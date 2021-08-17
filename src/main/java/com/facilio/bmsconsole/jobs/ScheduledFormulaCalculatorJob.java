@@ -63,14 +63,10 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 					while (it.hasNext()) {
 						FormulaFieldContext formula = it.next();
 						if(isCalculatable(formula, calculatedFieldIds)) {
-							if (AccountUtil.getCurrentOrg().getId() == 286l) {
-								LOGGER.info("Gonna execute scheduled formula : "+formula.getName());
-							}
+
+							LOGGER.info("Gonna execute scheduled formula : "+formula.getName() + ", Formula matched resources : "+StringUtils.join(formula.getMatchedResourcesIds(), ","));
 							try {
 								List<ReadingContext> readings = new ArrayList<>();
-								if (AccountUtil.getCurrentOrg().getId() == 286l) {
-									LOGGER.info("Formula matched resources : "+StringUtils.join(formula.getMatchedResourcesIds(), ","));
-								}
 								for (Long resourceId : formula.getMatchedResourcesIds()) {
 									ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(resourceId, formula.getReadingField());
 									long startTime = getStartTime(formula, meta.getTtime());
@@ -91,8 +87,8 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 										readings.addAll(currentReadings);
 									}
 								}
-								if (AccountUtil.getCurrentOrg().getId() == 286l) {
-									LOGGER.info("Readings Calculated for : "+formula.getName());
+								if (AccountUtil.getCurrentOrg().getId() == 286l || AccountUtil.getCurrentOrg().getId() == 405) {
+									LOGGER.info("Readings Calculated for : "+formula.getName() + " , size : " + readings.size());
 								}
 								if (!readings.isEmpty()) {
 									
@@ -117,7 +113,7 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 								}
 							}
 							catch (Exception e) {
-								LOGGER.info("Exception occurred ", e);
+								LOGGER.error("Exception occurred: Schedule formula calculator job failed. formula : " + formula , e);
 								CommonCommandUtil.emailException("ScheduledFormulaCalculatorJob", "EnPI Calculation failed for : "+formula.getId()+" in org : "+jc.getOrgId(), e);
 							}
 							calculatedFieldIds.add(formula.getReadingFieldId());

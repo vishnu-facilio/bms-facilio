@@ -328,6 +328,9 @@ public class FormulaFieldAPI {
 					if (AccountUtil.getCurrentOrg().getId() == 78l && resourceId == 1248194l) {
 						LOGGER.info("Result of Formula : " + fieldName + " for resource : " + resourceId + " : " + workflowResult+", ttime : "+iEndTime);
 					}
+					if (AccountUtil.getCurrentOrg().getId() == 405) {
+						LOGGER.info("Result of Formula : " + fieldName + " for resource : " + resourceId + " : " + workflowResult+", ttime : "+iEndTime);
+					}
 					
 					if(workflowResult != null) {
 						Double resultVal = Double.parseDouble(workflowResult.toString());
