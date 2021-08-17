@@ -296,7 +296,7 @@
 		
 		<action name="dashboardWithFolder" class="com.facilio.bmsconsole.actions.DashboardAction"
 			method="getDashboardListWithFolder">
-<!--			<param name="translationImpl">DashboardTranslation</param>-->
+			<param name="translationImpl">DashboardTranslation</param>
 			<result name="success" type="json">
 				<param name="includeProperties">dashboardFolders,dashboardFolders\[\d+\],dashboardFolders\[\d+\].*</param>
 			</result>

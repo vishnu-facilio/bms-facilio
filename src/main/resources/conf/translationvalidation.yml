@@ -32,3 +32,9 @@ translation:
 
   - prefix: button
     suffix: [displayName]
+
+  - prefix: dashboardFolder
+    suffix: [displayName]
+
+  - prefix: fieldOption
+    suffix: [displayName]
