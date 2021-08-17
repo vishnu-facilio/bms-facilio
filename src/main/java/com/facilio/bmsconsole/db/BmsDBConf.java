@@ -536,6 +536,11 @@ public class BmsDBConf extends DBConf {
     }
 
     @Override
+    public String getEmailDomain() throws Exception {
+        return FacilioProperties.getMailDomain();
+    }
+
+    @Override
 	public Account getCurrentAccount() throws Exception {
 		return AccountUtil.getCurrentAccount();
 	}
