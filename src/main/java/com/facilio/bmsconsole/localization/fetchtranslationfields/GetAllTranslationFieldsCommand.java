@@ -61,7 +61,7 @@ public class GetAllTranslationFieldsCommand extends FacilioCommand {
             TranslationTypeEnum webTabType = TranslationTypeEnum.getTranslationTypeModule(TranslationTypeEnum.WEB_TAB.name());
             jsonArray.add(webTabType.getHandler().constructTranslationObject(webTab,linkName,properties));
 
-            TranslationTypeEnum stateFlowType = TranslationTypeEnum.getTranslationTypeModule(TranslationTypeEnum.STATE_FLOWS.name());
+            TranslationTypeEnum stateFlowType = TranslationTypeEnum.getTranslationTypeModule(TranslationTypeEnum.STATES.name());
             jsonArray.add(stateFlowType.getHandler().constructTranslationObject(webTab,linkName,properties));
 
         }

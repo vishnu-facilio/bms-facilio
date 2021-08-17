@@ -89,13 +89,14 @@ public class TranslationsUtil {
     private static Map<String, String> getColumnVsType () {
         Map<String, String> columnVsType = new HashMap<>();
         columnVsType.put("VIEWS","VIEWS");
-        columnVsType.put("VIEW_COLUMNS","VIEW COLUMNS");
+        columnVsType.put("VIEW_FOLDER","VIEW FOLDER");
         columnVsType.put("FORMS","FORMS");
         columnVsType.put("FIELDS","FIELDS");
-        columnVsType.put("FORM_FIELDS","FORM FIELDS");
-        columnVsType.put("STATE_FLOWS","STATE FLOWS");
+        columnVsType.put("STATES","STATES");
+        columnVsType.put("STATE_TRANSITION","STATE TRANSITION");
         columnVsType.put("BUTTONS","BUTTONS");
         columnVsType.put("DETAILS","DETAILS");
+        columnVsType.put("FIELD_OPTIONS","FIELD OPTIONS");
         return columnVsType;
     }
 }
