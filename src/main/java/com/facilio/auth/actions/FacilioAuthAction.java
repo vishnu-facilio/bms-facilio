@@ -1727,7 +1727,6 @@ public class FacilioAuthAction extends FacilioAction {
 		StringBuilder baseUrl = new StringBuilder(getProtocol()).append("://");
 		Organization org = IAMOrgUtil.getOrg(getDomain());
 		if (StringUtils.isNotEmpty(getLookUpType())) {
-			baseUrl.append(getDomain()).append(".");
 			if (getLookUpType().equalsIgnoreCase("service") ) {
 				List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL, org.getOrgId());
 				baseUrl.append(appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain());
