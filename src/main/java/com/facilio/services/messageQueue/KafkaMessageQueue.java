@@ -60,7 +60,15 @@ class KafkaMessageQueue extends MessageQueue {
         properties.put("connections.max.idle.ms", 300000);
         properties.put("receive.buffer.bytes", 65536);
         properties.put("request.timeout.ms", 120000);
-
+        if (FacilioProperties.getKafkaAuthMode().equalsIgnoreCase("sasl_ssl")) {        	
+            String username = FacilioProperties.getKafkaSaslUsername();
+            String password = FacilioProperties.getKafkaSaslPassword();
+            String jaasTemplate = "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"%s\" password=\"%s\";";
+            String jaasCfg = String.format(jaasTemplate, username, password);
+            properties.put("security.protocol", "SASL_SSL");
+            properties.put("sasl.mechanism", "SCRAM-SHA-512");
+            properties.put("sasl.jaas.config", jaasCfg);
+        }
         return properties;
     }
 
