@@ -553,6 +553,7 @@ public class AwsUtil
 			if (!"error+alert@facilio.com".equals(toAddress) && !"error@facilio.com".equals(toAddress)) {
 				toAddress = toAddress == null ? "" : toAddress;
 				JSONObject info = new JSONObject();
+				info.put("from", mailJson.get("sender"));
 				info.put("subject", mailJson.get("subject"));
 				if (mailJson.get("cc") != null) {
 					info.put("cc", mailJson.get("cc"));
