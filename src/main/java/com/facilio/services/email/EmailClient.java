@@ -256,6 +256,7 @@ public abstract class EmailClient {
             if (!ERROR_AND_ALERT_AT_FACILIO.equals(toAddress) && !ERROR_AT_FACILIO.equals(toAddress)) {
                 toAddress = toAddress == null ? "" : toAddress;
                 JSONObject info = new JSONObject();
+                info.put(SENDER, mailJson.get(SENDER));
                 info.put(SUBJECT, mailJson.get(SUBJECT));
                 if (mailJson.get(CC) != null) {
                     info.put("cc", mailJson.get(CC));

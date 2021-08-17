@@ -546,6 +546,7 @@ public class AwsUtil
 		}
 	}
 
+	// This method is not called during sending email
 	public static void logEmail (JSONObject mailJson) throws Exception {
 
 		try {
