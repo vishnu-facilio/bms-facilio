@@ -4,9 +4,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.ServletActionContext;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.services.filestore.FileStore;
-import com.facilio.services.factory.FacilioFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 
 public class AttachmentContext extends ModuleBaseWithCustomFields {
 	
@@ -116,12 +116,7 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 	public String getDownloadUrl() throws Exception {
 		if (this.downloadUrl == null && this.fileId > 0) {
 			FileStore fs = FacilioFactory.getFileStore();
-			if (AccountUtil.getCurrentAccount() != null && AccountUtil.getCurrentAccount().isFromMobile()) {
-				downloadUrl = fs.orginalFileUrl(this.fileId);
-			}
-			else {
-				downloadUrl = fs.getDownloadUrl(this.fileId);
-			}
+			downloadUrl = fs.getDownloadUrl(this.fileId);
 		}
 		return downloadUrl;
 	}

@@ -610,19 +610,14 @@ public abstract class FileStore {
 
 	//
 	// Namespaces are handled in V3 file url
-	private String getUrl (long fileId, boolean isDownload, boolean isPortal, int width, int height) throws Exception {
+	private String getUrl (long fileId, boolean isDownload, int width, int height) throws Exception {
 		StringBuilder url = new StringBuilder();
 
 		if (FacilioProperties.isDevelopment()) {
 			url.append(FacilioProperties.getClientAppUrl());
 		}
-		url.append("/api/v2/");
+		url.append("/api/v2/files/");
 
-		if (isPortal && (FacilioProperties.isProduction() || FacilioProperties.isOnpremise())) {
-			url.append("service/");
-		}
-
-		url.append("files/");
 		if (isDownload) {
 			url.append("download/");
 		}
@@ -642,47 +637,15 @@ public abstract class FileStore {
 	}
 
 	public String getPrivateUrl(long fileId) throws Exception {
-		User currentUser = AccountUtil.getCurrentAccount() == null ? null : AccountUtil.getCurrentAccount().getUser();
-
-		if (currentUser != null) {
-			return getPrivateUrl(fileId, currentUser.isPortalUser());
-		}
-		else {
-			return getPrivateUrl(fileId, false);
-		}
-	}
-
-	public String getPrivateUrl(long fileId, boolean isPortalUser) throws Exception {
-		return getUrl(fileId, false, isPortalUser, -1, -1);
+		return getUrl(fileId, false, -1, -1);
 	}
 
 	public String getPrivateUrl(long fileId, int width) throws Exception {
-		User currentUser = AccountUtil.getCurrentAccount() == null ? null : AccountUtil.getCurrentAccount().getUser();
-
-		if (currentUser != null) {
-			return getPrivateUrl(fileId, width, currentUser.isPortalUser());
-		}
-		else {
-			return getPrivateUrl(fileId, width, false);
-		}
-	}
-
-	public String getPrivateUrl(long fileId, int width,boolean isPortalUser) throws Exception {
-		return getUrl(fileId, false, isPortalUser, width, -1);
+		return getUrl(fileId, false, width, -1);
 	}
 
 	public String getDownloadUrl(long fileId) throws Exception {
-		User currentUser = AccountUtil.getCurrentAccount() == null ? null : AccountUtil.getCurrentAccount().getUser();
-		if (currentUser != null) {
-			return getDownloadUrl(fileId, currentUser.isPortalUser());
-		}
-		else {
-			return getDownloadUrl(fileId, false);
-		}
-	}
-
-	public String getDownloadUrl(long fileId, boolean isPortalUser) throws Exception {
-		return getUrl(fileId, true, isPortalUser, -1, -1);
+		return getUrl(fileId, true, -1, -1);
 	}
 
 	public int unOrphan(List<Long> fileIds) throws SQLException {

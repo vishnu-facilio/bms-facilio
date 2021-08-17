@@ -1,12 +1,13 @@
 package com.facilio.wmsv2.endpoint;
 
-import com.facilio.aws.util.FacilioProperties;
-import com.facilio.modules.FieldUtil;
-import com.facilio.server.ServerInfo;
-import com.facilio.services.kafka.FacilioKafkaProducer;
-import com.facilio.services.procon.message.FacilioRecord;
-import com.facilio.services.procon.producer.FacilioProducer;
-import com.facilio.wmsv2.message.Message;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -19,13 +20,14 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import com.facilio.aws.util.FacilioProperties;
+import com.facilio.modules.FieldUtil;
+import com.facilio.server.ServerInfo;
+import com.facilio.services.kafka.FacilioKafkaProducer;
+import com.facilio.services.kafka.KafkaUtil;
+import com.facilio.services.procon.message.FacilioRecord;
+import com.facilio.services.procon.producer.FacilioProducer;
+import com.facilio.wmsv2.message.Message;
 
 public class KafkaBroadcaster extends AbstractBroadcaster {
 
@@ -69,15 +71,7 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
         props.put("auto.offset.reset", "latest");
         props.put("key.deserializer", StringDeserializer.class.getName());
         props.put("value.deserializer", StringDeserializer.class.getName());
-        if (FacilioProperties.getKafkaAuthMode().equalsIgnoreCase("sasl_ssl")) {        	
-            String username = FacilioProperties.getKafkaSaslUsername();
-            String password = FacilioProperties.getKafkaSaslPassword();
-            String jaasTemplate = "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"%s\" password=\"%s\";";
-            String jaasCfg = String.format(jaasTemplate, username, password);
-            props.put("security.protocol", "SASL_SSL");
-            props.put("sasl.mechanism", "SCRAM-SHA-512");
-            props.put("sasl.jaas.config", jaasCfg);
-        }
+        KafkaUtil.setKafkaAuthProps(props);
         return props;
     }
 

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -84,29 +83,6 @@ public class WmsApi
 			LOGGER.log(Level.INFO, "Exception while producing to kafka ", e);
 		}
 	}
-
-	private static Properties getKafkaProducerProperties() {
-		Properties props = new Properties();
-		props.put("bootstrap.servers", FacilioProperties.getKafkaProducer());
-		props.put("acks", "all");
-		props.put("retries", 0);
-		props.put("batch.size", 16384);
-		props.put("linger.ms", 1);
-		props.put("buffer.memory", 33554432);
-		props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-		props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        if (FacilioProperties.getKafkaAuthMode().equalsIgnoreCase("sasl_ssl")) {
-            String username = FacilioProperties.getKafkaSaslUsername();
-            String password = FacilioProperties.getKafkaSaslPassword();
-            String jaasTemplate = "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"%s\" password=\"%s\";";
-            String jaasCfg = String.format(jaasTemplate, username, password);
-            props.put("security.protocol", "SASL_SSL");
-            props.put("sasl.mechanism", "SCRAM-SHA-512");
-            props.put("sasl.jaas.config", jaasCfg);
-        }
-		return  props;
-	}
-	
 	
 	public static String getWebsocketEndpoint(long id, LiveSessionType liveSessionType, LiveSessionSource liveSessionSource) {
 		return WEBSOCKET_URL + "/" + id + "?" + "type=" + liveSessionType.name() + "&source=" + liveSessionSource.name();

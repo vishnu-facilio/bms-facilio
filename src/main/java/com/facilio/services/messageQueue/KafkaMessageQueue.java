@@ -1,22 +1,30 @@
 package com.facilio.services.messageQueue;
 
 
-import com.facilio.aws.util.FacilioProperties;
-import com.facilio.services.kafka.FacilioKafkaProducer;
-import com.facilio.services.kafka.KafkaProcessor;
-import com.facilio.services.procon.message.FacilioRecord;
-import com.facilio.services.procon.processor.FacilioProcessor;
-import com.facilio.services.procon.producer.FacilioProducer;
-import org.apache.kafka.clients.admin.*;
-import org.apache.kafka.clients.producer.KafkaProducer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.CreateTopicsResult;
+import org.apache.kafka.clients.admin.KafkaAdminClient;
+import org.apache.kafka.clients.admin.ListTopicsResult;
+import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.log4j.LogManager;
 
-import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import com.facilio.aws.util.FacilioProperties;
+import com.facilio.services.kafka.FacilioKafkaProducer;
+import com.facilio.services.kafka.KafkaProcessor;
+import com.facilio.services.kafka.KafkaUtil;
+import com.facilio.services.procon.message.FacilioRecord;
+import com.facilio.services.procon.processor.FacilioProcessor;
 
 class KafkaMessageQueue extends MessageQueue {
     private static org.apache.log4j.Logger LOGGER = LogManager.getLogger(KafkaMessageQueue.class.getName());
@@ -60,15 +68,7 @@ class KafkaMessageQueue extends MessageQueue {
         properties.put("connections.max.idle.ms", 300000);
         properties.put("receive.buffer.bytes", 65536);
         properties.put("request.timeout.ms", 120000);
-        if (FacilioProperties.getKafkaAuthMode().equalsIgnoreCase("sasl_ssl")) {        	
-            String username = FacilioProperties.getKafkaSaslUsername();
-            String password = FacilioProperties.getKafkaSaslPassword();
-            String jaasTemplate = "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"%s\" password=\"%s\";";
-            String jaasCfg = String.format(jaasTemplate, username, password);
-            properties.put("security.protocol", "SASL_SSL");
-            properties.put("sasl.mechanism", "SCRAM-SHA-512");
-            properties.put("sasl.jaas.config", jaasCfg);
-        }
+        KafkaUtil.setKafkaAuthProps(properties);
         return properties;
     }
 

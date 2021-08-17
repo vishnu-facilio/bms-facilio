@@ -521,7 +521,7 @@ public class OrgBeanImpl implements OrgBean {
 		org.setPortalId(portalId);
 
 			FileStore fs = FacilioFactory.getFileStoreFromOrg(org.getId());
-			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId(), true));
+			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId()));
 			org.setOriginalUrl(fs.orginalFileUrl(org.getLogoId()));
 
 		if(appType == AppDomainType.SERVICE_PORTAL) {

@@ -1,10 +1,10 @@
 package com.facilio.services.kafka.notification;
 
-import com.facilio.aws.util.FacilioProperties;
-import com.facilio.server.ServerInfo;
-import com.facilio.wms.endpoints.SessionManager;
-import com.facilio.wms.message.Message;
-import com.facilio.wms.util.WmsApi;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
+
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -18,10 +18,12 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
+import com.facilio.aws.util.FacilioProperties;
+import com.facilio.server.ServerInfo;
+import com.facilio.services.kafka.KafkaUtil;
+import com.facilio.wms.endpoints.SessionManager;
+import com.facilio.wms.message.Message;
+import com.facilio.wms.util.WmsApi;
 
 public class NotificationProcessor implements Runnable {
 
@@ -52,15 +54,7 @@ public class NotificationProcessor implements Runnable {
         props.put("auto.offset.reset", "latest");
         props.put("key.deserializer", StringDeserializer.class.getName());
         props.put("value.deserializer", StringDeserializer.class.getName());
-        if (FacilioProperties.getKafkaAuthMode().equalsIgnoreCase("sasl_ssl")) {        	
-            String username = FacilioProperties.getKafkaSaslUsername();
-            String password = FacilioProperties.getKafkaSaslPassword();
-            String jaasTemplate = "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"%s\" password=\"%s\";";
-            String jaasCfg = String.format(jaasTemplate, username, password);
-            props.put("security.protocol", "SASL_SSL");
-            props.put("sasl.mechanism", "SCRAM-SHA-512");
-            props.put("sasl.jaas.config", jaasCfg);
-        }        
+        KafkaUtil.setKafkaAuthProps(props);        
         return props;
     }
 

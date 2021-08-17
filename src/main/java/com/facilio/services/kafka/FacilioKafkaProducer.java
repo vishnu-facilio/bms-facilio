@@ -1,18 +1,18 @@
 package com.facilio.services.kafka;
 
-import com.facilio.aws.util.FacilioProperties;
-import com.facilio.services.kinesis.ErrorDataProducer;
-import com.facilio.services.procon.message.FacilioRecord;
-import com.facilio.services.procon.producer.FacilioProducer;
+import java.util.Properties;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.util.Properties;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import com.facilio.aws.util.FacilioProperties;
+import com.facilio.services.procon.message.FacilioRecord;
+import com.facilio.services.procon.producer.FacilioProducer;
 
 public class FacilioKafkaProducer implements FacilioProducer {
     private static final Logger LOGGER = LogManager.getLogger(FacilioKafkaProducer.class.getName());
@@ -59,15 +59,8 @@ public class FacilioKafkaProducer implements FacilioProducer {
         props.put("buffer.memory", 33554432);
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        if (FacilioProperties.getKafkaAuthMode().equalsIgnoreCase("sasl_ssl")) {
-            String username = FacilioProperties.getKafkaSaslUsername();
-            String password = FacilioProperties.getKafkaSaslPassword();
-            String jaasTemplate = "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"%s\" password=\"%s\";";
-            String jaasCfg = String.format(jaasTemplate, username, password);
-            props.put("security.protocol", "SASL_SSL");
-            props.put("sasl.mechanism", "SCRAM-SHA-512");
-            props.put("sasl.jaas.config", jaasCfg);
-        }        
+        KafkaUtil.setKafkaAuthProps(props);
+        
         return  props;
     }
 
