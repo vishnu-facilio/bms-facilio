@@ -28,7 +28,7 @@ public class DashboardTranslationImplV1 implements TranslationIfc {
                         JSONObject headerObject = (JSONObject)widget.get("header");
                         String title = (String)headerObject.get("title");
                         if(title != null){
-                            widget.put("title",getTranslation(translationFile,widgetKey,title));
+                            headerObject.put("title",getTranslation(translationFile,widgetKey,title));
                         }
                     }
                 }
