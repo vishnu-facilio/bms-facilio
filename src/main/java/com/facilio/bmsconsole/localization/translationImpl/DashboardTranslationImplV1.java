@@ -35,18 +35,20 @@ public class DashboardTranslationImplV1 implements TranslationIfc {
             }
 
             JSONArray subTabs = (JSONArray)innerObject.get("tabs");
-            for (int k = 0; k < subTabs.size(); k++) {
-                JSONObject jsonObject = (JSONObject)subTabs.get(k);
-                String dashboardTabKey = DashboardTranslationImpl.getDashboardTabKey(String.valueOf(jsonObject.get("id")));
-                jsonObject.put("name",getTranslation(translationFile,dashboardTabKey,(String)jsonObject.get("name")));
+            if(subTabs != null && !subTabs.isEmpty()){
+                for (int k = 0; k < subTabs.size(); k++) {
+                    JSONObject jsonObject = (JSONObject)subTabs.get(k);
+                    String dashboardTabKey = DashboardTranslationImpl.getDashboardTabKey(String.valueOf(jsonObject.get("id")));
+                    jsonObject.put("name",getTranslation(translationFile,dashboardTabKey,(String)jsonObject.get("name")));
 
-                JSONArray childTabs = (JSONArray)jsonObject.get("childTabs");
+                    JSONArray childTabs = (JSONArray)jsonObject.get("childTabs");
 
-                if(childTabs != null && !childTabs.isEmpty()) {
-                    for (int l = 0; l < childTabs.size(); l++) {
-                        JSONObject subTabObject = (JSONObject)childTabs.get(l);
-                        String dashboardSubTabKey = DashboardTranslationImpl.getDashboardTabKey(String.valueOf(subTabObject.get("id")));
-                        subTabObject.put("name",getTranslation(translationFile,dashboardSubTabKey,(String)subTabObject.get("name")));
+                    if(childTabs != null && !childTabs.isEmpty()) {
+                        for (int l = 0; l < childTabs.size(); l++) {
+                            JSONObject subTabObject = (JSONObject)childTabs.get(l);
+                            String dashboardSubTabKey = DashboardTranslationImpl.getDashboardTabKey(String.valueOf(subTabObject.get("id")));
+                            subTabObject.put("name",getTranslation(translationFile,dashboardSubTabKey,(String)subTabObject.get("name")));
+                        }
                     }
                 }
             }

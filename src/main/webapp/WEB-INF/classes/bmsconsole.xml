@@ -3630,6 +3630,7 @@
 			</result>
 		</action>
 		<action name="getTabWidgets" class="com.facilio.bmsconsole.actions.DashboardAction" method="viewDashboardTab">
+			<param name="translationImpl">DashboardWidgetTranslation</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardTabContext.*</param>
 			</result>

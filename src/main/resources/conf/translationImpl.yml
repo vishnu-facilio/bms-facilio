@@ -58,3 +58,6 @@ translations:
 
   - name: DashboardTranslationV1
     translationImplClass : com.facilio.bmsconsole.localization.translationImpl.DashboardTranslationImplV1
+
+  - name: DashboardWidgetTranslation
+    translationImplClass : com.facilio.bmsconsole.localization.translationImpl.DashboardTabAndWidgetTranslationImpl
