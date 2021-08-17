@@ -495,8 +495,9 @@ public class WorkflowContext implements Serializable {
 			        return this.getReturnValue();
 				}
 				catch(Exception e) {
-					this.getLogStringBuilder().append("ERROR ::: "+e.getMessage()+"\n");
-					LOGGER.log(Level.SEVERE, e.getMessage(), e);
+					String errorMeg = "Exception occured in script : "+getId();
+					this.getLogStringBuilder().append(errorMeg+" ::: "+e.getMessage()+"\n");
+					LOGGER.log(Level.SEVERE, errorMeg+" ::: "+e.getMessage(), e);
 					throw e;
 				}
 			}
