@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.templates.*;
 import com.facilio.command.FacilioCommand;
+import com.facilio.services.email.EmailClient;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -952,8 +953,8 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 		action.setActionType(ActionType.BULK_EMAIL_NOTIFICATION);
 		
 		EMailTemplate emailTemplate = new EMailTemplate();
-		
-		emailTemplate.setFrom("noreply@${org.domain}.facilio.com");
+
+		emailTemplate.setFrom(EmailClient.getNoReplyFromEmail());
 		
 		emailTemplate.setType(Type.EMAIL);
 		emailTemplate.setName("New WorkOrder Email Template");

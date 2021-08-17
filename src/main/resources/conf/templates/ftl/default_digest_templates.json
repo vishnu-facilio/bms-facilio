@@ -1,9 +1,9 @@
 {
 "1": {
-		"name": "DAILY_MAINTENANCE_MAIL",
-		"sender": "report@${org.domain}.facilio.com",
-		"subject": "Daily Maintenance",
-		"to": "",
-		"message_ftl": "dailyMaintenance"
-	}
+	"name": "DAILY_MAINTENANCE_MAIL",
+	"sender": "report@${org.domain}.{org.emailDomain}",
+	"subject": "Daily Maintenance",
+	"to": "",
+	"message_ftl": "dailyMaintenance"
+}
 }

@@ -5,6 +5,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.services.email.EmailClient;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -38,7 +39,7 @@ public class SendEmailCommand extends FacilioCommand implements Serializable{
 				User user = AccountUtil.getCurrentUser();
 				FileInfo fileInfo = fs.getFileInfo(importProcessContext.getFileId());
 				EMailTemplate template = new EMailTemplate();
-				template.setFrom("alert@facilio.com");
+				template.setFrom(EmailClient.getFromEmail("alert"));
 				template.setTo(user.getEmail());
 				template.setMessage(emailMessage.toString());
 				template.setSubject("Import of" + fileInfo.getFileName());

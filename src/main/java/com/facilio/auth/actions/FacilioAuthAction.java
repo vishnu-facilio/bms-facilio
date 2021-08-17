@@ -30,6 +30,7 @@ import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.iam.accounts.context.SecurityPolicy;
 import com.facilio.iam.accounts.exceptions.SecurityPolicyException;
 import com.facilio.iam.accounts.util.*;
+import com.facilio.services.email.EmailClient;
 import com.google.common.base.Throwables;
 import lombok.*;
 import org.apache.commons.collections4.MapUtils;
@@ -1808,7 +1809,7 @@ public class FacilioAuthAction extends FacilioAction {
 
 		Context context = sentry.getContext();
 		context.clear();
-		context.setUser(new UserBuilder().setEmail("issues@facilio.com").build());
+		context.setUser(new UserBuilder().setEmail(EmailClient.getFromEmail("issues")).build());
 		context.addTag("url", permalink);
 		context.addTag("postedBy", from);
 		context.addTag("postId", postId);
