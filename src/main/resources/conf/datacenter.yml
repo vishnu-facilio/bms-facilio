@@ -18,3 +18,6 @@ datacenters:
 
   4:
     mainapp: sg.facilio.com
+
+  5:
+    mainapp: stage.facilio.in
