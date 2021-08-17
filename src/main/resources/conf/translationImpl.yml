@@ -55,3 +55,6 @@ translations:
 
   - name: StateTranslationV1
     translationImplClass : com.facilio.bmsconsole.localization.translationImpl.StateTranslationImplV1
+
+  - name: DashboardTranslationV1
+    translationImplClass : com.facilio.bmsconsole.localization.translationImpl.DashboardTranslationImplV1
