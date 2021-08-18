@@ -59,17 +59,24 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 
 				for (DashboardWidgetContext widget : widgets) {
 
+					JSONObject widgetSettings = widget.getWidgetSettings();
+					Boolean isFilterExclude = (widgetSettings == null) ? false : (Boolean) widgetSettings.get("excludeDbFilters");
+					if (isFilterExclude != null && isFilterExclude == true) {
+						continue;
+					}
+
 					long widgetId = widget.getId();
-					long widgetModuleId =-1;
+
 					boolean isCustomScript = DashboardFilterUtil.isCustomScriptWidget(widget);
 					// if custom script is enabled for widget, add widget to customScriptWidget list and skip futher processing
-					
+
 					if (isCustomScript) {												
 						customScriptWidgets.add(widgetId);
 							
 								continue;
 					}
 					
+					long widgetModuleId =-1;
 					try {
 					 widgetModuleId = DashboardFilterUtil.getModuleIdFromWidget(widget);
 					}
@@ -78,11 +85,7 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 						LOGGER.log(Level.SEVERE,"Error occured  finding module for widget , ID="+widgetId+" Skipping   db userfilters",e);
 						continue;
 					}
-
-					JSONObject widgetSettings = widget.getWidgetSettings();
-					boolean isFilterExclude = (boolean) widgetSettings.get("excludeDbFilters");
-
-					if (isFilterExclude == true || widgetModuleId == -1) {// widgetModuleId=-1 implies widget has no
+					if (widgetModuleId == -1) {// widgetModuleId=-1 implies widget has no
 																			// module associated with it , like TEXT,WEB
 																			// widget, reading widgets etc
 						continue;

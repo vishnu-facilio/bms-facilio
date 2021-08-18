@@ -232,6 +232,19 @@ public class DashboardFilterUtil {
 			{
 				return true;
 			}
+
+			//hack ,treat connected app widget similar to custom script.as we can develop any widget using javascript sdk
+			if(cardContext.getCardLayout().equals(CardLayout.WEB_LAYOUT_1.getName()))
+			{
+				JSONObject cardParams = cardContext.getCardParams();
+				if (cardParams != null) {
+					String type = (String) cardParams.get("type");
+
+					if ("conncetdapp".equals(type) || "connectedapp".equals(type)) {
+						return true;
+					}
+				}
+			}
 		}
 		
 		return false;
