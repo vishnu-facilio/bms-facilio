@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.page.factory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,14 +39,20 @@ public class TenantUnitSpacePageFactory extends PageFactory {
         Page.Section tab2Sec1 = page.new Section();
         tab2.addSection(tab2Sec1);
 
-        addRelatedListWidget(tab2Sec1, FacilioConstants.ContextNames.TENANT_SPACES, baseSpaceModule.getModuleId(), "Tenant History");
+        if(AccountUtil.getCurrentApp() != null && AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
+            addRelatedListWidget(tab2Sec1, FacilioConstants.ContextNames.TENANT_SPACES, baseSpaceModule.getModuleId(), "Tenant History");
+            addRelatedListWidget(tab2Sec1, FacilioConstants.ContextNames.ASSET, baseSpaceModule.getModuleId(), "Assets");
+        }
         if (AccountUtil.getCurrentOrg().getOrgId() == 320l) {
             addRelatedListWidget(tab2Sec1, FacilioConstants.ContextNames.WORK_ORDER, module.getModuleId(), "Work Orders");
         } else {
             addRelatedListWidget(tab2Sec1, FacilioConstants.ContextNames.WORK_ORDER, resourceModule.getModuleId(), "Work Orders");
         }
-        addRelatedListWidget(tab2Sec1, FacilioConstants.ContextNames.ASSET, baseSpaceModule.getModuleId(), "Assets");
+        List<String> excludedModules = new ArrayList<>();
+        excludedModules.add(FacilioConstants.ContextNames.WORK_ORDER);
+        excludedModules.add(FacilioConstants.ContextNames.TENANT_SPACES);
 
+        addRelatedListWidgets(tab2Sec1, module.getModuleId(), excludedModules, false);
         return page;
     }
 
