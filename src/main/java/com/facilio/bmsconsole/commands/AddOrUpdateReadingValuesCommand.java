@@ -38,7 +38,7 @@ public class AddOrUpdateReadingValuesCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		long startTime = System.currentTimeMillis();
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
-		
+
 		Boolean updateLastReading = (Boolean) context.get(FacilioConstants.ContextNames.UPDATE_LAST_READINGS);
 		if (updateLastReading == null) {
 			updateLastReading = true;
@@ -76,7 +76,7 @@ public class AddOrUpdateReadingValuesCommand extends FacilioCommand {
 			}
 			context.put(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META, currentReadingMap);
 		}
-		LOGGER.info("Time taken to add/update Readings data to DB : "+(System.currentTimeMillis() - startTime));
+		LOGGER.info("Time taken to add/update Readings data to DB : "+(System.currentTimeMillis() - startTime) +", reading map size : " + readingMap.size() + "reading map : " +readingMap +", last reading map : " + lastReadingMap);
 		context.put(FacilioConstants.ContextNames.RECORD_MAP, readingMap);
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		
@@ -132,6 +132,9 @@ public class AddOrUpdateReadingValuesCommand extends FacilioCommand {
 
 //		System.err.println( Thread.currentThread().getName()+"Inside addReadings in  AddorUpdateCommand#######  "+readings);
 		if (AccountUtil.getCurrentOrg().getId() == 78 && module.getName().equals(FacilioConstants.ContextNames.WATER_READING)) {
+			LOGGER.info("Adding readings : " + readings);
+		}
+		if (AccountUtil.getCurrentOrg().getId() == 405) {
 			LOGGER.info("Adding readings : " + readings);
 		}
 		InsertRecordBuilder<ReadingContext> readingBuilder = new InsertRecordBuilder<ReadingContext>()

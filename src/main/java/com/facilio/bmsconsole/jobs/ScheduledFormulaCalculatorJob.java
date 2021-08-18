@@ -46,7 +46,7 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 
 	@Override
 	public void execute(JobContext jc) {
-		// TODO Auto-generated method stub
+		LOGGER.info("JOB ID for ScheduledFormulaCalculatorJob " + jc.getJobId());
 		try {
 			long jobStartTime = System.currentTimeMillis();
 			List<Integer> types = getFrequencyTypesToBeFetched();
@@ -108,7 +108,7 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 									addReadingChain.execute();
 									
 								}
-								if (AccountUtil.getCurrentOrg().getId() == 286l) {
+								if (AccountUtil.getCurrentOrg().getId() == 286l || AccountUtil.getCurrentOrg().getId() == 405) {
 									LOGGER.info("Readings Added for : "+formula.getName());
 								}
 							}
