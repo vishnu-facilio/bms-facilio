@@ -55,7 +55,6 @@
 <%@ page import="com.facilio.modules.fields.FacilioField" %>
 <%@ page import="com.facilio.modules.FieldType" %>
 <%@ page import="com.facilio.bmsconsole.commands.FacilioChainFactory" %>
-<%@ page import="com.facilio.bmsconsole.commands.MigrationCommand" %>
 
 
 <%--
@@ -77,7 +76,11 @@
         @Override
         public boolean executeCommand(Context context) throws Exception {
 
-            new MigrationCommand().executeCommand(context);
+        	// Have migration commands for each org
+            // Transaction is only org level. If failed, have to continue from the last failed org and not from first
+            
+            LOGGER.info("Completed For -- "+AccountUtil.getCurrentOrg().getId());
+            response.getWriter().println("Completed For -- "+AccountUtil.getCurrentOrg().getId());
             return false;
         }
 
