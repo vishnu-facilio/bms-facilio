@@ -335,9 +335,12 @@
                 class="com.facilio.bmsconsoleV3.actions.FloorplanAction"
                 method="getFloorplanDetailsByType">
         </action>
-        <action name="floorplanListSearch"
+    </package>
+    <package name="floorplansearch" namespace="/api/v3/floorplan/search" extends="v3Api">
+        <action name="*"
                 class="com.facilio.bmsconsoleV3.actions.FloorplanAction"
                 method="floorplanListSearch">
+                <param name="floorPlanId">{1}</param>
         </action>
     </package>
     

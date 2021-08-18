@@ -51,6 +51,14 @@ public class FloorplanAction extends V3Action {
 		this.floorId = floorId;
 	}
 	
+	private long floorPlanId = -1;
+	public long getFloorPlanId() {
+		return floorPlanId;
+	}
+	public void setFloorPlanId(long floorPlanId) {
+		this.floorPlanId = floorPlanId;
+	}
+	
 	private String moduleName;
 	public String getModuleName() {
 		return moduleName;
@@ -110,6 +118,7 @@ public class FloorplanAction extends V3Action {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.SEARCH, search);
 		context.put(FacilioConstants.ContextNames.FLOOR, floorId);
+		context.put(FacilioConstants.ContextNames.FLOOR_PLAN_ID,floorPlanId);
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(getFilters());

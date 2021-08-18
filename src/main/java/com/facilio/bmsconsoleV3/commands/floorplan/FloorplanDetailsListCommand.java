@@ -19,8 +19,10 @@ import com.facilio.db.criteria.Criteria;
 
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
-
+import com.facilio.bmsconsoleV3.context.V3EmployeeContext;
+import com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanContext;
 import com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanContext.FloorPlanType;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -51,6 +53,7 @@ public class FloorplanDetailsListCommand extends FacilioCommand {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE);
 		String search = (String) context.get(FacilioConstants.ContextNames.SEARCH);
 		long floorId =  (long) context.get(FacilioConstants.ContextNames.FLOOR);
+		long floorplanId =  (long) context.get(FacilioConstants.ContextNames.FLOOR_PLAN_ID);
 		Criteria filterCriteria = (Criteria) context.get(Constants.FILTER_CRITERIA);
 		List<String> modules = new ArrayList<>();
 		ModuleBean modBean = (ModuleBean)BeanFactory.lookup("ModuleBean");
@@ -68,42 +71,62 @@ public class FloorplanDetailsListCommand extends FacilioCommand {
 			FacilioModule moduleObj = modBean.getModule(module);
 			List<FacilioField> fieldsList = new ArrayList<>();
 			fieldsList.addAll(modBean.getAllFields(module));
+			FacilioField idField = FieldFactory.getIdField(moduleObj);
 
 			Map<String, FacilioField> fields = FieldFactory.getAsMap(fieldsList);
-			Criteria searchCriteria = constructMainFieldSearchCriteria(moduleName, (String) search);
+			Criteria searchCriteria = constructMainFieldSearchCriteria(module, (String) search);
 			Criteria criteria = new Criteria();
 			List<SupplementRecord> supplementFields = new ArrayList<>();
-			if(!module.equalsIgnoreCase(FacilioConstants.ContextNames.EMPLOYEE) && floorId > 0) {
+			
+			if(floorId > 0) {
 				criteria.addAndCondition(CriteriaAPI.getCondition(fields.get("floor"), String.valueOf(floorId) , NumberOperators.EQUALS));
 			}
-			else if (module.equalsIgnoreCase(FacilioConstants.ContextNames.EMPLOYEE)) {
+			
+			if(floorplanId > 0 && floorId < 0) {
+				V3IndoorFloorPlanContext floorplan = (V3IndoorFloorPlanContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN, floorplanId, V3IndoorFloorPlanContext.class);
+				if(floorplan.getFloor() != null) {
+					floorId = floorplan.getFloor().getId();
+				}
+			}
+			
+			if (module.equalsIgnoreCase(FacilioConstants.ContextNames.EMPLOYEE)) {
 				supplementFields.add((SupplementRecord) fields.get("department"));
 				supplementFields.add((SupplementRecord) fields.get("space"));
 			}
-			else if(module.equalsIgnoreCase(FacilioConstants.ContextNames.SPACE) && floorId > 0) {
+			else if(floorId > 0) {
 				
 				FacilioModule spaceCategorymodule  = modBean.getModule(FacilioConstants.ContextNames.SPACE_CATEGORY);
 				List<FacilioField> spaceCategoryFields = modBean.getAllFields(FacilioConstants.ContextNames.SPACE_CATEGORY);
-				Criteria spaceCriteria = new Criteria();
 				
 
 				SelectRecordsBuilder<SpaceCategoryContext> builder = new SelectRecordsBuilder<SpaceCategoryContext>()
 						.module(spaceCategorymodule)
 						.beanClass(SpaceCategoryContext.class)
 						.select(spaceCategoryFields);
-				
-				
-				spaceCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(spaceCategorymodule), FacilioConstants.ContextNames.Floorplan.DESKS, StringOperators.IS));
-				spaceCriteria.addOrCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(spaceCategorymodule), FacilioConstants.ContextNames.LOCKERS, StringOperators.IS));
-				spaceCriteria.addOrCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(spaceCategorymodule), FacilioConstants.ContextNames.PARKING_STALL, StringOperators.IS));
-				
-				
-				builder.andCriteria(spaceCriteria);
+				if(module.equalsIgnoreCase(FacilioConstants.ContextNames.SPACE)) {
+					
+					builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(spaceCategorymodule), FacilioConstants.ContextNames.SpaceCategory.DESK, StringOperators.ISN_T))
+					.andCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(spaceCategorymodule), FacilioConstants.ContextNames.SpaceCategory.LOCKERS, StringOperators.ISN_T))
+					.andCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(spaceCategorymodule), FacilioConstants.ContextNames.SpaceCategory.PARKING_STALL, StringOperators.ISN_T));
+					
+				} else if(module.equalsIgnoreCase(FacilioConstants.ContextNames.Floorplan.DESKS)) {
+					
+					builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(spaceCategorymodule), FacilioConstants.ContextNames.SpaceCategory.DESK, StringOperators.IS));
+					
+				} else if(module.equalsIgnoreCase(FacilioConstants.ContextNames.LOCKERS)) {
+					
+					builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(spaceCategorymodule), FacilioConstants.ContextNames.SpaceCategory.LOCKERS, StringOperators.IS));
+					
+				} else if(module.equalsIgnoreCase(FacilioConstants.ContextNames.PARKING_STALL)) {
+					
+					builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(spaceCategorymodule), FacilioConstants.ContextNames.SpaceCategory.PARKING_STALL, StringOperators.IS));
+					
+				}
 				List<SpaceCategoryContext> spaceCategories = builder.get();
-				List<Long> categoryIds = new ArrayList<>();
-				spaceCategories.forEach(i -> categoryIds.add(i.getId()));
-				
-				criteria.addAndCondition(CriteriaAPI.getCondition(fields.get("spaceCategory"), StringUtils.join(categoryIds,",") , NumberOperators.EQUALS));
+					List<Long> categoryIds = new ArrayList<>();
+					spaceCategories.forEach(i -> categoryIds.add(i.getId()));
+					
+					criteria.addAndCondition(CriteriaAPI.getCondition(fields.get("spaceCategory"), StringUtils.join(categoryIds,",") , NumberOperators.EQUALS));
 			}
 			
 			V3Config v3Config = ChainUtil.getV3Config(module);
@@ -112,6 +135,45 @@ public class FloorplanDetailsListCommand extends FacilioCommand {
 			SelectRecordsBuilder<ModuleBaseWithCustomFields> selectRecordsBuilder = new SelectRecordsBuilder<>()
 	                .module(moduleObj)
 	                .beanClass(beanClass);
+			
+			if(!module.equalsIgnoreCase(FacilioConstants.ContextNames.EMPLOYEE) && floorplanId > 0) {
+				
+				Map<String, FacilioField> objectfields = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.INDOOR_FLOOR_PLAN_OBJECTS));
+				FacilioField floorplanField = objectfields.get("indoorfloorplan");
+				FacilioModule floorplanObjModule = modBean.getModule(FacilioConstants.ContextNames.INDOOR_FLOOR_PLAN_OBJECTS);
+				FacilioField floorplanIdField = FieldFactory.getIdField(floorplanObjModule);
+				
+				// Assuming only desks as markers - should be changed 
+				if(module.equalsIgnoreCase(FacilioConstants.ContextNames.Floorplan.DESKS)){
+					Map<String, FacilioField> markerfields = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.Floorplan.MARKER));
+					FacilioField markermoduleField = markerfields.get("markerModuleId");
+					FacilioModule markerModule = modBean.getModule(FacilioConstants.ContextNames.Floorplan.MARKER);
+					FacilioField markerfloorPlanIdField = markerfields.get("indoorfloorplan");
+					FacilioField markerRecordIdField = markerfields.get("recordId");
+					FacilioField markerIdField = FieldFactory.getIdField(markerModule);
+					
+					selectRecordsBuilder
+					.innerJoin(markerModule.getTableName())
+					.on(markerRecordIdField.getCompleteColumnName()+" = "+ idField.getCompleteColumnName())
+					.innerJoin(floorplanObjModule.getTableName())
+					.on( floorplanIdField.getCompleteColumnName() +" = "+ markerIdField.getCompleteColumnName())
+					.andCondition(CriteriaAPI.getCondition(markermoduleField, String.valueOf(moduleObj.getModuleId()), NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(markerfloorPlanIdField, String.valueOf(floorplanId), NumberOperators.EQUALS));
+				} else {
+					Map<String, FacilioField> zonefields = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.Floorplan.MARKED_ZONES));
+					FacilioModule markedzoneModule = modBean.getModule(FacilioConstants.ContextNames.Floorplan.MARKED_ZONES);
+					FacilioField markedzoneplanIdField = zonefields.get("indoorfloorplan");
+					FacilioField markedzonespaceIdField = zonefields.get("space");
+					FacilioField markedzoneIdField = FieldFactory.getIdField(markedzoneModule);
+					
+					selectRecordsBuilder
+					.innerJoin(markedzoneModule.getTableName())
+					.on(markedzonespaceIdField.getCompleteColumnName()+" = "+ idField.getCompleteColumnName())
+					.innerJoin(floorplanObjModule.getTableName())
+					.on( floorplanIdField.getCompleteColumnName() +" = "+ markedzoneIdField.getCompleteColumnName())
+					.andCondition(CriteriaAPI.getCondition(markedzoneplanIdField, String.valueOf(floorplanId), NumberOperators.EQUALS));
+				}
+			}
 			
 			if (searchCriteria != null && !searchCriteria.isEmpty()) {
 	            selectRecordsBuilder.andCriteria(searchCriteria);

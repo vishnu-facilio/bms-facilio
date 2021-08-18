@@ -2001,6 +2001,12 @@ public class FacilioConstants {
 			public static final String BOOKED_DESKS = "bookedDesks";
 		}
 		
+		public static class SpaceCategory {
+			public static final String DESK = "Desk";
+			public static final String LOCKERS = "Lockers";
+			public static final String PARKING_STALL = "Parking Stall";
+		}
+		
 		// etisalat changes
         public static final String BILL_ALERT = "custom_alert";
         public static final String BILL_INVOICE = "custom_invoices";
