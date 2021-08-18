@@ -11,7 +11,7 @@ import com.facilio.bmsconsole.workflow.rule.FormInterface;
 import com.facilio.modules.FacilioModule;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class ServiceCatalogContext implements Serializable, FormInterface {
+public class ServiceCatalogContext implements Serializable {
 	
 	
 	private long appId = -1;

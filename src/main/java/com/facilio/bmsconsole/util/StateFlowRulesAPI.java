@@ -630,6 +630,10 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 	}
 
 	public static void addOrUpdateFormDetails(FormInterface rule) throws Exception {
+		if (!rule.shouldFormInterfaceApply()) {
+			return;
+		}
+
 		FacilioForm form = rule.getForm();
 
 		String formName = "Enter Details" + "_" + rule.getId();
