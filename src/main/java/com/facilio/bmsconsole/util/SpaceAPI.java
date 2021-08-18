@@ -2013,21 +2013,24 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 	}
 
 	public static void v3UpdateSiteAndBuildingId(V3SpaceContext space) throws Exception {
+		boolean parentAvailable = false;
 		if(space.getBuilding() != null && space.getBuilding().getId() > 0) {
 			long buildingId = space.getBuilding().getId();
 			BuildingContext building = SpaceAPI.getBuildingSpace(buildingId);
-			space.setSiteId(building.getSiteId());
+			space._setSiteId(building.getSiteId());
+			parentAvailable = true;
 		}
 		if(space.getFloor() != null && space.getFloor().getId() > 0) {
 			long floorId = space.getFloor().getId();
 			V3FloorContext floor = SpaceAPI.getV3FloorSpace(floorId);
-			space.setSiteId(floor.getSiteId());
+			space._setSiteId(floor.getSiteId());
 			space.setBuilding(floor.getBuilding());
+			parentAvailable = true;
 		}
 		if (space.getParentSpace() != null && space.getParentSpace().getId() > 0) {
 			long spaceId = space.getParentSpace().getId();
 			V3SpaceContext spaces = SpaceAPI.getV3Space(spaceId);
-			space.setSiteId(spaces.getSiteId());
+			space._setSiteId(spaces.getSiteId());
 			space.setBuilding(spaces.getBuilding());
 			space.setFloorId(spaces.getFloorId());
 			if (spaces.getSpaceId3() != null && spaces.getSpaceId3() > 0) {
@@ -2048,6 +2051,10 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 			else {
 				space.setSpaceId1(spaceId);
 			}
+			parentAvailable = true;
+		}
+		if (!parentAvailable) {
+			throw new IllegalArgumentException("Parent Space not available. Please select parent space");
 		}
 	}
 	
