@@ -21,6 +21,7 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
@@ -1091,26 +1092,32 @@ public class TenantsAPI {
 	}
 	
 	public static List<TenantContext> getAllTenantsForSpace(Collection<Long> spaceIds) throws Exception {
-		List<TenantSpaceContext> tenantSpaces = getTenantSpaces(spaceIds, true);
+		List<TenantSpaceContext> tenantSpaces = getTenantSpaces(spaceIds);
 		if (tenantSpaces != null && !tenantSpaces.isEmpty()) {
 			return tenantSpaces.stream().map(tenantSpace -> tenantSpace.getTenant()).collect(Collectors.toList());
 		}
 		return null;
 	}
 	
-	private static List<TenantSpaceContext> getTenantSpaces(Collection<Long> spaceIds, boolean fetchChildTenants) throws Exception {
+	private static List<TenantSpaceContext> getTenantSpaces(Collection<Long> spaceIds) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(ContextNames.TENANT_SPACES);
 		List<FacilioField> fields = modBean.getAllFields(module.getName());
 		Map<String, FacilioField> tenantSpaceFieldMap = FieldFactory.getAsMap(fields);
-		Operator operator = fetchChildTenants ? BuildingOperator.BUILDING_IS : NumberOperators.EQUALS;
 		SelectRecordsBuilder<TenantSpaceContext> builder = new SelectRecordsBuilder<TenantSpaceContext>()
 				  .module(module)
 				  .beanClass(TenantSpaceContext.class)
 				  .select(fields)
-				  .andCondition(CriteriaAPI.getCondition(tenantSpaceFieldMap.get("space"), spaceIds, operator))
 				  .fetchSupplement((LookupField)tenantSpaceFieldMap.get("tenant"))
 				  ;
+		
+		Set<Long> baseSpaceParentIds = SpaceAPI.getBaseSpaceParentIds(spaceIds);
+		Criteria criteria = new Criteria();
+		criteria.addOrCondition(CriteriaAPI.getCondition(tenantSpaceFieldMap.get("space"), spaceIds, BuildingOperator.BUILDING_IS));
+		if (CollectionUtils.isNotEmpty(baseSpaceParentIds)) {
+			criteria.addOrCondition(CriteriaAPI.getCondition(tenantSpaceFieldMap.get("space"), baseSpaceParentIds, NumberOperators.EQUALS));
+		}
+		builder.andCriteria(criteria);
 		
 		return builder.get();
 	}

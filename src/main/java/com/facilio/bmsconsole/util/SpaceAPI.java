@@ -1289,7 +1289,7 @@ public static long getSitesCount() throws Exception {
 	
 	
 	
-	public static List<BaseSpaceContext> getBaseSpaces(List<Long> idList) throws Exception
+	public static List<BaseSpaceContext> getBaseSpaces(Collection<Long> idList) throws Exception
 	{
 		if(idList != null && !idList.isEmpty()) {
 			String list=StringUtils.join(idList, ",");
@@ -1979,7 +1979,7 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 		return space;
 	}
 	
-	public static Set<Long> getBaseSpaceParentIds(List<Long> spaceIds) throws Exception {
+	public static Set<Long> getBaseSpaceParentIds(Collection<Long> spaceIds) throws Exception {
 		Set<Long> parentIds = new HashSet<>();
 		List<BaseSpaceContext> baseSpaces = getBaseSpaces(spaceIds);
 		for(BaseSpaceContext baseSpace: baseSpaces) {
