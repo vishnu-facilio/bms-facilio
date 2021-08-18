@@ -275,6 +275,8 @@ public class ReadingAction extends FacilioAction {
 	}
 	
 	public String updateReadingDataMeta() throws Exception{
+
+		LOGGER.info("updated reading data meta : assetcategory id " + assetCategoryId + " , module ids : " + readingModuleIds);
 		ReadingsAPI.updateReadingDataMeta(getAssetCategoryId(),getReadingModuleIds());
 		setResult(FacilioConstants.ContextNames.MESSAGE, "success");
 		return SUCCESS;
