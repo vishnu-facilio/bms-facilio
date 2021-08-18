@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -58,8 +59,8 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 	boolean showTimeMetric = false;
 	PlannerType plannerType;
 	int rowDefaultSpan;
-	
-	int totalRecordCount = 0;
+
+	long totalRecordCount = 0;
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -358,7 +359,7 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 					.innerJoin(pmTriggerTable).on(triggerField.getCompleteColumnName() + "=" + pmTriggerTable + ".ID")
 					.andCondition(CriteriaAPI.getCondition(resourceField, resourceIds, NumberOperators.EQUALS))
 					.orderBy(orderBy.toString())
-					.limit(totalRecordCount)
+					.limit((int) totalRecordCount)
 					;
 			
 			props = dataBuilder.getAsProps();
@@ -448,7 +449,7 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 					Map<String, Object> metricObj = new HashMap<>();
 					metricObj.put("name", metricFieldNameMap.get(metric));
 					metricObj.put("rowSpan", 1);
-					int count = (int) prop.get(countField.getName());
+					long count = FacilioUtil.parseLong(prop.get(countField.getName()));
 					metricObj.put("count",count);
 					totalRecordCount += count;
 					
@@ -501,7 +502,7 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 					prevHeader.put("rowSpan", rowSpan + rowDefaultSpan);
 				}
 				if (i + 1 == size) {
-					int count = (int) (long) prop.get(countField.getName());
+					long count = FacilioUtil.parseLong(prop.get(countField.getName()));
 					prevHeader.put("count", count);
 					totalRecordCount += count;
 				}
