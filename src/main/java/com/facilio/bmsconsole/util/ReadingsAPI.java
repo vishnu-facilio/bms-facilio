@@ -1045,7 +1045,7 @@ public class ReadingsAPI {
 	
 	public static void updateReadingDataMeta(Long assetCategoryId, List<Long> readingModuleIds) throws Exception {
 
-		LOGGER.error("RDM assetCategoryId -- "+assetCategoryId);
+		LOGGER.info("RDM assetCategoryId -- "+assetCategoryId);
 		List<ResourceContext> resourcesList = new ArrayList<ResourceContext>();
 		if(assetCategoryId == null || assetCategoryId == -1) {
 			resourcesList= ResourceAPI.getAllResources();
@@ -1057,6 +1057,7 @@ public class ReadingsAPI {
 			}
 			LOGGER.error("RDM assets -- "+assets);
 		}
+		LOGGER.info("RDM resources list  -- "+resourcesList);
 		updateReadingDataMeta(resourcesList, readingModuleIds);
 	}
 	
@@ -1131,6 +1132,7 @@ public class ReadingsAPI {
 					rdm.setInputType(ReadingInputType.WEB);
 					rdm.setCustom(!field.isDefault());
 					builder.addRecord(FieldUtil.getAsProperties(rdm));
+					LOGGER.info("new rdm entry : " + rdm);
 				}
 			}
 		}
