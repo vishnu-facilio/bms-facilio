@@ -1743,7 +1743,11 @@ public class FacilioAuthAction extends FacilioAction {
 			List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.FACILIO, org.getOrgId());
 			baseUrl.append(appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain());
 		}
-		return baseUrl.toString();
+
+		String s = baseUrl.toString();
+
+		LOGGER.log(Level.SEVERE, "[base url] " + s);
+		return s;
 	}
 	
 	private String getProtocol() {
