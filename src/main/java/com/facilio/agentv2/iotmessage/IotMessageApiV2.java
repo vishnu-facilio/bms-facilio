@@ -1,13 +1,13 @@
 package com.facilio.agentv2.iotmessage;
 
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
-import com.facilio.agent.AgentType;
-import com.facilio.agentv2.FacilioAgent;
-import com.facilio.services.kafka.FacilioKafkaProducer;
-import com.facilio.services.procon.message.FacilioRecord;
-import com.facilio.services.procon.producer.FacilioProducer;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -19,10 +19,12 @@ import com.amazonaws.services.iot.client.AWSIotMessage;
 import com.amazonaws.services.iot.client.AWSIotMqttClient;
 import com.amazonaws.services.iot.client.AWSIotQos;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.AgentType;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agent.fw.constants.Status;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.logs.LogsApi;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.aws.util.FacilioProperties;
@@ -39,7 +41,10 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.services.kafka.FacilioKafkaProducer;
+import com.facilio.services.kafka.KafkaUtil;
 import com.facilio.services.messageQueue.MessageQueueTopic;
+import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.wms.message.WmsPublishResponse;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -305,15 +310,7 @@ public class IotMessageApiV2 {
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("partitioner.class", "com.facilio.services.kafka.CustomPartitioner");
-        if (FacilioProperties.getKafkaAuthMode().equalsIgnoreCase("sasl_ssl")) {        	
-            String username = FacilioProperties.getKafkaSaslUsername();
-            String password = FacilioProperties.getKafkaSaslPassword();
-            String jaasTemplate = "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"%s\" password=\"%s\";";
-            String jaasCfg = String.format(jaasTemplate, username, password);
-            props.put("security.protocol", "SASL_SSL");
-            props.put("sasl.mechanism", "SCRAM-SHA-512");
-            props.put("sasl.jaas.config", jaasCfg);
-        }        
+        KafkaUtil.setKafkaAuthProps(props);
         return props;
     }
 
