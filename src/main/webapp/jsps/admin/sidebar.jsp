@@ -208,6 +208,14 @@ if (buildinfo == null) {
 	        <tbody>
             <tr>
                 <td>
+                    Build Branch:
+                </td>
+                <td>
+                    <%= buildinfo.get("build.branch")%>
+                </td>
+            </tr>
+            <tr>
+                <td>
                     Build Number:
                 </td>
                 <td>
@@ -222,14 +230,14 @@ if (buildinfo == null) {
 	                <%= buildinfo.get("build.date")%>
 	            </td>
 	        </tr>
-	        <tr>
-	            <td>
-	                Server Ver:
-	            </td>
-	            <td>
-	                <%= buildinfo.get("version")%>
-	            </td>
-	        </tr>
+<%--	        <tr>--%>
+<%--	            <td>--%>
+<%--	                Server Ver:--%>
+<%--	            </td>--%>
+<%--	            <td>--%>
+<%--	                <%= buildinfo.get("version")%>--%>
+<%--	            </td>--%>
+<%--	        </tr>--%>
 	        <tr>
 	            <td>
 	                Client Ver:
