@@ -1,4 +1,4 @@
 version=${pom.version}
 build.date=${timestamp}
 build.number=${build.number}
-build.branch=production
+build.branch=master
