@@ -440,8 +440,7 @@ public class ActionAPI {
 		if (action.getTemplateJson().get("fromAddr") == null) {
 			emailTemplate.setFrom(EmailClient.getNoReplyFromEmail());
 		} else {
-			//TODO: emailTemplate::setFrom to accept Long and not String
-			emailTemplate.setFrom(Long.toString((Long) action.getTemplateJson().get("fromAddr")));
+			emailTemplate.setFrom(action.getTemplateJson().get("fromAddr").toString());
 		}
 
 		String toAdresses = action.getTemplateJson().get("to").toString();
