@@ -18,6 +18,7 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "pre_production" ]; then
     cp $FACILIO_HOME/deployment-files/awsprops-stage.properties $CONF_DIR/awsprops.properties
     cp $FACILIO_HOME/deployment-files/log4j-stage.properties $CLASSES_DIR/log4j.properties
     cp $FACILIO_HOME/deployment-files/service-stage.yml $CONF_DIR/service.yml
+    cp $FACILIO_HOME/deployment-files/clientAppConfig-stage.yml $CONF_DIR/clientAppConfig.yml
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
     echo "copied service file is =======" >> /home/facilio/deployment.log
     echo "$(<FACILIO_HOME/deployment-files/service-stage.yml)" >> /home/facilio/deployment.log
