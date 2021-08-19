@@ -118,18 +118,15 @@ public class ExecuteReadingRuleCommand extends ExecuteAllWorkflowsCommand {
 						workflowRules = getWorkflowRules(module, activities, entry.getValue(), context);
 					}
 
-					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339) {
-						LOGGER.info("Time taken to fetch workflow in ExecuteReadingRuleCommand: " + (System.currentTimeMillis() - currentTime));
-					}
 					currentTime = System.currentTimeMillis();
-					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339) {
-						LOGGER.info(MessageFormat.format("ExecuteReadingRuleCommand Number of (rules, records, parallalExecution) : ({0}, {1}, {2})",
-								(workflowRules == null ? 0 : workflowRules.size()),
-								(entry.getValue() == null ? 0 : entry.getValue().size()),
-								isParallelRuleExecutionEnum
-								)
-						);
-					}
+//					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339) {
+//						LOGGER.info(MessageFormat.format("ExecuteReadingRuleCommand Number of (rules, records, parallalExecution) : ({0}, {1}, {2})",
+//								(workflowRules == null ? 0 : workflowRules.size()),
+//								(entry.getValue() == null ? 0 : entry.getValue().size()),
+//								isParallelRuleExecutionEnum
+//								)
+//						);
+//					}
 
 					Map<String, List<WorkflowRuleContext>> workflowRuleCacheMap = new HashMap<String, List<WorkflowRuleContext>>();
 					if (workflowRules != null && !workflowRules.isEmpty()) {

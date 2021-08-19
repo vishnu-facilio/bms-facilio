@@ -41,9 +41,7 @@ public class GetReadingDataMetaCommand extends FacilioCommand {
 				List<ReadingContext> readings = entry.getValue();
 				List<FacilioField> allFields= bean.getAllFields(moduleName);
 				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
-				if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 445L){
-					LOGGER.info("moduleName : " + moduleName + " readings : " + readings + " , fieldMap : " + fieldMap);
-				}
+
 				for(ReadingContext reading : readings) {
 					Map<String, Object> readingData = reading.getReadings();
 					if (readingData != null && !readingData.isEmpty()) {
