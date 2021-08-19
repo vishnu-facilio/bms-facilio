@@ -32,7 +32,7 @@ public class GetTranslationFieldsCommand extends FacilioCommand {
         webTab.setModuleIds(moduleIds);
 
         TranslationTypeEnum type = TranslationTypeEnum.getTranslationTypeModule(translationType);
-        Objects.requireNonNull(type,"Invalid module type for Translation");
+        Objects.requireNonNull(type,"Invalid enum type for Translation");
         context.put(TranslationConstants.TRANSLATION_FIELDS,type.getHandler().constructTranslationObject(webTab,queryString,properties));
 
         return false;
