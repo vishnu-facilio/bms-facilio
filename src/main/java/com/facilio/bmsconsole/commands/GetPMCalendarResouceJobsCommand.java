@@ -377,10 +377,8 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 					Map<String, Object> titleData = titles.get(i);
 					List<Map<String, Object>> titleRow = (List<Map<String, Object>>) titleData.get("data");
 					Map<String, Object> leafNode = titleRow.get(titleRow.size() - 1);
-					// TODO:: To be refactored; count is returned as int as well as long on case on case basis.
 					long count = FacilioUtil.parseLong(leafNode.get("count"));
-					
-					List<Map<String, Object>> filteredList = props.subList((int) totalCount, ((int) totalCount + (int) count));
+					List<Map<String, Object>> filteredList = props.subList((int) totalCount, (int) totalCount + (int) count);
 
 					if (showTimeMetric) {
 						for (int j = 0; j < selectedMetrics.size(); j++) {
