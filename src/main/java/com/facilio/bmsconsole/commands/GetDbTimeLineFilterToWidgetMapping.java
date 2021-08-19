@@ -137,7 +137,18 @@ public class GetDbTimeLineFilterToWidgetMapping extends FacilioCommand {
 						dateField=new HashMap<>( Collections.singletonMap("dateField",null));
 
 					}	
+					else if (newCardWidget.getCardLayout().equals(CardLayout.WEB_LAYOUT_1.getName()))
+					{
+						JSONObject cardParams = newCardWidget.getCardParams();
+						if (cardParams != null) {
+							String type = (String) cardParams.get("type");
 
+							if ("conncetdapp".equals(type) || "connectedapp".equals(type)) {
+								//cannot identify datefield for connected app cards, but still include widget in timeline map
+								dateField=new HashMap<>( Collections.singletonMap("dateField",null));
+							}
+						}
+					}
 					else if (DashboardFilterUtil.T_TIME_ONLY_CARD_LAYOUTS.contains(cardLayout)) {
 
 						dateField=new HashMap<>( TIME_LINE_T_TIME_DATE_FIELD);

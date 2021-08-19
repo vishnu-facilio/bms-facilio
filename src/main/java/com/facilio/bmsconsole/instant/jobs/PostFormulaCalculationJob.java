@@ -88,13 +88,8 @@ public class PostFormulaCalculationJob extends InstantJob {
 			LOGGER.info("RDM : "+meta);
 		}
 		List<DateRange> intervals = DateTimeUtil.getTimeIntervals(meta.getTtime()+1, reading.getTtime(), formula.getInterval());
-		
-		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339
-				&& formula.getName() != null && formula.getName().contains("pproach")) {
-			LOGGER.info("Live intervals Post Formulas of modules : " + formula + " live reading: " + reading);
-		}
 
-		LOGGER.info("Intervals for calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+intervals);
+		LOGGER.info("Intervals for calculation of : "+formula.getName()+" for "+reading.getParentId()+" is "+intervals + ", Live intervals Post Formulas of modules : " + formula + " live reading: " + reading);
 		if (intervals != null) { //No need to calculate if RDM time is greater
 			long startTime = System.currentTimeMillis();
 			if (intervals.size() > 1) { //If more than one interval has to be calculated, only the last interval will be calculated here. Previous intervals will be done via scheduler
@@ -113,9 +108,9 @@ public class PostFormulaCalculationJob extends InstantJob {
 	
 	private List<ReadingContext>  updateFormula(FormulaFieldContext formula, ReadingContext reading) throws Exception {
 		
-		if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339 && formula.getName() != null && formula.getName().contains("pproach")) {
-			LOGGER.info("Live update Post Formulas of modules : "+formula+ " live reading: "+reading);
-		}
+//		if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339 && formula.getName() != null && formula.getName().contains("pproach")) {
+//			LOGGER.info("Live update Post Formulas of modules : "+formula+ " live reading: "+reading);
+//		}
 		long ttime = reading.getTtime();
 		ZonedDateTime zdt = DateTimeUtil.getDateTime(ttime);
 		zdt = zdt.truncatedTo(new SecondsChronoUnit(formula.getInterval() * 60));
