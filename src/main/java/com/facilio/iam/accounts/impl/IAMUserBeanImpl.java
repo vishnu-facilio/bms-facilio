@@ -62,7 +62,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.transaction.FacilioTransactionManager;
-import com.facilio.fw.LRUCache;
+import com.facilio.fw.cache.LRUCache;
 import com.facilio.iam.accounts.bean.IAMUserBean;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;

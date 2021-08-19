@@ -337,14 +337,34 @@ CREATE TABLE IF NOT EXISTS Public_Files (
   EXPIRES_ON BIGINT
 );
 
+CREATE TABLE IF NOT EXISTS ClientApp_Org_Grouping ( -- Separate table to maintain org grouping separately
+    ID BIGINT AUTO_INCREMENT PRIMARY KEY,
+    NAME VARCHAR(255) NOT NULL UNIQUE -- This is just to take the default entry using name
+);
+
+INSERT INTO ClientApp_Org_Grouping (NAME) VALUES ('default');
+
+CREATE TABLE IF NOT EXISTS ClientApp_Org_Grouping_Children (
+    -- Making orgId as pk to make sure one org is present only in one org grouping.
+    -- Caveat is we can't have separate orgs in different org grouping for different app client version.
+    -- But that's okay I guess, otherwise I can't control one org being in 2 orgGroups and for same app name.
+    -- Unless we introduce app name in org_grouping which I think is not needed now :D
+    ORGID BIGINT PRIMARY KEY,
+    GROUP_ID BIGINT NOT NULL,
+    CONSTRAINT CLIENTAPP_ORG_GROUPING_CHILDREN_FK_GROUP_ID FOREIGN KEY (GROUP_ID) REFERENCES ClientApp_Org_Grouping (ID),
+    CONSTRAINT CLIENTAPP_ORG_GROUPING_CHILDREN_FK_ORGID FOREIGN KEY (ORGID) REFERENCES Organizations (ORGID)
+);
+
 CREATE TABLE IF NOT EXISTS ClientApp (
-     id int(11) NOT NULL AUTO_INCREMENT,
-     environment varchar(50) NOT NULL,
-     version varchar(20) NOT NULL,
-	is_new_client_build BOOLEAN DEFAULT 0,
-     updatedTime bigint(20) DEFAULT NULL,
-     updatedBy bigint(20) DEFAULT NULL,
-     PRIMARY KEY (id)
+     ID INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+     ENVIRONMENT VARCHAR(255) NOT NULL,
+     APP_NAME VARCHAR(255) NOT NULL, -- In case of null, it should be empty string to handle unique constraint. MySQL won't handle unique constraint if one of the columns is empty
+     ORG_GROUPING BIGINT NOT NULL, -- In case of null, it'll have default grouping entry again to handle unique constraint.
+     VERSION VARCHAR(255) NOT NULL,
+     UPDATED_TIME BIGINT DEFAULT NULL,
+     UPDATED_BY BIGINT DEFAULT NULL,
+     CONSTRAINT UNIQUE_CLIENT_BUILD_COMBO UNIQUE (ENVIRONMENT, APPNAME, ORG_GROUPING),
+     CONSTRAINT CLIENTAPP_FK_ORG_GROUPING FOREIGN KEY (ORG_GROUPING) REFERENCES CLIENTAPP_ORG_GROUPING (ID)
 );
 
 CREATE TABLE IF NOT EXISTS Weather_Stations (

@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.db;
 
 import com.facilio.cache.CacheUtil;
-import com.facilio.fw.LRUCache;
+import com.facilio.fw.cache.LRUCache;
 
 public class ResponseCacheUtil {
 

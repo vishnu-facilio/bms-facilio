@@ -3,21 +3,13 @@ package com.facilio.beans;
 import java.util.*;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.FieldPermissionContext;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.cache.CacheUtil;
-import com.facilio.fw.LRUCache;
+import com.facilio.fw.cache.LRUCache;
 import com.facilio.fw.cache.FacilioCache;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;

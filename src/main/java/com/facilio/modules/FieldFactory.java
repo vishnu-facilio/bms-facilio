@@ -16,7 +16,6 @@ import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class FieldFactory extends BaseFieldFactory {
@@ -7038,11 +7037,6 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
-
-    public static FacilioField getField(String name, String colName, FieldType type) {
-        return getField(name, colName, null, type);
-    }
-
     public static List<FacilioField> getAnomalyConfigFields() {
         FacilioModule module = ModuleFactory.getAnalyticsAnomalyConfigModule();
         List<FacilioField> fields = new ArrayList<>();
@@ -8108,20 +8102,20 @@ public class FieldFactory extends BaseFieldFactory {
     		return field;
     }
 
-    public static FacilioField getDefaultField(String name, String displayName, String colName, FieldType type) {
+    public static <F extends FacilioField> F  getDefaultField(String name, String displayName, String colName, FieldType type) {
         return getDefaultField(name, displayName, colName, type, null, null);
     }
 
-    public static FacilioField getDefaultField(String name, String displayName, String colName, FieldType type, FacilioField.FieldDisplayType displayType) {
+    public static <F extends FacilioField> F  getDefaultField(String name, String displayName, String colName, FieldType type, FacilioField.FieldDisplayType displayType) {
         return getDefaultField(name, displayName, colName, type, displayType, null);
     }
 
-    public static FacilioField getDefaultField(String name, String displayName, String colName, FieldType type, Boolean isMain) {
+    public static <F extends FacilioField> F  getDefaultField(String name, String displayName, String colName, FieldType type, Boolean isMain) {
         return getDefaultField(name, displayName, colName, type, null, isMain);
     }
 
-    public static FacilioField getDefaultField(String name, String displayName, String colName, FieldType type, FacilioField.FieldDisplayType displayType, Boolean isMain) {
-        FacilioField field = getField(name, displayName, colName, null, type);
+    public static <F extends FacilioField> F  getDefaultField(String name, String displayName, String colName, FieldType type, FacilioField.FieldDisplayType displayType, Boolean isMain) {
+        F field = getField(name, displayName, colName, null, type);
         if (displayType == null) {
             field.setDisplayType(getDefaultDisplayTypeFromDataType(type));
         }
@@ -9746,6 +9740,36 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getNumberField("fjsonconvtime","JSON_CONV_TIME",module));
 
         return fields;
+    }
+
+    protected static <F extends FacilioField> F  getNewFieldObject(FieldType type) {
+        switch (type) {
+            case LOOKUP:
+                return (F) new LookupField();
+            case LINE_ITEM:
+                return (F) new LineItemField();
+            case MULTI_LOOKUP:
+                return (F) new MultiLookupField();
+            case MULTI_ENUM:
+                return (F) new MultiEnumField();
+            case LARGE_TEXT:
+                return (F) new LargeTextField();
+            default:
+                return BaseFieldFactory.getNewFieldObject(type);
+        }
+    }
+
+    public static <F extends FacilioField> F getField(String name, String colName, FieldType type) {
+        return getField(name, colName, null, type);
+    }
+
+    public static <F extends FacilioField> F getField(String name, String colName, FacilioModule module, FieldType type) {
+        return getField(name, null, colName, module, type);
+    }
+
+    public static <F extends FacilioField> F getField(String name, String displayName, String colName, FacilioModule module,
+                                        FieldType type) {
+        return constructField(FieldFactory::getNewFieldObject, name, displayName, colName, module, type);
     }
 }
 

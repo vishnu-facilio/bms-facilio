@@ -95,7 +95,7 @@
         <dependency>
             <groupId>com.facilio.framework</groupId>
             <artifactId>facilio-framework</artifactId>
-            <version>1.0.415</version>
+            <version>1.0.416</version>
         </dependency>
 
         <dependency>
@@ -426,12 +426,6 @@
             <version>2.6</version>
         </dependency>
         <!-- dependency for mandrill email client ends -->
-
-        <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
-            <version>2.9.0</version>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/org.imgscalr/imgscalr-lib -->
         <dependency>
             <groupId>org.imgscalr</groupId>

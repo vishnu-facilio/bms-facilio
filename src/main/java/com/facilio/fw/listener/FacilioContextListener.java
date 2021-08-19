@@ -24,6 +24,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.facilio.bmsconsoleV3.commands.AddSignupDataCommandV3;
+import com.facilio.client.app.beans.ClientAppBean;
+import com.facilio.client.app.pojo.ClientAppConfig;
+import com.facilio.client.app.util.ClientAppUtil;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.qa.rules.pojo.QAndARuleType;
 import com.facilio.services.email.EmailClient;
@@ -47,7 +50,7 @@ import com.facilio.activity.ActivityType;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.cache.RedisManager;
+import com.facilio.fw.cache.RedisManager;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.transaction.FacilioConnectionPool;
@@ -122,16 +125,13 @@ public class FacilioContextListener implements ServletContextListener {
 			AddSignupDataCommandV3.initSignUpDataClasses();
 			initializeDB();
 			ServerInfo.registerServer();
-
 			if( !FacilioProperties.isDevelopment() && StringUtils.isNotEmpty(FacilioProperties.getKafkaConsumer())) {
 				 new Thread(new NotificationProcessor()).start();
 			}
-
 			BeanFactory.initBeans();
 			FacilioScheduler.initScheduler();
 			FacilioInstantJobScheduler.init();
 			ChainUtil.initRESTAPIHandler("com.facilio.apiv3");
-
 			if(RedisManager.getInstance() != null) {
 				RedisManager.getInstance().connect(); // creating redis connection pool
 			}
@@ -154,6 +154,7 @@ public class FacilioContextListener implements ServletContextListener {
 			PortalAuthInterceptor.setPortalDomain(FacilioProperties.getOccupantAppDomain());// event.getServletContext().getInitParameter("SERVICEPORTAL_DOMAIN");
 			LOGGER.info("Loading the domain name as ######" + PortalAuthInterceptor.getPortalDomain());
 			initLocalHostName();
+			initClientAppConfig();
 
 		} catch (Exception e) {
 			sendFailureEmail(e);
@@ -164,6 +165,10 @@ public class FacilioContextListener implements ServletContextListener {
 			HealthCheckFilter.setStatus(200);
 		}
 
+	}
+
+	private void initClientAppConfig() throws Exception {
+		ClientAppConfig clientAppConfig = ClientAppUtil.getClientAppConfig(ClientAppBean.DEFAULT_CLIENT_APP);
 	}
 
 	private void setVersion(ServletContextEvent event) {

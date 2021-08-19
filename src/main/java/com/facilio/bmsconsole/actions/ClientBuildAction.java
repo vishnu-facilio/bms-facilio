@@ -2,76 +2,75 @@ package com.facilio.bmsconsole.actions;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.client.app.beans.ClientAppBean;
+import com.facilio.client.app.pojo.ClientAppConfig;
+import com.facilio.client.app.util.ClientAppUtil;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.db.transaction.FacilioTransactionManager;
 import com.opensymphony.xwork2.ActionSupport;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.log4j.Log4j;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.text.MessageFormat;
+
 import static com.facilio.aws.util.AwsUtil.getAmazonS3Client;
 
-
+@Log4j
+@Getter
+@Setter
 public class ClientBuildAction extends ActionSupport {
-    private static final Logger LOGGER = LogManager.getLogger(ClientBuildAction.class.getName());
 
     private String version;
-    public String getVersion() {
-        return version;
-    }
-    public void setVersion(String version) {
-        this.version = version;
-    }
+    private String appName;
+    private String orgGrouping;
 
-    public boolean checkIfBuildExists() {
-        if (FacilioProperties.getEnvironment() == null) {
-            return false;
-        }
-        if (FacilioProperties.isDevelopment()) {
+    public boolean checkIfBuildExists(ClientAppConfig config, String version) throws Exception {
+        String indexUrl = ClientAppUtil.clientAppBean().getClientAppInfo(config.getName(), version, false).getStaticUrl() + "/index.html";
+        try (InputStream inputStream = new URL(indexUrl).openStream())
+        {
+            String html = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
             return true;
         }
-        boolean objectExists = false;
-        String staticBucket = FacilioProperties.getConfig("static.bucket");
-        if(staticBucket != null) {
-            AmazonS3 s3Client = getAmazonS3Client();
-            objectExists = s3Client.doesObjectExist(staticBucket, this.version+"/js/app.js");
+        catch (Exception e) {
+            LOGGER.error("Error occurred while checking if client index.html is presenting while updating version", e);
+            return false;
         }
-        return objectExists;
     }
 
-    public String updateVersion() throws Exception{
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        int updatedRows = 0;
+    public String updateVersion() throws Exception {
+        if (StringUtils.isEmpty(version)) {
+            LOGGER.info("Version cannot be for updating client app");
+            return ERROR;
+        }
+        String appName = StringUtils.isEmpty(getAppName()) ? ClientAppBean.DEFAULT_CLIENT_APP : getAppName();
+        String orgGrouping = StringUtils.isEmpty(getOrgGrouping()) ? ClientAppBean.DEFAULT_ORG_GROUPING : getOrgGrouping();
+        ClientAppConfig config = ClientAppUtil.getClientAppConfig(appName);
         try {
-            if(checkIfBuildExists()) {
-                FacilioTransactionManager.INSTANCE.getTransactionManager().begin();
-
-                conn = FacilioConnectionPool.INSTANCE.getConnection();
-
-                stmt = conn.prepareStatement("Update ClientApp set version=?, updatedTime=?, is_new_client_build=?  WHERE environment=?");
-                stmt.setString(1, this.version);
-                stmt.setLong(2, System.currentTimeMillis());
-                stmt.setBoolean(3, true);
-                stmt.setString(4, FacilioProperties.getEnvironment());
-
-                updatedRows = stmt.executeUpdate();
-                FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
+            if (config == null) {
+                LOGGER.info(MessageFormat.format("Invalid appName ({0}) for updating client app", appName));
+                return ERROR;
+            }
+            if (checkIfBuildExists(config, version)) {
+                ClientAppUtil.clientAppBean().insertOrUpdateClientVersion(version, appName, orgGrouping);
+                return SUCCESS;
             } else {
                 LOGGER.info("Client version not found in S3: " + this.version + ", for environment: " + FacilioProperties.getEnvironment());
+                return ERROR;
             }
-        } catch (Exception e) {
-            FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();
-            LOGGER.info("Exception while updating client version " + this.version + ", for environment: " + FacilioProperties.getEnvironment(), e);
-        } finally {
-            DBUtil.closeAll(conn, stmt);
         }
-
-        if(updatedRows > 0) {
-            LOGGER.info("Updated client build version : " + this.version + ", for environment: " + FacilioProperties.getEnvironment());
-            return SUCCESS;
-        } else {
+        catch (Exception e) {
+            LOGGER.error("Error occurred while trying to update client app version");
             return ERROR;
         }
     }

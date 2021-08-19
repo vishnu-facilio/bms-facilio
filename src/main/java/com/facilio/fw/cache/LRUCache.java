@@ -1,17 +1,15 @@
-package com.facilio.fw;
+package com.facilio.fw.cache;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.facilio.fw.cache.FacilioCache;
-import com.facilio.fw.cache.PubSubLRUCache;
+import com.facilio.collections.UniqueMap;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
-import com.facilio.cache.RedisManager;
 
 import redis.clients.jedis.Jedis;
 
@@ -61,20 +59,23 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
 
 	// Add the cache in the following method for automatic purging
 	private static List<FacilioCache> initCacheList() {
-		List<FacilioCache> cacheList = new ArrayList<>();
-		cacheList.add(fieldCachePS);
-		cacheList.add(fieldNameCachePS);
-		cacheList.add(moduleFieldCachePS);
-		cacheList.add(moduleCachePS);
-		cacheList.add(queryCachePS);
-		cacheList.add(responseCachePS);
-		cacheList.add(featureLicenseCachePS);
-		cacheList.add(orgUnitCachePs);
-		cacheList.add(roleIdCachePs);
-		cacheList.add(roleNameCachePs);
-		cacheList.add(userSecurityPolicyPS);
-		cacheList.add(userSessionCachePS);
-		return Collections.unmodifiableList(cacheList);
+		Map<String, FacilioCache> cacheList = new UniqueMap<>(); //To make sure all cache have unique name
+		cacheList.put(fieldCachePS.name(),fieldCachePS);
+		cacheList.put(fieldNameCachePS.name(),fieldNameCachePS);
+		cacheList.put(moduleFieldCachePS.name(),moduleFieldCachePS);
+		cacheList.put(moduleCachePS.name(),moduleCachePS);
+		cacheList.put(queryCachePS.name(),queryCachePS);
+		cacheList.put(responseCachePS.name(),responseCachePS);
+		cacheList.put(featureLicenseCachePS.name(),featureLicenseCachePS);
+		cacheList.put(orgUnitCachePs.name(),orgUnitCachePs);
+		cacheList.put(roleIdCachePs.name(),roleIdCachePs);
+		cacheList.put(roleNameCachePs.name(),roleNameCachePs);
+		cacheList.put(userSecurityPolicyPS.name(),userSecurityPolicyPS);
+		cacheList.put(userSessionCachePS.name(),userSessionCachePS);
+		cacheList.put(FWLRUCaches.getClientAppCache().name(), FWLRUCaches.getClientAppCache());
+		cacheList.put(FWLRUCaches.getOrgGroupingCache().name(), FWLRUCaches.getOrgGroupingCache());
+		cacheList.put(FWLRUCaches.getOrgGroupingOrgDomainCache().name(), FWLRUCaches.getOrgGroupingOrgDomainCache());
+		return Collections.unmodifiableList(new ArrayList<>(cacheList.values()));
 	}
 
 	public static void purgeAllCache() {
@@ -268,6 +269,11 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
 	@Override
 	public Set<K> keys() {
 		return cache.keySet();
+	}
+
+	@Override
+	public String name() {
+		return name;
 	}
 
 	public boolean contains(K key) {

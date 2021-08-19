@@ -1681,6 +1681,8 @@ public class FacilioAuthAction extends FacilioAction {
 
 		setCookieProperties(cookie,true);
 
+		FacilioCookie.addOrgDomainCookie(getDomain(), response);
+
 		if (isMobile) {
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("token", authtoken);
@@ -1695,14 +1697,14 @@ public class FacilioAuthAction extends FacilioAction {
 		if (FacilioProperties.isDevelopment()) {
 			if (FacilioProperties.isOnpremise()) {
 				var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; HttpOnly;";
-				response.setHeader("Set-Cookie", cookieString);
+				response.addHeader("Set-Cookie", cookieString);
 			} else {
 				var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
-				response.setHeader("Set-Cookie", cookieString);
+				response.addHeader("Set-Cookie", cookieString);
 			}
 		} else if("stage".equals(FacilioProperties.getEnvironment()) && !isMobile) {
 			var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
-			response.setHeader("Set-Cookie", cookieString);
+			response.addHeader("Set-Cookie", cookieString);
 		} else {
 			response.addCookie(cookie);
 
