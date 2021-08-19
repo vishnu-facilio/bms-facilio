@@ -321,7 +321,7 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 					
 					Object pmIDObj = props.get("pmId");
 					
-					if(pmIDObj != null && !pmIDObj.toString().isBlank()) {
+					if(pmIDObj != null && !pmIDObj.toString().isEmpty()) {
 						
 						pmId = Long.parseLong(pmIDObj.toString());
 						
