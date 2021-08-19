@@ -315,9 +315,19 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 					}
 					pm.setName(woTemplate.getSubject());
 					pm.setTitle(woTemplate.getSubject());
-
-					long pmID = ((Double) props.getOrDefault("pmId", -1)).longValue();
-					if (pmID <= 0){
+					
+					
+					Long pmId = null;
+					
+					Object pmIDObj = props.get("pmId");
+					
+					if(pmIDObj != null && !pmIDObj.toString().isBlank()) {
+						
+						pmId = Long.parseLong(pmIDObj.toString());
+						
+					}
+					
+					if (pmId == null || pmId <= 0){
 						LOGGER.info("ID prop not found, adding as new PM");
 						FacilioChain newPMChain = FacilioChainFactory.getAddNewPreventiveMaintenanceChain();
 						FacilioContext ctx = newPMChain.getContext();
@@ -326,10 +336,11 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 						ctx.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
 						ctx.put(FacilioConstants.ContextNames.SKIP_WO_CREATION,true);
 						newPMChain.execute();
-					}else{
-						LOGGER.info("ID prop: " + pmID + " found, updating existing PM");
+					}
+					else {
+						LOGGER.info("ID prop: " + pmId + " found, updating existing PM");
 
-						PreventiveMaintenance existingPM = PreventiveMaintenanceAPI.getPM(pmID, false);
+						PreventiveMaintenance existingPM = PreventiveMaintenanceAPI.getPM(pmId, false);
 						WorkorderTemplate existingWOT = (WorkorderTemplate)
 								TemplateAPI.getTemplate(existingPM.getTemplateId());
 
@@ -337,7 +348,7 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 						FacilioContext ctx = updatePMChain.getContext();
 
 						List<Long> idList = new ArrayList<>();
-						idList.add(pmID);
+						idList.add(pmId);
 						ctx.put(FacilioConstants.ContextNames.RECORD_ID_LIST, idList); // old PM ID list
 						ctx.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm); // new PM
 						ctx.put(FacilioConstants.ContextNames.WORK_ORDER, woTemplate.getWorkorder()); // new WO
