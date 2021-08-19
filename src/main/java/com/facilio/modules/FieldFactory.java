@@ -1529,7 +1529,7 @@ public class FieldFactory extends BaseFieldFactory {
 
         switch (fieldName) {
         	case "siteId":
-            return getSiteIdField();
+            return getSiteIdField(module);
         
             case "sysCreatedTime":
                 FacilioField createdTime = getField("sysCreatedTime",  "Created Time", "SYS_CREATED_TIME", module, FieldType.DATE_TIME);
