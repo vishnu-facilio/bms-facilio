@@ -9712,6 +9712,22 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getGlobalVariableGroupFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getGlobalVariableGroupModule();
+
+        fields.add(getIdField(module));
+        fields.add(getStringField("name", "NAME", module));
+        fields.add(getStringField("linkName", "LINK_NAME", module));
+        fields.add(getStringField("description", "DESCRIPTION", module));
+
+        fields.add(getNumberField("createdBy", "CREATED_BY", module));
+        fields.add(getNumberField("modifiedBy", "MODIFIED_BY", module));
+        fields.add(getNumberField("createdTime", "CREATED_TIME", module));
+        fields.add(getNumberField("modifiedTime", "MODIFIED_TIME", module));
+        return fields;
+    }
+
     public static List<FacilioField> getFacilioAuditFields(){
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getFacilioAuditModule();

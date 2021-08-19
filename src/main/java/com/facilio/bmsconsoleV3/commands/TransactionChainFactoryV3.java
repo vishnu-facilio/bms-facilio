@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AddActivitiesCommand;
+import com.facilio.bmsconsole.automation.command.AddOrUpdateGlobalVariableCommand;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
@@ -23,19 +24,8 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.Neighbo
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.AddOrUpdateNewsSharingCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.AddPeopleTypeForEmployeeCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
-import com.facilio.bmsconsoleV3.commands.facility.CancelBookingCommand;
-import com.facilio.bmsconsoleV3.commands.facility.SetCanEditForBookingCommand;
-import com.facilio.bmsconsoleV3.commands.facility.ValidateCancelBookingCommandV3;
-import com.facilio.bmsconsoleV3.commands.facility.ValidateFacilityBookingCommandV3;
-import com.facilio.bmsconsoleV3.commands.floorplan.AddDeskCommand;
-import com.facilio.bmsconsoleV3.commands.floorplan.AddMarkedZonesCommand;
-import com.facilio.bmsconsoleV3.commands.floorplan.AddMarkerCommand;
-import com.facilio.bmsconsoleV3.commands.floorplan.AddORUpdateModuleRecordCommand;
-import com.facilio.bmsconsoleV3.commands.floorplan.AddOrUpdateObjectCommand;
-import com.facilio.bmsconsoleV3.commands.floorplan.SerializeCommand;
-import com.facilio.bmsconsoleV3.commands.floorplan.UpdateDeskCommand;
-import com.facilio.bmsconsoleV3.commands.floorplan.UpdateMarkerCommand;
 import com.facilio.bmsconsoleV3.commands.facility.*;
+import com.facilio.bmsconsoleV3.commands.floorplan.*;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanPMsInContextCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksCommand;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
@@ -45,6 +35,7 @@ import com.facilio.bmsconsoleV3.commands.purchaseorder.POBeforeCreateOrEditV3Com
 import com.facilio.bmsconsoleV3.commands.purchaseorder.UpdateIsPoCreatedCommand;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.PreFillAddPurchaseRequestCommand;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.PurchaseRequestTotalCostRollUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.tenant.AddTenantSpaceRelationCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenant.AddTenantUserCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.CheckForMandatoryTenantIdCommandV3;
@@ -61,10 +52,10 @@ import com.facilio.bmsconsoleV3.commands.visitorlogging.*;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.chain.FacilioChain;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.trigger.command.*;
 import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
-
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -968,6 +959,18 @@ public class TransactionChainFactoryV3 {
 		 chain.addCommand(new SetUserAndPeopleForEmailConversationThreadingCommand());
 	     return chain;
 	}
+
+    public static FacilioChain addOrUpdateGlobalVariableChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new AddOrUpdateGlobalVariableCommand());
+        return chain;
+    }
+
+    public static FacilioChain deleteGlobalVariableGroupChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new DeleteGlobalVariableGroupCommand());
+        return chain;
+    }
 
 	public static Command getServiceRequestAfterUpdateChain() {
 		FacilioChain chain = getDefaultChain();

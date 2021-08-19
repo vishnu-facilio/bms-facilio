@@ -343,6 +343,37 @@
                 <param name="floorPlanId">{1}</param>
         </action>
     </package>
+
+    <package name="globalVariable" namespace="/api/v3/globalVariable" extends="v3Api">
+        <action name="listGroup"
+                class="com.facilio.bmsconsole.actions.GlobalVariableAction"
+                method="listGroup">
+        </action>
+        <action name="addOrUpdateGroup"
+                class="com.facilio.bmsconsole.actions.GlobalVariableAction"
+                method="addOrUpdateGroup"></action>
+        <action name="delete"
+                class="com.facilio.bmsconsole.actions.GlobalVariableAction"
+                method="deleteGroup"></action>
+    </package>
+    
+    <package name="setup" namespace="/api/v3/setup" extends="v3Api">
+        <action name="*/*/*"
+                class="com.facilio.bmsconsoleV3.actions.SetupAction">
+            <param name="first">{1}</param>
+            <param name="second">{1}</param>
+            <param name="third">{1}</param>
+        </action>
+        <action name="*/*"
+                class="com.facilio.bmsconsoleV3.actions.SetupAction">
+            <param name="first">{1}</param>
+            <param name="second">{1}</param>
+        </action>
+        <action name="*"
+                class="com.facilio.bmsconsoleV3.actions.SetupAction">
+            <param name="first">{1}</param>
+        </action>
+    </package>
     
     <package name="bulkResourceAllocation" namespace="/api/v3/resourceAllocation" extends="v3Api">
         <action name="getModuleAndCrtieriaFromConfig"
