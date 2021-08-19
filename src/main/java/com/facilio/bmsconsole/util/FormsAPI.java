@@ -1,8 +1,34 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.StringJoiner;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.FormSiteRelationContext;
 import com.facilio.bmsconsole.context.VendorContext;
@@ -12,6 +38,7 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormField.Required;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.constants.FacilioConstants.Builder;
@@ -27,25 +54,18 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.BaseLookupField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.util.*;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class FormsAPI {
 
@@ -1235,4 +1255,15 @@ public class FormsAPI {
 	
 	/******* Default Val End ********/
 	
+	
+	public static FacilioForm fetchForm(long formId, String moduleName) throws Exception {
+		FacilioChain chain = FacilioChainFactory.getFormMetaChain();
+		Context formContext = chain.getContext();
+
+		formContext.put(FacilioConstants.ContextNames.FORM_ID, formId);
+		formContext.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		chain.execute();
+
+		return (FacilioForm) formContext.get(FacilioConstants.ContextNames.FORM);
+	}
 }

@@ -1,28 +1,20 @@
 package com.facilio.bmsconsole.page.factory;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.ApplicationContext;
-import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.forms.FormSection;
-import com.facilio.bmsconsole.forms.FormSection.SectionType;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.Page.Tab;
 import com.facilio.bmsconsole.page.PageWidget;
-import com.facilio.bmsconsole.page.PageWidget.WidgetType;
-import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.fw.BeanFactory;
@@ -44,7 +36,10 @@ public class CustomModulePageFactory extends PageFactory {
 		tab1.addSection(tab1Sec1);
 		
 		List<String> formSubModules = new ArrayList<>();
-		addSecondaryDetailsWidget(tab1Sec1, record, module, formSubModules);
+		
+		boolean isAtg = AccountUtil.getCurrentOrg().getOrgId() == 406 && record.getFormId() != -1;
+		SummaryOrderType orderType = isAtg ? SummaryOrderType.FORM_SECTION : SummaryOrderType.FORM;
+		addSecondaryDetailsWidget(tab1Sec1, record, module, formSubModules, orderType);
 		if (record == null) {
 			return page;
 		}
@@ -108,48 +103,6 @@ public class CustomModulePageFactory extends PageFactory {
 		
 		return page;
 	}
-
-	private static void addSecondaryDetailsWidget(Section section, ModuleBaseWithCustomFields record, FacilioModule module, List<String> formRelModules) throws Exception {
-		
-		if (AccountUtil.getCurrentOrg().getOrgId() == 406 && record.getFormId() != -1) {
-			long moduleId = module.getModuleId();
-			FacilioForm form = fetchForm(record.getFormId(), module.getName());
-			List<FormSection> sections = form.getSections();
-			for (FormSection formSection: sections) {
-				if (formSection.getSectionTypeEnum() == SectionType.SUB_FORM) {
-					String moduleName = formSection.getSubForm().getModule().getName();
-					formRelModules.add(moduleName);
-					addRelatedListWidgets(section, moduleId, Collections.singletonList(moduleName), true);
-				}
-				else {
-					if (formSection.getName() == null || 
-						formSection.getFields().stream().filter(field -> field.getHideField() == null || !field.getHideField()).count() == 0l) {
-						continue;
-					}
-					PageWidget detailsWidget = new PageWidget(WidgetType.SECONDARY_DETAILS_WIDGET);
-					detailsWidget.addToLayoutParams(section, 24, 7);
-					detailsWidget.addToWidgetParams("formSectionId", formSection.getId());
-					section.addWidget(detailsWidget);
-				}
-			}
-		}
-		else {
-			PageWidget detailsWidget = new PageWidget(WidgetType.SECONDARY_DETAILS_WIDGET);
-			detailsWidget.addToLayoutParams(section, 24, 7);
-			section.addWidget(detailsWidget);
-		}
-		
-	}
-
-	private static FacilioForm fetchForm(long formId, String moduleName) throws Exception {
-		FacilioChain chain = FacilioChainFactory.getFormMetaChain();
-		Context formContext = chain.getContext();
-
-		formContext.put(FacilioConstants.ContextNames.FORM_ID, formId);
-		formContext.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-		chain.execute();
-
-		return (FacilioForm) formContext.get(FacilioConstants.ContextNames.FORM);
-	}
+	
 
 }

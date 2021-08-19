@@ -2,6 +2,7 @@
 package com.facilio.bmsconsole.page.factory;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,6 +36,9 @@ import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkPermitContext;
 import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.forms.FormSection.SectionType;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.PageWidget;
@@ -43,6 +47,7 @@ import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 import com.facilio.bmsconsole.page.WidgetGroup.WidgetGroupType;
 import com.facilio.bmsconsole.templates.DefaultTemplate;
 import com.facilio.bmsconsole.util.ConnectedAppAPI;
+import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsoleV3.context.InviteVisitorContextV3;
 import com.facilio.bmsconsoleV3.context.V3DeliveriesContext;
@@ -74,6 +79,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
@@ -404,10 +410,40 @@ public class PageFactory {
 		section.addWidget(cardWidget);
 	}
 	
-	protected static void addSecondaryDetailWidget(Section section) {
-		PageWidget detailsWidget = new PageWidget(WidgetType.SECONDARY_DETAILS_WIDGET);
-		detailsWidget.addToLayoutParams(section, 24, 5);
-		section.addWidget(detailsWidget);
+	protected static void addSecondaryDetailWidget(Section section) throws Exception {
+		addSecondaryDetailsWidget(section, null, null, null, SummaryOrderType.FORM);
+	}
+	
+	protected static void addSecondaryDetailsWidget(Section section, ModuleBaseWithCustomFields record, FacilioModule module, List<String> formRelModules, SummaryOrderType orderType) throws Exception {
+		if (orderType == SummaryOrderType.FORM_SECTION) {
+			long moduleId = module.getModuleId();
+			FacilioForm form = FormsAPI.fetchForm(record.getFormId(), module.getName());
+			List<FormSection> sections = form.getSections();
+			for (FormSection formSection: sections) {
+				if (formSection.getSectionTypeEnum() == SectionType.SUB_FORM) {
+					String moduleName = formSection.getSubForm().getModule().getName();
+					formRelModules.add(moduleName);
+					addRelatedListWidgets(section, moduleId, Collections.singletonList(moduleName), true);
+				}
+				else {
+					if (formSection.getName() == null || 
+						formSection.getFields().stream().filter(field -> field.getHideField() == null || !field.getHideField()).count() == 0l) {
+						continue;
+					}
+					PageWidget detailsWidget = new PageWidget(WidgetType.SECONDARY_DETAILS_WIDGET);
+					detailsWidget.addToLayoutParams(section, 24, 7);
+					detailsWidget.addToWidgetParams("formSectionId", formSection.getId());
+					detailsWidget.addToWidgetParams("orderType", orderType.getIndex());
+					section.addWidget(detailsWidget);
+				}
+			}
+		}
+		else {
+			PageWidget detailsWidget = new PageWidget(WidgetType.SECONDARY_DETAILS_WIDGET);
+			detailsWidget.addToLayoutParams(section, 24, 7);
+			detailsWidget.addToWidgetParams("orderType", orderType.getIndex());
+			section.addWidget(detailsWidget);
+		}
 	}
 	
 	private static void addReadingCard(PageWidget cardWidget, String fieldName, String moduleName, long aggregateFunc, long dateOperator, long xAggr) {
@@ -604,5 +640,25 @@ public class PageFactory {
 		
 		widget.addToWidgetParams("chartParams", obj);
 	}
+	
+	public enum SummaryOrderType implements FacilioIntEnum {
+		FORM,
+		FORM_SECTION,
+		ALPHA,
+		CUSTOM
+		;
 
+		public String getValue() {
+			return name();
+		}
+
+		public static SummaryOrderType valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+		
+	}
+	
 }

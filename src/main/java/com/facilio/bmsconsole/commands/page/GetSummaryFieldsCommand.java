@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.page.factory.PageFactory.SummaryOrderType;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
@@ -84,26 +85,42 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		}
 
 		if (formFields == null) {
-			Long formSectionId = widgetParams != null ? (Long) widgetParams.get("formSectionId") : null;
+			SummaryOrderType orderType = SummaryOrderType.FORM;
+			Long formSectionId = null;
+			if (widgetParams != null) {
+				if (widgetParams.containsKey("orderType")) {
+					orderType = SummaryOrderType.valueOf(Integer.parseInt(widgetParams.get("orderType").toString()));
+				}
+				formSectionId = (Long) widgetParams.get("formSectionId");
+			}
 
 			FacilioForm form = fetchForm(formId);
 			if (form == null) {
 				formFields = getFieldsAsFormFields(modBean);
 			}
+			else if (orderType == SummaryOrderType.FORM_SECTION) {
+				formFields = new ArrayList<>();
+				for (FormField formField: form.getFields()) {
+					if (formField.getSectionId() == formSectionId &&
+							showField(formField) && !formField.isFieldHidden()) {
+						formFields.add(formField);
+					}
+				}
+			}
 			else {
 				formFields = form.getFields().stream().filter(formField -> ( 
-						(formSectionId == null || formField.getSectionId() == formSectionId) &&
-						formField.getField() != null  && !formField.getField().isMainField()  &&
-						!formField.isFieldHidden() || (formSectionId == null && isValPresent(formField.getField()) ) ))
-						.collect(Collectors.toList());
+						showField(formField)  &&
+						(!formField.isFieldHidden() || isValPresent(formField.getField())) 
+						)).collect(Collectors.toList());
 			}
 
-			// If formSectionId present, Widget will be shown based on form order and the fields in that section only
-			if (formSectionId == null) {	 
+			if (orderType != SummaryOrderType.FORM_SECTION) {	
 				int count = Collections.max(formFields, Comparator.comparing(s -> s.getSequenceNumber())).getSequenceNumber();
 				List<String> existingFieldNames = formFields.stream().map(FormField::getName).collect(Collectors.toList());
 				count = addModuleAndSystemFields(modBean, formFields, existingFieldNames, count);
-				sort(formFields);	// Sort based on alpha order
+				if (orderType == SummaryOrderType.ALPHA || formId == -1) {
+					alphaSort(formFields);
+				}
 				addFieldsonBottom(modBean, formFields, existingFieldNames, count);
 			}
 		}
@@ -111,6 +128,11 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		context.put("fields", formFields);
 
 		return false;
+	}
+	
+	private boolean showField(FormField formField) {
+		return formField.getField() != null  && !formField.getField().isMainField() && 
+				formField.getDisplayTypeEnum() != FieldDisplayType.IMAGE;
 	}
 
 	private FacilioForm fetchForm(long formId) throws Exception {
@@ -161,14 +183,10 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		return fields;
 	}
 
-	private void sort(List<FormField> fields) {
+	private void alphaSort(List<FormField> fields) {
 		fields.sort(new Comparator<FormField>() {
 			@Override
 			public int compare(FormField f1, FormField f2) {
-				if (f2.getDisplayTypeEnum() == FieldDisplayType.TEXTAREA) 
-					return 1;
-				if (f1.getDisplayTypeEnum() == FieldDisplayType.TEXTAREA) 
-					return -1;
 				return f1.getDisplayName().compareTo(f2.getDisplayName());
 			}
 		});
