@@ -10,6 +10,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.services.email.EmailClient;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -436,7 +437,12 @@ public class ActionAPI {
 	private static void setEmailTemplate(ActionContext action) {
 		EMailTemplate emailTemplate = new EMailTemplate();
 
-		emailTemplate.setFrom(Long.toString((Long)action.getTemplateJson().get("fromAddr")));
+		if (action.getTemplateJson().get("fromAddr") == null) {
+			emailTemplate.setFrom(EmailClient.getNoReplyFromEmail());
+		} else {
+			//TODO: emailTemplate::setFrom to accept Long and not String
+			emailTemplate.setFrom(Long.toString((Long) action.getTemplateJson().get("fromAddr")));
+		}
 
 		String toAdresses = action.getTemplateJson().get("to").toString();
 //		toAdresses = toAdresses.substring(1, toAdresses.length()-1);
