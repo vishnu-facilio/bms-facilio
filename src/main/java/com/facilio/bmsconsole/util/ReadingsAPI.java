@@ -378,11 +378,6 @@ public class ReadingsAPI {
 //													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCriteria(pkCriteriaList);
 		List<Map<String, Object>>  res = builder.get();
-		if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 445) {
-			if (res == null || res.isEmpty()) {
-				LOGGER.info("rdm data is null. module : " + module + " rdm pairs: " + rdmPairs + " , query : " + builder);
-			}
-		}
 		return getRDMMapFromProps(res, fieldIdMap);
 	}
 	
