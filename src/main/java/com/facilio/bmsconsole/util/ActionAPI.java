@@ -2,14 +2,12 @@ package com.facilio.bmsconsole.util;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.modules.*;
 import com.facilio.services.email.EmailClient;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -46,10 +44,6 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -425,20 +419,38 @@ public class ActionAPI {
 		return actions;
 	}
 
-	private static void setControlActionTemplate (ActionContext action, WorkflowRuleContext rule) throws IOException {
+	private static void setControlActionTemplate(ActionContext action, WorkflowRuleContext rule) throws IOException {
 		ControlActionTemplate template = FieldUtil.getAsBeanFromJson(action.getTemplateJson(), ControlActionTemplate.class);
 		if (StringUtils.isEmpty(template.getName())) {
-			template.setName(rule.getName()+"_Control_Action_Template");
+			template.setName(rule.getName() + "_Control_Action_Template");
 		}
 		action.setTemplate(template);
 		checkAndSetWorkflow(action.getTemplateJson(), template);
+	}
+
+	public static long getEMailAddressID(String email) {
+		long emailAddressID = -1L;
+		long ordId = AccountUtil.getCurrentOrg().getOrgId();
+		try {
+			GenericSelectRecordBuilder selectBdr = new GenericSelectRecordBuilder()
+					.select(Arrays.asList(FieldFactory.getField("ID", "ID", FieldType.ID)))
+					.table("Email_From_Address")
+					.andCustomWhere("ORGID = ? ", ordId)
+					.andCustomWhere("EMAIL LIKE " + "'" + email + "'");
+
+			List<Map<String, Object>> resultSet = selectBdr.get();
+			emailAddressID = (long) resultSet.get(0).get("ID");
+		} catch (Exception e) {
+			LOGGER.error("unable to fetch email address id", e);
+		}
+		return emailAddressID;
 	}
 
 	private static void setEmailTemplate(ActionContext action) {
 		EMailTemplate emailTemplate = new EMailTemplate();
 
 		if (action.getTemplateJson().get("fromAddr") == null) {
-			emailTemplate.setFrom(EmailClient.getNoReplyFromEmail());
+			emailTemplate.setFrom(Long.toString(getEMailAddressID(EmailClient.getNoReplyFromEmail())));
 		} else {
 			emailTemplate.setFrom(action.getTemplateJson().get("fromAddr").toString());
 		}
