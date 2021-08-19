@@ -880,10 +880,12 @@ public class FacilioConstants {
 		public static final String ASSET_PHOTOS = "assetphotos";
 		public static final String STORE_ROOM_PHOTOS = "storeroomphotos";
 		public static final String ASSET_ACTIVITY = "assetactivity";
-
+		
+		
 		public static final String TICKET_NOTES = "ticketnotes";
 		public static final String BASE_SPACE_NOTES = "basespacenotes";
 		public static final String ASSET_NOTES = "assetnotes";
+		public static final String DELIVERY_NOTES = "deliverynotes";
 		public static final String ITEM_TYPES_NOTES = "itemTypesNotes";
 		public static final String ITEM_NOTES = "itemNotes";
 		public static final String TOOL_NOTES = "toolNotes";
@@ -900,6 +902,7 @@ public class FacilioConstants {
 		public static final String TICKET_ATTACHMENTS = "ticketattachments";
 		public static final String BASE_SPACE_ATTACHMENTS = "basespaceattachments";
 		public static final String ASSET_ATTACHMENTS = "assetattachments";
+		public static final String DELIVERY_ATTACHMENTS = "deliveryattachments";
 		public static final String TASK_ATTACHMENTS = "taskattachments";
 		public static final String INVENTORY_ATTACHMENTS = "inventoryattachments";
 		public static final String ITEM_TYPES_ATTACHMENTS = "itemTypesAttachments";
