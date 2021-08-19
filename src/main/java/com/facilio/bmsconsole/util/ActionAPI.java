@@ -7,6 +7,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.*;
 import com.facilio.services.email.EmailClient;
 import org.apache.commons.collections.CollectionUtils;
@@ -430,13 +431,11 @@ public class ActionAPI {
 
 	public static long getEMailAddressID(String email) {
 		long emailAddressID = -1L;
-		long ordId = AccountUtil.getCurrentOrg().getOrgId();
 		try {
 			GenericSelectRecordBuilder selectBdr = new GenericSelectRecordBuilder()
 					.select(Arrays.asList(FieldFactory.getField("ID", "ID", FieldType.ID)))
 					.table("Email_From_Address")
-					.andCustomWhere("ORGID = ? ", ordId)
-					.andCustomWhere("EMAIL LIKE " + "'" + email + "'");
+					.andCondition(CriteriaAPI.getCondition("email", "EMAIL", email, StringOperators.IS));
 
 			List<Map<String, Object>> resultSet = selectBdr.get();
 			emailAddressID = (long) resultSet.get(0).get("ID");
