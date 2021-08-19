@@ -119,7 +119,10 @@ public class AttachmentAction  extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
 		} else if (module.equals(FacilioConstants.ContextNames.ASSET_ATTACHMENTS)) {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
-		} else if (module.equals(FacilioConstants.ContextNames.QUOTE_ATTACHMENTS)) {
+		} else if (module.equals(FacilioConstants.ContextNames.DELIVERY_ATTACHMENTS)) {
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.CUSTOM_ACTIVITY);
+		}
+		else if (module.equals(FacilioConstants.ContextNames.QUOTE_ATTACHMENTS)) {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.QUOTE_ACTIVITY);
 		}  else if (module.equals(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_ATTACHMENTS)) {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_ACTIVITY);
