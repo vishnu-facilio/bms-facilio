@@ -176,7 +176,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateCriteriaFromClientCriteriaCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
-		c.addCommand(new AddLookupFieldMetaList());
+		c.addCommand(new AddLookupFieldMetaList(false));
 		c.addCommand(new GenericGetModuleDataListCommand(isPicklist));
 		if (!isPicklist) {
 			c.addCommand(new SpecialHandlingToGetModuleDataListCommand());
@@ -187,7 +187,7 @@ public class ReadOnlyChainFactory {
 	
 	public static FacilioChain fetchModuleDataDetailsChain() {
 		FacilioChain c = getDefaultChain();
-		c.addCommand(new AddLookupFieldMetaList());
+		c.addCommand(new AddLookupFieldMetaList(true));
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new LookupPrimaryFieldHandlingCommand());
 		return c;
@@ -583,7 +583,7 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getPageChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new PageRecordHandlingCommand());
-		c.addCommand(new AddLookupFieldMetaList());
+		c.addCommand(new AddLookupFieldMetaList(false));
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new GetPageCommand());
 		c.addCommand(new GetPageConnectedAppWidgetsCommand());
