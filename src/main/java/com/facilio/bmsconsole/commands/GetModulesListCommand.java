@@ -43,6 +43,10 @@ public class GetModulesListCommand extends FacilioCommand {
 			ContextNames.BUILDING,
 			ContextNames.FLOOR,
 			ContextNames.SPACE,
+			Inspection.INSPECTION_TEMPLATE,
+			Inspection.INSPECTION_RESPONSE,
+			Induction.INDUCTION_TEMPLATE,
+			Induction.INDUCTION_RESPONSE,
 	});
 	
 	@Override
@@ -56,7 +60,6 @@ public class GetModulesListCommand extends FacilioCommand {
 				sytemModules.add(modBean.getModule(moduleName));
 			}
 		}
-
 		List<FacilioModule> customModules = new ArrayList<>();
 
 		customModules.addAll(modBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY, true));
