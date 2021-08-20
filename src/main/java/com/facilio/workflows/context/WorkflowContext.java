@@ -459,7 +459,6 @@ public class WorkflowContext implements Serializable {
 		}
 	}
 	
-	
 	public Object executeWorkflowScoped() throws Exception {
 		
 		long currentMillis = System.currentTimeMillis();
@@ -496,8 +495,17 @@ public class WorkflowContext implements Serializable {
 				}
 				catch(Exception e) {
 					String errorMeg = "Exception occured in script : "+getId();
-					this.getLogStringBuilder().append(errorMeg+" ::: "+e.getMessage()+"\n");
-					LOGGER.log(Level.SEVERE, errorMeg+" ::: "+e.getMessage(), e);
+					if(this instanceof WorkflowUserFunctionContext) {
+						String name = ((WorkflowUserFunctionContext)this).getName();
+						errorMeg = errorMeg+" name - "+ name;
+					}
+					
+					errorMeg = errorMeg+" message - "+e.getMessage();
+					if(e.getCause() != null) {
+						errorMeg = errorMeg+" cause - "+e.getCause();
+		    		}
+					this.getLogStringBuilder().append("ERROR ::: "+errorMeg+"\n");
+					LOGGER.log(Level.SEVERE, errorMeg, e);
 					throw e;
 				}
 			}
