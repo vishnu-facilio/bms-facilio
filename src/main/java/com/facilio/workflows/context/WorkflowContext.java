@@ -501,9 +501,6 @@ public class WorkflowContext implements Serializable {
 					}
 					
 					errorMeg = errorMeg+" message - "+e.getMessage();
-					if(e.getCause() != null) {
-						errorMeg = errorMeg+" cause - "+e.getCause();
-		    		}
 					this.getLogStringBuilder().append("ERROR ::: "+errorMeg+"\n");
 					LOGGER.log(Level.SEVERE, errorMeg, e);
 					throw e;
