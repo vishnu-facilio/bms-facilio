@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -1265,5 +1266,15 @@ public class FormsAPI {
 		chain.execute();
 
 		return (FacilioForm) formContext.get(FacilioConstants.ContextNames.FORM);
+	}
+
+	public static void updateFormName(long formId, String formName) throws Exception {
+		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getFormModule().getTableName())
+				.fields(Collections.singletonList(FieldFactory.getNameField(ModuleFactory.getFormModule())))
+				.andCondition(CriteriaAPI.getIdCondition(formId, ModuleFactory.getFormModule()));
+		Map<String, Object> map = new HashMap<>();
+		map.put("name", formName);
+		builder.update(map);
 	}
 }

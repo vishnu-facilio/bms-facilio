@@ -48,6 +48,11 @@ public class CustomButtonRuleContext extends ApproverWorkflowRuleContext impleme
         return shouldFormInterfaceApply;
     }
 
+    @Override
+    public String getSuggestedFormName() {
+        return "__custom_button_" + getId();
+    }
+
     private String formModuleName;
     public String getFormModuleName() {
         return formModuleName;

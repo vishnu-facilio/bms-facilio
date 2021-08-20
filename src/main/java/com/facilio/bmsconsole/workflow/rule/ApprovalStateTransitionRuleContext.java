@@ -53,6 +53,16 @@ public class ApprovalStateTransitionRuleContext extends AbstractStateTransitionR
     }
 
     @Override
+    public String getSuggestedFormName() {
+        if ("Reject".equals(getName())) {
+            return "__approval_" + getStateFlowId() + "_reject_form";
+        } else if ("Approve".equals(getName())) {
+            return "__approval_" + getStateFlowId() + "_approve_form";
+        }
+        return null;
+    }
+
+    @Override
     public void executeTrueActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
         super.executeTrueActions(record, context, placeHolders);
 
