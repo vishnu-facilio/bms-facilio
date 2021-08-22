@@ -1698,7 +1698,9 @@
 			<param name="moduleName">planned</param>
 			<param name="permission">CREATE</param>
 			<result name="success" type="json">
-				<param name="includeProperties">spaceCategoryIds,spaceCategoryIds\[\d+\],spaceCategoryIds\[\d+\].*,assetCategoryIds,assetCategoryIds\[\d+\],assetCategoryIds\[\d+\].*,^hasFloor.*,buildings,buildings\[\d+\],buildings\[\d+\].*</param>
+				<param name="includeProperties">
+					accessibleUsers,accessibleUsers\[\d+\],accessibleUsers\[\d+\].*,spaceCategoryIds,spaceCategoryIds\[\d+\],spaceCategoryIds\[\d+\].*,assetCategoryIds,assetCategoryIds\[\d+\],assetCategoryIds\[\d+\].*,^hasFloor.*,buildings,buildings\[\d+\],buildings\[\d+\].*
+				</param>
 				<!-- <param name="includeProperties">spaceCategoryIds,spaceCategoryIds\[\d+\],spaceCategoryIds\[\d+\].*</param>
 				<param name="includeProperties"></param> -->
 			</result>

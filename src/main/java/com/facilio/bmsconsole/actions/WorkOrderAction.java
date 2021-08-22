@@ -21,6 +21,7 @@ import com.facilio.v3.context.Constants;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.chain.Command;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -700,26 +701,35 @@ public class WorkOrderAction extends FacilioAction {
 	public void setSiteIds(List<Long> siteIds) {
 		this.siteIds = siteIds;
 	}
-	
-	
+
+	public List<Long> getAccessibleUsers() {
+		return accessibleUsers;
+	}
+
+	public void setAccessibleUsers(List<Long> accessibleUsers) {
+		this.accessibleUsers = accessibleUsers;
+	}
+
+	List<Long> accessibleUsers;
+
+
 	public String getScopeFilteredValuesForPM() throws Exception {
 		buildings = Collections.emptyList();
-		
-		if(assignmentType != null) {
-			
-			if(assignmentType.equals(PMAssignmentType.ALL_FLOORS)) {
+
+		if (assignmentType != null) {
+
+			if (assignmentType.equals(PMAssignmentType.ALL_FLOORS)) {
 				List<Long> floorsIds = new ArrayList<>();
-				
-				if(includeIds != null) {
+
+				if (includeIds != null) {
 					floorsIds = includeIds;
-				}
-				else {
+				} else {
 					floorsIds = getIdsFromContextList(SpaceAPI.getBuildingFloors(buildingId));
-					if(excludeIds != null) {
+					if (excludeIds != null) {
 						floorsIds.removeAll(excludeIds);
 					}
 				}
-				
+
 				assetCategoryIds = AssetsAPI.getAssetCategoryIds(floorsIds, buildingId, true);
 				spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(floorsIds, buildingId);
 			} else if(assignmentType.equals(PMAssignmentType.SPACE_CATEGORY) || assignmentType.equals(PMAssignmentType.ALL_SITES)) {
@@ -790,91 +800,98 @@ public class WorkOrderAction extends FacilioAction {
 					assetCategoryIds = assetCategSet.stream().collect(Collectors.toList());
 					spaceCategoryIds = spaceCategSet.stream().collect(Collectors.toList());
 				}
-			} else if(assignmentType.equals(PMAssignmentType.ASSET_CATEGORY)) {
+			} else if (assignmentType.equals(PMAssignmentType.ASSET_CATEGORY)) {
 				assetCategoryIds = AssetsAPI.getSubCategoryIds(assetCategoryId); //doubt
 			}
 		} else if (siteIds != null && siteIds.size() > 0) {
-			this.assetCategoryIds = new ArrayList<>();
-			this.spaceCategoryIds = new ArrayList<>();
-			this.buildings = new ArrayList<>();
-			Set<Long> assetCategorySet = new HashSet<>();
-			Set<Long> spaceCategorySet = new HashSet<>();
-			for (int i = 0; i < siteIds.size(); i++) {
-				List<BaseSpaceContext> buildings = SpaceAPI.getSiteBuildingsWithFloors(siteIds.get(i));
-				if(buildings != null && !buildings.isEmpty()) {
-					this.buildings.addAll(buildings);
-				}
-				assetCategorySet.addAll(AssetsAPI.getAssetCategoryIds(siteIds.get(i), buildingId, true));
-				spaceCategorySet.addAll(SpaceAPI.getSpaceCategoryIds(siteIds.get(i), buildingId));
-			}
+			getScopeValuesForMultiSitePM();
+		} else if (siteId != null && siteId > -1) {
+			getScopeValuesForRegularPM();
+		}
+		return SUCCESS;
+	}
 
-			if (this.siteIds.size() == 1) {
-				if (buildingId == null || buildingId < -1) {
-					List<BaseSpaceContext> buildings = SpaceAPI.getSiteBuildingsWithFloors(this.siteIds.get(0));
-					if(buildings != null && !buildings.isEmpty()) {
-						setBuildings(buildings);
-						hasFloor = true;
-					}
-				} else {
-					List<BaseSpaceContext> buildings = SpaceAPI.getSiteBuildingsWithFloors(this.siteIds.get(0));
-					if (buildings != null && !buildings.isEmpty()) {
-						setBuildings(buildings);
-					}
-					List<BaseSpaceContext> floors = SpaceAPI.getBuildingFloors(buildingId);
-					if(floors != null && !floors.isEmpty()) {
-						hasFloor = true;
-					}
-				}
-			}
+	private void getScopeValuesForMultiSitePM() throws Exception {
+		this.assetCategoryIds = new ArrayList<>();
+		this.spaceCategoryIds = new ArrayList<>();
+		this.buildings = new ArrayList<>();
+		Set<Long> assetCategorySet = new HashSet<>();
+		Set<Long> spaceCategorySet = new HashSet<>();
 
-			this.assetCategoryIds.addAll(assetCategorySet);
-			this.spaceCategoryIds.addAll(spaceCategorySet);
-		} else if(siteId != null && siteId > -1) {
+		for (int i = 0; i < siteIds.size(); i++) {
+			List<BaseSpaceContext> buildings = SpaceAPI.getSiteBuildingsWithFloors(siteIds.get(i));
+			if (buildings != null && !buildings.isEmpty()) {
+				this.buildings.addAll(buildings);
+			}
+			assetCategorySet.addAll(AssetsAPI.getAssetCategoryIds(siteIds.get(i), buildingId, true));
+			spaceCategorySet.addAll(SpaceAPI.getSpaceCategoryIds(siteIds.get(i), buildingId));
+		}
+		if (this.siteIds.size() == 1) {
 			if (buildingId == null || buildingId < -1) {
-				List<BaseSpaceContext> buildings = SpaceAPI.getSiteBuildingsWithFloors(siteId);
-				if(buildings != null && !buildings.isEmpty()) {
+				List<BaseSpaceContext> buildings = SpaceAPI.getSiteBuildingsWithFloors(this.siteIds.get(0));
+				if (buildings != null && !buildings.isEmpty()) {
 					setBuildings(buildings);
 					hasFloor = true;
 				}
 			} else {
-				List<BaseSpaceContext> buildings = SpaceAPI.getSiteBuildingsWithFloors(siteId);
+				List<BaseSpaceContext> buildings = SpaceAPI.getSiteBuildingsWithFloors(this.siteIds.get(0));
 				if (buildings != null && !buildings.isEmpty()) {
 					setBuildings(buildings);
 				}
 				List<BaseSpaceContext> floors = SpaceAPI.getBuildingFloors(buildingId);
-				if(floors != null && !floors.isEmpty()) {
+				if (floors != null && !floors.isEmpty()) {
 					hasFloor = true;
 				}
 			}
-			
-			assetCategoryIds = AssetsAPI.getAssetCategoryIds(siteId, buildingId, true);
-			spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(siteId, buildingId);
 		}
-		return SUCCESS;
+		this.accessibleUsers = SpaceAPI.getAccessibleUsers(siteIds);
+		this.assetCategoryIds.addAll(assetCategorySet);
+		this.spaceCategoryIds.addAll(spaceCategorySet);
 	}
-	
-	 private List<Long> getIdsFromSpaceContextList(List<SpaceContext> spaceListOfCategory) {
-		 List<Long> ids = null;
-	    	if(spaceListOfCategory != null && !spaceListOfCategory.isEmpty()) {
-	    		ids = new ArrayList<>();
-	    		for(ModuleBaseWithCustomFields context :spaceListOfCategory) {
-	    			ids.add(context.getId());
-	    		}
-	    	}
-	    	return ids;
+
+	private void getScopeValuesForRegularPM() throws Exception {
+		List<BaseSpaceContext> buildings = SpaceAPI.getSiteBuildingsWithFloors(siteId);
+		if (buildingId == null || buildingId < -1) {
+			if (CollectionUtils.isNotEmpty(buildings)) {
+				setBuildings(buildings);
+				hasFloor = true;
+			}
+		} else {
+			if (CollectionUtils.isNotEmpty(buildings)) {
+				setBuildings(buildings);
+			}
+			List<BaseSpaceContext> floors = SpaceAPI.getBuildingFloors(buildingId);
+			if (floors != null && !floors.isEmpty()) {
+				hasFloor = true;
+			}
+		}
+		this.accessibleUsers = SpaceAPI.getAccessibleUsers(Collections.singletonList(siteId));
+		this.assetCategoryIds = AssetsAPI.getAssetCategoryIds(siteId, buildingId, true);
+		this.spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(siteId, buildingId);
+	}
+
+	private List<Long> getIdsFromSpaceContextList(List<SpaceContext> spaceListOfCategory) {
+		List<Long> ids = null;
+		if (spaceListOfCategory != null && !spaceListOfCategory.isEmpty()) {
+			ids = new ArrayList<>();
+			for (ModuleBaseWithCustomFields context : spaceListOfCategory) {
+				ids.add(context.getId());
+			}
+		}
+		return ids;
 	}
 
 	public List<Long> getIdsFromContextList(List<BaseSpaceContext> contexts) {
-	    	
-	    	List<Long> ids = null;
-	    	if(contexts != null && !contexts.isEmpty()) {
-	    		ids = new ArrayList<>();
-	    		for(ModuleBaseWithCustomFields context :contexts) {
-	    			ids.add(context.getId());
-	    		}
-	    	}
-	    	return ids;
-	 }
+
+		List<Long> ids = null;
+		if (contexts != null && !contexts.isEmpty()) {
+			ids = new ArrayList<>();
+			for (ModuleBaseWithCustomFields context : contexts) {
+				ids.add(context.getId());
+			}
+		}
+		return ids;
+	}
 	
 	public String updatePreventiveMaintenance(FacilioContext context) throws Exception {
 
