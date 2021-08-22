@@ -61,3 +61,6 @@ translations:
 
   - name: DashboardWidgetTranslation
     translationImplClass : com.facilio.bmsconsole.localization.translationImpl.DashboardTabAndWidgetTranslationImpl
+
+  - name: StateFlowListTranslation
+    translationImplClass : com.facilio.bmsconsole.localization.translationImpl.StateFlowTransImpl

@@ -3,9 +3,12 @@ package com.facilio.bmsconsole.localization.fetchtranslationfields;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.WebTabContext;
+import com.facilio.bmsconsole.localization.translationImpl.StateFlowTransImpl;
 import com.facilio.bmsconsole.localization.translationImpl.StateFlowTranslationImpl;
 import com.facilio.bmsconsole.localization.util.TranslationConstants;
 import com.facilio.bmsconsole.localization.util.TranslationsUtil;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -27,11 +30,15 @@ public class GetStateTransitionTranslationFields implements TranslationTypeInter
     public JSONArray constructTranslationObject ( @NonNull WebTabContext context,String queryString,Properties properties ) throws Exception {
 
         FacilioUtil.throwIllegalArgumentException(!WebTabContext.Type.MODULE.equals(WebTabContext.Type.valueOf(context.getType())),"Invalid webTab Type for fetch Module Fields");
-        FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(queryString),"stateflow id is mandatory param for fetching state  fields");
+        FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(queryString),"stateFlow ID is mandatory");
 
         JSONArray jsonArray = new JSONArray();
 
         long stateFlowId = Long.parseLong(queryString);
+
+        if(stateFlowId < 0){
+            FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(queryString),"Invalid stateFlow ID");
+        }
 
         FacilioChain stateTransitionChain = ReadOnlyChainFactory.getStateTransitionList();
         FacilioContext stateTransitionChainContext = stateTransitionChain.getContext();
@@ -47,6 +54,13 @@ public class GetStateTransitionTranslationFields implements TranslationTypeInter
                 String stateTransitionKey = StateFlowTranslationImpl.getTranslationKey(StateFlowTranslationImpl.STATE_TRANSITION,id);
                 jsonArray.add(TranslationsUtil.constructJSON(stateTransition.getName(),StateFlowTranslationImpl.STATE_TRANSITION,TranslationConstants.DISPLAY_NAME,id,stateTransitionKey,properties));
             }
+        }
+        StateFlowRuleContext stateFlowRuleContext = (StateFlowRuleContext) WorkflowRuleAPI.getWorkflowRule(stateFlowId);
+
+        if(stateFlowRuleContext != null){
+            String stateFlow = String.valueOf(stateFlowRuleContext.getId());
+            String stateFlowKey = StateFlowTranslationImpl.getTranslationKey(StateFlowTransImpl.STATE_FLOW,stateFlow);
+            jsonArray.add(TranslationsUtil.constructJSON(stateFlowRuleContext.getName(),StateFlowTransImpl.STATE_FLOW,TranslationConstants.DISPLAY_NAME,stateFlow,stateFlowKey,properties));
         }
 
         JSONObject fieldObject = new JSONObject();

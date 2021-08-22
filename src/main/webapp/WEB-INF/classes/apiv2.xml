@@ -468,6 +468,7 @@
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="getStateFlowList" >
+			<param name="translationImpl">StateFlowListTranslation</param>
 			<param name="moduleName">setup</param>
 			<param name="permission">STATEFLOWS</param>
 			<param name="isNewPermission">true</param>
