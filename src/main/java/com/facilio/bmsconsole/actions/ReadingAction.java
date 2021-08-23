@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.facilio.logging.FacilioLogHandler;
 import com.facilio.taskengine.common.JobConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1291,7 +1290,7 @@ public class ReadingAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.RULE_JOB_TYPE, getRuleJobType());
 			context.put(FacilioConstants.ContextNames.HISTORICAL_RULE_LOGGER_PROPS, getLoggerInfo());
 			context.put(FacilioConstants.ContextNames.IS_INCLUDE, isInclude);
-			context.put(JobConstants.LOGGER_LEVEL, FacilioLogHandler.getLevelInt(AccountUtil.getCurrentAccount().getLevel()));
+			context.put(JobConstants.LOGGER_LEVEL, 2); //debug
 			runThroughRuleChain.execute();
 			
 			setResult("success", "Rule evaluation for the readings in the given period has been started");	
