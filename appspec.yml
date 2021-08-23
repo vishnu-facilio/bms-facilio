@@ -85,6 +85,8 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /service-syd.yml
     destination: /home/facilio/deployment-files/
+  - source: /clientAppConfig-stage.yml
+    destination: /home/facilio/deployment-files/
 
 permissions:
   - object: /home/facilio

@@ -60,7 +60,6 @@ public class GetModulesListCommand extends FacilioCommand {
 				sytemModules.add(modBean.getModule(moduleName));
 			}
 		}
-
 		List<FacilioModule> customModules = new ArrayList<>();
 
 		customModules.addAll(modBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY, true));

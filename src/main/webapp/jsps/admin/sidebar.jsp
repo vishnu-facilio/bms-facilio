@@ -3,6 +3,7 @@
 <%@taglib uri="facilio-tags" prefix="f" %>
 <%@page import="java.util.Properties, org.apache.struts2.ServletActionContext" %>
 <%@page import="com.facilio.aws.util.FacilioProperties" %>
+<%@ page import="com.facilio.client.app.util.ClientAppUtil" %>
 <%
 Properties buildinfo = (Properties)ServletActionContext.getServletContext().getAttribute("buildinfo");
 if (buildinfo == null) {
@@ -243,7 +244,7 @@ if (buildinfo == null) {
 	                Client Ver:
 	            </td>
 	            <td>
-	                <%= (String)com.facilio.aws.util.AwsUtil.getClientInfoAsService().get("version")%>
+	                <%= ClientAppUtil.getClientBuildInfo(request).getVersion() %>
 	            </td>
 	        </tr>
 	        <tr>

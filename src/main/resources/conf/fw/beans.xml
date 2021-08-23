@@ -1,4 +1,6 @@
 <beans>
+	<bean name="ClientAppBean" class="com.facilio.client.app.beans.ClientAppBeanCacheImpl"></bean>
+
 	<bean name="ModuleBean" class="com.facilio.beans.ModuleBeanCacheImpl"></bean>
 	<bean name="ModuleCRUD" class="com.facilio.beans.ModuleCRUDBeanImpl"></bean>
 	

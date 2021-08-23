@@ -461,12 +461,12 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
     		return value;
     	}
     	catch(Exception e) {
-    		LOGGER.log(Level.SEVERE, e.getMessage(), e);
-    		workflowContext.getLogStringBuilder().append("ERROR ::: "+e.getMessage()+"\n");
-    		if(e.getCause() != null) {
-    			workflowContext.getLogStringBuilder().append("ERROR ::: "+e.getCause()+"\n");
-    		}
-    		throw new RuntimeException(e.getCause());
+//    		LOGGER.log(Level.SEVERE, e.getMessage(), e);
+//    		workflowContext.getLogStringBuilder().append("ERROR ::: "+e.getMessage()+"\n");
+//    		if(e.getCause() != null) {
+//    			workflowContext.getLogStringBuilder().append("ERROR ::: "+e.getCause()+"\n");
+//    		}
+    		throw new RuntimeException(e);
     	}
     }
     
@@ -693,51 +693,6 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
     	}
     }
     
-    // on error command the above mthod and open the bellow one
-    
-//    public Value visitModuleAndSystemNameSpaceInitialization(WorkflowV2Parser.ModuleAndSystemNameSpaceInitializationContext ctx) {
-//    	try {
-//    		String moduleDisplayName = ctx.VAR().getText();
-//        	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//        	FacilioModule module = modBean.getModule(WorkflowV2Util.getModuleName(moduleDisplayName));
-//        	if(module == null) {
-//        		String nameSpaceString = ctx.VAR().getText();
-//            	FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpaceString);
-//            	if(nameSpaceEnum == null) {
-//            		throw new RuntimeException("No Module Or System NameSpace With this Name -> "+moduleDisplayName);
-//            	}
-//            	return new Value(nameSpaceEnum); 
-//        	}
-//        	else {
-//        		return new Value(module);
-//        	}
-//    	}
-//    	catch(Exception e) {
-//    		throw new RuntimeException(e.getMessage());
-//    	}
-//    }
-    
-//    @Override 
-//    public Value visitConnectionInitialization(WorkflowV2Parser.ConnectionInitializationContext ctx) { 
-//    	
-//    	
-//    	try {
-//    		Value connectionNameValue = this.visit(ctx.expr());
-//    		
-//    		WorkflowV2Util.checkForNullAndThrowException(connectionNameValue, ctx.expr().getText());
-//    		
-//    		String connectionName = connectionNameValue.asString();
-//        	ConnectionContext connection = ConnectionUtil.getConnection(connectionName);
-//        	if(connection == null) {
-//        		throw new RuntimeException("Connection "+connection+ " Does not exist");
-//        	}
-//        	return new Value(connection); 
-//    	}
-//    	catch(Exception e) {
-//    		throw new RuntimeException(e.getMessage());
-//    	}
-//    
-//    }
     
     @Override 
     public Value visitReadingInitialization(WorkflowV2Parser.ReadingInitializationContext ctx) 
@@ -768,26 +723,7 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
     		throw new RuntimeException(e.getMessage());
     	}
     }
-    
-//    @Override 
-//    public Value visitNameSpaceInitialization(WorkflowV2Parser.NameSpaceInitializationContext ctx) {
-//    	try {
-//    		Value nameSpaceValue = this.visit(ctx.expr());
-//    		WorkflowV2Util.checkForNullAndThrowException(nameSpaceValue, ctx.expr().getText());
-//        	FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpaceValue.asString());
-//        	if(nameSpaceEnum == null) {
-//        		WorkflowNamespaceContext namespace = UserFunctionAPI.getNameSpace(nameSpaceValue.asString());
-//        		if(namespace == null) {
-//        			throw new RuntimeException("No such namespace - "+nameSpaceValue.asString());
-//        		}
-//        		return new Value(namespace);
-//        	}
-//        	return new Value(nameSpaceEnum); 
-//    	}
-//    	catch(Exception e) {
-//    		throw new RuntimeException(e);
-//    	}
-//    }
+
     
     @Override
     public Value visitNewKeywordIntitialization(WorkflowV2Parser.NewKeywordIntitializationContext ctx) {

@@ -6,7 +6,7 @@ import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.cache.CacheUtil;
-import com.facilio.fw.LRUCache;
+import com.facilio.fw.cache.LRUCache;
 import com.facilio.fw.cache.FacilioCache;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;

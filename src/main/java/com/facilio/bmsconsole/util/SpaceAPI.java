@@ -879,10 +879,9 @@ public class SpaceAPI {
 				.module(module)
 				.select(fields)
 				.beanClass(FloorContext.class)
-				.andCondition(CriteriaAPI.getCondition("BUILDING_ID","building",String.valueOf(buildingId),NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("SPACE_TYPE", "spaceType",String.valueOf(BaseSpaceContext.SpaceType.FLOOR.getIntVal()),NumberOperators.EQUALS))
-				.orderBy("Floor.FLOOR_LEVEL ASC,Resources.NAME ASC")
-		;
+				.andCondition(CriteriaAPI.getCondition("BUILDING_ID", "building", String.valueOf(buildingId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("SPACE_TYPE", "spaceType", String.valueOf(BaseSpaceContext.SpaceType.FLOOR.getIntVal()), NumberOperators.EQUALS))
+				.orderBy("Floor.FLOOR_LEVEL ASC,Resources.NAME ASC");
 		boolean skipModuleCriteria = (boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, false);
 		if (skipModuleCriteria) {
 			selectBuilder.skipModuleCriteria();
@@ -891,19 +890,20 @@ public class SpaceAPI {
 
 		return floors;
 	}
-	
+
+	// Returns buildings without floors as well; to be refactored with getSiteBuildings()
 	public static List<BaseSpaceContext> getSiteBuildingsWithFloors(long sitedId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
-		
+
 		SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
-																	.select(fields)
-																	.module(module)
-																	.maxLevel(0)
-																	.beanClass(BaseSpaceContext.class)
-//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-																	.andCustomWhere("BaseSpace.SITE_ID =? AND BaseSpace.SPACE_TYPE=? and exists(select BS.ID FROM BaseSpace BS INNER JOIN Resources RS ON BS.ID = RS.ID WHERE (RS.SYS_DELETED IS NULL OR NOT(RS.SYS_DELETED)) AND BS.BUILDING_ID=BaseSpace.ID AND BS.SPACE_TYPE=? LIMIT 1)",sitedId,BaseSpaceContext.SpaceType.BUILDING.getIntVal(),BaseSpaceContext.SpaceType.FLOOR.getIntVal());
+				.select(fields)
+				.module(module)
+				.maxLevel(0)
+				.beanClass(BaseSpaceContext.class)
+				//	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCustomWhere("BaseSpace.SITE_ID =? AND BaseSpace.SPACE_TYPE=?", sitedId, BaseSpaceContext.SpaceType.BUILDING.getIntVal());
 		List<BaseSpaceContext> spaces = selectBuilder.get();
 		return spaces;
 	}

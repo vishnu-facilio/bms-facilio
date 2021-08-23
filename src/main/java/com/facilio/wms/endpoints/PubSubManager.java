@@ -13,7 +13,7 @@ import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.cache.RedisManager;
+import com.facilio.fw.cache.RedisManager;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.wms.endpoints.LiveSession.LiveSessionType;

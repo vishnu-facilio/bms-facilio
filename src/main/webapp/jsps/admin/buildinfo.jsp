@@ -1,7 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
     <%@page import="com.facilio.aws.util.AwsUtil, com.facilio.bmsconsole.actions.AdminAction, com.facilio.accounts.util.AccountUtil"%>
-    <%
+<%@ page import="com.facilio.fw.cache.LRUCache" %>
+<%@ page import="com.facilio.fw.cache.FWLRUCaches" %>
+<%
   	
   String version = request.getParameter("version");
   boolean isNewClientBuild = true;
@@ -56,28 +58,37 @@ function init() {
 </div>
 <div id="tg" style="display:none; margin-top:30px;">
 <br>Module Cache =  <textarea style="width: 600px;height:1500px;overflow-y:auto;"><%
-	out.println(com.facilio.fw.LRUCache.getModuleFieldsCache());
+	out.println(LRUCache.getModuleFieldsCache());
 %></textarea>
 <br>Fields Cache = <textarea  style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
-	out.println(com.facilio.fw.LRUCache.getFieldsCache());
+	out.println(LRUCache.getFieldsCache());
 %></textarea>
 <br>Field Name Cache = <textarea  style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
-    out.println(com.facilio.fw.LRUCache.getFieldNameCache());
+    out.println(LRUCache.getFieldNameCache());
 %></textarea>
 <br>Response Cache = <textarea  style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
-	out.println(com.facilio.fw.LRUCache.getResponseCache());
+	out.println(LRUCache.getResponseCache());
 %></textarea>
 <br>Feature License Cache = <textarea  style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
-	out.println(com.facilio.fw.LRUCache.getFeatureLicenseCache());
+	out.println(LRUCache.getFeatureLicenseCache());
 %></textarea>
 <br>Org Display Unit Cache = <textarea style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
-    out.println(com.facilio.fw.LRUCache.getOrgUnitCachePs());
+    out.println(LRUCache.getOrgUnitCachePs());
 %></textarea>
-<br>RoleId Cache = <textarea style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
-        out.println(com.facilio.fw.LRUCache.getRoleIdCachePs());
+<br>Role Id Cache = <textarea style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
+        out.println(LRUCache.getRoleIdCachePs());
 %></textarea>
-<br>RoleName Cache = <textarea style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
-        out.println(com.facilio.fw.LRUCache.getRoleNameCachePs());
+<br>Role Name Cache = <textarea style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
+        out.println(LRUCache.getRoleNameCachePs());
+%></textarea>
+<br>Client App Info Cache = <textarea style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
+    out.println(FWLRUCaches.getClientAppCache());
+%></textarea>
+<br>Client Org Grouping Cache = <textarea style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
+    out.println(FWLRUCaches.getOrgGroupingCache());
+%></textarea>
+<br>Client Org Grouping Domain Cache = <textarea style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
+    out.println(FWLRUCaches.getOrgGroupingOrgDomainCache());
 %></textarea>
 </div>
 

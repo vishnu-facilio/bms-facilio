@@ -221,6 +221,7 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 					selectBuilder.fetchSupplement((LookupField) fieldMap.get("trigger"));
 				}
 				selectBuilder.fetchSupplement((LookupField) fieldMap.get("type"));
+				selectBuilder.fetchSupplement((LookupField) fieldMap.get("moduleState"));
 				List<SupplementRecord> customLookupFields = new ArrayList<>();
 				for (FacilioField field : fields) {
 					if (!field.isDefault()) {

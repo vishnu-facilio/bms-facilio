@@ -3,11 +3,11 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -16,7 +16,12 @@ import com.facilio.modules.fields.MultiEnumField;
 import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.modules.fields.SupplementRecord;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 public class AddLookupFieldMetaList extends FacilioCommand {
+	
+	private boolean isSummary;
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -55,6 +60,9 @@ public class AddLookupFieldMetaList extends FacilioCommand {
 				}
 				else if (f instanceof MultiEnumField) {
 					supplements.add((MultiEnumField) f);
+				}
+				else if (isSummary && f.getDataTypeEnum().isMultiRecord()) { // Adding multi record fields for summary alone. Custom or otherwise
+					supplements.add((SupplementRecord) f);
 				}
 			}
 			if (CollectionUtils.isNotEmpty(fetchLookup)) {

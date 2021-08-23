@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.dto.Account;
 import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONObject;
 
@@ -51,6 +52,12 @@ public class TenantUnitSpacePageFactory extends PageFactory {
         List<String> excludedModules = new ArrayList<>();
         excludedModules.add(FacilioConstants.ContextNames.WORK_ORDER);
         excludedModules.add(FacilioConstants.ContextNames.TENANT_SPACES);
+
+        //for atre -- to be removed
+        if(AccountUtil.getCurrentOrg().getOrgId() == 418l && AccountUtil.getCurrentApp() != null && !AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
+            excludedModules.add("custom_vendormapping");
+            excludedModules.add("custom_retailoperationassignment");
+        }
 
         addRelatedListWidgets(tab2Sec1, module.getModuleId(), excludedModules, false);
         return page;

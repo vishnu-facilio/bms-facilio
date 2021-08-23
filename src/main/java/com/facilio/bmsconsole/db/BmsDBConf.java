@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.db;
 
 import com.facilio.accounts.dto.*;
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -8,8 +9,9 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.db.util.DBConf;
 import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.LRUCache;
+import com.facilio.fw.cache.LRUCache;
 import com.facilio.bmsconsole.localization.translationbean.TranslationBean;
+import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FieldType;
@@ -459,6 +461,26 @@ public class BmsDBConf extends DBConf {
     }
 
     @Override
+    public void incrementRedisDeleteCount(int redisQueries) {
+        AccountUtil.incrementRedisDeleteCount(redisQueries);
+    }
+
+    @Override
+    public void incrementRedisDeleteTime(long redisTime) {
+        AccountUtil.incrementRedisDeleteTime(redisTime);
+    }
+
+    @Override
+    public void incrementRedisGetTime(long redisTime) {
+        AccountUtil.incrementRedisGetTime(redisTime);
+    }
+
+    @Override
+    public void incrementRedisGetCount(int redisQueries) {
+        AccountUtil.incrementRedisGetCount(redisQueries);
+    }
+
+    @Override
     public void setJsonConversionTime(long jsonConversionTime) {
         AccountUtil.setJsonConversionTime(jsonConversionTime);
     }
@@ -538,6 +560,21 @@ public class BmsDBConf extends DBConf {
     @Override
     public String getEmailDomain() throws Exception {
         return FacilioProperties.getMailDomain();
+    }
+
+    @Override
+    public String getEnvironment() throws Exception {
+        return FacilioProperties.getEnvironment();
+    }
+
+    @Override
+    public String getConfigProp(String name) throws Exception {
+        return FacilioProperties.getConfig(name);
+    }
+
+    @Override
+    public Organization getOrg(String orgDomain) throws Exception {
+        return IAMUtil.getOrgBean().getOrgv2(orgDomain);
     }
 
     @Override

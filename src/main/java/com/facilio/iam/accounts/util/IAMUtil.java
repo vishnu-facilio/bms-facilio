@@ -1,22 +1,15 @@
 package com.facilio.iam.accounts.util;
 
 import java.util.List;
-import java.util.Map;
 
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.LRUCache;
+import com.facilio.fw.cache.LRUCache;
 import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.iam.accounts.bean.IAMOrgBean;
 import com.facilio.iam.accounts.bean.IAMUserBean;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
 
 public class IAMUtil {
 	

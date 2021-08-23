@@ -1,9 +1,4 @@
-<%@page import="com.facilio.service.FacilioServiceUtil"%>
 <%@page import="com.facilio.auth.cookie.FacilioCookie"%>
-<%@page import="org.apache.commons.lang3.StringUtils"%>
-<%@page import="java.util.ArrayList"%>
-<%@page import="java.util.Arrays"%>
-<%@page import="java.util.List"%>
 <%@page import="org.json.simple.JSONObject" %>
 <%@page import="com.facilio.iam.accounts.util.IAMAppUtil" %>
 <%@page import="java.util.Map" %>
@@ -14,13 +9,9 @@
 <%@page import="java.net.URL" %>
 <%@page import="java.util.HashMap" %>
 <%@page import="java.util.concurrent.ConcurrentHashMap" %>
-<%@page import="com.facilio.aws.util.FacilioProperties" %>
-<%@page import="org.apache.commons.lang3.StringUtils" %>
 <%@page import="com.facilio.util.FacilioIndexJsp" %>
-<%@page import="com.facilio.util.RequestUtil" %>
-<%@ page import="com.facilio.accounts.dto.AppDomain" %>
-<%@page import="com.facilio.service.FacilioService" %>
-<%@page import="com.facilio.constants.FacilioConstants" %>
+<%@ page import="com.facilio.client.app.pojo.ClientAppInfo" %>
+<%@ page import="com.facilio.client.app.util.ClientAppUtil" %>
 <%@page contentType="text/html; charset=UTF-8" %>
 
 <%! static Map<String, String> indexHtmls = new ConcurrentHashMap<>(); %> <%-- Maybe change this to LRU Cache later --%>
@@ -28,32 +19,15 @@
 <%
 
     try {
-        boolean isDynamicClient = false;
-        String clientVersion = (String) request.getAttribute(RequestUtil.REQUEST_DYNAMIC_CLIENT_VERSION);
-        if (!FacilioProperties.isProduction()
-                && StringUtils.isNotEmpty(clientVersion)
-        ) {
-            // String subDomain = request.getServerName().substring(0, request.getServerName().indexOf(FacilioProperties.getStageDomain()) - 1);
-            System.out.println("Client Version => "+clientVersion);
-            isDynamicClient = true;
-        }
-        else {
-        	clientVersion =(String) com.facilio.aws.util.AwsUtil.getClientInfoAsService().get("version");
-        }
+        ClientAppInfo info = ClientAppUtil.getClientBuildInfo(request);
+        String staticUrl = info.getStaticUrl();
 
-        if (clientVersion != null && !clientVersion.startsWith("/")) {
-            clientVersion = "/" + clientVersion;
-        } else {
-            clientVersion = "";
-        }
-       
-        String staticUrlPropName = isDynamicClient ? "stage.static.url" : "static.url";
-        String staticUrl = com.facilio.aws.util.FacilioProperties.getConfig(staticUrlPropName) + clientVersion;
+        // Code after this needs to be refactored sometime
         boolean servicePortalDomain = false;//used in client rendering to identify if the current req server is portal domain or not
         String brandName = com.facilio.aws.util.FacilioProperties.getConfig("rebrand.brand");
-        String domain =com.facilio.aws.util.FacilioProperties.getConfig("rebrand.domain");
-        String copyrightName =com.facilio.aws.util.FacilioProperties.getConfig("rebrand.copyright.name");
-        String copyrightYear =com.facilio.aws.util.FacilioProperties.getConfig("rebrand.copyright.year");
+        String domain = com.facilio.aws.util.FacilioProperties.getConfig("rebrand.domain");
+        String copyrightName = com.facilio.aws.util.FacilioProperties.getConfig("rebrand.copyright.name");
+        String copyrightYear = com.facilio.aws.util.FacilioProperties.getConfig("rebrand.copyright.year");
 
         boolean googleAuthEnable = "true".equalsIgnoreCase(com.facilio.aws.util.FacilioProperties.getConfig("google.auth"));
         String googleAuthClientId =com.facilio.aws.util.FacilioProperties.getConfig("google.auth.clientid");
@@ -168,7 +142,7 @@
             }
             catch (Exception e) {
                 FacilioIndexJsp.LOGGER.error("Error occurred in index.jsp", e);
-                if (isDynamicClient) {
+                if (info.isDynamicClient()) {
                     out.println("Please check the client build version given in domain. ");
                 }
                 else {

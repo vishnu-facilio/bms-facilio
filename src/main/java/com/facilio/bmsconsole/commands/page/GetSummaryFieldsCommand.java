@@ -25,7 +25,6 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.page.factory.PageFactory.SummaryOrderType;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
-import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -61,9 +60,8 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		module = modBean.getModule(moduleName);
 
-		long recordId = (long) context.get(ContextNames.ID);
 		allFields = modBean.getAllFields(moduleName);
-		record = RecordAPI.getRecord(moduleName, recordId);
+		record = (ModuleBaseWithCustomFields) context.get(ContextNames.RECORD);
 
 		long formId = (long) context.get(ContextNames.FORM_ID);
 		long widgetId = (long) context.get(ContextNames.WIDGET_ID);
