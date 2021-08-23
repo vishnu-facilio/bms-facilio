@@ -2,6 +2,7 @@ package com.facilio.logging;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -22,6 +23,7 @@ public class FacilioLogHandler extends Handler {
 
     private static final HashMap<String, Logger> LOGGER_MAP = new HashMap<>();
     private static final HashMap<Level, Priority> LEVEL_MAP = new HashMap<>();
+    private static final HashMap<org.apache.log4j.Level, Integer> LEVEL_POS_MAP = new HashMap<>();
 
     static {
         LEVEL_MAP.put(Level.INFO, org.apache.log4j.Level.INFO);
@@ -31,6 +33,15 @@ public class FacilioLogHandler extends Handler {
         LEVEL_MAP.put(Level.ALL, org.apache.log4j.Level.DEBUG);
         LEVEL_MAP.put(Level.WARNING, org.apache.log4j.Level.WARN);
         LEVEL_MAP.put(Level.SEVERE, org.apache.log4j.Level.ERROR);
+
+        LEVEL_POS_MAP.put(org.apache.log4j.Level.ALL, 0);
+        LEVEL_POS_MAP.put(org.apache.log4j.Level.TRACE, 1);
+        LEVEL_POS_MAP.put(org.apache.log4j.Level.DEBUG, 2);
+        LEVEL_POS_MAP.put(org.apache.log4j.Level.INFO, 3);
+        LEVEL_POS_MAP.put(org.apache.log4j.Level.WARN, 4);
+        LEVEL_POS_MAP.put(org.apache.log4j.Level.ERROR, 5);
+        LEVEL_POS_MAP.put(org.apache.log4j.Level.FATAL, 6);
+        LEVEL_POS_MAP.put(org.apache.log4j.Level.OFF, 7);
     }
 
     public void publish(LogRecord record) {
@@ -112,5 +123,19 @@ public class FacilioLogHandler extends Handler {
             event.setProperty("exception", "LogAppenderException");
         }
         return event;
+    }
+
+    public static int getLevelInt(org.apache.log4j.Level lev){
+        return LEVEL_POS_MAP.getOrDefault(lev, -1);
+    }
+
+    public static org.apache.log4j.Level getLevelByInt(int loggerLevel) {
+
+        for(Map.Entry<org.apache.log4j.Level, Integer> entry : LEVEL_POS_MAP.entrySet()){
+            if (entry.getValue().equals(loggerLevel)){
+                return entry.getKey();
+            }
+        }
+        return null;
     }
 }

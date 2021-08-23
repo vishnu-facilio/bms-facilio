@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.logging.FacilioLogHandler;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -632,35 +633,7 @@ public class Account implements AccountsInterface<User>, AccountStats, Serializa
 		}
 	}
 	public void setLoggerLevel(int loggerLevel) {
-		Level level = null;
-		switch (loggerLevel) {
-			case 0:
-				level = Level.ALL;
-				break;
-			case 1:
-				level = Level.TRACE;
-				break;
-			case 2:
-				level = Level.DEBUG;
-				break;
-			case 3:
-				level = Level.INFO;
-				break;
-			case 4:
-				level = Level.WARN;
-				break;
-			case 5:
-				level = Level.ERROR;
-				break;
-			case 6:
-				level = Level.FATAL;
-				break;
-			case 7:
-				level = Level.OFF;
-				break;
-			default:
-				break;
-		}
+		Level level = FacilioLogHandler.getLevelByInt(loggerLevel);
 		if (level != null) {
 			setLevel(level);
 		}
