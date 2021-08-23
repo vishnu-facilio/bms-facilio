@@ -511,12 +511,7 @@ public class WorkflowRuleContext implements Serializable {
 		if (actions == null) {
 			actions = ActionAPI.getActiveActionsFromWorkflowRule(ruleId);
 		}
-		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
-//			LOGGER.info("Time taken to fetch actions for workflowrule id : "+ruleId+" with actions : "+actions+" is "+(System.currentTimeMillis() - startTime));			
-		}
-		if (AccountUtil.getCurrentOrg().getId() == 151) {
-			LOGGER.info("List of actions for "+this.getId()+" : "+actions);
-		}
+		LOGGER.debug("Time taken to fetch actions for workflowrule id : "+ruleId+" with actions : "+actions+" is "+(System.currentTimeMillis() - startTime));
 		if(actions != null) {
 			for(ActionContext action : actions) {
 				if (this.getId() == 6448) {

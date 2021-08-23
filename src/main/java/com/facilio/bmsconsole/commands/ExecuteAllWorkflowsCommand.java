@@ -227,12 +227,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 		}
 		long executionTime = System.currentTimeMillis() - time;
 		if (executionTime > 50) {
-			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 274) {
-				LOGGER.info("### time taken in postExecute: " + this.getClass().getSimpleName() + ": " + executionTime);
-			}
-			else {
-				LOGGER.debug("### time taken in postExecute: " + this.getClass().getSimpleName() + ": " + executionTime);
-			}
+			LOGGER.debug("### time taken in postExecute: " + this.getClass().getSimpleName() + ": " + executionTime);
 		}
 
 		return false;

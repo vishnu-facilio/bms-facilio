@@ -2752,7 +2752,7 @@ public class FacilioConstants {
 		public static final String HOURLY = "hourly";
 		public static final String WEEKLY = "weekly";
 		public static final String MONTHLY = "monthly";
-		
+
 		
 		public static final StringBuilder ENERGY_TABLE= new StringBuilder(" ENERGY_DATA ");
 		
