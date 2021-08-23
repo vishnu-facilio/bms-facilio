@@ -62,27 +62,6 @@ public class SpaceAPI {
 		return photos;
 	}
 
-	public static List<Long> getAccessibleUsers(List<Long> spaceIDs) {
-		List<Long> accessibleUsers = new ArrayList<>();
-		if (CollectionUtils.isEmpty(spaceIDs)) {
-			return accessibleUsers;
-		}
-		String siteClause = "(" + spaceIDs.stream().map(id -> Long.toString(id)).collect(Collectors.joining(",")) + ")";
-
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(Arrays.asList(FieldFactory.getField("ORG_USER_ID", "ORG_USER_ID", FieldType.NUMBER)))
-				.table(ModuleFactory.getAccessibleSpaceModule().getTableName())
-				.andCustomWhere("SITE_ID IN " + siteClause);
-		try {
-			List<Map<String, Object>> resultSet = selectBuilder.get();
-			accessibleUsers = resultSet.stream().map(rec -> (Long) rec.get("ORG_USER_ID")).distinct().collect(Collectors.toList());
-		} catch (Exception e) {
-			LOGGER.info("Fetch failed; query:" + selectBuilder.toString());
-		}
-
-		return accessibleUsers;
-	}
-
 	public static double computeTenantZoneArea(long zoneId) throws Exception {
 		List<Long> ids = new ArrayList<Long>();
 		ids.add(zoneId);

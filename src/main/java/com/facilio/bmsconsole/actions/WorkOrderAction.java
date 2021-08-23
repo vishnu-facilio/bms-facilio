@@ -702,17 +702,6 @@ public class WorkOrderAction extends FacilioAction {
 		this.siteIds = siteIds;
 	}
 
-	public List<Long> getAccessibleUsers() {
-		return accessibleUsers;
-	}
-
-	public void setAccessibleUsers(List<Long> accessibleUsers) {
-		this.accessibleUsers = accessibleUsers;
-	}
-
-	List<Long> accessibleUsers;
-
-
 	public String getScopeFilteredValuesForPM() throws Exception {
 		buildings = Collections.emptyList();
 
@@ -844,7 +833,6 @@ public class WorkOrderAction extends FacilioAction {
 				}
 			}
 		}
-		this.accessibleUsers = SpaceAPI.getAccessibleUsers(siteIds);
 		this.assetCategoryIds.addAll(assetCategorySet);
 		this.spaceCategoryIds.addAll(spaceCategorySet);
 	}
@@ -865,7 +853,6 @@ public class WorkOrderAction extends FacilioAction {
 				hasFloor = true;
 			}
 		}
-		this.accessibleUsers = SpaceAPI.getAccessibleUsers(Collections.singletonList(siteId));
 		this.assetCategoryIds = AssetsAPI.getAssetCategoryIds(siteId, buildingId, true);
 		this.spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(siteId, buildingId);
 	}
