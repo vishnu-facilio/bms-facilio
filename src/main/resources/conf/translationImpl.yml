@@ -64,3 +64,6 @@ translations:
 
   - name: StateFlowListTranslation
     translationImplClass : com.facilio.bmsconsole.localization.translationImpl.StateFlowTransImpl
+
+  - name: ReportFolderTranslationV2
+    translationImplClass : com.facilio.bmsconsole.localization.translationImpl.ReportFolderTranslationImplV2
