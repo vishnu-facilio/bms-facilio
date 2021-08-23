@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.facilio.command.FacilioCommand;
 import com.facilio.command.PostTransactionCommand;
+import com.facilio.taskengine.common.JobConstants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
@@ -40,11 +41,11 @@ import com.facilio.time.DateTimeUtil;
 public class RunThroughHistoricalRuleCommand extends FacilioCommand implements PostTransactionCommand {
 	private static final Logger LOGGER = Logger.getLogger(RunThroughHistoricalRuleCommand.class.getName());
 	private List<Long> workflowRuleResourceParentLoggerIds = new ArrayList<Long>();
-	
+	private Context context;
 	@SuppressWarnings("null")
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		
+		this.context = context;
 		long maximumDailyEventRuleJobsPerOrg = 10000l; 
 		
 		Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.HISTORICAL_READING_RULE_JOBS_THRESHOLD);
@@ -215,11 +216,11 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand implements P
 	
 	@Override
 	public boolean postExecute() throws Exception {
-		
+		int loggerLevel = (int)context.getOrDefault(JobConstants.LOGGER_LEVEL, -1);
 		if(workflowRuleResourceParentLoggerIds != null && !workflowRuleResourceParentLoggerIds.isEmpty()) {
 			for(Long parentRuleResourceLoggerId :workflowRuleResourceParentLoggerIds)
 			{		
-				FacilioTimer.scheduleOneTimeJobWithDelay(parentRuleResourceLoggerId, "HistoricalAlarmOccurrenceDeletionJob", 30, "history");
+				FacilioTimer.scheduleOneTimeJobWithDelay(parentRuleResourceLoggerId, "HistoricalAlarmOccurrenceDeletionJob", 30, "history", loggerLevel);
 			}
 		}
 		return false;

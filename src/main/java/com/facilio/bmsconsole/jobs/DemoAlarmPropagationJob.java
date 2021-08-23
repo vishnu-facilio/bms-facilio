@@ -2,6 +2,9 @@ package com.facilio.bmsconsole.jobs;
 
 import java.time.ZonedDateTime;
 
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.taskengine.common.JobConstants;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -25,11 +28,14 @@ public class DemoAlarmPropagationJob extends FacilioJob{
 		ZonedDateTime currentZdt = DateTimeUtil.getDateTime();
 		try {
 			LOGGER.info("DemoAlarmPropagationJob Started for zdt: " +currentZdt);
-			FacilioChain context = TransactionChainFactory.demoAlarmPropagationChain();
-			context.getContext().put(ContextNames.START_TIME, currentZdt);
-			context.getContext().put(ContextNames.DEMO_ROLLUP_JOB_ORG, jc.getOrgId());
-			context.getContext().put(ContextNames.JOB, jc.getJobId());
-			context.execute();
+			FacilioChain chain = TransactionChainFactory.demoAlarmPropagationChain();
+			FacilioContext context = chain.getContext();
+			context.put(ContextNames.START_TIME, currentZdt);
+			context.put(ContextNames.DEMO_ROLLUP_JOB_ORG, jc.getOrgId());
+			context.put(ContextNames.JOB, jc.getJobId());
+			context.put(JobConstants.LOGGER_LEVEL, jc.getLoggerLevel());
+
+			chain.execute();
 			LOGGER.info("DemoAlarmPropagationJob Started Daily Demo Historical rule evaluation for zdt: "+currentZdt);
 		} catch (Exception e) {
         	LOGGER.error("DemoAlarmPropagationJob Error -- "  +e+ " OrgId -- "+AccountUtil.getCurrentOrg().getId());

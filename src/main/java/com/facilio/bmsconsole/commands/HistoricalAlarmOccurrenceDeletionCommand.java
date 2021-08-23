@@ -21,6 +21,7 @@ import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.taskengine.common.JobConstants;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateRange;
 import org.apache.commons.chain.Context;
@@ -39,9 +40,10 @@ public class HistoricalAlarmOccurrenceDeletionCommand extends FacilioCommand imp
 	private String exceptionMessage = null;
 	private StackTraceElement[] stack = null;
 	private int retryCount = 0;
+	private Context context;
 
 	public boolean executeCommand(Context context) throws Exception {
-		
+		this.context = context;
 		try {
 			parentRuleResourceLoggerId = (long) context.get(FacilioConstants.ContextNames.HISTORICAL_ALARM_OCCURRENCE_DELETION_JOB_ID);
 			retryCount = (int) context.get(FacilioConstants.ContextNames.HISTORICAL_ALARM_OCCURRENCE_DELETION_JOB_RETRY_COUNT);
@@ -140,9 +142,8 @@ public class HistoricalAlarmOccurrenceDeletionCommand extends FacilioCommand imp
 		
 		List<WorkflowRuleHistoricalLogsContext> ruleResourceGroupedLoggers = WorkflowRuleHistoricalLogsAPI.getWorkflowRuleHistoricalLogsByParentRuleResourceId(parentRuleResourceLoggerId);
 		
-		for(WorkflowRuleHistoricalLogsContext ruleResourceLoggerContext:ruleResourceGroupedLoggers)
-		{
-			FacilioTimer.scheduleOneTimeJobWithDelay(ruleResourceLoggerContext.getId(), "HistoricalRuleEventRunJob", 30, "history"); //For events, splitted start and end time would be fetched from the loggers
+		for(WorkflowRuleHistoricalLogsContext ruleResourceLoggerContext:ruleResourceGroupedLoggers) {
+			FacilioTimer.scheduleOneTimeJobWithDelay(ruleResourceLoggerContext.getId(), "HistoricalRuleEventRunJob", 30, "history", (int)context.getOrDefault(JobConstants.LOGGER_LEVEL, -1)); //For events, splitted start and end time would be fetched from the loggers
 		}
 		return false;
 	}

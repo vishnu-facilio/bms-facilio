@@ -16,11 +16,14 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.taskengine.common.JobConstants;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateRange;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.sql.SQLException;
@@ -28,12 +31,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 public class HistoricalRuleEventRunCommand extends FacilioCommand implements PostTransactionCommand {
 
-	private static final Logger LOGGER = Logger.getLogger(HistoricalRuleEventRunCommand.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(HistoricalRuleEventRunCommand.class.getName());
 	
 	private WorkflowRuleHistoricalLogsContext workflowRuleHistoricalLogsContext = null;
 	private Long jobId;
@@ -41,10 +43,10 @@ public class HistoricalRuleEventRunCommand extends FacilioCommand implements Pos
 	private StackTraceElement[] stack = null;
 	private boolean isFailed = false;
 	HashMap<String, Boolean> jobStatesMap = new HashMap<String, Boolean>();
-	
+	private Context context;
 	@Override
 	public boolean executeCommand(Context jobContext) throws Exception {
-		
+		this.context = context;
 	try {
 		long jobStartTime = System.currentTimeMillis();
 		jobId = (long) jobContext.get(FacilioConstants.ContextNames.HISTORICAL_EVENT_RULE_JOB_ID);
@@ -97,7 +99,7 @@ public class HistoricalRuleEventRunCommand extends FacilioCommand implements Pos
 		exceptionMessage = historicalRuleException.getMessage();
 		stack = historicalRuleException.getStackTrace();
 		isFailed = true;
-		Boolean isManualFailed = (Boolean)jobStatesMap.get("isManualFailed");
+		Boolean isManualFailed = jobStatesMap.get("isManualFailed");
 
 		if(exceptionMessage != null && isManualFailed) {
 			workflowRuleHistoricalLogsContext.setErrorMessage(exceptionMessage);
@@ -110,7 +112,7 @@ public class HistoricalRuleEventRunCommand extends FacilioCommand implements Pos
 		}
 				
 		if(!isManualFailed) {
-			LOGGER.severe("HISTORICAL RULE RESOURCE EVENT JOB COMMAND FAILED, JOB ID -- : "+ jobId +" ExceptionMessage -- " + exceptionMessage + " StackTrace -- " + ExceptionUtils.getStackTrace(historicalRuleException));
+			LOGGER.debug("HISTORICAL RULE RESOURCE EVENT JOB COMMAND FAILED, JOB ID -- : "+ jobId +" ExceptionMessage -- " + exceptionMessage + " StackTrace -- " + ExceptionUtils.getStackTrace(historicalRuleException));
 		}
 		
 		throw historicalRuleException;
@@ -136,7 +138,7 @@ public class HistoricalRuleEventRunCommand extends FacilioCommand implements Pos
 			int rowsUpdated = WorkflowRuleResourceLoggerAPI.updateEventGeneratingParentWorkflowRuleResourceLoggerContext(parentRuleResourceLoggerContext);
 			if(rowsUpdated == 1)
 			{
-				FacilioTimer.scheduleOneTimeJobWithDelay(parentRuleResourceLoggerContext.getId(), "HistoricalAlarmProcessingJob", 30, "history");
+				FacilioTimer.scheduleOneTimeJobWithDelay(parentRuleResourceLoggerContext.getId(), "HistoricalAlarmProcessingJob", 30, "history", (int) context.getOrDefault(JobConstants.LOGGER_LEVEL, -1));
 			}
 		}	
 		return false;
@@ -162,7 +164,7 @@ public class HistoricalRuleEventRunCommand extends FacilioCommand implements Pos
 				else {
 					NewTransactionService.newTransaction(() -> WorkflowRuleHistoricalLogsAPI.updateWorkflowRuleHistoricalLogsContextState(workflowRuleHistoricalLogsContext, WorkflowRuleHistoricalLogsContext.Status.FAILED.getIntVal()));
 					CommonCommandUtil.emailException(HistoricalRuleEventRunCommand.class.getName(), "Historical Run Failed for Reading_Rule_Resource_Event_Logger : "+jobId, mailExp);
-					LOGGER.log(Level.SEVERE, exceptionMessage);	
+					LOGGER.error(exceptionMessage);
 				}
 			
 				long parentRuleResourceLoggerId = workflowRuleHistoricalLogsContext.getParentRuleResourceId();
@@ -184,7 +186,7 @@ public class HistoricalRuleEventRunCommand extends FacilioCommand implements Pos
 				}			
 			}
 			else  {
-				LOGGER.severe("HISTORICAL RULERESOURCEEVENT LOGGER IS NULL IN ONERROR FOR JOB -- " + jobId);
+				LOGGER.debug("HISTORICAL RULERESOURCEEVENT LOGGER IS NULL IN ONERROR FOR JOB -- " + jobId);
 			}	
 			
 		}
@@ -192,8 +194,8 @@ public class HistoricalRuleEventRunCommand extends FacilioCommand implements Pos
 		{
 			CommonCommandUtil.emailException("Historical Rule Exception Handling failed",
 					"Historical Rule Exception Handling failed - orgid -- " + AccountUtil.getCurrentOrg().getId()+ ", JOB ID -- " +jobId, e);
-			LOGGER.severe("Historical Rule Exception Handling failed  --"+jobId);
-			LOGGER.log(Level.SEVERE, e.getMessage(), e);
+			LOGGER.debug("Historical Rule Exception Handling failed  --"+jobId);
+			LOGGER.debug(e.getMessage(), e);
 		}
 	}
 	

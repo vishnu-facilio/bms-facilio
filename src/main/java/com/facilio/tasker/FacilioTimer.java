@@ -101,11 +101,19 @@ public class FacilioTimer {
 	}
 
 	public static void scheduleOneTimeJobWithDelay(long jobId, String jobName, int delayInSec, String executorName) throws Exception {
+		scheduleOneTimeJobWithTimestampInSec(jobId, jobName, delayInSec, executorName);
+	}
+
+	public static void scheduleOneTimeJobWithDelay(long jobId, String jobName, int delayInSec, String executorName, int loggerLevel) throws Exception {
 		long nextExecutionTime = (System.currentTimeMillis()/1000)+delayInSec;
-		scheduleOneTimeJobWithTimestampInSec(jobId, jobName, nextExecutionTime, executorName);
+		scheduleOneTimeJobWithTimestampInSec(jobId, jobName, nextExecutionTime, executorName, loggerLevel);
 	}
 
 	public static void scheduleOneTimeJobWithTimestampInSec(long jobId, String jobName, long nextExecutionTime, String executorName) throws Exception {
+		scheduleOneTimeJobWithTimestampInSec(jobId, jobName, nextExecutionTime, executorName, -1);
+	}
+
+	public static void scheduleOneTimeJobWithTimestampInSec(long jobId, String jobName, long nextExecutionTime, String executorName, int loggerLevel) throws Exception {
 
 		JobContext jc = new JobContext();
 		jc.setJobId(jobId);
@@ -118,6 +126,9 @@ public class FacilioTimer {
 		jc.setAddedTime(System.currentTimeMillis());
 		if (AccountUtil.getCurrentAccount() != null) {
 			jc.setTimezone(AccountUtil.getCurrentAccount().getTimeZone());
+		}
+		if(loggerLevel != -1) {
+			jc.setLoggerLevel(loggerLevel);
 		}
 		FacilioService.runAsService(FacilioConstants.Services.JOB_SERVICE,() -> JobStore.addJob(jc));
 	}

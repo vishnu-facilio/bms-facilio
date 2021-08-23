@@ -254,7 +254,7 @@ public class WorkflowRuleAPI {
 			if(AccountUtil.getCurrentOrg().getId() == 1) {
 				if(workflowRuleContext.getWorkflow().getWorkflowUIMode() != WorkflowUIMode.XML.getValue()) {
 
-					fillExtraParamsForWorkflowV2(workflowRuleContext.getWorkflow()); 		// ^^^^^^^^^ TO BE REVERTED ON ERROR ^^^^^^^^
+					//fillExtraParamsForWorkflowV2(workflowRuleContext.getWorkflow()); 		// ^^^^^^^^^ TO BE REVERTED ON ERROR ^^^^^^^^
 				}
 			}
 			
@@ -613,14 +613,7 @@ public class WorkflowRuleAPI {
 		ruleBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), CommonOperators.IS_EMPTY));
 		List<Map<String, Object>> props = ruleBuilder.get();
 
-		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343 && module != null && module.getTypeEnum().isReadingType()) {
-			LOGGER.info(MessageFormat.format("Rule query : {0}", ruleBuilder.toString()));
-		}
-
-		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 445 && module != null && module.getTypeEnum().isReadingType()) {
-			LOGGER.info(MessageFormat.format("Rule query : {0}", ruleBuilder.toString()));
-		}
-
+		LOGGER.debug(MessageFormat.format("Rule query : {0}", ruleBuilder.toString()));
 		return getWorkFlowsFromMapList(props, fetchChildren, fetchExtended);
 	}
 	
@@ -1035,9 +1028,8 @@ public class WorkflowRuleAPI {
 		long startTime = System.currentTimeMillis();
 		Map<String, Object> rulePlaceHolders = workflowRule.constructPlaceHolders(moduleName, record, recordPlaceHolders, context);
 		boolean fieldChangeFlag = false, miscFlag = false, criteriaFlag = false, workflowFlag = false , siteId = false;
-		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 393l) {
-			LOGGER.info("Time taken to construct rulePlaceholders: "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for record : "+record+" is "+(System.currentTimeMillis() - startTime)+" , PLACEHOLDERS  : " + rulePlaceHolders);
-		}
+		LOGGER.debug("Time taken to construct rulePlaceholders: "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for record : "+record+" is "+(System.currentTimeMillis() - startTime)+" , PLACEHOLDERS  : " + rulePlaceHolders);
+
 		long criteriaCheckStartTime = System.currentTimeMillis();
 		siteId = workflowRule.evaluateSite(moduleName, record, rulePlaceHolders, context);
 		if (siteId) {
@@ -1052,41 +1044,14 @@ public class WorkflowRuleAPI {
 				}
 			}
 		}
-		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
-//			LOGGER.info("Time taken to evaluate criteria and workflow flags: "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for record : "+record+" is "+(System.currentTimeMillis() - criteriaCheckStartTime));			
-		}
-		if (AccountUtil.getCurrentOrg().getId() == 286l && (workflowRule.getId() == 26740l)) {
-			LOGGER.error("Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag);
-		}
-		if (AccountUtil.getCurrentOrg().getId() == 155l && (workflowRule.getId() == 32177l)) {
-			LOGGER.error("Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag);
-		}
-		if (AccountUtil.getCurrentOrg().getId() == 186 && workflowRule.getId() == 6448) {
-			LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag);
-		}
-		
-		if (AccountUtil.getCurrentOrg().getId() == 134l && (workflowRule.getId() == 4235l || workflowRule.getId() == 6793l)) {
-			LOGGER.error("Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag);
-		}
-		if (AccountUtil.getCurrentOrg().getId() == 88 && workflowRule.getId() == 7762l) {
-			LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag);
-		}
+
 
 		boolean result = fieldChangeFlag && miscFlag && criteriaFlag && workflowFlag && siteId ;
 
-		if (AccountUtil.getCurrentOrg().getId() == 393) {
-			LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag);
-		}
-
-		if (AccountUtil.getCurrentOrg().getId() == 445) {
-			LOGGER.info("Result of rule : "+result + " rule : " + workflowRule+",  for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag);
-		}
-		
-		if ((workflowRule.getParentRuleId() == 77401l || workflowRule.getId() == 77401l) && workflowRule.getOrgId() == 324l) {
-			if(record != null) {
-				LOGGER.info("CSUFanfailure Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag+
+		LOGGER.debug("Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag);
+		if(record != null) {
+			LOGGER.debug("CSUFanfailure Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag+
 						" \n ResourceId: " +((ReadingContext) record).getParentId()+ " \n Ttime: " + ((ReadingContext) record).getTtime() +" \n ModuleId: " + ((ReadingContext) record).getModuleId());
-			}
 		}
 		long actionExecutionStartTime = System.currentTimeMillis();
 		if (shouldExecute) {
@@ -1097,9 +1062,7 @@ public class WorkflowRuleAPI {
 				workflowRule.executeFalseActions(record, context, rulePlaceHolders);
 			}
 		}
-//		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 393l) {
-//			LOGGER.info("Time taken to execute readingRule actions: "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for record : "+record+" is "+(System.currentTimeMillis() - actionExecutionStartTime));
-//		}
+		LOGGER.info("Time taken to execute readingRule actions: "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for record : "+record+" is "+(System.currentTimeMillis() - actionExecutionStartTime));
 		return result;
 	}
 	
@@ -1114,12 +1077,7 @@ public class WorkflowRuleAPI {
 			for(WorkflowRuleContext workflowRule : workflowRules) {
 				long startTime = System.currentTimeMillis();
 				boolean stopFurtherExecution = workflowRule.executeRuleAndChildren(workflowRule, module, record, changeSet, recordPlaceHolders, context, propagateError, parentRule, onSuccess, workflowRuleCacheMap, isParallelRuleExecution, eventTypes, ruleTypes);
-				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 339) {
-					LOGGER.info(MessageFormat.format("Time taken to execute rule : {0} is {1}", workflowRule.getName(), (System.currentTimeMillis() - startTime)));
-				}
-				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 393) {
-					LOGGER.info(MessageFormat.format("Time taken to execute rule : {0} is {1}", workflowRule.getName(), (System.currentTimeMillis() - startTime)));
-				}
+				LOGGER.debug(MessageFormat.format("Time taken to execute rule : {0} is {1}", workflowRule.getName(), (System.currentTimeMillis() - startTime)));
 				if(stopFurtherExecution) {
 					break;
 				}

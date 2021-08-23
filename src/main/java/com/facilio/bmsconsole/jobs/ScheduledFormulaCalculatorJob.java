@@ -47,6 +47,7 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 	@Override
 	public void execute(JobContext jc) {
 		LOGGER.info("JOB ID for ScheduledFormulaCalculatorJob " + jc.getJobId());
+		int formulaLim = 0;
 		try {
 			long jobStartTime = System.currentTimeMillis();
 			List<Integer> types = getFrequencyTypesToBeFetched();
@@ -59,6 +60,10 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 				fetchFields(formulas, modBean);
 				long endTime = DateTimeUtil.getHourStartTime();
 				while (!formulas.isEmpty() && !timedOut) {
+					if(++formulaLim > 1000){
+						LOGGER.info("Schedule formula calculator exceeded 1000 count.");
+						break;
+					}
 					Iterator<FormulaFieldContext> it = formulas.iterator();
 					while (it.hasNext()) {
 						FormulaFieldContext formula = it.next();
@@ -124,7 +129,6 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 			}
 			LOGGER.info("Time taken for ScheduledFormulaExecution job : "+(System.currentTimeMillis() - jobStartTime));
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			LOGGER.info("Exception occurred ", e);
 			CommonCommandUtil.emailException("ScheduledFormulaCalculatorJobENPI", "EnPI Calculation job failed for orgid : "+jc.getOrgId(), e);
 		}
@@ -142,9 +146,15 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 	}
 	
 	private boolean isCalculatable(FormulaFieldContext formula, List<Long> calculatedFieldIds) throws Exception {
+		if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 405) {
+			LOGGER.info("formula isCalculatable : " + formula + " , depented fields : " + formula.getWorkflow().getDependentFields());
+		}
 		if (formula.getWorkflow().getDependentFields() != null && !formula.getWorkflow().getDependentFields().isEmpty()) {
 			for(FacilioField field : formula.getWorkflow().getDependentFields()) {
 				if (field.getModule().getTypeEnum() == ModuleType.SCHEDULED_FORMULA && !calculatedFieldIds.contains(field.getFieldId())) {
+					if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 405) {
+						LOGGER.info("isCalculatable is false " + formula.getName() + ", field ids : " + calculatedFieldIds);
+					}
 					return false;
 				}
 			}
