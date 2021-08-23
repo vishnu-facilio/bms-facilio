@@ -67,6 +67,8 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /awsprops-ff-scheduler.properties
     destination: /home/facilio/deployment-files/
+    - source: /awsprops-ff-kafka.properties
+    destination: /home/facilio/deployment-files/
   - source: /awsprops-ff-user.properties
     destination: /home/facilio/deployment-files/
   - source: /executors-org.xml
