@@ -1049,10 +1049,10 @@ public class WorkflowRuleAPI {
 		boolean result = fieldChangeFlag && miscFlag && criteriaFlag && workflowFlag && siteId ;
 
 		LOGGER.debug("Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag);
-		if(record != null) {
-			LOGGER.debug("CSUFanfailure Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag+
-						" \n ResourceId: " +((ReadingContext) record).getParentId()+ " \n Ttime: " + ((ReadingContext) record).getTtime() +" \n ModuleId: " + ((ReadingContext) record).getModuleId());
-		}
+//		if(record != null) {
+//			LOGGER.debug("CSUFanfailure Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag+
+//						" \n ResourceId: " +((ReadingContext) record).getParentId()+ " \n Ttime: " + ((ReadingContext) record).getTtime() +" \n ModuleId: " + ((ReadingContext) record).getModuleId());
+//		}
 		long actionExecutionStartTime = System.currentTimeMillis();
 		if (shouldExecute) {
 			if(result) {
