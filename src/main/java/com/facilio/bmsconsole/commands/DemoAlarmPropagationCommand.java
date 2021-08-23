@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.taskengine.common.JobConstants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -43,6 +44,8 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
+
+import static com.facilio.taskengine.common.JobConstants.LOGGER_LEVEL;
 
 public class DemoAlarmPropagationCommand extends FacilioCommand {
 	
@@ -112,6 +115,7 @@ public class DemoAlarmPropagationCommand extends FacilioCommand {
 				loggerInfo.put("resource", resourceIds);
 				loggerInfo.put("skipLoggerUpdate", true);
 				runThroughRuleChainContext.put(FacilioConstants.ContextNames.HISTORICAL_RULE_LOGGER_PROPS, loggerInfo);
+				runThroughRuleChainContext.put(JobConstants.LOGGER_LEVEL, context.getOrDefault(LOGGER_LEVEL, -1));
 				FacilioChain runThroughRuleChain = TransactionChainFactory.runThroughHistoricalRuleChain();
 				runThroughRuleChain.execute(runThroughRuleChainContext);
 				LOGGER.info("Daily Demo Historical rule evaluation has been started for the given rule " +ruleId+ " with resourceIds: "+resourceIds);
