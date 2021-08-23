@@ -22,6 +22,11 @@ public class StateflowTransitionContext extends AbstractStateTransitionRuleConte
 	}
 
 	@Override
+	public String getSuggestedFormName() {
+		return "__state_transition_" + getId();
+	}
+
+	@Override
 	protected void executeTrue(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
 		ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
 

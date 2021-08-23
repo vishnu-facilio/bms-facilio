@@ -44,6 +44,14 @@ public class ApprovalRuleMetaContext implements Serializable {
         this.criteria = criteria;
     }
 
+    private boolean shouldFormInterfaceApply = true;
+    public boolean isShouldFormInterfaceApply() {
+        return shouldFormInterfaceApply;
+    }
+    public void setShouldFormInterfaceApply(boolean shouldFormInterfaceApply) {
+        this.shouldFormInterfaceApply = shouldFormInterfaceApply;
+    }
+
     private EventType eventType;
     public long getEventType() {
         if (eventType != null) {
@@ -176,10 +184,21 @@ public class ApprovalRuleMetaContext implements Serializable {
         this.approvalDialogType = AbstractStateTransitionRuleContext.DialogType.valueOf(approvalDialogTypeInt);
     }
 
+    private long approvalFormId = -1;
+    public long getApprovalFormId() {
+        return approvalFormId;
+    }
+    public void setApprovalFormId(long approvalFormId) {
+        this.approvalFormId = approvalFormId;
+    }
+
+    @Deprecated
     private FacilioForm approvalForm;
+    @Deprecated
     public FacilioForm getApprovalForm() {
         return approvalForm;
     }
+    @Deprecated
     public void setApprovalForm(FacilioForm approvalForm) {
         this.approvalForm = approvalForm;
     }
@@ -200,10 +219,22 @@ public class ApprovalRuleMetaContext implements Serializable {
     public void setRejectDialogType(int approvalDialogTypeInt) {
         this.rejectDialogType = AbstractStateTransitionRuleContext.DialogType.valueOf(approvalDialogTypeInt);
     }
+
+    private long rejectFormId = -1;
+    public long getRejectFormId() {
+        return rejectFormId;
+    }
+    public void setRejectFormId(long rejectFormId) {
+        this.rejectFormId = rejectFormId;
+    }
+
+    @Deprecated
     private FacilioForm rejectForm;
+    @Deprecated
     public FacilioForm getRejectForm() {
         return rejectForm;
     }
+    @Deprecated
     public void setRejectForm(FacilioForm rejectForm) {
         this.rejectForm = rejectForm;
     }

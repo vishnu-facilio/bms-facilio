@@ -630,6 +630,28 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 	}
 
 	public static void addOrUpdateFormDetails(FormInterface rule) throws Exception {
+		if (!rule.shouldFormInterfaceApply()) {
+			String suggestedFormName = rule.getSuggestedFormName();
+			if (rule.getFormId() > 0 && StringUtils.isNotEmpty(suggestedFormName)) {
+				long ruleModuleId = rule.getModuleId();
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule ruleModule = modBean.getModule(ruleModuleId);
+				if (ruleModule == null) {
+					throw new IllegalArgumentException("Invalid module");
+				}
+				FacilioForm formFromDB = FormsAPI.getFormFromDB(suggestedFormName, ruleModule);
+				if (formFromDB != null && formFromDB.getId() != rule.getFormId()) {	// delete only if these are different forms
+					FormsAPI.deleteForms(Collections.singletonList(formFromDB.getId()));
+				}
+
+				FacilioForm form = FormsAPI.getFormFromDB(rule.getFormId());
+				if (form != null && !suggestedFormName.equals(form.getName())) {
+					FormsAPI.updateFormName(rule.getFormId(), suggestedFormName);
+				}
+			}
+			return;
+		}
+
 		FacilioForm form = rule.getForm();
 
 		String formName = "Enter Details" + "_" + rule.getId();

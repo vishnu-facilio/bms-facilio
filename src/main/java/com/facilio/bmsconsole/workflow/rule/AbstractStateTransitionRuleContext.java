@@ -64,6 +64,15 @@ public abstract class AbstractStateTransitionRuleContext extends ApproverWorkflo
         this.formId = formId;
     }
 
+    private boolean shouldFormInterfaceApply = true;
+    public void setShouldFormInterfaceApply(boolean shouldFormInterfaceApply) {
+        this.shouldFormInterfaceApply = shouldFormInterfaceApply;
+    }
+    @Override
+    public boolean shouldFormInterfaceApply() {
+        return shouldFormInterfaceApply;
+    }
+
     private String formModuleName;
     public String getFormModuleName() {
         return formModuleName;
