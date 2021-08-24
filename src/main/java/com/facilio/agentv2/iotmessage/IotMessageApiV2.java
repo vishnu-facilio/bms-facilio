@@ -341,11 +341,20 @@ public class IotMessageApiV2 {
         LOGGER.info(FacilioProperties.getIotEndPoint() +" " + client+"-facilio" + " " + topic + " " + object);
         AWSIotMqttClient mqttClient = new AWSIotMqttClient(FacilioProperties.getIotEndPoint(), client+"-facilio", FacilioProperties.getIotUser(), FacilioProperties.getIotPassword());
         try {
-            mqttClient.connect();
+            if (AccountUtil.getCurrentOrg().getOrgId() == 486) {
+                if (mqttClient.getConnectionStatus() != AWSIotConnectionStatus.CONNECTED) {
+                    mqttClient.connect();
+                }
+            } else {
+                mqttClient.connect();
+            }
+            LOGGER.info("Connected successfully");
             if(mqttClient.getConnectionStatus() == AWSIotConnectionStatus.CONNECTED) {
+                LOGGER.info("Publishing message");
                 mqttClient.publish(new AWSIotMessage(topic, AWSIotQos.QOS0, object.toJSONString()));
             }
         } catch (AWSIotException e) {
+            LOGGER.error("Excetion message : " + e.getMessage() + " : " + e.getErrorCode());
             LOGGER.error("Exception while publishing message ", e);
             throw e;
         } finally {
