@@ -27,6 +27,7 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
     private KafkaConsumer<String, String> consumer;
     private TopicPartition topicPartition = null;
     private JSONParser parser = new JSONParser();
+    private boolean isAuthCheckEnabled = false; 
     private static final Logger LOGGER = LogManager.getLogger(FacilioKafkaConsumer.class.getName());
 
     public FacilioKafkaConsumer(String client, String consumerGroup, String topic, int partition) {
@@ -50,6 +51,7 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
         props.put("max.poll.interval.ms",3000000);
         props.put("max.poll.records", 10);
         KafkaUtil.setKafkaAuthProps(props);
+        isAuthCheckEnabled = FacilioProperties.getKafkaAuthMode().equalsIgnoreCase("sasl_ssl");        
         return props;
     }
 
@@ -65,7 +67,7 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
                 StringReader reader = new StringReader(record.value());
                 JSONObject object = null;
                 JSONObject data = null;
-                if (FacilioProperties.getKafkaAuthMode().equalsIgnoreCase("sasl_ssl")) {
+                if (isAuthCheckEnabled) {
                 	data = (JSONObject) parser.parse(reader);
                 } else {
                     object = (JSONObject) parser.parse(reader);
