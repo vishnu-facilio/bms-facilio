@@ -46,7 +46,7 @@ public class HistoricalRuleEventRunCommand extends FacilioCommand implements Pos
 	private Context context;
 	@Override
 	public boolean executeCommand(Context jobContext) throws Exception {
-		this.context = context;
+		this.context = jobContext;
 	try {
 		long jobStartTime = System.currentTimeMillis();
 		jobId = (long) jobContext.get(FacilioConstants.ContextNames.HISTORICAL_EVENT_RULE_JOB_ID);
