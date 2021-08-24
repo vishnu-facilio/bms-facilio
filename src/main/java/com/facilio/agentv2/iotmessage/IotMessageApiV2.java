@@ -342,6 +342,7 @@ public class IotMessageApiV2 {
         AWSIotMqttClient mqttClient = new AWSIotMqttClient(FacilioProperties.getIotEndPoint(), client+"-facilio", FacilioProperties.getIotUser(), FacilioProperties.getIotPassword());
         try {
             if (AccountUtil.getCurrentOrg().getOrgId() == 486) {
+                LOGGER.info("Connections status " + mqttClient.getConnectionStatus().name());
                 if (mqttClient.getConnectionStatus() != AWSIotConnectionStatus.CONNECTED) {
                     mqttClient.connect();
                 }
