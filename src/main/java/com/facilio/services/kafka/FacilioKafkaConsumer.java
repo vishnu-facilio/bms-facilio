@@ -63,12 +63,18 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(timeout));
             for (ConsumerRecord<String, String> record : records) {
                 StringReader reader = new StringReader(record.value());
-                JSONObject object = (JSONObject) parser.parse(reader);
-                JSONObject data = (JSONObject) parser.parse((String)object.get("data"));
+                JSONObject object = null;
+                JSONObject data = null;
+                if (FacilioProperties.getKafkaAuthMode().equalsIgnoreCase("sasl_ssl")) {
+                	data = (JSONObject) parser.parse(reader);
+                } else {
+                    object = (JSONObject) parser.parse(reader);
+                    data = (JSONObject) parser.parse((String)object.get("data"));
+                }
                 FacilioRecord facilioRecord = new FacilioRecord(record.key(), data);
                 facilioRecord.setId(record.offset());
                 try {
-                    if(object.containsKey("timestamp")) {
+                    if(object != null && object.containsKey("timestamp")) {
                         Long timestamp = Long.parseLong(object.get("timestamp").toString());
                         facilioRecord.setTimeStamp(timestamp);
                     } else {
