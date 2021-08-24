@@ -58,7 +58,7 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 				FacilioForm subForm = section.getSubForm();
 				handleFields(subForm.getModule(), subForm);
 			}
-			else {
+			else if (section.getFields() != null) {
 				for(FormField field: section.getFields()) {
 					if (formSourceType == FormSourceType.FROM_BULK_FORM) {
 						field.setValue(null);
