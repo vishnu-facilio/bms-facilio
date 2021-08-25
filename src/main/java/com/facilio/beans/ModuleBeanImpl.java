@@ -1358,7 +1358,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		int i = 1;
 		int maxIndex = 1;
 		for (EnumFieldValue<Integer> enumVal : field.getValues()) {
-			if (enumVal.getIndex() != -1 && enumVal.getIndex() > maxIndex) {
+			if (enumVal.getIndex() != null && enumVal.getIndex() > maxIndex) {
 				maxIndex = enumVal.getIndex();
 			}
 			enumVal.setSequence(i++);
