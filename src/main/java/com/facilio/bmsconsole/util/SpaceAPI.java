@@ -2052,7 +2052,7 @@ public static List<Map<String,Object>> getBuildingArea(String buildingList) thro
 			}
 			parentAvailable = true;
 		}
-		if (!parentAvailable) {
+		if (!parentAvailable && space.getSiteId() == -1) {
 			throw new IllegalArgumentException("Parent Space not available. Please select parent space");
 		}
 	}
