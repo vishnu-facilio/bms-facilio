@@ -47,3 +47,9 @@ translation:
 
   - prefix: dashboard
     suffix: [displayName]
+
+  - prefix: reportFolder
+    suffix: [displayName]
+
+  - prefix: report
+    suffix: [displayName]

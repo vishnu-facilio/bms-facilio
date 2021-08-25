@@ -39,6 +39,20 @@ public class CustomButtonRuleContext extends ApproverWorkflowRuleContext impleme
         this.formId = formId;
     }
 
+    private boolean shouldFormInterfaceApply = true;
+    public void setShouldFormInterfaceApply(boolean shouldFormInterfaceApply) {
+        this.shouldFormInterfaceApply = shouldFormInterfaceApply;
+    }
+    @Override
+    public boolean shouldFormInterfaceApply() {
+        return shouldFormInterfaceApply;
+    }
+
+    @Override
+    public String getSuggestedFormName() {
+        return "__custom_button_" + getId();
+    }
+
     private String formModuleName;
     public String getFormModuleName() {
         return formModuleName;

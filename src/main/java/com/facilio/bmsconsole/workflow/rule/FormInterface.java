@@ -13,4 +13,7 @@ public interface FormInterface {
     long getId();
 
     long getModuleId() throws Exception;
+
+    boolean shouldFormInterfaceApply(); // temp fix
+    String getSuggestedFormName();
 }

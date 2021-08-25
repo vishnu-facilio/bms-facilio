@@ -37,17 +37,17 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class SpaceAPI {
-	
-	private static Logger logger = Logger.getLogger(SpaceAPI.class.getName());
-	
+
+	private static Logger LOGGER = Logger.getLogger(SpaceAPI.class.getName());
+
 	public static List<PhotosContext> getBaseSpacePhotos(Long baseSpaceId) throws Exception {
-		
+
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
+
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE_PHOTOS);
-		
+
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE_PHOTOS);
-		
+
 		SelectRecordsBuilder<PhotosContext> builder = new SelectRecordsBuilder<PhotosContext>()
 				.select(fields)
 				.table(module.getTableName())
@@ -55,23 +55,22 @@ public class SpaceAPI {
 				.beanClass(PhotosContext.class)
 				.module(module)
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getCondition(module.getTableName()+".PARENT_SPACE", "basespaceId", baseSpaceId+"", NumberOperators.EQUALS));
-		
+				.andCondition(CriteriaAPI.getCondition(module.getTableName() + ".PARENT_SPACE", "basespaceId", baseSpaceId + "", NumberOperators.EQUALS));
+
 		List<PhotosContext> photos = builder.get();
-		
+
 		return photos;
 	}
-	
-	public static double computeTenantZoneArea(long zoneId) throws Exception{
+
+	public static double computeTenantZoneArea(long zoneId) throws Exception {
 		List<Long> ids = new ArrayList<Long>();
 		ids.add(zoneId);
 		double area = 0.0;
 		List<BaseSpaceContext> children = SpaceAPI.getZoneChildren(ids);
-		for(int i=0;i<children.size();i++)
-		{
+		for (int i = 0; i < children.size(); i++) {
 			area += children.get(i).getArea();
 		}
-	
+
 		return area;
 	}
 	

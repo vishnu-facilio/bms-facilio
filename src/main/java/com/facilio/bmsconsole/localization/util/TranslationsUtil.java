@@ -23,7 +23,7 @@ public class TranslationsUtil {
 
     private static final String TRANSLATION_VALIDATION_FILE = "conf/translationvalidation.yml";
     private static final Map<String, TranslationConfFile> TRANSLATION_CONF_FILE_MAP = Collections.unmodifiableMap(initTranslationConfFile());
-    public static final Map<String,String> COLUMN_VS_TRANSLATION_TYPE = getColumnVsType();
+    public static final Map<String,Map<String, String>> COLUMN_VS_TRANSLATION_TYPE = getColumnVsType();
 
     @SneakyThrows
     private static Map<String, TranslationConfFile> initTranslationConfFile () {
@@ -86,19 +86,29 @@ public class TranslationsUtil {
         return jsonObject;
     }
 
-    private static Map<String, String> getColumnVsType () {
-        Map<String, String> columnVsType = new HashMap<>();
-        columnVsType.put("VIEWS","VIEWS");
-        columnVsType.put("VIEW_FOLDER","VIEW FOLDER");
-        columnVsType.put("FORMS","FORMS");
-        columnVsType.put("FIELDS","FIELDS");
-        columnVsType.put("STATES","STATES");
-        columnVsType.put("STATE_TRANSITION","STATE TRANSITION");
-        columnVsType.put("BUTTONS","BUTTONS");
-        columnVsType.put("DETAILS","DETAILS");
-        columnVsType.put("FIELD_OPTIONS","FIELD OPTIONS");
-        columnVsType.put("DASHBOARD_FOLDER","DASHBOARD FOLDER");
-        columnVsType.put("DASHBOARD","DASHBOARD & WIDGETS");
+    private static Map<String, Map<String, String>> getColumnVsType () {
+        Map<String, Map<String, String>> columnVsType = new HashMap<>();
+        Map<String, String> moduleTab = new HashMap<>();
+        moduleTab.put("VIEWS","VIEWS");
+        moduleTab.put("VIEW_FOLDER","VIEW FOLDER");
+        moduleTab.put("FORMS","FORMS");
+        moduleTab.put("FIELDS","FIELDS");
+        moduleTab.put("STATES","STATES");
+        moduleTab.put("STATE_TRANSITION","STATE TRANSITION");
+        moduleTab.put("BUTTONS","BUTTONS");
+        moduleTab.put("DETAILS","DETAILS");
+        columnVsType.put("moduleTab",moduleTab);
+
+        Map<String, String> dashboardTab = new HashMap<>();
+        dashboardTab.put("DASHBOARD_FOLDER","DASHBOARD FOLDER");
+        dashboardTab.put("DASHBOARD","DASHBOARD & WIDGETS");
+        columnVsType.put("dashboardTab",dashboardTab);
+
+        Map<String, String> reportTab = new HashMap<>();
+        reportTab.put("REPORT_FOLDER","REPORT FOLDER");
+        reportTab.put("REPORT","REPORT");
+        columnVsType.put("reportTab",reportTab);
+
         return columnVsType;
     }
 }

@@ -468,6 +468,7 @@
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="getStateFlowList" >
+			<param name="translationImpl">StateFlowListTranslation</param>
 			<param name="moduleName">setup</param>
 			<param name="permission">STATEFLOWS</param>
 			<param name="isNewPermission">true</param>
@@ -2508,6 +2509,7 @@
 		<action name="fetchReportFolders"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="fetchReportFolders">
+			<param name="translationImpl">ReportFolderTranslationV2</param>
 		</action>
 		<action name="fetchAllCustomModuleReportFolders"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
