@@ -1,6 +1,7 @@
 package com.facilio.workflowv2.Visitor;
 
 import java.lang.reflect.Method;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import lombok.extern.log4j.Log4j;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -55,9 +57,8 @@ import com.facilio.workflowv2.util.WorkflowV2TypeUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 import com.facilio.xml.builder.XMLBuilder;
 
+@Log4j
 public class WorkflowFunctionVisitor extends CommonParser<Value> {
-	
-	private static final Logger LOGGER = Logger.getLogger(WorkflowFunctionVisitor.class.getName());
 
     private Map<String, Value> varMemoryMap = new HashMap<String, Value>();
     
@@ -936,9 +937,9 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
     public Value visitLog(WorkflowV2Parser.LogContext ctx) {
         Value value = this.visit(ctx.expr());
         workflowContext.getLogStringBuilder().append(value.asString()+"\n");
-        LOGGER.log(Level.INFO, workflowContext.getId()+" - "+value.asString());
+        LOGGER.debug(MessageFormat.format("{0} - {1}", workflowContext.getId(), value.asString()));
         
-        System.out.println(workflowContext.getId()+" - "+value.asString());
+//        System.out.println(workflowContext.getId()+" - "+value.asString());
         return value;
     }
     
