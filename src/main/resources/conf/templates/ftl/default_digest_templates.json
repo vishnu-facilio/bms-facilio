@@ -1,7 +1,7 @@
 {
 "1": {
 	"name": "DAILY_MAINTENANCE_MAIL",
-	"sender": "report@${org.domain}.{org.emailDomain}",
+	"sender": "report@${org.domain}.${org.emailDomain}",
 	"subject": "Daily Maintenance",
 	"to": "",
 	"message_ftl": "dailyMaintenance"
