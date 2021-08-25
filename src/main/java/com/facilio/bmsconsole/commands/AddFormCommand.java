@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -16,6 +15,7 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormField.Required;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.util.FormsAPI;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -73,7 +73,9 @@ public class AddFormCommand extends FacilioCommand {
 			// For modules having no default form in form factory
 			else {
 				FormSection section = new FormSection();
-				section.addField(FormsAPI.getFormFieldFromFacilioField(modBean.getPrimaryField(moduleName), 1));
+				FormField primaryField = FormsAPI.getFormFieldFromFacilioField(modBean.getPrimaryField(moduleName), 1);
+				primaryField.setRequired(true);
+				section.addField(primaryField);
 				if (FieldUtil.isSiteIdFieldPresent(module)) {
 					section.addField(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 2, 1));
 				}
