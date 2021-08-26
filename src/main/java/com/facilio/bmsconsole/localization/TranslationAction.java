@@ -43,7 +43,7 @@ public class TranslationAction extends FacilioAction {
     private long tabId = -1L;
     private long applicationId = -1L;
     private String translationType;
-
+    private String queryString;
 
     public String addLanguage () throws Exception {
         addNewLanguage();
@@ -52,14 +52,13 @@ public class TranslationAction extends FacilioAction {
 
     public String getTranslationFields () throws Exception {
 
-        String param = ServletActionContext.getRequest().getParameter("queryString");
         FacilioChain chain = ReadOnlyChainFactory.getTranslationFields();
         FacilioContext context = chain.getContext();
 
         context.put(TranslationConstants.LANG_CODE,getLangCode());
         context.put(TranslationConstants.TAB_ID,getTabId());
         context.put(TranslationConstants.TRANSLATION_TYPE,getTranslationType());
-        context.put(TranslationConstants.QUERY_STRING,param);
+        context.put(TranslationConstants.QUERY_STRING,getQueryString());
         chain.execute();
 
         setResult("sections",context.get(TranslationConstants.TRANSLATION_FIELDS));
