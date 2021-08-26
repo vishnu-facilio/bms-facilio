@@ -57,7 +57,6 @@ public class TenantUnitSpacePageFactory extends PageFactory {
         if(AccountUtil.getCurrentOrg().getOrgId() == 418l && AccountUtil.getCurrentApp() != null && !AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
             excludedModules.add("custom_vendormapping");
             excludedModules.add("custom_retailoperationassignment");
-            excludedModules.add("asset");
         }
 
         addRelatedListWidgets(tab2Sec1, module.getModuleId(), excludedModules, false);
