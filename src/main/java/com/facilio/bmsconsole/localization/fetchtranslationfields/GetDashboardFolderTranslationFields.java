@@ -16,11 +16,12 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 public class GetDashboardFolderTranslationFields implements TranslationTypeInterface {
     @Override
-    public JSONArray constructTranslationObject ( @NonNull WebTabContext context,String queryString,Properties properties ) throws Exception {
+    public JSONArray constructTranslationObject ( @NonNull WebTabContext context,Map<String,String> filters,Properties properties ) throws Exception {
 
         FacilioUtil.throwIllegalArgumentException(!WebTabContext.Type.DASHBOARD.equals(WebTabContext.Type.valueOf(context.getType())),"Invalid webTab Type for fetching Dashboard Fields");
 

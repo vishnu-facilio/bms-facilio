@@ -23,22 +23,19 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 public class GetStateTransitionTranslationFields implements TranslationTypeInterface {
     @Override
-    public JSONArray constructTranslationObject ( @NonNull WebTabContext context,String queryString,Properties properties ) throws Exception {
+    public JSONArray constructTranslationObject ( @NonNull WebTabContext context,Map<String,String> filters,Properties properties ) throws Exception {
 
         FacilioUtil.throwIllegalArgumentException(!WebTabContext.Type.MODULE.equals(WebTabContext.Type.valueOf(context.getType())),"Invalid webTab Type for fetch Module Fields");
-        FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(queryString),"stateFlow ID is mandatory");
+        FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(filters.get("stateFlowId")),"stateFlow ID is mandatory");
 
         JSONArray jsonArray = new JSONArray();
 
-        long stateFlowId = Long.parseLong(queryString);
-
-        if(stateFlowId < 0){
-            FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(queryString),"Invalid stateFlow ID");
-        }
+        long stateFlowId = Long.parseLong(filters.get("stateFlowId"));
 
         FacilioChain stateTransitionChain = ReadOnlyChainFactory.getStateTransitionList();
         FacilioContext stateTransitionChainContext = stateTransitionChain.getContext();

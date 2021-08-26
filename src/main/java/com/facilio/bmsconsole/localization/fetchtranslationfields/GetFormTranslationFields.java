@@ -23,19 +23,20 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 public class GetFormTranslationFields implements TranslationTypeInterface {
     @Override
-    public JSONArray constructTranslationObject ( @NonNull WebTabContext webTabContext,String queryString,Properties properties ) throws Exception {
+    public JSONArray constructTranslationObject ( @NonNull WebTabContext webTabContext,Map<String,String> filters,Properties properties ) throws Exception {
 
         FacilioUtil.throwIllegalArgumentException(!WebTabContext.Type.MODULE.equals(WebTabContext.Type.valueOf(webTabContext.getType())),"Invalid webTab Type for fetch Module Fields");
-        FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(queryString),"Form id is mandatory param for fetching form fields");
+        FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(filters.get("formId")),"Form id is mandatory param for fetching form fields");
 
         JSONArray jsonArray = new JSONArray();
         ModuleBean moduleBean = (ModuleBean)BeanFactory.lookup("ModuleBean");
         List<Long> moduleIds = webTabContext.getModuleIds();
-        long formId = Long.parseLong(queryString);
+        long formId = Long.parseLong(filters.get("formId"));
 
         if(CollectionUtils.isNotEmpty(moduleIds)) {
             for (long moduleId : moduleIds) {

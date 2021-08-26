@@ -27,8 +27,6 @@ import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -43,7 +41,9 @@ public class TranslationAction extends FacilioAction {
     private long tabId = -1L;
     private long applicationId = -1L;
     private String translationType;
-    private String queryString;
+    private Map<String,String> filter;
+
+
 
     public String addLanguage () throws Exception {
         addNewLanguage();
@@ -58,7 +58,7 @@ public class TranslationAction extends FacilioAction {
         context.put(TranslationConstants.LANG_CODE,getLangCode());
         context.put(TranslationConstants.TAB_ID,getTabId());
         context.put(TranslationConstants.TRANSLATION_TYPE,getTranslationType());
-        context.put(TranslationConstants.QUERY_STRING,getQueryString());
+        context.put(TranslationConstants.FILTERS,getFilter());
         chain.execute();
 
         setResult("sections",context.get(TranslationConstants.TRANSLATION_FIELDS));
