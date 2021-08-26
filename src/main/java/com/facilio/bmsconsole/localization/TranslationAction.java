@@ -121,7 +121,13 @@ public class TranslationAction extends FacilioAction {
                         for (WebTabContext webTab : webtabGroup.getWebTabs()) {
                             switch (webTab.getTypeEnum()) {
                                 case MODULE:
-                                    webTab.setTypeVsColumns(TranslationsUtil.COLUMN_VS_TRANSLATION_TYPE);
+                                    webTab.setTypeVsColumns(TranslationsUtil.COLUMN_VS_TRANSLATION_TYPE.get("moduleTab"));
+                                    break;
+                                case DASHBOARD:
+                                    webTab.setTypeVsColumns(TranslationsUtil.COLUMN_VS_TRANSLATION_TYPE.get("dashboardTab"));
+                                    break;
+                                case REPORT:
+                                    webTab.setTypeVsColumns(TranslationsUtil.COLUMN_VS_TRANSLATION_TYPE.get("reportTab"));
                                     break;
                             }
 
