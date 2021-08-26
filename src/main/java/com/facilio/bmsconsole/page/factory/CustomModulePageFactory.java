@@ -81,11 +81,16 @@ public class CustomModulePageFactory extends PageFactory {
 			titleMap.put("documents", "Attachment");
 		}
 
+		boolean isAtreTenantHideCommentsModules = AccountUtil.getCurrentOrg().getOrgId() == 418l && AccountUtil.getCurrentApp() != null && AccountUtil.getCurrentApp().getLinkName().equals(ApplicationLinkNames.TENANT_PORTAL_APP) && (module.getName().equals("custom_payment") || module.getName().equals("custom_contracts") || module.getName().equals("custom_receipts"));
+
 		//handling notify req for atre custom module - incident management -> temp solution
 		if(module.getName().equals("custom_incidentmanagement_1")) {
 			addCommonSubModuleWidget(tab1Sec1, module, record, titleMap,true);
 		}
-		else {
+		else if(isAtreTenantHideCommentsModules) {
+				PageWidget.WidgetType widgetType = PageWidget.WidgetType.ATTACHMENT;
+				addCommonSubModuleWidget(tab1Sec1, module, record, titleMap,false,widgetType);
+		}else{
 			addCommonSubModuleWidget(tab1Sec1, module, record, titleMap,false);
 		}
 
