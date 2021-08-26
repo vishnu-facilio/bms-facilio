@@ -36,8 +36,7 @@ public class FacilioDCAction extends V3Action {
 			int dc = IAMUserUtil.findDCForUser(userName, groupType);
 			setData("dc", dc);
 		} catch (Exception ex) {
-			LOGGER.error("Exception while findDCForUser ", ex);
-			throw ex;
+			return "invaliduser";
 		}
 
 		return SUCCESS;
