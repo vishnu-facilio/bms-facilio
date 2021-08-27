@@ -524,6 +524,7 @@ public class FieldUtil {
 		if(module.getName().equals(FacilioConstants.ContextNames.ATTENDANCE)){
 			return false;
 		}
+
 		// custom modules will have system fields by default
 		if (module.isCustom()
 				|| module.getTypeEnum() == FacilioModule.ModuleType.ENUM_REL_MODULE
@@ -533,8 +534,29 @@ public class FieldUtil {
 			return true;
 		}
 
+		if(!FacilioProperties.isProduction() && SYSTEM_FIELDS_MIGRATED_MODULES.contains(module.getName())){
+			return false;
+		}
+
 		return SYSTEM_FIELDS_ALLOWED_MODULES.contains(module.getName());
 	}
+
+	private static final Set<String> SYSTEM_FIELDS_MIGRATED_MODULES = Collections.unmodifiableSet(
+			new HashSet<>(Arrays.asList(
+					FacilioConstants.ContextNames.ATTENDANCE,
+					FacilioConstants.ContextNames.ASSET_ACTIVITY,
+					FacilioConstants.ContextNames.WORKORDER_ACTIVITY,
+					FacilioConstants.ContextNames.ITEM_ACTIVITY,
+					FacilioConstants.ContextNames.PURCHASE_ORDER,
+					FacilioConstants.ContextNames.PURCHASE_REQUEST,
+					FacilioConstants.ContextNames.RECEIVABLE,
+					FacilioConstants.ContextNames.RECEIPTS,
+					FacilioConstants.ContextNames.CONTRACTS,
+					FacilioConstants.ContextNames.GATE_PASS,
+					FacilioConstants.ContextNames.SHIPMENT,
+					FacilioConstants.ContextNames.INVENTORY_REQUEST
+			))
+	);
 
 	public static boolean isBaseEntityRootModule (FacilioModule module) {
 		return (module.getTypeEnum() == FacilioModule.ModuleType.BASE_ENTITY && module.getExtendModule() == null);

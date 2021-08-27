@@ -20,11 +20,12 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 public class GetFieldTranslationFileds implements TranslationTypeInterface {
     @Override
-    public JSONArray constructTranslationObject ( @NonNull WebTabContext webTabContext,String queryString,Properties properties ) throws Exception {
+    public JSONArray constructTranslationObject ( @NonNull WebTabContext webTabContext,Map<String,String> filters,Properties properties ) throws Exception {
 
         FacilioUtil.throwIllegalArgumentException(!WebTabContext.Type.MODULE.equals(WebTabContext.Type.valueOf(webTabContext.getType())),"Invalid webTab Type for fetch Module Fields");
 

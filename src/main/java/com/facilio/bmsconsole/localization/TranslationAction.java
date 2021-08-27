@@ -27,8 +27,6 @@ import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -43,6 +41,8 @@ public class TranslationAction extends FacilioAction {
     private long tabId = -1L;
     private long applicationId = -1L;
     private String translationType;
+    private Map<String,String> filter;
+
 
 
     public String addLanguage () throws Exception {
@@ -52,14 +52,13 @@ public class TranslationAction extends FacilioAction {
 
     public String getTranslationFields () throws Exception {
 
-        String param = ServletActionContext.getRequest().getParameter("queryString");
         FacilioChain chain = ReadOnlyChainFactory.getTranslationFields();
         FacilioContext context = chain.getContext();
 
         context.put(TranslationConstants.LANG_CODE,getLangCode());
         context.put(TranslationConstants.TAB_ID,getTabId());
         context.put(TranslationConstants.TRANSLATION_TYPE,getTranslationType());
-        context.put(TranslationConstants.QUERY_STRING,param);
+        context.put(TranslationConstants.FILTERS,getFilter());
         chain.execute();
 
         setResult("sections",context.get(TranslationConstants.TRANSLATION_FIELDS));
@@ -122,7 +121,13 @@ public class TranslationAction extends FacilioAction {
                         for (WebTabContext webTab : webtabGroup.getWebTabs()) {
                             switch (webTab.getTypeEnum()) {
                                 case MODULE:
-                                    webTab.setTypeVsColumns(TranslationsUtil.COLUMN_VS_TRANSLATION_TYPE);
+                                    webTab.setTypeVsColumns(TranslationsUtil.COLUMN_VS_TRANSLATION_TYPE.get("moduleTab"));
+                                    break;
+                                case DASHBOARD:
+                                    webTab.setTypeVsColumns(TranslationsUtil.COLUMN_VS_TRANSLATION_TYPE.get("dashboardTab"));
+                                    break;
+                                case REPORT:
+                                    webTab.setTypeVsColumns(TranslationsUtil.COLUMN_VS_TRANSLATION_TYPE.get("reportTab"));
                                     break;
                             }
 

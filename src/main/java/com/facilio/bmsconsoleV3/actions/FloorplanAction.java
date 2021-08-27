@@ -127,11 +127,7 @@ public class FloorplanAction extends V3Action {
 		
 		chain.execute();
 		
-		setData(FacilioConstants.ContextNames.EMPLOYEE, context.get(FacilioConstants.ContextNames.EMPLOYEE));
-		setData(FacilioConstants.ContextNames.Floorplan.DESKS, context.get(FacilioConstants.ContextNames.Floorplan.DESKS));
-		setData(FacilioConstants.ContextNames.SPACE, context.get(FacilioConstants.ContextNames.SPACE));
-		setData(FacilioConstants.ContextNames.LOCKERS, context.get(FacilioConstants.ContextNames.LOCKERS));
-		setData(FacilioConstants.ContextNames.PARKING_STALL, context.get(FacilioConstants.ContextNames.PARKING_STALL));
+		setData(FacilioConstants.ContextNames.RECORD_LIST, context.get(FacilioConstants.ContextNames.RECORD_LIST));
 		return SUCCESS;
 	}
 }

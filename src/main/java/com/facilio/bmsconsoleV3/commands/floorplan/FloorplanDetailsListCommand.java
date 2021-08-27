@@ -39,6 +39,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.v3.V3Builder.V3Config;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -55,6 +57,7 @@ public class FloorplanDetailsListCommand extends FacilioCommand {
 		long floorId =  (long) context.get(FacilioConstants.ContextNames.FLOOR);
 		long floorplanId =  (long) context.get(FacilioConstants.ContextNames.FLOOR_PLAN_ID);
 		Criteria filterCriteria = (Criteria) context.get(Constants.FILTER_CRITERIA);
+		List<JSONObject> moduleDataList = new ArrayList<>();
 		List<String> modules = new ArrayList<>();
 		ModuleBean modBean = (ModuleBean)BeanFactory.lookup("ModuleBean");
 		if(moduleName != null && StringUtils.isNotEmpty((String) moduleName)) {
@@ -193,9 +196,18 @@ public class FloorplanDetailsListCommand extends FacilioCommand {
 
 	        selectRecordsBuilder.select(modBean.getAllFields(module));
 	        List<? extends ModuleBaseWithCustomFields> records = selectRecordsBuilder.get();
-	        context.put(module, records);
-			
+
+	        if(records != null && CollectionUtils.isNotEmpty(records)) {
+		        JSONObject moduleDataObj = new JSONObject();
+		        moduleDataObj.put("name", moduleObj.getName());
+		        moduleDataObj.put("displayName", moduleObj.getDisplayName());
+		        moduleDataObj.put(FacilioConstants.ContextNames.DATA, records);
+		        moduleDataList.add(moduleDataObj);
+	        }
+	        
 		}
+		
+		context.put(FacilioConstants.ContextNames.RECORD_LIST, moduleDataList);
 
 		return false;
 	}

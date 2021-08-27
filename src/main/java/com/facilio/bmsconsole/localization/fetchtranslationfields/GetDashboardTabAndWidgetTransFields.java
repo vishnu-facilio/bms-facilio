@@ -14,13 +14,14 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 public class GetDashboardTabAndWidgetTransFields implements TranslationTypeInterface {
     @Override
-    public JSONArray constructTranslationObject ( @NonNull WebTabContext context,String queryString,Properties properties ) throws Exception {
+    public JSONArray constructTranslationObject ( @NonNull WebTabContext context,Map<String,String> filters,Properties properties ) throws Exception {
 
-        long dashboardTabId = Long.parseLong(queryString);
+        Long dashboardTabId = Long.parseLong(filters.get("dashboardTabId"));
         DashboardTabContext dashboardTabContexts = DashboardUtil.getDashboardTabWithWidgets(dashboardTabId);
         DashboardContext dashboardContext = DashboardUtil.getDashboard(dashboardTabContexts.getDashboardId());
         JSONArray jsonArray = new JSONArray();

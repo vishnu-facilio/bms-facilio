@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 
 public class FacilityModulesPageFactory extends PageFactory{
@@ -45,8 +46,10 @@ public class FacilityModulesPageFactory extends PageFactory{
         specialAvailabilityWidget.addToLayoutParams(tab1Sec5, 24, 4);
         tab1Sec5.addWidget(specialAvailabilityWidget);
 
-        addCommonSubModuleWidget(tab1Sec5, module, record);
-
+        boolean isAtreTenant = AccountUtil.getCurrentOrg().getOrgId() == 418l && AccountUtil.getCurrentApp() != null && AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+        if(!isAtreTenant) {
+            addCommonSubModuleWidget(tab1Sec5, module, record);
+        }
 
         return page;
     }
