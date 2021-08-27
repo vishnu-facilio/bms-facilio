@@ -38,8 +38,7 @@ public class CalculatePreFormulaCommand extends FacilioCommand {
 		if (readingMap != null && !readingMap.isEmpty()) {
 			long processStarttime = System.currentTimeMillis();
 			Map<String, List<FormulaFieldContext>> formulaMap = FormulaFieldAPI.getActivePreFormulasOfModule(readingMap.keySet());
-			LOGGER.debug("Pre Formulas of modules : "+readingMap.keySet());
-			LOGGER.debug(formulaMap);
+			LOGGER.debug("Pre Formulas of modules : "+readingMap.keySet() +",  formula map : " + formulaMap);
 			if (formulaMap != null && !formulaMap.isEmpty()) {
 				List<Pair<Long, FacilioField>> newRdmPairs = new ArrayList<>();
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

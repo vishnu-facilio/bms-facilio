@@ -38,7 +38,10 @@ public class AddOrUpdateReadingValuesCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		long startTime = System.currentTimeMillis();
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
-
+		if(AccountUtil.getCurrentOrg().getId() == 393){
+			Set modules = readingMap != null ? readingMap.keySet() : null;
+			LOGGER.debug("AddOrUpdateReadingValuesCommand : modules : " + modules);
+		}
 		Boolean updateLastReading = (Boolean) context.get(FacilioConstants.ContextNames.UPDATE_LAST_READINGS);
 		if (updateLastReading == null) {
 			updateLastReading = true;
@@ -56,7 +59,7 @@ public class AddOrUpdateReadingValuesCommand extends FacilioCommand {
 //		if (AccountUtil.getCurrentOrg().getId() == 134) {
 //			LOGGER.info("Adding readings from source : "+sourceType);
 //		}
-		
+		Set modules = null;
 		Map<String, ReadingDataMeta> lastReadingMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
 		if (readingMap != null && !readingMap.isEmpty()) {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -75,9 +78,10 @@ public class AddOrUpdateReadingValuesCommand extends FacilioCommand {
 				addReadings(module, fields, readingsToBeAdded,lastReadingMap, currentReadingMap, updateLastReading);
 			}
 			context.put(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META, currentReadingMap);
+			modules = readingMap.keySet();
 		}
-//		LOGGER.info("Time taken to add/update Readings data to DB : "+(System.currentTimeMillis() - startTime) +", reading map size : " + "reading map : " +readingMap +", last reading map : " + lastReadingMap);
-		LOGGER.info("Time taken to add/update Readings data to DB : "+(System.currentTimeMillis() - startTime));
+		LOGGER.info("Time taken to add/update Readings data to DB : "+(System.currentTimeMillis() - startTime) +", modules : "+modules);
+
 		context.put(FacilioConstants.ContextNames.RECORD_MAP, readingMap);
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		
@@ -136,7 +140,10 @@ public class AddOrUpdateReadingValuesCommand extends FacilioCommand {
 			LOGGER.info("Adding readings : " + readings);
 		}
 		if (AccountUtil.getCurrentOrg().getId() == 405) {
-			LOGGER.info("Adding readings : " + readings);
+			LOGGER.debug("Adding readings : " + readings);
+		}
+		if (AccountUtil.getCurrentOrg().getId() == 393) {
+			LOGGER.debug("Adding readings : " + readings);
 		}
 		InsertRecordBuilder<ReadingContext> readingBuilder = new InsertRecordBuilder<ReadingContext>()
 				.module(module)

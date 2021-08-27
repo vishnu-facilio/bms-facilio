@@ -31,11 +31,14 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class ExecuteValidationRule extends FacilioCommand {
-
+	private static final Logger LOGGER = LogManager.getLogger(CalculatePreFormulaCommand.class.getName());
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
+		long processStarttime = System.currentTimeMillis();
 		Boolean doValidation = (Boolean) context.get(FacilioConstants.ContextNames.DO_VALIDTION);
 		if (doValidation == null || !doValidation) {
 			return false;
@@ -47,6 +50,7 @@ public class ExecuteValidationRule extends FacilioCommand {
 		}
 			
 		fetchAndExecuteRules(recordMap, (FacilioContext) context);
+		LOGGER.info("Time taken for execute validation rule : "+recordMap.keySet()+" is "+(System.currentTimeMillis() - processStarttime));
 		return false;
 	}
 	

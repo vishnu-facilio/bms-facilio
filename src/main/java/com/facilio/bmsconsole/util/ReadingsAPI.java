@@ -822,9 +822,9 @@ public class ReadingsAPI {
 										&& StringUtils.isNotEmpty(meta.getActualValue())
 										&& !"-1".equals(meta.getActualValue())
 										&& timeStamp < lastTimeStamp)) {
-									if (AccountUtil.getCurrentOrg().getId() == 343l || AccountUtil.getCurrentOrg().getId() == 339l) {
-										LOGGER.info("Not updating RDM: time" + timeStamp + ", current: " + currentTime + ", readingId: " + readingId + ", resourceId: "+ resourceId + ", fieldId: " +fieldId+ ", Meta: "+meta);
-									}
+
+										LOGGER.debug("Not updating RDM: time" + timeStamp + ", current: " + currentTime + ", readingId: " + readingId + ", resourceId: "+ resourceId + ", fieldId: " +fieldId+ ", Meta: "+meta);
+
 									continue;
 								}
 							}
