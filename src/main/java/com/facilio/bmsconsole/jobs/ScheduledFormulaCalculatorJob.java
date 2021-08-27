@@ -68,8 +68,8 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 					while (it.hasNext()) {
 						FormulaFieldContext formula = it.next();
 						if(isCalculatable(formula, calculatedFieldIds)) {
-
-							LOGGER.info("Gonna execute scheduled formula : "+formula.getName() + ", Formula matched resources : "+StringUtils.join(formula.getMatchedResourcesIds(), ","));
+							long formulaExecStTime = System.currentTimeMillis();
+							LOGGER.debug("Gonna execute scheduled formula : "+formula.getName() + ", Formula matched resources : "+StringUtils.join(formula.getMatchedResourcesIds(), ","));
 							try {
 								List<ReadingContext> readings = new ArrayList<>();
 								for (Long resourceId : formula.getMatchedResourcesIds()) {
@@ -113,9 +113,8 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 									addReadingChain.execute();
 									
 								}
-								if (AccountUtil.getCurrentOrg().getId() == 286l || AccountUtil.getCurrentOrg().getId() == 405) {
-									LOGGER.info("Readings Added for : "+formula.getName());
-								}
+								LOGGER.debug("Readings Added for : "+formula.getName() + ", time taken : " + (System.currentTimeMillis() - formulaExecStTime));
+
 							}
 							catch (Exception e) {
 								LOGGER.error("Exception occurred: Schedule formula calculator job failed. formula : " + formula , e);
