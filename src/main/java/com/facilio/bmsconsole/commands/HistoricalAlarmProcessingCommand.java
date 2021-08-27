@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -14,6 +15,7 @@ import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.command.PostTransactionCommand;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
@@ -88,11 +90,11 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 			}
 		}
 		
-		catch (Exception historicalAlarmProcessingException) {	
-			exceptionMessage = historicalAlarmProcessingException.getMessage();
-			stack = historicalAlarmProcessingException.getStackTrace();
-			LOGGER.severe("HISTORICAL RULE ALARM PROCESSING JOB COMMAND FAILED, JOB ID -- : "+parentRuleResourceLoggerId+ " parentRuleResourceLoggerContext --: " +parentRuleResourceLoggerContext+ " Exception -- " + exceptionMessage + " StackTrace -- " + String.valueOf(stack));
-			throw historicalAlarmProcessingException;		
+		catch (Exception e) {
+			exceptionMessage = e.getMessage();
+			stack = e.getStackTrace();
+			LOGGER.severe("HISTORICAL RULE ALARM PROCESSING JOB COMMAND FAILED, JOB ID -- : "+parentRuleResourceLoggerId+ " parentRuleResourceLoggerContext --: " +parentRuleResourceLoggerContext+ " Exception -- " + exceptionMessage + " StackTrace -- " + ExceptionUtils.getStackTrace(e));
+			throw e;
 		}
 		return false;
 	}
@@ -143,23 +145,27 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 		//final batch of historical events to proceed with system autoclear
 		if (baseEvents != null && !baseEvents.isEmpty())
 		{
-			FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain(true);
-			addEvent.getContext().put(EventConstants.EventContextNames.EVENT_LIST, baseEvents);
-			addEvent.getContext().put(EventConstants.EventContextNames.IS_HISTORICAL_EVENT, true);
-			if (isAutomatedSystemHistory && type != Type.SENSOR_ROLLUP_ALARM && type != Type.SENSOR_ALARM) {
-				addEvent.getContext().put(EventConstants.EventContextNames.CONSTRUCT_HISTORICAL_AUTO_CLEAR_EVENT, false);
-			}
-			else {
-				addEvent.getContext().put(EventConstants.EventContextNames.CONSTRUCT_HISTORICAL_AUTO_CLEAR_EVENT, true);
-			}
-			addEvent.getContext().put(EventConstants.EventContextNames.LAST_OCCURRENCE_OF_PREVIOUS_BATCH, lastOccurrenceOfPreviousBatchMap);
-			addEvent.execute();
-			
-			LOGGER.info("Events added in final alarm processing job: "+parentRuleResourceLoggerId+" Primary Rule : "+primaryRuleId+" for fetchEventsCriteria : "+fetchEventsCriteria+" Size  -- "+baseEvents.size()+ " events -- "+baseEvents);				
-		
-			Integer alarmOccurrenceCount = (Integer) addEvent.getContext().get(FacilioConstants.ContextNames.ALARM_COUNT);
-			if(alarmOccurrenceCount != null) {
-				totalAlarmOccurrenceCount += alarmOccurrenceCount;
+			try {//SPK: this try/catch block for debugging purpose. should be delte this block.
+				LOGGER.log(Level.FINEST, "Events going to be add in final alarm processing job: " + parentRuleResourceLoggerId + " Primary Rule : " + primaryRuleId + " Size  -- " + baseEvents.size());
+				FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain(true);
+				addEvent.getContext().put(EventConstants.EventContextNames.EVENT_LIST, baseEvents);
+				addEvent.getContext().put(EventConstants.EventContextNames.IS_HISTORICAL_EVENT, true);
+				if (isAutomatedSystemHistory && type != Type.SENSOR_ROLLUP_ALARM && type != Type.SENSOR_ALARM) {
+					addEvent.getContext().put(EventConstants.EventContextNames.CONSTRUCT_HISTORICAL_AUTO_CLEAR_EVENT, false);
+				} else {
+					addEvent.getContext().put(EventConstants.EventContextNames.CONSTRUCT_HISTORICAL_AUTO_CLEAR_EVENT, true);
+				}
+				addEvent.getContext().put(EventConstants.EventContextNames.LAST_OCCURRENCE_OF_PREVIOUS_BATCH, lastOccurrenceOfPreviousBatchMap);
+				addEvent.execute();
+
+				LOGGER.info("Events added in final alarm processing job: " + parentRuleResourceLoggerId + " Primary Rule : " + primaryRuleId + " for fetchEventsCriteria : " + fetchEventsCriteria + " Size  -- " + baseEvents.size() + " events -- " + baseEvents);
+				Integer alarmOccurrenceCount = (Integer) addEvent.getContext().get(FacilioConstants.ContextNames.ALARM_COUNT);
+				if (alarmOccurrenceCount != null) {
+					totalAlarmOccurrenceCount += alarmOccurrenceCount;
+				}
+			} catch (java.sql.BatchUpdateException ex) {
+				LOGGER.info("Batch update ex for alarm processing: parent rule : " + parentRuleResourceLoggerContext + ", primary rule : " + primaryRuleId + ", total alarm occurrenct cnt : " + totalAlarmOccurrenceCount);
+				throw ex;
 			}
 		}
 		

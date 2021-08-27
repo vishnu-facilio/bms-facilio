@@ -54,17 +54,21 @@ public class ReadingUnitAndInputConversionCommand extends FacilioCommand {
 										if(readingDataMeta==null) {
 											LOGGER.info("Reading data meta is null for parent: "+reading.getParentId()+" for field: "+field);
 										}
-										if(readingDataMeta != null && readingDataMeta.getUnitEnum() != null) {
-											Object value = UnitsUtil.convertToSiUnit(readingData.get(fieldName), readingDataMeta.getUnitEnum());
-											readingData.put(fieldName, value);
-										}
-										else {
-											Unit unit =(Unit) context.get(FacilioConstants.ContextNames.FORMULA_INPUT_UNIT_STRING);
-											if(unit != null) {
-												Object value = UnitsUtil.convertToSiUnit(readingData.get(fieldName), unit);
-												readingData.put(fieldName, value);
-											}
-										}
+										try {
+                                            if (readingDataMeta != null && readingDataMeta.getUnitEnum() != null) {
+                                                Object value = UnitsUtil.convertToSiUnit(readingData.get(fieldName), readingDataMeta.getUnitEnum());
+                                                readingData.put(fieldName, value);
+                                            } else {
+                                                Unit unit = (Unit) context.get(FacilioConstants.ContextNames.FORMULA_INPUT_UNIT_STRING);
+                                                if (unit != null) {
+                                                    Object value = UnitsUtil.convertToSiUnit(readingData.get(fieldName), unit);
+                                                    readingData.put(fieldName, value);
+                                                }
+                                            }
+                                        } catch (Exception ex) {
+                                            LOGGER.info("unit conversion failed. fieldName : " + fieldName + " , value : " + readingData.get(fieldName) + ", unit : " + readingDataMeta.getUnitEnum() +", field : " + field, ex);
+                                            throw ex;
+                                        }
 										convertInputValue(readingDataMeta, valuesMap, readingData, fieldName);
 									}
 								}
