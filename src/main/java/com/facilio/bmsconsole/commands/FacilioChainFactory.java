@@ -2435,6 +2435,7 @@ public class FacilioChainFactory {
 	public static FacilioChain v2DeleteTenantChain () {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new DeleteTenantCommand());
+		c.addCommand( new RemoveAssociatedTenantUnitCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		c.addCommand(new DeleteTenantContactsCommand());
 		c.addCommand(deleteTenantContactChain());
