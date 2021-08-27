@@ -44,6 +44,7 @@ public class EnergyDataDeltaCalculationCommand extends FacilioCommand {
 
 		Map<String, ReadingDataMeta> metaMap = (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
 		if(metaMap==null || metaMap.isEmpty()) {
+			LOGGER.debug("EnergyDataDeltaCalculationCommand: Previous reading data is null");
 			return false;
 		}
 		
