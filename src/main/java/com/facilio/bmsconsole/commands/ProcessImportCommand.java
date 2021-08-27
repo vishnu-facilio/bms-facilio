@@ -1111,7 +1111,7 @@ public class ProcessImportCommand extends FacilioCommand {
 		if (additionalSpaces.size() > 0) {
 			Long tempSpaceId;
 			for (JSONObject additionalSpace : additionalSpaces) {
-				tempSpaceId = SpaceAPI.getDependentSpaceId((String) additionalSpace.get("name"), spaceId, (int)additionalSpace.get("level"));
+				tempSpaceId = SpaceAPI.getDependentSpaceId((String) additionalSpace.get("name"), spaceId, (int)additionalSpace.get("level")-1);
 				if (tempSpaceId != null) {
 					spaceId = tempSpaceId;
 				} else if (canAddNew) {
