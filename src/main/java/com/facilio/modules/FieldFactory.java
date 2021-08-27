@@ -2833,9 +2833,9 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.DATE_TIME));
 
         FacilioField isProcessField = new FacilioField();
-        isProcessField.setName("isProcessed");
-        isProcessField.setDataType(FieldType.BOOLEAN);
-        isProcessField.setColumnName("IS_PROCESSED");
+        isProcessField.setName("state");
+        isProcessField.setDataType(FieldType.NUMBER);
+        isProcessField.setColumnName("STATE");
         isProcessField.setModule(module);
         fields.add(isProcessField);
 
