@@ -524,9 +524,6 @@ public class FieldUtil {
 		if(module.getName().equals(FacilioConstants.ContextNames.ATTENDANCE)){
 			return false;
 		}
-		if(!FacilioProperties.isProduction()){
-			return !SYSTEM_FIELDS_MIGRATED_MODULES.contains(module.getName());
-		}
 
 		// custom modules will have system fields by default
 		if (module.isCustom()
@@ -535,6 +532,10 @@ public class FieldUtil {
 				|| module.getTypeEnum() == FacilioModule.ModuleType.RATING
 				|| FacilioConstants.ContextNames.RESOURCE.equals(module.getParentModule().getName())) {
 			return true;
+		}
+
+		if(!FacilioProperties.isProduction() && SYSTEM_FIELDS_MIGRATED_MODULES.contains(module.getName())){
+			return false;
 		}
 
 		return SYSTEM_FIELDS_ALLOWED_MODULES.contains(module.getName());
