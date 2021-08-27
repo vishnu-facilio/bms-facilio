@@ -197,15 +197,17 @@ public class FloorplanDetailsListCommand extends FacilioCommand {
 	        selectRecordsBuilder.select(modBean.getAllFields(module));
 	        List<? extends ModuleBaseWithCustomFields> records = selectRecordsBuilder.get();
 
-	        JSONObject moduleDataObj = new JSONObject();
-	        moduleDataObj.put("name", moduleObj.getName());
-	        moduleDataObj.put("displayName", moduleObj.getDisplayName());
-	        moduleDataObj.put(FacilioConstants.ContextNames.DATA, records);
-	        moduleDataList.add(moduleDataObj);
+	        if(records != null && CollectionUtils.isNotEmpty(records)) {
+		        JSONObject moduleDataObj = new JSONObject();
+		        moduleDataObj.put("name", moduleObj.getName());
+		        moduleDataObj.put("displayName", moduleObj.getDisplayName());
+		        moduleDataObj.put(FacilioConstants.ContextNames.DATA, records);
+		        moduleDataList.add(moduleDataObj);
+	        }
 	        
 		}
 		
-		context.put(FacilioConstants.ContextNames.DATA, moduleDataList);
+		context.put(FacilioConstants.ContextNames.RECORD_LIST, moduleDataList);
 
 		return false;
 	}

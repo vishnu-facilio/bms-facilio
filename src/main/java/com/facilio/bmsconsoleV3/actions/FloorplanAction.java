@@ -127,7 +127,7 @@ public class FloorplanAction extends V3Action {
 		
 		chain.execute();
 		
-		setData(FacilioConstants.ContextNames.DATA, context.get(FacilioConstants.ContextNames.DATA));
+		setData(FacilioConstants.ContextNames.RECORD_LIST, context.get(FacilioConstants.ContextNames.RECORD_LIST));
 		return SUCCESS;
 	}
 }
