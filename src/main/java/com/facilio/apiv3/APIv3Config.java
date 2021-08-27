@@ -44,6 +44,7 @@ import com.facilio.bmsconsoleV3.commands.floorplan.V3ValidateSpaceCommand;
 import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.SetItemTypesUnitCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksCommand;
@@ -412,9 +413,10 @@ public class APIv3Config {
     public static Supplier<V3Config> getInsurance() {
         return () -> new V3Config(V3InsuranceContext.class, new ModuleCustomFieldCount30())
                 .create()
-                    .beforeSave(new AssociateVendorToInsuranceCommandV3())
+                    .beforeSave(new ValidateDateCommandV3(),new AssociateVendorToInsuranceCommandV3())
                     .afterSave(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand())
                 .update()
+                .beforeSave(new ValidateDateCommandV3())
                 .list()
                     .beforeFetch(new LoadInsuranceLookUpCommandV3())
                 .summary()
