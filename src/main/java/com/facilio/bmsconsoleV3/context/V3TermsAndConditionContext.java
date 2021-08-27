@@ -11,6 +11,8 @@ public class V3TermsAndConditionContext extends V3Context {
     private String shortDesc;
     private String longDesc;
     public Boolean isEditable;
+    public Boolean defaultOnPo;
+    public Boolean defaultOnQuotation;
 
     public String getName() {
         return name;
@@ -58,4 +60,29 @@ public class V3TermsAndConditionContext extends V3Context {
         }
         return false;
     }
+    public Boolean getDefaultOnPo() {
+                if (defaultOnPo != null) {
+                        return defaultOnPo.booleanValue();
+                    }
+                return false;
+            }
+
+            public void setDefaultOnPo(Boolean defaultOnPo) {
+                this.defaultOnPo = defaultOnPo;
+            }
+
+
+
+            public Boolean getDefaultOnQuotation() {
+                if (defaultOnQuotation!= null) {
+                        return defaultOnQuotation.booleanValue();
+                    }
+                return false;
+            }
+
+            public void setDefaultOnQuotation(Boolean defaultOnQuotation) {
+                this.defaultOnQuotation = defaultOnQuotation;
+            }
+
 }
+
