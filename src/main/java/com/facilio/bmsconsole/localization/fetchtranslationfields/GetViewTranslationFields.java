@@ -37,7 +37,7 @@ public class GetViewTranslationFields implements TranslationTypeInterface {
         FacilioView view = ViewAPI.getView(viewId);
         List<ViewField> viewFields = view.getFields();
 
-        if(CollectionUtils.isNotEmpty(viewFields) && view != null) {
+        if(CollectionUtils.isNotEmpty(viewFields)) {
 
             String viewKey = ViewTranslationImpl.getTranslationKey(view.getName());
             fieldList.add(TranslationsUtil.constructJSON(view.getDisplayName(),VIEWS,TranslationConstants.DISPLAY_NAME,view.getName(),viewKey,properties));
@@ -45,9 +45,11 @@ public class GetViewTranslationFields implements TranslationTypeInterface {
             for (ViewField viewField : viewFields) {
                 String viewColumnId = String.valueOf(viewField.getId());
                 String viewColumnKey = ViewColumnTranslationImpl.getTranslationKey(viewColumnId);
-                fieldList.add(TranslationsUtil.constructJSON(viewField.getColumnDisplayName(),ViewColumnTranslationImpl.VIEWS_COLUMNS,TranslationConstants.DISPLAY_NAME,viewColumnId,viewColumnKey,properties));
+                String displayName = viewField.getColumnDisplayName();
+                if(StringUtils.isNotEmpty(displayName)){
+                    fieldList.add(TranslationsUtil.constructJSON(viewField.getColumnDisplayName(),ViewColumnTranslationImpl.VIEWS_COLUMNS,TranslationConstants.DISPLAY_NAME,viewColumnId,viewColumnKey,properties));
+                }
             }
-
         }
 
         JSONObject fieldObject = new JSONObject();

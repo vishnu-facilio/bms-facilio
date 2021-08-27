@@ -22,6 +22,10 @@ public class FormFieldTranslationImpl implements TranslationIfc {
         if(sections == null || sections.isEmpty()) {
             return json;
         }
+
+        String formKey = FormTranslationImpl.getTranslationKey((String)form.get(TranslationConstants.NAME));
+        form.put(TranslationConstants.DISPLAY_NAME,getTranslation(translationFile,formKey,(String)form.get(TranslationConstants.DISPLAY_NAME)));
+
         for (int i = 0; i < sections.size(); i++) {
             JSONObject sectionObject = (JSONObject)sections.get(i);
             JSONArray fields = (JSONArray)sectionObject.get("fields");

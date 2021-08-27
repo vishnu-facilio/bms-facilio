@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -933,16 +932,16 @@ public class FormsAPI {
 			boolean hasName = (nameField == null);	// if module doesn't have name, we should treat it as `true`
 			boolean hasSite = false;
 			for (FormField field : form.getFields()) {
-				if (field.getField() != null) {
+				if (field.getName().equals("siteId")) {
+					hasSite = true;
+				}
+				else if (field.getField() != null) {
 					if (field.getField().getName().equals("photo")) {
 						hasPhoto = true;
 					}
 					if (!hasName && field.getField().getName().equals("name")) {
 						hasName = true;
 					}
-				}
-				else if (field.getName().equals("siteId")) {
-					hasSite = true;
 				}
 			}
 			if (!hasPhoto) {
@@ -1128,7 +1127,8 @@ public class FormsAPI {
 			Map<String, Object> params = new HashMap<>();
 			params.put(Builder.ORDER_BY, "id");
 			params.put(Builder.LIMIT, 1);
-			List<FacilioForm> forms = getDBFormList(moduleName, null, params, true);
+			ApplicationContext application = ApplicationApi.getApplicationForLinkName(appLinkName);
+			List<FacilioForm> forms = getDBFormList(moduleName, null, params, true, false, false,application.getId());
 			if (CollectionUtils.isNotEmpty(forms)) {
 				return forms.get(0);
 			}

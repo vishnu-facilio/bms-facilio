@@ -96,7 +96,7 @@ public class ViewAction extends FacilioAction {
 	public String addWoScheduleView() throws Exception {
 		
 		emailTemplate.setName("Report");
-		emailTemplate.setFrom("report@${org.domain}.{org.emailDomain}");
+		emailTemplate.setFrom("report@${org.domain}.${org.emailDomain}");
 		
 		FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
@@ -128,7 +128,7 @@ public class ViewAction extends FacilioAction {
 	
 	public String editWoScheduledView () throws Exception {
 		emailTemplate.setName("Report");
-		emailTemplate.setFrom("report@${org.domain}.{org.emailDomain}");
+		emailTemplate.setFrom("report@${org.domain}.${org.emailDomain}");
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, type);

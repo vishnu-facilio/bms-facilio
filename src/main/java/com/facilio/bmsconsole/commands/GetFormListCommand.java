@@ -36,8 +36,7 @@ public class GetFormListCommand extends FacilioCommand {
 		ApplicationContext app = appId <= 0 ? AccountUtil.getCurrentApp() : ApplicationApi.getApplicationForId(appId);
 		appId = app.getId();
 
-		List<String> appLinkNames = new ArrayList<>(); 
-		appLinkNames.add(app.getLinkName());  
+		List<String> appLinkNames = Collections.singletonList(app.getLinkName());
 
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		
@@ -107,7 +106,7 @@ public class GetFormListCommand extends FacilioCommand {
 		Map<String, FacilioForm> extendedForms = new LinkedHashMap<>();
 		if (module.getExtendModule() != null && fetchExtendedModuleForms != null && fetchExtendedModuleForms) {
 			Map<String, FacilioForm> extendedFactoryForms = FormFactory.getForms(module.getExtendModule().getName(), appLinkNames);
-			if (!forms.isEmpty()) {
+			if (!extendedFactoryForms.isEmpty()) {
 				for(Map.Entry<String, FacilioForm> entry :extendedFactoryForms.entrySet()) {
 					entry.getValue().setModule(module.getExtendModule());
 					extendedForms.put(entry.getKey(), entry.getValue());

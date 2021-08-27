@@ -1,14 +1,14 @@
 {
 	"1": {
 		"name": "WORKORDER_ASSIGN_EMAIL",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "New Workorder Assigned",
 		"to": "${workorder.assignedTo.email:-}",
 		"message": "${workorder.assignedBy.name} has assigned a new workorder to you.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the new workorder here - ${workorder.url}\n\nRegards,\nTeam ${org.brand:-Facilio}."
 	},
 	"2": {
 		"name": "WORKORDER_ACTIVITY_FOLLOWUP",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "Workorder Follow",
 		"to": "shivaraj@thingscient.com",
 		"message": "A new work order has been assigned to you. Please follow the link below to view the work order."
@@ -20,14 +20,14 @@
 	},
 	"4": {
 		"name": "TASK_COMMENT_EMAIL",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "New Comment added",
 		"to": "${workorder.assignedTo.email:-}",
 		"message": "${comment.createdBy.name} has  added a new comment in your workorder ${workorder.subject} . Please view the workorder here - ${workorder.url} to reply/view the comments.\n\nRegards,\nTeam ${org.brand:-Facilio}."
 	},
 	"5": {
 		"name": "ALARM_CREATION_EMAIL",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "New Alarm raised",
 		"to": "",
 		"message": "A new Alarm has been raised in the system. \n\nReason : ${alarm.subject}\nDetails: ${alarm.description}\nStatus: ${alarm.state}\n\nPlease view the alarm here - ${alarm.url} and acknowledge it as soon as possible.\n\nRegards,\nTeam ${org.brand:-Facilio}."
@@ -92,21 +92,21 @@
 	},
 	"10": {
 		"name": "PM_EMAIL_PRE_REMINDER",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "New WorkOrder created from PPM ${workorder.subject} will be executed on ${workorder.createdTimeString}",
 		"to": "${workorder.assignedTo.email:-}",
 		"message": "The following PPM will be created and a new workorder will be created on ${workorder.createdTimeString}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\n\nRegards,\nTeam ${org.brand:-Facilio}."
 	},
 	"11": {
 		"name": "PM_EMAIL_DUE_REMINDER",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "Workorder is due by ${workorder.dueDateString:-}",
 		"to": "${workorder.assignedTo.email:-}",
 		"message": "The following workorder created from PPM ${workorder.subject} is in due by ${workorder.dueDateString}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\n\nPlease view the workorder here - ${workorder.url}\n\nRegards,\nTeam ${org.brand:-Facilio}."
 	},
 	"12": {
 		"name": "NEW_WORK_REQUEST_EMAIL",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "New Workrequest raised",
 		"to": "${org.superAdmin.email:-}",
 		"message": "The following workorderrequest has been raised by ${workorderrequest.requester.name}.\n\nSubject : ${workorderrequest.subject}\nDescription : \n${workorderrequest.description}\n\nPlease approve/reject the workrequest here - ${workorderrequest.url}\n\nRegards,\nTeam ${org.brand:-Facilio}."
@@ -166,7 +166,7 @@
 	},
 	"16": {
 		"name": "APPROVE_WOREQ_EMAIL",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "Workrequest approved",
 		"to": "${workorderrequest.requester.email:-}",
 		"message": "Your workorderrequest has been approved. A workrorder has been created and assigned to ${workorderrequest.assignedTo.name}.\n\nSubject : ${workorderrequest.subject}\nDescription : \n${workorderrequest.description}.\n\nRegards,\nTeam ${org.brand:-Facilio}."
@@ -205,7 +205,7 @@
 	},
 	"20": {
 		"name": "REJECT_WOREQ_EMAIL",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "Workorderrequest rejected ",
 		"to": "${workorderrequest.requester.email:-}",
 		"message": "Your workorderrequest has been rejected.\n\nSubject : ${workorderrequest.subject}\nDescription : \n${workorderrequest.description}\n\nPlease check for the further details here - ${workorderrequest.url}.\n\nRegards,\nTeam ${org.brand:-Facilio}."
@@ -244,7 +244,7 @@
 	},
 	"24": {
 		"name": "TECH_SOLVE_WO_EMAIL",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "Work order resolved",
 		"to": "${workorder.assignedBy.email:-}",
 		"message": "The following workorder ${workorder.subject} has been resolved by Technician ${workorder.assignedTo.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nStatus : ${workorder.status.status}\n\nPlease view the workorder here - ${workorder.url}\n\nRegards,\nTeam ${org.brand:-Facilio}."
@@ -283,7 +283,7 @@
 	},
 	"28": {
 		"name": "TECH_CLOSE_WO_EMAIL",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "Work order closed",
 		"to": "${workorder.assignedTo.email:-}",
 		"message": "The following work order ${workorder.subject} has been  closed by ${workorder.assignedTo.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nStatus : ${workorder.status.status}\n\nPlease view the closed work order here - ${workorder.url}\n\nRegards,\nTeam ${org.brand:-Facilio}."
@@ -322,7 +322,7 @@
 	},
 	"32": {
 		"name": "CLOSED_WOREQ_EMAIL",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "Workorderrequest Resolved",
 		"to": "${workorderrequest.requester.email:-}",
 		"message": "Your workorderrequest has been resolved by ${workorder.assignedTo.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\n\nPlease view your resolved workorderrequest here - ${workorder.url}\n\nRegards,\nTeam ${org.brand:-Facilio}."
@@ -388,7 +388,7 @@
 	},
 	"38": {
 		"name": "WORKORDER_ASSIGN_GROUP_EMAIL",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "New Workorder Assigned",
 		"to": "${workorder.assignmentGroup.email:-}",
 		"message": "${workorder.assignedBy.name} has assigned a new workorder to your team - ${workorder.assignmentGroup.name}. \n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the work order here - ${workorder.url}\n\nRegards,\nTeam ${org.brand:-Facilio}."
@@ -459,7 +459,7 @@
 	},
 	"45": {
 		"name": "ADD_TASK_EMAIL",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "New Task added",
 		"to": "${workorder.assignedTo.email:-}",
 		"message": "A new Task has been added in your WorkOrder ${workorder.subject} by ${workorder.assignedBy.name}.Please view the new task here - ${workorder.url}\n\nRegards\nTeam ${org.brand:-Facilio}."
@@ -498,7 +498,7 @@
 	},
 	"49": {
 		"name": "UPDATE_TASK_EMAIL",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "Task Updated",
 		"to": "${workorder.assignedTo.email:-}",
 		"message": "A Task has been updated in your WorkOrder ${workorder.subject}.Please view the updated task here - ${workorder.url}\n\nRegards\nTeam ${org.brand:-Facilio}."
@@ -537,7 +537,7 @@
 	},
 	"53": {
 		"name": "WO_RESOLVED_EMAIL",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "Workorder resolved",
 		"to": "${workorder.assignedBy.email:-}",
 		"message": "The following work order ${workorder.subject} has been resolved. Please view the resolved workorder here - ${workorder.url}\n\nRegards\nTeam ${org.brand:-Facilio}."
@@ -578,14 +578,14 @@
 
 	"57": {
 		"name": "PM_EMAIL_OVERDUE_REMINDER",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "Workorder ${workorder.subject} is overdue",
 		"to": "${workorder.assignedTo.email:-}",
 		"message": "The following work order created from planned maintenance ${workorder.subject} is overdue by ${workorder.dueDateString}.\n\nSubject : ${workorder.subject}\nDescription : ${workorder.description:-}\nDue by : ${workorder.dueDateString}\n\nPlease view the work order here - ${workorder.url} .\n\nRegards,\nTeam ${org.brand:-Facilio}"
 	},
 	"58": {
 		"name": "TECH_CLOSE_WOREQ_EMAIL",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "Work order closed",
 		"to": "${workorder.requester.email:-}",
 		"message": "The following work order ${workorder.subject} has been closed by ${workorder.assignedBy.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nStatus : ${workorder.status.status}\n\nPlease view the closed work order here - ${workorder.url}\n\nRegards,\nTeam ${org.brand:-Facilio}."
@@ -624,7 +624,7 @@
 	},
 	"62": {
 		"name": "ALARM_CLEAR_UPDATE_EMAIL",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "Alarm Cleared",
 		"to": "",
 		"message": "The following Alarm has been cleared. \n\nReason : ${alarm.subject}\nDetails: ${alarm.description}\nStatus: ${alarm.state}\n\nPlease view the alarm here - ${alarm.url} and acknowledge it as soon as possible.\n\nRegards,\nTeam ${org.brand:-Facilio}."
@@ -643,7 +643,7 @@
 	},
 	"66": {
 		"name": "ASSET_EXPIRE_EMAIL",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "Asset Expired",
 		"to": "${org.superAdmin.email:-}",
 		"message": "This is to inform you that your facility ${site.name}'s ${asset.names} has expired on ${expired.date}. Kindly update the latest warrenty date for the asset here ${asset.url} \n\nRegards,\nTeam ${org.brand:-Facilio}."
@@ -655,14 +655,14 @@
 	},
 	"68": {
 		"name": "ASSET_TOBEEXPIRED_EMAIL",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "KDM Expiry Notification",
 		"to": "${org.superAdmin.email:-}",
 		"message": "This is to inform you that the following KDM(s) of your facility will be expired on ${expired.date}. please follow up and purchase the latest KDM(s) for the list given below ${asset.url} \n\n"
 	},
 	"69": {
 		"name": "ON_HOLD_WO_EMAIL",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "Work order put on hold",
 		"to": "${workorder.assignedBy.email:-}",
 		"message": "The following work order ${workorder.subject} assigned  has been put on hold by ${workorder.assignedTo.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nStatus : ${workorder.status.status}\n\nPlease view the work order here - ${workorder.url}\n\nRegards,\nTeam ${org.brand:-Facilio}."
@@ -706,14 +706,14 @@
 	},
 	"74": {
 		"name": "APPROVAL_ACTION_EMAIL",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "Approval Approved",
 		"to": "${workorder.requestedBy.email:-}",
 		"message": "Approver has approved your request : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the new workorder here - ${workorder.url}\n\nRegards,\nTeam ${org.brand:-Facilio}."
 	},
 	"75": {
 		"name": "REJECT_ACTION_EMAIL",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "Approval Rejected",
 		"to": "${workorder.requestedBy.email:-}",
 		"message": "Approver has rejected your request \n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the new workorder here - ${workorder.url}\n\nRegards,\nTeam ${org.brand:-Facilio}."
@@ -778,7 +778,7 @@
 	},
 	"80": {
 		"name": "APPROVAL_EMAIL",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "Requesting Approval",
 		"to": "",
 		"message": "Approval has been requested : ${workorder.subject}\nDescription : \n${workorder.description:-}\nDue by : ${workorder.dueDateString:-}\nPlease view the new approval here - ${workorder.url}\n\nRegards,\nTeam ${org.brand:-Facilio}."
@@ -814,21 +814,21 @@
 	},
 	"83": {
 		"name": "DAILY_MAINTENANCE_MAIL",
-		"sender": "report@${org.domain}.{org.emailDomain}",
+		"sender": "report@${org.domain}.${org.emailDomain}",
 		"subject": "Daily Maintenance",
 		"to": "",
 		"message_ftl": "dailyMaintenance"
 	},
 	"84": {
 		"name": "MONTHLY_MAINTENANCE_MAIL",
-		"sender": "report@${org.domain}.{org.emailDomain}",
+		"sender": "report@${org.domain}.${org.emailDomain}",
 		"subject": "Monthly Maintenance",
 		"to": "",
 		"message_ftl": "monthlyMaintenance"
 	},
 	"90": {
 		"name": "CHECKEDIN_EMAIL",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "Thanks for Checking in",
 		"to": "${visitorlogging.visitor.email:-}",
 		"message": "Thanks for visiting ${org.name}\n CheckInTime : \n${visitorlogging.checkInTime:-}\nPerson To Meet : ${visitorlogging.host.name:-} \nAdmin Team."
@@ -840,7 +840,7 @@
 	},
 	"92": {
 		"name": "PREREGISTERATION_INVITATION_EMAIL",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "You are invited",
 		"to": "${visitorlogging.visitor.email:-}",
 		"message": "You are invited to visit ${visitorlogging.eventHost.name:-} of ${org.name} on ${visitorlogging.checkInTime:-} \n Please visit the reception to check in on the required date and time, \nAdmin Team."
@@ -852,7 +852,7 @@
 	},
 	"94": {
 		"name": "HOST_APPROVAL_EMAIL",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "Your request to visit is approved",
 		"to": "${visitorlogging.visitor.email:-}",
 		"message": "Your request to visit ${visitorlogging.eventHost.name:-} of ${org.name} is approved.Kindly proceed to check in.\n Please visit the reception for further details, \nAdmin Team."
@@ -864,7 +864,7 @@
 	},
 	"96": {
 		"name": "HOST_REJECTING_EMAIL",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "Your request to visit is rejected",
 		"to": "${visitorlogging.visitor.email:-}",
 		"message": "Your request to visit ${visitorlogging.eventHost.name:-} of ${org.name} is rejected.We regret the inconvenience caused, \nAdmin Team."
@@ -876,7 +876,7 @@
 	},
 	"98": {
 		"name": "VISITOR_REQUESTING_EMAIL",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "${visitorlogging.visitor.name:-} has requested to visit you",
 		"to": "${visitorlogging.eventHost.email:-}",
 		"message": "${visitorlogging.visitor.name:-} has requested to visit you and is now waiting in your premises.Kindly login facilio to proceed further \nAdmin Team."
@@ -888,7 +888,7 @@
 	},
 	"100": {
 		"name": "VISITOR_CHECKINGOUT_EMAIL",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"subject": "You have checked out",
 		"to": "${visitorlogging.visitor.email:-}",
 		"message": "Thanks for visiting us.You have successfully checked out.\nAdmin Team."
@@ -900,7 +900,7 @@
 	},
 	"102": {
 		"name": "VISITOR_HOST_NOTIFICATION",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"mailType": "html",
 		"subject": "Visitor Arrived!",
 		"to": "<#if (vLog.host) ?? > ${vLog.host.email} </#if>",
@@ -908,7 +908,7 @@
 	},
 	"103": {
 		"name": "VISITOR_WELCOME_NOTIFICATION",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"mailType": "html",
 		"subject": "Welcome!",
 		"to": "${vLog.visitor.email}",
@@ -916,7 +916,7 @@
 	},
 	"104": {
 		"name": "VISITOR_THANKS_NOTIFICATION",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"mailType": "html",
 		"subject": "Thanks For Visiting!",
 		"to": "${vLog.visitor.email}",
@@ -924,7 +924,7 @@
 	},
 	"105": {
 		"name": "VISITOR_INVITE_NOTIFICATION",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"mailType": "html",
 		"subject": "<#if (vLog.host) ?? > ${vLog.host.name} invited you to ${org.name} | Invite Code: ${vLog.passCode} <#else>You are invited to ${org.name} | Invite Code: ${vLog.passCode}</#if>",
 		"to": "${vLog.visitor.email}",
@@ -932,7 +932,7 @@
 	},
 	"106": {
 		"name": "VISITOR_APPROVAL_NOTIFICATION",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"mailType": "html",
 		"subject": "Visitor Approval Needed!",
 		"to": "<#if (vLog.host) ?? > ${vLog.host.email} </#if>",
@@ -980,7 +980,7 @@
 	},
 	"114": {
 		"name": "BLOCKED_VISITOR_MAIL_NOTIFICATION",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"mailType": "html",
 		"subject": "Attention Please ! Blocked Visitor on Watchlist Arrived!",
 		"to": "<#if (vLog.host) ?? > ${vLog.host.email} </#if>",
@@ -994,7 +994,7 @@
 	},
 	"116": {
 		"name": "VENDOR_REGISTRATION_MAIL_NOTIFICATION",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"mailType": "html",
 		"subject": "Welcome! A final step to get registered",
 		"to": "${fetchVendor.primaryContactEmail}",
@@ -1008,7 +1008,7 @@
 	},
 	"118": {
 		"name": "VIP_VISITOR_MAIL_NOTIFICATION",
-		"sender": "noreply@${org.domain}.{org.emailDomain}",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"mailType": "html",
 		"subject": "Attention Please ! VIP Visitor on Watchlist Arrived!",
 		"to": "<#if (vLog.host) ?? >${vLog.host.email}</#if>",
