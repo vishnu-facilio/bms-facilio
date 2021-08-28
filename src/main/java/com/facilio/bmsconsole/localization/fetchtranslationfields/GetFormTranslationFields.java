@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.localization.translation.ModuleTranslationUtils;
 import com.facilio.bmsconsole.localization.translationImpl.FormFieldTranslationImpl;
 import com.facilio.bmsconsole.localization.translationImpl.FormTranslationImpl;
 import com.facilio.bmsconsole.localization.util.TranslationConstants;
@@ -15,6 +16,9 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.EnumField;
+import com.facilio.modules.fields.EnumFieldValue;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 import lombok.NonNull;
 import org.apache.commons.collections4.CollectionUtils;
@@ -63,8 +67,20 @@ public class GetFormTranslationFields implements TranslationTypeInterface {
                         List<FormField> formFields = section.getFields();
                         if(CollectionUtils.isNotEmpty(formFields)) {
                             for (FormField formField : formFields) {
+                                FacilioField field  = formField.getField();
                                 String key = FormFieldTranslationImpl.getTranslationKey(formField.getName());
-                                jsonArray.add(TranslationsUtil.constructJSON(formField.getDisplayName(),FormFieldTranslationImpl.FORM_FIELD,TranslationConstants.DISPLAY_NAME,formField.getName(),key,properties));
+                                JSONObject fieldJson = TranslationsUtil.constructJSON(formField.getDisplayName(),FormFieldTranslationImpl.FORM_FIELD,TranslationConstants.DISPLAY_NAME,formField.getName(),key,properties);
+                                if(field != null && field instanceof EnumField) {
+                                    List<EnumFieldValue<Integer>> enumFieldValues = ((EnumField)field).getValues();
+                                    JSONArray fieldOptions = new JSONArray();
+                                    for (EnumFieldValue enumFieldValue : enumFieldValues) {
+                                        String id = String.valueOf(enumFieldValue.getId());
+                                        String optionKey = ModuleTranslationUtils.getFieldOptionsTranslationKey(id);
+                                        fieldOptions.add(TranslationsUtil.constructJSON(enumFieldValue.getValue(),"fieldOption",TranslationConstants.DISPLAY_NAME,id,optionKey,properties));
+                                    }
+                                    fieldJson.put("fields",fieldOptions);
+                                }
+                                jsonArray.add(fieldJson);
                             }
                         }
                     }
