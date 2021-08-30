@@ -309,6 +309,16 @@ public class WorkflowRuleAPI {
 					ScheduledRuleAPI.deleteScheduledRuleJob(rule);
 				}
 			}
+
+			// when the old rule is of type scheduled and new rule is not scheduled, delete the schedule job
+			if (!EventType.SCHEDULED.isPresent(rule.getActivityType())) {
+				ScheduledRuleAPI.deleteScheduledRuleJob(oldRule);
+			}
+		} else {
+			// when the old rule is not scheduled type, but current one is
+			if (EventType.SCHEDULED.isPresent(rule.getActivityType())) {
+				ScheduledRuleAPI.addScheduledRuleJob(rule);
+			}
 		}
 
 //		TriggerUtil.deleteTriggersForWorkflowRule(rule);

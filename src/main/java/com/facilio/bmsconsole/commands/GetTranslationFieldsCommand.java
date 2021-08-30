@@ -11,6 +11,7 @@ import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -21,7 +22,7 @@ public class GetTranslationFieldsCommand extends FacilioCommand {
         long tabId = (long)context.get(TranslationConstants.TAB_ID);
         String langCode = (String)context.get(TranslationConstants.LANG_CODE);
         String translationType = (String)context.get(TranslationConstants.TRANSLATION_TYPE);
-        String queryString = (String)context.getOrDefault(TranslationConstants.QUERY_STRING,null);
+        Map<String,String> filters = (Map<String, String>)context.getOrDefault(TranslationConstants.FILTERS,null);
 
         TranslationBean bean = (TranslationBean)TransactionBeanFactory.lookup("TranslationBean");
         Properties properties = bean.getTranslationFile(langCode);
@@ -33,7 +34,7 @@ public class GetTranslationFieldsCommand extends FacilioCommand {
 
         TranslationTypeEnum type = TranslationTypeEnum.getTranslationTypeModule(translationType);
         Objects.requireNonNull(type,"Invalid enum type for Translation");
-        context.put(TranslationConstants.TRANSLATION_FIELDS,type.getHandler().constructTranslationObject(webTab,queryString,properties));
+        context.put(TranslationConstants.TRANSLATION_FIELDS,type.getHandler().constructTranslationObject(webTab,filters,properties));
 
         return false;
     }

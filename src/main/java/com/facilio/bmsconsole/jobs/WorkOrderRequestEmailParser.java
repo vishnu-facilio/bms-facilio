@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.util.SupportEmailAPI;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -32,70 +33,86 @@ import java.util.StringJoiner;
 
 public class WorkOrderRequestEmailParser extends FacilioJob {
 
+	public enum Status {
+		NEW,
+		PROCESSED,
+		FAILED;
+
+		public int getVal() {
+			return ordinal();
+		}
+	}
+
 	public static final String S3_BUCKET_NAME = FacilioProperties.getIncomingEmailS3Bucket();
 	private static final Logger LOGGER = LogManager.getLogger(WorkOrderRequestEmailParser.class.getName());
-	
-	private Map<String, Object> updateIsProcessed = new HashMap<>();
-	
-	public WorkOrderRequestEmailParser() {
-		// TODO Auto-generated constructor stub
-		updateIsProcessed.put("isProcessed", true);
-	}
-	
+
+
 	@Override
-	public void execute(JobContext jc) {
-		// TODO Auto-generated method stub
+	public void execute(JobContext jc) throws Exception {
+
+		long emailID = -1L;
+
 		try {
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-															.select(FieldFactory.getWorkorderEmailFields())
-															.table("WorkOrderRequest_EMail")
-															.andCustomWhere("IS_PROCESSED IS NULL OR IS_PROCESSED = false")
-															.limit(100);
+					.select(FieldFactory.getWorkorderEmailFields())
+					.table("WorkOrderRequest_EMail")
+					.andCondition(CriteriaAPI.getCondition("STATE", "state", Integer.toString(Status.NEW.getVal()), NumberOperators.EQUALS))
+					.limit(100);
 			List<Map<String, Object>> emailProps = selectBuilder.get();
-			LOGGER.info("EMail Props : "+emailProps);
-			if(emailProps != null) {
-				for(Map<String, Object> emailProp : emailProps) {
+			LOGGER.info("EMail Props : " + emailProps);
+
+			if (emailProps != null) {
+				for (Map<String, Object> emailProp : emailProps) {
 					String s3Id = (String) emailProp.get("s3MessageId");
-					try(S3Object rawEmail = AwsUtil.getAmazonS3Client().getObject(S3_BUCKET_NAME, s3Id); InputStream is = rawEmail.getObjectContent()) {
-						createWorkOrderRequest((long) emailProp.get("id"), is);
-					}
-					catch(Exception e) {
-						LOGGER.error("Exception occurred for id - "+s3Id, e);
+					emailID = (long) emailProp.get("id");
+					try (S3Object rawEmail = AwsUtil.getAmazonS3Client().getObject(S3_BUCKET_NAME, s3Id); InputStream is = rawEmail.getObjectContent()) {
+
+						MimeMessage emailMsg = new MimeMessage(null, is);
+						MimeMessageParser parser = new MimeMessageParser(emailMsg);
+						parser.parse();
+						SupportEmailContext supportEmail = getSupportEmail(parser);
+						long requestID = -1L;
+						long orgID = -1L;
+						if (supportEmail != null) {
+							orgID = supportEmail.getOrgId();
+							requestID = NewTransactionService.newTransactionWithReturn(() -> addWorkRequest(emailMsg, parser, supportEmail));
+						}
+						markAsDone(emailID, requestID, orgID);
+
+					} catch (Exception e) {
+						LOGGER.error("Exception occurred for id - " + s3Id, e);
+						markAsFailed(emailID);
 					}
 				}
 			}
-		}
-		catch(Exception e) {
+
+		} catch (Exception e) {
 			LOGGER.error("Exception occurred ", e);
+			markAsFailed(emailID);
 		}
 	}
-	
-	private void updateEmailProp(long id, long requestId, long orgId) throws Exception {
-		updateIsProcessed.put("requestId",requestId);
-		updateIsProcessed.put("orgId", orgId);
+
+	private void markAsFailed(long id) throws Exception {
+		Map<String, Object> dataBag = new HashMap<>();
+		dataBag.put("state", Status.FAILED.getVal());
+		updateEmailProp(id, dataBag);
+	}
+
+	private void markAsDone(long id, long requestID, long orgID) throws Exception {
+		Map<String, Object> dataBag = new HashMap<>();
+		dataBag.put("requestId", requestID);
+		dataBag.put("orgId", orgID);
+		dataBag.put("state", Status.PROCESSED.getVal());
+		updateEmailProp(id, dataBag);
+	}
+
+	private void updateEmailProp(long id, Map<String, Object> dataBag) throws Exception {
 		FacilioModule module = ModuleFactory.getWorkOrderRequestEMailModule();
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.fields(FieldFactory.getWorkorderEmailFields())
 				.table("WorkOrderRequest_EMail")
 				.andCondition(CriteriaAPI.getIdCondition(id, module));
-		updateBuilder.update(updateIsProcessed);
-		updateIsProcessed.remove("requestId");
-		updateIsProcessed.remove("orgId");
-	}
-	
-	
-	private void createWorkOrderRequest(long emailpropId, InputStream is) throws Exception {
-		MimeMessage emailMsg = new MimeMessage(null, is);
-		MimeMessageParser parser = new MimeMessageParser(emailMsg);
-		parser.parse();
-		SupportEmailContext supportEmail = getSupportEmail(parser); 
-		long requestId = -1;
-		long orgId = -1;
-		if(supportEmail != null) {
-			orgId = supportEmail.getOrgId();
-			requestId = NewTransactionService.newTransactionWithReturn(() -> addWorkRequest(emailMsg, parser, supportEmail));
-		}
-		updateEmailProp(emailpropId, requestId, orgId);
+		updateBuilder.update(dataBag);
 	}
 
 	private long addWorkRequest(MimeMessage emailMsg, MimeMessageParser parser, SupportEmailContext supportEmail) throws Exception {
@@ -105,33 +122,33 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 
 	private SupportEmailContext getSupportEmail(MimeMessageParser parser) throws Exception {
 		SupportEmailContext supportEmail = getSupportEmail(parser.getTo());
-		if(supportEmail != null) {
+		if (supportEmail != null) {
 			return supportEmail;
 		}
-		
+
 		supportEmail = getSupportEmail(parser.getCc());
-		if(supportEmail != null) {
+		if (supportEmail != null) {
 			return supportEmail;
 		}
-		
+
 		supportEmail = getSupportEmail(parser.getBcc());
-		if(supportEmail != null) {
+		if (supportEmail != null) {
 			return supportEmail;
 		}
-		
+
 		return null;
 	}
-	
+
 	private SupportEmailContext getSupportEmail(List<Address> toAddresses) throws Exception {
-		LOGGER.info("Support email addresses : "+toAddresses);
-		if(CollectionUtils.isNotEmpty(toAddresses)) {
+		LOGGER.info("Support email addresses : " + toAddresses);
+		if (CollectionUtils.isNotEmpty(toAddresses)) {
 			StringJoiner emails = new StringJoiner(",");
-			for(Address address : toAddresses) {
+			for (Address address : toAddresses) {
 				String email = ((InternetAddress) address).getAddress();
 				emails.add(email);
 			}
 			SupportEmailContext supportEmail = SupportEmailAPI.getSupportEmailFromFwdEmail(emails.toString());
-			LOGGER.info("Support email object : "+supportEmail);
+			LOGGER.info("Support email object : " + supportEmail);
 			return supportEmail;
 		}
 		return null;

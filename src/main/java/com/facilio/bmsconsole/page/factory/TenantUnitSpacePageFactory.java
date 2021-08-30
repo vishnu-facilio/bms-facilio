@@ -43,6 +43,8 @@ public class TenantUnitSpacePageFactory extends PageFactory {
         if(AccountUtil.getCurrentApp() != null && AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
             addRelatedListWidget(tab2Sec1, FacilioConstants.ContextNames.TENANT_SPACES, baseSpaceModule.getModuleId(), "Tenant History");
             addRelatedListWidget(tab2Sec1, FacilioConstants.ContextNames.ASSET, baseSpaceModule.getModuleId(), "Assets");
+        }else if(AccountUtil.getCurrentApp() != null && AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP)) {
+            addRelatedListWidget(tab2Sec1, FacilioConstants.ContextNames.ASSET, baseSpaceModule.getModuleId(), "Assets");
         }
         if (AccountUtil.getCurrentOrg().getOrgId() == 320l) {
             addRelatedListWidget(tab2Sec1, FacilioConstants.ContextNames.WORK_ORDER, module.getModuleId(), "Work Orders");
@@ -57,7 +59,7 @@ public class TenantUnitSpacePageFactory extends PageFactory {
         if(AccountUtil.getCurrentOrg().getOrgId() == 418l && AccountUtil.getCurrentApp() != null && !AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
             excludedModules.add("custom_vendormapping");
             excludedModules.add("custom_retailoperationassignment");
-            excludedModules.add("asset");
+            excludedModules.add("custom_incidentmanagement_1");
         }
 
         addRelatedListWidgets(tab2Sec1, module.getModuleId(), excludedModules, false);

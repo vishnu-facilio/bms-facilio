@@ -9,9 +9,14 @@ import java.util.Properties;
 
 public class FormFieldTranslationImpl implements TranslationIfc {
     public static final String FORM_FIELD = "formField";
+    public static final String FIELD_OPTION = "fieldOption";
 
     public static String getTranslationKey ( String value ) {
         return FORM_FIELD + "." + value + "." + TranslationConstants.DISPLAY_NAME;
+    }
+
+    public static String getFormFieldOptionsTranslationKey ( String value ) {
+        return FIELD_OPTION + "." + value + "." + TranslationConstants.DISPLAY_NAME;
     }
 
     @Override
@@ -33,6 +38,21 @@ public class FormFieldTranslationImpl implements TranslationIfc {
                 JSONObject fieldObject = (JSONObject)fields.get(j);
                 String key = getTranslationKey((String)fieldObject.get(TranslationConstants.NAME));
                 fieldObject.put(TranslationConstants.DISPLAY_NAME,getTranslation(translationFile,key,(String)fieldObject.get(TranslationConstants.DISPLAY_NAME)));
+
+                JSONObject optionFields = (JSONObject)fieldObject.get("field");
+                if(optionFields != null) {
+                    if(optionFields.get("dataTypeEnum").equals("ENUM")) {
+                        JSONArray values = (JSONArray)optionFields.get("values");
+
+                        if(values != null && !values.isEmpty()) {
+                            for (int k = 0; k < values.size(); k++) {
+                                JSONObject valueObject = (JSONObject)values.get(k);
+                                String fieldOptionKey = getFormFieldOptionsTranslationKey(String.valueOf(valueObject.get("id")));
+                                valueObject.put(TranslationConstants.NAME,getTranslation(translationFile,fieldOptionKey,(String)valueObject.get(TranslationConstants.NAME)));
+                            }
+                        }
+                    }
+                }
             }
         }
         return json;

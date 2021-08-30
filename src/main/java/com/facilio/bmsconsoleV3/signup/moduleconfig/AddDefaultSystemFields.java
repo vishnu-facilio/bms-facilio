@@ -17,7 +17,7 @@ public class AddDefaultSystemFields extends SignUpData {
     public void addData () throws Exception {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             List<FacilioModule> modules = new ArrayList<>();
-            modules.add(modBean.getModule(FacilioConstants.ContextNames.ATTENDANCE));
+//            modules.add(modBean.getModule(FacilioConstants.ContextNames.ATTENDANCE));
 //            modules.add(modBean.getModule(FacilioConstants.ContextNames.ASSET_ACTIVITY));
 //            modules.add(modBean.getModule(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
 //            modules.add(modBean.getModule(FacilioConstants.ContextNames.ITEM_ACTIVITY));

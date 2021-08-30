@@ -6605,5 +6605,19 @@
 		<action name="listLang" class="com.facilio.bmsconsole.localization.TranslationAction" method="getTranslatedLang"/>
 	</package>
 
-
+	<package name="translationsetup" namespace="/api/v2/translationsetup" extends="v2Api">
+		<action name="viewList"
+				class="com.facilio.bmsconsole.actions.ViewAction" method="v2viewlist">
+		</action>
+		<action name="*" class="com.facilio.bmsconsole.actions.FormAction" method="formDetails">
+			<param name="moduleName">{1}</param>
+		</action>
+		<action name="list"
+				class="com.facilio.bmsconsole.actions.StateFlowAction"
+				method="getStateFlowList" >
+			<param name="moduleName">setup</param>
+			<param name="permission">STATEFLOWS</param>
+			<param name="isNewPermission">true</param>
+		</action>
+	</package>
 </struts>
