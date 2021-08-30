@@ -1,9 +1,7 @@
 package com.facilio.bmsconsoleV3.context;
 
 import com.facilio.bmsconsole.context.ServiceContext;
-import com.facilio.bmsconsole.context.ServiceVendorContext;
 import com.facilio.modules.FacilioIntEnum;
-import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.context.V3Context;
 
 import java.util.List;
@@ -92,23 +90,22 @@ public class V3ServiceContext extends V3Context {
         this.sellingPrice = sellingPrice;
     }
 
-    private ServiceContext.PaymentType paymentType;
+    private V3ServiceContext.PaymentType paymentType;
     public Integer getPaymentType() {
         if (paymentType != null) {
             return paymentType.getIndex();
         }
         return -1;
     }
-    public void setPaymentType(Integer paymentType) {
-        this.paymentType = ServiceContext.PaymentType.valueOf(paymentType);
+    public void setPaymentType(int paymentType) {
+        this.paymentType = V3ServiceContext.PaymentType.valueOf(paymentType);
     }
-    public ServiceContext.PaymentType getPaymentTypeEnum() {
+    public V3ServiceContext.PaymentType getPaymentTypeEnum() {
         return paymentType;
     }
-    public void setPaymentType(ServiceContext.PaymentType paymentType) {
+    public void setPaymentType(V3ServiceContext.PaymentType paymentType) {
         this.paymentType = paymentType;
     }
-
     public static enum PaymentType implements FacilioIntEnum {
         FIXED("Fixed"),
         DURATION_BASED("Duration Based");
@@ -119,7 +116,7 @@ public class V3ServiceContext extends V3Context {
             this.name = name;
         }
 
-        public static V3ServiceContext.PaymentType valueOf(int value) {
+        public static PaymentType valueOf(Integer value) {
             if (value > 0 && value <= values().length) {
                 return values()[value - 1];
             }
