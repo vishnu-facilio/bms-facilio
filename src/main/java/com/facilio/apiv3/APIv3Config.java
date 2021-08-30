@@ -59,6 +59,9 @@ import com.facilio.bmsconsoleV3.commands.purchaserequest.FetchPurchaseRequestDet
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestSummaryLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
+import com.facilio.bmsconsoleV3.commands.service.GetServiceVendorListCommandV3;
+import com.facilio.bmsconsoleV3.commands.service.UpdateStatusCommandV3;
+import com.facilio.bmsconsoleV3.commands.service.UpdateVendorV3;
 import com.facilio.bmsconsoleV3.commands.servicerequest.AddRequesterForServiceRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.servicerequest.LoadServiceRequestLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.site.AddOrUpdateSiteLocationCommand;
@@ -1351,6 +1354,20 @@ public class APIv3Config {
                 .delete()
                 .summary().beforeFetch(new SpaceFillLookupFieldsCommand())
                 .list().beforeFetch(new SpaceFillLookupFieldsCommand())
+                .build();
+    }
+    @Module("service")
+    public static Supplier<V3Config> getService() {
+        return () -> new V3Config(V3ServiceContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .beforeSave(new UpdateStatusCommandV3())
+                .afterSave(new UpdateVendorV3())
+                .update()
+                .afterSave(new UpdateVendorV3())
+                .delete()
+                .list()
+                .summary()
+                .afterFetch(new GetServiceVendorListCommandV3())
                 .build();
     }
 }
