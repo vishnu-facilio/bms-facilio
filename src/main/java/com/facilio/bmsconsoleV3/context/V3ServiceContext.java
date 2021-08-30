@@ -1,25 +1,24 @@
 package com.facilio.bmsconsoleV3.context;
 
-import com.facilio.bmsconsole.context.ServiceContext;
-import com.facilio.modules.FacilioIntEnum;
-import com.facilio.v3.context.V3Context;
-
 import java.util.List;
 
+import com.facilio.bmsconsole.context.ServiceContext;
+import com.facilio.command.FacilioCommand;
+import com.facilio.modules.FacilioIntEnum;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.v3.context.V3Context;
+
 public class V3ServiceContext extends V3Context {
+
     private static final Long serialVersionUID = 1L;
-    // private  List<V3ServiceVendorContext> V3ServiceVendors;
 
     private String name;
-    //private static long id;
-
     public String getName() {
         return name;
     }
     public void setName(String name) {
         this.name = name;
     }
-
 
     private String description;
     private Double duration;
@@ -37,27 +36,23 @@ public class V3ServiceContext extends V3Context {
         this.duration = duration;
     }
 
-    private V3ServiceContext.ServiceStatus status;
-
-    private List<V3ServiceVendorContext> serviceVendors;
-    public List<V3ServiceVendorContext> getServiceVendors() {
-        return serviceVendors;
-    }
-    public void setServiceVendors(List<V3ServiceVendorContext> serviceVendors) {
-        this.serviceVendors = serviceVendors;
+    private ServiceContext.ServiceStatus status;
+    public ServiceContext.ServiceStatus getStatusEnum() {
+        return status;
     }
 
-    public int getStatus() {
+
+    public Integer getStatus() {
         if (status != null) {
             return status.getValue();
         }
-        return -1;
+        return null;
     }
-    public void setStatus(V3ServiceContext.ServiceStatus status) {
+    public void setStatus(ServiceContext.ServiceStatus status) {
         this.status = status;
     }
     public void setStatus(int status) {
-        this.status = V3ServiceContext.ServiceStatus.valueOf(status);
+        this.status = ServiceContext.ServiceStatus.valueOf(status);
     }
 
 
@@ -78,7 +73,13 @@ public class V3ServiceContext extends V3Context {
         }
     }
 
-
+    private List<V3ServiceVendorContext> serviceVendors;
+    public List<V3ServiceVendorContext> getServiceVendors() {
+        return serviceVendors;
+    }
+    public void setServiceVendors(List<V3ServiceVendorContext> serviceVendors) {
+        this.serviceVendors = serviceVendors;
+    }
 
     private Double sellingPrice;
 
@@ -95,17 +96,18 @@ public class V3ServiceContext extends V3Context {
         if (paymentType != null) {
             return paymentType.getIndex();
         }
-        return -1;
+        return null;
     }
-    public void setPaymentType(int paymentType) {
+    public void setPaymentType(Integer paymentType) {
         this.paymentType = V3ServiceContext.PaymentType.valueOf(paymentType);
     }
     public V3ServiceContext.PaymentType getPaymentTypeEnum() {
         return paymentType;
     }
-    public void setPaymentType(V3ServiceContext.PaymentType paymentType) {
-        this.paymentType = paymentType;
-    }
+  //  public void setPaymentType(V3ServiceContext.PaymentType paymentType) {
+    //    this.paymentType = paymentType;
+   // }
+
     public static enum PaymentType implements FacilioIntEnum {
         FIXED("Fixed"),
         DURATION_BASED("Duration Based");
@@ -116,7 +118,7 @@ public class V3ServiceContext extends V3Context {
             this.name = name;
         }
 
-        public static PaymentType valueOf(Integer value) {
+        public static V3ServiceContext.PaymentType valueOf(Integer value) {
             if (value > 0 && value <= values().length) {
                 return values()[value - 1];
             }
@@ -143,5 +145,4 @@ public class V3ServiceContext extends V3Context {
     public void setBuyingPrice(Double buyingPrice) {
         this.buyingPrice = buyingPrice;
     }
-
 }
