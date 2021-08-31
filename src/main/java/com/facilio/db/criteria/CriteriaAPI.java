@@ -270,4 +270,8 @@ public class CriteriaAPI extends BaseCriteriaAPI {
 	public static Condition getNameCondition(String name, FacilioModule module) {
 		return getCondition(FieldFactory.getNameField(module), name, StringOperators.IS);
 	}
+
+	public static Condition getNameCondition(Collection<String>names,FacilioModule module) {
+		return getNameCondition(StringUtils.join(names,","),module);
+	}
 }
