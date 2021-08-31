@@ -61,7 +61,6 @@ public class V3ServiceVendorContext extends V3Context {
     private Long lastOrderedDate = null;
 
 
-
     public Long getLastOrderedDate() {
         return lastOrderedDate;
     }
@@ -69,7 +68,6 @@ public class V3ServiceVendorContext extends V3Context {
     public void setLastOrderedDate(Long lastOrderedDate) {
         this.lastOrderedDate = lastOrderedDate;
     }
-
 
 
 }

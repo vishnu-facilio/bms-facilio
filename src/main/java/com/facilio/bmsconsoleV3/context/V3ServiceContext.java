@@ -11,11 +11,12 @@ import com.facilio.v3.context.V3Context;
 public class V3ServiceContext extends V3Context {
 
     private static final Long serialVersionUID = 1L;
-
     private String name;
+
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -26,21 +27,24 @@ public class V3ServiceContext extends V3Context {
     public String getDescription() {
         return description;
     }
+
     public void setDescription(String description) {
         this.description = description;
     }
+
     public Double getDuration() {
         return duration;
     }
+
     public void setDuration(Double duration) {
         this.duration = duration;
     }
 
     private ServiceContext.ServiceStatus status;
+
     public ServiceContext.ServiceStatus getStatusEnum() {
         return status;
     }
-
 
     public Integer getStatus() {
         if (status != null) {
@@ -48,13 +52,14 @@ public class V3ServiceContext extends V3Context {
         }
         return null;
     }
+
     public void setStatus(ServiceContext.ServiceStatus status) {
         this.status = status;
     }
+
     public void setStatus(int status) {
         this.status = ServiceContext.ServiceStatus.valueOf(status);
     }
-
 
     public static enum ServiceStatus {
         ACTIVE(),
@@ -62,7 +67,7 @@ public class V3ServiceContext extends V3Context {
         ;
 
         public int getValue() {
-            return ordinal()+1;
+            return ordinal() + 1;
         }
 
         public static V3ServiceContext.ServiceStatus valueOf(int value) {
@@ -74,9 +79,11 @@ public class V3ServiceContext extends V3Context {
     }
 
     private List<V3ServiceVendorContext> serviceVendors;
+
     public List<V3ServiceVendorContext> getServiceVendors() {
         return serviceVendors;
     }
+
     public void setServiceVendors(List<V3ServiceVendorContext> serviceVendors) {
         this.serviceVendors = serviceVendors;
     }
@@ -92,21 +99,24 @@ public class V3ServiceContext extends V3Context {
     }
 
     private V3ServiceContext.PaymentType paymentType;
+
     public Integer getPaymentType() {
         if (paymentType != null) {
             return paymentType.getIndex();
         }
         return null;
     }
+
     public void setPaymentType(Integer paymentType) {
         this.paymentType = V3ServiceContext.PaymentType.valueOf(paymentType);
     }
+
     public V3ServiceContext.PaymentType getPaymentTypeEnum() {
         return paymentType;
     }
-  //  public void setPaymentType(V3ServiceContext.PaymentType paymentType) {
+    //  public void setPaymentType(V3ServiceContext.PaymentType paymentType) {
     //    this.paymentType = paymentType;
-   // }
+    // }
 
     public static enum PaymentType implements FacilioIntEnum {
         FIXED("Fixed"),

@@ -1360,14 +1360,14 @@ public class APIv3Config {
     public static Supplier<V3Config> getService() {
         return () -> new V3Config(V3ServiceContext.class, new ModuleCustomFieldCount30())
                 .create()
-                .beforeSave(new UpdateStatusCommandV3())
-                .afterSave(new UpdateVendorV3())
+                  .beforeSave(new UpdateStatusCommandV3())
+                  .afterSave(new UpdateVendorV3())
                 .update()
-                .afterSave(new UpdateVendorV3())
+                  .afterSave(new UpdateVendorV3())
                 .delete()
                 .list()
                 .summary()
-                .afterFetch(new GetServiceVendorListCommandV3())
+                  .afterFetch(new GetServiceVendorListCommandV3())
                 .build();
     }
 }

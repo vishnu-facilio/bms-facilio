@@ -27,12 +27,10 @@ import java.util.Map;
 public class UpdateVendorV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-
-
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3ServiceContext> service = recordMap.get(moduleName);
-        if(CollectionUtils.isNotEmpty(service)) {
+        if (CollectionUtils.isNotEmpty(service)) {
             for (V3ServiceContext services : service) {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 FacilioModule module = modBean.getModule(moduleName);
@@ -42,39 +40,32 @@ public class UpdateVendorV3 extends FacilioCommand {
                         .module(serviceVendorModule)
                         .andCondition(CriteriaAPI.getCondition("SERVICE_ID", "service", String.valueOf(services.getId()), NumberOperators.EQUALS));
                 deleteBuilder.delete();
-
                 if (CollectionUtils.isNotEmpty(services.getServiceVendors())) {
                     updateServiceVendors(services);
                     addRecord(false, services.getServiceVendors(), serviceVendorModule, modBean.getAllFields(serviceVendorModule.getName()));
-
                 }
             }
         }
-
-
         return false;
     }
 
-
-    private  void updateServiceVendors(V3ServiceContext service) {
+    private void updateServiceVendors(V3ServiceContext service) {
         for (V3ServiceVendorContext v3ServiceVendorContext : service.getServiceVendors()) {
             v3ServiceVendorContext.setServiceId(service.getId());
         }
     }
-    private void addRecord(boolean isLocalIdNeeded, List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields) throws Exception {
 
+    private void addRecord(boolean isLocalIdNeeded, List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields) throws Exception {
         //custom fields multi lookup handling
         List<SupplementRecord> supplements = new ArrayList<>();
         CommonCommandUtil.handleFormDataAndSupplement(fields, list.get(0).getData(), supplements);
-
         InsertRecordBuilder insertRecordBuilder = new InsertRecordBuilder<>()
                 .module(module)
                 .fields(fields);
-        if(isLocalIdNeeded) {
+        if (isLocalIdNeeded) {
             insertRecordBuilder.withLocalId();
         }
-
-        if(CollectionUtils.isNotEmpty(supplements)) {
+        if (CollectionUtils.isNotEmpty(supplements)) {
             insertRecordBuilder.insertSupplements(supplements);
         }
         insertRecordBuilder.addRecord(list.get(0));

@@ -29,27 +29,20 @@ import java.util.Map;
 public class GetServiceVendorListCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-
         long id = Constants.getRecordIds(context).get(0);
         V3ServiceContext v3serviceContext = (V3ServiceContext) CommandUtil.getModuleData(context, FacilioConstants.ContextNames.SERVICE, id);
         if (v3serviceContext != null) {
-            // for (V3ServiceContext service : v3serviceContext) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SERVICE_VENDOR);
             List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SERVICE_VENDOR);
             Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-
             SelectRecordsBuilder<V3ServiceVendorContext> selectBuilder = new SelectRecordsBuilder<V3ServiceVendorContext>().select(fields)
                     .table(module.getTableName()).moduleName(module.getName()).beanClass(V3ServiceVendorContext.class)
                     .andCondition(CriteriaAPI.getCondition("SERVICE_ID", "serviceId", String.valueOf(v3serviceContext.getId()), NumberOperators.EQUALS))
                     .fetchSupplement((LookupField) fieldMap.get("vendor"));
             List<V3ServiceVendorContext> serviceVendors = selectBuilder.get();
             v3serviceContext.setServiceVendors(serviceVendors);
-
         }
-        //}
-
         return false;
     }
-
 }

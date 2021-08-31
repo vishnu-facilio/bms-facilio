@@ -23,13 +23,8 @@ public class UpdateStatusCommandV3 extends FacilioCommand {
         List<V3ServiceContext> v3serviceContext = Constants.getRecordList((FacilioContext) context);
         if (v3serviceContext != null) {
             for (V3ServiceContext service : v3serviceContext) {
-               
                 service.setStatus(ServiceContext.ServiceStatus.ACTIVE);
-
-
             }
-
-
         }
         return false;
     }
