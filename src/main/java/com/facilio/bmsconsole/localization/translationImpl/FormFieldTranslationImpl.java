@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.localization.translationImpl;
 
 import com.facilio.bmsconsole.localization.util.TranslationConstants;
 import com.facilio.translation.TranslationIfc;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -48,7 +49,10 @@ public class FormFieldTranslationImpl implements TranslationIfc {
                             for (int k = 0; k < values.size(); k++) {
                                 JSONObject valueObject = (JSONObject)values.get(k);
                                 String fieldOptionKey = getFormFieldOptionsTranslationKey(String.valueOf(valueObject.get("id")));
-                                valueObject.put(TranslationConstants.NAME,getTranslation(translationFile,fieldOptionKey,(String)valueObject.get(TranslationConstants.NAME)));
+                                String name = (String)valueObject.get("value");
+                                if(StringUtils.isNotEmpty(name)){
+                                    valueObject.put("value",getTranslation(translationFile,fieldOptionKey,name));
+                                }
                             }
                         }
                     }
