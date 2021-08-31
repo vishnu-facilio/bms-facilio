@@ -23,6 +23,7 @@ public class UpdateStatusCommandV3 extends FacilioCommand {
         List<V3ServiceContext> v3serviceContext = Constants.getRecordList((FacilioContext) context);
         if (v3serviceContext != null) {
             for (V3ServiceContext service : v3serviceContext) {
+                service.setSellingPrice((double) Math.round(service.getSellingPrice() * 100) / 100);
                 service.setStatus(ServiceContext.ServiceStatus.ACTIVE);
             }
         }
