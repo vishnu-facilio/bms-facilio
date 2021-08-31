@@ -4543,4 +4543,12 @@ public class ModuleFactory {
 		module.setTableName("Post_Timeseries_Trigger_Resources_Rel");
         return module;
     }
+
+	public static FacilioModule getScatterGraphLineModule() {
+		FacilioModule facilioScatterGraphModule = new FacilioModule();
+		facilioScatterGraphModule.setName("facilioScatterGraph");
+		facilioScatterGraphModule.setDisplayName("Scatter Graph Line");
+		facilioScatterGraphModule.setTableName("SCATTER_GRAPH_LINE");
+		return facilioScatterGraphModule;
+	}
 }

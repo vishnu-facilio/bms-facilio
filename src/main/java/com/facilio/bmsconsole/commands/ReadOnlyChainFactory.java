@@ -49,6 +49,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new CalculateDerivationCommand());
 		c.addCommand(new CalculateVarianceCommand());
 		c.addCommand(new FetchReportExtraMeta());
+		c.addCommand(new FetchCustomBaselineData());
 		return c;
 	}
 
@@ -120,6 +121,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetTrendLineCommand());
 		c.addCommand(new FormatForTimeDuration());
 		c.addCommand(new FetchCriteriaReportCommand());
+		c.addCommand(new FetchCustomBaselineData());
 		return c;
 	}
 	
@@ -134,6 +136,7 @@ public class ReadOnlyChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new CreateReadingAnalyticsReportCommand());
 		c.addCommand(fetchReportDataChain());
+		c.addCommand(new FetchCustomBaselineData());
 		return c;
 	}
 	
@@ -2839,6 +2842,18 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getAllWebTabTranlsationFields(){
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetAllTranslationFieldsCommand());
+		return chain;
+	}
+
+	public static FacilioChain getScatterGraphById() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetScatterGraphById());
+		return chain;
+	}
+
+	public static FacilioChain getScatterGraph() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetScatterGraph());
 		return chain;
 	}
 }
