@@ -6137,6 +6137,19 @@ public class TransactionChainFactory {
 		chain.addCommand(new AddOrUpdateTranslationCommand());
 		return chain;
 	}
+
+
+	public static FacilioChain addOrUpdateScatterGraph() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddOrUpdateScatterGraph());
+		return chain;
+	}
+
+	public static FacilioChain deleteScatterGraph(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new DeleteScatterGraph());
+		return chain;
+	}
 	
 }
 

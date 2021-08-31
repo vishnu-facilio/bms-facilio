@@ -9742,6 +9742,29 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public  static List<FacilioField> getScatterGraphFields(){
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getScatterGraphLineModule();
+        fields.add(getIdField(module));
+        /*fields.add(AccountConstants.getOrgIdField());*/
+
+        fields.add(getStringField("label","LABEL",module));
+        fields.add(getStringField("graphValue","GRAPH_VALUE",module));
+
+        return fields;
+    }
+
+    public  static List<FacilioField> getScatterGraphMetaFields(){
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getScatterGraphLineModule();
+        fields.add(getIdField(module));
+        /*fields.add(AccountConstants.getOrgIdField());*/
+
+        fields.add(getStringField("label","LABEL",module));
+
+        return fields;
+    }
+
     protected static <F extends FacilioField> F  getNewFieldObject(FieldType type) {
         switch (type) {
             case LOOKUP:
