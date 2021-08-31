@@ -419,32 +419,22 @@ public class TemplateAPI {
 		}
 		return null;
 	}
-	
+
 	private static Template getExtendedTemplate(Map<String, Object> templateMap) throws Exception {
 		Template.Type type = Template.Type.getType((int) templateMap.get("type"));
 		long id = (long) templateMap.get("id");
 		Template template = null;
 		switch (type) {
 			case EMAIL: {
-				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getEMailTemplatesModule(), FieldFactory.getEMailTemplateFields(), id);
-				if(templates != null && !templates.isEmpty()) {
-
-					// Temp Fix, fail safe to add default email address; to be refactored later
-					Object fromIDStr = templates.get(0).get("from");
-					if (fromIDStr == null){
+				List<Map<String, Object>> templates = getExtendedEMailProps(id);
+				if (templates != null && !templates.isEmpty()) {
+					// Fail-safe to add default email address; to be refactored later
+					Object fromIDStr = templates.get(0).get("fromID");
+					if (fromIDStr == null) {
 						LOGGER.warn("fromAddress is null, to be checked.");
 						templates.get(0).put("from", EmailClient.getNoReplyFromEmail());
-					}else{
-						long fromID = (Long) fromIDStr;
-						GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-								.select(Arrays.asList(FieldFactory.getField("EMAIL", "EMAIL", FieldType.STRING)))
-								.table("Email_From_Address")
-								.andCustomWhere("ID = ? ", fromID);
-
-						List<Map<String, Object>> resultSet = selectBuilder.get();
-						templates.get(0).put("from", resultSet.get(0).get("EMAIL"));
+						templates.get(0).put("fromID", ActionAPI.getEMailAddressID(EmailClient.getNoReplyFromEmail()));
 					}
-
 					templateMap.putAll(templates.get(0));
 					template = getEMailTemplateFromMap(templateMap);
 				}
@@ -588,21 +578,32 @@ public class TemplateAPI {
 		setFormInTemplate(template);
 		return template;
 	}
-	
+
 	public static void setFormInTemplate(FormTemplate template) throws Exception {
 		FacilioForm form = FormsAPI.getFormFromDB(template.getFormId());
 		template.setForm(form);
 	}
-	
+
 	private static List<Map<String, Object>> getExtendedProps(FacilioModule module, List<FacilioField> fields, long id) throws Exception {
 		return getExtendedProps(module, fields, id, null);
 	}
- 	
+
+	private static List<Map<String, Object>> getExtendedEMailProps(long id) throws Exception {
+
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getEMailTemplateFields())
+				.table("Email_From_Address")
+				.innerJoin("EMail_Templates")
+				.on("EMail_Templates.FROM_ADDRESS = Email_From_Address.ID")
+				.andCondition(CriteriaAPI.getCondition("EMail_Templates.ID", "id", Long.toString(id), NumberOperators.EQUALS));
+		List<Map<String, Object>> resultSet = builder.get();
+		return resultSet;
+	}
+
 	private static List<Map<String, Object>> getExtendedProps(FacilioModule module, List<FacilioField> fields, long id, Criteria criteria) throws Exception {
 		GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
 				.select(fields)
-				.table(module.getTableName())
-				;
+				.table(module.getTableName());
 		if (id <= 0 && criteria == null) {
 			throw new IllegalArgumentException("both id and criteria cannot be null");
 		}
@@ -728,16 +729,15 @@ public class TemplateAPI {
 		template.setBodyId(FacilioFactory.getFileStore(superAdmin.getId()).addFile("Email_Template_"+template.getName(), template.getMessage(), "text/plain"));
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
-															.table("Templates")
-															.fields(FieldFactory.getTemplateFields())
-															.addRecord(templateProps);
-		
+				.table("Templates")
+				.fields(FieldFactory.getTemplateFields())
+				.addRecord(templateProps);
 		userTemplateBuilder.save();
-		
+
 		GenericInsertRecordBuilder emailTemplateBuilder = new GenericInsertRecordBuilder()
-																.table("EMail_Templates")
-																.fields(FieldFactory.getEMailTemplateFields())
-																.addRecord(templateProps);
+				.table("EMail_Templates")
+				.fields(FieldFactory.getEMailTemplateFields())
+				.addRecord(templateProps);
 		emailTemplateBuilder.save();
 		return (long) templateProps.get("id"); 
 	}
@@ -904,17 +904,17 @@ public class TemplateAPI {
 	
 	private static EMailTemplate getEMailTemplateFromMap(Map<String, Object> templateMap) throws Exception {
 		EMailTemplate template = FieldUtil.getAsBeanFromMap(templateMap, EMailTemplate.class);
-		
+		template.setFrom(ActionAPI.getEMailAddress(template.getFromID()));
+
 		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
-		
-		try(InputStream body = FacilioFactory.getFileStore(superAdmin.getId()).readFile(template.getBodyId())) {
+
+		try (InputStream body = FacilioFactory.getFileStore(superAdmin.getId()).readFile(template.getBodyId())) {
 			template.setMessage(IOUtils.toString(body));
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			log.info("Exception occurred ", e);
 			throw e;
 		}
-		
+
 		return template;
 	}
 	

@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.*;
 import com.facilio.services.email.EmailClient;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -433,7 +434,7 @@ public class ActionAPI {
 		long emailAddressID = -1L;
 		try {
 			GenericSelectRecordBuilder selectBdr = new GenericSelectRecordBuilder()
-					.select(Arrays.asList(FieldFactory.getField("ID", "ID", FieldType.ID)))
+					.select(Collections.singletonList(FieldFactory.getField("ID", "ID", FieldType.ID)))
 					.table("Email_From_Address")
 					.andCondition(CriteriaAPI.getCondition("email", "EMAIL", email, StringOperators.IS));
 
@@ -445,13 +446,33 @@ public class ActionAPI {
 		return emailAddressID;
 	}
 
+	public static String getEMailAddress(long id) {
+		String emailAddress = "";
+		try {
+			GenericSelectRecordBuilder selectBdr = new GenericSelectRecordBuilder()
+					.select(Collections.singletonList(FieldFactory.getField("EMAIL", "EMAIL", FieldType.STRING)))
+					.table("Email_From_Address")
+					.andCondition(CriteriaAPI.getCondition("ID", "ID", String.valueOf(id), StringOperators.IS));
+
+			List<Map<String, Object>> resultSet = selectBdr.get();
+			emailAddress = (String) resultSet.get(0).get("EMAIL");
+		} catch (Exception e) {
+			LOGGER.error("unable to fetch email address", e);
+		}
+		return emailAddress;
+	}
+
 	private static void setEmailTemplate(ActionContext action) {
 		EMailTemplate emailTemplate = new EMailTemplate();
 
 		if (action.getTemplateJson().get("fromAddr") == null) {
-			emailTemplate.setFrom(Long.toString(getEMailAddressID(EmailClient.getNoReplyFromEmail())));
+			String noReplyAddr = EmailClient.getNoReplyFromEmail();
+			emailTemplate.setFromID(getEMailAddressID(EmailClient.getNoReplyFromEmail()));
+			emailTemplate.setFrom(noReplyAddr);
 		} else {
-			emailTemplate.setFrom(action.getTemplateJson().get("fromAddr").toString());
+			long fromAddr = FacilioUtil.parseLong(action.getTemplateJson().get("fromAddr"));
+			emailTemplate.setFromID(fromAddr);
+			emailTemplate.setFrom(getEMailAddress(fromAddr));
 		}
 
 		String toAdresses = action.getTemplateJson().get("to").toString();

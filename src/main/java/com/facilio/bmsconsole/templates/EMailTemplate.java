@@ -7,21 +7,37 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public class EMailTemplate extends Template {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private String from;
+
 	public String getFrom() {
 		return from;
 	}
+
 	public void setFrom(String from) {
 		this.from = from;
 	}
-	
+
+
+	public Long getFromID() {
+		return fromID;
+	}
+
+	public void setFromID(Long fromID) {
+		this.fromID = fromID;
+	}
+
+	private Long fromID;
+
+
 	private String to;
+
 	public String getTo() {
 		return to;
 	}
+
 	public void setTo(String to) {
 		this.to = to;
 	}
