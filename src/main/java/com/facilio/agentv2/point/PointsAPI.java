@@ -945,15 +945,8 @@ public class PointsAPI {
             point.put(AgentConstants.WRITABLE_SWITCH,true);
         }
     }
-    public static void applyBacnetDefaultWritableRule(Point point) {
-        if(point.getControllerType() == FacilioControllerType.BACNET_IP){
-            BacnetIpPointContext bacnetIpPoint = (BacnetIpPointContext) point;
-            if(BACNetUtil.InstanceType.valueOf(bacnetIpPoint.getInstanceType()).isWritable()){
-                point.setWritable(true);
-                point.setAgentWritable(true);
-            }
-        }
-    }
+
+
     public static void handleBacnetWritableSwitch(Map<String,Object> point) {
         if(containsValueCheck(AgentConstants.INSTANCE_TYPE,point)){
             BACNetUtil.InstanceType instanceType = BACNetUtil.InstanceType.valueOf(((Number) point.get(AgentConstants.INSTANCE_TYPE)).intValue());

@@ -1,26 +1,32 @@
 package com.facilio.agentv2.point;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentType;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
+import com.facilio.agentv2.bacnet.BacnetIpPointContext;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.GetControllerRequest;
 import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.modbusrtu.RtuNetworkContext;
-import com.facilio.aws.util.FacilioProperties;
-import com.facilio.wmsv2.endpoint.SessionManager;
-import com.facilio.wmsv2.message.Message;
-
+import com.facilio.bacnet.BACNetUtil;
+import com.facilio.db.builder.DBUtil;
+import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
+import com.google.api.client.json.Json;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+import sun.management.Agent;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 
 public class PointsUtil
 {
@@ -52,7 +58,7 @@ public class PointsUtil
             for (Object o : pointsJSON) {
                 JSONObject pointJSON = (JSONObject) o;
                 pointJSON.put(AgentConstants.DEVICE_NAME,identifier);
-                pointJSON.put(AgentConstants.FIELD_DEIVICES,);
+                pointJSON.put(AgentConstants.FIELD_DEVICES,);
                 pointJSON.put(AgentConstants.CONTROLLER_ID,controller.getId());
                 pointJSON.put(AgentConstants.POINT_TYPE,payload.get(AgentConstants.TYPE));
                 try {
@@ -75,6 +81,7 @@ public class PointsUtil
         }
         return false;
     }*/
+
 
     public static boolean processPoints(JSONObject payload, Device device, FacilioAgent agent) throws Exception {
         LOGGER.info(" processing point "+device.getControllerProps());
@@ -109,6 +116,14 @@ public class PointsUtil
             }
             controller = getControllerRequest.getController();
 
+            //getting points name
+            List<String>pointName = (List<String>) pointsJSON.stream().map(x -> ((JSONObject)x).get(AgentConstants.NAME).toString()).collect(Collectors.toList());
+
+            //getting existing points name from DB
+            List<String>existingPoints = PointsAPI.getPointsFromDb(pointName,controller).stream()
+                    .map(name -> name.get(AgentConstants.NAME).toString())
+                    .collect(Collectors.toList());
+
 
             List<Point> points = new ArrayList<>();
             for (Object o : pointsJSON) {
@@ -118,15 +133,18 @@ public class PointsUtil
                 pointJSON.put(AgentConstants.POINT_TYPE, device.getControllerType());
                 pointJSON.put(AgentConstants.CONTROLLER_ID, controller.getId());
                 try {
-                    Point point = PointsAPI.getPointFromJSON(pointJSON);
-                    if(!pointJSON.containsKey(AgentConstants.DISPLAY_NAME) && pointJSON.containsKey(AgentConstants.NAME)) {
-                    	point.setDisplayName(pointJSON.get(AgentConstants.NAME).toString());
-                    }
-                    setPointWritable(pointJSON,point);
-                    if (point != null) {
-                        point.setControllerId(controller.getId());
-                        int agentType = agent.getAgentType();
-                        if(agentType == AgentType.CUSTOM.getKey() || agentType == AgentType.REST.getKey() || agentType == AgentType.CLOUD.getKey()){
+                    if(!existingPoints.contains(pointJSON.get(AgentConstants.NAME))){
+                        Point point = PointsAPI.getPointFromJSON(pointJSON);
+                      if (!pointJSON.containsKey(AgentConstants.DISPLAY_NAME) && pointJSON.containsKey(AgentConstants.NAME)) {
+                        point.setDisplayName(pointJSON.get(AgentConstants.NAME).toString());
+                     }
+
+                        setPointWritable(pointJSON, point);
+                        if (point != null) {
+                         point.setControllerId(controller.getId());
+                         point.setAgentId(controller.getAgentId());
+                         int agentType = agent.getAgentType();
+                         if (agentType == AgentType.CUSTOM.getKey() || agentType == AgentType.REST.getKey() || agentType == AgentType.CLOUD.getKey()) {
                             point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
                         }
                         if (controller.getControllerType() == FacilioControllerType.MODBUS_IP.asInt() || controller.getControllerType() == FacilioControllerType.MODBUS_RTU.asInt()) {
@@ -135,28 +153,42 @@ public class PointsUtil
                             }
                         }
                         points.add(point);
+
                     }
+                }
                 } catch (Exception e) {
                     LOGGER.info("Exception occurred while getting point",e);
                 }
             }
+
             if (points.size() == 0) {
-                throw new Exception(" points to cadd can't be empty");
+                throw new Exception(" points to add can't be empty");
             }
-            long pointsToBeAdded = points.size();
+
+            addPoints(controller,points);
+
+
+
+
+         /*   long pointsToBeAdded = points.size();
             //TODO try bulk insert first
             long pointsAdded = 0;
             for (Point point : points) {
-                PointsAPI.applyBacnetDefaultWritableRule(point);
-                //TODO make it bulk add
-                boolean pointEntry = PointsAPI.addPoint(point);
-                if (!pointEntry) {
-                    LOGGER.info("Exception while adding point," + point.toJSON());
-                }else {
-                    pointsAdded++;
+                if(!existingPoints.contains(point.getName())) {
+                    PointsAPI.applyBacnetDefaultWritableRule(point);
+                    //TODO make it bulk add
+                    boolean pointEntry = PointsAPI.addPoint(point);
+
+                    if (!pointEntry) {
+                        LOGGER.info("Exception while adding point," + point.toJSON());
+                    } else {
+                        pointsAdded++;
+                    }
                 }
             }
-            LOGGER.info("-----DISCOVERPOINTS SUMMARY POINTDATAIN->" + incomingCount + "  POINTSTOBEADDED->" + pointsToBeAdded + "  POINTSADDED->" + pointsAdded);
+            LOGGER.info("-----DISCOVERPOINTS SUMMARY POINTDATAIN->" + incomingCount + "  POINTSTOBEADDED->" + pointsToBeAdded + "  POINTSADDED->" + pointsAdded); */
+
+
         }else {
             LOGGER.info(" Exception occurred, pointsData missing from payload -> "+payload);
         }
@@ -164,6 +196,14 @@ public class PointsUtil
     }
 
     private static void setPointWritable(JSONObject pointJSON, Point point) {
+
+        if(point.getControllerType() == FacilioControllerType.BACNET_IP){
+            BacnetIpPointContext bacnetIpPoint = (BacnetIpPointContext) point;
+            if(BACNetUtil.InstanceType.valueOf(bacnetIpPoint.getInstanceType()).isWritable()){
+                point.setWritable(true);
+                point.setAgentWritable(true);
+            }
+        }
 		// TODO Auto-generated method stub
 		if(pointJSON.containsKey(AgentConstants.WRITABLE)) {
 			Boolean value = Boolean.parseBoolean(pointJSON.get(AgentConstants.WRITABLE).toString());
@@ -181,5 +221,14 @@ public class PointsUtil
             return true;
         }
         return false;
+    }
+    //BULK INSERT
+    public static void addPoints(Controller controller,List<Point>points) throws Exception {
+        FacilioControllerType controllerType = FacilioControllerType.valueOf(controller.getControllerType());
+
+        List<FacilioField> fields = PointsAPI.getChildPointFields(controllerType);
+
+        DBUtil.insertValuesWithJoin(PointsAPI.getPointModule(controllerType),fields, FieldUtil.getAsMapList(points,PointsAPI.getPointType(controllerType)));
+
     }
 }
