@@ -16,16 +16,15 @@ public class ValidateDateCommandV3 extends FacilioCommand {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3InsuranceContext> insurances = recordMap.get(moduleName);
-        if(CollectionUtils.isNotEmpty(insurances)) {
+        if (CollectionUtils.isNotEmpty(insurances)) {
             for (V3InsuranceContext ins : insurances) {
-                if (ins.getValidFrom() != null && ins.getValidTill() != null) {
-                    if (ins.getValidFrom() > ins.getValidTill()) {
+                if (ins.getValidFrom() != null && ins.getValidTill() != null && ins.getValidFrom() > ins.getValidTill()) {
+                    {
                         throw new IllegalArgumentException("Please enter proper Validity Dates");
                     }
                 }
             }
         }
-
-return false;
+        return false;
     }
-    }
+}

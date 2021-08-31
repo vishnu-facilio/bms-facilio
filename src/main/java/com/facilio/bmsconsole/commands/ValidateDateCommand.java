@@ -15,15 +15,11 @@ public class ValidateDateCommand extends FacilioCommand {
         List<InsuranceContext> insurances = (List<InsuranceContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
         if (CollectionUtils.isNotEmpty(insurances)) {
             for (InsuranceContext ins : insurances) {
-                if (ins.getValidFrom() >0 && ins.getValidTill() > 0)
-                if (ins.getValidFrom() > ins.getValidTill()) {
+                if (ins.getValidFrom() > 0 && ins.getValidTill() > 0 && ins.getValidFrom() > ins.getValidTill()) {
                     throw new IllegalArgumentException("Please enter proper Validity Dates");
-
                 }
             }
-
-
         }
         return false;
     }
-    }
+}

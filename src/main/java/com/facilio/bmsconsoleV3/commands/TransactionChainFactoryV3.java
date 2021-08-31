@@ -3,6 +3,8 @@ package com.facilio.bmsconsoleV3.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.commands.*;
+import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
+import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
@@ -984,6 +986,13 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new SetLocalIdCommandV3());
         chain.addCommand(new ValidateFacilityCommand());
         return chain;
+    }
+
+    public static FacilioChain getAssociatedVendorAndValidationBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AssociateVendorToInsuranceCommandV3());
+        c.addCommand(new ValidateDateCommandV3());
+        return c;
     }
 
 }

@@ -413,10 +413,10 @@ public class APIv3Config {
     public static Supplier<V3Config> getInsurance() {
         return () -> new V3Config(V3InsuranceContext.class, new ModuleCustomFieldCount30())
                 .create()
-                    .beforeSave(new ValidateDateCommandV3(),new AssociateVendorToInsuranceCommandV3())
+                    .beforeSave(TransactionChainFactoryV3.getAssociatedVendorAndValidationBeforeSaveChain())
                     .afterSave(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand())
                 .update()
-                .beforeSave(new ValidateDateCommandV3())
+                    .beforeSave(new ValidateDateCommandV3())
                 .list()
                     .beforeFetch(new LoadInsuranceLookUpCommandV3())
                 .summary()
