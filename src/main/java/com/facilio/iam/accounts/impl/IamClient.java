@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.facilio.auth.AuthUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -160,9 +161,21 @@ public class IamClient {
 		return RequestUtil.getProtocol(request) + "://" + url;
 	}
     
-    private static Map<String, String> getSecretKeyHeader() {
-    		// TODO
-    		return null;
+    private static Map<String, String> getSecretKeyHeader() throws Exception {
+        String environment = FacilioProperties.getEnvironment();
+        String region;
+        if (environment.equals("development")) {
+            region = "dev";
+        } else if (environment.equals("stage")) {
+            region = "us-west-2";
+        } else {
+            region = "us-west-2";
+        }
+
+        String jwt = AuthUtils.generateServiceToken("facilio", region, "iam");
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Authorization", jwt);
+    	return headers;
     }
 
     private static JSONObject getJsonFromResponse(HttpResponse response) throws ParseException {

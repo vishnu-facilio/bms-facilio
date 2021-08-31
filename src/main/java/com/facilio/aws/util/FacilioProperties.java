@@ -139,6 +139,8 @@ public class FacilioProperties {
     private static String passwordHashingFunction;
 
     private static String incomingEmailS3Bucket;
+    private static String secretManager;
+    private static String service;
 
     static {
         loadProperties();
@@ -255,6 +257,7 @@ public class FacilioProperties {
 
                 passwordHashingFunction = PROPERTIES.getProperty("password.hashing.function");
                 incomingEmailS3Bucket = PROPERTIES.getProperty("incoming.email.s3.name");
+                secretManager = PROPERTIES.getProperty("secretmanger");
 
                 String cookieLifespanProp = PROPERTIES.getProperty("token.cookie.lifespan");
                 if (StringUtils.isNotEmpty(cookieLifespanProp)) {
@@ -786,4 +789,11 @@ public class FacilioProperties {
         return Boolean.parseBoolean(getConfig("instantJobServer"));
     }
 
+    public static String getSecretManager() {
+        return secretManager;
+    }
+
+    public static String getService() {
+        return service;
+    }
 }
