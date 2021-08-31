@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.localization.translationImpl.DashboardTranslationI
 import com.facilio.bmsconsole.localization.util.TranslationConstants;
 import com.facilio.bmsconsole.localization.util.TranslationsUtil;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.util.FacilioUtil;
 import lombok.NonNull;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
@@ -22,6 +23,13 @@ public class GetDashboardTabAndWidgetTransFields implements TranslationTypeInter
     public JSONArray constructTranslationObject ( @NonNull WebTabContext context,Map<String,String> filters,Properties properties ) throws Exception {
 
         Long dashboardTabId = Long.parseLong(filters.get("dashboardTabId"));
+        Long dashboardId = Long.parseLong(filters.get("dashboardId"));
+
+        if(dashboardId != null){
+            return GetDashboardTranslationFields.constructTranslationObject(dashboardId,DashboardUtil.getDashboardTabs(dashboardId),properties);
+        }
+        FacilioUtil.throwIllegalArgumentException(dashboardTabId == null,"Invalid Dashboard tab Id");
+
         DashboardTabContext dashboardTabContexts = DashboardUtil.getDashboardTabWithWidgets(dashboardTabId);
         DashboardContext dashboardContext = DashboardUtil.getDashboard(dashboardTabContexts.getDashboardId());
         JSONArray jsonArray = new JSONArray();
