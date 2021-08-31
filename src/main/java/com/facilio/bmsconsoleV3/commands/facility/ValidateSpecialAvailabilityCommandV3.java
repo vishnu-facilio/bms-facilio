@@ -34,18 +34,14 @@ public class ValidateSpecialAvailabilityCommandV3 extends FacilioCommand {
                             if (splAvailability.getStartDate() > splAvailability.getEndDate()) {
                                 throw new IllegalArgumentException("please enter valid dates ");
                             }
-
-
                             if (splAvailability.getStartDate() <= facility.getSlotGeneratedUpto() || splAvailability.getEndDate() <= facility.getSlotGeneratedUpto()) {
                                 throw new RESTException(ErrorCode.VALIDATION_ERROR, "Slots are already created for the selected dates. Please select a date after " + formatter.format(DateTimeUtil.getDateTime(facility.getSlotGeneratedUpto())));
                             }
-
                         }
                     }
                 }
             }
         }
-
         return false;
     }
 }
