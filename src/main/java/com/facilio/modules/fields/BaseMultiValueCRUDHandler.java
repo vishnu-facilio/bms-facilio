@@ -132,7 +132,9 @@ public abstract class BaseMultiValueCRUDHandler<E> implements InsertSupplementHa
             recordList = new ArrayList<>();
             recordMap.put(recordId, recordList);
         }
-        recordList.add(value);
+        if(value !=null){
+            recordList.add(value);
+        }
     }
 
     private Map<Long, List<E>> recordMap = null;
