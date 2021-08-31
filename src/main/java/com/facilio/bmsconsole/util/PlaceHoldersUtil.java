@@ -141,11 +141,12 @@ public class PlaceHoldersUtil {
         int selectCount = AccountUtil.getCurrentSelectQuery(), pSelectCount = AccountUtil.getCurrentPublicSelectQuery();
         Map<String, Object> placeHolders = null;
         if(beanMap != null) {
+            Map<String, Object> clonedBeanMap = new HashMap<>(beanMap); 
             if (StringUtils.isNotEmpty(moduleName) && !LookupSpecialTypeUtil.isSpecialType(moduleName)) {
-                placeHolders = constructFieldPlaceHolders(moduleName, prefix, beanMap, level);
+                placeHolders = constructFieldPlaceHolders(moduleName, prefix, clonedBeanMap, level);
             }
             placeHolders = placeHolders == null ? new HashMap<>() : placeHolders;
-            addPropsWithPrefix(prefix, beanMap, placeHolders);
+            addPropsWithPrefix(prefix, clonedBeanMap, placeHolders);
         }
         long timeTaken = System.currentTimeMillis() - time;
         int totalSelect = AccountUtil.getCurrentSelectQuery() - selectCount;
