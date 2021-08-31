@@ -2,7 +2,10 @@ package com.facilio.bmsconsoleV3.commands.insurance;
 
 import com.facilio.bmsconsoleV3.context.V3InsuranceContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -20,7 +23,7 @@ public class ValidateDateCommandV3 extends FacilioCommand {
             for (V3InsuranceContext ins : insurances) {
                 if (ins.getValidFrom() != null && ins.getValidTill() != null && ins.getValidFrom() > ins.getValidTill()) {
                     {
-                        throw new IllegalArgumentException("Please enter proper Validity Dates");
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Please enter proper validity Dates.");
                     }
                 }
             }
