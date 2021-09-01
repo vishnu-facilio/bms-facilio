@@ -2061,7 +2061,14 @@ public class V2ReportAction extends FacilioAction {
 		if(context.containsKey("criteriaData")){
 			setResult("criteriaData", context.get("criteriaData"));
 		}
-		
+
+		if(context.containsKey("baselineData")){
+			setResult("baselineData", context.get("baselineData"));
+		}
+		if(context.containsKey("baselineDataColors")){
+			setResult("baselineDataColors", context.get("baselineDataColors"));
+		}
+
 		resultContext = context;
 		
 		return SUCCESS;
@@ -2552,6 +2559,82 @@ public class V2ReportAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.CRITERIA, pivotparams.getCriteria());
 		setResult(FacilioConstants.ContextNames.PIVOT_TEMPLATE_JSON, pivotparams.getTemplateJSON());
 		
+		return SUCCESS;
+	}
+
+
+	private int scatterGraphId;
+	private String scatterGraphLabel;
+	private String scatterGraphValue;
+	private String scatterGraphAction;
+
+	public int getScatterGraphId() {
+		return scatterGraphId;
+	}
+
+	public void setScatterGraphId(int scatterGraphId) {
+		this.scatterGraphId = scatterGraphId;
+	}
+
+	public String getScatterGraphLabel() {
+		return scatterGraphLabel;
+	}
+
+	public void setScatterGraphLabel(String scatterGraphLabel) {
+		this.scatterGraphLabel = scatterGraphLabel;
+	}
+
+	public String getScatterGraphValue() {
+		return scatterGraphValue;
+	}
+
+	public void setScatterGraphValue(String scatterGraphValue) {
+		this.scatterGraphValue = scatterGraphValue;
+	}
+
+	public String getScatterGraphAction() {
+		return scatterGraphAction;
+	}
+
+	public void setScatterGraphAction(String scatterGraphAction) {
+		this.scatterGraphAction = scatterGraphAction;
+	}
+
+	public String scatterLineGraph() throws Exception {
+		//setResult("result","success");
+		FacilioModule module = ModuleFactory.getScatterGraphLineModule();
+		FacilioContext context = new FacilioContext();
+		// FacilioChain chain = FacilioChain.
+		if(getScatterGraphAction() != null && (getScatterGraphAction().equals("ADD") || getScatterGraphAction().equals("MODIFY"))){
+			System.out.println("Add or update data to database");
+			if(getScatterGraphValue() != null && getScatterGraphLabel()!= null){
+				FacilioChain chain = TransactionChainFactory.addOrUpdateScatterGraph();
+				context.put(FacilioConstants.ContextNames.SCATTER_GRAPH_ID, getScatterGraphId());
+				context.put(FacilioConstants.ContextNames.SCATTER_GRAPH_LABEL, getScatterGraphLabel());
+				context.put(FacilioConstants.ContextNames.SCATTER_GRAPH_VALUE, getScatterGraphValue());
+				chain.execute(context);
+				setResult("id", context.get(FacilioConstants.ContextNames.SCATTER_GRAPH_RESULT));
+			}
+
+		} else if(getScatterGraphAction() != null && getScatterGraphAction().equals("DELETE")){
+			System.out.println("Delete data in database");
+			FacilioChain chain = TransactionChainFactory.deleteScatterGraph();
+			context.put(FacilioConstants.ContextNames.SCATTER_GRAPH_ID, getScatterGraphId());
+			chain.execute(context);
+			setResult("result", "Success");
+		}
+		else if(getScatterGraphAction() != null && getScatterGraphAction().equals("GET_BY_ID")){
+			System.out.println("Get data from database by Id");
+			context.put(FacilioConstants.ContextNames.SCATTER_GRAPH_ID,getScatterGraphId());
+			FacilioChain chain = ReadOnlyChainFactory.getScatterGraphById();
+			chain.execute(context);
+			setResult("result",context.get(FacilioConstants.ContextNames.SCATTER_GRAPH_RESULT));
+		} else {
+			System.out.println("Get data from database");
+			FacilioChain chain = ReadOnlyChainFactory.getScatterGraph();
+			chain.execute(context);
+			setResult("result",context.get(FacilioConstants.ContextNames.SCATTER_GRAPH_RESULT));
+		}
 		return SUCCESS;
 	}
 }

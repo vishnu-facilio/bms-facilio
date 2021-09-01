@@ -2556,6 +2556,10 @@
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="fetchCriteriaReport">
 		</action>
+		<action name="scatterLineGraph"
+				class="com.facilio.bmsconsole.actions.V2ReportAction"
+				method="scatterLineGraph">
+		</action>
 	</package>
 
 	<package name="reportFoldersApiv2"

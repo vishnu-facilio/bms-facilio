@@ -1905,6 +1905,12 @@ public class FacilioConstants {
 		public static final String LOCKERS = "lockers";
 		public static final String PARKING_STALL = "parkingstall";
 
+		public static final String SCATTER_GRAPH_LABEL = "scatterGraphLabel";
+		public static final String SCATTER_GRAPH_VALUE = "scatterGraphValue";
+		public static final String SCATTER_GRAPH_ID = "scatterGraphId";
+		public static final String SCATTER_GRAPH_RESULT = "scatterGraphResult";
+		public static final String SCATTER_BASELINE_DATA = "baselineData";
+		public static final String SCATTER_BASELINE_COLOR = "baselineDataColor";
 
 		public static class WorkPermit {
 			public static final String WORK_PERMIT_TYPE_CHECKLIST = "workpermittypechecklist";
