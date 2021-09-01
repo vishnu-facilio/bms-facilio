@@ -8,12 +8,8 @@
     <package name="v3InternalApi" strict-method-invocation="false" extends="v3BaseApi">
         
         <interceptors>
-            <interceptor name="internalauthinterceptor" class="com.facilio.auth.ServiceTokenInterceptor" />
             <interceptor-stack name="defaultInterceptor">
                 <interceptor-ref name="defaultStack" />
-                <interceptor-ref name="internalauthinterceptor">
-                    <param name="service">iam</param>
-                </interceptor-ref>
                 <interceptor-ref name="json">
                     <param name="enableSMD">true</param>
                 </interceptor-ref>

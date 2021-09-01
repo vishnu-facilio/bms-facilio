@@ -172,10 +172,10 @@ public class IamClient {
             region = "us-west-2";
         }
 
-        String jwt = AuthUtils.generateServiceToken("facilio", region, "iam");
-        Map<String, String> headers = new HashMap<>();
-        headers.put("Authorization", jwt);
-    	return headers;
+//        String jwt = AuthUtils.generateServiceToken("facilio", region, "iam");
+//        Map<String, String> headers = new HashMap<>();
+//        headers.put("Authorization", jwt);
+    	return null;
     }
 
     private static JSONObject getJsonFromResponse(HttpResponse response) throws ParseException {
