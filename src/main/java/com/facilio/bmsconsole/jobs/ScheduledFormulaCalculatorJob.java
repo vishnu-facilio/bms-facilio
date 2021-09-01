@@ -47,9 +47,9 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 	@Override
 	public void execute(JobContext jc) {
 		LOGGER.info("JOB ID for ScheduledFormulaCalculatorJob " + jc.getJobId());
+		long jobStartTime = System.currentTimeMillis();
 		int formulaLim = 0;
 		try {
-			long jobStartTime = System.currentTimeMillis();
 			List<Integer> types = getFrequencyTypesToBeFetched();
 			LOGGER.log(Level.INFO, "Frequencies to be fetched for Scheduled Formula Calculation : "+types);
 			List<FormulaFieldContext> formulas = FormulaFieldAPI.getActiveScheduledFormulasOfFrequencyType(types);
@@ -126,10 +126,11 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 					}
 				}
 			}
-			LOGGER.info("Time taken for ScheduledFormulaExecution job : "+(System.currentTimeMillis() - jobStartTime));
 		} catch (Exception e) {
 			LOGGER.info("Exception occurred ", e);
 			CommonCommandUtil.emailException("ScheduledFormulaCalculatorJobENPI", "EnPI Calculation job failed for orgid : "+jc.getOrgId(), e);
+		} finally {
+			LOGGER.info("Time taken for ScheduledFormulaExecution job : "+(System.currentTimeMillis() - jobStartTime));
 		}
 	}
 	

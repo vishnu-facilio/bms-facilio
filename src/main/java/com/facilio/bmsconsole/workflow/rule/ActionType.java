@@ -831,6 +831,9 @@ public enum ActionType {
 			long currentTime = System.currentTimeMillis();
 			for (Object key : obj.keySet()) {
 				FacilioField field = modBean.getField((String) key, currentRule.getModule().getName());
+				if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 324 && field == null){
+					LOGGER.info("perform action : key : " + key + ", field : " + field + ", module : " + currentRule.getModule() + " , current rule : "+ currentRule.getId());
+				}
 				if (field != null) {
 					Object val = obj.get(key);
 					if (val != null) {

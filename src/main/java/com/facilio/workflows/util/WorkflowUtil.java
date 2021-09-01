@@ -2308,7 +2308,7 @@ public class WorkflowUtil {
 		}
 		for(String key : keys) {
 			String value = "0";
-			if(variablesMap.get(key) != null) {
+			if(variablesMap.get(key) != null && !StringUtils.isEmpty(variablesMap.get(key).toString())) {
 				value = variablesMap.get(key).toString();
 				if (NumberUtils.isCreatable(value)) {
 					value = DEFAULT_DECIMAL_FORMAT.format(Double.parseDouble(value));
