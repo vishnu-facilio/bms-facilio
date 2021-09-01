@@ -9,6 +9,13 @@ import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 
+/**
+ * Delete Global variable group command. It will throw error, if any variables is assigned with the variable group.
+ * It is needed that we should delete all the variables if we are using this command.
+ *
+ * If it is needed to cascade all the variables along with Variable Group,
+ * use this method instead, {@link GlobalVariableUtil#deleteVariableGroup}.
+ */
 public class DeleteGlobalVariableGroupCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {

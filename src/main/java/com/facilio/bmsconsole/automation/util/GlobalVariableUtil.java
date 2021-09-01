@@ -32,6 +32,11 @@ public class GlobalVariableUtil {
         return variableGroup;
     }
 
+    /**
+     * Deletes variable group, along with variables assigned with this group.
+     * @param id
+     * @throws Exception
+     */
     public static void deleteVariableGroup(Long id) throws Exception {
         GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
                 .table(ModuleFactory.getGlobalVariableGroupModule().getTableName())
