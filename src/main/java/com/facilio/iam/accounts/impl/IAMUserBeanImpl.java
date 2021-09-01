@@ -846,10 +846,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	@SneakyThrows
 	@Override
 	public Integer lookupUserDC(String username, GroupType groupType) {
-// 		Temporarily disabling for testing in stage
-//		if (isUserPresentInCurrentDC(username, groupType)) {
-//			return null;
-//		}
+ 		Temporarily disabling for testing in stage
+		if (isUserPresentInCurrentDC(username, groupType)) {
+			return null;
+		}
 		
 		Integer dc = IamClient.lookupUserDC(username, groupType);
 		if (dc == null || dc <= 0) {
