@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.chain.FacilioChain;
@@ -184,7 +185,8 @@ public class GetAllFieldsCommand extends FacilioCommand {
 			}
 			fields.removeAll(fieldsToRemove);
 			fields.addAll(FieldFactory.getSystemPointFields(mod));
-		} else if (Arrays.asList(ContextNames.SERVICE_REQUEST, ContextNames.QUOTE, ContextNames.PURCHASE_ORDER, ContextNames.PURCHASE_REQUEST, ContextNames.SAFETY_PLAN, ContextNames.HAZARD, ContextNames.PRECAUTION, ContextNames.MOVES, ContextNames.VENDORS, ContextNames.INSURANCE, ContextNames.ASSET).contains(mod.getName())) {
+		} else if (Arrays.asList(ContextNames.SERVICE_REQUEST, ContextNames.QUOTE, ContextNames.PURCHASE_ORDER, ContextNames.PURCHASE_REQUEST, ContextNames.SAFETY_PLAN, ContextNames.HAZARD, ContextNames.PRECAUTION, ContextNames.MOVES, ContextNames.VENDORS, ContextNames.INSURANCE, ContextNames.ASSET).contains(mod.getName())
+				&& (FacilioProperties.isProduction() || !FieldUtil.SYSTEM_FIELDS_MIGRATED_MODULES.contains(moduleName)) ) {
 			fields.addAll(FieldFactory.getSystemPointFields(mod));
 		}
 		

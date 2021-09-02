@@ -541,7 +541,7 @@ public class FieldUtil {
 		return SYSTEM_FIELDS_ALLOWED_MODULES.contains(module.getName());
 	}
 
-	private static final Set<String> SYSTEM_FIELDS_MIGRATED_MODULES = Collections.unmodifiableSet(
+	public static final Set<String> SYSTEM_FIELDS_MIGRATED_MODULES = Collections.unmodifiableSet(
 			new HashSet<>(Arrays.asList(
 					FacilioConstants.ContextNames.ATTENDANCE,
 					FacilioConstants.ContextNames.ASSET_ACTIVITY,
