@@ -24,20 +24,26 @@ public class ValidateSpecialAvailabilityCommandV3 extends FacilioCommand {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<FacilitySpecialAvailabilityContext> splAvailabilities = recordMap.get(moduleName);
-        if(CollectionUtils.isNotEmpty(splAvailabilities)) {
+        if (CollectionUtils.isNotEmpty(splAvailabilities)) {
             DateTimeFormatter formatter = DateTimeUtil.getDateTimeFormat("dd/MM/YYYY");
-            for(FacilitySpecialAvailabilityContext splAvailability : splAvailabilities){
-                if(splAvailability.getFacility() != null) {
+            for (FacilitySpecialAvailabilityContext splAvailability : splAvailabilities) {
+                if (splAvailability.getFacility() != null) {
                     FacilityContext facility = (FacilityContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.FacilityBooking.FACILITY, splAvailability.getFacility().getId(), FacilityContext.class);
                     if (facility != null) {
-                        if (splAvailability.getStartDate() <= facility.getSlotGeneratedUpto() || splAvailability.getEndDate() <= facility.getSlotGeneratedUpto()) {
-                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Slots are already created for the selected dates. Please select a date after " + formatter.format(DateTimeUtil.getDateTime(facility.getSlotGeneratedUpto())));
+                        if (splAvailability.getStartDate() != null && splAvailability.getEndDate() != null && splAvailability.getStartTime() != null && splAvailability.getEndTime() != null) {
+                            if (splAvailability.getStartDate() > splAvailability.getEndDate()) {
+                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Please enter valid dates.");
+                            }
+                            if (splAvailability.getStartDate() <= facility.getSlotGeneratedUpto() || splAvailability.getEndDate() <= facility.getSlotGeneratedUpto()) {
+                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Slots are already created for the selected dates. Please select a date after " + formatter.format(DateTimeUtil.getDateTime(facility.getSlotGeneratedUpto())));
+                            }
+                        } else {
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Please enter all the mandatory fields.");
                         }
                     }
                 }
             }
         }
-
         return false;
     }
 }

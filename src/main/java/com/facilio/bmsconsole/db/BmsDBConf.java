@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.db;
 import com.facilio.accounts.dto.*;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.chain.FacilioChain;
@@ -150,6 +151,11 @@ public class BmsDBConf extends DBConf {
         String url = String.format("jdbc:mysql://%s:%s/", password.get("host"), password.get("port"));
         password.put("url", url);
         return password;
+    }
+
+    @Override
+    public String getSecretManager() {
+        return FacilioProperties.getSecretManager();
     }
 
     @Override
@@ -575,6 +581,11 @@ public class BmsDBConf extends DBConf {
     @Override
     public Organization getOrg(String orgDomain) throws Exception {
         return IAMUtil.getOrgBean().getOrgv2(orgDomain);
+    }
+
+    @Override
+    public String getRegion() throws Exception {
+        return FacilioProperties.getRegion();
     }
 
     @Override

@@ -44,6 +44,7 @@ import com.facilio.bmsconsoleV3.commands.floorplan.V3ValidateSpaceCommand;
 import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.SetItemTypesUnitCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksCommand;
@@ -59,6 +60,9 @@ import com.facilio.bmsconsoleV3.commands.purchaserequest.FetchPurchaseRequestDet
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestSummaryLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
+import com.facilio.bmsconsoleV3.commands.service.GetServiceVendorListCommandV3;
+import com.facilio.bmsconsoleV3.commands.service.UpdateStatusCommandV3;
+import com.facilio.bmsconsoleV3.commands.service.UpdateVendorV3;
 import com.facilio.bmsconsoleV3.commands.servicerequest.AddRequesterForServiceRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.servicerequest.LoadServiceRequestLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.site.AddOrUpdateSiteLocationCommand;
@@ -409,9 +413,10 @@ public class APIv3Config {
     public static Supplier<V3Config> getInsurance() {
         return () -> new V3Config(V3InsuranceContext.class, new ModuleCustomFieldCount30())
                 .create()
-                    .beforeSave(new AssociateVendorToInsuranceCommandV3())
+                    .beforeSave(TransactionChainFactoryV3.getAssociatedVendorAndValidationBeforeSaveChain())
                     .afterSave(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand())
                 .update()
+                    .beforeSave(new ValidateDateCommandV3())
                 .list()
                     .beforeFetch(new LoadInsuranceLookUpCommandV3())
                 .summary()
@@ -1351,6 +1356,20 @@ public class APIv3Config {
                 .delete()
                 .summary().beforeFetch(new SpaceFillLookupFieldsCommand())
                 .list().beforeFetch(new SpaceFillLookupFieldsCommand())
+                .build();
+    }
+    @Module("service")
+    public static Supplier<V3Config> getService() {
+        return () -> new V3Config(V3ServiceContext.class, new ModuleCustomFieldCount30())
+                .create()
+                  .beforeSave(new UpdateStatusCommandV3())
+                  .afterSave(new UpdateVendorV3())
+                .update()
+                  .afterSave(new UpdateVendorV3())
+                .delete()
+                .list()
+                .summary()
+                  .afterFetch(new GetServiceVendorListCommandV3())
                 .build();
     }
 }

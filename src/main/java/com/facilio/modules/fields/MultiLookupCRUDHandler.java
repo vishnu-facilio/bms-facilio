@@ -115,7 +115,7 @@ public class MultiLookupCRUDHandler extends BaseMultiValueCRUDHandler<Object> {
                         break;
                     case RIGHT:
                         parentObject = rel.getRight();
-                        value = rel.getRight();
+                        value = rel.getLeft();
                         break;
                 }
 

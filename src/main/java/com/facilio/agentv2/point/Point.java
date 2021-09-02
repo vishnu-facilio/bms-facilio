@@ -37,6 +37,7 @@ public abstract class Point extends FacilioPoint{
     }
 
     private long agentId;
+    @JsonInclude
     private long orgId;
     @JsonInclude
     private String displayName;
@@ -84,6 +85,7 @@ public abstract class Point extends FacilioPoint{
         if (getId() > 0) {
             pointJSON.put(AgentConstants.ID,getId());
         }
+        pointJSON.put(AgentConstants.AGENT_ID,agentId);
         pointJSON.put(AgentConstants.ORGID,orgId);
         pointJSON.put(AgentConstants.NAME,getName());
         pointJSON.put(AgentConstants.DISPLAY_NAME,getDisplayName());
@@ -243,6 +245,9 @@ public abstract class Point extends FacilioPoint{
         }
         if(row.containsKey(AgentConstants.ASSET_CATEGORY_ID)){
             setCategoryId((Long) row.get(AgentConstants.ASSET_CATEGORY_ID));
+        }
+        if(row.containsKey(AgentConstants.AGENT_ID)){
+            setAgentId((Long) row.get(AgentConstants.AGENT_ID));
         }
         return this;
     }

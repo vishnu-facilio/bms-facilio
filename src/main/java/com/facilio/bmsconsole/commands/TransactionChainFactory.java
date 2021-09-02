@@ -4729,6 +4729,7 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForInsurance());
 		c.addCommand(new AssociateVendorToInsuranceFromRequesterCommand());
+		c.addCommand(new ValidateDateCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new ExecuteStateFlowCommand());
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.MODULE_RULE));
@@ -4742,6 +4743,7 @@ public class TransactionChainFactory {
 	public static FacilioChain updateInsurancesChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForInsurance());
+		c.addCommand(new ValidateDateCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new ChangeApprovalStatusForModuleDataCommand());

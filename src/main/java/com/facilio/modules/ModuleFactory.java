@@ -2590,6 +2590,7 @@ public class ModuleFactory {
 		niagaraPointModule.setName("niagaraPoint");
 		niagaraPointModule.setDisplayName("NiagaraPoint");
 		niagaraPointModule.setTableName("Niagara_Point");
+		niagaraPointModule.setExtendModule(getPointModule());
 		return niagaraPointModule;
 	}
 	
@@ -2598,6 +2599,7 @@ public class ModuleFactory {
 		bacnetIpPointModule.setName("bacnetIpPoint");
 		bacnetIpPointModule.setDisplayName("BACnetIPPoint");
 		bacnetIpPointModule.setTableName("BACnet_IP_Point");
+		bacnetIpPointModule.setExtendModule(getPointModule());
 		return bacnetIpPointModule;
 	}
 	
@@ -2606,6 +2608,7 @@ public class ModuleFactory {
 		modbusPointModule.setName("modbusTcpPoint");
 		modbusPointModule.setDisplayName("ModbusTcpPoint");
 		modbusPointModule.setTableName("Modbus_Tcp_Point");
+		modbusPointModule.setExtendModule(getPointModule());
 		return modbusPointModule;
 	}
 	public static FacilioModule getModbusRtuPointModule() {
@@ -2613,6 +2616,7 @@ public class ModuleFactory {
 		modbusPointModule.setName("modbusRtuPoint");
 		modbusPointModule.setDisplayName("ModbusRtuPoint");
 		modbusPointModule.setTableName("Modbus_Rtu_Point");
+		modbusPointModule.setExtendModule(getPointModule());
 		return modbusPointModule;
 	}
 	
@@ -2621,6 +2625,7 @@ public class ModuleFactory {
 		opcUAPointModule.setName("opcUAPoint");
 		opcUAPointModule.setDisplayName("OPCUAPoint");
 		opcUAPointModule.setTableName("OPC_UA_Point");
+		opcUAPointModule.setExtendModule(getPointModule());
 		return opcUAPointModule;
 	}
 
@@ -2629,6 +2634,7 @@ public class ModuleFactory {
 		opcXmlDAPointModule.setName("opcXmlDAPoint");
 		opcXmlDAPointModule.setDisplayName("OPCXMLDAPoint");
 		opcXmlDAPointModule.setTableName("OPC_XML_DA_Point");
+		opcXmlDAPointModule.setExtendModule(getPointModule());
 		return opcXmlDAPointModule;
 	}
 
@@ -2645,6 +2651,7 @@ public class ModuleFactory {
 		opcXmlDAPointModule.setName("miscPoint");
 		opcXmlDAPointModule.setDisplayName("MiscPoint");
 		opcXmlDAPointModule.setTableName("Misc_Point");
+		opcXmlDAPointModule.setExtendModule(getPointModule());
 		return opcXmlDAPointModule;
 	}
 

@@ -117,6 +117,7 @@ public class FieldFactory extends BaseFieldFactory {
         return getField(AgentConstants.UPDATED_TIME, "UPDATED_TIME", module, FieldType.NUMBER);
     }
 
+
     public static Collection<FacilioField> getSecretFileFields() {
         FacilioModule module = ModuleFactory.getSecretFileModule();
         List<FacilioField> fields = new ArrayList<>();
@@ -2995,7 +2996,7 @@ public class FieldFactory extends BaseFieldFactory {
         }
 
         FacilioField emailFromAddress = new FacilioField();
-        emailFromAddress.setName("from");
+        emailFromAddress.setName("fromID");
         emailFromAddress.setDataType(FieldType.NUMBER);
         emailFromAddress.setColumnName("FROM_ADDRESS");
         emailFromAddress.setModule(module);
@@ -6771,6 +6772,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField(AgentConstants.CREATED_TIME, "CREATED_TIME", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.MAPPED_TIME, "MAPPED_TIME", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.UNIT, "UNIT", module, FieldType.NUMBER));
+        fields.add(getField(AgentConstants.AGENT_ID, "AGENT_ID", module, FieldType.NUMBER));
         //fields.add(getNewDeletedTimeField(module));
         SystemEnumField configureStatusfield = (SystemEnumField) getField(AgentConstants.CONFIGURE_STATUS, "CONFIGURE_STATUS", module, FieldType.SYSTEM_ENUM);
         configureStatusfield.setEnumName("ConfigureStatus");
@@ -6828,7 +6830,8 @@ public class FieldFactory extends BaseFieldFactory {
     public static List<FacilioField> getNiagaraPointFields() {
         FacilioModule module = ModuleFactory.getNiagaraPointModule();
         List<FacilioField> fields = new ArrayList<>();
-        fields.add(getIdNotPrimaryField(module));
+        fields.addAll(getPointFields());
+        fields.add(getIdField(module));
         fields.add(getControllerIdField(module));
         fields.add(getFieldDeviceId(module));
         fields.add(getField(AgentConstants.PATH, "PATH", module, FieldType.STRING));
@@ -6838,20 +6841,25 @@ public class FieldFactory extends BaseFieldFactory {
     public static List<FacilioField> getOPCXmlDAPointFields() {
         FacilioModule module = ModuleFactory.getOPCXmlDAPointModule();
         List<FacilioField> fields = new ArrayList<>();
-        fields.add(getIdNotPrimaryField(module));
+        fields.addAll(getPointFields());
+        fields.add(getIdField(module));
         fields.add(getControllerIdField(module));
         fields.add(getFieldDeviceId(module));
         fields.add(getField(AgentConstants.PATH, "PATH", module, FieldType.STRING));
+
         return fields;
     }
 
     public static List<FacilioField> getMiscPointFields() {
         FacilioModule module = ModuleFactory.getMiscPointModule();
         List<FacilioField> fields = new ArrayList<>();
-        fields.add(getIdNotPrimaryField(module));
+        fields.addAll(getPointFields());
+        fields.add(getIdField(module));
         fields.add(getControllerIdField(module));
         fields.add(getFieldDeviceId(module));
         fields.add(getField(AgentConstants.PATH, "PATH", module, FieldType.STRING));
+
+
         return fields;
     }
 
@@ -6859,7 +6867,8 @@ public class FieldFactory extends BaseFieldFactory {
     public static List<FacilioField> getOPCUAPointFields() {
         FacilioModule module = ModuleFactory.getOPCUAPointModule();
         List<FacilioField> fields = new ArrayList<>();
-        fields.add(getIdNotPrimaryField(module));
+        fields.addAll(getPointFields());
+        fields.add(getIdField(module));
         fields.add(getFieldDeviceId(module));
         fields.add(getControllerIdField(module));
         fields.add(getField(AgentConstants.NAMESPACE, "NAME_SPACE", module, FieldType.NUMBER));
@@ -6870,7 +6879,8 @@ public class FieldFactory extends BaseFieldFactory {
     public static List<FacilioField> getModbusTcpPointFields() {
         FacilioModule module = ModuleFactory.getModbusTcpPointModule();
         List<FacilioField> fields = new ArrayList<>();
-        fields.add(getIdNotPrimaryField(module));
+        fields.addAll(getPointFields());
+        fields.add(getIdField(module));
         fields.add(getFieldDeviceId(module));
         fields.add(getControllerIdField(module));
         fields.add(getField(AgentConstants.REGISTER_NUMBER, "REGISTER_NUMBER", module, FieldType.NUMBER));
@@ -6881,7 +6891,8 @@ public class FieldFactory extends BaseFieldFactory {
     public static List<FacilioField> getSystemPointFields(){
         FacilioModule module = ModuleFactory.getSystemPointModule();
         List<FacilioField> fields = new ArrayList<>();
-        fields.add(getIdNotPrimaryField(module));
+        fields.addAll(getPointFields());
+        fields.add(getIdField(module));
         fields.add(getControllerIdField(module));
         fields.add(getNameField(module));
         fields.add(getFieldDeviceId(module));
@@ -6905,7 +6916,8 @@ public class FieldFactory extends BaseFieldFactory {
     public static List<FacilioField> getModbusRtuPointFields() {
         FacilioModule module = ModuleFactory.getModbusRtuPointModule();
         List<FacilioField> fields = new ArrayList<>();
-        fields.add(getIdNotPrimaryField(module));
+        fields.addAll(getPointFields());
+        fields.add(getIdField(module));
         fields.add(getFieldDeviceId(module));
         fields.add(getControllerIdField(module));
         fields.add(getField(AgentConstants.REGISTER_NUMBER, "REGISTER_NUMBER", module, FieldType.NUMBER));
@@ -6918,7 +6930,8 @@ public class FieldFactory extends BaseFieldFactory {
     public static List<FacilioField> getBACnetIPPointFields() {
         FacilioModule module = ModuleFactory.getBACnetIPPointModule();
         List<FacilioField> fields = new ArrayList<>();
-        fields.add(getIdNotPrimaryField(module));
+        fields.addAll(getPointFields());
+        fields.add(getIdField(module));
         fields.add(getControllerIdField(module));
         fields.add(getFieldDeviceId(module));
         fields.add(getField(AgentConstants.INSTANCE_NUMBER, "INSTANCE_NUMBER", module, FieldType.NUMBER));
