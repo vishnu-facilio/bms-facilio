@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.workflow.rule;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
@@ -9,9 +11,12 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.EmailAttachmentAPI;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
+import com.facilio.bmsconsole.context.TemplateFileContext;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 
 public class ActionContext implements Serializable {
@@ -113,6 +118,17 @@ public class ActionContext implements Serializable {
 				if(actionObj != null && (!actionObj.containsKey("mailType") || actionObj.get("mailType") == null)) {
 					actionObj.put("mailType", type);
 				}
+			}
+			
+			if (template.getId() > 0) {
+				 List<TemplateFileContext> attachments = EmailAttachmentAPI.getAttachments("templatefileattachment",template.getId());
+				 if (attachments != null && !attachments.isEmpty()) {
+					 Map<String,String> attachementMap = new HashMap<String, String>();
+					 for (TemplateFileContext attachment : attachments) {
+						 attachementMap.put(attachment.getFileName(), attachment.getDownloadUrl());
+					 }
+					 context.put(FacilioConstants.ContextNames.ATTACHMENT_MAP_FILE_LIST, attachementMap);
+				 }
 			}
 
 			actionType.performAction(actionObj, context, currentRule, currentRecord);

@@ -158,6 +158,7 @@ public enum ActionType {
 				try {
 					JSONArray toEmails = null;
 					Object toAddr = obj.remove("to");
+					Map<String,String> attachements = (Map<String, String>) context.get(FacilioConstants.ContextNames.ATTACHMENT_MAP_FILE_LIST);
 
 					if (toAddr instanceof JSONArray) {
 						toEmails = (JSONArray) toAddr;
@@ -176,6 +177,11 @@ public enum ActionType {
 								}
 							}
 							obj.put("to", activeToEmails.toString());
+							if(attachements != null && !attachements.isEmpty()) {
+								FacilioFactory.getEmailClient().sendEmailWithActiveUserCheck(obj, attachements);
+							}else {
+								FacilioFactory.getEmailClient().sendEmailWithActiveUserCheck(obj);
+							}
 							FacilioFactory.getEmailClient().sendEmailWithActiveUserCheck(obj);
 						} else {
 							for (Object toEmail : toEmails) {
@@ -187,7 +193,11 @@ public enum ActionType {
 										LOGGER.info("Gonna Email : " + obj.toJSONString());
 									}
 
-									FacilioFactory.getEmailClient().sendEmailWithActiveUserCheck(obj);
+									if(attachements != null && !attachements.isEmpty()) {
+										FacilioFactory.getEmailClient().sendEmailWithActiveUserCheck(obj, attachements);
+									}else {
+										FacilioFactory.getEmailClient().sendEmailWithActiveUserCheck(obj);
+									}
 								}
 							}
 						}
