@@ -122,7 +122,7 @@ public class GetApplicationDetails extends FacilioCommand {
 							if(!fetchAllLayouts) {
 								webTabs.removeIf(t -> !hasLicense(t));
 							}
-							if(CollectionUtils.isNotEmpty(webTabs) && considerRole != null && considerRole) {
+							if(CollectionUtils.isNotEmpty(webTabs) && considerRole != null && considerRole && AccountUtil.getCurrentUser() != null && !AccountUtil.getCurrentUser().getRole().isPrevileged()) {
 								webTabs.removeIf(t -> t.getPermissionVal() <= 0);
 							}
 							webTabGroup.setWebTabs(webTabs);
