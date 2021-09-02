@@ -60,7 +60,7 @@ public class AddQAndAModules extends SignUpData {
     private void addAnswerAttachmentModule(FacilioModule answer) throws Exception {
 		
     	FacilioModule module = new FacilioModule();
-    	module.setName(answer.getName() + "attachments");
+    	module.setName(FacilioConstants.QAndA.Answers.ATTACHMENT);
     	module.setDisplayName(answer.getDisplayName() + " Attachments");
     	module.setTableName("Q_And_A_Answer_Attachments");
     	module.setType(FacilioModule.ModuleType.ATTACHMENTS);

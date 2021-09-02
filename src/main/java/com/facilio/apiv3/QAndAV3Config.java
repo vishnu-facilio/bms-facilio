@@ -13,6 +13,7 @@ import com.facilio.qa.context.questions.MCQOptionContext;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
+import com.facilio.v3.context.AttachmentV3Context;
 
 @Config
 public class QAndAV3Config {
@@ -62,6 +63,12 @@ public class QAndAV3Config {
                 .delete()
                     .beforeDelete(QAndATransactionChainFactory.beforeAnswerDeleteChain())
                     .afterDelete(QAndATransactionChainFactory.afterAnswerDeleteChain())
+                .build();
+    }
+
+    @Module(FacilioConstants.QAndA.Answers.ATTACHMENT)
+    public static Supplier<V3Config> getAnswerAttachment() {
+        return () -> new V3Config(AttachmentV3Context.class, null)
                 .build();
     }
 
