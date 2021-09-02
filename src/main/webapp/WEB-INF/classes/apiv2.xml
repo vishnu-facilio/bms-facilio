@@ -6613,7 +6613,7 @@
 		<action name="viewList"
 				class="com.facilio.bmsconsole.actions.ViewAction" method="v2viewlist">
 		</action>
-		<action name="*" class="com.facilio.bmsconsole.actions.FormAction" method="formDetails">
+		<action name="forms" class="com.facilio.bmsconsole.actions.FormAction" method="formDetails">
 			<param name="moduleName">{1}</param>
 		</action>
 		<action name="list"
