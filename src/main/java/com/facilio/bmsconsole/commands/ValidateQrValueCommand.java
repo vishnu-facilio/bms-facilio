@@ -1,7 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.*;
-import com.facilio.bmsconsole.context.ResourceContext;
+
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.command.FacilioCommand;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -19,7 +20,7 @@ public class ValidateQrValueCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         // TODO Auto-generated method stub
-        ResourceContext asset = (ResourceContext) context.get(FacilioConstants.ContextNames.RECORD);
+        AssetContext asset = (AssetContext) context.get(FacilioConstants.ContextNames.RECORD);
         List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
         String qrValue = asset.getQrVal();
         if (StringUtils.isNotEmpty(qrValue)) {
@@ -43,16 +44,16 @@ public class ValidateQrValueCommand extends FacilioCommand {
             }
             //edit asset
             if (CollectionUtils.isNotEmpty(recordIds)) {
-                SelectRecordsBuilder<ResourceContext> builder = new SelectRecordsBuilder<ResourceContext>()
+                SelectRecordsBuilder<AssetContext> builder = new SelectRecordsBuilder<AssetContext>()
                         .module(module)
                         .beanClass(beanClassName)
                         .select(fields)
                         .andCondition(CriteriaAPI.getIdCondition(recordIds, module));
-                List<ResourceContext> records = builder.get();
+                List<AssetContext> records = builder.get();
 
-                for (ResourceContext record : records) {
+                for (AssetContext record : records) {
                     if (!(qrValue.equals(record.getQrVal()))) {
-                        List<ResourceContext> qrValueRecords = selectQueryMethod(module,beanClassName,fields,qrValue);
+                        List<AssetContext> qrValueRecords = checkQrValue(module,beanClassName,fields,qrValue);
                         if (qrValueRecords.size() >= 1) {
                             throw new IllegalArgumentException("QR Value already exists");
                         }
@@ -61,7 +62,7 @@ public class ValidateQrValueCommand extends FacilioCommand {
             }
             //create asset
             else {
-                List<ResourceContext> qrValueRecords = selectQueryMethod(module,beanClassName,fields,qrValue);
+                List<AssetContext> qrValueRecords = checkQrValue(module,beanClassName,fields,qrValue);
                 if (qrValueRecords.size() >= 1) {
                     throw new IllegalArgumentException("QR Value already exists");
                 }
@@ -69,13 +70,13 @@ public class ValidateQrValueCommand extends FacilioCommand {
         }
         return false;
     }
-    private List<ResourceContext> selectQueryMethod(FacilioModule module,Class beanClassName,List<FacilioField> fields,String qrValue) throws Exception{
-        SelectRecordsBuilder<ResourceContext> selectRecordsBuilder = new SelectRecordsBuilder<ResourceContext>()
+    private List<AssetContext> checkQrValue(FacilioModule module,Class beanClassName,List<FacilioField> fields,String qrValue) throws Exception{
+        SelectRecordsBuilder<AssetContext> selectRecordsBuilder = new SelectRecordsBuilder<AssetContext>()
                 .module(module)
                 .beanClass(beanClassName)
                 .select(fields)
                 .andCondition(CriteriaAPI.getCondition("QR_VALUE", "qrVal", qrValue, NumberOperators.EQUALS));
-        List<ResourceContext> qrValueRecords = selectRecordsBuilder.get();
+        List<AssetContext> qrValueRecords = selectRecordsBuilder.get();
         return qrValueRecords;
     }
 }
