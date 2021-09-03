@@ -3,17 +3,14 @@ package com.facilio.bmsconsole.automation.util;
 import com.facilio.bmsconsole.automation.context.GlobalVariableContext;
 import com.facilio.bmsconsole.automation.context.GlobalVariableGroupContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
-import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 
-import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 
 public class GlobalVariableUtil {
 
@@ -46,16 +43,19 @@ public class GlobalVariableUtil {
         builder.delete();
     }
 
-    public static void addGlobalVariable(GlobalVariableContext variable) throws Exception {
-        GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+    public static void deleteVariable(Long id) throws Exception {
+        GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
                 .table(ModuleFactory.getGlobalVariableModule().getTableName())
-                .fields(FieldFactory.getGlobalVariableGroupFields());
-        Map<String, Object> map = FieldUtil.getAsProperties(variable);
-        long id = builder.insert(map);
-        variable.setId(id);
+                .andCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getGlobalVariableModule()));
+        builder.delete();
     }
 
-    public static void updateGlobalVariable(GlobalVariableContext variable) throws Exception {
-
+    public static List<GlobalVariableContext> getAllGlobalVariables(Long groupId) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getGlobalVariableModule().getTableName())
+                .select(FieldFactory.getGlobalVariableFields())
+                .andCondition(CriteriaAPI.getCondition("GROUP_ID", "groupId", String.valueOf(groupId), NumberOperators.EQUALS));
+        List<GlobalVariableContext> list = FieldUtil.getAsBeanListFromMapList(builder.get(), GlobalVariableContext.class);
+        return list;
     }
 }

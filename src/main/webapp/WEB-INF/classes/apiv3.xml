@@ -362,6 +362,9 @@
         <action name="addOrUpdate"
                 class="com.facilio.bmsconsole.actions.GlobalVariableAction"
                 method="addOrUpdate"></action>
+        <action name="delete"
+                class="com.facilio.bmsconsole.actions.GlobalVariableAction"
+                method="delete"></action>
     </package>
     
     <package name="setup" namespace="/api/v3/setup" extends="v3Api">

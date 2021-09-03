@@ -25,6 +25,14 @@ public class GlobalVariableContext implements Serializable {
         this.orgId = orgId;
     }
 
+    private long groupId = -1;
+    public long getGroupId() {
+        return groupId;
+    }
+    public void setGroupId(long groupId) {
+        this.groupId = groupId;
+    }
+
     private String name;
     public String getName() {
         return name;

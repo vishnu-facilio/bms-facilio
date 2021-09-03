@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.automation.command;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.automation.context.GlobalVariableContext;
 import com.facilio.bmsconsole.automation.context.GlobalVariableGroupContext;
+import com.facilio.bmsconsole.automation.util.GlobalVariableUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -28,6 +29,11 @@ public class AddOrUpdateGlobalVariableCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         GlobalVariableContext variable = (GlobalVariableContext) context.get(FacilioConstants.ContextNames.GLOBAL_VARIABLE);
+
+        GlobalVariableGroupContext variableGroup = GlobalVariableUtil.getVariableGroup(variable.getGroupId());
+        if (variableGroup == null) {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid group");
+        }
 
         if (StringUtils.isEmpty(variable.getName())) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Variable name is mandatory");

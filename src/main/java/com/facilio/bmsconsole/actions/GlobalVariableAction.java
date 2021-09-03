@@ -28,6 +28,14 @@ public class GlobalVariableAction extends V3Action {
         this.variable = variable;
     }
 
+    private long groupId = -1;
+    public long getGroupId() {
+        return groupId;
+    }
+    public void setGroupId(long groupId) {
+        this.groupId = groupId;
+    }
+
     public String addOrUpdateGroup() throws Exception {
         FacilioChain chain = TransactionChainFactoryV3.addOrUpdateGlobalVariableGroupChain();
         FacilioContext context = chain.getContext();
@@ -55,6 +63,7 @@ public class GlobalVariableAction extends V3Action {
         context.put(FacilioConstants.ContextNames.ID, getId());
         chain.execute();
 
+        setMessage("Variable group deleted");
         return SUCCESS;
     }
 
@@ -70,7 +79,25 @@ public class GlobalVariableAction extends V3Action {
     }
 
     public String list() throws Exception {
+        FacilioChain chain = ReadOnlyChainFactoryV3.getListGlobalVariableChain();
+        FacilioContext context = chain.getContext();
 
+        context.put(FacilioConstants.ContextNames.GROUP_ID, groupId);
+        chain.execute();
+
+        setData("list", context.get(FacilioConstants.ContextNames.GLOBAL_VARIABLE_LIST));
+
+        return SUCCESS;
+    }
+
+    public String delete() throws Exception {
+        FacilioChain chain = TransactionChainFactoryV3.deleteGlobalVariableChain();
+        FacilioContext context = chain.getContext();
+
+        context.put(FacilioConstants.ContextNames.ID, getId());
+        chain.execute();
+
+        setMessage("Variable deleted");
         return SUCCESS;
     }
 }

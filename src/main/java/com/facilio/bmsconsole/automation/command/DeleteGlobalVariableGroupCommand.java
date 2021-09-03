@@ -1,13 +1,22 @@
-package com.facilio.bmsconsoleV3.commands;
+package com.facilio.bmsconsole.automation.command;
 
+import com.facilio.bmsconsole.automation.context.GlobalVariableContext;
 import com.facilio.bmsconsole.automation.context.GlobalVariableGroupContext;
 import com.facilio.bmsconsole.automation.util.GlobalVariableUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Delete Global variable group command. It will throw error, if any variables is assigned with the variable group.
@@ -30,7 +39,11 @@ public class DeleteGlobalVariableGroupCommand extends FacilioCommand {
         return false;
     }
 
-    private void validateDelete(Long variableGroup) {
+    private void validateDelete(Long variableGroup) throws Exception {
         // don't delete if that group has variables inside
+        List<GlobalVariableContext> allGlobalVariables = GlobalVariableUtil.getAllGlobalVariables(variableGroup);
+        if (CollectionUtils.isNotEmpty(allGlobalVariables)) {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Remove variables, before removing group");
+        }
     }
 }

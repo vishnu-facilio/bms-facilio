@@ -9733,11 +9733,12 @@ public class FieldFactory extends BaseFieldFactory {
         FacilioModule module = ModuleFactory.getGlobalVariableModule();
 
         fields.add(getIdField(module));
+        fields.add(getNumberField("groupId", "GROUP_ID", module));
         fields.add(getStringField("name", "NAME", module));
         fields.add(getStringField("linkName", "LINK_NAME", module));
         fields.add(getStringField("description", "DESCRIPTION", module));
         fields.add(getNumberField("type", "TYPE", module));
-        fields.add(getStringField("value", "VALUE_STRING", module));
+        fields.add(getStringField("valueString", "VALUE_STRING", module));
 
         fields.add(getNumberField("createdBy", "CREATED_BY", module));
         fields.add(getNumberField("modifiedBy", "MODIFIED_BY", module));
