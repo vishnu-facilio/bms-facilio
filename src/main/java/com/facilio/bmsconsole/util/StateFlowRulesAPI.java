@@ -492,20 +492,20 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		return getStateTransitions(ModuleFactory.getStateRuleTransitionModule(), FieldFactory.getStateRuleTransitionFields(), stateCriteria);
 	}
 
-	public static List<WorkflowRuleContext> getExecutableStateTransitions(List<WorkflowRuleContext> stateFlows, String moduleName, ModuleBaseWithCustomFields record, Context context) throws Exception {
+	public static List<WorkflowRuleContext> getExecutableStateTransitions(List<WorkflowRuleContext> stateTransitions, String moduleName, ModuleBaseWithCustomFields record, Context context) throws Exception {
 		List<WorkflowRuleContext> list = null;
-		if (CollectionUtils.isNotEmpty(stateFlows)) {
+		if (CollectionUtils.isNotEmpty(stateTransitions)) {
 			list = new ArrayList<>();
 
 			Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, record, WorkflowRuleAPI.getOrgPlaceHolders(), 1);
 			List<UpdateChangeSet> changeSet = getDefaultFieldChangeSet(moduleName, record.getId());
 
-			Iterator<WorkflowRuleContext> iterator = stateFlows.iterator();
+			Iterator<WorkflowRuleContext> iterator = stateTransitions.iterator();
 			while (iterator.hasNext()) {
-				WorkflowRuleContext stateFlow = iterator.next();
-				boolean evaluate = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(stateFlow, moduleName, record, changeSet, recordPlaceHolders, (FacilioContext) context, false);
+				WorkflowRuleContext stateTransition = iterator.next();
+				boolean evaluate = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(stateTransition, moduleName, record, changeSet, recordPlaceHolders, (FacilioContext) context, false);
 				if (evaluate) {
-					list.add(stateFlow);
+					list.add(stateTransition);
 				}
 			}
 		}
