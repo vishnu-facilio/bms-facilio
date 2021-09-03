@@ -8,6 +8,7 @@ import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.asset.AddRotatingItemToolCommandV3;
 import com.facilio.bmsconsoleV3.commands.asset.ConstructAddAssetActivityCommandV3;
+import com.facilio.bmsconsoleV3.commands.asset.LoadAssetSummaryCommandV3;
 import com.facilio.bmsconsoleV3.commands.budget.*;
 import com.facilio.bmsconsoleV3.commands.building.AddOrUpdateBuildingLocation;
 import com.facilio.bmsconsoleV3.commands.building.BuildingFillLookupFieldsCommand;
@@ -1375,6 +1376,7 @@ public class APIv3Config {
                 .list()
                 .summary()
                   .afterFetch(new GetServiceVendorListCommandV3())
+                .build();
     }
     @Module("asset")
     public static Supplier<V3Config> getAsset() {
@@ -1382,7 +1384,7 @@ public class APIv3Config {
                 .create().beforeSave(new AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMF()).afterSave(new ConstructAddAssetActivityCommandV3(), FacilioChainFactory.getCategoryReadingsChain(), new InsertReadingDataMetaForNewResourceCommand(), new AddRotatingItemToolCommandV3(),new AddActivitiesCommand(FacilioConstants.ContextNames.ASSET_ACTIVITY), new PushDataToESCommand())
                 .update()
                 .delete()
-                .summary()
+                .summary().afterFetch(new LoadAssetSummaryCommandV3())
                 .list()
                 .build();
     }
