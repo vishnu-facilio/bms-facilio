@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.automation.command.AddOrUpdateGlobalVariableCommand;
+import com.facilio.bmsconsole.automation.command.AddOrUpdateGlobalVariableGroupCommand;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
@@ -960,15 +961,21 @@ public class TransactionChainFactoryV3 {
 	     return chain;
 	}
 
-    public static FacilioChain addOrUpdateGlobalVariableChain() {
+    public static FacilioChain addOrUpdateGlobalVariableGroupChain() {
         FacilioChain chain = getDefaultChain();
-        chain.addCommand(new AddOrUpdateGlobalVariableCommand());
+        chain.addCommand(new AddOrUpdateGlobalVariableGroupCommand());
         return chain;
     }
 
     public static FacilioChain deleteGlobalVariableGroupChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new DeleteGlobalVariableGroupCommand());
+        return chain;
+    }
+
+    public static FacilioChain addOrUpdateGlobalVariableChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new AddOrUpdateGlobalVariableCommand());
         return chain;
     }
 

@@ -352,9 +352,16 @@
         <action name="addOrUpdateGroup"
                 class="com.facilio.bmsconsole.actions.GlobalVariableAction"
                 method="addOrUpdateGroup"></action>
-        <action name="delete"
+        <action name="deleteGroup"
                 class="com.facilio.bmsconsole.actions.GlobalVariableAction"
                 method="deleteGroup"></action>
+
+        <action name="list"
+                class="com.facilio.bmsconsole.actions.GlobalVariableAction"
+                method="list" />
+        <action name="addOrUpdate"
+                class="com.facilio.bmsconsole.actions.GlobalVariableAction"
+                method="addOrUpdate"></action>
     </package>
     
     <package name="setup" namespace="/api/v3/setup" extends="v3Api">

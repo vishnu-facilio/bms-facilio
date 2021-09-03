@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands;
 
+import com.facilio.bmsconsole.automation.command.ListGlobalVariableCommand;
 import com.facilio.bmsconsole.automation.command.ListGlobalVariableGroupCommand;
 import com.facilio.bmsconsole.commands.GenerateCriteriaFromFilterCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -150,6 +151,12 @@ public class ReadOnlyChainFactoryV3 {
     public static FacilioChain getListGlobalVariableGroupChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new ListGlobalVariableGroupCommand());
+        return chain;
+    }
+
+    public static FacilioChain getListGlobalVariableChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new ListGlobalVariableCommand());
         return chain;
     }
 }

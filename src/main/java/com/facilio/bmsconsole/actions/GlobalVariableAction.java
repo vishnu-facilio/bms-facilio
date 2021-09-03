@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import com.facilio.bmsconsole.automation.context.GlobalVariableContext;
 import com.facilio.bmsconsole.automation.context.GlobalVariableGroupContext;
 import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
@@ -19,8 +20,16 @@ public class GlobalVariableAction extends V3Action {
         this.variableGroup = variableGroup;
     }
 
+    private GlobalVariableContext variable;
+    public GlobalVariableContext getVariable() {
+        return variable;
+    }
+    public void setVariable(GlobalVariableContext variable) {
+        this.variable = variable;
+    }
+
     public String addOrUpdateGroup() throws Exception {
-        FacilioChain chain = TransactionChainFactoryV3.addOrUpdateGlobalVariableChain();
+        FacilioChain chain = TransactionChainFactoryV3.addOrUpdateGlobalVariableGroupChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.GLOBAL_VARIABLE_GROUP, variableGroup);
         chain.execute();
@@ -45,6 +54,22 @@ public class GlobalVariableAction extends V3Action {
 
         context.put(FacilioConstants.ContextNames.ID, getId());
         chain.execute();
+
+        return SUCCESS;
+    }
+
+    public String addOrUpdate() throws Exception {
+        FacilioChain chain = TransactionChainFactoryV3.addOrUpdateGlobalVariableChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.GLOBAL_VARIABLE, variable);
+        chain.execute();
+
+        Object o = context.get(FacilioConstants.ContextNames.GLOBAL_VARIABLE);
+        setData("variable", FieldUtil.getAsJSON(o));
+        return SUCCESS;
+    }
+
+    public String list() throws Exception {
 
         return SUCCESS;
     }

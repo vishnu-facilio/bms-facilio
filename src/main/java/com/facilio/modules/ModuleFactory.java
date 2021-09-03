@@ -3156,7 +3156,14 @@ public class ModuleFactory {
 		module.setName("globalVariableGroup");
 		module.setDisplayName("Global Variable Group");
 		module.setTableName("Global_Variable_Group");
-		module.setType(FacilioModule.ModuleType.BASE_ENTITY);
+		return module;
+	}
+
+	public static FacilioModule getGlobalVariableModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("globalVariable");
+		module.setDisplayName("Global Variable");
+		module.setTableName("Global_Variable");
 		return module;
 	}
 	

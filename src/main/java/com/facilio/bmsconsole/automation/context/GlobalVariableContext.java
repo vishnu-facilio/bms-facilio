@@ -1,10 +1,29 @@
 package com.facilio.bmsconsole.automation.context;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.modules.FacilioIntEnum;
-import com.facilio.modules.FieldType;
-import com.facilio.v3.context.V3Context;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.struts2.json.annotations.JSON;
 
-public class GlobalVariableContext extends V3Context {
+import java.io.Serializable;
+
+public class GlobalVariableContext implements Serializable {
+
+    private long id = -1;
+    public long getId() {
+        return id;
+    }
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    private long orgId = -1;
+    public long getOrgId() {
+        return orgId;
+    }
+    public void setOrgId(long orgId) {
+        this.orgId = orgId;
+    }
 
     private String name;
     public String getName() {
@@ -31,7 +50,16 @@ public class GlobalVariableContext extends V3Context {
     }
 
     private Type type;
-    public Type getType() {
+    public int getType() {
+        if (type == null) {
+            return -1;
+        }
+        return type.getIndex();
+    }
+    public void setType(int type) {
+        this.type = Type.valueOf(type);
+    }
+    public Type getTypeEnum() {
         return type;
     }
     public void setType(Type type) {
@@ -46,10 +74,46 @@ public class GlobalVariableContext extends V3Context {
         this.valueString = valueString;
     }
 
+    @JsonIgnore
     private Object value;
+    @JSON(serialize = false)
     public Object getValue() {
+        if (value == null) {
+            switch (type) {
+                case NUMBER:
+                    try {
+                        value = Integer.parseInt(valueString);
+                    } catch (NumberFormatException ex) {}
+                    break;
+
+                case DECIMAL:
+                    try {
+                        value = Double.parseDouble(valueString);
+                    } catch (NumberFormatException ex) {}
+                    break;
+
+                case STRING:
+                    value = valueString;
+                    break;
+
+                case BOOLEAN:
+                    value = Boolean.parseBoolean(valueString);
+                    break;
+
+                case DATE:
+                case DATE_TIME:
+                    try {
+                        value = Long.parseLong(valueString);
+                    } catch (NumberFormatException ex) {}
+                    break;
+
+                default:
+                    throw new IllegalArgumentException("Unsupported variable type");
+            }
+        }
         return value;
     }
+    @JSON(deserialize = false)
     public void setValue(Object value) {
         this.value = value;
     }
@@ -62,12 +126,44 @@ public class GlobalVariableContext extends V3Context {
         this.createdTime = createdTime;
     }
 
+    private long createdBy = -1;
+    public long getCreatedBy() {
+        return createdBy;
+    }
+    public void setCreatedBy(long createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    private User createdByUser;
+    public User getCreatedByUser() {
+        return createdByUser;
+    }
+    public void setCreatedByUser(User createdByUser) {
+        this.createdByUser = createdByUser;
+    }
+
     private long modifiedTime = -1l;
     public long getModifiedTime() {
         return modifiedTime;
     }
     public void setModifiedTime(long modifiedTime) {
         this.modifiedTime = modifiedTime;
+    }
+
+    private long modifiedBy = -1;
+    public long getModifiedBy() {
+        return modifiedBy;
+    }
+    public void setModifiedBy(long modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
+
+    private User modifiedByUser;
+    public User getModifiedByUser() {
+        return modifiedByUser;
+    }
+    public void setModifiedByUser(User modifiedByUser) {
+        this.modifiedByUser = modifiedByUser;
     }
 
     public enum Type implements FacilioIntEnum {
@@ -77,5 +173,12 @@ public class GlobalVariableContext extends V3Context {
         BOOLEAN,
         DATE,
         DATE_TIME;
+
+        public static Type valueOf(int value) {
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
+            }
+            return null;
+        }
     }
 }

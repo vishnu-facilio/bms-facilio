@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.automation.util;
 
+import com.facilio.bmsconsole.automation.context.GlobalVariableContext;
 import com.facilio.bmsconsole.automation.context.GlobalVariableGroupContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -12,6 +13,7 @@ import com.facilio.modules.ModuleFactory;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 public class GlobalVariableUtil {
 
@@ -44,22 +46,16 @@ public class GlobalVariableUtil {
         builder.delete();
     }
 
-    public static void addGlobalVariableGroup(GlobalVariableGroupContext variableGroup) throws Exception {
+    public static void addGlobalVariable(GlobalVariableContext variable) throws Exception {
         GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-                .table(ModuleFactory.getGlobalVariableGroupModule().getTableName())
+                .table(ModuleFactory.getGlobalVariableModule().getTableName())
                 .fields(FieldFactory.getGlobalVariableGroupFields());
-        long id = builder.insert(FieldUtil.getAsProperties(variableGroup));
-        variableGroup.setId(id);
+        Map<String, Object> map = FieldUtil.getAsProperties(variable);
+        long id = builder.insert(map);
+        variable.setId(id);
     }
 
-    public static void updateGlobalVariableGroup(GlobalVariableGroupContext variableGroup) throws Exception {
-        if (variableGroup.getId() <= 0) {
-            throw new IllegalArgumentException("Cannot update the record");
-        }
-        GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-                .table(ModuleFactory.getGlobalVariableGroupModule().getTableName())
-                .fields(FieldFactory.getGlobalVariableGroupFields())
-                .andCondition(CriteriaAPI.getIdCondition(variableGroup.getId(), ModuleFactory.getGlobalVariableGroupModule()));
-        builder.update(FieldUtil.getAsProperties(variableGroup));
+    public static void updateGlobalVariable(GlobalVariableContext variable) throws Exception {
+
     }
 }
