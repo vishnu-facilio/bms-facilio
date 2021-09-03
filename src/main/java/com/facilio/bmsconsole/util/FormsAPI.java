@@ -799,11 +799,11 @@ public class FormsAPI {
 			formListBuilder.andCriteria(criteria);
 		}
 		
+		ApplicationContext app = null;
 		if (appId > 0) {
-			ApplicationContext app = appId <= 0 ? AccountUtil.getCurrentApp() : ApplicationApi.getApplicationForId(appId);
+			app = ApplicationApi.getApplicationForId(appId);
 			List<Long> appIds = Collections.singletonList(app.getId());
 			formListBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), StringUtils.join(appIds, ","), NumberOperators.EQUALS));	
-			
 		}
 	
 		if (MapUtils.isNotEmpty(selectParams)) {
@@ -819,17 +819,19 @@ public class FormsAPI {
 		else {
 			formListBuilder.orderBy("ID asc");
 		}
-		System.out.println("********"+ formListBuilder.constructSelectStatement());
+		
 		List<FacilioForm> forms = FieldUtil.getAsBeanListFromMapList(formListBuilder.get(), FacilioForm.class);
-		
-		forms = getAsFormSiteRelationListMap(forms, spaces);
-		
-		
-
-		if (fetchFields && CollectionUtils.isNotEmpty(forms)) {
+		if ( CollectionUtils.isNotEmpty(forms)) {
+			forms = getAsFormSiteRelationListMap(forms, spaces);
+			
+			String appName = app != null ? app.getLinkName() : ApplicationLinkNames.FACILIO_MAIN_APP;
 			for (FacilioForm form: forms) {
-				setFormSections(form);
-				setFormFields(form);
+				form.setAppLinkName(appName);
+				
+				if (fetchFields) {
+					setFormSections(form);
+					setFormFields(form);
+				}
 			}
 		}
 		return forms;
@@ -837,7 +839,6 @@ public class FormsAPI {
 	}
 	
 	private static List<FacilioForm> getAsFormSiteRelationListMap(List<FacilioForm> forms, List<Long> spaces) throws Exception {
-		if (forms != null && forms.size() > 0) {
 			List<Long> formIds = forms.stream().map(FacilioForm::getId).collect(Collectors.toList());
 			StringJoiner ids = new StringJoiner(",");
 			formIds.stream().forEach(f -> ids.add(String.valueOf(f)));
@@ -867,8 +868,6 @@ public class FormsAPI {
 				}
 			}
 			}
-
-		}
 		// TODO Auto-generated method stub
 		return forms;
 	}
