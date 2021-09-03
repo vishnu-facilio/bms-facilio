@@ -13,6 +13,9 @@ public class StateFlowTranslationImplV3 implements TranslationIfc {
 
         JSONObject meta = (JSONObject)json.get("meta");
         JSONObject supplements = (JSONObject)meta.get("supplements");
+        if(supplements == null || !supplements.containsKey("workorder")){
+            return json;
+        }
         JSONObject workOrder = (JSONObject)supplements.get("workorder");
         JSONObject moduleState = (JSONObject)workOrder.get("moduleState");
 
