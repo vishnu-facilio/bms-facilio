@@ -1,25 +1,29 @@
 package com.facilio.agentv2.commands;
 
+import java.util.Map;
+import java.util.Objects;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.log4j.LogManager;
+
 import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentType;
 import com.facilio.agent.integration.DownloadCertFile;
 import com.facilio.agentv2.AgentAction;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.service.FacilioService;
-import com.facilio.services.messageQueue.MessageQueueFactory;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.CloudAgentUtil;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.OrgInfoKeys;
+import com.facilio.service.FacilioService;
+import com.facilio.services.messageQueue.MessageQueueFactory;
+import com.facilio.services.messageQueue.MessageQueueTopic;
 import com.facilio.workflows.util.WorkflowUtil;
-
-import java.util.Map;
-import java.util.Objects;
 
 public class CreateAgentCommand extends AgentV2Command {
 
@@ -38,10 +42,16 @@ public class CreateAgentCommand extends AgentV2Command {
 	    				throw new IllegalArgumentException(agent.getWorkflow().getErrorListener().getErrorsAsString());
 	    			}
             }
+            AgentType agentType = AgentType.valueOf(agent.getAgentType());
+            if (isPartionEnabled(agentType)) {
+            		int partitionId = getAndUpdateMaxPartition();
+            		agent.setPartitionId(partitionId);
+            }
+            
             long agentId = AgentApiV2.addAgent(agent);
             agent.setId(agentId);
             Organization currentOrg = AccountUtil.getCurrentOrg();
-            switch (AgentType.valueOf(agent.getAgentType())) {
+            switch (agentType) {
                 case REST:
                 case WATTSENSE:
                     createMessageTopic(currentOrg);
@@ -49,8 +59,8 @@ public class CreateAgentCommand extends AgentV2Command {
                 case FACILIO:
                 case NIAGARA:
                 case CUSTOM:
-                    createMessageTopic(currentOrg);
-                    createPolicy(agent,currentOrg);
+                    String messageTopic = createMessageTopic(currentOrg);
+                    createPolicy(agent,currentOrg, messageTopic);
                     return true;
                 case CLOUD:
                     //creating kinesis stream
@@ -62,17 +72,23 @@ public class CreateAgentCommand extends AgentV2Command {
                     //createPolicy(agent,currentOrg);
                     AgentApiV2.scheduleRestJob(agent);
                     return true;
+                case AGENT_SERVICE:
+                		// TODO Add policy and kafka topic if not added. Increase partiotion every 10 agents
+                		CloudAgentUtil.addCloudServiceAgent(agent);
+                		createMessageTopic(currentOrg, agent.getPartitionId());
+                		break;
+                	
             }
+            
             return false;
         } else {
             throw new Exception(" agent missing from context " + context);
         }
     }
 
-    private void createPolicy ( FacilioAgent agent,Organization currentOrg ) {
+    private void createPolicy ( FacilioAgent agent,Organization currentOrg, String orgMessageTopic ) throws Exception {
         try{
-            String orgMessageTopic = createMessageTopic(currentOrg);
-            LOGGER.info("download certificate current org domain is :" + orgMessageTopic);
+            LOGGER.debug("download certificate current org domain is :" + orgMessageTopic);
             String certFileId = com.facilio.agent.FacilioAgent.getCertFileId("facilio");
             long orgId = Objects.requireNonNull(currentOrg.getOrgId());
             Map<String, Object> orgInfo = CommonCommandUtil.getOrgInfo(orgId, certFileId);
@@ -82,9 +98,31 @@ public class CreateAgentCommand extends AgentV2Command {
             AwsUtil.addClientToPolicy(agent.getName(), orgMessageTopic, "facilio");
         }catch (Exception e){
             LOGGER.error("Exception occurred while adding Agent cert .. ",e);
+            throw e;
         }
     }
     private String createMessageTopic ( Organization currentOrg ) throws Exception {
-        return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.AGENT_SERVICE,()-> AgentAction.getMessageTopic(currentOrg.getDomain(),currentOrg.getOrgId()));
+        return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.AGENT_SERVICE,()-> AgentAction.getMessageTopic(currentOrg.getDomain(),currentOrg.getOrgId()) );
+    }
+    
+    private boolean createMessageTopic ( Organization currentOrg, int paritionId ) throws Exception {
+        return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.AGENT_SERVICE,()->  MessageQueueTopic.addMsgTopic(currentOrg.getDomain(), currentOrg.getOrgId(), paritionId) );
+    }
+    
+    // Checking if partition is needed based on agent type for now. This may be needed to be set from UI itself
+    private boolean isPartionEnabled(AgentType agentType) {
+    		return agentType == AgentType.AGENT_SERVICE;
+    }
+    
+    private int getAndUpdateMaxPartition() throws Exception {
+    		int partitionId = 0;
+    		String key = OrgInfoKeys.MAX_AGENT_PARTITION;
+    		Map<String, String> orgInfo = CommonCommandUtil.getOrgInfo(key);
+    		if (MapUtils.isNotEmpty(orgInfo)) {
+    			partitionId = Integer.parseInt(orgInfo.get(key)) + 1;
+    		}
+    		CommonCommandUtil.insertOrgInfo(key, String.valueOf(partitionId));
+    		
+    		return partitionId;
     }
 }

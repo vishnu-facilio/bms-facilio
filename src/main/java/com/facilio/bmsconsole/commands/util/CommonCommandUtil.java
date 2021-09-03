@@ -398,16 +398,15 @@ public class CommonCommandUtil {
 		}
 	}
 
-	public static void insertOrgInfo( long orgId, String name, String value) throws Exception
+	public static void insertOrgInfo(String name, String value) throws Exception
 	{
-		if (getOrgInfo(orgId, name) == null) {
+		if (MapUtils.isEmpty(getOrgInfo(name))) {
 
 			GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
 					.table(AccountConstants.getOrgInfoModule().getTableName())
 					.fields(AccountConstants.getOrgInfoFields());
 
 			Map<String, Object> properties = new HashMap<>();
-			properties.put("orgId", orgId);
 			properties.put("name", name);
 			properties.put("value", value);
 			insertRecordBuilder.addRecord(properties);

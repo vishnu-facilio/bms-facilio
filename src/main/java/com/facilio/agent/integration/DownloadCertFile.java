@@ -86,7 +86,7 @@ public class DownloadCertFile {
                 FileStore fs = FacilioFactory.getFileStore();
                 long id = fs.addFile(file.getName(), file, "application/octet-stream");
                 url = fs.getPrivateUrl(id);
-                CommonCommandUtil.insertOrgInfo(orgId, certFileId, String.valueOf(id));
+                CommonCommandUtil.insertOrgInfo(certFileId, String.valueOf(id));
                 file.delete();
             }
             FacilioFactory.getMessageQueue().start();
@@ -115,7 +115,7 @@ public class DownloadCertFile {
 			out.flush();
 			FileStore fs = FacilioFactory.getFileStore();
 			long id = fs.addFile(file.getName(), file, "application/octet-stream");
-			CommonCommandUtil.insertOrgInfo(orgId, certFileId, String.valueOf(id));
+			CommonCommandUtil.insertOrgInfo(certFileId, String.valueOf(id));
 			file.delete();
 		}
 		FacilioFactory.getMessageQueue().start();

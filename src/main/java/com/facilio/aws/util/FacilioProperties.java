@@ -141,6 +141,8 @@ public class FacilioProperties {
     private static String incomingEmailS3Bucket;
     private static String secretManager;
     private static String service;
+    
+    private static String cloudAgentUrl;
 
     static {
         loadProperties();
@@ -258,6 +260,8 @@ public class FacilioProperties {
                 passwordHashingFunction = PROPERTIES.getProperty("password.hashing.function");
                 incomingEmailS3Bucket = PROPERTIES.getProperty("incoming.email.s3.name");
                 secretManager = PROPERTIES.getProperty("secretmanger");
+                
+                cloudAgentUrl = PROPERTIES.getProperty("agent.cloud.url", "facilioagent.com");
 
                 String cookieLifespanProp = PROPERTIES.getProperty("token.cookie.lifespan");
                 if (StringUtils.isNotEmpty(cookieLifespanProp)) {
@@ -778,6 +782,10 @@ public class FacilioProperties {
 	}
 	public static String getIncomingEmailS3Bucket() {
         return incomingEmailS3Bucket;
+    }
+	
+	public static String getCloudAgentUrl() {
+        return cloudAgentUrl;
     }
 	
     public static long getBuildNumber() {
