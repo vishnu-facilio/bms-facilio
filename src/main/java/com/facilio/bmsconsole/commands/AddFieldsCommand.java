@@ -14,6 +14,9 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.fw.FacilioException;
+import com.facilio.i18n.util.Keys.Error;
+import com.facilio.i18n.util.TranslationUtil;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
@@ -29,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Log4j
 public class AddFieldsCommand extends FacilioCommand {
@@ -51,9 +55,10 @@ public class AddFieldsCommand extends FacilioCommand {
 			for (FacilioModule module : modules) {
 				FacilioModule cloneMod = new FacilioModule(module);
 				if(module != null && CollectionUtils.isNotEmpty(module.getFields())) {
-					
+					List<Long> extendedModuleIds = module.getExtendedModuleIds();
 					List<FacilioField> existingFields = isNewModules ? null : modBean.getAllFields(module.getName());
-					Map<FieldType, List<String>> existingColumns = getColumnNamesGroupedByType(existingFields);
+					List<String> existingNames = existingFields.stream().map(FacilioField::getName).collect(Collectors.toList());
+					Map<FieldType, List<String>> existingColumns = getColumnNamesGroupedByType(existingFields, module.getModuleId());
 					
 					List<FacilioField> counterFields = new ArrayList<>();
 					
@@ -61,7 +66,7 @@ public class AddFieldsCommand extends FacilioCommand {
 						try {
 							field.setModule(cloneMod);
 							setColumnName(field, existingColumns);
-							constructFieldName(field, module, allowSameName);
+							constructFieldName(field, module, allowSameName, existingNames, extendedModuleIds);
 							long fieldId = modBean.addField(field);
 							field.setFieldId(fieldId);
 							fieldIds.add(fieldId);
@@ -145,13 +150,16 @@ public class AddFieldsCommand extends FacilioCommand {
 		}
 	}
 	
-	private void constructFieldName(FacilioField field, FacilioModule module, boolean changeDisplayName) throws Exception {
+	private void constructFieldName(FacilioField field, FacilioModule module, boolean changeDisplayName, List<String> existingNames, List<Long> extendedModuleIds) throws Exception {
 		if(field.getName() == null || field.getName().isEmpty()) {
 			if(field.getDisplayName() != null && !field.getDisplayName().isEmpty()) {
 				field.setName(field.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
 				// Will be used while adding a new field from form
 				if (changeDisplayName) {
-					changeDisplayName(field);
+					changeDisplayName(field, extendedModuleIds);
+				}
+				else if (existingNames.contains(field.getName())) {
+					throw new FacilioException(TranslationUtil.getString(Error.FIELD_DUPLICATE, field.getDisplayName()));
 				}
 			}
 			else {
@@ -161,14 +169,14 @@ public class AddFieldsCommand extends FacilioCommand {
 	}
 	
 
-	private void changeDisplayName(FacilioField field) throws Exception {
+	private void changeDisplayName(FacilioField field, List<Long> extendedModuleIds) throws Exception {
 		FacilioModule module = ModuleFactory.getFieldsModule();
 		List<FacilioField> fields = FieldFactory.getSelectFieldFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 					.table(module.getTableName())
 					.select(fields)
-					.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(field.getModuleId()), NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), extendedModuleIds, NumberOperators.EQUALS))
 					.orderBy(fieldMap.get("fieldId").getColumnName() + " desc")
 					.limit(1);
 		
@@ -190,16 +198,18 @@ public class AddFieldsCommand extends FacilioCommand {
 		}
 	}
 	
-	private Map<FieldType, List<String>> getColumnNamesGroupedByType(List<FacilioField> fields) {
+	private Map<FieldType, List<String>> getColumnNamesGroupedByType(List<FacilioField> fields, long moduleId) {
 		Map<FieldType, List<String>> existingColumns = new HashMap<>();
 		if(fields != null) {
 			for(FacilioField field : fields) {
-				List<String> columns = existingColumns.get(field.getDataTypeEnum());
-				if(columns == null) {
-					columns = new ArrayList<>();
-					existingColumns.put(field.getDataTypeEnum(), columns);
+				if (field.getModuleId() == moduleId) {
+					List<String> columns = existingColumns.get(field.getDataTypeEnum());
+					if(columns == null) {
+						columns = new ArrayList<>();
+						existingColumns.put(field.getDataTypeEnum(), columns);
+					}
+					columns.add(field.getColumnName());
 				}
-				columns.add(field.getColumnName());
 			}
 		}
 		return existingColumns;
