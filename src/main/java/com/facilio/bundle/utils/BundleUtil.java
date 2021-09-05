@@ -3,22 +3,181 @@ package com.facilio.bundle.utils;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.validation.ValidationException;
+
+import org.apache.log4j.Priority;
 import org.json.simple.JSONObject;
 import org.reflections.Reflections;
 import org.reflections.scanners.FieldAnnotationsScanner;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bundle.anotations.ExcludeInBundle;
 import com.facilio.bundle.anotations.IncludeInBundle;
+import com.facilio.bundle.context.BundleChangeSetContext;
+import com.facilio.bundle.enums.BundleCommitStatusEnum;
+import com.facilio.bundle.enums.BundleComponentsEnum;
+import com.facilio.bundle.enums.BundleModeEnum;
+import com.facilio.chain.FacilioContext;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.time.DateTimeUtil;
 
 import lombok.extern.log4j.Log4j;
 
 @Log4j
 public class BundleUtil {
 
+	public static BundleChangeSetContext markModifiedComponent(BundleComponentsEnum componentType,Long componentId,String name,BundleModeEnum mode) throws Exception {
+		
+		if(1 == 1) {
+			return null;
+		}
+		try {
+			
+			BundleChangeSetContext existingChangeSet = getOrAddModifiedComponent(componentType, componentId, name, mode);
+			
+			boolean isUpdateNeeded = true;
+			
+			switch (existingChangeSet.getModeEnum()) {
+			case ADD:
+				switch(mode) {
+					case ADD:
+					case UPDATE:
+						break;
+					case DELETE:
+						deleteBundleRelated(ModuleFactory.getBundleChangeSetModule(), CriteriaAPI.getIdCondition(existingChangeSet.getId(), ModuleFactory.getBundleChangeSetModule()));
+						isUpdateNeeded = false;
+						break;
+					case DUMMY:
+						throw new ValidationException("Add mode cannot be set to Dummy");
+				}
+				break;
+			case UPDATE:
+				switch(mode) {
+					case ADD:
+						throw new ValidationException("Update mode cannot be set to Add");
+					case UPDATE:
+						break;
+					case DELETE:
+						existingChangeSet.setModeEnum(BundleModeEnum.DELETE);
+						break;
+					case DUMMY:
+						throw new ValidationException("Update mode cannot be set to Dummy");
+				}
+				break;
+			case DELETE:
+				switch(mode) {
+					case ADD:
+						throw new ValidationException("Delete mode cannot be set to Add");
+					case UPDATE:
+						throw new ValidationException("Delete mode cannot be set to Update");
+					case DELETE:
+						break;
+					case DUMMY:
+						throw new ValidationException("Delete mode cannot be set to Dummy");
+				}
+				break;
+			case DUMMY:
+				switch(mode) {
+					case ADD:
+						throw new ValidationException("Dummy mode cannot be set to Add");
+					case UPDATE:
+						existingChangeSet.setModeEnum(BundleModeEnum.UPDATE);
+					case DELETE:
+						existingChangeSet.setModeEnum(BundleModeEnum.DELETE);
+						break;
+					case DUMMY:
+						break;
+				}
+				break;
+			}
+			
+			if(isUpdateNeeded) {
+				
+				existingChangeSet.setLastEditedTime(DateTimeUtil.getCurrenTime());
+				
+				updateBundleModule(ModuleFactory.getBundleChangeSetModule(), FieldFactory.getBundleChangeSetFields(), existingChangeSet, CriteriaAPI.getIdCondition(existingChangeSet.getId(), ModuleFactory.getBundleChangeSetModule()));
+			}
+			
+			return existingChangeSet;
+			
+		}
+		catch(Exception e) {
+			LOGGER.log(Priority.ERROR, e.getMessage());
+			throw e;
+		}
+	}
+	
+	public static BundleChangeSetContext getOrAddModifiedComponent(BundleComponentsEnum componentType,Long componentId,String componentName,BundleModeEnum mode) throws Exception {
+		
+		Map<String, FacilioField> bundleChangeSetFieldMap = FieldFactory.getAsMap(FieldFactory.getBundleChangeSetFields());
+		
+		Criteria fetchCriteria = new Criteria();
+		fetchCriteria.addAndCondition(CriteriaAPI.getCondition(bundleChangeSetFieldMap.get("componentType"), componentType.getValue()+"", NumberOperators.EQUALS));
+		fetchCriteria.addAndCondition(CriteriaAPI.getCondition(bundleChangeSetFieldMap.get("componentId"), componentId+"", NumberOperators.EQUALS));
+		fetchCriteria.addAndCondition(CriteriaAPI.getCondition(bundleChangeSetFieldMap.get("commitStatus"), BundleCommitStatusEnum.NOT_YET_COMMITED.getValue()+"", NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> changeSetComponents = fetchBundleRelated(ModuleFactory.getBundleChangeSetModule(), FieldFactory.getBundleChangeSetFields(), fetchCriteria, null);
+		
+		if(changeSetComponents != null && !changeSetComponents.isEmpty()) {
+			BundleChangeSetContext changeSet = FieldUtil.getAsBeanFromMap(changeSetComponents.get(0), BundleChangeSetContext.class);
+			return changeSet;
+		}
+		else {
+			
+			BundleChangeSetContext bundleChangeSetContext = new BundleChangeSetContext();
+			
+			bundleChangeSetContext.setComponentTypeEnum(componentType);
+			bundleChangeSetContext.setComponentId(componentId);
+			bundleChangeSetContext.setName(componentName);
+			bundleChangeSetContext.setOrgId(AccountUtil.getCurrentOrg().getId());
+			bundleChangeSetContext.setCommitStatusEnum(BundleCommitStatusEnum.NOT_YET_COMMITED);
+			bundleChangeSetContext.setModeEnum(mode == null ? BundleModeEnum.DUMMY : mode);
+			bundleChangeSetContext.setLastEditedTime(DateTimeUtil.getCurrenTime());
+			
+			if(componentType.getParent() != null) {
+				
+				FacilioContext context = new FacilioContext();
+				
+				context.put(BundleConstants.COMPONENT_ID, componentId);
+				
+				componentType.getBundleComponentClassInstance().getParentDetails(context);
+				Long parentComponentId = (Long)context.get(BundleConstants.PARENT_COMPONENT_ID);
+				String parentComponentName = (String)context.get(BundleConstants.PARENT_COMPONENT_NAME);
+				
+				BundleChangeSetContext parentChangeSet = getOrAddModifiedComponent(componentType.getParent(), parentComponentId, parentComponentName, null);
+				
+				bundleChangeSetContext.setParentId(parentChangeSet.getId());
+			}
+			
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.table(ModuleFactory.getBundleChangeSetModule().getTableName())
+					.fields(FieldFactory.getBundleChangeSetFields());
+
+			Map<String, Object> props = FieldUtil.getAsProperties(bundleChangeSetContext);
+			insertBuilder.addRecord(props);
+			insertBuilder.save();
+
+			bundleChangeSetContext.setId((Long) props.get("id"));
+
+			return bundleChangeSetContext;
+		}
+	}
 	
 	public static void getFormattedObject(Object beanObject) throws Exception {
 		
@@ -69,5 +228,47 @@ public class BundleUtil {
         }
         return results;
     }
+	
+	public static int updateBundleModule(FacilioModule module,List<FacilioField> fields,Object context,Condition condition) throws Exception {
+		
+		GenericUpdateRecordBuilder updatetBuilder = new GenericUpdateRecordBuilder()
+				.table(module.getTableName())
+				.fields(fields)
+				.andCondition(condition);
+
+		Map<String, Object> props = FieldUtil.getAsProperties(context);
+		return updatetBuilder.update(props);
+
+	}
+	
+	public static int deleteBundleRelated(FacilioModule module,Condition condition) throws Exception {
+		
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+				.table(module.getTableName())
+				.andCondition(condition);
+
+		int detedRows =  deleteBuilder.delete();
+		
+		return detedRows;
+	}
+	
+	public static List<Map<String, Object>> fetchBundleRelated(FacilioModule module,List<FacilioField> fields,Criteria fetchCriteria,Condition condition) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				;
+		
+		if(fetchCriteria != null) {
+			selectBuilder.andCriteria(fetchCriteria);
+		}
+		if(condition != null) {
+			selectBuilder.andCondition(condition);
+		}
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		return props;
+	}
 	
 }

@@ -23,7 +23,17 @@ import com.facilio.workflowv2.util.UserFunctionAPI;
 import com.facilio.workflowv2.util.WorkflowV2API;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
-public class FunctionBundleComponent implements BundleComponentInterface {
+public class FunctionBundleComponent extends CommonBundleComponent {
+	
+	@Override
+	public void getParentDetails(FacilioContext context) throws Exception {
+		
+		Long functionId = (Long) context.get(BundleConstants.COMPONENT_ID);
+		WorkflowUserFunctionContext userFunction = WorkflowV2API.getUserFunction(functionId);
+		
+		context.put(BundleConstants.PARENT_COMPONENT_ID, userFunction.getNameSpaceId());
+		context.put(BundleConstants.PARENT_COMPONENT_NAME, userFunction.getNameSpaceName());
+	}
 
 	@Override
 	public JSONObject getFormatedObject(FacilioContext context) throws Exception {

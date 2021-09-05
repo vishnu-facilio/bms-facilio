@@ -9754,6 +9754,29 @@ public class FieldFactory extends BaseFieldFactory {
 
         return fields;
     }
+    
+    //Bundle Related Fields starts
+    
+    
+    public static List<FacilioField> getBundleChangeSetFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getBundleChangeSetModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("componentType", "COMPONENT_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("mode", "MODE", module, FieldType.NUMBER));
+        fields.add(getField("componentId", "COMPONENT_ID", module, FieldType.NUMBER));
+        fields.add(getField("name", "NAME", module, FieldType.STRING));
+        fields.add(getField("commitStatus", "COMMIT_STATUS", module, FieldType.NUMBER));
+        fields.add(getField("parentId", "PARENT_ID", module, FieldType.NUMBER));
+        fields.add(getField("lastEditedTime", "LAST_EDITED_TIME", module, FieldType.NUMBER));
+
+        return fields;
+    }
+    
+    
+    
+    //Bundle Related Fields ends
 
     public  static List<FacilioField> getScatterGraphFields(){
         List<FacilioField> fields = new ArrayList<>();

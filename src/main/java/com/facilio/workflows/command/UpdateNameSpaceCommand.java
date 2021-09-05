@@ -5,6 +5,9 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bundle.enums.BundleComponentsEnum;
+import com.facilio.bundle.enums.BundleModeEnum;
+import com.facilio.bundle.utils.BundleUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -27,6 +30,8 @@ public class UpdateNameSpaceCommand extends FacilioCommand {
 		workflowNamespaceContext.setSysModifiedTime(DateTimeUtil.getCurrenTime());
 		
 		updateNameSpace(workflowNamespaceContext);
+		
+		BundleUtil.markModifiedComponent(BundleComponentsEnum.FUNCTION_NAME_SPACE, workflowNamespaceContext.getId(), workflowNamespaceContext.getName(), BundleModeEnum.UPDATE);
 		return false;
 	}
 	

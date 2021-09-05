@@ -99,4 +99,41 @@ public class WorkflowV2API {
 		}
 		return functions;
 	}
+	
+	public static WorkflowUserFunctionContext getUserFunction(Long userFunctionId) throws Exception {
+		
+		FacilioModule module = ModuleFactory.getWorkflowUserFunctionModule();
+		List<FacilioField> fields = FieldFactory.getWorkflowUserFunctionFields();
+		fields.addAll(FieldFactory.getWorkflowFields());
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields)
+				.table(module.getTableName())
+				.innerJoin(ModuleFactory.getWorkflowModule().getTableName())
+				.on(ModuleFactory.getWorkflowModule().getTableName()+".ID="+module.getTableName()+".ID")
+				.andCondition(CriteriaAPI.getIdCondition(userFunctionId, module));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if (props != null && !props.isEmpty()) {
+			 
+			 WorkflowUserFunctionContext workflowContext = FieldUtil.getAsBeanFromMap(props.get(0), WorkflowUserFunctionContext.class);
+			 
+				selectBuilder = new GenericSelectRecordBuilder()
+						.select(FieldFactory.getWorkflowNamespaceFields())
+						.table(ModuleFactory.getWorkflowNamespaceModule().getTableName())
+						.andCondition(CriteriaAPI.getIdCondition(workflowContext.getNameSpaceId(), ModuleFactory.getWorkflowNamespaceModule()));
+
+				props = selectBuilder.get();
+
+				if (props != null && !props.isEmpty()) {
+					WorkflowNamespaceContext nameSpace =  FieldUtil.getAsBeanFromMap(props.get(0), WorkflowNamespaceContext.class);
+					workflowContext.setNameSpaceName(nameSpace.getName());
+				}
+			 
+			 
+			 return workflowContext;
+			
+		}
+		return null;
+	}
 }

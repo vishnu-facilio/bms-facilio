@@ -4551,4 +4551,18 @@ public class ModuleFactory {
 		facilioScatterGraphModule.setTableName("SCATTER_GRAPH_LINE");
 		return facilioScatterGraphModule;
 	}
+	
+	//	Bundle Related Modules starts
+    
+    
+    public static FacilioModule getBundleChangeSetModule() {
+        FacilioModule module = new FacilioModule();
+        module.setName("bundleChangeSet");
+        module.setDisplayName("Bundle Change Set");
+		module.setTableName("Bundle_Change_Set");
+        return module;
+    }
+    
+    
+    //Bundle Related Modules ends
 }
