@@ -24,7 +24,7 @@ public class ValidateQrValueCommand extends FacilioCommand {
         String qrValue = asset.getQrVal();
         if (StringUtils.isNotEmpty(qrValue)) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+            String moduleName = FacilioConstants.ContextNames.ASSET;
             FacilioModule module = modBean.getModule(moduleName);
             List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
             if (fields == null) {
