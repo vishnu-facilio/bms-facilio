@@ -1466,6 +1466,10 @@ public class FacilioAuthAction extends FacilioAction {
 			peopleAction.addPeople(true);
 		} else {
 			pplContext.setIsOccupantPortalAccess(true);
+			RoleBean roleBean = AccountUtil.getRoleBean();
+			HashMap<String, Long> roleMap = new HashMap<>();
+			Role role = roleBean.getRole(orgId, FacilioConstants.DefaultRoleNames.OCCUPANT_USER);
+			roleMap.put(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, role.getId());
 			peopleAction.setPeopleList(Arrays.asList(pplContext));
 			peopleAction.updatePeople(true);
 		}
