@@ -74,6 +74,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 					urlsToValidate.add(url.getPath());
 				}
 				IAMAccount iamAccount = IAMUserUtil.getPermalinkAccount(token, urlsToValidate);
+				AccountUtil.setAuthMethod(AccountUtil.AuthMethod.PERMALINK);
 				if(iamAccount == null) {
 					checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), "Returning error because of no IAM account in permalink", request);
 					return Action.ERROR;
@@ -82,6 +83,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 				}
 			}
 			else if (!isRemoteScreenMode(request)) {
+				AccountUtil.setAuthMethod(AccountUtil.AuthMethod.USER_PWD);
 				String authRequired = ActionContext.getContext().getParameters().get("auth").getValue();
 				if(authRequired == null || "".equalsIgnoreCase(authRequired.trim()) || "true".equalsIgnoreCase(authRequired)) {
 					IAMAccount iamAccount = null;
@@ -113,6 +115,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 				}
 			}
 			else {
+				AccountUtil.setAuthMethod(AccountUtil.AuthMethod.REMOTE_SCREEN);
 				boolean authStatus = handleRemoteScreenAuth(request);//both tv mode and new device mode handled
 				if (!authStatus) {
 					LOGGER.log(Level.FATAL, "you are not allowed to access this page from remote screen.");

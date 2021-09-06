@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.chain.FacilioContext;
@@ -333,6 +334,15 @@ public abstract class AbstractStateTransitionRuleContext extends ApproverWorkflo
                     return false;
                 }
             }
+        }
+
+        Boolean getPermalinkTransition = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.STATE_TRANSITION_GET_PERMALINK_ONLY, false);
+        boolean isFromPermalink = AccountUtil.getAuthMethod() == AccountUtil.AuthMethod.PERMALINK;
+        if (getPermalinkTransition == null) {
+            getPermalinkTransition = false;
+        }
+        if (getPermalinkTransition || isFromPermalink) {    // skip only user check part, for the transitions that comes from permalink..
+            return isShouldExecuteFromPermalink();
         }
 
         return super.evaluateMisc(moduleName, record, placeHolders, context);

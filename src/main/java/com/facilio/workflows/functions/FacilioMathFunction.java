@@ -15,7 +15,7 @@ public enum FacilioMathFunction implements FacilioWorkflowFunctionInterface  {
 		@Override
 		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
-			Double value = (double) objects[0];
+			Double value = Double.parseDouble(objects[0].toString());
 			return Math.abs(value);
 		};
 		
@@ -30,7 +30,7 @@ public enum FacilioMathFunction implements FacilioWorkflowFunctionInterface  {
 		@Override
 		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
-			double value = (double) objects[0];
+			double value = Double.parseDouble(objects[0].toString());
 			return Math.ceil(value);
 		};
 		
@@ -45,7 +45,7 @@ public enum FacilioMathFunction implements FacilioWorkflowFunctionInterface  {
 		@Override
 		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
-			double value = (double) objects[0];
+			double value = Double.parseDouble(objects[0].toString());
 			return Math.floor(value);
 		};
 		

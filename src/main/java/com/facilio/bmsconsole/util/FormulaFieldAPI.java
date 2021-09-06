@@ -377,7 +377,7 @@ public class FormulaFieldAPI {
 
 				}
 				catch (Exception e) {
-					LOGGER.error("calculateFormulaReadings failed. resource id : " + resourceId + " , field name : " + fieldName + ", intervals : " + intervals +", workflow : " + workflow , e );
+					LOGGER.error("calculateFormulaReadings failed. resource id : " + resourceId + " , field name : " + fieldName + ", intervals : " + intervals +", workflow : " + workflow.getId() , e );
 					if (e.getMessage() == null || !(e.getMessage().contains("Division by zero") || e.getMessage().contains("Division undefined")  || e.getMessage().contains("/ by zero"))) {
 						CommonCommandUtil.emailException("FormulaFieldAPI", "Formula calculation failed for : "+fieldName+" between "+iStartTime+" and "+iEndTime, e);
 					}

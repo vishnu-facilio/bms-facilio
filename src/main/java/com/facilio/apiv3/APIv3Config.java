@@ -6,6 +6,9 @@ import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.*;
+import com.facilio.bmsconsoleV3.commands.asset.AddRotatingItemToolCommandV3;
+import com.facilio.bmsconsoleV3.commands.asset.ConstructAddAssetActivityCommandV3;
+import com.facilio.bmsconsoleV3.commands.asset.LoadAssetSummaryCommandV3;
 import com.facilio.bmsconsoleV3.commands.budget.*;
 import com.facilio.bmsconsoleV3.commands.building.AddOrUpdateBuildingLocation;
 import com.facilio.bmsconsoleV3.commands.building.BuildingFillLookupFieldsCommand;
@@ -93,6 +96,7 @@ import com.facilio.bmsconsoleV3.commands.watchlist.GetLogsForWatchListCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.LoadWorkorderLookupsAfterFetchcommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.*;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.budget.AccountTypeContext;
 import com.facilio.bmsconsoleV3.context.budget.BudgetContext;
 import com.facilio.bmsconsoleV3.context.budget.ChartOfAccountContext;
@@ -101,6 +105,7 @@ import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.Announcem
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.*;
 import com.facilio.bmsconsoleV3.context.floorplan.*;
+import com.facilio.bmsconsoleV3.context.inventory.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
@@ -117,6 +122,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.control.*;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.controlaction.context.ControlActionCommandContext;
+import com.facilio.elasticsearch.command.PushDataToESCommand;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
@@ -1370,6 +1376,16 @@ public class APIv3Config {
                 .list()
                 .summary()
                   .afterFetch(new GetServiceVendorListCommandV3())
+                .build();
+    }
+    @Module("asset")
+    public static Supplier<V3Config> getAsset() {
+        return () -> new V3Config(V3AssetContext.class, new ModuleCustomFieldCount30())
+                .create().beforeSave(new AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMF()).afterSave(new ConstructAddAssetActivityCommandV3(), FacilioChainFactory.getCategoryReadingsChain(), new InsertReadingDataMetaForNewResourceCommand(), new AddRotatingItemToolCommandV3(),new AddActivitiesCommand(FacilioConstants.ContextNames.ASSET_ACTIVITY), new PushDataToESCommand())
+                .update()
+                .delete()
+                .summary().afterFetch(new LoadAssetSummaryCommandV3())
+                .list()
                 .build();
     }
 }

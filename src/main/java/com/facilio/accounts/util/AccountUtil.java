@@ -38,8 +38,25 @@ import java.util.*;
 @Log4j
 public class AccountUtil {
 
-	private static ThreadLocal<Account> currentAccount = new ThreadLocal<Account>();
+	private static ThreadLocal<Account> currentAccount = new ThreadLocal<>();
+	private static ThreadLocal<AuthMethod> validationMethod = new ThreadLocal<>();
 	public static final String JWT_DELIMITER = "#";
+
+	public enum AuthMethod {
+		PERMALINK,
+		REMOTE_SCREEN,
+		SSO,
+		API,
+		USER_PWD
+	}
+
+	public static void setAuthMethod(AuthMethod method) {
+		validationMethod.set(method);
+	}
+
+	public static AuthMethod getAuthMethod() {
+		return validationMethod.get();
+	}
 
 	public static void setCurrentAccount(Account account) throws Exception {
 		currentAccount.set(account);

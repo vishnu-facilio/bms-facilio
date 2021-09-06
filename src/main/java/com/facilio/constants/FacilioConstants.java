@@ -1521,6 +1521,7 @@ public class FacilioConstants {
 		public static final String DEFAULT_STATE_FLOW_ID = "default_state_flow_id";
 		public static final String TRANSITION = "transition";
 		public static final String STATE_TRANSITION_ONLY_CONDITIONED_CHECK = "stateTransitionOnlyConditionedCheck";
+		public static final String STATE_TRANSITION_GET_PERMALINK_ONLY = "stateTransitionSkipUserCheck";
 		public static final String STATEFLOW_DIAGRAM = "stateFlowDiagram";
 		public static final String CONFIRMATION_DIALOGS = "confirmationDialogs";
 		public static final String VALID_CONFIRMATION_DIALOGS = "validConfirmationDialogs";
@@ -1905,6 +1906,12 @@ public class FacilioConstants {
 		public static final String LOCKERS = "lockers";
 		public static final String PARKING_STALL = "parkingstall";
 
+		public static final String SCATTER_GRAPH_LABEL = "scatterGraphLabel";
+		public static final String SCATTER_GRAPH_VALUE = "scatterGraphValue";
+		public static final String SCATTER_GRAPH_ID = "scatterGraphId";
+		public static final String SCATTER_GRAPH_RESULT = "scatterGraphResult";
+		public static final String SCATTER_BASELINE_DATA = "baselineData";
+		public static final String SCATTER_BASELINE_COLOR = "baselineDataColor";
 
 		public static class WorkPermit {
 			public static final String WORK_PERMIT_TYPE_CHECKLIST = "workpermittypechecklist";
@@ -2534,6 +2541,7 @@ public class FacilioConstants {
 		public static final String CALCULATE_VM_THROUGH_FORMULA = "calculateVmThroughFormula";
 		public static final String IS_OLD_AGENT = "isOldAgent";
 		public static final String DATA_PROCESSING_LOGGER_LEVEL = "dataProcessingLoggerLevel";		
+		public static final String MAX_AGENT_PARTITION = "maxAgentPartition";		
 	}
 
 	public static class Services{

@@ -616,8 +616,10 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			if(record.getStateFlowId() > 0 && record.getModuleState() != null) {
 				
 				LOGGER.log(Level.SEVERE, "record.getStateFlowId() -- "+record.getStateFlowId());
-				
-				List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(record.getStateFlowId(), record.getModuleState().getId(), moduleName, record, new FacilioContext());
+
+				FacilioContext facilioContext = new FacilioContext();
+				facilioContext.put(FacilioConstants.ContextNames.STATE_TRANSITION_GET_PERMALINK_ONLY, true);
+				List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(record.getStateFlowId(), record.getModuleState().getId(), moduleName, record, facilioContext);
 				jObj.put("moduleId", record.getModuleId());
 				jObj.put("moduleName", moduleName);
 				ArrayList<String> permalinks = new ArrayList<String>();

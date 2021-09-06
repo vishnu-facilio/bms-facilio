@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -473,7 +474,7 @@ public class AssetsAPI {
 		}
 		return null;
 	}
-	
+
 	public static AssetCategoryContext getCategoryByAssetModule(long moduleId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.ASSET_CATEGORY));
@@ -482,17 +483,34 @@ public class AssetsAPI {
 																		.moduleName(FacilioConstants.ContextNames.ASSET_CATEGORY)
 																		.beanClass(AssetCategoryContext.class)
 																		.andCondition(CriteriaAPI.getCondition(fieldMap.get("assetModuleID"), String.valueOf(moduleId) ,NumberOperators.EQUALS));
-		
+
 		List<AssetCategoryContext> categories = selectBuilder.get();
-		
+
 		if(categories != null && !categories.isEmpty()) {
 			return categories.get(0);
 		}
 		return null;
 	}
-	
+
+	public static V3AssetCategoryContext getCategoryByAssetModuleV3(long moduleId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.ASSET_CATEGORY));
+		SelectRecordsBuilder<V3AssetCategoryContext> selectBuilder = new SelectRecordsBuilder<V3AssetCategoryContext>()
+				.select(modBean.getAllFields(FacilioConstants.ContextNames.ASSET_CATEGORY))
+				.moduleName(FacilioConstants.ContextNames.ASSET_CATEGORY)
+				.beanClass(V3AssetCategoryContext.class)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("assetModuleID"), String.valueOf(moduleId) ,NumberOperators.EQUALS));
+
+		List<V3AssetCategoryContext> categories = selectBuilder.get();
+
+		if(categories != null && !categories.isEmpty()) {
+			return categories.get(0);
+		}
+		return null;
+	}
+
 	public static List<AssetCategoryContext> getCategoryList() throws Exception {
-		
+
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		SelectRecordsBuilder<AssetCategoryContext> selectBuilder = new SelectRecordsBuilder<AssetCategoryContext>()
 																		.select(modBean.getAllFields(FacilioConstants.ContextNames.ASSET_CATEGORY))
@@ -500,7 +518,7 @@ public class AssetsAPI {
 																		.beanClass(AssetCategoryContext.class);
 		return selectBuilder.get();
 	}
-	
+
 	public static List<AssetTypeContext> getTypeList() throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

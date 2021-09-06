@@ -1,7 +1,6 @@
-package com.facilio.bmsconsoleV3.context;
+package com.facilio.bmsconsoleV3.context.inventory;
 
 import com.facilio.bmsconsole.context.InventoryCategoryContext;
-import com.facilio.services.factory.FacilioFactory;
 import com.facilio.unitconversion.Unit;
 import com.facilio.v3.context.V3Context;
 
