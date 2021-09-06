@@ -6,6 +6,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.EmailAttachmentAPI;
 import com.facilio.bmsconsole.context.TemplateFileContext;
+import com.facilio.bmsconsole.context.TemplateUrlContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 
@@ -19,8 +20,12 @@ public class GetAttachmentsListCommand extends FacilioCommand {
 		long templateId = (long) context.get(FacilioConstants.ContextNames.TEMPLATE_ID);	
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		
-		List<TemplateFileContext> attachmentList = EmailAttachmentAPI.getAttachments(moduleName, templateId);
+		List<TemplateFileContext> attachmentList = EmailAttachmentAPI.getAttachments(templateId);
+		
+		List<TemplateUrlContext> urlAttachments = EmailAttachmentAPI.getUrlAttachments(templateId);
+		
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_LIST, attachmentList);
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_URL_LIST, urlAttachments);
 		
 		
 		return false;

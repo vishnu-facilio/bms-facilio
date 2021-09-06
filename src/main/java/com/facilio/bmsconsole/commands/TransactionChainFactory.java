@@ -6160,6 +6160,7 @@ public class TransactionChainFactory {
 	public static FacilioChain getAddAttachmentsListChain(){
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddAttachmentCommand());
+		chain.addCommand(new DeleteUrlAttachmentCommand());
 		chain.addCommand(new AddTemplateAttachmentCommand());
 		return chain;
 	}

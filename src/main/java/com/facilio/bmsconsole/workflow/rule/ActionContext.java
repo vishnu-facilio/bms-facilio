@@ -14,10 +14,13 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.EmailAttachmentAPI;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.context.TemplateFileContext;
+import com.facilio.bmsconsole.context.TemplateUrlContext;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.modules.FieldUtil;
+import com.facilio.pdf.PdfUtil;
 
 public class ActionContext implements Serializable {
 	/**
@@ -120,13 +123,22 @@ public class ActionContext implements Serializable {
 				}
 			}
 			
-			if (template.getId() > 0) {
-				 List<TemplateFileContext> attachments = EmailAttachmentAPI.getAttachments("templatefileattachment",template.getId());
+			if (template.getId() > 0 && actionType.getVal() == ActionType.BULK_EMAIL_NOTIFICATION.getVal()) {
+				 Map<String,String> attachementMap = new HashMap<String, String>();
+				 List<TemplateFileContext> attachments = EmailAttachmentAPI.getAttachments(template.getId());
 				 if (attachments != null && !attachments.isEmpty()) {
-					 Map<String,String> attachementMap = new HashMap<String, String>();
 					 for (TemplateFileContext attachment : attachments) {
 						 attachementMap.put(attachment.getFileName(), attachment.getDownloadUrl());
 					 }
+				 }	 
+				 List<TemplateUrlContext> urlAttachments = EmailAttachmentAPI.getUrlAttachments(template.getId());
+				 if (urlAttachments != null && !urlAttachments.isEmpty()) {
+					 for (TemplateUrlContext url : urlAttachments) {
+						 String fileName = PdfUtil.exportUrlAsPdf(url.getUrlString().toString(), true, null, FileFormat.PDF); 
+						 attachementMap.put(url.getUrlString(), fileName);
+					 }
+				 }
+				 if (attachementMap != null && !attachementMap.isEmpty()) {
 					 context.put(FacilioConstants.ContextNames.ATTACHMENT_MAP_FILE_LIST, attachementMap);
 				 }
 			}

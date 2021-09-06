@@ -8,6 +8,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.EmailAttachmentAPI;
 import com.facilio.bmsconsole.context.TemplateFileContext;
+import com.facilio.bmsconsole.context.TemplateUrlContext;
 import com.facilio.bmsconsole.forms.FormRuleTriggerFieldContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -28,15 +29,39 @@ public class AddTemplateAttachmentCommand extends FacilioCommand {
 		List<Long> attachmentIds = (List<Long>) context.get(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST);
 		long templateId = (long) context.get(FacilioConstants.ContextNames.TEMPLATE_ID);	
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		List<String> urlList = (List<String>) context.get(FacilioConstants.ContextNames.ATTACHMENT_URL_LIST);
 		
-		EmailAttachmentAPI.addAttachments(attachmentIds, moduleName, templateId);
+		if(attachmentIds != null && !attachmentIds.isEmpty()) {
+			List<TemplateFileContext> attachments = new ArrayList<>();
+			for(long attachmentId : attachmentIds) {
+				TemplateFileContext attachment = new TemplateFileContext();	
+				attachment.setFileId(attachmentId);
+				attachment.setTemplateId(templateId);
+				
+				attachments.add(attachment);
+			}
+			List<FacilioField> fields = FieldFactory.getTemplateFileFields();
+			FacilioModule module = ModuleFactory.getTemplateFileModule();
+			EmailAttachmentAPI.addAttachments(attachments, module, templateId, TemplateFileContext.class, fields);
+		}
+		
+		if(urlList != null && !urlList.isEmpty()) {
+			List<TemplateUrlContext> attachments = new ArrayList<>();
+			for(String url : urlList) {
+				TemplateUrlContext attachment = new TemplateUrlContext();	
+				attachment.setUrlString(url);
+				attachment.setTemplateId(templateId);	
+				attachments.add(attachment);
+			}
+			List<FacilioField> fields = FieldFactory.getTemplateUrlFields();
+			FacilioModule module = ModuleFactory.getTemplateUrlAttachmentModule();
+			EmailAttachmentAPI.addAttachments(attachments, module, templateId, TemplateUrlContext.class, fields);
+		}
 		
 		
+
 		return false;
+
 	}	
-
-	
-
-	
 
 }

@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
 import com.facilio.bmsconsole.context.TemplateFileContext;
+import com.facilio.bmsconsole.context.TemplateUrlContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -25,8 +26,20 @@ public class EmailAttachmentAction extends FacilioAction {
 	
 	private List<String> attachmentFileName;
 	
+	private List<String> urlList;
+	
+
+
 	public List<Long> getAttachmentIds() {
 		return attachmentIds;
+	}
+
+	public List<String> getUrlList() {
+		return urlList;
+	}
+
+	public void setUrlList(List<String> urlList) {
+		this.urlList = urlList;
 	}
 
 	public void setAttachmentIds(List<Long> attachmentIds) {
@@ -101,9 +114,12 @@ public class EmailAttachmentAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		FacilioChain getListChain = TransactionChainFactory.getAttachmentsListTranslationChain();
 		getListChain.execute(context);
-		List<TemplateFileContext> attachmentList = (List<TemplateFileContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_LIST);
+		
+		List<TemplateFileContext> attachmentList = (List<TemplateFileContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_LIST);		
+		List<TemplateUrlContext> attachmentUrlList = (List<TemplateUrlContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_URL_LIST);
 		
 		setResult("attachments", attachmentList);
+		setResult("attachmentUrlList", attachmentUrlList);
 		
 		return SUCCESS;
 	}
@@ -117,10 +133,12 @@ public class EmailAttachmentAction extends FacilioAction {
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachmentContentType);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
  		
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_URL_LIST, this.urlList);
+ 		
  		
 		FacilioChain getAddChain = TransactionChainFactory.getAddAttachmentsListChain();
 		getAddChain.execute(context);
-		setResult("asset", context.get(FacilioConstants.ContextNames.ASSET));
+		setResult("attachments", "attachment");
 		
 		return SUCCESS;
 	}
@@ -137,7 +155,5 @@ public class EmailAttachmentAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	
-
 
 }

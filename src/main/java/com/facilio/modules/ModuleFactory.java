@@ -995,6 +995,14 @@ public class ModuleFactory {
 		templatesModule.setTableName("Template_File_Attachment");
 		return templatesModule;
 	}
+	
+	public static FacilioModule getTemplateUrlAttachmentModule() {
+		FacilioModule templatesModule = new FacilioModule();
+		templatesModule.setName("templateurlattachment");
+		templatesModule.setDisplayName("Template Url Attachment");
+		templatesModule.setTableName("Template_Url_Attachment");
+		return templatesModule;
+	}
 
 	public static FacilioModule getEMailTemplatesModule() {
 		FacilioModule eMailTemplatesModule = new FacilioModule();

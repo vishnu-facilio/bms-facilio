@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.context.TemplateFileContext;
+import com.facilio.bmsconsole.context.TemplateUrlContext;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -19,34 +20,23 @@ import com.facilio.services.filestore.FileStore;
 
 public class EmailAttachmentAPI {
 	
-	public static final void addAttachments(List<Long> attachmentIds, String moduleName, long templateId) throws Exception {
+	public static final <E> void addAttachments(List<E> attachments, FacilioModule module, long templateId, Class<E> classObj, List<FacilioField> fields) throws Exception {
 		
-		FacilioModule module = ModuleFactory.getTemplateFileModule();
-		List<FacilioField> fields = FieldFactory.getTemplateFileFields();
-	    Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		
-		if(attachmentIds != null) {
-			List<TemplateFileContext> attachments = new ArrayList<>();
-			for(long attachmentId : attachmentIds) {
-				TemplateFileContext attachment = new TemplateFileContext();	
-				attachment.setFileId(attachmentId);
-				attachment.setTemplateId(templateId);
-				
-				attachments.add(attachment);
-			}
+	    Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);	
+		if(attachments != null) {
+	
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 					.table(module.getTableName())
 					.fields(fields);
 			
-			List<Map<String, Object>> props = FieldUtil.getAsMapList(attachments, TemplateFileContext.class);
+			List<Map<String, Object>> props = FieldUtil.getAsMapList(attachments, classObj);
 			insertBuilder.addRecords(props);
 			insertBuilder.save();
 			
-		}
-		
+		}	
 	}
 	
-	public static final List<TemplateFileContext> getAttachments(String moduleName, long templateId) throws Exception {
+	public static final List<TemplateFileContext> getAttachments(long templateId) throws Exception {
 		
 		FileStore.NamespaceConfig namespaceConfig = FileStore.getNamespace(FileStore.DEFAULT_NAMESPACE);
 		
@@ -66,6 +56,28 @@ public class EmailAttachmentAPI {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			 attachmentList = FieldUtil.getAsBeanListFromMapList(props, TemplateFileContext.class);
+		}
+		
+		return attachmentList;
+	}
+	
+public static final List<TemplateUrlContext> getUrlAttachments(long templateId) throws Exception {
+		
+		
+		FacilioModule module = ModuleFactory.getTemplateUrlAttachmentModule();
+		List<FacilioField> fields = FieldFactory.getTemplateUrlFields();
+	    Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+	    
+	    List<TemplateUrlContext> attachmentList = new ArrayList<>();
+				
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("templateId"), ""+templateId, NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			 attachmentList = FieldUtil.getAsBeanListFromMapList(props, TemplateUrlContext.class);
 		}
 		
 		return attachmentList;
