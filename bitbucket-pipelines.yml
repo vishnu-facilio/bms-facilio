@@ -4,13 +4,9 @@ pipelines:
       - step:
           script:
             - echo "started"
-            - apt-get update && apt-get install -y curl jq
-            - export CLIENT_ID=AUfGbSrbPdyJXdWXXr
-            - export CLIENT_SECRET=ZMXQFCEDqztJKkZ58p3H7X7vAyztybhH
-            - export access_token=$(curl -s -X POST -u "${CLIENT_ID}:${CLIENT_SECRET}" https://bitbucket.org/site/oauth2/access_token -d grant_type=client_credentials -d scopes="repository"| jq --raw-output '.access_token')
-            - git remote set-url origin "https://x-token-auth:${access_token}@bitbucket.org/facilio/bmsconsole.git"
             - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
             - commitid=`git rev-list -1 --before="24 hour ago" master`
+            - git fetch --all
             - git branch
             - echo $commitid
             - git checkout production
