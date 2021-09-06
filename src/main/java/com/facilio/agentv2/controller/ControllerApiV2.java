@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.facilio.agentv2.rdm.RdmControllerContext;
+import com.facilio.fw.FacilioException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -144,19 +145,13 @@ public class ControllerApiV2 {
     }
 
 
-    /**
-     * this api is costly so avoid using it for frequent processes
-     * <p>
-     * working
-     *
-     * @param controllerId
-     * @return
-     */
     public static Controller getControllerFromDb(long controllerId) throws Exception {
         Controller controller = null;
         if (controllerId > 0) {
             GetControllerRequest getControllerRequest = new GetControllerRequest()
+                    .ofType(getControllerType(controllerId))
                     .withControllerId(controllerId);
+
             controller = getControllerRequest.getController();
             if (controller != null) {
                 return controller;
@@ -180,9 +175,6 @@ public class ControllerApiV2 {
     public static List<Condition> getControllerCondition(JSONObject childJson, FacilioControllerType controllerType) throws Exception {
         List<Condition> conditions = new ArrayList<>();
         Controller controller = makeControllerFromMap(childJson, controllerType);
-        if (AccountUtil.getCurrentOrg().getOrgId() == 152) {
-            LOGGER.info("controller : " + controller.getName() + " : " + controller.getType());
-        }
         conditions.addAll(controller.getControllerConditions());
         return conditions;
     }
@@ -843,4 +835,21 @@ public class ControllerApiV2 {
     	 	}
 		return null;
     }
+
+    public static FacilioControllerType getControllerType(long controllerId) throws Exception {
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getControllersField());
+
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getNewControllerModule().getTableName())
+                .select(fieldMap.values())
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("id"), Collections.singletonList(controllerId), NumberOperators.EQUALS));
+
+        List<Map<String, Object>> rows = selectRecordBuilder.get();
+        if (rows.size() == 1) {
+            int controllerType = (int) rows.get(0).get(AgentConstants.CONTROLLER_TYPE);
+            return FacilioControllerType.valueOf(controllerType);
+        }
+        throw new FacilioException("Invalid no. of rows");
+    }
+
 }
