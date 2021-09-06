@@ -2419,6 +2419,11 @@ public class FacilioConstants {
 			if (module != null) {
 				moduleClass =  classMap.get(module.getName());
 
+				// Temp fix until Asset is entirely moved to V3
+				if (moduleClass == null && checkParent && module.instanceOf(ContextNames.ASSET)) {
+					return getClassFromModule(module.getExtendModule(), checkParent);
+				}
+
 				if (moduleClass == null) {
 					V3Config config = ChainUtil.getV3Config(module, checkParent);
 					moduleClass = config == null ? null : config.getBeanClass();
