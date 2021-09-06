@@ -23,7 +23,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 
-public abstract  class WorkflowRuleBaseBundleComponent implements BundleComponentInterface {
+public abstract  class WorkflowRuleBaseBundleComponent extends CommonBundleComponent {
 
 	public abstract WorkflowRuleContext.RuleType getWorkflowRuleType();
 	

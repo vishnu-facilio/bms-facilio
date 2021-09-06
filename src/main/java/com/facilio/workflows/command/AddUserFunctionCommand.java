@@ -4,6 +4,9 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.bundle.enums.BundleComponentsEnum;
+import com.facilio.bundle.enums.BundleModeEnum;
+import com.facilio.bundle.utils.BundleUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
@@ -23,6 +26,9 @@ public class AddUserFunctionCommand extends FacilioCommand {
 		userFunctionContext.fillFunctionHeaderFromScript();
 		
 		addUserFunction(userFunctionContext);
+		
+		BundleUtil.markModifiedComponent(BundleComponentsEnum.FUNCTION, userFunctionContext.getId(), userFunctionContext.getName(), BundleModeEnum.ADD);
+		
 		return false;
 	}
 

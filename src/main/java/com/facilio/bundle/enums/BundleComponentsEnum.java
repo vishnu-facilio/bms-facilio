@@ -15,9 +15,10 @@ public enum BundleComponentsEnum {
 
 	MODULE(1,"Module",ModuleBundleComponent.class,null,true),
 	FIELD(2,"Field",FieldBundleComponent.class,BundleComponentsEnum.MODULE,false),
-	FUNCTION(3,"Function",FunctionBundleComponent.class,null,true),
-	WORKFLOW_RULE(4,"Workflow_Rule",WorkflowRuleBundleComponent.class,BundleComponentsEnum.MODULE,true),
-	NOTIFICATION_RULE(5,"Notification_Rule",NotificationRuleBundleComponent.class,BundleComponentsEnum.MODULE,true),
+	FUNCTION_NAME_SPACE(3,"Function_NameSpace",FunctionBundleComponent.class,null,true),
+	FUNCTION(4,"Function",FunctionBundleComponent.class,BundleComponentsEnum.FUNCTION_NAME_SPACE,true),
+//	WORKFLOW_RULE(5,"Workflow_Rule",WorkflowRuleBundleComponent.class,BundleComponentsEnum.MODULE,true),
+//	NOTIFICATION_RULE(6,"Notification_Rule",NotificationRuleBundleComponent.class,BundleComponentsEnum.MODULE,true),
 	;
 	
 	int value;

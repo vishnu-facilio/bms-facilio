@@ -1,6 +1,5 @@
 package com.facilio.bundle.context;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,16 +9,14 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bundle.interfaces.BundleComponentInterface;
 import com.facilio.bundle.utils.BundleConstants;
 import com.facilio.chain.FacilioContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
-import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 
-public class ModuleBundleComponent implements BundleComponentInterface {
+public class ModuleBundleComponent extends CommonBundleComponent {
 
 	@Override
 	public JSONObject getFormatedObject(FacilioContext context) throws Exception {

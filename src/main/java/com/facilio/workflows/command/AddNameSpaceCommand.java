@@ -5,6 +5,9 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bundle.enums.BundleComponentsEnum;
+import com.facilio.bundle.enums.BundleModeEnum;
+import com.facilio.bundle.utils.BundleUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
@@ -33,6 +36,9 @@ public class AddNameSpaceCommand extends FacilioCommand {
 		workflowNamespaceContext.setOrgid(AccountUtil.getCurrentOrg().getId());
 		
 		addNameSpace(workflowNamespaceContext);
+		
+		BundleUtil.markModifiedComponent(BundleComponentsEnum.FUNCTION_NAME_SPACE, workflowNamespaceContext.getId(), workflowNamespaceContext.getName(), BundleModeEnum.ADD);
+		
 		return false;
 	}
 	

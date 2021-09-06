@@ -33,7 +33,17 @@ import com.facilio.v3.context.Constants;
 import lombok.extern.log4j.Log4j;
 
 @Log4j
-public class FieldBundleComponent implements BundleComponentInterface {
+public class FieldBundleComponent extends CommonBundleComponent {
+	
+	@Override
+	public void getParentDetails(FacilioContext context) throws Exception {
+		
+		Long fieldId = (Long) context.get(BundleConstants.COMPONENT_ID);
+		FacilioField fieldContext = Constants.getModBean().getField(fieldId);
+		
+		context.put(BundleConstants.PARENT_COMPONENT_ID, fieldContext.getModule().getModuleId());
+		context.put(BundleConstants.PARENT_COMPONENT_NAME, fieldContext.getModule().getDisplayName());
+	}
 
 	@Override
 	public JSONObject getFormatedObject(FacilioContext context) throws Exception {

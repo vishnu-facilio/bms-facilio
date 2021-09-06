@@ -2,6 +2,9 @@ package com.facilio.workflows.command;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.bundle.enums.BundleComponentsEnum;
+import com.facilio.bundle.enums.BundleModeEnum;
+import com.facilio.bundle.utils.BundleUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -18,6 +21,9 @@ public class DeleteNameSpaceCommand extends FacilioCommand {
 		WorkflowNamespaceContext workflowNamespaceContext = (WorkflowNamespaceContext) context.get(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT);
 		
 		deleteNameSpace(workflowNamespaceContext);
+		
+		BundleUtil.markModifiedComponent(BundleComponentsEnum.FUNCTION_NAME_SPACE, workflowNamespaceContext.getId(), workflowNamespaceContext.getName(), BundleModeEnum.DELETE);
+		
 		return false;
 	}
 	

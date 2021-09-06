@@ -9,8 +9,14 @@ public class BundleConstants {
 	public static final String PARENT_COMPONENT_OBJECT = "parentComponentObject";
 	
 	public static final String PARENT_COMPONENT_ID = "parentComponentId";
+	public static final String PARENT_COMPONENT_NAME = "parentComponentName";
 	
 	public static final String BUNDLED_COMPONENTS = "bundledComponents";
 	
 	public static final String DESTINATION_ORG = "destinationOrg";
+	
+	public static final String COMPONENT_TYPE = "componentType";
+	public static final String COMPONENT_NAME = "componentName";
+	public static final String MODE = "mode";
+	
 }
