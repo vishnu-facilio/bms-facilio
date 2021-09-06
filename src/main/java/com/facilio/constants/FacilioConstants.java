@@ -2417,7 +2417,7 @@ public class FacilioConstants {
 
 				// Temp fix until Asset is entirely moved to V3
 				if (moduleClass == null && checkParent && module.instanceOf(ContextNames.ASSET)) {
-					return AssetContext.class;
+					return getClassFromModule(module.getExtendModule(), checkParent);
 				}
 
 				if (moduleClass == null) {
