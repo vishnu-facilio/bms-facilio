@@ -1,5 +1,7 @@
 package com.facilio.bmsconsoleV3.commands;
 
+import com.facilio.bmsconsole.automation.command.ListGlobalVariableCommand;
+import com.facilio.bmsconsole.automation.command.ListGlobalVariableGroupCommand;
 import com.facilio.bmsconsole.commands.GenerateCriteriaFromFilterCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.page.GetSummaryFieldsCommand;
@@ -144,5 +146,17 @@ public class ReadOnlyChainFactoryV3 {
         c.addCommand(new GenerateCriteriaFromFilterCommand());
         c.addCommand(new FloorplanDetailsListCommand());
         return c;
+    }
+
+    public static FacilioChain getListGlobalVariableGroupChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new ListGlobalVariableGroupCommand());
+        return chain;
+    }
+
+    public static FacilioChain getListGlobalVariableChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new ListGlobalVariableCommand());
+        return chain;
     }
 }

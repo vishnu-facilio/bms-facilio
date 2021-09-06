@@ -241,6 +241,10 @@ public class FacilioConstants {
 
         public static final String TRIGGER_TYPE = "triggerType";
 		public static final String TYPE_PRIMARY_ID = "typePrimaryId";
+		public static final String GLOBAL_VARIABLE_GROUP_LIST = "globalVariableGroupList";
+		public static final String GLOBAL_VARIABLE_GROUP = "globalVariableGroup";
+		public static final String GLOBAL_VARIABLE_LIST = "globalVariableList";
+		public static final String GLOBAL_VARIABLE = "globalVariable";
 
         public static class Reservation {
 			public static final String RESERVATION = "reservation";
