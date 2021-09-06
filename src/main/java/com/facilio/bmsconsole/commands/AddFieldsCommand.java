@@ -57,7 +57,7 @@ public class AddFieldsCommand extends FacilioCommand {
 				if(module != null && CollectionUtils.isNotEmpty(module.getFields())) {
 					List<Long> extendedModuleIds = module.getExtendedModuleIds();
 					List<FacilioField> existingFields = isNewModules ? null : modBean.getAllFields(module.getName());
-					List<String> existingNames = existingFields.stream().map(FacilioField::getName).collect(Collectors.toList());
+					List<String> existingNames = existingFields != null ? existingFields.stream().map(FacilioField::getName).collect(Collectors.toList()) : null;
 					Map<FieldType, List<String>> existingColumns = getColumnNamesGroupedByType(existingFields, module.getModuleId());
 					
 					List<FacilioField> counterFields = new ArrayList<>();
@@ -158,7 +158,7 @@ public class AddFieldsCommand extends FacilioCommand {
 				if (changeDisplayName) {
 					changeDisplayName(field, extendedModuleIds);
 				}
-				else if (existingNames.contains(field.getName())) {
+				else if (existingNames != null && existingNames.contains(field.getName())) {
 					throw new FacilioException(TranslationUtil.getString(Error.FIELD_DUPLICATE, field.getDisplayName()));
 				}
 			}
