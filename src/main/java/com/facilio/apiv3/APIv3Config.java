@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.asset.AddRotatingItemToolCommandV3;
+import com.facilio.bmsconsoleV3.commands.asset.AssetListFilterByReadingsCommand;
 import com.facilio.bmsconsoleV3.commands.asset.ConstructAddAssetActivityCommandV3;
 import com.facilio.bmsconsoleV3.commands.asset.LoadAssetSummaryCommandV3;
 import com.facilio.bmsconsoleV3.commands.budget.*;
@@ -1394,7 +1395,7 @@ public class APIv3Config {
                 .update()
                 .delete()
                 .summary().afterFetch(new LoadAssetSummaryCommandV3())
-                .list()
+                .list().afterFetch(new AssetListFilterByReadingsCommand())
                 .build();
     }
 }
