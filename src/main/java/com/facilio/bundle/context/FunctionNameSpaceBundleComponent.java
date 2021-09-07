@@ -6,8 +6,11 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bundle.enums.BundleComponentsEnum;
+import com.facilio.bundle.enums.BundleModeEnum;
 import com.facilio.bundle.utils.BundleConstants;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -67,6 +70,26 @@ public class FunctionNameSpaceBundleComponent extends CommonBundleComponent {
 	@Override
 	public void install(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
+		
+		BundleFileContext changeSetXMLFile = (BundleFileContext) context.get(BundleConstants.BUNDLED_XML_COMPONENT_FILE);
+		
+		BundleModeEnum modeEnum = BundleModeEnum.valueOfName(changeSetXMLFile.getXmlContent().getAttribute(BundleConstants.Components.MODE));
+		
+		switch(modeEnum) {
+		case ADD: 
+			
+			WorkflowNamespaceContext workflowNamespaceContext = new WorkflowNamespaceContext();
+			
+			workflowNamespaceContext.setName(changeSetXMLFile.getXmlContent().getElement(BundleConstants.Components.NAME).getText());
+			
+			FacilioChain addWorkflowChain =  TransactionChainFactory.getAddWorkflowNameSpaceChain();
+			FacilioContext newContext = addWorkflowChain.getContext();
+			
+			newContext.put(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT, workflowNamespaceContext);
+			addWorkflowChain.execute();
+			
+			break;
+		}
 		
 	}
 

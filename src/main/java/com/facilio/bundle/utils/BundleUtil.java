@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
+import com.google.common.io.Files;
 
 import lombok.extern.log4j.Log4j;
 
@@ -277,15 +279,9 @@ public class BundleUtil {
 	
 	public static String readFileContent(String filePath) throws IOException {
 		
-		File file = new File(filePath);
-		  
-		  try(BufferedReader br = new BufferedReader(new FileReader(file))) {
-			  String content;
-			  while ((content = br.readLine()) != null) {
-				  return content;
-			  }
-		  }
-		return null;
+		String text = Files.asCharSource(new File(filePath), Charset.defaultCharset()).read();
+
+		return text;
 	}
 	
 	public static List<Map<String, Object>> fetchBundleRelated(FacilioModule module,List<FacilioField> fields,Criteria fetchCriteria,Condition condition) throws Exception {

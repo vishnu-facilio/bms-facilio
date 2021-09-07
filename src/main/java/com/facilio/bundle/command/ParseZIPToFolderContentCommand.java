@@ -48,14 +48,6 @@ public class ParseZIPToFolderContentCommand extends FacilioCommand {
 		context.put(BundleConstants.BUNDLE_FOLDER, rootFolder);
 		context.put(FacilioConstants.ContextNames.FILE_ID, fileId);
 		
-//		FacilioChain populateBundleCommand = BundleTransactionChainFactory.getPopulateBundleChain();
-//		
-//		FacilioContext newcontext = populateBundleCommand.getContext();
-//		
-//		newcontext.putAll(context);
-//		
-//		populateBundleCommand.execute();
-//		
 		return false;
 	}
 

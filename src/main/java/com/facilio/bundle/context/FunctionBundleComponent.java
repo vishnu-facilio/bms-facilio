@@ -9,6 +9,7 @@ import org.json.simple.JSONObject;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bundle.enums.BundleComponentsEnum;
+import com.facilio.bundle.enums.BundleModeEnum;
 import com.facilio.bundle.interfaces.BundleComponentInterface;
 import com.facilio.bundle.utils.BundleConstants;
 import com.facilio.chain.FacilioChain;
@@ -19,6 +20,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
+import com.facilio.workflows.context.WorkflowFieldType;
 import com.facilio.workflows.context.WorkflowUserFunctionContext;
 import com.facilio.workflowv2.contexts.WorkflowNamespaceContext;
 import com.facilio.workflowv2.util.UserFunctionAPI;
@@ -99,30 +101,35 @@ public class FunctionBundleComponent extends CommonBundleComponent {
 	public void install(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		JSONObject workflowJSON = (JSONObject) context.get(BundleConstants.COMPONENT_OBJECT);
+		BundleFileContext changeSetXMLFile = (BundleFileContext) context.get(BundleConstants.BUNDLED_XML_COMPONENT_FILE);
+		BundleFolderContext parentFolder = (BundleFolderContext) context.get(BundleConstants.BUNDLE_FOLDER);
 		
-		WorkflowUserFunctionContext workflow = FieldUtil.getAsBeanFromJson(workflowJSON, WorkflowUserFunctionContext.class);
+		String scriptContent = parentFolder.getFile(changeSetXMLFile.getName()+"."+FS_EXTN).getFileContent();
 		
-		WorkflowNamespaceContext nameSpace = UserFunctionAPI.getNameSpace(workflow.getNameSpaceName());
+		BundleModeEnum modeEnum = BundleModeEnum.valueOfName(changeSetXMLFile.getXmlContent().getAttribute(BundleConstants.Components.MODE));
 		
-		if(nameSpace == null) {
-			nameSpace = new WorkflowNamespaceContext();
-			nameSpace.setName(workflow.getNameSpaceName());
-			FacilioChain addWorkflowChain =  TransactionChainFactory.getAddWorkflowNameSpaceChain();
+		String nameSpaceName = changeSetXMLFile.getXmlContent().getAttribute(NAME_SPACE);
+		
+		String returnType = changeSetXMLFile.getXmlContent().getElement(RETURN_STRING).getText();
+		
+		switch(modeEnum) {
+		case ADD: 
+			
+			WorkflowUserFunctionContext userFunction = new WorkflowUserFunctionContext();
+			
+			userFunction.setWorkflowV2String(scriptContent);
+			userFunction.setIsV2Script(Boolean.TRUE);
+			userFunction.setReturnType(WorkflowFieldType.getStringvaluemap().get(returnType).getIntValue());
+			userFunction.setNameSpaceId(UserFunctionAPI.getNameSpace(nameSpaceName).getId());
+			
+			FacilioChain addWorkflowChain =  TransactionChainFactory.getAddWorkflowUserFunctionChain();
 			FacilioContext newContext = addWorkflowChain.getContext();
 			
-			newContext.put(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT, nameSpace);
+			newContext.put(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
 			addWorkflowChain.execute();
 			
+			break;
 		}
-		
-		workflow.setNameSpaceId(nameSpace.getId());
-		
-		FacilioChain addWorkflowChain =  TransactionChainFactory.getAddWorkflowUserFunctionChain();
-		FacilioContext addContext = addWorkflowChain.getContext();
-		
-		addContext.put(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, workflow);
-		addWorkflowChain.execute();
 		
 	}
 
