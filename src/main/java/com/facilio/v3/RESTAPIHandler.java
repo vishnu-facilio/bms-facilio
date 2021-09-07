@@ -216,7 +216,10 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
                 }
             }
 
-            context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+            List<Object> filter_by = queryParameters.get("filter_by");
+            Constants.setFilterBy(context, CollectionUtils.isEmpty(filter_by) ? null : (String) filter_by.get(0));
+
+            context.put(FacilioConstants.ContextNames.PAGINATION, pagination.isEmpty() ? null : pagination);
 
             if (MapUtils.isNotEmpty(sorting)) {
                 context.put(FacilioConstants.ContextNames.SORTING, sorting);
