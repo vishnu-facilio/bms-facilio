@@ -179,6 +179,25 @@ public class BundleUtil {
 		}
 	}
 	
+	public static List<BundleChangeSetContext> getAllChangeSet() throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getBundleChangeSetFields());
+		
+		Criteria criteria = new Criteria();
+		
+		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("commitStatus"), BundleCommitStatusEnum.NOT_YET_COMMITED.getValue()+"", NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = fetchBundleRelated(ModuleFactory.getBundleChangeSetModule(), FieldFactory.getBundleChangeSetFields(), criteria, null);
+		
+		
+		if(props != null && !props.isEmpty()) {
+			List<BundleChangeSetContext> changeSet = FieldUtil.getAsBeanListFromMapList(props, BundleChangeSetContext.class);
+			
+			return changeSet;
+		}
+		return null;
+	}
+	
 	public static void getFormattedObject(Object beanObject) throws Exception {
 		
 		List<Class<?>> superClasses = getSuperClasses(beanObject.getClass());

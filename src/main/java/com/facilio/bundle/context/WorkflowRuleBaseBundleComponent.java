@@ -28,7 +28,7 @@ public abstract  class WorkflowRuleBaseBundleComponent extends CommonBundleCompo
 	public abstract WorkflowRuleContext.RuleType getWorkflowRuleType();
 	
 	@Override
-	public JSONObject getFormatedObject(FacilioContext context) throws Exception {
+	public void getFormatedObject(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		WorkflowRuleContext workflowRule = (WorkflowRuleContext) context.get(BundleConstants.COMPONENT_OBJECT);
@@ -45,7 +45,7 @@ public abstract  class WorkflowRuleBaseBundleComponent extends CommonBundleCompo
 			action.setTemplateId(-1l);
 			action.setId(-1);
 		}
-		return FieldUtil.getAsJSON(workflowRule);
+//		return FieldUtil.getAsJSON(workflowRule);
 	}
 
 	private JSONObject getTemplateJSONAsPerType(String moduleName, Template template) throws Exception {
@@ -116,35 +116,35 @@ public abstract  class WorkflowRuleBaseBundleComponent extends CommonBundleCompo
 		return templateJSON;
 	}
 
-	@Override
-	public JSONArray getAllFormatedObject(FacilioContext context) throws Exception {
-		// TODO Auto-generated method stub
-		JSONObject parentObject = (JSONObject)context.get(BundleConstants.PARENT_COMPONENT_OBJECT);
-		String moduleName = (String) parentObject.get("name");
-		
-		FacilioChain chain = ReadOnlyChainFactory.getCustomModuleWorkflowRulesChain();
-        FacilioContext newContext = chain.getContext();
-        newContext.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-        newContext.put(FacilioConstants.ContextNames.RULE_TYPE, getWorkflowRuleType().getIntVal());
-        chain.execute();
-
-        List<WorkflowRuleContext> workflowRules = (List<WorkflowRuleContext>) newContext.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST);
-        
-        if(workflowRules == null) {
-        	return null;
-        }
-        
-        JSONArray returnList = new JSONArray();
-		for(WorkflowRuleContext workflowRule : workflowRules) {
-			
-			context.put(BundleConstants.COMPONENT_OBJECT, workflowRule);
-			JSONObject formattedObject = getFormatedObject(context);
-			
-			returnList.add(formattedObject);
-		}
-		
-		return returnList;
-	}
+//	@Override
+//	public JSONArray getAllFormatedObject(FacilioContext context) throws Exception {
+//		// TODO Auto-generated method stub
+//		JSONObject parentObject = (JSONObject)context.get(BundleConstants.PARENT_COMPONENT_OBJECT);
+//		String moduleName = (String) parentObject.get("name");
+//		
+//		FacilioChain chain = ReadOnlyChainFactory.getCustomModuleWorkflowRulesChain();
+//        FacilioContext newContext = chain.getContext();
+//        newContext.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+//        newContext.put(FacilioConstants.ContextNames.RULE_TYPE, getWorkflowRuleType().getIntVal());
+//        chain.execute();
+//
+//        List<WorkflowRuleContext> workflowRules = (List<WorkflowRuleContext>) newContext.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST);
+//        
+//        if(workflowRules == null) {
+//        	return null;
+//        }
+//        
+//        JSONArray returnList = new JSONArray();
+//		for(WorkflowRuleContext workflowRule : workflowRules) {
+//			
+//			context.put(BundleConstants.COMPONENT_OBJECT, workflowRule);
+//			JSONObject formattedObject = getFormatedObject(context);
+//			
+//			returnList.add(formattedObject);
+//		}
+//		
+//		return returnList;
+//	}
 
 	@Override
 	public void install(FacilioContext context) throws Exception {

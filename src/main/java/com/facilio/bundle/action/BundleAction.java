@@ -23,7 +23,7 @@ public class BundleAction extends V3Action{
 	
 	JSONObject organization;
 	
-	public String copyCustomiation() throws Exception {
+	public String copyCustomization() throws Exception {
 		
 		LOGGER.info("organization : "+organization);
 		
@@ -35,7 +35,9 @@ public class BundleAction extends V3Action{
 		
 		copyCustomizationChain.execute();
 		
-		return null;
+		setData(BundleConstants.DOWNLOAD_URL, context.get(BundleConstants.DOWNLOAD_URL));
+		
+		return SUCCESS;
 		
 	}
 

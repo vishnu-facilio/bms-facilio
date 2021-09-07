@@ -394,9 +394,9 @@
     
     
     <package name="bundle" namespace="/api/v3/bundle" extends="v3Api">
-        <action name="copyCustomiation"
+        <action name="copyCustomization"
                 class="com.facilio.bundle.action.BundleAction"
-                method="copyCustomiation">
+                method="copyCustomization">
         </action>
     </package>
 
