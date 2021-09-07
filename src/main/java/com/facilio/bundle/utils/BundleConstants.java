@@ -33,8 +33,16 @@ public class BundleConstants {
 	public static final String COMPONENTS_FOLDER_NAME = "Components";
 	
 	public static final String COMPONENTS_FOLDER = "componentFolder";
+	
+	public static final String BUNDLE_FOLDER = "bundleFolder";
 
 	public static final String DOWNLOAD_URL = "downloadUrl";
+
+	public static final String BUNDLE_ZIP_FILE = "bundleZIPFile";
+	public static final String BUNDLE_ZIP_FILE_NAME = "bundleZIPFileName";
+	public static final String BUNDLE_ZIP_FILE_CONTENT_TYPE = "application/zip";
+
+	public static final String BUNDLED_XML_COMPONENT_FILE = "bundledXMLComponentFile";
 	
 	public static class Components {
 		public static final String NAME = "name";

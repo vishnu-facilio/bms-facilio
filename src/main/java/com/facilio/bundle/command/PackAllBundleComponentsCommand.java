@@ -13,6 +13,7 @@ import java.util.Queue;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Priority;
 import org.zeroturnaround.zip.ZipUtil;
 
@@ -173,7 +174,8 @@ public class PackAllBundleComponentsCommand extends FacilioCommand {
 		
 		long fileId = fs.addFile(rootFolder.getName()+".zip", zipFile, "application/zip");
 		
-		System.out.println("path ------------ "+zipFile);
+		FileUtils.deleteDirectory(rootFile);
+		zipFile.delete();
 		
 		return fileId;
 	}

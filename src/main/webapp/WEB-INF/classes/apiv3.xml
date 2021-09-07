@@ -398,6 +398,10 @@
                 class="com.facilio.bundle.action.BundleAction"
                 method="copyCustomization">
         </action>
+        <action name="installBundle"
+                class="com.facilio.bundle.action.BundleAction"
+                method="installBundle">
+        </action>
     </package>
 
 </struts>

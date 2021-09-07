@@ -12,14 +12,19 @@ public class BundleTransactionChainFactory {
     public static FacilioChain getCopyCustomizationChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new PackAllBundleComponentsCommand());
-//        c.addCommand(new CreateNewOrgAndPopulateBundleCommand());
+        return c;
+    }
+    
+    public static FacilioChain getInstallBundleChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ParseZIPToFolderContentCommand());
+        c.addCommand(new InstallBundledFolderContentCommand());
         return c;
     }
     
     public static FacilioChain getPopulateBundleChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new PopulateBundleToNewOrgCommand());
-        c.addCommand(new PopulateExtrasToNewOrgCommand());
+        c.addCommand(new PopulateBundleToNewOrgCommand());			//as per the old flow, not using now. keeping it just for reference.
         return c;
     }
 }

@@ -78,20 +78,6 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-		
-		
-		public static FacilioChain getOrgCreateOnCopyCustomizationAfterSaveChain() {
-			FacilioChain c = getDefaultChain();
-
-			c.addCommand(new AddDefaultDataCommand());
-			c.addCommand(new AddDefaultUnitsCommand());
-			c.addCommand(new AddOrgInfoCommand());
-			c.addCommand(new CreateAppSuperAdminCommand());
-			c.addCommand(new AddEmployeeTypePeopleForUserAdditionCommand());
-			
-			return c;
-		}
-		
 		public static FacilioChain runDefaultFieldsMigration() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new RunDefaultFieldsMigration());

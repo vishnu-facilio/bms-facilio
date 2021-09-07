@@ -44,6 +44,8 @@ public enum BundleComponentsEnum {
 	
 	private static final Map<Integer, BundleComponentsEnum> ALL_BUNDLE_COMPONENTS = Collections.unmodifiableMap(initAllBundleMap());
 	
+	private static final Map<String, BundleComponentsEnum> ALL_BUNDLE_COMPONENTS_BY_NAME = Collections.unmodifiableMap(initAllBundleMapByName());
+	
 	private static final ArrayList<BundleComponentsEnum> PARENT_COMPONENT_LIST = initParentComponentList();
 	
 	private static final Map<BundleComponentsEnum, ArrayList<BundleComponentsEnum>> PARENT_CHILD_MAP = Collections.unmodifiableMap(initParentChildMap());
@@ -52,6 +54,14 @@ public enum BundleComponentsEnum {
 		Map<Integer, BundleComponentsEnum> typeMap = new HashMap<>();
 		for(BundleComponentsEnum type : values()) {
 			typeMap.put(type.getValue(), type);
+		}
+		return typeMap;
+	}
+	
+	private static Map<String, BundleComponentsEnum> initAllBundleMapByName() {
+		Map<String, BundleComponentsEnum> typeMap = new HashMap<>();
+		for(BundleComponentsEnum type : values()) {
+			typeMap.put(type.getName(), type);
 		}
 		return typeMap;
 	}
@@ -91,5 +101,9 @@ public enum BundleComponentsEnum {
 
 	public static Map<Integer, BundleComponentsEnum> getAllBundleComponents() {
 		return ALL_BUNDLE_COMPONENTS;
+	}
+	
+	public static Map<String, BundleComponentsEnum> getAllBundleComponentsByName() {
+		return ALL_BUNDLE_COMPONENTS_BY_NAME;
 	}
 }

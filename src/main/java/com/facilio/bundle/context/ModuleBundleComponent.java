@@ -175,23 +175,11 @@ public class ModuleBundleComponent extends CommonBundleComponent {
 	public void install(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		JSONObject moduleJSON = (JSONObject) context.get(BundleConstants.COMPONENT_OBJECT);
+		BundleFileContext changeSetXMLFile = (BundleFileContext) context.get(BundleConstants.BUNDLED_XML_COMPONENT_FILE);
+		BundleFolderContext parentFolder = (BundleFolderContext) context.get(BundleConstants.BUNDLE_FOLDER);
 		
-		FacilioModule module = FieldUtil.getAsBeanFromJson(moduleJSON, FacilioModule.class);
 		
-		module.setOrgId(AccountUtil.getCurrentOrg().getId());
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		if(module.getExtendModule() != null) {
-			
-			FacilioModule extendedModule = modBean.getModule(module.getExtendModule().getName());
-			if(extendedModule == null) {
-				throw new Exception(module.getName()+" extendedModule is null :: "+module.getExtendModule().getName());
-			}
-			module.setExtendModule(extendedModule);
-		}
-		modBean.addModule(module);
+//		modBean.addModule(module);
 		
 	}
 

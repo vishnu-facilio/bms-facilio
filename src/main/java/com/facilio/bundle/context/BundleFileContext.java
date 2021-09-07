@@ -30,4 +30,15 @@ import lombok.Setter;
 		}
 	}
 	
+	public BundleFileContext(String name,String extension,String fileContent) throws Exception {
+		this.name = name;
+		this.extension = extension;
+		if(extension.equals(BundleConstants.XML_FILE_EXTN)) {
+			xmlContent = XMLBuilder.parse(fileContent);
+		}
+		else {
+			this.fileContent = fileContent;
+		}
+	}
+	
 }

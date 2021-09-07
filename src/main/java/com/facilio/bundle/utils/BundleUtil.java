@@ -1,5 +1,9 @@
 package com.facilio.bundle.utils;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -269,6 +273,19 @@ public class BundleUtil {
 		int detedRows =  deleteBuilder.delete();
 		
 		return detedRows;
+	}
+	
+	public static String readFileContent(String filePath) throws IOException {
+		
+		File file = new File(filePath);
+		  
+		  try(BufferedReader br = new BufferedReader(new FileReader(file))) {
+			  String content;
+			  while ((content = br.readLine()) != null) {
+				  return content;
+			  }
+		  }
+		return null;
 	}
 	
 	public static List<Map<String, Object>> fetchBundleRelated(FacilioModule module,List<FacilioField> fields,Criteria fetchCriteria,Condition condition) throws Exception {
