@@ -7,12 +7,10 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.Constants;
 import lombok.var;
@@ -157,7 +155,7 @@ public class GenerateCriteriaForV4Command extends FacilioCommand {
             return null;
         }
 
-        long moduleId = field.getModuleId();
+        long moduleId = ((LookupField) field).getLookupModuleId();
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleId);
 
@@ -168,7 +166,7 @@ public class GenerateCriteriaForV4Command extends FacilioCommand {
 
         List<FacilioField> allFields = modBean.getAllFields(module.getName());
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
-        FacilioField idField = fieldMap.get("id");
+        FacilioField idField = FieldFactory.getIdField(module);
         FacilioField mainField = null;
 
         for (FacilioField f: allFields) {
@@ -186,6 +184,10 @@ public class GenerateCriteriaForV4Command extends FacilioCommand {
         selectRecordsBuilder
                 .module(module)
                 .select(Arrays.asList(mainField, idField));
+
+        if (field.getName().equals("moduleState")) {
+            selectRecordsBuilder.andCondition(CriteriaAPI.getCondition("PARENT_MODULEID","parentModuleId", "" + field.getModuleId(), NumberOperators.EQUALS));
+        }
 
         List<Map<String, Object>> asProps = selectRecordsBuilder.getAsProps();
 

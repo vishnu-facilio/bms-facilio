@@ -91,8 +91,8 @@ public class ListCommand extends FacilioCommand {
         int perPage;
         int page;
         if (pagination != null) {
-            page = (int) pagination.get("page");
-            perPage = (int) pagination.get("perPage");
+            page = (int) (pagination.get("page") == null ? 1 : pagination.get("page"));
+            perPage = (int) (pagination.get("perPage") == null ? 50 : pagination.get("perPage"));
         } else {
             page = 1;
             perPage = 50;

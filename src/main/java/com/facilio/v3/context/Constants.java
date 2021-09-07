@@ -36,6 +36,16 @@ public class Constants {
     public static final String STATE_FLOWS = "stateFlows";
     public static final String CUSTOM_BUTTONS = "customButtons";
 
+    public static final String FILTER_BY = "filter_by";
+    public static String getFilterBy(Context context) {
+        return (String) context.get(FILTER_BY);
+    }
+
+    public static void setFilterBy(Context context, String filterBy) {
+        context.put(FILTER_BY, filterBy);
+    }
+
+
     private static final String MODULE_NAME = "moduleName";
     public static String getModuleName(Context context) {
         return (String) context.get(MODULE_NAME);
