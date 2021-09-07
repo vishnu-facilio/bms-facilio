@@ -20,6 +20,8 @@ public class BundleConstants {
 	
 	public static final String BUNDLE_FILE_NAME = "bundle";
 	
+	public static final String BUNDLE_XML_BUILDER = "bundlexmlBuilder";
+	
 	public static final String BUNDLE_CHANGE = "bundleChange";
 	
 	public static final String VERSION = "version";

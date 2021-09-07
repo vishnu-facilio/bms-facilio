@@ -1,5 +1,6 @@
 package com.facilio.bundle.context;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,6 +13,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bundle.enums.BundleComponentsEnum;
 import com.facilio.bundle.interfaces.BundleComponentInterface;
 import com.facilio.bundle.utils.BundleConstants;
 import com.facilio.chain.FacilioChain;
@@ -49,7 +51,6 @@ public class FieldBundleComponent extends CommonBundleComponent {
 		context.put(BundleConstants.PARENT_COMPONENT_NAME, fieldContext.getModule().getDisplayName());
 	}
 	
-	@Override
 	public String getFileName(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
@@ -57,7 +58,27 @@ public class FieldBundleComponent extends CommonBundleComponent {
 		
 		FacilioField field = ((ModuleBean) BeanFactory.lookup("ModuleBean")).getField(fieldId);
 		
-		return field.getModule().getName()+"_"+field.getName();
+		return field.getModule().getName()+"_fields";
+	}
+	
+	@Override
+	public void fillBundleXML(FacilioContext context) throws Exception {
+		// TODO Auto-generated method stub
+		String fileName = BundleComponentsEnum.FIELD.getName()+File.separatorChar+getFileName(context)+".xml";
+		XMLBuilder bundleBuilder = (XMLBuilder) context.get(BundleConstants.BUNDLE_XML_BUILDER);
+		
+		List<XMLBuilder> elementList = bundleBuilder.getElementList(BundleConstants.VALUES);
+		
+		boolean entryFound = false;
+		for(XMLBuilder element : elementList) {
+			if(fileName.equals(element.getText())) {
+				entryFound = true;
+				break;
+			}
+		}
+		if(!entryFound) {
+			bundleBuilder.element(BundleConstants.VALUES).text(fileName);
+		}
 	}
 
 	@Override

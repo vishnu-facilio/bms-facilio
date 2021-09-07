@@ -11,10 +11,15 @@ public class WorkflowRuleBundleComponent extends WorkflowRuleBaseBundleComponent
 		return RuleType.MODULE_RULE;
 	}
 
-	@Override
 	public String getFileName(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void fillBundleXML(FacilioContext context) throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

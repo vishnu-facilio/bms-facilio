@@ -1,5 +1,6 @@
 package com.facilio.bundle.context;
 
+import java.io.File;
 import java.util.List;
 
 import org.json.simple.JSONArray;
@@ -7,6 +8,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bundle.enums.BundleComponentsEnum;
 import com.facilio.bundle.interfaces.BundleComponentInterface;
 import com.facilio.bundle.utils.BundleConstants;
 import com.facilio.chain.FacilioChain;
@@ -41,7 +43,6 @@ public class FunctionBundleComponent extends CommonBundleComponent {
 		context.put(BundleConstants.PARENT_COMPONENT_NAME, userFunction.getNameSpaceName());
 	}
 	
-	@Override
 	public String getFileName(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
@@ -49,6 +50,15 @@ public class FunctionBundleComponent extends CommonBundleComponent {
 		WorkflowUserFunctionContext userFunction = WorkflowV2API.getUserFunction(functionId);
 		
 		return userFunction.getNameSpaceName()+"_"+userFunction.getName();
+	}
+	
+	@Override
+	public void fillBundleXML(FacilioContext context) throws Exception {
+		// TODO Auto-generated method stub
+		
+		String fileName = BundleComponentsEnum.FUNCTION.getName()+File.separatorChar+getFileName(context)+".xml";
+		XMLBuilder bundleBuilder = (XMLBuilder) context.get(BundleConstants.BUNDLE_XML_BUILDER);
+		bundleBuilder.element(BundleConstants.VALUES).text(fileName);
 	}
 
 	@Override
@@ -68,8 +78,7 @@ public class FunctionBundleComponent extends CommonBundleComponent {
 		
 		XMLBuilder xmlBuilder = functionXMLFile.getXmlContent();
 		
-		xmlBuilder.element(componentChange.getComponentTypeEnum().getName())
-					.attr(BundleConstants.Components.MODE, componentChange.getModeEnum().getName())
+		xmlBuilder.attr(BundleConstants.Components.MODE, componentChange.getModeEnum().getName())
 					.attr(NAME_SPACE, function.getNameSpaceName())
 				  .element(BundleConstants.Components.NAME)
 					.text(function.getName())

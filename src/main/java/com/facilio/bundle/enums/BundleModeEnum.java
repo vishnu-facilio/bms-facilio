@@ -9,9 +9,9 @@ import lombok.Getter;
 public enum BundleModeEnum {
 	
 	DUMMY(0,"Dummy"),
-	ADD(1,"Module"),
-	UPDATE(2,"Field"),
-	DELETE(3,"Function"),
+	ADD(1,"Add"),
+	UPDATE(2,"Update"),
+	DELETE(3,"Delete"),
 	;
 	
 	int value;

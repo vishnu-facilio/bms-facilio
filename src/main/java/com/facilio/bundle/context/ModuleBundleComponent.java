@@ -1,9 +1,12 @@
 package com.facilio.bundle.context;
 
+import java.io.File;
+
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bundle.enums.BundleComponentsEnum;
 import com.facilio.bundle.utils.BundleConstants;
 import com.facilio.chain.FacilioContext;
 import com.facilio.fw.BeanFactory;
@@ -44,7 +47,6 @@ public class ModuleBundleComponent extends CommonBundleComponent {
 		moduleFolder.addFile(fileName+"."+BundleConstants.XML_FILE_EXTN, fileContext);
 	}
 	
-	@Override
 	public String getFileName(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
@@ -53,6 +55,15 @@ public class ModuleBundleComponent extends CommonBundleComponent {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		return modBean.getModule(moduleId).getName();
+	}
+	
+	@Override
+	public void fillBundleXML(FacilioContext context) throws Exception {
+		// TODO Auto-generated method stub
+		
+		String fileName = BundleComponentsEnum.MODULE.getName()+File.separatorChar+getFileName(context)+".xml";
+		XMLBuilder bundleBuilder = (XMLBuilder) context.get(BundleConstants.BUNDLE_XML_BUILDER);
+		bundleBuilder.element(BundleConstants.VALUES).text(fileName);
 	}
 
 //	@Override

@@ -11,10 +11,15 @@ public class NotificationRuleBundleComponent extends WorkflowRuleBaseBundleCompo
 		return RuleType.MODULE_RULE_NOTIFICATION;
 	}
 
-	@Override
 	public String getFileName(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void fillBundleXML(FacilioContext context) throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

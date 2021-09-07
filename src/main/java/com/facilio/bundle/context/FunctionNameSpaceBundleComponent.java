@@ -1,9 +1,12 @@
 package com.facilio.bundle.context;
 
+import java.io.File;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bundle.enums.BundleComponentsEnum;
 import com.facilio.bundle.utils.BundleConstants;
 import com.facilio.chain.FacilioContext;
 import com.facilio.fw.BeanFactory;
@@ -16,7 +19,6 @@ import com.facilio.xml.builder.XMLBuilder;
 
 public class FunctionNameSpaceBundleComponent extends CommonBundleComponent {
 
-	@Override
 	public String getFileName(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
@@ -26,6 +28,16 @@ public class FunctionNameSpaceBundleComponent extends CommonBundleComponent {
 		
 		return nameSpace.getName();
 	}
+	
+	@Override
+	public void fillBundleXML(FacilioContext context) throws Exception {
+		// TODO Auto-generated method stub
+		
+		String fileName = BundleComponentsEnum.FUNCTION_NAME_SPACE.getName()+File.separatorChar+getFileName(context)+".xml";
+		XMLBuilder bundleBuilder = (XMLBuilder) context.get(BundleConstants.BUNDLE_XML_BUILDER);
+		bundleBuilder.element(BundleConstants.VALUES).text(fileName);
+	}
+	
 	@Override
 	public void getFormatedObject(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
@@ -43,8 +55,7 @@ public class FunctionNameSpaceBundleComponent extends CommonBundleComponent {
 		
 		XMLBuilder xmlBuilder = nsFile.getXmlContent();
 		
-		xmlBuilder.element(componentChange.getComponentTypeEnum().getName())
-					.attr(BundleConstants.Components.MODE, componentChange.getModeEnum().getName())
+		xmlBuilder.attr(BundleConstants.Components.MODE, componentChange.getModeEnum().getName())
 				  .element(BundleConstants.Components.NAME)
 					.text(nameSpace.getName())
 					.p();
@@ -64,5 +75,4 @@ public class FunctionNameSpaceBundleComponent extends CommonBundleComponent {
 		// TODO Auto-generated method stub
 		
 	}
-
 }

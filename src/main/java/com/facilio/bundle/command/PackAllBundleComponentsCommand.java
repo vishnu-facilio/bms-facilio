@@ -19,6 +19,7 @@ import org.zeroturnaround.zip.ZipUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.xml.builder.XMLBuilder;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bundle.context.BundleChangeSetContext;
@@ -45,7 +46,7 @@ public class PackAllBundleComponentsCommand extends FacilioCommand {
 		
 		if(changeSet != null) {
 			
-			BundleFolderContext rootFolder = new BundleFolderContext("Facilio_App_Bundle");
+			BundleFolderContext rootFolder = new BundleFolderContext("Facilio_App_Bundle_"+DateTimeUtil.getFormattedTime(DateTimeUtil.getCurrenTime()));
 			
 			rootFolder.addFolder(BundleConstants.COMPONENTS_FOLDER_NAME);
 			
@@ -84,12 +85,11 @@ public class PackAllBundleComponentsCommand extends FacilioCommand {
 						newContext.put(BundleConstants.COMPONENT_ID, componentChange.getComponentId());
 						newContext.put(BundleConstants.BUNDLE_CHANGE, componentChange);
 						newContext.put(BundleConstants.COMPONENTS_FOLDER, rootFolder.getFolder(BundleConstants.COMPONENTS_FOLDER_NAME));
+						newContext.put(BundleConstants.BUNDLE_XML_BUILDER, bundleBuilder);
 						
-						String fileName = component.getName()+File.separatorChar+bundleComponent.getFileName(newContext)+".xml";
-						
+						bundleComponent.fillBundleXML(newContext);
 						bundleComponent.getFormatedObject(newContext);
 						
-						bundleBuilder = bundleBuilder.element(BundleConstants.VALUES).text(fileName).p();
 					}
 					
 					bundleBuilder = bundleBuilder.p();
