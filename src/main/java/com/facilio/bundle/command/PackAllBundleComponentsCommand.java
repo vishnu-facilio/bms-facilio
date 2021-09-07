@@ -2,8 +2,8 @@ package com.facilio.bundle.command;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+//import java.nio.file.Files;
+//import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -152,7 +152,7 @@ public class PackAllBundleComponentsCommand extends FacilioCommand {
 					
 					BundleFileContext fileContext = folder.getFiles().get(fileName);
 					
-					Path filepath = Path.of(folder.getPath() + File.separator + fileContext.getName() + "." + fileContext.getExtension());
+//					Path filepath = Path.of(folder.getPath() + File.separator + fileContext.getName() + "." + fileContext.getExtension());
 					
 					String content = fileContext.isXMLFile() ? fileContext.getXmlContent().getAsXMLString() : fileContext.getFileContent();  
 			       
