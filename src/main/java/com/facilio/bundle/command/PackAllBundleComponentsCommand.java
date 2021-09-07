@@ -156,7 +156,7 @@ public class PackAllBundleComponentsCommand extends FacilioCommand {
 					
 					String content = fileContext.isXMLFile() ? fileContext.getXmlContent().getAsXMLString() : fileContext.getFileContent();  
 			       
-					Files.writeString(filepath, content);
+//					Files.writeString(filepath, content);
 				}
 			}
 		}
