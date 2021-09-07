@@ -1,6 +1,7 @@
 package com.facilio.bundle.command;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 //import java.nio.file.Files;
 //import java.nio.file.Path;
@@ -12,15 +13,9 @@ import java.util.Queue;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.apache.log4j.Priority;
 import org.zeroturnaround.zip.ZipUtil;
 
-import com.facilio.command.FacilioCommand;
-import com.facilio.services.factory.FacilioFactory;
-import com.facilio.services.filestore.FileStore;
-import com.facilio.time.DateTimeUtil;
-import com.facilio.xml.builder.XMLBuilder;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bundle.context.BundleChangeSetContext;
 import com.facilio.bundle.context.BundleFileContext;
@@ -31,8 +26,12 @@ import com.facilio.bundle.interfaces.BundleComponentInterface;
 import com.facilio.bundle.utils.BundleConstants;
 import com.facilio.bundle.utils.BundleUtil;
 import com.facilio.chain.FacilioContext;
+import com.facilio.command.FacilioCommand;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.time.DateTimeUtil;
+import com.facilio.xml.builder.XMLBuilder;
 
-import io.jsonwebtoken.lang.Collections;
 import lombok.extern.log4j.Log4j;
 
 @Log4j
@@ -152,11 +151,16 @@ public class PackAllBundleComponentsCommand extends FacilioCommand {
 					
 					BundleFileContext fileContext = folder.getFiles().get(fileName);
 					
-//					Path filepath = Path.of(folder.getPath() + File.separator + fileContext.getName() + "." + fileContext.getExtension());
-					
 					String content = fileContext.isXMLFile() ? fileContext.getXmlContent().getAsXMLString() : fileContext.getFileContent();  
 			       
-//					Files.writeString(filepath, content);
+					try(FileWriter fWriter = new FileWriter(folder.getPath() + File.separator + fileContext.getName() + "." + fileContext.getExtension())) {
+			            fWriter.write(content);
+			        }
+			        catch (IOException e) {
+			            LOGGER.log(Priority.ERROR, e.getMessage(), e);
+			            throw e;
+			        }
+					
 				}
 			}
 		}
