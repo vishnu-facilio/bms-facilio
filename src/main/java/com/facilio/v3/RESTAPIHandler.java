@@ -197,7 +197,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
             JSONObject pagination = new JSONObject();
             if (CollectionUtils.isNotEmpty(page)) {
                 try {
-                    this.setPage(Integer.valueOf((String) pagination.get(0)));
+                    this.setPage(Integer.valueOf((String) page.get(0)));
                     pagination.put("page", this.getPage());
                 } catch (Exception ex) {
                     this.setPage(1);
@@ -215,6 +215,8 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware, Ser
                     pagination.put("perPage", 50);
                 }
             }
+
+            context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 
             if (MapUtils.isNotEmpty(sorting)) {
                 context.put(FacilioConstants.ContextNames.SORTING, sorting);
