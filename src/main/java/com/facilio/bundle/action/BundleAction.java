@@ -21,17 +21,11 @@ public class BundleAction extends V3Action{
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	JSONObject organization;
-	
 	public String copyCustomization() throws Exception {
-		
-		LOGGER.info("organization : "+organization);
 		
 		FacilioChain copyCustomizationChain = BundleTransactionChainFactory.getCopyCustomizationChain();
 		
 		FacilioContext context = copyCustomizationChain.getContext();
-		
-		context.put(BundleConstants.DESTINATION_ORG, organization);
 		
 		copyCustomizationChain.execute();
 		
