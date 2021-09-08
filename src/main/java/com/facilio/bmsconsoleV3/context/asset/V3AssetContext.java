@@ -78,12 +78,23 @@ public class V3AssetContext extends V3ResourceContext {
         this.lastDowntimeId = lastDowntimeId;
     }
 
-    public AssetState getState() {
-        return state;
+    public int getState() {
+        if(state != null) {
+            return state.getIntVal();
+        }
+        return -1;
     }
-
-    public void setState(AssetState state) {
+    public void setState(int state) {
+        this.state = V3AssetContext.AssetState.STATE_MAP.get(state);
+    }
+    public void setState(V3AssetContext.AssetState state) {
         this.state = state;
+    }
+    public String getStateVal() {
+        if(state != null) {
+            return state.getStringVal();
+        }
+        return null;
     }
 
     public String getModuleName() {
