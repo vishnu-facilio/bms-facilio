@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +19,7 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.bmsconsole.context.CommissioningLogContext;
 import com.facilio.bmsconsole.util.CommissioningApi;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -91,7 +91,7 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
 		FacilioField orderBy = isNiagra ? fieldMap.get(AgentConstants.DISPLAY_NAME) : fieldMap.get(AgentConstants.NAME);
 		GetPointRequest getPointRequest = new GetPointRequest()
-				.filterConfigurePoints()
+				.filterPointsForCommissioning()
 				.ofType(log.getControllerTypeEnum())
 //				.initBuilder(null)
 				.orderBy(orderBy.getCompleteColumnName())
