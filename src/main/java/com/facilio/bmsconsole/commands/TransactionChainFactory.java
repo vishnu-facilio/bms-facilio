@@ -849,6 +849,7 @@ public class TransactionChainFactory {
 			c.addCommand(new SetAssetCategoryCommand());
 			c.addCommand(new SetModuleForSpecialAssetsCommand());
 			c.addCommand(new AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMF());
+			c.addCommand(new ValidateQrValueCommand());
 			c.addCommand(new GenericAddModuleDataCommand());
 			c.addCommand(new ConstructAddAssetActivityCommand());
 			c.addCommand(new AddRotatingItemToolCommand());
@@ -885,6 +886,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddCategoryOnAssetUpdateCommand());
 			c.addCommand(new SetModuleForSpecialAssetsCommand());
 			c.addCommand(new AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMF());
+			c.addCommand(new ValidateQrValueCommand());
 			c.addCommand(new GenericUpdateModuleDataCommand());
 			c.addCommand(new UpdateEventListForStateFlowCommand());
 			c.addCommand(new GenericGetModuleDataListCommand());

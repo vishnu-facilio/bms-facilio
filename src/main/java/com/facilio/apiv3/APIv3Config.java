@@ -429,7 +429,16 @@ public class APIv3Config {
                     .beforeFetch(new LoadInsuranceLookUpCommandV3())
                 .build();
     }
-    
+    @Module("termsandconditions")
+    public static Supplier<V3Config> getTermsAndCondition() {
+        return () -> new V3Config(V3TermsAndConditionContext.class, new ModuleCustomFieldCount30())
+                               .create()
+                               .update()
+                               .list()
+                               .summary()
+                               .delete()
+                               .build();
+        }
     @Module("storeRoom")
     public static Supplier<V3Config> getStoreRoom() {
         return () -> new V3Config(V3StoreRoomContext.class, null)

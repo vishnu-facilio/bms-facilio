@@ -3150,6 +3150,22 @@ public class ModuleFactory {
 //		module.setExtendModule(getWorkflowRuleModule());
 //		return module;
 //	}
+
+	public static FacilioModule getGlobalVariableGroupModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("globalVariableGroup");
+		module.setDisplayName("Global Variable Group");
+		module.setTableName("Global_Variable_Group");
+		return module;
+	}
+
+	public static FacilioModule getGlobalVariableModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("globalVariable");
+		module.setDisplayName("Global Variable");
+		module.setTableName("Global_Variable");
+		return module;
+	}
 	
 	public static FacilioModule getMobileDetailsModule() {
 		FacilioModule module = new FacilioModule();
