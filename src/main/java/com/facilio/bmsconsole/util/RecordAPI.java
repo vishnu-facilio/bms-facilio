@@ -28,6 +28,7 @@ import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FieldOption;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.SupplementRecord;
 
 public class RecordAPI {
 
@@ -36,6 +37,10 @@ public class RecordAPI {
 	}
 	
 	public static Map<Long, List<UpdateChangeSet>> addRecord(boolean isLocalIdNeeded, List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields, Boolean isChangeSetNeeded) throws Exception {
+		return addRecord(isLocalIdNeeded, list, module, fields, isChangeSetNeeded, null);
+	}
+	
+	public static Map<Long, List<UpdateChangeSet>> addRecord(boolean isLocalIdNeeded, List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields, Boolean isChangeSetNeeded, List<SupplementRecord> supplements) throws Exception {
 		
 		InsertRecordBuilder insertRecordBuilder = new InsertRecordBuilder<>()
 				.module(module)
@@ -46,6 +51,11 @@ public class RecordAPI {
 		if (isChangeSetNeeded != null && isChangeSetNeeded) {
 			insertRecordBuilder.withChangeSet();
 		}
+		
+		if(CollectionUtils.isNotEmpty(supplements)) {
+			insertRecordBuilder.insertSupplements(supplements);
+		}
+		
 	
 		insertRecordBuilder.addRecords(list);
 		insertRecordBuilder.save();
