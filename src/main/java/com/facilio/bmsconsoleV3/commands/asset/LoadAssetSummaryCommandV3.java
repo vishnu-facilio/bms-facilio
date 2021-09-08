@@ -21,6 +21,8 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.v3.V3Builder.V3Config;
+import com.facilio.v3.util.ChainUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -40,7 +42,9 @@ public class LoadAssetSummaryCommandV3  extends FacilioCommand {
             String moduleName = module.getName();
 
             List<FacilioField> fields = modBean.getAllFields(moduleName);
-            Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
+
+            V3Config v3Config = ChainUtil.getV3Config(moduleName);
+            Class beanClassName = ChainUtil.getBeanClass(v3Config, module);
             if (beanClassName == null) {
                 beanClassName = ModuleBaseWithCustomFields.class;
             }
