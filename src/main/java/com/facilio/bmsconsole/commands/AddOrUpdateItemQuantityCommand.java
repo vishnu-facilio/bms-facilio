@@ -167,6 +167,8 @@ public class AddOrUpdateItemQuantityCommand extends FacilioCommand {
 				FieldType.DECIMAL));
 		fields.add(FieldFactory.getField("returns", "sum(case WHEN TRANSACTION_STATE = 3 THEN QUANTITY ELSE 0 END)",
 				FieldType.DECIMAL));
+		fields.add(FieldFactory.getField("adjustments_decrease", "sum(case WHEN TRANSACTION_STATE = 8 THEN QUANTITY ELSE 0 END)",
+				FieldType.DECIMAL));
 		builder.select(fields);
 
 		builder.andCondition(CriteriaAPI.getCondition(consumableFieldMap.get(fieldName),
@@ -174,11 +176,12 @@ public class AddOrUpdateItemQuantityCommand extends FacilioCommand {
 
 		List<Map<String, Object>> rs = builder.get();
 		if (rs != null && rs.size() > 0) {
-			double addition = 0, issues = 0, returns = 0;
+			double addition = 0, issues = 0, returns = 0 , adjustments_decrease = 0 ;
 			addition = rs.get(0).get("addition") != null ? (double) rs.get(0).get("addition") : 0;
 			issues = rs.get(0).get("issues") != null ? (double) rs.get(0).get("issues") : 0;
 			returns = rs.get(0).get("returns") != null ? (double) rs.get(0).get("returns") : 0;
-			return ((addition + returns) - issues);
+			adjustments_decrease = rs.get(0).get("adjustments_decrease") != null ? (double) rs.get(0).get("adjustments_decrease") : 0;
+			return ((addition + returns) - issues - adjustments_decrease);
 		}
 		return 0d;
 	}

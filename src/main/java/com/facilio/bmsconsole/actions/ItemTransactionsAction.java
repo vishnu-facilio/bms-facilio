@@ -61,12 +61,15 @@ public class ItemTransactionsAction extends FacilioAction {
 	}
 
 	private long siteId = -1;
+
 	public long getSiteId() {
 		return siteId;
 	}
+
 	public void setSiteId(long siteId) {
 		this.siteId = siteId;
 	}
+
 	public String addOrUpdateItemTransactions() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
@@ -74,6 +77,18 @@ public class ItemTransactionsAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PURCHASED_ITEM, purchasedItems);
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
 		FacilioChain addWorkorderPartChain = TransactionChainFactory.getAddOrUpdateItemTransactionsChain();
+		addWorkorderPartChain.execute(context);
+		setItemTransactionsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
+		setResult("itemTransactionsId", itemTransactionsId);
+		return SUCCESS;
+	}
+	
+	public String adjustmentItemTransactions() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+		context.put(FacilioConstants.ContextNames.RECORD_LIST, itemTransaction);
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
+		FacilioChain addWorkorderPartChain = TransactionChainFactory.getAdjustmentItemTransactionsChain();
 		addWorkorderPartChain.execute(context);
 		setItemTransactionsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		setResult("itemTransactionsId", itemTransactionsId);
@@ -154,10 +169,10 @@ public class ItemTransactionsAction extends FacilioAction {
 		}
 		if (getShowItemsForReturn()) {
 			context.put(FacilioConstants.ContextNames.SHOW_ITEMS_FOR_RETURN, showItemsForReturn);
-		}
-		else if(getShowItemsForIssue()) {
+		} 
+		else if (getShowItemsForIssue()) {
 			context.put(FacilioConstants.ContextNames.SHOW_ITEMS_FOR_ISSUE, showItemsForIssue);
-		}
+		} 
 		FacilioChain itemsListChain = ReadOnlyChainFactory.getItemTransactionsList();
 		itemsListChain.execute(context);
 		if (getCount()) {
@@ -178,12 +193,12 @@ public class ItemTransactionsAction extends FacilioAction {
 		itemsList();
 		return SUCCESS;
 	}
-	
+
 	public String showItemTransactionListForIssue() throws Exception {
 		itemsList();
 		return SUCCESS;
 	}
-	
+
 	public String itemTransactionsCount() throws Exception {
 		itemsList();
 		setResult(FacilioConstants.ContextNames.COUNT, itemsCount);
@@ -245,7 +260,7 @@ public class ItemTransactionsAction extends FacilioAction {
 	public void setShowItemsForReturn(Boolean showToolsForReturn) {
 		this.showItemsForReturn = showToolsForReturn;
 	}
-	
+
 	private Boolean showItemsForIssue;
 
 	public Boolean getShowItemsForIssue() {
@@ -258,5 +273,4 @@ public class ItemTransactionsAction extends FacilioAction {
 	public void setShowItemsForIssue(Boolean showItemsForIssue) {
 		this.showItemsForIssue = showItemsForIssue;
 	}
-	
 }

@@ -2380,6 +2380,17 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static FacilioChain getAdjustmentItemTransactionsChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForItemTransactions());
+			c.addCommand(new AdjustmentItemTransactionCommand());
+			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
+			c.addCommand(getUpdateItemQuantityRollupChain());
+			c.addCommand(new AddActivitiesCommand());
+
+			return c;
+		}
+		
 		public static FacilioChain getItemTransactionRemainingQuantityRollupChain(){
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForItemTransactions());
