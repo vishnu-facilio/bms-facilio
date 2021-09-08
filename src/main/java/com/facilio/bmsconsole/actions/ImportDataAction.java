@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ImportProcessLogContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.imports.config.ImportChainUtil;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -64,6 +65,26 @@ public class ImportDataAction extends FacilioAction {
 		ImportProcessContext imp = (ImportProcessContext) context.get(FacilioConstants.ContextNames.IMPORT_PROCESS_CONTEXT);
 		setResult(FacilioConstants.ContextNames.IMPORT_PROCESS_CONTEXT ,imp);
         
+		return SUCCESS;
+	}
+
+	public String uploadHandler() throws Exception {
+		FacilioChain chain = ImportChainUtil.getUploadChain(moduleName);
+
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.FILE_NAME, fileUploadFileName);
+		context.put(FacilioConstants.ContextNames.FILE, fileUpload);
+		context.put(FacilioConstants.ContextNames.FILE_CONTENT_TYPE, fileUploadContentType);
+		context.put(FacilioConstants.ContextNames.IMPORT_PROCESS_CONTEXT, importProcessContext);
+
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.SITE_ID, siteId);
+
+		chain.execute();
+
+		ImportProcessContext imp = (ImportProcessContext) context.get(FacilioConstants.ContextNames.IMPORT_PROCESS_CONTEXT);
+		setResult(FacilioConstants.ContextNames.IMPORT_PROCESS_CONTEXT ,imp);
+
 		return SUCCESS;
 	}
 	

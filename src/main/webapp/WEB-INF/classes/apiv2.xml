@@ -5598,6 +5598,10 @@
 		</action>
 		<action name ="updateImportProcessContext" class="com.facilio.bmsconsole.actions.ImportDataAction" method="updateImportProcessContext">
 		</action>
+
+		<action name="uploadHandler"
+				class="com.facilio.bmsconsole.actions.ImportDataAction" method="uploadHandler">
+		</action>
 	</package>
 
 	<package name="autoCommissiondata"
