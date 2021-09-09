@@ -24,14 +24,7 @@ public class DeleteWorkflowCommand extends FacilioCommand {
 			workflow = (WorkflowUserFunctionContext) context.get(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT);
 		}
 		
-		WorkflowUserFunctionContext userFunction = WorkflowV2API.getUserFunction(workflow.getId());
-		
 		WorkflowUtil.deleteWorkflow(workflow.getId());
-		
-		if(userFunction != null) {
-			
-			BundleUtil.markModifiedComponent(BundleComponentsEnum.FUNCTION, userFunction.getId(), userFunction.getName(), BundleModeEnum.DELETE);
-		}
 		
 		return false;
 	}

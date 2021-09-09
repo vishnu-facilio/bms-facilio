@@ -37,6 +37,9 @@ import com.facilio.bmsconsoleV3.commands.jobplan.BulkAddJobPlanTasksCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.AssociateQuotationTermsCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.DisAssociateQuotationTermsCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.SendQuotationMailCommand;
+import com.facilio.bundle.command.CommonBundleMarkModifiedComponentsCommand;
+import com.facilio.bundle.enums.BundleComponentsEnum;
+import com.facilio.bundle.enums.BundleModeEnum;
 import com.facilio.cb.command.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -3384,6 +3387,7 @@ public class TransactionChainFactory {
 		public static FacilioChain getAddWorkflowNameSpaceChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new AddNameSpaceCommand());
+			c.addCommand(new CommonBundleMarkModifiedComponentsCommand(BundleComponentsEnum.FUNCTION_NAME_SPACE, BundleModeEnum.ADD));
 			return c;
 		}
 		public static FacilioChain getUpdateWorkflowNameSpaceChain() {
@@ -3401,6 +3405,7 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(getAddWorkflowChain());
 			c.addCommand(new AddUserFunctionCommand());
+			c.addCommand(new CommonBundleMarkModifiedComponentsCommand(BundleComponentsEnum.FUNCTION, BundleModeEnum.ADD));
 			return c;
 		}
 		public static FacilioChain getUpdateWorkflowUserFunctionChain() {
