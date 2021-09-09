@@ -1,9 +1,8 @@
 package com.facilio.bmsconsole.imports.config;
 
+import com.facilio.bmsconsole.imports.annotations.ImportModule;
 import com.facilio.bmsconsole.imports.command.ImportUploadFileCommand;
 import com.facilio.chain.FacilioChain;
-import com.facilio.v3.V3Builder.V3Config;
-import com.facilio.v3.annotation.Module;
 import org.apache.commons.chain.Command;
 import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
@@ -22,7 +21,7 @@ public class ImportChainUtil {
 
     private static void initImportHandlerMap() {
         Reflections reflections = new Reflections(ClasspathHelper.forPackage("com.facilio.bmsconsole.imports"), new MethodAnnotationsScanner());
-        Set<Method> methodsAnnotatedWithModule = reflections.getMethodsAnnotatedWith(Module.class);
+        Set<Method> methodsAnnotatedWithModule = reflections.getMethodsAnnotatedWith(ImportModule.class);
 
         for (Method method: methodsAnnotatedWithModule) {
             if (method.getParameterCount() != 0) {
@@ -35,7 +34,7 @@ public class ImportChainUtil {
                 continue;
             }
 
-            Module annotation = method.getAnnotation(Module.class);
+            ImportModule annotation = method.getAnnotation(ImportModule.class);
             String moduleName = annotation.value().trim();
             if (StringUtils.isEmpty(moduleName)) {
                 // Skip if module name is empty

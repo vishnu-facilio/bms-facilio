@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.imports;
 
+import com.facilio.bmsconsole.imports.annotations.ImportModule;
 import com.facilio.bmsconsole.imports.config.ImportConfig;
 import com.facilio.command.FacilioCommand;
 import com.facilio.v3.annotation.Module;
@@ -10,7 +11,7 @@ import java.util.function.Supplier;
 public class ImportConfiguration {
 
 
-    @Module(value = "asset")
+    @ImportModule(value = "asset")
     public static Supplier<ImportConfig> getAssetImportConfig() {
         return () -> new ImportConfig.ImportConfigBuilder()
                 .uploadHandler()

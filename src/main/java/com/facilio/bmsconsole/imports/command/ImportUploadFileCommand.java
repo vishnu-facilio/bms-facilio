@@ -34,6 +34,10 @@ public class ImportUploadFileCommand extends FacilioCommand {
         File fileUpload = (File) context.get(FacilioConstants.ContextNames.FILE);
         String fileUploadContentType = (String) context.get(FacilioConstants.ContextNames.FILE_CONTENT_TYPE);
 
+        if (fileUpload == null) {
+            throw new IllegalArgumentException("Invalid file to upload");
+        }
+
         Workbook workbook = WorkbookFactory.create(fileUpload);
         if (workbook.getNumberOfSheets() > 1) {
             throw new IllegalArgumentException("Uploaded File contains more than one Sheet");
@@ -73,6 +77,10 @@ public class ImportUploadFileCommand extends FacilioCommand {
         importProcessContext.setImportTime(DateTimeUtil.getCurrenTime());
         importProcessContext.setImportType(ImportProcessContext.ImportType.EXCEL.getValue());
         importProcessContext.setUploadedBy(AccountUtil.getCurrentUser().getOuid());
+
+        if (importProcessContext.getImportSetting() == null) {
+            importProcessContext.setImportSetting(ImportProcessContext.ImportSetting.INSERT.getValue());
+        }
 
         // todo omitted assetId, templateId, and moduleMeta tags
         ImportAPI.addImportProcess(importProcessContext);
