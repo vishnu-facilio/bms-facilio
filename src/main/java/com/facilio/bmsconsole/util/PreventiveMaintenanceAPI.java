@@ -33,6 +33,7 @@ import com.facilio.bmsconsoleV3.util.JobPlanAPI;
 import com.facilio.db.builder.*;
 import com.facilio.modules.*;
 import com.facilio.taskengine.job.JobContext;
+import com.facilio.util.FacilioUtil;
 import lombok.var;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -1395,23 +1396,57 @@ public class PreventiveMaintenanceAPI {
 		
 		List<Long> res = null;
 		if(props != null && !props.isEmpty()) {
-			
 			res = new ArrayList<>();
-			for(Map<String, Object> prop :props) {
-				
+			for (Map<String, Object> prop : props) {
 				Long id = (Long) prop.get("id");
 				res.add(id);
 			}
-			
-			List<PreventiveMaintenance> pms = getPMs(res,null,null,null, null,true);
-			
+			List<PreventiveMaintenance> pms = getPMs(res, null, null, null, null, true);
 			return pms;
 		}
 		return null;
 	}
 
+	/*
+	 * A PM can have multiple triggers; there is a one-many relationship between Preventive_Maintenance & PM_Triggers
+	 * table; earlier PM used to have a single trigger and FREQUENCY_TYPE column used to have the type ID - this
+	 *  is not used anymore;
+	 *
+	 * To preserve existing behavior The generated criteria is preserved and only FREQUENCY_TYPE condition is
+	 * replaced with PM_ID equals from matching data from PM_Triggers table; */
+	private static Criteria UpdateFrequencyFilterCriteria(Criteria criteria) throws Exception {
+		Criteria newCriteria = new Criteria();
 
-	public static List<PreventiveMaintenance> getPMs(Collection<Long> ids, Criteria criteria, String searchQuery, JSONObject pagination, List<FacilioField> fields, Boolean...fetchDependencies) throws Exception {
+		Optional<String> frequencyCriteriaKey = Optional.empty();
+		Optional<String> frequencyCriteriaValue = Optional.empty();
+		for (Map.Entry<String, Condition> cond : criteria.getConditions().entrySet()) {
+			if (cond.getValue().getFieldName().equals("frequency")) {
+				frequencyCriteriaKey = Optional.of(cond.getKey());
+				frequencyCriteriaValue = Optional.of(cond.getValue().getValue());
+			} else {
+				newCriteria.addAndCondition(cond.getValue());
+			}
+		}
+
+		if (frequencyCriteriaKey.isPresent()) {
+			FacilioField pmIDField = FieldFactory.getField("PM_ID", "PM_ID", FieldType.NUMBER);
+			FacilioField frequencyField = FieldFactory.getField("FREQUENCY", "FREQUENCY", FieldType.NUMBER);
+
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(Collections.singletonList(pmIDField))
+					.table(ModuleFactory.getPMTriggersModule().getTableName())
+					.andCondition(CriteriaAPI.getCondition(frequencyField, frequencyCriteriaValue.get(), NumberOperators.EQUALS));
+
+			List<Map<String, Object>> resultSet = selectBuilder.get();
+			List<Long> pmsWithGivenFreq = new ArrayList<>();
+			resultSet.forEach(record -> pmsWithGivenFreq.add(FacilioUtil.parseLong(record.get("PM_ID"))));
+			newCriteria.addAndCondition(CriteriaAPI.getIdCondition(pmsWithGivenFreq, ModuleFactory.getPreventiveMaintenanceModule()));
+		}
+		return newCriteria;
+	}
+
+
+	public static List<PreventiveMaintenance> getPMs(Collection<Long> ids, Criteria criteria, String searchQuery, JSONObject pagination, List<FacilioField> fields, Boolean... fetchDependencies) throws Exception {
 		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
 		if (fields == null || fields.isEmpty()) {
 			fields = FieldFactory.getPreventiveMaintenanceFields();
@@ -1419,23 +1454,24 @@ public class PreventiveMaintenanceAPI {
 			fields = new ArrayList<>(fields);
 		}
 
+
+
 		FacilioField pmSubjectField = FieldFactory.getAsMap(fields).get("title");
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-														.select(fields)
-														.table(module.getTableName())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.orderBy("Preventive_Maintenance.CREATION_TIME DESC")
-														;
-		
+				.select(fields)
+				.table(module.getTableName())
+				//.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.orderBy("Preventive_Maintenance.CREATION_TIME DESC");
+
 		if (pagination != null) {
 			int page = (int) pagination.get("page");
 			int perPage = (int) pagination.get("perPage");
-			
-			int offset = ((page-1) * perPage);
+
+			int offset = ((page - 1) * perPage);
 			if (offset < 0) {
 				offset = 0;
 			}
-			
+
 			selectBuilder.offset(offset);
 			selectBuilder.limit(perPage);
 		}
@@ -1445,6 +1481,7 @@ public class PreventiveMaintenanceAPI {
 		}
 		
 		if(criteria != null && !criteria.isEmpty()) {
+			criteria = UpdateFrequencyFilterCriteria(criteria);
 			selectBuilder.andCriteria(criteria);
 		}
 		if (searchQuery!= null) {
@@ -1608,6 +1645,7 @@ public class PreventiveMaintenanceAPI {
 										var frequencyType = trigger.getFrequencyEnum();
 										if (frequencyType != null) {
 											pm.setPmTriggerDescription(frequencyType.getName());
+											pm.setFrequency(frequencyType);
 										} else {
 											pm.setPmTriggerDescription("---");
 										}

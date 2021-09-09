@@ -22,8 +22,6 @@ public class DeleteNameSpaceCommand extends FacilioCommand {
 		
 		deleteNameSpace(workflowNamespaceContext);
 		
-		BundleUtil.markModifiedComponent(BundleComponentsEnum.FUNCTION_NAME_SPACE, workflowNamespaceContext.getId(), workflowNamespaceContext.getName(), BundleModeEnum.DELETE);
-		
 		return false;
 	}
 	

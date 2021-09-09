@@ -2968,7 +2968,7 @@ public class FormFactory {
 		fields.add(attachment);
 
 		fields.add(new FormField("newsandinformationsharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 4, 1));
-
+		fields.add(new FormField("commentsAllowed", FieldDisplayType.DECISION_BOX, "Comments Allowed", Required.OPTIONAL, 5, 1));
 		form.setFields(fields);
 
 

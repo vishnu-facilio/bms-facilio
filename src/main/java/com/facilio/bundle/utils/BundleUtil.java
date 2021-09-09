@@ -1,8 +1,6 @@
 package com.facilio.bundle.utils;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
@@ -14,7 +12,6 @@ import java.util.stream.Collectors;
 
 import javax.validation.ValidationException;
 
-import org.apache.log4j.Priority;
 import org.json.simple.JSONObject;
 import org.reflections.Reflections;
 import org.reflections.scanners.FieldAnnotationsScanner;
@@ -50,83 +47,72 @@ public class BundleUtil {
 
 	public static BundleChangeSetContext markModifiedComponent(BundleComponentsEnum componentType,Long componentId,String name,BundleModeEnum mode) throws Exception {
 		
-		if(1 == 1) {
-			return null;
-		}
-		try {
-			
-			BundleChangeSetContext existingChangeSet = getOrAddModifiedComponent(componentType, componentId, name, mode);
-			
-			boolean isUpdateNeeded = true;
-			
-			switch (existingChangeSet.getModeEnum()) {
-			case ADD:
-				switch(mode) {
-					case ADD:
-					case UPDATE:
-						break;
-					case DELETE:
-						deleteBundleRelated(ModuleFactory.getBundleChangeSetModule(), CriteriaAPI.getIdCondition(existingChangeSet.getId(), ModuleFactory.getBundleChangeSetModule()));
-						isUpdateNeeded = false;
-						break;
-					case DUMMY:
-						throw new ValidationException("Add mode cannot be set to Dummy");
-				}
-				break;
-			case UPDATE:
-				switch(mode) {
-					case ADD:
-						throw new ValidationException("Update mode cannot be set to Add");
-					case UPDATE:
-						break;
-					case DELETE:
-						existingChangeSet.setModeEnum(BundleModeEnum.DELETE);
-						break;
-					case DUMMY:
-						throw new ValidationException("Update mode cannot be set to Dummy");
-				}
-				break;
-			case DELETE:
-				switch(mode) {
-					case ADD:
-						throw new ValidationException("Delete mode cannot be set to Add");
-					case UPDATE:
-						throw new ValidationException("Delete mode cannot be set to Update");
-					case DELETE:
-						break;
-					case DUMMY:
-						throw new ValidationException("Delete mode cannot be set to Dummy");
-				}
-				break;
-			case DUMMY:
-				switch(mode) {
-					case ADD:
-						throw new ValidationException("Dummy mode cannot be set to Add");
-					case UPDATE:
-						existingChangeSet.setModeEnum(BundleModeEnum.UPDATE);
-					case DELETE:
-						existingChangeSet.setModeEnum(BundleModeEnum.DELETE);
-						break;
-					case DUMMY:
-						break;
-				}
-				break;
+		BundleChangeSetContext existingChangeSet = getOrAddModifiedComponent(componentType, componentId, name, mode);
+		
+		boolean isUpdateNeeded = true;
+		
+		switch (existingChangeSet.getModeEnum()) {
+		case ADD:
+			switch(mode) {
+				case ADD:
+				case UPDATE:
+					break;
+				case DELETE:
+					deleteBundleRelated(ModuleFactory.getBundleChangeSetModule(), CriteriaAPI.getIdCondition(existingChangeSet.getId(), ModuleFactory.getBundleChangeSetModule()));
+					isUpdateNeeded = false;
+					break;
+				case DUMMY:
+					throw new ValidationException("Add mode cannot be set to Dummy");
 			}
-			
-			if(isUpdateNeeded) {
-				
-				existingChangeSet.setLastEditedTime(DateTimeUtil.getCurrenTime());
-				
-				updateBundleModule(ModuleFactory.getBundleChangeSetModule(), FieldFactory.getBundleChangeSetFields(), existingChangeSet, CriteriaAPI.getIdCondition(existingChangeSet.getId(), ModuleFactory.getBundleChangeSetModule()));
+			break;
+		case UPDATE:
+			switch(mode) {
+				case ADD:
+					throw new ValidationException("Update mode cannot be set to Add");
+				case UPDATE:
+					break;
+				case DELETE:
+					existingChangeSet.setModeEnum(BundleModeEnum.DELETE);
+					break;
+				case DUMMY:
+					throw new ValidationException("Update mode cannot be set to Dummy");
 			}
-			
-			return existingChangeSet;
-			
+			break;
+		case DELETE:
+			switch(mode) {
+				case ADD:
+					throw new ValidationException("Delete mode cannot be set to Add");
+				case UPDATE:
+					throw new ValidationException("Delete mode cannot be set to Update");
+				case DELETE:
+					break;
+				case DUMMY:
+					throw new ValidationException("Delete mode cannot be set to Dummy");
+			}
+			break;
+		case DUMMY:
+			switch(mode) {
+				case ADD:
+					throw new ValidationException("Dummy mode cannot be set to Add");
+				case UPDATE:
+					existingChangeSet.setModeEnum(BundleModeEnum.UPDATE);
+				case DELETE:
+					existingChangeSet.setModeEnum(BundleModeEnum.DELETE);
+					break;
+				case DUMMY:
+					break;
+			}
+			break;
 		}
-		catch(Exception e) {
-			LOGGER.log(Priority.ERROR, e.getMessage());
-			throw e;
+		
+		if(isUpdateNeeded) {
+			
+			existingChangeSet.setLastEditedTime(DateTimeUtil.getCurrenTime());
+			
+			updateBundleModule(ModuleFactory.getBundleChangeSetModule(), FieldFactory.getBundleChangeSetFields(), existingChangeSet, CriteriaAPI.getIdCondition(existingChangeSet.getId(), ModuleFactory.getBundleChangeSetModule()));
 		}
+		
+		return existingChangeSet;
 	}
 	
 	public static BundleChangeSetContext getOrAddModifiedComponent(BundleComponentsEnum componentType,Long componentId,String componentName,BundleModeEnum mode) throws Exception {
