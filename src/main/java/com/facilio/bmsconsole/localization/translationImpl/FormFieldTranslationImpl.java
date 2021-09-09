@@ -48,7 +48,7 @@ public class FormFieldTranslationImpl implements TranslationIfc {
                         if(values != null && !values.isEmpty()) {
                             for (int k = 0; k < values.size(); k++) {
                                 JSONObject valueObject = (JSONObject)values.get(k);
-                                String fieldOptionKey = getFormFieldOptionsTranslationKey(String.valueOf(valueObject.get("id")));
+                                String fieldOptionKey = getFormFieldOptionsTranslationKey((fieldObject.get(TranslationConstants.NAME)+"."+valueObject.get("index")));
                                 String name = (String)valueObject.get("value");
                                 if(StringUtils.isNotEmpty(name)){
                                     valueObject.put("value",getTranslation(translationFile,fieldOptionKey,name));

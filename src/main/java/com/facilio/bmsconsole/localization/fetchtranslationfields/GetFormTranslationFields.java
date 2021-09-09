@@ -74,9 +74,9 @@ public class GetFormTranslationFields implements TranslationTypeInterface {
                                     List<EnumFieldValue<Integer>> enumFieldValues = ((EnumField)field).getValues();
                                     JSONArray fieldOptions = new JSONArray();
                                     for (EnumFieldValue enumFieldValue : enumFieldValues) {
-                                        String id = String.valueOf(enumFieldValue.getId());
-                                        String optionKey = ModuleTranslationUtils.getFieldOptionsTranslationKey(id);
-                                        fieldOptions.add(TranslationsUtil.constructJSON(enumFieldValue.getValue(),"fieldOption",TranslationConstants.DISPLAY_NAME,id,optionKey,properties));
+                                        String idx = field.getName()+"."+enumFieldValue.getIndex();
+                                        String optionKey = ModuleTranslationUtils.getFieldOptionsTranslationKey(idx);
+                                        fieldOptions.add(TranslationsUtil.constructJSON(enumFieldValue.getValue(),"fieldOption",TranslationConstants.DISPLAY_NAME,idx,optionKey,properties));
                                     }
                                     fieldJson.put("fields",fieldOptions);
                                 }
