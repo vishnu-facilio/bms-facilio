@@ -1,159 +1,111 @@
 package com.facilio.bundle.context;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.io.File;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bundle.enums.BundleComponentsEnum;
+import com.facilio.bundle.enums.BundleModeEnum;
 import com.facilio.bundle.utils.BundleConstants;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldUtil;
+import com.facilio.workflows.context.WorkflowFieldType;
+import com.facilio.workflows.context.WorkflowUserFunctionContext;
+import com.facilio.workflowv2.util.UserFunctionAPI;
+import com.facilio.workflowv2.util.WorkflowV2Util;
+import com.facilio.xml.builder.XMLBuilder;
 
 public class ModuleBundleComponent extends CommonBundleComponent {
-
+	
+	public static final String DESCRIPTION = "description";
+	public static final String STATEFLOW_ENABLED = "stateFlowEnabled";
+	
 	@Override
-	public JSONObject getFormatedObject(FacilioContext context) throws Exception {
+	public void getFormatedObject(FacilioContext context) throws Exception {
 		
-		FacilioModule module = (FacilioModule) context.get(BundleConstants.COMPONENT_OBJECT);
-		
-		JSONObject returnJson = FieldUtil.getAsJSON(module);
-		
-		return returnJson;
-	}
-
-	@Override
-	public JSONArray getAllFormatedObject(FacilioContext context) throws Exception {
-		// TODO Auto-generated method stub
+		BundleChangeSetContext componentChange = (BundleChangeSetContext) context.get(BundleConstants.BUNDLE_CHANGE);
+		BundleFolderContext componentFolder = (BundleFolderContext) context.get(BundleConstants.COMPONENTS_FOLDER);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		ModuleType[] types = ModuleType.values();
+		FacilioModule module = modBean.getModule(componentChange.getComponentId());
 		
-		JSONArray returnList = new JSONArray();
+		String fileName = getFileName(context);
 		
-		List<FacilioModule> allModules = new ArrayList<FacilioModule>();
+		BundleFileContext fileContext = new BundleFileContext(fileName, BundleConstants.XML_FILE_EXTN, componentChange.getComponentTypeEnum().getName(), null);
 		
-		for(int i=0;i<types.length;i++) {
-			ModuleType moduleType = types[i];
-			
-			if(!getRestricedModuleTypeList().contains(moduleType)) {
-				
-				List<FacilioModule> modules = modBean.getModuleList(moduleType);
-				
-				modules = fetchModuleObject(modules);
-				
-				allModules.addAll(modules);
-			}
-		}
+		XMLBuilder xmlBuilder = fileContext.getXmlContent();
 		
-		List<FacilioModule> modulesByHirarchy = new ArrayList<FacilioModule>();
+		xmlBuilder.attr(BundleConstants.Components.MODE, componentChange.getModeEnum().getName());
 		
-		arrangeModuleByHirarchy(allModules,modulesByHirarchy,null);
+		xmlBuilder = xmlBuilder.element(BundleConstants.Components.NAME).t(module.getName()).p()
+							   .element(BundleConstants.Components.DISPLAY_NAME).t(module.getDisplayName()).p()
+							   .element(DESCRIPTION).t(module.getDescription()).p()
+							   .element(STATEFLOW_ENABLED).t(module.isStateFlowEnabled().toString()).p()
+							   ;
 		
-		for(FacilioModule module :modulesByHirarchy) {
-			
-			context.put(BundleConstants.COMPONENT_OBJECT, module);
-			context.put(BundleConstants.COMPONENT_ID, module.getModuleId());
-			
-			JSONObject formattedObject = getFormatedObject(context);
-			
-			returnList.add(formattedObject);
-			
-		}
+		BundleFolderContext moduleFolder = componentFolder.getOrAddFolder(componentChange.getComponentTypeEnum().getName());
 		
-		return returnList;
+		moduleFolder.addFile(fileName+"."+BundleConstants.XML_FILE_EXTN, fileContext);
 	}
 	
-	
-	private List<FacilioModule> fetchModuleObject(List<FacilioModule> modules) throws Exception {
+	public String getFileName(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		List<FacilioModule> modulesObject = new ArrayList<FacilioModule>();
+		Long moduleId = (Long)context.get(BundleConstants.COMPONENT_ID);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		for(FacilioModule module : modules) {
-			
-			FacilioModule moduleObj = modBean.getModule(module.getName());
-			modulesObject.add(moduleObj);
-		}
-		return modulesObject;
+		return modBean.getModule(moduleId).getName();
 	}
-
-	private void arrangeModuleByHirarchy(List<FacilioModule> modules, List<FacilioModule> modulesByHirarchy,List<Long> parentModuleIds) {
+	
+	@Override
+	public void fillBundleXML(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		if(modules.isEmpty()) {
-			return;
-		}
-		
-		List<FacilioModule> arrangedModules = new ArrayList<FacilioModule>();
-		for(FacilioModule module : modules) {
-			if(parentModuleIds == null) {
-				if(module.getExtendModule() == null) {
-					arrangedModules.add(module);
-				}
-			}
-			else if (parentModuleIds.contains(module.getExtendModule().getModuleId())) {
-				arrangedModules.add(module);
-			}
-		}
-		
-		modules.removeAll(arrangedModules);
-		
-		modulesByHirarchy.addAll(arrangedModules);
-		
-		if(!modules.isEmpty()) {
-			
-			parentModuleIds = arrangedModules.stream().map(FacilioModule::getModuleId).collect(Collectors.toList());
-			
-			arrangeModuleByHirarchy(modules, modulesByHirarchy, parentModuleIds);
-		}
-	}
-
-	private List<ModuleType> getRestricedModuleTypeList() {
-		
-		List<ModuleType> types = new ArrayList<ModuleType>();
-		
-		types.add(ModuleType.SCHEDULED_FORMULA);
-		types.add(ModuleType.LIVE_FORMULA);
-		types.add(ModuleType.SYSTEM_SCHEDULED_FORMULA);
-		types.add(ModuleType.LOOKUP_REL_MODULE);
-		types.add(ModuleType.ENUM_REL_MODULE);
-		types.add(ModuleType.SLA_TIME);
-		types.add(ModuleType.LARGE_TEXT_DATA_MODULE);
-		
-		return types;
+		String fileName = BundleComponentsEnum.MODULE.getName()+File.separatorChar+getFileName(context)+".xml";
+		XMLBuilder bundleBuilder = (XMLBuilder) context.get(BundleConstants.BUNDLE_XML_BUILDER);
+		bundleBuilder.element(BundleConstants.VALUES).text(fileName);
 	}
 
 	@Override
 	public void install(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		JSONObject moduleJSON = (JSONObject) context.get(BundleConstants.COMPONENT_OBJECT);
+		BundleFileContext changeSetXMLFile = (BundleFileContext) context.get(BundleConstants.BUNDLED_XML_COMPONENT_FILE);
 		
-		FacilioModule module = FieldUtil.getAsBeanFromJson(moduleJSON, FacilioModule.class);
+		XMLBuilder xmlContent = changeSetXMLFile.getXmlContent();
+		BundleModeEnum modeEnum = BundleModeEnum.valueOfName(xmlContent.getAttribute(BundleConstants.Components.MODE));
 		
-		module.setOrgId(AccountUtil.getCurrentOrg().getId());
+		String name = xmlContent.getElement(BundleConstants.Components.NAME).getText();
+		String displayName = xmlContent.getElement(BundleConstants.Components.DISPLAY_NAME).getText();
+		String description = xmlContent.getElement(DESCRIPTION).getText();
 		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		Boolean stateFlowEnabled = Boolean.valueOf(xmlContent.getElement(STATEFLOW_ENABLED).getText());
 		
-		if(module.getExtendModule() != null) {
+		switch(modeEnum) {
+		case ADD: 
 			
-			FacilioModule extendedModule = modBean.getModule(module.getExtendModule().getName());
-			if(extendedModule == null) {
-				throw new Exception(module.getName()+" extendedModule is null :: "+module.getExtendModule().getName());
-			}
-			module.setExtendModule(extendedModule);
+			FacilioChain addModulesChain = TransactionChainFactory.getAddModuleChain();
+			FacilioContext newContext = addModulesChain.getContext();
+			newContext.put(FacilioConstants.ContextNames.MODULE_TYPE, 0);
+			newContext.put(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME, displayName);
+			newContext.put(FacilioConstants.ContextNames.MODULE_DESCRIPTION, description);
+			newContext.put(FacilioConstants.ContextNames.STATE_FLOW_ENABLED, stateFlowEnabled);
+
+			addModulesChain.execute();
+			
+			break;
 		}
-		modBean.addModule(module);
+		
+//		modBean.addModule(module);
 		
 	}
 

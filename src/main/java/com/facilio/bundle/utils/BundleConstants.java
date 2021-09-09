@@ -17,6 +17,36 @@ public class BundleConstants {
 	
 	public static final String COMPONENT_TYPE = "componentType";
 	public static final String COMPONENT_NAME = "componentName";
-	public static final String MODE = "mode";
 	
+	public static final String BUNDLE_FILE_NAME = "bundle";
+	
+	public static final String BUNDLE_XML_BUILDER = "bundlexmlBuilder";
+	
+	public static final String BUNDLE_CHANGE = "bundleChange";
+	
+	public static final String VERSION = "version";
+	public static final String COMPONENTS = "components";
+	public static final String COMPONENT = "component";
+	public static final String VALUES = "values";
+	
+	public static final String XML_FILE_EXTN = "xml";
+	public static final String COMPONENTS_FOLDER_NAME = "Components";
+	
+	public static final String COMPONENTS_FOLDER = "componentFolder";
+	
+	public static final String BUNDLE_FOLDER = "bundleFolder";
+
+	public static final String DOWNLOAD_URL = "downloadUrl";
+
+	public static final String BUNDLE_ZIP_FILE = "bundleZIPFile";
+	public static final String BUNDLE_ZIP_FILE_NAME = "bundleZIPFileName";
+	public static final String BUNDLE_ZIP_FILE_CONTENT_TYPE = "application/zip";
+
+	public static final String BUNDLED_XML_COMPONENT_FILE = "bundledXMLComponentFile";
+	
+	public static class Components {
+		public static final String NAME = "name";
+		public static final String DISPLAY_NAME = "displayName";
+		public static final String MODE = "mode";
+	}
 }

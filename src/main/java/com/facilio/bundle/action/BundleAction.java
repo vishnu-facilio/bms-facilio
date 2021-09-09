@@ -1,5 +1,7 @@
 package com.facilio.bundle.action;
 
+import java.io.File;
+
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.Organization;
@@ -21,21 +23,35 @@ public class BundleAction extends V3Action{
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	JSONObject organization;
+	File bundleZip;
+	String bundleZipName;
 	
-	public String copyCustomiation() throws Exception {
-		
-		LOGGER.info("organization : "+organization);
+	public String copyCustomization() throws Exception {
 		
 		FacilioChain copyCustomizationChain = BundleTransactionChainFactory.getCopyCustomizationChain();
 		
 		FacilioContext context = copyCustomizationChain.getContext();
 		
-		context.put(BundleConstants.DESTINATION_ORG, organization);
-		
 		copyCustomizationChain.execute();
 		
-		return null;
+		setData(BundleConstants.DOWNLOAD_URL, context.get(BundleConstants.DOWNLOAD_URL));
+		
+		return SUCCESS;
+		
+	}
+	
+	public String installBundle() throws Exception {
+		
+		FacilioChain installBundle = BundleTransactionChainFactory.getInstallBundleChain();
+		
+		FacilioContext context = installBundle.getContext();
+		
+		context.put(BundleConstants.BUNDLE_ZIP_FILE, getBundleZip());
+		context.put(BundleConstants.BUNDLE_ZIP_FILE_NAME, getBundleZipName());
+		
+		installBundle.execute();
+		
+		return SUCCESS;
 		
 	}
 

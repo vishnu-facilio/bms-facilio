@@ -1,6 +1,11 @@
 package com.facilio.bundle.utils;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +41,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
+import com.google.common.io.Files;
 
 import lombok.extern.log4j.Log4j;
 
@@ -179,6 +185,25 @@ public class BundleUtil {
 		}
 	}
 	
+	public static List<BundleChangeSetContext> getAllChangeSet() throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getBundleChangeSetFields());
+		
+		Criteria criteria = new Criteria();
+		
+		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("commitStatus"), BundleCommitStatusEnum.NOT_YET_COMMITED.getValue()+"", NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = fetchBundleRelated(ModuleFactory.getBundleChangeSetModule(), FieldFactory.getBundleChangeSetFields(), criteria, null);
+		
+		
+		if(props != null && !props.isEmpty()) {
+			List<BundleChangeSetContext> changeSet = FieldUtil.getAsBeanListFromMapList(props, BundleChangeSetContext.class);
+			
+			return changeSet;
+		}
+		return null;
+	}
+	
 	public static void getFormattedObject(Object beanObject) throws Exception {
 		
 		List<Class<?>> superClasses = getSuperClasses(beanObject.getClass());
@@ -250,6 +275,13 @@ public class BundleUtil {
 		int detedRows =  deleteBuilder.delete();
 		
 		return detedRows;
+	}
+	
+	public static String readFileContent(String filePath) throws IOException {
+		
+		String text = Files.asCharSource(new File(filePath), Charset.defaultCharset()).read();
+
+		return text;
 	}
 	
 	public static List<Map<String, Object>> fetchBundleRelated(FacilioModule module,List<FacilioField> fields,Criteria fetchCriteria,Condition condition) throws Exception {

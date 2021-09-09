@@ -1,5 +1,6 @@
 package com.facilio.bundle.context;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,6 +13,8 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bundle.enums.BundleComponentsEnum;
+import com.facilio.bundle.enums.BundleModeEnum;
 import com.facilio.bundle.interfaces.BundleComponentInterface;
 import com.facilio.bundle.utils.BundleConstants;
 import com.facilio.chain.FacilioChain;
@@ -29,11 +32,19 @@ import com.facilio.modules.fields.LineItemField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.v3.context.Constants;
+import com.facilio.xml.builder.XMLBuilder;
 
 import lombok.extern.log4j.Log4j;
 
 @Log4j
 public class FieldBundleComponent extends CommonBundleComponent {
+	
+	public static final String FIELDS = "Fields";
+	public static final String MODULE_NAME = "moduleName";
+	
+	public static final String DISPLAY_TYPE = "displayType";
+	public static final String DATA_TYPE = "dataType";
+	public static final String REQUIRED = "required";
 	
 	@Override
 	public void getParentDetails(FacilioContext context) throws Exception {
@@ -44,123 +55,187 @@ public class FieldBundleComponent extends CommonBundleComponent {
 		context.put(BundleConstants.PARENT_COMPONENT_ID, fieldContext.getModule().getModuleId());
 		context.put(BundleConstants.PARENT_COMPONENT_NAME, fieldContext.getModule().getDisplayName());
 	}
-
-	@Override
-	public JSONObject getFormatedObject(FacilioContext context) throws Exception {
+	
+	public String getFileName(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		FacilioField field = (FacilioField) context.get(BundleConstants.COMPONENT_OBJECT);
+		Long fieldId = (Long)context.get(BundleConstants.COMPONENT_ID);
 		
-		if(field.getDataTypeEnum() == FieldType.STRING_SYSTEM_ENUM) {
-			System.out.println(field);
+		FacilioField field = ((ModuleBean) BeanFactory.lookup("ModuleBean")).getField(fieldId);
+		
+		return field.getModule().getName()+"_fields";
+	}
+	
+	@Override
+	public void fillBundleXML(FacilioContext context) throws Exception {
+		// TODO Auto-generated method stub
+		String fileName = BundleComponentsEnum.FIELD.getName()+File.separatorChar+getFileName(context)+".xml";
+		XMLBuilder bundleBuilder = (XMLBuilder) context.get(BundleConstants.BUNDLE_XML_BUILDER);
+		
+		List<XMLBuilder> elementList = bundleBuilder.getElementList(BundleConstants.VALUES);
+		
+		boolean entryFound = false;
+		for(XMLBuilder element : elementList) {
+			if(fileName.equals(element.getText())) {
+				entryFound = true;
+				break;
+			}
 		}
-		
-		FacilioField clonedField = field.clone();
-		
-		if(clonedField instanceof MultiLookupField) {
-			
-			MultiLookupField multiLookup = (MultiLookupField) clonedField;
-			
-			multiLookup.setRelModule(null);
-			multiLookup.setRelModuleId(-1l);
+		if(!entryFound) {
+			bundleBuilder.element(BundleConstants.VALUES).text(fileName);
 		}
-		
-		JSONObject returnJson = FieldUtil.getAsJSON(clonedField);
-		
-		return returnJson;
 	}
 
 	@Override
-	public JSONArray getAllFormatedObject(FacilioContext context) throws Exception {
+	public void getFormatedObject(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
-		JSONObject parentObject = (JSONObject)context.get(BundleConstants.PARENT_COMPONENT_OBJECT);
-		String moduleName = (String) parentObject.get("name");
 		
-		List<FacilioField> fields = Constants.getModBean().getAllFields(moduleName).stream().filter((field) -> { if(field.getModule().getName().equals(moduleName)) {return true;} return false;}).collect(Collectors.toList());
-		
-		JSONArray returnList = new JSONArray();
-		for(FacilioField field : fields) {
-			context.put(BundleConstants.COMPONENT_OBJECT, field);
-			context.put(BundleConstants.COMPONENT_ID, field.getFieldId());
-			
-			JSONObject formattedObject = getFormatedObject(context);
-			
-			returnList.add(formattedObject);
-		}
-		
-		
-		return returnList;
-	}
-
-	@Override
-	public void install(FacilioContext context) throws Exception {
-		// TODO Auto-generated method stub
+		BundleChangeSetContext componentChange = (BundleChangeSetContext) context.get(BundleConstants.BUNDLE_CHANGE);
+		BundleFolderContext componentFolder = (BundleFolderContext) context.get(BundleConstants.COMPONENTS_FOLDER);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		JSONObject parentModule = (JSONObject) context.get(BundleConstants.PARENT_COMPONENT_OBJECT);
+		FacilioField field = modBean.getField(componentChange.getComponentId());
 		
-		FacilioModule module = modBean.getModule((String)parentModule.get("name"));
+		String fileName = getFileName(context);
 		
-		JSONObject fieldJSON = (JSONObject) context.get(BundleConstants.COMPONENT_OBJECT);
+		BundleFolderContext fieldFolder = componentFolder.getOrAddFolder(componentChange.getComponentTypeEnum().getName());
 		
-		FacilioField field = FieldUtil.parseFieldJson(fieldJSON);
+		BundleFileContext moduleFieldsFile = fieldFolder.getFile(fileName+"."+BundleConstants.XML_FILE_EXTN);
 		
-		if(field instanceof LineItemField) {
-			return;
+		if(moduleFieldsFile == null) {
+			moduleFieldsFile = new BundleFileContext(fileName, BundleConstants.XML_FILE_EXTN, FIELDS, null);
+			fieldFolder.addFile(fileName +"."+ BundleConstants.XML_FILE_EXTN, moduleFieldsFile);
 		}
 		
-		field.setOrgId(AccountUtil.getCurrentOrg().getId());
-		field.setModule(module);
 		
-		if(field instanceof LookupField || field instanceof MultiLookupField) {
-			BaseLookupField lookupField = (BaseLookupField) field;
-			
-			String lookupModuleName = lookupField.getLookupModule().getName();
-			
-			FacilioModule lookupModule = modBean.getModule(lookupModuleName);
-			
-			lookupField.setLookupModule(lookupModule);
-			if(lookupModule.getModuleId() > 0) {
-				lookupField.setLookupModuleId(lookupModule.getModuleId());
-			}
-			else {
-				lookupField.setSpecialType(lookupModuleName);
-			}
-			
-		}
+		XMLBuilder xmlBuilder = moduleFieldsFile.getXmlContent();
 		
-		if(field instanceof EnumField) {
-			
-			EnumField enumField = (EnumField) field;
-			
-			if(enumField.getValues() != null) {
-				for(EnumFieldValue<Integer> values : enumField.getValues()) {
-					if(values.getIndex() == null) {
-						values.setIndex(0);
-					}
-				}
-			}
-		}
-		
-		FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
-		
-		FacilioContext addFieldContext = addFieldsChain.getContext();
-		
-		List<FacilioField> fields = new ArrayList<FacilioField>();
-		fields.add(field);
-		
-		addFieldContext.put(FacilioConstants.ContextNames.MODULE_NAME, field.getModule().getName());
-		addFieldContext.put(FacilioConstants.ContextNames.IS_SKIP_COUNTER_FIELD_ADD, true);
-		addFieldContext.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
-		
-		addFieldsChain.execute();
-		
-		Long fieldId = ((List<Long>) addFieldContext.get(FacilioConstants.ContextNames.MODULE_FIELD_IDS)).get(0);
+		xmlBuilder.element(componentChange.getComponentTypeEnum().getName())
+					.attr(BundleConstants.Components.MODE, componentChange.getModeEnum().getName())
+					.attr(MODULE_NAME, field.getModule().getName())
+				  .element(BundleConstants.Components.NAME).text(field.getName()).p()
+				  .element(BundleConstants.Components.DISPLAY_NAME).text(field.getDisplayName()).p()
+				  .element(DATA_TYPE).text(field.getDataTypeEnum().getTypeAsString()).p()
+				  .element(DISPLAY_TYPE).text(field.getDisplayTypeInt()+"").p()
+				  .element(REQUIRED).text(field.getRequired().toString()).p()
+				  ;
 		
 	}
 
+	
 	@Override
+	public void install(FacilioContext context) throws Exception {
+		
+		BundleFileContext changeSetXMLFile = (BundleFileContext) context.get(BundleConstants.BUNDLED_XML_COMPONENT_FILE);
+		
+		XMLBuilder xmlContent = changeSetXMLFile.getXmlContent();
+		
+		String moduleName = null;
+		
+		for(XMLBuilder fieldElement : xmlContent.getElementList(BundleComponentsEnum.FIELD.getName())) {
+			
+			BundleModeEnum modeEnum = BundleModeEnum.valueOfName(fieldElement.getAttribute(BundleConstants.Components.MODE));
+			moduleName = fieldElement.getAttribute(MODULE_NAME);
+			
+			switch(modeEnum) {
+			case ADD: 
+				
+				FacilioField field = new FacilioField();
+				
+				field.setDisplayName(fieldElement.getElement(BundleConstants.Components.DISPLAY_NAME).getText());
+				field.setDataType(FieldType.getCFType(fieldElement.getElement(DATA_TYPE).getText()));
+				field.setDisplayTypeInt(Integer.valueOf(fieldElement.getElement(DISPLAY_TYPE).getText()));
+				field.setRequired(Boolean.valueOf(fieldElement.getElement(REQUIRED).getText()));
+				
+				List<FacilioField> addFields = new ArrayList<FacilioField>();
+				
+				addFields.add(field);
+				
+				FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
+				
+				FacilioContext newContext = addFieldsChain.getContext();
+				
+				newContext.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+				newContext.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, addFields);
+				
+				addFieldsChain.execute();
+				
+				break;
+			}
+		}
+	}
+
+//	@Override
+//	public void install(FacilioContext context) throws Exception {
+//		// TODO Auto-generated method stub
+//		
+//		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//		
+//		JSONObject parentModule = (JSONObject) context.get(BundleConstants.PARENT_COMPONENT_OBJECT);
+//		
+//		FacilioModule module = modBean.getModule((String)parentModule.get("name"));
+//		
+//		JSONObject fieldJSON = (JSONObject) context.get(BundleConstants.COMPONENT_OBJECT);
+//		
+//		FacilioField field = FieldUtil.parseFieldJson(fieldJSON);
+//		
+//		if(field instanceof LineItemField) {
+//			return;
+//		}
+//		
+//		field.setOrgId(AccountUtil.getCurrentOrg().getId());
+//		field.setModule(module);
+//		
+//		if(field instanceof LookupField || field instanceof MultiLookupField) {
+//			BaseLookupField lookupField = (BaseLookupField) field;
+//			
+//			String lookupModuleName = lookupField.getLookupModule().getName();
+//			
+//			FacilioModule lookupModule = modBean.getModule(lookupModuleName);
+//			
+//			lookupField.setLookupModule(lookupModule);
+//			if(lookupModule.getModuleId() > 0) {
+//				lookupField.setLookupModuleId(lookupModule.getModuleId());
+//			}
+//			else {
+//				lookupField.setSpecialType(lookupModuleName);
+//			}
+//			
+//		}
+//		
+//		if(field instanceof EnumField) {
+//			
+//			EnumField enumField = (EnumField) field;
+//			
+//			if(enumField.getValues() != null) {
+//				for(EnumFieldValue<Integer> values : enumField.getValues()) {
+//					if(values.getIndex() == null) {
+//						values.setIndex(0);
+//					}
+//				}
+//			}
+//		}
+//		
+//		FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
+//		
+//		FacilioContext addFieldContext = addFieldsChain.getContext();
+//		
+//		List<FacilioField> fields = new ArrayList<FacilioField>();
+//		fields.add(field);
+//		
+//		addFieldContext.put(FacilioConstants.ContextNames.MODULE_NAME, field.getModule().getName());
+//		addFieldContext.put(FacilioConstants.ContextNames.IS_SKIP_COUNTER_FIELD_ADD, true);
+//		addFieldContext.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
+//		
+//		addFieldsChain.execute();
+//		
+//		Long fieldId = ((List<Long>) addFieldContext.get(FacilioConstants.ContextNames.MODULE_FIELD_IDS)).get(0);
+//		
+//	}
+
+	@Override
+
 	public void postInstall(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
