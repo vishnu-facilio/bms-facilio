@@ -247,6 +247,35 @@ public enum FacilioStringFunction implements FacilioWorkflowFunctionInterface {
 			}
 		}
 	},
+	TO_UPPER_CASE(14,"toUpperCase") {
+
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			String string = objects[0].toString();
+			
+			return string.toUpperCase();
+		}
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length < 1) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	TO_LOWER_CASE(15,"toLowerCase") {
+
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			String string = objects[0].toString();
+			return string.toLowerCase();
+		}
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length < 1) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
 	;
 	private Integer value;
 	private String functionName;
