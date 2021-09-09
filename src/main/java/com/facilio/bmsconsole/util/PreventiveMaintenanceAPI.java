@@ -1454,7 +1454,7 @@ public class PreventiveMaintenanceAPI {
 			fields = new ArrayList<>(fields);
 		}
 
-		criteria = UpdateFrequencyFilterCriteria(criteria);
+
 
 		FacilioField pmSubjectField = FieldFactory.getAsMap(fields).get("title");
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -1481,6 +1481,7 @@ public class PreventiveMaintenanceAPI {
 		}
 		
 		if(criteria != null && !criteria.isEmpty()) {
+			criteria = UpdateFrequencyFilterCriteria(criteria);
 			selectBuilder.andCriteria(criteria);
 		}
 		if (searchQuery!= null) {
