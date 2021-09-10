@@ -1389,7 +1389,8 @@ public class APIv3Config {
     public static Supplier<V3Config> getAsset() {
         return () -> new V3Config(V3AssetContext.class, new ModuleCustomFieldCount30())
                 .create().beforeSave(new AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMF()).afterSave(new ConstructAddAssetActivityCommandV3(), FacilioChainFactory.getCategoryReadingsChain(), new InsertReadingDataMetaForNewResourceCommand(), new AddRotatingItemToolCommandV3(),new AddActivitiesCommand(FacilioConstants.ContextNames.ASSET_ACTIVITY), new PushDataToESCommand())
-                .update().beforeSave(new AssetCategoryAdditionInExtendModuleCommand())
+                .update()
+                .beforeSave(new AssetCategoryAdditionInExtendModuleCommand(),new AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMFV3(),new ValidateQrValueCommandV3())
                 .delete()
                 .summary().afterFetch(new LoadAssetSummaryCommandV3())
                 .list().afterFetch(new AssetListFilterByReadingsCommand())
