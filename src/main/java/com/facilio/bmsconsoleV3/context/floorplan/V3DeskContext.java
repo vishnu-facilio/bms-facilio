@@ -87,9 +87,9 @@ public class V3DeskContext  extends V3SpaceContext {
 	}
 	public static enum DeskType {
 		
-		ASSIGNES(1, "Assigned"),
-		HOTEL(2, "Hotel"),
-        HOT(3, "HOT");
+		ASSIGNES(1, "Assignable Desk"),
+		HOTEL(2, "Hotel Desk"),
+        HOT(3, "HOT Desk");
 
 		private int intVal;
 		private String strVal;

@@ -52,6 +52,17 @@ public class V3IndoorFloorPlanObjectContext  extends V3Context {
 	public void setGeoId(String geoId) {
 		this.geoId = geoId;
 	}
+	
+
+	public Integer getObjectType() {
+		return ObjectType;
+	}
+	public void setObjectType(Integer objectType) {
+		ObjectType = objectType;
+	}
+
+
+	private Integer ObjectType;
     
 
 

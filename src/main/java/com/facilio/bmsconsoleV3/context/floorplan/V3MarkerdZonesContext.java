@@ -14,6 +14,26 @@ public class V3MarkerdZonesContext  extends V3IndoorFloorPlanObjectContext {
 	private Boolean isReservable;
 
 	private SpaceContext space;
+	
+	private Long zoneModuleId;
+	
+	public Long getZoneModuleId() {
+		return zoneModuleId;
+	}
+
+	public void setZoneModuleId(Long zoneModuleId) {
+		this.zoneModuleId = zoneModuleId;
+	}
+
+	public Long getRecordId() {
+		return recordId;
+	}
+
+	public void setRecordId(Long recordId) {
+		this.recordId = recordId;
+	}
+
+	private Long recordId; 
 
 
     /**

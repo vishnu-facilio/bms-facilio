@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.floorplan;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Collections;
 import java.util.List;
@@ -16,7 +17,9 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.facilitybooking.BookingSlotsContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.SlotContext;
+import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext;
 import com.facilio.bmsconsoleV3.util.FacilityAPI;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -26,6 +29,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.modules.fields.MultiLookupMeta;
 import com.facilio.modules.fields.SupplementRecord;
@@ -41,7 +45,12 @@ public class FetchFloorplanFacilitiesCommmand extends FacilioCommand {
 		long startTime =  (long) context.get(FacilioConstants.ContextNames.START_TIME);
 		long endTime =  (long) context.get(FacilioConstants.ContextNames.END_TIME);
 		
+		
+		
 		if(!CollectionUtils.isEmpty(spaceIds)) {
+			
+    		Map<Long, V3FacilityBookingContext> bookingMap =  new HashMap<>();
+
 		
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 	        String slots = FacilioConstants.ContextNames.FacilityBooking.FACILITY;
@@ -85,7 +94,31 @@ public class FetchFloorplanFacilitiesCommmand extends FacilioCommand {
 	    		List<BookingSlotsContext> bookingSlots = FacilityAPI.getFacilityBookingListWithSlots(slotIds);
 	    		Map<Long,BookingSlotsContext> bookingSlotsAsMap =  bookingSlots.stream()
 	            .collect(Collectors.toMap(b -> b.getSlot().getId(), Function.identity()));
+	    		
+	    		List<Long> bookingIds = new ArrayList<Long>();
 	        
+	    		bookingSlots.forEach(i -> bookingIds.add(i.getBooking().getId()));
+	    		
+	    		
+	    		// this is to get the facility booking list
+	    		if (CollectionUtils.isNotEmpty(bookingIds)) {
+	    			
+	                FacilioModule bookingModule = modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
+	                Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(bookingModule);
+	                Collection<SupplementRecord>lookUpfields = new ArrayList<>();
+	        		List<FacilioField> bookingFields = modBean.getAllFields(bookingModule.getName());
+	        		Map<String, FacilioField> bookingFieldMap = FieldFactory.getAsMap(bookingFields);
+	         		lookUpfields.add((LookupField) bookingFieldMap.get(FacilioConstants.ContextNames.FacilityBooking.BOOKING_RESERVEDFOR));
+	   			
+	    			
+	    			List<V3FacilityBookingContext> bookingList = V3RecordAPI.getRecordsListWithSupplements(bookingModule.getName(), bookingIds, beanClassName, lookUpfields);
+	    			
+	    			bookingMap = bookingList.stream()
+	    		            .collect(Collectors.toMap(b -> b.getId(), Function.identity()));
+	    			
+	    		
+	    		}
+
 	        
 	        Map<Long,List<SlotContext>> slotMap = new HashMap<>();
 	        for (SlotContext slot : slotList) {
@@ -102,7 +135,11 @@ public class FetchFloorplanFacilitiesCommmand extends FacilioCommand {
 	        			bookedSlotMap.get(slot.getFacilityId()).add(bookingSlotsAsMap.get(slot.getId()));
 	        			} else {
 		        			List<BookingSlotsContext> bookingslotArray = new ArrayList<>();
-		        			bookingslotArray.add(bookingSlotsAsMap.get(slot.getId()));
+		        			BookingSlotsContext bookingSlot = bookingSlotsAsMap.get(slot.getId());
+		        			if (bookingSlot.getBooking() != null) {
+		        				bookingSlot.setBooking(bookingMap.get(bookingSlot.getBooking().getId()));
+		        			}
+		        			bookingslotArray.add(bookingSlot);
 		        			bookedSlotMap.put(slot.getFacilityId(),bookingslotArray);
 		        		}
 	        		}
@@ -120,6 +157,8 @@ public class FetchFloorplanFacilitiesCommmand extends FacilioCommand {
 	        context.put(FacilioConstants.ContextNames.FacilityBooking.FACILITY, FacilitiesMap);
 			
 	        context.put(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING, BookingsMap);
+	        
+	        context.put("bookingMap", bookingMap);
 		}
 		
 		return false;

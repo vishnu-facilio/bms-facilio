@@ -4,11 +4,16 @@ import com.facilio.bmsconsole.automation.command.ListGlobalVariableCommand;
 import com.facilio.bmsconsole.automation.command.ListGlobalVariableGroupCommand;
 import com.facilio.bmsconsole.commands.GenerateCriteriaFromFilterCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsoleV3.commands.floorplan.getIndoorFloorPlanViewerCommand;
 import com.facilio.bmsconsole.commands.page.GetSummaryFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.facility.GetFacilityAvailabilityCommandV3;
 import com.facilio.bmsconsoleV3.commands.floorplan.FetchFloorplanFacilitiesCommmand;
 import com.facilio.bmsconsoleV3.commands.floorplan.FetchFloorplanMapByTypeCommmand;
 import com.facilio.bmsconsoleV3.commands.floorplan.FloorplanDetailsListCommand;
+import com.facilio.bmsconsoleV3.commands.floorplan.getFloorplanPropertiesBookingResultCommands;
+import com.facilio.bmsconsoleV3.commands.floorplan.getIndoorFloorPlanBookingResultCommands;
+import com.facilio.bmsconsoleV3.commands.floorplan.getIndoorFloorPlanBookingViewerCommand;
+import com.facilio.bmsconsoleV3.commands.floorplan.getIndoorFloorPlanPropertiesCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.AddDefaultCriteriaForQuoteFetchCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.QuotationFillLookupFields;
 import com.facilio.bmsconsoleV3.commands.tenant.LoadTenantLookUpsCommandV3;
@@ -158,5 +163,31 @@ public class ReadOnlyChainFactoryV3 {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new ListGlobalVariableCommand());
         return chain;
+        
+    }
+    public static FacilioChain getfloorplanViewerObjectChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new getIndoorFloorPlanViewerCommand());
+        return c;
+    }
+    public static FacilioChain getfloorplanBookingObjectChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new getIndoorFloorPlanBookingViewerCommand());
+        c.addCommand(new FetchFloorplanFacilitiesCommmand());
+        c.addCommand(new getIndoorFloorPlanBookingResultCommands());
+        return c;
+    }
+    public static FacilioChain getfloorplanPropertiesChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new getIndoorFloorPlanPropertiesCommand());
+        return c;
+    }
+    public static FacilioChain getfloorplanBookingPropertiesChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new getIndoorFloorPlanPropertiesCommand());
+        c.addCommand(new FetchFloorplanFacilitiesCommmand());
+        c.addCommand(new getFloorplanPropertiesBookingResultCommands());
+        
+        return c;
     }
 }
