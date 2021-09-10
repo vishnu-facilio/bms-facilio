@@ -235,7 +235,7 @@ public class SAMLServiceProvider {
 		template.append("<samlp:AuthnRequest xmlns:samlp=\"urn:oasis:names:tc:SAML:2.0:protocol\" xmlns:saml=\"urn:oasis:names:tc:SAML:2.0:assertion\" ID=\"${ID}\" Version=\"2.0\" IssueInstant=\"${IssueInstant}\" ProviderName=\"${ProviderName}\" Destination=\"${Destination}\" ProtocolBinding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST\" AssertionConsumerServiceURL=\"${AssertionConsumerServiceURL}\">");
 		template.append("<saml:Issuer>${Issuer}</saml:Issuer>");
 		template.append("<samlp:NameIDPolicy Format=\"urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress\" AllowCreate=\"true\" />");
-		template.append("<samlp:RequestedAuthnContext Comparison=\"exact\"><saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml:AuthnContextClassRef></samlp:RequestedAuthnContext>");
+		// template.append("<samlp:RequestedAuthnContext Comparison=\"exact\"><saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml:AuthnContextClassRef></samlp:RequestedAuthnContext>");
 		template.append("</samlp:AuthnRequest>");
 		String templateStr = template.toString();
 		
