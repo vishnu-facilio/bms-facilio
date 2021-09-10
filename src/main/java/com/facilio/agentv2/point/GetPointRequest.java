@@ -106,6 +106,14 @@ public class GetPointRequest {
         criteria.addAndCondition(CriteriaAPI.getCondition(POINT_MAP.get(AgentConstants.SUBSCRIBE_STATUS), String.valueOf(3), NumberOperators.EQUALS));
         return this;
     }
+    
+    public GetPointRequest filterPointsForCommissioning() {
+    		Criteria filterCriteria = new Criteria(); 
+    		filterCriteria.addOrCondition(CriteriaAPI.getCondition(POINT_MAP.get(AgentConstants.CONFIGURE_STATUS), String.valueOf(3), NumberOperators.EQUALS));
+    		filterCriteria.addOrCondition(CriteriaAPI.getCondition(POINT_MAP.get(AgentConstants.SUBSCRIBE_STATUS), String.valueOf(3), NumberOperators.EQUALS));
+    		criteria.andCriteria(filterCriteria);
+        return this;
+    }
 
     public GetPointRequest forController(long controllerId) throws Exception {
         if(controllerId > 0){

@@ -27,8 +27,6 @@ public class AddUserFunctionCommand extends FacilioCommand {
 		
 		addUserFunction(userFunctionContext);
 		
-		BundleUtil.markModifiedComponent(BundleComponentsEnum.FUNCTION, userFunctionContext.getId(), userFunctionContext.getName(), BundleModeEnum.ADD);
-		
 		return false;
 	}
 

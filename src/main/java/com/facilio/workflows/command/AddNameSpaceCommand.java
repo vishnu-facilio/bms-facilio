@@ -37,8 +37,6 @@ public class AddNameSpaceCommand extends FacilioCommand {
 		
 		addNameSpace(workflowNamespaceContext);
 		
-		BundleUtil.markModifiedComponent(BundleComponentsEnum.FUNCTION_NAME_SPACE, workflowNamespaceContext.getId(), workflowNamespaceContext.getName(), BundleModeEnum.ADD);
-		
 		return false;
 	}
 	

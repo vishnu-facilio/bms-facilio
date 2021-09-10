@@ -16,6 +16,21 @@ public class NewsAndInformationContext extends V3Context {
     private String description;
     private Type type;
 
+
+    public Boolean commentsAllowed;
+
+
+    public Boolean getcommentsAllowed() {
+        if (commentsAllowed!= null) {
+            return commentsAllowed.booleanValue();
+        }
+        return false;
+    }
+
+    public void setcommentsAllowed(Boolean commentsAllowed) {
+        this.commentsAllowed = commentsAllowed;
+    }
+
     public String getTitle() {
         return title;
     }
