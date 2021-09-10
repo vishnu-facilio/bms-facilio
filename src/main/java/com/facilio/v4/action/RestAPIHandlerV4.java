@@ -32,7 +32,7 @@ public class RestAPIHandlerV4 extends RESTAPIHandler {
          this.setCode(ErrorCode.VALIDATION_ERROR.getCode());
          getHttpServletResponse().setStatus(ErrorCode.VALIDATION_ERROR.getHttpStatus());
          LOGGER.log(Level.SEVERE, message);
-         return V3Action.FAILURE;
+         return ERROR;
 	}
 
 	@Override

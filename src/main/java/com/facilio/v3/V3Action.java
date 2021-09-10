@@ -13,17 +13,19 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.interceptor.ServletResponseAware;
 import org.json.simple.JSONObject;
 
 import com.opensymphony.xwork2.ActionSupport;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
 @Log4j
-public class V3Action extends ActionSupport {
+public class V3Action extends ActionSupport implements ServletResponseAware {
 
 	protected enum api {
 		v3,
@@ -34,7 +36,6 @@ public class V3Action extends ActionSupport {
 		return api.v3;
 	}
 
-	public static final String FAILURE = "failure";
     private JSONObject data;
 	private JSONObject meta;
 	private JSONObject params;
@@ -247,46 +248,76 @@ public class V3Action extends ActionSupport {
 	public String getStackTrace() {
 		return stackTrace;
 	}
+	
+	private Boolean fetchStackTrace;
+	public Boolean getFetchStackTrace() {
+		if (fetchStackTrace == null) {
+			return false;
+		}
+		return fetchStackTrace;
+	}
+	public void setFetchStackTrace(Boolean fetchStackTrace) {
+		this.fetchStackTrace = fetchStackTrace;
+	}
+	
 	private static final int MAX_LENGTH_OF_TRACE = 5000;
 	public void setStackTrace(Exception e) {
 		if (e != null) {
-			LogManager.getLogger(this.getClass().getName()).error("Exception occurred: - ", e);
-			if(!FacilioProperties.isProduction()) {
-				this.stackTrace = StringUtils.abbreviate(ExceptionUtils.getStackTrace(e), MAX_LENGTH_OF_TRACE) ;
+			if((!FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()) || getFetchStackTrace()) {
+				Throwable msg = e;
+				if (e instanceof InvocationTargetException) {
+					msg = e.getCause();
+				}
+				this.stackTrace = StringUtils.abbreviate(ExceptionUtils.getStackTrace(msg), MAX_LENGTH_OF_TRACE) ;
 			}
 		}
 	}
 	
-//	private Exception exception;
-//	public Exception getException() {
-//		return exception;
-//	}
-//	public void setException(Exception exception) {
-//		this.exception = exception;
-//	}
-//
-//	public String handleException() {
-//		try {
-//			HttpServletResponse response = ServletActionContext.getResponse();
-//			if (exception instanceof RESTException) {
-//				RESTException ex = (RESTException)exception;
-//				setMessage(ex.getMessage());
-//				setCode(ex.getErrorCode().getCode());
-//				setData(ex.getData());
-//				response.setStatus(ex.getErrorCode().getHttpStatus());
-//				setStackTrace(ex);
-//	            LOGGER.error("Rest Exception on v3 api", ex);
-//			}
-//			else {
-//				setCode(ErrorCode.UNHANDLED_EXCEPTION.getCode());
-//	            setMessage(FacilioUtil.constructMessageFromException(exception));
-//	            response.setStatus(ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus());
-//	            setStackTrace(exception);
-//	            LOGGER.error("Exception on v3 api", exception);
-//			}
-//		} catch (Exception e) {
-//            LOGGER.error("Exception occurred inside handle V3 Exception", e);
-//		}
-//		return "failure"; // Move this to ERROR after changing error structure in v3 xml
-//	}
+	private Exception exception;
+	public Exception getException() {
+		return exception;
+	}
+	public void setException(Exception exception) {
+		this.exception = exception;
+	}
+	
+	protected HttpServletResponse httpServletResponse;
+	@Override
+	public void setServletResponse(HttpServletResponse httpServletResponse) {
+		this.httpServletResponse = httpServletResponse;
+	}
+	public HttpServletResponse getHttpServletResponse() {
+		return httpServletResponse;
+	}
+	
+	public String handleException() {
+		ErrorCode errorCode;
+		String message;
+		if (exception instanceof RESTException) {
+			RESTException ex = (RESTException) exception;
+			errorCode = ex.getErrorCode();
+			message = ex.getMessage();
+			this.setData(ex.getData());
+		} else if (exception instanceof IllegalArgumentException) {
+			errorCode =  ErrorCode.VALIDATION_ERROR;
+			message = exception.getMessage();
+			if (StringUtils.isEmpty(message)) {
+				message = "Error occurred due to some validation";
+			}
+			this.setData(null);
+		} else {
+			errorCode =  ErrorCode.UNHANDLED_EXCEPTION;
+			message = "Internal Server Error";
+			this.setData(null);
+		}
+
+		this.setCode(errorCode.getCode());
+		this.setMessage(message);
+		this.httpServletResponse.setStatus(errorCode.getHttpStatus());
+
+		this.setStackTrace(exception);
+		LOGGER.error("Exception handling v3 api, moduleName: " + getModuleName(), exception);
+
+		return ERROR;
+	}
 }

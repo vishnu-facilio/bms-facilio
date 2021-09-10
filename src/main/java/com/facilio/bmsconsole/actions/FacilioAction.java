@@ -25,6 +25,8 @@ import org.json.simple.parser.JSONParser;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
+
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -162,7 +164,11 @@ public class FacilioAction extends ActionSupport {
 		if (e != null) {
 			LOGGER.error("Exception occured: - ", e);
 			if((!FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()) || getFetchStackTrace() || AuthInterceptor.isPuppeteerRequest()) {
-				this.stackTrace = StringUtils.abbreviate(ExceptionUtils.getStackTrace(e), MAX_LENGTH_OF_TRACE) ;
+				Throwable msg = e;
+				if (e instanceof InvocationTargetException) {
+					msg = e.getCause();
+				}
+				this.stackTrace = StringUtils.abbreviate(ExceptionUtils.getStackTrace(msg), MAX_LENGTH_OF_TRACE) ;
 //				System.out.println(this.stackTrace);
 			}
 		}

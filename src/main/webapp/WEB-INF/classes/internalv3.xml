@@ -28,14 +28,7 @@
             <result name="invaliduser" type="httpheader">
                 <param name="status">400</param>
             </result>
-            <result name="exception" type="chain">
-                <param name="actionName">handleException</param>
-                <param name="namespace">/v3/exception</param>
-            </result>
         </global-results>
-        <global-exception-mappings>
-            <exception-mapping exception="java.lang.Exception" result="exception" />
-        </global-exception-mappings>
     </package>
 
     <package name="dcApi" namespace="/api/v3/internal/dc" extends="v3InternalApi">
