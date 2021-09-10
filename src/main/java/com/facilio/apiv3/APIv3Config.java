@@ -43,7 +43,6 @@ import com.facilio.bmsconsoleV3.commands.floorplan.FetchFloorPlanMarkerCommand;
 import com.facilio.bmsconsoleV3.commands.floorplan.V3ValidateFloorPlanCommand;
 import com.facilio.bmsconsoleV3.commands.floorplan.V3ValidateSpaceCommand;
 import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
-import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
@@ -1257,6 +1256,7 @@ public class APIv3Config {
         return () -> new V3Config(V3DeliveriesContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .beforeSave(new FillDeliveriesDetailsCommand())
+                .beforeSave(new DeleveryDataParserCommand())
                 .afterSave(new ConstructAddCustomActivityCommandV3(), new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY))
                 .update()
                 .beforeSave(new FillDeliveriesDetailsCommand())
