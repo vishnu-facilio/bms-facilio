@@ -985,11 +985,9 @@ public class ProcessImportCommand extends FacilioCommand {
 		floorName = (String) colVal.get(fieldMapping.get(moduleName + "__floor"));
 		spaceName = (String) colVal.get(fieldMapping.get(moduleName + "__spaceName"));
 		int start = 1;
-
-		if (spaceName != null ||
-				ImportAPI.isBaseSpaceExtendedModule(importProcessContext.getModule())
-		) {
-			if (ImportAPI.isBaseSpaceExtendedModule(importProcessContext.getModule())) {
+		boolean isSpaceImport = ImportAPI.isBaseSpaceExtendedModule(importProcessContext.getModule());
+		if (spaceName != null || isSpaceImport) {
+			if (isSpaceImport) {
 				spaceName = (String) colVal.get(fieldMapping.get(moduleName + "__space1"));
 				start = 2;
 			}
@@ -1111,7 +1109,11 @@ public class ProcessImportCommand extends FacilioCommand {
 		if (additionalSpaces.size() > 0) {
 			Long tempSpaceId;
 			for (JSONObject additionalSpace : additionalSpaces) {
-				tempSpaceId = SpaceAPI.getDependentSpaceId((String) additionalSpace.get("name"), spaceId, (int)additionalSpace.get("level"));
+				int level = (int)additionalSpace.get("level");
+				if (isSpaceImport) {
+					level--;
+				}
+				tempSpaceId = SpaceAPI.getDependentSpaceId((String) additionalSpace.get("name"), spaceId, level);
 				if (tempSpaceId != null) {
 					spaceId = tempSpaceId;
 				} else if (canAddNew) {
