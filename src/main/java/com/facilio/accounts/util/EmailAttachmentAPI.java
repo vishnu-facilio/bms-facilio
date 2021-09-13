@@ -7,6 +7,8 @@ import java.util.Map;
 
 import com.facilio.bmsconsole.context.TemplateFileContext;
 import com.facilio.bmsconsole.context.TemplateUrlContext;
+import com.facilio.bmsconsole.context.TemplateFileFieldContext;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -32,6 +34,20 @@ public class EmailAttachmentAPI {
 			List<Map<String, Object>> props = FieldUtil.getAsMapList(attachments, classObj);
 			insertBuilder.addRecords(props);
 			insertBuilder.save();
+			
+		}	
+	}
+	
+public static final <E> void deleteAttachments(List<Long> templateIds, FacilioModule module, Class<E> classObj, List<FacilioField> fields) throws Exception {
+		
+	    Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);	
+		if(templateIds != null && !templateIds.isEmpty()) {
+	
+			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+					.table(module.getTableName())
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("templateId"), templateIds, NumberOperators.EQUALS));
+			 builder.delete();
+			
 			
 		}	
 	}
@@ -82,6 +98,28 @@ public static final List<TemplateUrlContext> getUrlAttachments(long templateId) 
 		
 		return attachmentList;
 	}
+
+public static final List<TemplateFileFieldContext> getFileFieldAttachments(long templateId) throws Exception {
+	
+	
+	FacilioModule module = ModuleFactory.getTemplateFileFieldAttachmentModule();
+	List<FacilioField> fields = FieldFactory.getTemplateFileFieldFields();
+    Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+    
+    List<TemplateFileFieldContext> attachmentList = new ArrayList<>();
+			
+	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+			.select(fields)
+			.table(module.getTableName())
+			.andCondition(CriteriaAPI.getCondition(fieldMap.get("templateId"), ""+templateId, NumberOperators.EQUALS));
+	
+	List<Map<String, Object>> props = selectBuilder.get();
+	if (props != null && !props.isEmpty()) {
+		 attachmentList = FieldUtil.getAsBeanListFromMapList(props, TemplateFileFieldContext.class);
+	}
+	
+	return attachmentList;
+}
 	
 
 }

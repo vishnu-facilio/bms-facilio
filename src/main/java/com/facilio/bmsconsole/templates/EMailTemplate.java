@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.templates;
 
 import org.json.simple.JSONObject;
 
-import com.facilio.modules.FacilioIntEnum;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -147,34 +146,6 @@ public class EMailTemplate extends Template {
 		return false;
 	}
 	
-//	 private enum EmailAttachmentType implements FacilioIntEnum {
-//	        FILE_ATTACHMENT("Direct File Attachment", "templatefileattachment");
-//	  
-//	        private String name;
-//	        private String moduleName;
-//
-//
-//	        EmailAttachmentType(String name, String moduleName) {
-//	            this.name = name;
-//	            this.moduleName = moduleName;
-//
-//	        }
-//
-//	        @Override
-//	        public Integer getIndex() {
-//	            return ordinal() + 1;
-//	        }
-//
-//	        @Override
-//	        public String getValue() {
-//	            return name;
-//	        }
-//
-//	        public static EmailAttachmentType valueOf(int value) {
-//	            if (value > 0 && value <= values().length) {
-//	                return values()[value - 1];
-//	            }
-//	            return null;
-//	        }
-//	    }
+
+	
 }

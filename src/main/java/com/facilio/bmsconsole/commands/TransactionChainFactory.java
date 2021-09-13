@@ -701,6 +701,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddWorkflowRuleCommand());
 			c.addCommand(new AddActionsForWorkflowRule());
 			c.addCommand(new AddOrUpdateJobEntryForScheduledReadingRuleCommand());
+			c.addCommand(new AddAttachmentTemplateRelation());
 			return c;
 		}
 
@@ -751,6 +752,7 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleterOldRuleActionsCommand());
 			c.addCommand(new AddActionsForWorkflowRule());
 			c.addCommand(new AddOrUpdateJobEntryForScheduledReadingRuleCommand());
+			c.addCommand(new AddAttachmentTemplateRelation());
 			return c;
 		}
 		

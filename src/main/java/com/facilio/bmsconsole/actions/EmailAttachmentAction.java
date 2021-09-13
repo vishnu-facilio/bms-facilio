@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
 import com.facilio.bmsconsole.context.TemplateFileContext;
+import com.facilio.bmsconsole.context.TemplateFileFieldContext;
 import com.facilio.bmsconsole.context.TemplateUrlContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -117,9 +118,11 @@ public class EmailAttachmentAction extends FacilioAction {
 		
 		List<TemplateFileContext> attachmentList = (List<TemplateFileContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_LIST);		
 		List<TemplateUrlContext> attachmentUrlList = (List<TemplateUrlContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_URL_LIST);
+		List<TemplateFileFieldContext> attachmentFileFieldslList = (List<TemplateFileFieldContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_FILE_FIELDID_LIST);
 		
 		setResult("attachments", attachmentList);
 		setResult("attachmentUrlList", attachmentUrlList);
+		setResult("attachmentFileFieldslList", attachmentFileFieldslList);
 		
 		return SUCCESS;
 	}

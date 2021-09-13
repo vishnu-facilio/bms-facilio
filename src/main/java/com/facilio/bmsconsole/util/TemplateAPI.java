@@ -27,6 +27,7 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.EmailAttachmentAPI;
 import com.facilio.billing.context.ExcelTemplate;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.JobPlanContext;
@@ -41,6 +42,8 @@ import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
 import com.facilio.bmsconsole.context.TemplateFileContext;
+import com.facilio.bmsconsole.context.TemplateFileFieldContext;
+import com.facilio.bmsconsole.context.TemplateUrlContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.templates.AssignmentTemplate;
@@ -633,6 +636,24 @@ public class TemplateAPI {
 		builder.delete();
 		if(template != null) {
 			templatePostDelete(template);
+		}
+	}
+	
+	public static void deleteTemplateAttachments(List<Long> ids) throws Exception {
+		if(ids != null && !ids.isEmpty()) {
+			List<FacilioField> fields = FieldFactory.getTemplateFileFields();
+			FacilioModule module = ModuleFactory.getTemplateFileModule();
+			EmailAttachmentAPI.deleteAttachments(ids, module, TemplateFileContext.class, fields);
+			
+			List<FacilioField> urlFields = FieldFactory.getTemplateUrlFields();
+			FacilioModule urlModule = ModuleFactory.getTemplateUrlAttachmentModule();
+			EmailAttachmentAPI.deleteAttachments(ids, urlModule, TemplateUrlContext.class, urlFields);
+			
+			List<FacilioField> fileFieldFields = FieldFactory.getTemplateFileFieldFields();
+			FacilioModule fileFieldModule = ModuleFactory.getTemplateFileFieldAttachmentModule();
+			EmailAttachmentAPI.deleteAttachments(ids, fileFieldModule, TemplateUrlContext.class, fileFieldFields);
+
+
 		}
 	}
 	
@@ -1905,6 +1926,50 @@ public class TemplateAPI {
 			result.add(FieldUtil.getAsBeanFromMap(prop, TemplateFileContext.class));
 		}
 		return result;
+	}
+	public static void addAttachment(Template template) throws Exception {
+		if (template.getTemplateFileIds() != null && !template.getTemplateFileIds().isEmpty()) {
+			List<TemplateFileContext> attachments = new ArrayList<>();
+			for(long attachmentId : template.getTemplateFileIds()) {
+				TemplateFileContext attachment = new TemplateFileContext();	
+				attachment.setFileId(attachmentId);
+				attachment.setTemplateId(template.getId());							
+				attachments.add(attachment);
+			}
+			List<FacilioField> fields = FieldFactory.getTemplateFileFields();
+			FacilioModule module = ModuleFactory.getTemplateFileModule();
+			EmailAttachmentAPI.addAttachments(attachments, module, template.getId(), TemplateFileContext.class, fields);
+
+		}
+		
+		if (template.getTemplateUrlStrings() != null && !template.getTemplateUrlStrings().isEmpty()) {
+			List<TemplateUrlContext> attachments = new ArrayList<>();
+			for(String url : template.getTemplateUrlStrings()) {
+				TemplateUrlContext attachment = new TemplateUrlContext();	
+				attachment.setUrlString(url);
+				attachment.setTemplateId(template.getId());	
+				attachments.add(attachment);
+			}
+			List<FacilioField> fields = FieldFactory.getTemplateUrlFields();
+			FacilioModule module = ModuleFactory.getTemplateUrlAttachmentModule();
+			EmailAttachmentAPI.addAttachments(attachments, module, template.getId(), TemplateUrlContext.class, fields);
+
+		}
+		
+		if (template.getTemplateFileFileIds() != null && !template.getTemplateFileFileIds().isEmpty()) {
+			List<TemplateFileFieldContext> attachments = new ArrayList<>();
+			for(long fileFieldID : template.getTemplateFileFileIds()) {
+				TemplateFileFieldContext attachment = new TemplateFileFieldContext();	
+				attachment.setFileFileId(fileFieldID);
+				attachment.setTemplateId(template.getId());	
+				attachments.add(attachment);
+			}
+			List<FacilioField> fields = FieldFactory.getTemplateFileFieldFields();
+			FacilioModule module = ModuleFactory.getTemplateFileFieldAttachmentModule();
+			EmailAttachmentAPI.addAttachments(attachments, module, template.getId(), TemplateFileFieldContext.class, fields);
+
+		}
+		
 	}
 	
 }

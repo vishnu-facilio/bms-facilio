@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.templates;
 
 import java.io.Serializable;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -16,9 +17,16 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.context.TemplateFileContext;
+import com.facilio.bmsconsole.context.TemplateUrlContext;
 import com.facilio.bmsconsole.util.FreeMarkerAPI;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
+
+import java.util.List;
+import com.facilio.bmsconsole.context.TemplateFileContext;
+import com.facilio.bmsconsole.context.TemplateUrlContext;
+import com.facilio.modules.FacilioIntEnum;
+
 
 public abstract class Template implements Serializable {
 
@@ -50,13 +58,6 @@ public abstract class Template implements Serializable {
 		return name;
 	}
 	
-	private List<TemplateFileContext> templateFiles;
-	public List<TemplateFileContext> getTemplateFiles() {
-		return templateFiles;
-	}
-	public void setTemplateFiles(List<TemplateFileContext> templateFiles) {
-		this.templateFiles = templateFiles;
-	}
 	
 	public void setName(String name) {
 		this.name = name;
@@ -297,6 +298,45 @@ public abstract class Template implements Serializable {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public List<TemplateFileContext> getTemplateFiles() {
+		return templateFiles;
+	}
+	public void setTemplateFiles(List<TemplateFileContext> templateFiles) {
+		this.templateFiles = templateFiles;
+	}
+	public List<TemplateUrlContext> getTemplateUrls() {
+		return templateUrls;
+	}
+	public void setTemplateUrls(List<TemplateUrlContext> templateUrls) {
+		this.templateUrls = templateUrls;
+	}
+
+	private List<TemplateFileContext> templateFiles;
+	private List<TemplateUrlContext> templateUrls;
+	private List<Long> templateFileIds;
+	private List<Long> templateFileFileIds;
+	public List<Long> getTemplateFileFileIds() {
+		return templateFileFileIds;
+	}
+	public void setTemplateFileFileIds(List<Long> templateFileFileIds) {
+		this.templateFileFileIds = templateFileFileIds;
+	}
+
+	private List<String> templateUrlStrings;
+	
+	public List<Long> getTemplateFileIds() {
+		return templateFileIds;
+	}
+	public void setTemplateFileIds(List<Long> templateFileIds) {
+		this.templateFileIds = templateFileIds;
+	}
+	public List<String> getTemplateUrlStrings() {
+		return templateUrlStrings;
+	}
+	public void setTemplateUrlStrings(List<String> templateUrlStrings) {
+		this.templateUrlStrings = templateUrlStrings;
 	}
 
 }
