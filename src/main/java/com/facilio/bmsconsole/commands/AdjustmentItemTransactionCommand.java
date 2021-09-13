@@ -70,47 +70,50 @@ public class AdjustmentItemTransactionCommand extends FacilioCommand {
 				} 
 				else if (itemTransaction.getTransactionStateEnum() == TransactionState.ADJUSTMENT_DECREASE
 						&& item.getQuantity() < itemTransaction.getQuantity()) {
-					throw new IllegalArgumentException("Insufficient quantity in inventory!");
+					throw new IllegalArgumentException("Invalid Adjustment Quantity!");
 				}
 				else if(itemTransaction.getTransactionStateEnum() == TransactionState.ADJUSTMENT_DECREASE
 						&& !itemType.isRotating())
 				{
-					List<PurchasedItemContext> purchasedItem = new ArrayList<>();
-
-					if (item.getCostTypeEnum() == null || item.getCostType() <= 0
-							|| item.getCostTypeEnum() == CostType.FIFO) {
-						purchasedItem = getPurchasedItemList(item.getId(), " asc", purchasedItemModule,
-								purchasedItemFields);
-					} else if (item.getCostTypeEnum() == CostType.LIFO) {
-						purchasedItem = getPurchasedItemList(item.getId(), " desc", purchasedItemModule,
-								purchasedItemFields);
-					}
-
-					if (purchasedItem != null && !purchasedItem.isEmpty()) {
-						PurchasedItemContext pItem = purchasedItem.get(0);
-						double requiredQuantity = -(itemTransaction.getQuantity());
-						if (requiredQuantity + pItem.getCurrentQuantity() >= 0) {
-							ItemTransactionsContext woItem = new ItemTransactionsContext();
-							woItem = setWorkorderItemObj(pItem, itemTransaction.getQuantity(), item, parentId,
-									itemTransaction, itemType, approvalState, context);
-							itemTransactionsList.add(woItem);
-							itemTransactiosnToBeAdded.add(woItem);
-						} else {
-							for (PurchasedItemContext purchaseitem : purchasedItem) {
+					if(itemTransaction.getQuantity() != item.getQuantity())
+					{
+						List<PurchasedItemContext> purchasedItem = new ArrayList<>();
+	
+						if (item.getCostTypeEnum() == null || item.getCostType() <= 0
+								|| item.getCostTypeEnum() == CostType.FIFO) {
+							purchasedItem = getPurchasedItemList(item.getId(), " asc", purchasedItemModule,
+									purchasedItemFields);
+						} else if (item.getCostTypeEnum() == CostType.LIFO) {
+							purchasedItem = getPurchasedItemList(item.getId(), " desc", purchasedItemModule,
+									purchasedItemFields);
+						}
+	
+						if (purchasedItem != null && !purchasedItem.isEmpty()) {
+							PurchasedItemContext pItem = purchasedItem.get(0);
+							double requiredQuantity = -(itemTransaction.getQuantity());
+							if (requiredQuantity + pItem.getCurrentQuantity() >= 0) {
 								ItemTransactionsContext woItem = new ItemTransactionsContext();
-								double quantityUsedForTheCost = 0;
-								if (purchaseitem.getCurrentQuantity() + requiredQuantity >= 0) {
-									quantityUsedForTheCost = requiredQuantity;
-								} else {
-									quantityUsedForTheCost = -(purchaseitem.getCurrentQuantity());
-								}
-								woItem = setWorkorderItemObj(purchaseitem, -(quantityUsedForTheCost), item,
-										parentId, itemTransaction, itemType, approvalState, context);
-								requiredQuantity -= quantityUsedForTheCost;
+								woItem = setWorkorderItemObj(pItem, itemTransaction.getQuantity(), item, parentId,
+										itemTransaction, itemType, approvalState, context);
 								itemTransactionsList.add(woItem);
 								itemTransactiosnToBeAdded.add(woItem);
-								if (requiredQuantity == 0) {
-									break;
+							} else {
+								for (PurchasedItemContext purchaseitem : purchasedItem) {
+									ItemTransactionsContext woItem = new ItemTransactionsContext();
+									double quantityUsedForTheCost = 0;
+									if (purchaseitem.getCurrentQuantity() + requiredQuantity >= 0) {
+										quantityUsedForTheCost = requiredQuantity;
+									} else {
+										quantityUsedForTheCost = -(purchaseitem.getCurrentQuantity());
+									}
+									woItem = setWorkorderItemObj(purchaseitem, -(quantityUsedForTheCost), item,
+											parentId, itemTransaction, itemType, approvalState, context);
+									requiredQuantity -= quantityUsedForTheCost;
+									itemTransactionsList.add(woItem);
+									itemTransactiosnToBeAdded.add(woItem);
+									if (requiredQuantity == 0) {
+										break;
+									}
 								}
 							}
 						}
@@ -120,20 +123,23 @@ public class AdjustmentItemTransactionCommand extends FacilioCommand {
 				else if(itemTransaction.getTransactionStateEnum() == TransactionState.ADJUSTMENT_INCREASE
 						&& !itemType.isRotating())
 				{
-					PurchasedItemContext pi =itemTransaction.getPurchasedItem();
-					pi.setItem(item);
-					pi.setItemType(itemType);
-					pi.setCostDate(System.currentTimeMillis());
-					itemType.setLastPurchasedDate(pi.getCostDate());
-					item.setLastPurchasedDate(pi.getCostDate());
-					itemType.setLastPurchasedPrice(pi.getUnitcost());
-					item.setLastPurchasedPrice(pi.getUnitcost());
-					addPurchasedItem(purchasedItemModule,purchasedItemFields,pi);
-					ItemTransactionsContext woItem = new ItemTransactionsContext();
-					woItem = setWorkorderItemObj(itemTransaction.getPurchasedItem(), itemTransaction.getQuantity(), item, parentId,
-							itemTransaction, itemType, approvalState, context);
-					itemTransactionsList.add(woItem);
-					itemTransactiosnToBeAdded.add(woItem);
+					if(itemTransaction.getQuantity() != item.getQuantity())
+					{
+						PurchasedItemContext pi =itemTransaction.getPurchasedItem();
+						pi.setItem(item);
+						pi.setItemType(itemType);
+						pi.setCostDate(System.currentTimeMillis());
+						itemType.setLastPurchasedDate(pi.getCostDate());
+						item.setLastPurchasedDate(pi.getCostDate());
+						itemType.setLastPurchasedPrice(pi.getUnitcost());
+						item.setLastPurchasedPrice(pi.getUnitcost());
+						addPurchasedItem(purchasedItemModule,purchasedItemFields,pi);
+						ItemTransactionsContext woItem = new ItemTransactionsContext();
+						woItem = setWorkorderItemObj(itemTransaction.getPurchasedItem(), itemTransaction.getQuantity(), item, parentId,
+								itemTransaction, itemType, approvalState, context);
+						itemTransactionsList.add(woItem);
+						itemTransactiosnToBeAdded.add(woItem);
+					}
 				}
 
 			}
