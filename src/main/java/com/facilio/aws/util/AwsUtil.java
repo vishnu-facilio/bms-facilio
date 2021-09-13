@@ -3,10 +3,7 @@ package com.facilio.aws.util;
 import com.amazon.sqs.javamessaging.AmazonSQSExtendedClient;
 import com.amazon.sqs.javamessaging.ExtendedClientConfiguration;
 import com.amazonaws.ClientConfiguration;
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.InstanceProfileCredentialsProvider;
+import com.amazonaws.auth.*;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.iot.AWSIot;
 import com.amazonaws.services.iot.AWSIotClientBuilder;
@@ -55,16 +52,21 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
+import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.textract.TextractClient;
+import software.amazon.awssdk.services.textract.model.Document;
+import software.amazon.awssdk.services.textract.model.DetectDocumentTextRequest;
+import software.amazon.awssdk.services.textract.model.DetectDocumentTextResponse;
+import software.amazon.awssdk.services.textract.model.Block;
+import software.amazon.awssdk.services.textract.model.TextractException;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import javax.transaction.SystemException;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -77,8 +79,7 @@ import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.util.*;
 
-public class AwsUtil 
-{
+public class AwsUtil {
 
 	private static final Logger LOGGER = LogManager.getLogger(AwsUtil.class.getName());
 
@@ -91,10 +92,11 @@ public class AwsUtil
 	private static final String IAM_ARN_PREFIX = "arn:aws:iam::";
 	private static final String KINESIS_PUT_ROLE_SUFFIX = ":role/service-role/kinesisput";
 	private static final String IOT_SQL_VERSION = "2016-03-23";//Refer the versions available in AWS iot sql version document before changing.
-	
+
 	private static Map<String, AWSIotMqttClient> AWS_IOT_MQTT_CLIENTS = new HashMap<>();
-	
+
 	private static AmazonS3 AWS_S3_CLIENT = null;
+	private static TextractClient AWS_TEXTRACT_CLIENT = null;
 	private static AmazonRekognition AWS_REKOGNITION_CLIENT = null;
 
 	private static volatile AWSCredentials basicCredentials = null;
@@ -107,7 +109,7 @@ public class AwsUtil
 	private static final Object LOCK = new Object();
 
 	public static Map<String, Object> getClientInfoAsService() throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() -> getClientInfo());
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE, () -> getClientInfo());
 	}
 
 	public static Map<String, Object> getClientInfo() {
@@ -115,8 +117,8 @@ public class AwsUtil
 		PreparedStatement pstmt = null;
 		ResultSet rs;
 		String clientVersion = null;
-		boolean isNewClientBuild=false;
-		Map<String, Object> clientInfo=new HashMap<>();
+		boolean isNewClientBuild = false;
+		Map<String, Object> clientInfo = new HashMap<>();
 		if (FacilioProperties.getClientVersion() != null) {
 			clientVersion = FacilioProperties.getClientVersion();
 			isNewClientBuild = true;
@@ -133,13 +135,13 @@ public class AwsUtil
 
 					}
 				}
-			} catch(SQLException | RuntimeException e){
+			} catch (SQLException | RuntimeException e) {
 				LOGGER.info("Exception while verifying password, ", e);
-			} finally{
+			} finally {
 				DBUtil.closeAll(conn, pstmt);
 			}
 		}
-		clientInfo.put("version",clientVersion);
+		clientInfo.put("version", clientVersion);
 		clientInfo.put("isNewClientBuild", isNewClientBuild);
 		return clientInfo;
 	}
@@ -147,14 +149,13 @@ public class AwsUtil
 	public static int updateClientVersion(String newVersion, boolean isNewClientBuild) throws Exception {
 		com.facilio.accounts.dto.User currentUser = AccountUtil.getCurrentUser();
 		if (currentUser != null) {
-			return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> updateClientVersionervice(newVersion, isNewClientBuild, currentUser.getId()));
-		}
-		else {
+			return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> updateClientVersionervice(newVersion, isNewClientBuild, currentUser.getId()));
+		} else {
 			throw new IllegalArgumentException("Current User cannot be null while updating Client Version");
 		}
 	}
 
-	
+
 	public static String generateCSRFToken() throws Exception {
 		MessageDigest salt = MessageDigest.getInstance("SHA-256");
 		salt.update(UUID.randomUUID().toString().getBytes("UTF-8"));
@@ -169,15 +170,15 @@ public class AwsUtil
 		return AwsPolicyUtils.getPolicyGist(getIotClient());
 	}
 
-	private static int updateClientVersionervice(String newVersion,boolean isNewClientBuild, long userId) throws SystemException {
+	private static int updateClientVersionervice(String newVersion, boolean isNewClientBuild, long userId) throws SystemException {
 		int updatedRows = 0;
-		if(newVersion != null) {
+		if (newVersion != null) {
 			newVersion = newVersion.trim();
 			newVersion = newVersion.replace("/", "");
 			Connection conn = null;
 			PreparedStatement pstmt = null;
 			try {
-				if(checkIfVersionExistsInS3(newVersion)) {
+				if (checkIfVersionExistsInS3(newVersion)) {
 					if (FacilioProperties.getEnvironment() != null && userId != -1) {
 						FacilioTransactionManager.INSTANCE.getTransactionManager().begin();
 						conn = FacilioConnectionPool.INSTANCE.getConnection();
@@ -189,9 +190,9 @@ public class AwsUtil
 						pstmt.setString(5, FacilioProperties.getEnvironment());
 
 						updatedRows = pstmt.executeUpdate();
-						if(updatedRows > 0) {
-						    LOGGER.info("Updated client version successfully");
-                        }
+						if (updatedRows > 0) {
+							LOGGER.info("Updated client version successfully");
+						}
 						FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
 					}
 				}
@@ -211,186 +212,195 @@ public class AwsUtil
 		}
 		boolean objectExists = false;
 		String staticBucket = FacilioProperties.getConfig("static.bucket");
-		if(staticBucket != null) {
+		if (staticBucket != null) {
 			AmazonS3 s3Client = getAmazonS3Client();
-			objectExists = s3Client.doesObjectExist(staticBucket, newVersion+"/js/app.js");
+			objectExists = s3Client.doesObjectExist(staticBucket, newVersion + "/js/app.js");
 		}
 		return objectExists;
-		
+
 	}
 
-	public static CreateKeysAndCertificateResult getCertificateResult()
-    {
-    	AWSIot awsIot = AWSIotClientBuilder.standard().withCredentials(InstanceProfileCredentialsProvider.createAsyncRefreshingProvider(false)).build();
-    
-    	CreateKeysAndCertificateRequest cr = new CreateKeysAndCertificateRequest().withSetAsActive(true);
-    	CreateKeysAndCertificateResult certResult = awsIot.createKeysAndCertificate(cr);
-    	
-    	AttachPrincipalPolicyRequest policyResult = new AttachPrincipalPolicyRequest().withPolicyName("EM-Policy").withPrincipal(certResult.getCertificateArn());
-    	awsIot.attachPrincipalPolicy(policyResult);
+	public static CreateKeysAndCertificateResult getCertificateResult() {
+		AWSIot awsIot = AWSIotClientBuilder.standard().withCredentials(InstanceProfileCredentialsProvider.createAsyncRefreshingProvider(false)).build();
+
+		CreateKeysAndCertificateRequest cr = new CreateKeysAndCertificateRequest().withSetAsActive(true);
+		CreateKeysAndCertificateResult certResult = awsIot.createKeysAndCertificate(cr);
+
+		AttachPrincipalPolicyRequest policyResult = new AttachPrincipalPolicyRequest().withPolicyName("EM-Policy").withPrincipal(certResult.getCertificateArn());
+		awsIot.attachPrincipalPolicy(policyResult);
 		return certResult;
-    }
-    
-    public static AWSIotMqttClient getAwsIotMqttClient(String clientId) throws AWSIotException
-    {
-    	if(AWS_IOT_MQTT_CLIENTS.containsKey(clientId))
-    	{
-    		return AWS_IOT_MQTT_CLIENTS.get(clientId);
-    	}
-    	AWSIotMqttClient awsIotClient = new AWSIotMqttClient(FacilioProperties.getConfig("iot.endpoint"), clientId, FacilioProperties.getConfig(AwsUtil.AWS_ACCESS_KEY_ID), FacilioProperties.getConfig(AwsUtil.AWS_SECRET_KEY_ID));
-    	awsIotClient.connect();
-    	AWS_IOT_MQTT_CLIENTS.put(clientId, awsIotClient);
+	}
+
+	public static AWSIotMqttClient getAwsIotMqttClient(String clientId) throws AWSIotException {
+		if (AWS_IOT_MQTT_CLIENTS.containsKey(clientId)) {
+			return AWS_IOT_MQTT_CLIENTS.get(clientId);
+		}
+		AWSIotMqttClient awsIotClient = new AWSIotMqttClient(FacilioProperties.getConfig("iot.endpoint"), clientId, FacilioProperties.getConfig(AwsUtil.AWS_ACCESS_KEY_ID), FacilioProperties.getConfig(AwsUtil.AWS_SECRET_KEY_ID));
+		awsIotClient.connect();
+		AWS_IOT_MQTT_CLIENTS.put(clientId, awsIotClient);
 		return awsIotClient;
-    }
-    
-    public static AmazonS3 getAmazonS3Client() {
-    	if (AWS_S3_CLIENT == null) {
-    		ClientConfiguration configuration = new ClientConfiguration().withMaxConnections(200).withConnectionTimeout(30000).withMaxErrorRetry(3);
-        	AWS_S3_CLIENT = AmazonS3ClientBuilder.standard().withRegion(getRegion()).withCredentials(getAWSCredentialsProvider()).withClientConfiguration(configuration).build();
-    	}
-    	return AWS_S3_CLIENT;
-    }
-    
-    public static AmazonRekognition getAmazonRekognitionClient() {
-    	if (AWS_REKOGNITION_CLIENT == null) {
-    		AWS_REKOGNITION_CLIENT = AmazonRekognitionClientBuilder.standard().withRegion(getRegion()).withCredentials(getAWSCredentialsProvider()).build();
-    	}
-    	return AWS_REKOGNITION_CLIENT;
-    }
-    
-    public static String getSignature(String payload, String xAmzDate, String path) throws Exception
-    {
+	}
+
+	public static AmazonS3 getAmazonS3Client() {
+		if (AWS_S3_CLIENT == null) {
+			ClientConfiguration configuration = new ClientConfiguration().withMaxConnections(200).withConnectionTimeout(30000).withMaxErrorRetry(3);
+			AWS_S3_CLIENT = AmazonS3ClientBuilder.standard().withRegion(getRegion()).withCredentials(getAWSCredentialsProvider()).withClientConfiguration(configuration).build();
+		}
+		return AWS_S3_CLIENT;
+	}
+
+	public static TextractClient getAmazonTextractClient() {
+		if (AWS_TEXTRACT_CLIENT == null) {
+			Region region = getRegionV2(getRegion());
+			software.amazon.awssdk.auth.credentials.InstanceProfileCredentialsProvider awsCred = getAwsTextractCreds();
+			AWS_TEXTRACT_CLIENT = TextractClient.builder().region(region).credentialsProvider(awsCred).build();
+		}
+		return AWS_TEXTRACT_CLIENT;
+	}
+
+	public static Region getRegionV2(String regionString){
+		Region region;
+		if(regionString == null){
+			region = Region.US_EAST_1;
+			return region;
+		}
+		region = Region.of(regionString);
+		return region;
+	}
+
+	public static software.amazon.awssdk.auth.credentials.InstanceProfileCredentialsProvider getAwsTextractCreds() {
+		software.amazon.awssdk.auth.credentials.InstanceProfileCredentialsProvider credentials = software.amazon.awssdk.auth.credentials.InstanceProfileCredentialsProvider.create();
+		return credentials;
+	}
+
+	public static AmazonRekognition getAmazonRekognitionClient() {
+		if (AWS_REKOGNITION_CLIENT == null) {
+			AWS_REKOGNITION_CLIENT = AmazonRekognitionClientBuilder.standard().withRegion(getRegion()).withCredentials(getAWSCredentialsProvider()).build();
+		}
+		return AWS_REKOGNITION_CLIENT;
+	}
+
+	public static String getSignature(String payload, String xAmzDate, String path) throws Exception {
 		String secretKey = FacilioProperties.getConfig("secretKeyId");
-        String dateStamp = new SimpleDateFormat("yyyyMMdd").format(new Date()); 	//"20170525";
-        String regionName = FacilioProperties.getConfig("region");		//"us-west-2";
+		String dateStamp = new SimpleDateFormat("yyyyMMdd").format(new Date());    //"20170525";
+		String regionName = FacilioProperties.getConfig("region");        //"us-west-2";
 
 		byte[] kSecret = ("AWS4" + secretKey).getBytes(StandardCharsets.UTF_8);
-        byte[] kDate = HmacSHA256(dateStamp, kSecret);
-        byte[] kRegion = HmacSHA256(regionName, kDate);
-        byte[] kService = HmacSHA256(AwsUtil.AWS_IOT_SERVICE_NAME, kRegion);
-        byte[] kSigning = HmacSHA256("aws4_request", kService);
-        
-        String stringToSign = getStringToSign(payload, xAmzDate, path);
-        return bytesToHex(HmacSHA256(stringToSign, kSigning));
-    }
-    
-    public static String getStringToSign(String payload, String xAmzDate, String path) throws NoSuchAlgorithmException
-    {
-    	String canonicalHeader = "content-type:application/json\nhost:" + FacilioProperties.getConfig("host") + "\nx-amz-date:"+xAmzDate+"\n";
-        String signedHeader = "content-type;host;x-amz-date";
-        String canonicalRequest = "POST" + "\n" + path + "\n" + "" + "\n" + canonicalHeader + "\n" + signedHeader + "\n" + hash256(payload).toLowerCase();
-        
-        String scope = new SimpleDateFormat("yyyyMMdd").format(new Date()) + "/" + FacilioProperties.getConfig("region") + "/"+ AwsUtil.AWS_IOT_SERVICE_NAME + "/aws4_request";
-        return "AWS4-HMAC-SHA256" + "\n" + xAmzDate + "\n" + scope + "\n" + hash256(canonicalRequest).toLowerCase();
-    }
-    
-    public static Map<String, String> getAuthHeaders(String signature, String xAmzDate)
-    {
-    	Map<String, String> headers = new HashMap<String, String>();
-        headers.put("Content-Type", "application/json");
-        headers.put("Host", FacilioProperties.getConfig("host"));
-        headers.put("X-Amz-Date", xAmzDate);
-        headers.put("Authorization", "AWS4-HMAC-SHA256 Credential=" + FacilioProperties.getConfig("accessKeyId") + "/" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + "/" + FacilioProperties.getConfig("region") + "/" + AwsUtil.AWS_IOT_SERVICE_NAME + "/aws4_request, SignedHeaders=content-type;host;x-amz-date, Signature=" + signature);
-        return headers;
-    }
-    
-    public static CloseableHttpClient getHttpClient(int timeOutInSeconds)
-    {
-    	if(timeOutInSeconds!=-1L)
-    	{
-    		RequestConfig config = RequestConfig.custom()
-    		    	  .setSocketTimeout(timeOutInSeconds * 1000).build();
-    		return HttpClientBuilder.create().setDefaultRequestConfig(config).build();
-    	}
-  
-   		 return HttpClients.createDefault();
-    }
-    
-    public static String doHttpPost(String url,Map<String,String> headers,Map<String,String> params,String bodyContent,int timeOutInSeconds) throws IOException
-    {
-    	StringBuilder result = new StringBuilder();
-    	
-    	CloseableHttpClient client = AwsUtil.getHttpClient(timeOutInSeconds);
-    	
-    	try
-    	{
+		byte[] kDate = HmacSHA256(dateStamp, kSecret);
+		byte[] kRegion = HmacSHA256(regionName, kDate);
+		byte[] kService = HmacSHA256(AwsUtil.AWS_IOT_SERVICE_NAME, kRegion);
+		byte[] kSigning = HmacSHA256("aws4_request", kService);
+
+		String stringToSign = getStringToSign(payload, xAmzDate, path);
+		return bytesToHex(HmacSHA256(stringToSign, kSigning));
+	}
+
+	public static String getStringToSign(String payload, String xAmzDate, String path) throws NoSuchAlgorithmException {
+		String canonicalHeader = "content-type:application/json\nhost:" + FacilioProperties.getConfig("host") + "\nx-amz-date:" + xAmzDate + "\n";
+		String signedHeader = "content-type;host;x-amz-date";
+		String canonicalRequest = "POST" + "\n" + path + "\n" + "" + "\n" + canonicalHeader + "\n" + signedHeader + "\n" + hash256(payload).toLowerCase();
+
+		String scope = new SimpleDateFormat("yyyyMMdd").format(new Date()) + "/" + FacilioProperties.getConfig("region") + "/" + AwsUtil.AWS_IOT_SERVICE_NAME + "/aws4_request";
+		return "AWS4-HMAC-SHA256" + "\n" + xAmzDate + "\n" + scope + "\n" + hash256(canonicalRequest).toLowerCase();
+	}
+
+	public static Map<String, String> getAuthHeaders(String signature, String xAmzDate) {
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put("Content-Type", "application/json");
+		headers.put("Host", FacilioProperties.getConfig("host"));
+		headers.put("X-Amz-Date", xAmzDate);
+		headers.put("Authorization", "AWS4-HMAC-SHA256 Credential=" + FacilioProperties.getConfig("accessKeyId") + "/" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + "/" + FacilioProperties.getConfig("region") + "/" + AwsUtil.AWS_IOT_SERVICE_NAME + "/aws4_request, SignedHeaders=content-type;host;x-amz-date, Signature=" + signature);
+		return headers;
+	}
+
+	public static CloseableHttpClient getHttpClient(int timeOutInSeconds) {
+		if (timeOutInSeconds != -1L) {
+			RequestConfig config = RequestConfig.custom()
+					.setSocketTimeout(timeOutInSeconds * 1000).build();
+			return HttpClientBuilder.create().setDefaultRequestConfig(config).build();
+		}
+
+		return HttpClients.createDefault();
+	}
+
+	public static String doHttpPost(String url, Map<String, String> headers, Map<String, String> params, String bodyContent, int timeOutInSeconds) throws IOException {
+		StringBuilder result = new StringBuilder();
+
+		CloseableHttpClient client = AwsUtil.getHttpClient(timeOutInSeconds);
+
+		try {
 			HttpPost post = new HttpPost(url);
-			if(headers != null)
-			{
+			if (headers != null) {
 				for (String key : headers.keySet()) {
 					String value = headers.get(key);
 					post.setHeader(key, value);
 				}
 			}
-			if(bodyContent != null)
-			{
-			    HttpEntity entity = new ByteArrayEntity(bodyContent.getBytes(StandardCharsets.UTF_8));
-			    post.setEntity(entity);
-			}		    
-		    if(params != null)
-		    {
-		    	List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
+			if (bodyContent != null) {
+				HttpEntity entity = new ByteArrayEntity(bodyContent.getBytes(StandardCharsets.UTF_8));
+				post.setEntity(entity);
+			}
+			if (params != null) {
+				List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
 				for (String key : params.keySet()) {
 					String value = params.get(key);
 					postParameters.add(new BasicNameValuePair(key, value));
 				}
-		        post.setEntity(new UrlEncodedFormEntity(postParameters));
-		    }
-			
-		    CloseableHttpResponse response = client.execute(post);
-		    int status = response.getStatusLine().getStatusCode();
-		    if(status != 200) {
+				post.setEntity(new UrlEncodedFormEntity(postParameters));
+			}
+
+			CloseableHttpResponse response = client.execute(post);
+			int status = response.getStatusLine().getStatusCode();
+			if (status != 200) {
 				LOGGER.info("\nSending 'POST' request to URL : " + url);
 				LOGGER.info("Post parameters : " + post.getEntity());
 				LOGGER.info("Response Code : " + status);
 			}
-	 
+
 			BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 			String line = "";
 			while ((line = rd.readLine()) != null) {
 				result.append(line);
 			}
-    	} catch (Exception e) {
+		} catch (Exception e) {
 			LOGGER.info("Executing doHttpPost ::::url:::" + url, e);
 		} finally {
 			client.close();
 		}
-    	return result.toString();
-    }
-    public static String doHttpPost(String url, Map<String, String> headers, Map<String, String> params, String bodyContent) throws IOException
-    {
-    	return AwsUtil.doHttpPost(url, headers, params, bodyContent,-1);
-    }
-    
-    private static byte[] HmacSHA256(String data, byte[] key) throws Exception
-	{
-        String algorithm = "HmacSHA256";
-        Mac mac = Mac.getInstance(algorithm);
-        mac.init(new SecretKeySpec(key, algorithm));
-        return mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
-    }
-	
-	private static String hash256(String data) throws NoSuchAlgorithmException
-	{
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
-        md.update(data.getBytes());
-        return bytesToHex(md.digest());
-    }
-	
-	private static String bytesToHex(byte[] bytes)
-	{
-        StringBuilder result = new StringBuilder();
-        for (byte byt : bytes) result.append(Integer.toString((byt & 0xff) + 0x100, 16).substring(1));
-        return result.toString();
-    }
+		return result.toString();
+	}
+
+	public static String doHttpPost(String url, Map<String, String> headers, Map<String, String> params, String bodyContent) throws IOException {
+		return AwsUtil.doHttpPost(url, headers, params, bodyContent, -1);
+	}
+
+	private static byte[] HmacSHA256(String data, byte[] key) throws Exception {
+		String algorithm = "HmacSHA256";
+		Mac mac = Mac.getInstance(algorithm);
+		mac.init(new SecretKeySpec(key, algorithm));
+		return mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
+	}
+
+	private static String hash256(String data) throws NoSuchAlgorithmException {
+		MessageDigest md = MessageDigest.getInstance("SHA-256");
+		md.update(data.getBytes());
+		return bytesToHex(md.digest());
+	}
+
+	private static String bytesToHex(byte[] bytes) {
+		StringBuilder result = new StringBuilder();
+		for (byte byt : bytes) result.append(Integer.toString((byt & 0xff) + 0x100, 16).substring(1));
+		return result.toString();
+	}
+
 	@Deprecated
-	public static void sendEmail(JSONObject mailJson) throws Exception  {
-		if(FacilioProperties.isDevelopment()) {
-			mailJson.put("subject", "Local - "+mailJson.get("subject"));
+	public static void sendEmail(JSONObject mailJson) throws Exception {
+		if (FacilioProperties.isDevelopment()) {
+			mailJson.put("subject", "Local - " + mailJson.get("subject"));
 			logEmail(mailJson);
 			return;
 		}
-		if(FacilioProperties.isSmtp()) {
+		if (FacilioProperties.isSmtp()) {
 			EmailUtil.sendEmail(mailJson);
 		} else {
 			sendEmailViaAws(mailJson);
@@ -398,118 +408,116 @@ public class AwsUtil
 		logEmail(mailJson);
 	}
 
-	private static void sendEmailViaAws(JSONObject mailJson) throws Exception  {
-		String toAddress = (String)mailJson.get("to");
-		String ccAddress = (String)mailJson.get("cc");
-		String bccAddress = (String)mailJson.get("bcc");
+	private static void sendEmailViaAws(JSONObject mailJson) throws Exception {
+		String toAddress = (String) mailJson.get("to");
+		String ccAddress = (String) mailJson.get("cc");
+		String bccAddress = (String) mailJson.get("bcc");
 		boolean sendEmail = true;
 		HashSet<String> to = new HashSet<>();
 		HashSet<String> cc = new HashSet<>();
 		HashSet<String> bcc = new HashSet<>();
-		if( !FacilioProperties.isProduction() ) {
-			if(toAddress != null) {
-				for(String address : toAddress.split(",")) {
-					if(address.contains("@facilio.com")) {
+		if (!FacilioProperties.isProduction()) {
+			if (toAddress != null) {
+				for (String address : toAddress.split(",")) {
+					if (address.contains("@facilio.com")) {
 						to.add(address);
 					}
 				}
 				if (ccAddress != null && StringUtils.isNotEmpty(ccAddress)) {
-					for(String address : ccAddress.split(",")) {
-						if(address.contains("@facilio.com")) {
+					for (String address : ccAddress.split(",")) {
+						if (address.contains("@facilio.com")) {
 							cc.add(address);
 						}
 					}
 				}
 				if (bccAddress != null && StringUtils.isNotEmpty(bccAddress)) {
-					for(String address : bccAddress.split(",")) {
-						if(address.contains("@facilio.com")) {
+					for (String address : bccAddress.split(",")) {
+						if (address.contains("@facilio.com")) {
 							bcc.add(address);
 						}
 					}
 				}
-				if(to.size() == 0 ) {
+				if (to.size() == 0) {
 					sendEmail = false;
 				}
 			} else {
 				sendEmail = false;
 			}
 		} else {
-			for(String address : toAddress.split(",")) {
-				if(address!= null && address.contains("@")) {
+			for (String address : toAddress.split(",")) {
+				if (address != null && address.contains("@")) {
 					to.add(address);
 				}
 			}
 		}
-		if(sendEmail && to.size() > 0) {
+		if (sendEmail && to.size() > 0) {
 			sendMailViaMessage(mailJson, to, cc, bcc);
 		}
 	}
-	
+
 	public static void sendVerificationMailForFromAddressConfig(String email) {
-		
+
 		try {
-			
+
 			VerifyEmailIdentityRequest verifyEmailAddressResult = new VerifyEmailIdentityRequest()
-																	.withEmailAddress(email)
-																	;
-			
+					.withEmailAddress(email);
+
 			AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
 					.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
-			
+
 			VerifyEmailIdentityResult result = client.verifyEmailIdentity(verifyEmailAddressResult);
-			
-			LOGGER.info("verification response -- "+result);
-			
+
+			LOGGER.info("verification response -- " + result);
+
 		} catch (Exception ex) {
 			LOGGER.info("Error During send Verification mail to " + email + " " + ex.getMessage());
 			throw ex;
 		}
 	}
-	
-	
+
+
 	public static Map<String, Boolean> getVerificationMailStatus(List<String> emails) {
-		
+
 		try {
-			
-			Map<String,Boolean> facilioResultMap = new HashMap<String, Boolean>();
-			
+
+			Map<String, Boolean> facilioResultMap = new HashMap<String, Boolean>();
+
 			GetIdentityVerificationAttributesRequest getIdentityVerificationAttributesRequest = new GetIdentityVerificationAttributesRequest()
-																									.withIdentities(emails);
-			
+					.withIdentities(emails);
+
 			AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
 					.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
-			
+
 			GetIdentityVerificationAttributesResult result = client.getIdentityVerificationAttributes(getIdentityVerificationAttributesRequest);
-			
+
 			Map<String, IdentityVerificationAttributes> resultmap = result.getVerificationAttributes();
-			
-			LOGGER.error("resultmap -- "+resultmap);
-			
-			for(String email : emails) {
-				
+
+			LOGGER.error("resultmap -- " + resultmap);
+
+			for (String email : emails) {
+
 				IdentityVerificationAttributes status = resultmap.get(email);
-				
-				if(status != null) {
-					
-					if(status.getVerificationStatus().equals("Success")) {
+
+				if (status != null) {
+
+					if (status.getVerificationStatus().equals("Success")) {
 						facilioResultMap.put(email, Boolean.TRUE);
-					}
-					else {
+					} else {
 						facilioResultMap.put(email, Boolean.FALSE);
 					}
 				}
-				
+
 			}
-			
+
 			return facilioResultMap;
-			
+
 		} catch (Exception ex) {
 			LOGGER.info("Error During Verification mail " + emails + " " + ex.getMessage());
 		}
 		return null;
 	}
 
-	public static void sendMailViaMessage(JSONObject mailJson,Set<String> to, Set<String> cc, Set<String> bcc) {
+	public static void sendMailViaMessage(JSONObject mailJson, Set<String> to, Set<String> cc, Set<String> bcc) {
 
 		Destination destination = new Destination().withToAddresses(to);
 		if (CollectionUtils.isNotEmpty(cc)) {
@@ -522,10 +530,9 @@ public class AwsUtil
 		Content bodyContent = new Content().withData((String) mailJson.get("message"));
 
 		Body body = null;
-		if(mailJson.get("mailType") != null && mailJson.get("mailType").equals("html")) {
+		if (mailJson.get("mailType") != null && mailJson.get("mailType").equals("html")) {
 			body = new Body().withHtml(bodyContent);
-		}
-		else {
+		} else {
 			body = new Body().withText(bodyContent);
 		}
 
@@ -538,7 +545,7 @@ public class AwsUtil
 					.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
 			client.sendEmail(request);
 			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 151) {
-				LOGGER.info("Email sent to "+to.toString()+"\n"+mailJson);
+				LOGGER.info("Email sent to " + to.toString() + "\n" + mailJson);
 			}
 		} catch (Exception ex) {
 			LOGGER.info("Error message: " + to.toString() + " " + ex.getMessage());
@@ -547,7 +554,7 @@ public class AwsUtil
 	}
 
 	// This method is not called during sending email
-	public static void logEmail (JSONObject mailJson) throws Exception {
+	public static void logEmail(JSONObject mailJson) throws Exception {
 
 		try {
 			String toAddress = (String) mailJson.get("to");
@@ -564,39 +571,39 @@ public class AwsUtil
 				}
 				CommonAPI.addNotificationLogger(NotificationType.EMAIL, toAddress, info);
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOGGER.error("Error occurred while logging email", e);
 		}
 	}
-	@Deprecated
-	public static void sendEmail(JSONObject mailJson, Map<String,String> files) throws Exception  {
 
-		FacilioFactory.getEmailClient().sendEmail(mailJson,files);
-		if(files == null || files.isEmpty()) {
+	@Deprecated
+	public static void sendEmail(JSONObject mailJson, Map<String, String> files) throws Exception {
+
+		FacilioFactory.getEmailClient().sendEmail(mailJson, files);
+		if (files == null || files.isEmpty()) {
 			sendEmail(mailJson);
 			return;
 		}
 		logEmail(mailJson);
-		if(FacilioProperties.isSmtp()) {
+		if (FacilioProperties.isSmtp()) {
 			EmailUtil.sendEmail(mailJson, files);
 		} else {
 			sendEmailViaAws(mailJson, files);
 		}
 	}
 
-	private static void sendEmailViaAws(JSONObject mailJson, Map<String,String> files) throws Exception  {
-		if(files == null || files.isEmpty()) {
+	private static void sendEmailViaAws(JSONObject mailJson, Map<String, String> files) throws Exception {
+		if (files == null || files.isEmpty()) {
 			sendEmail(mailJson);
 			return;
 		}
-		String toAddress = (String)mailJson.get("to");
+		String toAddress = (String) mailJson.get("to");
 		HashSet<String> to = new HashSet<>();
 		boolean sendEmail = true;
-		if( !FacilioProperties.isProduction() ) {
-			if(toAddress != null) {
-				for(String address : toAddress.split(",")) {
-					if(address.contains("@facilio.com")) {
+		if (!FacilioProperties.isProduction()) {
+			if (toAddress != null) {
+				for (String address : toAddress.split(",")) {
+					if (address.contains("@facilio.com")) {
 						to.add(address);
 					}
 				}
@@ -604,27 +611,27 @@ public class AwsUtil
 				sendEmail = false;
 			}
 		} else {
-			for(String address : toAddress.split(",")) {
-				if(address != null && address.contains("@")) {
+			for (String address : toAddress.split(",")) {
+				if (address != null && address.contains("@")) {
 					to.add(address);
 				}
 			}
 		}
-		if(sendEmail && to.size() > 0) {
+		if (sendEmail && to.size() > 0) {
 			try {
 				if (FacilioProperties.isDevelopment()) {
 //					mailJson.put("subject", "Local - " + mailJson.get("subject"));
 					return;
 				}
 				sendEmailViaMimeMessage(mailJson, files);
-				
+
 				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 151) {
-					LOGGER.info("Email sent to "+toAddress+"\n"+mailJson);
+					LOGGER.info("Email sent to " + toAddress + "\n" + mailJson);
 				}
-				
+
 			} catch (Exception ex) {
 				LOGGER.info("The email was not sent.");
-				LOGGER.info("Error message: " + toAddress+" " + ex.getMessage());
+				LOGGER.info("Error message: " + toAddress + " " + ex.getMessage());
 				throw ex;
 			}
 		}
@@ -638,14 +645,14 @@ public class AwsUtil
 			SendRawEmailRequest request = new SendRawEmailRequest(rawMessage);
 			AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
 					.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
-			
+
 			SendRawEmailResult response = client.sendRawEmail(request);
-			return response.getMessageId()+"@"+Regions.US_WEST_2.getName()+".amazonses.com";
+			return response.getMessageId() + "@" + Regions.US_WEST_2.getName() + ".amazonses.com";
 		}
 	}
 
 	private static AWSCredentials getBasicAwsCredentials() {
-		if(basicCredentials == null) {
+		if (basicCredentials == null) {
 			synchronized (LOCK) {
 				if (basicCredentials == null) {
 					basicCredentials = new BasicAWSCredentials(FacilioProperties.getConfig(AWS_ACCESS_KEY_ID), FacilioProperties.getConfig(AWS_SECRET_KEY_ID));
@@ -656,9 +663,9 @@ public class AwsUtil
 	}
 
 	public static AWSCredentialsProvider getAWSCredentialsProvider() {
-		if(credentialsProvider == null){
+		if (credentialsProvider == null) {
 			synchronized (LOCK) {
-				if(credentialsProvider == null){
+				if (credentialsProvider == null) {
 					credentialsProvider = InstanceProfileCredentialsProvider.createAsyncRefreshingProvider(false);
 				}
 			}
@@ -667,21 +674,21 @@ public class AwsUtil
 	}
 
 	public static String getRegion() {
-    	if(region == null) {
-    		synchronized (LOCK) {
-    			if(region == null) {
-    				region = FacilioProperties.getConfig("region");
+		if (region == null) {
+			synchronized (LOCK) {
+				if (region == null) {
+					region = FacilioProperties.getConfig("region");
 				}
 			}
 		}
-    	return region;
+		return region;
 	}
 
 	private static AWSIot getIotClient() {
-    	if(awsIot == null) {
-    		synchronized (LOCK) {
-    			if(awsIot == null) {
-    				awsIot = AWSIotClientBuilder.standard()
+		if (awsIot == null) {
+			synchronized (LOCK) {
+				if (awsIot == null) {
+					awsIot = AWSIotClientBuilder.standard()
 							.withCredentials(getAWSCredentialsProvider())
 							.withRegion(getRegion()).build();
 				}
@@ -690,14 +697,14 @@ public class AwsUtil
 		return awsIot;
 	}
 
-	static  String getIotArn(){
+	static String getIotArn() {
 		return "arn:aws:iot:" + getRegion() + ":" + getUserId();
 	}
 
 	public static AmazonSQS getSQSClient() {
-		if(awsSQS == null) {
+		if (awsSQS == null) {
 			synchronized (LOCK) {
-				if(awsSQS == null) {
+				if (awsSQS == null) {
 					awsSQS = AmazonSQSClientBuilder.standard()
 							.withCredentials(getAWSCredentialsProvider())
 							.withRegion(getRegion()).build();
@@ -726,7 +733,7 @@ public class AwsUtil
 			}
 		}
 		return user.getUserId();*/
-    	return FacilioProperties.getConfig("user.id");
+		return FacilioProperties.getConfig("user.id");
 	}
 	/*public static void addIotClient(String policyName, String clientId){
 		addAwsIotClient(policyName,clientId);
@@ -798,7 +805,7 @@ public class AwsUtil
 		if (kinesis == null) {
 			synchronized (LOCK) {
 				if (kinesis == null) {
-    				kinesis = AmazonKinesisClientBuilder.standard()
+					kinesis = AmazonKinesisClientBuilder.standard()
 							.withCredentials(getAWSCredentialsProvider())
 							.withRegion(getRegion())
 							.build();
@@ -880,30 +887,26 @@ public class AwsUtil
 
 	@Deprecated
 	public static void sendErrorMail(long orgid, long ml_id, String error) {
-		try
-		{
+		try {
 			JSONObject json = new JSONObject();
 			json.put("sender", EmailClient.getFromEmail("mlerror"));
 			json.put("to", "ai@facilio.com");
-			json.put("subject", orgid+" - "+ml_id);
-			
+			json.put("subject", orgid + " - " + ml_id);
+
 			StringBuilder body = new StringBuilder()
-									.append(error)
-									.append("\n\nInfo : \n--------\n")
-									.append("\n Org Time : ").append(DateTimeUtil.getDateTime())
-									.append("\n Indian Time : ").append(DateTimeUtil.getDateTime(ZoneId.of("Asia/Kolkata")))
-									.append("\n\nMsg : ")
-									.append(error)
-									.append("\n\nOrg Info : \n--------\n")
-									.append(orgid)
-									;
+					.append(error)
+					.append("\n\nInfo : \n--------\n")
+					.append("\n Org Time : ").append(DateTimeUtil.getDateTime())
+					.append("\n Indian Time : ").append(DateTimeUtil.getDateTime(ZoneId.of("Asia/Kolkata")))
+					.append("\n\nMsg : ")
+					.append(error)
+					.append("\n\nOrg Info : \n--------\n")
+					.append(orgid);
 			json.put("message", body.toString());
-			
+
 			sendEmail(json);
-		}
-		catch(Exception e)
-		{
-			LOGGER.error("Error while sending mail ",e);
+		} catch (Exception e) {
+			LOGGER.error("Error while sending mail ", e);
 		}
 	}
 
@@ -916,5 +919,43 @@ public class AwsUtil
 
 	public static void addClientToPolicy(String agentName, String policyName, String type) throws Exception {
 		AwsPolicyUtils.createOrUpdateIotPolicy(agentName, policyName, type, getIotClient());
+	}
+
+	public static List<Block> detectDocText(InputStream sourceStream) {
+		TextractClient textractClient=getAmazonTextractClient();
+		List<Block> result = new ArrayList<>();
+		String environment = FacilioProperties.getConfig("environment");
+		if ("development".equalsIgnoreCase(environment)) {
+			return null;
+		}
+		try {
+
+			SdkBytes sourceBytes = SdkBytes.fromInputStream(sourceStream);
+
+			// Get the input Document object as bytes
+			Document myDoc = Document.builder()
+					.bytes(sourceBytes)
+					.build();
+
+			DetectDocumentTextRequest detectDocumentTextRequest = DetectDocumentTextRequest.builder()
+					.document(myDoc)
+					.build();
+
+			// Invoke the Detect operation
+			DetectDocumentTextResponse textResponse = textractClient.detectDocumentText(detectDocumentTextRequest);
+
+			List<Block> docInfo = textResponse.blocks();
+
+			Iterator<Block> blockIterator = docInfo.iterator();
+
+			while(blockIterator.hasNext()) {
+				Block block = blockIterator.next();
+				result.add(block);
+			}
+
+		} catch (TextractException e) {
+			LOGGER.error(e);
+		}
+		return result;
 	}
 }
