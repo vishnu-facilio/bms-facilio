@@ -32,6 +32,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.bmsconsole.util.ItemsApi;
 
 public class AdjustmentItemTransactionCommand extends FacilioCommand {
 	@SuppressWarnings("unchecked")
@@ -52,13 +53,11 @@ public class AdjustmentItemTransactionCommand extends FacilioCommand {
 		List<ItemTransactionsContext> itemTransactiosnToBeAdded = new ArrayList<>();
 		long itemTypeId = -1;
 		ApprovalState approvalState = null;
-		List<PurchasedItemContext> newPurchasedItems = new ArrayList<>();
 		if (itemTransactions != null && !itemTransactions.isEmpty()) {
 			for (ItemTransactionsContext itemTransaction : itemTransactions) {
-				ItemContext item = getItem(itemTransaction.getItem().getId());
+				ItemContext item = ItemsApi.getItems(itemTransaction.getItem().getId());
 				itemTypeId = item.getItemType().getId();
-				ItemTypesContext itemType = getItemType(itemTypeId);
-				StoreRoomContext storeRoom = item.getStoreRoom();
+				ItemTypesContext itemType = ItemsApi.getItemTypes(itemTypeId);
 				long parentId = itemTransaction.getParentId();
 				if (itemTransaction.getTransactionStateEnum() == TransactionState.ADJUSTMENT_DECREASE
 						&& itemType.isRotating()) {
@@ -182,43 +181,6 @@ public class AdjustmentItemTransactionCommand extends FacilioCommand {
 		return woItem;
 	}
 	
-	
-	
-	public static ItemContext getItem(long id) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		List<LookupField> lookUpfields = new ArrayList<>();
-		lookUpfields.add((LookupField) fieldMap.get("storeRoom"));
-		SelectRecordsBuilder<ItemContext> selectBuilder = new SelectRecordsBuilder<ItemContext>().select(fields)
-				.table(module.getTableName()).moduleName(module.getName()).beanClass(ItemContext.class)
-				.andCustomWhere(module.getTableName() + ".ID = ?", id).fetchSupplements(lookUpfields);
-
-		List<ItemContext> inventories = selectBuilder.get();
-
-		if (inventories != null && !inventories.isEmpty()) {
-			return inventories.get(0);
-		}
-		return null;
-	}
-
-	public static ItemTypesContext getItemType(long id) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule itemTypesModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TYPES);
-		List<FacilioField> itemTypesFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM_TYPES);
-
-		SelectRecordsBuilder<ItemTypesContext> itemTypesselectBuilder = new SelectRecordsBuilder<ItemTypesContext>()
-				.select(itemTypesFields).table(itemTypesModule.getTableName()).moduleName(itemTypesModule.getName())
-				.beanClass(ItemTypesContext.class).andCondition(CriteriaAPI.getIdCondition(id, itemTypesModule));
-
-		List<ItemTypesContext> itemTypes = itemTypesselectBuilder.get();
-		if (itemTypes != null && !itemTypes.isEmpty()) {
-			return itemTypes.get(0);
-		}
-		return null;
-	}
-
 	private void updatePurchasedItem(AssetContext purchasedItem) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
