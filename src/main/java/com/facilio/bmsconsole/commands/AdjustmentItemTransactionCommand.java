@@ -230,24 +230,6 @@ public class AdjustmentItemTransactionCommand extends FacilioCommand {
 		System.err.println(Thread.currentThread().getName() + "Exiting updateReadings in  AddorUpdateCommand#######  ");
 
 	}
-
-	public static PurchasedItemContext getInventoryCost(long id) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_ITEM);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_ITEM);
-
-		SelectRecordsBuilder<PurchasedItemContext> selectBuilder = new SelectRecordsBuilder<PurchasedItemContext>()
-				.select(fields).table(module.getTableName()).moduleName(module.getName())
-				.beanClass(PurchasedItemContext.class).andCustomWhere(module.getTableName() + ".ITEM_ID = ?", id);
-
-		List<PurchasedItemContext> inventoryCosts = selectBuilder.get();
-
-		if (inventoryCosts != null && !inventoryCosts.isEmpty()) {
-			return inventoryCosts.get(0);
-		}
-		return null;
-	}
-	
 	private void addPurchasedItem(FacilioModule module, List<FacilioField> fields, PurchasedItemContext parts)
 			throws Exception {
 		InsertRecordBuilder<PurchasedItemContext> readingBuilder = new InsertRecordBuilder<PurchasedItemContext>()
@@ -269,22 +251,6 @@ public class AdjustmentItemTransactionCommand extends FacilioCommand {
 				.orderBy(fieldMap.get("costDate").getColumnName() + orderByType);
 
 		List<PurchasedItemContext> purchasedItemlist = selectBuilder.get();
-
-		if (purchasedItemlist != null && !purchasedItemlist.isEmpty()) {
-			return purchasedItemlist;
-		}
-		return null;
-	}
-
-	public static List<AssetContext> getPurchasedItemsListFromId(List<Long> id) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
-		SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>().select(fields)
-				.table(module.getTableName()).moduleName(module.getName()).beanClass(AssetContext.class)
-				.andCondition(CriteriaAPI.getIdCondition(id, module));
-
-		List<AssetContext> purchasedItemlist = selectBuilder.get();
 
 		if (purchasedItemlist != null && !purchasedItemlist.isEmpty()) {
 			return purchasedItemlist;
