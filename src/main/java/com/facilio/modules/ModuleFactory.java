@@ -4219,6 +4219,7 @@ public class ModuleFactory {
 		facilioModule.setTableName(AgentConstants.SYSTEM_POINT_MODULE_NAME);
 		facilioModule.setTableName("System_Point");
 		facilioModule.setDisplayName("System Point");
+		facilioModule.setExtendModule(getPointModule());
 		return facilioModule;
 	}
 

@@ -13,6 +13,7 @@ import com.facilio.bacnet.BACNetUtil;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.json.Json;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -124,7 +125,7 @@ public class PointsUtil
                     .collect(Collectors.toList());
 
 
-            List<Point> points = new ArrayList<>();
+            List<Map<String,Object>> points = new ArrayList<>();
             for (Object o : pointsJSON) {
                 JSONObject pointJSON = (JSONObject) o;
                 pointJSON.put(AgentConstants.DEVICE_NAME, device.getName());
@@ -151,7 +152,10 @@ public class PointsUtil
                                 point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
                             }
                         }
-                        points.add(point);
+                            Map<String, Object> pointMap =
+                           FieldUtil.getAsProperties(point.toJSON());
+
+                        points.add(pointMap);
 
                     }
                 }
@@ -222,7 +226,7 @@ public class PointsUtil
         return false;
     }
     //BULK INSERT
-    public static void addPoints(Controller controller,List<Point>points) throws Exception {
+    public static void addPoints(Controller controller,List<Map<String,Object>>points) throws Exception {
         FacilioControllerType controllerType = FacilioControllerType.valueOf(controller.getControllerType());
 
         List<FacilioField> fields = PointsAPI.getChildPointFields(controllerType);
