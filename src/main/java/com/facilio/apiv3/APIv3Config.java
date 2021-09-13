@@ -1391,6 +1391,7 @@ public class APIv3Config {
                 .create().beforeSave(new AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMF()).afterSave(new ConstructAddAssetActivityCommandV3(), FacilioChainFactory.getCategoryReadingsChain(), new InsertReadingDataMetaForNewResourceCommand(), new AddRotatingItemToolCommandV3(),new AddActivitiesCommand(FacilioConstants.ContextNames.ASSET_ACTIVITY), new PushDataToESCommand())
                 .update()
                 .beforeSave(new AssetCategoryAdditionInExtendModuleCommand(),new AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMFV3(),new ValidateQrValueCommandV3())
+                .afterSave( new ConstructUpdateCustomActivityCommandV3(), new AddActivitiesCommandV3())
                 .delete()
                 .summary().afterFetch(new LoadAssetSummaryCommandV3())
                 .list().afterFetch(new AssetListFilterByReadingsCommand())
