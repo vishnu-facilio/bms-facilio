@@ -6,10 +6,7 @@ import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.*;
-import com.facilio.bmsconsoleV3.commands.asset.AddRotatingItemToolCommandV3;
-import com.facilio.bmsconsoleV3.commands.asset.AssetListFilterByReadingsCommand;
-import com.facilio.bmsconsoleV3.commands.asset.ConstructAddAssetActivityCommandV3;
-import com.facilio.bmsconsoleV3.commands.asset.LoadAssetSummaryCommandV3;
+import com.facilio.bmsconsoleV3.commands.asset.*;
 import com.facilio.bmsconsoleV3.commands.budget.*;
 import com.facilio.bmsconsoleV3.commands.building.AddOrUpdateBuildingLocation;
 import com.facilio.bmsconsoleV3.commands.building.BuildingFillLookupFieldsCommand;
@@ -1393,6 +1390,7 @@ public class APIv3Config {
         return () -> new V3Config(V3AssetContext.class, new ModuleCustomFieldCount30())
                 .create().beforeSave(new AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMF()).afterSave(new ConstructAddAssetActivityCommandV3(), FacilioChainFactory.getCategoryReadingsChain(), new InsertReadingDataMetaForNewResourceCommand(), new AddRotatingItemToolCommandV3(),new AddActivitiesCommand(FacilioConstants.ContextNames.ASSET_ACTIVITY), new PushDataToESCommand())
                 .update()
+                .beforeSave(new AssetCategoryAdditionInExtendModuleCommand(),new AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMFV3(),new ValidateQrValueCommandV3())
                 .delete()
                 .summary().afterFetch(new LoadAssetSummaryCommandV3())
                 .list().afterFetch(new AssetListFilterByReadingsCommand())

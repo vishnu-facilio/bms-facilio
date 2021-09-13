@@ -25,14 +25,9 @@
 			<result name="usernotinapp" type="httpheader">
 				<param name="status">409</param>
 			</result>
-		
-			<result name="error" type="json">
-                <param name="ignoreHierarchy">false</param>
-                <param name="includeProperties">responseCode, message, stackTrace</param>
-            </result>
             <result name="exception" type="chain">
                 <param name="actionName">handleException</param>
-                <param name="namespace">/v1/exception</param>
+                <param name="namespace">/v3/exception</param>
             </result>
             <result name="cachedResponse" type="chain">
                 <param name="actionName">cachedResponse</param>
@@ -43,7 +38,7 @@
                 <param name="ignoreHierarchy">false</param>
                 <param name="includeProperties">^code.*,^data.*,^meta.*,message</param>
             </result>
-            <result name="failure" type="json">
+            <result name="error" type="json">
                 <param name="excludeNullProperties">true</param>
                 <param name="ignoreHierarchy">false</param>
                 <param name="includeProperties">^message.*,^code.*,^data.*,^stackTrace.*</param>
