@@ -1,6 +1,7 @@
 package com.facilio.agent.module;
 
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.ModuleFactory;
 
 public class AgentModuleFactory {
 	
@@ -26,6 +27,7 @@ public class AgentModuleFactory {
         lonworksModule.setName("lonworksPoint");
         lonworksModule.setDisplayName("LonWorks Point");
         lonworksModule.setTableName("LonWorks_Point");
+		lonworksModule.setExtendModule(ModuleFactory.getPointModule());
         return lonworksModule;
     }
 
@@ -34,6 +36,7 @@ public class AgentModuleFactory {
         lonworksModule.setName("rdmPoint");
         lonworksModule.setDisplayName("RDM Point");
         lonworksModule.setTableName("RDM_Point");
+		lonworksModule.setExtendModule(ModuleFactory.getPointModule());
         return lonworksModule;
 	}
 }
