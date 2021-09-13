@@ -7,34 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsoleV3.context.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.BaseAlarmContext;
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.ClientContext;
-import com.facilio.bmsconsole.context.ConnectedAppWidgetContext;
-import com.facilio.bmsconsole.context.FloorContext;
-import com.facilio.bmsconsole.context.FormulaFieldContext;
-import com.facilio.bmsconsole.context.HazardContext;
-import com.facilio.bmsconsole.context.InsuranceContext;
-import com.facilio.bmsconsole.context.InventoryRequestContext;
-import com.facilio.bmsconsole.context.MultiVariateAnomalyAlarm;
-import com.facilio.bmsconsole.context.OperationAlarmContext;
-import com.facilio.bmsconsole.context.PrecautionContext;
-import com.facilio.bmsconsole.context.ReadingAlarm;
-import com.facilio.bmsconsole.context.SafetyPlanContext;
-import com.facilio.bmsconsole.context.ServiceRequestContext;
-import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
-import com.facilio.bmsconsole.context.VendorContext;
-import com.facilio.bmsconsole.context.VisitorLoggingContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.context.WorkPermitContext;
 import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormSection;
@@ -49,13 +28,6 @@ import com.facilio.bmsconsole.templates.DefaultTemplate;
 import com.facilio.bmsconsole.util.ConnectedAppAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
-import com.facilio.bmsconsoleV3.context.InviteVisitorContextV3;
-import com.facilio.bmsconsoleV3.context.V3DeliveriesContext;
-import com.facilio.bmsconsoleV3.context.V3DepartmentContext;
-import com.facilio.bmsconsoleV3.context.V3LockersContext;
-import com.facilio.bmsconsoleV3.context.V3MovesContext;
-import com.facilio.bmsconsoleV3.context.V3ParkingStallContext;
-import com.facilio.bmsconsoleV3.context.VisitorLogContextV3;
 import com.facilio.bmsconsoleV3.context.communityfeatures.DealsAndOffersContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.NeighbourhoodContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.NewsAndInformationContext;
@@ -85,6 +57,7 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.mv.context.MVProjectWrapper;
+import com.facilio.bmsconsoleV3.context.V3TermsAndConditionContext;
 
 public class PageFactory {
 
@@ -201,6 +174,8 @@ public class PageFactory {
 				return DepartmentPageFactory.getDepartmentPage((V3DepartmentContext) record, module);
 			case ContextNames.INVENTORY_REQUEST:
 				return InventoryRequestPageFactory.getInventoryRequestPage((InventoryRequestContext) record, module);
+			case ContextNames.TERMS_AND_CONDITIONS:
+				return TermsAndConditionsPageFactory.getTermsAndConditionsPage((V3TermsAndConditionContext) record, module);
 		}
 		if (module.getExtendModule() == null) {	// temp
 			// etisalat changes will be changed to standard method
