@@ -49,16 +49,13 @@ public class AdjustmentItemTransactionCommand extends FacilioCommand {
 		List<ItemTransactionsContext> itemTransactions = (List<ItemTransactionsContext>) context
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
 		
-		List<ItemTransactionsContext> itemTransactionsList = new ArrayList<>();
 		List<ItemTransactionsContext> itemTransactiosnToBeAdded = new ArrayList<>();
 		long itemTypeId = -1;
-		ApprovalState approvalState = null;
 		if (itemTransactions != null && !itemTransactions.isEmpty()) {
 			for (ItemTransactionsContext itemTransaction : itemTransactions) {
 				ItemContext item = ItemsApi.getItems(itemTransaction.getItem().getId());
 				itemTypeId = item.getItemType().getId();
 				ItemTypesContext itemType = ItemsApi.getItemTypes(itemTypeId);
-				long parentId = itemTransaction.getParentId();
 				if (itemTransaction.getTransactionStateEnum() == TransactionState.ADJUSTMENT_DECREASE
 						&& itemType.isRotating()) {
 					throw new IllegalArgumentException("Not Applicable for Rotating Items!");
@@ -92,9 +89,8 @@ public class AdjustmentItemTransactionCommand extends FacilioCommand {
 							double requiredQuantity = -(itemTransaction.getQuantity());
 							if (requiredQuantity + pItem.getCurrentQuantity() >= 0) {
 								ItemTransactionsContext woItem = new ItemTransactionsContext();
-								woItem = setWorkorderItemObj(pItem, itemTransaction.getQuantity(), item, parentId,
-										itemTransaction, itemType, approvalState, context);
-								itemTransactionsList.add(woItem);
+								woItem = setWorkorderItemObj(pItem, itemTransaction.getQuantity(), item,
+										itemTransaction, itemType);
 								itemTransactiosnToBeAdded.add(woItem);
 							} else {
 								for (PurchasedItemContext purchaseitem : purchasedItem) {
@@ -106,9 +102,8 @@ public class AdjustmentItemTransactionCommand extends FacilioCommand {
 										quantityUsedForTheCost = -(purchaseitem.getCurrentQuantity());
 									}
 									woItem = setWorkorderItemObj(purchaseitem, -(quantityUsedForTheCost), item,
-											parentId, itemTransaction, itemType, approvalState, context);
+											itemTransaction, itemType);
 									requiredQuantity -= quantityUsedForTheCost;
-									itemTransactionsList.add(woItem);
 									itemTransactiosnToBeAdded.add(woItem);
 									if (requiredQuantity == 0) {
 										break;
@@ -134,9 +129,8 @@ public class AdjustmentItemTransactionCommand extends FacilioCommand {
 						item.setLastPurchasedPrice(pi.getUnitcost());
 						addPurchasedItem(purchasedItemModule,purchasedItemFields,pi);
 						ItemTransactionsContext woItem = new ItemTransactionsContext();
-						woItem = setWorkorderItemObj(itemTransaction.getPurchasedItem(), itemTransaction.getQuantity(), item, parentId,
-								itemTransaction, itemType, approvalState, context);
-						itemTransactionsList.add(woItem);
+						woItem = setWorkorderItemObj(itemTransaction.getPurchasedItem(), itemTransaction.getQuantity(), item,
+								itemTransaction, itemType);
 						itemTransactiosnToBeAdded.add(woItem);
 					}
 				}
@@ -150,7 +144,7 @@ public class AdjustmentItemTransactionCommand extends FacilioCommand {
 			context.put(FacilioConstants.ContextNames.ITEM_ID, itemTransactions.get(0).getItem().getId());
 			context.put(FacilioConstants.ContextNames.ITEM_IDS,
 					Collections.singletonList(itemTransactions.get(0).getItem().getId()));
-			context.put(FacilioConstants.ContextNames.RECORD_LIST, itemTransactionsList);
+			context.put(FacilioConstants.ContextNames.RECORD_LIST, itemTransactiosnToBeAdded);
 			context.put(FacilioConstants.ContextNames.ITEM_TYPES_ID, itemTypeId);
 			context.put(FacilioConstants.ContextNames.ITEM_TYPES_IDS, Collections.singletonList(itemTypeId));
 			context.put(FacilioConstants.ContextNames.TRANSACTION_STATE,
@@ -160,8 +154,7 @@ public class AdjustmentItemTransactionCommand extends FacilioCommand {
 	}
 	
 	private ItemTransactionsContext setWorkorderItemObj(PurchasedItemContext purchasedItem, double quantity,
-			ItemContext item, long parentId, ItemTransactionsContext itemTransactions, ItemTypesContext itemTypes,
-			ApprovalState approvalState, Context context) throws Exception {
+			ItemContext item, ItemTransactionsContext itemTransactions, ItemTypesContext itemTypes){
 		ItemTransactionsContext woItem = new ItemTransactionsContext();
 		woItem.setTransactionState(itemTransactions.getTransactionStateEnum());
 		woItem.setIsReturnable(false);
@@ -181,17 +174,6 @@ public class AdjustmentItemTransactionCommand extends FacilioCommand {
 		return woItem;
 	}
 	
-	private void updatePurchasedItem(AssetContext purchasedItem) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
-		UpdateRecordBuilder<AssetContext> updateBuilder = new UpdateRecordBuilder<AssetContext>().module(module)
-				.fields(fields).andCondition(CriteriaAPI.getIdCondition(purchasedItem.getId(), module));
-		updateBuilder.update(purchasedItem);
-
-		System.err.println(Thread.currentThread().getName() + "Exiting updateReadings in  AddorUpdateCommand#######  ");
-
-	}
 	private void addPurchasedItem(FacilioModule module, List<FacilioField> fields, PurchasedItemContext parts)
 			throws Exception {
 		InsertRecordBuilder<PurchasedItemContext> readingBuilder = new InsertRecordBuilder<PurchasedItemContext>()
