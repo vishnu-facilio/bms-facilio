@@ -120,150 +120,153 @@ public class AssetPageFactory extends PageFactory {
 		Section tab2Sec3 = page.new Section("unplannedWorkorder");
 		tab2.addSection(tab2Sec3);
 		addUnPlannedWoWidget(tab2Sec3);
-		
-		Tab tab3 = page.new Tab("readings");
-		page.addTab(tab3);
-		
-		Section tab3Sec1 = page.new Section();
-		tab3.addSection(tab3Sec1);
-		
-		addReadingWidget(tab3Sec1);
-		
-		if (AccountUtil.isFeatureEnabled(FeatureLicense.CONTROL_ACTIONS)) {
-			Section tab3Sec2 = page.new Section("commands");
-			addCommandWidget(tab3Sec2, asset.getId());
-			
-			if (CollectionUtils.isNotEmpty(tab3Sec2.getWidgets())) {
-				tab3.addSection(tab3Sec2);
+
+		if(AccountUtil.getCurrentApp() != null && AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)){
+			Tab tab3 = page.new Tab("readings");
+			page.addTab(tab3);
+
+			Section tab3Sec1 = page.new Section();
+			tab3.addSection(tab3Sec1);
+
+			addReadingWidget(tab3Sec1);
+
+			if (AccountUtil.isFeatureEnabled(FeatureLicense.CONTROL_ACTIONS)) {
+				Section tab3Sec2 = page.new Section("commands");
+				addCommandWidget(tab3Sec2, asset.getId());
+
+				if (CollectionUtils.isNotEmpty(tab3Sec2.getWidgets())) {
+					tab3.addSection(tab3Sec2);
+				}
 			}
-		}
-		
-		Tab tab4 = page.new Tab("performance");
-		page.addTab(tab4);
-		
-		Section tab4Sec1 = page.new Section();
-		tab4.addSection(tab4Sec1);
-		
-		addAssetLifeWidget(tab4Sec1);
-		addAlarmInsightsWidget(tab4Sec1);
-		addLastDownTimeWidget(tab4Sec1);
-		addOverallDowntimeWidget(tab4Sec1);
-		
-		
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.ASSET_BREAKDOWN));
-		
-		Criteria breakdownCriteria = new Criteria();
-		breakdownCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("asset"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
-		
-		addFailureRateWidget(tab4Sec1, breakdownCriteria);
-		addAvgTtrWidget(tab4Sec1, breakdownCriteria);
-		
-		
-		// ----- Financial Tab Start --------
-		Tab tab7 = page.new Tab("financial");
-		page.addTab(tab7);
-		Section tab7Sec1 = page.new Section();
-		tab7.addSection(tab7Sec1);
 
-		addAssetCostDetailsWidget(tab7Sec1);
+			Tab tab4 = page.new Tab("performance");
+			page.addTab(tab4);
 
-		Map<String, FacilioField> woFieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.WORK_ORDER));
-		Map<String, FacilioField> woCostFieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.WORKORDER_COST));
+			Section tab4Sec1 = page.new Section();
+			tab4.addSection(tab4Sec1);
 
-		Criteria criteria = new Criteria();
-		criteria.addAndCondition(CriteriaAPI.getCondition(woCostFieldMap.get("parentId"), String.valueOf(""), NumberOperators.EQUALS));
-		addCostBreakupWidget(tab7Sec1,criteria);
+			addAssetLifeWidget(tab4Sec1);
+			addAlarmInsightsWidget(tab4Sec1);
+			addLastDownTimeWidget(tab4Sec1);
+			addOverallDowntimeWidget(tab4Sec1);
 
-		criteria = new Criteria();
-		criteria.addAndCondition(CriteriaAPI.getCondition(woFieldMap.get("resource"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
-		addMaintenanceCostTrendWidget(tab7Sec1, criteria);
 
-		if (AssetDepreciationAPI.getDepreciationOfAsset(asset.getId()) != null) {
-			addDepreciationScheduleWidget(tab7Sec1);
-		}
-		addDepreciationCostTrendWidget(tab7Sec1, asset, modBean);
-		
-		// ----- Financial Tab End --------
-		
-		
-		// if (AccountUtil.isFeatureEnabled(FeatureLicense.GRAPHICS)) {
-		if ((isDemoOrg() && asset.isConnected() ) 
-				|| (AccountUtil.getCurrentOrg().getOrgId() == 75 && module.getName().equals("fahu"))
-				|| (AccountUtil.getCurrentOrg().getOrgId() == 253)
-				|| (AccountUtil.getCurrentOrg().getOrgId() == 323)
-				|| (AccountUtil.getCurrentOrg().getOrgId() == 297l && (module.getName().equals("ahu") || module.getName().equals("vav")))
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.ASSET_BREAKDOWN));
+
+			Criteria breakdownCriteria = new Criteria();
+			breakdownCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("asset"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
+
+			addFailureRateWidget(tab4Sec1, breakdownCriteria);
+			addAvgTtrWidget(tab4Sec1, breakdownCriteria);
+
+
+			// ----- Financial Tab Start --------
+			Tab tab7 = page.new Tab("financial");
+			page.addTab(tab7);
+			Section tab7Sec1 = page.new Section();
+			tab7.addSection(tab7Sec1);
+
+			addAssetCostDetailsWidget(tab7Sec1);
+
+			Map<String, FacilioField> woFieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.WORK_ORDER));
+			Map<String, FacilioField> woCostFieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.WORKORDER_COST));
+
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(CriteriaAPI.getCondition(woCostFieldMap.get("parentId"), String.valueOf(""), NumberOperators.EQUALS));
+			addCostBreakupWidget(tab7Sec1,criteria);
+
+			criteria = new Criteria();
+			criteria.addAndCondition(CriteriaAPI.getCondition(woFieldMap.get("resource"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
+			addMaintenanceCostTrendWidget(tab7Sec1, criteria);
+
+			if (AssetDepreciationAPI.getDepreciationOfAsset(asset.getId()) != null) {
+				addDepreciationScheduleWidget(tab7Sec1);
+			}
+			addDepreciationCostTrendWidget(tab7Sec1, asset, modBean);
+
+			// ----- Financial Tab End --------
+
+
+			// if (AccountUtil.isFeatureEnabled(FeatureLicense.GRAPHICS)) {
+			if ((isDemoOrg() && asset.isConnected() )
+					|| (AccountUtil.getCurrentOrg().getOrgId() == 75 && module.getName().equals("fahu"))
+					|| (AccountUtil.getCurrentOrg().getOrgId() == 253)
+					|| (AccountUtil.getCurrentOrg().getOrgId() == 323)
+					|| (AccountUtil.getCurrentOrg().getOrgId() == 297l && (module.getName().equals("ahu") || module.getName().equals("vav")))
 			) {
-			
-			Tab tab6 = page.new Tab("graphics", "graphics");
-			page.addTab(tab6);
-			
-			Section tab6Sec1 = page.new Section();
-			tab6.addSection(tab6Sec1);
-			
-			addGraphicsWidget(tab6Sec1);
-		}
-		
-		if(asset.getGeoLocationEnabled() != null && asset.getGeoLocationEnabled() && !asset.isConnected() && AccountUtil.getCurrentOrg().getOrgId() == 155) {
-			Tab tab8 = page.new Tab("assetMovement");
-			page.addTab(tab8);
-			Section tab8Sec1 = page.new Section();
-			tab8.addSection(tab8Sec1);
-			addAssetMovementsWidget(tab8Sec1);
-		}
-		
-		
-		if (AccountUtil.isFeatureEnabled(FeatureLicense.CONTRACT) && AccountUtil.getCurrentOrg().getOrgId() == 155) {
-			Tab tab5 = page.new Tab("contracts");
-			page.addTab(tab5);
-			
-			Section tab5Sec1 = page.new Section();
-			tab5.addSection(tab5Sec1);
-			
-			addContractWidget(tab5Sec1);
-		}
 
-		if (AccountUtil.isFeatureEnabled(FeatureLicense.INVENTORY)) {
-			if (asset.getRotatingItem() != null && asset.getRotatingItem().getId() > 0) {
+				Tab tab6 = page.new Tab("graphics", "graphics");
+				page.addTab(tab6);
 
-				Tab tab9 = page.new Tab("inventory usage");
-				page.addTab(tab9);
+				Section tab6Sec1 = page.new Section();
+				tab6.addSection(tab6Sec1);
+
+				addGraphicsWidget(tab6Sec1);
+			}
+
+			if(asset.getGeoLocationEnabled() != null && asset.getGeoLocationEnabled() && !asset.isConnected() && AccountUtil.getCurrentOrg().getOrgId() == 155) {
+				Tab tab8 = page.new Tab("assetMovement");
+				page.addTab(tab8);
+				Section tab8Sec1 = page.new Section();
+				tab8.addSection(tab8Sec1);
+				addAssetMovementsWidget(tab8Sec1);
+			}
+
+
+			if (AccountUtil.isFeatureEnabled(FeatureLicense.CONTRACT) && AccountUtil.getCurrentOrg().getOrgId() == 155) {
+				Tab tab5 = page.new Tab("contracts");
+				page.addTab(tab5);
 
 				Section tab5Sec1 = page.new Section();
-				tab9.addSection(tab5Sec1);
-				addInventoryTransactionsWidget(tab5Sec1, "itemTransactions");
+				tab5.addSection(tab5Sec1);
+
+				addContractWidget(tab5Sec1);
 			}
-			else if (asset.getRotatingTool() != null && asset.getRotatingTool().getId() > 0) {
 
-				Tab tab9 = page.new Tab("inventory usage");
-				page.addTab(tab9);
+			if (AccountUtil.isFeatureEnabled(FeatureLicense.INVENTORY)) {
+				if (asset.getRotatingItem() != null && asset.getRotatingItem().getId() > 0) {
 
+					Tab tab9 = page.new Tab("inventory usage");
+					page.addTab(tab9);
+
+					Section tab5Sec1 = page.new Section();
+					tab9.addSection(tab5Sec1);
+					addInventoryTransactionsWidget(tab5Sec1, "itemTransactions");
+				}
+				else if (asset.getRotatingTool() != null && asset.getRotatingTool().getId() > 0) {
+
+					Tab tab9 = page.new Tab("inventory usage");
+					page.addTab(tab9);
+
+					Section tab5Sec1 = page.new Section();
+					tab9.addSection(tab5Sec1);
+					addInventoryTransactionsWidget(tab5Sec1, "toolTransactions");
+				}
+			}
+
+			FacilioModule assetModule = modBean.getModule(ContextNames.ASSET);
+			if (AccountUtil.isFeatureEnabled(FeatureLicense.SAFETY_PLAN)) {
+				Tab tab10 = page.new Tab("safety");
+				page.addTab(tab10);
 				Section tab5Sec1 = page.new Section();
-				tab9.addSection(tab5Sec1);
-				addInventoryTransactionsWidget(tab5Sec1, "toolTransactions");
+				tab10.addSection(tab5Sec1);
+				addRelatedListWidget(tab5Sec1, "assetHazard", assetModule.getModuleId(), "Hazards");
+				addSafetyPlanHazardsWidget(tab5Sec1);
 			}
-		}
-		
-		FacilioModule assetModule = modBean.getModule(ContextNames.ASSET);
-		if (AccountUtil.isFeatureEnabled(FeatureLicense.SAFETY_PLAN)) {
-			Tab tab10 = page.new Tab("safety");
-			page.addTab(tab10);
-			Section tab5Sec1 = page.new Section();
-			tab10.addSection(tab5Sec1);
-			addRelatedListWidget(tab5Sec1, "assetHazard", assetModule.getModuleId(), "Hazards");
-			addSafetyPlanHazardsWidget(tab5Sec1);
+
+
+
+			Tab tab11 = page.new Tab("related records");
+			Section tab11Sec1 = page.new Section();
+			tab11.addSection(tab11Sec1);
+
+			addRelatedListWidgets(tab11Sec1, assetModule.getModuleId());
+			if (tab11Sec1.getWidgets() != null && !tab11Sec1.getWidgets().isEmpty()) {
+				page.addTab(tab11);
+			}
+
 		}
 
-				
-				
-		Tab tab11 = page.new Tab("related records");
-		Section tab11Sec1 = page.new Section();
-		tab11.addSection(tab11Sec1);
-			
-		addRelatedListWidgets(tab11Sec1, assetModule.getModuleId());
-		if (tab11Sec1.getWidgets() != null && !tab11Sec1.getWidgets().isEmpty()) {
-			page.addTab(tab11);
-		}
-		
 		
 		Tab tab9 = page.new Tab("history", "history");
 		page.addTab(tab9);
