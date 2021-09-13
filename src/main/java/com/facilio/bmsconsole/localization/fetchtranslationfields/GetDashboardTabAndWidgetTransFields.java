@@ -20,12 +20,14 @@ import java.util.Properties;
 
 public class GetDashboardTabAndWidgetTransFields implements TranslationTypeInterface {
     @Override
-    public JSONArray constructTranslationObject ( @NonNull WebTabContext context,Map<String,String> filters,Properties properties ) throws Exception {
+    public JSONArray constructTranslationObject ( @NonNull WebTabContext context,Map<String, String> filters,Properties properties ) throws Exception {
 
-        Long dashboardTabId = Long.parseLong(filters.get("dashboardTabId"));
-        Long dashboardId = Long.parseLong(filters.get("dashboardId"));
+        FacilioUtil.throwIllegalArgumentException(!WebTabContext.Type.DASHBOARD.equals(WebTabContext.Type.valueOf(context.getType())),"Invalid webTab Type for fetching Dashboard Fields");
 
-        if(dashboardId != null){
+        Long dashboardId = filters.get("dashboardId") == null ? null :Long.parseLong(filters.get("dashboardId"));
+        Long dashboardTabId = filters.get("dashboardTabId") == null ? null :Long.parseLong(filters.get("dashboardTabId"));
+
+        if(dashboardId != null) {
             return GetDashboardTranslationFields.constructTranslationObject(dashboardId,DashboardUtil.getDashboardTabs(dashboardId),properties);
         }
         FacilioUtil.throwIllegalArgumentException(dashboardTabId == null,"Invalid Dashboard tab Id");
