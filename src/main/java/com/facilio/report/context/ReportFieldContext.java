@@ -84,6 +84,14 @@ public class ReportFieldContext {
 		this.lookupFieldId = lookupFieldId;
 	}
 	
+	private long subModuleFieldId = -1;
+	public long getSubModuleFieldId() {
+		return subModuleFieldId;
+	}
+	public void setSubModuleFieldId(long subModuleFieldId) {
+		this.subModuleFieldId = subModuleFieldId;
+	}
+	
 	private String fieldName;
 	public String getFieldName() {
 		return fieldName;

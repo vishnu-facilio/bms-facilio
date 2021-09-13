@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 
 public class ReportPivotParamsContext {
@@ -55,5 +56,52 @@ public class ReportPivotParamsContext {
 	}
 	public void setTemplateJSON(JSONObject templateJSON) {
 		this.templateJSON = templateJSON;
+	}
+	private long dateFieldId = -1;
+	public long getDateFieldId() {
+		return dateFieldId;
+	}
+	public void setDateFieldId(long dateFieldId) {
+		this.dateFieldId = dateFieldId;
+	}
+	
+	Integer dateOperator;
+	public Integer getDateOperator() {
+		return dateOperator;
+	}
+	public void setDateOperator(Integer dateOperator) {
+		this.dateOperator = dateOperator;
+	}
+	
+	String dateValue;
+	public String getDateValue() {
+		return dateValue;
+	}
+	public void setDateValue(String dateValue) {
+		this.dateValue = dateValue;
+	}
+	
+	private Boolean showTimelineFilter;
+	public Boolean getShowTimelineFilter() {
+		return showTimelineFilter;
+	}
+	public void setShowTimelineFilter(boolean showTimelineFilter) {
+		this.showTimelineFilter = showTimelineFilter;
+	}
+	
+	private long startTime = -1;
+	public long getStartTime() {
+		return startTime;
+	}
+	public void setStartTime(long startTime) {
+		this.startTime = startTime;
+	}
+	
+	private long endTime = -1;
+	public long getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(long endTime) {
+		this.endTime = endTime;
 	}
 }

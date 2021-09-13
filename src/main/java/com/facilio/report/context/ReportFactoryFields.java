@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.aws.util.FacilioProperties;
@@ -774,13 +775,19 @@ public class ReportFactoryFields {
 				.on("Fields.FIELDID = "+ ModuleFactory.getLookupFieldsModule().getTableName() +".FIELDID")
 				.andCustomWhere(ModuleFactory.getLookupFieldsModule().getTableName()+".LOOKUP_MODULE_ID IN ("+StringUtils.join(selectModules, ',')+")");
 		List<Map<String, Object>> props = builder.get();
+		for (Map<String, Object> prop: props) {
+			if (prop.containsKey("createdBy")) {
+				IAMUser user = new IAMUser();
+				user.setId((long) prop.get("createdBy"));
+				prop.put("createdBy", user);
+			}
+		}
 		Set<FacilioModule> modules = FieldUtil.getAsBeanListFromMapList(props, FacilioModule.class)
-				.stream().filter(submodule -> !submodule.isCustom()).collect(Collectors.toSet());
+				.stream().collect(Collectors.toSet());
 		if(moduleName.equalsIgnoreCase("asset")) {
 			FacilioModule womodule = modBean.getModule("workorder");
 			modules.add(womodule);
 		}
-//		modules.add(module);
 		return modules;
 	}
 	public static Set<FacilioField> getMetricsList(String moduleName) throws Exception {

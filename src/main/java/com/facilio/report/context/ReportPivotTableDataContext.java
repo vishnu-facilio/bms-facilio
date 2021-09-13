@@ -41,40 +41,13 @@ public class ReportPivotTableDataContext {
 		
 	}
 	
-
-    // public static enum DataModuleType {
-	// 	MODULE,
-	// 	READING
-	// 	;
-		
-	// 	public int getValue() {
-	// 		return ordinal() + 1;
-	// 	}
-		
-	// 	public static DataModuleType valueOf (int value) {
-	// 		if (value > 0 && value <= values().length) {
-	// 			return values() [value - 1];
-	// 		}
-	// 		return null;
-	// 	}
-	// }
-
-    // private DataModuleType moduleType = DataModuleType.MODULE;
-	// public DataModuleType getModuleTypeEnum() {
-	// 	return moduleType;
-	// }
-	// public void setModuleType(DataModuleType moduleType) {
-	// 	this.moduleType = moduleType;
-	// }
-	// public int getModuleType() {
-	// 	if (moduleType != null) {
-	// 		return moduleType.getValue();
-	// 	}
-	// 	return -1;
-	// }
-	// public void setModuleType(int moduleType) {
-	// 	this.moduleType = DataPointType.valueOf(moduleType);
-	// }
+	private String moduleName;
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
 
     private String moduleType;
     public String getModuleType(){
@@ -127,6 +100,14 @@ public class ReportPivotTableDataContext {
 		this.alias = alias;
 	}
 	
+	private long subModuleFieldId = -1;
+	public long getSubModuleFieldId() {
+		return subModuleFieldId;
+	}
+	public void setSubModuleFieldId(long subModuleFieldId) {
+		this.subModuleFieldId = subModuleFieldId;
+	}
+
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
