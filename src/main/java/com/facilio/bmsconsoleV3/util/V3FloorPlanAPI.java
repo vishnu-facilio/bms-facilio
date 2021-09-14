@@ -158,16 +158,13 @@ public class V3FloorPlanAPI {
      }
 
 	 	   
-	 	  public static V3IndoorFloorPlanPropertiesContext getZoneProperties(ModuleBaseWithCustomFields record, V3MarkerdZonesContext zone, Context context, String viewMode) throws Exception {
+	 	  public static V3IndoorFloorPlanPropertiesContext getZoneProperties(ModuleBaseWithCustomFields record, V3MarkerdZonesContext zone, Context context, String viewMode,Long markerModuleId) throws Exception {
 	 		    
 	 			
 	 	        V3IndoorFloorPlanPropertiesContext properties = new V3IndoorFloorPlanPropertiesContext();
-	 	         
-	 	    	Long markerModuleId = (long) zone.getZoneModuleId();
-	 		   
+	 	         	 		   
 	 			   properties.setObjectId(zone.getId());
 	 			   properties.setRecordId(zone.getRecordId());
-	 			   properties.setMarkerModuleId(zone.getZoneModuleId());
 	 			if (zone.getSpace() != null) {
 	 				properties.setSpaceId(zone.getSpace().getId());
 	 				
@@ -186,7 +183,7 @@ public class V3FloorPlanAPI {
 	 					
 	 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 	 			        FacilioModule module = modBean.getModule(markerModuleId);
-	 			        
+	 	 			   properties.setMarkerModuleId(zone.getZoneModuleId());
 	 			        properties.setMarkerModuleName(module.getName());
 	 					
 	 					if (module.getName().equals(FacilioConstants.ContextNames.LOCKERS)) {

@@ -136,11 +136,11 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 		    
 		        	
 		        	if (recordId != null && markerModuleId != null ) {
-		        		feature.setProperties(V3FloorPlanAPI.getZoneProperties(zonevsRecordObjectMap.get(markerModuleId).get(recordId), zone, context, viewMode));
+		        		feature.setProperties(V3FloorPlanAPI.getZoneProperties(zonevsRecordObjectMap.get(markerModuleId).get(recordId), zone, context, viewMode, markerModuleId));
 		            	feature.setTooltipData(getZoneTooltipData(zone, context));    	
 		           }
 		        	else {
-		        		feature.setProperties(V3FloorPlanAPI.getZoneProperties(null, zone, context, viewMode));
+		        		feature.setProperties(V3FloorPlanAPI.getZoneProperties(null, zone, context, viewMode, null));
 		            	feature.setTooltipData(getZoneTooltipData(zone, context));
 		        	}
 		        	feature.setObjectType(2);
