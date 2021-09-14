@@ -2413,6 +2413,7 @@
 		<action name="executeReport"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="executeReport">
+			<param name="translationImpl">ReportTranslation</param>
 		</action>
 		<action name="getReportFields"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
