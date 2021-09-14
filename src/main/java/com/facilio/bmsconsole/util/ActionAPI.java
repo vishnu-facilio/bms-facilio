@@ -336,7 +336,6 @@ public class ActionAPI {
 //					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(actionModule))
 					.andCondition(CriteriaAPI.getIdCondition(actionIds, actionModule));
 			deleteBuilder.delete();
-			TemplateAPI.deleteTemplateAttachments(templateIds);
 			TemplateAPI.deleteTemplates(templateIds);
 		}
 	}
@@ -497,10 +496,12 @@ public class ActionAPI {
 		emailTemplate.setSubject((String) action.getTemplateJson().get("subject"));
 		emailTemplate.setMessage((String) action.getTemplateJson().get("message"));
 		emailTemplate.setType(Type.EMAIL);
-		
+				
 		emailTemplate.setTemplateFileIds((List<Long>) action.getTemplateJson().get("templateFileIds"));
 		emailTemplate.setTemplateUrlStrings((List<String>) action.getTemplateJson().get("templateUrlStrings"));
 		emailTemplate.setTemplateFileFileIds((List<Long>) action.getTemplateJson().get("templateFileFileIds"));
+		
+		emailTemplate.setIsAttachmentAdded((Boolean) action.getTemplateJson().get("isAttachmentAdded"));
 		
 		
 		if (action.getTemplateJson().containsKey("sendAsSeparateMail")) {

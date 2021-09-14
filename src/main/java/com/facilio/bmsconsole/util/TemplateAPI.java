@@ -639,24 +639,6 @@ public class TemplateAPI {
 		}
 	}
 	
-	public static void deleteTemplateAttachments(List<Long> ids) throws Exception {
-		if(ids != null && !ids.isEmpty()) {
-			List<FacilioField> fields = FieldFactory.getTemplateFileFields();
-			FacilioModule module = ModuleFactory.getTemplateFileModule();
-			EmailAttachmentAPI.deleteAttachments(ids, module, TemplateFileContext.class, fields);
-			
-			List<FacilioField> urlFields = FieldFactory.getTemplateUrlFields();
-			FacilioModule urlModule = ModuleFactory.getTemplateUrlAttachmentModule();
-			EmailAttachmentAPI.deleteAttachments(ids, urlModule, TemplateUrlContext.class, urlFields);
-			
-			List<FacilioField> fileFieldFields = FieldFactory.getTemplateFileFieldFields();
-			FacilioModule fileFieldModule = ModuleFactory.getTemplateFileFieldAttachmentModule();
-			EmailAttachmentAPI.deleteAttachments(ids, fileFieldModule, TemplateUrlContext.class, fileFieldFields);
-
-
-		}
-	}
-	
 	private static void templatePreDelete(Template template, List<Long> ids) throws Exception {
 		switch (template.getTypeEnum()) {
 			case WORKORDER:

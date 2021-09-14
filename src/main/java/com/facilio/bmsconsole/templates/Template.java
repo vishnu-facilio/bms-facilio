@@ -312,6 +312,18 @@ public abstract class Template implements Serializable {
 	public void setTemplateUrls(List<TemplateUrlContext> templateUrls) {
 		this.templateUrls = templateUrls;
 	}
+	
+	public Boolean getIsAttachmentAdded() {
+		if (isAttachmentAdded == null) {
+			return false;
+		}
+		return isAttachmentAdded;
+	}
+	public void setIsAttachmentAdded(Boolean isAttachmentAdded) {
+		this.isAttachmentAdded = isAttachmentAdded;
+	}
+
+	private Boolean isAttachmentAdded;
 
 	private List<TemplateFileContext> templateFiles;
 	private List<TemplateUrlContext> templateUrls;
