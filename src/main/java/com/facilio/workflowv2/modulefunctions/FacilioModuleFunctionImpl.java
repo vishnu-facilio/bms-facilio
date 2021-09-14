@@ -26,6 +26,7 @@ import com.facilio.bmsconsole.util.CommonAPI;
 import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -45,6 +46,7 @@ import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -778,6 +780,14 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 	public Long getId(Map<String, Object> globalParams, List<Object> objects) throws Exception {
 		FacilioModule module = (FacilioModule) objects.get(0);
 		return module.getModuleId();
+	}
+	@Override
+	public List<Map<String, Object>> getAllStates(Map<String, Object> globalParams, List<Object> objects) throws Exception {
+		// TODO Auto-generated method stub
+		
+		FacilioModule module = (FacilioModule) objects.get(0);
+		
+		return FieldUtil.getAsMapList(TicketAPI.getAllStatus(module, true), FacilioStatus.class);
 	}
 	
 }

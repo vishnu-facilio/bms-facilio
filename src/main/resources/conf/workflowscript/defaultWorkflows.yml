@@ -1879,3 +1879,58 @@
     
 	return result;
 }'
+
+'202':
+  description: 'service request open,close,all count'
+  usage: 'Tenant portal'
+  workflow: 'Map getServiceRequestCount(Number userId){
+  
+  mapRes = {};
+  
+  allStates = Module("serviceRequest").getAllStates();
+  
+  openStateIds = [];
+  closedStateIds = [];
+  
+  for each index,state in allStates {
+    
+   	if(state.typeCode == 1) {
+      openStateIds.add(state.id);
+    }
+    else if (state.typeCode == 2) {
+      closedStateIds.add(state.id);
+    }
+  }
+  db = {};
+  if(userId != null) {
+     db.put("criteria",[id > 0 && requester == userId]);
+  }
+  else {
+   	 db.put("criteria",[id > 0]); 
+  }
+    
+  db.put("field","id");
+  db.put("aggregation","count");
+  mapRes.put("total",Module("serviceRequest").fetch(db));
+  
+  if(userId != null) {
+     db.put("criteria",[moduleState == openStateIds && requester == userId]);
+  }
+  else {
+   	 db.put("criteria",[moduleState == openStateIds]);
+  }
+  
+  mapRes.put("open",Module("serviceRequest").fetch(db));
+  
+  
+  if(userId != null) {
+     db.put("criteria",[moduleState == closedStateIds && requester == userId]);
+  }
+  else {
+   	 db.put("criteria",[moduleState == closedStateIds]);
+  }
+  
+  mapRes.put("closed",Module("serviceRequest").fetch(db));
+
+  return mapRes;
+}'
