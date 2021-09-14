@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.imports.config;
 
 import com.facilio.bmsconsole.imports.annotations.ImportModule;
 import com.facilio.bmsconsole.imports.command.ImportUploadFileCommand;
+import com.facilio.bmsconsole.imports.command.ParseImportFileCommand;
 import com.facilio.chain.FacilioChain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.lang3.StringUtils;
@@ -70,17 +71,42 @@ public class ImportChainUtil {
         ImportConfig importConfig = getImportConfig(moduleName);
 
         Command beforeUploadCommand = null;
+        Command afterUploadCommand = null;
 
         if (importConfig != null) {
             UploadHandler uploadHandler = importConfig.getUploadHandler();
             if (uploadHandler != null) {
                 beforeUploadCommand = uploadHandler.getBeforeUploadCommand();
+                afterUploadCommand = uploadHandler.getAfterUploadCommand();
             }
         }
 
         FacilioChain chain = getDefaultChain();
         addIfNotNull(chain, beforeUploadCommand);
         chain.addCommand(new ImportUploadFileCommand());
+        addIfNotNull(chain, afterUploadCommand);
+        return chain;
+    }
+
+    private static FacilioChain getParseChain(String moduleName) {
+        ImportConfig importConfig = getImportConfig(moduleName);
+
+        Command beforeParseCommand = null;
+        Command afterParseCommand = null;
+
+        if (importConfig != null) {
+            ParseHandler parseHandler = importConfig.getParseHandler();
+            if (parseHandler != null) {
+                beforeParseCommand = parseHandler.getBeforeParseCommand();
+                afterParseCommand = parseHandler.getAfterParseCommand();
+            }
+        }
+
+        FacilioChain chain = getDefaultChain();
+        addIfNotNull(chain, beforeParseCommand);
+        chain.addCommand(new ParseImportFileCommand());
+        addIfNotNull(chain, afterParseCommand);
+
         return chain;
     }
 

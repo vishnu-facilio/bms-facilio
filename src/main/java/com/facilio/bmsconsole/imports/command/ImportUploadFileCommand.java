@@ -85,7 +85,7 @@ public class ImportUploadFileCommand extends FacilioCommand {
         // todo omitted assetId, templateId, and moduleMeta tags
         ImportAPI.addImportProcess(importProcessContext);
 
-        ImportAPI.getFieldMapping(importProcessContext);
+        ImportAPI.getFieldMapping(importProcessContext);    // this may not get saved in DB
 
         return false;
     }
