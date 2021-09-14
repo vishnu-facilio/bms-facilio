@@ -182,7 +182,7 @@ public class V3FloorPlanAPI {
 	 				properties.setIsOccupied(false);
 	 				
 	 			
-	 				if (markerModuleId != null) {
+	 				if (markerModuleId != null && record != null) {
 	 					
 	 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 	 			        FacilioModule module = modBean.getModule(markerModuleId);

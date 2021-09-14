@@ -315,7 +315,7 @@ public class getIndoorFloorPlanViewerCommand extends FacilioCommand {
             	feature.setTooltipData(V3FloorPlanAPI.getZoneTooltipData(zone, viewMode));    	
            }
         	else {
-        		feature.setProperties(V3FloorPlanAPI.getZoneProperties(zonevsRecordObjectMap.get(markerModuleId).get(recordId), zone, context, viewMode));
+        		feature.setProperties(V3FloorPlanAPI.getZoneProperties(null, zone, context, viewMode));
             	feature.setTooltipData(V3FloorPlanAPI.getZoneTooltipData(zone, viewMode));
         	}
         	feature.setObjectType(2);
