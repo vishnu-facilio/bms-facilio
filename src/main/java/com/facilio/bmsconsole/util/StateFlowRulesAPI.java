@@ -49,7 +49,6 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 
 	public static void constructStateRule(List<WorkflowRuleContext> list) throws Exception {
 		if (CollectionUtils.isNotEmpty(list)) {
-			List<Long> formIds = null;
 			List<Long> fieldWorkflowRuleIds = null;
 			for (WorkflowRuleContext workflowRuleContext : list) {
 				if (workflowRuleContext instanceof ApproverWorkflowRuleContext) {
@@ -60,10 +59,8 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 				if (workflowRuleContext instanceof FormInterface) {
 					FormInterface formInterface = (FormInterface) workflowRuleContext;
 					if (formInterface.getFormId() > 0) {
-						if (formIds == null) {
-							formIds = new ArrayList<>();
-						}
-						formIds.add(formInterface.getFormId());
+						FacilioForm facilioForm = FormsAPI.fetchForm(formInterface.getFormId(), null, true);
+						formInterface.setForm(facilioForm);
 					}
 				}
 
@@ -103,25 +100,6 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 								abstractStateTransitionRuleContext.setInterval(rule.getInterval());
 							}
 						}
-					}
-				}
-			}
-
-			if (CollectionUtils.isNotEmpty(formIds)) {
-				Criteria criteria = new Criteria();
-				criteria.addAndCondition(CriteriaAPI.getIdCondition(formIds, ModuleFactory.getFormModule()));
-				List<FacilioForm> forms = FormsAPI.getFormFromDB(criteria);
-				if (forms == null) {
-					forms = new ArrayList<>();
-				}
-				Map<Long, FacilioForm> map = new HashMap<>();
-				for (FacilioForm form : forms) {
-					map.put(form.getId(), form);
-				}
-				for (WorkflowRuleContext workflowRuleContext : list) {
-					if (workflowRuleContext instanceof FormInterface) {
-						FormInterface stateFlowRule = (FormInterface) workflowRuleContext;
-						stateFlowRule.setForm(map.get(stateFlowRule.getFormId()));
 					}
 				}
 			}
