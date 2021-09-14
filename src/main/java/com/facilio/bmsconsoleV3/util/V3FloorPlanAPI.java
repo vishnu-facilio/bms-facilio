@@ -539,7 +539,7 @@ public class V3FloorPlanAPI {
 	    	builder.andCondition(CriteriaAPI.getIdCondition(objectIds, module));
 
 	     }
-	        builder.fetchSupplement((LookupField) fieldMap.get("markertype"));
+	        builder.fetchSupplement((LookupField) fieldMap.get("markerType"));
 
 	        
 	        List<V3MarkerContext> markers = builder.get();
