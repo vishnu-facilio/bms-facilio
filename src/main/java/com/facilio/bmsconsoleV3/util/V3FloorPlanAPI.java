@@ -399,26 +399,33 @@ public class V3FloorPlanAPI {
 	   public static String getCenterLabel(String name) {
 		   String result = "";
 		   
-		   String[] splitStr = name.split("\\s+");
-		   
-		   if (splitStr.length > 0) {
+		   if (name != null) {
+			   String[] splitStr = name.split("\\s+");
 			   
-			   if (splitStr.length == 1) {
-				   if (splitStr[0].length() > 1) {
-					   result = splitStr[0].charAt(0) + "" + splitStr[0].charAt(1); 
+			   if (splitStr.length > 0) {
+				   
+				   if (splitStr.length == 1) {
+					   if (splitStr[0].length() > 1) {
+						   result = splitStr[0].charAt(0) + "" + splitStr[0].charAt(1); 
+					   }
+					   else {
+						   result = splitStr[0].charAt(0) + ""; 
+					   }
+					   
 				   }
 				   else {
-					   result = splitStr[0].charAt(0) + ""; 
+					    result = splitStr[0].charAt(0) + "";
+						 if (splitStr[1] != null) {
+					   		result = result + splitStr[1].charAt(0); 
+				   			}
 				   }
-				   
+	 
 			   }
-			   else {
-				    result = splitStr[0].charAt(0) + "";
-			   }
- 
+			   
+			   return result.toUpperCase();
 		   }
-		   
-		   return result.toUpperCase();
+		   return name;
+
 	   }
 
     public static List<V3MarkerContext> getUpdateMarkerList(List<V3MarkerContext> newMarkers, List<V3MarkerContext> oldMarkers) throws Exception {
