@@ -27,7 +27,6 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.accounts.util.EmailAttachmentAPI;
 import com.facilio.billing.context.ExcelTemplate;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.JobPlanContext;
@@ -41,9 +40,6 @@ import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
-import com.facilio.bmsconsole.context.TemplateFileContext;
-import com.facilio.bmsconsole.context.TemplateFileFieldContext;
-import com.facilio.bmsconsole.context.TemplateUrlContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.templates.AssignmentTemplate;
@@ -256,6 +252,11 @@ public class TemplateAPI {
 			id = addFormTemplate((FormTemplate) template);
 			template.setId(id);
 		}
+		
+		if (template.getAttachments() != null) {
+			TemplateAttachmentUtil.addAttachments(template.getId(), template.getAttachments());
+		}
+		
 		return id;
 	}
 	
@@ -1885,73 +1886,6 @@ public class TemplateAPI {
 			return workflow;
 		}
 		return null;
-	}
-	
-	public static List<TemplateFileContext> fetchTemplateFiles(long id) throws Exception {
-		FacilioModule module = ModuleFactory.getTemplateFileModule();
-		Collection<FacilioField> fields = FieldFactory.getTemplateFileFields();
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("templateId"), Collections.singletonList(id), NumberOperators.EQUALS));
-
-		List<Map<String, Object>> props = selectBuilder.get();
-
-		if (props == null || props.isEmpty()) {
-			return null;
-		}
-
-		List<TemplateFileContext> result = new ArrayList<>();
-		for (Map<String, Object> prop: props) {
-			result.add(FieldUtil.getAsBeanFromMap(prop, TemplateFileContext.class));
-		}
-		return result;
-	}
-	public static void addAttachment(Template template) throws Exception {
-		if (template.getTemplateFileIds() != null && !template.getTemplateFileIds().isEmpty()) {
-			List<TemplateFileContext> attachments = new ArrayList<>();
-			for(long attachmentId : template.getTemplateFileIds()) {
-				TemplateFileContext attachment = new TemplateFileContext();	
-				attachment.setFileId(attachmentId);
-				attachment.setTemplateId(template.getId());							
-				attachments.add(attachment);
-			}
-			List<FacilioField> fields = FieldFactory.getTemplateFileFields();
-			FacilioModule module = ModuleFactory.getTemplateFileModule();
-			EmailAttachmentAPI.addAttachments(attachments, module, template.getId(), TemplateFileContext.class, fields);
-
-		}
-		
-		if (template.getTemplateUrlStrings() != null && !template.getTemplateUrlStrings().isEmpty()) {
-			List<TemplateUrlContext> attachments = new ArrayList<>();
-			for(String url : template.getTemplateUrlStrings()) {
-				TemplateUrlContext attachment = new TemplateUrlContext();	
-				attachment.setUrlString(url);
-				attachment.setTemplateId(template.getId());	
-				attachments.add(attachment);
-			}
-			List<FacilioField> fields = FieldFactory.getTemplateUrlFields();
-			FacilioModule module = ModuleFactory.getTemplateUrlAttachmentModule();
-			EmailAttachmentAPI.addAttachments(attachments, module, template.getId(), TemplateUrlContext.class, fields);
-
-		}
-		
-		if (template.getTemplateFileFileIds() != null && !template.getTemplateFileFileIds().isEmpty()) {
-			List<TemplateFileFieldContext> attachments = new ArrayList<>();
-			for(long fileFieldID : template.getTemplateFileFileIds()) {
-				TemplateFileFieldContext attachment = new TemplateFileFieldContext();	
-				attachment.setFileFileId(fileFieldID);
-				attachment.setTemplateId(template.getId());	
-				attachments.add(attachment);
-			}
-			List<FacilioField> fields = FieldFactory.getTemplateFileFieldFields();
-			FacilioModule module = ModuleFactory.getTemplateFileFieldAttachmentModule();
-			EmailAttachmentAPI.addAttachments(attachments, module, template.getId(), TemplateFileFieldContext.class, fields);
-
-		}
-		
 	}
 	
 }

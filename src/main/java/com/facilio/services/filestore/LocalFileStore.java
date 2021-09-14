@@ -77,7 +77,7 @@ public class LocalFileStore extends FileStore {
 	
 	@Override
 	public String getOrgiDownloadUrl(String namespace, long fileId) throws Exception {
-		return null;
+		return getDownloadUrl(fileId);
 	}
 
 	@Override

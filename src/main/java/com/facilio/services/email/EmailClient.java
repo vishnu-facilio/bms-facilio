@@ -115,6 +115,7 @@ public abstract class EmailClient {
      */
     @Deprecated
     public abstract void sendEmail(JSONObject mailJson) throws Exception;
+    
     /**
      * @deprecated
      * Use {@link #sendEmailWithActiveUserCheck(JSONObject, Map)} instead.

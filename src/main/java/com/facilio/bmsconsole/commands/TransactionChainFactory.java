@@ -701,7 +701,6 @@ public class TransactionChainFactory {
 			c.addCommand(new AddWorkflowRuleCommand());
 			c.addCommand(new AddActionsForWorkflowRule());
 			c.addCommand(new AddOrUpdateJobEntryForScheduledReadingRuleCommand());
-			c.addCommand(new AddAttachmentTemplateRelation());
 			return c;
 		}
 
@@ -752,7 +751,6 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleterOldRuleActionsCommand());
 			c.addCommand(new AddActionsForWorkflowRule());
 			c.addCommand(new AddOrUpdateJobEntryForScheduledReadingRuleCommand());
-			c.addCommand(new AddAttachmentTemplateRelation());
 			return c;
 		}
 		
@@ -6156,14 +6154,6 @@ public class TransactionChainFactory {
 	public static FacilioChain deleteScatterGraph(){
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new DeleteScatterGraph());
-		return chain;
-	}
-	
-	public static FacilioChain getAddAttachmentsListChain(){
-		FacilioChain chain = getDefaultChain();
-		chain.addCommand(new AddAttachmentCommand());
-		chain.addCommand(new DeleteUrlAttachmentCommand());
-		chain.addCommand(new AddTemplateAttachmentCommand());
 		return chain;
 	}
 	

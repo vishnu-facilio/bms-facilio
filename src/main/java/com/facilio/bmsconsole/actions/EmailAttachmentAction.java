@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.List;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
 import com.facilio.bmsconsole.context.TemplateFileContext;
 import com.facilio.bmsconsole.context.TemplateFileFieldContext;
@@ -123,25 +122,6 @@ public class EmailAttachmentAction extends FacilioAction {
 		setResult("attachments", attachmentList);
 		setResult("attachmentUrlList", attachmentUrlList);
 		setResult("attachmentFileFieldslList", attachmentFileFieldslList);
-		
-		return SUCCESS;
-	}
-	
-	public String add() throws Exception {
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.TEMPLATE_ID, templateId);
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.attachment);
- 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.attachmentFileName);
- 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachmentContentType);
- 		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
- 		
- 		context.put(FacilioConstants.ContextNames.ATTACHMENT_URL_LIST, this.urlList);
- 		
- 		
-		FacilioChain getAddChain = TransactionChainFactory.getAddAttachmentsListChain();
-		getAddChain.execute(context);
-		setResult("attachments", "attachment");
 		
 		return SUCCESS;
 	}

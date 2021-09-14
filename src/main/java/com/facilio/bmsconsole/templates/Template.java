@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.templates;
 
 import java.io.Serializable;
-
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -19,13 +19,11 @@ import org.json.simple.parser.ParseException;
 import com.facilio.bmsconsole.context.TemplateFileContext;
 import com.facilio.bmsconsole.context.TemplateUrlContext;
 import com.facilio.bmsconsole.util.FreeMarkerAPI;
+import com.facilio.bmsconsole.util.TemplateAttachmentUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
-import java.util.List;
-import com.facilio.bmsconsole.context.TemplateFileContext;
-import com.facilio.bmsconsole.context.TemplateUrlContext;
-import com.facilio.modules.FacilioIntEnum;
+import lombok.Getter;
 
 
 public abstract class Template implements Serializable {
@@ -151,8 +149,14 @@ public abstract class Template implements Serializable {
 	
 	public final JSONObject getTemplate(Map<String, Object> parameters) throws Exception {
 		JSONObject json = getOriginalTemplate();
-		if (json != null && (workflow != null || userWorkflow != null)) {
-			JSONObject parsedJson = null;
+		if (json != null) {
+			
+			if (getIsAttachmentAdded()) {
+				this.attachments = TemplateAttachmentUtil.fetchAttachments(getId());
+			}
+			
+			if (workflow != null) {
+				JSONObject parsedJson = null;
 				Map<String, Object> params;
 				if (workflow.isV2Script()) {
 					params = (Map<String, Object>) WorkflowUtil.getWorkflowExpressionResult(workflow, parameters);
@@ -204,19 +208,20 @@ public abstract class Template implements Serializable {
 					}
 					catch (Exception e) {
 						LOGGER.error(new StringBuilder("Error occurred during replacing of place holders \n")
-											.append("JSON : ")
-											.append(jsonStr)
-											.append("\nParams : ")
-											.append(params)
-											.append("\nParameters : ")
-											.append(parameters)
-											.toString(), e);
+								.append("JSON : ")
+								.append(jsonStr)
+								.append("\nParams : ")
+								.append(params)
+								.append("\nParameters : ")
+								.append(parameters)
+								.toString(), e);
 						throw e;
 					}
 					JSONParser parser = new JSONParser();
 					parsedJson = (JSONObject) parser.parse(jsonStr);
 				}
 				return parsedJson;
+			}
 		}
 		return json;
 	}
@@ -300,19 +305,7 @@ public abstract class Template implements Serializable {
 		return null;
 	}
 	
-	public List<TemplateFileContext> getTemplateFiles() {
-		return templateFiles;
-	}
-	public void setTemplateFiles(List<TemplateFileContext> templateFiles) {
-		this.templateFiles = templateFiles;
-	}
-	public List<TemplateUrlContext> getTemplateUrls() {
-		return templateUrls;
-	}
-	public void setTemplateUrls(List<TemplateUrlContext> templateUrls) {
-		this.templateUrls = templateUrls;
-	}
-	
+	private Boolean isAttachmentAdded;
 	public Boolean getIsAttachmentAdded() {
 		if (isAttachmentAdded == null) {
 			return false;
@@ -322,33 +315,16 @@ public abstract class Template implements Serializable {
 	public void setIsAttachmentAdded(Boolean isAttachmentAdded) {
 		this.isAttachmentAdded = isAttachmentAdded;
 	}
-
-	private Boolean isAttachmentAdded;
-
-	private List<TemplateFileContext> templateFiles;
-	private List<TemplateUrlContext> templateUrls;
-	private List<Long> templateFileIds;
-	private List<Long> templateFileFileIds;
-	public List<Long> getTemplateFileFileIds() {
-		return templateFileFileIds;
-	}
-	public void setTemplateFileFileIds(List<Long> templateFileFileIds) {
-		this.templateFileFileIds = templateFileFileIds;
-	}
-
-	private List<String> templateUrlStrings;
 	
-	public List<Long> getTemplateFileIds() {
-		return templateFileIds;
-	}
-	public void setTemplateFileIds(List<Long> templateFileIds) {
-		this.templateFileIds = templateFileIds;
-	}
-	public List<String> getTemplateUrlStrings() {
-		return templateUrlStrings;
-	}
-	public void setTemplateUrlStrings(List<String> templateUrlStrings) {
-		this.templateUrlStrings = templateUrlStrings;
+	
+	@Getter
+	private List<TemplateAttachment> attachments;
+	public void addAttachment(TemplateAttachment attachment) {
+		if (attachments == null) {
+			attachments = new ArrayList<>();
+		}
+		attachments.add(attachment);
+		
 	}
 
 }

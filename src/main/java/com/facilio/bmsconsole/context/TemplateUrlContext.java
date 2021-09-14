@@ -1,34 +1,36 @@
 package com.facilio.bmsconsole.context;
 
-public class TemplateUrlContext {
-	
-	private long id;
-	private long orgId;
-	private long templateId;
+import org.apache.struts2.json.annotations.JSON;
+
+import com.facilio.bmsconsole.templates.TemplateAttachment;
+import com.facilio.bmsconsole.templates.TemplateAttachmentType;
+import com.facilio.pdf.PdfUtil;
+import com.facilio.time.DateTimeUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter
+public class TemplateUrlContext extends TemplateAttachment {
+
 	private String urlString;
+
+	@Override
+	protected long fetchFileId(Object record) {
+		return PdfUtil.exportUrlAsFileId(urlString, getFileName());
+	}
+
+	@Override
+	public TemplateAttachmentType getType() {
+		return TemplateAttachmentType.URL;
+	}
 	
-	public long getId() {
-		return id;
+	@Override
+	@JsonIgnore
+    @JSON(serialize = false)
+	public String getFileName() {
+		return "Pdf - " + DateTimeUtil.getFormattedTime(System.currentTimeMillis(), "dd-MM-yyyy HH-mm");
 	}
-	public void setId(long id) {
-		this.id = id;
-	}
-	public long getOrgId() {
-		return orgId;
-	}
-	public void setOrgId(long orgId) {
-		this.orgId = orgId;
-	}
-	public long getTemplateId() {
-		return templateId;
-	}
-	public void setTemplateId(long templateId) {
-		this.templateId = templateId;
-	}
-	public String getUrlString() {
-		return urlString;
-	}
-	public void setUrlString(String urlString) {
-		this.urlString = urlString;
-	}
+
 }

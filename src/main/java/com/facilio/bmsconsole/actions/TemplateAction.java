@@ -408,17 +408,6 @@ public class TemplateAction  extends FacilioAction {
 		
 	}
 	
-	public String fetchTemplateAttachments() throws Exception {
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD_ID, id);
-		
-		FacilioChain fetchTemplateAttachments = FacilioChainFactory.fetchTemplateAttachmentsChain();
-		fetchTemplateAttachments.execute(context);
-		
-		
-		return SUCCESS;
-	}
-	
 	private WebNotificationTemplate webNotificationTemplate;
 	public WebNotificationTemplate getWebNotificationTemplate() {
 		return webNotificationTemplate;

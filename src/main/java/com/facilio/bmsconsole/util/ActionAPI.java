@@ -31,6 +31,8 @@ import com.facilio.bmsconsole.templates.PushNotificationTemplate;
 import com.facilio.bmsconsole.templates.SMSTemplate;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.Template.Type;
+import com.facilio.bmsconsole.templates.TemplateAttachment;
+import com.facilio.bmsconsole.templates.TemplateAttachmentType;
 import com.facilio.bmsconsole.templates.WhatsappMessageTemplate;
 import com.facilio.bmsconsole.templates.WorkflowTemplate;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
@@ -497,13 +499,6 @@ public class ActionAPI {
 		emailTemplate.setMessage((String) action.getTemplateJson().get("message"));
 		emailTemplate.setType(Type.EMAIL);
 				
-		emailTemplate.setTemplateFileIds((List<Long>) action.getTemplateJson().get("templateFileIds"));
-		emailTemplate.setTemplateUrlStrings((List<String>) action.getTemplateJson().get("templateUrlStrings"));
-		emailTemplate.setTemplateFileFileIds((List<Long>) action.getTemplateJson().get("templateFileFileIds"));
-		
-		emailTemplate.setIsAttachmentAdded((Boolean) action.getTemplateJson().get("isAttachmentAdded"));
-		
-		
 		if (action.getTemplateJson().containsKey("sendAsSeparateMail")) {
 			emailTemplate.setSendAsSeparateMail((Boolean) action.getTemplateJson().get("sendAsSeparateMail"));
 		}
@@ -513,6 +508,21 @@ public class ActionAPI {
 		if (action.getTemplateJson().containsKey("html")) {
 			emailTemplate.setHtml((Boolean) action.getTemplateJson().get("html"));
 		}
+		
+		List<Map<String, Object>> attachmentsJson = (List<Map<String, Object>>) action.getTemplateJson().get("attachmentList");
+		if (CollectionUtils.isNotEmpty(attachmentsJson)) {
+			for (Map<String, Object> attachmentMap: attachmentsJson) {
+				int typeInt = (int)(long)attachmentMap.get("type");
+				TemplateAttachmentType type = TemplateAttachmentType.valueOf(typeInt);
+				TemplateAttachment attachment = FieldUtil.getAsBeanFromMap(attachmentMap, type.getAttachmentClass());
+				emailTemplate.addAttachment(attachment);
+			}
+			emailTemplate.setIsAttachmentAdded(true);
+		}
+		else {
+			emailTemplate.setIsAttachmentAdded(false);
+		}
+		
 		action.setTemplate(emailTemplate);
 		
 		checkAndSetWorkflow(action.getTemplateJson(), emailTemplate);

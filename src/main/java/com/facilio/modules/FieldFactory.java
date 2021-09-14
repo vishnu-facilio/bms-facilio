@@ -3032,7 +3032,7 @@ public class FieldFactory extends BaseFieldFactory {
         templateId.setModule(module);
         fields.add(templateId);
         
-        fields.add(getField("fileFileId","File FIELD Id","FILE_FIELD_ID",module,FieldType.NUMBER));
+        fields.add(getField("fieldId","File FIELD Id","FILE_FIELD_ID",module,FieldType.NUMBER));
         
         return fields;
     }
