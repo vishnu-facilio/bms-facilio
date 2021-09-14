@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.templates;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.facilio.bmsconsole.context.TemplateFileContext;
@@ -41,6 +42,9 @@ public enum TemplateAttachmentType implements FacilioIntEnum {
 	private FacilioModule module;
 
 	private List<FacilioField> fields;
+	public  List<FacilioField> getFields() {
+		return new ArrayList<>(fields);
+	}
 
 	public static TemplateAttachmentType valueOf(int value) {
 		if (value > 0 && value <= values().length) {
