@@ -414,7 +414,13 @@ public class V3FloorPlanAPI {
 			   }
 			   else {
 				   
-				   result = splitStr[0].charAt(0)+ "" + splitStr[1].charAt(0); 
+				   result = splitStr[0].charAt(0) + "";
+				   
+				   if (splitStr[1] != null) {
+					   result = result + splitStr[1].charAt(0); 
+					   
+				   }
+				   
 				   
 			   }
  
