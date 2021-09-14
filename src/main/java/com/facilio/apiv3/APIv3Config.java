@@ -45,6 +45,9 @@ import com.facilio.bmsconsoleV3.commands.floorplan.V3ValidateSpaceCommand;
 import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.AddOrUpdateInventoryRequestCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.FetchInventoryRequestDetailsCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.LoadIRLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.SetItemTypesUnitCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksCommand;
@@ -1451,5 +1454,22 @@ public class APIv3Config {
                 .afterFetch(new AssetListFilterByReadingsCommand())
                 .build();
     }
+    @Module("inventoryrequest")
+    public static Supplier<V3Config> getInventoryRequest() {
+        return () -> new V3Config(V3InventoryRequestContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .beforeSave(TransactionChainFactoryV3.getIRBeforeSaveChain())
+                .afterSave(new AddOrUpdateInventoryRequestCommandV3())
+                .update()
+                .beforeSave(TransactionChainFactoryV3.getIRBeforeSaveChain())
+                .afterSave(new AddOrUpdateInventoryRequestCommandV3())
+                .list()
+                .beforeFetch(new LoadIRLookupCommandV3())
+                .summary()
+                .afterFetch(new FetchInventoryRequestDetailsCommandV3())
+                .delete()
+                .build();
+    }
+
 }
 

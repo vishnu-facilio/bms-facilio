@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestLineItemContext;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
@@ -204,5 +205,32 @@ public static boolean checkQuantityForWoTool(long parentTransactionId, double wo
 	}
 	return false;
 	}
-	
+
+	public static List<V3InventoryRequestLineItemContext> getLineItemsForInventoryRequestV3(String requestIds, String itemIds, String toolIds) throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+
+
+		List<LookupField> lookUpFields = new ArrayList<>();
+		lookUpFields.add((LookupField) modBean.getField("itemType", module.getName()));
+		lookUpFields.add((LookupField) modBean.getField("toolType", module.getName()));
+		lookUpFields.add((LookupField) modBean.getField("storeRoom", module.getName()));
+		lookUpFields.add((LookupField) modBean.getField("asset", module.getName()));
+
+
+		SelectRecordsBuilder<V3InventoryRequestLineItemContext> builder = new SelectRecordsBuilder<V3InventoryRequestLineItemContext>()
+				.module(module)
+				.beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition("INVENTORY_REQUEST_ID", "inventoryRequestId", requestIds, NumberOperators.EQUALS))
+				.fetchSupplements(lookUpFields);
+
+		List<V3InventoryRequestLineItemContext> records = builder.get();
+		return records;
+
+
+	}
+
 }

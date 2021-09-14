@@ -12,6 +12,8 @@ import com.facilio.bmsconsoleV3.commands.accessibleSpaces.DeleteAccessibleSpaces
 import com.facilio.bmsconsoleV3.commands.accessibleSpaces.FetchAccessibleSpacesCommand;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.ValidateInventoryRequestCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.ValidateInventoryRequestUpdateCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.transferRequest.*;
 import com.facilio.command.FacilioCommand;
@@ -1014,6 +1016,14 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ValidateDateCommandV3());
         return c;
     }
+    public static FacilioChain getIRBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetLocalIdCommandV3());
+        c.addCommand(new ValidateInventoryRequestCommandV3());
+        c.addCommand(new ValidateInventoryRequestUpdateCommandV3());
+        return c;
+    }
+
 
     public static FacilioChain getAddOrUpdateItemStockTransactionChain(){
         FacilioChain c = getDefaultChain();
