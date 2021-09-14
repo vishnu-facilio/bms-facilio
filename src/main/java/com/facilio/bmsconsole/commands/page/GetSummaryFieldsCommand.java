@@ -113,7 +113,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 			}
 
 			if (orderType != SummaryOrderType.FORM_SECTION) {	
-				int count = Collections.max(formFields, Comparator.comparing(s -> s.getSequenceNumber())).getSequenceNumber();
+				int count = !formFields.isEmpty() ? Collections.max(formFields, Comparator.comparing(s -> s.getSequenceNumber())).getSequenceNumber() : 0;
 				List<String> existingFieldNames = formFields.stream().map(FormField::getName).collect(Collectors.toList());
 				count = addModuleAndSystemFields(modBean, formFields, existingFieldNames, count);
 				if (orderType == SummaryOrderType.ALPHA || formId == -1) {

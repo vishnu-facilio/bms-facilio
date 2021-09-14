@@ -3,11 +3,13 @@ package com.facilio.bmsconsole.context;
 import com.facilio.bmsconsole.templates.TemplateAttachment;
 import com.facilio.bmsconsole.templates.TemplateAttachmentType;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter
 public class TemplateFileContext extends TemplateAttachment {
 	
-	public String getDownloadUrl() throws Exception {
-		return null;
-	}
+	private long fileId;
 	
 	@Override
 	public TemplateAttachmentType getType() {

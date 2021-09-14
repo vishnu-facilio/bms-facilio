@@ -254,7 +254,7 @@ public class S3FileStore extends FileStore {
 	@Override
 	public String getOrgiDownloadUrl(String namespace, long fileId) throws Exception {
 		
-		FileInfo fileInfo = getFileInfo(namespace, fileId);
+		FileInfo fileInfo = getFileInfo(namespace, fileId, true);
 		if (fileInfo != null) {
 			return fetchDownloadUrl(fileInfo, getExpiration());
 		}

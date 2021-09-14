@@ -10,7 +10,6 @@ import lombok.Setter;
 public abstract class TemplateAttachment {
 	
 	private long templateId;
-	private long fileId;
 	private String fileName;
 	long id;
 	long orgId;
@@ -25,7 +24,7 @@ public abstract class TemplateAttachment {
 	public abstract TemplateAttachmentType getType();
 	
 	public String fetchFileUrl(Object record) throws Exception {
-		fetchFileId(record);
+		long fileId = fetchFileId(record);
 		if (fileId > 0 && getFileName() != null) {
 			FileStore fs = FacilioFactory.getFileStore();
 			return fs.getOrgiDownloadUrl(fileId);
