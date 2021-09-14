@@ -89,14 +89,15 @@ public class TranslationsUtil {
     private static Map<String, Map<String, String>> getColumnVsType () {
         Map<String, Map<String, String>> columnVsType = new HashMap<>();
         Map<String, String> moduleTab = new HashMap<>();
+        moduleTab.put("DETAILS","DETAILS");
+        moduleTab.put("FIELDS","FIELDS");
+        moduleTab.put("FORMS","FORMS");
         moduleTab.put("VIEWS","VIEWS");
         moduleTab.put("VIEW_FOLDER","VIEW FOLDER");
-        moduleTab.put("FORMS","FORMS");
-        moduleTab.put("FIELDS","FIELDS");
         moduleTab.put("STATES","STATES");
         moduleTab.put("STATE_TRANSITION","STATE TRANSITION");
         moduleTab.put("BUTTONS","BUTTONS");
-        moduleTab.put("DETAILS","DETAILS");
+
         columnVsType.put("moduleTab",moduleTab);
 
         Map<String, String> dashboardTab = new HashMap<>();
