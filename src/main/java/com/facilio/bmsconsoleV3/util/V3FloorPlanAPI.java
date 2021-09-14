@@ -401,32 +401,31 @@ public class V3FloorPlanAPI {
 		   
 		   // have to workout
 		   
-//		   if (name != null) {
-//			   String[] splitStr = name.split("\\s+");
-//			   
-//			   if (splitStr.length > 0) {
-//				   
-//				   if (splitStr.length == 1) {
-//					   if (splitStr[0].length() > 1) {
-//						   result = splitStr[0].charAt(0) + "" + splitStr[0].charAt(1); 
-//					   }
-//					   else {
-//						   result = splitStr[0].charAt(0) + ""; 
-//					   }
-//					   
-//				   }
-//				   else {
-//					    result = splitStr[0].charAt(0) + "";
-//						 if (splitStr[1] != null) {
-//					   		result = result + splitStr[1].charAt(0); 
-//				   			}
-//				   }
-//	 
-//			   }
-//			   
-//			   return result.toUpperCase();
-//		   }
-//		   return name;
+		   if (name != null) {
+			   String[] splitStr = name.trim().split("\\s+");
+			   
+			   if (splitStr.length > 0) {
+				   
+				   if (splitStr.length == 1) {
+					   if (splitStr[0].length() > 1) {
+						   result = splitStr[0].charAt(0) + "" + splitStr[0].charAt(1); 
+					   }
+					   else {
+						   result = splitStr[0].charAt(0) + ""; 
+					   }
+					   
+				   }
+				   else {
+					    result = splitStr[0].charAt(0) + "";
+						 if (splitStr[1] != null) {
+					   		result = result + splitStr[1].charAt(0); 
+				   			}
+				   }
+	 
+			   }
+			   
+			   return result.toUpperCase();
+		   }
 		   
 		   return result;
 
