@@ -42,11 +42,12 @@ public class AgentFieldFactory {
 	 public static List<FacilioField> getLonWorksPointFields(){
 	        FacilioModule module = AgentModuleFactory.getLonWorksPointModule();
 	        List<FacilioField> fields = new ArrayList<>();
-	        fields.add(FieldFactory.getIdNotPrimaryField(module));
+	        fields.addAll(FieldFactory.getPointFields());
+	        fields.add(FieldFactory.getIdField(module));
 	        fields.add(FieldFactory.getControllerIdField(module));
-	        fields.add(FieldFactory.getField(AgentConstants.TARGET_NAME, "TARGET_NAME", FieldType.STRING));
-	        fields.add(FieldFactory.getField(AgentConstants.TARGET_COMP, "TARGET_COMP", FieldType.STRING));
-	        fields.add(FieldFactory.getField(AgentConstants.LINK_TYPE, "LINK_TYPE", FieldType.STRING));
+	        fields.add(FieldFactory.getField(AgentConstants.TARGET_NAME, "TARGET_NAME", module, FieldType.STRING));
+	        fields.add(FieldFactory.getField(AgentConstants.TARGET_COMP, "TARGET_COMP", module, FieldType.STRING));
+	        fields.add(FieldFactory.getField(AgentConstants.LINK_TYPE, "LINK_TYPE", module, FieldType.STRING));
 	        fields.add(FieldFactory.getFieldDeviceId(module));
 	        return fields;
 	    }
@@ -54,11 +55,12 @@ public class AgentFieldFactory {
 	public static List<FacilioField> getRdmPointFields() {
 		FacilioModule module = AgentModuleFactory.getRdmPointModule();
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(FieldFactory.getIdNotPrimaryField(module));
+		fields.addAll(FieldFactory.getPointFields());
+        fields.add(FieldFactory.getIdField(module));
 		fields.add(FieldFactory.getControllerIdField(module));
-		fields.add(FieldFactory.getField(AgentConstants.PATH, "PATH", FieldType.STRING));
-		fields.add(FieldFactory.getField(AgentConstants.DETAILS, "DETAILS", FieldType.STRING));
-		fields.add(FieldFactory.getField(AgentConstants.RDM_POINT_CLASS, "CLASS", FieldType.STRING));
+		fields.add(FieldFactory.getField(AgentConstants.PATH, "PATH", module, FieldType.STRING));
+		fields.add(FieldFactory.getField(AgentConstants.DETAILS, "DETAILS", module, FieldType.STRING));
+		fields.add(FieldFactory.getField(AgentConstants.RDM_POINT_CLASS, "CLASS", module, FieldType.STRING));
 		fields.add(FieldFactory.getFieldDeviceId(module));
 		return fields;
 	}
