@@ -99,6 +99,7 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 		        	
 		        	feature.setActive(feature.getProperties().getActive());
 		        	feature.setObjectType(1);
+		        	feature.setMarkerType(marker.getMarkerType());
 		        	
 		        	
 		        	
@@ -183,7 +184,7 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 		   properties.setActive(true);
 		   
 		   if (marker.getMarkerType() != null) {
-			   properties.setMarkerId(String.valueOf(marker.getMarkerType().getId()));
+			   properties.setMarkerId(String.valueOf(marker.getMarkerType().getName()));
 		   }
 		   
 		   if(module.getName().equals(FacilioConstants.ContextNames.Floorplan.DESKS)) {
@@ -295,7 +296,7 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 		   properties.setIsCustom(false);
 
 		if (marker.getMarkerType() != null) {
-			  long markerId = marker.getMarkerType().getId();
+			  String markerId = marker.getMarkerType().getName();
 			   properties.setMarkerId(String.valueOf(markerId));
 			   properties.setActiveClass(String.valueOf(markerId));
 			   properties.setNormalClass(String.valueOf(markerId));

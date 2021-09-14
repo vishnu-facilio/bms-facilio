@@ -262,7 +262,7 @@ public class V3FloorPlanAPI {
 			   properties.setActive(true);
 			   
 			   if (marker.getMarkerType() != null) {
-				   properties.setMarkerId(String.valueOf(marker.getMarkerType().getId()));
+				   properties.setMarkerId(String.valueOf(marker.getMarkerType().getName()));
 			   }
 			   
 			   if(module.getName().equals(FacilioConstants.ContextNames.Floorplan.DESKS)) {
@@ -379,7 +379,7 @@ public class V3FloorPlanAPI {
 			   properties.setIsCustom(false);
 
   			if (marker.getMarkerType() != null) {
-				  long markerId = marker.getMarkerType().getId();
+				  String markerId = marker.getMarkerType().getName();
 				   properties.setMarkerId(String.valueOf(markerId));
 				   properties.setActiveClass(String.valueOf(markerId));
 				   properties.setNormalClass(String.valueOf(markerId));
@@ -539,6 +539,8 @@ public class V3FloorPlanAPI {
 	    	builder.andCondition(CriteriaAPI.getIdCondition(objectIds, module));
 
 	     }
+	        builder.fetchSupplement((LookupField) fieldMap.get("markertype"));
+
 	        
 	        List<V3MarkerContext> markers = builder.get();
 	        if(CollectionUtils.isNotEmpty(markers))

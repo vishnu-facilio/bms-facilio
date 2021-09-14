@@ -279,7 +279,8 @@ public class getIndoorFloorPlanViewerCommand extends FacilioCommand {
         	
         	feature.setActive(feature.getProperties().getActive());
         	feature.setObjectType(1);
-        	
+        	feature.setMarkerType(marker.getMarkerType());
+
         	
         	
         	markerObjectMap.put(marker.getId(), feature);
