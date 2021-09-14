@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -16,7 +17,9 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.workflowv2.annotation.ScriptModule;
 
+@ScriptModule(moduleName = FacilioConstants.ContextNames.ALARM_OCCURRENCE)
 public class FacilioAlarmModuleFunctions extends FacilioModuleFunctionImpl {
 	
 	public List<Map<String, Object>> getTopNAlarms(Map<String,Object> globalParams,List<Object> objects) throws Exception {

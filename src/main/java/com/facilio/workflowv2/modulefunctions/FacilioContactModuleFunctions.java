@@ -13,7 +13,9 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
+import com.facilio.workflowv2.annotation.ScriptModule;
 
+@ScriptModule(moduleName = FacilioConstants.ContextNames.CONTACT)
 public class FacilioContactModuleFunctions extends FacilioModuleFunctionImpl {
 
 	@Override

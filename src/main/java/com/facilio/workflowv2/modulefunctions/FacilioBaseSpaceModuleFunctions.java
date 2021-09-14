@@ -9,7 +9,10 @@ import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.workflowv2.annotation.ScriptModule;
 
+@ScriptModule(moduleName = FacilioConstants.ContextNames.BASE_SPACE)
 public class FacilioBaseSpaceModuleFunctions extends FacilioModuleFunctionImpl {
 
 	public List<Long> getSubordinates(Map<String,Object> globalParams,List<Object> objects) throws Exception {

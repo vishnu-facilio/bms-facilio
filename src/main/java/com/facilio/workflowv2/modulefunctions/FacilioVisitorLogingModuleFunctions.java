@@ -2,23 +2,20 @@ package com.facilio.workflowv2.modulefunctions;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
+import com.facilio.workflowv2.annotation.ScriptModule;
 
+@ScriptModule(moduleName = FacilioConstants.ContextNames.VISITOR_LOGGING)
 public class FacilioVisitorLogingModuleFunctions extends FacilioModuleFunctionImpl {
 
 	@Override

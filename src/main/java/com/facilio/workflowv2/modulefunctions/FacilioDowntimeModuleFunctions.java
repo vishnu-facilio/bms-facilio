@@ -9,7 +9,9 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
+import com.facilio.workflowv2.annotation.ScriptModule;
 
+@ScriptModule(moduleName = FacilioConstants.ContextNames.ASSET_BREAKDOWN)
 public class FacilioDowntimeModuleFunctions extends FacilioModuleFunctionImpl {
 	
 	@Override
