@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 public class ImportConfiguration {
 
 
-    @ImportModule(value = "asset")
+    @ImportModule(value = "test_module")
     public static Supplier<ImportConfig> getAssetImportConfig() {
         return () -> new ImportConfig.ImportConfigBuilder()
                 .uploadHandler()
@@ -20,6 +20,10 @@ public class ImportConfiguration {
                     public boolean executeCommand(Context context) throws Exception {
                         return false;
                     }
+                }).done()
+                .parseHandler()
+                .uniqueFunction((rowNumber, rowValue, context) -> {
+                    return null;
                 }).done()
                 .insertHandler()
                 .beforeInsertCommand(new FacilioCommand() {

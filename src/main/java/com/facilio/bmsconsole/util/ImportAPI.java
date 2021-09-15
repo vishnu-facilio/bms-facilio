@@ -845,6 +845,7 @@ public class ImportAPI {
 		public static final String IS_FROM_IMPORT = "isFromImport";
 		public static final String ADDED_BASE_SPACE_IDS = "baseSpaceIds";
 		public static final String REQUIRED_FIELDS = "requiredFields";
+		public static final String UNIQUE_FUNCTION = "uniqueFunction";
 
 	}
 	

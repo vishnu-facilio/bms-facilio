@@ -3,6 +3,10 @@ package com.facilio.bmsconsole.imports.command;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.context.ImportRowContext;
+import com.facilio.bmsconsole.exceptions.importExceptions.ImportFieldValueMissingException;
+import com.facilio.bmsconsole.exceptions.importExceptions.ImportMandatoryFieldsException;
+import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
+import com.facilio.bmsconsole.imports.annotations.UniqueFunction;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -15,14 +19,11 @@ import com.facilio.services.filestore.FileStore;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.*;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ParseImportFileCommand extends FacilioCommand {
 
@@ -53,10 +54,185 @@ public class ParseImportFileCommand extends FacilioCommand {
         List<FacilioField> fieldsList = modBean.getAllFields(moduleName);
         Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fieldsList);
 
+        if (ImportAPI.isInsertImport(importProcessContext)) {
+            // Check whether there is a mapping for the required fields or not
+            ArrayList<String> missingColumns = new ArrayList<String>();
+            if (CollectionUtils.isNotEmpty(requiredFields)) {
+                for (FacilioField field : requiredFields) {
+                    if (!fieldMapping.containsKey(field.getModule().getName() + "__" + field.getName())) {
+                        missingColumns.add(field.getDisplayName());
+                    }
+                }
+            }
+            if (missingColumns.size() > 0) {
+                throw new ImportMandatoryFieldsException(null, missingColumns, new Exception());
+            }
+        }
 
+        UniqueFunction uniqueFunction = (UniqueFunction) context.get(ImportAPI.ImportProcessConstants.UNIQUE_FUNCTION);
+        if (uniqueFunction == null) {
+            uniqueFunction = ParseImportFileCommand::getUniqueFunction;
+        }
+
+        String sheetName = (String) context.get(FacilioConstants.ContextNames.SHEET_NAME);
+        int totalRowCount = 0;
+        for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+            Sheet datatypeSheet = workbook.getSheetAt(i);
+
+            // if sheet name is not empty, and sheet name doesn't match
+            if (StringUtils.isNotEmpty(sheetName) && !sheetName.equalsIgnoreCase(datatypeSheet.getSheetName())) {
+                continue;
+            }
+
+            Iterator<Row> rowItr = datatypeSheet.iterator();
+            boolean heading = true;
+
+            int rowNo = 0;
+            while (rowItr.hasNext()) {
+                ImportRowContext rowContext = new ImportRowContext();
+                rowNo++;
+                Row row = rowItr.next();
+
+                if (row.getPhysicalNumberOfCells() <= 0) {
+                    break;
+                }
+
+                Iterator<Cell> cellItr = row.cellIterator();
+                if (heading) { // get the heading info
+                    int cellIndex = 0;
+                    while (cellItr.hasNext()) {
+                        Cell cell = cellItr.next();
+                        String cellValue = cell.getStringCellValue();
+                        headerIndex.put(cellIndex, cellValue);
+                        cellIndex++;
+                    }
+                    heading = false;
+                    continue;   // skip processing real data
+                }
+
+                HashMap<String, Object> rowVal = getRowVal(cellItr, headerIndex, workbook, rowNo);
+
+                if (isRowValueEmpty(rowVal)) {
+                    break;  // if it is empty cell, break the loop. We won't process further
+                }
+
+                rowContext.setRowNumber(rowNo);
+                rowContext.setColVal(rowVal);
+                rowContext.setSheetNumber(i);
+
+                if (ImportAPI.isInsertImport(importProcessContext)) {
+                    checkMandatoryFields(requiredFields, context, rowVal, rowNo);
+                }
+
+                String uniqueString = uniqueFunction.apply(rowNo, rowVal, context);
+
+                if(importProcessContext.getImportSetting() != ImportProcessContext.ImportSetting.INSERT.getValue()) {
+                    checkMandatoryUniqueFields(importProcessContext, rowVal, fieldMapping, rowNo);
+                }
+
+                if (!groupedContext.containsKey(uniqueString)) {
+                    List<ImportRowContext> rowContexts = new ArrayList<>();
+                    rowContexts.add(rowContext);
+                    groupedContext.put(uniqueString, rowContexts);
+                } else {
+                    groupedContext.get(uniqueString).add(rowContext);
+                }
+            }
+
+            totalRowCount += rowNo;
+        }
+
+        context.put(ImportAPI.ImportProcessConstants.GROUPED_ROW_CONTEXT, groupedContext);
+        context.put(ImportAPI.ImportProcessConstants.ROW_COUNT, totalRowCount);
         workbook.close();
 
         return false;
+    }
+
+    private HashMap<String, Object> getRowVal(Iterator<Cell> cellItr, HashMap<Integer, String> headerIndex, Workbook workbook, int rowNo) throws ImportParseException {
+        HashMap<String, Object> rowVal = new HashMap<>();
+        FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+        while (cellItr.hasNext()) {
+            Cell cell = cellItr.next();
+
+            String cellName = headerIndex.get(cell.getColumnIndex());
+            if (StringUtils.isEmpty(cellName)) {
+                continue;
+            }
+
+            Object val;
+            try {
+                CellValue cellValue = evaluator.evaluate(cell);
+                val = ImportAPI.getValueFromCell(cell, cellValue);
+            } catch(Exception e) {
+                throw new ImportParseException(rowNo, cellName, e);
+            }
+            rowVal.put(cellName, val);
+        }
+        return rowVal;
+    }
+
+    /**
+     * Check whether the uniqueField to match data is not empty. Throws error when any of these fields
+     * for a particular row is null.
+     *
+     * @param importProcessContext
+     * @param rowVal
+     * @param fieldMapping
+     * @param rowNo
+     * @throws Exception
+     */
+    private void checkMandatoryUniqueFields(ImportProcessContext importProcessContext, HashMap<String, Object> rowVal, HashMap<String, String> fieldMapping, int rowNo) throws Exception {
+        String settingArrayName = getSettingString(importProcessContext);
+        List<String> fieldList = null;
+        if(importProcessContext.getImportJobMetaJson() != null &&
+                !importProcessContext.getImportJobMetaJson().isEmpty() &&
+                importProcessContext.getImportJobMetaJson().containsKey(settingArrayName)) {
+
+            fieldList = (List<String>) importProcessContext.getImportJobMetaJson().get(settingArrayName);
+        }
+
+        if (CollectionUtils.isNotEmpty(fieldList)) {
+            for(String field : fieldList) {
+                if(rowVal.get(fieldMapping.get(field)) == null) {
+                    throw new ImportFieldValueMissingException(rowNo, fieldMapping.get(field), new Exception());
+                }
+            }
+        }
+    }
+
+    /**
+     * Check the value of the particular row is null.
+     *
+     * @param mandatoryFields
+     * @param context
+     * @param rowVal
+     * @param rowNo
+     * @throws ImportMandatoryFieldsException
+     */
+    private void checkMandatoryFields(List<FacilioField> mandatoryFields, Context context, HashMap<String, Object> rowVal, int rowNo) throws ImportMandatoryFieldsException {
+        if (CollectionUtils.isNotEmpty(mandatoryFields)) {
+            ArrayList<String> columns = new ArrayList<>();
+            for (FacilioField field : mandatoryFields) {
+                String fieldColumnName = field.getModule().getName() + "__" + field.getName();
+                if (rowVal.containsKey(fieldColumnName) || rowVal.get(fieldColumnName) == null) {
+                    columns.add(field.getDisplayName());
+                }
+            }
+
+            if (CollectionUtils.isNotEmpty(columns)) {
+                throw new ImportMandatoryFieldsException(rowNo, columns, new Exception());
+            }
+        }
+    }
+
+    private String getSettingString(ImportProcessContext importProcessContext) {
+        if(importProcessContext.getImportSetting() == ImportProcessContext.ImportSetting.INSERT_SKIP.getValue()) {
+            return "insertBy";
+        }
+        else {
+            return "updateBy";
+        }
     }
 
     private ArrayList<FacilioField> getRequiredFields(String moduleName) throws Exception{
@@ -69,5 +245,22 @@ public class ParseImportFileCommand extends FacilioCommand {
             }
         }
         return fields;
+    }
+
+    private static String getUniqueFunction(Integer rowNumber, Map<String, Object> rowVal, Context context) {
+        return null;
+    }
+
+    private boolean isRowValueEmpty(Map<String, Object> rowVal) {
+        if (MapUtils.isEmpty(rowVal)) {
+            return true;
+        }
+
+        for (Object obj : rowVal.values()) {
+            if (obj != null) {
+                return false;
+            }
+        }
+        return true;
     }
 }

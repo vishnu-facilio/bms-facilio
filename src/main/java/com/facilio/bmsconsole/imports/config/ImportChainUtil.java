@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.imports.config;
 
+import com.facilio.bmsconsole.commands.InsertImportDataIntoLogCommand;
 import com.facilio.bmsconsole.imports.annotations.ImportModule;
 import com.facilio.bmsconsole.imports.command.ImportUploadFileCommand;
 import com.facilio.bmsconsole.imports.command.ParseImportFileCommand;
@@ -106,6 +107,7 @@ public class ImportChainUtil {
         addIfNotNull(chain, beforeParseCommand);
         chain.addCommand(new ParseImportFileCommand());
         addIfNotNull(chain, afterParseCommand);
+        chain.addCommand(new InsertImportDataIntoLogCommand());
 
         return chain;
     }
