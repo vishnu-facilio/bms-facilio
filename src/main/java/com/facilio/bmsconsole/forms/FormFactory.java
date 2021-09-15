@@ -435,6 +435,7 @@ public class FormFactory {
 		List<FacilioForm> facilityBookingFormsList = Arrays.asList(getFacilityBookingForm(), getFacilityBookingPortalForm(), getFacilityHotDeskBookingForm(), getFacilitySpaceBookingForm(),getFacilityHotDeskBookingPortalForm(),getFacilitySpaceBookingPortalForm());
 		List<FacilioForm> facilitySpecialAvailabilityFormsList = Arrays.asList(getFacilitySpecialAvailabilityForm());
 		List<FacilioForm> amenityFormsList = Arrays.asList(getAmenityForm());
+		List<FacilioForm> termsAndConditionsFormsList = Arrays.asList(getTermsAndConditionForm());
 		List<FacilioForm> externalAttendeeFormList = Arrays.asList(getExternalAttendeeForm());
 		List<FacilioForm> siteFormList = Arrays.asList(getSiteForm());
 		List<FacilioForm> buildingFormList = Arrays.asList(getBuildingForm());
@@ -504,6 +505,7 @@ public class FormFactory {
 				.put(ContextNames.FacilityBooking.FACILITY_BOOKING, getFormMap(facilityBookingFormsList))
 				.put(ContextNames.FacilityBooking.FACILITY_SPECIAL_AVAILABILITY, getFormMap(facilitySpecialAvailabilityFormsList))
 				.put(ContextNames.FacilityBooking.AMENITY, getFormMap(amenityFormsList))
+				.put(ContextNames.TERMS_AND_CONDITIONS, getFormMap(termsAndConditionsFormsList))
 				.put(ContextNames.FacilityBooking.FACILITY_BOOKING_EXTERNAL_ATTENDEE, getFormMap(externalAttendeeFormList))
 				.put(ContextNames.SITE, getFormMap(siteFormList))
 				.put(ContextNames.BUILDING, getFormMap(buildingFormList))
