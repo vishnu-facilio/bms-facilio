@@ -89,7 +89,11 @@ public class InspectionTemplateContext extends QAndATemplateContext <InspectionR
 
     @Override
     protected InspectionResponseContext newResponseObject() {
-        return new InspectionResponseContext();
+        InspectionResponseContext inspectionResponse = new InspectionResponseContext();
+        
+        inspectionResponse.setData(this.getData());
+        
+        return inspectionResponse;
     }
 
     @Override

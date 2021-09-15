@@ -92,7 +92,12 @@ public class InductionTemplateContext extends QAndATemplateContext <InductionRes
 
     @Override
     protected InductionResponseContext newResponseObject() {
-        return new InductionResponseContext();
+        
+    	InductionResponseContext inductionResponse = new InductionResponseContext();
+        
+    	inductionResponse.setData(this.getData());
+        
+        return inductionResponse;
     }
     
     @Override
