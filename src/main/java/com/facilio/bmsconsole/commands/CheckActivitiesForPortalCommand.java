@@ -18,9 +18,9 @@ public class CheckActivitiesForPortalCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		List<ActivityContext> activity =  (List<ActivityContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		List<ActivityContext> activities = new ArrayList<>();
+		Boolean isAssetActivity = context.get(FacilioConstants.ContextNames.MODULE_NAME).equals(FacilioConstants.ContextNames.ASSET_ACTIVITY);
 		for(ActivityContext prop : activity) {	
 			ActivityContext checkIsNotify = prop;
-			Boolean isAssetActivity = context.get(FacilioConstants.ContextNames.MODULE_NAME).equals(FacilioConstants.ContextNames.ASSET_ACTIVITY);
 			if (AccountUtil.getCurrentUser().isPortalUser() && !isAssetActivity) {
 					if (checkIsNotify.getType() == WorkOrderActivityType.ADD_COMMENT.getValue()) {
 						if (checkIsNotify.getInfo().get("notifyRequester") != null) {
