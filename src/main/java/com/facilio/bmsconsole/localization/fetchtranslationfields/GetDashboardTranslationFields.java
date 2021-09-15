@@ -32,8 +32,8 @@ public class GetDashboardTranslationFields {
 
         if(CollectionUtils.isNotEmpty(dashboardTabContextList)) {
             for (DashboardTabContext dashboardTabContext : dashboardTabContextList){
-                String dashboardTabKey = DashboardTranslationImpl.getDashboardTabKey(String.valueOf(dashboardTabContext.getDashboardTabId()));
-                jsonArray.add(TranslationsUtil.constructJSON(dashboardTabContext.getName(),DashboardTranslationImpl.DASHBOARD_TAB,TranslationConstants.DISPLAY_NAME,String.valueOf(dashboardTabContext.getDashboardTabId()),dashboardTabKey,properties));
+                String dashboardTabKey = DashboardTranslationImpl.getDashboardTabKey(String.valueOf(dashboardTabContext.getId()));
+                jsonArray.add(TranslationsUtil.constructJSON(dashboardTabContext.getName(),DashboardTranslationImpl.DASHBOARD_TAB,TranslationConstants.DISPLAY_NAME,String.valueOf(dashboardTabContext.getId()),dashboardTabKey,properties));
 
                 List<DashboardWidgetContext> dashboardWidgets = dashboardTabContext.getDashboardWidgets();
 

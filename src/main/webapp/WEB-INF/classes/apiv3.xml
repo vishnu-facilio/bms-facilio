@@ -330,6 +330,15 @@
                 class="com.facilio.bmsconsoleV3.actions.FloorplanAction"
                 method="getFloorplanDetailsByType">
         </action>
+        <action name="viewerData"
+                class="com.facilio.bmsconsoleV3.actions.FloorplanAction"
+                method="getFloorplanViewData">
+        </action>
+         <action name="propertiesdata"
+                class="com.facilio.bmsconsoleV3.actions.FloorplanAction"
+                method="getPropertiesData">
+        </action>
+        
     </package>
     <package name="floorplansearch" namespace="/api/v3/floorplan/search" extends="v3Api">
         <action name="*"

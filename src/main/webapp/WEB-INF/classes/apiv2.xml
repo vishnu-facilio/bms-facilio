@@ -3796,6 +3796,13 @@
 			<param name="moduleName">inventory</param>
 			<param name="permission">READ,READ_OWN</param>
 		</action>
+		
+		<action name="addAdjustment"
+			class="com.facilio.bmsconsole.actions.ItemTransactionsAction"
+			method="adjustmentItemTransactions">
+			<param name="moduleName">inventory</param>
+			<param name="permission">READ,READ_OWN</param>
+		</action>
 
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.ItemTransactionsAction"
@@ -3804,7 +3811,6 @@
 			<param name="permission">DELETE</param>
 		</action>
 	</package>
-
 	<package name="approveOrRejectItemTransactionsApi"
 		namespace="/api/v2/approveOrRejectItem" extends="v2Api">
 		<action name="approveOrReject"

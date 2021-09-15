@@ -2,10 +2,13 @@ package com.facilio.bmsconsoleV3.actions;
 
 import java.util.List;
 
+import com.facilio.bmsconsole.context.IndoorFloorPlanContext;
 import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
+import com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanGeoJsonContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldUtil;
 import com.facilio.v3.V3Action;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.JSONObject;
@@ -75,6 +78,44 @@ public class FloorplanAction extends V3Action {
 		this.search = search;
 	}
 	
+	private long getFloorplanId() {
+		return floorplanId;
+	}
+	public void setFloorplanId(long floorplanId) {
+		this.floorplanId = floorplanId;
+	}
+
+	private long floorplanId;
+	
+	public String getViewMode() {
+		return viewMode;
+	}
+	public void setViewMode(String viewMode) {
+		this.viewMode = viewMode;
+	}
+
+	private String viewMode;
+
+
+	public List<Long> getObjectIds() {
+		return objectIds;
+	}
+	public void setObjectIds(List<Long> objectIds) {
+		this.objectIds = objectIds;
+	}
+
+	private List<Long> objectIds;
+	
+	
+	public Long getObjectId() {
+		return objectId;
+	}
+	public void setObjectId(Long objectId) {
+		this.objectId = objectId;
+	}
+
+	private Long objectId;
+	
 	
 	public String getFacilityDetails() throws Exception {
 		
@@ -130,4 +171,119 @@ public class FloorplanAction extends V3Action {
 		setData(FacilioConstants.ContextNames.RECORD_LIST, context.get(FacilioConstants.ContextNames.RECORD_LIST));
 		return SUCCESS;
 	}
+	public String getFloorplanViewData() throws Exception {
+		
+
+		
+		if (viewMode != null && viewMode.equals(FacilioConstants.ContextNames.Floorplan.ASSIGNMENT_VIEW)) {
+			FacilioChain chain = ReadOnlyChainFactoryV3.getfloorplanViewerObjectChain();
+			FacilioContext context = chain.getContext();
+			context.put(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN_ID, floorplanId);
+			context.put(FacilioConstants.ContextNames.Floorplan.OBJECT_IDS, objectIds);
+			context.put(FacilioConstants.ContextNames.Floorplan.VIEW_MODE, viewMode);
+			chain.execute();		
+			setData(FacilioConstants.ContextNames.Floorplan.MARKERS, context.get(FacilioConstants.ContextNames.Floorplan.MARKERS));
+			setData(FacilioConstants.ContextNames.Floorplan.ZONES, context.get(FacilioConstants.ContextNames.Floorplan.ZONES));
+			setData(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN, context.get(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN));
+
+
+		}
+		else if (viewMode != null && viewMode.equals(FacilioConstants.ContextNames.Floorplan.BOOKING_VIEW)) {
+			
+			FacilioChain chain = ReadOnlyChainFactoryV3.getfloorplanBookingObjectChain();
+			FacilioContext context = chain.getContext();
+			context.put(FacilioConstants.ContextNames.START_TIME, startTime);
+			context.put(FacilioConstants.ContextNames.END_TIME, endTime);
+			context.put(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN_ID, floorplanId);
+			context.put(FacilioConstants.ContextNames.Floorplan.OBJECT_IDS, objectIds);
+			context.put(FacilioConstants.ContextNames.Floorplan.VIEW_MODE, viewMode);
+			chain.execute();
+			
+			setData(FacilioConstants.ContextNames.FacilityBooking.FACILITY, context.get(FacilioConstants.ContextNames.FacilityBooking.FACILITY));
+			setData(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING, context.get(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING));
+			setData("bookingList", context.get("bookingMap"));
+
+			
+			setData(FacilioConstants.ContextNames.Floorplan.MARKERS, context.get(FacilioConstants.ContextNames.Floorplan.MARKERS));
+			setData(FacilioConstants.ContextNames.Floorplan.ZONES, context.get(FacilioConstants.ContextNames.Floorplan.ZONES));
+			setData(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN, context.get(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN));
+
+		}
+		else {
+			FacilioChain chain = ReadOnlyChainFactoryV3.getfloorplanViewerObjectChain();
+			FacilioContext context = chain.getContext();
+			context.put(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN_ID, floorplanId);
+			context.put(FacilioConstants.ContextNames.Floorplan.OBJECT_IDS, objectIds);
+			chain.execute();	
+			
+			setData(FacilioConstants.ContextNames.Floorplan.MARKERS, context.get(FacilioConstants.ContextNames.Floorplan.MARKERS));
+			setData(FacilioConstants.ContextNames.Floorplan.ZONES, context.get(FacilioConstants.ContextNames.Floorplan.ZONES));
+			setData(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN, context.get(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN));
+
+		}
+		
+	
+		
+		
+		return SUCCESS;
+	}
+	
+	public String getPropertiesData() throws Exception {
+		
+		if (objectId != null && objectId > 0) {
+			
+			if (viewMode != null && viewMode.equals(FacilioConstants.ContextNames.Floorplan.ASSIGNMENT_VIEW)) {
+
+				FacilioChain chain = ReadOnlyChainFactoryV3.getfloorplanPropertiesChain();
+				FacilioContext context = chain.getContext();
+				context.put(FacilioConstants.ContextNames.Floorplan.OBJECTID, objectId);
+				context.put(FacilioConstants.ContextNames.Floorplan.VIEW_MODE, viewMode);
+
+				chain.execute();
+				
+				setData(FacilioConstants.ContextNames.Floorplan.PROPERTIES, context.get(FacilioConstants.ContextNames.Floorplan.PROPERTIES));
+
+				
+			}
+			else if (viewMode != null && viewMode.equals(FacilioConstants.ContextNames.Floorplan.BOOKING_VIEW)) {
+
+				FacilioChain chain = ReadOnlyChainFactoryV3.getfloorplanBookingPropertiesChain();
+				FacilioContext context = chain.getContext();
+				context.put(FacilioConstants.ContextNames.Floorplan.OBJECTID, objectId);
+				context.put(FacilioConstants.ContextNames.START_TIME, startTime);
+				context.put(FacilioConstants.ContextNames.END_TIME, endTime);
+				context.put(FacilioConstants.ContextNames.Floorplan.VIEW_MODE, viewMode);
+
+				chain.execute();
+				setData(FacilioConstants.ContextNames.Floorplan.PROPERTIES, context.get(FacilioConstants.ContextNames.Floorplan.PROPERTIES));
+
+				
+			}
+			else {
+				
+				FacilioChain chain = ReadOnlyChainFactoryV3.getfloorplanPropertiesChain();
+				FacilioContext context = chain.getContext();
+				context.put(FacilioConstants.ContextNames.Floorplan.OBJECTID, objectId);
+				context.put(FacilioConstants.ContextNames.Floorplan.VIEW_MODE, viewMode);
+
+				chain.execute();
+				
+				setData(FacilioConstants.ContextNames.Floorplan.PROPERTIES, context.get(FacilioConstants.ContextNames.Floorplan.PROPERTIES));
+
+				
+			}
+
+			
+			
+		}
+		else {
+			setData(FacilioConstants.ContextNames.Floorplan.PROPERTIES, new JSONObject());
+		}
+
+		
+		return SUCCESS;
+	}
+	
+	
+	
 }

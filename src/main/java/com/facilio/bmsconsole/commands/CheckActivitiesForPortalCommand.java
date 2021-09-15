@@ -20,7 +20,8 @@ public class CheckActivitiesForPortalCommand extends FacilioCommand {
 		List<ActivityContext> activities = new ArrayList<>();
 		for(ActivityContext prop : activity) {	
 			ActivityContext checkIsNotify = prop;
-			if (AccountUtil.getCurrentUser().isPortalUser()) {
+			Boolean isAssetActivity = context.get(FacilioConstants.ContextNames.MODULE_NAME).equals(FacilioConstants.ContextNames.ASSET_ACTIVITY);
+			if (AccountUtil.getCurrentUser().isPortalUser() && !isAssetActivity) {
 					if (checkIsNotify.getType() == WorkOrderActivityType.ADD_COMMENT.getValue()) {
 						if (checkIsNotify.getInfo().get("notifyRequester") != null) {
 							if ((boolean) checkIsNotify.getInfo().get("notifyRequester")) {

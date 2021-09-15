@@ -178,6 +178,7 @@ public class AddOrUpdateItemQuantityCommand extends FacilioCommand {
 			addition = rs.get(0).get("addition") != null ? (double) rs.get(0).get("addition") : 0;
 			issues = rs.get(0).get("issues") != null ? (double) rs.get(0).get("issues") : 0;
 			returns = rs.get(0).get("returns") != null ? (double) rs.get(0).get("returns") : 0;
+			
 			return ((addition + returns) - issues);
 		}
 		return 0d;

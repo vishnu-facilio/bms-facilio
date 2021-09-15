@@ -1961,9 +1961,11 @@ public class FacilioConstants {
 			public static final String FACILITY_BOOKING_PAYMENTS = "bookingpayment";
 			public static final String RESERVED_FOR = "reservedFor";
 			public static final String FACILITY_PHOTOS = "facilityphotos";
-
 			public static final String END_DATE_TIME = "endDateTime";
-
+			public static final String BOOKING_REQUESTER= "bookingRequestedBy";
+			public static final String BOOKING_RESERVEDFOR= "reservedFor";
+			
+			
 		}
 
 		public static class Tenant {
@@ -2005,6 +2007,7 @@ public class FacilioConstants {
 		}
 
 		public static class Floorplan {
+			public static final String INDOOR_FLOORPLAN_ID = "indoorfloorplanId";
 			public static final String INDOOR_FLOORPLAN = "indoorfloorplan";
 			public static final String INDOOR_FLOORPLAN_OBJECTS = "indoorfloorplanobjects";
 			public static final String MARKER_TYPE = "markertype";
@@ -2013,6 +2016,26 @@ public class FacilioConstants {
 			public static final String DESKS = "desks";
 			public static final String FETCH_ONLY_DESKS = "fetchOnlydesks";
 			public static final String BOOKED_DESKS = "bookedDesks";
+			public static final String FEATURES  = "features";
+			public static final String MARKERS  = "markers";
+			public static final String MARKERS_FIELDS  = "markersFields";
+			public static final String RECORD_FIELDS  = "recordFields";
+			public static final String ZONES  = "zones";
+			public static final String OBJECT_IDS  = "objectIds";
+			public static final String VIEW_MODE  = "viewMode";
+			public static final String ASSIGNMENT_VIEW  = "ASSIGNMENT";
+			public static final String BOOKING_VIEW  = "BOOKING";
+			public static final String OBJECTID  = "objectId";
+			public static final String PROPERTIES  = "properties";
+			public static final String OBJECT  = "object";
+			public static final String OBJECT_FIEDS  = "objectFields";
+			public static final String RECORD  = "record";
+			public static final String MARKER_RECORD_OBJECTMAP  = "markerRecordObjectMap";
+			public static final String ZONE_RECORD_OBJECTMAP  = "zoneRecordObjectMap";
+			public static final String MARKER_LIST  = "markerList";
+			public static final String ZONE_LIST  = "zoneList";
+			public static final String SPACE_MAP  = "spaceMap";
+
 		}
 		
 		public static class SpaceCategory {

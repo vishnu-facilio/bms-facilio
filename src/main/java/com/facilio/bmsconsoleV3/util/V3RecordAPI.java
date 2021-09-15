@@ -167,6 +167,28 @@ public class V3RecordAPI {
             return null;
         }
     }
+   
+    
+    public static <T extends ModuleBaseWithCustomFields> List<T> getRecordsListWithSupplements (String modName, Collection<Long> recordIds, Class<T> beanClass, Collection<SupplementRecord> supplements) throws Exception{
+        List<T> records = constructBuilder(modName, recordIds, beanClass, null, supplements).get();
+        if(CollectionUtils.isNotEmpty(records)) {
+            return records;
+        }
+        else {
+            return null;
+        }
+    }
+    
+    
+    public static <T extends ModuleBaseWithCustomFields> List<T> getRecordsListWithSupplements (String modName, Collection<Long> recordIds, Class<T> beanClass, Criteria criteria, Collection<SupplementRecord> supplements) throws Exception{
+        List<T> records = constructBuilder(modName, recordIds, beanClass, criteria, supplements).get();
+        if(CollectionUtils.isNotEmpty(records)) {
+            return records;
+        }
+        else {
+            return null;
+        }
+    }
 
     public static <T extends ModuleBaseWithCustomFields> Map<Long, T> getRecordsMap (String modName, Collection<Long> recordIds) throws Exception{
         return getRecordsMap(modName, recordIds, null, null);

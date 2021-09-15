@@ -6,7 +6,9 @@ public enum TransactionState{
 	RETURN,
 	USE,
 	IN,
-	OUT;
+	OUT,
+	ADJUSTMENT_INCREASE,
+	ADJUSTMENT_DECREASE;
 
 
 	public static TransactionState valueOf(int value) {

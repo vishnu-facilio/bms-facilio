@@ -1255,13 +1255,18 @@ public class FormsAPI {
 	
 	/******* Default Val End ********/
 	
-	
 	public static FacilioForm fetchForm(long formId, String moduleName) throws Exception {
+		return fetchForm(formId, moduleName, false);
+	}
+	
+	public static FacilioForm fetchForm(long formId, String moduleName, boolean fetchRuleFields) throws Exception {
 		FacilioChain chain = FacilioChainFactory.getFormMetaChain();
 		Context formContext = chain.getContext();
 
 		formContext.put(FacilioConstants.ContextNames.FORM_ID, formId);
 		formContext.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		formContext.put(FacilioConstants.ContextNames.FETCH_FORM_RULE_FIELDS, fetchRuleFields);
+		
 		chain.execute();
 
 		return (FacilioForm) formContext.get(FacilioConstants.ContextNames.FORM);

@@ -15,6 +15,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.LookupFieldMeta;
+import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.V3Context;
@@ -279,7 +281,29 @@ public class FacilityAPI {
         List<SlotContext> slotList = builder.get();
         return  slotList;
     }
+    
+    public static List<SlotContext> getFacilitySlotsForTimeRangeWithSupplements(List<Long> facilityIds, Long startTime, Long endTime) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String slots = FacilioConstants.ContextNames.FacilityBooking.SLOTS;
+        List<FacilioField> fields = modBean.getAllFields(slots);
+        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 
+        SelectRecordsBuilder<SlotContext> builder = new SelectRecordsBuilder<SlotContext>()
+                .moduleName(slots)
+                .select(fields)
+                .beanClass(SlotContext.class)
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("facilityId"), StringUtils.join(facilityIds,","), NumberOperators.EQUALS));
+        if(startTime != null && endTime != null) {
+        	DateRange range = new DateRange(startTime,endTime);
+        	builder.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("slotStartTime"), range.toString(), DateOperators.BETWEEN))
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("slotEndTime"), range.toString(), DateOperators.BETWEEN));
+        }
+        
+//		builder.fetchSupplement((LookupField) fieldsAsMap.get("bookingRequestedBy"));
+
+        List<SlotContext> slotList = builder.get();
+        return  slotList;
+    }
     public static List<FacilityContext> getFacilityList(Long parentId, Long parentModuleId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         String slots = FacilioConstants.ContextNames.FacilityBooking.FACILITY;
@@ -312,6 +336,7 @@ public class FacilityAPI {
         return  list;
     }
     
+
     public static List<BookingSlotsContext> getFacilityBookingListWithSlots(List<Long> slotIds) throws Exception {
     	
     	List<BookingSlotsContext> list = new ArrayList<>();
@@ -320,15 +345,33 @@ public class FacilityAPI {
     		
     		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         	String bookingSlots = FacilioConstants.ContextNames.FacilityBooking.BOOKING_SLOTS;
+            FacilioModule bookingModule = modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
             List<FacilioField> slotfields = modBean.getAllFields(bookingSlots);
             Map<String, FacilioField> slotfieldsAsMap = FieldFactory.getAsMap(slotfields);
+            
+            
+        		List<LookupField> additionaLookups = new ArrayList<LookupField>();
+        		LookupFieldMeta moduleStateField = new LookupFieldMeta((LookupField) slotfieldsAsMap.get("booking"));
+
+        	    FacilioField requestedFor = FieldFactory.getField("bookingRequestedBy", "BOOKING_REQUESTED_BY", bookingModule, FieldType.LOOKUP);
+
+                List<FacilioField> selectFieldsList = new ArrayList<>();
+                selectFieldsList.add(requestedFor);
+                
+                moduleStateField.setSelectFields(selectFieldsList);
+                additionaLookups.add(moduleStateField);
+
+                
+    
             SelectRecordsBuilder<BookingSlotsContext> slotbuilder = new SelectRecordsBuilder<BookingSlotsContext>()
                     .moduleName(bookingSlots)
                     .select(slotfields)
                     .beanClass(BookingSlotsContext.class)
                     .andCondition(CriteriaAPI.getCondition(slotfieldsAsMap.get("slot"), StringUtils.join(slotIds,","), NumberOperators.EQUALS))
-                    .fetchSupplement((LookupField) slotfieldsAsMap.get("booking"));
+                    .fetchSupplements(additionaLookups);
+    
 
+    		
             list = slotbuilder.get();
         }
     	

@@ -25,7 +25,8 @@ public enum TranslationTypeEnum {
     STATE_TRANSITION(WebTabContext.Type.MODULE,new GetStateTransitionTranslationFields()),
     DASHBOARD_FOLDER(WebTabContext.Type.DASHBOARD,new GetDashboardFolderTranslationFields()),
     DASHBOARD(WebTabContext.Type.DASHBOARD,new GetDashboardTabAndWidgetTransFields()),
-    REPORT_FOLDER(WebTabContext.Type.REPORT,new GetReportFolderTranslationFields())
+    REPORT_FOLDER(WebTabContext.Type.REPORT,new GetReportFolderTranslationFields()),
+    REPORT(WebTabContext.Type.REPORT,new GetReportTranslationFields())
     ;
 
     private static final Map<String, TranslationTypeEnum> TRANSLATION_TYPE_ENUM_MAP = initTranslationWiseType();
