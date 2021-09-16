@@ -95,6 +95,7 @@ public class NoteAction extends FacilioAction {
 		ModuleBaseWithCustomFields parent = new ModuleBaseWithCustomFields();
 		parent.setId(note.getParentId());
 		note.setParent(parent);
+
 		String parentModuleName = this.parentModuleName;
 		if (parentModuleName == null) {
 			parentModuleName = ticketModuleName;
@@ -113,7 +114,9 @@ public class NoteAction extends FacilioAction {
 		else if (moduleName.equals(FacilioConstants.ContextNames.TICKET_NOTES)) {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
 			}
-
+		else if (moduleName.equals(FacilioConstants.ContextNames.STORE_ROOM_NOTES)) {
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.STORE_ROOM_ACTIVITY);
+		}
 		else if (moduleName.equals(FacilioConstants.ContextNames.ASSET_NOTES)) {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
 			}
