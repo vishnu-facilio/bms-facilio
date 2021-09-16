@@ -1,20 +1,25 @@
 package com.facilio.agentv2.point;
 
-import com.facilio.agent.controller.FacilioControllerType;
-import com.facilio.agentv2.AgentConstants;
-import com.facilio.command.FacilioCommand;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.chain.FacilioChain;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
-import com.facilio.db.criteria.Criteria;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.util.Map;
+import com.facilio.agent.controller.FacilioControllerType;
+import com.facilio.agentv2.AgentConstants;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.chain.FacilioChain;
+import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 
 public class EditPointCommand extends FacilioCommand {
 
@@ -67,9 +72,16 @@ public class EditPointCommand extends FacilioCommand {
 
     private int updateChild(Context context, FacilioControllerType controllerType) throws Exception {
         if (containsAndNotNull(context, FacilioConstants.ContextNames.TO_UPDATE_CHILD_MAP) && containsAndNotNull(context, FacilioConstants.ContextNames.CRITERIA)) {
+        	FacilioModule module = PointsAPI.getPointModule(controllerType);
+        	List<FacilioField> childPointFields = PointsAPI.getChildPointFields(controllerType);
+        	
+        	// temp handling..TODO remove by handling extended update
+        	childPointFields = childPointFields.stream().filter(p -> p.getModule().getName() == module.getName())
+        											   .collect(Collectors.toList());
+        	
             GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
-                    .table(PointsAPI.getPointModule(controllerType).getTableName())
-                    .fields(PointsAPI.getChildPointFields(controllerType))
+                    .table(module.getTableName())
+                    .fields(childPointFields)
                     .andCriteria((Criteria) context.get(FacilioConstants.ContextNames.CHILD_CRITERIA));
             return updateRecordBuilder.update((Map<String, Object>) context.get(FacilioConstants.ContextNames.TO_UPDATE_CHILD_MAP));
         }
