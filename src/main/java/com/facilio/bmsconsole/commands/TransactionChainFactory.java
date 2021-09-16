@@ -6157,6 +6157,18 @@ public class TransactionChainFactory {
 		return chain;
 	}
 	
+	public static FacilioChain getDeleteAttachmentsListChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new DeleteTemplateAttachmentCommand());
+		return chain;
+	}
+	
+	public static FacilioChain getAttachmentsListTranslationChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetAttachmentsListCommand());
+		return chain;
+	}
+	
 }
 
 

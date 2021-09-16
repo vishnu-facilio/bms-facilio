@@ -262,7 +262,7 @@ public class FacilioFileStore extends FileStore {
 	}
 
 	private String getFileUrl(String namespace, long fileId, String mode) throws Exception {
-		FileInfo fileInfo = getFileInfo(namespace, fileId);
+		FileInfo fileInfo = getFileInfo(namespace, fileId, true);
 		return getFileUrl(fileInfo, mode);
 	}
 

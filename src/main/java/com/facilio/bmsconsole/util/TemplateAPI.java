@@ -252,6 +252,11 @@ public class TemplateAPI {
 			id = addFormTemplate((FormTemplate) template);
 			template.setId(id);
 		}
+		
+		if (template.getAttachments() != null) {
+			TemplateAttachmentUtil.addAttachments(template.getId(), template.getAttachments());
+		}
+		
 		return id;
 	}
 	

@@ -2978,7 +2978,62 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.LOOKUP));
         fields.add(getField("userWorkflowId", "USER_WORKFLOW_ID", module, FieldType.LOOKUP));
         fields.add(getField("ftl", "IS_FTL", module, FieldType.BOOLEAN));
+        fields.add(getField("isAttachmentAdded", "IS_ATTACHMENT_ADDED", module, FieldType.BOOLEAN));
 
+        return fields;
+    }
+    
+    public static List<FacilioField> getTemplateFileFields() {
+        FacilioModule module = ModuleFactory.getTemplateFileModule();
+
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        
+        FacilioField templateId = new FacilioField();
+        templateId.setName("templateId");
+        templateId.setDataType(FieldType.NUMBER);
+        templateId.setColumnName("TEMPLATE_ID");
+        templateId.setModule(module);
+        fields.add(templateId);
+        
+ 		fields.add(getField("fileId","File Id","FILE_ID",module,FieldType.NUMBER));
+
+        return fields;
+    }
+    
+    public static List<FacilioField> getTemplateUrlFields() {
+        FacilioModule module = ModuleFactory.getTemplateUrlAttachmentModule();
+
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        
+        FacilioField templateId = new FacilioField();
+        templateId.setName("templateId");
+        templateId.setDataType(FieldType.NUMBER);
+        templateId.setColumnName("TEMPLATE_ID");
+        templateId.setModule(module);
+        fields.add(templateId);
+        
+ 		fields.add(getField("urlString","Url String","URL_STRING",module,FieldType.STRING));
+
+        return fields;
+    }
+    
+    public static List<FacilioField> getTemplateFileFieldFields() {
+        FacilioModule module = ModuleFactory.getTemplateFileFieldAttachmentModule();
+
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        
+        FacilioField templateId = new FacilioField();
+        templateId.setName("templateId");
+        templateId.setDataType(FieldType.NUMBER);
+        templateId.setColumnName("TEMPLATE_ID");
+        templateId.setModule(module);
+        fields.add(templateId);
+        
+        fields.add(getField("fieldId","File FIELD Id","FILE_FIELD_ID",module,FieldType.NUMBER));
+        
         return fields;
     }
 

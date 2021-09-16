@@ -987,6 +987,30 @@ public class ModuleFactory {
 		templatesModule.setTableName("Templates");
 		return templatesModule;
 	}
+	
+	public static FacilioModule getTemplateFileModule() {
+		FacilioModule templatesModule = new FacilioModule();
+		templatesModule.setName("templatefileattachment");
+		templatesModule.setDisplayName("Template File Attachment");
+		templatesModule.setTableName("Template_File_Attachment");
+		return templatesModule;
+	}
+	
+	public static FacilioModule getTemplateUrlAttachmentModule() {
+		FacilioModule templatesModule = new FacilioModule();
+		templatesModule.setName("templateurlattachment");
+		templatesModule.setDisplayName("Template Url Attachment");
+		templatesModule.setTableName("Template_Url_Attachment");
+		return templatesModule;
+	}
+	
+	public static FacilioModule getTemplateFileFieldAttachmentModule() {
+		FacilioModule templatesModule = new FacilioModule();
+		templatesModule.setName("templatefilefieldattachment");
+		templatesModule.setDisplayName("Template File Field Attachment");
+		templatesModule.setTableName("Template_FileField_Attachment");
+		return templatesModule;
+	}
 
 	public static FacilioModule getEMailTemplatesModule() {
 		FacilioModule eMailTemplatesModule = new FacilioModule();

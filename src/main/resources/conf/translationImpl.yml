@@ -67,3 +67,6 @@ translations:
 
   - name: ReportFolderTranslationV2
     translationImplClass : com.facilio.bmsconsole.localization.translationImpl.ReportFolderTranslationImplV2
+
+  - name: ReportTranslation
+    translationImplClass : com.facilio.bmsconsole.localization.translationImpl.ReportTranslationImpl

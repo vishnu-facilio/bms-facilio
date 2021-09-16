@@ -244,6 +244,6 @@ public class WebTabContext implements Serializable {
     }
 
     @Setter @Getter
-    private Map<String, String> typeVsColumns;
+    private JSONArray typeVsColumns;
 
 }

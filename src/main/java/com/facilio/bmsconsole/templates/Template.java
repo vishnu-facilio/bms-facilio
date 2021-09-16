@@ -1,8 +1,10 @@
 package com.facilio.bmsconsole.templates;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.text.StringEscapeUtils;
@@ -14,9 +16,15 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.facilio.bmsconsole.context.TemplateFileContext;
+import com.facilio.bmsconsole.context.TemplateUrlContext;
 import com.facilio.bmsconsole.util.FreeMarkerAPI;
+import com.facilio.bmsconsole.util.TemplateAttachmentUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
+
+import lombok.Getter;
+
 
 public abstract class Template implements Serializable {
 
@@ -26,6 +34,7 @@ public abstract class Template implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LogManager.getLogger(Template.class.getName());
 	private static final String CUSTOM_SCRIPT_NAMESPACE = "cs";
+		
 	private long id;
 	public long getId() {
 		return id;
@@ -46,6 +55,8 @@ public abstract class Template implements Serializable {
 	public String getName() {
 		return name;
 	}
+	
+	
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -138,8 +149,14 @@ public abstract class Template implements Serializable {
 	
 	public final JSONObject getTemplate(Map<String, Object> parameters) throws Exception {
 		JSONObject json = getOriginalTemplate();
-		if (json != null && (workflow != null || userWorkflow != null)) {
-			JSONObject parsedJson = null;
+		if (json != null) {
+			
+			if (getIsAttachmentAdded()) {
+				this.attachments = TemplateAttachmentUtil.fetchAttachments(getId());
+			}
+			
+			if (workflow != null) {
+				JSONObject parsedJson = null;
 				Map<String, Object> params;
 				if (workflow.isV2Script()) {
 					params = (Map<String, Object>) WorkflowUtil.getWorkflowExpressionResult(workflow, parameters);
@@ -191,19 +208,20 @@ public abstract class Template implements Serializable {
 					}
 					catch (Exception e) {
 						LOGGER.error(new StringBuilder("Error occurred during replacing of place holders \n")
-											.append("JSON : ")
-											.append(jsonStr)
-											.append("\nParams : ")
-											.append(params)
-											.append("\nParameters : ")
-											.append(parameters)
-											.toString(), e);
+								.append("JSON : ")
+								.append(jsonStr)
+								.append("\nParams : ")
+								.append(params)
+								.append("\nParameters : ")
+								.append(parameters)
+								.toString(), e);
 						throw e;
 					}
 					JSONParser parser = new JSONParser();
 					parsedJson = (JSONObject) parser.parse(jsonStr);
 				}
 				return parsedJson;
+			}
 		}
 		return json;
 	}
@@ -285,6 +303,28 @@ public abstract class Template implements Serializable {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	private Boolean isAttachmentAdded;
+	public Boolean getIsAttachmentAdded() {
+		if (isAttachmentAdded == null) {
+			return false;
+		}
+		return isAttachmentAdded;
+	}
+	public void setIsAttachmentAdded(Boolean isAttachmentAdded) {
+		this.isAttachmentAdded = isAttachmentAdded;
+	}
+	
+	
+	@Getter
+	private List<TemplateAttachment> attachments;
+	public void addAttachment(TemplateAttachment attachment) {
+		if (attachments == null) {
+			attachments = new ArrayList<>();
+		}
+		attachments.add(attachment);
+		
 	}
 
 }

@@ -2093,6 +2093,17 @@
 			method="updateSection">
 		</action>
 	</package>
+	
+	<package name="mailattachment" namespace="/api/v2/template/attachment" extends="v2Api">
+		<action name="getList"
+			class="com.facilio.bmsconsole.actions.EmailAttachmentAction" method="getList">
+		</action>
+		
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.EmailAttachmentAction" method="delete">
+		</action>
+		
+	</package>
 
 	<package name="templateApiv2" namespace="/api/v2/template"
 		extends="v2Api">
@@ -2413,6 +2424,7 @@
 		<action name="executeReport"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="executeReport">
+			<param name="translationImpl">ReportTranslation</param>
 		</action>
 		<action name="getReportFields"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"

@@ -526,6 +526,8 @@ public class FacilioConstants {
 		public static final String EXISTING_ATTACHMENT_LIST = "existingAttachments";
 		public static final String ATTACHMENT_CONTEXT_LIST = "attachmentsContextList";
 		public static final String ATTACHMENT_FILE_LIST = "attachmentFiles";
+		public static final String ATTACHMENT_URL_LIST = "attachmentFilesUrl";
+		public static final String ATTACHMENT_FILE_FIELDID_LIST = "attachmentFileFieldIds";
 		public static final String ATTACHMENT_CONTENT_TYPE = "attachmentContentType";
 		public static final String ATTACHMENT_TYPE = "attachmentType";
 		public static final String ATTACHMENT_FILE_NAME = "attachmentFileName";
@@ -2201,7 +2203,7 @@ public class FacilioConstants {
 			classMap.put(RENTAL_LEASE_CONTRACTS_LINE_ITEMS, RentalLeaseContractLineItemsContext.class);
 			classMap.put(RENTAL_LEASE_CONTRACTS_LINE_ITEMS, RentalLeaseContractLineItemsContext.class);
 			classMap.put(TOOL_VENDORS, ToolTypeVendorContext.class);
-			classMap.put(TERMS_AND_CONDITIONS, TermsAndConditionContext.class);
+			classMap.put(TERMS_AND_CONDITIONS, V3TermsAndConditionContext.class);
 			classMap.put(CONTRACT_ASSOCIATED_ASSETS, ContractAssociatedAssetsContext.class);
 			classMap.put(CONTRACT_ASSOCIATED_TERMS, ContractAssociatedTermsContext.class);
 			classMap.put(ATTENDANCE, AttendanceContext.class);

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -15,6 +16,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.reflections.Reflections;
+import org.reflections.scanners.FieldAnnotationsScanner;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -30,7 +33,9 @@ import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.annotation.Module;
 import com.facilio.workflowv2.Visitor.WorkflowFunctionVisitor;
+import com.facilio.workflowv2.annotation.ScriptModule;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.ExprContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Recursive_expressionContext;
 import com.facilio.workflowv2.contexts.DBParamContext;
@@ -38,11 +43,7 @@ import com.facilio.workflowv2.contexts.Value;
 
 public class WorkflowV2Util {
 
-	public static Map<String, String> MODULE_CLASS_MAPPER = new HashMap<>();
-	
 	public static Map<String, Object> MODULE_OBJECT_CACHE = new HashMap<>();
-	
-	private static final String MODULE_CLASS_MAPPER_FILE_NAME = "conf/workflowModuleClassMapper.xml";
 	
 	private static final String DEFAULT_WORKFLOW_FILE_NAME = "conf/defaultWorkflows.json";
 	
@@ -51,6 +52,8 @@ public class WorkflowV2Util {
 	private static final String WORKFLOW_TEMPLATE_FILE_NAME = "conf/workflowTemplates.json";
 	
 	public static final String MODULE_CRUD_CLASS_NAME = "com.facilio.workflowv2.modulefunctions.FacilioModuleFunctionImpl";
+	
+	public static final String MODULE_CRUD_PACKAGE_NAME = "com.facilio.workflowv2.modulefunctions";
 	
 	public static final String CRUD_MODULE_KEY = "default_module";
 	
@@ -111,37 +114,17 @@ public class WorkflowV2Util {
 	private static void initWorkflowResource() throws Exception {
 		
 		ClassLoader classLoader = WorkflowV2Util.class.getClassLoader();
-		File file = new File(classLoader.getResource(MODULE_CLASS_MAPPER_FILE_NAME).getFile());
 		
-		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		Document doc = dBuilder.parse(file);
-				
-		doc.getDocumentElement().normalize();
+		Set<Class<?>> classes = new Reflections(MODULE_CRUD_PACKAGE_NAME).getTypesAnnotatedWith(ScriptModule.class);
 		
-		NodeList moduleNodes = doc.getElementsByTagName("module");
-		if(moduleNodes.getLength() > 0) {
-			for(int i=0;i<moduleNodes.getLength();i++) {
-				Node moduleNode = moduleNodes.item(i);
-				if (moduleNode.getNodeType() == Node.ELEMENT_NODE) {
-	        		Element module  = (Element) moduleNode;
-	        		String moduleName = module.getAttribute("name");
-	        		String moduleClassName = module.getAttribute("classname");
-	        		MODULE_CLASS_MAPPER.put(moduleName, moduleClassName);
-	        	}
-			}
-        }
-		
-		for(String moduleName :MODULE_CLASS_MAPPER.keySet()) {
-			String className = MODULE_CLASS_MAPPER.get(moduleName);
+		for(Class<?> class1 : classes) {
+			ScriptModule module = class1.getAnnotation(ScriptModule.class);
 			
-			Class<?> moduleFunctionClass = classLoader.loadClass(className);
-	        Object moduleFunctionObject = moduleFunctionClass.newInstance();
-	        MODULE_OBJECT_CACHE.put(moduleName, moduleFunctionObject);
+			MODULE_OBJECT_CACHE.put(module.moduleName(), class1.getDeclaredConstructor().newInstance());
 		}
 		
 		Class<?> moduleFunctionClass = classLoader.loadClass(MODULE_CRUD_CLASS_NAME);
-        Object moduleFunctionObject = moduleFunctionClass.newInstance();
+        Object moduleFunctionObject = moduleFunctionClass.getDeclaredConstructor().newInstance();
         MODULE_OBJECT_CACHE.put(CRUD_MODULE_KEY, moduleFunctionObject);
         
         
@@ -196,10 +179,6 @@ public class WorkflowV2Util {
         
 	}
 
-	public static String getModuleClassNameFromModuleName(String moduleName) {
-		return MODULE_CLASS_MAPPER.get(moduleName);
-	}
-	
 	public static void fillExtraInfo(Value paramValue, FacilioModule module) throws Exception {
 
 		if (paramValue.asObject() instanceof DBParamContext || paramValue.asObject() instanceof Criteria) {

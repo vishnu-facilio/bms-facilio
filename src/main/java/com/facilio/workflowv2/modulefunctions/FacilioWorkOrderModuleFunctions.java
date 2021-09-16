@@ -32,7 +32,9 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
+import com.facilio.workflowv2.annotation.ScriptModule;
 
+@ScriptModule(moduleName = FacilioConstants.ContextNames.WORK_ORDER)
 public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 
 	public List<Map<String,Object>> getAvgResolutionTime(Map<String,Object> globalParams,List<Object> objects) throws Exception {

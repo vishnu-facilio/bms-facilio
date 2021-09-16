@@ -21,7 +21,9 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.workflowv2.annotation.ScriptModule;
 
+@ScriptModule(moduleName = FacilioConstants.Induction.INDUCTION_TEMPLATE)
 public class FacilioInductionTemplateModuleFunctions extends FacilioModuleFunctionImpl {
 
 	

@@ -121,13 +121,13 @@ public class TranslationAction extends FacilioAction {
                         for (WebTabContext webTab : webtabGroup.getWebTabs()) {
                             switch (webTab.getTypeEnum()) {
                                 case MODULE:
-                                    webTab.setTypeVsColumns(TranslationsUtil.COLUMN_VS_TRANSLATION_TYPE.get("moduleTab"));
+                                    webTab.setTypeVsColumns(constructJson(TranslationsUtil.COLUMN_VS_TRANSLATION_TYPE.get("moduleTab")));
                                     break;
                                 case DASHBOARD:
-                                    webTab.setTypeVsColumns(TranslationsUtil.COLUMN_VS_TRANSLATION_TYPE.get("dashboardTab"));
+                                    webTab.setTypeVsColumns(constructJson(TranslationsUtil.COLUMN_VS_TRANSLATION_TYPE.get("dashboardTab")));
                                     break;
                                 case REPORT:
-                                    webTab.setTypeVsColumns(TranslationsUtil.COLUMN_VS_TRANSLATION_TYPE.get("reportTab"));
+                                    webTab.setTypeVsColumns(constructJson(TranslationsUtil.COLUMN_VS_TRANSLATION_TYPE.get("reportTab")));
                                     break;
                             }
 
@@ -142,6 +142,17 @@ public class TranslationAction extends FacilioAction {
             jsonObject.put("linkName",props.getLinkName());
         }
         return jsonObject;
+    }
+
+    private JSONArray constructJson ( Map<String, String> webTabs ) {
+        JSONArray jsonArray = new JSONArray();
+        for (Map.Entry<String, String> entry : webTabs.entrySet()) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("type",entry.getKey());
+            jsonObject.put("label",entry.getValue());
+            jsonArray.add(jsonObject);
+        }
+        return jsonArray;
     }
 
     private void addNewLanguage () throws Exception {

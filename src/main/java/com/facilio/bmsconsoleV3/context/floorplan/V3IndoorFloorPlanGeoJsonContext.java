@@ -100,5 +100,16 @@ public class V3IndoorFloorPlanGeoJsonContext extends V3Context {
 	}
 
 	private long objectType;
+	
+	public V3FloorplanMarkersContext getMarkerType() {
+		return markerType;
+	}
+
+	public void setMarkerType(V3FloorplanMarkersContext markerType) {
+		this.markerType = markerType;
+	}
+
+	private V3FloorplanMarkersContext markerType;
+
 
 }

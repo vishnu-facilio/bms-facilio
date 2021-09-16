@@ -279,7 +279,8 @@ public class getIndoorFloorPlanViewerCommand extends FacilioCommand {
         	
         	feature.setActive(feature.getProperties().getActive());
         	feature.setObjectType(1);
-        	
+        	feature.setMarkerType(marker.getMarkerType());
+
         	
         	
         	markerObjectMap.put(marker.getId(), feature);
@@ -311,11 +312,11 @@ public class getIndoorFloorPlanViewerCommand extends FacilioCommand {
     
         	
         	if (recordId != null && markerModuleId != null ) {
-        		feature.setProperties(V3FloorPlanAPI.getZoneProperties(zonevsRecordObjectMap.get(markerModuleId).get(recordId), zone, context, viewMode));
+        		feature.setProperties(V3FloorPlanAPI.getZoneProperties(zonevsRecordObjectMap.get(markerModuleId).get(recordId), zone, context, viewMode, markerModuleId));
             	feature.setTooltipData(V3FloorPlanAPI.getZoneTooltipData(zone, viewMode));    	
            }
         	else {
-        		feature.setProperties(V3FloorPlanAPI.getZoneProperties(zonevsRecordObjectMap.get(markerModuleId).get(recordId), zone, context, viewMode));
+        		feature.setProperties(V3FloorPlanAPI.getZoneProperties(null, zone, context, viewMode, null));
             	feature.setTooltipData(V3FloorPlanAPI.getZoneTooltipData(zone, viewMode));
         	}
         	feature.setObjectType(2);

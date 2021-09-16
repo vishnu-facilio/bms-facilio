@@ -9,8 +9,11 @@ import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
+import com.facilio.workflowv2.annotation.ScriptModule;
 
+@ScriptModule(moduleName = FacilioConstants.ContextNames.GROUPS)
 public class FacilioTeamModuleFunctions extends FacilioModuleFunctionImpl {
 
 	

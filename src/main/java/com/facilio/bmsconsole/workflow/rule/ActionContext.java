@@ -1,17 +1,20 @@
 package com.facilio.bmsconsole.workflow.rule;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.templates.Template;
+import com.facilio.bmsconsole.templates.TemplateAttachment;
 import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 
 public class ActionContext implements Serializable {
@@ -108,10 +111,23 @@ public class ActionContext implements Serializable {
 		if(template != null) {
 			JSONObject actionObj = template.getTemplate(placeHolders);
 			
-			if(placeHolders != null) {
-				String type = placeHolders.get("mailType") != null ? placeHolders.get("mailType").toString() : null;
-				if(actionObj != null && (!actionObj.containsKey("mailType") || actionObj.get("mailType") == null)) {
-					actionObj.put("mailType", type);
+			if (actionObj != null) {
+				if(placeHolders != null) {
+					String type = placeHolders.get("mailType") != null ? placeHolders.get("mailType").toString() : null;
+					if(!actionObj.containsKey("mailType") || actionObj.get("mailType") == null) {
+						actionObj.put("mailType", type);
+					}
+				}
+
+				if (CollectionUtils.isNotEmpty(template.getAttachments())) {
+					Map<String,String> attachmentMap = new HashMap<String, String>();
+					for (TemplateAttachment attachment: template.getAttachments()) {
+						String url = attachment.fetchFileUrl(currentRecord);
+						if (url != null) {
+							attachmentMap.put(attachment.getFileName(), url);
+						}
+					}
+					context.put(FacilioConstants.ContextNames.ATTACHMENT_MAP_FILE_LIST, attachmentMap);
 				}
 			}
 

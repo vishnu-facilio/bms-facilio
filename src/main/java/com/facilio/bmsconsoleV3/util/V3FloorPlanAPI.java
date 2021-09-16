@@ -158,16 +158,13 @@ public class V3FloorPlanAPI {
      }
 
 	 	   
-	 	  public static V3IndoorFloorPlanPropertiesContext getZoneProperties(ModuleBaseWithCustomFields record, V3MarkerdZonesContext zone, Context context, String viewMode) throws Exception {
+	 	  public static V3IndoorFloorPlanPropertiesContext getZoneProperties(ModuleBaseWithCustomFields record, V3MarkerdZonesContext zone, Context context, String viewMode,Long markerModuleId) throws Exception {
 	 		    
 	 			
 	 	        V3IndoorFloorPlanPropertiesContext properties = new V3IndoorFloorPlanPropertiesContext();
-	 	         
-	 	    	Long markerModuleId = (long) zone.getZoneModuleId();
-	 		   
+	 	         	 		   
 	 			   properties.setObjectId(zone.getId());
 	 			   properties.setRecordId(zone.getRecordId());
-	 			   properties.setMarkerModuleId(zone.getZoneModuleId());
 	 			if (zone.getSpace() != null) {
 	 				properties.setSpaceId(zone.getSpace().getId());
 	 				
@@ -182,11 +179,11 @@ public class V3FloorPlanAPI {
 	 				properties.setIsOccupied(false);
 	 				
 	 			
-	 				if (markerModuleId != null) {
+	 				if (markerModuleId != null && record != null) {
 	 					
 	 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 	 			        FacilioModule module = modBean.getModule(markerModuleId);
-	 			        
+	 	 			   properties.setMarkerModuleId(zone.getZoneModuleId());
 	 			        properties.setMarkerModuleName(module.getName());
 	 					
 	 					if (module.getName().equals(FacilioConstants.ContextNames.LOCKERS)) {
@@ -265,7 +262,7 @@ public class V3FloorPlanAPI {
 			   properties.setActive(true);
 			   
 			   if (marker.getMarkerType() != null) {
-				   properties.setMarkerId(String.valueOf(marker.getMarkerType().getId()));
+				   properties.setMarkerId(String.valueOf(marker.getMarkerType().getName()));
 			   }
 			   
 			   if(module.getName().equals(FacilioConstants.ContextNames.Floorplan.DESKS)) {
@@ -382,7 +379,7 @@ public class V3FloorPlanAPI {
 			   properties.setIsCustom(false);
 
   			if (marker.getMarkerType() != null) {
-				  long markerId = marker.getMarkerType().getId();
+				  String markerId = marker.getMarkerType().getName();
 				   properties.setMarkerId(String.valueOf(markerId));
 				   properties.setActiveClass(String.valueOf(markerId));
 				   properties.setNormalClass(String.valueOf(markerId));
@@ -399,28 +396,36 @@ public class V3FloorPlanAPI {
 	   public static String getCenterLabel(String name) {
 		   String result = "";
 		   
-		   String[] splitStr = name.split("\\s+");
+		   // have to workout
 		   
-		   if (splitStr.length > 0) {
+		   if (name != null) {
+			   String[] splitStr = name.trim().split("\\s+");
 			   
-			   if (splitStr.length == 1) {
-				   if (splitStr[0].length() > 1) {
-					   result = splitStr[0].charAt(0) + "" + splitStr[0].charAt(1); 
+			   if (splitStr.length > 0) {
+				   
+				   if (splitStr.length == 1) {
+					   if (splitStr[0].length() > 1) {
+						   result = splitStr[0].charAt(0) + "" + splitStr[0].charAt(1); 
+					   }
+					   else {
+						   result = splitStr[0].charAt(0) + ""; 
+					   }
+					   
 				   }
 				   else {
-					   result = splitStr[0].charAt(0) + ""; 
+					    result = splitStr[0].charAt(0) + "";
+						 if (splitStr[1] != null) {
+					   		result = result + splitStr[1].charAt(0); 
+				   			}
 				   }
-				   
+	 
 			   }
-			   else {
-				   
-				   result = splitStr[0].charAt(0)+ "" + splitStr[1].charAt(0); 
-				   
-			   }
- 
+			   
+			   return result.toUpperCase();
 		   }
 		   
-		   return result.toUpperCase();
+		   return result;
+
 	   }
 
     public static List<V3MarkerContext> getUpdateMarkerList(List<V3MarkerContext> newMarkers, List<V3MarkerContext> oldMarkers) throws Exception {
@@ -534,6 +539,8 @@ public class V3FloorPlanAPI {
 	    	builder.andCondition(CriteriaAPI.getIdCondition(objectIds, module));
 
 	     }
+	        builder.fetchSupplement((LookupField) fieldMap.get("markerType"));
+
 	        
 	        List<V3MarkerContext> markers = builder.get();
 	        if(CollectionUtils.isNotEmpty(markers))
