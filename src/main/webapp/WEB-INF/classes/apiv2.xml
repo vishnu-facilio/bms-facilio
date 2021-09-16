@@ -2429,6 +2429,7 @@
 		<action name="getReportFields"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="getReportFields">
+			<param name="translationImpl">ReportFieldTranslation</param>
 		</action>
 		<action name="getSubModulesListForReports"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"

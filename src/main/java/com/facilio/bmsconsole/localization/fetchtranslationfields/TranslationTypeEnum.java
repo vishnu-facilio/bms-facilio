@@ -61,10 +61,10 @@ public enum TranslationTypeEnum {
                     reportType.add(new ClientColumnTypeEnum(type.name(),type.getClientColumnName()));
                     break;
             }
-            columnVsType.put(WebTabContext.Type.MODULE,moduleType);
-            columnVsType.put(WebTabContext.Type.DASHBOARD,dashboardType);
-            columnVsType.put(WebTabContext.Type.REPORT,reportType);
         }
+        columnVsType.put(WebTabContext.Type.MODULE,moduleType);
+        columnVsType.put(WebTabContext.Type.DASHBOARD,dashboardType);
+        columnVsType.put(WebTabContext.Type.REPORT,reportType);
         return columnVsType;
     }
 
