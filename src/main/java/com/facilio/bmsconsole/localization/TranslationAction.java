@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.localization;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.ApplicationContext;
@@ -9,7 +10,6 @@ import com.facilio.bmsconsole.context.WebTabGroupContext;
 import com.facilio.bmsconsole.localization.fetchtranslationfields.TranslationTypeEnum;
 import com.facilio.bmsconsole.localization.translationbean.TranslationBean;
 import com.facilio.bmsconsole.localization.util.TranslationConstants;
-import com.facilio.bmsconsole.localization.util.TranslationsUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -45,8 +45,8 @@ public class TranslationAction extends FacilioAction {
     private Map<String,String> filter;
 
 
-
     public String addLanguage () throws Exception {
+        FacilioUtil.throwIllegalArgumentException(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_LANGUAGE_TRANSLATION) == false,"Multi-Lang feature license is not enabled for this Org");
         addNewLanguage();
         return SUCCESS;
     }
