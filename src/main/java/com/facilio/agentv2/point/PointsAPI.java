@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -369,6 +370,14 @@ public class PointsAPI {
 
             default:
                 //throw new Exception("FacilioControler type didnt match with cases "+controllerType.toString());
+        }
+        
+        List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.FIELDS);
+        if (fields != null) {
+        		FacilioModule pointModule = ModuleFactory.getPointModule();
+        		fields = fields.stream().filter(p -> p.getModule().getName() != pointModule.getName())
+						   .collect(Collectors.toList()); 
+        		 context.put(FacilioConstants.ContextNames.FIELDS,fields);
         }
     }
 

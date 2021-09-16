@@ -246,7 +246,7 @@ public class GetPointRequest {
 
     private GenericSelectRecordBuilder loadBuilder(FacilioControllerType controllerType) throws Exception {
         GenericSelectRecordBuilder builder = getPointBuilder();
-        List<FacilioField> fields = new ArrayList<>(POINT_FIELDS);
+        List<FacilioField> fields = new ArrayList<>();
         switch (controllerType) {
             case MODBUS_RTU:
                 fields.addAll(FieldFactory.getModbusRtuPointFields());
