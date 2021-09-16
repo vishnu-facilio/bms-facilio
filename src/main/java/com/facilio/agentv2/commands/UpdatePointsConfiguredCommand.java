@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * This command updates config status  and controller id for points and child points
@@ -53,6 +54,12 @@ public class UpdatePointsConfiguredCommand extends AgentV2Command {
             		childPointModule = PointsAPI.getPointModule(FacilioControllerType.valueOf(0));
             	}
             	childPointFields = PointsAPI.getChildPointFields(FacilioControllerType.valueOf(controllerType));
+            	
+            	// temp handling..TODO remove by handling extended update
+            	String modName = childPointModule.getName();
+            	childPointFields = childPointFields.stream().filter(p -> p.getModule().getName() == modName)
+            											   .collect(Collectors.toList());
+            	
                 GenericUpdateRecordBuilder builder1 = new GenericUpdateRecordBuilder()
                         .table(childPointModule.getTableName())
                         .fields(childPointFields)
