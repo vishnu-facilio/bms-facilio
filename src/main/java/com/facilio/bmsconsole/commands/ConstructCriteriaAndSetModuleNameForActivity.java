@@ -55,7 +55,8 @@ public class ConstructCriteriaAndSetModuleNameForActivity extends FacilioCommand
 			int index = -1;
 			
 			Criteria filterCriteria = new Criteria();
-			if (AccountUtil.getCurrentUser().isPortalUser())  {
+			Boolean isAssetActivity = context.get(FacilioConstants.ContextNames.MODULE_NAME).equals(FacilioConstants.ContextNames.ASSET_ACTIVITY);
+			if (AccountUtil.getCurrentUser().isPortalUser() && !isAssetActivity)  {
 				for (int i = 0; i<fields.size(); i++) {
 				if (fields.get(i).getName().contains("type")) { 
 					index = i;

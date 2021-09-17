@@ -10,6 +10,8 @@ import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerIncludeExcludeResourceContext;
+import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30;
+import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount50;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.qa.command.InductionSupplementSupplyCommand;
 import com.facilio.qa.command.InspectionSupplementSupplyCommand;
@@ -45,7 +47,7 @@ public class ExtendedQAndAV3Config {
 
     @Module(FacilioConstants.Inspection.INSPECTION_TEMPLATE)
     public static Supplier<V3Config> getInspection() {
-        return () -> new V3Config(InspectionTemplateContext.class, null)
+        return () -> new V3Config(InspectionTemplateContext.class, new ModuleCustomFieldCount50())
                 .create()
                 .beforeSave(QAndATransactionChainFactory.inspectionTemplateBeforeSaveChain())
                 .afterSave(QAndATransactionChainFactory.inspectionAfterSaveChain())
@@ -62,7 +64,7 @@ public class ExtendedQAndAV3Config {
     
     @Module(FacilioConstants.Inspection.INSPECTION_RESPONSE)
     public static Supplier<V3Config> getInspectionResponse() {
-        return () -> new V3Config(InspectionResponseContext.class, null)
+        return () -> new V3Config(InspectionResponseContext.class, new ModuleCustomFieldCount50())
         		.create()
         		.afterSave(new ConstructAddCustomActivityCommandV3())
         		.afterTransaction(new AddActivitiesCommandV3())
@@ -112,7 +114,7 @@ public class ExtendedQAndAV3Config {
     
     @Module(FacilioConstants.Induction.INDUCTION_TEMPLATE)
     public static Supplier<V3Config> getInduction() {
-        return () -> new V3Config(InductionTemplateContext.class, null)
+        return () -> new V3Config(InductionTemplateContext.class, new ModuleCustomFieldCount50())
                 .create()
                 .beforeSave(QAndATransactionChainFactory.inductionTemplateBeforeSaveChain())
                 .afterSave(QAndATransactionChainFactory.inductionAfterSaveChain())
@@ -128,7 +130,7 @@ public class ExtendedQAndAV3Config {
     
     @Module(FacilioConstants.Induction.INDUCTION_RESPONSE)
     public static Supplier<V3Config> getInductionResponse() {
-        return () -> new V3Config(InductionResponseContext.class, null)
+        return () -> new V3Config(InductionResponseContext.class, new ModuleCustomFieldCount50())
         		.create()
         		.afterSave(new ConstructAddCustomActivityCommandV3())
         		.afterTransaction(new AddActivitiesCommandV3())

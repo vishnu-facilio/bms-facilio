@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.dto.NewPermission;
+import com.facilio.bmsconsole.localization.fetchtranslationfields.TranslationTypeEnum;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioModule;
 import lombok.Getter;
@@ -244,6 +245,6 @@ public class WebTabContext implements Serializable {
     }
 
     @Setter @Getter
-    private JSONArray typeVsColumns;
+    private List<TranslationTypeEnum.ClientColumnTypeEnum> typeVsColumns;
 
 }

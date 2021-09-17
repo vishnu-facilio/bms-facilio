@@ -175,7 +175,7 @@ public class V3FloorPlanAPI {
 
 	 				}
 	 				
-	 				properties.setZoneBackgroundColor("000000");
+	 				properties.setZoneBackgroundColor("#000000");
 	 				properties.setIsOccupied(false);
 	 				
 	 			

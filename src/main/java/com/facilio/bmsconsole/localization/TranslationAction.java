@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.ApplicationLayoutContext;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.context.WebTabGroupContext;
+import com.facilio.bmsconsole.localization.fetchtranslationfields.TranslationTypeEnum;
 import com.facilio.bmsconsole.localization.translationbean.TranslationBean;
 import com.facilio.bmsconsole.localization.util.TranslationConstants;
 import com.facilio.bmsconsole.localization.util.TranslationsUtil;
@@ -119,18 +120,7 @@ public class TranslationAction extends FacilioAction {
                 for (ApplicationLayoutContext prop : layout) {
                     for (WebTabGroupContext webtabGroup : prop.getWebTabGroupList()) {
                         for (WebTabContext webTab : webtabGroup.getWebTabs()) {
-                            switch (webTab.getTypeEnum()) {
-                                case MODULE:
-                                    webTab.setTypeVsColumns(constructJson(TranslationsUtil.COLUMN_VS_TRANSLATION_TYPE.get("moduleTab")));
-                                    break;
-                                case DASHBOARD:
-                                    webTab.setTypeVsColumns(constructJson(TranslationsUtil.COLUMN_VS_TRANSLATION_TYPE.get("dashboardTab")));
-                                    break;
-                                case REPORT:
-                                    webTab.setTypeVsColumns(constructJson(TranslationsUtil.COLUMN_VS_TRANSLATION_TYPE.get("reportTab")));
-                                    break;
-                            }
-
+                            webTab.setTypeVsColumns(TranslationTypeEnum.CLIENT_TRANSLATION_TYPE_ENUM.get(webTab.getTypeEnum()));
                         }
                     }
                 }

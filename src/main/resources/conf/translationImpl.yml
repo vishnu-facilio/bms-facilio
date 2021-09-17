@@ -70,3 +70,6 @@ translations:
 
   - name: ReportTranslation
     translationImplClass : com.facilio.bmsconsole.localization.translationImpl.ReportTranslationImpl
+
+  - name: ReportFieldTranslation
+    translationImplClass : com.facilio.bmsconsole.localization.translationImpl.ReportFieldTranslationImpl
