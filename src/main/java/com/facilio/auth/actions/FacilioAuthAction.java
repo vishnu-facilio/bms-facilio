@@ -1492,6 +1492,9 @@ public class FacilioAuthAction extends FacilioAction {
 			String str = SSOUtil.base64Decode(getSsoToken());
 			long orgId = Long.parseLong(str.split("_")[0]);
 			long ssoId = Long.parseLong(str.split("_")[1]);
+
+			Organization org = IAMOrgUtil.getOrg(orgId);
+			setDomain(org.getDomain());
 			
 			AccountSSO sso = IAMOrgUtil.getAccountSSO(orgId);
 			if (sso == null || sso.getIsActive() == null || !sso.getIsActive()) {
