@@ -1256,7 +1256,6 @@ public class APIv3Config {
         return () -> new V3Config(V3DeliveriesContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .beforeSave(new FillDeliveriesDetailsCommand())
-                .beforeSave(new DeleveryDataParserCommand())
                 .afterSave(new ConstructAddCustomActivityCommandV3(), new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY))
                 .update()
                 .beforeSave(new FillDeliveriesDetailsCommand())
