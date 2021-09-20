@@ -66,6 +66,9 @@ public class AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMFV3 extend
                         if(Double.valueOf(datamap.get("multiplicationFactor").toString()) != -1 && energyMeterContext != null && energyMeterContext.getMultiplicationFactor() == Double.valueOf(datamap.get("multiplicationFactor").toString())) {
                             continue;
                         }
+                        if(energyMeterContext == null){
+                            energyMeterContext = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(asset), EnergyMeterContext.class);
+                        }
                         energyMeterContext.setMultiplicationFactor(Double.valueOf(datamap.get("multiplicationFactor").toString()));
                         AggregatedEnergyConsumptionUtil.calculateHistoryForAggregatedEnergyConsumption(-1l, -1l, Collections.singletonList(asset.getId()), Collections.singletonList(energyMeterContext));
                     }

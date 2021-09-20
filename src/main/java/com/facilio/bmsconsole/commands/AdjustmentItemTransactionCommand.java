@@ -71,7 +71,7 @@ public class AdjustmentItemTransactionCommand extends FacilioCommand {
 				else if(itemTransaction.getTransactionStateEnum() == TransactionState.ADJUSTMENT_DECREASE
 						&& !itemType.isRotating())
 				{
-					if(itemTransaction.getQuantity() != item.getQuantity())
+					if(itemTransaction.getQuantity() <= item.getQuantity())
 					{
 						List<PurchasedItemContext> purchasedItem = new ArrayList<>();
 	
@@ -117,8 +117,6 @@ public class AdjustmentItemTransactionCommand extends FacilioCommand {
 				else if(itemTransaction.getTransactionStateEnum() == TransactionState.ADJUSTMENT_INCREASE
 						&& !itemType.isRotating())
 				{
-					if(itemTransaction.getQuantity() != item.getQuantity())
-					{
 						PurchasedItemContext pi =itemTransaction.getPurchasedItem();
 						pi.setItem(item);
 						pi.setItemType(itemType);
@@ -132,7 +130,6 @@ public class AdjustmentItemTransactionCommand extends FacilioCommand {
 						woItem = setWorkorderItemObj(itemTransaction.getPurchasedItem(), itemTransaction.getQuantity(), item,
 								itemTransaction, itemType);
 						itemTransactiosnToBeAdded.add(woItem);
-					}
 				}
 
 			}
