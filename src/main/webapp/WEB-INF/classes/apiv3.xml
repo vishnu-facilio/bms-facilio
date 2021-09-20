@@ -408,4 +408,11 @@
         </action>
     </package>
 
+    <package name="delivery" namespace="/api/v3/deliveries" extends="v3Api">
+        <action name="parse"
+                class="com.facilio.delivery.action.DeliveryParser"
+                method="deliveryParserAction">
+        </action>
+    </package>
+
 </struts>
