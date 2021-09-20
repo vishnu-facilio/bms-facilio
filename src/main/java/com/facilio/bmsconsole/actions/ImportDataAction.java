@@ -87,6 +87,21 @@ public class ImportDataAction extends FacilioAction {
 
 		return SUCCESS;
 	}
+
+	public String parseHandler() throws Exception {
+		// setting the status, before the scheduling the job
+		importProcessContext.setStatus(ImportProcessContext.ImportStatus.PARSING_IN_PROGRESS.getValue());
+		ImportAPI.updateImportProcess(importProcessContext);
+
+		FacilioChain chain = ImportChainUtil.getParseChain(moduleName);
+
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.IMPORT_PROCESS_CONTEXT, importProcessContext);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		chain.execute();
+		
+		return SUCCESS;
+	}
 	
 	public String checkModule() throws Exception{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

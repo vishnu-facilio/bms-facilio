@@ -5,7 +5,7 @@ public class ImportConfig {
 
     private ImportConfig(ImportConfigBuilder builder) {
         this.uploadHandler = builder.uploadHandler;
-        this.insertHandler = builder.insertHandler;
+        this.importHandler = builder.importHandler;
     }
 
     private UploadHandler uploadHandler;
@@ -13,9 +13,9 @@ public class ImportConfig {
         return uploadHandler;
     }
 
-    private InsertHandler insertHandler;
-    public InsertHandler getInsertHandler() {
-        return insertHandler;
+    private ImportHandler importHandler;
+    public ImportHandler getImportHandler() {
+        return importHandler;
     }
 
     private ParseHandler parseHandler;
@@ -29,9 +29,9 @@ public class ImportConfig {
             return new UploadHandler.UploadHandlerBuilder(this);
         }
 
-        InsertHandler insertHandler;
-        public InsertHandler.InsertHandlerBuilder insertHandler() {
-            return new InsertHandler.InsertHandlerBuilder(this);
+        ImportHandler importHandler;
+        public ImportHandler.ImportHandlerBuilder importHandler() {
+            return new ImportHandler.ImportHandlerBuilder(this);
         }
 
         ParseHandler parseHandler;

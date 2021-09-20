@@ -89,7 +89,7 @@ public class ImportChainUtil {
         return chain;
     }
 
-    private static FacilioChain getParseChain(String moduleName) {
+    public static FacilioChain getParseChain(String moduleName) {
         ImportConfig importConfig = getImportConfig(moduleName);
 
         Command beforeParseCommand = null;
@@ -108,6 +108,27 @@ public class ImportChainUtil {
         chain.addCommand(new ParseImportFileCommand());
         addIfNotNull(chain, afterParseCommand);
         chain.addCommand(new InsertImportDataIntoLogCommand());
+
+        return chain;
+    }
+
+    public static FacilioChain getImportChain(String moduleName) {
+        ImportConfig importConfig = getImportConfig(moduleName);
+
+        Command beforeImportCommand = null;
+        Command afterImportCommand = null;
+
+        if (importConfig != null) {
+            ImportHandler importHandler = importConfig.getImportHandler();
+            if (importHandler != null) {
+                beforeImportCommand = importHandler.getBeforeImportCommand();
+                afterImportCommand = importHandler.getAfterImportCommand();
+            }
+        }
+
+        FacilioChain chain = getDefaultChain();
+        addIfNotNull(chain, beforeImportCommand);
+//        chain.addCommand();
 
         return chain;
     }
