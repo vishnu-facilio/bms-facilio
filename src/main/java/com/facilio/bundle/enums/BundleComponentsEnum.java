@@ -24,14 +24,14 @@ public enum BundleComponentsEnum {
 	MODULE(1,"Module",ModuleBundleComponent.class,null,
 			ModuleFactory.getModuleModule(),FieldFactory.getModuleFields(),"moduleId",null,null,null),
 	
-	//FIELD(2,"Field",FieldBundleComponent.class,BundleComponentsEnum.MODULE,
-			//ModuleFactory.getFieldsModule(),FieldFactory.getSelectFieldFields(),"fieldId",null,null,null),
+	FIELD(2,"Field",FieldBundleComponent.class,BundleComponentsEnum.MODULE,
+			ModuleFactory.getFieldsModule(),FieldFactory.getSelectFieldFields(),"fieldId",null,null,null),
 	
-	//FUNCTION_NAME_SPACE(3,"Function_NameSpace",FunctionNameSpaceBundleComponent.class,null,
-			//ModuleFactory.getWorkflowNamespaceModule(),FieldFactory.getWorkflowNamespaceFields(),null,null,null,null),
+	FUNCTION_NAME_SPACE(3,"Function_NameSpace",FunctionNameSpaceBundleComponent.class,null,
+			ModuleFactory.getWorkflowNamespaceModule(),FieldFactory.getWorkflowNamespaceFields(),null,null,null,null),
 	
-	//FUNCTION(4,"Function",FunctionBundleComponent.class,BundleComponentsEnum.FUNCTION_NAME_SPACE,
-			//ModuleFactory.getWorkflowModule(),FieldFactory.getWorkflowFields(),"moduleId",null,null,null),
+	FUNCTION(4,"Function",FunctionBundleComponent.class,BundleComponentsEnum.FUNCTION_NAME_SPACE,
+			ModuleFactory.getWorkflowModule(),FieldFactory.getWorkflowFields(),"moduleId",null,null,null),
 	
 //	WORKFLOW_RULE(5,"Workflow_Rule",WorkflowRuleBundleComponent.class,BundleComponentsEnum.MODULE,true),
 //	NOTIFICATION_RULE(6,"Notification_Rule",NotificationRuleBundleComponent.class,BundleComponentsEnum.MODULE,true),
