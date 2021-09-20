@@ -1419,7 +1419,6 @@ public class FacilioConstants {
 		public static final String TENANT_UTILITY_IDS = "utilityIds";
 		public static final String TENANT_CONTEXT = "tenantContext";
         public static final String TENANT_ACTIVITY = "tenantactivity";
-		public static final String STORE_ROOM_ACTIVITY = "storeroomactivity";
         public static final String TENANT_NOTES = "tenantnotes";
 
 
@@ -1488,6 +1487,8 @@ public class FacilioConstants {
 		public static final String PURCHASE_CONTRACT = "purchasecontract";
 		public static final String PURCHASE_CONTRACTS_LINE_ITEMS = "purchasecontractlineitems";
 		public static final String CONTRACTS = "contracts";
+		public static final String CONTRACT_NOTES = "contractnotes";
+		public static final String CONTRACT_ATTACHMENTS = "contractattachments";
 		
 		public static final String LABOUR_CONTRACTS = "labourcontracts";
 		public static final String LABOUR_CONTRACT = "labourcontract";
