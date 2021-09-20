@@ -1,6 +1,5 @@
 package com.facilio.bundle.context;
 
-import com.facilio.bundle.enums.BundleCommitStatusEnum;
 import com.facilio.bundle.enums.BundleComponentsEnum;
 import com.facilio.bundle.enums.BundleModeEnum;
 
@@ -13,12 +12,12 @@ public class BundleChangeSetContext {
 	private Long id;
 	private Long orgId;
 	private BundleComponentsEnum componentType;
-	private BundleModeEnum mode;
+	private BundleModeEnum componentMode;
 	private Long componentId;
-	private String name;
-	private BundleCommitStatusEnum commitStatus;
-	private Long parentId;
-	private Long lastEditedTime;
+	private String componentName;
+	private String componentDisplayName;
+	private Long bundleId;
+	private Long componentLastEditedTime;
 	
 	
 	public int getComponentType() {
@@ -39,39 +38,21 @@ public class BundleChangeSetContext {
 		return componentType;
 	}
 	
-	public int getMode() {
-		if(mode != null) {
-			return mode.getValue();
+	public int getComponentMode() {
+		if(componentMode != null) {
+			return componentMode.getValue();
 		}
 		return -1;
 	}
-	public void setMode(int modeInt) {
-		mode = BundleModeEnum.valueOf(modeInt);
+	public void setComponentMode(int modeInt) {
+		componentMode = BundleModeEnum.valueOf(modeInt);
 	}
 	
 	public void setModeEnum(BundleModeEnum mode) {
-		this.mode = mode;
+		this.componentMode = mode;
 	}
 	
 	public BundleModeEnum getModeEnum() {
-		return mode;
-	}
-	
-	public int getCommitStatus() {
-		if(commitStatus != null) {
-			return commitStatus.getValue();
-		}
-		return -1;
-	}
-	public void setCommitStatus(int commitStatusInt) {
-		commitStatus = BundleCommitStatusEnum.valueOf(commitStatusInt);
-	}
-
-	public void setCommitStatusEnum(BundleCommitStatusEnum commitStatus) {
-		this.commitStatus = commitStatus;
-	}
-	
-	public BundleCommitStatusEnum getCommitStatusEnum() {
-		return commitStatus;
+		return componentMode;
 	}
 }

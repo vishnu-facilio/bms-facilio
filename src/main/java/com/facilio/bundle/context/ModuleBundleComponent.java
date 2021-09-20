@@ -45,11 +45,13 @@ public class ModuleBundleComponent extends CommonBundleComponent {
 		
 		xmlBuilder.attr(BundleConstants.Components.MODE, componentChange.getModeEnum().getName());
 		
-		xmlBuilder = xmlBuilder.element(BundleConstants.Components.NAME).t(module.getName()).p()
-							   .element(BundleConstants.Components.DISPLAY_NAME).t(module.getDisplayName()).p()
-							   .element(DESCRIPTION).t(module.getDescription()).p()
-							   .element(STATEFLOW_ENABLED).t(module.isStateFlowEnabled().toString()).p()
-							   ;
+		if(componentChange.getModeEnum() != BundleModeEnum.DELETE) {
+			xmlBuilder = xmlBuilder.element(BundleConstants.Components.NAME).t(module.getName()).p()
+								   .element(BundleConstants.Components.DISPLAY_NAME).t(module.getDisplayName()).p()
+								   .element(DESCRIPTION).t(module.getDescription()).p()
+								   .element(STATEFLOW_ENABLED).t(module.isStateFlowEnabled().toString()).p()
+								   ;
+		}
 		
 		BundleFolderContext moduleFolder = componentFolder.getOrAddFolder(componentChange.getComponentTypeEnum().getName());
 		
@@ -59,11 +61,9 @@ public class ModuleBundleComponent extends CommonBundleComponent {
 	public String getFileName(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		Long moduleId = (Long)context.get(BundleConstants.COMPONENT_ID);
+		BundleChangeSetContext componentChange = (BundleChangeSetContext) context.get(BundleConstants.BUNDLE_CHANGE);
 		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		return modBean.getModule(moduleId).getName();
+		return componentChange.getComponentName();
 	}
 	
 	@Override

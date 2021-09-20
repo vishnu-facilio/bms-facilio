@@ -12,4 +12,8 @@ public interface BundleComponentInterface {
 	
 	void getParentDetails(FacilioContext context) throws Exception;
 	
+	void getAddedChangeSet(FacilioContext context) throws Exception;
+	void getModifiedChangeSet(FacilioContext context) throws Exception;
+	void getDeletedChangeSet(FacilioContext context) throws Exception;
+	
 }

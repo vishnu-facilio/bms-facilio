@@ -3,36 +3,66 @@ package com.facilio.bundle.enums;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import com.facilio.bundle.context.*;
+import com.facilio.bundle.context.FieldBundleComponent;
+import com.facilio.bundle.context.FunctionBundleComponent;
+import com.facilio.bundle.context.FunctionNameSpaceBundleComponent;
+import com.facilio.bundle.context.ModuleBundleComponent;
 import com.facilio.bundle.interfaces.BundleComponentInterface;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 
 import lombok.Getter;
 
 @Getter
 public enum BundleComponentsEnum {
 
-	MODULE(1,"Module",ModuleBundleComponent.class,null,true),
-	FIELD(2,"Field",FieldBundleComponent.class,BundleComponentsEnum.MODULE,false),
-	FUNCTION_NAME_SPACE(3,"Function_NameSpace",FunctionNameSpaceBundleComponent.class,null,true),
-	FUNCTION(4,"Function",FunctionBundleComponent.class,BundleComponentsEnum.FUNCTION_NAME_SPACE,true),
+	MODULE(1,"Module",ModuleBundleComponent.class,null,
+			ModuleFactory.getModuleModule(),FieldFactory.getModuleFields(),"moduleId",null,null,null),
+	
+	//FIELD(2,"Field",FieldBundleComponent.class,BundleComponentsEnum.MODULE,
+			//ModuleFactory.getFieldsModule(),FieldFactory.getSelectFieldFields(),"fieldId",null,null,null),
+	
+	//FUNCTION_NAME_SPACE(3,"Function_NameSpace",FunctionNameSpaceBundleComponent.class,null,
+			//ModuleFactory.getWorkflowNamespaceModule(),FieldFactory.getWorkflowNamespaceFields(),null,null,null,null),
+	
+	//FUNCTION(4,"Function",FunctionBundleComponent.class,BundleComponentsEnum.FUNCTION_NAME_SPACE,
+			//ModuleFactory.getWorkflowModule(),FieldFactory.getWorkflowFields(),"moduleId",null,null,null),
+	
 //	WORKFLOW_RULE(5,"Workflow_Rule",WorkflowRuleBundleComponent.class,BundleComponentsEnum.MODULE,true),
 //	NOTIFICATION_RULE(6,"Notification_Rule",NotificationRuleBundleComponent.class,BundleComponentsEnum.MODULE,true),
 	;
 	
 	int value;
 	String name;
-	BundleComponentsEnum parent;
 	Class<? extends BundleComponentInterface> componentClass;
-	Boolean asSeperateFolder;
+	BundleComponentsEnum parent;
 	
-	BundleComponentsEnum(int value, String name,Class<? extends BundleComponentInterface> componentClass,BundleComponentsEnum parent,Boolean asSeperateFolder) {
+	FacilioModule module;
+	List<FacilioField> fields;
+	
+	String idFieldName="id";												
+	String modifiedTimeFieldName="modifiedTime";
+	String nameFieldName = "name";
+	String displayNameFieldName = "displayName";
+	
+	BundleComponentsEnum(int value, String name,Class<? extends BundleComponentInterface> componentClass,BundleComponentsEnum parent,FacilioModule module,List<FacilioField> fields,String idFieldName,String modifiedTimeFieldName,String nameFieldName,String displayNameFieldName) {
 		this.value = value;
 		this.name = name;
 		this.parent = parent;
 		this.componentClass = componentClass;
-		this.asSeperateFolder = asSeperateFolder;
+		
+		this.module = module;
+		this.fields = fields;
+		
+		this.idFieldName = idFieldName == null ? this.idFieldName : idFieldName;
+		this.modifiedTimeFieldName = modifiedTimeFieldName == null ? this.modifiedTimeFieldName : modifiedTimeFieldName;
+		this.nameFieldName = nameFieldName == null ? this.nameFieldName : nameFieldName;
+		this.displayNameFieldName = displayNameFieldName == null ? this.displayNameFieldName : displayNameFieldName;
 	}
 	
 	public BundleComponentInterface getBundleComponentClassInstance() throws Exception {

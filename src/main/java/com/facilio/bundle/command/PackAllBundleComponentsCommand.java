@@ -77,10 +77,6 @@ public class PackAllBundleComponentsCommand extends FacilioCommand {
 					
 					for(BundleChangeSetContext componentChange : componentChangeSet) {
 						
-						if(componentChange.getModeEnum() == BundleModeEnum.DUMMY) {
-							continue;
-						}
-						
 						FacilioContext newContext = new FacilioContext();
 						newContext.put(BundleConstants.COMPONENT_ID, componentChange.getComponentId());
 						newContext.put(BundleConstants.BUNDLE_CHANGE, componentChange);

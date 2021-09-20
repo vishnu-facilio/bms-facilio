@@ -4,6 +4,8 @@ public class BundleConstants {
 
 	public static final String COMPONENT_ID = "componentId";
 	
+	public static final String CHANGE_SET = "changeSet";
+	
 	public static final String COMPONENT_OBJECT = "componentObject";
 	
 	public static final String PARENT_COMPONENT_OBJECT = "parentComponentObject";
