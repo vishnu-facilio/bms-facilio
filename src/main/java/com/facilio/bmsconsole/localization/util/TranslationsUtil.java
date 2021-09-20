@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.localization.util;
 import com.facilio.bmsconsole.localization.translation.TranslationConfFile;
 import com.facilio.collections.UniqueMap;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.service.FacilioServiceUtil;
@@ -16,6 +17,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.SQLException;
 import java.util.*;
 
 @Log4j
@@ -62,8 +64,8 @@ public class TranslationsUtil {
     public static long getTranslationFileId ( String langCode ) throws Exception {
         GenericSelectRecordBuilder select = new GenericSelectRecordBuilder().select(TranslationConstants.getTranslationFields())
                 .table(TranslationConstants.getTranslationModule().getTableName())
-                .andCondition(CriteriaAPI.getCondition("LANG_CODE",TranslationConstants.LANG_CODE,langCode,StringOperators.IS))
-                .andCondition(CriteriaAPI.getCondition("STATUS","status","1",StringOperators.IS));
+                .andCondition(CriteriaAPI.getCondition("LANG_CODE",TranslationConstants.LANG_CODE,langCode,StringOperators.IS));
+//                .andCondition(CriteriaAPI.getCondition("STATUS","status","1",StringOperators.IS));
         Map<String, Object> props = select.fetchFirst();
         long fileId = -1L;
         if(props != null && !props.isEmpty()) {
@@ -111,5 +113,19 @@ public class TranslationsUtil {
         columnVsType.put("reportTab",reportTab);
 
         return columnVsType;
+    }
+
+    public static void updateStatus ( String lang,boolean status ) throws SQLException {
+        update(lang,status);
+    }
+
+    private static void update ( String lang,boolean status ) throws SQLException {
+        Map<String, Object> prop = new HashMap<>();
+        prop.put("status",status);
+        GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+                .table(TranslationConstants.getTranslationModule().getTableName())
+                .fields(TranslationConstants.getTranslationFields())
+                .andCondition(CriteriaAPI.getCondition("LANG_CODE","langCode",lang,StringOperators.IS));
+        builder.update(prop);
     }
 }

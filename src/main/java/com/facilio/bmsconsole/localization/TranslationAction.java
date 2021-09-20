@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.context.WebTabGroupContext;
 import com.facilio.bmsconsole.localization.fetchtranslationfields.TranslationTypeEnum;
 import com.facilio.bmsconsole.localization.translationbean.TranslationBean;
 import com.facilio.bmsconsole.localization.util.TranslationConstants;
+import com.facilio.bmsconsole.localization.util.TranslationsUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -43,6 +44,7 @@ public class TranslationAction extends FacilioAction {
     private long applicationId = -1L;
     private String translationType;
     private Map<String,String> filter;
+    private boolean status = true;
 
 
     public String addLanguage () throws Exception {
@@ -158,5 +160,10 @@ public class TranslationAction extends FacilioAction {
     private void addOrUpdateTranslation () throws Exception {
         TranslationBean bean = (TranslationBean)TransactionBeanFactory.lookup("TranslationBean");
         bean.save(getLangCode(),getTranslations());
+    }
+
+    public String updateStatus() throws Exception{
+        TranslationsUtil.updateStatus(getLangCode(),isStatus());
+        return SUCCESS;
     }
 }
