@@ -109,6 +109,7 @@ public class TranslationAction extends FacilioAction {
                 Map<String,Object> map = new HashMap<>();
                 map.put("langCode",prop.get("langCode"));
                 map.put("status",prop.get("status"));
+                langList.add(map);
             }
         }
         return langList;
