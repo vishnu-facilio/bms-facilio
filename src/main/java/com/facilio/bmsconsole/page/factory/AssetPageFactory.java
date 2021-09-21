@@ -70,10 +70,12 @@ public class AssetPageFactory extends PageFactory {
 			addSupplyFeedbackChartWidget(tab1Sec1);
 			addSupplyStatusChartWidget(tab1Sec1);
 		}
-		
-		addWoCountWidget(tab1Sec1);
-		addAlarmCountWidget(tab1Sec1);
-		addFailureMetricWidget(tab1Sec1);
+
+		if(AccountUtil.getCurrentApp() != null && AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
+			addWoCountWidget(tab1Sec1);
+			addAlarmCountWidget(tab1Sec1);
+			addFailureMetricWidget(tab1Sec1);
+		}
 		
 		if (AccountUtil.getCurrentOrg().getOrgId() == 436) {
 			addCustomSecondaryDetailsWidget(tab1Sec1);
