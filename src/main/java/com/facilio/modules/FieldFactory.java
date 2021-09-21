@@ -9853,13 +9853,21 @@ public class FieldFactory extends BaseFieldFactory {
         FacilioModule module = ModuleFactory.getBundleChangeSetModule();
 
         fields.add(getIdField(module));
+        fields.addAll(getBundleChangeSetFieldsWithoutId());
+        return fields;
+    }
+    
+    public static List<FacilioField> getBundleChangeSetFieldsWithoutId() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getBundleChangeSetModule();
+
         fields.add(getField("componentType", "COMPONENT_TYPE", module, FieldType.NUMBER));
-        fields.add(getField("mode", "MODE", module, FieldType.NUMBER));
+        fields.add(getField("componentMode", "COMPONENT_MODE", module, FieldType.NUMBER));
         fields.add(getField("componentId", "COMPONENT_ID", module, FieldType.NUMBER));
-        fields.add(getField("name", "NAME", module, FieldType.STRING));
-        fields.add(getField("commitStatus", "COMMIT_STATUS", module, FieldType.NUMBER));
-        fields.add(getField("parentId", "PARENT_ID", module, FieldType.NUMBER));
-        fields.add(getField("lastEditedTime", "LAST_EDITED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("componentName", "COMPONENT_NAME", module, FieldType.STRING));
+        fields.add(getField("componentDisplayName", "COMPONENT_DISPLAY_NAME", module, FieldType.STRING));
+        fields.add(getField("bundleId", "BUNDLE_ID", module, FieldType.NUMBER));
+        fields.add(getField("componentLastEditedTime", "COMPONENT_LAST_EDITED_TIME", module, FieldType.NUMBER));
 
         return fields;
     }

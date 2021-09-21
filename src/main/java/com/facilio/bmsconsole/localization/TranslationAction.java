@@ -10,12 +10,11 @@ import com.facilio.bmsconsole.context.WebTabGroupContext;
 import com.facilio.bmsconsole.localization.fetchtranslationfields.TranslationTypeEnum;
 import com.facilio.bmsconsole.localization.translationbean.TranslationBean;
 import com.facilio.bmsconsole.localization.util.TranslationConstants;
+import com.facilio.bmsconsole.localization.util.TranslationsUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.util.FacilioUtil;
@@ -28,9 +27,10 @@ import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Log4j
 @Getter
@@ -43,6 +43,7 @@ public class TranslationAction extends FacilioAction {
     private long applicationId = -1L;
     private String translationType;
     private Map<String,String> filter;
+    private boolean status = true;
 
 
     public String addLanguage () throws Exception {
@@ -98,12 +99,20 @@ public class TranslationAction extends FacilioAction {
         return SUCCESS;
     }
 
-    private List<String> getLang () throws Exception {
+    private List<Map<String, Object>> getLang () throws Exception {
         GenericSelectRecordBuilder select = new GenericSelectRecordBuilder().select(TranslationConstants.getTranslationFields())
-                .table(TranslationConstants.getTranslationModule().getTableName())
-                .andCondition(CriteriaAPI.getCondition("STATUS","status","1",StringOperators.IS));
+                .table(TranslationConstants.getTranslationModule().getTableName());
         List<Map<String, Object>> props = select.get();
-        return props.stream().map(p -> (String)p.get("langCode")).collect(Collectors.toList());
+        List<Map<String,Object>> langList = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(props)){
+            for (Map<String,Object> prop : props){
+                Map<String,Object> map = new HashMap<>();
+                map.put("langCode",prop.get("langCode"));
+                map.put("status",prop.get("status"));
+                langList.add(map);
+            }
+        }
+        return langList;
     }
 
     private JSONObject fetchTranslationDetails () throws Exception {
@@ -158,5 +167,10 @@ public class TranslationAction extends FacilioAction {
     private void addOrUpdateTranslation () throws Exception {
         TranslationBean bean = (TranslationBean)TransactionBeanFactory.lookup("TranslationBean");
         bean.save(getLangCode(),getTranslations());
+    }
+
+    public String updateStatus() throws Exception{
+        TranslationsUtil.updateStatus(getLangCode(),isStatus());
+        return SUCCESS;
     }
 }

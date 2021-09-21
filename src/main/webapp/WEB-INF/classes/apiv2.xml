@@ -6626,6 +6626,7 @@
 		<action name="fetchDetail" class="com.facilio.bmsconsole.localization.TranslationAction" method="fetchDetail"></action>
 		<action name="getAllWebTabFields" class="com.facilio.bmsconsole.localization.TranslationAction" method="getAllWebTabFields"/>
 		<action name="listLang" class="com.facilio.bmsconsole.localization.TranslationAction" method="getTranslatedLang"/>
+		<action name="updateStatus" class="com.facilio.bmsconsole.localization.TranslationAction" method="updateStatus"/>
 	</package>
 
 	<package name="translationsetup" namespace="/api/v2/translationsetup" extends="v2Api">
