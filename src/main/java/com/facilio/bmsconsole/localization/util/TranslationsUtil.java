@@ -64,8 +64,8 @@ public class TranslationsUtil {
     public static long getTranslationFileId ( String langCode ) throws Exception {
         GenericSelectRecordBuilder select = new GenericSelectRecordBuilder().select(TranslationConstants.getTranslationFields())
                 .table(TranslationConstants.getTranslationModule().getTableName())
-                .andCondition(CriteriaAPI.getCondition("LANG_CODE",TranslationConstants.LANG_CODE,langCode,StringOperators.IS));
-//                .andCondition(CriteriaAPI.getCondition("STATUS","status","1",StringOperators.IS));
+                .andCondition(CriteriaAPI.getCondition("LANG_CODE",TranslationConstants.LANG_CODE,langCode,StringOperators.IS))
+                .andCondition(CriteriaAPI.getCondition("STATUS","status","1",StringOperators.IS));
         Map<String, Object> props = select.fetchFirst();
         long fileId = -1L;
         if(props != null && !props.isEmpty()) {
