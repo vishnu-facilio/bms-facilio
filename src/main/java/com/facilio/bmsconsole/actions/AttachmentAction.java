@@ -115,8 +115,12 @@ public class AttachmentAction  extends FacilioAction {
 
 		if (module.equals(FacilioConstants.ContextNames.ITEM_TYPES_ATTACHMENTS)) {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ITEM_ACTIVITY);
-		} else if (module.equals(FacilioConstants.ContextNames.STORE_ROOM_ATTACHMENTS)) {
-			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.STORE_ROOM_ACTIVITY);
+		} else if (module.equals(FacilioConstants.ContextNames.TOOL_TYPES_ATTACHMENTS)) {
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.CUSTOM_ACTIVITY);
+		}else if (module.equals(FacilioConstants.ContextNames.CONTRACT_ATTACHMENTS)) {
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.CUSTOM_ACTIVITY);
+		}else if (module.equals(FacilioConstants.ContextNames.STORE_ROOM_ATTACHMENTS)) {
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.CUSTOM_ACTIVITY);
 		}else if (module.equals(FacilioConstants.ContextNames.TICKET_ATTACHMENTS) || module.equals(FacilioConstants.ContextNames.TASK_ATTACHMENTS)) {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
 		} else if (module.equals(FacilioConstants.ContextNames.ASSET_ATTACHMENTS)) {
@@ -183,6 +187,10 @@ public class AttachmentAction  extends FacilioAction {
 			}
 			if (module.equals(FacilioConstants.ContextNames.STORE_ROOM_ATTACHMENTS)) {
 				attachmentList.get(0).setAttachmentModule(FacilioConstants.ContextNames.STORE_ROOM_LIST);
+				attachmentList.get(0).setRecordId(recordId);
+			}
+			if (module.equals(FacilioConstants.ContextNames.CONTRACT_ATTACHMENTS)) {
+				attachmentList.get(0).setAttachmentModule(FacilioConstants.ContextNames.CONTRACTS);
 				attachmentList.get(0).setRecordId(recordId);
 			}
 		}
