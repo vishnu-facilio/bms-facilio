@@ -4,6 +4,10 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldUtil;
+import com.facilio.wmsv2.handler.AuditLogHandler;
+
+import java.util.List;
 
 public class AuditLogAction extends FacilioAction {
 
@@ -14,7 +18,8 @@ public class AuditLogAction extends FacilioAction {
         constructListContext(context);
         chain.execute();
 
-        setResult(FacilioConstants.ContextNames.AUDIT_LOGS, context.get(FacilioConstants.ContextNames.RECORD_LIST));
+        Object o = FieldUtil.getAsMapList((List) context.get(FacilioConstants.ContextNames.RECORD_LIST), AuditLogHandler.AuditLogContext.class);
+        setResult(FacilioConstants.ContextNames.AUDIT_LOGS, o);
         return SUCCESS;
     }
 }

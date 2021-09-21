@@ -5,7 +5,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.AuditLogUtil;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.v3.context.V3Context;
 import com.facilio.wmsv2.constants.Topics;
 import com.facilio.wmsv2.message.Message;
 import com.facilio.wmsv2.message.TopicHandler;
@@ -54,7 +54,7 @@ public class AuditLogHandler extends BaseHandler {
         return null;
     }
 
-    public static class AuditLogContext extends ModuleBaseWithCustomFields {
+    public static class AuditLogContext extends V3Context {
         private String subject;
         public String getSubject() {
             return subject;

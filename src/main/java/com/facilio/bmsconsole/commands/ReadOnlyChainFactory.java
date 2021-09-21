@@ -2823,13 +2823,7 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getAuditLogs() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
-		chain.addCommand(new FacilioCommand() {
-			@Override
-			public boolean executeCommand(Context context) throws Exception {
-				context.put(FacilioConstants.ContextNames.SORTING_QUERY, "TIME DESC");
-				return false;
-			}
-		});
+		chain.addCommand(new AuditLogDefaultListCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		return chain;
 	}
