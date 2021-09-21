@@ -9,9 +9,14 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.wmsv2.constants.Topics;
 import com.facilio.wmsv2.message.Message;
 import com.facilio.wmsv2.message.TopicHandler;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 @TopicHandler(
         topic = Topics.System.auditLogs,
@@ -164,6 +169,31 @@ public class AuditLogHandler extends BaseHandler {
         }
         public void setAppId(long appId) {
             this.appId = appId;
+        }
+
+        private JSONArray linkConfig;
+        public String getLinkConfig() {
+            if (linkConfig != null) {
+                return linkConfig.toJSONString();
+            }
+            return null;
+        }
+        @JsonIgnore
+        public JSONArray getLinkConfigJSON() {
+            return linkConfig;
+        }
+        public AuditLogContext setLinkConfig(String linkConfig) {
+            if (StringUtils.isNotEmpty(linkConfig)) {
+                try {
+                    JSONParser parser = new JSONParser();
+                    this.linkConfig = (JSONArray) parser.parse(linkConfig);
+                } catch (ParseException ex) {}
+            }
+            return this;
+        }
+        public AuditLogContext setLinkConfig(JSONArray config) {
+            this.linkConfig = config;
+            return this;
         }
 
         public AuditLogContext() {

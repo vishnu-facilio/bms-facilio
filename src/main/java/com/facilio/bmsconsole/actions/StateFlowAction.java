@@ -1,27 +1,28 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.facilio.db.criteria.Criteria;
-import com.facilio.wmsv2.handler.AuditLogHandler;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.struts2.ServletActionContext;
-import org.json.simple.JSONObject;
-
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.StateContext;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.wmsv2.handler.AuditLogHandler;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 public class StateFlowAction extends FacilioAction {
 	private static final long serialVersionUID = 1L;
@@ -69,8 +70,22 @@ public class StateFlowAction extends FacilioAction {
 		
 		setResult(FacilioConstants.ContextNames.TRANSITION, stateTransition);
 		sendAuditLogs(new AuditLogHandler.AuditLogContext("State Transition is " + (add ? "added" : "updated"),
-				"State transition has been " + (add ? "added" : "updated"), AuditLogHandler.RecordType.SETTING,
-				"StateTransition", stateTransition.getId()).setActionType(add ? AuditLogHandler.ActionType.ADD : AuditLogHandler.ActionType.UPDATE));
+				String.format("State transition {%s} has been %s.", stateTransition.getName(), (add ? "added" : "updated")),
+				AuditLogHandler.RecordType.SETTING,
+				"StateTransition", stateTransition.getId())
+				.setActionType(add ? AuditLogHandler.ActionType.ADD : AuditLogHandler.ActionType.UPDATE)
+				.setLinkConfig(((Function<Void, JSONArray>) o -> {
+					JSONArray array = new JSONArray();
+					JSONObject json = new JSONObject();
+					json.put("transitionId", stateTransition.getId());
+					json.put("stateFlowId", stateTransition.getStateFlowId());
+					json.put("navigateTo", "StateFlow");
+
+					array.add(json);
+					return array;
+				}).apply(null))
+		);
+
 		return SUCCESS;
 	}
 	
