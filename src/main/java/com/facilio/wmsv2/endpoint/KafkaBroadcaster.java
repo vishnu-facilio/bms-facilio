@@ -58,12 +58,12 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
         String environment = FacilioProperties.getConfig("environment");
         String applicationName = environment+"-"+ ServerInfo.getHostname();
 
-        allConsumerProcessor = new KafkaProcessor(kinesisNotificationTopic, applicationName);
+        allConsumerProcessor = new KafkaProcessor(kinesisNotificationTopic, applicationName, ServerInfo.getHostname());
         String singleConsumerTopic = kinesisNotificationTopic + "-singleConsumer";
-        signleConsumerProcessor = new KafkaProcessor(singleConsumerTopic, singleConsumerTopic);
+        signleConsumerProcessor = new KafkaProcessor(singleConsumerTopic, singleConsumerTopic, ServerInfo.getHostname());
     }
 
-    private Properties getProperties(String groupId) {
+    private Properties getProperties(String groupId, String client) {
         Properties props = new Properties();
         props.put("bootstrap.servers", FacilioProperties.getKafkaConsumer());
         props.put("group.id", groupId);
@@ -71,6 +71,9 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
         props.put("auto.offset.reset", "latest");
         props.put("key.deserializer", StringDeserializer.class.getName());
         props.put("value.deserializer", StringDeserializer.class.getName());
+
+        props.put("group.instance.id", client);
+        props.put("client.id", client);
         KafkaUtil.setKafkaAuthProps(props);
         return props;
     }
@@ -98,12 +101,12 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
 
         private ScheduledExecutorService executor = null;
 
-        public KafkaProcessor(String topic, String groupId) {
+        public KafkaProcessor(String topic, String groupId, String client) {
             this.topic = topic;
 
             producer = new FacilioKafkaProducer();
 
-            consumer = new KafkaConsumer<>(getProperties(groupId));
+            consumer = new KafkaConsumer<>(getProperties(groupId, client));
             topicPartition = new TopicPartition(topic, 0);
             List<TopicPartition> topicPartitionList = new ArrayList<>();
             topicPartitionList.add(topicPartition);

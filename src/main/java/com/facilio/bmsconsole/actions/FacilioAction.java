@@ -9,7 +9,10 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.filters.MultiReadServletRequest;
 import com.facilio.util.FacilioUtil;
+import com.facilio.wmsv2.constants.Topics;
+import com.facilio.wmsv2.endpoint.SessionManager;
 import com.facilio.wmsv2.handler.AuditLogHandler;
+import com.facilio.wmsv2.message.Message;
 import com.opensymphony.xwork2.ActionSupport;
 import lombok.Getter;
 import lombok.Setter;
@@ -368,17 +371,19 @@ public class FacilioAction extends ActionSupport {
 	private int loggerLevel = -1;
 
 	public void sendAuditLogs(AuditLogHandler.AuditLogContext auditLog) {
-//		if (auditLog == null) {
-//			return;
-//		}
-//		long orgId = AccountUtil.getCurrentOrg() != null ? AccountUtil.getCurrentOrg().getOrgId() : -1;
-//		SessionManager.getInstance().sendMessage(new Message()
-//				.setTopic(Topics.System.auditLogs)
-//				.setOrgId(orgId)
-//				.setContent(auditLog
-//						.toJSON()
-//				)
-//		);
+		if (auditLog == null) {
+			return;
+		}
+		long orgId = AccountUtil.getCurrentOrg() != null ? AccountUtil.getCurrentOrg().getOrgId() : -1;
+		if (FacilioProperties.isDevelopment() || orgId == 173L) {	// send audit logs for Thalir org alone.
+			SessionManager.getInstance().sendMessage(new Message()
+					.setTopic(Topics.System.auditLogs)
+					.setOrgId(orgId)
+					.setContent(auditLog
+							.toJSON()
+					)
+			);
+		}
 	}
 
 }
