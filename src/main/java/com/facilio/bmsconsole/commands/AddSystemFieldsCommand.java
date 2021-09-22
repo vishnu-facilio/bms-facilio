@@ -88,6 +88,12 @@ public class AddSystemFieldsCommand extends FacilioCommand {
 			approvalFlowIdField.setDefault(true);
 			approvalFlowIdField.setDisplayType(FieldDisplayType.NUMBER);
 			fields.add(approvalFlowIdField);
+
+			fields.add(FieldFactory.getSystemField("sysCreatedTime",module));
+			fields.add(FieldFactory.getSystemField("sysCreatedBy",module));
+			fields.add(FieldFactory.getSystemField("sysModifiedTime",module));
+			fields.add(FieldFactory.getSystemField("sysModifiedBy",module));
+
 		}
 		return false;
 	}
