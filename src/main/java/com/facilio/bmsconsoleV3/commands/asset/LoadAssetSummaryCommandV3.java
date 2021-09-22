@@ -82,6 +82,7 @@ public class LoadAssetSummaryCommandV3  extends FacilioCommand {
                 if(records.size() > 0) {
                     ResourceAPI.loadModuleResources(records, fields);
                     V3AssetContext assetRec = (V3AssetContext) records.get(0);
+                    assetRec.setCategoryModuleName(moduleName);
                     this.getAssetLocation(assetRec);
                     recordList.add(assetRec);
                 }

@@ -451,5 +451,13 @@ public class V3AssetContext extends V3ResourceContext {
             return STATE_MAP;
         }
     }
+    private String categoryModuleName;
 
+    public String getCategoryModuleName() {
+        return categoryModuleName;
+    }
+
+    public void setCategoryModuleName(String categoryModuleName) {
+        this.categoryModuleName = categoryModuleName;
+    }
 }
