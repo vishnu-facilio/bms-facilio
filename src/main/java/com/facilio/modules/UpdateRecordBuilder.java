@@ -408,8 +408,26 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			updateFields.addAll(scopeFieldsAndCriteria.getFields());
 		}
 		if (FieldUtil.isSystemFieldsPresent(module)) {
-			updateFields.addAll(FieldFactory.getSystemPointFields(module.getParentModule()));
+			FacilioField sysCreatedTimeField = FieldFactory.getSystemField("sysCreatedTime",module.getParentModule());
+			FacilioField sysCreatedByField = FieldFactory.getSystemField("sysCreatedBy",module.getParentModule());
+			FacilioField sysModifiedTimeField = FieldFactory.getSystemField("sysModifiedTime",module.getParentModule());
+			FacilioField sysModifiedByField = FieldFactory.getSystemField("sysModifiedBy",module.getParentModule());
+			if(!updateFields.contains(sysCreatedTimeField)){
+				updateFields.add(sysCreatedTimeField);
+			}
+			if(!updateFields.contains(sysCreatedByField)){
+				updateFields.add(sysCreatedByField);
+			}
+			if((module.getParentModule() == null || (module.getParentModule().getTypeEnum() != FacilioModule.ModuleType.LOOKUP_REL_MODULE && module.getParentModule().getTypeEnum() != FacilioModule.ModuleType.ENUM_REL_MODULE))){
+				if (!updateFields.contains(sysModifiedTimeField)) {
+					updateFields.add(sysModifiedTimeField);
+				}
+				if (!updateFields.contains(sysModifiedByField)) {
+					updateFields.add(sysModifiedByField);
+				}
+			}
 		}
+
 		if (FieldUtil.isBaseEntityRootModule(prevModule)) {
 			updateFields.addAll(FieldFactory.getBaseModuleSystemFields(module));
 		}
