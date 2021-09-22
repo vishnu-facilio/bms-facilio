@@ -1,5 +1,6 @@
 package com.facilio.wmsv2.endpoint;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -117,7 +118,7 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
                 @Override
                 public void run() {
                     final JSONParser parser = new JSONParser();
-                    ConsumerRecords<String, String> records = consumer.poll(1000);
+                    ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
                     for (ConsumerRecord<String, String> record : records) {
                         String value = record.value();
                         try {
