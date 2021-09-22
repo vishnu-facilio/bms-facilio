@@ -97,7 +97,7 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
         private FacilioProducer producer;
         private String topic;
         private KafkaConsumer<String, String> consumer;
-        private TopicPartition topicPartition;
+//        private TopicPartition topicPartition;
 
         private ScheduledExecutorService executor = null;
 
@@ -107,10 +107,10 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
             producer = new FacilioKafkaProducer();
 
             consumer = new KafkaConsumer<>(getProperties(groupId, client));
-            topicPartition = new TopicPartition(topic, 0);
-            List<TopicPartition> topicPartitionList = new ArrayList<>();
-            topicPartitionList.add(topicPartition);
-            consumer.assign(topicPartitionList);
+//            topicPartition = new TopicPartition(topic, 0);
+//            List<TopicPartition> topicPartitionList = new ArrayList<>();
+//            topicPartitionList.add(topicPartition);
+            consumer.subscribe(Collections.singletonList(topic));
 
             executor = Executors.newScheduledThreadPool(1);
             executor.scheduleAtFixedRate(new Runnable() {
@@ -127,7 +127,7 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
                             LOGGER.error("Exception while parsing data to JSON ", ex);
                         }
                         finally {
-                            consumer.commitSync(Collections.singletonMap(topicPartition, new OffsetAndMetadata(record.offset() + 1)));
+                            consumer.commitSync();
                         }
                     }
                 }
