@@ -47,7 +47,6 @@ public class GetWebTabGroupTranslationFields {
     }
 
     private static WebTabGroupContext getWebTabGroups ( Map<String, String> queryString ) throws Exception {
-        Long appId = Long.parseLong( queryString.get(FacilioConstants.ContextNames.APP_ID));
         Long webTabGroupId = Long.parseLong(queryString.get(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID));
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
