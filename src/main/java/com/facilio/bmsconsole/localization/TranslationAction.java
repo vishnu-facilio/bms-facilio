@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.ApplicationLayoutContext;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.context.WebTabGroupContext;
+import com.facilio.bmsconsole.localization.fetchtranslationfields.GetWebTabGroupTranslationFields;
 import com.facilio.bmsconsole.localization.fetchtranslationfields.TranslationTypeEnum;
 import com.facilio.bmsconsole.localization.translationbean.TranslationBean;
 import com.facilio.bmsconsole.localization.util.TranslationConstants;
@@ -171,6 +172,11 @@ public class TranslationAction extends FacilioAction {
 
     public String updateStatus() throws Exception{
         TranslationsUtil.updateStatus(getLangCode(),isStatus());
+        return SUCCESS;
+    }
+
+    public String getWebTabGroupFields() throws Exception {
+        setResult("sections",GetWebTabGroupTranslationFields.constructTranslationObject(getFilter()));
         return SUCCESS;
     }
 }
