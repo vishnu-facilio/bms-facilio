@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.imports.config;
 
-import com.facilio.bmsconsole.imports.annotations.UniqueFunction;
+import com.facilio.bmsconsole.imports.annotations.RowFunction;
 import org.apache.commons.chain.Command;
 
 public class ParseHandler {
@@ -14,15 +14,15 @@ public class ParseHandler {
         return afterParseCommand;
     }
 
-    private UniqueFunction uniqueFunction;
-    public UniqueFunction getUniqueFunction() {
-        return uniqueFunction;
+    private RowFunction rowFunction;
+    public RowFunction getRowFunction() {
+        return rowFunction;
     }
 
     public ParseHandler(ParseHandlerBuilder builder) {
         this.beforeParseCommand = builder.beforeParseCommand;
         this.afterParseCommand = builder.afterParseCommand;
-        this.uniqueFunction = builder.uniqueFunction;
+        this.rowFunction = builder.rowFunction;
     }
 
     public static class ParseHandlerBuilder extends NesterBuilder<ImportConfig.ImportConfigBuilder> {
@@ -38,9 +38,9 @@ public class ParseHandler {
             return this;
         }
 
-        private UniqueFunction uniqueFunction;
-        public ParseHandlerBuilder uniqueFunction(UniqueFunction uniqueFunction) {
-            this.uniqueFunction = uniqueFunction;
+        private RowFunction rowFunction;
+        public ParseHandlerBuilder rowFunction(RowFunction rowFunction) {
+            this.rowFunction = rowFunction;
             return this;
         }
 

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.imports.config;
 
+import com.facilio.bmsconsole.imports.annotations.RowFunction;
 import org.apache.commons.chain.Command;
 
 public class ImportHandler {
@@ -13,9 +14,15 @@ public class ImportHandler {
         return afterImportCommand;
     }
 
+    private RowFunction rowFunction;
+    public RowFunction getRowFunction() {
+        return rowFunction;
+    }
+
     public ImportHandler(ImportHandlerBuilder importHandlerBuilder) {
         this.beforeImportCommand = importHandlerBuilder.beforeImportCommand;
         this.afterImportCommand = importHandlerBuilder.afterImportCommand;
+        this.rowFunction = importHandlerBuilder.rowFunction;
     }
 
     public static class ImportHandlerBuilder extends NesterBuilder<ImportConfig.ImportConfigBuilder> {
@@ -28,6 +35,12 @@ public class ImportHandler {
         private Command afterImportCommand;
         public ImportHandlerBuilder afterImportCommand(Command command) {
             this.afterImportCommand = afterImportCommand;
+            return this;
+        }
+
+        private RowFunction rowFunction;
+        public ImportHandlerBuilder rowFunction(RowFunction rowFunction) {
+            this.rowFunction = rowFunction;
             return this;
         }
 

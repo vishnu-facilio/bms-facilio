@@ -6,7 +6,7 @@ import com.facilio.bmsconsole.context.ImportRowContext;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportFieldValueMissingException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportMandatoryFieldsException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
-import com.facilio.bmsconsole.imports.annotations.UniqueFunction;
+import com.facilio.bmsconsole.imports.annotations.RowFunction;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -69,9 +69,9 @@ public class ParseImportFileCommand extends FacilioCommand {
             }
         }
 
-        UniqueFunction uniqueFunction = (UniqueFunction) context.get(ImportAPI.ImportProcessConstants.UNIQUE_FUNCTION);
-        if (uniqueFunction == null) {
-            uniqueFunction = ParseImportFileCommand::getUniqueFunction;
+        RowFunction rowFunction = (RowFunction) context.get(ImportAPI.ImportProcessConstants.UNIQUE_FUNCTION);
+        if (rowFunction == null) {
+            rowFunction = ParseImportFileCommand::getUniqueFunction;
         }
 
         String sheetName = (String) context.get(FacilioConstants.ContextNames.SHEET_NAME);
@@ -124,7 +124,7 @@ public class ParseImportFileCommand extends FacilioCommand {
                     checkMandatoryFields(requiredFields, context, rowVal, rowNo);
                 }
 
-                String uniqueString = uniqueFunction.apply(rowNo, rowVal, context);
+                String uniqueString = rowFunction.apply(rowNo, rowVal, context);
 
                 if(importProcessContext.getImportSetting() != ImportProcessContext.ImportSetting.INSERT.getValue()) {
                     checkMandatoryUniqueFields(importProcessContext, rowVal, fieldMapping, rowNo);

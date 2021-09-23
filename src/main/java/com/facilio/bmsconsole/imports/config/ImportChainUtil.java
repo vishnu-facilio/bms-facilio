@@ -2,9 +2,12 @@ package com.facilio.bmsconsole.imports.config;
 
 import com.facilio.bmsconsole.commands.InsertImportDataIntoLogCommand;
 import com.facilio.bmsconsole.imports.annotations.ImportModule;
+import com.facilio.bmsconsole.imports.annotations.RowFunction;
 import com.facilio.bmsconsole.imports.command.ImportUploadFileCommand;
 import com.facilio.bmsconsole.imports.command.ParseImportFileCommand;
+import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import org.apache.commons.chain.Command;
 import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
@@ -94,12 +97,14 @@ public class ImportChainUtil {
 
         Command beforeParseCommand = null;
         Command afterParseCommand = null;
+        RowFunction rowFunction = null;
 
         if (importConfig != null) {
             ParseHandler parseHandler = importConfig.getParseHandler();
             if (parseHandler != null) {
                 beforeParseCommand = parseHandler.getBeforeParseCommand();
                 afterParseCommand = parseHandler.getAfterParseCommand();
+                rowFunction = parseHandler.getRowFunction();
             }
         }
 
@@ -109,6 +114,9 @@ public class ImportChainUtil {
         addIfNotNull(chain, afterParseCommand);
         chain.addCommand(new InsertImportDataIntoLogCommand());
 
+        FacilioContext context = chain.getContext();
+        context.put(ImportAPI.ImportProcessConstants.UNIQUE_FUNCTION, rowFunction);
+
         return chain;
     }
 
@@ -117,18 +125,24 @@ public class ImportChainUtil {
 
         Command beforeImportCommand = null;
         Command afterImportCommand = null;
+        RowFunction rowFunction = null;
 
         if (importConfig != null) {
             ImportHandler importHandler = importConfig.getImportHandler();
             if (importHandler != null) {
                 beforeImportCommand = importHandler.getBeforeImportCommand();
                 afterImportCommand = importHandler.getAfterImportCommand();
+                rowFunction = importHandler.getRowFunction();
             }
         }
 
         FacilioChain chain = getDefaultChain();
         addIfNotNull(chain, beforeImportCommand);
-//        chain.addCommand();
+        chain.addCommand(new V3ProcessImportCommand());
+        addIfNotNull(chain, afterImportCommand);
+
+        FacilioContext context = chain.getContext();
+        context.put(ImportAPI.ImportProcessConstants.UNIQUE_FUNCTION, rowFunction);
 
         return chain;
     }
