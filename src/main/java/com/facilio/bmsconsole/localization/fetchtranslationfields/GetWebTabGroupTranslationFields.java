@@ -53,12 +53,6 @@ public class GetWebTabGroupTranslationFields {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getWebTabGroupModule().getTableName())
                 .select(FieldFactory.getWebTabGroupFields());
-        if (appId == null || appId < 0) {
-            builder.andCondition(CriteriaAPI.getCondition("APP_ID", "appId", "", CommonOperators.IS_EMPTY));
-        }
-        else {
-            builder.andCondition(CriteriaAPI.getCondition("APP_ID", "appId", String.valueOf(appId), NumberOperators.EQUALS));
-        }
 
         if(webTabGroupId != null && webTabGroupId > 0){
             builder.andCondition(CriteriaAPI.getIdCondition(webTabGroupId,ModuleFactory.getWebTabGroupModule()));
