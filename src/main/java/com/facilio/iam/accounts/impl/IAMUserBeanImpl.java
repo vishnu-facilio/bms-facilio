@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAmount;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -119,6 +121,14 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		String[] userObj = token.split(USER_TOKEN_REGEX);
 		IAMUser user = null;
 		if(userObj.length == 4) {
+			String creationTimeStr = userObj[3];
+			long creationTime = Long.parseLong(creationTimeStr);
+			Instant creationInstant = Instant.ofEpochMilli(creationTime);
+			Instant plus3Hours = creationInstant.plus(3, ChronoUnit.HOURS);
+			Instant currentTime = Instant.ofEpochMilli(System.currentTimeMillis());
+			if (currentTime.isAfter(plus3Hours)) {
+				return null;
+			}
 			user = getFacilioUser(Long.parseLong(userObj[0]), Long.parseLong(userObj[1]), true);
 		}
 		return user;
