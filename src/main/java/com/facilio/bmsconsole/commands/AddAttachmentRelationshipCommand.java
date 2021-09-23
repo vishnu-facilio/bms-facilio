@@ -126,6 +126,14 @@ public class AddAttachmentRelationshipCommand extends FacilioCommand implements 
 				setAttachmentsActivityContext(attachments, attachmentNames, attach, attachmentActivity);
 				CommonCommandUtil.addActivityToContext(recordId, -1, ItemActivityType.ITEM_ATTACHMENT, attach, (FacilioContext) context);
      		}
+			else if(moduleName.equals(FacilioConstants.ContextNames.TOOL_TYPES_ATTACHMENTS)) {
+				setAttachmentsActivityContext(attachments, attachmentNames, attach, attachmentActivity);
+				CommonCommandUtil.addActivityToContext(recordId, -1, CommonActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
+			}
+			else if(moduleName.equals(FacilioConstants.ContextNames.CONTRACT_ATTACHMENTS)) {
+				setAttachmentsActivityContext(attachments, attachmentNames, attach, attachmentActivity);
+				CommonCommandUtil.addActivityToContext(recordId, -1, CommonActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
+			}
      		else if(moduleName.equals(FacilioConstants.ContextNames.ASSET_ATTACHMENTS)) {
 				setAttachmentsActivityContext(attachments, attachmentNames, attach, attachmentActivity);
 				CommonCommandUtil.addActivityToContext(recordId, -1, AssetActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);

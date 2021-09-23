@@ -115,7 +115,13 @@ public class NoteAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
 			}
 		else if (moduleName.equals(FacilioConstants.ContextNames.STORE_ROOM_NOTES)) {
-			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.STORE_ROOM_ACTIVITY);
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.CUSTOM_ACTIVITY);
+		}
+		else if (moduleName.equals(FacilioConstants.ContextNames.TOOL_TYPES_NOTES)) {
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.CUSTOM_ACTIVITY);
+		}
+		else if (moduleName.equals(FacilioConstants.ContextNames.CONTRACT_NOTES)) {
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.CUSTOM_ACTIVITY);
 		}
 		else if (moduleName.equals(FacilioConstants.ContextNames.ASSET_NOTES)) {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
