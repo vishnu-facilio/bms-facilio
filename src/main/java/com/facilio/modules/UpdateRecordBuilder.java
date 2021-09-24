@@ -249,6 +249,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			scopeFieldsAndCriteria = ScopeHandler.getInstance().updateValuesForUpdateAndGetFieldsAndCriteria(module, joinModules, moduleProps);
 			if (!moduleProps.isEmpty()) {
 				updateLookupFields(moduleProps, fields);
+				moduleProps.remove("sysCreatedBy");
 				moduleProps.put("sysModifiedTime", System.currentTimeMillis());
 
 				if (AccountUtil.getCurrentUser() != null) {
