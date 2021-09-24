@@ -524,8 +524,7 @@ public class FieldUtil {
 	public static boolean isSystemFieldsPresent (FacilioModule module) {
 
 		// custom modules will have system fields by default
-		if (module.isCustom()
-				|| module.getTypeEnum() == FacilioModule.ModuleType.ENUM_REL_MODULE
+		if (module.getTypeEnum() == FacilioModule.ModuleType.ENUM_REL_MODULE
 				|| module.getTypeEnum() == FacilioModule.ModuleType.LOOKUP_REL_MODULE
 				|| module.getTypeEnum() == FacilioModule.ModuleType.RATING
 				|| FacilioConstants.ContextNames.RESOURCE.equals(module.getParentModule().getName())) {
@@ -534,62 +533,6 @@ public class FieldUtil {
 
 		return SYSTEM_FIELDS_ALLOWED_MODULES.contains(module.getName());
 	}
-
-	public static final Set<String> SYSTEM_FIELDS_MIGRATED_MODULES = Collections.unmodifiableSet(
-			new HashSet<>(Arrays.asList(
-					FacilioConstants.ContextNames.ATTENDANCE,
-					FacilioConstants.ContextNames.ASSET_ACTIVITY,
-					FacilioConstants.ContextNames.WORKORDER_ACTIVITY,
-					FacilioConstants.ContextNames.ITEM_ACTIVITY,
-					FacilioConstants.ContextNames.PURCHASE_ORDER,
-					FacilioConstants.ContextNames.PURCHASE_REQUEST,
-					FacilioConstants.ContextNames.RECEIVABLE,
-					FacilioConstants.ContextNames.RECEIPTS,
-					FacilioConstants.ContextNames.CONTRACTS,
-					FacilioConstants.ContextNames.GATE_PASS,
-					FacilioConstants.ContextNames.SHIPMENT,
-					FacilioConstants.ContextNames.INVENTORY_REQUEST,
-					FacilioConstants.ContextNames.ATTENDANCE_TRANSACTIONS,
-					FacilioConstants.ContextNames.SERVICE,
-					FacilioConstants.ContextNames.TERMS_AND_CONDITIONS,
-					FacilioConstants.ContextNames.Reservation.RESERVATION,
-					FacilioConstants.ContextNames.Reservation.RESERVATIONS_EXTERNAL_ATTENDEE,
-					FacilioConstants.ContextNames.Reservation.RESERVATIONS_INTERNAL_ATTENDEE,
-					FacilioConstants.ContextNames.ASSET_MOVEMENT,
-					FacilioConstants.ContextNames.VISITOR,
-					FacilioConstants.ContextNames.VISITOR_INVITE,
-					FacilioConstants.ContextNames.VISITOR_LOGGING,
-					FacilioConstants.ContextNames.WorkPermit.WORKPERMIT,
-					FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_TYPE,
-					FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_TYPE_CHECKLIST,
-					FacilioConstants.ContextNames.CONTACT,
-					FacilioConstants.ContextNames.VENDORS,
-					FacilioConstants.ContextNames.INSURANCE,
-					FacilioConstants.ContextNames.VENDOR_DOCUMENTS,
-					FacilioConstants.ContextNames.SAFETY_PLAN,
-					FacilioConstants.ContextNames.HAZARD,
-					FacilioConstants.ContextNames.PRECAUTION,
-					FacilioConstants.ContextNames.SERVICE_REQUEST,
-					FacilioConstants.ContextNames.QUOTE,
-					FacilioConstants.ContextNames.USER_NOTIFICATION,
-					FacilioConstants.ContextNames.ANNOUNCEMENT,
-					FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION,
-					FacilioConstants.ContextNames.Tenant.DEALS_AND_OFFERS,
-					FacilioConstants.ContextNames.Tenant.NEIGHBOURHOOD,
-					FacilioConstants.ContextNames.Tenant.ADMIN_DOCUMENTS,
-					FacilioConstants.ContextNames.Tenant.PEOPLE_ANNOUNCEMENTS,
-					FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY,
-					FacilioConstants.ContextNames.WO_SERVICE,
-					FacilioConstants.ContextNames.WO_LABOUR,
-					FacilioConstants.ContextNames.TRANSACTION,
-					FacilioConstants.ContextNames.Tenant.AUDIENCE,
-					FacilioConstants.ContextNames.FacilityBooking.FACILITY,
-					FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING,
-					FacilioConstants.ContextNames.JOB_PLAN,
-					FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME,
-					FacilioConstants.ContextNames.MOVES
-			))
-	);
 
 	public static boolean isBaseEntityRootModule (FacilioModule module) {
 		return (module.getTypeEnum() == FacilioModule.ModuleType.BASE_ENTITY && module.getExtendModule() == null);
