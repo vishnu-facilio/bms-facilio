@@ -26,6 +26,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.commands.GetControllableCategoryFromSpaceCommand;
 import com.facilio.controlaction.commands.GetControllableCategoryFromSpaceListCommand;
 import com.facilio.controlaction.commands.GetIncludedSpaceListCommand;
+import com.facilio.delegate.command.GetAllMyDelegationCommand;
 import com.facilio.energystar.command.*;
 import com.facilio.mv.command.FetchMVWidgetResultCommand;
 import com.facilio.trigger.context.TriggerType;
@@ -2247,6 +2248,12 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getSLAPolicyEscalationsChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetSLAPolicyEscalationsCommand());
+		return chain;
+	}
+
+	public static FacilioChain getAllMyDelegationChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetAllMyDelegationCommand());
 		return chain;
 	}
 	

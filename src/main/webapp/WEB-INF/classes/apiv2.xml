@@ -648,6 +648,15 @@
 		</action>
 	</package>
 
+	<package name="userDelegation" namespace="/api/v2/userDelegation" extends="v2Api">
+		<action name="list"
+				class="com.facilio.delegate.action.DelegateAction" method="list" />
+		<action name="addOrUpdate"
+				class="com.facilio.delegate.action.DelegateAction" method="addOrUpdateDelegation" />
+		<action name="delete"
+				class="com.facilio.delegate.action.DelegateAction" method="delete" />
+	</package>
+
 	<package name="sla" namespace="/api/v2/sla" extends="v2Api">
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="getAllSLA" />

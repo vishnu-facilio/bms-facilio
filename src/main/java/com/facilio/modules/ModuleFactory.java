@@ -3824,6 +3824,14 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getUserDelegationModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("userDelegation");
+		module.setDisplayName("User Delegation");
+		module.setTableName("User_Delegation");
+		return module;
+	}
+
 	
 	public static FacilioModule getServiceRequestModule() {
 		FacilioModule ticketStatusModule = new FacilioModule();
