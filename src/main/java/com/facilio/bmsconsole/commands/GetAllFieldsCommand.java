@@ -184,10 +184,11 @@ public class GetAllFieldsCommand extends FacilioCommand {
 				}
 			}
 			fields.removeAll(fieldsToRemove);
-			fields.addAll(FieldFactory.getSystemPointFields(mod));
-		} else if (Arrays.asList(ContextNames.SERVICE_REQUEST, ContextNames.QUOTE, ContextNames.PURCHASE_ORDER, ContextNames.PURCHASE_REQUEST, ContextNames.SAFETY_PLAN, ContextNames.HAZARD, ContextNames.PRECAUTION, ContextNames.MOVES, ContextNames.VENDORS, ContextNames.INSURANCE, ContextNames.ASSET).contains(mod.getName())
-				&& (FacilioProperties.isProduction() || !FieldUtil.SYSTEM_FIELDS_MIGRATED_MODULES.contains(moduleName)) ) {
-			fields.addAll(FieldFactory.getSystemPointFields(mod));
+		} else if (FieldUtil.isSystemFieldsPresent(mod)) {
+			// Temp handling till all system fields are migrated
+			if (!fields.contains(FieldFactory.getSystemField("sysCreatedTime",mod.getParentModule()))) {
+				fields.addAll(FieldFactory.getSystemPointFields(mod));
+			}
 		}
 		
 		if (Arrays.asList(ContextNames.WORK_ORDER, ContextNames.TENANT, ContextNames.ASSET, ContextNames.SERVICE_REQUEST).contains(mod.getName())) {
