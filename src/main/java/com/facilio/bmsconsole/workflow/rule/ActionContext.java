@@ -14,7 +14,7 @@ import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.TemplateAttachment;
 import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.modules.FieldUtil;
 
 public class ActionContext implements Serializable {
@@ -127,7 +127,7 @@ public class ActionContext implements Serializable {
 							attachmentMap.put(attachment.getFileName(), url);
 						}
 					}
-					context.put(FacilioConstants.ContextNames.ATTACHMENT_MAP_FILE_LIST, attachmentMap);
+					actionObj.put(ContextNames.ATTACHMENT_MAP_FILE_LIST, attachmentMap);
 				}
 			}
 

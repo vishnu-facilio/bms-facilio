@@ -158,7 +158,7 @@ public enum ActionType {
 				try {
 					JSONArray toEmails = null;
 					Object toAddr = obj.remove("to");
-					Map<String,String> attachments = (Map<String, String>) context.get(FacilioConstants.ContextNames.ATTACHMENT_MAP_FILE_LIST);
+					Map<String,String> attachments = (Map<String, String>) obj.remove(FacilioConstants.ContextNames.ATTACHMENT_MAP_FILE_LIST);
 
 					if (toAddr instanceof JSONArray) {
 						toEmails = (JSONArray) toAddr;
