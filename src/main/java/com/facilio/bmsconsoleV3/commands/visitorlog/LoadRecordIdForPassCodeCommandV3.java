@@ -31,7 +31,7 @@ import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 
-public class LoadRecordIdForPassCodeCommandV3 extends FacilioCommand {
+public class  LoadRecordIdForPassCodeCommandV3 extends FacilioCommand {
 	
 	@Override
     public boolean executeCommand(Context context) throws Exception {
@@ -45,7 +45,7 @@ public class LoadRecordIdForPassCodeCommandV3 extends FacilioCommand {
         	return false;
         }
         
-        if((recordIds == null||recordIds.isEmpty()||recordIds.get(0) == 0l) && (MapUtils.isNotEmpty(queryParams) && !queryParams.containsKey("id"))) {
+        if(MapUtils.isNotEmpty(queryParams) && !queryParams.containsKey("id")) {
         	
         	if(queryParams.containsKey("passCode") && queryParams.get("passCode") != null && !queryParams.get("passCode").isEmpty()){
         		if(StringUtils.isNotEmpty((String)queryParams.get("passCode").get(0))) {	
@@ -101,7 +101,7 @@ public class LoadRecordIdForPassCodeCommandV3 extends FacilioCommand {
                 			}
             			}
         			}
-        		}	
+         		}
         	}
         	else if(queryParams.containsKey("recordId") && queryParams.get("recordId") != null && !queryParams.get("recordId").isEmpty()){
         		if(queryParams.get("recordId").get(0) != null && (Long)queryParams.get("recordId").get(0) != -1l) {

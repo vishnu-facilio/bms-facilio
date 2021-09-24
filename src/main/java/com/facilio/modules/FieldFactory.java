@@ -1534,22 +1534,26 @@ public class FieldFactory extends BaseFieldFactory {
             case "sysCreatedTime":
                 FacilioField createdTime = getField("sysCreatedTime",  "Created Time", "SYS_CREATED_TIME", module, FieldType.DATE_TIME);
                 createdTime.setDisplayType(FacilioField.FieldDisplayType.DATETIME);
+                createdTime.setDefault(true);
                 return createdTime;
             case "sysModifiedTime":
                 FacilioField modifiedTime = getField("sysModifiedTime", "Modified Time", "SYS_MODIFIED_TIME", module, FieldType.DATE_TIME);
                 modifiedTime.setDisplayType(FacilioField.FieldDisplayType.DATETIME);
+                modifiedTime.setDefault(true);
                 return modifiedTime;
             case "sysCreatedBy":
                 LookupField createdBy = (LookupField) getField("sysCreatedBy", "Created By", "SYS_CREATED_BY", module, FieldType.LOOKUP);
                 createdBy.setSpecialType(FacilioConstants.ContextNames.USERS);
                 createdBy.setLookupModule(LookupSpecialTypeUtil.getModule(FacilioConstants.ContextNames.USERS));
                 createdBy.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+                createdBy.setDefault(true);
                 return createdBy;
             case "sysModifiedBy":
                 LookupField modifiedBy = (LookupField) getField("sysModifiedBy", "Modified By", "SYS_MODIFIED_BY", module, FieldType.LOOKUP);
                 modifiedBy.setSpecialType(FacilioConstants.ContextNames.USERS);
                 modifiedBy.setLookupModule(LookupSpecialTypeUtil.getModule(FacilioConstants.ContextNames.USERS));
                 modifiedBy.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+                modifiedBy.setDefault(true);
                 return modifiedBy;
         }
         return null;
