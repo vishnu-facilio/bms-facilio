@@ -232,9 +232,9 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		moduleProps.remove("orgId");
 		moduleProps.remove("moduleId");
 		moduleProps.remove("id");
-		if (FieldUtil.isSystemFieldsPresent(module)) {
-			moduleProps.keySet().removeAll(FieldFactory.getSystemFieldNames());
-		}
+//		if (FieldUtil.isSystemFieldsPresent(module)) {
+//			moduleProps.keySet().removeAll(FieldFactory.getSystemFieldNames());
+//		}
 //		if (FieldUtil.isBaseEntityRootModule(module)) {
 //			moduleProps.keySet().removeAll(FieldFactory.getBaseModuleSystemFieldNames());
 //		}
@@ -249,7 +249,9 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			scopeFieldsAndCriteria = ScopeHandler.getInstance().updateValuesForUpdateAndGetFieldsAndCriteria(module, joinModules, moduleProps);
 			if (!moduleProps.isEmpty()) {
 				updateLookupFields(moduleProps, fields);
-				moduleProps.remove("sysCreatedBy");
+				if (FieldUtil.isSystemFieldsPresent(module)) {
+					moduleProps.keySet().removeAll(FieldFactory.getSystemFieldNames());
+				}
 				moduleProps.put("sysModifiedTime", System.currentTimeMillis());
 
 				if (AccountUtil.getCurrentUser() != null) {
