@@ -16,6 +16,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ScopeHandler;
 import com.facilio.modules.fields.FacilioField;
 import lombok.NonNull;
@@ -84,7 +85,7 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
 
     private FilterFieldContext getIdFilterField (@NonNull FacilioField field) {
         if (field.getDataTypeEnum() == FieldType.ID) {
-            return new FilterFieldContext(field, isRecordIdIsIdField(field.getModule()) ? "ID" : "Record ID");
+            return new FilterFieldContext(field, FieldUtil.getRecordIdFieldName(field.getModule()));
         }
         else {
             return new FilterFieldContext(field);
