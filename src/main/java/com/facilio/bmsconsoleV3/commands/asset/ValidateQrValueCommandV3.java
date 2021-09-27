@@ -42,7 +42,7 @@ public class ValidateQrValueCommandV3 extends FacilioCommand {
                     List<V3AssetContext> records = builder.get();
 
                     for (V3AssetContext record : records) {
-                        if (!(qrValue.equals(record.getQrVal()))) {
+                        if (record.getId() == asset.getId() && !qrValue.equals(record.getQrVal())) {
                             List<V3AssetContext> qrValueRecords = checkQrValue(module, fields, qrValue);
                             if (qrValueRecords.size() >= 1) {
                                 throw new IllegalArgumentException("QR Value already exists");
