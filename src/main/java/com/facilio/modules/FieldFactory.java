@@ -699,6 +699,14 @@ public class FieldFactory extends BaseFieldFactory {
     public static FacilioField getAgentV2MsgIdField(FacilioModule module) {
         return getField(AgentConstants.MESSAGE_ID, "MSGID", module, FieldType.NUMBER);
     }
+    
+    public static List<FacilioField> getCloudAgentDomainFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getCloudAgentDomainModule();
+        fields.add(getIdField(module));
+        fields.add(getStringField("domain", "DOMAIN", module));
+        return fields;
+    }
 
     /**
      * ID

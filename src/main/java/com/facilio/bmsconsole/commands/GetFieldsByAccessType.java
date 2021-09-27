@@ -1,5 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang.StringUtils;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -9,10 +14,6 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang.StringUtils;
-
-import java.util.List;
 
 public class GetFieldsByAccessType extends FacilioCommand {
     @Override
@@ -41,8 +42,11 @@ public class GetFieldsByAccessType extends FacilioCommand {
             if (FieldUtil.isSiteIdFieldPresent(module, true)) {
                 selectedFields.add(FieldFactory.getSiteIdField(module));
             }
+            // Temp handling till all system fields are migrated
             if (FieldUtil.isSystemFieldsPresent(module)) {
-                selectedFields.addAll(FieldFactory.getSystemPointFields(module));
+	    			if (!selectedFields.contains(FieldFactory.getSystemField("sysCreatedTime",module.getParentModule()))) {
+	    				selectedFields.addAll(FieldFactory.getSystemPointFields(module));
+	    			}
             }
 //        }
 

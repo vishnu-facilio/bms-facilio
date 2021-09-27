@@ -1,5 +1,9 @@
 package com.facilio.modules;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.facilio.agent.AgentKeys;
 import com.facilio.agent.integration.AgentIntegrationKeys;
 import com.facilio.agentv2.AgentConstants;
@@ -8,10 +12,6 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.constants.FacilioConstants.ModuleNames;
 import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.modules.fields.FacilioField;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ModuleFactory {
 
@@ -224,6 +224,14 @@ public class ModuleFactory {
 		agentDataModule.setName("agent");
 		agentDataModule.setDisplayName("agent");
 		agentDataModule.setTableName(AgentConstants.AGENT_TABLE);
+		return agentDataModule;
+	}
+	
+	public static FacilioModule getCloudAgentDomainModule() {
+		FacilioModule agentDataModule = new FacilioModule();
+		agentDataModule.setName("cloudAgentDomain");
+		agentDataModule.setDisplayName("Cloud Agent Domain");
+		agentDataModule.setTableName("Cloud_Agent_Domain");
 		return agentDataModule;
 	}
 

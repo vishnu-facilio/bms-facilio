@@ -16,9 +16,6 @@ public class AddDefaultSystemFields extends SignUpData {
     @Override
     public void addData () throws Exception {
 
-            if(FacilioProperties.isProduction()){
-                return;
-            }
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             List<FacilioModule> modules = new ArrayList<>();
             modules.add(modBean.getModule(FacilioConstants.ContextNames.ATTENDANCE));
