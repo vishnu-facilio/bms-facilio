@@ -917,6 +917,12 @@ public class FormsAPI {
 			case ContextNames.INSURANCE:
 				fields.add(new FormField("insuranceType", FieldDisplayType.SELECTBOX, "Insurance Type", FormField.Required.OPTIONAL, 1, 1));
 				break;
+			case ContextNames.SPACE:
+				fields.add(new FormField("building", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Building Associated", FormField.Required.REQUIRED,"building", 5, 1,true));
+				fields.add(new FormField("floor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Floor Associated", FormField.Required.REQUIRED,"floor", 5, 1,true));
+				fields.add(FormFactory.getSpaceAssociatedField());
+				break;
+				
 				// Add fields here if it has to be shown in unused list and not there in the default form
 			}
 		}
@@ -1036,7 +1042,7 @@ public class FormsAPI {
 	}
 	
 	private static List<FormField> setUnusedSystemFields(List<FormField> systemFields, FacilioForm defaultForm, Map<String, FormField> formFieldMap) throws Exception {
-		List<FormField> fields = defaultForm.getFields(); // TODO get fields from all sections
+		List<FormField> fields = new ArrayList<>(defaultForm.getFields()); // TODO get fields from all sections
 		FacilioModule extendedModule = defaultForm.getModule().getExtendModule();
 		if (extendedModule != null) {
 			FacilioForm extendedForm = getDefaultForm(extendedModule.getName(), defaultForm.getAppLinkName(), true);
