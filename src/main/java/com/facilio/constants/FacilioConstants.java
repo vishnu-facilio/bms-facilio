@@ -1128,7 +1128,11 @@ public class FacilioConstants {
 		public static final String TECH_COUNT_GROUP_DIGEST = "techCountGroupDigest";
 		public static final String SITE_ROLE_WISE_COUNT= "siteRoleWiseCount";
 		public static final String SITE_ROLE_WO_COUNT= "siteRoleWoCount";
-		
+
+		public static final String DELEGATION_CONTEXT = "delegation";
+		public static final String ONLY_MY_DELEGATION = "onlyMyDelegation";
+		public static final String DELEGATION_LIST = "delegationList";
+
 		
 		public static final String VIEWID = "viewId";
 		public static final String VIEW_LIST = "views";

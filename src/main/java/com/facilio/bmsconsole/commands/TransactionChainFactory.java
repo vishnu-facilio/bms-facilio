@@ -43,6 +43,8 @@ import com.facilio.cb.command.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.commands.*;
+import com.facilio.delegate.command.AddOrUpdateDelegateCommand;
+import com.facilio.delegate.command.DeleteUserDelegationCommand;
 import com.facilio.elasticsearch.command.PushDataToESCommand;
 import com.facilio.energystar.command.*;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand;
@@ -5200,6 +5202,18 @@ public class TransactionChainFactory {
 	public static FacilioChain getBulkAddOrUpdateSLAChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddOrUpdateBulkSLACommand());
+		return chain;
+	}
+
+	public static FacilioChain getAddOrUpdateUserDelegationChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddOrUpdateDelegateCommand());
+		return chain;
+	}
+
+	public static FacilioChain getDeleteUserDelegationChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new DeleteUserDelegationCommand());
 		return chain;
 	}
 
