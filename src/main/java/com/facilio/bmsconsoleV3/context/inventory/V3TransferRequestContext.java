@@ -18,6 +18,7 @@ public class V3TransferRequestContext extends V3Context {
     private Boolean isStaged;
     private Boolean isShipped;
     private Boolean isCompleted;
+    private Boolean isShipmentTrackingNeeded;
 
     public String getRequestSubject() {
         return requestSubject;
@@ -108,4 +109,14 @@ public class V3TransferRequestContext extends V3Context {
         isCompleted = completed;
     }
 
+    public Boolean getShipmentTrackingNeeded() {
+        if (isShipmentTrackingNeeded != null) {
+            return isShipmentTrackingNeeded.booleanValue();
+        }
+        return false;
+    }
+
+    public void setShipmentTrackingNeeded(Boolean shipmentTrackingNeeded) {
+        isShipmentTrackingNeeded = shipmentTrackingNeeded;
+    }
 }
