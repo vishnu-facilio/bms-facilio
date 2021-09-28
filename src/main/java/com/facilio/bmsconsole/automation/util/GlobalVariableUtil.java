@@ -72,18 +72,19 @@ public class GlobalVariableUtil {
     }
 
     public static Map<String, Map<String, Object>> getLiveVariables() {
-        FacilioCache<String, Map<String, Map<String, Object>>> globalVariableCache = LRUCache.getGlobalVariableCache();
-        String orgKey = CacheUtil.ORG_KEY(AccountUtil.getCurrentOrg().getOrgId());
-        Map<String, Map<String, Object>> globalVariableMap = globalVariableCache.get(orgKey);
         try {
+            FacilioCache<String, Map<String, Map<String, Object>>> globalVariableCache = LRUCache.getGlobalVariableCache();
+            String orgKey = CacheUtil.ORG_KEY(AccountUtil.getCurrentOrg().getOrgId());
+            Map<String, Map<String, Object>> globalVariableMap = globalVariableCache.get(orgKey);
             if (globalVariableMap == null) {
                 globalVariableMap = getLiveVariablesFromDB();
                 globalVariableCache.put(orgKey, globalVariableMap);
             }
+            return globalVariableMap;
         } catch (Exception ex) {
             LOGGER.error("Error in getting live variables", ex);
+            return null;
         }
-        return globalVariableMap;
     }
 
     private static Map<String, Map<String, Object>> getLiveVariablesFromDB() throws Exception {
