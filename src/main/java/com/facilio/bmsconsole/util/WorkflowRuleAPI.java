@@ -2,9 +2,9 @@ package com.facilio.bmsconsole.util;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.automation.util.GlobalVariableUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingEventContext;
 import com.facilio.bmsconsole.scoringrule.ScoringRuleAPI;
@@ -35,7 +35,6 @@ import com.facilio.workflows.context.WorkflowContext.WorkflowUIMode;
 import com.facilio.workflows.context.WorkflowFieldType;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowGlobalParamUtil;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -59,6 +58,16 @@ public class WorkflowRuleAPI {
 		CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
 		placeHolders.put("org", AccountUtil.getCurrentOrg());
 		placeHolders.put("user", AccountUtil.getCurrentUser());
+
+		Map<String, Map<String, Object>> liveVariables = GlobalVariableUtil.getLiveVariables();
+		if (MapUtils.isNotEmpty(liveVariables)) {
+			placeHolders.put("gs", liveVariables);
+			Map<String, Object> gs = new HashMap<>();
+			for (String key : liveVariables.keySet()) {
+				gs.put(key, liveVariables.get(key));
+			}
+			CommonCommandUtil.appendModuleNameInKey(null, "gs", gs, placeHolders);
+		}
 		
 		return placeHolders;
 	}
