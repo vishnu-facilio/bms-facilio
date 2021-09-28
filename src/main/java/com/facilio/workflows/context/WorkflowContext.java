@@ -15,11 +15,14 @@ import java.util.logging.Logger;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.commons.collections4.MapUtils;
 import org.json.simple.JSONArray;
 
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.bmsconsole.automation.util.GlobalVariableUtil;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
@@ -556,6 +559,10 @@ public class WorkflowContext implements Serializable {
 		globalParameters.put("currentOrg", FieldUtil.getAsJSON(AccountUtil.getCurrentOrg()));
 		globalParameters.put("currentUser", FieldUtil.getAsJSON(AccountUtil.getCurrentUser()));
 		
+		Map<String, Map<String, Object>> liveVariables = GlobalVariableUtil.getLiveVariables();
+		if (MapUtils.isNotEmpty(liveVariables)) {
+			globalParameters.put("gs", liveVariables);		
+		}
 	}
 	//	old workflow methods starts
 	// only from client

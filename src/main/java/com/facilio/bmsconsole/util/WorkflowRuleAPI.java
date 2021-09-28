@@ -59,16 +59,6 @@ public class WorkflowRuleAPI {
 		placeHolders.put("org", AccountUtil.getCurrentOrg());
 		placeHolders.put("user", AccountUtil.getCurrentUser());
 
-		Map<String, Map<String, Object>> liveVariables = GlobalVariableUtil.getLiveVariables();
-		if (MapUtils.isNotEmpty(liveVariables)) {
-			placeHolders.put("gs", liveVariables);
-			Map<String, Object> gs = new HashMap<>();
-			for (String key : liveVariables.keySet()) {
-				gs.put(key, liveVariables.get(key));
-			}
-			CommonCommandUtil.appendModuleNameInKey(null, "gs", gs, placeHolders);
-		}
-		
 		return placeHolders;
 	}
 
