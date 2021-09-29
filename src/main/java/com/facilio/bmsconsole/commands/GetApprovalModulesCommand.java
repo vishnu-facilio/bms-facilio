@@ -36,7 +36,8 @@ public class GetApprovalModulesCommand extends FacilioCommand {
     	                FacilioConstants.ContextNames.SITE,
     	                FacilioConstants.ContextNames.BUILDING,
     	                FacilioConstants.ContextNames.FLOOR,
-    	                FacilioConstants.ContextNames.SPACE
+    	                FacilioConstants.ContextNames.SPACE,
+					 	FacilioConstants.ContextNames.ASSET
     	     });
     	}
 
