@@ -501,8 +501,12 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
 
     public String patch() throws Exception {
     		//removing permission restricted fields
-        removeRestrictedFields(this.getData(), this.getModuleName(), true);
-        patchHandler(this.getModuleName(), this.getId(), this.getData(), this.getParams());
+        Map<String, Object> data = this.getData();
+        if (data == null) {
+            data = new HashMap<>();
+        }
+        removeRestrictedFields(data, this.getModuleName(), true);
+        patchHandler(this.getModuleName(), this.getId(), data, this.getParams());
         return SUCCESS;
     }
 
