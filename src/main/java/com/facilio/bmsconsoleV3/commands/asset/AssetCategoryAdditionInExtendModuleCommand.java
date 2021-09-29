@@ -35,6 +35,7 @@ public class AssetCategoryAdditionInExtendModuleCommand extends FacilioCommand {
         if(assetCategory!=null && assetCategory.getId() != 0) {
             categoryId=assetCategory.getId();
         }
+        context.put(FacilioConstants.ContextNames.MODULE_NAME,module.getName());
         context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
         context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
         context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
