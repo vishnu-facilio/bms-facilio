@@ -8899,6 +8899,22 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getUserDelegationFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getUserDelegationModule();
+
+        fields.add(getIdField(module));
+        fields.add(getStringField("name", "NAME", module));
+        fields.add(getStringField("description", "DESCRIPTION", module));
+        fields.add(getNumberField("appId", "APP_ID", module));
+        fields.add(getNumberField("fromTime", "FROM_TIME", module));
+        fields.add(getNumberField("toTime", "TO_TIME", module));
+        fields.add(getNumberField("userId", "USER_ID", module));
+        fields.add(getNumberField("delegateUserId", "DELEGATE_USER_ID", module));
+
+        return fields;
+    }
+
     public static List<FacilioField> getNewPermissionFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getNewPermissionModule();

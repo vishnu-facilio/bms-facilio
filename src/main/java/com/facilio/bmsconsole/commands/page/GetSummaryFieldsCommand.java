@@ -249,11 +249,6 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		if (!additionalFields.isEmpty()) {
 			for(FacilioField field: allFields) {
 				String name = field.getName();
-				if (name.equals("site")) { // Temp...needs to have common name for site field in fields and forms
-					name = "siteId";
-					field = field.clone();
-					field.setName(name);
-				}
 				if (additionalFields.contains(name) && !existingFieldNames.contains(name)) {
 					formFields.add(FormsAPI.getFormFieldFromFacilioField(field, ++count));
 				}
@@ -357,7 +352,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 					"actualWorkEnd"
 			}))
 			.put(ContextNames.TENANT_UNIT_SPACE, Arrays.asList(new String[] {
-					"siteId",
+					"site",
 					"building",
 					"floor"
 			}))

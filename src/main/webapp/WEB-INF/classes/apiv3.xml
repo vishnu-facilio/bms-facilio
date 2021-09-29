@@ -255,6 +255,12 @@
             </result>
         </action>
     </package>
+     <package name="fieldsApiv3" namespace="/api/v3/fields" extends="v3Api">
+        <action name="sortable/*" class="com.facilio.bmsconsoleV3.actions.V3ModuleAction" method="sortableFields">
+            <param name="moduleName">{1}</param>
+            <param name="translationImpl">FieldTranslationV3</param>
+        </action>
+    </package>
 
     <package name="qandaTemplate" namespace="/api/v3/qanda/template" extends="v3Api">
         <action name="execute"

@@ -2,8 +2,10 @@ package com.facilio.bmsconsoleV3.commands;
 
 import com.facilio.bmsconsole.automation.command.ListGlobalVariableCommand;
 import com.facilio.bmsconsole.automation.command.ListGlobalVariableGroupCommand;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.GenerateCriteriaFromFilterCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.module.GetSortableFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.floorplan.getIndoorFloorPlanViewerCommand;
 import com.facilio.bmsconsole.commands.page.GetSummaryFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.facility.GetFacilityAvailabilityCommandV3;
@@ -188,6 +190,13 @@ public class ReadOnlyChainFactoryV3 {
         c.addCommand(new FetchFloorplanFacilitiesCommmand());
         c.addCommand(new getFloorplanPropertiesBookingResultCommands());
         
+        return c;
+    }
+    
+    public static FacilioChain getSortableFieldsCommand() {
+        FacilioChain c = getDefaultChain();
+		c.addCommand(FacilioChainFactory.getFieldsByAccessType());
+        c.addCommand(new GetSortableFieldsCommand());
         return c;
     }
 }

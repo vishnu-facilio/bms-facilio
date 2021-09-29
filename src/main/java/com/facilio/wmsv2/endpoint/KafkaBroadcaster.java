@@ -69,6 +69,7 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
         props.put("bootstrap.servers", FacilioProperties.getKafkaConsumer());
         props.put("group.id", groupId);
         props.put("enable.auto.commit", "false");
+        props.put("session.timeout.ms", "300000");
         props.put("auto.offset.reset", "latest");
         props.put("key.deserializer", StringDeserializer.class.getName());
         props.put("value.deserializer", StringDeserializer.class.getName());
@@ -98,7 +99,6 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
         private FacilioProducer producer;
         private String topic;
         private KafkaConsumer<String, String> consumer;
-//        private TopicPartition topicPartition;
 
         private ScheduledExecutorService executor = null;
 
@@ -108,9 +108,6 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
             producer = new FacilioKafkaProducer();
 
             consumer = new KafkaConsumer<>(getProperties(groupId, client));
-//            topicPartition = new TopicPartition(topic, 0);
-//            List<TopicPartition> topicPartitionList = new ArrayList<>();
-//            topicPartitionList.add(topicPartition);
             consumer.subscribe(Collections.singletonList(topic));
 
             executor = Executors.newScheduledThreadPool(1);

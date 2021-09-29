@@ -10,7 +10,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -26,6 +25,7 @@ import com.facilio.bmsconsole.util.SharingAPI;
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.ViewFactory;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
@@ -250,8 +250,8 @@ public class GetViewListCommand extends FacilioCommand {
 			
 		}
 		else {
+			 allViews = new ArrayList<>();
 			if (!viewGroups.isEmpty() && viewGroups != null) {
-				 allViews = new ArrayList<>();
 				for(ViewGroups viewGroup : viewGroups) {
 					if (viewGroup.getViews() != null && !viewGroup.getViews().isEmpty()) {
 						allViews.addAll(viewGroup.getViews());
