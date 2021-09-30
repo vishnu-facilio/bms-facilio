@@ -1,5 +1,14 @@
 package com.facilio.accounts.util;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.accounts.bean.GroupBean;
 import com.facilio.accounts.bean.OrgBean;
 import com.facilio.accounts.bean.RoleBean;
@@ -12,9 +21,8 @@ import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.DBUtil;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.iam.accounts.util.IAMUtil;
@@ -26,15 +34,8 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.service.FacilioService;
 import com.facilio.service.FacilioServiceUtil;
 import com.facilio.util.RequestUtil;
-import com.facilio.constants.FacilioConstants.ContextNames;
-import lombok.extern.log4j.Log4j;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.*;
+import lombok.extern.log4j.Log4j;
 @Log4j
 public class AccountUtil {
 
@@ -400,7 +401,7 @@ public class AccountUtil {
 		APPROVAL(1024),
 		MOBILE_DASHBOARD(2048),
 		CONTROL_ACTIONS(4096),
-		INVENTORY(8192),
+		INVENTORY(8192, new String[]{ContextNames.TOOL, ContextNames.ITEM}),
 		SCHEDULED_WO(16384),
 		TENANTS(32768, new String[]{ContextNames.TENANT, ContextNames.TENANT_UNIT_SPACE}),
 		HUDSON_YARDS(65536, new String[]{ContextNames.WorkPermit.WORKPERMIT}), // TEMP
