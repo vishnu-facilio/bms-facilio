@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.automation.command;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.automation.context.GlobalVariableGroupContext;
 import com.facilio.bmsconsole.automation.util.GlobalVariableUtil;
+import com.facilio.cache.CacheUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -11,6 +12,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fw.cache.LRUCache;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -45,6 +47,7 @@ public class AddOrUpdateGlobalVariableGroupCommand extends FacilioCommand {
         } else {
             updateGlobalVariableGroup(variableGroup);
         }
+        LRUCache.getGlobalVariableCache().remove(CacheUtil.ORG_KEY(AccountUtil.getCurrentOrg().getOrgId()));
         return false;
     }
 

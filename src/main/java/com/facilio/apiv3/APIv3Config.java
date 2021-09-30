@@ -512,6 +512,16 @@ public class APIv3Config {
                 .afterDelete(new DeleteReceivableByPOIdV3())
                 .build();
     }
+    @Module("transferrequest")
+    public static Supplier<V3Config> getTransferRequest() {
+        return () -> new V3Config(V3TransferRequestContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
     
     @Module("itemTypes")
     public static Supplier<V3Config> getItemTypes() {

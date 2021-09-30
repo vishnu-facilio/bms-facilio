@@ -54,6 +54,7 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
 	private static FacilioCache<String, Object> roleIdCachePs = new PubSubLRUCache<>("roleId",1000);
 	private static FacilioCache<String, Object> roleNameCachePs = new PubSubLRUCache<>("roleName",1000);
 	private static FacilioCache<String, Object> userSecurityPolicyPS = new PubSubLRUCache<>("userSecurityPolicyPS", 2000);
+	private static FacilioCache<String, Map<String, Map<String, Object>>> globalVariable = new PubSubLRUCache<>("globalVariable", 2000);
 
 	private static final List<FacilioCache> CACHE_LIST = initCacheList();
 
@@ -71,6 +72,7 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
 		cacheList.put(roleIdCachePs.name(),roleIdCachePs);
 		cacheList.put(roleNameCachePs.name(),roleNameCachePs);
 		cacheList.put(userSecurityPolicyPS.name(),userSecurityPolicyPS);
+		cacheList.put(globalVariable.name(),globalVariable);
 		cacheList.put(userSessionCachePS.name(),userSessionCachePS);
 		cacheList.put(FWLRUCaches.getClientAppCache().name(), FWLRUCaches.getClientAppCache());
 		cacheList.put(FWLRUCaches.getOrgGroupingCache().name(), FWLRUCaches.getOrgGroupingCache());
@@ -142,6 +144,9 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
 	public static FacilioCache<String, Object> getResponseCache() {
 //		if(FacilioProperties.isProduction()){return responseCache;}
 		return responseCachePS;
+	}
+	public static FacilioCache<String, Map<String, Map<String, Object>>> getGlobalVariableCache() {
+		return globalVariable;
 	}
 
 	public static FacilioCache<String, Long> getFeatureLicenseCache() {

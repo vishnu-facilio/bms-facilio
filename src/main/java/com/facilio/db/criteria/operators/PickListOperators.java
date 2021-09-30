@@ -26,6 +26,8 @@ import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.FacilioModulePredicate;
+import org.owasp.esapi.ESAPI;
+import org.owasp.esapi.codecs.MySQLCodec;
 
 public enum PickListOperators implements Operator<String> {
 	
@@ -52,7 +54,7 @@ public enum PickListOperators implements Operator<String> {
 					if(value.equals(FacilioConstants.Criteria.LOGGED_IN_USER) || value.equals(FacilioConstants.Criteria.LOGGED_IN_PEOPLE)) {
 						value = "?";
 					}
-					return columnName+" = "+value;
+					return columnName+" = '"+ ESAPI.encoder().encodeForSQL(new MySQLCodec(MySQLCodec.Mode.STANDARD), value) + "'";
 				}
 			}
 			return null;

@@ -225,3 +225,6 @@ enums:
     
   - name: FloorPlanType
     enumClassName: com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanContext$FloorPlanType
+
+  - name: InventoryType
+    enumClassName: com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestLineItemContext$InventoryType

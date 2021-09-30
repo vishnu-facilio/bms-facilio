@@ -33,6 +33,8 @@ import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnn
 import com.facilio.bmsconsoleV3.context.facilitybooking.*;
 import com.facilio.bmsconsoleV3.context.floorplan.*;
 import com.facilio.bmsconsoleV3.context.inspection.*;
+import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestLineItemContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTaskSectionContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTasksContext;
@@ -1924,6 +1926,8 @@ public class FacilioConstants {
 		public static final String SCATTER_GRAPH_RESULT = "scatterGraphResult";
 		public static final String SCATTER_BASELINE_DATA = "baselineData";
 		public static final String SCATTER_BASELINE_COLOR = "baselineDataColor";
+		public static final String TRANSFER_REQUEST = "transferrequest";
+		public static final String TRANSFER_REQUEST_LINE_ITEM = "transferrequestlineitems";
 
 		public static class WorkPermit {
 			public static final String WORK_PERMIT_TYPE_CHECKLIST = "workpermittypechecklist";
@@ -2427,6 +2431,8 @@ public class FacilioConstants {
 			
 			classMap.put(Inspection.INSPECTION_RESPONSE_ACTIVITY, ActivityContext.class);
 			classMap.put(Induction.INDUCTION_RESPONSE_ACTIVITY, ActivityContext.class);
+			classMap.put(TRANSFER_REQUEST, V3TransferRequestContext.class);
+			classMap.put(TRANSFER_REQUEST_LINE_ITEM, V3TransferRequestLineItemContext.class);
 
 			for (QuestionType type : QuestionType.values()) {
 				classMap.put(type.getSubModuleName(), type.getSubClass());
