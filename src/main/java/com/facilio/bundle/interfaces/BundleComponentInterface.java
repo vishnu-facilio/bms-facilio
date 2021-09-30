@@ -1,6 +1,7 @@
 package com.facilio.bundle.interfaces;
 
 import com.facilio.chain.FacilioContext;
+import com.facilio.db.criteria.Condition;
 
 public interface BundleComponentInterface {
 
@@ -15,5 +16,6 @@ public interface BundleComponentInterface {
 	void getAddedChangeSet(FacilioContext context) throws Exception;
 	void getModifiedChangeSet(FacilioContext context) throws Exception;
 	void getDeletedChangeSet(FacilioContext context) throws Exception;
+	Condition getFetchChangeSetCondition(FacilioContext context) throws Exception;
 	
 }

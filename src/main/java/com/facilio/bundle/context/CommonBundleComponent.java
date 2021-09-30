@@ -12,6 +12,7 @@ import com.facilio.bundle.interfaces.BundleComponentInterface;
 import com.facilio.bundle.utils.BundleConstants;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
@@ -31,6 +32,11 @@ public abstract class CommonBundleComponent implements BundleComponentInterface 
 	}
 	
 	@Override
+	public Condition getFetchChangeSetCondition(FacilioContext context) throws Exception {
+		return null;
+	}
+	
+	@Override
 	public void getAddedChangeSet(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
@@ -42,13 +48,17 @@ public abstract class CommonBundleComponent implements BundleComponentInterface 
 		
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 				.select(component.getFields())
-				.table(ModuleFactory.getBundleChangeSetModule().getTableName())
-				.rightJoin(component.getModule().getTableName())
+				.table(component.getModule().getTableName())
+				.leftJoin(ModuleFactory.getBundleChangeSetModule().getTableName())
 				.on("Bundle_Change_Set.COMPONENT_ID = "+component.getModule().getTableName()+"."+componentFieldMap.get(component.getIdFieldName()).getColumnName())
-				//.andCondition(CriteriaAPI.getCondition(componentFieldMap.get(component.getModifiedTimeFieldName()), "", CommonOperators.IS_NOT_EMPTY))
-				.andCustomWhere("MODIFIED_TIME is not null")
+				.andCondition(CriteriaAPI.getCondition(componentFieldMap.get(component.getModifiedTimeFieldName()), "", CommonOperators.IS_NOT_EMPTY))
 				.andCondition(CriteriaAPI.getCondition(bundleFieldMap.get("id"), "",CommonOperators.IS_EMPTY));
 		
+		Condition condition = getFetchChangeSetCondition(context);
+		
+		if(condition != null) {
+			select.andCondition(condition);
+		}
 		
 		List<Map<String, Object>> props = select.get();
 		
@@ -92,8 +102,7 @@ public abstract class CommonBundleComponent implements BundleComponentInterface 
 				.innerJoin(component.getModule().getTableName())
 				.on("Bundle_Change_Set.COMPONENT_ID = "+component.getModule().getTableName()+"."+componentFieldMap.get(component.getIdFieldName()).getColumnName())
 				.andCondition(CriteriaAPI.getCondition(bundleFieldMap.get("componentType"), component.getValue()+"", NumberOperators.EQUALS))
-				//.andCondition(CriteriaAPI.getCondition(bundleFieldMap.get("componentLastEditedTime"), component.getModule().getTableName()+"."+componentFieldMap.get(component.getModifiedTimeFieldName()).getColumnName(),DateOperators.IS_BEFORE));
-				.andCondition(CriteriaAPI.getCondition(bundleFieldMap.get("componentLastEditedTime"), component.getModule().getTableName()+".MODIFIED_TIME",DateOperators.IS_BEFORE));
+				.andCondition(CriteriaAPI.getCondition(bundleFieldMap.get("componentLastEditedTime"), component.getModule().getTableName()+"."+componentFieldMap.get(component.getModifiedTimeFieldName()).getColumnName(),DateOperators.IS_BEFORE));
 		
 		
 		List<Map<String, Object>> props = select.get();

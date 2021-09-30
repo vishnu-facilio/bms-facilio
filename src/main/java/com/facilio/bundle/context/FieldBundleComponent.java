@@ -118,7 +118,7 @@ public class FieldBundleComponent extends CommonBundleComponent {
 				  .element(BundleConstants.Components.DISPLAY_NAME).text(field.getDisplayName()).p()
 				  .element(DATA_TYPE).text(field.getDataTypeEnum().getTypeAsString()).p()
 				  .element(DISPLAY_TYPE).text(field.getDisplayTypeInt()+"").p()
-				  .element(REQUIRED).text(field.getRequired().toString()).p()
+//				  .element(REQUIRED).text(field.getRequired().toString()).p()
 				  ;
 		
 	}
