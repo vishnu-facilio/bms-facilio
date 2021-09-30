@@ -138,7 +138,8 @@ public class GenerateCriteriaForV4Command extends FacilioCommand {
 
     private enum lookupOperators {
         eq,
-        neq
+        neq,
+        within
     }
 
     private Criteria getLookupFieldCriteria(String val, String operatorStr, FacilioField field) throws Exception {
@@ -160,53 +161,58 @@ public class GenerateCriteriaForV4Command extends FacilioCommand {
         FacilioModule module = modBean.getModule(moduleId);
 
         FacilioModule.ModuleType moduleType = module.getTypeEnum();
-        if (moduleType != FacilioModule.ModuleType.PICK_LIST) {
-            return null;
-        }
+        if (moduleType == FacilioModule.ModuleType.PICK_LIST) {
+            List<FacilioField> allFields = modBean.getAllFields(module.getName());
+            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+            FacilioField idField = FieldFactory.getIdField(module);
+            FacilioField mainField = null;
 
-        List<FacilioField> allFields = modBean.getAllFields(module.getName());
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
-        FacilioField idField = FieldFactory.getIdField(module);
-        FacilioField mainField = null;
+            for (FacilioField f: allFields) {
+                if (f.isMainField()) {
+                    mainField = f;
+                    break;
+                }
+            }
 
-        for (FacilioField f: allFields) {
-            if (f.isMainField()) {
-                mainField = f;
-                break;
+            if (mainField == null) {
+                return null;
+            }
+
+            SelectRecordsBuilder selectRecordsBuilder = new SelectRecordsBuilder();
+            selectRecordsBuilder
+                    .module(module)
+                    .select(Arrays.asList(mainField, idField));
+
+            if (field.getName().equals("moduleState")) {
+                selectRecordsBuilder.andCondition(CriteriaAPI.getCondition("PARENT_MODULEID","parentModuleId", "" + field.getModuleId(), NumberOperators.EQUALS));
+            }
+
+            List<Map<String, Object>> asProps = selectRecordsBuilder.getAsProps();
+
+            Map<String, Long> lookupMap = new HashMap<>();
+            for (Map<String, Object> prop: asProps) {
+                long id = (long) prop.get("id");
+                String mainVal = (String) prop.get(mainField.getName());
+                lookupMap.put(mainVal, id);
+            }
+
+            switch (operator) {
+                case eq:
+                    condition = CriteriaAPI.getCondition(field, lookupMap.get(val)+"", NumberOperators.EQUALS);
+                    break;
+                case neq:
+                    condition = CriteriaAPI.getCondition(field, lookupMap.get(val)+"", NumberOperators.NOT_EQUALS);
+                    break;
+                default:
+                    return null;
             }
         }
-
-        if (mainField == null) {
-            return null;
-        }
-
-        SelectRecordsBuilder selectRecordsBuilder = new SelectRecordsBuilder();
-        selectRecordsBuilder
-                .module(module)
-                .select(Arrays.asList(mainField, idField));
-
-        if (field.getName().equals("moduleState")) {
-            selectRecordsBuilder.andCondition(CriteriaAPI.getCondition("PARENT_MODULEID","parentModuleId", "" + field.getModuleId(), NumberOperators.EQUALS));
-        }
-
-        List<Map<String, Object>> asProps = selectRecordsBuilder.getAsProps();
-
-        Map<String, Long> lookupMap = new HashMap<>();
-        for (Map<String, Object> prop: asProps) {
-            long id = (long) prop.get("id");
-            String mainVal = (String) prop.get(mainField.getName());
-            lookupMap.put(mainVal, id);
-        }
-
-        switch (operator) {
-            case eq:
-                condition = CriteriaAPI.getCondition(field, lookupMap.get(val)+"", NumberOperators.EQUALS);
-                break;
-            case neq:
-                condition = CriteriaAPI.getCondition(field, lookupMap.get(val)+"", NumberOperators.NOT_EQUALS);
-                break;
-            default:
-                return null;
+        else {
+             if (operator == lookupOperators.within) {
+                 condition = CriteriaAPI.getCondition(field, val+"", BuildingOperator.BUILDING_IS);
+             } else {
+                 return null;
+             }
         }
 
         Criteria criteria = new Criteria();
@@ -328,7 +334,7 @@ public class GenerateCriteriaForV4Command extends FacilioCommand {
         lte
     }
 
-    private Criteria getNumberFieldCriteria(String val, String operatorStr, FacilioField field) {
+    private Criteria getNumberFieldCriteria(String val, String operatorStr, FacilioField field) throws Exception {
         if (StringUtils.isEmpty(operatorStr)) {
             operatorStr = "eq";
         }
