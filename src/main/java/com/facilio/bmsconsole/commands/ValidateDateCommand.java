@@ -17,7 +17,7 @@ public class ValidateDateCommand extends FacilioCommand {
         List<InsuranceContext> insurances = (List<InsuranceContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
         if (CollectionUtils.isNotEmpty(insurances)) {
             for (InsuranceContext ins : insurances) {
-            	if(ins.getValidTill() < DateTimeUtil.getDayStartTime(false))
+            	if(ins.getValidTill() > 0 && ins.getValidTill() < System.currentTimeMillis())
             	{
                     throw new IllegalArgumentException("Expiry date cannot be past date");
             	}
