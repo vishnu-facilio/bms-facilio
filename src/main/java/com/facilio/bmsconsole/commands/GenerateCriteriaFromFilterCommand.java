@@ -31,6 +31,8 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
+import org.owasp.esapi.ESAPI;
+import org.owasp.esapi.codecs.MySQLCodec;
 
 public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 
@@ -182,7 +184,7 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 				if (operator instanceof StringOperators) {
 					obj = obj.replace(",", StringOperators.DELIMITED_COMMA);
 				}
-				values.append(obj.trim());
+				values.append(ESAPI.encoder().encodeForSQL(new MySQLCodec(MySQLCodec.Mode.STANDARD), obj.trim()));
 			}
 			String valuesString = values.toString();
 			if (condition.getOperator() instanceof FieldOperator) {
