@@ -1,21 +1,57 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.constants.FacilioConstants.ContextNames.Budget;
+import com.facilio.constants.FacilioConstants.ContextNames.FacilityBooking;
+import com.facilio.constants.FacilioConstants.ContextNames.WorkPermit;
+import com.facilio.constants.FacilioConstants.Induction;
+import com.facilio.constants.FacilioConstants.Inspection;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-
+//This command is used for showing module list while adding Lookup field type in form builder and custom module list in other places.
 public class GetModuleListCommand extends FacilioCommand {
+	
+	private static final List<String> MODULES = Arrays.asList(new String[] {
+			ContextNames.WORK_ORDER,
+			ContextNames.USERS,
+			ContextNames.ASSET,
+			ContextNames.SITE,
+			ContextNames.BUILDING,
+			ContextNames.FLOOR,
+			ContextNames.SPACE,
+			ContextNames.VENDORS,
+			Inspection.INSPECTION_TEMPLATE,
+			Inspection.INSPECTION_RESPONSE,
+			Induction.INDUCTION_TEMPLATE,
+			Induction.INDUCTION_RESPONSE,
+			WorkPermit.WORKPERMIT,
+			ContextNames.SERVICE,
+			ContextNames.SERVICE_REQUEST,
+			ContextNames.TENANT,
+			ContextNames.TENANT_UNIT_SPACE,
+			ContextNames.PEOPLE,
+			ContextNames.CLIENT,
+			Budget.BUDGET,
+			FacilityBooking.FACILITY,
+			FacilityBooking.FACILITY_BOOKING,
+			ContextNames.TOOL,
+			ContextNames.ITEM
+			
+	});
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -46,52 +82,15 @@ public class GetModuleListCommand extends FacilioCommand {
 			}
 		}
 
+		// This is used in formbuilder
 		Boolean fetchDefaultModules = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_DEFAULT_MODULES);
 		if (fetchDefaultModules != null && fetchDefaultModules) {
-			moduleList.add(modBean.getModule("workorder"));
-			moduleList.add(modBean.getModule("users"));
-			moduleList.add(modBean.getModule("asset"));
-			moduleList.add(modBean.getModule("site"));
-			moduleList.add(modBean.getModule("building"));
-			moduleList.add(modBean.getModule("floor"));
-			moduleList.add(modBean.getModule("space"));
-			moduleList.add(modBean.getModule("alarm"));
-			moduleList.add(modBean.getModule("vendors"));
-			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INSPECTION)) {
-				moduleList.add(modBean.getModule(FacilioConstants.Inspection.INSPECTION_TEMPLATE));
-				moduleList.add(modBean.getModule(FacilioConstants.Inspection.INSPECTION_RESPONSE));
+			for(String moduleName: MODULES) {
+				if (AccountUtil.isModuleLicenseEnabled(moduleName)) {
+					moduleList.add(modBean.getModule(moduleName));
+				}
 			}
-			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INDUCTION)) {
-				moduleList.add(modBean.getModule(FacilioConstants.Induction.INDUCTION_TEMPLATE));
-				moduleList.add(modBean.getModule(FacilioConstants.Induction.INDUCTION_RESPONSE));
-			}
-			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.HUDSON_YARDS)) {
-				moduleList.add(modBean.getModule(ContextNames.WorkPermit.WORKPERMIT));
-			}
-			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CONTRACT)) {
-				moduleList.add(modBean.getModule(ContextNames.SERVICE));
-			}
-			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
-				moduleList.add(modBean.getModule(ContextNames.TENANT));
-				moduleList.add(modBean.getModule(ContextNames.TENANT_UNIT_SPACE));
-			}
-			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {
-				moduleList.add(modBean.getModule(ContextNames.PEOPLE));
-			}
-			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLIENT)) {
-				moduleList.add(modBean.getModule(ContextNames.CLIENT));
-			}
-			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.BUDGET_MONITORING)) {
-				moduleList.add(modBean.getModule(ContextNames.Budget.BUDGET));
-			}
-			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.FACILITY_BOOKING)) {
-				moduleList.add(modBean.getModule(ContextNames.FacilityBooking.FACILITY));
-				moduleList.add(modBean.getModule(ContextNames.FacilityBooking.FACILITY_BOOKING));
-			}
-			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)) {
-				moduleList.add(modBean.getModule(ContextNames.TOOL));
-				moduleList.add(modBean.getModule(ContextNames.ITEM));
-			}
+			
 			if(AccountUtil.getCurrentOrg().getOrgId() == 429l) { //temp
 				moduleList.add(modBean.getModule(ContextNames.DEPARTMENT));
 				moduleList.add(modBean.getModule(ContextNames.EMPLOYEE));

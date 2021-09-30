@@ -1,5 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
@@ -9,12 +20,8 @@ import com.facilio.constants.FacilioConstants.Induction;
 import com.facilio.constants.FacilioConstants.Inspection;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
+// This command is used for showing module list under Customization tab
 public class GetModulesListCommand extends FacilioCommand {
 
 	private static final List<String> MODULES = Arrays.asList(new String[] {
