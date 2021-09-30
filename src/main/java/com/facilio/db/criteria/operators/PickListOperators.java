@@ -54,7 +54,7 @@ public enum PickListOperators implements Operator<String> {
 					if(value.equals(FacilioConstants.Criteria.LOGGED_IN_USER) || value.equals(FacilioConstants.Criteria.LOGGED_IN_PEOPLE)) {
 						value = "?";
 					}
-					return columnName+" = '"+ ESAPI.encoder().encodeForSQL(new MySQLCodec(MySQLCodec.Mode.STANDARD), value) + "'";
+					return columnName+" = "+ value;
 				}
 			}
 			return null;
