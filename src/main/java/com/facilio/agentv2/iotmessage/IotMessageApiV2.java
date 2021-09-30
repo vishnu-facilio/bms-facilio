@@ -74,7 +74,8 @@ public class IotMessageApiV2 {
         iotMessage.setAckTime(currTime);
         rowUpdated = updateIotMessage(iotMessage);
         try {
-            handleSuccessNotification(iotMessage);
+        		// Add this after handling in client properly
+            //handleSuccessNotification(iotMessage);
         }catch (Exception e){
             LOGGER.info("Exception while handling success ",e);
         }
