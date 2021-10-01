@@ -171,28 +171,21 @@ public class AuditLogHandler extends BaseHandler {
             this.appId = appId;
         }
 
-        private JSONArray linkConfig;
+        private String linkConfig;
         public String getLinkConfig() {
-            if (linkConfig != null) {
-                return linkConfig.toJSONString();
-            }
-            return null;
-        }
-        @JsonIgnore
-        public JSONArray getLinkConfigJSON() {
             return linkConfig;
         }
-        public AuditLogContext setLinkConfig(String linkConfig) {
+        public JSONArray getLinkConfigJSON() {
             if (StringUtils.isNotEmpty(linkConfig)) {
                 try {
                     JSONParser parser = new JSONParser();
-                    this.linkConfig = (JSONArray) parser.parse(linkConfig);
-                } catch (ParseException ex) {}
+                    return (JSONArray) parser.parse(linkConfig);
+                } catch (ParseException e) {}
             }
-            return this;
+            return null;
         }
-        public AuditLogContext setLinkConfig(JSONArray config) {
-            this.linkConfig = config;
+        public AuditLogContext setLinkConfig(String linkConfig) {
+            this.linkConfig = linkConfig;
             return this;
         }
 
