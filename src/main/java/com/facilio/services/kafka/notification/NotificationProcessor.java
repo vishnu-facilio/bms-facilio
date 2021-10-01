@@ -1,5 +1,6 @@
 package com.facilio.services.kafka.notification;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -48,6 +49,7 @@ public class NotificationProcessor implements Runnable {
         props.put("group.id", groupId);
         props.put("enable.auto.commit", "false");
         props.put("auto.offset.reset", "latest");
+        props.put("session.timeout.ms", "300000");
         props.put("key.deserializer", StringDeserializer.class.getName());
         props.put("value.deserializer", StringDeserializer.class.getName());
         KafkaUtil.setKafkaAuthProps(props);        
@@ -62,7 +64,7 @@ public class NotificationProcessor implements Runnable {
             LOGGER.info("Running notification processor");
             while (true) {
                 try {
-                    ConsumerRecords<String, String> records = consumer.poll(500L);
+                    ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(500));
                     long startTime = System.currentTimeMillis();
                     long timeToSendMessage = 0L;
                     for (ConsumerRecord<String, String> record : records) {
