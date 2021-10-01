@@ -49,6 +49,7 @@ public class NotificationProcessor implements Runnable {
         props.put("group.id", groupId);
         props.put("enable.auto.commit", "false");
         props.put("auto.offset.reset", "latest");
+        props.put("session.timeout.ms", "300000");
         props.put("key.deserializer", StringDeserializer.class.getName());
         props.put("value.deserializer", StringDeserializer.class.getName());
         KafkaUtil.setKafkaAuthProps(props);        
