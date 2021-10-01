@@ -2062,9 +2062,15 @@ public class FacilioAuthAction extends FacilioAction {
 
 		if (getInviteToken() != null) {
 			IAMUser iamUser = IAMUserUtil.resetPassword(getInviteToken(), getRawPassword());
-			User user = new User(iamUser);
-			if (user.getUid() > 0) {
-				invitation.put("status", "success");
+			if (iamUser == null) {
+				invitation.put("message", "Link has been expired");
+				ActionContext.getContext().getValueStack().set("invitation", invitation);
+				return ERROR;
+			} else {
+				User user = new User(iamUser);
+				if (user.getUid() > 0) {
+					invitation.put("status", "success");
+				}
 			}
 		} else {
 			User user = null;
