@@ -1,5 +1,6 @@
 package com.facilio.services.kafka.notification;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -62,7 +63,7 @@ public class NotificationProcessor implements Runnable {
             LOGGER.info("Running notification processor");
             while (true) {
                 try {
-                    ConsumerRecords<String, String> records = consumer.poll(500L);
+                    ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(500));
                     long startTime = System.currentTimeMillis();
                     long timeToSendMessage = 0L;
                     for (ConsumerRecord<String, String> record : records) {
