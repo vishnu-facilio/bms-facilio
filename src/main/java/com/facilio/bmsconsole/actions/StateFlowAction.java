@@ -74,15 +74,15 @@ public class StateFlowAction extends FacilioAction {
 				AuditLogHandler.RecordType.SETTING,
 				"StateTransition", stateTransition.getId())
 				.setActionType(add ? AuditLogHandler.ActionType.ADD : AuditLogHandler.ActionType.UPDATE)
-				.setLinkConfig(((Function<Void, JSONArray>) o -> {
+				.setLinkConfig(((Function<Void, String>) o -> {
 					JSONArray array = new JSONArray();
 					JSONObject json = new JSONObject();
-					json.put("transitionId", stateTransition.getId());
+					json.put("id", stateTransition.getId());
 					json.put("stateFlowId", stateTransition.getStateFlowId());
-					json.put("navigateTo", "StateFlow");
+					json.put("navigateTo", "StateTransition");
 
 					array.add(json);
-					return array;
+					return array.toJSONString();
 				}).apply(null))
 		);
 
