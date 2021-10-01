@@ -13,6 +13,8 @@
 	<bean name="IAMUserBean" class="com.facilio.iam.accounts.impl.IAMUserBeanImpl"></bean>
 	<bean name="IAMOrgBean" class="com.facilio.iam.accounts.impl.IAMOrgBeanImpl"></bean>
 
+	<bean name="SecretsManagerBean" class="com.facilio.auth.beans.SecretsManagerBeanCacheImpl"></bean>
+
 	<!-- Q And A Rules -->
 	<bean name="QAndARuleBean" class="com.facilio.qa.rules.bean.QAndARuleBeanImpl" />
 
