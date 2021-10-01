@@ -289,18 +289,8 @@ public class AdminAction extends ActionSupport {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		long orgId = Long.parseLong(request.getParameter("orgId"));
 		long timeDuration = Long.parseLong(request.getParameter("durations"));
-
-		try {
-			FacilioChain demoRollupChain = TransactionChainFactory.demoRollUpChain();
-			demoRollupChain.getContext().put(ContextNames.DEMO_ROLLUP_EXECUTION_TIME, timeDuration);
-			demoRollupChain.getContext().put(ContextNames.DEMO_ROLLUP_JOB_ORG, orgId);
-			demoRollupChain.execute();
-		} catch (Exception e) {
-			LOGGER.log(Level.INFO, "Exception while executing Demojob" + e.getMessage(), e);
-		}
-
+		AccountUtil.getTransactionalOrgBean(orgId).runDemoRollup(orgId,timeDuration);
 		return SUCCESS;
-
 	}
 	
 	public String demoRollUpYearly() {
