@@ -30,7 +30,6 @@ public class NotificationProcessor implements Runnable {
     private static final Logger LOGGER = LogManager.getLogger(NotificationProcessor.class.getName());
 
     private KafkaConsumer<String, String> consumer;
-    private TopicPartition topicPartition;
 
     public NotificationProcessor() {
         String streamName =  WmsApi.getKinesisNotificationTopic();
@@ -38,10 +37,7 @@ public class NotificationProcessor implements Runnable {
         String applicationName = environment+"-"+ ServerInfo.getHostname();
 
         consumer = new KafkaConsumer<>(getProperties(applicationName));
-        topicPartition = new TopicPartition(streamName, 0);
-        List<TopicPartition> topicPartitionList = new ArrayList<>();
-        topicPartitionList.add(topicPartition);
-        consumer.assign(topicPartitionList);
+        consumer.subscribe(Collections.singletonList(streamName));
         // consumer.seekToEnd(topicPartitionList);
         LOGGER.info("Notification processor has been initialized");
     }
@@ -77,7 +73,7 @@ public class NotificationProcessor implements Runnable {
                             Message message = Message.getMessage(messageData);
                             LOGGER.debug("Going to send message to " + message.getTo() + " from " + message.getFrom());
                             timeToSendMessage = timeToSendMessage + SessionManager.getInstance().sendMessage(message);
-                            consumer.commitSync(Collections.singletonMap(topicPartition, new OffsetAndMetadata(record.offset() + 1)));
+                            consumer.commitSync();
                         } catch (ParseException e) {
                             LOGGER.log(Priority.INFO, "Exception while parsing data to JSON ", e);
                         }
