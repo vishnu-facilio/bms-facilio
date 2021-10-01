@@ -62,6 +62,7 @@ import com.facilio.taskengine.common.JobConstants;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.util.ChainUtil;
+import com.facilio.wmsv2.handler.AuditLogHandler;
 import org.json.simple.JSONObject;
 
 import java.text.SimpleDateFormat;
@@ -2403,6 +2404,8 @@ public class FacilioConstants {
 			classMap.put(JOB_PLAN, JobPlanContext.class);
 			classMap.put(JOB_PLAN_SECTION, JobPlanTaskSectionContext.class);
 			classMap.put(JOB_PLAN_TASK, JobPlanTasksContext.class);
+
+			classMap.put(AUDIT_LOGS, AuditLogHandler.AuditLogContext.class);
 
 			classMap.put(Floorplan.INDOOR_FLOORPLAN, V3IndoorFloorPlanContext.class);
 			classMap.put(Floorplan.INDOOR_FLOORPLAN_OBJECTS, V3IndoorFloorPlanObjectContext.class);
