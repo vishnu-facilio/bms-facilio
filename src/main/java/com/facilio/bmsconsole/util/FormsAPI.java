@@ -1087,7 +1087,7 @@ public class FormsAPI {
 			}
 			else {
 				defaultCustomFields = defaultFields.stream().filter(field -> field.getField() != null && !field.getField().isDefault())
-						.map(field -> field.getId()).collect(Collectors.toList());
+						.map(field -> field.getFieldId()).collect(Collectors.toList());
 			}
 			allFields.addAll(defaultFields);
 			addUnusedWebSystemFields(defaultForm, allFields);
