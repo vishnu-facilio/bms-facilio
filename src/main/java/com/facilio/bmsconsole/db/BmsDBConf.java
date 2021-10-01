@@ -589,6 +589,11 @@ public class BmsDBConf extends DBConf {
     }
 
     @Override
+    public String getService() throws Exception {
+        return FacilioProperties.getService();
+    }
+
+    @Override
 	public Account getCurrentAccount() throws Exception {
 		return AccountUtil.getCurrentAccount();
 	}
