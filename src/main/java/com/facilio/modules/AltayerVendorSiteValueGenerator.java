@@ -9,7 +9,10 @@ import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,16 +25,9 @@ public class AltayerVendorSiteValueGenerator extends ValueGenerator {
             try {
                 V3VendorContext vendor = V3PeopleAPI.getVendorForUser(AccountUtil.getCurrentUser().getId());
                 if (vendor != null) {
-                    List<Long> buildingIds = getVendorMappingData();
-                    if(CollectionUtils.isNotEmpty(buildingIds)) {
-                        List<Long> siteIds = new ArrayList<>();
-                        for(Long id : buildingIds) {
-                            BuildingContext building = SpaceAPI.getBuildingSpace(id, false);
-                            if(!siteIds.contains(building.getSiteId())) {
-                                siteIds.add(building.getSiteId());
-                            }
-                        }
-                        return siteIds;
+                    List<Long> siteIds = getSiteIdsFromVendorMappingData();
+                    if(CollectionUtils.isNotEmpty(siteIds)) {
+                        return StringUtils.join(siteIds, ",");
                     }
                 }
             }
@@ -42,8 +38,8 @@ public class AltayerVendorSiteValueGenerator extends ValueGenerator {
         return null;
     }
 
-    public List<Long> getVendorMappingData() throws Exception {
-        List<Long> buildingIds = new ArrayList<>();
+    public List<Long> getSiteIdsFromVendorMappingData() throws Exception {
+        List<Long> siteIds = new ArrayList<>();
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule("custom_vendormapping");
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
@@ -51,17 +47,21 @@ public class AltayerVendorSiteValueGenerator extends ValueGenerator {
                 .module(module)
                 .beanClass(ModuleBaseWithCustomFields.class)
                 .select(modBean.getAllFields(module.getName()))
+                .fetchSupplement((LookupField) fieldMap.get("building"))
                 ;
         List<Map<String, Object>> props = builder.getAsProps();
         if(CollectionUtils.isNotEmpty(props)) {
             for(Map<String, Object> prop : props) {
-                Long id = (Long)prop.get("building");
-                if(!buildingIds.contains(id)) {
-                    buildingIds.add(id);
+                Map<String, Object> building = (Map<String, Object>) prop.get("building");
+                if(MapUtils.isNotEmpty(building)) {
+                    Long siteId = (Long) building.get("siteId");
+                    if (!siteIds.contains(siteId)) {
+                        siteIds.add(siteId);
+                    }
                 }
             }
-            if(CollectionUtils.isNotEmpty(buildingIds)){
-                return buildingIds;
+            if(CollectionUtils.isNotEmpty(siteIds)){
+                return siteIds;
             }
         }
 
