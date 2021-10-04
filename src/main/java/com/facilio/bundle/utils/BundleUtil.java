@@ -16,13 +16,17 @@ import org.json.simple.JSONObject;
 import org.reflections.Reflections;
 import org.reflections.scanners.FieldAnnotationsScanner;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bundle.anotations.ExcludeInBundle;
 import com.facilio.bundle.anotations.IncludeInBundle;
 import com.facilio.bundle.context.BundleChangeSetContext;
+import com.facilio.bundle.context.BundleContext;
 import com.facilio.bundle.enums.BundleComponentsEnum;
+import com.facilio.bundle.enums.BundleModeEnum;
 import com.facilio.bundle.interfaces.BundleComponentInterface;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
@@ -167,7 +171,61 @@ public class BundleUtil {
 //		}
 //	}
 //	
-	public static List<BundleChangeSetContext> getAllChangeSet() throws Exception {
+	
+	public static BundleContext getDefaultSystemBundle() throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getBundleFields());
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getBundleModule().getTableName())
+				.select(FieldFactory.getBundleFields())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("type"), BundleContext.BundleTypeEnum.UN_MANAGED_SYSTEM.getValue()+"", NumberOperators.EQUALS))
+				.orderBy("CREATED_TIME desc")
+				.limit(1)
+				;
+		
+		List<Map<String, Object>> props = builder.get();
+		
+		BundleContext bundle = FieldUtil.getAsBeanFromMap(props.get(0), BundleContext.class);
+		
+		return bundle;
+				
+	}
+	
+	public static BundleChangeSetContext addBundleChangeSetForSystemComponents(BundleComponentsEnum componentEnum, Long componentId, String componentDisplayName) throws Exception {
+		
+		if(1 == 1) {
+			return null;
+		}
+		
+		BundleContext bundle = getDefaultSystemBundle();
+		
+		BundleChangeSetContext changeSet = new BundleChangeSetContext();
+		
+		changeSet.setBundleId(bundle.getId());
+		changeSet.setComponentTypeEnum(componentEnum);
+		changeSet.setComponentId(componentId);
+		changeSet.setComponentDisplayName(componentDisplayName);
+		changeSet.setComponentLastEditedTime(bundle.getCreatedTime());
+		changeSet.setComponentMode(BundleModeEnum.ADD.getValue());
+		changeSet.setOrgId(AccountUtil.getCurrentOrg().getId());
+		
+		Map<String, Object> props = FieldUtil.getAsProperties(changeSet);
+		
+		GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getBundleChangeSetModule().getTableName())
+				.fields(FieldFactory.getBundleChangeSetFields())
+				.addRecord(props);
+		
+		insert.save();
+		
+		Long id = (Long)props.get("id");
+		
+		changeSet.setId(id);
+
+		return changeSet;
+	}
+	public static List<BundleChangeSetContext> getAllChangeSet(BundleContext bundle) throws Exception {
 		
 		
 		List<BundleChangeSetContext> returnChangeset = new ArrayList<BundleChangeSetContext>();
@@ -186,6 +244,7 @@ public class BundleUtil {
 			
 			FacilioContext context = new FacilioContext();
 			context.put(BundleConstants.COMPONENT, component);
+			context.put(BundleConstants.BUNDLE_CONTEXT, bundle);
 			
 			componentClass.getAddedChangeSet(context);
 			
@@ -324,5 +383,6 @@ public class BundleUtil {
 		
 		return props;
 	}
+
 	
 }

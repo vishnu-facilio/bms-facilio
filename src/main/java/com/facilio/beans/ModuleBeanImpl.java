@@ -953,8 +953,12 @@ public class ModuleBeanImpl implements ModuleBean {
 			if (field.getDefault() == null) {
 				field.setDefault(false);
 			}
-			field.setCreatedTime(System.currentTimeMillis());
-			field.setModifiedTime(field.getCreatedTime());
+			if(field.getCreatedTime() <= 0) {
+				field.setCreatedTime(System.currentTimeMillis());
+			}
+			if(field.getModifiedTime() <= 0) {
+				field.setModifiedTime(field.getCreatedTime());
+			}
 			Map<String, Object> fieldProps = FieldUtil.getAsProperties(field);
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 															.table("Fields")
@@ -1603,12 +1607,14 @@ public class ModuleBeanImpl implements ModuleBean {
 			
 			long currentTime = System.currentTimeMillis();
 			
-			if (module.isCustom()) {
-				pstmt.setLong(11, currentTime);
+			if(module.getCreatedTime() <= 0) {
+				module.setCreatedTime(currentTime);
 			}
-			else {
-				pstmt.setNull(11, Types.BIGINT);
+			if(module.getModifiedTime() <= 0) {
+				module.setModifiedTime(currentTime);
 			}
+			
+			pstmt.setLong(11, module.getCreatedTime());
 
 			pstmt.setBoolean(12, module.isStateFlowEnabled());
 			pstmt.setBoolean(13, module.isCustom());
@@ -1620,7 +1626,7 @@ public class ModuleBeanImpl implements ModuleBean {
 				pstmt.setNull(14, Types.BOOLEAN);
 			}
 			
-			pstmt.setLong(15, currentTime);
+			pstmt.setLong(15, module.getModifiedTime());
 			
 			if (pstmt.executeUpdate() < 1) {
 				throw new Exception("Unable to add Module");

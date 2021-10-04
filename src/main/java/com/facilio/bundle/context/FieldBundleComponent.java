@@ -46,6 +46,25 @@ public class FieldBundleComponent extends CommonBundleComponent {
 	public static final String DATA_TYPE = "dataType";
 	public static final String REQUIRED = "required";
 	
+	public static final List<String> SYSTEM_UN_PACKABLE_FIELD_NAMES = new ArrayList<String>();
+	
+	public static final List<String> SYSTEM_DEFAULT_FIELD_NAMES = new ArrayList<String>();
+	
+	static {
+		SYSTEM_UN_PACKABLE_FIELD_NAMES.add("approvalFlowId");
+		SYSTEM_UN_PACKABLE_FIELD_NAMES.add("approvalStatus");
+		SYSTEM_UN_PACKABLE_FIELD_NAMES.add("moduleState");
+		SYSTEM_UN_PACKABLE_FIELD_NAMES.add("stateFlowId");
+		
+		SYSTEM_DEFAULT_FIELD_NAMES.add("name");
+		SYSTEM_DEFAULT_FIELD_NAMES.add("photo");
+		SYSTEM_DEFAULT_FIELD_NAMES.add("siteId");
+		SYSTEM_DEFAULT_FIELD_NAMES.add("sysCreatedBy");
+		SYSTEM_DEFAULT_FIELD_NAMES.add("sysCreatedTime");
+		SYSTEM_DEFAULT_FIELD_NAMES.add("sysModifiedBy");
+		SYSTEM_DEFAULT_FIELD_NAMES.add("sysModifiedTime");
+	}
+	
 	@Override
 	public void getParentDetails(FacilioContext context) throws Exception {
 		
@@ -66,23 +85,45 @@ public class FieldBundleComponent extends CommonBundleComponent {
 		return field.getModule().getName()+"_fields";
 	}
 	
+	public boolean isPackableComponent(FacilioContext context) throws InstantiationException, IllegalAccessException, Exception {
+		Long fieldId = (Long)context.get(BundleConstants.COMPONENT_ID);
+		
+		FacilioField field = ((ModuleBean) BeanFactory.lookup("ModuleBean")).getField(fieldId);
+		
+		//check 1 - check if fields's module is in restricted list 
+		
+		if(ModuleBundleComponent.IGNORE_MODULE_TYPES.contains(field.getModule().getType())) {
+			return false;
+		}
+		
+		if(SYSTEM_UN_PACKABLE_FIELD_NAMES.contains(field.getName())) {
+			return false;
+		}
+		
+		return true;
+		
+	}
+	
 	@Override
 	public void fillBundleXML(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
-		String fileName = BundleComponentsEnum.FIELD.getName()+File.separatorChar+getFileName(context)+".xml";
-		XMLBuilder bundleBuilder = (XMLBuilder) context.get(BundleConstants.BUNDLE_XML_BUILDER);
 		
-		List<XMLBuilder> elementList = bundleBuilder.getElementList(BundleConstants.VALUES);
-		
-		boolean entryFound = false;
-		for(XMLBuilder element : elementList) {
-			if(fileName.equals(element.getText())) {
-				entryFound = true;
-				break;
+		if(isPackableComponent(context)) {
+			String fileName = BundleComponentsEnum.FIELD.getName()+File.separatorChar+getFileName(context)+".xml";
+			XMLBuilder bundleBuilder = (XMLBuilder) context.get(BundleConstants.BUNDLE_XML_BUILDER);
+			
+			List<XMLBuilder> elementList = bundleBuilder.getElementList(BundleConstants.VALUES);
+			
+			boolean entryFound = false;
+			for(XMLBuilder element : elementList) {
+				if(fileName.equals(element.getText())) {
+					entryFound = true;
+					break;
+				}
 			}
-		}
-		if(!entryFound) {
-			bundleBuilder.element(BundleConstants.VALUES).text(fileName);
+			if(!entryFound) {
+				bundleBuilder.element(BundleConstants.VALUES).text(fileName);
+			}
 		}
 	}
 
@@ -90,37 +131,46 @@ public class FieldBundleComponent extends CommonBundleComponent {
 	public void getFormatedObject(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		BundleChangeSetContext componentChange = (BundleChangeSetContext) context.get(BundleConstants.BUNDLE_CHANGE);
-		BundleFolderContext componentFolder = (BundleFolderContext) context.get(BundleConstants.COMPONENTS_FOLDER);
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		FacilioField field = modBean.getField(componentChange.getComponentId());
-		
-		String fileName = getFileName(context);
-		
-		BundleFolderContext fieldFolder = componentFolder.getOrAddFolder(componentChange.getComponentTypeEnum().getName());
-		
-		BundleFileContext moduleFieldsFile = fieldFolder.getFile(fileName+"."+BundleConstants.XML_FILE_EXTN);
-		
-		if(moduleFieldsFile == null) {
-			moduleFieldsFile = new BundleFileContext(fileName, BundleConstants.XML_FILE_EXTN, FIELDS, null);
-			fieldFolder.addFile(fileName +"."+ BundleConstants.XML_FILE_EXTN, moduleFieldsFile);
+		if(isPackableComponent(context)) {
+			
+			BundleChangeSetContext componentChange = (BundleChangeSetContext) context.get(BundleConstants.BUNDLE_CHANGE);
+			BundleFolderContext componentFolder = (BundleFolderContext) context.get(BundleConstants.COMPONENTS_FOLDER);
+			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
+			FacilioField field = modBean.getField(componentChange.getComponentId());
+			
+			String fileName = getFileName(context);
+			
+			BundleFolderContext fieldFolder = componentFolder.getOrAddFolder(componentChange.getComponentTypeEnum().getName());
+			
+			BundleFileContext moduleFieldsFile = fieldFolder.getFile(fileName+"."+BundleConstants.XML_FILE_EXTN);
+			
+			if(moduleFieldsFile == null) {
+				moduleFieldsFile = new BundleFileContext(fileName, BundleConstants.XML_FILE_EXTN, FIELDS, null);
+				fieldFolder.addFile(fileName +"."+ BundleConstants.XML_FILE_EXTN, moduleFieldsFile);
+			}
+			
+			 BundleModeEnum mode = componentChange.getModeEnum();
+			
+			if(SYSTEM_DEFAULT_FIELD_NAMES.contains(field.getName())) {
+				mode = BundleModeEnum.UPDATE;
+			}
+			
+			Boolean isRequired = field.getRequired() == null? false : field.getRequired();
+			
+			XMLBuilder xmlBuilder = moduleFieldsFile.getXmlContent();
+			
+			xmlBuilder.element(componentChange.getComponentTypeEnum().getName())
+						.attr(BundleConstants.Components.MODE, mode.getName())
+						.attr(MODULE_NAME, field.getModule().getName())
+					  .element(BundleConstants.Components.NAME).text(field.getName()).p()
+					  .element(BundleConstants.Components.DISPLAY_NAME).text(field.getDisplayName()).p()
+					  .element(DATA_TYPE).text(field.getDataTypeEnum().getTypeAsString()).p()
+					  .element(DISPLAY_TYPE).text(field.getDisplayTypeInt()+"").p()
+					  .element(REQUIRED).text(isRequired.toString()).p()
+					  ;	
 		}
-		
-		
-		XMLBuilder xmlBuilder = moduleFieldsFile.getXmlContent();
-		
-		xmlBuilder.element(componentChange.getComponentTypeEnum().getName())
-					.attr(BundleConstants.Components.MODE, componentChange.getModeEnum().getName())
-					.attr(MODULE_NAME, field.getModule().getName())
-				  .element(BundleConstants.Components.NAME).text(field.getName()).p()
-				  .element(BundleConstants.Components.DISPLAY_NAME).text(field.getDisplayName()).p()
-				  .element(DATA_TYPE).text(field.getDataTypeEnum().getTypeAsString()).p()
-				  .element(DISPLAY_TYPE).text(field.getDisplayTypeInt()+"").p()
-//				  .element(REQUIRED).text(field.getRequired().toString()).p()
-				  ;
-		
 	}
 
 	

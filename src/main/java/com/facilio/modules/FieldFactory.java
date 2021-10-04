@@ -9885,31 +9885,36 @@ public class FieldFactory extends BaseFieldFactory {
     //Bundle Related Fields starts
     
     
+    public static List<FacilioField> getBundleFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getBundleModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("bundleName", "BUNDLE_NAME", module, FieldType.STRING));
+        fields.add(getField("bundleGlobalName", "BUNDLE_GLOBAL_NAME", module, FieldType.STRING));
+        fields.add(getField("version", "VERSION", module, FieldType.STRING));
+        fields.add(getField("parentBundleId", "PARENT_BUNDLE", module, FieldType.NUMBER));
+        fields.add(getField("bundleFileId", "BUNDLE_FILE_ID", module, FieldType.NUMBER));
+        fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
+        fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.NUMBER));
+        return fields;
+    }
+    
+    
     public static List<FacilioField> getBundleChangeSetFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getBundleChangeSetModule();
 
         fields.add(getIdField(module));
-        fields.addAll(getBundleChangeSetFieldsWithoutId());
-        return fields;
-    }
-    
-    public static List<FacilioField> getBundleChangeSetFieldsWithoutId() {
-        List<FacilioField> fields = new ArrayList<>();
-        FacilioModule module = ModuleFactory.getBundleChangeSetModule();
-
         fields.add(getField("componentType", "COMPONENT_TYPE", module, FieldType.NUMBER));
         fields.add(getField("componentMode", "COMPONENT_MODE", module, FieldType.NUMBER));
         fields.add(getField("componentId", "COMPONENT_ID", module, FieldType.NUMBER));
-        fields.add(getField("componentName", "COMPONENT_NAME", module, FieldType.STRING));
         fields.add(getField("componentDisplayName", "COMPONENT_DISPLAY_NAME", module, FieldType.STRING));
         fields.add(getField("bundleId", "BUNDLE_ID", module, FieldType.NUMBER));
         fields.add(getField("componentLastEditedTime", "COMPONENT_LAST_EDITED_TIME", module, FieldType.NUMBER));
-
         return fields;
     }
-    
-    
     
     //Bundle Related Fields ends
 

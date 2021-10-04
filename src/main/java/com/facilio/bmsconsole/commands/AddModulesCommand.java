@@ -11,6 +11,9 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bundle.enums.BundleComponentsEnum;
+import com.facilio.bundle.utils.BundleConstants;
+import com.facilio.bundle.utils.BundleUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.fw.BeanFactory;
@@ -25,6 +28,7 @@ public class AddModulesCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		List<FacilioModule> modules = CommonCommandUtil.getModules(context);
 		boolean skipModuleNameCheck = (boolean) context.getOrDefault(FacilioConstants.Module.SKIP_EXISTING_MODULE_WITH_SAME_NAME_CHECK, false);
+		boolean putBundleChangeSetEntry = (boolean) context.getOrDefault(BundleConstants.PUT_DEFAULT_BUNDLE_CHANGE_SET_ENTRY, false);
 		if(modules != null && !modules.isEmpty()) {
 			for (FacilioModule module : modules) {
 				if (!skipModuleNameCheck) {
@@ -34,6 +38,10 @@ public class AddModulesCommand extends FacilioCommand {
 				long moduleId = modBean.addModule(module);
 				module.setModuleId(moduleId);
 				context.put(FacilioConstants.ContextNames.MODULE_ID,moduleId);
+				if(putBundleChangeSetEntry) {
+
+					BundleUtil.addBundleChangeSetForSystemComponents(BundleComponentsEnum.MODULE, moduleId, module.getDisplayName());
+				}
 				String parentModuleName = (String) context.get(FacilioConstants.ContextNames.PARENT_MODULE);
 				if(parentModuleName != null && !parentModuleName.isEmpty()) {
 					FacilioModule parentModule = modBean.getModule(parentModuleName);

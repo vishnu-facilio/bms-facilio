@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.bundle.command.BundleTransactionChainFactory;
+import com.facilio.bundle.context.BundleContext;
 import com.facilio.bundle.utils.BundleConstants;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -26,6 +27,8 @@ public class BundleAction extends V3Action{
 	File bundleZip;
 	String bundleZipName;
 	
+	BundleContext bundle;
+	
 	public String copyCustomization() throws Exception {
 		
 		FacilioChain copyCustomizationChain = BundleTransactionChainFactory.getCopyCustomizationChain();
@@ -38,6 +41,21 @@ public class BundleAction extends V3Action{
 		
 		return SUCCESS;
 		
+	}
+	
+	public String addBundle() throws Exception {
+		
+		FacilioChain addBundle = BundleTransactionChainFactory.addBundleChain();
+		
+		FacilioContext context = addBundle.getContext();
+		
+		context.put(BundleConstants.BUNDLE_CONTEXT, getBundle());
+		
+		addBundle.execute();
+		
+		setData(BundleConstants.BUNDLE_CONTEXT,  getBundle());
+		
+		return SUCCESS;
 	}
 	
 	public String installBundle() throws Exception {

@@ -1,11 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount50;
+import com.facilio.bundle.enums.BundleComponentsEnum;
+import com.facilio.bundle.utils.BundleConstants;
+import com.facilio.bundle.utils.BundleUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -51,6 +55,8 @@ public class AddFieldsCommand extends FacilioCommand {
 			boolean isNewModules = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_NEW_MODULES, false);
 			
 			boolean isSkipCounterfieldAdd = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_SKIP_COUNTER_FIELD_ADD, false);
+
+			boolean putBundleChangeSetEntry = (boolean) context.getOrDefault(BundleConstants.PUT_DEFAULT_BUNDLE_CHANGE_SET_ENTRY, false);
 			
 			for (FacilioModule module : modules) {
 				FacilioModule cloneMod = new FacilioModule(module);
@@ -89,6 +95,10 @@ public class AddFieldsCommand extends FacilioCommand {
 
 									counterFields.add(deltaField);
 								}
+							}
+							
+							if(putBundleChangeSetEntry) {
+								BundleUtil.addBundleChangeSetForSystemComponents(BundleComponentsEnum.FIELD, fieldId, field.getDisplayName());
 							}
 						}
 						catch (Exception e) {

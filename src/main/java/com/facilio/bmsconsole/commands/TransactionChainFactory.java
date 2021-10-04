@@ -39,6 +39,7 @@ import com.facilio.bmsconsoleV3.commands.quotation.DisAssociateQuotationTermsCom
 import com.facilio.bmsconsoleV3.commands.quotation.SendQuotationMailCommand;
 import com.facilio.bundle.enums.BundleComponentsEnum;
 import com.facilio.bundle.enums.BundleModeEnum;
+import com.facilio.bundle.utils.BundleConstants;
 import com.facilio.cb.command.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -69,6 +70,7 @@ public class TransactionChainFactory {
 
 		public static FacilioChain getOrgSignupChain() {
 			FacilioChain c = getDefaultChain();
+//			c.addCommand(new AddDefaultBundleCommand());
 			c.addCommand(new AddDefaultModulesCommand());
 			c.addCommand(new AddDefaultUnitsCommand());
 			c.addCommand(new AddDefaultGraphicsCommand());
@@ -78,7 +80,7 @@ public class TransactionChainFactory {
 			c.addCommand(new CreateAppSuperAdminCommand());
 			c.addCommand(new AddSignupDataCommandV3());
 			c.addCommand(new AddEmployeeTypePeopleForUserAdditionCommand());
-			
+//			c.addCommand(new UpdateDefaultBundleCommand());
 			return c;
 		}
 		
@@ -1113,6 +1115,13 @@ public class TransactionChainFactory {
 		
 		public static FacilioChain addSystemModuleChain() {
 			FacilioChain c = getDefaultChain();
+			c.addCommand(new FacilioCommand() {
+				@Override
+				public boolean executeCommand(Context context) throws Exception {
+					context.put(BundleConstants.PUT_DEFAULT_BUNDLE_CHANGE_SET_ENTRY, Boolean.TRUE);
+					return false;
+				}
+			});
 			c.addCommand(new AddDefaultFieldsForSystemModulesCommand());
 			c.addCommand(commonAddModuleChain());
 			return c;
@@ -1175,6 +1184,13 @@ public class TransactionChainFactory {
 		
 		public static FacilioChain addDefaultSystemFields() {
 			FacilioChain c = getDefaultChain();
+			c.addCommand(new FacilioCommand() {
+				@Override
+				public boolean executeCommand(Context context) throws Exception {
+					context.put(BundleConstants.PUT_DEFAULT_BUNDLE_CHANGE_SET_ENTRY, Boolean.TRUE);
+					return false;
+				}
+			});
 			c.addCommand(new AddDefaultSystemFieldsCommand());
 			return c;
 		}

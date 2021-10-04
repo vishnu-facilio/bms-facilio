@@ -27,17 +27,21 @@ public class ModuleBundleComponent extends CommonBundleComponent {
 	public static final String DESCRIPTION = "description";
 	public static final String STATEFLOW_ENABLED = "stateFlowEnabled";
 	
+	public static final List<Integer> IGNORE_MODULE_TYPES = new ArrayList<Integer>();
+	
+	static {
+		
+		IGNORE_MODULE_TYPES.add(ModuleType.ATTACHMENTS.getValue());
+		IGNORE_MODULE_TYPES.add(ModuleType.NOTES.getValue());
+		IGNORE_MODULE_TYPES.add(ModuleType.ENUM_REL_MODULE.getValue());
+		IGNORE_MODULE_TYPES.add(ModuleType.LARGE_TEXT_DATA_MODULE.getValue());
+		IGNORE_MODULE_TYPES.add(ModuleType.LOOKUP_REL_MODULE.getValue());
+	}
+	
 	@Override
 	public Condition getFetchChangeSetCondition(FacilioContext context) throws Exception {
 		
-		List<Integer> ignoreModuleTypes = new ArrayList<Integer>();
-		
-		ignoreModuleTypes.add(ModuleType.ATTACHMENTS.getValue());
-		ignoreModuleTypes.add(ModuleType.NOTES.getValue());
-		ignoreModuleTypes.add(ModuleType.ENUM_REL_MODULE.getValue());
-		ignoreModuleTypes.add(ModuleType.LARGE_TEXT_DATA_MODULE.getValue());
-		
-		Condition changeSetFetchCondition = CriteriaAPI.getCondition("MODULE_TYPE", "type", StringUtils.join(ignoreModuleTypes, ","), NumberOperators.NOT_EQUALS);
+		Condition changeSetFetchCondition = CriteriaAPI.getCondition("MODULE_TYPE", "type", StringUtils.join(IGNORE_MODULE_TYPES, ","), NumberOperators.NOT_EQUALS);
 		
 		return changeSetFetchCondition;
 	}
@@ -78,7 +82,11 @@ public class ModuleBundleComponent extends CommonBundleComponent {
 		
 		BundleChangeSetContext componentChange = (BundleChangeSetContext) context.get(BundleConstants.BUNDLE_CHANGE);
 		
-		return componentChange.getComponentName();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		FacilioModule module = modBean.getModule(componentChange.getComponentId());
+		
+		return module.getName();
 	}
 	
 	@Override

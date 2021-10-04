@@ -19,6 +19,7 @@ import org.zeroturnaround.zip.ZipUtil;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bundle.context.BundleChangeSetContext;
+import com.facilio.bundle.context.BundleContext;
 import com.facilio.bundle.context.BundleFileContext;
 import com.facilio.bundle.context.BundleFolderContext;
 import com.facilio.bundle.enums.BundleComponentsEnum;
@@ -42,7 +43,9 @@ public class PackAllBundleComponentsCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
-		List<BundleChangeSetContext> changeSet = BundleUtil.getAllChangeSet();
+		BundleContext bundle = (BundleContext) context.get(BundleConstants.BUNDLE_CONTEXT);
+		
+		List<BundleChangeSetContext> changeSet = BundleUtil.getAllChangeSet(bundle);
 		
 		if(changeSet != null && !changeSet.isEmpty()) {
 			

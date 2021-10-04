@@ -23,6 +23,8 @@ import lombok.extern.java.Log;
 
 @Log
 public class ParseZIPToFolderContentCommand extends FacilioCommand {
+	
+	 
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -86,11 +88,13 @@ public class ParseZIPToFolderContentCommand extends FacilioCommand {
 					String fileName = FilenameUtils.getBaseName(fileNameWithExtn);
 					String extn = FilenameUtils.getExtension(fileNameWithExtn);
 					
-					String content = BundleUtil.readFileContent(file.getAbsolutePath());
+					if(BundleConstants.ALLOWED_EXTN.contains(extn) && !fileName.startsWith(".")) {
+						String content = BundleUtil.readFileContent(file.getAbsolutePath());
 					
-					BundleFileContext bundleFile = new BundleFileContext(fileName, extn, content);
+						BundleFileContext bundleFile = new BundleFileContext(fileName, extn, content);
 					
-					folderContent.addFile(fileNameWithExtn, bundleFile);
+						folderContent.addFile(fileNameWithExtn, bundleFile);
+					}
 				}
 			}
 		}
