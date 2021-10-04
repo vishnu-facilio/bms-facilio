@@ -14,6 +14,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.copyAssetReadingCommand;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
@@ -45,6 +46,7 @@ import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -631,6 +633,14 @@ public class OrgBeanImpl implements OrgBean {
 			return orgUnitsContexts;
 		}
 		return null;
+	}
+
+	@Override
+	public void runDemoRollup ( long orgId,long timeDuration ) throws Exception {
+			FacilioChain demoRollupChain = TransactionChainFactory.demoRollUpChain();
+			demoRollupChain.getContext().put(FacilioConstants.ContextNames.DEMO_ROLLUP_EXECUTION_TIME, timeDuration);
+			demoRollupChain.getContext().put(FacilioConstants.ContextNames.DEMO_ROLLUP_JOB_ORG, orgId);
+			demoRollupChain.execute();
 	}
 
 }

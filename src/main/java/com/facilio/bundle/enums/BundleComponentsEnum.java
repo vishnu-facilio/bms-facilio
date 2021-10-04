@@ -28,10 +28,10 @@ public enum BundleComponentsEnum {
 			ModuleFactory.getFieldsModule(),FieldFactory.getSelectFieldFields(),"fieldId",null,null,null),
 	
 	FUNCTION_NAME_SPACE(3,"Function_NameSpace",FunctionNameSpaceBundleComponent.class,null,
-			ModuleFactory.getWorkflowNamespaceModule(),FieldFactory.getWorkflowNamespaceFields(),null,null,null,null),
+			ModuleFactory.getWorkflowNamespaceModule(),FieldFactory.getWorkflowNamespaceFields(),null,"sysModifiedTime",null,null),
 	
 	FUNCTION(4,"Function",FunctionBundleComponent.class,BundleComponentsEnum.FUNCTION_NAME_SPACE,
-			ModuleFactory.getWorkflowModule(),FieldFactory.getWorkflowFields(),"moduleId",null,null,null),
+			ModuleFactory.getWorkflowModule(),FieldFactory.getWorkflowFields(),null,"sysModifiedTime",null,null),
 	
 //	WORKFLOW_RULE(5,"Workflow_Rule",WorkflowRuleBundleComponent.class,BundleComponentsEnum.MODULE,true),
 //	NOTIFICATION_RULE(6,"Notification_Rule",NotificationRuleBundleComponent.class,BundleComponentsEnum.MODULE,true),

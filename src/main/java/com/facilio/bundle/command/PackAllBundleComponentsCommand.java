@@ -44,7 +44,7 @@ public class PackAllBundleComponentsCommand extends FacilioCommand {
 		
 		List<BundleChangeSetContext> changeSet = BundleUtil.getAllChangeSet();
 		
-		if(changeSet != null) {
+		if(changeSet != null && !changeSet.isEmpty()) {
 			
 			BundleFolderContext rootFolder = new BundleFolderContext("Facilio_App_Bundle_"+DateTimeUtil.getFormattedTime(DateTimeUtil.getCurrenTime()));
 			

@@ -111,6 +111,10 @@
 			<result name="success" type="json">
 				<param name="includeProperties">invitation.*</param>
 			</result>
+			<result name="error" type="json">
+				<param name="statusCode">400</param>
+				<param name="includeProperties">invitation.*</param>
+			</result>
 		</action>
 		<action name="login" class="com.facilio.bmsconsole.actions.LoginAction"
 				method="apiLogin">

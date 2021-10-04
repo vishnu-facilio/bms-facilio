@@ -54,12 +54,23 @@ public class V3ItemContext extends V3Context {
         this.costType = costType;
     }
 
-    public Unit getIssuingUnit() {
+    public Unit getIssuingUnitEnum() {
         return issuingUnit;
     }
 
     public void setIssuingUnit(Unit issuingUnit) {
         this.issuingUnit = issuingUnit;
+    }
+
+    public int getIssuingUnit() {
+        if (issuingUnit != null) {
+            return issuingUnit.getUnitId();
+        }
+        return -1;
+    }
+
+    public void setIssuingUnit(int issuingUnit) {
+        this.issuingUnit = Unit.valueOf(issuingUnit);
     }
 
     public Double getQuantity() {

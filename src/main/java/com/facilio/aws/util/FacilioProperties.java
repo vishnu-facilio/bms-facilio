@@ -263,6 +263,8 @@ public class FacilioProperties {
                 
                 cloudAgentUrl = PROPERTIES.getProperty("agent.cloud.url", "facilioagent.com");
 
+                service = PROPERTIES.getProperty("service");
+
                 String cookieLifespanProp = PROPERTIES.getProperty("token.cookie.lifespan");
                 if (StringUtils.isNotEmpty(cookieLifespanProp)) {
                     try {

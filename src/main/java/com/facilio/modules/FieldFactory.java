@@ -1236,6 +1236,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("stateFlowEnabled", "STATE_FLOW_ENABLED", module, FieldType.BOOLEAN));
         fields.add(getField("custom", "IS_CUSTOM", module, FieldType.BOOLEAN));
         fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));
+        fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("sourceBundle", "SOURCE_BUNDLE", module, FieldType.NUMBER));
 
         return fields;
     }
@@ -1311,6 +1313,10 @@ public class FieldFactory extends BaseFieldFactory {
         isSystemUpdatedField.setColumnName("IS_SYSTEM_UPDATED");
         isSystemUpdatedField.setModule(module);
         fields.add(isSystemUpdatedField);
+        
+        fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("sourceBundle", "SOURCE_BUNDLE", module, FieldType.NUMBER));
 
 
         return fields;
@@ -1328,19 +1334,19 @@ public class FieldFactory extends BaseFieldFactory {
         fieldId.setModule(module);
         fields.add(fieldId);
 
-        FacilioField defaultField = new FacilioField();
-        defaultField.setName("default");
-        defaultField.setDataType(FieldType.BOOLEAN);
-        defaultField.setColumnName("IS_DEFAULT");
-        defaultField.setModule(module);
-        fields.add(defaultField);
+//        FacilioField defaultField = new FacilioField();
+//        defaultField.setName("default");
+//        defaultField.setDataType(FieldType.BOOLEAN);
+//        defaultField.setColumnName("IS_DEFAULT");
+//        defaultField.setModule(module);
+//        fields.add(defaultField);
 
-        FacilioField mainField = new FacilioField();
-        mainField.setName("mainField");
-        mainField.setDataType(FieldType.BOOLEAN);
-        mainField.setColumnName("IS_MAIN_FIELD");
-        mainField.setModule(module);
-        fields.add(mainField);
+//        FacilioField mainField = new FacilioField();
+//        mainField.setName("mainField");
+//        mainField.setDataType(FieldType.BOOLEAN);
+//        mainField.setColumnName("IS_MAIN_FIELD");
+//        mainField.setModule(module);
+//        fields.add(mainField);
 
         FacilioField disabled = new FacilioField();
         disabled.setName("disabled");
@@ -1377,13 +1383,13 @@ public class FieldFactory extends BaseFieldFactory {
         accessType.setModule(module);
         fields.add(accessType);
 
-        FacilioField isSystemUpdatedField = new FacilioField();
-        isSystemUpdatedField.setName("isSystemUpdated");
-        isSystemUpdatedField.setDataType(FieldType.BOOLEAN);
-        isSystemUpdatedField.setColumnName("IS_SYSTEM_UPDATED");
-        isSystemUpdatedField.setModule(module);
-        fields.add(isSystemUpdatedField);
-
+//        FacilioField isSystemUpdatedField = new FacilioField();
+//        isSystemUpdatedField.setName("isSystemUpdated");
+//        isSystemUpdatedField.setDataType(FieldType.BOOLEAN);
+//        isSystemUpdatedField.setColumnName("IS_SYSTEM_UPDATED");
+//        isSystemUpdatedField.setModule(module);
+//        fields.add(isSystemUpdatedField);
+        
         return fields;
     }
 
@@ -1448,6 +1454,9 @@ public class FieldFactory extends BaseFieldFactory {
         placeHolder.setColumnName("PLACE_HOLDER");
         placeHolder.setModule(module);
         fields.add(placeHolder);
+        
+        fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("sourceBundle", "SOURCE_BUNDLE", module, FieldType.NUMBER));
 
         return fields;
     }

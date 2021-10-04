@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import com.facilio.auth.AuthUtils;
+import com.facilio.util.ServiceHttpUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -23,7 +24,6 @@ import org.json.simple.parser.ParseException;
 import com.facilio.accounts.dto.AppDomain.GroupType;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.iam.accounts.util.DCUtil;
-import com.facilio.services.FacilioHttpUtils;
 import com.facilio.util.FacilioUtil;
 import com.facilio.util.RequestUtil;
 import com.opensymphony.xwork2.ActionContext;
@@ -45,8 +45,8 @@ public class IamClient {
         		groupType = GroupType.FACILIO;
         }
         params.put("groupType", groupType.getIndex().toString());
-        
-        String response = FacilioHttpUtils.doHttpGet(getUrl(url), getSecretKeyHeader(), params);
+
+        String response = ServiceHttpUtils.doHttpGet("iam", getUrl(url), null, params);
         if (StringUtils.isNotEmpty(response)) {
         		JSONObject obj = FacilioUtil.parseJson(response);
         		if (obj.containsKey("code")) {
@@ -73,7 +73,7 @@ public class IamClient {
         JSONObject body = new JSONObject();
         body.put("user", params);
         
-        String response = FacilioHttpUtils.doHttpPost(getUrl(url), getSecretKeyHeader(), null, body);
+        String response = ServiceHttpUtils.doHttpPost("iam", getUrl(url), getSecretKeyHeader(), null, body);
         if (StringUtils.isNotEmpty(response)) {
         		JSONObject obj = FacilioUtil.parseJson(response);
         		if (obj.containsKey("code")) {
@@ -89,7 +89,7 @@ public class IamClient {
         var url = FacilioProperties.getIAMURL() + "/api/v3/internal/dc/deleteDevicePassCode";
         JSONObject params = new JSONObject();
         params.put("deviceCode", code);
-        String response = FacilioHttpUtils.doHttpPost(getUrl(url), getSecretKeyHeader(), null, params);
+        String response = ServiceHttpUtils.doHttpPost("iam", getUrl(url), getSecretKeyHeader(), null, params);
         LOGGER.error("[deleteDevicePassCode] " + response);
         if (StringUtils.isNotEmpty(response)) {
             JSONObject obj = FacilioUtil.parseJson(response);
@@ -108,7 +108,7 @@ public class IamClient {
         params.put("deviceCode", code);
         params.put("connectedDeviceId", connectedDeviceId);
         params.put("dc", currentDC);
-        String response = FacilioHttpUtils.doHttpPost(getUrl(url), getSecretKeyHeader(), null, params);
+        String response = ServiceHttpUtils.doHttpPost("iam", getUrl(url), getSecretKeyHeader(), null, params);
         LOGGER.error("[markCodeAsConnected] " + response);
         if (StringUtils.isNotEmpty(response)) {
             JSONObject obj = FacilioUtil.parseJson(response);
@@ -125,7 +125,7 @@ public class IamClient {
         var url = FacilioProperties.getIAMURL() + "/api/v3/internal/dc/getDeviceCodeInfo";
         JSONObject params = new JSONObject();
         params.put("deviceCode", code);
-        String response = FacilioHttpUtils.doHttpPost(getUrl(url), getSecretKeyHeader(), null, params);
+        String response = ServiceHttpUtils.doHttpPost("iam", getUrl(url), getSecretKeyHeader(), null, params);
         LOGGER.error("[getDeviceCodeInfo] " + response);
         if (StringUtils.isNotEmpty(response)) {
             JSONObject obj = FacilioUtil.parseJson(response);
@@ -142,7 +142,7 @@ public class IamClient {
         var url = FacilioProperties.getIAMURL() + "/api/v3/internal/dc/getDevicePasscode";
         JSONObject params = new JSONObject();
         params.put("deviceCode", code);
-        String response = FacilioHttpUtils.doHttpPost(getUrl(url), getSecretKeyHeader(), null, params);
+        String response = ServiceHttpUtils.doHttpPost("iam", getUrl(url), getSecretKeyHeader(), null, params);
         LOGGER.error("[getDevicePasscode] " + response);
         if (StringUtils.isNotEmpty(response)) {
             JSONObject obj = FacilioUtil.parseJson(response);

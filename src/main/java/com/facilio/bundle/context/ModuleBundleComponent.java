@@ -1,10 +1,11 @@
 package com.facilio.bundle.context;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.json.simple.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bundle.enums.BundleComponentsEnum;
@@ -13,19 +14,33 @@ import com.facilio.bundle.utils.BundleConstants;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldUtil;
-import com.facilio.workflows.context.WorkflowFieldType;
-import com.facilio.workflows.context.WorkflowUserFunctionContext;
-import com.facilio.workflowv2.util.UserFunctionAPI;
-import com.facilio.workflowv2.util.WorkflowV2Util;
+import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.xml.builder.XMLBuilder;
 
 public class ModuleBundleComponent extends CommonBundleComponent {
 	
 	public static final String DESCRIPTION = "description";
 	public static final String STATEFLOW_ENABLED = "stateFlowEnabled";
+	
+	@Override
+	public Condition getFetchChangeSetCondition(FacilioContext context) throws Exception {
+		
+		List<Integer> ignoreModuleTypes = new ArrayList<Integer>();
+		
+		ignoreModuleTypes.add(ModuleType.ATTACHMENTS.getValue());
+		ignoreModuleTypes.add(ModuleType.NOTES.getValue());
+		ignoreModuleTypes.add(ModuleType.ENUM_REL_MODULE.getValue());
+		ignoreModuleTypes.add(ModuleType.LARGE_TEXT_DATA_MODULE.getValue());
+		
+		Condition changeSetFetchCondition = CriteriaAPI.getCondition("MODULE_TYPE", "type", StringUtils.join(ignoreModuleTypes, ","), NumberOperators.NOT_EQUALS);
+		
+		return changeSetFetchCondition;
+	}
 	
 	@Override
 	public void getFormatedObject(FacilioContext context) throws Exception {

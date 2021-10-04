@@ -9,7 +9,7 @@ import com.facilio.v3.context.V3Context;
 import com.facilio.wmsv2.constants.Topics;
 import com.facilio.wmsv2.message.Message;
 import com.facilio.wmsv2.message.TopicHandler;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -171,28 +171,22 @@ public class AuditLogHandler extends BaseHandler {
             this.appId = appId;
         }
 
-        private JSONArray linkConfig;
+        private String linkConfig;
         public String getLinkConfig() {
-            if (linkConfig != null) {
-                return linkConfig.toJSONString();
-            }
-            return null;
-        }
-        @JsonIgnore
-        public JSONArray getLinkConfigJSON() {
             return linkConfig;
         }
-        public AuditLogContext setLinkConfig(String linkConfig) {
+        @JsonInclude
+        public JSONArray getLinkConfigJSON() {
             if (StringUtils.isNotEmpty(linkConfig)) {
                 try {
                     JSONParser parser = new JSONParser();
-                    this.linkConfig = (JSONArray) parser.parse(linkConfig);
-                } catch (ParseException ex) {}
+                    return (JSONArray) parser.parse(linkConfig);
+                } catch (ParseException e) {}
             }
-            return this;
+            return new JSONArray();
         }
-        public AuditLogContext setLinkConfig(JSONArray config) {
-            this.linkConfig = config;
+        public AuditLogContext setLinkConfig(String linkConfig) {
+            this.linkConfig = linkConfig;
             return this;
         }
 

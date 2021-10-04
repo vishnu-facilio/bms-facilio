@@ -512,6 +512,9 @@ public class ModuleBeanImpl implements ModuleBean {
 			params.add(module.getCriteriaId());
 		}
 		
+		joiner.add("MODIFIED_TIME = ?");
+		params.add(System.currentTimeMillis());
+		
 		if (!params.isEmpty()) {
 			StringBuilder sql = new StringBuilder("UPDATE Modules SET ")
 										.append(joiner.toString())
@@ -950,6 +953,8 @@ public class ModuleBeanImpl implements ModuleBean {
 			if (field.getDefault() == null) {
 				field.setDefault(false);
 			}
+			field.setCreatedTime(System.currentTimeMillis());
+			field.setModifiedTime(field.getCreatedTime());
 			Map<String, Object> fieldProps = FieldUtil.getAsProperties(field);
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 															.table("Fields")
@@ -1427,6 +1432,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		if(field != null && field.getFieldId() != -1) {
 			long fieldId = field.getFieldId();
 			field.setFieldId(-1);
+			field.setModifiedTime(System.currentTimeMillis());
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 															.table("Fields")
 															.fields(FieldFactory.getUpdateFieldFields())
@@ -1543,7 +1549,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			throw new IllegalArgumentException("Module Type cannot be null during addition of modules");
 		}
 		
-		String sql = "INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, EXTENDS_ID, HIDE_FROM_PARENTS, MODULE_TYPE, DATA_INTERVAL, DESCRIPTION, CREATED_BY, CREATED_TIME, STATE_FLOW_ENABLED, IS_CUSTOM, IS_TRASH_ENABLED) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, EXTENDS_ID, HIDE_FROM_PARENTS, MODULE_TYPE, DATA_INTERVAL, DESCRIPTION, CREATED_BY, CREATED_TIME, STATE_FLOW_ENABLED, IS_CUSTOM, IS_TRASH_ENABLED,MODIFIED_TIME) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
 		ResultSet rs = null;
 		try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 			pstmt.setLong(1, getOrgId());
@@ -1595,8 +1601,10 @@ public class ModuleBeanImpl implements ModuleBean {
 				pstmt.setNull(10, Types.BIGINT);
 			}
 			
+			long currentTime = System.currentTimeMillis();
+			
 			if (module.isCustom()) {
-				pstmt.setLong(11, System.currentTimeMillis());
+				pstmt.setLong(11, currentTime);
 			}
 			else {
 				pstmt.setNull(11, Types.BIGINT);
@@ -1611,6 +1619,8 @@ public class ModuleBeanImpl implements ModuleBean {
 			else {
 				pstmt.setNull(14, Types.BOOLEAN);
 			}
+			
+			pstmt.setLong(15, currentTime);
 			
 			if (pstmt.executeUpdate() < 1) {
 				throw new Exception("Unable to add Module");

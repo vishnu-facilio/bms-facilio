@@ -75,4 +75,6 @@ public interface OrgBean {
 	public void updateOrgUnitsList(JSONObject metricUnitMap) throws Exception;
 
 	public List<OrgUnitsContext> getOrgUnitsList() throws Exception;
+
+	void runDemoRollup(long orgId, long timeDuration) throws Exception;
 }
