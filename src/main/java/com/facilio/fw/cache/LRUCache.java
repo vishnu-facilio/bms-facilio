@@ -77,6 +77,7 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
 		cacheList.put(FWLRUCaches.getClientAppCache().name(), FWLRUCaches.getClientAppCache());
 		cacheList.put(FWLRUCaches.getOrgGroupingCache().name(), FWLRUCaches.getOrgGroupingCache());
 		cacheList.put(FWLRUCaches.getOrgGroupingOrgDomainCache().name(), FWLRUCaches.getOrgGroupingOrgDomainCache());
+		cacheList.put(FWLRUCaches.getSecretsCache().name(), FWLRUCaches.getSecretsCache());
 		return Collections.unmodifiableList(new ArrayList<>(cacheList.values()));
 	}
 
