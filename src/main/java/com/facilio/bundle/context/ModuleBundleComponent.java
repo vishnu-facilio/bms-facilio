@@ -31,11 +31,19 @@ public class ModuleBundleComponent extends CommonBundleComponent {
 	
 	static {
 		
+		IGNORE_MODULE_TYPES.add(ModuleType.PHOTOS.getValue());
 		IGNORE_MODULE_TYPES.add(ModuleType.ATTACHMENTS.getValue());
 		IGNORE_MODULE_TYPES.add(ModuleType.NOTES.getValue());
+		
+		IGNORE_MODULE_TYPES.add(ModuleType.SCHEDULED_FORMULA.getValue());
+		IGNORE_MODULE_TYPES.add(ModuleType.LIVE_FORMULA.getValue());
+		IGNORE_MODULE_TYPES.add(ModuleType.SYSTEM_SCHEDULED_FORMULA.getValue());
+		
+		IGNORE_MODULE_TYPES.add(ModuleType.ACTIVITY.getValue());
+		
 		IGNORE_MODULE_TYPES.add(ModuleType.ENUM_REL_MODULE.getValue());
-		IGNORE_MODULE_TYPES.add(ModuleType.LARGE_TEXT_DATA_MODULE.getValue());
 		IGNORE_MODULE_TYPES.add(ModuleType.LOOKUP_REL_MODULE.getValue());
+		IGNORE_MODULE_TYPES.add(ModuleType.LARGE_TEXT_DATA_MODULE.getValue());
 	}
 	
 	@Override

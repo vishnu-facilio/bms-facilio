@@ -56,8 +56,6 @@ public class AddFieldsCommand extends FacilioCommand {
 			
 			boolean isSkipCounterfieldAdd = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_SKIP_COUNTER_FIELD_ADD, false);
 
-			boolean putBundleChangeSetEntry = (boolean) context.getOrDefault(BundleConstants.PUT_DEFAULT_BUNDLE_CHANGE_SET_ENTRY, false);
-			
 			for (FacilioModule module : modules) {
 				FacilioModule cloneMod = new FacilioModule(module);
 				if(module != null && CollectionUtils.isNotEmpty(module.getFields())) {
@@ -95,10 +93,6 @@ public class AddFieldsCommand extends FacilioCommand {
 
 									counterFields.add(deltaField);
 								}
-							}
-							
-							if(putBundleChangeSetEntry) {
-								BundleUtil.addBundleChangeSetForSystemComponents(BundleComponentsEnum.FIELD, fieldId, field.getDisplayName());
 							}
 						}
 						catch (Exception e) {

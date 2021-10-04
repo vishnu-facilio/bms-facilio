@@ -58,8 +58,6 @@ public class BundleConstants {
 
 	public static final String BUNDLED_XML_COMPONENT_FILE = "bundledXMLComponentFile";
 
-	public static final String PUT_DEFAULT_BUNDLE_CHANGE_SET_ENTRY = "bundleChangeSetEnty";
-	
 	public static class Components {
 		public static final String NAME = "name";
 		public static final String DISPLAY_NAME = "displayName";

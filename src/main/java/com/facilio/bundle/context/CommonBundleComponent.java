@@ -76,7 +76,6 @@ public abstract class CommonBundleComponent implements BundleComponentInterface 
 				change.setComponentId((Long)prop.get(component.getIdFieldName()));
 				change.setComponentTypeEnum(component);
 				change.setModeEnum(BundleModeEnum.ADD);
-//				change.setComponentName((String)prop.get(component.getNameFieldName()));
 				change.setComponentDisplayName((String)prop.get(component.getDisplayNameFieldName()));
 				
 				changeSet.add(change);

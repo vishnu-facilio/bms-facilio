@@ -192,13 +192,11 @@ public class BundleUtil {
 				
 	}
 	
-	public static BundleChangeSetContext addBundleChangeSetForSystemComponents(BundleComponentsEnum componentEnum, Long componentId, String componentDisplayName) throws Exception {
+	public static BundleChangeSetContext addBundleChangeSetForSystemComponents(BundleContext bundle,BundleComponentsEnum componentEnum, Long componentId, String componentDisplayName) throws Exception {
 		
-		if(1 == 1) {
-			return null;
-		}
-		
-		BundleContext bundle = getDefaultSystemBundle();
+//		if(1 == 1) {
+//			return null;
+//		}
 		
 		BundleChangeSetContext changeSet = new BundleChangeSetContext();
 		
@@ -225,6 +223,7 @@ public class BundleUtil {
 
 		return changeSet;
 	}
+	
 	public static List<BundleChangeSetContext> getAllChangeSet(BundleContext bundle) throws Exception {
 		
 		

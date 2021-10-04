@@ -31,14 +31,10 @@ public class AddDefaultModulesCommand extends FacilioCommand {
 		
 		long orgId = (long) context.get("orgId");
 		
-//		BundleContext defaultBundle = (BundleContext) context.get(BundleConstants.BUNDLE_CONTEXT);
-		
 		if(orgId > 0) {
 			Map<String, String> paramValues = new HashMap<>(); 
 			paramValues.put("orgId", String.valueOf(orgId));
 			paramValues.put("publicDb", DBConf.getInstance().getDefaultDB());
-//			paramValues.put("bundleId", defaultBundle.getId()+"");
-//			paramValues.put("orgCreatedTime", AccountUtil.getCurrentOrg().getCreatedTime()+"");
 			
 			addAllProperties(paramValues);
 			
