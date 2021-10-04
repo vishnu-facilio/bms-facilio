@@ -1,0 +1,58 @@
+package com.facilio.delegate.util;
+
+import com.facilio.accounts.bean.UserBean;
+import com.facilio.accounts.dto.User;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.delegate.context.DelegationContext;
+import com.facilio.delegate.context.DelegationType;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
+
+public class DelegationUtil {
+
+    private static GenericSelectRecordBuilder getBuilder(long timestamp, DelegationType delegationType) {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getUserDelegationModule().getTableName())
+                .select(FieldFactory.getUserDelegationFields())
+                .andCondition(CriteriaAPI.getCondition("FROM_TIME", "fromTime", String.valueOf(timestamp), NumberOperators.LESS_THAN_EQUAL))
+                .andCondition(CriteriaAPI.getCondition("TO_TIME", "toTime", String.valueOf(timestamp), NumberOperators.GREATER_THAN_EQUAL));
+        builder.andCustomWhere("(? & User_Delegation.DELEGATION_TYPE = ?)", delegationType.getIndex(), delegationType.getIndex());
+        return builder;
+    }
+
+    public static User getUser(User delegatedUser, long timestamp, DelegationType delegationType) throws Exception {
+        GenericSelectRecordBuilder builder = getBuilder(timestamp, delegationType);
+        builder.andCondition(CriteriaAPI.getCondition("DELEGATED_USER_ID", "delegatedUserId", String.valueOf(delegatedUser.getId()), NumberOperators.EQUALS));
+
+        DelegationContext delegationContext = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), DelegationContext.class);
+        if (delegationContext != null) {
+            UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+            User user = userBean.getUser(delegationContext.getUserId(), false);
+            if (user != null) {
+                return user;
+            }
+        }
+
+        return delegatedUser;
+    }
+
+    public static User getDelegatedUser(User user, long timestamp, DelegationType delegationType) throws Exception {
+        GenericSelectRecordBuilder builder = getBuilder(timestamp, delegationType);
+
+        builder.andCondition(CriteriaAPI.getCondition("USER_ID", "userId", String.valueOf(user.getId()), NumberOperators.EQUALS));
+        DelegationContext delegationContext = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), DelegationContext.class);
+
+        if (delegationContext != null) {
+            UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+            User delegatedUser = userBean.getUser(delegationContext.getDelegateUserId(), false);
+            if (delegatedUser != null) {
+                return delegatedUser;
+            }
+        }
+        return user;
+    }
+}

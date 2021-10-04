@@ -655,6 +655,9 @@
 				class="com.facilio.delegate.action.DelegateAction" method="addOrUpdateDelegation" />
 		<action name="delete"
 				class="com.facilio.delegate.action.DelegateAction" method="delete" />
+
+		<action name="test"
+				class="com.facilio.delegate.action.DelegateAction" method="testDelegation" />
 	</package>
 
 	<package name="sla" namespace="/api/v2/sla" extends="v2Api">

@@ -1,5 +1,6 @@
 package com.facilio.delegate.action;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -7,6 +8,8 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.delegate.context.DelegationContext;
+import com.facilio.delegate.context.DelegationType;
+import com.facilio.delegate.util.DelegationUtil;
 
 public class DelegateAction extends FacilioAction {
 
@@ -71,6 +74,36 @@ public class DelegateAction extends FacilioAction {
 
         context.put(FacilioConstants.ContextNames.ID, getId());
         chain.execute();
+
+        return SUCCESS;
+    }
+
+    private User user;
+    public User getUser() {
+        return user;
+    }
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    private long time;
+    public long getTime() {
+        return time;
+    }
+    public void setTime(long time) {
+        this.time = time;
+    }
+
+    private int delegationType;
+    public int getDelegationType() {
+        return delegationType;
+    }
+    public void setDelegationType(int delegationType) {
+        this.delegationType = delegationType;
+    }
+
+    public String testDelegation() throws Exception {
+        DelegationUtil.getDelegatedUser(user, time, DelegationType.valueOf(delegationType));
 
         return SUCCESS;
     }
