@@ -1,35 +1,49 @@
 package com.facilio.bmsconsoleV3.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.tenant.TenantContext;
-import com.facilio.bmsconsole.tenant.TenantSpaceContext;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.tenant.UtilityAsset;
 import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.ContactsAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
-import com.facilio.bmsconsole.util.TenantsAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsoleV3.context.V3ContactsContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.context.V3TenantSpaceContext;
+import com.facilio.bmsconsoleV3.context.V3TenantUnitSpaceContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.collections4.CollectionUtils;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class V3TenantsAPI {
 
@@ -184,7 +198,7 @@ public class V3TenantsAPI {
     }
 
     public static List<V3TenantContext> getAllTenantsForSpace(Collection<Long> spaceIds) throws Exception {
-        List<V3TenantSpaceContext> tenantSpaces = getTenantSpaces(spaceIds, true);
+        List<V3TenantSpaceContext> tenantSpaces = getTenantSpaces(spaceIds);
         if (tenantSpaces != null && !tenantSpaces.isEmpty()) {
             return tenantSpaces.stream().map(tenantSpace -> tenantSpace.getTenant()).collect(Collectors.toList());
         }
@@ -197,19 +211,25 @@ public class V3TenantsAPI {
         return getAllTenantsForSpace(Collections.singletonList(spaceId));
     }
 
-    private static List<V3TenantSpaceContext> getTenantSpaces(Collection<Long> spaceIds, boolean fetchChildTenants) throws Exception {
+    private static List<V3TenantSpaceContext> getTenantSpaces(Collection<Long> spaceIds) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT_SPACES);
         List<FacilioField> fields = modBean.getAllFields(module.getName());
         Map<String, FacilioField> tenantSpaceFieldMap = FieldFactory.getAsMap(fields);
-        Operator operator = fetchChildTenants ? BuildingOperator.BUILDING_IS : NumberOperators.EQUALS;
         SelectRecordsBuilder<V3TenantSpaceContext> builder = new SelectRecordsBuilder<V3TenantSpaceContext>()
                 .module(module)
                 .beanClass(V3TenantSpaceContext.class)
                 .select(fields)
-                .andCondition(CriteriaAPI.getCondition(tenantSpaceFieldMap.get("space"), spaceIds, operator))
                 .fetchSupplement((LookupField)tenantSpaceFieldMap.get("tenant"))
                 ;
+        
+        Set<Long> baseSpaceParentIds = SpaceAPI.getBaseSpaceParentIds(spaceIds);
+		Criteria criteria = new Criteria();
+		criteria.addOrCondition(CriteriaAPI.getCondition(tenantSpaceFieldMap.get("space"), spaceIds, BuildingOperator.BUILDING_IS));
+		if (CollectionUtils.isNotEmpty(baseSpaceParentIds)) {
+			criteria.addOrCondition(CriteriaAPI.getCondition(tenantSpaceFieldMap.get("space"), baseSpaceParentIds, NumberOperators.EQUALS));
+		}
+		builder.andCriteria(criteria);
 
         return builder.get();
     }
@@ -218,14 +238,6 @@ public class V3TenantsAPI {
         Map<Long, V3TenantContext> tenantMap = getTenantForResources(Collections.singletonList(resourceId));
         if (MapUtils.isNotEmpty(tenantMap)) {
             return tenantMap.get(resourceId);
-        }
-        return null;
-    }
-
-    public static V3TenantContext getTenantForSpace(long spaceId) throws Exception{
-        Map<Long, V3TenantContext> spaceTenant = getTenantForSpace(Collections.singletonList(spaceId));
-        if (spaceTenant != null) {
-            return spaceTenant.get(spaceId);
         }
         return null;
     }
@@ -263,11 +275,27 @@ public class V3TenantsAPI {
         if (filteredSpaces.isEmpty()) {
             return empty;
         }
-        List<V3TenantSpaceContext> tenantSpaces = getTenantSpaces(spaceIds, false);
+        List<V3TenantUnitSpaceContext> tenantSpaces = getOccupiedTenantUnits(spaceIds);
         if (tenantSpaces != null && !tenantSpaces.isEmpty()) {
-            return tenantSpaces.stream().collect(Collectors.toMap(tenantSpace -> tenantSpace.getSpace().getId(), V3TenantSpaceContext::getTenant));
+            return tenantSpaces.stream().collect(Collectors.toMap(tenantSpace -> tenantSpace.getSpace().getId(), V3TenantUnitSpaceContext::getTenant));
         }
         return empty;
     }
+    
+    private static List<V3TenantUnitSpaceContext> getOccupiedTenantUnits(Collection<Long> spaceIds) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(ContextNames.TENANT_UNIT_SPACE);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		SelectRecordsBuilder<V3TenantUnitSpaceContext> builder = new SelectRecordsBuilder<V3TenantUnitSpaceContext>()
+				.module(module)
+				.beanClass(V3TenantUnitSpaceContext.class)
+				.select(fields)
+				.andCondition(CriteriaAPI.getIdCondition(spaceIds, module))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("isOccupied"), "true", BooleanOperators.IS))
+				;
+		return builder.get();
+
+	}
 
 }
