@@ -1013,4 +1013,51 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getAddOrUpdateItemStockTransactionChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(SetTableNamesCommand.getForItemTransactions());
+        c.addCommand(new AddOrUpdateItemStockTransactionsCommandV3());
+        c.addCommand(getUpdateItemQuantityRollupChain());
+        return c;
+    }
+
+    public static FacilioChain getUpdateItemQuantityRollupChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddOrUpdateItemQuantityCommand());
+        c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE));
+        c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_OUT_OF_STOCK_NOTIFICATION_RULE));
+
+        c.addCommand(getUpdateItemTypeQuantityRollupChain());
+        return c;
+    }
+
+    public static FacilioChain getUpdateItemTypeQuantityRollupChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ItemTypeQuantityRollupCommand());
+        return c;
+    }
+
+    public static FacilioChain getAddOrUpdateToolStockTransactionChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(SetTableNamesCommand.getForToolTranaction());
+        c.addCommand(new AddOrUpdateToolStockTransactionsCommandV3());
+        c.addCommand(getUpdatetoolQuantityRollupChain());
+        return c;
+    }
+
+    public static FacilioChain getUpdatetoolQuantityRollupChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ToolQuantityRollUpCommand());
+        c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE));
+        c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_OUT_OF_STOCK_NOTIFICATION_RULE));
+        c.addCommand(getUpdateToolTypeQuantityRollupChain());
+        return c;
+    }
+
+    public static FacilioChain getUpdateToolTypeQuantityRollupChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ToolTypeQuantityRollupCommand());
+        return c;
+    }
+
 }
