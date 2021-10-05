@@ -1404,8 +1404,12 @@ public class APIv3Config {
                 .beforeSave(new AssetCategoryAdditionInExtendModuleCommand(),new AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMFV3(),new ValidateQrValueCommandV3())
                 .afterSave( new ConstructUpdateCustomActivityCommandV3(), new AddActivitiesCommandV3())
                 .delete()
-                .summary().afterFetch(new LoadAssetSummaryCommandV3())
-                .list().afterFetch(new AssetListFilterByReadingsCommand())
+                .summary()
+                .beforeFetch(new AssetSupplementsSupplyCommand())
+                .afterFetch(new LoadAssetSummaryCommandV3())
+                .list()
+                .beforeFetch(new AssetSupplementsSupplyCommand())
+                .afterFetch(new AssetListFilterByReadingsCommand())
                 .build();
     }
 }

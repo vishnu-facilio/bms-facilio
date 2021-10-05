@@ -48,27 +48,6 @@ public class LoadAssetSummaryCommandV3  extends FacilioCommand {
             }
 
             List<SupplementRecord> supplementFields = (List<SupplementRecord>) context.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);
-            if (supplementFields == null) {
-                supplementFields = new ArrayList<>();
-            }
-            Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-
-            SupplementRecord identifiedLocationField = (SupplementRecord) fieldsAsMap.get("identifiedLocation");
-            SupplementRecord spaceField = (SupplementRecord) fieldsAsMap.get("space");
-            SupplementRecord categoryField = (SupplementRecord) fieldsAsMap.get("category");
-            SupplementRecord rotatingItemField = (SupplementRecord) fieldsAsMap.get("rotatingItem");
-            SupplementRecord rotatingToolField = (SupplementRecord) fieldsAsMap.get("rotatingTool");
-
-            supplementFields.add(identifiedLocationField);
-            supplementFields.add(spaceField);
-            supplementFields.add(categoryField);
-            supplementFields.add(rotatingItemField);
-            supplementFields.add(rotatingToolField);
-
-            LookupField sysCreatedBy = (LookupField) FieldFactory.getSystemField("sysCreatedBy", modBean.getModule(FacilioConstants.ContextNames.RESOURCE));
-            supplementFields.add(sysCreatedBy);
-            LookupField sysModifiedBy = (LookupField) FieldFactory.getSystemField("sysModifiedBy", modBean.getModule(FacilioConstants.ContextNames.RESOURCE));
-            supplementFields.add(sysModifiedBy);
 
             for(V3AssetContext asset :assetList){
                 SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
