@@ -86,9 +86,9 @@ public class PageFactory {
 			case ContextNames.SENSOR_ROLLUP_ALARM:
 				return  SensorAlarmPageFactory.getSensorAlarmPage((SensorRollUpAlarmContext) record, module);
 			case ContextNames.MULTIVARIATE_ANOMALY_ALARM:
-				return  MultiVariateAnomalyAlarmPageFactory.getMultiVariateAnomalyAlarmPage((MultiVariateAnomalyAlarm) record, module);
+				return MultiVariateAnomalyAlarmPageFactory.getMultiVariateAnomalyAlarmPage((MultiVariateAnomalyAlarm) record, module);
 			case ContextNames.OPERATION_ALARM:
-				return  OperationalAlarmPageFactory.getOperationalAlarmPage((OperationAlarmContext) record, module);
+				return OperationalAlarmPageFactory.getOperationalAlarmPage((OperationAlarmContext) record, module);
 			case ContextNames.AGENT_ALARM:
 				return AgentAlarmPageFactory.getAgentAlarmPage((BaseAlarmContext) record);
 			case ContextNames.WorkPermit.WORKPERMIT:
@@ -96,7 +96,8 @@ public class PageFactory {
 			case ContextNames.VENDORS:
 				return VendorPageFactory.getVendorPage((VendorContext) record);
 			case ContextNames.WORK_ORDER:
-				return TenantWorkRequestPageFactory.getWorkorderPage((WorkOrderContext) record);
+//				return TenantWorkRequestPageFactory.getWorkorderPage((WorkOrderContext) record);
+				return WorkorderPageFactory.getWorkorderPage((WorkOrderContext) record);
 			case ContextNames.VISITOR_LOGGING:
 				return VisitorLoggingPageFactory.getVisitorLoggingPage((VisitorLoggingContext) record);
 			case ContextNames.INSURANCE:
