@@ -36,25 +36,25 @@ public class KafkaProcessor extends FacilioProcessor {
 	private static final FacilioModule MESSAGE_TOIPC_MODULE = AgentModuleFactory.getMessageToipcModule();
 
 	private DataProcessorUtil dataProcessorUtil;
-	private int partitionId;
+    private int processorId;
 
-	public KafkaProcessor(long orgId, String topic, int partition) {
+    public KafkaProcessor(long orgId, String topic, int processorId) {
         super(orgId, topic);
-		partitionId = partition;
         String clientName = topic + "-processor-";
+        this.processorId = processorId;
         String environment = FacilioProperties.getConfig("environment");
         String consumerGroup = clientName + environment;
-		setConsumer(new FacilioKafkaConsumer(ServerInfo.getHostname(), consumerGroup, getTopic(), partition));
+        setConsumer(new FacilioKafkaConsumer(ServerInfo.getHostname(), consumerGroup, getTopic()));
 		setProducer(new FacilioKafkaProducer());
         setEventType("processor");
         dataProcessorUtil = new DataProcessorUtil(orgId, topic);
-		LOGGER.info("Initializing processor " + topic + " - " + partition);
+        LOGGER.info("Initializing processor " + topic + " - " + getThreadName());
     }
 
 
 	@Override
 	protected String getThreadName() {
-		return "kafka-" + getOrgDomainName() + "-" + partitionId + "-" + getEventType();
+        return "kafka-" + getOrgDomainName() + "-" + processorId + "-" + getEventType();
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class KafkaProcessor extends FacilioProcessor {
 			}
 			for (FacilioRecord record : records) {
 				LOGGER.debug("Getting Kafka recordId : "+record.getId());
-                if (!dataProcessorUtil.processRecord(record, partitionId)) {
+                if (!dataProcessorUtil.processRecord(record)) {
 					LOGGER.error("Exception while processing ->" + record.getData());
 				}
 				getConsumer().commit(record);

@@ -1,13 +1,17 @@
 package com.facilio.services.messageQueue;
 
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.services.procon.message.FacilioRecord;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.kafka.clients.admin.DescribeConsumerGroupsResult;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import sun.management.Agent;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public abstract class MessageQueue {
 
@@ -66,27 +70,28 @@ public abstract class MessageQueue {
      */
     private void startProcessor() {
         //PropertyConfigurator.configure(getLoggingProps());
+        int currentThreadCount = 0;
         try {
             List<Map<String, Object>> orgMessageTopics = MessageQueueTopic.getTopics(EMPTY_LIST);
             if (CollectionUtils.isNotEmpty(orgMessageTopics)) {
-                for (Map<String, Object> org : orgMessageTopics) {
-                    Long orgId = (Long) org.get(AgentConstants.ORGID);
-                    int partition = (Integer) org.get(AgentConstants.PARTITION_ID);
-                    String orgDomainName = (String) org.get(AgentConstants.MESSAGE_TOPIC);
-                    if (!(EXISTING_ORG_PARTITION.containsKey(orgDomainName) && EXISTING_ORG_PARTITION.get(orgDomainName) == partition)) {
+                for (Map<String, Object> topicDetails : orgMessageTopics) {
+                    Long orgId = (Long) topicDetails.get(AgentConstants.ORGID);
+                    String orgDomainName = (String) topicDetails.get(AgentConstants.MESSAGE_TOPIC);
+                    if (currentThreadCount < FacilioProperties.getMaxProcessorThreads()) {
                         try {
-                            startProcessor(orgId, orgDomainName, partition);
+                            currentThreadCount = currentThreadCount + startProcessor(orgId, orgDomainName, topicDetails, currentThreadCount);
                         } catch (Exception e) {
                             try {
                                 CommonCommandUtil.emailException("KafkaProcessor", "Exception while starting stream " + orgDomainName, new Exception("Exception while starting stream will retry after 10 sec"));
                                 Thread.sleep(10000L);
-                                startProcessor(orgId, orgDomainName, partition);
+                                currentThreadCount = currentThreadCount + startProcessor(orgId, orgDomainName, topicDetails, currentThreadCount);
                             } catch (InterruptedException interrupted) {
                                 LOGGER.info("Exception occurred ", interrupted);
-                                CommonCommandUtil.emailException("KafkaProcessor", "Exception while starting stream " + orgDomainName, interrupted);
+                                CommonCommandUtil.emailException("KafkaProcessor", "Exception again while starting stream " + orgDomainName, interrupted);
                             }
                         }
                     }
+
                 }
             }
         } catch (Exception e) {
@@ -94,22 +99,25 @@ public abstract class MessageQueue {
         }
     }
 
-    private void startProcessor(long orgId, String orgDomainName, int partition) {
+    private int startProcessor(long orgId, String orgDomainName, Map<String, Object> topicDetails, int currentThreadCount) {
+        int noOfProcessorsStarted = 0;
         try {
             if (orgDomainName != null && STREAMS.contains(orgDomainName)) {
                 LOGGER.info("Starting kafka processor for org : " + orgDomainName + " id " + orgId);
-                initiateProcessFactory(orgId, orgDomainName, "processor", partition);
+                noOfProcessorsStarted = initiateProcessFactory(orgId, orgDomainName, "processor", topicDetails, currentThreadCount);
                 /*initiateProcessFactory(orgId, orgDomainName, "event");
                 initiateProcessFactory(orgId, orgDomainName, "timeSeries");
                 initiateProcessFactory(orgId,orgDomainName,"agent");*/
-                EXISTING_ORG_PARTITION.put(orgDomainName, partition);
+
+                //EXISTING_ORG_PARTITION.put(orgDomainName, processorId);
             }
         } catch (Exception e) {
             LOGGER.info("Exception occurred ", e);
         }
+        return noOfProcessorsStarted;
     }
 
-    public abstract void initiateProcessFactory(long orgId, String orgDomainName, String type, int partition);
+    public abstract int initiateProcessFactory(long orgId, String orgDomainName, String type, Map<String, Object> topicDetails, int currentThreadCount) throws Exception;
 
     private void updateStream() {
         try {

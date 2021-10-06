@@ -19,6 +19,8 @@ public class AgentFieldFactory {
 			fields.add(FieldFactory.getField("orgId", "ORGID", module, FieldType.NUMBER));
 			fields.add(FieldFactory.getField("topic", "TOPIC", module, FieldType.STRING));
          fields.add(FieldFactory.getField("partitionId", "PARTITION_ID", module, FieldType.NUMBER));
+         fields.add(FieldFactory.getField("maxConsumers", "MAX_CONSUMERS", module, FieldType.NUMBER));
+         fields.add(FieldFactory.getField("maxConsumersPerInstance", "MAX_CONSUMERS_PER_INSTANCE", module, FieldType.NUMBER));
          fields.add(FieldFactory.getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
 			fields.add(FieldFactory.getField("lastModifiedTime", "LAST_MODIFIED_TIME", module, FieldType.NUMBER));
 			fields.add(FieldFactory.getField("lastEnabledTime", "LAST_ENABLED_TIME", module, FieldType.NUMBER));

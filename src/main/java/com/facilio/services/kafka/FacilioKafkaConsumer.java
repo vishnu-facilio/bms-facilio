@@ -30,9 +30,9 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
     private boolean isAuthCheckEnabled = false; 
     private static final Logger LOGGER = LogManager.getLogger(FacilioKafkaConsumer.class.getName());
 
-    public FacilioKafkaConsumer(String client, String consumerGroup, String topic, int partition) {
+    public FacilioKafkaConsumer(String client, String consumerGroup, String topic) {
         consumer = new KafkaConsumer<>(getConsumerProperties(client, consumerGroup));
-        subscribe(topic, partition);
+        subscribe(topic);
     }
 
     private Properties getConsumerProperties(String client, String consumerGroup) {
@@ -75,6 +75,7 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
                 }
                 FacilioRecord facilioRecord = new FacilioRecord(record.key(), data);
                 facilioRecord.setId(record.offset());
+                facilioRecord.setPartition(record.partition());
                 try {
                     if(object != null && object.containsKey("timestamp")) {
                         Long timestamp = Long.parseLong(object.get("timestamp").toString());
@@ -102,11 +103,9 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
         }
     }
 
-    public void subscribe(String topic, int partition) {
+    public void subscribe(String topic) {
         if(topicPartition == null) {
-            topicPartition = new TopicPartition(topic, partition);
-            consumer.assign(Collections.singletonList(topicPartition));
-            //consumer.subscribe(Collections.singletonList(topic));
+            consumer.subscribe(Collections.singletonList(topic));
         }
     }
     

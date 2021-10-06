@@ -1,5 +1,8 @@
 package com.facilio.services.procon.message;
 
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.json.simple.JSONObject;
 
 import java.io.Serializable;
@@ -11,6 +14,9 @@ public class FacilioRecord implements Serializable {
     private long timeStamp;
     private long id;
     private long size;
+    @Getter
+    @Setter
+    private int partition = 0;
 
     public FacilioRecord(String partitionKey, JSONObject data) {
         this.data = data;

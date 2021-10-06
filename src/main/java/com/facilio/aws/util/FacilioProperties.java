@@ -143,6 +143,7 @@ public class FacilioProperties {
     private static String service;
     
     private static String cloudAgentUrl;
+    private static int maxProcessorThreads;
 
     static {
         loadProperties();
@@ -183,6 +184,7 @@ public class FacilioProperties {
                 securityFilterEnabled = Boolean.parseBoolean(PROPERTIES.getProperty("security.filter", "false").trim());
                 scheduleServer = "true".equals(getConfig("schedulerServer"));
                 messageProcessor = "true".equalsIgnoreCase(PROPERTIES.getProperty("messageProcessor"));
+                maxProcessorThreads = Integer.parseInt(PROPERTIES.getOrDefault("processor.max.threads", 50).toString().trim());
                 userServer = !scheduleServer;
                 db = PROPERTIES.getProperty("db.name");
                 dbClass = PROPERTIES.getProperty("db.class");
@@ -805,5 +807,9 @@ public class FacilioProperties {
 
     public static String getService() {
         return service;
+    }
+
+    public static int getMaxProcessorThreads() {
+        return maxProcessorThreads;
     }
 }
