@@ -354,7 +354,8 @@ public class PageWidget {
 		BOOKINGS_RELATED_LIST("bookingRelatedListWidget"),
 
 		// Workorder Widgets
-		TASKS_COMPLETED("tasksCompleted");
+		TASKS_COMPLETED("tasksCompleted"),
+		SCHEDULED_DURATION("scheduledDuration");
 
 		private String name;
 

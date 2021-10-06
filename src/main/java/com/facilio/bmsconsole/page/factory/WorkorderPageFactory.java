@@ -26,6 +26,11 @@ public class WorkorderPageFactory extends PageFactory {
         tasksCompleted.addToLayoutParams(sectionOne, 6, 6);
         sectionOne.addWidget(tasksCompleted);
 
+        // scheduled duration widget
+        PageWidget scheduledDuration = new PageWidget(PageWidget.WidgetType.SCHEDULED_DURATION);
+        scheduledDuration.addToLayoutParams(sectionOne, 6, 6);
+        sectionOne.addWidget(scheduledDuration);
+
     }
 
     public static Page getWorkorderPage(WorkOrderContext workorder) throws Exception {
