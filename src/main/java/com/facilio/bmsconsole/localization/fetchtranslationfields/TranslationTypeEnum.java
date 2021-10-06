@@ -18,12 +18,12 @@ public enum TranslationTypeEnum {
     VIEW_FOLDER("VIEW FOLDER",WebTabContext.Type.MODULE,new GetViewFolderTranslationFields()),
     STATES("STATES",WebTabContext.Type.MODULE,new GetStateTranslationFields()),
     STATE_TRANSITION("STATE TRANSITION",WebTabContext.Type.MODULE,new GetStateTransitionTranslationFields()),
+    STATE_TRANSITION_FORM("STATE TRANSITION FORM",WebTabContext.Type.MODULE,new GetFormTranslationFields()),
     BUTTONS("BUTTONS",WebTabContext.Type.MODULE, new GetButtonTranslationFields()),
     DASHBOARD_FOLDER("DASHBOARD FOLDER",WebTabContext.Type.DASHBOARD,new GetDashboardFolderTranslationFields()),
     DASHBOARD("DASHBOARD",WebTabContext.Type.DASHBOARD,new GetDashboardTabAndWidgetTransFields()),
     REPORT_FOLDER("REPORT FOLDER",WebTabContext.Type.REPORT,new GetReportFolderTranslationFields()),
-    REPORT("REPORT",WebTabContext.Type.REPORT,new GetReportTranslationFields()),
-    STATE_TRANSITION_FORM("STATE TRANSITION FORM",WebTabContext.Type.MODULE,new GetFormTranslationFields())
+    REPORT("REPORT",WebTabContext.Type.REPORT,new GetReportTranslationFields())
     ;
 
     private static final Map<String, TranslationTypeEnum> TRANSLATION_TYPE_ENUM_MAP = initTranslationWiseType();
