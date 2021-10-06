@@ -165,6 +165,7 @@ public class UserBeanImpl implements UserBean {
 			if(e instanceof AccountException && ((AccountException) e).getErrorCode() == ErrorCode.USER_ALREADY_EXISTS_IN_APP) {
 				throw e;
 			}
+			log.error("Exception occurred while creating user ", e);
 			IAMUserUtil.rollbackUserAdded(user.getUid(), AccountUtil.getCurrentOrg().getOrgId());
 			throw e;
 		}
