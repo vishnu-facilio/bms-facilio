@@ -31,6 +31,11 @@ public class WorkorderPageFactory extends PageFactory {
         scheduledDuration.addToLayoutParams(sectionOne, 6, 6);
         sectionOne.addWidget(scheduledDuration);
 
+        // actual duration widget
+        PageWidget actualDuration = new PageWidget(PageWidget.WidgetType.ACTUAL_DURATION);
+        actualDuration.addToLayoutParams(sectionOne, 6, 6);
+        sectionOne.addWidget(actualDuration);
+
     }
 
     public static Page getWorkorderPage(WorkOrderContext workorder) throws Exception {
