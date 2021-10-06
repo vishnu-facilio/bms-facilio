@@ -170,6 +170,8 @@ public class CommunityFeaturesAPI {
                         pplAnnouncement.setIsRead(false);
                         pplAnnouncement.setPeople(person);
                         pplAnnouncement.setParentId(announcement.getId());
+                        pplAnnouncement.setSysCreatedBy(announcement.getSysModifiedBy());
+                        pplAnnouncement.setSysCreatedTime(announcement.getSysModifiedTime());
                         pplMap.put(person.getId(), pplAnnouncement);
                     }
                 }
