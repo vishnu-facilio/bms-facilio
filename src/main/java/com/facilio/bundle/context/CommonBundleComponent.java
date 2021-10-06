@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.bundle.enums.BundleComponentsEnum;
 import com.facilio.bundle.enums.BundleModeEnum;
 import com.facilio.bundle.interfaces.BundleComponentInterface;
@@ -45,17 +47,15 @@ public abstract class CommonBundleComponent implements BundleComponentInterface 
 		BundleContext bundle = (BundleContext) context.get(BundleConstants.BUNDLE_CONTEXT);
 		
 		Map<String, FacilioField> componentFieldMap = component.getFields().stream().collect(Collectors.toMap(FacilioField::getName, Function.identity()));
-		
-		Map<String, FacilioField> bundleFieldMap = FieldFactory.getBundleChangeSetFields().stream().collect(Collectors.toMap(FacilioField::getName, Function.identity()));
+
 		
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 				.select(component.getFields())
 				.table(component.getModule().getTableName())
-				.leftJoin(ModuleFactory.getBundleChangeSetModule().getTableName())
-				.on("Bundle_Change_Set.COMPONENT_ID = "+component.getModule().getTableName()+"."+componentFieldMap.get(component.getIdFieldName()).getColumnName())
 				.andCondition(CriteriaAPI.getCondition(componentFieldMap.get(component.getModifiedTimeFieldName()), "", CommonOperators.IS_NOT_EMPTY))
-				.andCondition(CriteriaAPI.getCondition(bundleFieldMap.get("id"), "",CommonOperators.IS_EMPTY))
-				.andCondition(CriteriaAPI.getCondition(componentFieldMap.get(component.getModifiedTimeFieldName()), bundle.getCreatedTime()+"", DateOperators.IS_AFTER));
+				.andCondition(CriteriaAPI.getCondition(componentFieldMap.get(component.getCreatedTimeFieldName()), bundle.getCreatedTime()+"", DateOperators.IS_AFTER))
+//				.andCondition(CriteriaAPI.getCondition(componentFieldMap.get(component.getIdFieldName()), StringUtils.join(componentIdList, ","), NumberOperators.NOT_EQUALS))
+				;
 		
 		Condition condition = getFetchChangeSetCondition(context);
 		
@@ -98,16 +98,19 @@ public abstract class CommonBundleComponent implements BundleComponentInterface 
 		
 		Map<String, FacilioField> componentFieldMap = component.getFields().stream().collect(Collectors.toMap(FacilioField::getName, Function.identity()));
 		
-		Map<String, FacilioField> bundleFieldMap = FieldFactory.getBundleChangeSetFields().stream().collect(Collectors.toMap(FacilioField::getName, Function.identity()));
-		
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
-				.select(component.getFields())					 
-				.table(ModuleFactory.getBundleChangeSetModule().getTableName())
-				.innerJoin(component.getModule().getTableName())
-				.on("Bundle_Change_Set.COMPONENT_ID = "+component.getModule().getTableName()+"."+componentFieldMap.get(component.getIdFieldName()).getColumnName())
-				.andCondition(CriteriaAPI.getCondition(bundleFieldMap.get("componentType"), component.getValue()+"", NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(bundleFieldMap.get("bundleId"), bundle.getId()+"", NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(bundleFieldMap.get("componentLastEditedTime"), component.getModule().getTableName()+"."+componentFieldMap.get(component.getModifiedTimeFieldName()).getColumnName(),DateOperators.IS_BEFORE));
+				.select(component.getFields())
+				.table(component.getModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(componentFieldMap.get(component.getModifiedTimeFieldName()), "", CommonOperators.IS_NOT_EMPTY))
+				.andCondition(CriteriaAPI.getCondition(componentFieldMap.get(component.getModifiedTimeFieldName()), bundle.getCreatedTime()+"", DateOperators.IS_AFTER))
+				.andCondition(CriteriaAPI.getCondition(componentFieldMap.get(component.getCreatedTimeFieldName()), bundle.getCreatedTime()+"", DateOperators.IS_BEFORE))
+				;
+		
+		Condition condition = getFetchChangeSetCondition(context);
+		
+		if(condition != null) {
+			select.andCondition(condition);
+		}
 		
 		List<Map<String, Object>> props = select.get();
 		

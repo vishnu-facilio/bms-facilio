@@ -12,13 +12,45 @@ public class BundleTransactionChainFactory {
     public static FacilioChain getCopyCustomizationChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchDefaultSystemBundleCommand());
-        c.addCommand(new PackAllBundleComponentsCommand());
+        c.addCommand(new FetchBundleChangeSetCommand());
+        c.addCommand(new PackBundleChangeSetCommand());
         return c;
     }
     
     public static FacilioChain addBundleChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddBundleCommand());
+        return c;
+    }
+    
+    public static FacilioChain getBundleChangeSetChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchBundleCommand());
+        c.addCommand(new FetchLatestBundleCommand());
+        c.addCommand(new FetchBundleChangeSetCommand());
+        return c;
+    }
+    
+    public static FacilioChain getCreateVersionChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchBundleCommand());
+        c.addCommand(new FetchLatestBundleCommand());
+        c.addCommand(new FetchBundleChangeSetCommand());
+        c.addCommand(new PackBundleChangeSetCommand());
+        c.addCommand(new CreateBundleVersionCommand());
+        return c;
+    }
+    
+    public static FacilioChain getAllBundlesChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchAllBundleCommand());
+        return c;
+    }
+    
+    public static FacilioChain getAllVersionsChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchBundleCommand());
+        c.addCommand(new FetchAllVersionCommand());
         return c;
     }
     

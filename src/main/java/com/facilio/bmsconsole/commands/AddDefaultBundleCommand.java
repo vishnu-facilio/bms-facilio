@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
@@ -17,12 +18,15 @@ import com.facilio.bundle.utils.BundleUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
@@ -94,17 +98,23 @@ public class AddDefaultBundleCommand extends FacilioCommand {
 			List<FacilioModule> modules = modBean.getModuleList(moduleType);
 			
 			for(FacilioModule module : modules) {
+
 				BundleUtil.addBundleChangeSetForSystemComponents(defaultBundle,BundleComponentsEnum.MODULE, module.getModuleId(), module.getDisplayName());
 				
-				try {
-					List<FacilioField> fields = modBean.getAllFields(module.getName());
+				GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+																.select(FieldFactory.getSelectFieldFields())
+																.table("Fields")
+																.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", module.getModuleId()+"", NumberOperators.EQUALS));
+
+				List<Map<String, Object>> fieldProps = selectBuilder.get();
+				
+				if(fieldProps != null && !fieldProps.isEmpty()) {
+					
+					List<FacilioField> fields = FieldUtil.getAsBeanListFromMapList(fieldProps, FacilioField.class);
 					
 					for(FacilioField field : fields) {
 						BundleUtil.addBundleChangeSetForSystemComponents(defaultBundle,BundleComponentsEnum.FIELD, field.getFieldId(), field.getDisplayName());
 					}
-				}
-				catch(Exception e) {
-					LOGGER.info("No Fields present in module - "+module.getName(), e);
 				}
 			}
 		}

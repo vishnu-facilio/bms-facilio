@@ -416,6 +416,22 @@
                 class="com.facilio.bundle.action.BundleAction"
                 method="addBundle">
         </action>
+        <action name="getChangeSet"
+                class="com.facilio.bundle.action.BundleAction"
+                method="getChangeSet">
+        </action>
+        <action name="createVersion"
+                class="com.facilio.bundle.action.BundleAction"
+                method="createVersion">
+        </action>
+        <action name="getAllBundles"
+                class="com.facilio.bundle.action.BundleAction"
+                method="getAllBundles">
+        </action>
+        <action name="getAllVersions"
+                class="com.facilio.bundle.action.BundleAction"
+                method="getAllVersions">
+        </action>
     </package>
 
     <package name="delivery" namespace="/api/v3/deliveries" extends="v3Api">

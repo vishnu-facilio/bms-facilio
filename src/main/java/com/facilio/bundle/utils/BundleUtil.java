@@ -172,6 +172,22 @@ public class BundleUtil {
 //	}
 //	
 	
+	public static BundleContext getBundle(Long bundleId) throws Exception {
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getBundleModule().getTableName())
+				.select(FieldFactory.getBundleFields())
+				.andCondition(CriteriaAPI.getIdCondition(bundleId, ModuleFactory.getBundleModule()))
+				;
+		
+		List<Map<String, Object>> props = builder.get();
+		
+		BundleContext bundle = FieldUtil.getAsBeanFromMap(props.get(0), BundleContext.class);
+		
+		return bundle;
+				
+	}
+	
 	public static BundleContext getDefaultSystemBundle() throws Exception {
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getBundleFields());
@@ -189,6 +205,26 @@ public class BundleUtil {
 		BundleContext bundle = FieldUtil.getAsBeanFromMap(props.get(0), BundleContext.class);
 		
 		return bundle;
+				
+	}
+	
+	public static BundleContext getLatestVersionOfBundle(BundleContext parentBundle) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getBundleFields());
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getBundleModule().getTableName())
+				.select(FieldFactory.getBundleFields())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentBundleId"), parentBundle.getParentBundleId()+"", NumberOperators.EQUALS))
+				.orderBy("CREATED_TIME desc")
+				.limit(1)
+				;
+		
+		List<Map<String, Object>> props = builder.get();
+		
+		BundleContext latestBundle = FieldUtil.getAsBeanFromMap(props.get(0), BundleContext.class);
+		
+		return latestBundle;
 				
 	}
 	

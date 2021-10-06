@@ -26,7 +26,7 @@ public class BundleAction extends V3Action{
 	
 	File bundleZip;
 	String bundleZipName;
-	
+	String version;
 	BundleContext bundle;
 	
 	public String copyCustomization() throws Exception {
@@ -38,6 +38,21 @@ public class BundleAction extends V3Action{
 		copyCustomizationChain.execute();
 		
 		setData(BundleConstants.DOWNLOAD_URL, context.get(BundleConstants.DOWNLOAD_URL));
+		
+		return SUCCESS;
+		
+	}
+	
+	public String installBundle() throws Exception {
+		
+		FacilioChain installBundle = BundleTransactionChainFactory.getInstallBundleChain();
+		
+		FacilioContext context = installBundle.getContext();
+		
+		context.put(BundleConstants.BUNDLE_ZIP_FILE, getBundleZip());
+		context.put(BundleConstants.BUNDLE_ZIP_FILE_NAME, getBundleZipName());
+		
+		installBundle.execute();
 		
 		return SUCCESS;
 		
@@ -57,20 +72,63 @@ public class BundleAction extends V3Action{
 		
 		return SUCCESS;
 	}
-	
-	public String installBundle() throws Exception {
+
+	public String getChangeSet() throws Exception {
 		
-		FacilioChain installBundle = BundleTransactionChainFactory.getInstallBundleChain();
+		FacilioChain addBundle = BundleTransactionChainFactory.getBundleChangeSetChain();
 		
-		FacilioContext context = installBundle.getContext();
+		FacilioContext context = addBundle.getContext();
 		
-		context.put(BundleConstants.BUNDLE_ZIP_FILE, getBundleZip());
-		context.put(BundleConstants.BUNDLE_ZIP_FILE_NAME, getBundleZipName());
+		context.put(BundleConstants.BUNDLE_CONTEXT, getBundle());
 		
-		installBundle.execute();
+		addBundle.execute();
+		
+		setData(BundleConstants.BUNDLE_CHANGE_SET_LIST , context.get(BundleConstants.BUNDLE_CHANGE_SET_LIST));
 		
 		return SUCCESS;
-		
 	}
-
+	
+	public String createVersion() throws Exception {
+		
+		FacilioChain addBundle = BundleTransactionChainFactory.getCreateVersionChain();
+		
+		FacilioContext context = addBundle.getContext();
+		
+		context.put(BundleConstants.BUNDLE_CONTEXT, getBundle());
+		context.put(BundleConstants.VERSION, getVersion());
+		
+		addBundle.execute();
+		
+		setData(BundleConstants.BUNDLE_CONTEXT , context.get(BundleConstants.BUNDLE_CONTEXT));
+		
+		return SUCCESS;
+	}
+	
+	public String getAllBundles() throws Exception {
+		
+		FacilioChain getallBundles = BundleTransactionChainFactory.getAllBundlesChain();
+		
+		FacilioContext context = getallBundles.getContext();
+		
+		getallBundles.execute();
+		
+		setData(BundleConstants.BUNDLE_CONTEXT_LIST , context.get(BundleConstants.BUNDLE_CONTEXT_LIST));
+		
+		return SUCCESS;
+	}
+	
+	public String getAllVersions() throws Exception {
+		
+		FacilioChain getallVersions = BundleTransactionChainFactory.getAllVersionsChain();
+		
+		FacilioContext context = getallVersions.getContext();
+		
+		context.put(BundleConstants.BUNDLE_CONTEXT, getBundle());
+		
+		getallVersions.execute();
+		
+		setData(BundleConstants.BUNDLE_VERSION_LIST , context.get(BundleConstants.BUNDLE_VERSION_LIST));
+		
+		return SUCCESS;
+	}
 }

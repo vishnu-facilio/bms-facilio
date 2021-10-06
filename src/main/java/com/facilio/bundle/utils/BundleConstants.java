@@ -38,6 +38,8 @@ public class BundleConstants {
 	
 	public static final String BUNDLE_CONTEXT = "bundleContext";
 	
+	public static final String BUNDLE_VERSION_LIST = "bundleVersionList";
+	
 	public static final String VERSION = "version";
 	public static final String COMPONENTS = "components";
 	public static final String COMPONENT = "component";
@@ -57,6 +59,10 @@ public class BundleConstants {
 	public static final String BUNDLE_ZIP_FILE_CONTENT_TYPE = "application/zip";
 
 	public static final String BUNDLED_XML_COMPONENT_FILE = "bundledXMLComponentFile";
+
+	public static final String BUNDLE_CHANGE_SET_LIST = "bundleChangeSetList";
+
+	public static final String BUNDLE_CONTEXT_LIST = "bundleList";
 
 	public static class Components {
 		public static final String NAME = "name";
