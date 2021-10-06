@@ -84,7 +84,8 @@ public class GetAllModulesCommand extends FacilioCommand {
 			FacilioConstants.Induction.INDUCTION_RESPONSE,
 			ContextNames.SAFETY_PLAN,
 			ContextNames.HAZARD,
-			ContextNames.PRECAUTION
+			ContextNames.PRECAUTION,
+			ContextNames.SITE
     });
 
 	@Override
