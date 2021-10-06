@@ -37329,7 +37329,7 @@ CREATE TABLE IF NOT EXISTS Bundle_Change_Set (
   COMPONENT_LAST_EDITED_TIME bigint(20) NOT NULL,
   PRIMARY KEY (ID),
   KEY Bundle_Change_Set_bundle_id_idx (BUNDLE_ID),
-  CONSTRAINT Bundle_Change_Set_bundle_id FOREIGN KEY (BUNDLE_ID) REFERENCES bundle (ID)
+  CONSTRAINT Bundle_Change_Set_bundle_id FOREIGN KEY (BUNDLE_ID) REFERENCES Bundle (ID)
 );
 
 
