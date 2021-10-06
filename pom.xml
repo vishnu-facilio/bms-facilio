@@ -106,11 +106,7 @@
         <dependency>
             <groupId>com.facilio.framework</groupId>
             <artifactId>facilio-framework</artifactId>
-<<<<<<< HEAD
             <version>1.0.425</version>
-=======
-            <version>1.0.424</version>
->>>>>>> d0feb5d49c60d073b93213065d8fe410d72a0ee1
         </dependency>
 
         <dependency>
