@@ -45,6 +45,11 @@ public class WorkorderPageFactory extends PageFactory {
         PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT);
         notesWidget.addToLayoutParams(0, 6, 18, 8);
         sectionOne.addWidget(notesWidget);
+
+        // attachment widget
+        PageWidget attachmentsWidget = new PageWidget(PageWidget.WidgetType.ATTACHMENT);
+        attachmentsWidget.addToLayoutParams(0, 14, 18, 8);
+        sectionOne.addWidget(attachmentsWidget);
     }
 
     private static void addHistoryTab(Page page) {
