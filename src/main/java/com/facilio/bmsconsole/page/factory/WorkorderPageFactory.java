@@ -41,6 +41,24 @@ public class WorkorderPageFactory extends PageFactory {
         workorderDetails.addToLayoutParams(sectionOne, 6, 18);
         sectionOne.addWidget(workorderDetails);
 
+//        // notes widget
+//        PageWidget notesWidget = new PageWidget();
+//        notesWidget.setWidgetType(PageWidget.WidgetType.COMMENT);
+//        sectionOne.addWidget(notesWidget);
+    }
+
+    private static void addHistoryPage(Page page) {
+        Page.Tab historyPage = page.new Tab("history");
+        page.addTab(historyPage);
+
+        // TODO:: give a more contextual name for the section
+        Page.Section sectionOne = page.new Section();
+        historyPage.addSection(sectionOne);
+
+        // history widget
+        PageWidget historyWidget = new PageWidget(PageWidget.WidgetType.HISTORY);
+        historyWidget.addToLayoutParams(sectionOne, 24, 3);
+        sectionOne.addWidget(historyWidget);
     }
 
     public static Page getWorkorderPage(WorkOrderContext workorder) throws Exception {
@@ -57,8 +75,7 @@ public class WorkorderPageFactory extends PageFactory {
         Page.Tab relatedRecordsTab = page.new Tab("relatedRecords");
         page.addTab(relatedRecordsTab);
 
-        Page.Tab historyTab = page.new Tab("history");
-        page.addTab(historyTab);
+        addHistoryPage(page);
 
         return page;
     }
