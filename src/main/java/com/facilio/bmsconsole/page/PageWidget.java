@@ -356,7 +356,8 @@ public class PageWidget {
 		// Workorder Widgets
 		TASKS_COMPLETED("tasksCompleted"),
 		SCHEDULED_DURATION("scheduledDuration"),
-		ACTUAL_DURATION("actualDuration");
+		ACTUAL_DURATION("actualDuration"),
+		WORKORDER_DETAILS("workorderDetails");
 
 		private String name;
 

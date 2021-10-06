@@ -36,6 +36,11 @@ public class WorkorderPageFactory extends PageFactory {
         actualDuration.addToLayoutParams(sectionOne, 6, 6);
         sectionOne.addWidget(actualDuration);
 
+        // workorder details widget
+        PageWidget workorderDetails = new PageWidget(PageWidget.WidgetType.WORKORDER_DETAILS);
+        workorderDetails.addToLayoutParams(sectionOne, 6, 18);
+        sectionOne.addWidget(workorderDetails);
+
     }
 
     public static Page getWorkorderPage(WorkOrderContext workorder) throws Exception {
