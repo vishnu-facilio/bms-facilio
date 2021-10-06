@@ -6,8 +6,12 @@ import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bundle.enums.BundleComponentsEnum;
+import com.facilio.bundle.utils.BundleConstants;
+import com.facilio.bundle.utils.BundleUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -19,6 +23,7 @@ public class AddDefaultSystemFieldsCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 
 		 List<FacilioModule> modules = CommonCommandUtil.getModules(context);
+		 
          if (CollectionUtils.isNotEmpty(modules)) {
              for (FacilioModule module : modules) {
                  List<FacilioField> sysFields = FieldFactory.getSystemPointFields(module);
@@ -33,7 +38,7 @@ public class AddDefaultSystemFieldsCommand extends FacilioCommand {
 	private void insertSystemFields(FacilioModule module) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		for(FacilioField field : module.getFields()) {
-       	 modBean.addField(field);
+       	 	modBean.addField(field);
         }
 	}
 }

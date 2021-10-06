@@ -39,6 +39,7 @@ import com.facilio.bmsconsoleV3.commands.quotation.DisAssociateQuotationTermsCom
 import com.facilio.bmsconsoleV3.commands.quotation.SendQuotationMailCommand;
 import com.facilio.bundle.enums.BundleComponentsEnum;
 import com.facilio.bundle.enums.BundleModeEnum;
+import com.facilio.bundle.utils.BundleConstants;
 import com.facilio.cb.command.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -78,7 +79,7 @@ public class TransactionChainFactory {
 			c.addCommand(new CreateAppSuperAdminCommand());
 			c.addCommand(new AddSignupDataCommandV3());
 			c.addCommand(new AddEmployeeTypePeopleForUserAdditionCommand());
-			
+//			c.addCommand(new AddDefaultBundleCommand());
 			return c;
 		}
 		

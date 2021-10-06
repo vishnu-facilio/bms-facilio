@@ -4611,6 +4611,13 @@ public class ModuleFactory {
 	
 	//	Bundle Related Modules starts
     
+	public static FacilioModule getBundleModule() {
+        FacilioModule module = new FacilioModule();
+        module.setName("bundle");
+        module.setDisplayName("Bundle");
+		module.setTableName("Bundle");
+        return module;
+    }
     
     public static FacilioModule getBundleChangeSetModule() {
         FacilioModule module = new FacilioModule();

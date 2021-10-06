@@ -90,6 +90,9 @@ function init() {
 <br>Client Org Grouping Domain Cache = <textarea style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
     out.println(FWLRUCaches.getOrgGroupingOrgDomainCache());
 %></textarea>
+    <br>Secrets Cache = <textarea style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
+    out.println(FWLRUCaches.getSecretsCache());
+%></textarea>
 </div>
 
 <div style="margin-top:30px;">

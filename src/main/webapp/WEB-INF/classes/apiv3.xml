@@ -412,6 +412,10 @@
                 class="com.facilio.bundle.action.BundleAction"
                 method="installBundle">
         </action>
+        <action name="addBundle"
+                class="com.facilio.bundle.action.BundleAction"
+                method="addBundle">
+        </action>
     </package>
 
     <package name="delivery" namespace="/api/v3/deliveries" extends="v3Api">

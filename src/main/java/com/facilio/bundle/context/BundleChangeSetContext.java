@@ -14,7 +14,6 @@ public class BundleChangeSetContext {
 	private BundleComponentsEnum componentType;
 	private BundleModeEnum componentMode;
 	private Long componentId;
-	private String componentName;
 	private String componentDisplayName;
 	private Long bundleId;
 	private Long componentLastEditedTime;

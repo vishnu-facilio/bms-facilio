@@ -1,12 +1,11 @@
 package com.facilio.modules;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.FieldPermissionContext.CheckType;
 import com.facilio.bmsconsole.context.FieldPermissionContext.PermissionType;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
@@ -30,9 +29,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.cfg.MutableConfigOverride;
-
 import lombok.NonNull;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -529,15 +526,14 @@ public class FieldUtil {
 	public static boolean isSystemFieldsPresent (FacilioModule module) {
 
 		// custom modules will have system fields by default
-		if (module.isCustom()
-				|| module.getTypeEnum() == FacilioModule.ModuleType.ENUM_REL_MODULE
-				|| module.getTypeEnum() == FacilioModule.ModuleType.LOOKUP_REL_MODULE
-				|| module.getTypeEnum() == FacilioModule.ModuleType.RATING
-				|| FacilioConstants.ContextNames.RESOURCE.equals(module.getParentModule().getName())) {
+		if(module.getTypeEnum() == FacilioModule.ModuleType.ENUM_REL_MODULE
+						|| module.getTypeEnum() == FacilioModule.ModuleType.LOOKUP_REL_MODULE
+						|| module.getTypeEnum() == FacilioModule.ModuleType.RATING
+						|| FacilioConstants.ContextNames.RESOURCE.equals(module.getParentModule().getName())) {
 			return true;
 		}
 
-		return SYSTEM_FIELDS_ALLOWED_MODULES.contains(module.getName());
+		return false;
 	}
 
 	public static final Set<String> SYSTEM_FIELDS_MIGRATED_MODULES = Collections.unmodifiableSet(
