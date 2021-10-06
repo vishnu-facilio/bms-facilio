@@ -37,17 +37,17 @@ public class WorkorderPageFactory extends PageFactory {
         sectionOne.addWidget(actualDuration);
 
         // workorder details widget
-        PageWidget workorderDetails = new PageWidget(PageWidget.WidgetType.WORKORDER_DETAILS);
-        workorderDetails.addToLayoutParams(sectionOne, 6, 18);
-        sectionOne.addWidget(workorderDetails);
+//        PageWidget workorderDetails = new PageWidget(PageWidget.WidgetType.WORKORDER_DETAILS);
+//        workorderDetails.addToLayoutParams(sectionOne, 6, 18);
+//        sectionOne.addWidget(workorderDetails);
 
-//        // notes widget
-//        PageWidget notesWidget = new PageWidget();
-//        notesWidget.setWidgetType(PageWidget.WidgetType.COMMENT);
-//        sectionOne.addWidget(notesWidget);
+        // notes widget
+        PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT);
+        notesWidget.addToLayoutParams(0, 6, 18, 8);
+        sectionOne.addWidget(notesWidget);
     }
 
-    private static void addHistoryPage(Page page) {
+    private static void addHistoryTab(Page page) {
         Page.Tab historyPage = page.new Tab("history");
         page.addTab(historyPage);
 
@@ -75,7 +75,7 @@ public class WorkorderPageFactory extends PageFactory {
         Page.Tab relatedRecordsTab = page.new Tab("relatedRecords");
         page.addTab(relatedRecordsTab);
 
-        addHistoryPage(page);
+        addHistoryTab(page);
 
         return page;
     }
