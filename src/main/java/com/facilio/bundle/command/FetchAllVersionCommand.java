@@ -16,6 +16,8 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 
 public class FetchAllVersionCommand extends FacilioCommand {
 	
@@ -37,6 +39,12 @@ public class FetchAllVersionCommand extends FacilioCommand {
 		List<Map<String, Object>> props = builder.get();
 		
 		 List<BundleContext> bundles = FieldUtil.getAsBeanListFromMapList(props, BundleContext.class);
+		 
+		 
+		 for(BundleContext bundle1: bundles) {
+			 String downloadUrl = FacilioFactory.getFileStore().getDownloadUrl(bundle1.getBundleFileId());
+			 bundle1.setDownloadUrl(downloadUrl);
+		 }
 		 
 		 context.put(BundleConstants.BUNDLE_VERSION_LIST, bundles);
 		

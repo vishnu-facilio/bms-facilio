@@ -23,6 +23,8 @@ public class BundleContext {
 	Long createdTime;
 	Long modifiedTime;
 	
+	String downloadUrl;
+	
 	public int getType() {
 		if(type != null) {
 			return type.getValue();
