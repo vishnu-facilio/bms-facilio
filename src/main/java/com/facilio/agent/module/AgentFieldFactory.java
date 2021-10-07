@@ -61,7 +61,6 @@ public class AgentFieldFactory {
 		fields.add(FieldFactory.getField(AgentConstants.PATH, "PATH", module, FieldType.STRING));
 		fields.add(FieldFactory.getField(AgentConstants.DETAILS, "DETAILS", module, FieldType.STRING));
 		fields.add(FieldFactory.getField(AgentConstants.RDM_POINT_CLASS, "CLASS", module, FieldType.STRING));
-        fields.add(FieldFactory.getField(AgentConstants.IS_TDB, "IS_TDB", module, FieldType.BOOLEAN));
 		fields.add(FieldFactory.getFieldDeviceId(module));
 		return fields;
 	}
