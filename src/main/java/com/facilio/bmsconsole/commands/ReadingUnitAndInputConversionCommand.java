@@ -85,7 +85,7 @@ public class ReadingUnitAndInputConversionCommand extends FacilioCommand {
 	private void convertInputValue(ReadingDataMeta readingDataMeta, Map<Long,Map<String, Integer>> rdmValueMap, Map<String, Object> readingData, String fieldName) {
 		if (rdmValueMap != null && rdmValueMap.get(readingDataMeta.getId()) != null && readingDataMeta.getInputTypeEnum() == ReadingInputType.CONTROLLER_MAPPED) {
 			Map<String, Integer> valueMap = rdmValueMap.get(readingDataMeta.getId());
-			Object value = readingData.get(fieldName);
+			String value = readingData.get(fieldName).toString();
 			if (valueMap != null && valueMap.get(value) != null) {
 				readingData.put(fieldName, valueMap.get(value));
 			}
