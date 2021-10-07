@@ -357,7 +357,8 @@ public class PageWidget {
 		TASKS_COMPLETED("tasksCompleted"),
 		SCHEDULED_DURATION("scheduledDuration"),
 		ACTUAL_DURATION("actualDuration"),
-		WORK_DURATION("workDuration");
+		WORK_DURATION("workDuration"),
+		RESOURCE("resource");
 
 		private String name;
 
