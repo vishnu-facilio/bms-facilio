@@ -2,7 +2,6 @@ Map cardLayout(Map params) {
     result = {};
     result["title"] = params.title;
 
-
     deskModuleId = Module("desks").getId();
 
     ticketStatus = Module("ticketstatus").fetch([parentModuleId == deskModuleId]);
@@ -15,6 +14,7 @@ Map cardLayout(Map params) {
 
     buildingId = params.buildingId;
     floorId = params.floorId;
+    departments = params.departments;
 
     for each index, data in ticketStatus {
 
@@ -27,12 +27,11 @@ Map cardLayout(Map params) {
         if (data.status == "vacant") {
             vacantId = data.id;
         }
-
     }
 
 
     db = {
-        criteria: [moduleState == occupiedId],
+        criteria: [moduleState == occupiedId && department != [10] && floorId == 1445418],
 
     };
 
@@ -52,7 +51,7 @@ Map cardLayout(Map params) {
     };
 
 
-  
+
 
     db3 = {
         criteria: [moduleState == reservableId && building == buildingId],
@@ -63,23 +62,61 @@ Map cardLayout(Map params) {
 
 
     if (floorId != null) {
-        db1["criteria"] = [moduleState == occupiedId && floor == floorId];
-        db2["criteria"] = [moduleState == vacantId && floor == floorId];
-        db3["criteria"] = [moduleState == reservableId && floor == floorId];
+
+        if (departments != null && departments.size() > 0) {
+            db1 = {
+                criteria: [moduleState == occupiedId && floor == floorId && department != departments],
+                field: "id",
+                aggregation: "count"
+
+            };
+            db2 = {
+                criteria: [moduleState == vacantId && floor == floorId && department != departments],
+                field: "id",
+                aggregation: "count"
+
+            };
+            db3 = {
+                criteria: [moduleState == reservableId && floor == floorId && department != departments],
+                field: "id",
+                aggregation: "count"
+
+            };
+
+        } else {
+
+            db1 = {
+                criteria: [moduleState == occupiedId && floor == floorId],
+                field: "id",
+                aggregation: "count"
+
+            };
+            db2 = {
+                criteria: [moduleState == vacantId && floor == floorId],
+                field: "id",
+                aggregation: "count"
+
+            };
+            db3 = {
+                criteria: [moduleState == reservableId && floor == floorId],
+                field: "id",
+                aggregation: "count"
+
+            };
+
+        }
     }
 
+
+
     occupied = 0;
-
     vacant = 0;
-
     reservable = 0;
 
     if (buildingId != null) {
         occupied = Module("desks").fetch(db1);
         vacant = Module("desks").fetch(db2);
         reservable = Module("desks").fetch(db3);
-
-
     }
 
     value = {};
@@ -89,6 +126,5 @@ Map cardLayout(Map params) {
 
     result["value"] = null;
     result["valueMap"] = value;
-
     return result;
 }
