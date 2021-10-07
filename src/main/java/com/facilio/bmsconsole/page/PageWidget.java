@@ -359,7 +359,8 @@ public class PageWidget {
 		ACTUAL_DURATION("actualDuration"),
 		WORK_DURATION("workDuration"),
 		RESOURCE("resource"),
-		RESPONSIBILITY("responsibility");
+		RESPONSIBILITY("responsibility"),
+		WORKORDER_DETAILS("workorderDetails");
 
 		private String name;
 

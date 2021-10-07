@@ -51,6 +51,11 @@ public class WorkorderPageFactory extends PageFactory {
         responsibility.addToLayoutParams(18, 6, 6, 6);
         sectionOne.addWidget(responsibility);
 
+        // workorderDetails widget
+        PageWidget workorderDetails = new PageWidget(PageWidget.WidgetType.WORKORDER_DETAILS);
+        workorderDetails.addToLayoutParams(18, 12, 6, 12);
+        sectionOne.addWidget(workorderDetails);
+
         // notes widget
         PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT);
         notesWidget.addToLayoutParams(0, 6, 18, 8);
