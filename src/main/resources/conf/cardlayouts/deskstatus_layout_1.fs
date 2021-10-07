@@ -62,7 +62,7 @@ Map cardLayout(Map params) {
     };
 
 
-    if (floorId) {
+    if (floorId != null) {
         db1["criteria"] = [moduleState == occupiedId && floor == floorId];
         db2["criteria"] = [moduleState == vacantId && floor == floorId];
         db3["criteria"] = [moduleState == reservableId && floor == floorId];
