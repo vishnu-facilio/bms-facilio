@@ -360,7 +360,8 @@ public class PageWidget {
 		WORK_DURATION("workDuration"),
 		RESOURCE("resource"),
 		RESPONSIBILITY("responsibility"),
-		WORKORDER_DETAILS("workorderDetails");
+		WORKORDER_DETAILS("workorderDetails"),
+		RELATED_RECORDS("relatedRecords");
 
 		private String name;
 

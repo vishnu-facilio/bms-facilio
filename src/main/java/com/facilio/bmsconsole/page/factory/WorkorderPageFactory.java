@@ -81,6 +81,20 @@ public class WorkorderPageFactory extends PageFactory {
         sectionOne.addWidget(historyWidget);
     }
 
+    private static void addRelatedRecordsTab(Page page) {
+        Page.Tab relatedRecordsTab = page.new Tab("relatedRecords");
+        page.addTab(relatedRecordsTab);
+
+        // TODO:: give a more contextual name for the section
+        Page.Section sectionOne = page.new Section();
+        relatedRecordsTab.addSection(sectionOne);
+
+        // related records widget
+        PageWidget relatedRecords = new PageWidget(PageWidget.WidgetType.RELATED_RECORDS);
+        relatedRecords.addToLayoutParams(sectionOne, 24, 12);
+        sectionOne.addWidget(relatedRecords);
+    }
+
     public static Page getWorkorderPage(WorkOrderContext workorder) throws Exception {
         Page page = new Page();
 
@@ -92,9 +106,7 @@ public class WorkorderPageFactory extends PageFactory {
         Page.Tab tasksTab = page.new Tab("tasks");
         page.addTab(tasksTab);
 
-        Page.Tab relatedRecordsTab = page.new Tab("relatedRecords");
-        page.addTab(relatedRecordsTab);
-
+        addRelatedRecordsTab(page);
         addHistoryTab(page);
 
         return page;
