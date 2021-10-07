@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.asset;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ToolContext;
@@ -26,7 +27,7 @@ public class AddRotatingItemToolCommandV3 extends FacilioCommand {
                 } else {
                     if (asset.getRotatingItem() != null && asset.getRotatingItem().getId() > 0) {
                         V3ItemContext item = asset.getRotatingItem();
-                        FacilioChain c = TransactionChainFactory.getAddOrUpdateItemStockTransactionChain();
+                        FacilioChain c = TransactionChainFactoryV3.getAddOrUpdateItemStockTransactionChain();
                         c.getContext().put(FacilioConstants.ContextNames.ITEM, item);
                         c.getContext().put(FacilioConstants.ContextNames.ROTATING_ASSET, asset);
                         c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, false);
@@ -34,7 +35,7 @@ public class AddRotatingItemToolCommandV3 extends FacilioCommand {
                     }
                     if (asset.getRotatingTool() != null && asset.getRotatingTool().getId() > 0) {
                         V3ToolContext tool = asset.getRotatingTool();
-                        FacilioChain c = TransactionChainFactory.getAddOrUpdateToolStockTransactionChain();
+                        FacilioChain c = TransactionChainFactoryV3.getAddOrUpdateToolStockTransactionChain();
                         c.getContext().put(FacilioConstants.ContextNames.TOOL, tool);
                         c.getContext().put(FacilioConstants.ContextNames.ROTATING_ASSET, asset);
                         c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, false);

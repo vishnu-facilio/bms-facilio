@@ -18,8 +18,8 @@ public class AgentFieldFactory {
 			fields.add(FieldFactory.getField("isDisable", "IS_DISABLE", module, FieldType.BOOLEAN));
 			fields.add(FieldFactory.getField("orgId", "ORGID", module, FieldType.NUMBER));
 			fields.add(FieldFactory.getField("topic", "TOPIC", module, FieldType.STRING));
-		 fields.add(FieldFactory.getField("partitionId", "PARTITION_ID", module, FieldType.NUMBER));
-		 fields.add(FieldFactory.getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
+         fields.add(FieldFactory.getField("partitionId", "PARTITION_ID", module, FieldType.NUMBER));
+         fields.add(FieldFactory.getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
 			fields.add(FieldFactory.getField("lastModifiedTime", "LAST_MODIFIED_TIME", module, FieldType.NUMBER));
 			fields.add(FieldFactory.getField("lastEnabledTime", "LAST_ENABLED_TIME", module, FieldType.NUMBER));
 			fields.add(FieldFactory.getField("lastDisabledTime", "LAST_DISABLED_TIME", module, FieldType.NUMBER));
@@ -61,6 +61,7 @@ public class AgentFieldFactory {
 		fields.add(FieldFactory.getField(AgentConstants.PATH, "PATH", module, FieldType.STRING));
 		fields.add(FieldFactory.getField(AgentConstants.DETAILS, "DETAILS", module, FieldType.STRING));
 		fields.add(FieldFactory.getField(AgentConstants.RDM_POINT_CLASS, "CLASS", module, FieldType.STRING));
+        fields.add(FieldFactory.getField(AgentConstants.IS_TDB, "IS_TDB", module, FieldType.BOOLEAN));
 		fields.add(FieldFactory.getFieldDeviceId(module));
 		return fields;
 	}

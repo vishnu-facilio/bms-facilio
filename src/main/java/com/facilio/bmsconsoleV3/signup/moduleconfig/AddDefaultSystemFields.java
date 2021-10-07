@@ -58,7 +58,6 @@ public class AddDefaultSystemFields extends SignUpData {
             modules.add(modBean.getModule(FacilioConstants.ContextNames.Tenant.DEALS_AND_OFFERS));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.Tenant.NEIGHBOURHOOD));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.Tenant.ADMIN_DOCUMENTS));
-            modules.add(modBean.getModule(FacilioConstants.ContextNames.Tenant.PEOPLE_ANNOUNCEMENTS));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.WO_SERVICE));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.WO_LABOUR));

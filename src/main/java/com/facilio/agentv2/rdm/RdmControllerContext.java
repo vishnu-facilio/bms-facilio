@@ -35,6 +35,7 @@ public class RdmControllerContext extends Controller {
     private String url;
     private String username;
     private String password;
+    private boolean isTdb;
 
     public RdmControllerContext() {
         setControllerType(FacilioControllerType.RDM.asInt());
@@ -58,6 +59,7 @@ public class RdmControllerContext extends Controller {
         object.put(AgentConstants.DEVICE, getDevice());
         object.put(AgentConstants.USER_NAME, getUsername());
         object.put(AgentConstants.PASSWORD, getPassword());
+        object.put(AgentConstants.IS_TDB, isTdb());
         return object;
     }
 
