@@ -36,10 +36,10 @@ public class WorkorderPageFactory extends PageFactory {
         actualDuration.addToLayoutParams(sectionOne, 6, 6);
         sectionOne.addWidget(actualDuration);
 
-        // workorder details widget
-        PageWidget workorderDetails = new PageWidget(PageWidget.WidgetType.WORKORDER_DETAILS);
-        workorderDetails.addToLayoutParams(18, 0, 6, 22);
-        sectionOne.addWidget(workorderDetails);
+        // work duration widget
+        PageWidget workDuration = new PageWidget(PageWidget.WidgetType.WORK_DURATION);
+        workDuration.addToLayoutParams(18, 0, 6, 3);
+        sectionOne.addWidget(workDuration);
 
         // notes widget
         PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT);
