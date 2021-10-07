@@ -165,13 +165,16 @@ public class CommunityFeaturesAPI {
 
                 if(CollectionUtils.isNotEmpty(ppl)){
                     for(V3PeopleContext person : ppl) {
+
+                        announcement = getAnnouncementById(announcement.getId());
+
                         PeopleAnnouncementContext pplAnnouncement = FieldUtil.cloneBean(announcement, PeopleAnnouncementContext.class);
                         pplAnnouncement.setAudience(null);
                         pplAnnouncement.setIsRead(false);
                         pplAnnouncement.setPeople(person);
                         pplAnnouncement.setParentId(announcement.getId());
-                        pplAnnouncement.setSysCreatedBy(announcement.getSysModifiedBy());
-                        pplAnnouncement.setSysCreatedTime(announcement.getSysModifiedTime());
+                        pplAnnouncement.setCreatedBy(announcement.getSysModifiedBy());
+                        pplAnnouncement.setCreatedTime(announcement.getSysModifiedTime());
                         pplMap.put(person.getId(), pplAnnouncement);
                     }
                 }
@@ -312,6 +315,20 @@ public class CommunityFeaturesAPI {
         value.put("contactName", people.getName());
         updateBuilder.update(value);
 
+    }
+
+    public static AnnouncementContext getAnnouncementById(long id) throws  Exception{
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ANNOUNCEMENT);
+        SelectRecordsBuilder<AnnouncementContext> builder = new SelectRecordsBuilder<AnnouncementContext>()
+                .module(module)
+                .beanClass(AnnouncementContext.class)
+                .select(modBean.getAllFields(module.getName()))
+                .andCondition(CriteriaAPI.getIdCondition(id,module))
+                ;
+
+        return builder.fetchFirst();
     }
 
 }

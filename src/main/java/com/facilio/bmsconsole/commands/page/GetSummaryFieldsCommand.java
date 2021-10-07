@@ -452,8 +452,8 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 	private static final List<String> peopleAnnouncement = Collections.unmodifiableList(Arrays.asList(new String[] {
 			"category",
 			"expiryDate",
-			"sysCreatedTime",
-			"sysCreatedBy"
+			"createdBy",
+			"createdTime",
 	}));
 
 	/******* ATRE End ******************/

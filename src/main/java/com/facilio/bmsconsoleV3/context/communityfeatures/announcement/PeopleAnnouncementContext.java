@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.context.communityfeatures.announcement;
 
+import com.facilio.accounts.dto.IAMUser;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 
 public class PeopleAnnouncementContext extends AnnouncementContext {
@@ -39,5 +40,20 @@ public class PeopleAnnouncementContext extends AnnouncementContext {
         this.parentId = parentId;
     }
 
+    private IAMUser createdBy;
+    public IAMUser getCreatedBy() {
+        return createdBy;
+    }
+    public void setCreatedBy(IAMUser createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    private Long createdTime;
+    public Long getCreatedTime() {
+        return createdTime;
+    }
+    public void setCreatedTime(Long createdTime) {
+        this.createdTime = createdTime;
+    }
 
 }
