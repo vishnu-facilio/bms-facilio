@@ -14,6 +14,7 @@ Map cardLayout(Map params) {
     reservableId = 0;
 
     buildingId = params.buildingId;
+    floorId = params.floorId;
 
     for each index, data in ticketStatus {
 
