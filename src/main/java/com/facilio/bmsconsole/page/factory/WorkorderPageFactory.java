@@ -95,20 +95,26 @@ public class WorkorderPageFactory extends PageFactory {
         sectionOne.addWidget(relatedRecords);
     }
 
-    public static Page getWorkorderPage(WorkOrderContext workorder) throws Exception {
-        Page page = new Page();
-
-//        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//        FacilioModule module = modBean.getModule(workorder.getModuleId());
-
-        addSummaryTab(page);
-
+    private static void addTasksTab(Page page) {
         Page.Tab tasksTab = page.new Tab("tasks");
         page.addTab(tasksTab);
 
+        // TODO:: give a more contextual name for the section
+        Page.Section sectionOne = page.new Section();
+        tasksTab.addSection(sectionOne);
+
+        // workorder progress widget
+        PageWidget workorderProgress = new PageWidget(PageWidget.WidgetType.WORKORDER_PROGRESS);
+        workorderProgress.addToLayoutParams(sectionOne, 18, 2);
+        sectionOne.addWidget(workorderProgress);
+    }
+
+    public static Page getWorkorderPage(WorkOrderContext workorder) throws Exception {
+        Page page = new Page();
+        addSummaryTab(page);
+        addTasksTab(page);
         addRelatedRecordsTab(page);
         addHistoryTab(page);
-
         return page;
     }
 }

@@ -361,7 +361,8 @@ public class PageWidget {
 		RESOURCE("resource"),
 		RESPONSIBILITY("responsibility"),
 		WORKORDER_DETAILS("workorderDetails"),
-		RELATED_RECORDS("relatedRecords");
+		RELATED_RECORDS("relatedRecords"),
+		WORKORDER_PROGRESS("workorderProgress");
 
 		private String name;
 
