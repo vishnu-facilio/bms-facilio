@@ -6653,5 +6653,8 @@
 			<param name="permission">STATEFLOWS</param>
 			<param name="isNewPermission">true</param>
 		</action>
+		<action name="getStateTransitionForms"
+				class="com.facilio.bmsconsole.actions.StateFlowAction"
+				method="getStateTransitionFormList" />
 	</package>
 </struts>

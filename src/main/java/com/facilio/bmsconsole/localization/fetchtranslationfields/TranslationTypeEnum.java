@@ -18,6 +18,7 @@ public enum TranslationTypeEnum {
     VIEW_FOLDER("VIEW FOLDER",WebTabContext.Type.MODULE,new GetViewFolderTranslationFields()),
     STATES("STATES",WebTabContext.Type.MODULE,new GetStateTranslationFields()),
     STATE_TRANSITION("STATE TRANSITION",WebTabContext.Type.MODULE,new GetStateTransitionTranslationFields()),
+    STATE_TRANSITION_FORM("STATE TRANSITION FORM",WebTabContext.Type.MODULE,new GetFormTranslationFields()),
     BUTTONS("BUTTONS",WebTabContext.Type.MODULE, new GetButtonTranslationFields()),
     DASHBOARD_FOLDER("DASHBOARD FOLDER",WebTabContext.Type.DASHBOARD,new GetDashboardFolderTranslationFields()),
     DASHBOARD("DASHBOARD",WebTabContext.Type.DASHBOARD,new GetDashboardTabAndWidgetTransFields()),

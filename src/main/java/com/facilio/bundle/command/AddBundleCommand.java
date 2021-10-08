@@ -46,17 +46,20 @@ public class AddBundleCommand extends FacilioCommand {
 		Long id = (Long)props.get("id");
 		
 		bundle.setId(id);
-		bundle.setParentBundleId(id);
 		
-		
-		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder()
-				.table(ModuleFactory.getBundleModule().getTableName())
-				.fields(FieldFactory.getBundleFields())
-				.andCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getBundleModule()));
-		
-		update.update(FieldUtil.getAsProperties(bundle));
-		
-		addDefaultSystemBundleComponents(bundle);
+		if(bundle.getParentBundleId() == null || bundle.getParentBundleId() <=0) {
+			bundle.setParentBundleId(id);
+			
+			
+			GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder()
+					.table(ModuleFactory.getBundleModule().getTableName())
+					.fields(FieldFactory.getBundleFields())
+					.andCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getBundleModule()));
+			
+			update.update(FieldUtil.getAsProperties(bundle));
+			
+			addDefaultSystemBundleComponents(bundle);
+		}
 		
 		return false;
 	}

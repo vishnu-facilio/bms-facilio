@@ -29,6 +29,7 @@ import com.facilio.bundle.utils.BundleConstants;
 import com.facilio.bundle.utils.BundleUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.time.DateTimeUtil;
@@ -37,15 +38,13 @@ import com.facilio.xml.builder.XMLBuilder;
 import lombok.extern.log4j.Log4j;
 
 @Log4j
-public class PackAllBundleComponentsCommand extends FacilioCommand {
+public class PackBundleChangeSetCommand extends FacilioCommand {
 	
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
-		BundleContext bundle = (BundleContext) context.get(BundleConstants.BUNDLE_CONTEXT);
-		
-		List<BundleChangeSetContext> changeSet = BundleUtil.getAllChangeSet(bundle);
+		List<BundleChangeSetContext> changeSet = (List<BundleChangeSetContext>) context.get(BundleConstants.BUNDLE_CHANGE_SET_LIST);
 		
 		if(changeSet != null && !changeSet.isEmpty()) {
 			
@@ -108,13 +107,14 @@ public class PackAllBundleComponentsCommand extends FacilioCommand {
 			String downloadUrl = FacilioFactory.getFileStore().getDownloadUrl(fileId);
 			
 			context.put(BundleConstants.DOWNLOAD_URL, downloadUrl);
+			context.put(FacilioConstants.ContextNames.FILE_ID, fileId);
 		}
 		return false;
 	}
 
 	private long saveAsZipFile(BundleFolderContext rootFolder) throws Exception {
 
-		String rootPath = PackAllBundleComponentsCommand.class.getClassLoader().getResource("").getFile() + File.separator + "facilio-temp-files" + File.separator + AccountUtil.getCurrentOrg().getOrgId() + File.separator + "bundles"+File.separator + rootFolder.getName();
+		String rootPath = PackBundleChangeSetCommand.class.getClassLoader().getResource("").getFile() + File.separator + "facilio-temp-files" + File.separator + AccountUtil.getCurrentOrg().getOrgId() + File.separator + "bundles"+File.separator + rootFolder.getName();
 
 		File rootFile = new File(rootPath);
 		if (!(rootFile.exists() && rootFile.isDirectory())) {

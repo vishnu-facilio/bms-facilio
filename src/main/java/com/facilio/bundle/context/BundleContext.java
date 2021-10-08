@@ -1,7 +1,10 @@
 package com.facilio.bundle.context;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import com.facilio.bundle.enums.BundleComponentsEnum;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +22,8 @@ public class BundleContext {
 	BundleTypeEnum type;
 	Long createdTime;
 	Long modifiedTime;
+	
+	String downloadUrl;
 	
 	public int getType() {
 		if(type != null) {

@@ -22,16 +22,16 @@ import lombok.Getter;
 public enum BundleComponentsEnum {
 
 	MODULE(1,"Module",ModuleBundleComponent.class,null,
-			ModuleFactory.getModuleModule(),FieldFactory.getModuleFields(),"moduleId",null,null,null),
+			ModuleFactory.getModuleModule(),FieldFactory.getModuleFields(),"moduleId",null,null,null,null),
 	
 	FIELD(2,"Field",FieldBundleComponent.class,BundleComponentsEnum.MODULE,
-			ModuleFactory.getFieldsModule(),FieldFactory.getSelectFieldFields(),"fieldId",null,null,null),
+			ModuleFactory.getFieldsModule(),FieldFactory.getSelectFieldFields(),"fieldId",null,null,null,null),
 	
 	FUNCTION_NAME_SPACE(3,"Function_NameSpace",FunctionNameSpaceBundleComponent.class,null,
-			ModuleFactory.getWorkflowNamespaceModule(),FieldFactory.getWorkflowNamespaceFields(),null,"sysModifiedTime",null,null),
+			ModuleFactory.getWorkflowNamespaceModule(),FieldFactory.getWorkflowNamespaceFields(),null,"sysModifiedTime","sysCreatedTime",null,null),
 	
 	FUNCTION(4,"Function",FunctionBundleComponent.class,BundleComponentsEnum.FUNCTION_NAME_SPACE,
-			ModuleFactory.getWorkflowModule(),FieldFactory.getWorkflowFields(),null,"sysModifiedTime",null,null),
+			ModuleFactory.getWorkflowModule(),FieldFactory.getWorkflowFields(),null,"sysModifiedTime","sysCreatedTime",null,null),
 	
 //	WORKFLOW_RULE(5,"Workflow_Rule",WorkflowRuleBundleComponent.class,BundleComponentsEnum.MODULE,true),
 //	NOTIFICATION_RULE(6,"Notification_Rule",NotificationRuleBundleComponent.class,BundleComponentsEnum.MODULE,true),
@@ -47,10 +47,11 @@ public enum BundleComponentsEnum {
 	
 	String idFieldName="id";												
 	String modifiedTimeFieldName="modifiedTime";
+	String createdTimeFieldName="createdTime";
 	String nameFieldName = "name";
 	String displayNameFieldName = "displayName";
 	
-	BundleComponentsEnum(int value, String name,Class<? extends BundleComponentInterface> componentClass,BundleComponentsEnum parent,FacilioModule module,List<FacilioField> fields,String idFieldName,String modifiedTimeFieldName,String nameFieldName,String displayNameFieldName) {
+	BundleComponentsEnum(int value, String name,Class<? extends BundleComponentInterface> componentClass,BundleComponentsEnum parent,FacilioModule module,List<FacilioField> fields,String idFieldName,String modifiedTimeFieldName,String createdTime,String nameFieldName,String displayNameFieldName) {
 		this.value = value;
 		this.name = name;
 		this.parent = parent;
@@ -61,6 +62,7 @@ public enum BundleComponentsEnum {
 		
 		this.idFieldName = idFieldName == null ? this.idFieldName : idFieldName;
 		this.modifiedTimeFieldName = modifiedTimeFieldName == null ? this.modifiedTimeFieldName : modifiedTimeFieldName;
+		this.createdTimeFieldName = createdTime == null ? this.createdTimeFieldName : createdTime;
 		this.nameFieldName = nameFieldName == null ? this.nameFieldName : nameFieldName;
 		this.displayNameFieldName = displayNameFieldName == null ? this.displayNameFieldName : displayNameFieldName;
 	}

@@ -53,6 +53,7 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LargeTextField;
 import com.facilio.modules.fields.MultiEnumField;
 import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.modules.fields.SupplementRecord;
@@ -551,6 +552,9 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 				List<FacilioField> allFields = modBean.getAllFields(module.getName());
 				for(FacilioField field: allFields) {
 					if (field instanceof MultiEnumField || (!field.isDefault() && field instanceof MultiLookupField)) {
+						selectBuilder.fetchSupplement((SupplementRecord) field);
+					}
+					else if (field instanceof LargeTextField) {
 						selectBuilder.fetchSupplement((SupplementRecord) field);
 					}
 					else {

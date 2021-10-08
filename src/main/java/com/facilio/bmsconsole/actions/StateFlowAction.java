@@ -114,7 +114,33 @@ public class StateFlowAction extends FacilioAction {
 				map.put("fromStateId", transitionContext.getFromStateId());
 				map.put("toStateId", transitionContext.getToStateId());
 				map.put("type", transitionContext.getType());
+				map.put("formId",transitionContext.getFormId());
 				transitionPros.add(map);
+			}
+		}
+		setResult(FacilioConstants.ContextNames.STATE_TRANSITION_LIST, transitionPros);
+		return SUCCESS;
+	}
+
+	public String getStateTransitionFormList() throws Exception {
+
+		FacilioChain chain = ReadOnlyChainFactory.getStateTransitionList();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.STATE_FLOW_ID, stateFlowId);
+		chain.execute();
+
+		List<StateflowTransitionContext> stateTransitions = (List<StateflowTransitionContext>) context.get(FacilioConstants.ContextNames.STATE_TRANSITION_LIST);
+		List<Map<String, Object>> transitionPros = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(stateTransitions)) {
+			for (StateflowTransitionContext transitionContext : stateTransitions) {
+				Long formId = transitionContext.getFormId();
+				if(formId != null && formId > 0){
+					Map<String, Object> map = new HashMap<>();
+					map.put("id", transitionContext.getId());
+					map.put("name", transitionContext.getName());
+					map.put("formId",formId);
+					transitionPros.add(map);
+				}
 			}
 		}
 		setResult(FacilioConstants.ContextNames.STATE_TRANSITION_LIST, transitionPros);
