@@ -9,8 +9,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 
 public class SLARuleAPI extends WorkflowRuleAPI {
-	public static SLARuleContext updateSLARuleWithChildren(SLARuleContext rule) throws Exception {
-		SLARuleContext oldRule = (SLARuleContext) getWorkflowRule(rule.getId());
+	public static SLARuleContext updateSLARuleWithChildren(SLARuleContext rule, SLARuleContext oldRule) throws Exception {
 		updateWorkflowRuleChildIds(rule);
 		updateExtendedRule(rule, ModuleFactory.getSLARuleModule(), FieldFactory.getSLARuleFields());
 		deleteChildIdsForWorkflow(oldRule, rule);

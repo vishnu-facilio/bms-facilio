@@ -281,8 +281,7 @@ public class WorkflowRuleAPI {
 		workflow.setReturnType(WorkflowFieldType.BOOLEAN.getIntValue());
 	}
 	
-	public static WorkflowRuleContext updateWorkflowRuleWithChildren(WorkflowRuleContext rule) throws Exception {
-		WorkflowRuleContext oldRule = getWorkflowRule(rule.getId());
+	public static WorkflowRuleContext updateWorkflowRuleWithChildren(WorkflowRuleContext rule, WorkflowRuleContext oldRule) throws Exception {
 		updateWorkflowRuleChildIds(rule);
 		updateWorkflowRule(rule);
 		deleteChildIdsForWorkflow(oldRule, rule);

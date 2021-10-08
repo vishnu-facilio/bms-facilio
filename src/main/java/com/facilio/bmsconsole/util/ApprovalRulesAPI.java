@@ -215,9 +215,8 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		return rule;
 	}
 
-	public static WorkflowRuleContext updateCustomButtonRuleWithChildren(CustomButtonRuleContext rule) throws Exception {
-		CustomButtonRuleContext oldRule = (CustomButtonRuleContext) getWorkflowRule(rule.getId());
-		updateWorkflowRuleWithChildren(rule);
+	public static WorkflowRuleContext updateCustomButtonRuleWithChildren(CustomButtonRuleContext rule, CustomButtonRuleContext oldRule) throws Exception {
+		updateWorkflowRuleWithChildren(rule, oldRule);
 
 		updateApproverRule(oldRule, rule);
 
@@ -229,9 +228,8 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		return rule;
 	}
 
-	public static WorkflowRuleContext updateStateflowTransitionRuleWithChildren(StateflowTransitionContext rule) throws Exception {
-		StateflowTransitionContext oldRule = (StateflowTransitionContext) getWorkflowRule(rule.getId());
-		updateWorkflowRuleWithChildren(rule);
+	public static WorkflowRuleContext updateStateflowTransitionRuleWithChildren(StateflowTransitionContext rule, StateflowTransitionContext oldRule) throws Exception {
+		updateWorkflowRuleWithChildren(rule, oldRule);
 
 		StateFlowRulesAPI.addTimeFieldBasedTransition(rule);
 		updateApproverRule(oldRule, rule);
@@ -244,9 +242,8 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		return rule;
 	}
 
-	public static ApprovalRuleContext updateApprovalRuleWithChldren(ApprovalRuleContext rule) throws Exception {	
+	public static ApprovalRuleContext updateApprovalRuleWithChldren(ApprovalRuleContext rule, ApprovalRuleContext oldRule) throws Exception {	
 		ApprovalRulesAPI.validateApprovalRule(rule);
-		ApprovalRuleContext oldRule = (ApprovalRuleContext) getWorkflowRule(rule.getId());
 		deleteApprovers(oldRule.getApprovers());
 		updateWorkflowRuleChildIds(rule);
 		updateChildRuleIds(rule);
