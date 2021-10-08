@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -83,11 +84,19 @@ public class ReadingUnitAndInputConversionCommand extends FacilioCommand {
 	}
 	
 	private void convertInputValue(ReadingDataMeta readingDataMeta, Map<Long,Map<String, Integer>> rdmValueMap, Map<String, Object> readingData, String fieldName) {
+		boolean checkField = false;
+		if (FacilioProperties.isOnpremise() && (fieldName.equals("liftmode") || fieldName.equals("movingstate")) ) {
+			LOGGER.info("-------Data for " + fieldName + ": " + readingData.get(fieldName));
+			checkField = true;
+		}
 		if (rdmValueMap != null && rdmValueMap.get(readingDataMeta.getId()) != null && readingDataMeta.getInputTypeEnum() == ReadingInputType.CONTROLLER_MAPPED) {
 			Map<String, Integer> valueMap = rdmValueMap.get(readingDataMeta.getId());
 			String value = readingData.get(fieldName).toString();
 			if (valueMap != null && valueMap.get(value) != null) {
 				readingData.put(fieldName, valueMap.get(value));
+			}
+			if (checkField) {
+				LOGGER.info("Value Map- " + valueMap);
 			}
 		}
 	}
