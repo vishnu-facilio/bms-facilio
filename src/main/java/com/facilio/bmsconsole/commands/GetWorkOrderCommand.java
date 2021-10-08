@@ -74,13 +74,9 @@ public class GetWorkOrderCommand extends FacilioCommand {
 			List<SupplementRecord> customLookupFields = new ArrayList<>();
 			for (FacilioField field : fields) {
 				if (!field.isDefault()) {
-					if ((field.getDataTypeEnum() == FieldType.LOOKUP || field.getDataTypeEnum() == FieldType.MULTI_LOOKUP)) {
+					if ((field.getDataTypeEnum() == FieldType.LOOKUP || field.getDataTypeEnum().isMultiRecord())) {
 						customLookupFields.add((SupplementRecord) field);
 					}
-					else if (field.getDataTypeEnum() == FieldType.MULTI_ENUM) {
-						customLookupFields.add((SupplementRecord) field);
-					}
-					
 				}
 			}
 			builder.fetchSupplements(customLookupFields);
