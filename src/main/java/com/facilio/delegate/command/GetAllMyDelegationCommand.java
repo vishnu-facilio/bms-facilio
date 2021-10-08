@@ -28,7 +28,6 @@ public class GetAllMyDelegationCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         boolean onlyMyDelegation = (boolean) context.get(FacilioConstants.ContextNames.ONLY_MY_DELEGATION);
-//        Long appId = (Long) context.get(FacilioConstants.ContextNames.APP_ID);
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getUserDelegationModule().getTableName())
@@ -37,9 +36,6 @@ public class GetAllMyDelegationCommand extends FacilioCommand {
         if (onlyMyDelegation) {
             builder.andCondition(CriteriaAPI.getCondition("USER_ID", "userId", String.valueOf(AccountUtil.getCurrentUser().getId()), NumberOperators.EQUALS));
         }
-//        if (appId != null && appId > 0) {
-//            builder.andCondition(CriteriaAPI.getCondition("APP_ID", "appId", String.valueOf(appId), NumberOperators.EQUALS));
-//        }
         List<DelegationContext> delegationContexts = FieldUtil.getAsBeanListFromMapList(builder.get(), DelegationContext.class);
         fillDelegation(delegationContexts);
         context.put(FacilioConstants.ContextNames.DELEGATION_LIST, delegationContexts);
