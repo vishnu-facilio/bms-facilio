@@ -37,6 +37,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
+import lombok.extern.log4j.Log4j;
+
+@Log4j
 public class CommunityFeaturesAPI {
 
     public static List<Long> getBuildingTenants(Long buildingId) throws Exception {
@@ -150,6 +153,7 @@ public class CommunityFeaturesAPI {
             announcement.setAnnouncementsharing(getSharingInfo(announcement.getId()));
         }
 
+        LOGGER.info("announcement 1 == >"+announcement.getAnnouncementsharing());
 
         if(CollectionUtils.isNotEmpty(announcement.getAnnouncementsharing())) {
             Map<Long, PeopleAnnouncementContext> pplMap = new HashMap<>();
@@ -163,10 +167,14 @@ public class CommunityFeaturesAPI {
                     ppl = new SiteTenantContacts().getPeople(sharingInfo.getSharedToSpace() != null ? sharingInfo.getSharedToSpace().getId() : null);
                 }
 
+                LOGGER.info("ppl == >"+ppl.size());
+
                 if(CollectionUtils.isNotEmpty(ppl)){
                     for(V3PeopleContext person : ppl) {
 
                         announcement = getAnnouncementById(announcement.getId());
+
+                        LOGGER.info("announcement 2 == >"+announcement.toString());
 
                         PeopleAnnouncementContext pplAnnouncement = FieldUtil.cloneBean(announcement, PeopleAnnouncementContext.class);
                         pplAnnouncement.setAudience(null);
