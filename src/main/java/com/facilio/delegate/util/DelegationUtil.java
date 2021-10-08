@@ -25,8 +25,11 @@ public class DelegationUtil {
     }
 
     public static User getUser(User delegatedUser, long timestamp, DelegationType delegationType) throws Exception {
+        if (delegatedUser == null) {
+            throw new NullPointerException("deletegatedUser cannot be empty");
+        }
         GenericSelectRecordBuilder builder = getBuilder(timestamp, delegationType);
-        builder.andCondition(CriteriaAPI.getCondition("DELEGATED_USER_ID", "delegatedUserId", String.valueOf(delegatedUser.getId()), NumberOperators.EQUALS));
+        builder.andCondition(CriteriaAPI.getCondition("DELEGATE_USER_ID", "delegateUserId", String.valueOf(delegatedUser.getId()), NumberOperators.EQUALS));
 
         DelegationContext delegationContext = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), DelegationContext.class);
         if (delegationContext != null) {
@@ -41,6 +44,9 @@ public class DelegationUtil {
     }
 
     public static User getDelegatedUser(User user, long timestamp, DelegationType delegationType) throws Exception {
+        if (user == null) {
+            throw new NullPointerException("user cannot be empty");
+        }
         GenericSelectRecordBuilder builder = getBuilder(timestamp, delegationType);
 
         builder.andCondition(CriteriaAPI.getCondition("USER_ID", "userId", String.valueOf(user.getId()), NumberOperators.EQUALS));

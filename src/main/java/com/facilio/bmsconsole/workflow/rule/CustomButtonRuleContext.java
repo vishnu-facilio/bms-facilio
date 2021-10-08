@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.workflow.rule;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.chain.FacilioContext;
+import com.facilio.delegate.context.DelegationType;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -51,6 +52,11 @@ public class CustomButtonRuleContext extends ApproverWorkflowRuleContext impleme
     @Override
     public String getSuggestedFormName() {
         return "__custom_button_" + getId();
+    }
+
+    @Override
+    protected DelegationType getDelegationType() {
+        return DelegationType.CUSTOM_BUTTON;
     }
 
     private String formModuleName;

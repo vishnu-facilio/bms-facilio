@@ -9,6 +9,8 @@ import java.util.Map;
 public enum DelegationType implements FacilioIntEnum {
     EMAIL_NOTIFICATION("Email Notification", 1),
     STATE_FLOW("State Flow", 1 << 1),
+    APPROVAL("Approval", 1 << 2),
+    CUSTOM_BUTTON("Custom Button", 1 << 3),
     ;
 
     private String name;
