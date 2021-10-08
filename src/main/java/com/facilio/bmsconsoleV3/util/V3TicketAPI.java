@@ -418,7 +418,7 @@ public class V3TicketAPI {
         loadTicketResources(workOrders);
         loadTicketTenants(workOrders);
         loadTicketVendors(workOrders);
-        loadScheduledTimes(workOrders);
+        loadTicketDetails(workOrders);
     }
 
     public static List<FacilioStatus> getAllStatus(FacilioModule module, boolean ignorePreOpen) throws Exception
@@ -501,14 +501,13 @@ public class V3TicketAPI {
         }
     }
 
-    private static void loadScheduledTimes(Collection<? extends V3TicketContext> workorders) throws Exception {
+    private static void loadTicketDetails(Collection<? extends V3TicketContext> workorders) throws Exception {
 
         if (workorders == null || workorders.isEmpty()) {
             return;
         }
 
         try {
-
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TICKET);
 
@@ -523,8 +522,12 @@ public class V3TicketAPI {
                 if (workorder != null) {
                     TicketPriorityContext priority = workorder.getPriority();
                     if (priority != null) {
+                        // scheduled work duration
                         workorder.setScheduledStart(tickets.get(workorder.getId()).getScheduledStart());
                         workorder.setEstimatedEnd(tickets.get(workorder.getId()).getEstimatedEnd());
+
+                        // actual work duration
+                        workorder.setActualWorkEnd(tickets.get(workorder.getId()).getActualWorkEnd());
                     }
                 }
             }
