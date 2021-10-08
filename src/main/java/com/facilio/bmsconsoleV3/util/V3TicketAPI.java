@@ -21,6 +21,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections.CollectionUtils;
@@ -417,6 +418,7 @@ public class V3TicketAPI {
         loadTicketResources(workOrders);
         loadTicketTenants(workOrders);
         loadTicketVendors(workOrders);
+        loadScheduledTimes(workOrders);
     }
 
     public static List<FacilioStatus> getAllStatus(FacilioModule module, boolean ignorePreOpen) throws Exception
@@ -484,24 +486,57 @@ public class V3TicketAPI {
                         .beanClass(TicketPriorityContext.class);
                 Map<Long, TicketPriorityContext> priorities = selectBuilder.getAsMap();
 
-                for(V3TicketContext ticket : tickets) {
+                for (V3TicketContext ticket : tickets) {
                     if (ticket != null) {
                         TicketPriorityContext priority = ticket.getPriority();
-                        if(priority != null) {
+                        if (priority != null) {
                             ticket.setPriority(priorities.get(priority.getId()));
                         }
                     }
                 }
-            }
-            catch(Exception e) {
+            } catch (Exception e) {
                 LOGGER.error("Exception occurred ", e);
                 throw e;
             }
         }
     }
 
+    private static void loadScheduledTimes(Collection<? extends V3TicketContext> workorders) throws Exception {
+
+        if (workorders == null || workorders.isEmpty()) {
+            return;
+        }
+
+        try {
+
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TICKET);
+
+            SelectRecordsBuilder<TicketContext> selectBuilder = new SelectRecordsBuilder<TicketContext>()
+                    .select(fields)
+                    .table("Tickets")
+                    .moduleName(FacilioConstants.ContextNames.TICKET)
+                    .beanClass(TicketContext.class);
+            Map<Long, TicketContext> tickets = selectBuilder.getAsMap();
+
+            for (V3TicketContext workorder : workorders) {
+                if (workorder != null) {
+                    TicketPriorityContext priority = workorder.getPriority();
+                    if (priority != null) {
+                        workorder.setScheduledStart(tickets.get(workorder.getId()).getScheduledStart());
+                        workorder.setEstimatedEnd(tickets.get(workorder.getId()).getEstimatedEnd());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Exception occurred ", e);
+            throw e;
+        }
+
+    }
+
     private static void loadTicketCategory(Collection<? extends V3TicketContext> tickets) throws Exception {
-        if(tickets != null && !tickets.isEmpty()) {
+        if (tickets != null && !tickets.isEmpty()) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TICKET_CATEGORY);
 
@@ -762,7 +797,7 @@ public class V3TicketAPI {
                 List<V3TaskContext> taskList = taskMap.get(task.getSectionId());
                 if (taskList == null) {
                     taskList = new ArrayList<>();
-                    taskMap.put(task.getSectionId(), taskList);
+                    taskMap.put(task.getSectionId() == null ? -1 : task.getSectionId(), taskList);
                 }
                 taskList.add(task);
             }
