@@ -76,8 +76,8 @@ public class WorkorderPageFactory extends PageFactory {
         historyPage.addSection(sectionOne);
 
         // history widget
-        PageWidget historyWidget = new PageWidget(PageWidget.WidgetType.HISTORY);
-        historyWidget.addToLayoutParams(sectionOne, 24, 3);
+        PageWidget historyWidget = new PageWidget(PageWidget.WidgetType.WORKORDER_HISTORY);
+        historyWidget.addToLayoutParams(sectionOne, 24, 18);
         sectionOne.addWidget(historyWidget);
     }
 
@@ -107,6 +107,11 @@ public class WorkorderPageFactory extends PageFactory {
         PageWidget workorderProgress = new PageWidget(PageWidget.WidgetType.WORKORDER_PROGRESS);
         workorderProgress.addToLayoutParams(sectionOne, 18, 2);
         sectionOne.addWidget(workorderProgress);
+
+        // tasks widget
+        PageWidget tasks = new PageWidget(PageWidget.WidgetType.TASKS);
+        tasks.addToLayoutParams(0, 2, 18, 8);
+        sectionOne.addWidget(tasks);
     }
 
     public static Page getWorkorderPage(WorkOrderContext workorder) throws Exception {
