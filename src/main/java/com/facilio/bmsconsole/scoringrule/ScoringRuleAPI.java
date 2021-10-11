@@ -148,8 +148,7 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
         builder.delete();
     }
 
-    public static void updateScoringRule(ScoringRuleContext rule) throws Exception {
-        ScoringRuleContext oldRule = (ScoringRuleContext) getWorkflowRule(rule.getId());
+    public static void updateScoringRule(ScoringRuleContext rule, ScoringRuleContext oldRule) throws Exception {
         List<BaseTriggerContext> triggers = TriggerUtil.getTriggers(oldRule.getModule(), Collections.singletonList(EventType.INVOKE_TRIGGER),
                 null, false, false, null, TriggerType.SCORING_RULE_TRIGGER);
         if (CollectionUtils.isNotEmpty(triggers)) {
@@ -160,7 +159,7 @@ public class ScoringRuleAPI extends WorkflowRuleAPI {
         deleteScoringContext(rule.getId());
         addScoringRuleChildren(rule, false);
 
-        updateWorkflowRuleWithChildren(rule);
+        updateWorkflowRuleWithChildren(rule, oldRule);
         updateExtendedRule(rule, ModuleFactory.getScoringRuleModule(), FieldFactory.getScoringRuleFields());
     }
 

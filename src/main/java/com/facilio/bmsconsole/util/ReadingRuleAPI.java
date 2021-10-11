@@ -105,8 +105,10 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		return updateExtendedRule(rule, ModuleFactory.getReadingRuleModule(), FieldFactory.getReadingRuleFields());
 	}
 	
-	public static ReadingRuleContext updateReadingRuleWithChildren(ReadingRuleContext rule) throws Exception {
-		ReadingRuleContext oldRule = (ReadingRuleContext) getWorkflowRule(rule.getId());
+	public static ReadingRuleContext updateReadingRuleWithChildren(ReadingRuleContext rule, ReadingRuleContext oldRule) throws Exception {
+		if (oldRule == null) {
+			oldRule = (ReadingRuleContext) getWorkflowRule(rule.getId());
+		}
 		updateWorkflowRuleChildIds(rule);
 		updateExtendedRule(rule, ModuleFactory.getReadingRuleModule(), FieldFactory.getReadingRuleFields());
 		deleteChildIdsForWorkflow(oldRule, rule);
@@ -847,11 +849,11 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		}
 	}
 
-	public static WorkflowRuleContext updateAlarmWorkflowRule(AlarmWorkflowRuleContext rule) throws Exception {
+	public static WorkflowRuleContext updateAlarmWorkflowRule(AlarmWorkflowRuleContext rule, AlarmWorkflowRuleContext oldRule) throws Exception {
 		if (rule.getRuleId() <= 0) {
 			throw new IllegalArgumentException("Rule cannot be empty");
 		}
-		updateWorkflowRuleWithChildren(rule);
+		updateWorkflowRuleWithChildren(rule, oldRule);
 		WorkflowRuleAPI.updateExtendedRule(rule, ModuleFactory.getAlarmWorkflowRuleModule(), FieldFactory.getAlarmWorkflowRuleFields());
 		return rule;
 	}

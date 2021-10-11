@@ -77,7 +77,8 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		List<FormField> formFields = null;
 		if (currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP)) {
 			long orgId = AccountUtil.getCurrentOrg().getOrgId();
-			if (orgId == 407 || orgId == 418) {
+			if (orgId == 407 || orgId == 418 || moduleName.equals("peopleannouncement")) {
+				LOGGER.info("inside atre fields ==>");
 				formFields = getFieldsForAtre(modBean);
 			}
 		}
@@ -452,8 +453,8 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 	private static final List<String> peopleAnnouncement = Collections.unmodifiableList(Arrays.asList(new String[] {
 			"category",
 			"expiryDate",
-			"sysCreatedTime",
-			"sysCreatedBy"
+			"createdBy",
+			"createdTime",
 	}));
 
 	/******* ATRE End ******************/

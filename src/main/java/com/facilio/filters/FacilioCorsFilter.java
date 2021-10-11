@@ -302,7 +302,7 @@ public class FacilioCorsFilter implements Filter {
             return true;
         }
 
-        if (FacilioProperties.isDevelopment()) {
+        if (FacilioProperties.isDevelopment() && !FacilioProperties.isOnpremise()) {
             return true;
         }
 
@@ -327,7 +327,13 @@ public class FacilioCorsFilter implements Filter {
                 }
             }
         }
-        return ifDomainExists(domain);
+        boolean domainExists = ifDomainExists(domain);
+        if (!domainExists && FacilioProperties.isOnpremise()) {
+        		// Debugging
+            LOGGER.info("Domain not allowed: " + domain + ", Origins - " + ORIGINS);
+        		return true;
+        }
+        return domainExists;
     }
 
     private boolean ifDomainExists(String domain) {

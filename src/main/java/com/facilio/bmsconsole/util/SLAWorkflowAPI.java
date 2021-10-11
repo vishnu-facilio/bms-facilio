@@ -21,8 +21,8 @@ import java.util.stream.Collectors;
 
 public class SLAWorkflowAPI extends WorkflowRuleAPI {
 
-    public static void updateSLAPolicyRule(SLAPolicyContext rule) throws Exception {
-        WorkflowRuleAPI.updateWorkflowRuleWithChildren(rule);
+    public static void updateSLAPolicyRule(SLAPolicyContext rule, SLAPolicyContext oldRule) throws Exception {
+        WorkflowRuleAPI.updateWorkflowRuleWithChildren(rule, oldRule);
     }
 
     public static void deleteSLAPolicyEscalation(SLAPolicyContext rule) throws Exception {
@@ -120,8 +120,8 @@ public class SLAWorkflowAPI extends WorkflowRuleAPI {
         return FieldUtil.getAsBeanListFromMapList(builder.get(), SLAWorkflowCommitmentRuleContext.SLAEntityDuration.class);
     }
 
-    public static void updateSLACommitmentRule(SLAWorkflowCommitmentRuleContext rule) throws Exception {
-        WorkflowRuleAPI.updateWorkflowRuleWithChildren(rule);
+    public static void updateSLACommitmentRule(SLAWorkflowCommitmentRuleContext rule, SLAWorkflowCommitmentRuleContext oldRule) throws Exception {
+        WorkflowRuleAPI.updateWorkflowRuleWithChildren(rule, oldRule);
         deleteSLACommitmentDuration(rule);
         addSLACommitmentDuration(rule);
     }

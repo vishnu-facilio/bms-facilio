@@ -37,6 +37,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
+import lombok.extern.log4j.Log4j;
+
+@Log4j
 public class CommunityFeaturesAPI {
 
     public static List<Long> getBuildingTenants(Long buildingId) throws Exception {
@@ -150,6 +153,7 @@ public class CommunityFeaturesAPI {
             announcement.setAnnouncementsharing(getSharingInfo(announcement.getId()));
         }
 
+        LOGGER.info("announcement 1 == >"+announcement.getAnnouncementsharing());
 
         if(CollectionUtils.isNotEmpty(announcement.getAnnouncementsharing())) {
             Map<Long, PeopleAnnouncementContext> pplMap = new HashMap<>();
@@ -163,15 +167,22 @@ public class CommunityFeaturesAPI {
                     ppl = new SiteTenantContacts().getPeople(sharingInfo.getSharedToSpace() != null ? sharingInfo.getSharedToSpace().getId() : null);
                 }
 
+                LOGGER.info("ppl == >"+ppl.size());
+
                 if(CollectionUtils.isNotEmpty(ppl)){
                     for(V3PeopleContext person : ppl) {
+
+                        announcement = getAnnouncementById(announcement.getId());
+
+                        LOGGER.info("announcement 2 == >"+announcement.toString());
+
                         PeopleAnnouncementContext pplAnnouncement = FieldUtil.cloneBean(announcement, PeopleAnnouncementContext.class);
                         pplAnnouncement.setAudience(null);
                         pplAnnouncement.setIsRead(false);
                         pplAnnouncement.setPeople(person);
                         pplAnnouncement.setParentId(announcement.getId());
-                        pplAnnouncement.setSysCreatedBy(announcement.getSysModifiedBy());
-                        pplAnnouncement.setSysCreatedTime(announcement.getSysModifiedTime());
+                        pplAnnouncement.setCreatedBy(announcement.getSysModifiedBy());
+                        pplAnnouncement.setCreatedTime(announcement.getSysModifiedTime());
                         pplMap.put(person.getId(), pplAnnouncement);
                     }
                 }
@@ -312,6 +323,20 @@ public class CommunityFeaturesAPI {
         value.put("contactName", people.getName());
         updateBuilder.update(value);
 
+    }
+
+    public static AnnouncementContext getAnnouncementById(long id) throws  Exception{
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ANNOUNCEMENT);
+        SelectRecordsBuilder<AnnouncementContext> builder = new SelectRecordsBuilder<AnnouncementContext>()
+                .module(module)
+                .beanClass(AnnouncementContext.class)
+                .select(modBean.getAllFields(module.getName()))
+                .andCondition(CriteriaAPI.getIdCondition(id,module))
+                ;
+
+        return builder.fetchFirst();
     }
 
 }

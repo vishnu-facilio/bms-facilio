@@ -17,8 +17,12 @@ public class UpdateWorkflowRuleCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		WorkflowRuleContext rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
+		WorkflowRuleContext oldRule = WorkflowRuleAPI.getWorkflowRule(rule.getId());
+		if (rule.getActivityTypeEnum() == null) {
+			rule.setEvent(oldRule.getEvent());
+		}
+		
 		if (rule.getRuleTypeEnum() != null && rule.getRuleTypeEnum().versionSupported()) {
-			WorkflowRuleContext oldRule = WorkflowRuleAPI.getWorkflowRule(rule.getId(), false, false);
 			WorkflowRuleContext updateRule = new WorkflowRuleContext();
 			updateRule.setId(rule.getId());
 			updateRule.setLatestVersion(false);
@@ -38,48 +42,48 @@ public class UpdateWorkflowRuleCommand extends FacilioCommand {
 			WorkflowRuleAPI.updateWorkflowRule(updateRule);
 		}
 		else {
-			updateRule(rule);
+			updateRule(rule, oldRule);
 		}
 		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
 		context.put(FacilioConstants.ContextNames.RESULT, "success");
 		return false;
 	}
 	
-	private void updateRule (WorkflowRuleContext rule) throws Exception {
+	private void updateRule (WorkflowRuleContext rule, WorkflowRuleContext oldRule) throws Exception {
 		rule.setRuleType(null); //Type is not allowed to be changed
 		if (rule instanceof ReadingRuleContext) {
-			rule = ReadingRuleAPI.updateReadingRuleWithChildren((ReadingRuleContext) rule);
+			rule = ReadingRuleAPI.updateReadingRuleWithChildren((ReadingRuleContext) rule, (ReadingRuleContext)oldRule);
 		}
 		else if (rule instanceof SLARuleContext) {
-			rule = SLARuleAPI.updateSLARuleWithChildren((SLARuleContext) rule);
+			rule = SLARuleAPI.updateSLARuleWithChildren((SLARuleContext) rule, (SLARuleContext) oldRule);
 		}
 		else if (rule instanceof ApprovalRuleContext) {
-			rule = ApprovalRulesAPI.updateApprovalRuleWithChldren((ApprovalRuleContext) rule);
+			rule = ApprovalRulesAPI.updateApprovalRuleWithChldren((ApprovalRuleContext) rule, (ApprovalRuleContext)oldRule);
 		}
 		else if (rule instanceof StateFlowRuleContext || rule instanceof ApprovalStateFlowRuleContext) {
-			WorkflowRuleAPI.updateWorkflowRuleWithChildren(rule);
+			WorkflowRuleAPI.updateWorkflowRuleWithChildren(rule, oldRule);
 			WorkflowRuleAPI.updateExtendedRule(rule, ModuleFactory.getStateFlowModule(), FieldFactory.getStateFlowFields());
 		}
 		else if (rule instanceof StateflowTransitionContext) {
-			rule = ApprovalRulesAPI.updateStateflowTransitionRuleWithChildren((StateflowTransitionContext) rule);
+			rule = ApprovalRulesAPI.updateStateflowTransitionRuleWithChildren((StateflowTransitionContext) rule, (StateflowTransitionContext)oldRule);
 		}
 		else if (rule instanceof CustomButtonRuleContext) {
-			rule = ApprovalRulesAPI.updateCustomButtonRuleWithChildren((CustomButtonRuleContext) rule);
+			rule = ApprovalRulesAPI.updateCustomButtonRuleWithChildren((CustomButtonRuleContext) rule, (CustomButtonRuleContext) oldRule);
 		}
 		else if (rule instanceof AlarmWorkflowRuleContext) {
-			rule = ReadingRuleAPI.updateAlarmWorkflowRule((AlarmWorkflowRuleContext) rule);
+			rule = ReadingRuleAPI.updateAlarmWorkflowRule((AlarmWorkflowRuleContext) rule, (AlarmWorkflowRuleContext) oldRule);
 		}
 		else if (rule instanceof SLAWorkflowCommitmentRuleContext) {
-			SLAWorkflowAPI.updateSLACommitmentRule((SLAWorkflowCommitmentRuleContext) rule);
+			SLAWorkflowAPI.updateSLACommitmentRule((SLAWorkflowCommitmentRuleContext) rule, (SLAWorkflowCommitmentRuleContext) oldRule);
 		}
 		else if (rule instanceof SLAPolicyContext) {
-			SLAWorkflowAPI.updateSLAPolicyRule((SLAPolicyContext) rule);
+			SLAWorkflowAPI.updateSLAPolicyRule((SLAPolicyContext) rule, (SLAPolicyContext) oldRule);
 		}
 		else if (rule instanceof ScoringRuleContext) {
-			ScoringRuleAPI.updateScoringRule((ScoringRuleContext) rule);
+			ScoringRuleAPI.updateScoringRule((ScoringRuleContext) rule, (ScoringRuleContext) oldRule);
 		}
 		else {
-			rule = WorkflowRuleAPI.updateWorkflowRuleWithChildren(rule);
+			rule = WorkflowRuleAPI.updateWorkflowRuleWithChildren(rule, oldRule);
 		}
 	}
 
