@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.context.*;
 import org.apache.commons.collections4.CollectionUtils;
@@ -96,8 +98,12 @@ public class PageFactory {
 			case ContextNames.VENDORS:
 				return VendorPageFactory.getVendorPage((VendorContext) record);
 			case ContextNames.WORK_ORDER:
-//				return TenantWorkRequestPageFactory.getWorkorderPage((WorkOrderContext) record);
-				return WorkorderPageFactory.getWorkorderPage((WorkOrderContext) record);
+				AppDomain domain = AccountUtil.getCurrentUser().getAppDomain();
+				if (domain != null &&
+						domain.getAppDomainTypeEnum() == AppDomain.AppDomainType.FACILIO) {
+					return WorkorderPageFactory.getWorkorderPage((WorkOrderContext) record);
+				}
+				return TenantWorkRequestPageFactory.getWorkorderPage((WorkOrderContext) record);
 			case ContextNames.VISITOR_LOGGING:
 				return VisitorLoggingPageFactory.getVisitorLoggingPage((VisitorLoggingContext) record);
 			case ContextNames.INSURANCE:
