@@ -823,7 +823,13 @@ public class FormsAPI {
 		List<FacilioForm> forms = FieldUtil.getAsBeanListFromMapList(formListBuilder.get(), FacilioForm.class);
 		if ( CollectionUtils.isNotEmpty(forms)) {
 			forms = getAsFormSiteRelationListMap(forms, spaces);
-			
+			if (app == null) {
+				// Assuming only forms for a particular app will be fetched in a list
+				long formAppId = forms.get(0).getAppId();
+				if (formAppId > 0) {
+					app = ApplicationApi.getApplicationForId(formAppId);
+				}
+			}
 			String appName = app != null ? app.getLinkName() : ApplicationLinkNames.FACILIO_MAIN_APP;
 			for (FacilioForm form: forms) {
 				form.setAppLinkName(appName);
