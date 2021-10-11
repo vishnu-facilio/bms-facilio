@@ -15,13 +15,17 @@ public class FormRuleContext {
 	long id = -1;
 	long orgId = -1;
 	long formId = -1;
+	long subFormId = -1;
 	FacilioForm formContext;
+	FacilioForm subFormContext;
 	long criteriaId = -1;
+	long subFormCriteriaId = -1;
 	long siteId = -1;
 	List<FormRuleTriggerFieldContext> triggerFields;
 	
 	String name;
 	String description;
+	Criteria subFormCriteria;
 	Criteria criteria;
 	FormRuleType type;
 	TriggerType triggerType;
@@ -99,6 +103,15 @@ public class FormRuleContext {
 		criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getId(), criteriaId);
 		if(criteria != null && record != null) {
 			criteriaFlag = criteria.computePredicate(record).evaluate(record);
+		}
+		return criteriaFlag;
+	}
+	
+	public boolean evaluateSubFormCriteria (Map<String, Object> subFormRecord,FacilioContext context) throws Exception {
+		boolean criteriaFlag = true;
+		subFormCriteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getId(), subFormCriteriaId);
+		if(subFormCriteria != null && subFormRecord != null) {
+			criteriaFlag = subFormCriteria.computePredicate(subFormRecord).evaluate(subFormRecord);
 		}
 		return criteriaFlag;
 	}
@@ -390,5 +403,37 @@ public class FormRuleContext {
 		public static Map<Integer, FormRuleType> getAllRuleType() {
 			return ruleTypeMap;
 		}
+	}
+
+	public long getSubFormId() {
+		return subFormId;
+	}
+
+	public void setSubFormId(long subFormId) {
+		this.subFormId = subFormId;
+	}
+
+	public FacilioForm getSubFormContext() {
+		return subFormContext;
+	}
+
+	public void setSubFormContext(FacilioForm subFormContext) {
+		this.subFormContext = subFormContext;
+	}
+
+	public Criteria getSubFormCriteria() {
+		return subFormCriteria;
+	}
+
+	public void setSubFormCriteria(Criteria subFormCriteria) {
+		this.subFormCriteria = subFormCriteria;
+	}
+
+	public long getSubFormCriteriaId() {
+		return subFormCriteriaId;
+	}
+
+	public void setSubFormCriteriaId(long subFormCriteriaId) {
+		this.subFormCriteriaId = subFormCriteriaId;
 	}
 }

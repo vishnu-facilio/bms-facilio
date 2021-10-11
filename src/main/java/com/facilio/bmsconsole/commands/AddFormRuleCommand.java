@@ -16,8 +16,13 @@ public class AddFormRuleCommand extends FacilioCommand {
 		FormRuleContext formRule = (FormRuleContext)context.get(FormRuleAPI.FORM_RULE_CONTEXT);
 		
 		long id = CriteriaAPI.addCriteria(formRule.getCriteria(), AccountUtil.getCurrentOrg().getId());
-		
 		formRule.setCriteriaId(id);
+		
+		if(formRule.getSubFormCriteria() != null) {
+			long subFormCriteriaId = CriteriaAPI.addCriteria(formRule.getSubFormCriteria(), AccountUtil.getCurrentOrg().getId());
+			formRule.setSubFormCriteriaId(subFormCriteriaId);
+		}
+		
 		FormRuleAPI.addFormRuleContext(formRule);
 		return false;
 	}

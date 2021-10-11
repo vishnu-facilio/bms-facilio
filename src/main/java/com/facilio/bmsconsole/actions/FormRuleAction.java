@@ -174,6 +174,7 @@ public class FormRuleAction extends FacilioAction {
 		c.execute();
 		
 		setResult(FormRuleAPI.FORM_RULE_RESULT_JSON, context.get(FormRuleAPI.FORM_RULE_RESULT_JSON));
+		setResult(FormRuleAPI.SUB_FORM_RULE_RESULT_JSON, context.get(FormRuleAPI.SUB_FORM_RULE_RESULT_JSON));
 		return SUCCESS;
 	}
 	
