@@ -335,22 +335,14 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 		
 		FacilioModule module = modBean.getModule(moduleName);
 		
-		Map<String, FacilioField> formFieldMap = FieldFactory.getAsMap(FieldFactory.getFormFields());
-		
 		Map<String, FacilioField> formRuleFieldMap = FieldFactory.getAsMap(FieldFactory.getFormRuleFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getFormRuleFields())
 				.table(ModuleFactory.getFormRuleModule().getTableName())
-				.innerJoin(ModuleFactory.getFormModule().getTableName())
-				.on("Forms.ID = Form_Rule.FORM_ID")
-				.andCondition(CriteriaAPI.getCondition(formFieldMap.get("moduleId"), ""+module.getModuleId(), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(formRuleFieldMap.get("formId"), ""+formId, NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(formRuleFieldMap.get("type"), ""+FormRuleContext.FormRuleType.FROM_RULE.getIntVal(), NumberOperators.EQUALS))
 				;
-		
-		if (formId > 0) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition(formRuleFieldMap.get("formId"), ""+formId, NumberOperators.EQUALS));
-		}
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		
@@ -358,8 +350,6 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 			List<FormRuleContext> formRuleContexts = new ArrayList<>();
 			for(Map<String, Object> prop :props) {
 				FormRuleContext formRuleContext = FieldUtil.getAsBeanFromMap(prop, FormRuleContext.class);
-				formRuleContext.setFormContext(FormsAPI.getFormFromDB(formRuleContext.getFormId()));
-				formRuleContext.setActions(getFormRuleActionContext(formRuleContext.getId()));
 				formRuleContext.setTriggerFields(getFormRuleTriggerFields(formRuleContext));
 				formRuleContexts.add(formRuleContext);
 			}
