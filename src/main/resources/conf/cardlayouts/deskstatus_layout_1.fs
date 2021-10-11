@@ -182,14 +182,23 @@ Map cardLayout(Map params) {
     value["reservable"] = reservable;
 
     result["value"] = null;
-    result["valueMap"] = value;
 
     if (buildingId != null) {
         value["building"] = buildingModule.fetch([id == buildingId]);
+        buildingDb = {
+            criteria: [building == buildingId],
+            field: "id",
+            aggregation: "count"
+        };
+        value["floorCount"] = floorModule.fetch(buildingDb);
     }
 
     if (floorId != null) {
         value["floor"] = floorModule.fetch([id == floorId]);
     }
+
+    result["valueMap"] = value;
+
+
     return result;
 }
