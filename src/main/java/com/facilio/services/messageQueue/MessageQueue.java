@@ -8,7 +8,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.kafka.clients.admin.DescribeConsumerGroupsResult;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import sun.management.Agent;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;

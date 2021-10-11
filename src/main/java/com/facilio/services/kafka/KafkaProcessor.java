@@ -44,7 +44,7 @@ public class KafkaProcessor extends FacilioProcessor {
         this.processorId = processorId;
         String environment = FacilioProperties.getConfig("environment");
         String consumerGroup = clientName + environment;
-        setConsumer(new FacilioKafkaConsumer(ServerInfo.getHostname(), consumerGroup, getTopic()));
+        setConsumer(new FacilioKafkaConsumer(ServerInfo.getHostname()+"_"+processorId, consumerGroup, getTopic()));
 		setProducer(new FacilioKafkaProducer());
         setEventType("processor");
         dataProcessorUtil = new DataProcessorUtil(orgId, topic);
