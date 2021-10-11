@@ -87,66 +87,69 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 		
 		if (formData != null && !formData.isEmpty()) {	
 					
-				if (formData.containsKey("data")) {
-					Map<String,Object> customData = (Map<String, Object>) formData.get("data");
-					formData.putAll(customData);
-					//formData.remove("data");
-				}
+			if (formData.containsKey("data")) {
+				Map<String,Object> customData = (Map<String, Object>) formData.get("data");
+				formData.putAll(customData);
+				//formData.remove("data");
+			}
 				
-				Map<String, Object> lookupFormData = new HashMap<>();			
-				for (String eachKey : formData.keySet()) {
-					FormField respectiveFormField = fieldMap.get(eachKey);
-					boolean hasValue = false;
-					if (respectiveFormField != null && respectiveFormField.getField() != null && respectiveFormField.getField().getName() != null) {
-						
-						if (respectiveFormField.getDisplayTypeEnum() == FieldDisplayType.LOOKUP_SIMPLE) {
-							long id = -1;
-							if (formData.get(respectiveFormField.getField().getName()) instanceof Long) {
-								id = (long) formData.get(respectiveFormField.getField().getName());	
-								HashMap lookupData = new HashMap();
-								lookupData.put("id", id);
-								lookupFormData.put(eachKey, lookupData);
-							}
-							else if (formData.get(respectiveFormField.getField().getName()) instanceof HashMap) {
-								 HashMap lookupData = (HashMap) formData.get(respectiveFormField.getField().getName());
-								 id = (long) lookupData.get("id");
-							}
-							if (id > 0) {
-								hasValue = true;
-							}
+			Map<String, Object> lookupFormData = new HashMap<>();			
+			for (String eachKey : formData.keySet()) {
+				FormField respectiveFormField = fieldMap.get(eachKey);
+				boolean hasValue = false;
+				if (respectiveFormField != null && respectiveFormField.getField() != null && respectiveFormField.getField().getName() != null) {
+					
+					if (respectiveFormField.getDisplayTypeEnum() == FieldDisplayType.LOOKUP_SIMPLE) {
+						long id = -1;
+						if (formData.get(respectiveFormField.getField().getName()) instanceof Long) {
+							id = (long) formData.get(respectiveFormField.getField().getName());	
+							HashMap lookupData = new HashMap();
+							lookupData.put("id", id);
+							lookupFormData.put(eachKey, lookupData);
 						}
-						
-						else if (respectiveFormField.getDisplayTypeEnum() == FieldDisplayType.NUMBER || respectiveFormField.getDisplayTypeEnum() == FieldDisplayType.DECIMAL) {	
-							if (!formData.get(respectiveFormField.getField().getName()).equals((long) -99)) {
-								hasValue = true;
-							}
+						else if (formData.get(respectiveFormField.getField().getName()) instanceof HashMap) {
+							 HashMap lookupData = (HashMap) formData.get(respectiveFormField.getField().getName());
+							 id = (long) lookupData.get("id");
 						}
 						else if (formData.containsKey(respectiveFormField.getField().getName())) {
 							hasValue = true;
 						}
-						
-						if(respectiveFormField.getField() != null) {
-							if(respectiveFormField.getField().getDataTypeEnum() == FieldType.MULTI_LOOKUP) {
-								List<HashMap<String, Long>> multilookupValues = (List<HashMap<String, Long>>) formData.get(respectiveFormField.getField().getName());
-								if(CollectionUtils.isNotEmpty(multilookupValues)) {
-									List<Long> multiLookupIds = new ArrayList<Long>(); 
-									for(HashMap<String, Long> multilookupValue : multilookupValues) {
-										Long id = (Long)multilookupValue.get("id");
-										multiLookupIds.add(id);
-									}
-									lookupFormData.put(eachKey+".id", StringUtils.join(multiLookupIds, ","));
+						if (id > 0) {
+							hasValue = true;
+						}
+					}
+					
+					else if (respectiveFormField.getDisplayTypeEnum() == FieldDisplayType.NUMBER || respectiveFormField.getDisplayTypeEnum() == FieldDisplayType.DECIMAL) {	
+						if (!formData.get(respectiveFormField.getField().getName()).equals((long) -99)) {
+							hasValue = true;
+						}
+					}
+					
+					else if (formData.containsKey(respectiveFormField.getField().getName())) {
+						hasValue = true;
+					}
+					
+					if(respectiveFormField.getField() != null) {
+						if(respectiveFormField.getField().getDataTypeEnum() == FieldType.MULTI_LOOKUP) {
+							List<HashMap<String, Long>> multilookupValues = (List<HashMap<String, Long>>) formData.get(respectiveFormField.getField().getName());
+							if(CollectionUtils.isNotEmpty(multilookupValues)) {
+								List<Long> multiLookupIds = new ArrayList<Long>(); 
+								for(HashMap<String, Long> multilookupValue : multilookupValues) {
+									Long id = (Long)multilookupValue.get("id");
+									multiLookupIds.add(id);
 								}
+								lookupFormData.put(eachKey+".id", StringUtils.join(multiLookupIds, ","));
 							}
 						}
-						
 					}
-					if (hasValue) {
-						triggerFieldIds.add(respectiveFormField.getId());
-					}	
 				}
-				if (lookupFormData != null && !lookupFormData.isEmpty()) {
-					formData.putAll(lookupFormData);
-				}
+				if (hasValue) {
+					triggerFieldIds.add(respectiveFormField.getId());
+				}	
+			}
+			if (lookupFormData != null && !lookupFormData.isEmpty()) {
+				formData.putAll(lookupFormData);
+			}
 			 
 		}
 			

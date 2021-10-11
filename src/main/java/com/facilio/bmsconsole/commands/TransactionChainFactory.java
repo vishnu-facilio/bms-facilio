@@ -4025,12 +4025,12 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-		public static FacilioChain getExecuteFormActionRecursivelyRules() {
-			FacilioChain c = getDefaultChain();
-			c.addCommand(getExecuteFormActionRules());
-			c.addCommand(new ExecuteFormActionRulesForNextRoundCommand());
-			return c;
-		}
+//		public static FacilioChain getExecuteFormActionRecursivelyRules() {
+//			FacilioChain c = getDefaultChain();
+//			c.addCommand(getExecuteFormActionRules());
+//			c.addCommand(new ExecuteFormActionRulesForNextRoundCommand());
+//			return c;
+//		}
 
 		public static FacilioChain getExecuteFormActionRules() {
 			FacilioChain c = getDefaultChain();

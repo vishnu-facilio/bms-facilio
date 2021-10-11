@@ -56,9 +56,9 @@ public class FormRuleAPI {
 	public static final String SUB_FORM_DATA = "formRuleSubFormData";
 	public static final String SUB_FORM_DATA_INDEX = "formRuleSubFormDataIndex";
 	
-	public static final String VALUE_FILLED_FIELD_IDS = "valueFiledFields";
+//	public static final String VALUE_FILLED_FIELD_IDS = "valueFiledFields";
 	
-	public static final String FORM_DATA_FOR_NEXT_ROUND = "formDataForNextRound";
+//	public static final String FORM_DATA_FOR_NEXT_ROUND = "formDataForNextRound";
 	
 	public static final String JSON_RESULT_FIELDID_STRING = "fieldId";
 	public static final String JSON_RESULT_SECTIONID_STRING = "sectionId";
@@ -502,38 +502,38 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 		return matcher.find();
 	}
 	
-	public static void setDataForNextRoundInSubFormData(FacilioContext facilioContext,FormField field,Object value) {
-		
-		int index = (int) facilioContext.get(FormRuleAPI.SUB_FORM_DATA_INDEX);
-		
-		FormRuleActionContext formRuleActionContext = (FormRuleActionContext) facilioContext.get(FormRuleAPI.FORM_RULE_ACTION_CONTEXT);
-		
-		FacilioForm subForm = formRuleActionContext.getRuleContext().getSubFormContext();
-		
-		Map<String, Object> formDataToBeAddedforNextRound = (Map<String, Object>) facilioContext.get(FormRuleAPI.FORM_DATA_FOR_NEXT_ROUND);
-		
-		Map<String,Object> allSubformData = (Map<String, Object>) formDataToBeAddedforNextRound.getOrDefault(FormRuleAPI.SUB_FORM_DATA_KEY, new HashMap<String,Object>());
-		
-		List<Map<String,Object>> subFromDataList = (List<Map<String, Object>>) allSubformData.getOrDefault(subForm.getName(), new ArrayList<HashMap<String,Object>>());
-		
-		
-		Map<String, Object> subFromData = null;
-		if(subFromDataList.size()-1 >= index) {
-			subFromDataList.get(index);
-		}
-		
-		if(subFromData == null) {
-			subFromData = new HashMap<String,Object>();
-			subFromDataList.add(index, subFromData);
-		}
-			
-		subFromData.put(field.getName(), value);
-		
-		subFromDataList.set(index, subFromData);
-		allSubformData.put(subForm.getName(), subFromDataList);
-		formDataToBeAddedforNextRound.put(FormRuleAPI.SUB_FORM_DATA_KEY, allSubformData);
-		
-	}
+//	public static void setDataForNextRoundInSubFormData(FacilioContext facilioContext,FormField field,Object value) {
+//		
+//		int index = (int) facilioContext.get(FormRuleAPI.SUB_FORM_DATA_INDEX);
+//		
+//		FormRuleActionContext formRuleActionContext = (FormRuleActionContext) facilioContext.get(FormRuleAPI.FORM_RULE_ACTION_CONTEXT);
+//		
+//		FacilioForm subForm = formRuleActionContext.getRuleContext().getSubFormContext();
+//		
+//		Map<String, Object> formDataToBeAddedforNextRound = (Map<String, Object>) facilioContext.get(FormRuleAPI.FORM_DATA_FOR_NEXT_ROUND);
+//		
+//		Map<String,Object> allSubformData = (Map<String, Object>) formDataToBeAddedforNextRound.getOrDefault(FormRuleAPI.SUB_FORM_DATA_KEY, new HashMap<String,Object>());
+//		
+//		List<Map<String,Object>> subFromDataList = (List<Map<String, Object>>) allSubformData.getOrDefault(subForm.getName(), new ArrayList<HashMap<String,Object>>());
+//		
+//		
+//		Map<String, Object> subFromData = null;
+//		if(subFromDataList.size()-1 >= index) {
+//			subFromDataList.get(index);
+//		}
+//		
+//		if(subFromData == null) {
+//			subFromData = new HashMap<String,Object>();
+//			subFromDataList.add(index, subFromData);
+//		}
+//			
+//		subFromData.put(field.getName(), value);
+//		
+//		subFromDataList.set(index, subFromData);
+//		allSubformData.put(subForm.getName(), subFromDataList);
+//		formDataToBeAddedforNextRound.put(FormRuleAPI.SUB_FORM_DATA_KEY, allSubformData);
+//		
+//	}
 
 	public static void AddResultJSONToRespectiveResultSet(FacilioContext facilioContext, JSONObject json) {
 		// TODO Auto-generated method stub
