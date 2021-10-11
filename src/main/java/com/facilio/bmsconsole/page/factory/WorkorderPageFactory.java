@@ -112,6 +112,11 @@ public class WorkorderPageFactory extends PageFactory {
         PageWidget tasks = new PageWidget(PageWidget.WidgetType.TASKS);
         tasks.addToLayoutParams(0, 2, 18, 8);
         sectionOne.addWidget(tasks);
+
+        // sideBar widget
+        PageWidget sideBar = new PageWidget(PageWidget.WidgetType.WORKORDER_SIDEBAR);
+        sideBar.addToLayoutParams(18, 0, 6, 18);
+        sectionOne.addWidget(sideBar);
     }
 
     public static Page getWorkorderPage(WorkOrderContext workorder) throws Exception {
