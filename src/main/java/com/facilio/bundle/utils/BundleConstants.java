@@ -64,6 +64,8 @@ public class BundleConstants {
 
 	public static final String BUNDLE_CONTEXT_LIST = "bundleList";
 
+	public static final String INSTALLED_BUNDLES = "installedBundles";
+
 	public static class Components {
 		public static final String NAME = "name";
 		public static final String DISPLAY_NAME = "displayName";

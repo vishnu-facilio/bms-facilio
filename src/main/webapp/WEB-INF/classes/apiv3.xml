@@ -432,6 +432,10 @@
                 class="com.facilio.bundle.action.BundleAction"
                 method="getAllVersions">
         </action>
+        <action name="getAllInstalledBundles"
+                class="com.facilio.bundle.action.BundleAction"
+                method="getAllInstalledBundles">
+        </action>
     </package>
 
     <package name="delivery" namespace="/api/v3/deliveries" extends="v3Api">

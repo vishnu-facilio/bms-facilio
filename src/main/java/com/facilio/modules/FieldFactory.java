@@ -9884,6 +9884,17 @@ public class FieldFactory extends BaseFieldFactory {
     
     //Bundle Related Fields starts
     
+    public static List<FacilioField> getInstalledBundleFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getInstalledBundleModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("bundleId", "BUNDLE_ID", module, FieldType.NUMBER));
+        fields.add(getField("bundleGlobalName", "BUNDLE_GLOBAL_NAME", module, FieldType.STRING));
+        fields.add(getField("installedVersion", "INSTALLED_VERSION", module, FieldType.STRING));
+        fields.add(getField("installedTime", "INSTALLED_TIME", module, FieldType.NUMBER));
+        return fields;
+    }
     
     public static List<FacilioField> getBundleFields() {
         List<FacilioField> fields = new ArrayList<>();
