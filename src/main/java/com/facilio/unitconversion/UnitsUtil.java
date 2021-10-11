@@ -73,7 +73,13 @@ public class UnitsUtil {
 			Expression expression = new Expression(fromSiUnitFormula).setPrecision(8);
 			value = expression.eval();
 		}
-		return Double.valueOf(value.toString());
+		double returnValue =  Double.valueOf(value.toString());
+		
+		if(to.isRoundOffNeeded()) {
+			returnValue = Double.valueOf(String.valueOf(Math.round(returnValue)));
+		}
+		
+		return returnValue;
 	}
 	
 	public static Double convert(Object value,int from,int to) {
