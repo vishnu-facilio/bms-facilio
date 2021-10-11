@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.page.factory;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.page.Page;
@@ -119,9 +120,51 @@ public class WorkorderPageFactory extends PageFactory {
         sectionOne.addWidget(sideBar);
     }
 
+    private static void addSafetyPlanTab(Page page) {
+        Page.Tab safetyPlanTab = page.new Tab("safety plan");
+        page.addTab(safetyPlanTab);
+
+        // TODO:: give a more contextual name for the section
+        Page.Section sectionOne = page.new Section();
+        safetyPlanTab.addSection(sectionOne);
+
+        // hazards widget
+        PageWidget hazards = new PageWidget(PageWidget.WidgetType.HAZARDS);
+        hazards.addToLayoutParams(0, 0, 18, 8);
+        sectionOne.addWidget(hazards);
+
+        // precautions widget
+        PageWidget precautions = new PageWidget(PageWidget.WidgetType.PRECAUTIONS);
+        precautions.addToLayoutParams(0, 8, 18, 8);
+        sectionOne.addWidget(precautions);
+
+        // work duration widget
+        PageWidget workDuration = new PageWidget(PageWidget.WidgetType.WORK_DURATION);
+        workDuration.addToLayoutParams(18, 0, 6, 3);
+        sectionOne.addWidget(workDuration);
+
+        // resource widget
+        PageWidget resource = new PageWidget(PageWidget.WidgetType.RESOURCE);
+        resource.addToLayoutParams(18, 3, 6, 3);
+        sectionOne.addWidget(resource);
+
+        // responsibility widget
+        PageWidget responsibility = new PageWidget(PageWidget.WidgetType.RESPONSIBILITY);
+        responsibility.addToLayoutParams(18, 6, 6, 6);
+        sectionOne.addWidget(responsibility);
+
+        // workorderDetails widget
+        PageWidget workorderDetails = new PageWidget(PageWidget.WidgetType.WORKORDER_DETAILS);
+        workorderDetails.addToLayoutParams(18, 12, 6, 12);
+        sectionOne.addWidget(workorderDetails);
+    }
+
     public static Page getWorkorderPage(WorkOrderContext workorder) throws Exception {
         Page page = new Page();
         addSummaryTab(page);
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SAFETY_PLAN)) {
+            addSafetyPlanTab(page);
+        }
         addTasksTab(page);
         addRelatedRecordsTab(page);
         addHistoryTab(page);
