@@ -367,7 +367,8 @@ public class PageWidget {
 		WORKORDER_HISTORY("workorderHistory"),
 		WORKORDER_SIDEBAR("workorderSidebar"),
 		HAZARDS("hazards"),
-		PRECAUTIONS("precautions");
+		PRECAUTIONS("precautions"),
+		PREREQUISITES("prerequisites");
 
 		private String name;
 
