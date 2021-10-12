@@ -249,9 +249,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			scopeFieldsAndCriteria = ScopeHandler.getInstance().updateValuesForUpdateAndGetFieldsAndCriteria(module, joinModules, moduleProps);
 			if (!moduleProps.isEmpty()) {
 				updateLookupFields(moduleProps, fields);
-				if (FieldUtil.isSystemFieldsPresent(module)) {
-					moduleProps.keySet().removeAll(FieldFactory.getSystemFieldNames());
-				}
+				removeSystemFields(moduleProps);
 				moduleProps.put("sysModifiedTime", System.currentTimeMillis());
 
 				if (AccountUtil.getCurrentUser() != null) {
@@ -298,7 +296,14 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		updated = true;
 		return rowsUpdated;
 	}
-
+	private void removeSystemFields ( Map<String, Object> moduleProps ) {
+		if(moduleProps.containsKey("sysCreatedTime")) {
+			moduleProps.remove("sysCreatedTime");
+		}
+		if(moduleProps.containsKey("sysCreatedBy")) {
+			moduleProps.remove("sysCreatedBy");
+		}
+	}
 	private void handleSupplements(Map<String, Object> props) throws Exception {
 		if (CollectionUtils.isNotEmpty(updateSupplements)) {
 			for (SupplementRecord record : updateSupplements) {
