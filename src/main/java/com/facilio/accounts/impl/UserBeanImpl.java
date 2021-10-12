@@ -1,5 +1,6 @@
 package com.facilio.accounts.impl;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -164,6 +165,8 @@ public class UserBeanImpl implements UserBean {
 		catch(Exception e) {
 			if(e instanceof AccountException && ((AccountException) e).getErrorCode() == ErrorCode.USER_ALREADY_EXISTS_IN_APP) {
 				throw e;
+			} else if (e instanceof InvocationTargetException && ((InvocationTargetException) e).getTargetException() instanceof AccountException) {
+				throw (AccountException) ((InvocationTargetException) e).getTargetException();
 			}
 			log.error("Exception occurred while creating user ", e);
 			IAMUserUtil.rollbackUserAdded(user.getUid(), AccountUtil.getCurrentOrg().getOrgId());

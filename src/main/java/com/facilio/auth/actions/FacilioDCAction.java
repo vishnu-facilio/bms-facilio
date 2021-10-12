@@ -1,5 +1,6 @@
 package com.facilio.auth.actions;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import com.facilio.accounts.dto.AppDomain.GroupType;
@@ -9,9 +10,12 @@ import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.service.FacilioService;
 import com.facilio.v3.V3Action;
 
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
 
 @Log4j
@@ -44,7 +48,15 @@ public class FacilioDCAction extends V3Action {
 	
 	private Map<String, Object> user;
 	public String addUser() throws Exception {
-		IAMUserUtil.addDCLookup(user);
+		try {
+			IAMUserUtil.addDCLookup(user);
+		} catch (InvocationTargetException ex) {
+			if (ex.getTargetException() instanceof IllegalArgumentException) {
+				throw new RESTException(ErrorCode.USER_ALREADY_EXISTS, ex.getTargetException().getMessage());
+			} else {
+				throw ex;
+			}
+		}
 		setData("result", "success");
 		
 		return SUCCESS;

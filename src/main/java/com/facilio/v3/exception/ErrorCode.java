@@ -6,7 +6,8 @@ import javax.servlet.http.HttpServletResponse;
 public enum ErrorCode {
     RESOURCE_NOT_FOUND(1, HttpServletResponse.SC_NOT_FOUND),
     UNHANDLED_EXCEPTION(2, HttpServletResponse.SC_INTERNAL_SERVER_ERROR),
-    VALIDATION_ERROR(3, HttpServletResponse.SC_BAD_REQUEST)
+    VALIDATION_ERROR(3, HttpServletResponse.SC_BAD_REQUEST),
+    USER_ALREADY_EXISTS(4, HttpServletResponse.SC_BAD_REQUEST)
     ;
 
     private int code;

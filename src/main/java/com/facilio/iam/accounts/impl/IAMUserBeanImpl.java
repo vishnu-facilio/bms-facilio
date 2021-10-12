@@ -844,8 +844,19 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	
 	@Override
 	public long addDCLookup(Map<String, Object> props) throws Exception {
-		
 		List<FacilioField> fields = IAMAccountConstants.getDCFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder();
+		selectRecordBuilder.table(IAMAccountConstants.getDCLookupModule().getTableName())
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("userName"), String.valueOf(props.get("userName")), StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("groupType"), String.valueOf(props.get("groupType")), NumberOperators.EQUALS));
+		List<Map<String, Object>> result = selectRecordBuilder.get();
+
+		if (!result.isEmpty()) {
+			throw new IllegalArgumentException("Duplicate entries for the user name.");
+		}
 
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(IAMAccountConstants.getDCLookupModule().getTableName())
@@ -2689,16 +2700,18 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.ORG_USERID", "orgUserId", StringUtils.join(orgUserIds, ","), NumberOperators.EQUALS)).get();
 
 		List<Long> applicationIds = new ArrayList<>();
-		Map<Long, Map<String, Object>> ouidVsOrgUserApp = new HashMap<>();
+		List<Long> orgIds = new ArrayList<>();
 		for (Map<String, Object> orgUserApp: orgUserApps) {
-			ouidVsOrgUserApp.put((Long) orgUserApp.get("ouid"), orgUserApp);
 			applicationIds.add((long) orgUserApp.get("applicationId"));
+			orgIds.add((long) orgUserApp.get("orgId"));
 		}
 
 		List<Map<String, Object>> apps = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getApplicationFields())
 				.table("Application")
-				.andCondition(CriteriaAPI.getCondition("Application.ID", "id", StringUtils.join(applicationIds, ","), NumberOperators.EQUALS)).get();
+				.andCondition(CriteriaAPI.getCondition("Application.ID", "id", StringUtils.join(applicationIds, ","), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("Application.ORGID", "orgId", StringUtils.join(orgIds, ","), NumberOperators.EQUALS))
+				.get();
 
 
 		Map<Long, Map<String, Object>> appIdVsApp = new HashMap<>();

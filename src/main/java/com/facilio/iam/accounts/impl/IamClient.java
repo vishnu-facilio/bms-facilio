@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import com.facilio.auth.AuthUtils;
+import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.util.ServiceHttpUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
@@ -79,7 +80,11 @@ public class IamClient {
         		if (obj.containsKey("code")) {
         			int code = FacilioUtil.parseInt(obj.get("code").toString());
         			if (code != 0) {
-        				// Throw proper AccountException
+        			    if (code == 4) {
+                            throw new AccountException(AccountException.ErrorCode.DUPLICATE_USER, "User already exists in app");
+                        } else {
+                            throw new IllegalArgumentException((String) obj.get("message"));
+                        }
         			}
         		}
         }
