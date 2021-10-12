@@ -97,7 +97,11 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
     public void commit(FacilioRecord record) {
         try {
             long offset = record.getId();
-            consumer.commitSync(Collections.singletonMap(topicPartition, new OffsetAndMetadata(offset+1)));
+            if(topicPartition==null) {
+                consumer.commitSync(Duration.ofSeconds(30));
+            }else{
+                consumer.commitSync(Collections.singletonMap(topicPartition, new OffsetAndMetadata(offset+1)));
+            }
         } catch (NumberFormatException e) {
             LOGGER.info("Exception while parsing offset " + record.getId());
         }
