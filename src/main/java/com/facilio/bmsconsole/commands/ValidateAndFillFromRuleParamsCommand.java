@@ -35,6 +35,7 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 		
 		TriggerType triggerType = (TriggerType) context.get(FormRuleAPI.FORM_RULE_TRIGGER_TYPE);
 		Long formId = (Long) context.get(FacilioConstants.ContextNames.FORM_ID);
+		Long subFormId = (Long) context.get(FacilioConstants.ContextNames.SUB_FORM_ID);
 		Long formFieldId = (Long) context.get(FacilioConstants.ContextNames.FORM_FIELD_ID);
 		Map<String, Object> formData = (Map<String,Object>) context.get(FormRuleAPI.FORM_DATA);
 
@@ -71,6 +72,14 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 				throw new IllegalArgumentException("Form Field Cannot be null during Form Field Action Evaluation");
 			}
 			formRuleContexts = FormRuleAPI.getFormRuleContext(formId, Collections.singletonList(formFieldId), triggerType);
+			
+			FormField formField = FormsAPI.getFormFieldFromId(formFieldId);
+			
+			if(subFormId != null && subFormId > 0 && subFormId.equals(formField.getFormId())) {
+				
+				context.put(FormRuleAPI.IS_SUB_FORM_TRIGGER_FIELD, Boolean.TRUE);
+			}
+			
 			context.put(FormRuleAPI.FORM_RULE_CONTEXTS, formRuleContexts);
 			break;
 
@@ -85,7 +94,7 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 				  (field -> ((field.getField() != null && field.getField().getName() != null) ? field.getField().getName():field.getName()),
 				   Function.identity()));
 		
-		if (formData != null && !formData.isEmpty()) {	
+		if (formData != null && !formData.isEmpty()) {
 					
 			if (formData.containsKey("data")) {
 				Map<String,Object> customData = (Map<String, Object>) formData.get("data");
@@ -153,7 +162,7 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 			 
 		}
 			
-		if (triggerType.equals(TriggerType.FORM_ON_LOAD)) {		
+		if (triggerType.equals(TriggerType.FORM_ON_LOAD)) {
 			if (triggerFieldIds != null && !triggerFieldIds.isEmpty()) {
 				List<FormRuleContext> updateFormRuleContexts = FormRuleAPI.getFormRuleContext(formId, triggerFieldIds, TriggerType.FIELD_UPDATE);
 				if (updateFormRuleContexts != null && !updateFormRuleContexts.isEmpty()) {

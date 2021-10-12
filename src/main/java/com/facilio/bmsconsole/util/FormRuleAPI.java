@@ -47,6 +47,8 @@ public class FormRuleAPI {
 	public static final String FORM_RULE_CONTEXTS = "formRuleContexts";
 	public static final String FORM_RULE_ACTION_CONTEXT = "formRuleActionContext";
 	
+	public static final String IS_SUB_FORM_TRIGGER_FIELD = "isSubFormTriggerField";
+	
 	public static final String FORM_RULE_TRIGGER_TYPE = "formRuleTriggerType";
 	
 	public static final String SUB_FORM_DATA_KEY = "subformData";
@@ -538,17 +540,17 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 	public static void AddResultJSONToRespectiveResultSet(FacilioContext facilioContext, JSONObject json) {
 		// TODO Auto-generated method stub
 		
-		FormRuleActionContext formRuleActionContext = (FormRuleActionContext) facilioContext.get(FormRuleAPI.FORM_RULE_ACTION_CONTEXT);
+		FormRuleContext formRuleContext = (FormRuleContext) facilioContext.get(FormRuleAPI.FORM_RULE_CONTEXT);
 		
-		if(formRuleActionContext.getRuleContext().getSubFormId() > 0) {
+		if(formRuleContext.getSubFormId() > 0) {
 			
 			JSONObject subFormRuleResultJSON = (JSONObject) facilioContext.get(FormRuleAPI.SUB_FORM_RULE_RESULT_JSON);
 			
-			if(!subFormRuleResultJSON.containsKey(formRuleActionContext.getRuleContext().getSubFormContext().getName())) {
-				subFormRuleResultJSON.put(formRuleActionContext.getRuleContext().getSubFormContext().getName(), new JSONArray());
+			if(!subFormRuleResultJSON.containsKey(formRuleContext.getSubFormContext().getName())) {
+				subFormRuleResultJSON.put(formRuleContext.getSubFormContext().getName(), new JSONArray());
 			}
 			
-			JSONArray subFromRecordObjectList = (JSONArray) subFormRuleResultJSON.get(formRuleActionContext.getRuleContext().getSubFormContext().getName());
+			JSONArray subFromRecordObjectList = (JSONArray) subFormRuleResultJSON.get(formRuleContext.getSubFormContext().getName());
 			
 			int index = (int) facilioContext.get(FormRuleAPI.SUB_FORM_DATA_INDEX);
 			
@@ -560,7 +562,9 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 			
 			JSONArray actions = (JSONArray) subFormRecordObject.getOrDefault(SUB_FORM_DATA_ACTIONS_KEY, new JSONArray());
 			
-			actions.add(json);
+			if(json != null) {
+				actions.add(json);
+			}
 			
 			subFormRecordObject.put(SUB_FORM_DATA_ACTIONS_KEY, actions);
 		}

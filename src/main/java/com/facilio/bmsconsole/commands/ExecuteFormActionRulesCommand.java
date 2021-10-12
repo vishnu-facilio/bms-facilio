@@ -44,28 +44,58 @@ public class ExecuteFormActionRulesCommand extends FacilioCommand {
 		
 		for(FormRuleContext formRuleContext :formRuleContexts) {
 			
+			context.put(FormRuleAPI.FORM_RULE_CONTEXT, formRuleContext);
+			
 			if (formRuleContext.getFormContext() == null && form != null) {
 				formRuleContext.setFormContext(form);
 			}
 			
 			if(formRuleContext.getSubFormId() > 0) {
 				
-				List<Map<String,Object>> subFormDatas = (List<Map<String, Object>>) allSubFormDatas.get(formRuleContext.getSubFormContext().getName());
+				Boolean isSubFormTriggerField = (Boolean) context.getOrDefault(FormRuleAPI.IS_SUB_FORM_TRIGGER_FIELD, Boolean.FALSE);
 				
-				for(int i=0;i<subFormDatas.size();i++) {
+				List<Map<String,Object>> subFormDatas = (List<Map<String, Object>>) (((Map<String, Object>) allSubFormDatas.get(formRuleContext.getSubFormContext().getName())).get("data"));
+				
+				fillEmptyActionObjectsForAllSubFormData(subFormDatas,(FacilioContext)context);
+				
+				if(isSubFormTriggerField) {
 					
-					Map<String, Object> subFormData = subFormDatas.get(i);
-					
-					context.put(FormRuleAPI.SUB_FORM_DATA, subFormData);
-					context.put(FormRuleAPI.SUB_FORM_DATA_INDEX, i);
-					
-					boolean flag1 = formRuleContext.evaluateCriteria(formData, (FacilioContext)context);
-					boolean flag2 = formRuleContext.evaluateSubFormCriteria(subFormData, (FacilioContext)context);
-					if(flag1 && flag2) {
+					for(int i=0;i<subFormDatas.size();i++) {
 						
-						formRuleContext.executeAction((FacilioContext)context);
+						Map<String, Object> subFormData = subFormDatas.get(i);
+						
+						if(subFormData.get("sub_form_action") != null) {
+							context.put(FormRuleAPI.SUB_FORM_DATA, subFormData);
+							context.put(FormRuleAPI.SUB_FORM_DATA_INDEX, i);
+							
+							boolean flag1 = formRuleContext.evaluateCriteria(formData, (FacilioContext)context);
+							boolean flag2 = formRuleContext.evaluateSubFormCriteria(subFormData, (FacilioContext)context);
+							if(flag1 && flag2) {
+								
+								formRuleContext.executeAction((FacilioContext)context);
+							}
+							break;
+						}
 					}
 				}
+				else {
+					
+					for(int i=0;i<subFormDatas.size();i++) {
+						
+						Map<String, Object> subFormData = subFormDatas.get(i);
+						
+						context.put(FormRuleAPI.SUB_FORM_DATA, subFormData);
+						context.put(FormRuleAPI.SUB_FORM_DATA_INDEX, i);
+						
+						boolean flag1 = formRuleContext.evaluateCriteria(formData, (FacilioContext)context);
+						boolean flag2 = formRuleContext.evaluateSubFormCriteria(subFormData, (FacilioContext)context);
+						if(flag1 && flag2) {
+							
+							formRuleContext.executeAction((FacilioContext)context);
+						}
+					}
+				}
+				
 			}
 			else {
 				
@@ -78,6 +108,20 @@ public class ExecuteFormActionRulesCommand extends FacilioCommand {
 		}
 		
 		return false;
+	}
+	private void fillEmptyActionObjectsForAllSubFormData(List<Map<String, Object>> subFormDatas, FacilioContext context) {
+		// TODO Auto-generated method stub
+		
+		for(int i=0;i<subFormDatas.size();i++) {
+			
+			Map<String, Object> subFormData = subFormDatas.get(i);
+			
+			context.put(FormRuleAPI.SUB_FORM_DATA, subFormData);
+			context.put(FormRuleAPI.SUB_FORM_DATA_INDEX, i);
+			
+			FormRuleAPI.AddResultJSONToRespectiveResultSet(context, null);
+		}
+		
 	}
 
 }

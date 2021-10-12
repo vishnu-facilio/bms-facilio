@@ -9,7 +9,6 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.forms.FormRuleContext;
 import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
 public class FormRuleAction extends FacilioAction {
@@ -20,6 +19,7 @@ public class FormRuleAction extends FacilioAction {
 	private static final long serialVersionUID = 1L;
 	
 	 private long formId;
+	 private long subFormId = -1;
 	 private long formFieldId;
 	 private int triggerType;
 	 Map<String,Object> formData;
@@ -167,6 +167,7 @@ public class FormRuleAction extends FacilioAction {
 		Context context = c.getContext();
 		
 		context.put(FacilioConstants.ContextNames.FORM_ID, this.getFormId());
+		context.put(FacilioConstants.ContextNames.SUB_FORM_ID, this.getSubFormId());
 		context.put(FacilioConstants.ContextNames.FORM_FIELD_ID, this.getFormFieldId());
 		context.put(FormRuleAPI.FORM_RULE_TRIGGER_TYPE,FormRuleContext.TriggerType.getAllTriggerType().get(triggerType));
 		context.put(FormRuleAPI.FORM_DATA,formData);
@@ -190,6 +191,14 @@ public class FormRuleAction extends FacilioAction {
 		setResult(FormRuleAPI.FORM_RULE_RESULT_JSON, formRuleContext);
 		return SUCCESS;
 		
+	}
+
+	public long getSubFormId() {
+		return subFormId;
+	}
+
+	public void setSubFormId(long subFormId) {
+		this.subFormId = subFormId;
 	}
 
 }
