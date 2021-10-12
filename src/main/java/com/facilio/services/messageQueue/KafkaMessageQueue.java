@@ -117,6 +117,7 @@ class KafkaMessageQueue extends MessageQueue {
         try {
             if (listConsumerGroupsResult.all().get(5, TimeUnit.SECONDS).contains(consumerGroup)) {
                 numberOfConsumersOnline = describeConsumerGroupsResult.describedGroups().get(consumerGroup).get(5, TimeUnit.SECONDS).members().size();
+                LOGGER.info("number of consumers online " + numberOfConsumersOnline +" for consumer group - "+consumerGroup);
             }
         } catch (KafkaException kex) {
             LOGGER.error("Exception while getting consumer group details ", kex);
