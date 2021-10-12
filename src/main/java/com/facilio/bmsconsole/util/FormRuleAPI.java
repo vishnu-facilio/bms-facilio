@@ -51,7 +51,7 @@ public class FormRuleAPI {
 	
 	public static final String FORM_RULE_TRIGGER_TYPE = "formRuleTriggerType";
 	
-	public static final String SUB_FORM_DATA_KEY = "subformData";
+	public static final String SUB_FORM_DATA_KEY = "relations";
 	public static final String SUB_FORM_DATA_ACTIONS_KEY = "actions";
 	
 	public static final String FORM_DATA = "formRuleFormData";
