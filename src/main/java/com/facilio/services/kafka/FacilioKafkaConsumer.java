@@ -45,10 +45,10 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
         props.put("value.deserializer", StringDeserializer.class.getName());
         props.put("max.partition.fetch.bytes", 31457280);
         props.put("auto.offset.reset", "earliest");
-        props.put("session.timeout.ms", 600000);
+        props.put("session.timeout.ms", 10000);
         props.put("group.instance.id", client);
         props.put("client.id", client);
-        props.put("max.poll.interval.ms",3000000);
+        props.put("max.poll.interval.ms",300000);
         props.put("max.poll.records", 10);
         KafkaUtil.setKafkaAuthProps(props);
         isAuthCheckEnabled = FacilioProperties.getKafkaAuthMode().equalsIgnoreCase("sasl_ssl");        

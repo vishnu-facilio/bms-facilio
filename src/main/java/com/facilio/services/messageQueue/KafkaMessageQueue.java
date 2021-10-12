@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import com.facilio.agentv2.AgentConstants;
 import org.apache.kafka.clients.admin.*;
@@ -114,8 +115,11 @@ class KafkaMessageQueue extends MessageQueue {
         DescribeConsumerGroupsResult describeConsumerGroupsResult = kafkaClient.describeConsumerGroups(Collections.singleton(consumerGroup));
         ListConsumerGroupsResult listConsumerGroupsResult = kafkaClient.listConsumerGroups();
         int numberOfConsumersOnline = 0;
+        LOGGER.info("Consumer group : "+consumerGroup);
+        List<String> consumerGroupList = kafkaClient.listConsumerGroups().all().get(5, TimeUnit.SECONDS).stream().map(ConsumerGroupListing::groupId).collect(Collectors.toList());
+        LOGGER.info("ConsumerGroups : "+ consumerGroupList);
         try {
-            if (listConsumerGroupsResult.all().get(5, TimeUnit.SECONDS).contains(consumerGroup)) {
+            if (consumerGroupList.contains(consumerGroup)) {
                 numberOfConsumersOnline = describeConsumerGroupsResult.describedGroups().get(consumerGroup).get(5, TimeUnit.SECONDS).members().size();
                 LOGGER.info("number of consumers online " + numberOfConsumersOnline +" for consumer group - "+consumerGroup);
             }
