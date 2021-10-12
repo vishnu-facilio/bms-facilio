@@ -225,6 +225,7 @@ public class FormRuleContext {
 		FORM_ON_LOAD(1,"Form On Load"),
 		FIELD_UPDATE(2,"Field Update"),
 		FORM_SUBMIT(3, "Form Submit"),
+		SUB_FORM_ADD_OR_DELETE(4,"Sub Form Add or Delete")
 		;
 
 		int intVal;

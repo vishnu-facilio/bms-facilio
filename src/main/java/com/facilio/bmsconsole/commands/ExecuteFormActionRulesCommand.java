@@ -58,7 +58,7 @@ public class ExecuteFormActionRulesCommand extends FacilioCommand {
 				
 				fillEmptyActionObjectsForAllSubFormData(subFormDatas,(FacilioContext)context);
 				
-				if(isSubFormTriggerField) {
+				if(isSubFormTriggerField || formRuleContext.getTriggerTypeEnum() == TriggerType.SUB_FORM_ADD_OR_DELETE) {
 					
 					for(int i=0;i<subFormDatas.size();i++) {
 						

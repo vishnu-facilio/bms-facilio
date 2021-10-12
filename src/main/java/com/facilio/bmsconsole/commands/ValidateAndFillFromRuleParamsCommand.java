@@ -83,6 +83,16 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 			context.put(FormRuleAPI.FORM_RULE_CONTEXTS, formRuleContexts);
 			break;
 
+		case SUB_FORM_ADD_OR_DELETE:
+			if(formData == null) {
+				throw new IllegalArgumentException("Form Data Cannot be null during Sub form Action Evaluation");
+			}
+			if(subFormId == null || subFormId < 0) {
+				throw new IllegalArgumentException("sub form Cannot be null during Sub form Action Evaluation");
+			}
+			formRuleContexts = FormRuleAPI.getSubFormRuleContext(formId, subFormId, triggerType);
+			context.put(FormRuleAPI.FORM_RULE_CONTEXTS, formRuleContexts);
+			break;
 		default:
 			break;
 		}
