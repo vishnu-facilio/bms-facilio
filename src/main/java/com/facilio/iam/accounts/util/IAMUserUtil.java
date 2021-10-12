@@ -413,6 +413,10 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getTransactionalUserBean().addDCLookup(props));
 	}
 
+	public static List<Map<String, String>> getUserDetailsForUserManagement(String email) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getTransactionalUserBean().getUserDetailsForUserManagement(email));
+	}
+
 	public static boolean totpChecking(String code, long uid) throws Exception{
 		Map<String, Object> values = getUserMfaSettings(uid);
 		String totpKey = (String) values.get("totpSecret");

@@ -85,7 +85,7 @@ public class IAMAppUtil {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getAppDomain(appDomainId));
 	}
 
-	public static List<AppDomain> getAppDomainForType(int domainType, long orgId) throws Exception {
+	public static List<AppDomain> getAppDomainForType(int domainType, Long orgId) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getAppDomainForType(domainType, orgId));
 	}
 

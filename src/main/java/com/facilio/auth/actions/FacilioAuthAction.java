@@ -24,6 +24,7 @@ import com.facilio.accounts.dto.*;
 import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.bmsconsole.actions.PeopleAction;
 import com.facilio.bmsconsole.actions.SettingsMfa;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.util.AESEncryption;
 import com.facilio.bmsconsole.util.PeopleAPI;
@@ -145,6 +146,10 @@ public class FacilioAuthAction extends FacilioAction {
 	public String getPassword() {
 		return password;
 	}
+
+	@Getter
+	@Setter
+	private long applicationId;
 
 	public void setPassword(String password) {
 		this.password = PasswordHashUtil.cryptWithMD5(password);
@@ -2328,6 +2333,16 @@ public class FacilioAuthAction extends FacilioAction {
 			return ERROR;
 		}
 
+		return SUCCESS;
+	}
+
+	public String sendResetPassword() throws Exception {
+		long appId = getApplicationId();
+		AppDomain appDomainForApplication = ApplicationApi.getAppDomainForApplication(appId);
+		Map<String, Object> userMap = IAMUserUtil.getUserForUsername(getEmailaddress(), -1, appDomainForApplication.getIdentifier());
+		User user = FieldUtil.getAsBeanFromMap(userMap, User.class);
+		AccountUtil.getUserBean().sendResetPasswordLinkv2(user, appDomainForApplication.getDomain());
+		jsonresponse.put("message", "success");
 		return SUCCESS;
 	}
 

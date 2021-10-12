@@ -23,6 +23,7 @@ import com.facilio.accounts.dto.*;
 import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.accounts.sso.SSOUtil;
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.auth.actions.PasswordHashUtil;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.db.util.DBConf;
@@ -2669,5 +2670,77 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 		IAMUtil.dropUserSecurityPolicyCache(userIds);
 	}
-		
+
+	@Override
+	public List<Map<String, String>> getUserDetailsForUserManagement(String email) throws Exception {
+		List<Map<String, Object>> userData = getUserData(email, -1, null);
+
+		List<Long> orgUserIds = new ArrayList<>();
+		Map<Long, Map<String, Object>> orgUserIdVsUser = new HashMap<>();
+		for (Map<String, Object> user: userData) {
+			orgUserIds.add((long) user.get("iamOrgUserId"));
+			orgUserIdVsUser.put((long) user.get("iamOrgUserId"), user);
+		}
+
+
+		List<Map<String, Object>> orgUserApps = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getOrgUserAppsFields())
+				.table("ORG_User_Apps")
+				.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.ORG_USERID", "orgUserId", StringUtils.join(orgUserIds, ","), NumberOperators.EQUALS)).get();
+
+		List<Long> applicationIds = new ArrayList<>();
+		Map<Long, Map<String, Object>> ouidVsOrgUserApp = new HashMap<>();
+		for (Map<String, Object> orgUserApp: orgUserApps) {
+			ouidVsOrgUserApp.put((Long) orgUserApp.get("ouid"), orgUserApp);
+			applicationIds.add((long) orgUserApp.get("applicationId"));
+		}
+
+		List<Map<String, Object>> apps = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getApplicationFields())
+				.table("Application")
+				.andCondition(CriteriaAPI.getCondition("Application.ID", "id", StringUtils.join(applicationIds, ","), NumberOperators.EQUALS)).get();
+
+
+		Map<Long, Map<String, Object>> appIdVsApp = new HashMap<>();
+		for (Map<String, Object> app: apps) {
+			appIdVsApp.put((long) app.get("id"), app);
+		}
+
+		List<Map<String, String>> result = new ArrayList<>();
+
+		for (Map<String, Object> orgUser: orgUserApps) {
+			Map<String, String> res = new HashMap<>();
+			res.put("iamOrgUserId", String.valueOf(orgUser.get("ouid")));
+			long ouid = (long) orgUser.get("ouid");
+			long applicationId = (long) orgUser.get("applicationId");
+			Map<String, Object> application = appIdVsApp.get(applicationId);
+			res.put("applicationName", (String) application.get("name"));
+			res.put("applicationId", String.valueOf(orgUser.get("applicationId")));
+			res.put("userId", String.valueOf(orgUserIdVsUser.get(orgUser.get("ouid")).get("uid")));
+			result.add(res);
+		}
+
+		return result;
+	}
+
+//	private Map<String, String> getDomainForIdentifiers(List<String> identifiers) throws Exception {
+//		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+//				.select(IAMAccountConstants.getAppDomainFields())
+//				.table("App_Domain");
+//
+//		// Indentifier is <groupType>_<orgId>
+//		long groupType = -1;
+//		long orgId = -1;
+//
+//		try {
+//
+//		}
+//
+//		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.ID", "id", String.valueOf(domainId), NumberOperators.EQUALS));
+//
+//		List<Map<String, Object>> props = selectBuilder.get();
+//		if (CollectionUtils.isNotEmpty(props)) {
+//			return FieldUtil.getAsBeanFromMap(props.get(0), AppDomain.class);
+//		}
+//	}
 }

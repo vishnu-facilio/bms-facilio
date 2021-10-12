@@ -202,4 +202,6 @@ public interface IAMUserBean {
 
 	void deleteSecurityPolicy(long id, long orgId) throws Exception;
 
+	List<Map<String, String>> getUserDetailsForUserManagement(String email) throws Exception;
+
 }
