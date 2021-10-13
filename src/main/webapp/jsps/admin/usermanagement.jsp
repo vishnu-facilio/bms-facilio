@@ -32,7 +32,7 @@ java.sql.Timestamp,
           		if (AccountUtil.getRoleBean(orgId).getRole(roleId).getName().equalsIgnoreCase("Super Administrator")) {
           			userList = AccountUtil.getOrgBean(orgId).getAppUsers(orgId, -1, false);
        			}
-                userDetails = IAMUserUtil.getUserDetailsForUserManagement(email);
+                userDetails = AccountUtil.getUserBean(AccountUtil.getCurrentOrg().getOrgId()).getUserDetailsForUserManagement(email);
        		}
        		catch (Exception e) {	
       		}

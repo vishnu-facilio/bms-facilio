@@ -1301,7 +1301,54 @@ public class UserBeanImpl implements UserBean {
 		placeHolder.put(prop, brandVal != null ? brandVal : FacilioProperties.getConfig("rebrand." + prop));
 	}
 
-
-
 	
+	public List<Map<String, String>> getUserDetailsForUserManagement(String email) throws Exception {
+		List<Map<String, Object>> userData = IAMUserUtil.getUserData(email, -1, null);
+
+		List<Long> orgUserIds = new ArrayList<>();
+		Map<Long, Map<String, Object>> orgUserIdVsUser = new HashMap<>();
+		for (Map<String, Object> user: userData) {
+			orgUserIds.add((long) user.get("iamOrgUserId"));
+			orgUserIdVsUser.put((long) user.get("iamOrgUserId"), user);
+		}
+
+		List<Map<String, Object>> orgUserApps = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getOrgUserAppsFields())
+				.table("ORG_User_Apps")
+				.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.ORG_USERID", "orgUserId", StringUtils.join(orgUserIds, ","), NumberOperators.EQUALS)).get();
+
+		List<Long> applicationIds = new ArrayList<>();
+		List<Long> orgIds = new ArrayList<>();
+		for (Map<String, Object> orgUserApp: orgUserApps) {
+			applicationIds.add((long) orgUserApp.get("applicationId"));
+			orgIds.add((long) orgUserApp.get("orgId"));
+		}
+
+		List<Map<String, Object>> apps = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getApplicationFields())
+				.table("Application")
+				.andCondition(CriteriaAPI.getCondition("Application.ID", "id", StringUtils.join(applicationIds, ","), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("Application.ORGID", "orgId", StringUtils.join(orgIds, ","), NumberOperators.EQUALS))
+				.get();
+
+		Map<Long, Map<String, Object>> appIdVsApp = new HashMap<>();
+		for (Map<String, Object> app: apps) {
+			appIdVsApp.put((long) app.get("id"), app);
+		}
+
+		List<Map<String, String>> result = new ArrayList<>();
+
+		for (Map<String, Object> orgUser: orgUserApps) {
+			Map<String, String> res = new HashMap<>();
+			res.put("iamOrgUserId", String.valueOf(orgUser.get("ouid")));
+			long applicationId = (long) orgUser.get("applicationId");
+			Map<String, Object> application = appIdVsApp.get(applicationId);
+			res.put("applicationName", (String) application.get("name"));
+			res.put("applicationId", String.valueOf(orgUser.get("applicationId")));
+			res.put("userId", String.valueOf(orgUserIdVsUser.get(orgUser.get("ouid")).get("uid")));
+			result.add(res);
+		}
+
+		return result;
+	}
 }

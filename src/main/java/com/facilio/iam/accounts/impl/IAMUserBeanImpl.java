@@ -2222,7 +2222,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return selectBuilder.get();
 	}
 
-	private List<Map<String, Object>> getUserData(String username, long orgId, String identifier) throws Exception {
+	public List<Map<String, Object>> getUserData(String username, long orgId, String identifier) throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(IAMAccountConstants.getAccountsUserFields());
 		fields.addAll(IAMAccountConstants.getAccountsOrgUserFields());
@@ -2680,60 +2680,6 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				.delete();
 
 		IAMUtil.dropUserSecurityPolicyCache(userIds);
-	}
-
-	@Override
-	public List<Map<String, String>> getUserDetailsForUserManagement(String email) throws Exception {
-		List<Map<String, Object>> userData = getUserData(email, -1, null);
-
-		List<Long> orgUserIds = new ArrayList<>();
-		Map<Long, Map<String, Object>> orgUserIdVsUser = new HashMap<>();
-		for (Map<String, Object> user: userData) {
-			orgUserIds.add((long) user.get("iamOrgUserId"));
-			orgUserIdVsUser.put((long) user.get("iamOrgUserId"), user);
-		}
-
-
-		List<Map<String, Object>> orgUserApps = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getOrgUserAppsFields())
-				.table("ORG_User_Apps")
-				.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.ORG_USERID", "orgUserId", StringUtils.join(orgUserIds, ","), NumberOperators.EQUALS)).get();
-
-		List<Long> applicationIds = new ArrayList<>();
-		List<Long> orgIds = new ArrayList<>();
-		for (Map<String, Object> orgUserApp: orgUserApps) {
-			applicationIds.add((long) orgUserApp.get("applicationId"));
-			orgIds.add((long) orgUserApp.get("orgId"));
-		}
-
-		List<Map<String, Object>> apps = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getApplicationFields())
-				.table("Application")
-				.andCondition(CriteriaAPI.getCondition("Application.ID", "id", StringUtils.join(applicationIds, ","), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("Application.ORGID", "orgId", StringUtils.join(orgIds, ","), NumberOperators.EQUALS))
-				.get();
-
-
-		Map<Long, Map<String, Object>> appIdVsApp = new HashMap<>();
-		for (Map<String, Object> app: apps) {
-			appIdVsApp.put((long) app.get("id"), app);
-		}
-
-		List<Map<String, String>> result = new ArrayList<>();
-
-		for (Map<String, Object> orgUser: orgUserApps) {
-			Map<String, String> res = new HashMap<>();
-			res.put("iamOrgUserId", String.valueOf(orgUser.get("ouid")));
-			long ouid = (long) orgUser.get("ouid");
-			long applicationId = (long) orgUser.get("applicationId");
-			Map<String, Object> application = appIdVsApp.get(applicationId);
-			res.put("applicationName", (String) application.get("name"));
-			res.put("applicationId", String.valueOf(orgUser.get("applicationId")));
-			res.put("userId", String.valueOf(orgUserIdVsUser.get(orgUser.get("ouid")).get("uid")));
-			result.add(res);
-		}
-
-		return result;
 	}
 
 //	private Map<String, String> getDomainForIdentifiers(List<String> identifiers) throws Exception {

@@ -107,4 +107,6 @@ public interface UserBean {
 	public int deleteUserFromApps(User user, long applicationId) throws Exception;
 	
 	public int deletePeopleForUser(User user) throws Exception;
+
+	List<Map<String, String>> getUserDetailsForUserManagement(String email) throws Exception;
 }
