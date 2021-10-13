@@ -19,13 +19,17 @@ public abstract class MessageQueue {
     private static final Map<String, Integer> EXISTING_ORG_PARTITION = new HashMap<>();
 
     private static final List<Long> EMPTY_LIST = Collections.emptyList();
-
-
+    private static final long MIN_SESSION_TIMEOUT = 10000;
+    private static final HashSet<String> EXISTING_ORGS = new HashSet<>();
     /**
      * Entry point for starting processors
      */
-    public void start() {
+    public void start() throws InterruptedException {
         updateStream();
+        //In case of server restart,
+        //this wait time ensures that the broker knows the consumer has been killed.
+        //i.e active members list entry for all the consumers in the current machine expires
+        Thread.sleep(MIN_SESSION_TIMEOUT);
         startProcessor();
     }
 
@@ -76,21 +80,22 @@ public abstract class MessageQueue {
                 for (Map<String, Object> topicDetails : orgMessageTopics) {
                     Long orgId = (Long) topicDetails.get(AgentConstants.ORGID);
                     String orgDomainName = (String) topicDetails.get(AgentConstants.MESSAGE_TOPIC);
-                    if (currentThreadCount < FacilioProperties.getMaxProcessorThreads()) {
-                        try {
-                            currentThreadCount = currentThreadCount + startProcessor(orgId, orgDomainName, topicDetails, currentThreadCount);
-                        } catch (Exception e) {
+                    if (!EXISTING_ORGS.contains(orgDomainName)) {
+                        if (currentThreadCount < FacilioProperties.getMaxProcessorThreads()) {
                             try {
-                                CommonCommandUtil.emailException("KafkaProcessor", "Exception while starting stream " + orgDomainName, new Exception("Exception while starting stream will retry after 10 sec"));
-                                Thread.sleep(10000L);
                                 currentThreadCount = currentThreadCount + startProcessor(orgId, orgDomainName, topicDetails, currentThreadCount);
-                            } catch (InterruptedException interrupted) {
-                                LOGGER.info("Exception occurred ", interrupted);
-                                CommonCommandUtil.emailException("KafkaProcessor", "Exception again while starting stream " + orgDomainName, interrupted);
+                            } catch (Exception e) {
+                                try {
+                                    CommonCommandUtil.emailException("KafkaProcessor", "Exception while starting stream " + orgDomainName, new Exception("Exception while starting stream will retry after 10 sec"));
+                                    Thread.sleep(10000L);
+                                    currentThreadCount = currentThreadCount + startProcessor(orgId, orgDomainName, topicDetails, currentThreadCount);
+                                } catch (InterruptedException interrupted) {
+                                    LOGGER.info("Exception occurred ", interrupted);
+                                    CommonCommandUtil.emailException("KafkaProcessor", "Exception again while starting stream " + orgDomainName, interrupted);
+                                }
                             }
                         }
                     }
-
                 }
             }
         } catch (Exception e) {
@@ -104,11 +109,7 @@ public abstract class MessageQueue {
             if (orgDomainName != null && STREAMS.contains(orgDomainName)) {
                 LOGGER.info("Starting kafka processor for org : " + orgDomainName + " id " + orgId);
                 noOfProcessorsStarted = initiateProcessFactory(orgId, orgDomainName, "processor", topicDetails, currentThreadCount);
-                /*initiateProcessFactory(orgId, orgDomainName, "event");
-                initiateProcessFactory(orgId, orgDomainName, "timeSeries");
-                initiateProcessFactory(orgId,orgDomainName,"agent");*/
-
-                //EXISTING_ORG_PARTITION.put(orgDomainName, processorId);
+                EXISTING_ORGS.add(orgDomainName);
             }
         } catch (Exception e) {
             LOGGER.info("Exception occurred ", e);
