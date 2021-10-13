@@ -1,5 +1,6 @@
 package com.facilio.modules;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -240,6 +241,29 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 //		}
 	}
 
+	private void setSysTimeAndOrgId (Map<String, Object> prop) {
+		long currentTime = System.currentTimeMillis();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		prop.put("orgId", orgId);
+		prop.put("sysModifiedTime", currentTime);
+
+		if (this.bean != null) {
+			this.bean.setOrgId(orgId);
+			this.bean.setSysModifiedTime(currentTime);
+		}
+	}
+
+	private void setSysUser  (Map<String, Object> prop) {
+		User currentUser = AccountUtil.getCurrentUser();
+		if (currentUser != null && currentUser.getId() > 0) {
+			prop.put("sysModifiedBy", currentUser.getId());
+
+			if (this.bean != null) {
+				this.bean.setSysModifiedBy(currentUser);
+			}
+		}
+	}
+
 	public int updateViaMap(Map<String, Object> props) throws Exception {
 		int rowsUpdated = 0;
 		if(MapUtils.isNotEmpty(props)) {
@@ -250,11 +274,8 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			if (!moduleProps.isEmpty()) {
 				updateLookupFields(moduleProps, fields);
 				removeSystemFields(moduleProps);
-				moduleProps.put("sysModifiedTime", System.currentTimeMillis());
-
-				if (AccountUtil.getCurrentUser() != null) {
-					moduleProps.put("sysModifiedBy", AccountUtil.getCurrentUser().getId());
-				}
+				setSysTimeAndOrgId(moduleProps);
+				setSysUser(moduleProps);
 
 				if (withChangeSet) {
 					recordIds = constructChangeSet(moduleProps);
