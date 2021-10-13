@@ -508,6 +508,22 @@ public class UserBeanImpl implements UserBean {
 		}
 		return null;
 	}
+
+	@Override
+	public User getUser(long appId, long ouId) throws Exception {
+
+		GenericSelectRecordBuilder selectRecordBuilder = fetchUserSelectBuilder(appId, null, AccountUtil.getCurrentOrg().getOrgId(), Collections.singletonList(ouId));
+
+		List<Map<String, Object>> props = selectRecordBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), false);
+			if(CollectionUtils.isNotEmpty(props)) {
+				User user = createUserFromProps(props.get(0), true, false, null);
+				return user;
+			}
+		}
+		return null;
+	}
 	
 	
 	@Override
@@ -1284,6 +1300,8 @@ public class UserBeanImpl implements UserBean {
 		
 		placeHolder.put(prop, brandVal != null ? brandVal : FacilioProperties.getConfig("rebrand." + prop));
 	}
+
+
 
 	
 }
