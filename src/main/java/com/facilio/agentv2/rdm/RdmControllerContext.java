@@ -35,6 +35,15 @@ public class RdmControllerContext extends Controller {
     private String url;
     private String username;
     private String password;
+
+    public boolean isTdb() {
+        return isTdb;
+    }
+
+    public void setIsTdb(boolean tdb) {
+        isTdb = tdb;
+    }
+
     private boolean isTdb;
 
     public RdmControllerContext() {

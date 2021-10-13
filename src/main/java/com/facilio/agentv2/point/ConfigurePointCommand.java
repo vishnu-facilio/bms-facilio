@@ -5,7 +5,6 @@ import com.facilio.agentv2.controller.Controller;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -19,6 +18,13 @@ public class ConfigurePointCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         if (containsAndNotNull(context, AgentConstants.POINTS) && containsAndNotNull(context, AgentConstants.CONTROLLER)) {
             Controller controller = (Controller) context.get(AgentConstants.CONTROLLER);
+            if(controller.getControllerType()==13){
+                boolean isTdb = (boolean) controller.toJSON().get(AgentConstants.IS_TDB);
+              if(!isTdb){
+                  throw new Exception("is_tdb is false for controller "+controller.getId());
+              }
+            }
+
             int interval = -1;
             if (context.containsKey(AgentConstants.DATA_INTERVAL)) {
                 interval = Integer.parseInt((context.get(AgentConstants.DATA_INTERVAL).toString()));
