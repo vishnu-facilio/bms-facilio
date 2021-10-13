@@ -118,14 +118,14 @@ class KafkaMessageQueue extends MessageQueue {
         LOGGER.info("Consumer group : "+consumerGroup);
         List<String> consumerGroupList = kafkaClient.listConsumerGroups().all().get(5, TimeUnit.SECONDS).stream().map(ConsumerGroupListing::groupId).collect(Collectors.toList());
         LOGGER.info("ConsumerGroups : "+ consumerGroupList);
-        try {
+       /* try {
             if (consumerGroupList.contains(consumerGroup)) {
                 numberOfConsumersOnline = describeConsumerGroupsResult.describedGroups().get(consumerGroup).get(5, TimeUnit.SECONDS).members().size();
                 LOGGER.info("number of consumers online " + numberOfConsumersOnline +" for consumer group - "+consumerGroup);
             }
         } catch (KafkaException kex) {
             LOGGER.error("Exception while getting consumer group details ", kex);
-        }
+        }*/
 
         int consumersLeftToStart = maxConsumers - numberOfConsumersOnline;
         int count = 0;
