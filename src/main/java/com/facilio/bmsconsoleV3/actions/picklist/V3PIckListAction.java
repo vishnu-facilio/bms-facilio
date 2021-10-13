@@ -25,7 +25,7 @@ public class V3PIckListAction extends V3Action {
             	perPage = 150;
             }
             
-            PickListAction.populatePicklistContext(pickListChain.getContext(), getModuleName(), getFilters(), getSearch(), getCriteria(), getClientCriteria(), getDefault(), getPage(), getPerPage());
+            PickListAction.populatePicklistContext(pickListChain.getContext(), getModuleName(), getFilters(), getSearch(), getCriteria(), getClientCriteria(), getDefault(), getViewName(), getPage(), getPerPage());
             pickListChain.execute();
             setData(FacilioConstants.ContextNames.PICKLIST,pickListChain.getContext().get(FacilioConstants.ContextNames.PICKLIST));
             setMeta("moduleType", ((FacilioModule)pickListChain.getContext().get(FacilioConstants.ContextNames.MODULE)).getTypeEnum().name());
