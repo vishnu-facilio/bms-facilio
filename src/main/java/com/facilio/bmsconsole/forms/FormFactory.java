@@ -1404,6 +1404,16 @@ public class FormFactory {
 	
 	private static List<FormField> getWebWorkOrderFormFields() {
 		List<FormField> fields = new ArrayList<>();
+		
+		FacilioField srField = null;
+		try {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			srField = modBean.getField("serviceRequest", FacilioConstants.ContextNames.WORK_ORDER);
+		}
+		catch(Exception e) {
+			
+		}
+		
 		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));
 		fields.add(getSiteField());
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
@@ -1414,11 +1424,12 @@ public class FormFactory {
 		fields.add(new FormField("parentWO", FieldDisplayType.LOOKUP_SIMPLE, "Parent WorkOrder", Required.OPTIONAL, 9, 1));
 		fields.add(new FormField("sendForApproval", FieldDisplayType.DECISION_BOX, "Send For Approval", Required.OPTIONAL, 10, 1));
 		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL, 11, 1));
+		
 	//	fields.add(new FormField("workPermitNeeded", FieldDisplayType.DECISION_BOX, "Work Permit Needed", Required.OPTIONAL, 12, 1));
 	//	fields.add(new FormField("safetyPlan", FieldDisplayType.LOOKUP_SIMPLE, "Safety Plan", Required.OPTIONAL,"safetyPlan", 12, 1));
 
-
 		fields.add(new FormField("tasks", FieldDisplayType.TASKS, "TASKS", Required.OPTIONAL, 13, 1));
+		fields.add(new FormField(srField.getId(), "serviceRequest", FieldDisplayType.LOOKUP_SIMPLE, "Service Request", Required.OPTIONAL, 14, 1, true));
 		return Collections.unmodifiableList(fields);
 	}
 	

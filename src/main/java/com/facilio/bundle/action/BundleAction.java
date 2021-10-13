@@ -131,4 +131,17 @@ public class BundleAction extends V3Action{
 		
 		return SUCCESS;
 	}
+	
+	public String getAllInstalledBundles() throws Exception {
+		
+		FacilioChain getallinstalledBundles = BundleTransactionChainFactory.getAllInstalledBundlesChain();
+		
+		FacilioContext context = getallinstalledBundles.getContext();
+		
+		getallinstalledBundles.execute();
+		
+		setData(BundleConstants.INSTALLED_BUNDLES ,context.get(BundleConstants.INSTALLED_BUNDLES));
+		
+		return SUCCESS;
+	}
 }

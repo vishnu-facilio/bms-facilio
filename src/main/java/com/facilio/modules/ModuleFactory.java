@@ -4610,6 +4610,14 @@ public class ModuleFactory {
 	}
 	
 	//	Bundle Related Modules starts
+	
+	public static FacilioModule getInstalledBundleModule() {
+        FacilioModule module = new FacilioModule();
+        module.setName("installedBundle");
+        module.setDisplayName("Installed Bundle");
+		module.setTableName("Bundle_Installed");
+        return module;
+    }
     
 	public static FacilioModule getBundleModule() {
         FacilioModule module = new FacilioModule();
