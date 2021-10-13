@@ -196,11 +196,4 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
             }
         }
     }
-
-    private static final List<String> RECORD_ID_AS_ID_MODULES = Collections.unmodifiableList(Arrays.asList(new String[] {
-       ContextNames.ASSET
-    }));
-    private boolean isRecordIdIsIdField (@NonNull FacilioModule module) {
-        return RECORD_ID_AS_ID_MODULES.contains(module.getName());
-    }
 }

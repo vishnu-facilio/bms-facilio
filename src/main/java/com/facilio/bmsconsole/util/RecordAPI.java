@@ -11,15 +11,18 @@ import java.util.Objects;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ClientContext;
 import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
@@ -213,14 +216,23 @@ public class RecordAPI {
 	}
 
 	// TODO : This should be made db driven like main field
-	public static String getDefaultOrderByForModuleIfAny (String moduleName) {
-		Objects.requireNonNull(moduleName, "Module name cannot be null for getting default order by");
-		switch (moduleName) {
-			case FacilioConstants.ContextNames.TICKET_PRIORITY:
-				return "SEQUENCE_NUMBER";
-			default:
-				return null;
+	public static String getDefaultOrderByForModuleIfAny (String moduleName) throws Exception {
+		SortField field = getDefaultSortFieldForModule(moduleName);
+		if (field != null) {
+			String columnName = field.getSortField().getCompleteColumnName();
+			return columnName + " IS NULL," + columnName + " " + (field.getIsAscending()? "asc" : "desc");
 		}
+		return null;
+	}
+	public static SortField getDefaultSortFieldForModule(String moduleName) throws Exception {
+		Objects.requireNonNull(moduleName, "Module name cannot be null for getting default order by");
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		Pair<String, Boolean> fieldOrdering = FieldFactory.getSortableFieldName(moduleName);
+		if (fieldOrdering != null) {
+			return new SortField(modBean.getField(fieldOrdering.getLeft(), moduleName), fieldOrdering.getRight()) ;
+		}
+		return null;
 	}
 
 	public static String getDefaultIdOrderBy (FacilioModule module, List<Long> ids, String orderBy) {

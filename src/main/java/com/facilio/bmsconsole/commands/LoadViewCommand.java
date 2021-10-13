@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.SharingAPI;
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.ColumnFactory;
@@ -37,7 +38,7 @@ import java.util.stream.Collectors;
 
 public class LoadViewCommand extends FacilioCommand {
 
-	public static final List<String> VIEW_NAMES = Arrays.asList("hidden-all", "pendingapproval");
+	public static final List<String> HIDDEN_VIEW_NAMES = Arrays.asList("hidden-all", "pendingapproval");
 
 	private static final Logger LOGGER = LogManager.getLogger(LoadViewCommand.class.getName());
 	@Override
@@ -61,8 +62,10 @@ public class LoadViewCommand extends FacilioCommand {
 			
 			if(view == null) {
 				
-				if (VIEW_NAMES.contains(viewName)) {
+				boolean isHiddenView = false;
+				if (HIDDEN_VIEW_NAMES.contains(viewName)) {
 					viewName = "all";
+					isHiddenView = true;
 				}
 				
 				view = ViewFactory.getView(module, viewName, modBean);
@@ -78,6 +81,12 @@ public class LoadViewCommand extends FacilioCommand {
 				
 				if(view != null && view.getFields() != null) {
 					ViewAPI.setViewFieldsProp(view.getFields(), moduleName);
+					if (isHiddenView) {
+						SortField sortField = RecordAPI.getDefaultSortFieldForModule(moduleName);
+						if (sortField != null) {
+							view.setSortFields(Collections.singletonList(sortField));
+						}
+					}
 				}
 			}
 			

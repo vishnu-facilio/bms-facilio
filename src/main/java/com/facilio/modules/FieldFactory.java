@@ -53,6 +53,7 @@ public class FieldFactory extends BaseFieldFactory {
         lookupModuleVsSortFieldName.put("readingalarmcategory", Pair.of("name", true));
         lookupModuleVsSortFieldName.put("siteId", Pair.of("name", true));
         lookupModuleVsSortFieldName.put("facility", Pair.of("name", true));
+        lookupModuleVsSortFieldName.put("floor", Pair.of("floorlevel", true));
         return lookupModuleVsSortFieldName;
     }
 
@@ -61,7 +62,9 @@ public class FieldFactory extends BaseFieldFactory {
     	if (sortField == null) {
     		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
     		FacilioField primaryField = modBean.getPrimaryField(moduleName);
-    		sortField = Pair.of(primaryField.getName(), true);
+    		if (primaryField != null) {
+    			sortField = Pair.of(primaryField.getName(), true);
+    		}
     	}
         return sortField;
     }
