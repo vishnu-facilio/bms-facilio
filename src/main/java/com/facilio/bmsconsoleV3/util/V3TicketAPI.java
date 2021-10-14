@@ -20,6 +20,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
+import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.exception.ErrorCode;
@@ -421,8 +422,8 @@ public class V3TicketAPI {
         loadTicketDetails(workOrders);
     }
 
-    public static List<FacilioStatus> getAllStatus(FacilioModule module, boolean ignorePreOpen) throws Exception
-    {
+
+    public static List<FacilioStatus> getAllStatus(FacilioModule module, boolean ignorePreOpen) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TICKET_STATUS);
 
@@ -813,8 +814,8 @@ public class V3TicketAPI {
         return getRelatedTasks(ticketIds, true, false);
     }
 
-    public static List<V3TaskContext> getRelatedTasks(List<Long> ticketIds, boolean fetchChildren, boolean fetchResources) throws Exception
-    {
+    public static List<V3TaskContext> getRelatedTasks(List<Long> ticketIds,
+                                                      boolean fetchChildren, boolean fetchResources) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioField> fields = modBean.getAllFields("task");
         FacilioField parentId = FieldFactory.getAsMap(fields).get("parentTicketId");
@@ -847,18 +848,36 @@ public class V3TicketAPI {
                     .map(task -> task.getResource().getId()).collect(Collectors.toList());
             if (!resourceIds.isEmpty()) {
                 Map<Long, ResourceContext> resources = ResourceAPI.getResourceAsMapFromIds(resourceIds);
-                for(V3TaskContext task: tasks) {
+                for (V3TaskContext task : tasks) {
                     if (task.getResource() != null && task.getResource().getId() > 0 && resources.containsKey(task.getResource().getId())) {
                         task.setResource(resources.get(task.getResource().getId()));
                     }
                 }
             }
         }
+        setTaskInputData(tasks);
         return tasks;
     }
 
-    public static List<AttachmentContext> getRelatedAttachments(long ticketId) throws Exception
-    {
+    public static void setTaskInputData(List<V3TaskContext> tasks) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        for (V3TaskContext task : tasks) {
+            switch (task.getInputTypeEnum()) {
+                case BOOLEAN:
+                    BooleanField field = (BooleanField) modBean.getField(task.getReadingFieldId());
+                    task.setReadingField(field);
+                    task.setTruevalue(field.getTrueVal());
+                    task.setFalsevalue(field.getFalseVal());
+                    List<String> options = new ArrayList<>();
+                    options.add(field.getTrueVal());
+                    options.add(field.getFalseVal());
+                    task.setOptions(options);
+                    break;
+            }
+        }
+    }
+
+    public static List<AttachmentContext> getRelatedAttachments(long ticketId) throws Exception {
         return AttachmentsAPI.getAttachments(FacilioConstants.ContextNames.TICKET_ATTACHMENTS, ticketId);
     }
 

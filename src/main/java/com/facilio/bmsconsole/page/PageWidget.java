@@ -368,7 +368,8 @@ public class PageWidget {
 		WORKORDER_SIDEBAR("workorderSidebar"),
 		HAZARDS("hazards"),
 		PRECAUTIONS("precautions"),
-		PREREQUISITES("prerequisites");
+		PREREQUISITES("prerequisites"),
+		TASKS_MONOLITH("taskMonolith");
 
 		private String name;
 

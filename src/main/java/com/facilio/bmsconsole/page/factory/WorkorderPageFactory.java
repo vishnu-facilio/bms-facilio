@@ -103,17 +103,22 @@ public class WorkorderPageFactory extends PageFactory {
         Page.Section tasksSection = page.new Section();
         tasksTab.addSection(tasksSection);
 
-        // workorder progress widget
-        PageWidget workorderProgress = new PageWidget(PageWidget.WidgetType.WORKORDER_PROGRESS);
-        workorderProgress.addToLayoutParams(tasksSection, 18, 2);
-        tasksSection.addWidget(workorderProgress);
+        // tasks monolith widget
+        PageWidget tasksMonolith = new PageWidget(PageWidget.WidgetType.TASKS_MONOLITH);
+        tasksMonolith.addToLayoutParams(tasksSection, 24, 18);
+        tasksSection.addWidget(tasksMonolith);
 
-        // tasks widget
-        PageWidget tasks = new PageWidget(PageWidget.WidgetType.TASKS);
-        tasks.addToLayoutParams(0, 2, 18, 8);
-        tasksSection.addWidget(tasks);
-
-        composeRightPanel(tasksSection);
+//        // workorder progress widget
+//        PageWidget workorderProgress = new PageWidget(PageWidget.WidgetType.WORKORDER_PROGRESS);
+//        workorderProgress.addToLayoutParams(tasksSection, 18, 2);
+//        tasksSection.addWidget(workorderProgress);
+//
+//        // tasks widget
+//        PageWidget tasks = new PageWidget(PageWidget.WidgetType.TASKS);
+//        tasks.addToLayoutParams(0, 2, 18, 8);
+//        tasksSection.addWidget(tasks);
+//
+//        composeRightPanel(tasksSection);
     }
 
     private static Page.Section addSafetyPlanTab(Page page) {
@@ -142,7 +147,7 @@ public class WorkorderPageFactory extends PageFactory {
 
         // prerequisites widget
         PageWidget prerequisites = new PageWidget(PageWidget.WidgetType.PREREQUISITES);
-        prerequisites.addToLayoutParams(0, 16, 18, 8);
+        prerequisites.addToLayoutParams(0, 16, 18, 10);
         safetyPlanSection.addWidget(prerequisites);
     }
 
@@ -164,17 +169,20 @@ public class WorkorderPageFactory extends PageFactory {
     public static Page getWorkorderPage(WorkOrderContext workorder) throws Exception {
         Page page = new Page();
         addSummaryTab(page);
-        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SAFETY_PLAN)) {
-            if (workorder.isPrerequisiteEnabled()) {
-                addSafetyPlanTab(page);
-            } else {
-                addSafetyPlanTabWithPrerequisites(page);
-            }
-        }
+
         // isPrerequisiteEnabled is true when WO generated as a part of PM & Safety Plan is not enabled
         // when Safety Plan is enabled, prerequisites are shown as a widget in Safety Plan tab
         if (workorder.isPrerequisiteEnabled()) {
-            addPrerequisiteTab(page);
+            if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SAFETY_PLAN)) {
+                // SP & PR
+                addSafetyPlanTabWithPrerequisites(page);
+            } else {
+                // !SP & PR
+                addPrerequisiteTab(page);
+            }
+        } else if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SAFETY_PLAN)) {
+            // SP & !PR
+            addSafetyPlanTab(page);
         }
         addTasksTab(page);
         addRelatedRecordsTab(page);
