@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
@@ -10,6 +11,7 @@ import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -56,6 +58,13 @@ public class ReadingUnitAndInputConversionCommand extends FacilioCommand {
 											LOGGER.info("Reading data meta is null for parent: "+reading.getParentId()+" for field: "+field);
 										}
 										try {
+											long orgId = AccountUtil.getCurrentOrg().getId();
+											if (orgId == 339l || orgId == 321l) {
+												if (moduleName.equals(ContextNames.WEATHER_READING) && fieldName == "temperature") {
+													LOGGER.info("Temperature for " + orgId + ", Ttime - " + reading.getTtime() + ", Parent - " + reading.getParentId() + ", Value - " + readingData.get(fieldName) + ", id - " + reading.getId());
+												}
+											}
+											
                                             if (readingDataMeta != null && readingDataMeta.getUnitEnum() != null) {
                                                 Object value = UnitsUtil.convertToSiUnit(readingData.get(fieldName), readingDataMeta.getUnitEnum());
                                                 readingData.put(fieldName, value);
