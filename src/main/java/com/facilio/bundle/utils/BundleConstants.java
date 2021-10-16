@@ -66,6 +66,8 @@ public class BundleConstants {
 
 	public static final String INSTALLED_BUNDLES = "installedBundles";
 
+	public static final String CHANGE_SET_CACHE = "changeSetMapCache";
+
 	public static class Components {
 		public static final String NAME = "name";
 		public static final String DISPLAY_NAME = "displayName";

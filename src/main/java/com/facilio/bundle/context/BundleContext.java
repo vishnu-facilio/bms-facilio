@@ -23,6 +23,8 @@ public class BundleContext {
 	Long createdTime;
 	Long modifiedTime;
 	
+	List<BundleContext> childVersions;
+	
 	String downloadUrl;
 	
 	public int getType() {
