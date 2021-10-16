@@ -31,12 +31,6 @@ import io.jsonwebtoken.lang.Collections;
 public abstract class CommonBundleComponent implements BundleComponentInterface {
 
 	
-	
-	@Override
-	public void getParentDetails(FacilioContext context) throws Exception {
-		
-	}
-	
 	@Override
 	public Condition getFetchChangeSetCondition(FacilioContext context) throws Exception {
 		return null;

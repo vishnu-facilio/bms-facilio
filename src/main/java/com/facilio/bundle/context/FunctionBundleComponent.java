@@ -35,16 +35,6 @@ public class FunctionBundleComponent extends CommonBundleComponent {
 	
 	public static final String FS_EXTN = "fs";
 	
-	@Override
-	public void getParentDetails(FacilioContext context) throws Exception {
-		
-		Long functionId = (Long) context.get(BundleConstants.COMPONENT_ID);
-		WorkflowUserFunctionContext userFunction = WorkflowV2API.getUserFunction(functionId);
-		
-		context.put(BundleConstants.PARENT_COMPONENT_ID, userFunction.getNameSpaceId());
-		context.put(BundleConstants.PARENT_COMPONENT_NAME, userFunction.getNameSpaceName());
-	}
-	
 	public String getFileName(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		

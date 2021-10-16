@@ -48,7 +48,6 @@ public class AddDefaultBundleCommand extends FacilioCommand {
 		defaultBundle.setBundleName("default");
 		defaultBundle.setBundleGlobalName("org.facilio."+org.getDomain()+".default");
 		defaultBundle.setOrgId(org.getOrgId());
-		defaultBundle.setVersion("0.0.1");
 		defaultBundle.setTypeEnum(BundleContext.BundleTypeEnum.UN_MANAGED_SYSTEM);
 		defaultBundle.setCreatedTime(System.currentTimeMillis());
 		defaultBundle.setModifiedTime(defaultBundle.getCreatedTime());

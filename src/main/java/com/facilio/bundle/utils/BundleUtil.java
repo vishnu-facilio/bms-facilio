@@ -40,6 +40,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.google.common.io.Files;
 
+import io.jsonwebtoken.lang.Collections;
 import lombok.extern.log4j.Log4j;
 
 @Log4j
@@ -250,10 +251,6 @@ public class BundleUtil {
 	
 	public static BundleChangeSetContext addBundleChangeSetForSystemComponents(BundleContext bundle,BundleComponentsEnum componentEnum, Long componentId, String componentDisplayName) throws Exception {
 		
-//		if(1 == 1) {
-//			return null;
-//		}
-		
 		BundleChangeSetContext changeSet = new BundleChangeSetContext();
 		
 		changeSet.setBundleId(bundle.getId());
@@ -359,6 +356,24 @@ public class BundleUtil {
 
 		return text;
 	}
+	
+	public static void setVersion(BundleContext bundle) {
+		// TODO Auto-generated method stub
+		
+		if(Collections.isEmpty(bundle.getChildVersions())) {
+			bundle.setVersion(1.0);
+		}
+		else {
+			double maxVersion = Double.MIN_NORMAL;
+			for(BundleContext childVersion : bundle.getChildVersions()) {
+				if(maxVersion < childVersion.getVersion()) {
+					maxVersion = childVersion.getVersion();
+				}
+			}
+			bundle.setVersion(maxVersion+1.0);
+		}
+	}
+	
 	
 	public static List<Map<String, Object>> fetchBundleRelated(FacilioModule module,List<FacilioField> fields,Criteria fetchCriteria,Condition condition) throws Exception {
 		

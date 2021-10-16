@@ -33,10 +33,10 @@ public class BundleTransactionChainFactory {
     public static FacilioChain getCreateVersionChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchBundleCommand());
-//        c.addCommand(new FetchLatestBundleCommand());
         c.addCommand(new FetchBundleChangeSetCommand());
-        c.addCommand(new PackBundleChangeSetCommand());
         c.addCommand(new CreateBundleVersionCommand());
+        c.addCommand(new FetchAllChangeSetForPackingCommand());
+        c.addCommand(new PackBundleChangeSetCommand());
         return c;
     }
     

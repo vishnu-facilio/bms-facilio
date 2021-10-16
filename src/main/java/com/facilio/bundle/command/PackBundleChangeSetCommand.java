@@ -3,6 +3,8 @@ package com.facilio.bundle.command;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 //import java.nio.file.Files;
 //import java.nio.file.Path;
 import java.util.ArrayList;
@@ -30,6 +32,11 @@ import com.facilio.bundle.utils.BundleUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.time.DateTimeUtil;
@@ -46,6 +53,8 @@ public class PackBundleChangeSetCommand extends FacilioCommand {
 		
 		List<BundleChangeSetContext> changeSet = (List<BundleChangeSetContext>) context.get(BundleConstants.BUNDLE_CHANGE_SET_LIST);
 		
+		BundleContext bundle = (BundleContext) context.get(BundleConstants.BUNDLE_CONTEXT);
+		
 		if(changeSet != null && !changeSet.isEmpty()) {
 			
 			BundleFolderContext rootFolder = new BundleFolderContext("Facilio_App_Bundle_"+DateTimeUtil.getFormattedTime(DateTimeUtil.getCurrenTime()));
@@ -54,10 +63,10 @@ public class PackBundleChangeSetCommand extends FacilioCommand {
 			
 			BundleFileContext bundleFile = new BundleFileContext(BundleConstants.BUNDLE_FILE_NAME, BundleConstants.XML_FILE_EXTN, BundleConstants.BUNDLE_FILE_NAME, null);
 			
-			XMLBuilder bundleBuilder = bundleFile.getXmlContent();
-			bundleBuilder = bundleBuilder.e(BundleConstants.VERSION).text("1.0.0").p();
+			XMLBuilder bundleXMLBuilder = bundleFile.getXmlContent();
+			bundleXMLBuilder = bundleXMLBuilder.e(BundleConstants.VERSION).text(bundle.getVersion()+"").p();
 			
-			bundleBuilder = bundleBuilder.e(BundleConstants.COMPONENTS);
+			bundleXMLBuilder = bundleXMLBuilder.e(BundleConstants.COMPONENTS);
 			
 			Map<Integer, List<BundleChangeSetContext>> changeSetMap = changeSet.stream().collect(Collectors.groupingBy(BundleChangeSetContext::getComponentType));
 			
@@ -73,7 +82,7 @@ public class PackBundleChangeSetCommand extends FacilioCommand {
 				
 				if(changeSetMap.containsKey(component.getValue())) {
 					
-					bundleBuilder = bundleBuilder.e(BundleConstants.COMPONENT).attr("name", component.getName());
+					bundleXMLBuilder = bundleXMLBuilder.e(BundleConstants.COMPONENT).attr("name", component.getName());
 					
 					List<BundleChangeSetContext> componentChangeSet = changeSetMap.get(component.getValue());
 					
@@ -83,20 +92,20 @@ public class PackBundleChangeSetCommand extends FacilioCommand {
 						newContext.put(BundleConstants.COMPONENT_ID, componentChange.getComponentId());
 						newContext.put(BundleConstants.BUNDLE_CHANGE, componentChange);
 						newContext.put(BundleConstants.COMPONENTS_FOLDER, rootFolder.getFolder(BundleConstants.COMPONENTS_FOLDER_NAME));
-						newContext.put(BundleConstants.BUNDLE_XML_BUILDER, bundleBuilder);
+						newContext.put(BundleConstants.BUNDLE_XML_BUILDER, bundleXMLBuilder);
 						
 						bundleComponent.fillBundleXML(newContext);
 						bundleComponent.getFormatedObject(newContext);
 						
 					}
 					
-					bundleBuilder = bundleBuilder.p();
-					
-					ArrayList<BundleComponentsEnum> childList = BundleComponentsEnum.getParentChildMap().get(component);
-					
-					if(childList != null) {
-						componentsQueue.addAll(childList);
-					}
+					bundleXMLBuilder = bundleXMLBuilder.p();
+				}
+				
+				ArrayList<BundleComponentsEnum> childList = BundleComponentsEnum.getParentChildMap().get(component);
+				
+				if(childList != null) {
+					componentsQueue.addAll(childList);
 				}
 			}
 			
@@ -108,8 +117,24 @@ public class PackBundleChangeSetCommand extends FacilioCommand {
 			
 			context.put(BundleConstants.DOWNLOAD_URL, downloadUrl);
 			context.put(FacilioConstants.ContextNames.FILE_ID, fileId);
+			
+			updateBundleWithFileId(bundle,fileId);
 		}
 		return false;
+	}
+
+	private void updateBundleWithFileId(BundleContext bundle, long fileId) throws Exception {
+		
+		
+		bundle.setBundleFileId(fileId);
+		
+		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getBundleModule().getTableName())
+				.fields(FieldFactory.getBundleFields())
+				.andCondition(CriteriaAPI.getIdCondition(bundle.getId(), ModuleFactory.getBundleModule()));
+		
+		update.update(FieldUtil.getAsProperties(bundle));
+		
 	}
 
 	private long saveAsZipFile(BundleFolderContext rootFolder) throws Exception {

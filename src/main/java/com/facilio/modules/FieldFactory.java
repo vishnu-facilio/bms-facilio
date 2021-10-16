@@ -9906,7 +9906,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getIdField(module));
         fields.add(getField("bundleName", "BUNDLE_NAME", module, FieldType.STRING));
         fields.add(getField("bundleGlobalName", "BUNDLE_GLOBAL_NAME", module, FieldType.STRING));
-        fields.add(getField("version", "VERSION", module, FieldType.STRING));
+        fields.add(getField("version", "VERSION", module, FieldType.DECIMAL));
         fields.add(getField("parentBundleId", "PARENT_BUNDLE", module, FieldType.NUMBER));
         fields.add(getField("bundleFileId", "BUNDLE_FILE_ID", module, FieldType.NUMBER));
         fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
