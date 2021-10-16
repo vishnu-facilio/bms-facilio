@@ -16,6 +16,8 @@ public interface BundleComponentInterface {
 	void getAddedChangeSet(FacilioContext context) throws Exception;
 	void getModifiedChangeSet(FacilioContext context) throws Exception;
 	void getDeletedChangeSet(FacilioContext context) throws Exception;
+	
+	boolean isPackableComponent(FacilioContext context) throws Exception;
 	Condition getFetchChangeSetCondition(FacilioContext context) throws Exception;
 	
 }

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Priority;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -20,6 +21,10 @@ import com.facilio.bundle.utils.BundleConstants;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
@@ -48,7 +53,7 @@ public class FieldBundleComponent extends CommonBundleComponent {
 	
 	public static final List<String> SYSTEM_UN_PACKABLE_FIELD_NAMES = new ArrayList<String>();
 	
-	public static final List<String> SYSTEM_DEFAULT_FIELD_NAMES = new ArrayList<String>();
+//	public static final List<String> SYSTEM_DEFAULT_FIELD_NAMES = new ArrayList<String>();
 	
 	static {
 		SYSTEM_UN_PACKABLE_FIELD_NAMES.add("approvalFlowId");
@@ -56,13 +61,13 @@ public class FieldBundleComponent extends CommonBundleComponent {
 		SYSTEM_UN_PACKABLE_FIELD_NAMES.add("moduleState");
 		SYSTEM_UN_PACKABLE_FIELD_NAMES.add("stateFlowId");
 		
-		SYSTEM_DEFAULT_FIELD_NAMES.add("name");
-		SYSTEM_DEFAULT_FIELD_NAMES.add("photo");
-		SYSTEM_DEFAULT_FIELD_NAMES.add("siteId");
-		SYSTEM_DEFAULT_FIELD_NAMES.add("sysCreatedBy");
-		SYSTEM_DEFAULT_FIELD_NAMES.add("sysCreatedTime");
-		SYSTEM_DEFAULT_FIELD_NAMES.add("sysModifiedBy");
-		SYSTEM_DEFAULT_FIELD_NAMES.add("sysModifiedTime");
+		SYSTEM_UN_PACKABLE_FIELD_NAMES.add("name");
+		SYSTEM_UN_PACKABLE_FIELD_NAMES.add("photo");
+		SYSTEM_UN_PACKABLE_FIELD_NAMES.add("siteId");
+		SYSTEM_UN_PACKABLE_FIELD_NAMES.add("sysCreatedBy");
+		SYSTEM_UN_PACKABLE_FIELD_NAMES.add("sysCreatedTime");
+		SYSTEM_UN_PACKABLE_FIELD_NAMES.add("sysModifiedBy");
+		SYSTEM_UN_PACKABLE_FIELD_NAMES.add("sysModifiedTime");
 	}
 	
 	@Override
@@ -102,6 +107,15 @@ public class FieldBundleComponent extends CommonBundleComponent {
 		
 		return true;
 		
+	}
+	
+	@Override
+	public Condition getFetchChangeSetCondition(FacilioContext context) throws Exception {
+		// TODO Auto-generated method stub
+		
+		Condition changeSetFetchCondition = CriteriaAPI.getCondition("NAME", "name", StringUtils.join(SYSTEM_UN_PACKABLE_FIELD_NAMES, ","), StringOperators.ISN_T);
+		
+		return changeSetFetchCondition;
 	}
 	
 	@Override
@@ -152,10 +166,6 @@ public class FieldBundleComponent extends CommonBundleComponent {
 			}
 			
 			 BundleModeEnum mode = componentChange.getModeEnum();
-			
-			if(SYSTEM_DEFAULT_FIELD_NAMES.contains(field.getName())) {
-				mode = BundleModeEnum.UPDATE;
-			}
 			
 			Boolean isRequired = field.getRequired() == null? false : field.getRequired();
 			

@@ -37,6 +37,10 @@ public abstract class CommonBundleComponent implements BundleComponentInterface 
 	public Condition getFetchChangeSetCondition(FacilioContext context) throws Exception {
 		return null;
 	}
+	@Override
+	public boolean isPackableComponent(FacilioContext context) throws Exception {
+		return true;
+	}
 	
 	@Override
 	public void getAddedChangeSet(FacilioContext context) throws Exception {
@@ -71,14 +75,21 @@ public abstract class CommonBundleComponent implements BundleComponentInterface 
 			
 			for(Map<String, Object> prop : props) {
 				
-				BundleChangeSetContext change = new BundleChangeSetContext();
+				long componentID = (Long)prop.get(component.getIdFieldName());
 				
-				change.setComponentId((Long)prop.get(component.getIdFieldName()));
-				change.setComponentTypeEnum(component);
-				change.setModeEnum(BundleModeEnum.ADD);
-				change.setComponentDisplayName((String)prop.get(component.getDisplayNameFieldName()));
+				context.put(BundleConstants.COMPONENT_ID, componentID);
 				
-				changeSet.add(change);
+				if(isPackableComponent(context)) {
+					BundleChangeSetContext change = new BundleChangeSetContext();
+					
+					change.setComponentId(componentID);
+					change.setComponentTypeEnum(component);
+					change.setModeEnum(BundleModeEnum.ADD);
+					change.setComponentDisplayName((String)prop.get(component.getDisplayNameFieldName()));
+					
+					changeSet.add(change);
+				}
+				
 			}
 			
 			context.put(BundleConstants.CHANGE_SET, changeSet);
@@ -120,15 +131,21 @@ public abstract class CommonBundleComponent implements BundleComponentInterface 
 			
 			for(Map<String, Object> prop : props) {
 				
-				BundleChangeSetContext change = new BundleChangeSetContext();
+				long componentID = (Long)prop.get(component.getIdFieldName());
 				
-				change.setComponentId((Long)prop.get(component.getIdFieldName()));
-				change.setComponentTypeEnum(component);
-				change.setModeEnum(BundleModeEnum.UPDATE);
-//				change.setComponentName((String)prop.get(component.getNameFieldName()));
-				change.setComponentDisplayName((String)prop.get(component.getDisplayNameFieldName()));
+				context.put(BundleConstants.COMPONENT_ID, componentID);
 				
-				changeSet.add(change);
+				if(isPackableComponent(context)) {
+					
+					BundleChangeSetContext change = new BundleChangeSetContext();
+					
+					change.setComponentId(componentID);
+					change.setComponentTypeEnum(component);
+					change.setModeEnum(BundleModeEnum.UPDATE);
+					change.setComponentDisplayName((String)prop.get(component.getDisplayNameFieldName()));
+					
+					changeSet.add(change);
+				}
 			}
 			
 			context.put(BundleConstants.CHANGE_SET, changeSet);
