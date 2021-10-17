@@ -160,41 +160,65 @@ public class FieldBundleComponent extends CommonBundleComponent {
 		
 		BundleFileContext changeSetXMLFile = (BundleFileContext) context.get(BundleConstants.BUNDLED_XML_COMPONENT_FILE);
 		
-		XMLBuilder xmlContent = changeSetXMLFile.getXmlContent();
+		XMLBuilder fieldElement = changeSetXMLFile.getXmlContent();
 		
 		String moduleName = null;
 		
-		for(XMLBuilder fieldElement : xmlContent.getElementList(BundleComponentsEnum.FIELD.getName())) {
+		BundleModeEnum modeEnum = (BundleModeEnum) context.get(BundleConstants.INSTALL_MODE);
+		moduleName = fieldElement.getAttribute(MODULE_NAME);
+		
+		switch(modeEnum) {
+		case ADD: 
 			
-			BundleModeEnum modeEnum = BundleModeEnum.valueOfName(fieldElement.getAttribute(BundleConstants.Components.MODE));
-			moduleName = fieldElement.getAttribute(MODULE_NAME);
+			FacilioField field = new FacilioField();
 			
-			switch(modeEnum) {
-			case ADD: 
-				
-				FacilioField field = new FacilioField();
-				
-				field.setDisplayName(fieldElement.getElement(BundleConstants.Components.DISPLAY_NAME).getText());
-				field.setDataType(FieldType.getCFType(fieldElement.getElement(DATA_TYPE).getText()));
-				field.setDisplayTypeInt(Integer.valueOf(fieldElement.getElement(DISPLAY_TYPE).getText()));
-				field.setRequired(Boolean.valueOf(fieldElement.getElement(REQUIRED).getText()));
-				
-				List<FacilioField> addFields = new ArrayList<FacilioField>();
-				
-				addFields.add(field);
-				
-				FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
-				
-				FacilioContext newContext = addFieldsChain.getContext();
-				
-				newContext.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-				newContext.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, addFields);
-				
-				addFieldsChain.execute();
-				
-				break;
-			}
+			field.setDisplayName(fieldElement.getElement(BundleConstants.Components.DISPLAY_NAME).getText());
+			field.setDataType(FieldType.getCFType(fieldElement.getElement(DATA_TYPE).getText()));
+			field.setDisplayTypeInt(Integer.valueOf(fieldElement.getElement(DISPLAY_TYPE).getText()));
+			field.setRequired(Boolean.valueOf(fieldElement.getElement(REQUIRED).getText()));
+			
+			List<FacilioField> addFields = new ArrayList<FacilioField>();
+			
+			addFields.add(field);
+			
+			FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
+			
+			FacilioContext newContext = addFieldsChain.getContext();
+			
+			newContext.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+			newContext.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, addFields);
+			
+			addFieldsChain.execute();
+			
+			break;
 		}
+	}
+	
+	@Override
+	public void getInstallMode(FacilioContext context) throws Exception {
+		// TODO Auto-generated method stub
+		
+		BundleFileContext changeSetXMLFile = (BundleFileContext) context.get(BundleConstants.BUNDLED_XML_COMPONENT_FILE);
+		
+		XMLBuilder fieldElement = changeSetXMLFile.getXmlContent();
+		
+		String moduleName = fieldElement.getAttribute(MODULE_NAME);
+		
+		String fieldName = fieldElement.getElement(BundleConstants.Components.NAME).getText();
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		BundleModeEnum installMode = null;
+		
+		if(modBean.getField(fieldName, moduleName) != null) {
+			installMode = BundleModeEnum.UPDATE;
+		}
+		else {
+			installMode = BundleModeEnum.ADD;
+		}
+		
+		context.put(BundleConstants.INSTALL_MODE, installMode);
+		
 	}
 
 //	@Override

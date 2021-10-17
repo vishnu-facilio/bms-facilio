@@ -114,7 +114,7 @@ public class ModuleBundleComponent extends CommonBundleComponent {
 		BundleFileContext changeSetXMLFile = (BundleFileContext) context.get(BundleConstants.BUNDLED_XML_COMPONENT_FILE);
 		
 		XMLBuilder xmlContent = changeSetXMLFile.getXmlContent();
-		BundleModeEnum modeEnum = BundleModeEnum.valueOfName(xmlContent.getAttribute(BundleConstants.Components.MODE));
+		BundleModeEnum modeEnum = (BundleModeEnum) context.get(BundleConstants.INSTALL_MODE);
 		
 		String name = xmlContent.getElement(BundleConstants.Components.NAME).getText();
 		String displayName = xmlContent.getElement(BundleConstants.Components.DISPLAY_NAME).getText();
@@ -144,6 +144,31 @@ public class ModuleBundleComponent extends CommonBundleComponent {
 	@Override
 	public void postInstall(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void getInstallMode(FacilioContext context) throws Exception {
+		// TODO Auto-generated method stub
+		
+		BundleFileContext changeSetXMLFile = (BundleFileContext) context.get(BundleConstants.BUNDLED_XML_COMPONENT_FILE);
+		
+		XMLBuilder xmlContent = changeSetXMLFile.getXmlContent();
+		
+		String name = xmlContent.getElement(BundleConstants.Components.NAME).getText();
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		BundleModeEnum installMode = null;
+		
+		if(modBean.getModule(name) != null) {
+			installMode = BundleModeEnum.UPDATE;
+		}
+		else {
+			installMode = BundleModeEnum.ADD;
+		}
+		
+		context.put(BundleConstants.INSTALL_MODE, installMode);
 		
 	}
 

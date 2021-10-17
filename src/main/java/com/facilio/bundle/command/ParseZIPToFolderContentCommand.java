@@ -24,8 +24,6 @@ import lombok.extern.java.Log;
 @Log
 public class ParseZIPToFolderContentCommand extends FacilioCommand {
 	
-	 
-
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub

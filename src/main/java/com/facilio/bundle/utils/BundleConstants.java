@@ -41,6 +41,7 @@ public class BundleConstants {
 	public static final String BUNDLE_VERSION_LIST = "bundleVersionList";
 	
 	public static final String VERSION = "version";
+	public static final String GLOBAL_NAME = "globalName";
 	public static final String COMPONENTS = "components";
 	public static final String COMPONENT = "component";
 	public static final String VALUES = "values";
@@ -67,6 +68,10 @@ public class BundleConstants {
 	public static final String INSTALLED_BUNDLES = "installedBundles";
 
 	public static final String CHANGE_SET_CACHE = "changeSetMapCache";
+
+	public static final String TO_BE_INSTALLED_VERSIONS_LIST = "toBeInstalledVersionList";
+
+	public static final String INSTALL_MODE = "installMode";
 
 	public static class Components {
 		public static final String NAME = "name";
