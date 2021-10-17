@@ -142,6 +142,21 @@ public class WorkorderPageFactory extends PageFactory {
         return safetyPlanSection;
     }
 
+    private static void addInventoryTab(Page page) {
+        Page.Tab itemsAndLaborTab = page.new Tab("items & labor");
+        page.addTab(itemsAndLaborTab);
+
+        Page.Section itemsAndLaborSection = page.new Section();
+        itemsAndLaborTab.addSection(itemsAndLaborSection);
+
+        // TODO::VR monolith, to be decomposed.
+        // items & labor widget
+        PageWidget itemsAndLabor = new PageWidget(PageWidget.WidgetType.ITEMS_AND_LABOR);
+        itemsAndLabor.addToLayoutParams(itemsAndLaborSection, 24, 18);
+        itemsAndLaborSection.addWidget(itemsAndLabor);
+    }
+
+
     private static void addSafetyPlanTabWithPrerequisites(Page page) {
         Page.Section safetyPlanSection = addSafetyPlanTab(page);
 
@@ -185,6 +200,9 @@ public class WorkorderPageFactory extends PageFactory {
             addSafetyPlanTab(page);
         }
         addTasksTab(page);
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)) {
+            addInventoryTab(page);
+        }
         addRelatedRecordsTab(page);
         addHistoryTab(page);
         return page;
