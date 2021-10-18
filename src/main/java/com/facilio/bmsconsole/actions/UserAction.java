@@ -402,6 +402,9 @@ public class UserAction extends FacilioAction {
 				else if (ae.getErrorCode().equals(AccountException.ErrorCode.USER_ALREADY_EXISTS_IN_APP)) {
 					addFieldError("error", "This user already exists in the app of your organization.");
 					return ERROR;
+				} else if (ae.getErrorCode().equals(AccountException.ErrorCode.DUPLICATE_USER)) {
+					addFieldError("error", "User already exists in app.");
+					return ERROR;
 				}
 			} 
 			log.info("Exception occurred ", e);

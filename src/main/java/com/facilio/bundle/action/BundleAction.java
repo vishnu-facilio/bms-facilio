@@ -26,7 +26,6 @@ public class BundleAction extends V3Action{
 	
 	File bundleZip;
 	String bundleZipName;
-	String version;
 	BundleContext bundle;
 	
 	public String copyCustomization() throws Exception {
@@ -95,7 +94,6 @@ public class BundleAction extends V3Action{
 		FacilioContext context = addBundle.getContext();
 		
 		context.put(BundleConstants.BUNDLE_CONTEXT, getBundle());
-		context.put(BundleConstants.VERSION, getVersion());
 		
 		addBundle.execute();
 		

@@ -342,7 +342,7 @@ public class PageWidget {
 		INDUCTION_TEMPLATE_inductionInsights("inductionInsights"),
 		INDUCTION_TEMPLATE_inductionQuestions("inductionQuestions"),
 		INDUCTION_TEMPLATE_history("inductionHistory"),
-		
+
 		INDUCTION_RESPONSE_WIDGET("inductionResponseWidget"),
 		Q_AND_A_SECONDARY_DETAILS_WIDGET("qandASecondaryDetailsWidget"),
 
@@ -351,15 +351,32 @@ public class PageWidget {
 		SR_DETAILS_WIDGET("srDetailsWidget"),
 
 		COMBINED_RELATED_LIST("combinedRelatedListWidget"),
-		BOOKINGS_RELATED_LIST("bookingRelatedListWidget")
-		;
-		
+		BOOKINGS_RELATED_LIST("bookingRelatedListWidget"),
+
+		// Workorder Widgets
+		TASKS_COMPLETED("tasksCompleted"),
+		SCHEDULED_DURATION("scheduledDuration"),
+		ACTUAL_DURATION("actualDuration"),
+		WORK_DURATION("workDuration"),
+		RESOURCE("resource"),
+		RESPONSIBILITY("responsibility"),
+		WORKORDER_DETAILS("workorderDetails"),
+		RELATED_RECORDS("relatedRecords"),
+		WORKORDER_PROGRESS("workorderProgress"),
+		TASKS("tasks"),
+		WORKORDER_HISTORY("workorderHistory"),
+		WORKORDER_SIDEBAR("workorderSidebar"),
+		HAZARDS("hazards"),
+		PRECAUTIONS("precautions"),
+		PREREQUISITES("prerequisites"),
+		TASKS_MONOLITH("taskMonolith");
+
 		private String name;
-		
+
 		WidgetType(String name) {
 			this.name = name;
 		}
-		
+
 		public String getName() {
 			return name;
 		}

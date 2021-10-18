@@ -41,6 +41,8 @@ public interface UserBean {
 	
 	public User getUser(long appId, long orgId, long userId, String appDomain) throws Exception;
 
+	public User getUser(long appId, long ouId) throws Exception;
+
 	public User getUserInternal(long ouid) throws Exception;
 	
 	public User getUserFromPhone(String phone, String identifier, long orgId) throws Exception;
@@ -105,4 +107,6 @@ public interface UserBean {
 	public int deleteUserFromApps(User user, long applicationId) throws Exception;
 	
 	public int deletePeopleForUser(User user) throws Exception;
+
+	List<Map<String, String>> getUserDetailsForUserManagement(String email) throws Exception;
 }

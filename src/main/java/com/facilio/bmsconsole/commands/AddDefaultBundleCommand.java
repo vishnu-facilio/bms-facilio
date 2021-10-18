@@ -12,6 +12,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bundle.command.BundleTransactionChainFactory;
 import com.facilio.bundle.context.BundleContext;
+import com.facilio.bundle.context.FieldBundleComponent;
+import com.facilio.bundle.context.ModuleBundleComponent;
 import com.facilio.bundle.enums.BundleComponentsEnum;
 import com.facilio.bundle.utils.BundleConstants;
 import com.facilio.bundle.utils.BundleUtil;
@@ -46,7 +48,6 @@ public class AddDefaultBundleCommand extends FacilioCommand {
 		defaultBundle.setBundleName("default");
 		defaultBundle.setBundleGlobalName("org.facilio."+org.getDomain()+".default");
 		defaultBundle.setOrgId(org.getOrgId());
-		defaultBundle.setVersion("0.0.1");
 		defaultBundle.setTypeEnum(BundleContext.BundleTypeEnum.UN_MANAGED_SYSTEM);
 		defaultBundle.setCreatedTime(System.currentTimeMillis());
 		defaultBundle.setModifiedTime(defaultBundle.getCreatedTime());
@@ -95,25 +96,30 @@ public class AddDefaultBundleCommand extends FacilioCommand {
 		ModuleType[] allModuleType = FacilioModule.ModuleType.values();
 		
 		for(ModuleType moduleType : allModuleType) {
-			List<FacilioModule> modules = modBean.getModuleList(moduleType);
 			
-			for(FacilioModule module : modules) {
-
-				BundleUtil.addBundleChangeSetForSystemComponents(defaultBundle,BundleComponentsEnum.MODULE, module.getModuleId(), module.getDisplayName());
+			if(!ModuleBundleComponent.IGNORE_MODULE_TYPES.contains(moduleType.getValue())) {
+				List<FacilioModule> modules = modBean.getModuleList(moduleType);
 				
-				GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-																.select(FieldFactory.getSelectFieldFields())
-																.table("Fields")
-																.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", module.getModuleId()+"", NumberOperators.EQUALS));
+				for(FacilioModule module : modules) {
 
-				List<Map<String, Object>> fieldProps = selectBuilder.get();
-				
-				if(fieldProps != null && !fieldProps.isEmpty()) {
+					BundleUtil.addBundleChangeSetForSystemComponents(defaultBundle,BundleComponentsEnum.MODULE, module.getModuleId(), module.getDisplayName());
 					
-					List<FacilioField> fields = FieldUtil.getAsBeanListFromMapList(fieldProps, FacilioField.class);
+					GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+																	.select(FieldFactory.getSelectFieldFields())
+																	.table("Fields")
+																	.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", module.getModuleId()+"", NumberOperators.EQUALS));
+
+					List<Map<String, Object>> fieldProps = selectBuilder.get();
 					
-					for(FacilioField field : fields) {
-						BundleUtil.addBundleChangeSetForSystemComponents(defaultBundle,BundleComponentsEnum.FIELD, field.getFieldId(), field.getDisplayName());
+					if(fieldProps != null && !fieldProps.isEmpty()) {
+						
+						List<FacilioField> fields = FieldUtil.getAsBeanListFromMapList(fieldProps, FacilioField.class);
+						
+						for(FacilioField field : fields) {
+							if(!FieldBundleComponent.SYSTEM_UN_PACKABLE_FIELD_NAMES.contains(field.getName())) {
+								BundleUtil.addBundleChangeSetForSystemComponents(defaultBundle,BundleComponentsEnum.FIELD, field.getFieldId(), field.getDisplayName());
+							}
+						}
 					}
 				}
 			}

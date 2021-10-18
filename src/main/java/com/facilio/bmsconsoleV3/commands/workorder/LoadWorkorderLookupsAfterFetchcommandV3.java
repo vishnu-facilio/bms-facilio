@@ -19,10 +19,9 @@ public class LoadWorkorderLookupsAfterFetchcommandV3 extends FacilioCommand {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3WorkOrderContext> wos = recordMap.get(moduleName);
-        if(CollectionUtils.isNotEmpty(wos)) {
+        if (CollectionUtils.isNotEmpty(wos)) {
             V3TicketAPI.loadWorkOrderLookups(wos);
         }
-
         return false;
     }
 }

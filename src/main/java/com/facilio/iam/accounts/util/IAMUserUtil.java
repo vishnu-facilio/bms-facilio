@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.iam.accounts.context.SecurityPolicy;
 import com.facilio.modules.FieldFactory;
@@ -411,6 +412,10 @@ public class IAMUserUtil {
 	
 	public static long addDCLookup(Map<String, Object> props) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getTransactionalUserBean().addDCLookup(props));
+	}
+
+	public static List<Map<String, Object>> getUserData(String username, long orgId, String identifier) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().getUserData(username, orgId, identifier));
 	}
 
 	public static boolean totpChecking(String code, long uid) throws Exception{

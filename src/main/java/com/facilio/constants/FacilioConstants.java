@@ -58,6 +58,7 @@ import com.facilio.mv.context.MVAdjustment;
 import com.facilio.mv.context.MVBaseline;
 import com.facilio.mv.context.MVProjectContext;
 import com.facilio.qa.context.*;
+import com.facilio.service.FacilioService;
 import com.facilio.taskengine.common.JobConstants;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.AttachmentV3Context;
@@ -2598,7 +2599,7 @@ public class FacilioConstants {
 		public static final String IAM_SERVICE = "iam";
 		public static final String JOB_SERVICE = JobConstants.JOB_SERVICE;
 		public static final String AGENT_SERVICE = "agent";
-		public static final String DEFAULT_SERVICE = "default";
+		public static final String DEFAULT_SERVICE = FacilioService.DEFAULT_SERVICE;
 		public static final String INSTANT_JOB_SERVICE = JobConstants.INSTANT_JOB_SERVICE;
 		public static final String WMS_SERVICE = "wms";
 		public static final String TEMP_JOBS = "tempjobs";

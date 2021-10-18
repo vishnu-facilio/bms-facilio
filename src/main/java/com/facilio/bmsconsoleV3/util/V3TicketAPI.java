@@ -20,7 +20,9 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
+import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections.CollectionUtils;
@@ -417,10 +419,11 @@ public class V3TicketAPI {
         loadTicketResources(workOrders);
         loadTicketTenants(workOrders);
         loadTicketVendors(workOrders);
+        loadTicketDetails(workOrders);
     }
 
-    public static List<FacilioStatus> getAllStatus(FacilioModule module, boolean ignorePreOpen) throws Exception
-    {
+
+    public static List<FacilioStatus> getAllStatus(FacilioModule module, boolean ignorePreOpen) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TICKET_STATUS);
 
@@ -484,24 +487,60 @@ public class V3TicketAPI {
                         .beanClass(TicketPriorityContext.class);
                 Map<Long, TicketPriorityContext> priorities = selectBuilder.getAsMap();
 
-                for(V3TicketContext ticket : tickets) {
+                for (V3TicketContext ticket : tickets) {
                     if (ticket != null) {
                         TicketPriorityContext priority = ticket.getPriority();
-                        if(priority != null) {
+                        if (priority != null) {
                             ticket.setPriority(priorities.get(priority.getId()));
                         }
                     }
                 }
-            }
-            catch(Exception e) {
+            } catch (Exception e) {
                 LOGGER.error("Exception occurred ", e);
                 throw e;
             }
         }
     }
 
+    private static void loadTicketDetails(Collection<? extends V3TicketContext> workorders) throws Exception {
+
+        if (workorders == null || workorders.isEmpty()) {
+            return;
+        }
+
+        try {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TICKET);
+
+            SelectRecordsBuilder<TicketContext> selectBuilder = new SelectRecordsBuilder<TicketContext>()
+                    .select(fields)
+                    .table("Tickets")
+                    .moduleName(FacilioConstants.ContextNames.TICKET)
+                    .beanClass(TicketContext.class);
+            Map<Long, TicketContext> tickets = selectBuilder.getAsMap();
+
+            for (V3TicketContext workorder : workorders) {
+                if (workorder != null) {
+                    TicketPriorityContext priority = workorder.getPriority();
+                    if (priority != null) {
+                        // scheduled work duration
+                        workorder.setScheduledStart(tickets.get(workorder.getId()).getScheduledStart());
+                        workorder.setEstimatedEnd(tickets.get(workorder.getId()).getEstimatedEnd());
+
+                        // actual work duration
+                        workorder.setActualWorkEnd(tickets.get(workorder.getId()).getActualWorkEnd());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Exception occurred ", e);
+            throw e;
+        }
+
+    }
+
     private static void loadTicketCategory(Collection<? extends V3TicketContext> tickets) throws Exception {
-        if(tickets != null && !tickets.isEmpty()) {
+        if (tickets != null && !tickets.isEmpty()) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TICKET_CATEGORY);
 
@@ -762,7 +801,7 @@ public class V3TicketAPI {
                 List<V3TaskContext> taskList = taskMap.get(task.getSectionId());
                 if (taskList == null) {
                     taskList = new ArrayList<>();
-                    taskMap.put(task.getSectionId(), taskList);
+                    taskMap.put(task.getSectionId() == null ? -1 : task.getSectionId(), taskList);
                 }
                 taskList.add(task);
             }
@@ -775,8 +814,8 @@ public class V3TicketAPI {
         return getRelatedTasks(ticketIds, true, false);
     }
 
-    public static List<V3TaskContext> getRelatedTasks(List<Long> ticketIds, boolean fetchChildren, boolean fetchResources) throws Exception
-    {
+    public static List<V3TaskContext> getRelatedTasks(List<Long> ticketIds,
+                                                      boolean fetchChildren, boolean fetchResources) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioField> fields = modBean.getAllFields("task");
         FacilioField parentId = FieldFactory.getAsMap(fields).get("parentTicketId");
@@ -809,18 +848,36 @@ public class V3TicketAPI {
                     .map(task -> task.getResource().getId()).collect(Collectors.toList());
             if (!resourceIds.isEmpty()) {
                 Map<Long, ResourceContext> resources = ResourceAPI.getResourceAsMapFromIds(resourceIds);
-                for(V3TaskContext task: tasks) {
+                for (V3TaskContext task : tasks) {
                     if (task.getResource() != null && task.getResource().getId() > 0 && resources.containsKey(task.getResource().getId())) {
                         task.setResource(resources.get(task.getResource().getId()));
                     }
                 }
             }
         }
+        setTaskInputData(tasks);
         return tasks;
     }
 
-    public static List<AttachmentContext> getRelatedAttachments(long ticketId) throws Exception
-    {
+    public static void setTaskInputData(List<V3TaskContext> tasks) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        for (V3TaskContext task : tasks) {
+            switch (task.getInputTypeEnum()) {
+                case BOOLEAN:
+                    BooleanField field = (BooleanField) modBean.getField(task.getReadingFieldId());
+                    task.setReadingField(field);
+                    task.setTruevalue(field.getTrueVal());
+                    task.setFalsevalue(field.getFalseVal());
+                    List<String> options = new ArrayList<>();
+                    options.add(field.getTrueVal());
+                    options.add(field.getFalseVal());
+                    task.setOptions(options);
+                    break;
+            }
+        }
+    }
+
+    public static List<AttachmentContext> getRelatedAttachments(long ticketId) throws Exception {
         return AttachmentsAPI.getAttachments(FacilioConstants.ContextNames.TICKET_ATTACHMENTS, ticketId);
     }
 

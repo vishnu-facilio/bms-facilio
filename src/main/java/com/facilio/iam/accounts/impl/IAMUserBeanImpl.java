@@ -23,6 +23,7 @@ import com.facilio.accounts.dto.*;
 import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.accounts.sso.SSOUtil;
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.auth.actions.PasswordHashUtil;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.db.util.DBConf;
@@ -843,8 +844,19 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	
 	@Override
 	public long addDCLookup(Map<String, Object> props) throws Exception {
-		
 		List<FacilioField> fields = IAMAccountConstants.getDCFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder();
+		selectRecordBuilder.table(IAMAccountConstants.getDCLookupModule().getTableName())
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("userName"), String.valueOf(props.get("userName")), StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("groupType"), String.valueOf(props.get("groupType")), NumberOperators.EQUALS));
+		List<Map<String, Object>> result = selectRecordBuilder.get();
+
+		if (!result.isEmpty()) {
+			throw new IllegalArgumentException("Duplicate entries for the user name.");
+		}
 
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(IAMAccountConstants.getDCLookupModule().getTableName())
@@ -2210,7 +2222,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return selectBuilder.get();
 	}
 
-	private List<Map<String, Object>> getUserData(String username, long orgId, String identifier) throws Exception {
+	public List<Map<String, Object>> getUserData(String username, long orgId, String identifier) throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(IAMAccountConstants.getAccountsUserFields());
 		fields.addAll(IAMAccountConstants.getAccountsOrgUserFields());
@@ -2669,5 +2681,25 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 		IAMUtil.dropUserSecurityPolicyCache(userIds);
 	}
-		
+
+//	private Map<String, String> getDomainForIdentifiers(List<String> identifiers) throws Exception {
+//		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+//				.select(IAMAccountConstants.getAppDomainFields())
+//				.table("App_Domain");
+//
+//		// Indentifier is <groupType>_<orgId>
+//		long groupType = -1;
+//		long orgId = -1;
+//
+//		try {
+//
+//		}
+//
+//		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.ID", "id", String.valueOf(domainId), NumberOperators.EQUALS));
+//
+//		List<Map<String, Object>> props = selectBuilder.get();
+//		if (CollectionUtils.isNotEmpty(props)) {
+//			return FieldUtil.getAsBeanFromMap(props.get(0), AppDomain.class);
+//		}
+//	}
 }

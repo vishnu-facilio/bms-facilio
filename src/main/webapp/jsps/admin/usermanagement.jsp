@@ -1,4 +1,5 @@
 <%@page import="com.facilio.iam.accounts.util.IAMAppUtil"%>
+<%@page import="com.facilio.iam.accounts.util.IAMUserUtil"%>
 <%@page import="com.facilio.logging.SysOutLogger"%>
 <%@page import="com.facilio.accounts.util.AccountUtil, 
 java.util.List, 
@@ -18,6 +19,7 @@ java.sql.Timestamp,
        List<User> userList = null;
        List<Map<String, Object>> sessions = null;
        User usr = null;
+       List<Map<String, String>> userDetails = null;
        			if (email != null) {
        		AppDomain appDomain = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
        		try {
@@ -30,6 +32,7 @@ java.sql.Timestamp,
           		if (AccountUtil.getRoleBean(orgId).getRole(roleId).getName().equalsIgnoreCase("Super Administrator")) {
           			userList = AccountUtil.getOrgBean(orgId).getAppUsers(orgId, -1, false);
        			}
+                userDetails = AccountUtil.getUserBean(AccountUtil.getCurrentOrg().getOrgId()).getUserDetailsForUserManagement(email);
        		}
        		catch (Exception e) {	
       		}
@@ -41,6 +44,26 @@ java.sql.Timestamp,
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Insert title here</title>
+<script>
+    function resetPassword(email, applicationId){
+    	FacilioApp.ajax({
+    		method : "get",
+    		url : contextPath + "/api/sendResetPassword?emailaddress="+email+"&applicationId="+applicationId,
+    		done: function(data) {
+    			document.getElementById(userId).innerHTML = 'true'
+    		}
+    	})
+    }
+    function resendInvite(userId, applicationId){
+        FacilioApp.ajax({
+            method : "get",
+            url : contextPath + "/api/setup/resendinvite?userId="+userId+"&appId="+applicationId,
+            done: function(data) {
+                document.getElementById(userId).innerHTML = 'true'
+            }
+        })
+    }
+</script>
 
 </head>
 <body onload="init()">
@@ -148,6 +171,29 @@ if (userList != null) { %>
 <% }
 %>
 
+<%
+if (userDetails != null) { %>
+<table style=" margin-top:40px;" class="table table-bordered" >
+    <tr>
+        <th>ORG_USERID</th>
+        <th>Application</th>
+        <th>Actions</th>
+    </tr>
+    <% for(Map<String, String> userDetail : userDetails) {
+    %>
+        <tr>
+            <td><%=userDetail.get("iamOrgUserId") %></td>
+            <td><%=userDetail.get("applicationName") %></td>
+            <td>
+                <button type="button" onclick='resetPassword("<%=email%>", <%=userDetail.get("applicationId")%>)'>Send Reset Password Mail</button>
+                <button type="button" onclick='resendInvite(<%=userDetail.get("userId")%>, <%=userDetail.get("applicationId")%>)'>Resend Invite</button>
+            </td>
+        </tr>
+    <%
+    }%>
+</table>
+<% }
+%>
 </div>
 </div>
 

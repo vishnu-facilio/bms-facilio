@@ -570,7 +570,8 @@ public class CommonCommandUtil {
 					.select(fields)
 					.module(module)
 					.beanClass(BaseSpaceContext.class)
-					.andCondition(CriteriaAPI.getCondition("SPACE_TYPE", "spaceType", String.valueOf(SpaceType.SITE.getIntVal()), NumberOperators.EQUALS));
+					.andCondition(CriteriaAPI.getCondition("SPACE_TYPE", "spaceType", String.valueOf(SpaceType.SITE.getIntVal()), NumberOperators.EQUALS))
+					.orderBy("NAME");
 
 			List<BaseSpaceContext> accessibleBaseSpace;
 			if (siteIds.isEmpty()) {

@@ -168,6 +168,7 @@ public class ReadOnlyChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new LoadMainFieldCommand());
 		c.addCommand(new SpecialPickListFieldsCommand());
+		c.addCommand(new LoadViewCommand());
 		c.addCommand(new HandleDefaultIdAndOrderByForPicklist());
 		c.addCommand(commonFetchDataListChain(true));
 		c.addCommand(new ConstructFieldOptionForPicklist());

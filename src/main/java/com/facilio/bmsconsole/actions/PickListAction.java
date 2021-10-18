@@ -49,7 +49,7 @@ public class PickListAction extends FacilioAction {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public static void populatePicklistContext (FacilioContext context, String moduleName, String filters, String search, Criteria clientCriteria, String clientCriteriaStr, String defaultIds, int page, int perPage) throws Exception {
+	public static void populatePicklistContext (FacilioContext context, String moduleName, String filters, String search, Criteria clientCriteria, String clientCriteriaStr, String defaultIds, String viewName, int page, int perPage) throws Exception {
 		context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, clientCriteria);
 
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
@@ -78,6 +78,9 @@ public class PickListAction extends FacilioAction {
 			List<Long> defaultIdList = Arrays.stream(ids).map(Long::parseLong).collect(Collectors.toList());
 			context.put(FacilioConstants.PickList.DEFAULT_ID_LIST, defaultIdList);
 		}
+		if (StringUtils.isNotEmpty(viewName)) {
+	 		context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
+		}
 	}
 
 	@Override
@@ -89,7 +92,7 @@ public class PickListAction extends FacilioAction {
 		}
 		else {
 			FacilioChain pickListChain = FacilioChainFactory.getPickListChain();
-			populatePicklistContext(pickListChain.getContext(), getModuleName(), getFilters(), getSearch(), getCriteria(), getClientCriteria(), getDefault(), getPage(), getPerPage());
+			populatePicklistContext(pickListChain.getContext(), getModuleName(), getFilters(), getSearch(), getCriteria(), getClientCriteria(), getDefault(), getViewName(), getPage(), getPerPage());
 			pickListChain.execute();
 			setPickList((Map<Long, String>) pickListChain.getContext().get(FacilioConstants.ContextNames.PICKLIST));
 		}

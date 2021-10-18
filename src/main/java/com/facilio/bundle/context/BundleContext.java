@@ -16,12 +16,14 @@ public class BundleContext {
 	Long orgId;
 	String bundleName;
 	String bundleGlobalName;
-	String version;
+	Double version;
 	Long parentBundleId;
 	Long bundleFileId;
 	BundleTypeEnum type;
 	Long createdTime;
 	Long modifiedTime;
+	
+	List<BundleContext> childVersions;
 	
 	String downloadUrl;
 	

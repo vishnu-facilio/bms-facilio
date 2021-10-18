@@ -1,5 +1,6 @@
 package com.facilio.accounts.impl;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -164,6 +165,8 @@ public class UserBeanImpl implements UserBean {
 		catch(Exception e) {
 			if(e instanceof AccountException && ((AccountException) e).getErrorCode() == ErrorCode.USER_ALREADY_EXISTS_IN_APP) {
 				throw e;
+			} else if (e instanceof InvocationTargetException && ((InvocationTargetException) e).getTargetException() instanceof AccountException) {
+				throw (AccountException) ((InvocationTargetException) e).getTargetException();
 			}
 			log.error("Exception occurred while creating user ", e);
 			IAMUserUtil.rollbackUserAdded(user.getUid(), AccountUtil.getCurrentOrg().getOrgId());
@@ -500,6 +503,22 @@ public class UserBeanImpl implements UserBean {
 			IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), fetchDeleted);
 			if(CollectionUtils.isNotEmpty(props)) {
 				User user = createUserFromProps(props.get(0), false, false, null);
+				return user;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public User getUser(long appId, long ouId) throws Exception {
+
+		GenericSelectRecordBuilder selectRecordBuilder = fetchUserSelectBuilder(appId, null, AccountUtil.getCurrentOrg().getOrgId(), Collections.singletonList(ouId));
+
+		List<Map<String, Object>> props = selectRecordBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), false);
+			if(CollectionUtils.isNotEmpty(props)) {
+				User user = createUserFromProps(props.get(0), true, false, null);
 				return user;
 			}
 		}
@@ -1283,4 +1302,53 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	
+	public List<Map<String, String>> getUserDetailsForUserManagement(String email) throws Exception {
+		List<Map<String, Object>> userData = IAMUserUtil.getUserData(email, -1, null);
+
+		List<Long> orgUserIds = new ArrayList<>();
+		Map<Long, Map<String, Object>> orgUserIdVsUser = new HashMap<>();
+		for (Map<String, Object> user: userData) {
+			orgUserIds.add((long) user.get("iamOrgUserId"));
+			orgUserIdVsUser.put((long) user.get("iamOrgUserId"), user);
+		}
+
+		List<Map<String, Object>> orgUserApps = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getOrgUserAppsFields())
+				.table("ORG_User_Apps")
+				.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.ORG_USERID", "orgUserId", StringUtils.join(orgUserIds, ","), NumberOperators.EQUALS)).get();
+
+		List<Long> applicationIds = new ArrayList<>();
+		List<Long> orgIds = new ArrayList<>();
+		for (Map<String, Object> orgUserApp: orgUserApps) {
+			applicationIds.add((long) orgUserApp.get("applicationId"));
+			orgIds.add((long) orgUserApp.get("orgId"));
+		}
+
+		List<Map<String, Object>> apps = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getApplicationFields())
+				.table("Application")
+				.andCondition(CriteriaAPI.getCondition("Application.ID", "id", StringUtils.join(applicationIds, ","), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("Application.ORGID", "orgId", StringUtils.join(orgIds, ","), NumberOperators.EQUALS))
+				.get();
+
+		Map<Long, Map<String, Object>> appIdVsApp = new HashMap<>();
+		for (Map<String, Object> app: apps) {
+			appIdVsApp.put((long) app.get("id"), app);
+		}
+
+		List<Map<String, String>> result = new ArrayList<>();
+
+		for (Map<String, Object> orgUser: orgUserApps) {
+			Map<String, String> res = new HashMap<>();
+			res.put("iamOrgUserId", String.valueOf(orgUser.get("ouid")));
+			long applicationId = (long) orgUser.get("applicationId");
+			Map<String, Object> application = appIdVsApp.get(applicationId);
+			res.put("applicationName", (String) application.get("name"));
+			res.put("applicationId", String.valueOf(orgUser.get("applicationId")));
+			res.put("userId", String.valueOf(orgUserIdVsUser.get(orgUser.get("ouid")).get("uid")));
+			result.add(res);
+		}
+
+		return result;
+	}
 }

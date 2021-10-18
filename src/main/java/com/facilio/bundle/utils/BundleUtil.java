@@ -40,6 +40,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.google.common.io.Files;
 
+import io.jsonwebtoken.lang.Collections;
 import lombok.extern.log4j.Log4j;
 
 @Log4j
@@ -184,10 +185,30 @@ public class BundleUtil {
 		
 		BundleContext bundle = FieldUtil.getAsBeanFromMap(props.get(0), BundleContext.class);
 		
+		fillChildBundles(bundle);
+		
 		return bundle;
 				
 	}
 	
+	private static void fillChildBundles(BundleContext bundle) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getBundleFields());
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getBundleModule().getTableName())
+				.select(FieldFactory.getBundleFields())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentBundleId"), bundle.getParentBundleId()+"", NumberOperators.EQUALS))
+				.andCustomWhere("ID != PARENT_BUNDLE")
+				;
+		
+		List<Map<String, Object>> props = builder.get();
+		
+		List<BundleContext> childVersions = FieldUtil.getAsBeanListFromMapList(props, BundleContext.class);
+		
+		bundle.setChildVersions(childVersions);
+	}
+
 	public static BundleContext getDefaultSystemBundle() throws Exception {
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getBundleFields());
@@ -230,10 +251,6 @@ public class BundleUtil {
 	
 	public static BundleChangeSetContext addBundleChangeSetForSystemComponents(BundleContext bundle,BundleComponentsEnum componentEnum, Long componentId, String componentDisplayName) throws Exception {
 		
-//		if(1 == 1) {
-//			return null;
-//		}
-		
 		BundleChangeSetContext changeSet = new BundleChangeSetContext();
 		
 		changeSet.setBundleId(bundle.getId());
@@ -258,66 +275,6 @@ public class BundleUtil {
 		changeSet.setId(id);
 
 		return changeSet;
-	}
-	
-	public static List<BundleChangeSetContext> getAllChangeSet(BundleContext bundle) throws Exception {
-		
-		
-		List<BundleChangeSetContext> returnChangeset = new ArrayList<BundleChangeSetContext>();
-		
-		Map<BundleComponentsEnum, ArrayList<BundleComponentsEnum>> parentChildMap = BundleComponentsEnum.getParentChildMap();
-		
-		Queue<BundleComponentsEnum> componentsQueue = new LinkedList<BundleComponentsEnum>();
-		
-		componentsQueue.addAll(BundleComponentsEnum.getParentComponentList());
-		
-		while(!componentsQueue.isEmpty()) {
-			
-			BundleComponentsEnum component = componentsQueue.poll();
-			
-			BundleComponentInterface componentClass = component.getBundleComponentClassInstance();
-			
-			FacilioContext context = new FacilioContext();
-			context.put(BundleConstants.COMPONENT, component);
-			context.put(BundleConstants.BUNDLE_CONTEXT, bundle);
-			
-			componentClass.getAddedChangeSet(context);
-			
-			List<BundleChangeSetContext> addedChangeSet = (List<BundleChangeSetContext>) context.get(BundleConstants.CHANGE_SET);
-			
-			context.put(BundleConstants.CHANGE_SET, null);
-			
-			componentClass.getModifiedChangeSet(context);
-			
-			List<BundleChangeSetContext> modifiedChangeSet = (List<BundleChangeSetContext>) context.get(BundleConstants.CHANGE_SET);
-			
-			context.put(BundleConstants.CHANGE_SET, null);
-			
-			componentClass.getDeletedChangeSet(context);
-			
-			List<BundleChangeSetContext> deletedChangeSet = (List<BundleChangeSetContext>) context.get(BundleConstants.CHANGE_SET);
-			
-			context.put(BundleConstants.CHANGE_SET, null);
-			
-			if(addedChangeSet != null) {
-				returnChangeset.addAll(addedChangeSet);
-			}
-			if(modifiedChangeSet != null) {
-				returnChangeset.addAll(modifiedChangeSet);
-			}
-			if(deletedChangeSet != null) {
-				returnChangeset.addAll(deletedChangeSet);
-			}
-			
-			ArrayList<BundleComponentsEnum> childList = parentChildMap.get(component);
-			
-			if(childList != null) {
-				componentsQueue.addAll(childList);
-			}
-			
-		}
-		
-		return returnChangeset;
 	}
 	
 	public static void getFormattedObject(Object beanObject) throws Exception {
@@ -399,6 +356,24 @@ public class BundleUtil {
 
 		return text;
 	}
+	
+	public static void setVersion(BundleContext bundle) {
+		// TODO Auto-generated method stub
+		
+		if(Collections.isEmpty(bundle.getChildVersions())) {
+			bundle.setVersion(1.0);
+		}
+		else {
+			double maxVersion = Double.MIN_NORMAL;
+			for(BundleContext childVersion : bundle.getChildVersions()) {
+				if(maxVersion < childVersion.getVersion()) {
+					maxVersion = childVersion.getVersion();
+				}
+			}
+			bundle.setVersion(maxVersion+1.0);
+		}
+	}
+	
 	
 	public static List<Map<String, Object>> fetchBundleRelated(FacilioModule module,List<FacilioField> fields,Criteria fetchCriteria,Condition condition) throws Exception {
 		

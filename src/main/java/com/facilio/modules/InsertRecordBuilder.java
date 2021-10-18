@@ -1,5 +1,6 @@
 package com.facilio.modules;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
@@ -412,14 +413,37 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		return fieldMap;
 	}
 
-	private void addDefaultProps(Map<String, Object> prop, E bean) {
-		prop.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
-		prop.put("sysCreatedTime", System.currentTimeMillis());
-		prop.put("sysModifiedTime", System.currentTimeMillis());
-		if (AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().getId() > 0) {
-			prop.put("sysCreatedBy", AccountUtil.getCurrentUser().getId());
-			prop.put("sysModifiedBy", AccountUtil.getCurrentUser().getId());
+	private void setSysTimeAndOrgId (Map<String, Object> prop, E bean) {
+		long currentTime = System.currentTimeMillis();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		prop.put("orgId", orgId);
+		prop.put("sysCreatedTime", currentTime);
+		prop.put("sysModifiedTime", currentTime);
+
+		if (bean != null) {
+			bean.setOrgId(orgId);
+			bean.setSysCreatedTime(currentTime);
+			bean.setSysModifiedTime(currentTime);
 		}
+	}
+
+	private void setSysUser  (Map<String, Object> prop, E bean) {
+		User currentUser = AccountUtil.getCurrentUser();
+		if (currentUser != null && currentUser.getId() > 0) {
+			prop.put("sysCreatedBy", currentUser.getId());
+			prop.put("sysModifiedBy", currentUser.getId());
+
+			if (bean != null) {
+				bean.setSysCreatedBy(currentUser);
+				bean.setSysModifiedBy(currentUser);
+			}
+		}
+	}
+
+	private void addDefaultProps(Map<String, Object> prop, E bean) {
+		setSysTimeAndOrgId(prop, bean);
+		setSysUser(prop, bean);
+
 		for(FacilioField field : fields) {
 			switch (field.getDataTypeEnum()) {
 				case LOOKUP:

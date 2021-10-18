@@ -18,6 +18,8 @@ public class BundleChangeSetContext {
 	private Long bundleId;
 	private Long componentLastEditedTime;
 	
+	private Double tempVersion; 
+	
 	
 	public int getComponentType() {
 		if(componentType != null) {

@@ -53,6 +53,7 @@ public class FieldFactory extends BaseFieldFactory {
         lookupModuleVsSortFieldName.put("readingalarmcategory", Pair.of("name", true));
         lookupModuleVsSortFieldName.put("siteId", Pair.of("name", true));
         lookupModuleVsSortFieldName.put("facility", Pair.of("name", true));
+        lookupModuleVsSortFieldName.put("floor", Pair.of("floorlevel", true));
         return lookupModuleVsSortFieldName;
     }
 
@@ -61,7 +62,9 @@ public class FieldFactory extends BaseFieldFactory {
     	if (sortField == null) {
     		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
     		FacilioField primaryField = modBean.getPrimaryField(moduleName);
-    		sortField = Pair.of(primaryField.getName(), true);
+    		if (primaryField != null) {
+    			sortField = Pair.of(primaryField.getName(), true);
+    		}
     	}
         return sortField;
     }
@@ -9903,7 +9906,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getIdField(module));
         fields.add(getField("bundleName", "BUNDLE_NAME", module, FieldType.STRING));
         fields.add(getField("bundleGlobalName", "BUNDLE_GLOBAL_NAME", module, FieldType.STRING));
-        fields.add(getField("version", "VERSION", module, FieldType.STRING));
+        fields.add(getField("version", "VERSION", module, FieldType.DECIMAL));
         fields.add(getField("parentBundleId", "PARENT_BUNDLE", module, FieldType.NUMBER));
         fields.add(getField("bundleFileId", "BUNDLE_FILE_ID", module, FieldType.NUMBER));
         fields.add(getField("type", "TYPE", module, FieldType.NUMBER));

@@ -70,8 +70,6 @@ public class ModuleBundleComponent extends CommonBundleComponent {
 		
 		XMLBuilder xmlBuilder = fileContext.getXmlContent();
 		
-		xmlBuilder.attr(BundleConstants.Components.MODE, componentChange.getModeEnum().getName());
-		
 		if(componentChange.getModeEnum() != BundleModeEnum.DELETE) {
 			xmlBuilder = xmlBuilder.element(BundleConstants.Components.NAME).t(module.getName()).p()
 								   .element(BundleConstants.Components.DISPLAY_NAME).t(module.getDisplayName()).p()
@@ -103,7 +101,10 @@ public class ModuleBundleComponent extends CommonBundleComponent {
 		
 		String fileName = BundleComponentsEnum.MODULE.getName()+File.separatorChar+getFileName(context)+".xml";
 		XMLBuilder bundleBuilder = (XMLBuilder) context.get(BundleConstants.BUNDLE_XML_BUILDER);
-		bundleBuilder.element(BundleConstants.VALUES).text(fileName);
+		
+		BundleChangeSetContext componentChange = (BundleChangeSetContext) context.get(BundleConstants.BUNDLE_CHANGE);
+		
+		bundleBuilder.element(BundleConstants.VALUES).attr("version", componentChange.getTempVersion()+"").text(fileName);
 	}
 
 	@Override

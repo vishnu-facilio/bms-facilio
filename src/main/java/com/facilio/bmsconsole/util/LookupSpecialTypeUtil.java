@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,6 +106,7 @@ public class LookupSpecialTypeUtil {
 		if (CollectionUtils.isNotEmpty(users)) {
 			userList = users.stream()
 						.map(usr -> new FieldOption<>(usr.getId(), usr.getName()))
+						.sorted(Comparator.comparing(FieldOption::getLabel))
 						.collect(Collectors.toList());
 		}
 		return userList;

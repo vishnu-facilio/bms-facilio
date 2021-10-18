@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -16,6 +17,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -24,18 +26,18 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
+import io.jsonwebtoken.lang.Collections;
+
 public abstract class CommonBundleComponent implements BundleComponentInterface {
 
-	
-	
-	@Override
-	public void getParentDetails(FacilioContext context) throws Exception {
-		
-	}
 	
 	@Override
 	public Condition getFetchChangeSetCondition(FacilioContext context) throws Exception {
 		return null;
+	}
+	@Override
+	public boolean isPackableComponent(FacilioContext context) throws Exception {
+		return true;
 	}
 	
 	@Override
@@ -46,16 +48,25 @@ public abstract class CommonBundleComponent implements BundleComponentInterface 
 		
 		BundleContext bundle = (BundleContext) context.get(BundleConstants.BUNDLE_CONTEXT);
 		
+		Map<BundleComponentsEnum,List<BundleChangeSetContext>> changeSetCache = (Map<BundleComponentsEnum, List<BundleChangeSetContext>>) context.get(BundleConstants.CHANGE_SET_CACHE);
+		
+		List<Long> alreadyAddedComponentIds = new ArrayList<Long>();
+		
+		if(!Collections.isEmpty(changeSetCache.get(component))) {
+			alreadyAddedComponentIds.addAll(changeSetCache.get(component).stream().map(BundleChangeSetContext::getComponentId).collect(Collectors.toList()));
+		}
+		
 		Map<String, FacilioField> componentFieldMap = component.getFields().stream().collect(Collectors.toMap(FacilioField::getName, Function.identity()));
 
-		
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 				.select(component.getFields())
 				.table(component.getModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition(componentFieldMap.get(component.getModifiedTimeFieldName()), "", CommonOperators.IS_NOT_EMPTY))
-				.andCondition(CriteriaAPI.getCondition(componentFieldMap.get(component.getCreatedTimeFieldName()), bundle.getCreatedTime()+"", DateOperators.IS_AFTER))
-//				.andCondition(CriteriaAPI.getCondition(componentFieldMap.get(component.getIdFieldName()), StringUtils.join(componentIdList, ","), NumberOperators.NOT_EQUALS))
 				;
+		
+		if(!Collections.isEmpty(alreadyAddedComponentIds)) {
+			select.andCondition(CriteriaAPI.getCondition(componentFieldMap.get(component.getIdFieldName()), StringUtils.join(alreadyAddedComponentIds, ","), NumberOperators.NOT_EQUALS));
+		}
 		
 		Condition condition = getFetchChangeSetCondition(context);
 		
@@ -71,14 +82,21 @@ public abstract class CommonBundleComponent implements BundleComponentInterface 
 			
 			for(Map<String, Object> prop : props) {
 				
-				BundleChangeSetContext change = new BundleChangeSetContext();
+				long componentID = (Long)prop.get(component.getIdFieldName());
 				
-				change.setComponentId((Long)prop.get(component.getIdFieldName()));
-				change.setComponentTypeEnum(component);
-				change.setModeEnum(BundleModeEnum.ADD);
-				change.setComponentDisplayName((String)prop.get(component.getDisplayNameFieldName()));
+				context.put(BundleConstants.COMPONENT_ID, componentID);
 				
-				changeSet.add(change);
+				if(isPackableComponent(context)) {
+					BundleChangeSetContext change = new BundleChangeSetContext();
+					
+					change.setComponentId(componentID);
+					change.setComponentTypeEnum(component);
+					change.setModeEnum(BundleModeEnum.ADD);
+					change.setComponentDisplayName((String)prop.get(component.getDisplayNameFieldName()));
+					
+					changeSet.add(change);
+				}
+				
 			}
 			
 			context.put(BundleConstants.CHANGE_SET, changeSet);
@@ -94,44 +112,61 @@ public abstract class CommonBundleComponent implements BundleComponentInterface 
 		
 		BundleComponentsEnum component = (BundleComponentsEnum) context.get(BundleConstants.COMPONENT);
 		
-		BundleContext bundle = (BundleContext) context.get(BundleConstants.BUNDLE_CONTEXT);
+		Map<BundleComponentsEnum,List<BundleChangeSetContext>> changeSetCache = (Map<BundleComponentsEnum, List<BundleChangeSetContext>>) context.get(BundleConstants.CHANGE_SET_CACHE);
 		
 		Map<String, FacilioField> componentFieldMap = component.getFields().stream().collect(Collectors.toMap(FacilioField::getName, Function.identity()));
 		
-		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
-				.select(component.getFields())
-				.table(component.getModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition(componentFieldMap.get(component.getModifiedTimeFieldName()), "", CommonOperators.IS_NOT_EMPTY))
-				.andCondition(CriteriaAPI.getCondition(componentFieldMap.get(component.getModifiedTimeFieldName()), bundle.getCreatedTime()+"", DateOperators.IS_AFTER))
-				.andCondition(CriteriaAPI.getCondition(componentFieldMap.get(component.getCreatedTimeFieldName()), bundle.getCreatedTime()+"", DateOperators.IS_BEFORE))
-				;
+		List<BundleChangeSetContext> currentChangeSet = new ArrayList<BundleChangeSetContext>();
 		
-		Condition condition = getFetchChangeSetCondition(context);
-		
-		if(condition != null) {
-			select.andCondition(condition);
-		}
-		
-		List<Map<String, Object>> props = select.get();
-		
-		List<BundleChangeSetContext> changeSet = new ArrayList<BundleChangeSetContext>();
-		
-		if(!props.isEmpty()) {
+		if(!Collections.isEmpty(changeSetCache.get(component))) {
 			
-			for(Map<String, Object> prop : props) {
+			Map<Long, List<BundleChangeSetContext>> changeSetGroupedByBundleCreatedTime = changeSetCache.get(component).stream()
+				.filter(changeSet -> (changeSet.getModeEnum() == BundleModeEnum.ADD || changeSet.getModeEnum() == BundleModeEnum.UPDATE))
+				.collect(Collectors.groupingBy(BundleChangeSetContext::getComponentLastEditedTime));
+			
+			for(Long bundleCreatedTime : changeSetGroupedByBundleCreatedTime.keySet()) {
 				
-				BundleChangeSetContext change = new BundleChangeSetContext();
+				List<Long> alreadyAddedOrModifiedComponentIds = changeSetGroupedByBundleCreatedTime.get(bundleCreatedTime).stream().map(BundleChangeSetContext::getComponentId).collect(Collectors.toList());
 				
-				change.setComponentId((Long)prop.get(component.getIdFieldName()));
-				change.setComponentTypeEnum(component);
-				change.setModeEnum(BundleModeEnum.UPDATE);
-//				change.setComponentName((String)prop.get(component.getNameFieldName()));
-				change.setComponentDisplayName((String)prop.get(component.getDisplayNameFieldName()));
+				GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+						.select(component.getFields())
+						.table(component.getModule().getTableName())
+						.andCondition(CriteriaAPI.getCondition(componentFieldMap.get(component.getIdFieldName()), StringUtils.join(alreadyAddedOrModifiedComponentIds, ","), NumberOperators.EQUALS))
+						.andCondition(CriteriaAPI.getCondition(componentFieldMap.get(component.getModifiedTimeFieldName()), "", CommonOperators.IS_NOT_EMPTY))
+						.andCondition(CriteriaAPI.getCondition(componentFieldMap.get(component.getModifiedTimeFieldName()), bundleCreatedTime+"", DateOperators.IS_AFTER))
+						;
 				
-				changeSet.add(change);
+				Condition condition = getFetchChangeSetCondition(context);
+				
+				if(condition != null) {
+					select.andCondition(condition);
+				}
+				
+				List<Map<String, Object>> props = select.get();
+				
+				if(!props.isEmpty()) {
+					
+					for(Map<String, Object> prop : props) {
+						
+						long componentID = (Long)prop.get(component.getIdFieldName());
+						
+						context.put(BundleConstants.COMPONENT_ID, componentID);
+						
+						if(isPackableComponent(context)) {
+							
+							BundleChangeSetContext change = new BundleChangeSetContext();
+							
+							change.setComponentId(componentID);
+							change.setComponentTypeEnum(component);
+							change.setModeEnum(BundleModeEnum.UPDATE);
+							change.setComponentDisplayName((String)prop.get(component.getDisplayNameFieldName()));
+							
+							currentChangeSet.add(change);
+						}
+					}
+				}
 			}
-			
-			context.put(BundleConstants.CHANGE_SET, changeSet);
+			context.put(BundleConstants.CHANGE_SET, currentChangeSet);
 		}
 		else {
 			context.put(BundleConstants.CHANGE_SET, null);
@@ -144,41 +179,60 @@ public abstract class CommonBundleComponent implements BundleComponentInterface 
 		
 		BundleComponentsEnum component = (BundleComponentsEnum) context.get(BundleConstants.COMPONENT);
 		
-		BundleContext bundle = (BundleContext) context.get(BundleConstants.BUNDLE_CONTEXT);
+		Map<BundleComponentsEnum,List<BundleChangeSetContext>> changeSetCache = (Map<BundleComponentsEnum, List<BundleChangeSetContext>>) context.get(BundleConstants.CHANGE_SET_CACHE);
 		
 		Map<String, FacilioField> componentFieldMap = component.getFields().stream().collect(Collectors.toMap(FacilioField::getName, Function.identity()));
 		
-		Map<String, FacilioField> bundleFieldMap = FieldFactory.getBundleChangeSetFields().stream().collect(Collectors.toMap(FacilioField::getName, Function.identity()));
+		List<BundleChangeSetContext> currentChangeSet = new ArrayList<BundleChangeSetContext>();
 		
-		
-		// need to change things a bit since components will not be deleted in meta
-		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getBundleChangeSetFields())
-				.table(ModuleFactory.getBundleChangeSetModule().getTableName())
-				.leftJoin(component.getModule().getTableName())
-				.on("Bundle_Change_Set.COMPONENT_ID = "+component.getModule().getTableName()+"."+componentFieldMap.get(component.getIdFieldName()).getColumnName())
-				.andCondition(CriteriaAPI.getCondition(bundleFieldMap.get("componentType"), component.getValue()+"", NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(bundleFieldMap.get("bundleId"), bundle.getId()+"", NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(componentFieldMap.get(component.getIdFieldName()), "",CommonOperators.IS_EMPTY));
-		
-		
-		List<Map<String, Object>> props = select.get();
-		
-		if(!props.isEmpty()) {
-			List<BundleChangeSetContext> changeSet = FieldUtil.getAsBeanListFromMapList(props, BundleChangeSetContext.class);
+		if(!Collections.isEmpty(changeSetCache.get(component))) {
 			
-			for(BundleChangeSetContext change : changeSet) {
-				
-				change.setId(-1l);
-				change.setBundleId(-1l);
-				change.setModeEnum(BundleModeEnum.DELETE);
+			  List<Long> addedOrModifiedChangeSetComponentIDList = changeSetCache.get(component).stream()
+				.filter(changeSet -> (changeSet.getModeEnum() == BundleModeEnum.ADD || changeSet.getModeEnum() == BundleModeEnum.UPDATE))
+				.map(BundleChangeSetContext::getComponentId)
+				.collect(Collectors.toList());
+			
+			GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+					.select(component.getFields())
+					.table(component.getModule().getTableName())
+					.andCondition(CriteriaAPI.getCondition(componentFieldMap.get(component.getIdFieldName()), StringUtils.join(addedOrModifiedChangeSetComponentIDList, ","), NumberOperators.EQUALS))
+//					.andCondition(CriteriaAPI.getCondition(componentFieldMap.get(component.getDeletedFieldName()), Boolean.TRUE.toString(), BooleanOperators.IS)) 										// commenting for now. will be released when all delete is handled properly.
+					;
+			
+			Condition condition = getFetchChangeSetCondition(context);
+			
+			if(condition != null) {
+				select.andCondition(condition);
 			}
 			
-			context.put(BundleConstants.CHANGE_SET, changeSet);
+			List<Map<String, Object>> props = select.get();
+			
+			if(!props.isEmpty()) {
+				
+				for(Map<String, Object> prop : props) {
+					
+					long componentID = (Long)prop.get(component.getIdFieldName());
+					
+					context.put(BundleConstants.COMPONENT_ID, componentID);
+					
+					if(isPackableComponent(context)) {
+						
+						BundleChangeSetContext change = new BundleChangeSetContext();
+						
+						change.setComponentId(componentID);
+						change.setComponentTypeEnum(component);
+						change.setModeEnum(BundleModeEnum.UPDATE);
+						change.setComponentDisplayName((String)prop.get(component.getDisplayNameFieldName()));
+						
+						currentChangeSet.add(change);
+					}
+				}
+			}
+//			context.put(BundleConstants.CHANGE_SET, currentChangeSet);
 		}
 		else {
-			context.put(BundleConstants.CHANGE_SET, null);
+			
 		}
-		
+		context.put(BundleConstants.CHANGE_SET, null);
 	}
 }

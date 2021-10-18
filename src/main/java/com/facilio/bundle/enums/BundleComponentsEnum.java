@@ -50,6 +50,7 @@ public enum BundleComponentsEnum {
 	String createdTimeFieldName="createdTime";
 	String nameFieldName = "name";
 	String displayNameFieldName = "displayName";
+	String deletedFieldName = "isDeleted";
 	
 	BundleComponentsEnum(int value, String name,Class<? extends BundleComponentInterface> componentClass,BundleComponentsEnum parent,FacilioModule module,List<FacilioField> fields,String idFieldName,String modifiedTimeFieldName,String createdTime,String nameFieldName,String displayNameFieldName) {
 		this.value = value;

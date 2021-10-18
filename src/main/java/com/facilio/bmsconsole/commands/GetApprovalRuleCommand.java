@@ -48,6 +48,7 @@ public class GetApprovalRuleCommand extends FacilioCommand {
                         approvalMeta.setApprovalOrder(stateTransitionRule.getApprovalOrder());
                         approvalMeta.setAllApprovalRequired(stateTransitionRule.getAllApprovalRequired());
                         approvalMeta.setApprovalForm(stateTransitionRule.getForm());
+                        approvalMeta.setApprovalFormId(stateTransitionRule.getFormId());
                         if (stateTransitionRule.getActions() == null) {
                             List<ActionContext> actions = ActionAPI.getActiveActionsFromWorkflowRule(stateTransitionRule.getId());
                             stateTransitionRule.setActions(actions);
@@ -56,6 +57,7 @@ public class GetApprovalRuleCommand extends FacilioCommand {
                     }
                     else if (rule.getName().equals("Reject")) {
                         approvalMeta.setRejectForm(stateTransitionRule.getForm());
+                        approvalMeta.setRejectFormId(stateTransitionRule.getFormId());
                         if (stateTransitionRule.getActions() == null) {
                             List<ActionContext> actions = ActionAPI.getActiveActionsFromWorkflowRule(stateTransitionRule.getId());
                             stateTransitionRule.setActions(actions);
