@@ -448,8 +448,9 @@ public class AccountUtil {
 		SECURITY_POLICY(144115188075855872L), // 2 ^ 57
 		SMS(288230376151711744L), // 2 ^ 58
 		MULTI_LANGUAGE_TRANSLATION(576460752303423488L), // 2^59
-		WOV3_BETA(1152921504606846976L); // 2^60
-		// Last license - 2 ^ 60
+		WOV3_BETA(1152921504606846976L), // 2^60
+		PIVOT_TABLE(2305843009213693952L); // 2^61
+		// Last license - 2 ^ 61
 		// Add Module name if license is added for specific module
 
 		private long license;
