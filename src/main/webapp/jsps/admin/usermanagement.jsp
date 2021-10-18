@@ -34,7 +34,8 @@ java.sql.Timestamp,
        			}
                 userDetails = AccountUtil.getUserBean(AccountUtil.getCurrentOrg().getOrgId()).getUserDetailsForUserManagement(email);
        		}
-       		catch (Exception e) {	
+       		catch (Exception e) {
+       		    com.facilio.util.UserManagementJSP.LOGGER.error("Exception in user management",e);
       		}
       	}
    %>
