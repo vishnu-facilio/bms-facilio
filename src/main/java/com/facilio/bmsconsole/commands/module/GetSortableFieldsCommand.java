@@ -181,6 +181,7 @@ public class GetSortableFieldsCommand extends FacilioCommand {
 			"category",
 			"subcategory",
 			"department",
+			"space",
 			"siteId",
 			"name",
 			"qrVal"
