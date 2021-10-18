@@ -278,6 +278,7 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 				.select(FieldFactory.getFormRuleFields())
 				.table(ModuleFactory.getFormRuleModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("formId"), ""+formId, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("STATUS", "status", "true", BooleanOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("triggerType"), StringUtils.join(triggerValues, ","), NumberOperators.EQUALS));
 		
 		
