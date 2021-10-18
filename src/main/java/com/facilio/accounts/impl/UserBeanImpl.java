@@ -12,6 +12,7 @@ import java.util.Set;
 
 import com.facilio.accounts.dto.*;
 import com.facilio.iam.accounts.util.IAMAppUtil;
+import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1307,18 +1308,21 @@ public class UserBeanImpl implements UserBean {
 
 		List<Long> orgUserIds = new ArrayList<>();
 		Map<Long, Map<String, Object>> orgUserIdVsUser = new HashMap<>();
+		List<Long> orgIds = new ArrayList<>();
 		for (Map<String, Object> user: userData) {
 			orgUserIds.add((long) user.get("iamOrgUserId"));
+			orgIds.add((long) user.get("orgId"));
 			orgUserIdVsUser.put((long) user.get("iamOrgUserId"), user);
 		}
 
-		List<Map<String, Object>> orgUserApps = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getOrgUserAppsFields())
-				.table("ORG_User_Apps")
-				.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.ORG_USERID", "orgUserId", StringUtils.join(orgUserIds, ","), NumberOperators.EQUALS)).get();
+		List<Map<String, Object>> orgUserApps = new ArrayList<>();
+		for (int i = 0; i < orgIds.size(); i++) {
+			long orgId = orgIds.get(i);
+			orgUserApps.addAll(AccountUtil.getOrgBean(orgId).getOrgUserApps(orgUserIds.get(i)));
+		}
 
 		List<Long> applicationIds = new ArrayList<>();
-		List<Long> orgIds = new ArrayList<>();
+		orgIds = new ArrayList<>();
 		for (Map<String, Object> orgUserApp: orgUserApps) {
 			applicationIds.add((long) orgUserApp.get("applicationId"));
 			orgIds.add((long) orgUserApp.get("orgId"));

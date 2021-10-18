@@ -103,6 +103,15 @@ public class OrgBeanImpl implements OrgBean {
 	}
 
 	@Override
+	public List<Map<String, Object>> getOrgUserApps(long orgUserId) throws Exception {
+		List<Map<String, Object>> orgUserApps = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getOrgUserAppsFields())
+				.table("ORG_User_Apps")
+				.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.ORG_USERID", "orgUserId", orgUserId+"", NumberOperators.EQUALS)).get();
+		return orgUserApps;
+	}
+
+	@Override
 	public List<User> getAppUsers(long orgId, long appId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage) throws Exception {
 
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
