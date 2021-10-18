@@ -26,10 +26,12 @@ public abstract class MessageQueue {
      */
     public void start() throws InterruptedException {
         updateStream();
+        /*
         //In case of server restart,
         //this wait time ensures that the broker knows the consumer has been killed.
         //i.e active members list entry for all the consumers in the current machine expires
         Thread.sleep(MIN_SESSION_TIMEOUT);
+        */
         startProcessor();
     }
 

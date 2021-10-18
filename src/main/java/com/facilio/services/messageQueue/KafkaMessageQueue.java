@@ -8,6 +8,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.server.ServerInfo;
 import org.apache.kafka.clients.admin.*;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.KafkaException;
@@ -120,7 +121,17 @@ class KafkaMessageQueue extends MessageQueue {
         LOGGER.info("ConsumerGroups : "+ consumerGroupList);
         try {
             if (consumerGroupList.contains(consumerGroup)) {
-                numberOfConsumersOnline = describeConsumerGroupsResult.describedGroups().get(consumerGroup).get(5, TimeUnit.SECONDS).members().size();
+                Collection<MemberDescription> members = describeConsumerGroupsResult.describedGroups().get(consumerGroup).get(5, TimeUnit.SECONDS).members();
+                //zombies are entries of consumers in the kafka members list for this consumer group
+                //which are dead but the entry expires only after session.timeout, so exclude them from counting as active members
+                int zombies = 0;
+                for (MemberDescription m : members) {
+                    if (m.clientId().startsWith(ServerInfo.getHostname())) {
+                        zombies++;
+                    }
+                }
+                LOGGER.info("members = "+members.size()+" , zombies = "+ zombies);
+                numberOfConsumersOnline = members.size()-zombies;
                 LOGGER.info("number of consumers online " + numberOfConsumersOnline +" for consumer group - "+consumerGroup);
             }
         } catch (KafkaException kex) {
