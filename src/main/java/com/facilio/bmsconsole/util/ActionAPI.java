@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.services.email.EmailClient;
 import com.facilio.util.FacilioUtil;
@@ -18,6 +19,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -40,7 +42,9 @@ import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsoleV3.context.EmailFromAddress;
 import com.facilio.cb.context.ChatBotIntentAction;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -451,13 +455,18 @@ public class ActionAPI {
 	public static String getEMailAddress(long id) {
 		String emailAddress = "";
 		try {
-			GenericSelectRecordBuilder selectBdr = new GenericSelectRecordBuilder()
-					.select(Collections.singletonList(FieldFactory.getField("EMAIL", "EMAIL", FieldType.STRING)))
-					.table("Email_From_Address")
-					.andCondition(CriteriaAPI.getCondition("ID", "ID", String.valueOf(id), StringOperators.IS));
-
-			List<Map<String, Object>> resultSet = selectBdr.get();
-			emailAddress = (String) resultSet.get(0).get("EMAIL");
+			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
+			SelectRecordsBuilder<EmailFromAddress> select = new SelectRecordsBuilder<EmailFromAddress>()
+					.moduleName(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME)
+					.beanClass(EmailFromAddress.class)
+					.select(modBean.getAllFields(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME))
+					.andCondition(CriteriaAPI.getIdCondition(id, modBean.getModule(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME)));
+			
+			EmailFromAddress fromAddress = select.fetchFirst();
+			
+			emailAddress = MailMessageUtil.getWholeEmailFromNameAndEmail.apply(fromAddress.getDisplayName(), fromAddress.getEmail());
 		} catch (Exception e) {
 			LOGGER.error("unable to fetch email address", e);
 		}
