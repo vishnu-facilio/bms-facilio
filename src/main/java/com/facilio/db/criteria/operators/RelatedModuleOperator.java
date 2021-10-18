@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -67,8 +68,10 @@ public enum RelatedModuleOperator implements Operator<Criteria> {
 						builder.append("IN (SELECT ")
 								.append(field.getColumnName()).append(" FROM ")
 								.append(field.getTableName())
-								.append(" WHERE ").append(field.getTableName()).append(".MODULEID = ")
-								.append(field.getModuleId()).append(" AND ")
+								.append(" WHERE ")
+								.append(field.getTableName()).append(".ORGID = ").append(AccountUtil.getCurrentOrg().getOrgId()).append(" AND ")
+								.append(field.getTableName()).append(".MODULEID = ").append(field.getModuleId()).append(" AND ")
+								.append(field.getCompleteColumnName()).append(" IS NOT NULL AND ")
 								.append(value.computeWhereClause())
 								.append(")");
 						
