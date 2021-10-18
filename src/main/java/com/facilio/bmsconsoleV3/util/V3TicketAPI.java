@@ -512,24 +512,24 @@ public class V3TicketAPI {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TICKET);
 
-            SelectRecordsBuilder<TicketContext> selectBuilder = new SelectRecordsBuilder<TicketContext>()
+            SelectRecordsBuilder<V3TicketContext> selectBuilder = new SelectRecordsBuilder<V3TicketContext>()
                     .select(fields)
                     .table("Tickets")
                     .moduleName(FacilioConstants.ContextNames.TICKET)
-                    .beanClass(TicketContext.class);
-            Map<Long, TicketContext> tickets = selectBuilder.getAsMap();
+                    .beanClass(V3TicketContext.class);
+            Map<Long, V3TicketContext> tickets = selectBuilder.getAsMap();
 
             for (V3TicketContext workorder : workorders) {
                 if (workorder != null) {
-                    TicketPriorityContext priority = workorder.getPriority();
-                    if (priority != null) {
-                        // scheduled work duration
-                        workorder.setScheduledStart(tickets.get(workorder.getId()).getScheduledStart());
-                        workorder.setEstimatedEnd(tickets.get(workorder.getId()).getEstimatedEnd());
-
-                        // actual work duration
-                        workorder.setActualWorkEnd(tickets.get(workorder.getId()).getActualWorkEnd());
+                    V3TicketContext ticket = tickets.get(workorder.getId());
+                    if (ticket == null) {
+                        continue;
                     }
+                    // scheduled work duration
+                    workorder.setScheduledStart(ticket.getScheduledStart() != null ? ticket.getScheduledStart() : -1);
+                    workorder.setEstimatedEnd(ticket.getEstimatedEnd() != null ? ticket.getEstimatedEnd() : -1);
+                    // actual work duration
+                    workorder.setActualWorkEnd(ticket.getActualWorkEnd() != null ? ticket.getActualWorkEnd() : -1);
                 }
             }
         } catch (Exception e) {
