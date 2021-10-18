@@ -18,7 +18,10 @@ public class ServiceRequestPageFactory extends PageFactory {
             Page.Tab tab1 = page.new Tab("summary", "serviceRequestDetails");
             page.addTab(tab1);
 
-            String tab2Title = AccountUtil.getCurrentUser().isPortalUser() ? "Attachments" : "Comments & Attachments";
+            //hide comments section for portal users except for atre org
+            boolean hideComments = AccountUtil.getCurrentUser().isPortalUser() && AccountUtil.getCurrentOrg().getOrgId() != 418l;
+
+            String tab2Title = hideComments ? "Attachments" : "Comments & Attachments";
             Page.Tab tab2 = page.new Tab(tab2Title);
             page.addTab(tab2);
 
@@ -27,7 +30,7 @@ public class ServiceRequestPageFactory extends PageFactory {
             HashMap<String, String> titleMap = new HashMap<>();
             titleMap.put("notes", "Comment");
             titleMap.put("documents", "Attachment");
-            if (AccountUtil.getCurrentUser().isPortalUser()) {
+            if (hideComments) {
                 addCommonSubModuleWidget(tab2sec1, module, record, titleMap, false, PageWidget.WidgetType.ATTACHMENT);
             } else {
                 addCommonSubModuleWidget(tab2sec1, module, record, titleMap, false);
