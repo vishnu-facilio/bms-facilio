@@ -652,4 +652,13 @@ public class OrgBeanImpl implements OrgBean {
 			demoRollupChain.execute();
 	}
 
+	@Override
+	public List<Map<String, Object>> getApplication(long appId) throws Exception {
+		return new GenericSelectRecordBuilder()
+				.select(FieldFactory.getApplicationFields())
+				.table("Application")
+				.andCondition(CriteriaAPI.getCondition("Application.ID", "id", appId+"", NumberOperators.EQUALS))
+				.get();
+	}
+
 }

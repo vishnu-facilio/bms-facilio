@@ -1328,12 +1328,10 @@ public class UserBeanImpl implements UserBean {
 			orgIds.add((long) orgUserApp.get("orgId"));
 		}
 
-		List<Map<String, Object>> apps = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getApplicationFields())
-				.table("Application")
-				.andCondition(CriteriaAPI.getCondition("Application.ID", "id", StringUtils.join(applicationIds, ","), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("Application.ORGID", "orgId", StringUtils.join(orgIds, ","), NumberOperators.EQUALS))
-				.get();
+		List<Map<String, Object>> apps = new ArrayList<>();
+		for (int i = 0; i < orgIds.size(); i++) {
+			apps.addAll(AccountUtil.getOrgBean(orgIds.get(i)).getApplication(applicationIds.get(i)));
+		}
 
 		Map<Long, Map<String, Object>> appIdVsApp = new HashMap<>();
 		for (Map<String, Object> app: apps) {

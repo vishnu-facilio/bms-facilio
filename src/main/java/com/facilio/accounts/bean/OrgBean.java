@@ -79,4 +79,6 @@ public interface OrgBean {
 	void runDemoRollup(long orgId, long timeDuration) throws Exception;
 
 	List<Map<String, Object>> getOrgUserApps(long orgUserId) throws Exception;
+
+	List<Map<String, Object>> getApplication(long appId) throws Exception;
 }
