@@ -1202,13 +1202,16 @@ public class FetchReportDataCommand extends FacilioCommand {
         FacilioModule module = baseModule;
         while (module != null) {
             String tableName = module.getTableName() + " " + getAndSetModuleAlias(module.getName(), tableAlias);
+            String joinOn = getAndSetModuleAlias(module.getName(), tableAlias) + ".ID = " + module.getTableName() + ".ID";
+            String joinString = tableName + " " + joinOn;
             int random = (int) (Math.random()*(1000)+1);
-            if(innerJoinString.contains(tableName)) {
-                tableName = module.getTableName() + " " + random + getAndSetModuleAlias(module.getName(), tableAlias);
+            if(innerJoinString.contains(joinString)) {
+                return;
+           //     tableName = module.getTableName() + " " + random + getAndSetModuleAlias(module.getName(), tableAlias);
             }
-            innerJoinString += tableName + " ";
+            innerJoinString += joinString + " ";
             selectBuilder.innerJoin(tableName)
-                    .on(getAndSetModuleAlias(module.getName(), tableAlias) + ".ID = " + module.getTableName() + ".ID");
+                    .on(joinOn);
             module = module.getExtendModule();
         }
     }
