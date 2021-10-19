@@ -1325,6 +1325,8 @@ public class UserBeanImpl implements UserBean {
 			orgUserApps.addAll(AccountUtil.getOrgBean(orgId).getOrgUserApps(orgUserIds.get(i)));
 		}
 
+		LOGGER.error("get orgUserApps: " + orgUserApps.size());
+
 		List<Long> applicationIds = new ArrayList<>();
 		orgIds = new ArrayList<>();
 		for (Map<String, Object> orgUserApp: orgUserApps) {
