@@ -14,6 +14,7 @@ import com.facilio.accounts.dto.*;
 import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.util.FacilioUtil;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -65,6 +66,7 @@ import com.facilio.modules.fields.FacilioField;
 
 ;
 
+@Log4j
 public class UserBeanImpl implements UserBean {
 
 	private static Logger log = LogManager.getLogger(UserBeanImpl.class.getName());
@@ -1315,6 +1317,8 @@ public class UserBeanImpl implements UserBean {
 			orgUserIdVsUser.put((long) user.get("iamOrgUserId"), user);
 		}
 
+		LOGGER.error("get UserData orgIds: " + orgIds.size() + " orgUserIds: "+ orgUserIds.size());
+
 		List<Map<String, Object>> orgUserApps = new ArrayList<>();
 		for (int i = 0; i < orgIds.size(); i++) {
 			long orgId = orgIds.get(i);
@@ -1332,6 +1336,8 @@ public class UserBeanImpl implements UserBean {
 		for (int i = 0; i < orgIds.size(); i++) {
 			apps.addAll(AccountUtil.getOrgBean(orgIds.get(i)).getApplication(applicationIds.get(i)));
 		}
+
+		LOGGER.error("get Application apps: " + apps.size());
 
 		Map<Long, Map<String, Object>> appIdVsApp = new HashMap<>();
 		for (Map<String, Object> app: apps) {
