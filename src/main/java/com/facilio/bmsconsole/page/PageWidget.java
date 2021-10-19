@@ -354,6 +354,7 @@ public class PageWidget {
 		BOOKINGS_RELATED_LIST("bookingRelatedListWidget"),
 
 		// Workorder Widgets
+		WORKORDER_DESCRIPTION("workorderDescription"),
 		TASKS_COMPLETED("tasksCompleted"),
 		SCHEDULED_DURATION("scheduledDuration"),
 		ACTUAL_DURATION("actualDuration"),
