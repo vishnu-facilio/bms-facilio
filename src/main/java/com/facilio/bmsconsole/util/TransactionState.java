@@ -8,7 +8,9 @@ public enum TransactionState{
 	IN,
 	OUT,
 	ADJUSTMENT_INCREASE,
-	ADJUSTMENT_DECREASE;
+	ADJUSTMENT_DECREASE,
+	TRANSFERRED_FROM,
+	TRANSFERRED_TO;
 
 
 	public static TransactionState valueOf(int value) {

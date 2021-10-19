@@ -517,6 +517,7 @@ public class APIv3Config {
         return () -> new V3Config(V3TransferRequestContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .update()
+                .afterSave(TransactionChainFactoryV3.getUpdateTransferRequestIsStagedAfterSaveChain())
                 .list()
                 .summary()
                 .delete()
