@@ -1796,6 +1796,7 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericAddModuleDataCommand());
 			c.addCommand(new DeleteSitesForStoreRoomCommad());
 			c.addCommand(new AddSitesForStoreRoomCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
 			return c;
 		}
 		
@@ -1805,6 +1806,7 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericUpdateModuleDataCommand());
 			c.addCommand(new DeleteSitesForStoreRoomCommad());
 			c.addCommand(new AddSitesForStoreRoomCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
 			return c;
 		}
 		

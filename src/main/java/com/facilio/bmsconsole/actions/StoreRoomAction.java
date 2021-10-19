@@ -56,6 +56,7 @@ public class StoreRoomAction extends FacilioAction{
 					throw new IllegalArgumentException("StoreRoom Located Site cannot be empty");
 				}
 		     }
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.SITES_FOR_STORE_ROOM, storeRoom.getSites());
 		FacilioChain addStoreRoom = TransactionChainFactory.getAddStoreRoomChain();
 		addStoreRoom.execute(context);
