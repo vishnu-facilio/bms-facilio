@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
@@ -480,6 +481,14 @@ public class WeatherUtil {
 			readingsList = new ArrayList<ReadingContext>();
 			readingMap.put(siteId, readingsList);
 		}
+		list = list.stream().map(t -> {
+			try {
+				return t.clone();
+			} catch (CloneNotSupportedException e) {
+				LOGGER.error("Cannot clone - " + t.getParentId() + "," + t.getTtime(),e);
+			}
+			return t;
+		}).collect(Collectors.toList());
 		readingsList.addAll(list);
 	}
 
