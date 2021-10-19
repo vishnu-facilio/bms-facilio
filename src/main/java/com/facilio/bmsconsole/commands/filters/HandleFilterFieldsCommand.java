@@ -233,19 +233,18 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
             "lookup",
             "priority",
             "moduleState",
-            "datetime",
-            "actualWorkStart"
+            "inspectionduedate",
+            "actualWorkStart",
+            "serialNumber"
     }));
 
     private static final List<String> assetAtre = Collections.unmodifiableList(Arrays.asList(new String[] {
             "category",
-            "subcategory",
+            "type",
             "department",
             "space",
-            "scanqr",
             "name",
             "qrVal",
-            "tenantunit",
             "purchasedDate"
     }));
 
