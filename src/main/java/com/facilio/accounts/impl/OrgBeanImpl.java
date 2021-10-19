@@ -313,6 +313,16 @@ public class OrgBeanImpl implements OrgBean {
 		return getAppUsers(orgId, ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP), false);
 	}
 
+	public Map<String, Object> getOrgUser(long iamOrgUserId) throws Exception {
+		List<FacilioField> fields = new ArrayList<>(AccountConstants.getAppOrgUserFields());
+
+		return new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("ORG_Users")
+				.andCondition(CriteriaAPI.getCondition("IAM_ORG_USERID", "iamOrgUserId", iamOrgUserId+"", NumberOperators.EQUALS))
+				.get().get(0);
+	}
+
 	@Override
 	public Map<Long, User> getOrgUsersAsMap(long orgId) throws Exception {
 

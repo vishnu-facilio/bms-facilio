@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.*;
 import com.facilio.iam.accounts.util.IAMAppUtil;
@@ -1308,16 +1309,19 @@ public class UserBeanImpl implements UserBean {
 	public List<Map<String, String>> getUserDetailsForUserManagement(String email) throws Exception {
 		List<Map<String, Object>> userData = IAMUserUtil.getUserData(email, -1, null);
 
+		List<Long> iamOrgUserId = new ArrayList<>();
 		List<Long> orgUserIds = new ArrayList<>();
 		Map<Long, Map<String, Object>> orgUserIdVsUser = new HashMap<>();
 		List<Long> orgIds = new ArrayList<>();
 		for (Map<String, Object> user: userData) {
-			orgUserIds.add((long) user.get("iamOrgUserId"));
+			iamOrgUserId.add((long) user.get("iamOrgUserId"));
 			orgIds.add((long) user.get("orgId"));
-			orgUserIdVsUser.put((long) user.get("iamOrgUserId"), user);
+			Map<String, Object> orgUser = AccountUtil.getOrgBean((long) user.get("orgId")).getOrgUser((long) user.get("iamOrgUserId"));
+			orgUserIds.add((long) orgUser.get("ouid"));
+			orgUserIdVsUser.put((long) orgUser.get("ouid"), user);
 		}
 
-		LOGGER.error("get UserData orgIds: " + orgIds.size() + " orgUserIds: "+ orgUserIds.size());
+		LOGGER.error("get UserData orgIds: " + orgIds.size() + " iamOrgUserId: "+ iamOrgUserId.size());
 
 		List<Map<String, Object>> orgUserApps = new ArrayList<>();
 		for (int i = 0; i < orgIds.size(); i++) {
@@ -1353,6 +1357,7 @@ public class UserBeanImpl implements UserBean {
 			res.put("iamOrgUserId", String.valueOf(orgUser.get("ouid")));
 			long applicationId = (long) orgUser.get("applicationId");
 			Map<String, Object> application = appIdVsApp.get(applicationId);
+			res.put("orgId", String.valueOf(orgUser.get("orgId")));
 			res.put("applicationName", (String) application.get("name"));
 			res.put("applicationId", String.valueOf(orgUser.get("applicationId")));
 			res.put("userId", String.valueOf(orgUserIdVsUser.get(orgUser.get("ouid")).get("uid")));
