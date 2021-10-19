@@ -13,9 +13,6 @@ public class WorkorderPageFactory extends PageFactory {
     private static void composeRightPanel(Page.Section section) throws Exception {
 
         int yOffset = 0;
-        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)) {
-            yOffset += 3;
-        }
 
         // work duration widget
         PageWidget workDuration = new PageWidget(PageWidget.WidgetType.WORK_DURATION);
@@ -27,8 +24,17 @@ public class WorkorderPageFactory extends PageFactory {
             PageWidget totalCost = new PageWidget(PageWidget.WidgetType.TOTAL_COST);
             totalCost.addToLayoutParams(18, 3, 6, 3);
             section.addWidget(totalCost);
+            yOffset += 3;
         }
-        
+
+        // maintenance cost widget
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
+            PageWidget totalCost = new PageWidget(PageWidget.WidgetType.QUOTATION);
+            totalCost.addToLayoutParams(18, 3, 6, 3);
+            section.addWidget(totalCost);
+            yOffset += 3;
+        }
+
         // resource widget
         PageWidget resource = new PageWidget(PageWidget.WidgetType.RESOURCE);
         resource.addToLayoutParams(18, 3 + yOffset, 6, 3);
