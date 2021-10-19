@@ -790,13 +790,13 @@ public class ApplicationApi {
             webTabs = new ArrayList<>();
 
             webTabs.add(new WebTabContext("Dashboard", "dashboard", WebTabContext.Type.DASHBOARD, null, appId, null));
+            webTabs.add(new WebTabContext("Work Order", "workorder", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("workorder").getModuleId()), appId, null));
 
-            webTabs.add(getWebTabForApplication(appId, "workorder"));
             groupNameVsWebTabsMap.put("favorite", webTabs);
 
             webTabGroups.add(new WebTabGroupContext("Assets", "asset", layout.getId(), 202, groupOrder++));
             webTabs = new ArrayList<>();
-            webTabs.add(getWebTabForApplication(appId, "asset"));
+            webTabs.add(new WebTabContext("Assets", "asset", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("asset").getModuleId()), appId, null));
 
             groupNameVsWebTabsMap.put("asset", webTabs);
 
@@ -810,6 +810,14 @@ public class ApplicationApi {
                 long webGroupId = (long) chainContext.get(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID);
                 webTabGroupContext.setId(webGroupId);
                 List<WebTabContext> tabs = groupNameVsWebTabsMap.get(webTabGroupContext.getRoute());
+                for (WebTabContext webTabContext : tabs) {
+                    chain = TransactionChainFactory.getAddOrUpdateTabChain();
+                    chainContext = chain.getContext();
+                    chainContext.put(FacilioConstants.ContextNames.WEB_TAB, webTabContext);
+                    chain.execute();
+                    long tabId = (long) chainContext.get(FacilioConstants.ContextNames.WEB_TAB_ID);
+                    webTabContext.setId(tabId);
+                }
                 if(CollectionUtils.isNotEmpty(tabs)){
                     chain = TransactionChainFactory.getCreateAndAssociateTabGroupChain();
                     chainContext = chain.getContext();
