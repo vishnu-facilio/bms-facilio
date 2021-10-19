@@ -276,6 +276,32 @@ public enum FacilioStringFunction implements FacilioWorkflowFunctionInterface {
 			}
 		}
 	},
+	REPLACE(16, "replace") {
+		
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			String string = (String) objects[0];
+			String oldChar = (String) objects[1];
+			String newChar = (String) objects[2];
+			
+			return string.replace(oldChar, newChar);
+			
+		}
+	},
+	REPLACE_ALL(16, "replaceAll") {
+		
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			String string = (String) objects[0];
+			String regex = (String) objects[1];
+			String newChar = (String) objects[2];
+			
+			return string.replaceAll(regex, newChar);
+			
+		}
+	}
 	;
 	private Integer value;
 	private String functionName;
