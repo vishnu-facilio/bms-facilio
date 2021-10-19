@@ -261,12 +261,12 @@ public class FetchReportDataCommand extends FacilioCommand {
         setYFieldsAndGroupByFields(dataPointList, fields, xAggrField, groupBy, dp, selectBuilder, addedModules);
         List<FacilioField> cloneFields = new ArrayList<>();
         for (FacilioField field : fields) {
-            if (field != null && field.getModule() != null && (field.getModule().isCustom() && !baseModule.equals(field.getModule()))) {
+            if (field != null && field.getModule() != null && field.getModule().isCustom()) {
                 String alias = getAndSetModuleAlias(field.getModule().getName());
                 FacilioField cloneField = field.clone();
                 cloneField.setTableAlias(alias);
                 cloneFields.add(field);
-            } else if(baseModule.equals(field.getModule()) || field.getModule() == null){
+            } else {
                 cloneFields.add(field);
             }
         }
