@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bundle.context.BundleContext;
 import com.facilio.bundle.utils.BundleConstants;
 import com.facilio.bundle.utils.BundleUtil;
@@ -27,6 +28,11 @@ public class AddBundleCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		
 		BundleContext bundle = (BundleContext) context.get(BundleConstants.BUNDLE_CONTEXT);
+		
+		if(bundle.getParentBundleId() == null || bundle.getParentBundleId() <=0) {
+			
+			computeGlobalBundleName(bundle);
+		}
 		
 		if(bundle.getCreatedTime() == null) {
 			bundle.setCreatedTime(DateTimeUtil.getCurrenTime());
@@ -62,6 +68,16 @@ public class AddBundleCommand extends FacilioCommand {
 		}
 		
 		return false;
+	}
+
+	private void computeGlobalBundleName(BundleContext bundle) {
+		// TODO Auto-generated method stub
+		
+		String globalname = bundle.getBundleGlobalName();
+		
+		globalname = "com."+AccountUtil.getCurrentOrg().getDomain()+"."+globalname;
+		
+		bundle.setBundleGlobalName(globalname);
 	}
 
 	private void addDefaultSystemBundleComponents(BundleContext bundle) throws Exception {

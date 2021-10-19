@@ -22,4 +22,10 @@ public class NotificationRuleBundleComponent extends WorkflowRuleBaseBundleCompo
 		
 	}
 
+	@Override
+	public void getInstallMode(FacilioContext context) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

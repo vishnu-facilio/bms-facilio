@@ -369,7 +369,9 @@ public class PageWidget {
 		HAZARDS("hazards"),
 		PRECAUTIONS("precautions"),
 		PREREQUISITES("prerequisites"),
-		TASKS_MONOLITH("taskMonolith");
+		TASKS_MONOLITH("taskMonolith"),
+		ITEMS_AND_LABOR("itemsAndLabor"),
+		TOTAL_COST("totalCost");
 
 		private String name;
 

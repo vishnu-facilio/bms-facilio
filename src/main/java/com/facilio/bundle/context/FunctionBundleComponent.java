@@ -129,4 +129,10 @@ public class FunctionBundleComponent extends CommonBundleComponent {
 		
 	}
 
+	@Override
+	public void getInstallMode(FacilioContext context) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

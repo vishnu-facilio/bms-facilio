@@ -66,6 +66,8 @@ public class PackBundleChangeSetCommand extends FacilioCommand {
 			XMLBuilder bundleXMLBuilder = bundleFile.getXmlContent();
 			bundleXMLBuilder = bundleXMLBuilder.e(BundleConstants.VERSION).text(bundle.getVersion()+"").p();
 			
+			bundleXMLBuilder = bundleXMLBuilder.e(BundleConstants.GLOBAL_NAME).text(bundle.getBundleGlobalName()).p();
+			
 			bundleXMLBuilder = bundleXMLBuilder.e(BundleConstants.COMPONENTS);
 			
 			Map<Integer, List<BundleChangeSetContext>> changeSetMap = changeSet.stream().collect(Collectors.groupingBy(BundleChangeSetContext::getComponentType));

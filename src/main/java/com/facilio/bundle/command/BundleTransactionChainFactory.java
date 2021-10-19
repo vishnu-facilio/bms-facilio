@@ -56,6 +56,7 @@ public class BundleTransactionChainFactory {
     public static FacilioChain getInstallBundleChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ParseZIPToFolderContentCommand());
+        c.addCommand(new AddInstalledBundleEntryCommand());
         c.addCommand(new InstallBundledFolderContentCommand());
         return c;
     }

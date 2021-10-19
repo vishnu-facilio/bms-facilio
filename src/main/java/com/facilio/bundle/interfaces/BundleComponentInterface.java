@@ -8,6 +8,8 @@ public interface BundleComponentInterface {
 	void getFormatedObject(FacilioContext context) throws Exception;
 	void fillBundleXML(FacilioContext context) throws Exception;
 	
+	void getInstallMode(FacilioContext context) throws Exception;
+	
 	void install(FacilioContext context) throws Exception;
 	void postInstall(FacilioContext context) throws Exception;
 	

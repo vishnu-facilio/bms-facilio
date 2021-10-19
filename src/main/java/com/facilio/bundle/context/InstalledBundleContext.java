@@ -8,9 +8,8 @@ public class InstalledBundleContext {
 
 	Long id;
 	Long orgId;
-	Long bundleId;
 	String bundleGlobalName;
-	String installedVersion;
+	Double installedVersion;
 	Long installedTime;
 	
 }

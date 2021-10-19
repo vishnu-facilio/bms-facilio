@@ -98,4 +98,10 @@ public class FunctionNameSpaceBundleComponent extends CommonBundleComponent {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void getInstallMode(FacilioContext context) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
 }

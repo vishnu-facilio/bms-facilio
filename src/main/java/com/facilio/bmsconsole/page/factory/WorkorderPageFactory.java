@@ -7,35 +7,46 @@ import com.facilio.bmsconsole.page.PageWidget;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.util.stream.Collectors;
-
 public class WorkorderPageFactory extends PageFactory {
     private static final Logger LOGGER = LogManager.getLogger(WorkorderPageFactory.class.getName());
 
 
-    private static void composeRightPanel(Page.Section section) {
+    private static void composeRightPanel(Page.Section section) throws Exception {
+
+        int yOffset = 0;
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)) {
+            yOffset += 3;
+        }
+
         // work duration widget
         PageWidget workDuration = new PageWidget(PageWidget.WidgetType.WORK_DURATION);
         workDuration.addToLayoutParams(18, 0, 6, 3);
         section.addWidget(workDuration);
+        // total cost widget
 
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)) {
+            PageWidget totalCost = new PageWidget(PageWidget.WidgetType.TOTAL_COST);
+            totalCost.addToLayoutParams(18, 3, 6, 3);
+            section.addWidget(totalCost);
+        }
+        
         // resource widget
         PageWidget resource = new PageWidget(PageWidget.WidgetType.RESOURCE);
-        resource.addToLayoutParams(18, 3, 6, 3);
+        resource.addToLayoutParams(18, 3 + yOffset, 6, 3);
         section.addWidget(resource);
 
         // responsibility widget
         PageWidget responsibility = new PageWidget(PageWidget.WidgetType.RESPONSIBILITY);
-        responsibility.addToLayoutParams(18, 6, 6, 6);
+        responsibility.addToLayoutParams(18, 6 + yOffset, 6, 6);
         section.addWidget(responsibility);
 
         // workorderDetails widget
         PageWidget workorderDetails = new PageWidget(PageWidget.WidgetType.WORKORDER_DETAILS);
-        workorderDetails.addToLayoutParams(18, 12, 6, 12);
+        workorderDetails.addToLayoutParams(18, 12 + yOffset, 6, 12);
         section.addWidget(workorderDetails);
     }
 
-    private static void addSummaryTab(Page page) {
+    private static void addSummaryTab(Page page) throws Exception {
         Page.Tab summaryTab = page.new Tab("summary");
         page.addTab(summaryTab);
 
@@ -121,7 +132,7 @@ public class WorkorderPageFactory extends PageFactory {
 //        composeRightPanel(tasksSection);
     }
 
-    private static Page.Section addSafetyPlanTab(Page page) {
+    private static Page.Section addSafetyPlanTab(Page page) throws Exception {
         Page.Tab safetyPlanTab = page.new Tab("safety plan");
         page.addTab(safetyPlanTab);
 
@@ -142,7 +153,22 @@ public class WorkorderPageFactory extends PageFactory {
         return safetyPlanSection;
     }
 
-    private static void addSafetyPlanTabWithPrerequisites(Page page) {
+    private static void addInventoryTab(Page page) {
+        Page.Tab itemsAndLaborTab = page.new Tab("items & labor");
+        page.addTab(itemsAndLaborTab);
+
+        Page.Section itemsAndLaborSection = page.new Section();
+        itemsAndLaborTab.addSection(itemsAndLaborSection);
+
+        // TODO::VR monolith, to be decomposed.
+        // items & labor widget
+        PageWidget itemsAndLabor = new PageWidget(PageWidget.WidgetType.ITEMS_AND_LABOR);
+        itemsAndLabor.addToLayoutParams(itemsAndLaborSection, 24, 18);
+        itemsAndLaborSection.addWidget(itemsAndLabor);
+    }
+
+
+    private static void addSafetyPlanTabWithPrerequisites(Page page) throws Exception {
         Page.Section safetyPlanSection = addSafetyPlanTab(page);
 
         // prerequisites widget
@@ -151,7 +177,7 @@ public class WorkorderPageFactory extends PageFactory {
         safetyPlanSection.addWidget(prerequisites);
     }
 
-    private static void addPrerequisiteTab(Page page) {
+    private static void addPrerequisiteTab(Page page) throws Exception {
         Page.Tab prerequisite = page.new Tab("prerequisites");
         page.addTab(prerequisite);
 
@@ -185,6 +211,9 @@ public class WorkorderPageFactory extends PageFactory {
             addSafetyPlanTab(page);
         }
         addTasksTab(page);
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)) {
+            addInventoryTab(page);
+        }
         addRelatedRecordsTab(page);
         addHistoryTab(page);
         return page;

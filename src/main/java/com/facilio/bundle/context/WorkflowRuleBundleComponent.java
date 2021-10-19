@@ -22,4 +22,10 @@ public class WorkflowRuleBundleComponent extends WorkflowRuleBaseBundleComponent
 		
 	}
 
+	@Override
+	public void getInstallMode(FacilioContext context) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

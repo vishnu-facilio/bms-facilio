@@ -19,6 +19,8 @@ public class InstallBundledFolderContentCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
+		List<Double> toBeInstalledVersionList = (List<Double>) context.get(BundleConstants.TO_BE_INSTALLED_VERSIONS_LIST);
+		
 		BundleFolderContext rootFolder = (BundleFolderContext) context.get(BundleConstants.BUNDLE_FOLDER);
 		
 		BundleFileContext bundleXmlFileContext = rootFolder.getFile(BundleConstants.BUNDLE_FILE_NAME+"."+BundleConstants.XML_FILE_EXTN);
@@ -41,18 +43,23 @@ public class InstallBundledFolderContentCommand extends FacilioCommand {
 			
 			for(XMLBuilder subComponent : allchangeSet) {
 				
-				String subComponentPath = subComponent.getText();
+				Double componentVersion = Double.parseDouble(subComponent.getAttribute(BundleConstants.VERSION));
 				
-				String fileName = FilenameUtils.getName(subComponentPath);
-				
-				BundleFileContext changeSetXMLFile = parentFolder.getFile(fileName);
-				
-				FacilioContext newContext = new FacilioContext();
-				
-				newContext.put(BundleConstants.BUNDLED_XML_COMPONENT_FILE, changeSetXMLFile);
-				newContext.put(BundleConstants.BUNDLE_FOLDER, parentFolder);
-				
-				bundleComponentEnum.getBundleComponentClassInstance().install(newContext);
+				if(toBeInstalledVersionList.contains(componentVersion)) {
+					String subComponentPath = subComponent.getText();
+					
+					String fileName = FilenameUtils.getName(subComponentPath);
+					
+					BundleFileContext changeSetXMLFile = parentFolder.getFile(fileName);
+					
+					FacilioContext newContext = new FacilioContext();
+					
+					newContext.put(BundleConstants.BUNDLED_XML_COMPONENT_FILE, changeSetXMLFile);
+					newContext.put(BundleConstants.BUNDLE_FOLDER, parentFolder);
+					
+					bundleComponentEnum.getBundleComponentClassInstance().getInstallMode(newContext);
+					bundleComponentEnum.getBundleComponentClassInstance().install(newContext);
+				}
 			}
 		}
 		
