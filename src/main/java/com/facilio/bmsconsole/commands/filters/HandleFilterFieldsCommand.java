@@ -227,6 +227,9 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
     }
 
     private static final List<String> workorderAtre = Collections.unmodifiableList(Arrays.asList(new String[] {
+            "serialNumber",
+            "subject",
+            "createdTime",
             "building",
             "resource",
             "category",
@@ -234,8 +237,7 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
             "priority",
             "moduleState",
             "inspectionduedate",
-            "actualWorkStart",
-            "serialNumber"
+            "actualWorkStart"
     }));
 
     private static final List<String> assetAtre = Collections.unmodifiableList(Arrays.asList(new String[] {
@@ -245,7 +247,8 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
             "space",
             "name",
             "qrVal",
-            "purchasedDate"
+            "purchasedDate",
+            "singleline"
     }));
 
 }
