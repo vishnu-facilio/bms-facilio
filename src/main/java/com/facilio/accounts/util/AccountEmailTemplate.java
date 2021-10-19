@@ -118,6 +118,13 @@ public enum AccountEmailTemplate {
 		if (BRAND == null) {
 			BRAND = FacilioProperties.getConfig("rebrand.brand");//Facilio
 		}
+
+		if (IAMEMAIL == null) {
+			IAMEMAIL = FacilioProperties.getConfig("rebrand.iamemail");//"noreply@facilioaccounts.com"
+			if (IAMEMAIL == null) {
+				IAMEMAIL = FacilioProperties.getConfig("rebrand.supportemail");
+			}
+		}
 		
 		JSONObject json = new JSONObject();
 		Template template = null;
