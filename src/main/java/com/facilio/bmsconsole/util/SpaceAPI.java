@@ -1537,6 +1537,21 @@ public static long getSitesCount() throws Exception {
 		return spaceIds;
 	}
 	
+	public static List<SpaceContext> getSpaceListForBuilding(long buildingId) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		SelectRecordsBuilder<SpaceContext> builder = new SelectRecordsBuilder<SpaceContext>()
+				.moduleName(FacilioConstants.ContextNames.SPACE)
+				.select(modBean.getAllFields(FacilioConstants.ContextNames.SPACE))
+				.beanClass(SpaceContext.class)
+				.andCustomWhere(" BaseSpace.ORGID = ? AND BaseSpace.BUILDING_ID = ?", orgId, buildingId);
+		
+		List<SpaceContext> rs = builder.get();
+		return rs;
+	}
+	
 	public static long getSpacesCountForFloor(long floorId) throws Exception {
 		
 		FacilioField countFld = new FacilioField();

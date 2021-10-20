@@ -72,11 +72,11 @@ public class FetchBundleChangeSetCommand extends FacilioCommand {
 			
 			context.put(BundleConstants.CHANGE_SET, null);
 			
-			componentClass.getDeletedChangeSet((FacilioContext)context);
-			
-			List<BundleChangeSetContext> deletedChangeSet = (List<BundleChangeSetContext>) context.get(BundleConstants.CHANGE_SET);
-			
-			context.put(BundleConstants.CHANGE_SET, null);
+//			componentClass.getDeletedChangeSet((FacilioContext)context);
+//			
+//			List<BundleChangeSetContext> deletedChangeSet = (List<BundleChangeSetContext>) context.get(BundleConstants.CHANGE_SET);
+//			
+//			context.put(BundleConstants.CHANGE_SET, null);
 			
 			if(addedChangeSet != null) {
 				returnChangeset.addAll(addedChangeSet);
@@ -84,9 +84,9 @@ public class FetchBundleChangeSetCommand extends FacilioCommand {
 			if(modifiedChangeSet != null) {
 				returnChangeset.addAll(modifiedChangeSet);
 			}
-			if(deletedChangeSet != null) {
-				returnChangeset.addAll(deletedChangeSet);
-			}
+//			if(deletedChangeSet != null) {
+//				returnChangeset.addAll(deletedChangeSet);
+//			}
 			
 			ArrayList<BundleComponentsEnum> childList = parentChildMap.get(component);
 			

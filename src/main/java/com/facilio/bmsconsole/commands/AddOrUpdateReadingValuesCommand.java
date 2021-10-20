@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -115,6 +116,12 @@ public class AddOrUpdateReadingValuesCommand extends FacilioCommand {
 					updateReading(module, fields, reading, metaMap, currentReadingMap, updateLastReading, ignoreSplNullHandling);
 				}
 				reading.setSourceType(sourceType);
+				long orgId = AccountUtil.getCurrentOrg().getId();
+				if (orgId == 339l || orgId == 321l) {
+					if (module.getName().equals(ContextNames.WEATHER_READING) && readingData.containsKey("temperature")) {
+						LOGGER.info("Temperature for " + orgId + ", Ttime - " + reading.getTtime() + ", Parent - " + reading.getParentId() + ", Value - " + readingData.get("temperature")+ ", id - " + reading.getId());
+					}
+				}
 			}
 			else {
 				itr.remove();

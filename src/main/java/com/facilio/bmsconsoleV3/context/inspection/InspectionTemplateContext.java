@@ -9,14 +9,13 @@ import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
-import com.facilio.bmsconsoleV3.context.induction.InductionTemplateContext.CreationType;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.qa.context.QAndATemplateContext;
 import com.facilio.time.DateRange;
@@ -44,10 +43,10 @@ public class InspectionTemplateContext extends QAndATemplateContext <InspectionR
     public InspectionTemplateContext(Long id) {
         super(id);
     }
-    
+    private List<SiteContext> sites;
+    private List<BuildingContext> buildings;
     private CreationType creationType;
     private PreventiveMaintenance.PMAssignmentType assignmentType;
-    private BaseSpaceContext baseSpace;
     private AssetCategoryContext assetCategory;
     private SpaceCategoryContext spaceCategory;
     
@@ -99,7 +98,6 @@ public class InspectionTemplateContext extends QAndATemplateContext <InspectionR
     @Override
     protected void addDefaultPropsForResponse(InspectionResponseContext response) {
 
-    	response.setSiteId(this.getSiteId());
         response.setVendor(this.getVendor());
         response.setTenant(this.getTenant());
         response.setCategory(this.getCategory());

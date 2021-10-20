@@ -7,6 +7,13 @@ public class BuildingContext extends BaseSpaceContext {
 	/**
 	 *
 	 */
+	
+	public BuildingContext(long id) {
+		setId(id);
+	}
+	public BuildingContext() {
+		
+	}
 	private static final long serialVersionUID = 1L;
 	private LocationContext location;
 	public LocationContext getLocation() {

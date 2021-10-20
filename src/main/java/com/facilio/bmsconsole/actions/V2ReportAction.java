@@ -33,20 +33,6 @@ import com.facilio.bmsconsole.commands.GenerateCriteriaFromFilterCommand;
 import com.facilio.bmsconsole.commands.GetCriteriaDataCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.DashboardWidgetContext;
-import com.facilio.bmsconsole.context.FormulaFieldContext;
-import com.facilio.bmsconsole.context.MLAlarmContext;
-import com.facilio.bmsconsole.context.MLAnomalyAlarm;
-import com.facilio.bmsconsole.context.OperationAlarmContext;
-import com.facilio.bmsconsole.context.ReadingAlarm;
-import com.facilio.bmsconsole.context.ReadingAlarmContext;
-import com.facilio.bmsconsole.context.RegressionContext;
-import com.facilio.bmsconsole.context.ReportInfo;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.WidgetChartContext;
-import com.facilio.bmsconsole.context.WidgetStaticContext;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
@@ -2468,6 +2454,12 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
 		context.put(FacilioConstants.ContextNames.SORTING, sortBy);
 		context.put(FacilioConstants.ContextNames.TEMPLATE_JSON, templateJSON);
+		context.put(FacilioConstants.ContextNames.DATE_FIELD, dateFieldId);
+		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
+		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateValue);
+		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
+		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
+		context.put(FacilioConstants.ContextNames.TIME_FILTER, showTimelineFilter);
 		c.addCommand(new ConstructTabularReportData());
 		c.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
 		c.execute();
@@ -2488,7 +2480,12 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
 		context.put(FacilioConstants.ContextNames.SORTING, sortBy);
 		context.put(FacilioConstants.ContextNames.TEMPLATE_JSON, templateJSON);
-		
+		context.put(FacilioConstants.ContextNames.DATE_FIELD, dateFieldId);
+		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
+		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateValue);
+		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
+		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
+		context.put(FacilioConstants.ContextNames.TIME_FILTER, showTimelineFilter);
 		ReportPivotParamsContext pivotparams = new  ReportPivotParamsContext();
 		pivotparams.setRows(rows);
 		pivotparams.setData(data);
@@ -2496,6 +2493,14 @@ public class V2ReportAction extends FacilioAction {
 		pivotparams.setCriteria(criteria);
 		pivotparams.setSortBy(sortBy);
 		pivotparams.setTemplateJSON(templateJSON);
+		pivotparams.setDateFieldId(dateFieldId);
+		pivotparams.setDateOperator(dateOperator);
+		pivotparams.setDateValue(dateValue);
+		pivotparams.setStartTime(startTime);
+		pivotparams.setEndTime(endTime);
+		if(showTimelineFilter != null) {
+			pivotparams.setShowTimelineFilter(showTimelineFilter);
+		}
 		
 		if (reportContext == null) {
 			reportContext = new ReportContext();
@@ -2525,6 +2530,43 @@ public class V2ReportAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.PIVOT_TABLE_DATA, context.get(FacilioConstants.ContextNames.PIVOT_TABLE_DATA));
 		return SUCCESS;
 	}
+	public String exportPivotReport() throws Exception {
+		FacilioChain c = FacilioChain.getNonTransactionChain();
+		FacilioContext context = c.getContext();
+
+		ReportContext reportContext = ReportUtil.getReport(reportId);
+		if (reportContext == null) {
+			throw new Exception("Report not found");
+		}
+		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
+		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, reportContext.getModule().getName());
+		if (startTime != -1 && endTime != -1) {
+			reportContext.setDateRange(new DateRange(startTime, endTime));
+		}
+
+		JSONParser parser = new JSONParser();
+		ReportPivotParamsContext pivotparams = FieldUtil.getAsBeanFromJson((JSONObject) parser.parse(reportContext.getTabularState()), ReportPivotParamsContext.class);
+		context.put(FacilioConstants.Reports.ROWS, pivotparams.getRows());
+		context.put(FacilioConstants.Reports.DATA, pivotparams.getData());
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, pivotparams.getModuleName());
+		context.put(FacilioConstants.ContextNames.CRITERIA, pivotparams.getCriteria());
+		context.put(FacilioConstants.ContextNames.SORTING, pivotparams.getSortBy());
+		context.put(FacilioConstants.ContextNames.TEMPLATE_JSON, pivotparams.getTemplateJSON());
+		context.put(FacilioConstants.ContextNames.DATE_FIELD, pivotparams.getDateFieldId());
+		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, pivotparams.getDateOperator());
+		context.put(FacilioConstants.ContextNames.START_TIME, pivotparams.getStartTime());
+		context.put(FacilioConstants.ContextNames.END_TIME, pivotparams.getEndTime());
+		context.put(FacilioConstants.ContextNames.TIME_FILTER, pivotparams.getShowTimelineFilter());
+		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE,pivotparams.getDateValue());
+
+		c.addCommand(new ConstructTabularReportData());
+		c.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
+		c.addCommand(new ExportPivotReport());
+		c.execute();
+		setResult("fileUrl", context.get(FacilioConstants.ContextNames.FILE_URL));
+		return SUCCESS;
+	}
 	public String executePivotReport() throws Exception {
 		FacilioChain chain = FacilioChain.getNonTransactionChain();
 		FacilioContext context = new FacilioContext();
@@ -2545,6 +2587,13 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, pivotparams.getModuleName());
 		context.put(FacilioConstants.ContextNames.CRITERIA, pivotparams.getCriteria());
 		context.put(FacilioConstants.ContextNames.SORTING, pivotparams.getSortBy());
+		context.put(FacilioConstants.ContextNames.TEMPLATE_JSON, pivotparams.getTemplateJSON());
+		context.put(FacilioConstants.ContextNames.DATE_FIELD, pivotparams.getDateFieldId());
+		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, pivotparams.getDateOperator());
+		context.put(FacilioConstants.ContextNames.START_TIME, pivotparams.getStartTime());
+		context.put(FacilioConstants.ContextNames.END_TIME, pivotparams.getEndTime());
+		context.put(FacilioConstants.ContextNames.TIME_FILTER, pivotparams.getShowTimelineFilter());
+		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE,pivotparams.getDateValue());
 		
 		chain.addCommand(new ConstructTabularReportData());
 		chain.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
@@ -2561,6 +2610,10 @@ public class V2ReportAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+
+
+
+
 
 
 	private int scatterGraphId;
@@ -2636,5 +2689,29 @@ public class V2ReportAction extends FacilioAction {
 			setResult("result",context.get(FacilioConstants.ContextNames.SCATTER_GRAPH_RESULT));
 		}
 		return SUCCESS;
+	}
+	
+	private long dateFieldId = -1;
+	public long getDateFieldId() {
+		return dateFieldId;
+	}
+	public void setDateFieldId(long dateFieldId) {
+		this.dateFieldId = dateFieldId;
+	}
+	
+	String dateValue;
+	public String getDateValue() {
+		return dateValue;
+	}
+	public void setDateValue(String dateValue) {
+		this.dateValue = dateValue;
+	}
+	
+	private Boolean showTimelineFilter;
+	public Boolean getShowTimelineFilter() {
+		return showTimelineFilter;
+	}
+	public void setShowTimelineFilter(boolean showTimelineFilter) {
+		this.showTimelineFilter = showTimelineFilter;
 	}
 }

@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.context.ApplicationLayoutContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
@@ -225,6 +226,11 @@ public class ApplicationAction extends FacilioAction {
 		if(AccountUtil.getCurrentUser() != null){
 			Role currentUserRole = AccountUtil.getCurrentUser().getRole();
 			if(currentUserRole != null) {
+				if (currentUserRole.getIsPrevileged() == null || !currentUserRole.getIsPrevileged()) {
+					if (CollectionUtils.isEmpty(currentUserRole.getPermissions())) {
+						return "unauthorized";
+					}
+				}
 				setResult("currentUserRole", currentUserRole);
 			}
 		}

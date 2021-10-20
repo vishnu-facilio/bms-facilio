@@ -27,6 +27,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class HandleFilterFieldsCommand extends FacilioCommand {
 
@@ -34,6 +35,13 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.FIELDS);
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+
+        //Temp handling
+        List<FacilioField>  atreFilterfields = getAtreFilterFields(moduleName,fields);
+        if (CollectionUtils.isNotEmpty(atreFilterfields)) {
+            fields = atreFilterfields;
+        }
+
         List<FilterFieldContext> filterFields = createFilterFields(moduleName, fields);
         context.put(FacilioConstants.Filters.FILTER_FIELDS, filterFields);
         return false;
@@ -196,4 +204,51 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
             }
         }
     }
+
+    /******* ATRE Handling... TODO Remove once role based handling is done  *****************/
+
+    private List<FacilioField> getAtreFilterFields(String moduleName, List<FacilioField> fields) throws Exception {
+        List<FacilioField> filterFields = null;
+        if (AccountUtil.getCurrentOrg().getOrgId() == 418l && AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP)) {
+            List<String> atreFields = getAtreFieldMap().get(moduleName);
+            if (atreFields != null) {
+                filterFields = fields.stream().filter(field -> atreFields.contains(field.getName())).collect(Collectors.toList());
+            }
+        }
+        return filterFields;
+    }
+
+    private Map<String, List<String>> getAtreFieldMap() {
+        Map<String, List<String>> fieldMap = new HashMap<>();
+        fieldMap.put(ContextNames.WORK_ORDER, workorderAtre);
+        fieldMap.put(ContextNames.ASSET, assetAtre);
+
+        return fieldMap;
+    }
+
+    private static final List<String> workorderAtre = Collections.unmodifiableList(Arrays.asList(new String[] {
+            "serialNumber",
+            "subject",
+            "createdTime",
+            "building",
+            "resource",
+            "category",
+            "lookup",
+            "priority",
+            "moduleState",
+            "inspectionduedate",
+            "actualWorkStart"
+    }));
+
+    private static final List<String> assetAtre = Collections.unmodifiableList(Arrays.asList(new String[] {
+            "category",
+            "type",
+            "department",
+            "space",
+            "name",
+            "qrVal",
+            "purchasedDate",
+            "singleline"
+    }));
+
 }

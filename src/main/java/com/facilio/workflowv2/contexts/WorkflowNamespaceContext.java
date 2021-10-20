@@ -9,6 +9,7 @@ public class WorkflowNamespaceContext {
 
 	long id = -1;
 	long orgid = -1;
+	String linkName;
 	String name;
 	List<WorkflowUserFunctionContext> functions;
 	
@@ -83,5 +84,11 @@ public class WorkflowNamespaceContext {
 	}
 	public void setSysModifiedByObj(IAMUser sysModifiedByObj) {
 		this.sysModifiedByObj = sysModifiedByObj;
+	}
+	public String getLinkName() {
+		return linkName;
+	}
+	public void setLinkName(String linkName) {
+		this.linkName = linkName;
 	}
 }

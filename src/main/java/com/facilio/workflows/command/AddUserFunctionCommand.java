@@ -25,6 +25,10 @@ public class AddUserFunctionCommand extends FacilioCommand {
 		
 		userFunctionContext.fillFunctionHeaderFromScript();
 		
+		if(userFunctionContext.getLinkName() == null) {
+			userFunctionContext.setLinkName(userFunctionContext.getName());
+		}
+		
 		addUserFunction(userFunctionContext);
 		
 		return false;

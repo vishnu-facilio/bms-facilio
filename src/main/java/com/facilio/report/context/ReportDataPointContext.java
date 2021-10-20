@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.db.criteria.Criteria;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -367,6 +368,22 @@ public class ReportDataPointContext {
 	}
 	public void setDpCriteria(Criteria criteria) {
 		this.dpCriteria = criteria;
+	}
+
+	private int sortOrder;
+	public int getSortOrder() {
+		return sortOrder;
+	}
+	public void setSortOrder(int sortOrder) {
+		this.sortOrder = sortOrder;
+	}
+
+	private FacilioField sortField;
+	public FacilioField getSortField() {
+		return sortField;
+	}
+	public void setSortField(FacilioField sortField) {
+		this.sortField = sortField;
 	}
 
 	public static enum OrderByFunction {

@@ -5764,7 +5764,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("isV2Script", "IS_V2", module, FieldType.BOOLEAN));
         fields.add(getField("runAsAdmin", "RUN_AS_ADMIN", module, FieldType.BOOLEAN));
         
-        fields.addAll(FieldFactory.getSystemPointFields(module));
+        fields.addAll(FieldFactory.getSystemPointFields(module,true));
         
         return fields;
     }
@@ -5776,6 +5776,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getIdField(module));
 
         fields.add(getField("name", "NAME", module, FieldType.STRING));
+        fields.add(getField("linkName", "BUNDLE_LINK_NAME", module, FieldType.STRING));
         fields.add(getField("nameSpaceId", "NAMESPACE_ID", module, FieldType.LOOKUP));
 
         return fields;
@@ -5788,8 +5789,9 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getIdField(module));
 
         fields.add(getField("name", "NAME", module, FieldType.STRING));
+        fields.add(getField("linkName", "BUNDLE_LINK_NAME", module, FieldType.STRING));
         
-        fields.addAll(FieldFactory.getSystemPointFields(module));
+        fields.addAll(FieldFactory.getSystemPointFields(module,true));
 
         return fields;
     }

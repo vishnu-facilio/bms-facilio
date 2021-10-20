@@ -103,6 +103,15 @@ public class OrgBeanImpl implements OrgBean {
 	}
 
 	@Override
+	public List<Map<String, Object>> getOrgUserApps(long orgUserId) throws Exception {
+		List<Map<String, Object>> orgUserApps = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getOrgUserAppsFields())
+				.table("ORG_User_Apps")
+				.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.ORG_USERID", "orgUserId", orgUserId+"", NumberOperators.EQUALS)).get();
+		return orgUserApps;
+	}
+
+	@Override
 	public List<User> getAppUsers(long orgId, long appId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage) throws Exception {
 
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
@@ -302,6 +311,16 @@ public class OrgBeanImpl implements OrgBean {
 	@Override
 	public List<User> getDefaultAppUsers(long orgId) throws Exception {
 		return getAppUsers(orgId, ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP), false);
+	}
+
+	public Map<String, Object> getOrgUser(long iamOrgUserId) throws Exception {
+		List<FacilioField> fields = new ArrayList<>(AccountConstants.getAppOrgUserFields());
+
+		return new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("ORG_Users")
+				.andCondition(CriteriaAPI.getCondition("IAM_ORG_USERID", "iamOrgUserId", iamOrgUserId+"", NumberOperators.EQUALS))
+				.get().get(0);
 	}
 
 	@Override
@@ -641,6 +660,15 @@ public class OrgBeanImpl implements OrgBean {
 			demoRollupChain.getContext().put(FacilioConstants.ContextNames.DEMO_ROLLUP_EXECUTION_TIME, timeDuration);
 			demoRollupChain.getContext().put(FacilioConstants.ContextNames.DEMO_ROLLUP_JOB_ORG, orgId);
 			demoRollupChain.execute();
+	}
+
+	@Override
+	public List<Map<String, Object>> getApplication(long appId) throws Exception {
+		return new GenericSelectRecordBuilder()
+				.select(FieldFactory.getApplicationFields())
+				.table("Application")
+				.andCondition(CriteriaAPI.getCondition("Application.ID", "id", appId+"", NumberOperators.EQUALS))
+				.get();
 	}
 
 }

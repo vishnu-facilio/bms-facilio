@@ -19,6 +19,8 @@ files:
     destination: /home/facilio
   - source: /setenv-syd.sh
     destination: /home/facilio
+  - source: /setenv-uk.sh
+    destination: /home/facilio    
   - source: /threaddump.sh
     destination: /home/facilio
   - source: /move_hprof.sh
@@ -55,12 +57,20 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /log4j-ff-scheduler.properties
     destination: /home/facilio/deployment-files/
+  - source: /log4j-uk-user.properties
+    destination: /home/facilio/deployment-files/
+  - source: /log4j-uk-scheduler.properties
+    destination: /home/facilio/deployment-files/
   - source: /agentIntegration-production.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-sp-scheduler.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-sp-user.properties
     destination: /home/facilio/deployment-files/
+  - source: /awsprops-uk-scheduler.properties
+    destination: /home/facilio/deployment-files/
+  - source: /awsprops-uk-user.properties
+    destination: /home/facilio/deployment-files/    
   - source: /awsprops-syd-scheduler.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-syd-user.properties
@@ -87,6 +97,8 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /service-syd.yml
     destination: /home/facilio/deployment-files/
+  - source: /service-uk.yml
+    destination: /home/facilio/deployment-files/    
   - source: /clientAppConfig-stage.yml
     destination: /home/facilio/deployment-files/
 

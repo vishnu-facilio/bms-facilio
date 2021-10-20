@@ -942,9 +942,13 @@ public class FormsAPI {
 			FacilioField nameField = modBean.getField("name", form.getModule().getName());
 			boolean hasName = (nameField == null);	// if module doesn't have name, we should treat it as `true`
 			boolean hasSite = false;
+			boolean hasAttachments = false;
 			for (FormField field : form.getFields()) {
 				if (field.getName().equals("siteId")) {
 					hasSite = true;
+				}
+				else if (field.getDisplayTypeEnum() == FieldDisplayType.ATTACHMENT) {
+					hasAttachments = true;
 				}
 				else if (field.getField() != null) {
 					if (field.getField().getName().equals("photo")) {
@@ -966,6 +970,9 @@ public class FormsAPI {
 			}
 			if (!hasSite) {
 				defaultFields.add(FormFactory.getSiteField());
+			}
+			if (!hasAttachments) {
+				defaultFields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "cmdattachments", 1, 1));
 			}
 		}
 	}

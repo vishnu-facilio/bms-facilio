@@ -2723,7 +2723,7 @@ public class FacilioConstants {
 		public static final String VENDOR_PORTAL_APP = "vendor";
 		public static final String OCCUPANT_PORTAL_APP = "service";
 		public static final String OPERATIONAL_VISIBILITY_APP = "operations";
-		public static final String CAFM_APP = "cafm";
+		public static final String MAINTENANCE_APP = "maintenance";
 		public static final String WORKPLACE_APP = "wokplace";
 	}
 
@@ -2736,6 +2736,8 @@ public class FacilioConstants {
 		public static final String AGENT_ADMIN = "Agent Admin";
 		public static final String SUPER_ADMIN = "Super Administrator";
 		public static final String ADMIN = "Administrator";
+		public static final String MAINTENANCE_ADMIN = "CAFM Admin";
+
 	}
 
 

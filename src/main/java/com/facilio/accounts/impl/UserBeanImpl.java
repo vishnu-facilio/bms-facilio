@@ -9,10 +9,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.*;
 import com.facilio.iam.accounts.util.IAMAppUtil;
+import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.util.FacilioUtil;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -64,6 +67,7 @@ import com.facilio.modules.fields.FacilioField;
 
 ;
 
+@Log4j
 public class UserBeanImpl implements UserBean {
 
 	private static Logger log = LogManager.getLogger(UserBeanImpl.class.getName());
@@ -1305,31 +1309,41 @@ public class UserBeanImpl implements UserBean {
 	public List<Map<String, String>> getUserDetailsForUserManagement(String email) throws Exception {
 		List<Map<String, Object>> userData = IAMUserUtil.getUserData(email, -1, null);
 
+		List<Long> iamOrgUserId = new ArrayList<>();
 		List<Long> orgUserIds = new ArrayList<>();
 		Map<Long, Map<String, Object>> orgUserIdVsUser = new HashMap<>();
+		List<Long> orgIds = new ArrayList<>();
 		for (Map<String, Object> user: userData) {
-			orgUserIds.add((long) user.get("iamOrgUserId"));
-			orgUserIdVsUser.put((long) user.get("iamOrgUserId"), user);
+			iamOrgUserId.add((long) user.get("iamOrgUserId"));
+			orgIds.add((long) user.get("orgId"));
+			Map<String, Object> orgUser = AccountUtil.getOrgBean((long) user.get("orgId")).getOrgUser((long) user.get("iamOrgUserId"));
+			orgUserIds.add((long) orgUser.get("ouid"));
+			orgUserIdVsUser.put((long) orgUser.get("ouid"), user);
 		}
 
-		List<Map<String, Object>> orgUserApps = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getOrgUserAppsFields())
-				.table("ORG_User_Apps")
-				.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.ORG_USERID", "orgUserId", StringUtils.join(orgUserIds, ","), NumberOperators.EQUALS)).get();
+		LOGGER.error("get UserData orgIds: " + orgIds.size() + " iamOrgUserId: "+ iamOrgUserId.size());
+
+		List<Map<String, Object>> orgUserApps = new ArrayList<>();
+		for (int i = 0; i < orgIds.size(); i++) {
+			long orgId = orgIds.get(i);
+			orgUserApps.addAll(AccountUtil.getOrgBean(orgId).getOrgUserApps(orgUserIds.get(i)));
+		}
+
+		LOGGER.error("get orgUserApps: " + orgUserApps.size());
 
 		List<Long> applicationIds = new ArrayList<>();
-		List<Long> orgIds = new ArrayList<>();
+		orgIds = new ArrayList<>();
 		for (Map<String, Object> orgUserApp: orgUserApps) {
 			applicationIds.add((long) orgUserApp.get("applicationId"));
 			orgIds.add((long) orgUserApp.get("orgId"));
 		}
 
-		List<Map<String, Object>> apps = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getApplicationFields())
-				.table("Application")
-				.andCondition(CriteriaAPI.getCondition("Application.ID", "id", StringUtils.join(applicationIds, ","), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("Application.ORGID", "orgId", StringUtils.join(orgIds, ","), NumberOperators.EQUALS))
-				.get();
+		List<Map<String, Object>> apps = new ArrayList<>();
+		for (int i = 0; i < orgIds.size(); i++) {
+			apps.addAll(AccountUtil.getOrgBean(orgIds.get(i)).getApplication(applicationIds.get(i)));
+		}
+
+		LOGGER.error("get Application apps: " + apps.size());
 
 		Map<Long, Map<String, Object>> appIdVsApp = new HashMap<>();
 		for (Map<String, Object> app: apps) {
@@ -1343,6 +1357,7 @@ public class UserBeanImpl implements UserBean {
 			res.put("iamOrgUserId", String.valueOf(orgUser.get("ouid")));
 			long applicationId = (long) orgUser.get("applicationId");
 			Map<String, Object> application = appIdVsApp.get(applicationId);
+			res.put("orgId", String.valueOf(orgUser.get("orgId")));
 			res.put("applicationName", (String) application.get("name"));
 			res.put("applicationId", String.valueOf(orgUser.get("applicationId")));
 			res.put("userId", String.valueOf(orgUserIdVsUser.get(orgUser.get("ouid")).get("uid")));

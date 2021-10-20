@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -96,6 +97,8 @@ public enum AccountEmailTemplate {
 	}
 	
 	private static String SUPPORTEMAIL= FacilioProperties.getConfig("rebrand.supportemail");//"support@facilio.com"
+
+	private static String IAMEMAIL = StringUtils.isNotEmpty(FacilioProperties.getConfig("rebrand.iamemail")) ?  FacilioProperties.getConfig("rebrand.iamemail") : SUPPORTEMAIL; //noreply@facilioaccounts.com
 	
 	private static String ALERTEMAIL= FacilioProperties.getConfig("rebrand.alertemail");//alerts@facilio.com
 	
@@ -115,19 +118,26 @@ public enum AccountEmailTemplate {
 		if (BRAND == null) {
 			BRAND = FacilioProperties.getConfig("rebrand.brand");//Facilio
 		}
+
+		if (IAMEMAIL == null) {
+			IAMEMAIL = FacilioProperties.getConfig("rebrand.iamemail");//"noreply@facilioaccounts.com"
+			if (IAMEMAIL == null) {
+				IAMEMAIL = FacilioProperties.getConfig("rebrand.supportemail");
+			}
+		}
 		
 		JSONObject json = new JSONObject();
 		Template template = null;
 		
 		switch(templateVal) {
 		case 1:
-			json.put("sender", SUPPORTEMAIL);
+			json.put("sender", IAMEMAIL);
 			json.put("to", "${toUser.email}");
 			json.put("subject", "Welcome to "+ BRAND+"!");
 			json.put("message", "Hi ${toUser.name}, Thanks for signing up for "+BRAND+".");
 			break;
 		case 2:
-			json.put("sender", SUPPORTEMAIL);
+			json.put("sender", IAMEMAIL);
 			json.put("to", "${toUser.email}");
 			json.put("subject", "[" + BRAND +"] ${inviter.name} has invited you to join the ${org.name} organization");
 			try {
@@ -141,7 +151,7 @@ public enum AccountEmailTemplate {
 			}
 			break;
 		case 3:
-			json.put("sender", SUPPORTEMAIL);
+			json.put("sender", IAMEMAIL);
 			json.put("to", "${toUser.email}");
 			json.put("subject", "Welcome! And confirm your email");
 			try {
@@ -157,7 +167,7 @@ public enum AccountEmailTemplate {
 			}
 			break;
 		case 4:
-			json.put("sender", SUPPORTEMAIL);
+			json.put("sender", IAMEMAIL);
 			json.put("to", "${toUser.email}");
 			json.put("subject", "Reset your "+BRAND+" password");
 			try {
@@ -173,14 +183,14 @@ public enum AccountEmailTemplate {
 			}
 			break;
 		case 5:
-			json.put("sender", SUPPORTEMAIL);
+			json.put("sender", IAMEMAIL);
 			json.put("to", ALERTEMAIL);
 			json.put("subject","${toUser.name} with a mailId  ${toUser.email} has signedUp in ["+BRAND+ "]");
 			json.put("message", "Hi ${toUser.name}, Please click the below link to verify your email address. ${invitelink}\n" 
 					+ "Name:" + "${toUser.name}\n" + "Email:" + "${toUser.email}" + "Timezone:" + "${toUser.timezone}" );
 			break;
 		case 6:
-			json.put("sender", SUPPORTEMAIL);
+			json.put("sender", IAMEMAIL);
 			json.put("to", "${toUser.email}");
 			json.put("subject","[${org.name}] Welcome and confirm your email" );
 			try {
@@ -196,7 +206,7 @@ public enum AccountEmailTemplate {
 			}
 			break;
 		case 7:
-			json.put("sender", SUPPORTEMAIL);
+			json.put("sender", IAMEMAIL);
 			json.put("to", "${toUser.email}");
 			json.put("subject","[${org.name}] Welcome!" );
 			try {
@@ -212,7 +222,7 @@ public enum AccountEmailTemplate {
 			}
 			break;
 		case 8:
-			json.put("sender", SUPPORTEMAIL);
+			json.put("sender", IAMEMAIL);
 			json.put("to", "${toUser.email}");
 			json.put("subject","[${org.name}] Welcome!" );
 			try {

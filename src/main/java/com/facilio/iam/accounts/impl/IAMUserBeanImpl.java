@@ -1864,9 +1864,12 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				if(account != null) {
 					account.setUserSessionId((long) session.get("id"));
 				}
+				LOGGER.info("Verified token from cache entry for : " + uId);
 				return account;
 			}
 		}
+
+		LOGGER.info("No session cache entry for : " + uId);
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(IAMAccountConstants.getUserSessionFields())
@@ -1887,6 +1890,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			if(account != null && account.getUser() != null) {
 				account.setUserSessionId((long)props.get("id"));
 			}
+			LOGGER.info("Verified token from DB entry for : " + uId);
 			return account;
 		}
 		return null;

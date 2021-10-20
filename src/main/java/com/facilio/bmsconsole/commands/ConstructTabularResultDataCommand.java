@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.text.DecimalFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,26 +9,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
-import java.util.TreeSet;
 
+import com.facilio.modules.fields.EnumField;
+import com.facilio.modules.fields.EnumFieldValue;
+import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.SpaceAggregateOperator;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.report.context.ReportBaseLineContext;
@@ -37,6 +34,7 @@ import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportGroupByField;
 import com.facilio.report.util.ReportUtil;
+import org.joda.time.DateTimeField;
 
 public class ConstructTabularResultDataCommand extends ConstructReportDataCommand {
 	@Override
@@ -179,15 +177,22 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 				}
 				break;
 			case ENUM:
+				EnumField enumField = (EnumField) field;
+				List<EnumFieldValue<Integer>> enumFieldValues = enumField.getValues();
+				val = enumFieldValues.get(Math.toIntExact((Long) val)).getValue();
+				break;
 			case SYSTEM_ENUM:
 				Map<Integer,Object> enumMap = reportFieldContext.getEnumMap();
 				val = enumMap.get(val);
 				break;
 			case DATE:
+				val =  DateTimeUtil.getFormattedTime((Long) val);
 			case DATE_TIME:
 				if (aggr != null && aggr instanceof DateAggregateOperator) {
 					val = ((DateAggregateOperator)aggr).getAdjustedTimestamp((long) val);
 				}
+				val =  DateTimeUtil.getZonedDateTime((Long) val).format(DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy"));
+
 				break;
 			case NUMBER:
 				if (StringUtils.isNotEmpty(field.getName()) && field.getName().equals("siteId")) {

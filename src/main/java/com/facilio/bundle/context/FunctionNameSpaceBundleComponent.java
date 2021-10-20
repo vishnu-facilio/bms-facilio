@@ -21,6 +21,8 @@ import com.facilio.workflowv2.util.WorkflowV2Util;
 import com.facilio.xml.builder.XMLBuilder;
 
 public class FunctionNameSpaceBundleComponent extends CommonBundleComponent {
+	
+	
 
 	public String getFileName(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
@@ -29,16 +31,18 @@ public class FunctionNameSpaceBundleComponent extends CommonBundleComponent {
 		
 		WorkflowNamespaceContext nameSpace = WorkflowV2API.getNameSpace(nameSpaceId);
 		
-		return nameSpace.getName();
+		return nameSpace.getLinkName();
 	}
 	
 	@Override
 	public void fillBundleXML(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
+		BundleChangeSetContext componentChange = (BundleChangeSetContext) context.get(BundleConstants.BUNDLE_CHANGE);
+		
 		String fileName = BundleComponentsEnum.FUNCTION_NAME_SPACE.getName()+File.separatorChar+getFileName(context)+".xml";
 		XMLBuilder bundleBuilder = (XMLBuilder) context.get(BundleConstants.BUNDLE_XML_BUILDER);
-		bundleBuilder.element(BundleConstants.VALUES).text(fileName);
+		bundleBuilder.element(BundleConstants.VALUES).attr("version", componentChange.getTempVersion()+"").text(fileName);
 	}
 	
 	@Override
@@ -58,10 +62,9 @@ public class FunctionNameSpaceBundleComponent extends CommonBundleComponent {
 		
 		XMLBuilder xmlBuilder = nsFile.getXmlContent();
 		
-		xmlBuilder.attr(BundleConstants.Components.MODE, componentChange.getModeEnum().getName())
-				  .element(BundleConstants.Components.NAME)
-					.text(nameSpace.getName())
-					.p();
+		xmlBuilder.element(BundleConstants.Components.DISPLAY_NAME).text(nameSpace.getName())
+				  .p()
+				  .element(BundleConstants.Components.NAME).text(nameSpace.getLinkName());
 		
 		functionNameSpaceFolder.addFile(fileName+"."+BundleConstants.XML_FILE_EXTN, nsFile);
 		
@@ -73,14 +76,14 @@ public class FunctionNameSpaceBundleComponent extends CommonBundleComponent {
 		
 		BundleFileContext changeSetXMLFile = (BundleFileContext) context.get(BundleConstants.BUNDLED_XML_COMPONENT_FILE);
 		
-		BundleModeEnum modeEnum = BundleModeEnum.valueOfName(changeSetXMLFile.getXmlContent().getAttribute(BundleConstants.Components.MODE));
+		BundleModeEnum modeEnum = (BundleModeEnum) context.get(BundleConstants.INSTALL_MODE);
 		
 		switch(modeEnum) {
-		case ADD: 
-			
+		case ADD: {
 			WorkflowNamespaceContext workflowNamespaceContext = new WorkflowNamespaceContext();
 			
-			workflowNamespaceContext.setName(changeSetXMLFile.getXmlContent().getElement(BundleConstants.Components.NAME).getText());
+			workflowNamespaceContext.setName(changeSetXMLFile.getXmlContent().getElement(BundleConstants.Components.DISPLAY_NAME).getText());
+			workflowNamespaceContext.setLinkName(changeSetXMLFile.getXmlContent().getElement(BundleConstants.Components.NAME).getText());
 			
 			FacilioChain addWorkflowChain =  TransactionChainFactory.getAddWorkflowNameSpaceChain();
 			FacilioContext newContext = addWorkflowChain.getContext();
@@ -89,6 +92,20 @@ public class FunctionNameSpaceBundleComponent extends CommonBundleComponent {
 			addWorkflowChain.execute();
 			
 			break;
+		}
+		case UPDATE: {
+			WorkflowNamespaceContext workflowNamespaceContext = UserFunctionAPI.getNameSpace(changeSetXMLFile.getXmlContent().getElement(BundleConstants.Components.NAME).getText());
+			
+			workflowNamespaceContext.setName(changeSetXMLFile.getXmlContent().getElement(BundleConstants.Components.DISPLAY_NAME).getText());
+			
+			FacilioChain addWorkflowChain =  TransactionChainFactory.getUpdateWorkflowNameSpaceChain();
+			FacilioContext newContext = addWorkflowChain.getContext();
+			
+			newContext.put(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT, workflowNamespaceContext);
+			addWorkflowChain.execute();
+			
+			break;
+		}
 		}
 		
 	}
@@ -102,6 +119,23 @@ public class FunctionNameSpaceBundleComponent extends CommonBundleComponent {
 	@Override
 	public void getInstallMode(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
+		
+		BundleFileContext changeSetXMLFile = (BundleFileContext) context.get(BundleConstants.BUNDLED_XML_COMPONENT_FILE);
+		
+		XMLBuilder xmlContent = changeSetXMLFile.getXmlContent();
+		
+		String name = xmlContent.getElement(BundleConstants.Components.NAME).getText();
+		
+		BundleModeEnum installMode = null;
+		
+		if(UserFunctionAPI.getNameSpace(name) != null) {
+			installMode = BundleModeEnum.UPDATE;
+		}
+		else {
+			installMode = BundleModeEnum.ADD;
+		}
+		
+		context.put(BundleConstants.INSTALL_MODE, installMode);
 		
 	}
 }

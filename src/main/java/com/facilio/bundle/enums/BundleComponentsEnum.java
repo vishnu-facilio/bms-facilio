@@ -15,6 +15,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.workflowv2.util.UserFunctionAPI;
 
 import lombok.Getter;
 
@@ -28,10 +29,10 @@ public enum BundleComponentsEnum {
 			ModuleFactory.getFieldsModule(),FieldFactory.getSelectFieldFields(),"fieldId",null,null,null,null),
 	
 	FUNCTION_NAME_SPACE(3,"Function_NameSpace",FunctionNameSpaceBundleComponent.class,null,
-			ModuleFactory.getWorkflowNamespaceModule(),FieldFactory.getWorkflowNamespaceFields(),null,"sysModifiedTime","sysCreatedTime",null,null),
+			ModuleFactory.getWorkflowNamespaceModule(),FieldFactory.getWorkflowNamespaceFields(),null,"sysModifiedTime","sysCreatedTime","linkName","name"),
 	
 	FUNCTION(4,"Function",FunctionBundleComponent.class,BundleComponentsEnum.FUNCTION_NAME_SPACE,
-			ModuleFactory.getWorkflowModule(),FieldFactory.getWorkflowFields(),null,"sysModifiedTime","sysCreatedTime",null,null),
+			ModuleFactory.getWorkflowUserFunctionModule(),UserFunctionAPI.getUserFunctionFields(),null,"sysModifiedTime","sysCreatedTime","linkName","name"),
 	
 //	WORKFLOW_RULE(5,"Workflow_Rule",WorkflowRuleBundleComponent.class,BundleComponentsEnum.MODULE,true),
 //	NOTIFICATION_RULE(6,"Notification_Rule",NotificationRuleBundleComponent.class,BundleComponentsEnum.MODULE,true),
