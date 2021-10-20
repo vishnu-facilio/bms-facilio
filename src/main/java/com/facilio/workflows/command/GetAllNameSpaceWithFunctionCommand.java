@@ -24,6 +24,8 @@ import com.facilio.workflows.context.WorkflowUserFunctionContext;
 import com.facilio.workflowv2.contexts.WorkflowNamespaceContext;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
+import io.jsonwebtoken.lang.Collections;
+
 public class GetAllNameSpaceWithFunctionCommand extends FacilioCommand {
 
 	@Override
@@ -71,6 +73,11 @@ public class GetAllNameSpaceWithFunctionCommand extends FacilioCommand {
 
 	Map<Long,List<WorkflowUserFunctionContext>> getAllFunctions(List<Long> nameSpaceIds) throws Exception {
 		
+		Map<Long,List<WorkflowUserFunctionContext>> nameSpaceMap = new HashMap<>(); 
+		if(Collections.isEmpty(nameSpaceIds)) {
+			return nameSpaceMap;
+		}
+		
 		FacilioModule module = ModuleFactory.getWorkflowUserFunctionModule();
 		List<FacilioField> fields = FieldFactory.getWorkflowUserFunctionFields();
 		fields.addAll(FieldFactory.getWorkflowFields());
@@ -86,7 +93,6 @@ public class GetAllNameSpaceWithFunctionCommand extends FacilioCommand {
 
 		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean", AccountUtil.getCurrentOrg().getOrgId());
 		
-		Map<Long,List<WorkflowUserFunctionContext>> nameSpaceMap = new HashMap<>(); 
 		if (props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop :props) {
 				WorkflowUserFunctionContext workflowContext = FieldUtil.getAsBeanFromMap(prop, WorkflowUserFunctionContext.class);

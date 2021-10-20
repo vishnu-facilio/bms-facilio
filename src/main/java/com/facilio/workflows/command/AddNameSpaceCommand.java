@@ -33,6 +33,10 @@ public class AddNameSpaceCommand extends FacilioCommand {
 		workflowNamespaceContext.setSysCreatedTime(DateTimeUtil.getCurrenTime());
 		workflowNamespaceContext.setSysModifiedTime(DateTimeUtil.getCurrenTime());
 		
+		if(workflowNamespaceContext.getLinkName() == null) {
+			workflowNamespaceContext.setLinkName(workflowNamespaceContext.getName());
+		}
+		
 		workflowNamespaceContext.setOrgid(AccountUtil.getCurrentOrg().getId());
 		
 		addNameSpace(workflowNamespaceContext);
