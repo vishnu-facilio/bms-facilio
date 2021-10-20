@@ -355,6 +355,8 @@ public class PageWidget {
 
 		// Workorder Widgets
 		WORKORDER_DESCRIPTION("workorderDescription"),
+		WORKORDER_ATTACHMENTS("workorderAttachments"),
+		WORKORDER_COMMENTS("workorderComments"),
 		TASKS_COMPLETED("tasksCompleted"),
 		SCHEDULED_DURATION("scheduledDuration"),
 		ACTUAL_DURATION("actualDuration"),

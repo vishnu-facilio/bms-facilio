@@ -81,13 +81,13 @@ public class WorkorderPageFactory extends PageFactory {
         actualDuration.addToLayoutParams(12, yOffset, 6, 6);
         summarySection.addWidget(actualDuration);
 
-        // notes widget
-        PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT);
-        notesWidget.addToLayoutParams(0, 6 + yOffset, 18, 8);
-        summarySection.addWidget(notesWidget);
+        // comments widget
+        PageWidget commentsWidget = new PageWidget(PageWidget.WidgetType.WORKORDER_COMMENTS);
+        commentsWidget.addToLayoutParams(0, 6 + yOffset, 18, 8);
+        summarySection.addWidget(commentsWidget);
 
-        // attachment widget
-        PageWidget attachmentsWidget = new PageWidget(PageWidget.WidgetType.ATTACHMENT);
+        // attachments widget
+        PageWidget attachmentsWidget = new PageWidget(PageWidget.WidgetType.WORKORDER_ATTACHMENTS);
         attachmentsWidget.addToLayoutParams(0, 14 + yOffset, 18, 8);
         summarySection.addWidget(attachmentsWidget);
 
