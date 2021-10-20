@@ -2469,6 +2469,10 @@
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="executePivotReport">
 		</action>
+		<action name="exportPivotReport"
+				class="com.facilio.bmsconsole.actions.V2ReportAction"
+				method="exportPivotReport">
+		</action>
 		<action name="readingReport"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="fetchReadingsData">

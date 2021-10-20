@@ -13,6 +13,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bundle.enums.BundleComponentsEnum;
 import com.facilio.bundle.enums.BundleModeEnum;
@@ -158,6 +159,8 @@ public class FieldBundleComponent extends CommonBundleComponent {
 	@Override
 	public void install(FacilioContext context) throws Exception {
 		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
 		BundleFileContext changeSetXMLFile = (BundleFileContext) context.get(BundleConstants.BUNDLED_XML_COMPONENT_FILE);
 		
 		XMLBuilder fieldElement = changeSetXMLFile.getXmlContent();
@@ -168,11 +171,11 @@ public class FieldBundleComponent extends CommonBundleComponent {
 		moduleName = fieldElement.getAttribute(MODULE_NAME);
 		
 		switch(modeEnum) {
-		case ADD: 
-			
+		case ADD: {
 			FacilioField field = new FacilioField();
 			
 			field.setDisplayName(fieldElement.getElement(BundleConstants.Components.DISPLAY_NAME).getText());
+			field.setName(fieldElement.getElement(BundleConstants.Components.NAME).getText());
 			field.setDataType(FieldType.getCFType(fieldElement.getElement(DATA_TYPE).getText()));
 			field.setDisplayTypeInt(Integer.valueOf(fieldElement.getElement(DISPLAY_TYPE).getText()));
 			field.setRequired(Boolean.valueOf(fieldElement.getElement(REQUIRED).getText()));
@@ -191,6 +194,30 @@ public class FieldBundleComponent extends CommonBundleComponent {
 			addFieldsChain.execute();
 			
 			break;
+		}
+		case UPDATE: {
+			
+			String fieldName = fieldElement.getElement(BundleConstants.Components.NAME).getText();
+			String displayName = fieldElement.getElement(BundleConstants.Components.DISPLAY_NAME).getText();
+			
+			Boolean isRequired = Boolean.valueOf(fieldElement.getElement(REQUIRED).getText());
+			
+			FacilioField field = modBean.getField(fieldName, moduleName);
+			
+			field.setDisplayName(displayName);
+			field.setRequired(isRequired);
+			
+			FacilioChain updateFieldChain = FacilioChainFactory.getUpdateFieldChain();
+			
+			FacilioContext newContext = updateFieldChain.getContext();
+			newContext.put(FacilioConstants.ContextNames.MODULE_FIELD, field);
+			newContext.put(FacilioConstants.ContextNames.CHECK_FIELD_DISPLAY_NAME_DUPLICATION, Boolean.FALSE);
+
+			updateFieldChain.execute();
+			
+			break;
+			
+		}
 		}
 	}
 	

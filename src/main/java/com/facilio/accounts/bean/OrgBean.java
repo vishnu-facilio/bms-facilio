@@ -77,4 +77,10 @@ public interface OrgBean {
 	public List<OrgUnitsContext> getOrgUnitsList() throws Exception;
 
 	void runDemoRollup(long orgId, long timeDuration) throws Exception;
+
+	List<Map<String, Object>> getOrgUserApps(long orgUserId) throws Exception;
+
+	List<Map<String, Object>> getApplication(long appId) throws Exception;
+
+	Map<String, Object> getOrgUser(long iamOrgUserId) throws Exception;
 }

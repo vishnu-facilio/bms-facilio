@@ -41,6 +41,9 @@ public class AddDefaultBundleCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
+		LOGGER.info("AddDefaultBundleCommand Called");
+		LOGGER.error("AddDefaultBundleCommand Called");
+		
 		Organization org = AccountUtil.getCurrentOrg();
 		
 		BundleContext defaultBundle = new BundleContext();

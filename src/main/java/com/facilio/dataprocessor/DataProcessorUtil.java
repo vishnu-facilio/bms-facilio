@@ -120,8 +120,9 @@ public class DataProcessorUtil {
      * @param record
      * @return
      */
-    public boolean processRecord(FacilioRecord record, int partitionId) {
+    public boolean processRecord(FacilioRecord record) {
         long recordId = record.getId();
+        int partitionId = record.getPartition();
         long agentMsgId = -1L;
         long start = System.currentTimeMillis();
         try {

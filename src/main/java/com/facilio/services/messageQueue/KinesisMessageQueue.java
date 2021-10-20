@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 import com.amazonaws.services.kinesis.AmazonKinesisClientBuilder;
@@ -91,13 +92,13 @@ class KinesisMessageQueue extends MessageQueue {
     }
 
 
-    public void initiateProcessFactory(long orgId, String orgDomainName, String type, int partition) {
+    public int initiateProcessFactory(long orgId, String orgDomainName, String type, Map<String, Object> topicDetails, int currentThreadCount) throws Exception {
         try {
             new Thread(() -> KinesisStreamProcessor.run(orgId, orgDomainName, type, getProcessorFactory(orgId, orgDomainName, type))).start();
         } catch (Exception e) {
             log.info("Exception occurred ", e);
         }
-
+        return 0;
     }
 
 }

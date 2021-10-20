@@ -1,21 +1,17 @@
 package com.facilio.services.messageQueue;
 
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.CreateTopicsResult;
-import org.apache.kafka.clients.admin.KafkaAdminClient;
-import org.apache.kafka.clients.admin.ListTopicsResult;
-import org.apache.kafka.clients.admin.NewTopic;
+import com.facilio.agentv2.AgentConstants;
+import com.facilio.server.ServerInfo;
+import org.apache.kafka.clients.admin.*;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.log4j.LogManager;
 
@@ -35,7 +31,8 @@ class KafkaMessageQueue extends MessageQueue {
     static KafkaMessageQueue getClient(){
         return INSTANCE;
     }
-    private static AdminClient getKafkaClient(){
+
+    public static AdminClient getKafkaClient() {
         if (kafkaClient==null){
             kafkaClient =KafkaAdminClient.create(getKafkaProperties());
         }
@@ -105,17 +102,59 @@ class KafkaMessageQueue extends MessageQueue {
     }
 
 
-    private static FacilioProcessor getProcessor(long orgId, String orgDomainName, String type, int partition) {
-        return new KafkaProcessor(orgId, orgDomainName, partition);
+    private static FacilioProcessor getProcessor(long orgId, String orgDomainName, String type, int processorId) {
+        return new KafkaProcessor(orgId, orgDomainName, processorId);
     }
 
-    public void initiateProcessFactory(long orgId, String orgDomainName, String type, int partition) {
+    public int initiateProcessFactory(long orgId, String orgDomainName, String type, Map<String, Object> topicDetails, int currentThreadCount) throws Exception {
+
+        int maxConsumers = (Integer) topicDetails.get(AgentConstants.MAX_CONSUMERS);
+        int maxConsumersPerInstance = (Integer) topicDetails.get(AgentConstants.MAX_CONSUMERS_PER_INSTANCE);
+        String environment = FacilioProperties.getConfig("environment");
+        String consumerGroup = orgDomainName + "-processor-" + environment;
+        AdminClient kafkaClient = KafkaMessageQueue.getKafkaClient();
+        DescribeConsumerGroupsResult describeConsumerGroupsResult = kafkaClient.describeConsumerGroups(Collections.singleton(consumerGroup));
+        ListConsumerGroupsResult listConsumerGroupsResult = kafkaClient.listConsumerGroups();
+        int numberOfConsumersOnline = 0;
+        LOGGER.info("Consumer group : "+consumerGroup);
+        List<String> consumerGroupList = kafkaClient.listConsumerGroups().all().get(5, TimeUnit.SECONDS).stream().map(ConsumerGroupListing::groupId).collect(Collectors.toList());
+        LOGGER.info("ConsumerGroups : "+ consumerGroupList);
         try {
-            new Thread(getProcessor(orgId, orgDomainName, type, partition)).start();
-        } catch (Exception e) {
-            LOGGER.info("Exception occurred ", e);
+            if (consumerGroupList.contains(consumerGroup)) {
+                Collection<MemberDescription> members = describeConsumerGroupsResult.describedGroups().get(consumerGroup).get(5, TimeUnit.SECONDS).members();
+                //zombies are entries of consumers in the kafka members list for this consumer group
+                //which are dead but the entry expires only after session.timeout, so exclude them from counting as active members
+                int zombies = 0;
+                for (MemberDescription m : members) {
+                    if (m.clientId().startsWith(ServerInfo.getHostname())) {
+                        zombies++;
+                    }
+                }
+                LOGGER.info("members = "+members.size()+" , zombies = "+ zombies);
+                numberOfConsumersOnline = members.size()-zombies;
+                LOGGER.info("number of consumers online " + numberOfConsumersOnline +" for consumer group - "+consumerGroup);
+            }
+        } catch (KafkaException kex) {
+            LOGGER.error("Exception while getting consumer group details ", kex);
         }
 
+        int consumersLeftToStart = maxConsumers - numberOfConsumersOnline;
+        int count = 0;
+
+        while (consumersLeftToStart > 0 && count < maxConsumersPerInstance && currentThreadCount < FacilioProperties.getMaxProcessorThreads()) {
+            try {
+                int processorId = count;
+                new Thread(getProcessor(orgId, orgDomainName, type, processorId)).start();
+                LOGGER.info("Started processor - " + orgDomainName + ":" + processorId);
+            } catch (Exception e) {
+                LOGGER.info("Exception occurred ", e);
+            }
+            currentThreadCount++;
+            consumersLeftToStart--;
+            count++;
+        }
+
+        return count;
     }
 
 }

@@ -1,13 +1,16 @@
 package com.facilio.services.messageQueue;
 
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.services.procon.message.FacilioRecord;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.kafka.clients.admin.DescribeConsumerGroupsResult;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public abstract class MessageQueue {
 
@@ -16,13 +19,19 @@ public abstract class MessageQueue {
     private static final Map<String, Integer> EXISTING_ORG_PARTITION = new HashMap<>();
 
     private static final List<Long> EMPTY_LIST = Collections.emptyList();
-
-
+    private static final long MIN_SESSION_TIMEOUT = 10000;
+    private static final HashSet<String> EXISTING_ORGS = new HashSet<>();
     /**
      * Entry point for starting processors
      */
-    public void start() {
+    public void start() throws InterruptedException {
         updateStream();
+        /*
+        //In case of server restart,
+        //this wait time ensures that the broker knows the consumer has been killed.
+        //i.e active members list entry for all the consumers in the current machine expires
+        Thread.sleep(MIN_SESSION_TIMEOUT);
+        */
         startProcessor();
     }
 
@@ -66,24 +75,26 @@ public abstract class MessageQueue {
      */
     private void startProcessor() {
         //PropertyConfigurator.configure(getLoggingProps());
+        int currentThreadCount = 0;
         try {
             List<Map<String, Object>> orgMessageTopics = MessageQueueTopic.getTopics(EMPTY_LIST);
             if (CollectionUtils.isNotEmpty(orgMessageTopics)) {
-                for (Map<String, Object> org : orgMessageTopics) {
-                    Long orgId = (Long) org.get(AgentConstants.ORGID);
-                    int partition = (Integer) org.get(AgentConstants.PARTITION_ID);
-                    String orgDomainName = (String) org.get(AgentConstants.MESSAGE_TOPIC);
-                    if (!(EXISTING_ORG_PARTITION.containsKey(orgDomainName) && EXISTING_ORG_PARTITION.get(orgDomainName) == partition)) {
-                        try {
-                            startProcessor(orgId, orgDomainName, partition);
-                        } catch (Exception e) {
+                for (Map<String, Object> topicDetails : orgMessageTopics) {
+                    Long orgId = (Long) topicDetails.get(AgentConstants.ORGID);
+                    String orgDomainName = (String) topicDetails.get(AgentConstants.MESSAGE_TOPIC);
+                    if (!EXISTING_ORGS.contains(orgDomainName)) {
+                        if (currentThreadCount < FacilioProperties.getMaxProcessorThreads()) {
                             try {
-                                CommonCommandUtil.emailException("KafkaProcessor", "Exception while starting stream " + orgDomainName, new Exception("Exception while starting stream will retry after 10 sec"));
-                                Thread.sleep(10000L);
-                                startProcessor(orgId, orgDomainName, partition);
-                            } catch (InterruptedException interrupted) {
-                                LOGGER.info("Exception occurred ", interrupted);
-                                CommonCommandUtil.emailException("KafkaProcessor", "Exception while starting stream " + orgDomainName, interrupted);
+                                currentThreadCount = currentThreadCount + startProcessor(orgId, orgDomainName, topicDetails, currentThreadCount);
+                            } catch (Exception e) {
+                                try {
+                                    CommonCommandUtil.emailException("KafkaProcessor", "Exception while starting stream " + orgDomainName, new Exception("Exception while starting stream will retry after 10 sec"));
+                                    Thread.sleep(10000L);
+                                    currentThreadCount = currentThreadCount + startProcessor(orgId, orgDomainName, topicDetails, currentThreadCount);
+                                } catch (InterruptedException interrupted) {
+                                    LOGGER.info("Exception occurred ", interrupted);
+                                    CommonCommandUtil.emailException("KafkaProcessor", "Exception again while starting stream " + orgDomainName, interrupted);
+                                }
                             }
                         }
                     }
@@ -94,22 +105,21 @@ public abstract class MessageQueue {
         }
     }
 
-    private void startProcessor(long orgId, String orgDomainName, int partition) {
+    private int startProcessor(long orgId, String orgDomainName, Map<String, Object> topicDetails, int currentThreadCount) {
+        int noOfProcessorsStarted = 0;
         try {
             if (orgDomainName != null && STREAMS.contains(orgDomainName)) {
                 LOGGER.info("Starting kafka processor for org : " + orgDomainName + " id " + orgId);
-                initiateProcessFactory(orgId, orgDomainName, "processor", partition);
-                /*initiateProcessFactory(orgId, orgDomainName, "event");
-                initiateProcessFactory(orgId, orgDomainName, "timeSeries");
-                initiateProcessFactory(orgId,orgDomainName,"agent");*/
-                EXISTING_ORG_PARTITION.put(orgDomainName, partition);
+                noOfProcessorsStarted = initiateProcessFactory(orgId, orgDomainName, "processor", topicDetails, currentThreadCount);
+                EXISTING_ORGS.add(orgDomainName);
             }
         } catch (Exception e) {
             LOGGER.info("Exception occurred ", e);
         }
+        return noOfProcessorsStarted;
     }
 
-    public abstract void initiateProcessFactory(long orgId, String orgDomainName, String type, int partition);
+    public abstract int initiateProcessFactory(long orgId, String orgDomainName, String type, Map<String, Object> topicDetails, int currentThreadCount) throws Exception;
 
     private void updateStream() {
         try {

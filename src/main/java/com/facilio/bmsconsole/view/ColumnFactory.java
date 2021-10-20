@@ -47,8 +47,8 @@ public class ColumnFactory {
 		columnMap.put("workorder-tenantAll", getTenantWorkorderColumns());
 		columnMap.put("workorder-vendorWorkorder", getVendorWorkorderColumns());
 		columnMap.put("workorder-myAllWo", getDefaultOccupantPortalWoColumns());
-		columnMap.put("workorder-myAllOpen", getDefaultOccupantPortalWoColumns());
-		columnMap.put("workorder-myAllClosed", getDefaultOccupantPortalWoColumns());
+		columnMap.put("workorder-myOpenWo", getDefaultOccupantPortalWoColumns());
+		columnMap.put("workorder-myClosedWo", getDefaultOccupantPortalWoColumns());
 		columnMap.put("alarm-default", getDefaultAlarmColumns());
 		columnMap.put("energy-default", getDefaultEnergyColumns());
 		columnMap.put("asset-default", getDefaultAssetsColumns());
@@ -216,6 +216,7 @@ public class ColumnFactory {
 		columnMap.put("space-default", getDefaultSpaceViewColumns());
 		columnMap.put("floor-default", getDefaultFloorViewColumns());
 		columnMap.put("tenantunit-default",getDefaultTenantUnitSpaceColumns());
+		columnMap.put("tenantunit-details",getTenantUnitSpaceDetailsColumns());
 		columnMap.put("tenantspaces-default",getDefaultTenantSpacesColumns());
 		
 		columnMap.put("people-default",getDefaultPeopleColumns());
@@ -1633,13 +1634,25 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultTenantUnitSpaceColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 
-		columns.add(new ViewField("name", "Units"));
+		columns.add(new ViewField("name", "Unit"));
 		columns.add(new ViewField("building", "Building"));
 		columns.add(new ViewField("site", "Site"));
 		columns.add(new ViewField("tenant", "Tenant"));
 		columns.add(new ViewField("area", "Total Area"));
 		columns.add(new ViewField("isOccupied", "Occupancy Status"));
 
+
+		return columns;
+	}
+	
+	private static List<ViewField> getTenantUnitSpaceDetailsColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("name", "Unit"));
+		columns.add(new ViewField("site", "Site"));
+		columns.add(new ViewField("building", "Building"));
+		columns.add(new ViewField("floor", "Floor"));
+		columns.add(new ViewField("area", "Total Area"));
 
 		return columns;
 	}

@@ -34,7 +34,8 @@ java.sql.Timestamp,
        			}
                 userDetails = AccountUtil.getUserBean(AccountUtil.getCurrentOrg().getOrgId()).getUserDetailsForUserManagement(email);
        		}
-       		catch (Exception e) {	
+       		catch (Exception e) {
+       		    com.facilio.util.UserManagementJSP.LOGGER.error("Exception in user management",e);
       		}
       	}
    %>
@@ -176,6 +177,7 @@ if (userDetails != null) { %>
 <table style=" margin-top:40px;" class="table table-bordered" >
     <tr>
         <th>ORG_USERID</th>
+        <th>ORGID</th>
         <th>Application</th>
         <th>Actions</th>
     </tr>
@@ -183,6 +185,7 @@ if (userDetails != null) { %>
     %>
         <tr>
             <td><%=userDetail.get("iamOrgUserId") %></td>
+            <td><%=userDetail.get("orgId") %></td>
             <td><%=userDetail.get("applicationName") %></td>
             <td>
                 <button type="button" onclick='resetPassword("<%=email%>", <%=userDetail.get("applicationId")%>)'>Send Reset Password Mail</button>

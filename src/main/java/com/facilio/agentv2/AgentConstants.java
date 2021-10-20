@@ -262,4 +262,6 @@ public class AgentConstants
     public static final String DETAILS = "details";
     public static final String PARTITION_ID = "partitionId";
     public static final String IS_TDB = "isTdb";
+    public static final String MAX_CONSUMERS = "maxConsumers";
+    public static final String MAX_CONSUMERS_PER_INSTANCE = "maxConsumersPerInstance";
 }
