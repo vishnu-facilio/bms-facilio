@@ -867,6 +867,7 @@ public class FacilioAuthAction extends FacilioAction {
 		if (!isVerified) {
 			setJsonresponse("errorcode", 1);
 			setJsonresponse("message", "Invalid verification code");
+			LOGGER.log(Level.INFO, "Invalid username or password " + emailFromDigest);
 			return SUCCESS;
 		} else {
 			Organization defaultOrg = IAMUserUtil.getDefaultOrg((long) userInfo.get("uid"));
@@ -1016,6 +1017,7 @@ public class FacilioAuthAction extends FacilioAction {
 			return SUCCESS;
 		}
 		setJsonresponse("message", "Invalid username or password");
+		LOGGER.log(Level.INFO, "Invalid username or password " + getUsername());
 		return ERROR;
 	}
 
@@ -1156,6 +1158,7 @@ public class FacilioAuthAction extends FacilioAction {
 				}
 			}
 		} else{
+			LOGGER.log(Level.INFO, "invalid verification code " + emailFromDigest);
 			throw new IllegalArgumentException("invalid verification code");
 		}
 
@@ -1253,6 +1256,7 @@ public class FacilioAuthAction extends FacilioAction {
 		else {
 			setResponseCode(1);
 			setResult("message", "Invalid idToken!");
+			LOGGER.info("Invalid idToken!");
 		}
 		return SUCCESS;
 	}
