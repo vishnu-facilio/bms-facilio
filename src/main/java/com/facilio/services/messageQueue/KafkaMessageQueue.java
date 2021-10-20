@@ -134,7 +134,7 @@ class KafkaMessageQueue extends MessageQueue {
                 numberOfConsumersOnline = members.size()-zombies;
                 LOGGER.info("number of consumers online " + numberOfConsumersOnline +" for consumer group - "+consumerGroup);
             }
-        } catch (KafkaException kex) {
+        } catch (Exception kex) {
             LOGGER.error("Exception while getting consumer group details ", kex);
         }
 
