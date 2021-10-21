@@ -1,9 +1,12 @@
 package com.facilio.bmsconsole.page.factory;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -94,7 +97,7 @@ public class WorkorderPageFactory extends PageFactory {
         historySection.addWidget(historyWidget);
     }
 
-    private static void addRelatedRecordsTab(Page page) {
+    private static void addRelatedRecordsTab(Page page, long workorderModuleID) throws Exception {
         Page.Tab relatedRecordsTab = page.new Tab("related records");
         page.addTab(relatedRecordsTab);
 
@@ -105,6 +108,11 @@ public class WorkorderPageFactory extends PageFactory {
         PageWidget relatedRecords = new PageWidget(PageWidget.WidgetType.RELATED_RECORDS);
         relatedRecords.addToLayoutParams(relatedRecordsSection, 24, 12);
         relatedRecordsSection.addWidget(relatedRecords);
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(workorderModuleID);
+
+        addRelatedListWidgets(relatedRecordsSection, module.getModuleId());
     }
 
     private static void addTasksTab(Page page) {
@@ -214,7 +222,7 @@ public class WorkorderPageFactory extends PageFactory {
         if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)) {
             addInventoryTab(page);
         }
-        addRelatedRecordsTab(page);
+        addRelatedRecordsTab(page, workorder.getModuleId());
         addHistoryTab(page);
         return page;
     }
