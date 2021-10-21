@@ -174,7 +174,8 @@ public class GetSortableFieldsCommand extends FacilioCommand {
 	private static final List<String> workorderAtre = Collections.unmodifiableList(Arrays.asList(new String[] {
 			"moduleState",
 			"dueDate",
-			"priority"
+			"priority",
+			"serialNumber"
 	}));
 	
 	private static final List<String> assetAtre = Collections.unmodifiableList(Arrays.asList(new String[] {
@@ -184,6 +185,7 @@ public class GetSortableFieldsCommand extends FacilioCommand {
 			"space",
 			"siteId",
 			"name",
-			"qrVal"
+			"qrVal",
+			"sysCreatedTime"
 	}));
 }
