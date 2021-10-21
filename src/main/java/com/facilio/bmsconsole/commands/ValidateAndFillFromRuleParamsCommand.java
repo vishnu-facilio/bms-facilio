@@ -46,7 +46,10 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 		List<FormRuleContext> formRuleContexts = new ArrayList<>();
 		switch (triggerType) {
 		case FORM_ON_LOAD:
-			formRuleContexts = FormRuleAPI.getFormRuleContext(formId, triggerType, formData);
+			if (formData != null) {
+				// An initial unnecessary call without formdata is done from client and this causes unknown problems.
+				formRuleContexts = FormRuleAPI.getFormRuleContext(formId, triggerType, formData);
+			}
 			context.put(FormRuleAPI.FORM_RULE_CONTEXTS, formRuleContexts);
 			break;
 		case FORM_SUBMIT:
@@ -140,8 +143,7 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 			}
 		}
 		
-		LOGGER.info("ruleInfoObject - formRuleContexts"+ formRuleContexts);
-		LOGGER.info("ruleInfoObject - formData"+ formData + triggerType);
+		LOGGER.debug("ruleInfoObject - formData - "+ formData + triggerType);
 		context.put(FormRuleAPI.FORM_DATA, formData);
 		context.put(ContextNames.FORM, form);
 		

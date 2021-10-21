@@ -23,6 +23,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -136,6 +137,9 @@ public enum FormActionType {
 				
 				//TODO get the field from the form object itself
 				FormField field = FormsAPI.getFormFieldFromId(actionField.getFormFieldId());
+				if (field.getField() != null && field.getField().getDataTypeEnum() == FieldType.LOOKUP && value != null && !value.equals("")) {
+					value = Collections.singletonMap("id", FacilioUtil.parseLong(value));	
+				}
 				formDataToBeAddedforNextRound.put(field.getName(), value);
 				
 				valueFilledFields.add(actionField.getFormFieldId());

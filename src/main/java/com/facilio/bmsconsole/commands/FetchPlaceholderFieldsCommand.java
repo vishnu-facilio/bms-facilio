@@ -5,16 +5,19 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.filters.FilterFieldContext;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.constants.FacilioConstants.Filters;
@@ -36,6 +39,11 @@ public class FetchPlaceholderFieldsCommand extends FacilioCommand {
 		String moduleName = (String) context.get(ContextNames.MODULE_NAME);
 		List<FilterFieldContext> filterFields =(List<FilterFieldContext>) context.get(Filters.FILTER_FIELDS);
 		
+		FacilioForm form = (FacilioForm) context.get(ContextNames.FORM);
+		if (form != null) {
+			filterFields = filterFormFields(form, filterFields);
+		}
+		
 		modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		List<Map<String, Object>> mainFields = new ArrayList<>();
@@ -47,19 +55,25 @@ public class FetchPlaceholderFieldsCommand extends FacilioCommand {
 		return false;
 	}
 	
+	private List<FilterFieldContext> filterFormFields(FacilioForm form, List<FilterFieldContext> filterFields) {
+		List<Long> formFields = form.getFields().stream().map(FormField::getFieldId).collect(Collectors.toList());
+		return filterFields.stream().filter(f -> formFields.contains(f.getField().getId())).collect(Collectors.toList());
+	}
+	
 	private void handleFields(String moduleName, List<FilterFieldContext> filterFields, List<Map<String, Object>> placeHolderFields, boolean isMainModule) throws Exception {
 		
 		for(FilterFieldContext filterField: filterFields) {
 			FacilioField field = filterField.getField();
 			if (field instanceof LookupField) {
+				
+				FacilioModule lookupModule = ((LookupField)field).getLookupModule();
+				String lookupModuleName = lookupModule.getName();
+				
+				if (!AccountUtil.isModuleLicenseEnabled(lookupModuleName)) {
+					continue;
+				}
 				if (isMainModule) {
-					FacilioModule lookupModule = ((LookupField)field).getLookupModule();
-					String lookupModuleName = lookupModule.getName();
-					
-					if (!AccountUtil.isModuleLicenseEnabled(lookupModuleName)) {
-						continue;
-					}
-					
+					// For 1st level lookup
 					Map moduleMap = (Map) placeHolders.get("moduleFields");
 					if (!moduleMap.containsKey(lookupModuleName)) {
 						boolean isAdded = handleSpecialModule(lookupModuleName, filterField, placeHolderFields, moduleMap);
@@ -84,6 +98,10 @@ public class FetchPlaceholderFieldsCommand extends FacilioCommand {
 							createPlaceHolder(filterField, placeHolderFields,  primaryField.getName());
 						}
 					}
+				}
+				else {
+					// For 2nd level lookup
+					createPlaceHolder(filterField, placeHolderFields, "id");
 				}
 			}
 			else {

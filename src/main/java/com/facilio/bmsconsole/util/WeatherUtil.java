@@ -481,14 +481,7 @@ public class WeatherUtil {
 			readingsList = new ArrayList<ReadingContext>();
 			readingMap.put(siteId, readingsList);
 		}
-		list = list.stream().map(t -> {
-			try {
-				return t.clone();
-			} catch (CloneNotSupportedException e) {
-				LOGGER.error("Cannot clone - " + t.getParentId() + "," + t.getTtime(),e);
-			}
-			return t;
-		}).collect(Collectors.toList());
+		list = list.stream().map(ReadingContext::clone).collect(Collectors.toList());
 		readingsList.addAll(list);
 	}
 
