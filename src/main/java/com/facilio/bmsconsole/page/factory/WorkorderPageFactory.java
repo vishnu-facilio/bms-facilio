@@ -105,6 +105,7 @@ public class WorkorderPageFactory extends PageFactory {
         // items & labor widget
         PageWidget itemsAndLabor = new PageWidget(PageWidget.WidgetType.ITEMS_AND_LABOR);
         itemsAndLabor.addToLayoutParams(itemsAndLaborSection, 24, 18);
+        itemsAndLabor.addToWidgetParams("hideBg", true);
         itemsAndLaborSection.addWidget(itemsAndLabor);
     }
 
@@ -144,6 +145,7 @@ public class WorkorderPageFactory extends PageFactory {
         // tasks monolith widget
         PageWidget tasksMonolith = new PageWidget(PageWidget.WidgetType.TASKS_MONOLITH);
         tasksMonolith.addToLayoutParams(tasksSection, 24, 18);
+        tasksMonolith.addToWidgetParams("hideBg", true);
         tasksSection.addWidget(tasksMonolith);
 
 //        // workorder progress widget
