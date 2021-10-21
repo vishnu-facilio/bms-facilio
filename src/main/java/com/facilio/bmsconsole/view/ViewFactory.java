@@ -208,7 +208,7 @@ public class ViewFactory {
 		
 		order = 1;
 		views = new LinkedHashMap<>();
-		views.put("all", getAllEnergyMetersView().setOrder(order++));
+		views.put("energy", getAllEnergyMetersView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.ENERGY_METER, views);
 
 
@@ -1688,7 +1688,7 @@ public class ViewFactory {
 	
 	private static FacilioView getAllEnergyMetersView() {
 		FacilioView allView = new FacilioView();
-		allView.setName("all");
+		allView.setName("energy");
 		allView.setDisplayName("All Energy Meters");
 		allView.setSortFields(getSortFields(FacilioConstants.ContextNames.ASSET));
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
