@@ -33,9 +33,7 @@ import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnn
 import com.facilio.bmsconsoleV3.context.facilitybooking.*;
 import com.facilio.bmsconsoleV3.context.floorplan.*;
 import com.facilio.bmsconsoleV3.context.inspection.*;
-import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestContext;
-import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestLineItemContext;
-import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestPurchasedItems;
+import com.facilio.bmsconsoleV3.context.inventory.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTaskSectionContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTasksContext;
@@ -1932,6 +1930,8 @@ public class FacilioConstants {
 		public static final String TRANSFER_REQUEST = "transferrequest";
 		public static final String TRANSFER_REQUEST_LINE_ITEM = "transferrequestlineitems";
 		public static final String TRANSFER_REQUEST_PURCHASED_ITEMS = "transferrequestpurchaseditems";
+		public static final String TRANSFER_REQUEST_SHIPMENT = "transferrequestshipment";
+		public static final String TRANSFER_REQUEST_SHIPMENT_RECEIVABLES = "transferrequestshipmentreceivables";
 
 		public static class WorkPermit {
 			public static final String WORK_PERMIT_TYPE_CHECKLIST = "workpermittypechecklist";
@@ -2440,6 +2440,8 @@ public class FacilioConstants {
 			classMap.put(TRANSFER_REQUEST, V3TransferRequestContext.class);
 			classMap.put(TRANSFER_REQUEST_LINE_ITEM, V3TransferRequestLineItemContext.class);
 			classMap.put(TRANSFER_REQUEST_PURCHASED_ITEMS, V3TransferRequestPurchasedItems.class);
+			classMap.put(TRANSFER_REQUEST_SHIPMENT, V3TransferRequestShipmentContext.class);
+			classMap.put(TRANSFER_REQUEST_SHIPMENT_RECEIVABLES, V3TransferRequestShipmentReceivablesContext.class);
 
 			for (QuestionType type : QuestionType.values()) {
 				classMap.put(type.getSubModuleName(), type.getSubClass());

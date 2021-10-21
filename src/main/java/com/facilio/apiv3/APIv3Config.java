@@ -523,7 +523,16 @@ public class APIv3Config {
                 .delete()
                 .build();
     }
-    
+    @Module("transferrequestshipment")
+    public static Supplier<V3Config> getTransferRequestShipment() {
+        return () -> new V3Config(V3TransferRequestShipmentContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
     @Module("itemTypes")
     public static Supplier<V3Config> getItemTypes() {
         return () -> new V3Config(V3ItemTypesContext.class, new ModuleCustomFieldCount30())
