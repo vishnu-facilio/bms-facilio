@@ -128,6 +128,8 @@ public class ImportSpaceAction {
 		FacilioField field = modBean.getField("name", FacilioConstants.ContextNames.SPACE);
 		FacilioField field1 = modBean.getField("floor", FacilioConstants.ContextNames.SPACE);
 		
+		FacilioField space1 = modBean.getField("space1", FacilioConstants.ContextNames.SPACE);
+		
 		SelectRecordsBuilder<SpaceContext> selectBuilder = new SelectRecordsBuilder<SpaceContext>()
 																	.select(fields)
 																	.table(module.getTableName())
@@ -136,6 +138,7 @@ public class ImportSpaceAction {
 																	.beanClass(SpaceContext.class)
 																	.andCondition(CriteriaAPI.getCondition(field, spaceName.replace(",", StringOperators.DELIMITED_COMMA), StringOperators.IS))
 																	.andCondition(CriteriaAPI.getCondition(field1, ""+floorId, StringOperators.IS))
+																	.andCondition(CriteriaAPI.getCondition(space1, "", CommonOperators.IS_EMPTY))
 																	;
 		List<SpaceContext> spaces = selectBuilder.get();
 		
@@ -155,6 +158,8 @@ public class ImportSpaceAction {
 		FacilioField field1 = modBean.getField("building", FacilioConstants.ContextNames.SPACE);
 		FacilioField field2 = modBean.getField("floor", FacilioConstants.ContextNames.SPACE);
 		
+		FacilioField space1 = modBean.getField("space1", FacilioConstants.ContextNames.SPACE);
+		
 		SelectRecordsBuilder<SpaceContext> selectBuilder = new SelectRecordsBuilder<SpaceContext>()
 																	.select(fields)
 																	.table(module.getTableName())
@@ -164,6 +169,7 @@ public class ImportSpaceAction {
 																	.andCondition(CriteriaAPI.getCondition(field, spaceName.replace(",", StringOperators.DELIMITED_COMMA), StringOperators.IS))
 																	.andCondition(CriteriaAPI.getCondition(field1, ""+buildingId, StringOperators.IS))
 																	.andCondition(CriteriaAPI.getCondition(field2, "", CommonOperators.IS_EMPTY))
+																	.andCondition(CriteriaAPI.getCondition(space1, "", CommonOperators.IS_NOT_EMPTY))
 																	;
 		List<SpaceContext> spaces = selectBuilder.get();
 		
@@ -183,6 +189,8 @@ public class ImportSpaceAction {
 		FacilioField field2 = modBean.getField("building", FacilioConstants.ContextNames.SPACE);
 		FacilioField field3 = modBean.getField("floor", FacilioConstants.ContextNames.SPACE);
 		
+		FacilioField space1 = modBean.getField("space1", FacilioConstants.ContextNames.SPACE);	
+		
 		SelectRecordsBuilder<SpaceContext> selectBuilder = new SelectRecordsBuilder<SpaceContext>()
 																	.select(fields)
 																	.table(module.getTableName())
@@ -193,6 +201,7 @@ public class ImportSpaceAction {
 																	.andCondition(CriteriaAPI.getCondition(field1, ""+siteId, StringOperators.IS))
 																	.andCondition(CriteriaAPI.getCondition(field2, "", CommonOperators.IS_EMPTY))
 																	.andCondition(CriteriaAPI.getCondition(field3, "", CommonOperators.IS_EMPTY))
+																	.andCondition(CriteriaAPI.getCondition(space1, "", CommonOperators.IS_NOT_EMPTY))
 																	;
 		List<SpaceContext> spaces = selectBuilder.get();
 		
