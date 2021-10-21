@@ -76,6 +76,12 @@ public class V3DeskContext  extends V3SpaceContext {
 		}
 		return null;
 	}
+	public String getDeskTypeName() {
+		if(deskType != null) {
+			return deskType.getStringVal() + " Desk";
+		}
+		return null;
+	}
 	public void setDeskType(int type) {
 		this.deskType = deskType.typeMap.get(type);
 	}

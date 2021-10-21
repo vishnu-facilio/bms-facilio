@@ -255,7 +255,7 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 					   iconName = "desk";
 					   properties.setIconName(iconName);
 					
-						iconName = iconName.concat("_" + desk.getDeskTypeVal());
+						iconName = iconName.concat("_" + desk.getDeskTypeName());
 
 
 					   if (desk.getDepartment() != null) {
@@ -353,7 +353,7 @@ public static JSONObject getMarkerTooltip(ModuleBaseWithCustomFields record, V3M
 					 
 					 tooltipCoreData = new JSONObject();
 					 tooltipCoreData.put("icon", "desk_type");
-					 tooltipCoreData.put("label", desk.getDeskTypeVal());
+					 tooltipCoreData.put("label", desk.getDeskTypeName());
 					 tooltipConent.add(tooltipCoreData);
 
 					 
