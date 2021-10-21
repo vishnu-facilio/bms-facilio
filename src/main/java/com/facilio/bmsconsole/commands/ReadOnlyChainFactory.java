@@ -2756,6 +2756,7 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getPlaceholderFields() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(getFilterableFields());
+		chain.addCommand(FacilioChainFactory.getFormMetaChain());
 		chain.addCommand(new FetchPlaceholderFieldsCommand());
 
 		return chain;

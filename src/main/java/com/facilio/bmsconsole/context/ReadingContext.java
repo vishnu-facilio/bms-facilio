@@ -1,14 +1,19 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.bmsconsole.enums.SourceType;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.time.DateTimeUtil;
-
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.bmsconsole.enums.SourceType;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.time.DateTimeUtil;
+
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
+@AllArgsConstructor
 public class ReadingContext extends ModuleBaseWithCustomFields {
 
 	/**
@@ -160,9 +165,12 @@ public class ReadingContext extends ModuleBaseWithCustomFields {
 		return null;
 	}
 	
-	public ReadingContext clone() throws CloneNotSupportedException 
+	public ReadingContext clone()
 	{ 
-		return (ReadingContext) super.clone(); 
+		ReadingContext r =  new ReadingContext(actualTtime, ttime, zdt, parentId, marked, parent, newReading, sourceType, sourceId);
+		r.setId(getId());
+		r.setReadings(new HashMap<>(getReadings()));
+		return r;
 	}
 
 	public long getSourceId() {

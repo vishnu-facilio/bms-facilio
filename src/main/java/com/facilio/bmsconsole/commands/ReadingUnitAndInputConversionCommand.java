@@ -87,6 +87,10 @@ public class ReadingUnitAndInputConversionCommand extends FacilioCommand {
 					}
 				}
 			}
+			if (FacilioProperties.isOnpremise() && readingMap.keySet().contains("liftmode")) {
+				LOGGER.info("Lift mode readings" + readingMap.get("liftmode"));
+			}
+					
 			LOGGER.info("Time taken for Unit conversion for modules : "+readingMap.keySet()+" is "+(System.currentTimeMillis() - startTime));
 		}
 		return false;
