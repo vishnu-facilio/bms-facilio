@@ -191,8 +191,7 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 				if (aggr != null && aggr instanceof DateAggregateOperator) {
 					val = ((DateAggregateOperator)aggr).getAdjustedTimestamp((long) val);
 				}
-				val =  DateTimeUtil.getZonedDateTime((Long) val).format(DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy"));
-
+				val = DateTimeUtil.getFormattedTime((Long)val);
 				break;
 			case NUMBER:
 				if (StringUtils.isNotEmpty(field.getName()) && field.getName().equals("siteId")) {
