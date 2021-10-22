@@ -81,19 +81,6 @@ public class FetchPlaceholderFieldsCommand extends FacilioCommand {
 		}
 		return fields;
 	}
-	private FacilioField getSiteField(String moduleName) throws Exception {
-		FacilioField siteField;
-		List<FacilioField> fields = modBean.getAllFields(moduleName);
-		boolean isSiteLookupField = fields.stream().filter(f -> f.getName().equals("site") && f.getDataTypeEnum() == FieldType.LOOKUP).findFirst().isPresent();
-		if (isSiteLookupField) {
-			siteField = FieldFactory.getSiteField(null);
-			siteField.setName("site");
-		}
-		else {
-			siteField = FieldFactory.getSiteIdField();
-		}
-		return siteField;
-	}
 	
 	private List<FacilioField> getFieldsFromFilterFields(List<FilterFieldContext> filterFields) {
 		return filterFields.stream().map(FilterFieldContext::getField).collect(Collectors.toList());
@@ -104,9 +91,6 @@ public class FetchPlaceholderFieldsCommand extends FacilioCommand {
 		for(FacilioField field : fields) {
 			if (excludeField(field)) {
 				continue;
-			}
-			if (field.getName().equals("siteId")) {
-				field = getSiteField(moduleName);
 			}
 			if (field instanceof LookupField) {
 				FacilioModule lookupModule = ((LookupField)field).getLookupModule();
@@ -174,7 +158,7 @@ public class FetchPlaceholderFieldsCommand extends FacilioCommand {
 		placeHolder.put("displayType", displayType != null ? displayType.name() : null);
 		if(primaryField != null) {
 			if (isIdPrimaryField) {
-				primaryField =  ContextNames.ID;
+				primaryField =  "id";
 			}
 			placeHolder.put("primaryField", primaryField);
 		}
