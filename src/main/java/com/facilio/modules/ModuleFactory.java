@@ -11,6 +11,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.constants.FacilioConstants.ModuleNames;
 import com.facilio.controlaction.util.ControlActionUtil;
+import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
 
 public class ModuleFactory {
@@ -4019,12 +4020,13 @@ public class ModuleFactory {
 	}
 
 	public static FacilioModule getSiteModule() {
-		FacilioModule workOrdersModule = new FacilioModule();
-		workOrdersModule.setName(FacilioConstants.ContextNames.SITE);
-		workOrdersModule.setDisplayName("Site");
-		workOrdersModule.setTableName("Site");
-		workOrdersModule.setExtendModule(getResourceModule());
-		return workOrdersModule;
+		FacilioModule module = new FacilioModule();
+		module.setName(FacilioConstants.ContextNames.SITE);
+		module.setDisplayName("Site");
+		module.setTableName("Site");
+		module.setExtendModule(getResourceModule());
+		module.setType(ModuleType.BASE_ENTITY);
+		return module;
 	}
 	public static FacilioModule getRecommendedRuleModule() {
 		FacilioModule module = new FacilioModule();

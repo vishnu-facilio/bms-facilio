@@ -837,6 +837,7 @@ public class AccountConstants {
 
 		FacilioField ouid = new FacilioField();
 		ouid.setName("ouid");
+		ouid.setDisplayName("ID");
 		ouid.setDataType(FieldType.NUMBER);
 		ouid.setColumnName("ORG_USERID");
 		ouid.setModule(module);

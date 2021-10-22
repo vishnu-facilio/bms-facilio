@@ -2753,10 +2753,14 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 	
-	public static FacilioChain getPlaceholderFields() {
+	public static FacilioChain getPlaceholderFields(boolean isFormFields) {
 		FacilioChain chain = getDefaultChain();
-		chain.addCommand(getFilterableFields());
-		chain.addCommand(FacilioChainFactory.getFormMetaChain());
+		if (!isFormFields) {
+			chain.addCommand(getFilterableFields());
+		}
+		else {
+			chain.addCommand(FacilioChainFactory.getFormMetaChain());
+		}
 		chain.addCommand(new FetchPlaceholderFieldsCommand());
 
 		return chain;

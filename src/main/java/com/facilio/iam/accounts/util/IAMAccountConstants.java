@@ -527,6 +527,7 @@ public class IAMAccountConstants {
 
 			FacilioField name = new FacilioField();
 			name.setName("name");
+			name.setDisplayName("Name");
 			name.setDataType(FieldType.STRING);
 			name.setColumnName("NAME");
 			name.setModule(module);
@@ -548,6 +549,7 @@ public class IAMAccountConstants {
 
 			FacilioField email = new FacilioField();
 			email.setName("email");
+			email.setDisplayName("Email");
 			email.setDataType(FieldType.STRING);
 			email.setColumnName("EMAIL");
 			email.setModule(module);
@@ -576,6 +578,7 @@ public class IAMAccountConstants {
 
 			FacilioField phone = new FacilioField();
 			phone.setName("phone");
+			phone.setDisplayName("Phone");
 			phone.setDataType(FieldType.STRING);
 			phone.setColumnName("PHONE");
 			phone.setModule(module);
@@ -583,6 +586,7 @@ public class IAMAccountConstants {
 
 			FacilioField mobile = new FacilioField();
 			mobile.setName("mobile");
+			mobile.setDisplayName("Mobile");
 			mobile.setDataType(FieldType.STRING);
 			mobile.setColumnName("MOBILE");
 			mobile.setModule(module);
