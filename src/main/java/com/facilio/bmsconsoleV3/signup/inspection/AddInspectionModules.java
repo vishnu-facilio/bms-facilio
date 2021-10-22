@@ -71,6 +71,7 @@ import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.modules.fields.SystemEnumField;
 import com.facilio.qa.context.ResponseContext;
@@ -274,7 +275,8 @@ public class AddInspectionModules extends SignUpData {
       int seq = 0;
       fields.add(new FormField(fieldMap.get("creationType").getFieldId(), "creationType", FacilioField.FieldDisplayType.SELECTBOX, "Scope", FormField.Required.REQUIRED, ++seq, 1));
       fields.add(new FormField(fieldMap.get("siteId").getFieldId(), "site", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, ++seq, 1));
-      fields.add(new FormField(fieldMap.get("baseSpace").getFieldId(), "baseSpace", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Building", FormField.Required.OPTIONAL, ++seq, 1,Boolean.TRUE));
+      fields.add(new FormField(fieldMap.get("sites").getFieldId(), "sites", FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Sites", FormField.Required.OPTIONAL, ++seq, 1,Boolean.TRUE));
+      fields.add(new FormField(fieldMap.get("buildings").getFieldId(), "buildings", FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Buildings", FormField.Required.OPTIONAL, ++seq, 1,Boolean.TRUE));
       
       fields.add(new FormField(fieldMap.get("assignmentType").getFieldId(), "assignmentType", FacilioField.FieldDisplayType.SELECTBOX, "Scope Category", FormField.Required.OPTIONAL, ++seq, 1,Boolean.TRUE));
       
@@ -319,6 +321,8 @@ public class AddInspectionModules extends SignUpData {
       addSingleAssetSelectRule(defaultForm, fieldMap, formFieldMap);
       addMultipleAssetSelectRule(defaultForm, fieldMap, formFieldMap);
       
+//    addBuildingFilteringWithSiteRule(defaultForm, fieldMap, formFieldMap);
+      
       addAssetCategoryShowRule(defaultForm, fieldMap, formFieldMap);
       addAssetCategoryHideRule(defaultForm, fieldMap, formFieldMap);
       addSpaceCategoryShowRule(defaultForm, fieldMap, formFieldMap);
@@ -327,6 +331,50 @@ public class AddInspectionModules extends SignUpData {
       addOnLoadRule(defaultForm, fieldMap, formFieldMap);
 	}
 	
+	private void addBuildingFilteringWithSiteRule(FacilioForm defaultForm, Map<String, FacilioField> fieldMap, Map<Long, FormField> formFieldMap) throws Exception {
+		// TODO Auto-generated method stub
+		
+		  FormRuleContext singleRule = new FormRuleContext();
+	      singleRule.setName("Set Building Filter");
+	      singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
+	      singleRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
+	      singleRule.setFormId(defaultForm.getId());
+	      singleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
+	      
+	      FormRuleTriggerFieldContext triggerField = new FormRuleTriggerFieldContext();
+	      triggerField.setFieldId(formFieldMap.get(fieldMap.get("sites").getId()).getId());
+	      singleRule.setTriggerFields(Collections.singletonList(triggerField));
+	      
+	      List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
+	      
+	      FormRuleActionContext filterAction = new FormRuleActionContext(); 
+	      filterAction.setActionType(FormActionType.APPLY_FILTER.getVal());
+	      
+	      FormRuleActionFieldsContext actionField = new FormRuleActionFieldsContext();
+	      
+	      actionField.setFormFieldId(formFieldMap.get(fieldMap.get("buildings").getId()).getId());
+	      
+	      Criteria criteria = new Criteria();
+	      
+	      criteria.addAndCondition(CriteriaAPI.getCondition(null,"site", "${sites}", NumberOperators.EQUALS));	// set this property
+	      
+	      actionField.setCriteria(criteria);
+	      
+	      filterAction.setFormRuleActionFieldsContext(Collections.singletonList(actionField));
+	      
+	      actions.add(filterAction);
+	      
+	      singleRule.setActions(actions);
+	      
+	      FacilioChain chain = TransactionChainFactory.getAddFormRuleChain();
+		  Context context = chain.getContext();
+			
+		  context.put(FormRuleAPI.FORM_RULE_CONTEXT,singleRule);
+			
+		  chain.execute();
+	}
+
+
 	private void addOnLoadRule(FacilioForm defaultForm, Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
 		
 		FormRuleContext singleRule = new FormRuleContext();
@@ -355,20 +403,6 @@ public class AddInspectionModules extends SignUpData {
 	      actionField.setActionMeta(json.toJSONString());
 	      
 	      actionFields.add(actionField);
-	      
-	      FormRuleActionFieldsContext actionField1 = new FormRuleActionFieldsContext();
-	      
-	      actionField1.setFormFieldId(formFieldMap.get(fieldMap.get("baseSpace").getId()).getId());
-	      
-	      Criteria criteria = new Criteria();
-	        
-	      criteria.addAndCondition(CriteriaAPI.getCondition("SPACE_TYPE", "spaceType", BaseSpaceContext.SpaceType.BUILDING.getIntVal()+"", NumberOperators.EQUALS));
-	        
-	      Long criteriaId = CriteriaAPI.addCriteria(criteria);
-	      
-	      actionField1.setCriteriaId(criteriaId);
-	      
-	      actionFields.add(actionField1);
 	      
 	      filterAction.setFormRuleActionFieldsContext(actionFields);
 	      
@@ -582,11 +616,21 @@ public class AddInspectionModules extends SignUpData {
 	      FormRuleActionContext showAction = new FormRuleActionContext(); 
 	      showAction.setActionType(FormActionType.SHOW_FIELD.getVal());
 	      
+	      List<FormRuleActionFieldsContext> hideFields = new ArrayList<FormRuleActionFieldsContext>();
+	      
 	      FormRuleActionFieldsContext actionField = new FormRuleActionFieldsContext();
 	      
 	      actionField.setFormFieldId(formFieldMap.get(fieldMap.get("resource").getId()).getId());
 	      
-	      showAction.setFormRuleActionFieldsContext(Collections.singletonList(actionField));
+	      hideFields.add(actionField);
+	      
+	      FormRuleActionFieldsContext actionField1 = new FormRuleActionFieldsContext();	
+	      
+	      actionField1.setFormFieldId(formFieldMap.get(fieldMap.get("siteId").getId()).getId());
+	      
+	      hideFields.add(actionField1);
+	      
+	      showAction.setFormRuleActionFieldsContext(hideFields);
 	      
 	      actions.add(showAction);
 	      
@@ -601,7 +645,7 @@ public class AddInspectionModules extends SignUpData {
 	      hidefields.add(hideField1);
 	      
 	      FormRuleActionFieldsContext hideField2 = new FormRuleActionFieldsContext();
-	      hideField2.setFormFieldId(formFieldMap.get(fieldMap.get("baseSpace").getId()).getId());
+	      hideField2.setFormFieldId(formFieldMap.get(fieldMap.get("buildings").getId()).getId());
 	      hidefields.add(hideField2);
 	      
 	      FormRuleActionFieldsContext hideField3 = new FormRuleActionFieldsContext();
@@ -611,6 +655,10 @@ public class AddInspectionModules extends SignUpData {
 	      FormRuleActionFieldsContext hideField4 = new FormRuleActionFieldsContext();
 	      hideField4.setFormFieldId(formFieldMap.get(fieldMap.get("spaceCategory").getId()).getId());
 	      hidefields.add(hideField4);
+	      
+	      FormRuleActionFieldsContext hideField5 = new FormRuleActionFieldsContext();
+	      hideField5.setFormFieldId(formFieldMap.get(fieldMap.get("sites").getId()).getId());
+	      hidefields.add(hideField5);
 	      
 	      hideAction.setFormRuleActionFieldsContext(hidefields);
 	      
@@ -652,11 +700,21 @@ public class AddInspectionModules extends SignUpData {
 	      FormRuleActionContext hideAction = new FormRuleActionContext(); 
 	      hideAction.setActionType(FormActionType.HIDE_FIELD.getVal());
 	      
+	      List<FormRuleActionFieldsContext> hideFields = new ArrayList<FormRuleActionFieldsContext>();
+	      
 	      FormRuleActionFieldsContext actionField = new FormRuleActionFieldsContext();
 	      
 	      actionField.setFormFieldId(formFieldMap.get(fieldMap.get("resource").getId()).getId());
 	      
-	      hideAction.setFormRuleActionFieldsContext(Collections.singletonList(actionField));
+	      hideFields.add(actionField);
+	      
+	      FormRuleActionFieldsContext actionField1 = new FormRuleActionFieldsContext();	
+	      
+	      actionField1.setFormFieldId(formFieldMap.get(fieldMap.get("siteId").getId()).getId());
+	      
+	      hideFields.add(actionField1);
+	      
+	      hideAction.setFormRuleActionFieldsContext(hideFields);
 	      
 	      actions.add(hideAction);
 	      
@@ -671,8 +729,12 @@ public class AddInspectionModules extends SignUpData {
 	      showfields.add(showField1);
 	      
 	      FormRuleActionFieldsContext showField2 = new FormRuleActionFieldsContext();
-	      showField2.setFormFieldId(formFieldMap.get(fieldMap.get("baseSpace").getId()).getId());
+	      showField2.setFormFieldId(formFieldMap.get(fieldMap.get("buildings").getId()).getId());
 	      showfields.add(showField2);
+	      
+	      FormRuleActionFieldsContext showField3 = new FormRuleActionFieldsContext();
+	      showField3.setFormFieldId(formFieldMap.get(fieldMap.get("sites").getId()).getId());
+	      showfields.add(showField3);
 	      
 	      showAction.setFormRuleActionFieldsContext(showfields);
 	      
@@ -803,10 +865,6 @@ public class AddInspectionModules extends SignUpData {
         
         fields.add(assignmentType);
         
-        LookupField baseSpace = (LookupField) FieldFactory.getDefaultField("baseSpace", "Building", "BASE_SPACE", FieldType.LOOKUP);
-        baseSpace.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE));
-        fields.add(baseSpace);
-        
         LookupField assetCategory = (LookupField) FieldFactory.getDefaultField("assetCategory", "Asset Category", "ASSET_CATEGORY", FieldType.LOOKUP);
         assetCategory.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.ASSET_CATEGORY));
         fields.add(assetCategory);
@@ -836,6 +894,19 @@ public class AddInspectionModules extends SignUpData {
 		approvalFlowIdField.setDefault(true);
 		approvalFlowIdField.setDisplayType(FieldDisplayType.NUMBER);
 		fields.add(approvalFlowIdField);
+		
+		MultiLookupField multiLookupSiteField = (MultiLookupField) FieldFactory.getDefaultField("sites", "Sites", null, FieldType.MULTI_LOOKUP);
+        multiLookupSiteField.setParentFieldPositionEnum(MultiLookupField.ParentFieldPosition.LEFT);
+        multiLookupSiteField.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.SITE));
+        
+        MultiLookupField multiLookupBuildingField = (MultiLookupField) FieldFactory.getDefaultField("buildings", "Buildings", null, FieldType.MULTI_LOOKUP);
+        multiLookupBuildingField.setParentFieldPositionEnum(MultiLookupField.ParentFieldPosition.LEFT);
+        multiLookupBuildingField.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.BUILDING));
+        
+        
+        fields.add(multiLookupSiteField);
+        
+        fields.add(multiLookupBuildingField);
         
         fields.addAll(getInspectionCommonFieldList(modBean));
         

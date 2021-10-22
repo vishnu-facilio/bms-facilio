@@ -354,6 +354,9 @@ public class PageWidget {
 		BOOKINGS_RELATED_LIST("bookingRelatedListWidget"),
 
 		// Workorder Widgets
+		WORKORDER_DESCRIPTION("workorderDescription"),
+		WORKORDER_ATTACHMENTS("workorderAttachments"),
+		WORKORDER_COMMENTS("workorderComments"),
 		TASKS_COMPLETED("tasksCompleted"),
 		SCHEDULED_DURATION("scheduledDuration"),
 		ACTUAL_DURATION("actualDuration"),
@@ -371,6 +374,7 @@ public class PageWidget {
 		PREREQUISITES("prerequisites"),
 		TASKS_MONOLITH("taskMonolith"),
 		ITEMS_AND_LABOR("itemsAndLabor"),
+		QUOTATION("quotation"),
 		TOTAL_COST("totalCost");
 
 		private String name;

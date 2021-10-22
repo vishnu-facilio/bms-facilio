@@ -13,7 +13,7 @@ public class WorkflowUserFunctionContext extends WorkflowContext {
 	
 	Long nameSpaceId;
 	String name;
-	
+	String linkName;
 	String nameSpaceName;
 	
 	public Long getNameSpaceId() {
@@ -33,6 +33,12 @@ public class WorkflowUserFunctionContext extends WorkflowContext {
 	}
 	public void setNameSpaceName(String nameSpaceName) {
 		this.nameSpaceName = nameSpaceName;
+	}
+	public String getLinkName() {
+		return linkName;
+	}
+	public void setLinkName(String linkName) {
+		this.linkName = linkName;
 	}
 	
 }

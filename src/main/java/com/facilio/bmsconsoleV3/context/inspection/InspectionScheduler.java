@@ -4,15 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.context.BaseScheduleContext;
 import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
 import com.facilio.bmsconsole.context.BaseScheduleContext.ScheduleType;
+import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsoleV3.util.BulkResourceAllocationUtil;
 import com.facilio.bmsconsoleV3.util.InspectionAPI;
 import com.facilio.bmsconsoleV3.util.V3VisitorManagementAPI;
 import com.facilio.bmsconsole.context.ScheduleTypeInterface;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.qa.context.PageContext;
@@ -43,11 +48,11 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 			
 			List<InspectionResponseContext> responses = new ArrayList<InspectionResponseContext>();
 			
-			List<Long> resources = new ArrayList<Long>();
+			List<ResourceContext> resources = new ArrayList<ResourceContext>();
 			
 			if(template.getCreationType() == InspectionTemplateContext.CreationType.SINGLE.getIndex()) {
 				if(template.getResource() != null) {
-					resources.add(template.getResource().getId());
+					resources.add(ResourceAPI.getResource(template.getResource().getId()));
 				}
 				else {
 					resources.add(null);
@@ -62,7 +67,7 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 				
 				long createdtime = time.getEndTime()+1;
 				
-				for(Long resourceId : resources) {
+				for(ResourceContext resource : resources) {
 					InspectionResponseContext response = template.constructResponse();
 
 					response.setResStatus(ResponseContext.ResponseStatus.DISABLED); //This will be changed when the response is opened. Until then it can't be answered
@@ -70,7 +75,8 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 					response.setScheduledWorkStart(createdtime);
 					response.setStatus(InspectionResponseContext.Status.PRE_OPEN.getIndex());
 					response.setSourceType(InspectionResponseContext.SourceType.PLANNED.getIndex());
-					response.setResource(getResource.apply(resourceId));
+					response.setResource(resource);
+					response.setSiteId(resource.getSiteId());
 					responses.add(response);
 				}
 			}
@@ -87,16 +93,15 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 	
 	public List<InspectionResponseContext> getResponses(InspectionTemplateContext template,BaseScheduleContext baseScheduleContext,List<DateRange> times) throws Exception {
 		
+		
+		
 		List<InspectionResponseContext> responses = new ArrayList<InspectionResponseContext>();
 		
-		List<Long> resources = new ArrayList<Long>();
+		List<ResourceContext> resources = new ArrayList<ResourceContext>();
 		
 		if(template.getCreationType() == InspectionTemplateContext.CreationType.SINGLE.getIndex()) {
 			if(template.getResource() != null) {
-				resources.add(template.getResource().getId());
-			}
-			else {
-				resources.add(null);
+				resources.add(ResourceAPI.getResource(template.getResource().getId()));
 			}
 		}
 		else if(template.getCreationType() == InspectionTemplateContext.CreationType.MULTIPLE.getIndex())  {
@@ -108,14 +113,15 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 			
 			long createdtime = time.getEndTime()+1;
 			
-			for(Long resourceId : resources) {
+			for(ResourceContext resource : resources) {
 				InspectionResponseContext response = template.constructResponse();
 
 				response.setResStatus(ResponseContext.ResponseStatus.DISABLED); //This will be changed when the response is opened. Until then it can't be answered
 				response.setCreatedTime(createdtime);
 				response.setStatus(InspectionResponseContext.Status.PRE_OPEN.getIndex());
 				response.setSourceType(InspectionResponseContext.SourceType.PLANNED.getIndex());
-				response.setResource(getResource.apply(resourceId));
+				response.setResource(resource);
+				response.setSiteId(resource.getSiteId());
 				responses.add(response);
 			}
 		}
@@ -123,10 +129,18 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 		return responses;
 	}
 	
-	private List<Long> getMultipleResource(InspectionTemplateContext template, BaseScheduleContext baseScheduleContext) throws Exception {
+	private List<ResourceContext> getMultipleResource(InspectionTemplateContext template, BaseScheduleContext baseScheduleContext) throws Exception {
 		// TODO Auto-generated method stub
 		
-		Long baseSpaceId = template.getBaseSpace() != null ? template.getBaseSpace().getId() : template.getSiteId(); 
+		List<Long> baseSpaceIds = null;
+		
+		if(template.getBuildings() != null) {
+			baseSpaceIds = template.getBuildings().stream().map(BuildingContext::getId).collect(Collectors.toList());
+		}
+		else {
+			baseSpaceIds = template.getSites().stream().map(SiteContext::getId).collect(Collectors.toList());
+		}
+		
 		Long spaceCategoryId = template.getSpaceCategory() != null ? template.getSpaceCategory().getId() : null;
 		Long assetCategoryId = template.getAssetCategory() != null ? template.getAssetCategory().getId() : null;
 		
@@ -156,14 +170,23 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 					includedIds.removeAll(excludedIds);
 				}
 				
-				return includedIds;
+				List<ResourceContext> includeResources = ResourceAPI.getResources(includedIds, false);
+				return includeResources;
 			}
 		}
 		
-		List<Long> resources = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(template.getAssignmentTypeEnum(), baseSpaceId, spaceCategoryId, assetCategoryId, null, null, false);
+		List<ResourceContext> resources = BulkResourceAllocationUtil.getMultipleResourceToBeAddedFromPM(template.getAssignmentTypeEnum(), baseSpaceIds, spaceCategoryId, assetCategoryId, null, null, false);
 		
 		if(excludedIds != null) {
-			resources.removeAll(excludedIds);
+			List<ResourceContext> tempResourceContext = new ArrayList<ResourceContext>();
+			
+			for(ResourceContext resourceContext : resources) {
+				
+				if(!excludedIds.contains(resourceContext.getId())) {
+					tempResourceContext.add(resourceContext);
+				}
+			}
+			resources = tempResourceContext;
 		}
 		
 		return resources;
