@@ -162,6 +162,14 @@ public class CommunityFeaturesAPI {
                     ppl = new SiteTenantContacts().getPeople(sharingInfo.getSharedToSpace() != null ? sharingInfo.getSharedToSpace().getId() : null);
                 }
 
+                if(sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.ROLE) {
+                    ppl = V3PeopleAPI.getPeopleByRoleId(sharingInfo.getSharedToRole().getRoleId());
+                }
+
+                if(sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.PEOPLE) {
+                    ppl.add(V3PeopleAPI.getPeopleById(sharingInfo.getSharedToPeople().getId()));
+                }
+
                 if(CollectionUtils.isNotEmpty(ppl)){
                     for(V3PeopleContext person : ppl) {
 
