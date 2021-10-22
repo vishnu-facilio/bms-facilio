@@ -50,15 +50,15 @@ public class WorkorderPageFactory extends PageFactory {
             yOffset += widgetHeight;
         }
 
-//        // tenant widget
-//        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS) &&
-//                workorder.getTenant() != null) {
-//            widgetHeight = 3;
-//            PageWidget totalCost = new PageWidget(PageWidget.WidgetType.TENANT);
-//            totalCost.addToLayoutParams(18, yOffset, 6, widgetHeight);
-//            section.addWidget(totalCost);
-//            yOffset += widgetHeight;
-//        }
+        // tenant widget
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS) &&
+                workorder.getTenant() != null) {
+            widgetHeight = 3;
+            PageWidget totalCost = new PageWidget(PageWidget.WidgetType.TENANT);
+            totalCost.addToLayoutParams(18, yOffset, 6, widgetHeight);
+            section.addWidget(totalCost);
+            yOffset += widgetHeight;
+        }
 
         // responsibility widget
         widgetHeight = 6;

@@ -375,6 +375,7 @@ public class PageWidget {
 		TASKS_MONOLITH("taskMonolith"),
 		ITEMS_AND_LABOR("itemsAndLabor"),
 		QUOTATION("quotation"),
+		TENANT("tenant"),
 		TOTAL_COST("totalCost");
 
 		private String name;
