@@ -21,3 +21,6 @@ datacenters:
 
   5:
     mainapp: stage.facilio.in
+ 
+  6:
+    mainapp: app.facilio.co.uk
