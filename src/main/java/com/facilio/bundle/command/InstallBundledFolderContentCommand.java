@@ -68,6 +68,8 @@ public class InstallBundledFolderContentCommand extends FacilioCommand {
 		}
 		
 		
+		//delete handling here
+		
 		return false;
 	}
 

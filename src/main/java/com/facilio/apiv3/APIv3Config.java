@@ -168,6 +168,8 @@ public class APIv3Config {
                 .create()
                     .beforeSave(TransactionChainFactoryV3.getEmailFromAddressBeforeSaveChain())
                     .afterSave(TransactionChainFactoryV3.getEmailFromAddressAfterSaveChain())
+                   .update()
+                   .beforeSave(new EmailFromAddressValidateCommand())
                 .build();
     }
 
