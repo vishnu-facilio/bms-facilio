@@ -46,16 +46,26 @@ public class AltayerVendorAssetValueGenerator extends ValueGenerator{
                 .select(modBean.getAllFields(module.getName()))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("vendor"), String.valueOf(vendorId), PickListOperators.IS))
                 ;
+
+        List<SupplementRecord> fetchCatLookupsList = new ArrayList<>();
+        MultiLookupMeta categories = new MultiLookupMeta((MultiLookupField) fieldMap.get("category"));
+        fetchCatLookupsList.add(categories);
+        builder.fetchSupplements(fetchCatLookupsList);
+
         List<Map<String, Object>> props = builder.getAsProps();
         if(CollectionUtils.isNotEmpty(props)) {
             for(Map<String, Object> prop : props) {
                 if(!prop.containsKey("category")) {
                     continue;
                 }
-                Map<String, Object> category = (Map<String, Object>) prop.get("category");
-                Long categoryId = (Long)category.get("id");
-                if(!categoryIds.contains(categoryId)) {
-                    categoryIds.add(categoryId);
+                List<Map<String, Object>> mappedCategories = (List<Map<String, Object>>) prop.get("category");
+                if(CollectionUtils.isNotEmpty(mappedCategories)) {
+                    for(Map<String, Object> category : mappedCategories) {
+                        Long categoryId = (Long) category.get("id");
+                        if (!categoryIds.contains(categoryId)) {
+                            categoryIds.add(categoryId);
+                        }
+                    }
                 }
             }
             if(CollectionUtils.isNotEmpty(categoryIds)){
