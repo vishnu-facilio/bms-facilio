@@ -27,6 +27,7 @@ import com.facilio.modules.BmsAggregateOperators.SpaceAggregateOperator;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.report.context.*;
 import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
@@ -59,6 +60,7 @@ public class FetchReportDataCommand extends FacilioCommand {
     private Boolean isSubmoduleDataFetched = false;
     private List<Map<String, Object>> subModuleQueryResult = new ArrayList<>();
     private String innerJoinString = "";
+    private List<FacilioField> globalFields = new ArrayList<>();
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -268,10 +270,12 @@ public class FetchReportDataCommand extends FacilioCommand {
                     cloneField.setTableAlias(alias);
                 }
                 cloneFields.add(cloneField);
-            } else if(field != null){
+            } else if(field != null ){
                 cloneFields.add(field.clone());
             }
         }
+        globalFields = fields;
+        cloneFields.add(FieldFactory.getIdField(baseModule));
         selectBuilder.select(cloneFields);
 
         boolean noMatch = hasSortedDp && (xValues == null || xValues.isEmpty());
@@ -540,7 +544,22 @@ public class FetchReportDataCommand extends FacilioCommand {
 
             props = newSelect.get();
         } else {
-           // String query = newSelectBuilder.constructQueryString();
+//            for(FacilioField field : modBean.getAllFields("workorder")) {
+//                if(field.getDataTypeEnum() == FieldType.MULTI_ENUM) {
+//                    newSelectBuilder.fetchSupplement((SupplementRecord) field);
+//                }
+//            }
+//            String query = newSelectBuilder.constructQueryString();
+
+            List<SupplementRecord> customLookupFields = new ArrayList<>();
+            for(FacilioField field: globalFields){
+                if(field != null && field.getDataTypeEnum() == FieldType.MULTI_ENUM){
+                    customLookupFields.add((SupplementRecord) field.clone());
+                }
+            }
+
+            newSelectBuilder.fetchSupplements(customLookupFields);
+
             props = newSelectBuilder.getAsProps();
         }
         innerJoinString = "";
@@ -595,7 +614,7 @@ public class FetchReportDataCommand extends FacilioCommand {
                     gField.setTableAlias(getAndSetModuleAlias(gField.getModule().getName(), groupByField.getAlias()));
                 }
                 fields.add(gField);
-                if (gField.getModule().equals(baseModule)) {
+                if (gField.getModule().equals(baseModule) && !gField.getCompleteColumnName().endsWith("null")) {
                     groupBy.add(gField.getCompleteColumnName());
                 }
                 handleJoin(groupByField, selectBuilder, addedModules);

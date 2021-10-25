@@ -507,7 +507,8 @@ public class ReportFactoryFields {
 						|| field.getDataTypeEnum() == FieldType.BOOLEAN
 						||field.getDataTypeEnum() == FieldType.STRING
 						|| field.getDataTypeEnum() == FieldType.DATE 
-						|| field.getDataTypeEnum() == FieldType.DATE_TIME					
+						|| field.getDataTypeEnum() == FieldType.DATE_TIME
+						|| field.getDataTypeEnum() == FieldType.MULTI_ENUM
 						|| field.isMainField()
 					) {
 					
