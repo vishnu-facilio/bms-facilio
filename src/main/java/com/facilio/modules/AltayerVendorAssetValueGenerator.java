@@ -49,6 +49,9 @@ public class AltayerVendorAssetValueGenerator extends ValueGenerator{
         List<Map<String, Object>> props = builder.getAsProps();
         if(CollectionUtils.isNotEmpty(props)) {
             for(Map<String, Object> prop : props) {
+                if(!prop.containsKey("category")) {
+                    continue;
+                }
                 Map<String, Object> category = (Map<String, Object>) prop.get("category");
                 Long categoryId = (Long)category.get("id");
                 if(!categoryIds.contains(categoryId)) {
@@ -76,6 +79,9 @@ public class AltayerVendorAssetValueGenerator extends ValueGenerator{
                     List<Long> assetCategoriesList = new ArrayList<>();
                     for (ModuleBaseWithCustomFields mod : catProps) {
                         Map<String, Object> prop = FieldUtil.getAsProperties(mod);
+                        if(!prop.containsKey("assetcategorynew")) {
+                            continue;
+                        }
                         List<Map<String, Object>> mappedAssetCategories = (List<Map<String, Object>>) prop.get("assetcategorynew");
                         if(CollectionUtils.isNotEmpty(mappedAssetCategories)) {
                             for(Map<String, Object> map : mappedAssetCategories) {
