@@ -376,6 +376,10 @@ public class FormulaFieldAPI {
 					LOGGER.debug("Time taken for Formula calculation of : "+fieldName+" between "+iStartTime+" and "+iEndTime+" : "+timeTaken);
 
 				}
+				catch (SQLException e) {
+					LOGGER.error("calculateFormulaReadings failed by SQLException. resource id : " + resourceId + " , field name : " + fieldName +", workflow : " + workflow.getId() , e );
+					throw e;
+				}
 				catch (Exception e) {
 					LOGGER.error("calculateFormulaReadings failed. resource id : " + resourceId + " , field name : " + fieldName + ", intervals : " + intervals +", workflow : " + workflow.getId() , e );
 					if (e.getMessage() == null || !(e.getMessage().contains("Division by zero") || e.getMessage().contains("Division undefined")  || e.getMessage().contains("/ by zero"))) {
