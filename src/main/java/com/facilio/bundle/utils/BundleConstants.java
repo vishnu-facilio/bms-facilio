@@ -65,6 +65,8 @@ public class BundleConstants {
 
 	public static final String BUNDLE_CONTEXT_LIST = "bundleList";
 
+	public static final String INSTALLED_BUNDLE = "installedBundle";
+	
 	public static final String INSTALLED_BUNDLES = "installedBundles";
 
 	public static final String CHANGE_SET_CACHE = "changeSetMapCache";

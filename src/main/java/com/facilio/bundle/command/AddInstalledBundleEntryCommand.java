@@ -64,7 +64,9 @@ public class AddInstalledBundleEntryCommand extends FacilioCommand {
 		context.put(BundleConstants.TO_BE_INSTALLED_VERSIONS_LIST, toBeInstalledVersionList);
 		
 		
-		addInstalledBundleEntry(globalName,incommingVersion);
+		InstalledBundleContext installedBundle = addInstalledBundleEntry(globalName,incommingVersion);
+		
+		context.put(BundleConstants.INSTALLED_BUNDLE, installedBundle);
 		return false;
 	}
 

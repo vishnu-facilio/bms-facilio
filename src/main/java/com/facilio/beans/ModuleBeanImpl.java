@@ -512,6 +512,11 @@ public class ModuleBeanImpl implements ModuleBean {
 			params.add(module.getCriteriaId());
 		}
 		
+		if (module.getSourceBundle() > 0) {
+			joiner.add("SOURCE_BUNDLE = ?");
+			params.add(module.getSourceBundle());
+		}
+		
 		joiner.add("MODIFIED_TIME = ?");
 		params.add(System.currentTimeMillis());
 		

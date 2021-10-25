@@ -113,6 +113,8 @@ public class ModuleBundleComponent extends CommonBundleComponent {
 		
 		BundleFileContext changeSetXMLFile = (BundleFileContext) context.get(BundleConstants.BUNDLED_XML_COMPONENT_FILE);
 		
+		InstalledBundleContext installedBundle = (InstalledBundleContext) context.get(BundleConstants.INSTALLED_BUNDLE);
+		
 		XMLBuilder xmlContent = changeSetXMLFile.getXmlContent();
 		BundleModeEnum modeEnum = (BundleModeEnum) context.get(BundleConstants.INSTALL_MODE);
 		
@@ -133,6 +135,18 @@ public class ModuleBundleComponent extends CommonBundleComponent {
 
 			addModulesChain.execute();
 			
+			// to update installed bundle id
+			FacilioChain updateChain = TransactionChainFactory.getUpdateModuleChain();
+			newContext = updateChain.getContext();
+			newContext.put(FacilioConstants.ContextNames.MODULE_NAME, name);
+			newContext.put(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME, displayName);
+			newContext.put(FacilioConstants.ContextNames.MODULE_DESCRIPTION, description);
+			newContext.put(FacilioConstants.ContextNames.STATE_FLOW_ENABLED, stateFlowEnabled);
+			
+			newContext.put(BundleConstants.INSTALLED_BUNDLE, installedBundle);
+			
+			updateChain.execute();
+			
 			break;
 		}
 			
@@ -144,6 +158,7 @@ public class ModuleBundleComponent extends CommonBundleComponent {
 			newContext.put(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME, displayName);
 			newContext.put(FacilioConstants.ContextNames.MODULE_DESCRIPTION, description);
 			newContext.put(FacilioConstants.ContextNames.STATE_FLOW_ENABLED, stateFlowEnabled);
+			newContext.put(BundleConstants.INSTALLED_BUNDLE, installedBundle);
 
 			chain.execute();
 

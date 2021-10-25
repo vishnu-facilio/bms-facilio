@@ -150,6 +150,26 @@ public class FieldBundleComponent extends CommonBundleComponent {
 				  .element(REQUIRED).text(isRequired.toString()).p()
 				  ;	
 		
+		switch(field.getDataTypeEnum()) {
+		
+		case NUMBER:
+		case DECIMAL: {
+			
+		}
+		case BOOLEAN: {
+			
+		}
+		case LOOKUP: {
+			
+		}
+		case ENUM: {
+			
+		}
+		case FILE: {
+			
+		}
+		}
+		
 		BundleFolderContext fieldFolder = componentFolder.getOrAddFolder(componentChange.getComponentTypeEnum().getName());
 		
 		fieldFolder.addFile(fileName+"."+BundleConstants.XML_FILE_EXTN, fieldFile);
@@ -162,6 +182,8 @@ public class FieldBundleComponent extends CommonBundleComponent {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		BundleFileContext changeSetXMLFile = (BundleFileContext) context.get(BundleConstants.BUNDLED_XML_COMPONENT_FILE);
+		
+		InstalledBundleContext installedBundle = (InstalledBundleContext) context.get(BundleConstants.INSTALLED_BUNDLE);
 		
 		XMLBuilder fieldElement = changeSetXMLFile.getXmlContent();
 		
@@ -179,6 +201,7 @@ public class FieldBundleComponent extends CommonBundleComponent {
 			field.setDataType(FieldType.getCFType(fieldElement.getElement(DATA_TYPE).getText()));
 			field.setDisplayTypeInt(Integer.valueOf(fieldElement.getElement(DISPLAY_TYPE).getText()));
 			field.setRequired(Boolean.valueOf(fieldElement.getElement(REQUIRED).getText()));
+			field.setSourceBundle(installedBundle.getId());
 			
 			List<FacilioField> addFields = new ArrayList<FacilioField>();
 			
@@ -206,6 +229,7 @@ public class FieldBundleComponent extends CommonBundleComponent {
 			
 			field.setDisplayName(displayName);
 			field.setRequired(isRequired);
+			field.setSourceBundle(installedBundle.getId());
 			
 			FacilioChain updateFieldChain = FacilioChainFactory.getUpdateFieldChain();
 			
