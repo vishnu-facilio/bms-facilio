@@ -179,7 +179,11 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 			case ENUM:
 				EnumField enumField = (EnumField) field;
 				List<EnumFieldValue<Integer>> enumFieldValues = enumField.getValues();
-				val = enumFieldValues.get(Math.toIntExact((Long) val)).getValue();
+				if(val instanceof Integer) {
+					val = enumFieldValues.get((Integer) val).getValue();
+				} else if(val instanceof Long){
+					val = enumFieldValues.get(Math.toIntExact((Long) val)).getValue();
+				}
 				break;
 			case SYSTEM_ENUM:
 				Map<Integer,Object> enumMap = reportFieldContext.getEnumMap();
