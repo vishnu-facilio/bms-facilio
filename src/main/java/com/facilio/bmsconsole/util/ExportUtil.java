@@ -496,7 +496,10 @@ public class ExportUtil {
 	    					if(value instanceof Double) {
 	    						value = BigDecimal.valueOf((Double)value).toPlainString();
 	    					}
-	    					str.append(escapeCsv(value.toString())).append(',');
+	    					if(value != null) {
+								str.append(escapeCsv(value.toString()));
+							}
+	    					str.append(',');
 	    	    			}
 	    			}
 	    			
