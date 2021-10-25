@@ -4,16 +4,18 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.MultiLookupField;
+import com.facilio.modules.fields.MultiLookupMeta;
+import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AltayerVendorAssetValueGenerator extends ValueGenerator{
     @Override
@@ -62,13 +64,20 @@ public class AltayerVendorAssetValueGenerator extends ValueGenerator{
                         .select(modBean.getAllFields(catModule.getName()))
                         .andCondition(CriteriaAPI.getCondition(catFieldMap.get("workordercategory"), StringUtils.join(categoryIds, ","), PickListOperators.IS))
                         ;
+
+                List<SupplementRecord> fetchLookupsList = new ArrayList<>();
+
+                MultiLookupMeta assetCategories = new MultiLookupMeta((MultiLookupField) catFieldMap.get("assetcategorynew"));
+                fetchLookupsList.add(assetCategories);
+                builderCategory.fetchSupplements(fetchLookupsList);
+
                 List<Map<String, Object>> catProps = builderCategory.getAsProps();
                 if(CollectionUtils.isNotEmpty(catProps)) {
                     List<Long> assetCategoriesList = new ArrayList<>();
                     for (Map<String, Object> prop : catProps) {
-                        List<Map<String, Object>> assetCategories = (List<Map<String, Object>>) prop.get("assetcategorynew");
-                        if(CollectionUtils.isNotEmpty(assetCategories)) {
-                            for(Map<String, Object> map : assetCategories) {
+                        List<Map<String, Object>> mappedAssetCategories = (List<Map<String, Object>>) prop.get("assetcategorynew");
+                        if(CollectionUtils.isNotEmpty(mappedAssetCategories)) {
+                            for(Map<String, Object> map : mappedAssetCategories) {
                                 Long categoryId = (Long) map.get("id");
                                 if (!assetCategoriesList.contains(categoryId)) {
                                     assetCategoriesList.add(categoryId);

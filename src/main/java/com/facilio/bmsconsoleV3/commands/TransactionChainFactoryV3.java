@@ -1060,4 +1060,20 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getUpdateTransferRequestIsStagedAfterSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateCurrentBalanceCommandV3());
+        c.addCommand(new UpdateItemTransactionCommandV3());
+        c.addCommand(new UpdateToolTransactionCommandV3());
+        c.addCommand(TransactionChainFactoryV3.getUpdateTransferRequestIsCompletedAfterSaveChain());
+        return c;
+    }
+    public static FacilioChain getUpdateTransferRequestIsCompletedAfterSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateCurrentBalanceAfterTransferCommandV3());
+        c.addCommand(new UpdateItemTransactionAfterTransferCommandV3());
+        c.addCommand(new UpdateToolTransactionAfterTransferCommandV3());
+
+        return c;
+    }
 }

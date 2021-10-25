@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.qa.context.QAndATemplateContext;
 import com.facilio.time.DateRange;
@@ -110,6 +111,23 @@ public class InspectionTemplateContext extends QAndATemplateContext <InspectionR
         response.setCreatedTime(System.currentTimeMillis());
         response.setScheduledWorkStart(response.getCreatedTime());
         response.setStatus(InspectionResponseContext.Status.OPEN.getIndex());
+        
+        if(response.getSiteId() <= 0 && response.getResource() != null) {
+        	if(response.getResource().getSiteId() > 0) {
+        		response.setSiteId(response.getResource().getSiteId());
+        	}
+        	else {
+        		try {
+        			ResourceContext resourceContext = ResourceAPI.getResource(response.getResource().getId());
+        			
+        			response.setResource(resourceContext);
+        			response.setSiteId(resourceContext.getSiteId());
+        		}
+        		catch(Exception e) {
+        			LOGGER.error("Error during fetching resource :: "+response.getResource(),e);
+        		}
+        	}
+        }
     }
 
     @AllArgsConstructor
@@ -145,8 +163,10 @@ public class InspectionTemplateContext extends QAndATemplateContext <InspectionR
 		if(CollectionUtils.isNotEmpty(resources) && this.creationType == CreationType.MULTIPLE) {
 			responses = new ArrayList<InspectionResponseContext>();
 			for(ResourceContext resource : resources) {
+				resource = ResourceAPI.getResource(resource.getId());
 				InspectionResponseContext response = newResponseObject();
 				response.setResource(resource);
+				response.setSiteId(resource.getSiteId());
 				responses.add(response);
 			}
 		}

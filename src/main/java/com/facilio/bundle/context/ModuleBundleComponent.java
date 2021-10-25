@@ -123,8 +123,7 @@ public class ModuleBundleComponent extends CommonBundleComponent {
 		Boolean stateFlowEnabled = Boolean.valueOf(xmlContent.getElement(STATEFLOW_ENABLED).getText());
 		
 		switch(modeEnum) {
-		case ADD: 
-			
+		case ADD: {
 			FacilioChain addModulesChain = TransactionChainFactory.getAddModuleChain();
 			FacilioContext newContext = addModulesChain.getContext();
 			newContext.put(FacilioConstants.ContextNames.MODULE_TYPE, 0);
@@ -135,6 +134,21 @@ public class ModuleBundleComponent extends CommonBundleComponent {
 			addModulesChain.execute();
 			
 			break;
+		}
+			
+		case UPDATE:  {
+			
+			FacilioChain chain = TransactionChainFactory.getUpdateModuleChain();
+			FacilioContext newContext = chain.getContext();
+			newContext.put(FacilioConstants.ContextNames.MODULE_NAME, name);
+			newContext.put(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME, displayName);
+			newContext.put(FacilioConstants.ContextNames.MODULE_DESCRIPTION, description);
+			newContext.put(FacilioConstants.ContextNames.STATE_FLOW_ENABLED, stateFlowEnabled);
+
+			chain.execute();
+
+			break;
+		}
 		}
 		
 //		modBean.addModule(module);

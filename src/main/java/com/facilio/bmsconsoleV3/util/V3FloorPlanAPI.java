@@ -107,7 +107,7 @@ public class V3FloorPlanAPI {
 					 
 					 tooltipCoreData = new JSONObject();
 					 tooltipCoreData.put("icon", "desk_type");
-					 tooltipCoreData.put("label", desk.getDeskTypeVal());
+					 tooltipCoreData.put("label", desk.getDeskTypeName());
 					 tooltipConent.add(tooltipCoreData);
 
 					 
@@ -296,7 +296,7 @@ public class V3FloorPlanAPI {
 					   properties.setCenterLabel(getCenterLabel(desk.getEmployee().getName()));
 					   properties.setIconName(iconName);
 					
-						iconName = iconName.concat("_" + desk.getDeskTypeVal());
+						iconName = iconName.concat("_" + desk.getDeskTypeName());
 
 
 					   if (desk.getDepartment() != null) {
@@ -339,7 +339,7 @@ public class V3FloorPlanAPI {
 					   properties.setSecondaryLabel(desk.getEmployee().getName());
 					   properties.setIconName(iconName);
 					
-						iconName = iconName.concat("_" + desk.getDeskTypeVal());
+						iconName = iconName.concat("_" + desk.getDeskTypeName());
 
 
 					   if (desk.getDepartment() != null) {

@@ -13,48 +13,69 @@ import org.apache.log4j.Logger;
 public class WorkorderPageFactory extends PageFactory {
     private static final Logger LOGGER = LogManager.getLogger(WorkorderPageFactory.class.getName());
 
-    private static void composeRightPanel(Page.Section section) throws Exception {
+    private static void composeRightPanel(Page.Section section, WorkOrderContext workorder) throws Exception {
 
         int yOffset = 0;
 
         // work duration widget
         PageWidget workDuration = new PageWidget(PageWidget.WidgetType.WORK_DURATION);
-        workDuration.addToLayoutParams(18, 0, 6, 3);
+        workDuration.addToLayoutParams(18, yOffset, 6, 3);
         section.addWidget(workDuration);
-
-        // total cost widget
-        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)) {
-            PageWidget totalCost = new PageWidget(PageWidget.WidgetType.TOTAL_COST);
-            totalCost.addToLayoutParams(18, 3, 6, 3);
-            section.addWidget(totalCost);
-            yOffset += 3;
-        }
-
-        // maintenance cost widget
-        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
-            PageWidget totalCost = new PageWidget(PageWidget.WidgetType.QUOTATION);
-            totalCost.addToLayoutParams(18, 3, 6, 3);
-            section.addWidget(totalCost);
-            yOffset += 3;
-        }
+        yOffset += 3;
 
         // resource widget
+        int widgetHeight = 3;
         PageWidget resource = new PageWidget(PageWidget.WidgetType.RESOURCE);
-        resource.addToLayoutParams(18, 3 + yOffset, 6, 3);
+        resource.addToLayoutParams(18, yOffset, 6, widgetHeight);
         section.addWidget(resource);
+        yOffset += widgetHeight;
+
+        // maintenance cost & quotation widget
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
+            widgetHeight = 9;
+            PageWidget totalCost = new PageWidget(PageWidget.WidgetType.QUOTATION);
+            totalCost.addToLayoutParams(18, yOffset, 6, widgetHeight);
+            totalCost.addToWidgetParams("hideBg", true);
+            section.addWidget(totalCost);
+            yOffset += widgetHeight;
+        }
+
+        // total cost widget
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY) &&
+                !AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
+            widgetHeight = 3;
+            PageWidget totalCost = new PageWidget(PageWidget.WidgetType.TOTAL_COST);
+            totalCost.addToLayoutParams(18, yOffset, 6, widgetHeight);
+            section.addWidget(totalCost);
+            yOffset += widgetHeight;
+        }
+
+        // tenant widget
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS) &&
+                workorder.getTenant() != null) {
+            widgetHeight = 3;
+            PageWidget totalCost = new PageWidget(PageWidget.WidgetType.TENANT);
+            totalCost.addToLayoutParams(18, yOffset, 6, widgetHeight);
+            section.addWidget(totalCost);
+            yOffset += widgetHeight;
+        }
 
         // responsibility widget
+        widgetHeight = 6;
         PageWidget responsibility = new PageWidget(PageWidget.WidgetType.RESPONSIBILITY);
-        responsibility.addToLayoutParams(18, 6 + yOffset, 6, 6);
+        responsibility.addToLayoutParams(18, yOffset, 6, widgetHeight);
         section.addWidget(responsibility);
+        yOffset += widgetHeight;
 
         // workorderDetails widget
+        widgetHeight = 12;
         PageWidget workorderDetails = new PageWidget(PageWidget.WidgetType.WORKORDER_DETAILS);
-        workorderDetails.addToLayoutParams(18, 12 + yOffset, 6, 12);
+        workorderDetails.addToLayoutParams(18, yOffset, 6, widgetHeight);
         section.addWidget(workorderDetails);
+        yOffset += widgetHeight;
     }
 
-    private static void addSummaryTab(Page page, boolean withDescription) throws Exception {
+    private static void addSummaryTab(Page page, WorkOrderContext workorder) throws Exception {
         Page.Tab summaryTab = page.new Tab("summary");
         page.addTab(summaryTab);
 
@@ -62,7 +83,8 @@ public class WorkorderPageFactory extends PageFactory {
         summaryTab.addSection(summarySection);
 
         int yOffset = 0;
-        if (withDescription) {
+
+        if (workorder.getDescription() != null && !workorder.getDescription().isEmpty()) {
             PageWidget descWidget = new PageWidget(PageWidget.WidgetType.WORKORDER_DESCRIPTION);
             descWidget.addToLayoutParams(0, 0, 18, 3);
             summarySection.addWidget(descWidget);
@@ -94,7 +116,7 @@ public class WorkorderPageFactory extends PageFactory {
         attachmentsWidget.addToLayoutParams(0, 14 + yOffset, 18, 8);
         summarySection.addWidget(attachmentsWidget);
 
-        composeRightPanel(summarySection);
+        composeRightPanel(summarySection, workorder);
     }
 
     private static void addInventoryTab(Page page) {
@@ -108,6 +130,7 @@ public class WorkorderPageFactory extends PageFactory {
         // items & labor widget
         PageWidget itemsAndLabor = new PageWidget(PageWidget.WidgetType.ITEMS_AND_LABOR);
         itemsAndLabor.addToLayoutParams(itemsAndLaborSection, 24, 18);
+        itemsAndLabor.addToWidgetParams("hideBg", true);
         itemsAndLaborSection.addWidget(itemsAndLabor);
     }
 
@@ -152,6 +175,7 @@ public class WorkorderPageFactory extends PageFactory {
         // tasks monolith widget
         PageWidget tasksMonolith = new PageWidget(PageWidget.WidgetType.TASKS_MONOLITH);
         tasksMonolith.addToLayoutParams(tasksSection, 24, 18);
+        tasksMonolith.addToWidgetParams("hideBg", true);
         tasksSection.addWidget(tasksMonolith);
 
 //        // workorder progress widget
@@ -167,7 +191,7 @@ public class WorkorderPageFactory extends PageFactory {
 //        composeRightPanel(tasksSection);
     }
 
-    private static Page.Section addSafetyPlanTab(Page page) throws Exception {
+    private static Page.Section addSafetyPlanTab(Page page, WorkOrderContext workorder) throws Exception {
         Page.Tab safetyPlanTab = page.new Tab("safety plan");
         page.addTab(safetyPlanTab);
 
@@ -184,12 +208,12 @@ public class WorkorderPageFactory extends PageFactory {
         precautions.addToLayoutParams(0, 8, 18, 8);
         safetyPlanSection.addWidget(precautions);
 
-        composeRightPanel(safetyPlanSection);
+        composeRightPanel(safetyPlanSection, workorder);
         return safetyPlanSection;
     }
 
-    private static void addSafetyPlanTabWithPrerequisites(Page page) throws Exception {
-        Page.Section safetyPlanSection = addSafetyPlanTab(page);
+    private static void addSafetyPlanTabWithPrerequisites(Page page, WorkOrderContext workorder) throws Exception {
+        Page.Section safetyPlanSection = addSafetyPlanTab(page, workorder);
 
         // prerequisites widget
         PageWidget prerequisites = new PageWidget(PageWidget.WidgetType.PREREQUISITES);
@@ -197,7 +221,7 @@ public class WorkorderPageFactory extends PageFactory {
         safetyPlanSection.addWidget(prerequisites);
     }
 
-    private static void addPrerequisiteTab(Page page) throws Exception {
+    private static void addPrerequisiteTab(Page page, WorkOrderContext workorder) throws Exception {
         Page.Tab prerequisite = page.new Tab("prerequisites");
         page.addTab(prerequisite);
 
@@ -209,28 +233,27 @@ public class WorkorderPageFactory extends PageFactory {
         prerequisites.addToLayoutParams(0, 0, 18, 16);
         prerequisiteSection.addWidget(prerequisites);
 
-        composeRightPanel(prerequisiteSection);
+        composeRightPanel(prerequisiteSection, workorder);
     }
 
     public static Page getWorkorderPage(WorkOrderContext workorder) throws Exception {
         Page page = new Page();
 
-        boolean withDesc = workorder.getDescription() != null && !workorder.getDescription().isEmpty();
-        addSummaryTab(page, withDesc);
+        addSummaryTab(page, workorder);
 
         // isPrerequisiteEnabled is true when WO generated as a part of PM & Safety Plan is not enabled
         // when Safety Plan is enabled, prerequisites are shown as a widget in Safety Plan tab
         if (workorder.isPrerequisiteEnabled()) {
             if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SAFETY_PLAN)) {
                 // SP & PR
-                addSafetyPlanTabWithPrerequisites(page);
+                addSafetyPlanTabWithPrerequisites(page, workorder);
             } else {
                 // !SP & PR
-                addPrerequisiteTab(page);
+                addPrerequisiteTab(page, workorder);
             }
         } else if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SAFETY_PLAN)) {
             // SP & !PR
-            addSafetyPlanTab(page);
+            addSafetyPlanTab(page, workorder);
         }
         addTasksTab(page);
         if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)) {
