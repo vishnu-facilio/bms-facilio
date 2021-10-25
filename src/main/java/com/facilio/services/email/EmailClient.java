@@ -4,9 +4,17 @@ import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.CommonAPI;
 import com.facilio.bmsconsole.util.MailMessageUtil;
+import com.facilio.bmsconsoleV3.context.EmailFromAddress;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
@@ -132,6 +140,33 @@ public abstract class EmailClient {
 
     public static String getNoReplyFromEmail() {
         return getFromEmail("noreply");
+    }
+    
+    public static String getSystemFromAddress(EmailFromAddress.SourceType sourceType) {
+        
+    	String emailAddress = getNoReplyFromEmail();
+		try {
+			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME));
+			
+			SelectRecordsBuilder<EmailFromAddress> select = new SelectRecordsBuilder<EmailFromAddress>()
+					.moduleName(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME)
+					.beanClass(EmailFromAddress.class)
+					.select(modBean.getAllFields(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("creationType"), EmailFromAddress.CreationType.DEFAULT.getIntValue()+"", NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("sourceType"), sourceType.getIntValue()+"", NumberOperators.EQUALS));
+			
+			EmailFromAddress fromAddress = select.fetchFirst();
+			if(fromAddress != null) {
+				emailAddress = MailMessageUtil.getWholeEmailFromNameAndEmail.apply(fromAddress.getDisplayName(), fromAddress.getEmail());
+			}
+		} catch (Exception e) {
+			LOGGER.error("unable to fetch email address", e);
+		}
+		return emailAddress;
+    	
     }
 
     public static String getFromEmail(String localPart) {

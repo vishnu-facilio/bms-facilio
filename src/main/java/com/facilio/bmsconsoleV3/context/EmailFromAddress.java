@@ -49,6 +49,10 @@ public class EmailFromAddress extends V3Context {
 		SUPPORT,
 		;
 		
+		public int getIntValue() {
+			return ordinal()+1;
+		}
+		
 		private static final Map<Integer, SourceType> typeMap = Collections.unmodifiableMap(initTypeMap());
 		private static Map<Integer, SourceType> initTypeMap() {
 			Map<Integer, SourceType> typeMap = new HashMap<>();
@@ -70,6 +74,9 @@ public class EmailFromAddress extends V3Context {
 		CUSTOM,
 		;
 		
+		public int getIntValue() {
+			return ordinal()+1;
+		}
 		private static final Map<Integer, CreationType> typeMap = Collections.unmodifiableMap(initTypeMap());
 		private static Map<Integer, CreationType> initTypeMap() {
 			Map<Integer, CreationType> typeMap = new HashMap<>();
