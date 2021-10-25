@@ -9,6 +9,7 @@ public class V3TransferRequestContext extends V3Context {
     private static final long serialVersionUID = 1L;
 
     private String requestSubject;
+    private String description;
     private V3StoreRoomContext transferFromStore;
     private V3StoreRoomContext transferToStore;
     private V3PeopleContext transferredBy;
@@ -26,6 +27,14 @@ public class V3TransferRequestContext extends V3Context {
 
     public void setRequestSubject(String requestSubject) {
         this.requestSubject = requestSubject;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public V3StoreRoomContext getTransferFromStore() {
