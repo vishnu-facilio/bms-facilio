@@ -5,9 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -19,8 +16,10 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.taskengine.job.FacilioJob;
 import com.facilio.taskengine.job.JobContext;
 
+import lombok.extern.log4j.Log4j;
+
+@Log4j
 public class WeatherDataJob extends FacilioJob {
-	private static final Logger logger = LogManager.getLogger(WeatherDataJob.class.getName());
 
 	@Override
 	public void execute(JobContext jc) {
@@ -31,6 +30,8 @@ public class WeatherDataJob extends FacilioJob {
 				return;
 			}
 			List<SiteContext> sites = WeatherUtil.getAllSites(true);
+			Map<Long, Map<String,Object>> stationVsData = new HashMap<>();
+			
 			List<ReadingContext> hourlyReadings= new ArrayList<ReadingContext>();
 			List<ReadingContext> dailyReadings=new ArrayList<ReadingContext>();
 			List<ReadingContext> psychrometricReadings= new ArrayList<ReadingContext>();
@@ -38,9 +39,21 @@ public class WeatherDataJob extends FacilioJob {
 			Map<Long,List<ReadingContext>> siteDailyReadings = new HashMap<Long,List<ReadingContext>>();
 
 			for(SiteContext site:sites) {
+				
+				Map<String,Object> weatherData = null;
+				long weatherStationId = site.getWeatherStation();
+				if (weatherStationId > 0) {
+					weatherData = stationVsData.get(weatherStationId);
+					if (weatherData == null) {
+						weatherData=WeatherUtil.getWeatherData(site,null);
+						stationVsData.put(weatherStationId, weatherData);
+					}
+				}
+				else {
+					weatherData=WeatherUtil.getWeatherData(site,null);
+				}
 
-				Map<String,Object> weatherData=WeatherUtil.getWeatherData(site,null);
-				logger.log(Level.INFO,"The weather data: "+weatherData);
+				LOGGER.debug("The weather data: "+weatherData);
 				if(weatherData==null || weatherData.isEmpty()) {
 					continue;
 				}
@@ -55,7 +68,7 @@ public class WeatherDataJob extends FacilioJob {
 					if(psychrometricReading != null) {
 						psychrometricReadings.add(psychrometricReading);
 					}
-					logger.log(Level.INFO,"The psychometric data: "+psychrometricReading);
+					LOGGER.debug("The psychometric data: "+psychrometricReading);
 				}
 				//forecast..
 				List<ReadingContext> hourlyForecast= WeatherUtil.getHourlyForecastReadings(siteId,FacilioConstants.ContextNames.WEATHER_HOURLY_FORECAST_READING,weatherData,true);
@@ -80,7 +93,7 @@ public class WeatherDataJob extends FacilioJob {
 			WeatherUtil.addReading(FacilioConstants.ContextNames.WEATHER_DAILY_READING,WeatherUtil.getReadingList(siteDailyReadings));	
 		}
 		catch (Exception e) {
-			logger.log(Level.ERROR, e.getMessage(), e);
+			LOGGER.error(e.getMessage(), e);
 			CommonCommandUtil.emailException("WeatherDataJob", "Exception in Weather Data job ", e);
 		}
 	}

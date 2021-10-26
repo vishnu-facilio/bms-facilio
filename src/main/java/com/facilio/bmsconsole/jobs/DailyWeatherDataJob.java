@@ -30,9 +30,24 @@ public class DailyWeatherDataJob extends FacilioJob {
 			Map<Long,List<ReadingContext>> siteDailyReadings = new HashMap<Long,List<ReadingContext>>();
 
 			List<SiteContext> sites=WeatherUtil.getAllSites(true);
+			Map<Long, Map<String,Object>> stationVsData = new HashMap<>();
+			long time = DateTimeUtil.getDayStartTime(-1)/1000;
+
 			for(SiteContext site:sites) {
 				
-				Map<String,Object> weatherData=WeatherUtil.getWeatherData(site,DateTimeUtil.getDayStartTime(-1)/1000);
+				Map<String,Object> weatherData = null;
+				long weatherStationId = site.getWeatherStation();
+				if (weatherStationId > 0) {
+					weatherData = stationVsData.get(weatherStationId);
+					if (weatherData == null) {
+						weatherData=WeatherUtil.getWeatherData(site,time);
+						stationVsData.put(weatherStationId, weatherData);
+					}
+				}
+				else {
+					weatherData=WeatherUtil.getWeatherData(site,time);
+				}
+				
 				logger.log(Level.INFO,"Daily weather data : "+weatherData);
 				if(weatherData==null || weatherData.isEmpty()) {
 					continue;
