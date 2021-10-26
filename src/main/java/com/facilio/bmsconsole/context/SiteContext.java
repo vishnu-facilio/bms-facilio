@@ -76,13 +76,13 @@ public class SiteContext extends BaseSpaceContext {
 		return siteType;
 	}
 
-	private Long weatherStation;
+	private long weatherStation = -1;
 
-	public Long getWeatherStation() {
+	public long getWeatherStation() {
 		return weatherStation;
 	}
 
-	public void setWeatherStation(Long weatherStation) {
+	public void setWeatherStation(long weatherStation) {
 		this.weatherStation = weatherStation;
 	}
 

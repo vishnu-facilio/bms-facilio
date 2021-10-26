@@ -827,7 +827,7 @@ public class WeatherUtil {
 		SelectRecordsBuilder<SiteContext> selectBuilder = new SelectRecordsBuilder<SiteContext>()
 																	.select(fields)
 																	.module(module)
-//		temp															.andCondition(CriteriaAPI.getCondition(fieldMap.get("location"), CommonOperators.IS_NOT_EMPTY))
+																	.andCondition(CriteriaAPI.getCondition(fieldMap.get("location"), CommonOperators.IS_NOT_EMPTY))
 //																	.andCondition(CriteriaAPI.getCondition(fieldMap.get("weatherStation"), CommonOperators.IS_EMPTY))
 																	.beanClass(SiteContext.class);
 		if (fetchLocation) {
