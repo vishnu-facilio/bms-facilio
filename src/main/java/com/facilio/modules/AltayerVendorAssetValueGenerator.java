@@ -14,10 +14,15 @@ import com.facilio.modules.fields.MultiLookupMeta;
 import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 
 public class AltayerVendorAssetValueGenerator extends ValueGenerator{
+
+    private static final Logger LOGGER = org.apache.log4j.Logger.getLogger(AltayerVendorAssetValueGenerator.class);
+
     @Override
     public Object generateValueForCondition(int appType) {
         try {
@@ -31,6 +36,8 @@ public class AltayerVendorAssetValueGenerator extends ValueGenerator{
         }
         catch (Exception e) {
             e.printStackTrace();
+            LOGGER.log(Level.DEBUG, ""+ e.getMessage());
+
         }
         return null;
     }
@@ -54,6 +61,8 @@ public class AltayerVendorAssetValueGenerator extends ValueGenerator{
 
         List<Map<String, Object>> props = builder.getAsProps();
         if(CollectionUtils.isNotEmpty(props)) {
+            LOGGER.log(Level.DEBUG, "fetched result 1");
+
             for(Map<String, Object> prop : props) {
                 if(!prop.containsKey("category")) {
                     continue;
@@ -86,6 +95,8 @@ public class AltayerVendorAssetValueGenerator extends ValueGenerator{
 
                 List<ModuleBaseWithCustomFields> catProps = builderCategory.get();
                 if(CollectionUtils.isNotEmpty(catProps)) {
+                    LOGGER.log(Level.DEBUG, "fetched result 2");
+
                     List<Long> assetCategoriesList = new ArrayList<>();
                     for (ModuleBaseWithCustomFields mod : catProps) {
                         Map<String, Object> prop = FieldUtil.getAsProperties(mod);
