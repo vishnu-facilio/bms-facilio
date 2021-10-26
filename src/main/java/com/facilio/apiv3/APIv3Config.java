@@ -63,6 +63,7 @@ import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.service.GetServiceVendorListCommandV3;
 import com.facilio.bmsconsoleV3.commands.service.UpdateStatusCommandV3;
 import com.facilio.bmsconsoleV3.commands.service.UpdateVendorV3;
+import com.facilio.bmsconsoleV3.commands.service.addVendorV3;
 import com.facilio.bmsconsoleV3.commands.servicerequest.AddRequesterForServiceRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.servicerequest.LoadServiceRequestLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.site.AddOrUpdateSiteLocationCommand;
@@ -1397,7 +1398,6 @@ public class APIv3Config {
         return () -> new V3Config(V3ServiceContext.class, new ModuleCustomFieldCount30())
                 .create()
                   .beforeSave(new UpdateStatusCommandV3())
-                  .afterSave(new UpdateVendorV3())
                 .update()
                   .afterSave(new UpdateVendorV3())
                 .delete()
@@ -1406,6 +1406,8 @@ public class APIv3Config {
                   .afterFetch(new GetServiceVendorListCommandV3())
                 .build();
     }
+
+
     @Module("asset")
     public static Supplier<V3Config> getAsset() {
         return () -> new V3Config(V3AssetContext.class, new ModuleCustomFieldCount30())
