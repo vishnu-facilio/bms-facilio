@@ -16,8 +16,21 @@ import com.facilio.bmsconsole.page.WidgetGroup.WidgetGroupType;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 
-public class TenantWorkRequestPageFactory extends PageFactory{
+public class TenantWorkRequestPageFactory extends PageFactory {
+
+	// from ATRE Sandbox && from Vendor Portal
+	private static boolean requestFromATRESBVendorPortal() {
+		return AccountUtil.getCurrentUser().getOrgId() == 418L &&
+				AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomainType.VENDOR_PORTAL;
+	}
+
+	private static boolean requestFromMainApp() {
+		return AccountUtil.getCurrentUser().getAppDomain() != null &&
+				AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO;
+	}
+
 	private static final Logger LOGGER = LogManager.getLogger(TenantWorkRequestPageFactory.class.getName());
+
 	public static Page getWorkorderPage(WorkOrderContext workorder) throws Exception {
 		Page page = new Page();
 
@@ -28,31 +41,28 @@ public class TenantWorkRequestPageFactory extends PageFactory{
 
 		Section tab1Sec1 = page.new Section();
 		tab1.addSection(tab1Sec1);
-		
-		if (AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO) {
-			
-			addRelatedListWidgets(tab1Sec1, module.getModuleId());
-		}
-		else {
 
-		addWorkrequestDetailsWidget(tab1Sec1);
-		
-		
-		Section tab1Sec2 = page.new Section("portalWorkrequestFormDetails");
-		tab1.addSection(tab1Sec2);
-		addSecondaryDetailsWidget(tab1Sec2);
-		
-		Section tab1Sec3 = page.new Section();
-		tab1.addSection(tab1Sec3);
-		addCommentsAttachmentSubModuleGroup(tab1Sec3);
-		
-		Tab tab2 = page.new Tab("activity");
-		page.addTab(tab2);
-		
-		Section tab2Sec1 = page.new Section();
-		tab2.addSection(tab2Sec1);
-		
-		addActivityWidget(tab2Sec1);
+		if (requestFromMainApp() || requestFromATRESBVendorPortal()) {
+			addRelatedListWidgets(tab1Sec1, module.getModuleId());
+		} else {
+
+			addWorkrequestDetailsWidget(tab1Sec1);
+
+			Section tab1Sec2 = page.new Section("portalWorkrequestFormDetails");
+			tab1.addSection(tab1Sec2);
+			addSecondaryDetailsWidget(tab1Sec2);
+
+			Section tab1Sec3 = page.new Section();
+			tab1.addSection(tab1Sec3);
+			addCommentsAttachmentSubModuleGroup(tab1Sec3);
+
+			Tab tab2 = page.new Tab("activity");
+			page.addTab(tab2);
+
+			Section tab2Sec1 = page.new Section();
+			tab2.addSection(tab2Sec1);
+
+			addActivityWidget(tab2Sec1);
 		}
 		
 		return page;
