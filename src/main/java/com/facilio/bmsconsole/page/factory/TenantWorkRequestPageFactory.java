@@ -43,7 +43,15 @@ public class TenantWorkRequestPageFactory extends PageFactory {
 		tab1.addSection(tab1Sec1);
 
 		if (requestFromMainApp() || requestFromATRESBVendorPortal()) {
-			addRelatedListWidgets(tab1Sec1, module.getModuleId());
+
+			Tab relatedRecordsTab = page.new Tab("related records");
+			page.addTab(relatedRecordsTab);
+
+			Page.Section relatedRecordsSection = page.new Section();
+			relatedRecordsTab.addSection(relatedRecordsSection);
+
+			addRelatedListWidgets(relatedRecordsSection, module.getModuleId());
+			
 		} else {
 
 			addWorkrequestDetailsWidget(tab1Sec1);
