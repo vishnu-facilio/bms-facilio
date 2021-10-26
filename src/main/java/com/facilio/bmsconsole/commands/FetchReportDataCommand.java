@@ -542,21 +542,15 @@ public class FetchReportDataCommand extends FacilioCommand {
 
             props = newSelect.get();
         } else {
-//            for(FacilioField field : modBean.getAllFields("workorder")) {
-//                if(field.getDataTypeEnum() == FieldType.MULTI_ENUM) {
-//                    newSelectBuilder.fetchSupplement((SupplementRecord) field);
-//                }
-//            }
-//            String query = newSelectBuilder.constructQueryString();
-
-            List<SupplementRecord> customLookupFields = new ArrayList<>();
-            for(FacilioField field: globalFields){
-                if(field != null && field.getDataTypeEnum() == FieldType.MULTI_ENUM){
-                    customLookupFields.add((SupplementRecord) field.clone());
+            if(report.getTypeEnum() == ReportType.PIVOT_REPORT) {
+                List<SupplementRecord> customLookupFields = new ArrayList<>();
+                for (FacilioField field : globalFields) {
+                    if (field != null && field.getDataTypeEnum() == FieldType.MULTI_ENUM) {
+                        customLookupFields.add((SupplementRecord) field.clone());
+                    }
                 }
+                newSelectBuilder.fetchSupplements(customLookupFields);
             }
-
-            newSelectBuilder.fetchSupplements(customLookupFields);
 
             props = newSelectBuilder.getAsProps();
         }
