@@ -78,7 +78,6 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		if (currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP)) {
 			long orgId = AccountUtil.getCurrentOrg().getOrgId();
 			if (orgId == 407 || orgId == 418 || moduleName.equals("peopleannouncement")) {
-				LOGGER.info("inside atre fields ==>");
 				formFields = getFieldsForAtre(modBean);
 			}
 		}
@@ -341,6 +340,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		fieldMap.put("custom_payment", customPayment);
 		fieldMap.put("custom_receipts", customReceipts);
 		fieldMap.put("peopleannouncement", peopleAnnouncement);
+        fieldMap.put("custom_incidentmanagement_1", incidentManagement);
 
 		return fieldMap;
 	}
@@ -455,6 +455,31 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 			"expiryDate",
 			"createdBy",
 			"createdTime",
+	}));
+
+	private static final List<String> incidentManagement = Collections.unmodifiableList(Arrays.asList(new String[] {
+			"building",
+			"tenantunit",
+			"space",
+			"reportedby",
+			"lookup_1",
+			"businessunit",
+			"singleline_3",
+			"supercategory",
+			"category",
+			"subcategory",
+			"item",
+			"multiline_1",
+			"datetime",
+			"singleline",
+			"boolean",
+			"singleline_2",
+			"multiline",
+			"boolean_2",
+			"sysCreatedBy",
+			"sysCreatedTime",
+			"sysModifiedBy",
+			"sysModifiedTime"
 	}));
 
 	/******* ATRE End ******************/
