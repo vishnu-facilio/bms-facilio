@@ -11,12 +11,14 @@ import com.facilio.qa.rules.pojo.QAndARuleType;
 import com.facilio.v3.V3Action;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.log4j.Log4j;
 
 import java.util.List;
 import java.util.Map;
 
 @Getter
 @Setter
+@Log4j
 public class QAndARuleAction extends V3Action {
     public String fetchOperators() throws Exception {
         FacilioChain fetchOperators = QAndARuleReadOnlyChainFactory.questionOperatorsChain();
@@ -41,7 +43,7 @@ public class QAndARuleAction extends V3Action {
     }
 
     private List<Map<String, Object>> rules;
-    public String addRules() throws Exception {
+    private List<QAndARule> addRules() throws Exception {
         FacilioChain addOrUpdateRulesChain = QAndARuleTransactionChainFactory.addRules();
         FacilioContext context = addOrUpdateRulesChain.getContext();
         context.put(Constants.Command.RULE_TYPE, type);
@@ -50,9 +52,7 @@ public class QAndARuleAction extends V3Action {
 
         addOrUpdateRulesChain.execute();
         List<QAndARule> rules = (List<QAndARule>) context.get(Constants.Command.RULES);
-        this.setData("rules", rules);
-
-        return SUCCESS;
+        return  rules;
     }
 
 
@@ -62,6 +62,18 @@ public class QAndARuleAction extends V3Action {
     }
     public String addScoringRules() throws Exception {
         this.type = QAndARuleType.SCORING;
-        return addRules();
+        this.setData("rules", addRules());
+        return SUCCESS;
+    }
+
+    public String addQandARuleAction() throws Exception {
+        this.type = QAndARuleType.WORKFLOW;
+        FacilioChain chain = QAndARuleTransactionChainFactory.addRuleAction();
+        FacilioContext context = chain.getContext();
+        context.put(Constants.Command.RULES,addRules());
+        chain.execute();
+        List<QAndARule> rules = (List<QAndARule>) context.get(Constants.Command.RULES);
+        this.setData("rules", rules);
+        return SUCCESS;
     }
 }

@@ -21,4 +21,10 @@ public class QAndARuleTransactionChainFactory {
         return c;
     }
 
+    public static FacilioChain addRuleAction(){
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new AddRuleActionCommand());
+        return chain;
+    }
+
 }

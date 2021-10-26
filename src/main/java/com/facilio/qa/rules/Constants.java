@@ -39,6 +39,9 @@ public class Constants {
         public static final FacilioModule scoringRuleConditionModule() {
             return new FacilioModule("qandaScoringRuleCondition", "Q And A Scoring Rule Conditions", "Q_And_A_Scoring_Rule_Conditions", null, ruleConditionModule());
         }
+        public static final FacilioModule evalRuleActionRelModule() {
+            return new FacilioModule("evalRuleActionRel", "Eval Rule Action Rel", "Eval_Rule_Action_Rel");
+        }
     }
 
     public static class FieldFactory extends BaseFieldFactory {
@@ -60,6 +63,16 @@ public class Constants {
             fields.add(getField("type", "RULE_TYPE", module, FieldType.STRING));
             addSysFields(module, fields);
 
+            return Collections.unmodifiableList(fields);
+        }
+
+        public static final List<FacilioField> evalRuleActionRelFields() {
+            List<FacilioField> fields = new ArrayList<>();
+            FacilioModule module = ModuleFactory.evalRuleActionRelModule();
+
+            fields.add(getIdField(module));
+            fields.add(getField("ruleId", "RULE_ID", module, FieldType.NUMBER));
+            fields.add(getField("actionId", "ACTION_ID", module, FieldType.NUMBER));
             return Collections.unmodifiableList(fields);
         }
 
