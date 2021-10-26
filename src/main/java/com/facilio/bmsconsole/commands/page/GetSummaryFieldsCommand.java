@@ -75,7 +75,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 
 		ApplicationContext currentApp = AccountUtil.getCurrentApp();
 		List<FormField> formFields = null;
-		if (currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP)) {
+		if (currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP) || currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP)) {
 			long orgId = AccountUtil.getCurrentOrg().getOrgId();
 			if (orgId == 407l || orgId == 418l || moduleName.equals("peopleannouncement")) {
 				LOGGER.info("inside atre fields ==>");
@@ -341,6 +341,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		fieldMap.put("custom_payment", customPayment);
 		fieldMap.put("custom_receipts", customReceipts);
 		fieldMap.put("peopleannouncement", peopleAnnouncement);
+		fieldMap.put("custom_vendormapping", vendorMapping);
 
 		return fieldMap;
 	}
@@ -396,6 +397,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 	}));
 
 	private static final List<String> customContracts = Collections.unmodifiableList(Arrays.asList(new String[] {
+			"number",
 			"date_1",
 			"multiline",
 			"multiline_1",
@@ -454,6 +456,28 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 			"expiryDate",
 			"createdBy",
 			"createdTime",
+	}));
+
+	private static final List<String> vendorMapping = Collections.unmodifiableList(Arrays.asList(new String[] {
+			"space",
+			"tenantunit",
+			"building",
+			"category",
+			"subcategory",
+			"contacts",
+			"date",
+			"date_1",
+			"number_1",
+			"picklist",
+			"date_2",
+			"picklist_1",
+			"date_3",
+			"picklist_2",
+			"date_4",
+			"sysModifiedBy",
+			"sysCreatedTime",
+			"sysModifiedTime",
+			"sysCreatedBy"
 	}));
 
 	/******* ATRE End ******************/
