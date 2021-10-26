@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.facilio.command.FacilioCommand;
 import com.facilio.iam.accounts.impl.IamClient;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.DeviceContext;
@@ -11,6 +12,7 @@ import com.facilio.bmsconsole.util.DevicesUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.service.FacilioService;
 
+@Log4j
 public class ValidateCodeAndGetDeviceMetaCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -26,6 +28,7 @@ public class ValidateCodeAndGetDeviceMetaCommand extends FacilioCommand {
 			Map<String, Object> deviceCodeRow = IamClient.getDeviceCodeInfo(code);
 
 			if (deviceCodeRow == null) {
+				LOGGER.error("Device code row not fetched.");
 				return true;// code invalid
 			}
 			// context.put(FacilioConstants.ContextNames.DEVICE_INFO,deviceCodeRow.get("info"));
