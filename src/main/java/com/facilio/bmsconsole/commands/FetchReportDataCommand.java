@@ -266,7 +266,9 @@ public class FetchReportDataCommand extends FacilioCommand {
             if (field != null && field.getModule() != null && field.getModule().isCustom()) {
                 String alias = getAndSetModuleAlias(field.getModule().getName());
                 FacilioField cloneField = field.clone();
-                cloneField.setTableAlias(alias);
+                if(report.getTypeEnum() == ReportType.PIVOT_REPORT) {
+                    cloneField.setTableAlias(alias);
+                }
                 cloneFields.add(cloneField);
             } else if(field != null ){
                 cloneFields.add(field.clone());
