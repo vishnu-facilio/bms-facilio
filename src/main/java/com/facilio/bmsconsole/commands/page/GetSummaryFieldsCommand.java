@@ -77,8 +77,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		List<FormField> formFields = null;
 		if (currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP) || currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP)) {
 			long orgId = AccountUtil.getCurrentOrg().getOrgId();
-			if (orgId == 407l || orgId == 418l || moduleName.equals("peopleannouncement")) {
-				LOGGER.info("inside atre fields ==>");
+			if (orgId == 407 || orgId == 418 || moduleName.equals("peopleannouncement")) {
 				formFields = getFieldsForAtre(modBean);
 			}
 		}
@@ -342,6 +341,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		fieldMap.put("custom_receipts", customReceipts);
 		fieldMap.put("peopleannouncement", peopleAnnouncement);
 		fieldMap.put("custom_vendormapping", vendorMapping);
+        fieldMap.put("custom_incidentmanagement_1", incidentManagement);
 
 		return fieldMap;
 	}
@@ -478,6 +478,31 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 			"sysCreatedTime",
 			"sysModifiedTime",
 			"sysCreatedBy"
+		}));
+		
+	private static final List<String> incidentManagement = Collections.unmodifiableList(Arrays.asList(new String[] {
+			"building",
+			"tenantunit",
+			"space",
+			"reportedby",
+			"lookup_1",
+			"businessunit",
+			"singleline_3",
+			"supercategory",
+			"category",
+			"subcategory",
+			"item",
+			"multiline_1",
+			"datetime",
+			"singleline",
+			"boolean",
+			"singleline_2",
+			"multiline",
+			"boolean_2",
+			"sysCreatedBy",
+			"sysCreatedTime",
+			"sysModifiedBy",
+			"sysModifiedTime"
 	}));
 
 	/******* ATRE End ******************/
