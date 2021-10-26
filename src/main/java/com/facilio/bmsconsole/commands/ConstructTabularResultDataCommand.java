@@ -1,17 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
 import java.text.DecimalFormat;
-import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
 
-import com.facilio.modules.fields.EnumField;
-import com.facilio.modules.fields.EnumFieldValue;
+import com.facilio.modules.fields.*;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.MapUtils;
@@ -25,8 +18,6 @@ import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.SpaceAggregateOperator;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataContext;
@@ -34,7 +25,6 @@ import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportGroupByField;
 import com.facilio.report.util.ReportUtil;
-import org.joda.time.DateTimeField;
 
 public class ConstructTabularResultDataCommand extends ConstructReportDataCommand {
 	@Override
@@ -179,7 +169,15 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 			case ENUM:
 				EnumField enumField = (EnumField) field;
 				List<EnumFieldValue<Integer>> enumFieldValues = enumField.getValues();
-				val = enumFieldValues.get(Math.toIntExact((Long) val)).getValue();
+				if(val instanceof Integer) {
+					for(EnumFieldValue<Integer> field1: enumFieldValues){
+						if(Objects.equals(field1.getIndex(), val)){
+							val = field1.getValue();
+						}
+					}
+				} else if(val instanceof Long){
+					val = enumFieldValues.get(Math.toIntExact((Long) val)).getValue();
+				}
 				break;
 			case SYSTEM_ENUM:
 				Map<Integer,Object> enumMap = reportFieldContext.getEnumMap();
@@ -198,6 +196,15 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					updateLookupMap(reportFieldContext, field.getFieldId(), null, modBean.getModule("site"),labelMap);
 				}
+				break;
+			case MULTI_ENUM:
+				MultiEnumField multiEnumField = (MultiEnumField) field;
+				List<Integer> values = (List<Integer>) val;
+				StringBuilder valueString = new StringBuilder();
+				for(int index : values){
+					valueString.append(multiEnumField.getValue(index)).append(", ");
+				}
+				val = valueString.substring(0, valueString.length()-2);
 				break;
 			case LOOKUP:
 				if (val instanceof Map) {
