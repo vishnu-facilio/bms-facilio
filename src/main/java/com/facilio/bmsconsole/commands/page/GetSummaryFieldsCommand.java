@@ -335,7 +335,11 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		fieldMap.put("custom_payment", customPayment);
 		fieldMap.put("custom_receipts", customReceipts);
 		fieldMap.put("peopleannouncement", peopleAnnouncement);
+<<<<<<< HEAD
         fieldMap.put("custom_incidentmanagement_1", incidentManagement);
+=======
+		fieldMap.put("custom_vendormapping", vendorMapping);
+>>>>>>> 2e337d73b1 (removing amc field in vendor protal)
 
 		return fieldMap;
 	}
@@ -452,29 +456,26 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 			"createdTime",
 	}));
 
-	private static final List<String> incidentManagement = Collections.unmodifiableList(Arrays.asList(new String[] {
-			"building",
-			"tenantunit",
+	private static final List<String> vendorMapping = Collections.unmodifiableList(Arrays.asList(new String[] {
 			"space",
-			"reportedby",
-			"lookup_1",
-			"businessunit",
-			"singleline_3",
-			"supercategory",
+			"tenantunit",
+			"building",
 			"category",
 			"subcategory",
-			"item",
-			"multiline_1",
-			"datetime",
-			"singleline",
-			"boolean",
-			"singleline_2",
-			"multiline",
-			"boolean_2",
-			"sysCreatedBy",
-			"sysCreatedTime",
+			"contacts",
+			"date",
+			"date_1",
+			"number_1",
+			"picklist",
+			"date_2",
+			"picklist_1",
+			"date_3",
+			"picklist_2",
+			"date_4",
 			"sysModifiedBy",
-			"sysModifiedTime"
+			"sysCreatedTime",
+			"sysModifiedTime",
+			"sysCreatedBy"
 	}));
 
 	/******* ATRE End ******************/
