@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.GetDbTimeLineFilterToWidgetMapping;
@@ -78,7 +79,40 @@ public class DashboardFilterUtil {
 
 				)));
 	}
+	public static boolean isUserFilterApplicableReadingWidget(ReportContext report, DashboardUserFilterContext filter) {
 
+	    JSONParser parser = new JSONParser();
+	    try {
+	        JSONObject chartStateObject = (JSONObject) parser.parse(report.getChartState());
+
+	        JSONObject common = (JSONObject) chartStateObject.get("common");
+
+	        if (common != null) {
+	            JSONObject filters = (JSONObject) common.get("filters");
+
+	            if (filters != null) {
+	                JSONObject filterState = (JSONObject) filters.get("filterState");
+	                String FilterModuleName = filter.getModuleName();
+
+	                if (filterState != null) {
+	                    String liveFilterModuleName = (String) filterState.get("liveFilterField");
+	                    if (FilterModuleName != null && liveFilterModuleName.equals(FilterModuleName)) {
+	                        return true;
+	                    }
+	                }
+
+	            }
+
+	        }
+
+	    } catch (Exception e) {
+	        LOGGER.log(Level.SEVERE, "Error occured  while parsing chart state of this report, ID=" + report.getId() + " Skipping   db userfilters", e);
+
+	    }
+
+	    return false;
+
+	}
 	public static DashboardFilterContext getDashboardFilter(Long dashboardId, Long dashboardTabId) throws Exception {
 		FacilioModule module = ModuleFactory.getDashboardFilterModule();
 		Condition idCondition;

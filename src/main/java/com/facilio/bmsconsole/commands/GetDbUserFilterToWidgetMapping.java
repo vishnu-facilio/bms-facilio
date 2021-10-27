@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.DashboardContext;
@@ -17,11 +18,16 @@ import com.facilio.bmsconsole.context.DashboardFilterContext;
 import com.facilio.bmsconsole.context.DashboardTabContext;
 import com.facilio.bmsconsole.context.DashboardUserFilterContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
+import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.util.DashboardFilterUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportDataPointContext;
+import com.facilio.report.util.ReportUtil;
+
 
 public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
     private static final Logger LOGGER = Logger.getLogger(GetDbTimeLineFilterToWidgetMapping.class.getName());
@@ -88,6 +94,40 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 					if (widgetModuleId == -1) {// widgetModuleId=-1 implies widget has no
 																			// module associated with it , like TEXT,WEB
 																			// widget, reading widgets etc
+
+			
+						try {
+							if (widget.getWidgetType() == DashboardWidgetContext.WidgetType.CHART) {
+
+
+								WidgetChartContext chartWidget = (WidgetChartContext) widget;
+								chartWidget.getNewReportId();
+								ReportContext report = ReportUtil.getReport(chartWidget.getNewReportId(), true);
+								
+
+								for (DashboardUserFilterContext filter : userFilters) {
+									Boolean isUserFilterApplicableReadingWidget = DashboardFilterUtil.isUserFilterApplicableReadingWidget(report, filter);
+									if (isUserFilterApplicableReadingWidget) {
+							
+									filter.getWidgetFieldMap().put(widgetId, null);
+
+										this.addToWidgetUserFiltersMap(widgetId, filter.getId(), widgetUserFiltersMap);
+									}
+								}
+								}
+							
+
+							}
+						catch(Exception e)
+						{
+							LOGGER.log(Level.SEVERE,"Error occured  finding module for widget , ID="+widgetId+" Skipping   db userfilters",e);
+							continue;
+						}
+
+						
+							
+						
+				
 						continue;
 					}
 
