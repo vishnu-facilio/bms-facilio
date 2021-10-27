@@ -108,8 +108,10 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 								for (DashboardUserFilterContext filter : userFilters) {
 									Boolean isUserFilterApplicableReadingWidget = DashboardFilterUtil.isUserFilterApplicableReadingWidget(report, filter);
 									if (isUserFilterApplicableReadingWidget) {
-							
-									filter.getWidgetFieldMap().put(widgetId, null);
+										FacilioField widgetField = new FacilioField();
+										widgetField.setName(filter.getModuleName());
+								
+										filter.getWidgetFieldMap().put(widgetId, widgetField);
 
 										this.addToWidgetUserFiltersMap(widgetId, filter.getId(), widgetUserFiltersMap);
 									}
