@@ -496,7 +496,7 @@ public class FetchReportDataCommand extends FacilioCommand {
         }
 
 
-        List<Map<String, Object>> props;
+        List<Map<String, Object>> props = new ArrayList<>();
 
         ReportFieldContext reportFieldContext = dp.getxAxis();
         boolean outerJoin = reportFieldContext.isOuterJoin();
@@ -557,6 +557,7 @@ public class FetchReportDataCommand extends FacilioCommand {
             }
 //            String query = newSelectBuilder.constructQueryString();
             props = newSelectBuilder.getAsProps();
+            isBaseModuleJoined = false;
         }
         LOGGER.debug("SELECT BUILDER --- " + newSelectBuilder);
 
@@ -1290,10 +1291,6 @@ public class FetchReportDataCommand extends FacilioCommand {
             }
 
         } else if (!this.baseModule.getName().equals(reportField.getModuleName()) && reportField.getAlias().contains("data_")) {
-
-            if (reportField.getSubModuleFieldId() > 0) {
-                return;
-            }
 
             String moduleName = reportField.getModuleName();
             List<FacilioField> fields = modBean.getAllFields(moduleName);
