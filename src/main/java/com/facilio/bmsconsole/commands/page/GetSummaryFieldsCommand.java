@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.PropertyUtils;
@@ -311,22 +312,16 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 	private List<FormField> getFieldsForAtre (ModuleBean modBean) throws Exception {
 		List<FormField> fields = new ArrayList<FormField>();
 
-		List<FacilioField> moduleFields = new ArrayList<>(allFields);
-		for(String name: FieldFactory.getSystemFieldNames()) {
-			moduleFields.add(FieldFactory.getSystemField(name, module));
-		}
-
+		Map<String, FacilioField> fieldMap = allFields.stream().collect(Collectors.toMap(FacilioField::getName, Function.identity()));
 		List<String> atreFields = getAtreFieldMap().get(moduleName);
 		if (atreFields == null) {
 			return null;
 		}
 		int count = 0;
-		for(FacilioField field: moduleFields) {
-			if (atreFields.contains(field.getName())) {
-				fields.add(FormsAPI.getFormFieldFromFacilioField(field, ++count));
-			}
+		for (String fieldName: atreFields) {
+			FacilioField field = fieldMap.get(fieldName);
+			fields.add(FormsAPI.getFormFieldFromFacilioField(field, ++count));
 		}
-
 		return fields;
 	}
 

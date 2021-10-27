@@ -933,7 +933,7 @@ public class FormsAPI {
 			}
 		}
 
-		addToDefaultFields(form.getFields(), defaultFields, fields);
+		addToDefaultFields(new ArrayList<>(form.getFields()), defaultFields, fields);
 
 		if (form.getModule().isCustom()) {
 
@@ -994,6 +994,7 @@ public class FormsAPI {
 	
 	private static void addToDefaultFields(List<FormField> existingFields, List<FormField> defaultFields, List<FormField> newFields) {
 		if (!newFields.isEmpty()) {
+			existingFields.addAll(defaultFields);
 			List<String> fieldNames = existingFields.stream().map(FormField::getName).collect(Collectors.toList());
 			defaultFields.addAll(newFields.stream().filter(field -> !fieldNames.contains(field.getName())).collect(Collectors.toList()));
 		}

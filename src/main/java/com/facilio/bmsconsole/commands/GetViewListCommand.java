@@ -250,11 +250,13 @@ public class GetViewListCommand extends FacilioCommand {
 			
 		}
 		else {
-			 allViews = new ArrayList<>();
-			if (!viewGroups.isEmpty() && viewGroups != null) {
-				for(ViewGroups viewGroup : viewGroups) {
-					if (viewGroup.getViews() != null && !viewGroup.getViews().isEmpty()) {
-						allViews.addAll(viewGroup.getViews());
+			if (moduleObj != null) { //moduleObj check is for approval module. Needs to handle in a better way
+				allViews = new ArrayList<>();
+				if (!viewGroups.isEmpty() && viewGroups != null) {
+					for(ViewGroups viewGroup : viewGroups) {
+						if (viewGroup.getViews() != null && !viewGroup.getViews().isEmpty()) {
+							allViews.addAll(viewGroup.getViews());
+						}
 					}
 				}
 			}
