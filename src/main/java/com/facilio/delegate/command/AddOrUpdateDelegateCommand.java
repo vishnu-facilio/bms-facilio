@@ -60,7 +60,7 @@ public class AddOrUpdateDelegateCommand extends FacilioCommand {
         if (delegationContext.getDelegateUserId() == delegationContext.getUserId()) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Cannot delegate to yourself ;)");
         }
-        if (delegationContext.getDelegationTypeEnum() == null) {
+        if (delegationContext.getDelegationType() <= 0) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Delegation features is missing");
         }
         // check whether user is valid or not

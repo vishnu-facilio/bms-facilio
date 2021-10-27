@@ -86,20 +86,11 @@ public class DelegationContext implements Serializable {
         this.delegateUser = delegateUser;
     }
 
-    private DelegationType delegationType;
+    private int delegationType = -1;
     public int getDelegationType() {
-        if (delegationType != null) {
-            return delegationType.getIndex();
-        }
-        return -1;
-    }
-    public void setDelegationType(int delegationValue) {
-        this.delegationType = DelegationType.valueOf(delegationValue);
-    }
-    public DelegationType getDelegationTypeEnum() {
         return delegationType;
     }
-    public void setDelegationType(DelegationType delegationType) {
+    public void setDelegationType(int delegationType) {
         this.delegationType = delegationType;
     }
 }

@@ -2,6 +2,7 @@ package com.facilio.delegate.util;
 
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -34,7 +35,8 @@ public class DelegationUtil {
         DelegationContext delegationContext = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), DelegationContext.class);
         if (delegationContext != null) {
             UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
-            User user = userBean.getUser(delegationContext.getUserId(), false);
+            long appId = AccountUtil.getCurrentApp() != null ? AccountUtil.getCurrentApp().getId() : -1L;
+            User user = userBean.getUser(appId, delegationContext.getUserId());
             if (user != null) {
                 return user;
             }
@@ -54,7 +56,8 @@ public class DelegationUtil {
 
         if (delegationContext != null) {
             UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
-            User delegatedUser = userBean.getUser(delegationContext.getDelegateUserId(), false);
+            long appId = AccountUtil.getCurrentApp() != null ? AccountUtil.getCurrentApp().getId() : -1L;
+            User delegatedUser = userBean.getUser(appId, delegationContext.getUserId());
             if (delegatedUser != null) {
                 return delegatedUser;
             }
