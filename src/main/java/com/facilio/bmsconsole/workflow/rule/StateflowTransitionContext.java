@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.workflow.rule;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.chain.FacilioContext;
+import com.facilio.delegate.context.DelegationType;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -24,6 +25,11 @@ public class StateflowTransitionContext extends AbstractStateTransitionRuleConte
 	@Override
 	public String getSuggestedFormName() {
 		return "__state_transition_" + getId();
+	}
+
+	@Override
+	protected DelegationType getDelegationType() {
+		return DelegationType.STATE_FLOW;
 	}
 
 	@Override

@@ -38,14 +38,6 @@ public class DelegationContext implements Serializable {
         this.description = description;
     }
 
-    private long appId = -1;
-    public long getAppId() {
-        return appId;
-    }
-    public void setAppId(long appId) {
-        this.appId = appId;
-    }
-
     private long fromTime = -1;
     public long getFromTime() {
         return fromTime;
@@ -92,5 +84,13 @@ public class DelegationContext implements Serializable {
     }
     public void setDelegateUser(User delegateUser) {
         this.delegateUser = delegateUser;
+    }
+
+    private int delegationType = -1;
+    public int getDelegationType() {
+        return delegationType;
+    }
+    public void setDelegationType(int delegationType) {
+        this.delegationType = delegationType;
     }
 }

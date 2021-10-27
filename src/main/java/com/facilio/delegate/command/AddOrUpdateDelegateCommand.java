@@ -48,9 +48,6 @@ public class AddOrUpdateDelegateCommand extends FacilioCommand {
         if (StringUtils.isEmpty(delegationContext.getName())) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Delegation name should not empty");
         }
-        if (delegationContext.getAppId() == -1) {
-            throw new RESTException(ErrorCode.VALIDATION_ERROR, "App is mandatory");
-        }
         if (delegationContext.getFromTime() == -1 || delegationContext.getToTime() == -1) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Time range is mandatory");
         }
@@ -63,12 +60,14 @@ public class AddOrUpdateDelegateCommand extends FacilioCommand {
         if (delegationContext.getDelegateUserId() == delegationContext.getUserId()) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Cannot delegate to yourself ;)");
         }
+        if (delegationContext.getDelegationType() <= 0) {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Delegation features is missing");
+        }
         // check whether user is valid or not
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getUserDelegationModule().getTableName())
-                .select(FieldFactory.getUserDelegationFields())
-                .andCondition(CriteriaAPI.getCondition("APP_ID", "appId", String.valueOf(delegationContext.getAppId()), NumberOperators.EQUALS));
+                .select(FieldFactory.getUserDelegationFields());
         if (delegationContext.getId() > 0) {
             builder.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(delegationContext.getId()), NumberOperators.NOT_EQUALS));
         }

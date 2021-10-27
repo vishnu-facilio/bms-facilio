@@ -22,6 +22,8 @@ import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.bmsconsole.util.VendorsAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.delegate.context.DelegationType;
+import com.facilio.delegate.util.DelegationUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
@@ -52,10 +54,14 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 	}
 
 	public boolean isAllowed (Object object) throws Exception {
-		return isAllowed(AccountUtil.getCurrentUser(), object);
+		return isAllowed(object, null);
 	}
 
-	public boolean isAllowed (User user, Object object) throws Exception {
+	public boolean isAllowed(Object object, DelegationType delegationType) throws Exception {
+		return isAllowed(AccountUtil.getCurrentUser(), object, delegationType);
+	}
+
+	public boolean isAllowed (User user, Object object, DelegationType delegationType) throws Exception {
 		if (isEmpty()) {
 			return true;
 		}
@@ -74,7 +80,7 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 		boolean isAppSharingMatched = false;
 		if (!appPermissions.isEmpty()) {
 			for (SingleSharingContext permission : appPermissions) {
-				isAppSharingMatched = isMatching(permission, user, object);
+				isAppSharingMatched = isMatching(permission, user, object, delegationType);
 				if (isAppSharingMatched) {
 					break;
 				}
@@ -87,7 +93,7 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 		boolean havePermission = false;
 		if (!otherPermissions.isEmpty()) {
 			for (SingleSharingContext permission : otherPermissions) {
-				havePermission = isMatching(permission, user, object);
+				havePermission = isMatching(permission, user, object, delegationType);
 				if (havePermission) {
 					break;
 				}
@@ -100,16 +106,31 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 		return isAppSharingMatched && havePermission;
 	}
 
-	public boolean isMatching (SingleSharingContext permission, User user, Object object) throws Exception {
+	public boolean isMatching (SingleSharingContext permission, User user, Object object, DelegationType delegationType) throws Exception {
+		User delegationUser = user;
+		if (delegationType != null) {
+			delegationUser = DelegationUtil.getUser(user, System.currentTimeMillis(), delegationType);
+		}
+
 		switch (permission.getTypeEnum()) {
 			case USER:
 				if (permission.getUserId() == user.getOuid()) {
 					return true;
 				}
+				if (delegationUser.getId() != user.getId()) {
+					if (permission.getUserId() == delegationUser.getId()) {
+						return true;
+					}
+				}
 				break;
 			case ROLE:
 				if (permission.getRoleId() == user.getRoleId()) {
 					return true;
+				}
+				if (delegationUser.getId() != user.getId()) {
+					if (permission.getRoleId() == delegationUser.getRoleId()) {
+						return true;
+					}
 				}
 			case GROUP:
 				if (permission.getGroupMembers() == null) {
@@ -120,7 +141,7 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 
 				if (permission.getGroupMembers() != null && !permission.getGroupMembers().isEmpty()) {
 					for (GroupMember member : permission.getGroupMembers()) {
-						if (member.getOuid() == user.getOuid()) {
+						if (member.getOuid() == user.getOuid() || member.getOuid() == delegationUser.getOuid()) {
 							return true;
 						}
 					}
@@ -138,13 +159,13 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 								List<Long> objIds = getUserIdsForField(moduleDataMap, field);
 								if (CollectionUtils.isNotEmpty(objIds)) {
 									if ("users".equals(lookupModule.getName())) {
-										if (objIds.contains(user.getOuid())) {
+										if (objIds.contains(user.getOuid()) || objIds.contains(delegationUser.getOuid())) {
 											return true;
 										}
 									} else {
 										FacilioModule peopleModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
 										if (lookupModule.getExtendedModuleIds().contains(peopleModule.getModuleId())) {
-											if (objIds.contains(user.getPeopleId())) {
+											if (objIds.contains(user.getPeopleId()) || objIds.contains(delegationUser.getPeopleId())) {
 												return true;
 											}
 										}
@@ -231,17 +252,21 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 	}
 
 	public List<SingleSharingContext> getMatching(Object object) throws Exception {
-		return getMatching(AccountUtil.getCurrentUser(), object);
+		return getMatching(object, null);
 	}
 
-	public List<SingleSharingContext> getMatching (User user, Object object) throws Exception {
+	public List<SingleSharingContext> getMatching(Object object, DelegationType delegationType) throws Exception {
+		return getMatching(AccountUtil.getCurrentUser(), object, delegationType);
+	}
+
+	public List<SingleSharingContext> getMatching (User user, Object object, DelegationType delegationType) throws Exception {
 		if (isEmpty()) {
 			return null;
 		}
 
 		List<SingleSharingContext> matchingPermissions = new ArrayList<>();
 		for (SingleSharingContext permission : this) {
-			if (isMatching(permission, user, object)) {
+			if (isMatching(permission, user, object, delegationType)) {
 				matchingPermissions.add(permission);
 			}
 		}
