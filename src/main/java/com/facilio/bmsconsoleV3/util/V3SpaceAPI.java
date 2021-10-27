@@ -1,8 +1,6 @@
 package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsoleV3.context.V3BuildingContext;
 import com.facilio.bmsconsoleV3.context.V3SiteContext;
 import com.facilio.constants.FacilioConstants;
@@ -12,11 +10,16 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.util.List;
 import java.util.Map;
 
 public class V3SpaceAPI {
+
+    private static final Logger LOGGER = LogManager.getLogger(V3SpaceAPI.class.getName());
+
     public static V3SiteContext getSiteSpace(long id) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);
@@ -59,7 +62,7 @@ public class V3SpaceAPI {
         LookupField location = (LookupField) fieldsAsMap.get("location");
         selectBuilder.fetchSupplement(location);
         List<V3BuildingContext> spaces = selectBuilder.get();
-
+        LOGGER.info("Asset Summary building fetch query ===> "+selectBuilder.toString());
         if(spaces != null && !spaces.isEmpty()) {
             return spaces.get(0);
         }
