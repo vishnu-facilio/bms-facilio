@@ -57,9 +57,6 @@ public class FetchPlaceholderFieldsCommand extends FacilioCommand {
 		FacilioForm form = (FacilioForm) context.get(ContextNames.FORM);
 		List<FacilioField> fields = form != null ? getFormFields(form) : getFieldsFromFilterFields(filterFields);
 		
-		FacilioForm form = (FacilioForm) context.get(ContextNames.FORM);
-		List<FacilioField> fields = form != null ? getFormFields(form) : getFieldsFromFilterFields(filterFields);
-		
 		modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		List<Map<String, Object>> mainFields = new ArrayList<>();
