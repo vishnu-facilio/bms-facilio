@@ -13,20 +13,23 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.util.ChainUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 
 public class LoadAssetSummaryCommandV3  extends FacilioCommand {
+
+    private static final Logger LOGGER = LogManager.getLogger(LoadAssetSummaryCommandV3.class.getName());
+
     @Override
     public boolean executeCommand(Context context) throws Exception {
         List<V3AssetContext> assetList = (List<V3AssetContext>) (((Map<String,Object>)context.get(FacilioConstants.ContextNames.RECORD_MAP)).get("asset"));
@@ -65,6 +68,7 @@ public class LoadAssetSummaryCommandV3  extends FacilioCommand {
                 if(records.size() > 0) {
                     ResourceAPI.loadModuleResources(records, fields);
                     V3AssetContext assetRec = (V3AssetContext) records.get(0);
+                    LOGGER.info("Asset Summary Record ===>"+assetRec);
                     assetRec.setCategoryModuleName(moduleName);
                     this.getAssetLocation(assetRec);
                     recordList.add(assetRec);
@@ -84,6 +88,13 @@ public class LoadAssetSummaryCommandV3  extends FacilioCommand {
 
     private void getAssetLocation(V3AssetContext asset) throws Exception {
         V3BaseSpaceContext assetLocation = asset.getSpace();
+
+        LOGGER.info("Asset Summary ID ===>"+assetLocation.getId());
+        LOGGER.info("Asset Summary Site ID ===>"+assetLocation.getSiteId());
+        LOGGER.info("Asset Summary Building ID ===>"+assetLocation.getBuildingId());
+        LOGGER.info("Asset Summary Floor ID ===>"+assetLocation.getFloorId());
+        LOGGER.info("Asset Summary Space ID ===>"+assetLocation.getSpaceId());
+
         if (assetLocation == null || assetLocation.getId() <= 0) {
             return;
         }
@@ -114,7 +125,7 @@ public class LoadAssetSummaryCommandV3  extends FacilioCommand {
         }
         if (assetLocation.getBuildingId() != null && assetLocation.getBuildingId() > 0) {
             if (asset.getCurrentLocation() == null && currentLocation == null) {
-                V3BuildingContext assetBuilding = V3SpaceAPI.getBuildingSpace(assetLocation.getBuildingId(), true);
+                V3BuildingContext assetBuilding = V3SpaceAPI.getBuildingSpace(assetLocation.getBuildingId());
                 V3BuildingContext building = new V3BuildingContext();
                 building.setId(assetBuilding.getBuildingId());
                 building.setName(assetBuilding.getName());
