@@ -47,7 +47,7 @@ public class ServiceRequestPageFactory extends PageFactory {
             }
             
             if (!AccountUtil.getCurrentUser().isPortalUser()) {
-                Page.Tab tab4 = page.new Tab("Activity");
+                Page.Tab tab4 = page.new Tab("History");;
                 page.addTab(tab4);
                 Page.Section tab4Sec1 = page.new Section();
                 tab4.addSection(tab4Sec1);

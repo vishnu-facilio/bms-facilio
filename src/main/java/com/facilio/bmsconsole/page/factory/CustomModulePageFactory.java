@@ -96,7 +96,7 @@ public class CustomModulePageFactory extends PageFactory {
 
 		ApplicationContext app = AccountUtil.getCurrentApp();
 		if (app != null && app.getLinkName().equals(ApplicationLinkNames.FACILIO_MAIN_APP) && module != null && !"serviceRequest".equalsIgnoreCase(module.getName())) {
-			 Page.Tab tab3 = page.new Tab("Activity");
+			 Page.Tab tab3 = page.new Tab("History");;
 		        page.addTab(tab3);
 		        Page.Section tab4Sec1 = page.new Section();
 		        tab3.addSection(tab4Sec1);
