@@ -331,8 +331,11 @@
                 method="addQandARuleAction">
         <param name="pageId">{1}</param>
         </action>
-        <action name="update" class="com.facilio.qa.rules.actions.QAndARuleAction"
-                method="updateQandARuleAction"/>
+        <action name="list"
+                class="com.facilio.qa.rules.actions.QAndARuleAction"
+                method="fetchQandARuleAction">
+            <param name="pageId">{1}</param>
+        </action>
     </package>
 
     <package name="scoringRulesFetch" namespace="/api/v3/scoringrules/list" extends="v3Api">

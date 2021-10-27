@@ -76,4 +76,9 @@ public class QAndARuleAction extends V3Action {
         this.setData("rules", rules);
         return SUCCESS;
     }
+
+    public String fetchQandARuleAction() throws Exception {
+        this.type = QAndARuleType.WORKFLOW;
+        return fetchRules();
+    }
 }
