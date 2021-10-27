@@ -51,6 +51,8 @@ public class AltayerVendorSiteValueGenerator extends ValueGenerator {
                 .select(modBean.getAllFields(module.getName()))
                 .fetchSupplement((LookupField) fieldMap.get("building"))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("vendor"), String.valueOf(vendorID), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleState"), "26327", NumberOperators.EQUALS))
+
                 ;
         List<Map<String, Object>> props = builder.getAsProps();
         if(CollectionUtils.isNotEmpty(props)) {
