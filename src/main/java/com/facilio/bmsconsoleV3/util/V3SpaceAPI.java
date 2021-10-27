@@ -42,7 +42,7 @@ public class V3SpaceAPI {
         return null;
     }
 
-    public static V3BuildingContext getBuildingSpace(long id, boolean fetchLocation) throws Exception {
+    public static V3BuildingContext getBuildingSpace(long id) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BUILDING);
         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BUILDING);
