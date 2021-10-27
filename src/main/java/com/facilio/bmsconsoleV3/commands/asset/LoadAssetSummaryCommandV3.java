@@ -104,7 +104,7 @@ public class LoadAssetSummaryCommandV3  extends FacilioCommand {
             if (asset.getCurrentLocation() == null) {
                 V3SiteContext assetSite = V3SpaceAPI.getSiteSpace(assetLocation.getSiteId());
                 V3SiteContext site = new V3SiteContext();
-                site.setId(assetSite.getSiteId());
+                site.setId(assetSite.getId());
                 site.setName(assetSite.getName());
                 assetLocation.setSite(site);
                 if (assetSite.getLocation() != null) {
@@ -127,7 +127,7 @@ public class LoadAssetSummaryCommandV3  extends FacilioCommand {
             if (asset.getCurrentLocation() == null && currentLocation == null) {
                 V3BuildingContext assetBuilding = V3SpaceAPI.getBuildingSpace(assetLocation.getBuildingId());
                 V3BuildingContext building = new V3BuildingContext();
-                building.setId(assetBuilding.getBuildingId());
+                building.setId(assetBuilding.getId());
                 building.setName(assetBuilding.getName());
                 assetLocation.setBuilding(building);
                 if (assetBuilding.getLocation() != null) {
