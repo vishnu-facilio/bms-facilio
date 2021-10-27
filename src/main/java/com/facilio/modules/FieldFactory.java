@@ -2716,6 +2716,13 @@ public class FieldFactory extends BaseFieldFactory {
         fwdEmail.setModule(module);
         fields.add(fwdEmail);
 
+        FacilioField legacyEmail = new FacilioField();
+        legacyEmail.setName("legacyEmail");
+        legacyEmail.setDataType(FieldType.STRING);
+        legacyEmail.setColumnName("LEGACY_EMAIL");
+        legacyEmail.setModule(module);
+        fields.add(legacyEmail);
+
         fields.add(getField("autoAssignGroupId", "AUTO_ASSIGN_GROUP_ID", module, FieldType.LOOKUP));
 
         fields.add(getField("isCustomMail", "IS_CUSTOM_MAIL", module, FieldType.BOOLEAN));

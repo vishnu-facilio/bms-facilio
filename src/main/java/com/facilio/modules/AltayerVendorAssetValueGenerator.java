@@ -46,35 +46,52 @@ public class AltayerVendorAssetValueGenerator extends ValueGenerator{
                 .select(modBean.getAllFields(module.getName()))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("vendor"), String.valueOf(vendorId), PickListOperators.IS))
                 ;
+
+        List<SupplementRecord> fetchCatLookupsList = new ArrayList<>();
+        MultiLookupMeta categories = new MultiLookupMeta((MultiLookupField) fieldMap.get("category"));
+        fetchCatLookupsList.add(categories);
+        builder.fetchSupplements(fetchCatLookupsList);
+
         List<Map<String, Object>> props = builder.getAsProps();
         if(CollectionUtils.isNotEmpty(props)) {
             for(Map<String, Object> prop : props) {
-                Map<String, Object> category = (Map<String, Object>) prop.get("category");
-                Long categoryId = (Long)category.get("id");
-                if(!categoryIds.contains(categoryId)) {
-                    categoryIds.add(categoryId);
+                if(!prop.containsKey("category")) {
+                    continue;
+                }
+                List<Map<String, Object>> mappedCategories = (List<Map<String, Object>>) prop.get("category");
+                if(CollectionUtils.isNotEmpty(mappedCategories)) {
+                    for(Map<String, Object> category : mappedCategories) {
+                        Long categoryId = (Long) category.get("id");
+                        if (!categoryIds.contains(categoryId)) {
+                            categoryIds.add(categoryId);
+                        }
+                    }
                 }
             }
             if(CollectionUtils.isNotEmpty(categoryIds)){
                 FacilioModule catModule = modBean.getModule("custom_workordercustomcategory");
                 Map<String, FacilioField> catFieldMap = FieldFactory.getAsMap(modBean.getAllFields(catModule.getName()));
                 SelectRecordsBuilder<ModuleBaseWithCustomFields> builderCategory = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
-                        .module(module)
+                        .module(catModule)
                         .beanClass(ModuleBaseWithCustomFields.class)
                         .select(modBean.getAllFields(catModule.getName()))
                         .andCondition(CriteriaAPI.getCondition(catFieldMap.get("workordercategory"), StringUtils.join(categoryIds, ","), PickListOperators.IS))
                         ;
 
                 List<SupplementRecord> fetchLookupsList = new ArrayList<>();
-
                 MultiLookupMeta assetCategories = new MultiLookupMeta((MultiLookupField) catFieldMap.get("assetcategorynew"));
                 fetchLookupsList.add(assetCategories);
                 builderCategory.fetchSupplements(fetchLookupsList);
 
-                List<Map<String, Object>> catProps = builderCategory.getAsProps();
+
+                List<ModuleBaseWithCustomFields> catProps = builderCategory.get();
                 if(CollectionUtils.isNotEmpty(catProps)) {
                     List<Long> assetCategoriesList = new ArrayList<>();
-                    for (Map<String, Object> prop : catProps) {
+                    for (ModuleBaseWithCustomFields mod : catProps) {
+                        Map<String, Object> prop = FieldUtil.getAsProperties(mod);
+                        if(!prop.containsKey("assetcategorynew")) {
+                            continue;
+                        }
                         List<Map<String, Object>> mappedAssetCategories = (List<Map<String, Object>>) prop.get("assetcategorynew");
                         if(CollectionUtils.isNotEmpty(mappedAssetCategories)) {
                             for(Map<String, Object> map : mappedAssetCategories) {

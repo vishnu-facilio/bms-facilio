@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
+import com.facilio.bmsconsoleV3.context.EmailFromAddress;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.services.email.EmailFactory;
@@ -26,8 +27,9 @@ public enum FacilioNotificationFunctions implements FacilioWorkflowFunctionInter
 			if(objects[0] == null) {
 				return null;
 			}
+			
 			Map<String,Object> sendMailMap =  (Map<String, Object>) objects[0];
-			sendMailMap.put("sender", EmailFactory.getEmailClient().getNoReplyFromEmail());
+			sendMailMap.put("sender", EmailFactory.getEmailClient().getSystemFromAddress(EmailFromAddress.SourceType.NOTIFICATION));
 			Map<String,String> attachements = (Map<String,String>)sendMailMap.get("attachments");
 			
 			FacilioContext context = new FacilioContext();

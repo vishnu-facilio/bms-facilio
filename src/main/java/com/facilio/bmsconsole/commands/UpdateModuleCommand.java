@@ -5,6 +5,8 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bundle.context.InstalledBundleContext;
+import com.facilio.bundle.utils.BundleConstants;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -17,6 +19,8 @@ public class UpdateModuleCommand extends FacilioCommand {
 		String displayName = (String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME);
 		String description = (String) context.get(FacilioConstants.ContextNames.MODULE_DESCRIPTION);
 		Boolean stateFlowEnabled = (Boolean) context.get(FacilioConstants.ContextNames.STATE_FLOW_ENABLED);
+		
+		InstalledBundleContext installedBundle = (InstalledBundleContext) context.get(BundleConstants.INSTALLED_BUNDLE);
 
 		if (StringUtils.isNotEmpty(moduleName) && StringUtils.isNotEmpty(displayName)) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -27,6 +31,11 @@ public class UpdateModuleCommand extends FacilioCommand {
 			m.setDisplayName(displayName);
 			m.setDescription(description);
 			m.setStateFlowEnabled(stateFlowEnabled);
+			
+			if(installedBundle != null) {
+				m.setSourceBundle(installedBundle.getId());
+			}
+			
 			modBean.updateModule(m);
 			
 			module.setDisplayName(displayName);

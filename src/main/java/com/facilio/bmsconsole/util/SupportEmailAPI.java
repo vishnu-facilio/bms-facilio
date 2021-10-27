@@ -34,11 +34,13 @@ public class SupportEmailAPI {
 	public static SupportEmailContext getSupportEmailFromFwdEmail(String email) throws Exception {
 		try {
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(SUPPORT_EMAIL_FIELDS);
-			FacilioField actualEmail = fieldMap.get("actualEmail"), fwdEmail = fieldMap.get("fwdEmail"), isCustomEmail = fieldMap.get("isCustomMail");
+			FacilioField actualEmail = fieldMap.get("actualEmail"), fwdEmail = fieldMap.get("fwdEmail"),
+					isCustomEmail = fieldMap.get("isCustomMail"), legacyEmail = fieldMap.get("legacyEmail");
 
 			Criteria emailCriteria = new Criteria();
 			emailCriteria.addOrCondition(CriteriaAPI.getCondition(actualEmail, email, StringOperators.IS));
 			emailCriteria.addOrCondition(CriteriaAPI.getCondition(fwdEmail, email, StringOperators.IS));
+			emailCriteria.addOrCondition(CriteriaAPI.getCondition(legacyEmail, email, StringOperators.IS));
 
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 					.table(SUPPORT_EMAIL_MODULE.getTableName())

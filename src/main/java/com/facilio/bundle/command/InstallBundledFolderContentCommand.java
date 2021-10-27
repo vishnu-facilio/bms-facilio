@@ -7,6 +7,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import com.facilio.bundle.context.BundleFileContext;
 import com.facilio.bundle.context.BundleFolderContext;
+import com.facilio.bundle.context.InstalledBundleContext;
 import com.facilio.bundle.enums.BundleComponentsEnum;
 import com.facilio.bundle.utils.BundleConstants;
 import com.facilio.chain.FacilioContext;
@@ -20,6 +21,8 @@ public class InstallBundledFolderContentCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		
 		List<Double> toBeInstalledVersionList = (List<Double>) context.get(BundleConstants.TO_BE_INSTALLED_VERSIONS_LIST);
+		
+		InstalledBundleContext installedBundle = (InstalledBundleContext) context.get(BundleConstants.INSTALLED_BUNDLE);
 		
 		BundleFolderContext rootFolder = (BundleFolderContext) context.get(BundleConstants.BUNDLE_FOLDER);
 		
@@ -54,6 +57,7 @@ public class InstallBundledFolderContentCommand extends FacilioCommand {
 					
 					FacilioContext newContext = new FacilioContext();
 					
+					newContext.put(BundleConstants.INSTALLED_BUNDLE, installedBundle);
 					newContext.put(BundleConstants.BUNDLED_XML_COMPONENT_FILE, changeSetXMLFile);
 					newContext.put(BundleConstants.BUNDLE_FOLDER, parentFolder);
 					
@@ -63,6 +67,8 @@ public class InstallBundledFolderContentCommand extends FacilioCommand {
 			}
 		}
 		
+		
+		//delete handling here
 		
 		return false;
 	}
