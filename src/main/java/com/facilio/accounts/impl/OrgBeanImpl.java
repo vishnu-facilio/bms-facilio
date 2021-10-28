@@ -114,6 +114,10 @@ public class OrgBeanImpl implements OrgBean {
 	@Override
 	public List<User> getAppUsers(long orgId, long appId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage) throws Exception {
 
+		return getAppUsers(orgId, appId, -1, checkAccessibleSites, fetchNonAppUsers, offset, perPage);
+	}
+
+	private List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage) throws Exception {
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
 			return null;
@@ -138,13 +142,15 @@ public class OrgBeanImpl implements OrgBean {
 				.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS))
 				;
 
+		if(ouId > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.ORG_USERID", "orgUserId", String.valueOf(ouId), NumberOperators.EQUALS));
+		}
 		if (fetchNonAppUsers) {
 			List<Long> appUserIds = getAppUserIds(appId, selectBuilder, fieldMap);
 			if (appUserIds != null) {
 				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ouid"), appUserIds, NumberOperators.NOT_EQUALS));
 			}
-		}
-		else {
+		} else {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("applicationId"), String.valueOf(appId), NumberOperators.EQUALS));
 		}
 
@@ -203,6 +209,7 @@ public class OrgBeanImpl implements OrgBean {
 			for(Role role : roles){
 				roleMap.put(role.getId(), role);
 			}
+
 			Map<Long, List<Long>> accessibleSpaceListMap = UserBeanImpl.getAllUsersAccessibleSpaceList();
 			Map<Long, List<Long>> accessibleGroupListMap = UserBeanImpl.getAllUsersAccessibleGroupList();
 
@@ -230,7 +237,16 @@ public class OrgBeanImpl implements OrgBean {
 		return null;
 	}
 
-    @Override
+	@Override
+	public User getAppUser(long orgId, long appId, long ouId) throws Exception {
+		List<User> users = getAppUsers(orgId, appId, ouId, false, false, -1, -1);
+		if(CollectionUtils.isNotEmpty(users)) {
+			return users.get(0);
+		}
+		return null;
+	}
+
+	@Override
 	public Long getAppUsersCount(long orgId, long appId, boolean fetchNonAppUsers) throws Exception {
 
 		User currentUser = AccountUtil.getCurrentAccount().getUser();

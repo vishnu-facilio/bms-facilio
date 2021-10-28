@@ -75,6 +75,16 @@ public class ApplicationAction extends FacilioAction {
 		this.user = user;
 	}
 
+	private long ouId;
+
+	public long getOuId() {
+		return ouId;
+	}
+
+	public void setOuId(long ouId) {
+		this.ouId = ouId;
+	}
+
 	private Boolean fetchNonAppUsers;
 	public Boolean getFetchNonAppUsers() {
 		return fetchNonAppUsers;
@@ -278,6 +288,19 @@ public class ApplicationAction extends FacilioAction {
 		else {
 			setResult(FacilioConstants.ContextNames.COUNT, context.get(FacilioConstants.ContextNames.COUNT));
 		}
+
+		return SUCCESS;
+
+	}
+
+	public String getApplicationUserDetails() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.getApplicationUserDetailsChain();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.APPLICATION_ID, appId);
+		context.put(FacilioConstants.ContextNames.ORG_USER_ID, ouId);
+
+		chain.execute();
+		setResult(FacilioConstants.ContextNames.USER, context.get(FacilioConstants.ContextNames.USER));
 
 		return SUCCESS;
 
