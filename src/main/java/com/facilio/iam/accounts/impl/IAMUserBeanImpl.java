@@ -125,9 +125,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			String creationTimeStr = userObj[3];
 			long creationTime = Long.parseLong(creationTimeStr);
 			Instant creationInstant = Instant.ofEpochMilli(creationTime);
-			Instant plus3Hours = creationInstant.plus(3, ChronoUnit.HOURS);
+			Instant plus7Days = creationInstant.plus(7, ChronoUnit.DAYS);
 			Instant currentTime = Instant.ofEpochMilli(System.currentTimeMillis());
-			if (currentTime.isAfter(plus3Hours)) {
+			if (currentTime.isAfter(plus7Days)) {
 				return null;
 			}
 			user = getFacilioUser(Long.parseLong(userObj[0]), Long.parseLong(userObj[1]), true);
