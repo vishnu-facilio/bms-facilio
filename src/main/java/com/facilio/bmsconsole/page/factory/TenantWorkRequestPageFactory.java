@@ -18,11 +18,6 @@ import com.facilio.modules.FacilioModule;
 
 public class TenantWorkRequestPageFactory extends PageFactory {
 
-	// from ATRE Sandbox && from Vendor Portal
-	private static boolean requestFromATRESBVendorPortal() {
-		return AccountUtil.getCurrentUser().getOrgId() == 418L &&
-				AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomainType.VENDOR_PORTAL;
-	}
 
 	private static boolean requestFromMainApp() {
 		return AccountUtil.getCurrentUser().getAppDomain() != null &&
@@ -42,7 +37,7 @@ public class TenantWorkRequestPageFactory extends PageFactory {
 		Section tab1Sec1 = page.new Section();
 		tab1.addSection(tab1Sec1);
 
-		if (requestFromMainApp() || requestFromATRESBVendorPortal()) {
+		if (requestFromMainApp()) {
 
 			Tab relatedRecordsTab = page.new Tab("related records");
 			page.addTab(relatedRecordsTab);
@@ -51,7 +46,7 @@ public class TenantWorkRequestPageFactory extends PageFactory {
 			relatedRecordsTab.addSection(relatedRecordsSection);
 
 			addRelatedListWidgets(relatedRecordsSection, module.getModuleId());
-			
+
 		} else {
 
 			addWorkrequestDetailsWidget(tab1Sec1);
