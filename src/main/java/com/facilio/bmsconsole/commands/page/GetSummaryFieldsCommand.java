@@ -76,7 +76,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 
 		ApplicationContext currentApp = AccountUtil.getCurrentApp();
 		List<FormField> formFields = null;
-		if (currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP)) {
+		if (currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP) || currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP)) {
 			long orgId = AccountUtil.getCurrentOrg().getOrgId();
 			if (orgId == 407 || orgId == 418 || moduleName.equals("peopleannouncement")) {
 				formFields = getFieldsForAtre(modBean);
@@ -391,6 +391,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 	}));
 
 	private static final List<String> customContracts = Collections.unmodifiableList(Arrays.asList(new String[] {
+			"number",
 			"date_1",
 			"multiline",
 			"multiline_1",

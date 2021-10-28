@@ -1397,7 +1397,6 @@ public class APIv3Config {
         return () -> new V3Config(V3ServiceContext.class, new ModuleCustomFieldCount30())
                 .create()
                   .beforeSave(new UpdateStatusCommandV3())
-                  .afterSave(new UpdateVendorV3())
                 .update()
                   .afterSave(new UpdateVendorV3())
                 .delete()
@@ -1406,6 +1405,8 @@ public class APIv3Config {
                   .afterFetch(new GetServiceVendorListCommandV3())
                 .build();
     }
+
+
     @Module("asset")
     public static Supplier<V3Config> getAsset() {
         return () -> new V3Config(V3AssetContext.class, new ModuleCustomFieldCount30())

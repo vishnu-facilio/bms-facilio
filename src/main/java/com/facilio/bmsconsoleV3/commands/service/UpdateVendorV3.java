@@ -30,24 +30,19 @@ public class UpdateVendorV3 extends FacilioCommand {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3ServiceContext> service = recordMap.get(moduleName);
-        if (CollectionUtils.isNotEmpty(service)) {
-            for (V3ServiceContext services : service) {
-                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                FacilioModule module = modBean.getModule(moduleName);
-                FacilioModule serviceVendorModule = modBean.getModule(FacilioConstants.ContextNames.SERVICE_VENDOR);
-                List<FacilioField> fields = modBean.getAllFields(moduleName);
-                DeleteRecordBuilder<ServiceVendorContext> deleteBuilder = new DeleteRecordBuilder<ServiceVendorContext>()
-                        .module(serviceVendorModule)
-                        .andCondition(CriteriaAPI.getCondition("SERVICE_ID", "service", String.valueOf(services.getId()), NumberOperators.EQUALS));
-                deleteBuilder.delete();
-                if (CollectionUtils.isNotEmpty(services.getServiceVendors())) {
-                    updateServiceVendors(services);
-                    addRecord(false, services.getServiceVendors(), serviceVendorModule, modBean.getAllFields(serviceVendorModule.getName()));
-                }
+        for (V3ServiceContext services : service) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule module = modBean.getModule(moduleName);
+            FacilioModule serviceVendorModule = modBean.getModule(FacilioConstants.ContextNames.SERVICE_VENDOR);
+            List<FacilioField> fields = modBean.getAllFields(moduleName);
+            if (CollectionUtils.isNotEmpty(services.getServiceVendors())) {
+                updateServiceVendors(services);
+                addRecord(false, services.getServiceVendors(), serviceVendorModule, modBean.getAllFields(serviceVendorModule.getName()));
             }
         }
         return false;
     }
+
 
     private void updateServiceVendors(V3ServiceContext service) {
         for (V3ServiceVendorContext v3ServiceVendorContext : service.getServiceVendors()) {
@@ -68,7 +63,7 @@ public class UpdateVendorV3 extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(supplements)) {
             insertRecordBuilder.insertSupplements(supplements);
         }
-        insertRecordBuilder.addRecord(list.get(0));
+        insertRecordBuilder.addRecords(list);
         insertRecordBuilder.save();
     }
 

@@ -15,10 +15,13 @@ import com.facilio.modules.fields.MultiLookupMeta;
 import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 
 public class AltayerVendorAssetValueGenerator extends ValueGenerator{
+
     @Override
     public Object generateValueForCondition(int appType) {
         try {
@@ -57,6 +60,7 @@ public class AltayerVendorAssetValueGenerator extends ValueGenerator{
 
         List<Map<String, Object>> props = builder.getAsProps();
         if(CollectionUtils.isNotEmpty(props)) {
+
             for(Map<String, Object> prop : props) {
                 if(!prop.containsKey("category")) {
                     continue;
@@ -89,6 +93,7 @@ public class AltayerVendorAssetValueGenerator extends ValueGenerator{
 
                 List<ModuleBaseWithCustomFields> catProps = builderCategory.get();
                 if(CollectionUtils.isNotEmpty(catProps)) {
+                   
                     List<Long> assetCategoriesList = new ArrayList<>();
                     for (ModuleBaseWithCustomFields mod : catProps) {
                         Map<String, Object> prop = FieldUtil.getAsProperties(mod);

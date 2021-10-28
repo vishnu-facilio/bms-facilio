@@ -61,7 +61,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 				addReadingWidget(tab1Sec4);
 				addCommonSubModuleWidget(tab1Sec4, module, site);
 				
-				Page.Tab tab2 = page.new Tab("Activity");
+				Page.Tab tab2 = page.new Tab("History");
 			    page.addTab(tab2);
 			    Page.Section tab2Sec1 = page.new Section();
 			    tab2.addSection(tab2Sec1);
@@ -95,8 +95,8 @@ public class SpaceManagementPageFactory extends PageFactory {
 		        tab1.addSection(tab1Sec4);
 				addReadingWidget(tab1Sec4);
 				addCommonSubModuleWidget(tab1Sec4, module, site);
-				
-				Page.Tab tab2 = page.new Tab("Activity");
+
+			Page.Tab tab2 = page.new Tab("History");
 			    page.addTab(tab2);
 			    Page.Section tab2Sec1 = page.new Section();
 			    tab2.addSection(tab2Sec1);
@@ -132,8 +132,8 @@ public class SpaceManagementPageFactory extends PageFactory {
 		addReadingWidget(tab1Sec3);
 		tab1.addSection(tab1Sec3);
 		addCommonSubModuleWidget(tab1Sec3,module, building);
-		
-		Page.Tab tab2 = page.new Tab("Activity");
+
+		Page.Tab tab2 = page.new Tab("History");
 	    page.addTab(tab2);
 	    Page.Section tab2Sec1 = page.new Section();
 	    tab2.addSection(tab2Sec1);
@@ -169,8 +169,8 @@ public class SpaceManagementPageFactory extends PageFactory {
 		addReadingWidget(tab1Sec3);
 		tab1.addSection(tab1Sec3);
 		addCommonSubModuleWidget(tab1Sec3, module, floor);
-		
-		Page.Tab tab3 = page.new Tab("Activity");
+
+		Page.Tab tab3 = page.new Tab("History");
 	    page.addTab(tab3);
 	    Page.Section tab3Sec1 = page.new Section();
 	    tab3.addSection(tab3Sec1);
