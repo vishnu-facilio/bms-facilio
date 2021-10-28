@@ -335,11 +335,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		fieldMap.put("custom_payment", customPayment);
 		fieldMap.put("custom_receipts", customReceipts);
 		fieldMap.put("peopleannouncement", peopleAnnouncement);
-<<<<<<< HEAD
-        fieldMap.put("custom_incidentmanagement_1", incidentManagement);
-=======
 		fieldMap.put("custom_vendormapping", vendorMapping);
->>>>>>> 2e337d73b1 (removing amc field in vendor protal)
 
 		return fieldMap;
 	}
