@@ -68,7 +68,7 @@ public class WorkorderPageFactory extends PageFactory {
         yOffset += widgetHeight;
 
         // workorderDetails widget
-        widgetHeight = 12;
+        widgetHeight = 10;
         PageWidget workorderDetails = new PageWidget(PageWidget.WidgetType.WORKORDER_DETAILS);
         workorderDetails.addToLayoutParams(18, yOffset, 6, widgetHeight);
         section.addWidget(workorderDetails);
