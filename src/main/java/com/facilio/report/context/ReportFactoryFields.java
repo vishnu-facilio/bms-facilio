@@ -60,9 +60,7 @@ public class ReportFactoryFields {
 				selectedFields.add(fields.get(fieldName));
 			}
 	}
-		if(facilioModule.isCustom() || moduleName.equalsIgnoreCase("quote") 
-				|| moduleName.equalsIgnoreCase(FacilioConstants.ContextNames.SERVICE_REQUEST)
-				|| moduleName.equalsIgnoreCase(FacilioConstants.ContextNames.WORK_ORDER)) {
+		if(	moduleName.equalsIgnoreCase(FacilioConstants.ContextNames.WORK_ORDER)) {
 			selectedFields.addAll(FieldFactory.getSystemPointFields(facilioModule));
 		}
 		
@@ -878,9 +876,6 @@ public class ReportFactoryFields {
 
 			}
 
-		}
-		if (facilioModule.isCustom() || moduleName.equalsIgnoreCase("quote")) {
-			selectedFields.addAll(FieldFactory.getSystemPointFields(facilioModule));
 		}
 
 		JSONObject dimensionFieldMap = new JSONObject();
