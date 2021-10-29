@@ -754,10 +754,12 @@ public class ReportUtil {
 		}
 		
 		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
-		deleteRecordBuilder.table(ModuleFactory.getWidgetModule().getTableName())
-		.andCondition(CriteriaAPI.getCondition(ModuleFactory.getWidgetModule().getTableName()+".ID", "id", StringUtils.join(removedWidgets, ","),StringOperators.IS));
-		
-		deleteRecordBuilder.delete();
+		if(removedWidgets.size() > 0) {
+			deleteRecordBuilder.table(ModuleFactory.getWidgetModule().getTableName())
+					.andCondition(CriteriaAPI.getCondition(ModuleFactory.getWidgetModule().getTableName() + ".ID", "id", StringUtils.join(removedWidgets, ","), StringOperators.IS));
+
+			deleteRecordBuilder.delete();
+		}
 		
 		
 		deleteRecordBuilder = new GenericDeleteRecordBuilder();
