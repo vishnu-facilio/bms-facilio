@@ -15,9 +15,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
@@ -1348,77 +1346,69 @@ public class FetchReportDataCommand extends FacilioCommand {
             }
             return props;
         }
-        for (Map<String, Object> record : props) {
-            List<FacilioField> baseFields = new ArrayList<>();
-//            List<FacilioField> submoduleFields = new ArrayList<>();
-            for (ReportPivotTableRowsContext row : rows) {
-                FacilioField field = null;
-                if (!baseModule.getName().equals(row.getModuleName())) {
-                    field = modBean.getField(row.getField().getId());
+//      List<FacilioField> submoduleFields = new ArrayList<>();
+        for (ReportPivotTableRowsContext row : rows) {
+            FacilioField field = null;
+            if (!baseModule.getName().equals(row.getModuleName())) {
+                field = modBean.getField(row.getField().getId());
 //                    submoduleFields.add(field);
-                    Map<String, Object> fieldsMap = buildSubmoduleQueryFields(record, field, rows);
-                    fieldsList.add(fieldsMap);
-                } else {
-                    field = modBean.getField(row.getField().getId());
-                    baseFields.add(field);
-                }
+                Map<String, Object> fieldsMap = buildSubmoduleQueryFields(props, field, rows);
+                fieldsList.add(fieldsMap);
             }
+        }
 
-            for (Map<String, Object> submoduleMap : fieldsList) {
-                List<FacilioField> fields = new ArrayList<>();
-                FacilioField subField = (FacilioField) submoduleMap.get("field");
-                ReportPivotTableRowsContext row = (ReportPivotTableRowsContext) submoduleMap.get("row");
-                fields.add(subField);
-                GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder().select(fields).table(subField.getTableName());
-                if (row.getCriteria() != null) {
-                    selectRecordBuilder.andCriteria(row.getCriteria());
-                }
-                List<Map<String, Object>> conditionList = (List<Map<String, Object>>) submoduleMap.get("condition");
-                for (Map<String, Object> condition : conditionList) {
-                    selectRecordBuilder.andCustomWhere((String) condition.get("condition"));
-                }
-                getSubmoduleJoinOn(subField, selectRecordBuilder);
-                if (row.getSortField() != null) {
-                    FacilioField orderByField = modBean.getField(row.getSortField().getId());
-                    selectRecordBuilder.orderBy(subField.getTableName() + "." + orderByField.getColumnName());
-                }
+        for (Map<String, Object> submoduleMap : fieldsList) {
+            List<FacilioField> fields = new ArrayList<>();
+            FacilioField subField = (FacilioField) submoduleMap.get("field");
+            FacilioField baseField = FieldFactory.getIdField(baseModule);
+            ReportPivotTableRowsContext row = (ReportPivotTableRowsContext) submoduleMap.get("row");
+            fields.add(subField);
+            fields.add(baseField);
+            GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder().select(fields).table(subField.getTableName());
+            if (row.getCriteria() != null) {
+                selectRecordBuilder.andCriteria(row.getCriteria());
+            }
+            List<Long> conditionList = (List<Long>) submoduleMap.get("condition");
+
+            selectRecordBuilder.andCondition(CriteriaAPI.getCondition(baseField,conditionList,NumberOperators.EQUALS));
+
+            getSubmoduleJoinOn(subField, selectRecordBuilder);
+            if (row.getSortField() != null) {
+                FacilioField orderByField = modBean.getField(row.getSortField().getId());
+                selectRecordBuilder.orderBy(subField.getTableName() + "." + orderByField.getColumnName());
+            }
 //                if(row.getSortOrder() > 0){
 //                    selectRecordBuilder.
 //                }
-                Map<String, Object> result = selectRecordBuilder.fetchFirst();
+
+            List<Map<String, Object>> result = selectRecordBuilder.get();
+            for(Map<String,Object> record: props) {
                 if (result != null) {
-                    record.put(subField.getName(), result.get(subField.getName()));
+                    record.put(subField.getName(), result.get(0));
                 }
-                String query = selectRecordBuilder.constructSelectStatement();
-                System.out.println("query -> " + query);
             }
+
+            System.out.println("query -> " + selectRecordBuilder);
         }
+
         isSubmoduleDataFetched = true;
         subModuleQueryResult = props;
         return props;
     }
 
-    private Map<String, Object> buildSubmoduleQueryFields(Map<String, Object> conditions, FacilioField field, List<ReportPivotTableRowsContext> rows) throws Exception {
+    private Map<String, Object> buildSubmoduleQueryFields(List<Map<String, Object>> conditions, FacilioField field, List<ReportPivotTableRowsContext> rows) throws Exception {
         Map<String, Object> result = new HashMap<>();
-        List<Map<String, Object>> conditionList = new ArrayList<>();
+        List<Long> conditionList = new ArrayList<>();
         result.put("field", field);
         for (ReportPivotTableRowsContext row : rows) {
-            if (row.getModuleName().equals(baseModule.getName())) {
-                Map<String, Object> conditionMap = new HashMap<>();
-                FacilioField baseModuleField = modBean.getField(row.getField().getId());
-                String condition = "";
-                switch (baseModuleField.getDataTypeEnum()) {
-                    case STRING:
-                        condition = baseModuleField.getCompleteColumnName() + " =  '" + conditions.get(baseModuleField.getName()) + "'";
-                        break;
-                    default:
-                        condition = baseModuleField.getCompleteColumnName() + " =  " + conditions.get(baseModuleField.getName());
-                }
-                conditionMap.put("condition", condition);
-                conditionList.add(conditionMap);
-            } else {
+            if (!row.getModuleName().equals(baseModule.getName())) {
                 result.put("row", row);
             }
+        }
+        for(Map<String,Object> record: conditions)
+        {
+            FacilioField baseModuleField = FieldFactory.getIdField(baseModule);
+            conditionList.add((Long) record.get(baseModuleField.getName()));
         }
         result.put("condition", conditionList);
         return result;
@@ -1430,14 +1420,13 @@ public class FetchReportDataCommand extends FacilioCommand {
         FacilioField dataField = null;
         for (FacilioField field : fields) {
             if (field.getName().equals(baseModule.getName())) {
-                dataField = field;
+                dataField = field.clone();
             }
         }
         if (dataField == null) {
-            dataField = FieldFactory.getIdField(submoduleField.getModule());
+            dataField = FieldFactory.getIdField(submoduleField.getModule()).clone();
         }
 
-        FacilioModule module = dataField.getModule();
         FacilioField idField = FieldFactory.getIdField(baseModule);
         selectRecordBuilder.rightJoin(baseModule.getTableName()).on(dataField.getTableName() + "." + dataField.getColumnName() + " = " + idField.getCompleteColumnName());
     }
