@@ -86,13 +86,22 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 
 						StringJoiner key = new StringJoiner("|");
 						Map<String, Object> data = null;
+						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 						if (dataPoint.getGroupByFields() != null && !dataPoint.getGroupByFields().isEmpty()) {
 							data = new HashMap<>();
 							Map<String, Object> rows = new HashMap<>();
 							data.put("rows", rows);
 							for (ReportGroupByField groupBy : dataPoint.getGroupByFields()) {
-								FacilioField field = groupBy.getField();
-								Object groupByVal = prop.get(field.getName());
+								Object groupByVal;
+								FacilioField field;
+								if(groupBy.getLookupFieldId() > 0)
+								{
+									field = modBean.getField(groupBy.getLookupFieldId());
+								}
+								else {
+									field = groupBy.getField();
+								}
+								groupByVal = prop.get(field.getName());
 								groupByVal = formatVal(groupBy, null, groupByVal, xVal, dataPoint.isHandleEnum(), dpLookUpMap,lookupMap);
 								rows.put(groupBy.getAlias(), groupByVal);
 								key.add(groupBy.getAlias()+"_"+groupByVal.toString());
