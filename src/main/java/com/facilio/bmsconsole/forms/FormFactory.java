@@ -366,6 +366,29 @@ public class FormFactory {
 					sections.add(attendeeSection);
 				}
 			}
+			else if (moduleName.equals(ContextNames.TRANSFER_REQUEST)) {
+				List<FormSection> sections = new ArrayList<>();
+
+				List<FormField> defaultFields = new ArrayList<>();
+				List<FormField> lineItemFields = new ArrayList<>();
+
+				form.setSections(sections);
+				FormSection defaultSection = new FormSection("Transfer Request", 1, defaultFields, true);
+				FormSection lineItemSection = new FormSection("Line Items", 4, lineItemFields, true);
+
+
+				form.getFields().forEach(field -> {
+					if (field.getDisplayTypeEnum() == FieldDisplayType.INVREQUEST_LINE_ITEMS) {
+						lineItemFields.add(field);
+					}
+					else {
+						defaultFields.add(field);
+					}
+				});
+
+				sections.add(defaultSection);
+				sections.add(lineItemSection);
+			}
 			else if (form.getSections() == null && form.getFields() != null) {
 				FormSection section = new FormSection("Default", 1, form.getFields(), false);
 				form.setSections(Collections.singletonList(section));
@@ -447,6 +470,8 @@ public class FormFactory {
 		
 		List<FacilioForm> warrantyContractFormsList = Arrays.asList(getWarrantyContractForm());
 
+		List<FacilioForm> trForm = Arrays.asList(getTransferRequestForm());
+
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
 				.put(FacilioConstants.ContextNames.ASSET, getFormMap(assetForms))
@@ -514,6 +539,7 @@ public class FormFactory {
 				.put(FacilioConstants.Inspection.INSPECTION_RESPONSE, getFormMap(inspectionFormList))
 				.put(FacilioConstants.Induction.INDUCTION_RESPONSE, getFormMap(inductionFormList))
 				.put(ContextNames.WARRANTY_CONTRACTS, getFormMap(warrantyContractFormsList))
+				.put(ContextNames.TRANSFER_REQUEST, getFormMap(trForm))
 				.build();
 	}
 	
@@ -1978,7 +2004,17 @@ public class FormFactory {
 		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
-	
+
+	public static FacilioForm getTransferRequestForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("TRANSFER REQUEST");
+		form.setName("default_inventoryrequest_web");
+		form.setModule(ModuleFactory.getModule(ContextNames.TRANSFER_REQUEST));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getTransferRequestFormFields());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
 	public static FacilioForm getPurchaseContractForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("PURCHASE CONTRACT");
@@ -2070,7 +2106,19 @@ public class FormFactory {
 		//fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 2, 1));
 		return fields;
 	}
-	
+	private static List<FormField> getTransferRequestFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("requestSubject", FieldDisplayType.TEXTBOX, "Request Subject", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("transferFromStore", FieldDisplayType.LOOKUP_SIMPLE, "Transfer from Store", Required.REQUIRED, "storeRoom", 3, 2));
+		fields.add(new FormField("transferToStore", FieldDisplayType.LOOKUP_SIMPLE, "Transfer to Store", Required.REQUIRED, "storeRoom", 3, 3));
+		fields.add(new FormField("transferredBy", FieldDisplayType.LOOKUP_SIMPLE, "Transferred By", Required.OPTIONAL, "people", 4, 1));
+		fields.add(new FormField("transferInitiatedOn", FieldDisplayType.DATE, "Transfer Date", Required.OPTIONAL, 5, 2));
+		fields.add(new FormField("expectedCompletionDate", FieldDisplayType.DATE, "Expected Arrival Date", Required.OPTIONAL, 5, 3));
+		fields.add(new FormField("transferrequestlineitems", FieldDisplayType.INVREQUEST_LINE_ITEMS, "LINE ITEMS", Required.REQUIRED, 6, 1));
+
+		return fields;
+	}
 	private static List<FormField> getPurchaseContractFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));

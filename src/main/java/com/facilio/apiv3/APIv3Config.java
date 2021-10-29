@@ -521,7 +521,10 @@ public class APIv3Config {
                 .update()
                 .afterSave(TransactionChainFactoryV3.getUpdateTransferRequestIsStagedAfterSaveChain())
                 .list()
+                .beforeFetch(new LoadTrListLookupCommandV3())
                 .summary()
+                .beforeFetch(new LoadTrSummaryLookupCommandV3())
+                .afterFetch(new SetLineItemsCommandV3())
                 .delete()
                 .build();
     }

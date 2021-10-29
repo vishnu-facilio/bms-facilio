@@ -377,7 +377,8 @@ public class PageWidget {
 		ITEMS_AND_LABOR("itemsAndLabor"),
 		QUOTATION("quotation"),
 		TENANT("tenant"),
-		TOTAL_COST("totalCost");
+		TOTAL_COST("totalCost"),
+		TRANSFER_REQUEST_LINE_ITEMS("transferrequestlineitems");
 
 		private String name;
 
