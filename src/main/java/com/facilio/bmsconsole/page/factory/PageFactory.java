@@ -184,13 +184,11 @@ public class PageFactory {
 				return InventoryRequestPageFactory.getInventoryRequestPage((InventoryRequestContext) record, module);
 			case ContextNames.TERMS_AND_CONDITIONS:
 				return TermsAndConditionsPageFactory.getTermsAndConditionsPage((V3TermsAndConditionContext) record, module);
-<<<<<<< Updated upstream
 			case ContextNames.SERVICE:
 				return ServicePageFactory.getServicePage((V3ServiceContext) record, module);
-=======
 			case ContextNames.TRANSFER_REQUEST:
 				return TransferRequestPageFactory.getTransferRequestPage((V3TransferRequestContext) record, module);
->>>>>>> Stashed changes
+
 		}
 		if (module.getExtendModule() == null) {	// temp
 			// etisalat changes will be changed to standard method
