@@ -94,7 +94,7 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 							for (ReportGroupByField groupBy : dataPoint.getGroupByFields()) {
 								Object groupByVal;
 								FacilioField field;
-								if(groupBy.getLookupFieldId() > 0)
+								if(groupBy.getLookupFieldId() > 0 && groupBy.getField().getModule().isCustom() && report.getTypeEnum() == ReportContext.ReportType.PIVOT_REPORT)
 								{
 									field = modBean.getField(groupBy.getLookupFieldId());
 								}
