@@ -145,7 +145,7 @@ public class VendorPageFactory extends PageFactory{
 			tab3Sec1.addWidget(transaction);
 			
 			
-			Page.Tab tab6 = page.new Tab("Activity");
+			Page.Tab tab6 = page.new Tab("History");;
 		    page.addTab(tab6);
 		    Page.Section tab6Sec1 = page.new Section();
 		    tab6.addSection(tab6Sec1);
@@ -238,7 +238,7 @@ public class VendorPageFactory extends PageFactory{
 				addSpecialRelatedListWidgetForDemoOrg(tab2Sec7);
 			}*/
 			
-			Page.Tab tab3 = page.new Tab("Activity");
+			Page.Tab tab3 = page.new Tab("History");;
 		    page.addTab(tab3);
 		    Page.Section tab3Sec1 = page.new Section();
 		    tab3.addSection(tab3Sec1);

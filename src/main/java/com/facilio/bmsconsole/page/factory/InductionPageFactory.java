@@ -208,7 +208,7 @@ public class InductionPageFactory extends PageFactory {
     		}
         }
         
-        Page.Tab activityTab = page.new Tab("Activity");
+        Page.Tab activityTab = page.new Tab("History");;
         Page.Section activitySec = page.new Section();
         
         PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);

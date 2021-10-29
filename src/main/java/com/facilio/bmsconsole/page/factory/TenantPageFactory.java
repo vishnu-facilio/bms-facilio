@@ -54,7 +54,7 @@ public class TenantPageFactory extends PageFactory{
 		}
 		addRelatedList(tab2Sec1, record.getModuleId());
 		
-		Page.Tab tab3 = page.new Tab("Activity");
+		Page.Tab tab3 = page.new Tab("History");;
 	    page.addTab(tab3);
 	    Page.Section tab3Sec1 = page.new Section();
 		tab3.addSection(tab3Sec1);

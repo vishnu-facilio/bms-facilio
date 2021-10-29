@@ -61,6 +61,8 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /log4j-uk-scheduler.properties
     destination: /home/facilio/deployment-files/
+  - source: /awsprops-uk-kafka.properties
+    destination: /home/facilio/deployment-files/    
   - source: /log4j-sp-user.properties
     destination: /home/facilio/deployment-files/
   - source: /log4j-sp-scheduler.properties

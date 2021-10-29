@@ -72,7 +72,7 @@ public class WorkpermitPageFactory extends PageFactory {
 		tab2Sec1.addWidget(attachmentWidget);
 
 
-		Page.Tab tab4 = page.new Tab("Activity");
+		Page.Tab tab4 = page.new Tab("History");;
 		page.addTab(tab4);
 		Page.Section tab4Sec1 = page.new Section();
 		tab4.addSection(tab4Sec1);

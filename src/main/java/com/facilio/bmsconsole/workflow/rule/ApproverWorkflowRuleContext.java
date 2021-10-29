@@ -7,13 +7,16 @@ import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.delegate.context.DelegationType;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.struts2.json.annotations.JSON;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +48,7 @@ public class ApproverWorkflowRuleContext extends WorkflowRuleContext {
             return true;
         }
         else {
-            return approvers.isAllowed(object);
+            return approvers.isAllowed(object, getDelegationType());
         }
     }
 
@@ -99,20 +102,26 @@ public class ApproverWorkflowRuleContext extends WorkflowRuleContext {
         this.confirmationDialogs = confirmationDialogs;
     }
 
+    @JsonIgnore
+    @JSON(serialize = false)
+    protected DelegationType getDelegationType() {
+        return null;
+    }
+
     @Override
     public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
         boolean result = true;
         ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
 
         if (CollectionUtils.isNotEmpty(approvers)) {
-            List<SingleSharingContext> matching = approvers.getMatching(record);
+            List<SingleSharingContext> matching = approvers.getMatching(record, getDelegationType());
 
             List<SingleSharingContext> checkAnyPendingApprovers = checkAnyPendingApprovers(moduleRecord, matching);
             if (getApprovalOrderEnum() != null && getApprovalOrderEnum() == ApprovalRuleContext.ApprovalOrder.SEQUENTIAL && CollectionUtils.isNotEmpty(checkAnyPendingApprovers)) {
                 // if sequential, check only next user
                 checkAnyPendingApprovers = Collections.singletonList(checkAnyPendingApprovers.get(0));
             }
-            List<SingleSharingContext> matchingAgain = new SharingContext<>(checkAnyPendingApprovers).getMatching(record);
+            List<SingleSharingContext> matchingAgain = new SharingContext<>(checkAnyPendingApprovers).getMatching(record, getDelegationType());
             result = CollectionUtils.isNotEmpty(matchingAgain);
         }
         return result;
@@ -155,7 +164,7 @@ public class ApproverWorkflowRuleContext extends WorkflowRuleContext {
         boolean shouldExecuteTrueActions = true;
         ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
         if (CollectionUtils.isNotEmpty(approvers)) {
-            List<SingleSharingContext> matching = approvers.getMatching(record);
+            List<SingleSharingContext> matching = approvers.getMatching(record, getDelegationType());
             ApprovalRuleContext.addApprovalStep(moduleRecord.getId(), null, matching, this);
 
             List<SingleSharingContext> checkAnyPendingApprovers = checkAnyPendingApprovers(moduleRecord, matching);

@@ -230,7 +230,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 		tab1Sec5.addWidget(unplannedWidget);
 		tab2.addSection(tab1Sec5);
 
-		Page.Tab tab3 = page.new Tab("Activity");
+		Page.Tab tab3 = page.new Tab("History");;
 	    page.addTab(tab3);
 	    Page.Section tab3Sec1 = page.new Section();
 	    tab3.addSection(tab3Sec1);

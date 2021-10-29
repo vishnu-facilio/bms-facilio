@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.delegate.context.DelegationType;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -60,6 +61,11 @@ public class ApprovalStateTransitionRuleContext extends AbstractStateTransitionR
             return "__approval_" + getStateFlowId() + "_approve_form";
         }
         return null;
+    }
+
+    @Override
+    protected DelegationType getDelegationType() {
+        return DelegationType.APPROVAL;
     }
 
     @Override

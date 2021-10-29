@@ -69,7 +69,7 @@ public class DesksPageFactory extends PageFactory {
         
         addCombinedRelatedListWidget(tab2Sec1, FacilioConstants.ContextNames.SERVICE_REQUEST, resourceModule.getModuleId(), "Service Requests");
 
-		Page.Tab tab3 = page.new Tab("Activity");
+		Page.Tab tab3 = page.new Tab("History");;
 		page.addTab(tab3);
 		Page.Section tab4Sec1 = page.new Section();
 		tab3.addSection(tab4Sec1);

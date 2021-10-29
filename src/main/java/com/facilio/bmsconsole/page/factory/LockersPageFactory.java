@@ -39,7 +39,7 @@ public class LockersPageFactory extends PageFactory {
 			page.addTab(tab2);
 		}
         
-        Page.Tab tab3 = page.new Tab("Activity");
+        Page.Tab tab3 = page.new Tab("History");;
 		page.addTab(tab3);
 		Page.Section tab4Sec1 = page.new Section();
 		tab3.addSection(tab4Sec1);
