@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <request path="/api/setup/test">
+        <requestbody type="object">
+            <property name="appId" type="number"/>
+            <property name="emailVerificationNeeded" type="boolean" />
+            <property name="user" type="object">
+                <property name="email" type="string"/>
+                <property name="language" type="string"/>
+                <property name="name" type="string" />
+                <property name="roleId" type="number" />
+            </property>
+        </requestbody>
+    </request>
+</config>
