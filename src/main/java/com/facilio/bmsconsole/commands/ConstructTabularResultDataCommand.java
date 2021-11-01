@@ -105,9 +105,22 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 								FacilioField field;
 								if(groupBy.getLookupFieldId() > 0 && report.getTypeEnum() == ReportContext.ReportType.PIVOT_REPORT)
 								{
+									FacilioModule baseModule;
+									if (report.getModuleId() > 0) {
+										baseModule = modBean.getModule(report.getModuleId());
+									} else {
+										baseModule = dataPoint.getxAxis().getModule();
+									}
+									String fieldName;
+
 									field = modBean.getField(groupBy.getLookupFieldId()).clone();
 									FacilioField facilioField = groupBy.getField();
-									String fieldName = field.getName() + "_" + facilioField.getName();
+
+									if(baseModule.isParentOrChildModule(groupBy.getField().getModule())) {
+										fieldName = groupBy.getModule().getName() + "_" + facilioField.getName();
+									} else {
+										fieldName = field.getName() + "_" + facilioField.getName();
+									}
 									field.setName(fieldName);
 								}
 								else {
