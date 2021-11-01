@@ -688,7 +688,12 @@ public class V3VisitorManagementAPI {
                 ;
 
         if(StringUtils.isNotEmpty(phoneNumber)) {
-            builder.andCondition(CriteriaAPI.getCondition("PHONE", "phone", String.valueOf(phoneNumber), StringOperators.IS));
+        	phoneNumber=phoneNumber.trim();
+        	String phoneno="+";
+        	phoneno=phoneno.concat(phoneNumber);
+            builder.orCondition(CriteriaAPI.getCondition("PHONE", "phone", String.valueOf(phoneNumber), StringOperators.IS))
+            .orCondition(CriteriaAPI.getCondition("PHONE", "phone", String.valueOf(phoneno), StringOperators.IS));
+            
         }
         if(id != null && id > 0) {
             builder.andCondition(CriteriaAPI.getIdCondition(id, module));
