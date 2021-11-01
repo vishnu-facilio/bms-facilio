@@ -441,8 +441,24 @@ public class QuotationAPI {
     }
 
     public static String formatDecimal(Double val) {
-        DecimalFormat df =new DecimalFormat(".00");
+        DecimalFormat df = new DecimalFormat(".00");
         return df.format(val);
+    }
+
+
+    public static long getQuoteCount(long workorderID) throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.QUOTE);
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.QUOTE);
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+        SelectRecordsBuilder<QuotationContext> builder = new SelectRecordsBuilder<QuotationContext>()
+                .module(module)
+                .beanClass(QuotationContext.class)
+                .select(fields)
+                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("workorder"), String.valueOf(workorderID), PickListOperators.IS));
+        List<QuotationContext> records = builder.get();
+        return records.size();
     }
 
     public static void validateForWorkorder(QuotationContext quotation) throws Exception {
