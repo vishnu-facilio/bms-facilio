@@ -1398,7 +1398,7 @@ public class APIv3Config {
                 .create()
                   .beforeSave(new UpdateStatusCommandV3())
                 .update()
-                  .afterSave(new UpdateVendorV3())
+                  .afterSave(new UpdateVendorV3(), new GetServiceVendorListCommandV3())
                 .delete()
                 .list()
                 .summary()
