@@ -166,6 +166,7 @@ public class AdminAction extends ActionSupport {
 				//temp handling for enabling people contacts license
 				if (	AccountUtil.FeatureLicense.INVENTORY.isEnabled(sumOfLicenses)
 						||	AccountUtil.FeatureLicense.CLIENT.isEnabled(sumOfLicenses)
+						||	AccountUtil.FeatureLicense.VENDOR.isEnabled(sumOfLicenses)
 						||  AccountUtil.FeatureLicense.TENANTS.isEnabled(sumOfLicenses)
 						||	AccountUtil.FeatureLicense.PEOPLE.isEnabled(sumOfLicenses)
 				) {
