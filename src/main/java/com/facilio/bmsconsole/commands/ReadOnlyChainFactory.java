@@ -2654,6 +2654,12 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getApplicationUserDetailsChain () {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetApplicationUserDetailsCommand());
+		return chain;
+	}
+
 	public static FacilioChain getRDMforRestAPI() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetRDMForRestAPI());

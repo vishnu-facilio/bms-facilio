@@ -42,12 +42,6 @@ public class GetFieldsByAccessType extends FacilioCommand {
             if (FieldUtil.isSiteIdFieldPresent(module, true)) {
                 selectedFields.add(FieldFactory.getSiteIdField(module));
             }
-            // Temp handling till all system fields are migrated
-            if (FieldUtil.isSystemFieldsPresent(module)) {
-	    			if (!selectedFields.contains(FieldFactory.getSystemField("sysCreatedTime",module.getParentModule()))) {
-	    				selectedFields.addAll(FieldFactory.getSystemPointFields(module));
-	    			}
-            }
 //        }
 
         context.put(FacilioConstants.ContextNames.FIELDS, selectedFields);

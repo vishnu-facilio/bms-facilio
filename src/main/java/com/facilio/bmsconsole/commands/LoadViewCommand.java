@@ -370,20 +370,6 @@ public class LoadViewCommand extends FacilioCommand {
 				fieldNames.put(field.getName(), displayName);
 			}
 		}
-		if (module.isCustom()) {
-			List<FacilioField> systemFields = FieldFactory.getSystemPointFields(module);
-			for(FacilioField systemField : systemFields) {
-				fieldNames.put(systemField.getName(), systemField.getDisplayName());
-				
-			}
-		}
-		else if(Arrays.asList(ContextNames.SAFETY_PLAN, ContextNames.HAZARD, ContextNames.PRECAUTION, ContextNames.VENDORS, ContextNames.INSURANCE, ContextNames.SERVICE_REQUEST, ContextNames.ASSET).contains(module.getName())) {
-			List<FacilioField> systemFields = FieldFactory.getSystemPointFields(module);
-			for(FacilioField systemField : systemFields) {
-				fieldNames.put(systemField.getName(), systemField.getDisplayName());
-
-			}
-		}
 		
 //		Temporary handling for Deyari
 		if (moduleName.equals("workorder") || moduleName.equals("safetyPlan") || moduleName.equals("asset") || moduleName.equals("tenant")) {

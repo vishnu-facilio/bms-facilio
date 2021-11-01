@@ -203,19 +203,8 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 			}
 		}
 
-		boolean isSystemFieldsPresent = FieldUtil.isSystemFieldsPresent(module);
-		if (!isSystemFieldsPresent) { // For system fields in db
-			additionalFields.addAll(FieldFactory.getSystemFieldNames());
-		}
-
+		additionalFields.addAll(FieldFactory.getSystemFieldNames());
 		addAdditionalFields(additionalFields, formFields, existingFieldNames, count);
-
-		if (isSystemFieldsPresent) {
-			for(String name: FieldFactory.getSystemFieldNames()) {
-				FacilioField systemField = FieldFactory.getSystemField(name, module);
-				formFields.add(FormsAPI.getFormFieldFromFacilioField(systemField, ++count));
-			}
-		}
 		return count;
 	}
 

@@ -6010,6 +6010,9 @@
 		<action name="list" class="com.facilio.bmsconsole.actions.ApplicationAction"
 			method="getApplicationUsers">
 		</action>
+		<action name="summary" class="com.facilio.bmsconsole.actions.ApplicationAction"
+				method="getApplicationUserDetails">
+		</action>
 	</package>
 	
 	<package name="fetchApplicationDetails" namespace="/api/v2/application/fetchDetails"

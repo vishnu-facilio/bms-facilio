@@ -68,7 +68,7 @@ public class WorkorderPageFactory extends PageFactory {
         yOffset += widgetHeight;
 
         // workorderDetails widget
-        widgetHeight = 12;
+        widgetHeight = 10;
         PageWidget workorderDetails = new PageWidget(PageWidget.WidgetType.WORKORDER_DETAILS);
         workorderDetails.addToLayoutParams(18, yOffset, 6, widgetHeight);
         section.addWidget(workorderDetails);
@@ -156,7 +156,7 @@ public class WorkorderPageFactory extends PageFactory {
 
         // related records widget
         PageWidget relatedRecords = new PageWidget(PageWidget.WidgetType.RELATED_RECORDS);
-        relatedRecords.addToLayoutParams(relatedRecordsSection, 24, 12);
+        relatedRecords.addToLayoutParams(relatedRecordsSection, 24, 8);
         relatedRecordsSection.addWidget(relatedRecords);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

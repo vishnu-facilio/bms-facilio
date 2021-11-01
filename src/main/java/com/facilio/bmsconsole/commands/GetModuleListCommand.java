@@ -49,7 +49,8 @@ public class GetModuleListCommand extends FacilioCommand {
 			FacilityBooking.FACILITY,
 			FacilityBooking.FACILITY_BOOKING,
 			ContextNames.TOOL,
-			ContextNames.ITEM
+			ContextNames.ITEM,
+			ContextNames.ASSET_CATEGORY
 			
 	});
 
