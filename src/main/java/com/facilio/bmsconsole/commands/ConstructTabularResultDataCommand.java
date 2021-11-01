@@ -68,10 +68,20 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 	}
 	
 	private void constructData(ReportContext report, ReportDataPointContext dataPoint, List<Map<String, Object>> props, ReportBaseLineContext baseLine, Collection<Map<String, Object>> transformedData, Map<String, Object> directHelperData, Map<String, Object> lookupMap) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		HashMap<ReportFieldContext, List<Long>> dpLookUpMap = new HashMap();
 		if (props != null && !props.isEmpty()) {
 			for (Map<String, Object> prop : props) {
-				Object xVal = prop.get(dataPoint.getxAxis().getField().getName());
+				Object xVal;
+				if(dataPoint.getyAxis().getLookupFieldId() > 0) {
+					FacilioField facilioField = dataPoint.getxAxis().getField();
+					LookupField lookupField = (LookupField) modBean.getField(dataPoint.getxAxis().getLookupFieldId());
+					String fieldName = lookupField.getName() + "_" + facilioField.getName();
+					xVal = prop.get(fieldName);
+				} else {
+					xVal = prop.get(dataPoint.getxAxis().getField().getName());
+				}
+
 				if (xVal != null) {
 					xVal = getBaseLineAdjustedXVal(xVal, dataPoint.getxAxis(), baseLine);
 					Object formattedxVal = formatVal(dataPoint.getxAxis(), report.getxAggrEnum(), xVal, null, false, dpLookUpMap,lookupMap);
@@ -86,7 +96,6 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 
 						StringJoiner key = new StringJoiner("|");
 						Map<String, Object> data = null;
-						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 						if (dataPoint.getGroupByFields() != null && !dataPoint.getGroupByFields().isEmpty()) {
 							data = new HashMap<>();
 							Map<String, Object> rows = new HashMap<>();
@@ -94,9 +103,12 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 							for (ReportGroupByField groupBy : dataPoint.getGroupByFields()) {
 								Object groupByVal;
 								FacilioField field;
-								if(groupBy.getLookupFieldId() > 0 && groupBy.getField().getModule().isCustom() && report.getTypeEnum() == ReportContext.ReportType.PIVOT_REPORT)
+								if(groupBy.getLookupFieldId() > 0 && report.getTypeEnum() == ReportContext.ReportType.PIVOT_REPORT)
 								{
-									field = modBean.getField(groupBy.getLookupFieldId());
+									field = modBean.getField(groupBy.getLookupFieldId()).clone();
+									FacilioField facilioField = groupBy.getField();
+									String fieldName = field.getName() + "_" + facilioField.getName();
+									field.setName(fieldName);
 								}
 								else {
 									field = groupBy.getField();
