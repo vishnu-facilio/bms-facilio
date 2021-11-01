@@ -6,8 +6,11 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.delegate.context.DelegationType;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.chain.Context;
+import org.apache.struts2.json.annotations.JSON;
 
 import java.util.Map;
 
@@ -39,5 +42,23 @@ public class StateflowTransitionContext extends AbstractStateTransitionRuleConte
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(getModuleId());
 		StateFlowRulesAPI.updateState(moduleRecord, module, StateFlowRulesAPI.getStateContext(getToStateId()), false, context);
+	}
+
+	@JsonIgnore
+	@JSON(serialize = false)
+	public String getAuditLogDescription(boolean add) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(String.format("State Transition '%s' has been %s with", getName(), (add ? "added" : "edited")));
+		return builder.toString();
+	}
+
+	@JsonIgnore
+	@JSON(serialize = false)
+	public String getAuditLogDescriptionJSON() {
+		try {
+			return FieldUtil.getAsJSON(this).toJSONString();
+		} catch (Exception e) {
+			return null;
+		}
 	}
 }
