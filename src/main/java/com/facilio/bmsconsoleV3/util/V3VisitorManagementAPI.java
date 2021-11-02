@@ -688,11 +688,21 @@ public class V3VisitorManagementAPI {
                 ;
 
         if(StringUtils.isNotEmpty(phoneNumber)) {
-        	phoneNumber=phoneNumber.trim();
-        	String phoneno="+";
-        	phoneno=phoneno.concat(phoneNumber);
-            builder.orCondition(CriteriaAPI.getCondition("PHONE", "phone", String.valueOf(phoneNumber), StringOperators.IS))
-            .orCondition(CriteriaAPI.getCondition("PHONE", "phone", String.valueOf(phoneno), StringOperators.IS));
+        	String phoneNoWithPlus = null;
+        	String phoneNoWithoutPlus = null;
+        	if (phoneNumber.startsWith("+")) {
+        	   phoneNoWithPlus = phoneNumber;
+        	   phoneNoWithoutPlus = phoneNumber.replace("+", "");
+        	}
+        	else {
+        		phoneNoWithoutPlus = phoneNumber.trim();
+        	    phoneNoWithPlus = "+" + phoneNoWithoutPlus;
+        	}
+
+        	Criteria phoneCriteria = new Criteria();
+        	phoneCriteria.addOrCondition(CriteriaAPI.getCondition("PHONE", "phone", String.valueOf(phoneNoWithoutPlus), StringOperators.IS));
+        	phoneCriteria.addOrCondition(CriteriaAPI.getCondition("PHONE", "phone", String.valueOf(phoneNoWithPlus), StringOperators.IS));
+        	builder.andCriteria(phoneCriteria);
             
         }
         if(id != null && id > 0) {
