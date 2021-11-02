@@ -10,6 +10,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import org.apache.commons.chain.Context;
 
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
@@ -49,6 +50,8 @@ public class GetContractListCommand extends FacilioCommand {
 		filters.put("status", status);
 
 		context.put(FacilioConstants.ContextNames.FILTERS, filters);
+		context.put(ContextNames.INCLUDE_PARENT_CRITERIA, true);
+
 
 		return false;
 	}
