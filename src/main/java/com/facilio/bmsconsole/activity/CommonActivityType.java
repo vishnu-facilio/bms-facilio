@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.activity;
 
 import com.facilio.activity.ActivityType;
+import com.facilio.constants.FacilioConstants;
 import org.json.simple.JSONObject;
 
 public enum CommonActivityType implements ActivityType {
@@ -64,6 +65,12 @@ public enum CommonActivityType implements ActivityType {
 			return " assigned the "+json.get("moduleDisplayName") +" to ";
 		}
 	},
+    DELETE_COMMENT(113) {
+        @Override
+        public String constructMessage(JSONObject json) {
+            return "deleted the comment (" + json.get(FacilioConstants.ContextNames.NOTES_COMMENT) + ")";
+        }
+    }
     ;
 
 
