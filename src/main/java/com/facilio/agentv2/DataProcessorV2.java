@@ -141,6 +141,9 @@ public class DataProcessorV2
                     break;
                 case TIMESERIES:
                     JSONObject timeSeriesPayload = (JSONObject) payload.clone();
+                    if (orgId == 413 && agent.getName().startsWith("bishop")){
+                        LOGGER.info("Payload : "+timeSeriesPayload);
+                    }
                     Controller timeseriesController = getCachedControllerUsingPayload(payload,agent.getId());
                     if (!controllerIdVsLastTimeSeriesTimeStamp.containsKey(timeseriesController.getId()) ||
                             !controllerIdVsLastTimeSeriesTimeStamp.get(timeseriesController.getId()).equals(timeStamp) ||
