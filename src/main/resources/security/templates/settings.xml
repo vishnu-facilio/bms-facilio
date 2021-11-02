@@ -1,0 +1,5 @@
+<templates>
+    <template name="test">
+        <property name="test" type="string"/>
+    </template>
+</templates>

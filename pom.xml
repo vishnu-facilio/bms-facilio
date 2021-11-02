@@ -37,6 +37,14 @@
             <url>s3://repo.facilio/sqlite-utils-java/snapshot/</url>
         </repository>
         <repository>
+            <id>facilio-security-s3-release-repo</id>
+            <url>s3://repo.facilio/facilio-security-build/release/</url>
+        </repository>
+        <repository>
+            <id>facilio-security-s3-snapshot-repo</id>
+            <url>s3://repo.facilio/facilio-security-build/snapshot/</url>
+        </repository>
+        <repository>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -113,6 +121,12 @@
             <groupId>com.facilio.taskengine</groupId>
             <artifactId>facilio-taskengine</artifactId>
             <version>0.0.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.facilio.security</groupId>
+            <artifactId>security</artifactId>
+            <version>1.3-SNAPSHOT</version>
         </dependency>
 
         <dependency>
