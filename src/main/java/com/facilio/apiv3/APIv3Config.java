@@ -126,7 +126,6 @@ import com.facilio.v3.annotation.Module;
 import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
 import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
 import com.facilio.v3.commands.FetchChangeSetForCustomActivityCommand;
-import com.facilio.v3.context.V3Context;
 
 import java.util.function.Supplier;
 
@@ -760,7 +759,7 @@ public class APIv3Config {
 
     @Module("workorder")
     public static Supplier<V3Config> getWorkorder() {
-        return () -> new V3Config(V3Context.class, new ModuleCustomFieldCount30())
+        return () -> new V3Config(V3WorkOrderContext.class, new ModuleCustomFieldCount30())
                 .create()
                   .beforeSave(TransactionChainFactoryV3.getWorkorderBeforeSaveChain())
                   .afterSave(TransactionChainFactoryV3.getWorkorderAfterSaveChain())
