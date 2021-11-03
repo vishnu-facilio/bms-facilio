@@ -39,6 +39,10 @@ public class TimelineRequest {
         this.endTime = endTime;
     }
 
+    public String getDateValue() {
+        return startTime + "," + endTime;
+    }
+
     private BmsAggregateOperators.DateAggregateOperator dateAggregateOperator;
     public void setDateAggregateOperator(Integer dateAggregateOperator) {
         AggregateOperator aggregateOperator = AggregateOperator.getAggregateOperator(dateAggregateOperator);

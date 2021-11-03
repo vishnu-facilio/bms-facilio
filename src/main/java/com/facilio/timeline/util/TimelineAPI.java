@@ -4,18 +4,24 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.timeline.context.TimelineRequest;
 import com.facilio.v3.V3Builder.V3Config;
+import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.ChainUtil;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 
 public class TimelineAPI {
+
+    private static final Logger LOGGER = LogManager.getLogger(TimelineAPI.class.getName());
 
     private static final String GROUP_CONCAT_FIELD_NAME = "__groupConcat";
     private static final String MIN_START_DATE = "__minStartDate";
@@ -35,8 +41,8 @@ public class TimelineAPI {
         FacilioField endTimeField = fieldMap.get("actualWorkEnd");
 
         Criteria timeCriteria = new Criteria();
-        timeCriteria.addAndCondition(CriteriaAPI.getCondition(startTimeField, String.valueOf(timelineRequest.getStartTime()), NumberOperators.GREATER_THAN_EQUAL));
-        timeCriteria.addOrCondition(CriteriaAPI.getCondition(endTimeField, String.valueOf(timelineRequest.getEndTime()), NumberOperators.LESS_THAN_EQUAL));
+        timeCriteria.addAndCondition(CriteriaAPI.getCondition(startTimeField, timelineRequest.getDateValue(), DateOperators.BETWEEN));
+        timeCriteria.addOrCondition(CriteriaAPI.getCondition(endTimeField, timelineRequest.getDateValue(), DateOperators.BETWEEN));
 
         StringJoiner groupBy = new StringJoiner(",");
         Collection<FacilioField> aggregateFields = new ArrayList<>();
@@ -60,6 +66,7 @@ public class TimelineAPI {
                 .groupBy(groupBy.toString())
                 .andCriteria(timeCriteria);
         List<Map<String, Object>> aggregateValue = aggregateBuilder.getAsProps();
+        LOGGER.error("query for aggregate value: " + aggregateBuilder);
 
 
         List<FacilioField> allModuleFields = new ArrayList<>(allFields);
@@ -78,6 +85,7 @@ public class TimelineAPI {
         builder.andCriteria(timeCriteria);
 
         List<Map<String, Object>> recordMapList = builder.getAsProps();
+        LOGGER.error("query for actual record value: " + builder);
 
         return aggregateResult(timelineGroupField, startTimeField, recordMapList, aggregateValue);
 
@@ -171,10 +179,11 @@ public class TimelineAPI {
     private static String getQueryContactQuery(FacilioModule module, FacilioField timelineGroupField,
                                                FacilioField startTimeField,
                                                BmsAggregateOperators.DateAggregateOperator dateAggregator, Criteria timeCriteria) throws Exception {
-        GenericSelectRecordBuilder groupConcatQuery = new GenericSelectRecordBuilder()
-                .table(module.getTableName())
+        SelectRecordsBuilder groupConcatQuery = new SelectRecordsBuilder()
+                .module(module)
+                .beanClass(V3Context.class)
                 .andCriteria(timeCriteria);
-        joinAllExtendedModules(groupConcatQuery, module);
+//        joinAllExtendedModules(groupConcatQuery, module);
 
         StringJoiner groupByJoiner = new StringJoiner(",");
         Collection<FacilioField> fields = new ArrayList<>();
@@ -192,7 +201,7 @@ public class TimelineAPI {
 
         groupConcatQuery.select(fields);
         groupConcatQuery.groupBy(groupByJoiner.toString());
-        return groupConcatQuery.constructSelectStatement();
+        return groupConcatQuery.constructQueryString();
     }
 
     private static FacilioField getGroupConcatField(FacilioField startDateField) {
