@@ -11,6 +11,7 @@ import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.context.*;
+import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestContext;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -185,6 +186,9 @@ public class PageFactory {
 				return TermsAndConditionsPageFactory.getTermsAndConditionsPage((V3TermsAndConditionContext) record, module);
 			case ContextNames.SERVICE:
 				return ServicePageFactory.getServicePage((V3ServiceContext) record, module);
+			case ContextNames.TRANSFER_REQUEST:
+				return TransferRequestPageFactory.getTransferRequestPage((V3TransferRequestContext) record, module);
+
 		}
 		if (module.getExtendModule() == null) {	// temp
 			// etisalat changes will be changed to standard method

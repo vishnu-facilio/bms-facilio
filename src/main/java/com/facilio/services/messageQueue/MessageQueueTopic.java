@@ -27,6 +27,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.service.FacilioService;
 
+
 public class MessageQueueTopic {
 
 	private static final Logger LOGGER = LogManager.getLogger(MessageQueueTopic.class.getName());
@@ -40,6 +41,8 @@ public class MessageQueueTopic {
 		prop.put(AgentConstants.CREATED_TIME, System.currentTimeMillis());
 		prop.put(AgentConstants.ORGID,orgId);
 		prop.put(AgentConstants.PARTITION_ID, partitionId);
+		prop.put(AgentConstants.MAX_CONSUMERS_PER_INSTANCE,1);
+		prop.put(AgentConstants.MAX_CONSUMERS,2);
 		long count = new GenericInsertRecordBuilder().fields(MESSAGE_TOPIC_FIELDS)
 				.table(MESSAGE_TOIPC_MODULE.getTableName())
 				.insert(prop);

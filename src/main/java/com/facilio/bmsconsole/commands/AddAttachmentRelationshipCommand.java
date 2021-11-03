@@ -96,7 +96,7 @@ public class AddAttachmentRelationshipCommand extends FacilioCommand implements 
 			attachments = AttachmentsAPI.getAttachments(moduleName, attachmentIds);
 			context.put(FacilioConstants.ContextNames.ATTACHMENT_LIST, attachments);
 			if(moduleName.equals(FacilioConstants.ContextNames.TICKET_ATTACHMENTS)) {
-				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ADD_TICKET_ATTACHMENTS);
+				CommonCommandUtil.addEventType(EventType.ADD_TICKET_ATTACHMENTS, (FacilioContext) context);
 			}
 			JSONArray attachmentNames = new JSONArray();
      		JSONObject attach = new JSONObject();

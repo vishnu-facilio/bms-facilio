@@ -1010,6 +1010,10 @@ public class FacilioChainFactory {
 		c.addCommand(new AddAttachmentTicketActivityCommand());
 //		c.setPostTransactionChain(TransactionChainFactory.getUpdateAttachmentCountChain());
 		c.addCommand(new AddActivitiesCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
+		c.addCommand(new ForkChainToInstantJobCommand(false)
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION))
+		);
 		return c;
 	}
 	

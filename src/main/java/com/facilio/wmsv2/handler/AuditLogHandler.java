@@ -73,6 +73,14 @@ public class AuditLogHandler extends BaseHandler {
             return this;
         }
 
+        private String descriptionJSON;
+        public String getDescriptionJSON() {
+            return descriptionJSON;
+        }
+        public void setDescriptionJSON(String descriptionJSON) {
+            this.descriptionJSON = descriptionJSON;
+        }
+
         private RecordType recordType;
         public int getRecordType() {
             if (recordType != null) {
@@ -193,9 +201,10 @@ public class AuditLogHandler extends BaseHandler {
         public AuditLogContext() {
         }
 
-        public AuditLogContext(String subject, String description, RecordType recordType, String typeName, long recordId) {
+        public AuditLogContext(String subject, String description, String descriptionJSON, RecordType recordType, String typeName, long recordId) {
             this.subject = subject;
             this.description = description;
+            this.descriptionJSON = descriptionJSON;
             this.recordType = recordType;
             this.typeName = typeName;
             this.recordId = recordId;

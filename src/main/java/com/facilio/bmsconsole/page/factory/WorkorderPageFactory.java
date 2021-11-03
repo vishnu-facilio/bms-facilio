@@ -5,6 +5,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsoleV3.util.QuotationAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import org.apache.log4j.LogManager;
@@ -16,36 +17,39 @@ public class WorkorderPageFactory extends PageFactory {
     private static void composeRightPanel(Page.Section section, WorkOrderContext workorder) throws Exception {
 
         int yOffset = 0;
+        int xOffset = 17;
+        int widgetWidth = 7;
 
         // work duration widget
-        PageWidget workDuration = new PageWidget(PageWidget.WidgetType.WORK_DURATION);
-        workDuration.addToLayoutParams(18, yOffset, 6, 3);
-        section.addWidget(workDuration);
-        yOffset += 3;
-
-        // resource widget
         int widgetHeight = 3;
-        PageWidget resource = new PageWidget(PageWidget.WidgetType.RESOURCE);
-        resource.addToLayoutParams(18, yOffset, 6, widgetHeight);
-        section.addWidget(resource);
+        PageWidget workDuration = new PageWidget(PageWidget.WidgetType.WORK_DURATION);
+        workDuration.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
+        section.addWidget(workDuration);
         yOffset += widgetHeight;
-
-        // maintenance cost & quotation widget
-        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
-            widgetHeight = 9;
-            PageWidget totalCost = new PageWidget(PageWidget.WidgetType.QUOTATION);
-            totalCost.addToLayoutParams(18, yOffset, 6, widgetHeight);
-            totalCost.addToWidgetParams("hideBg", true);
-            section.addWidget(totalCost);
-            yOffset += widgetHeight;
-        }
 
         // total cost widget
         if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY) &&
                 !AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
             widgetHeight = 3;
             PageWidget totalCost = new PageWidget(PageWidget.WidgetType.TOTAL_COST);
-            totalCost.addToLayoutParams(18, yOffset, 6, widgetHeight);
+            totalCost.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
+            section.addWidget(totalCost);
+            yOffset += widgetHeight;
+        }
+
+        // resource widget
+        widgetHeight = 3;
+        PageWidget resource = new PageWidget(PageWidget.WidgetType.RESOURCE);
+        resource.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
+        section.addWidget(resource);
+        yOffset += widgetHeight;
+
+        // maintenance cost & quotation widget
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
+            widgetHeight = QuotationAPI.getQuoteCount(workorder.getId()) > 0 ? 9 : 3;
+            PageWidget totalCost = new PageWidget(PageWidget.WidgetType.QUOTATION);
+            totalCost.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
+            totalCost.addToWidgetParams("hideBg", true);
             section.addWidget(totalCost);
             yOffset += widgetHeight;
         }
@@ -55,7 +59,7 @@ public class WorkorderPageFactory extends PageFactory {
                 workorder.getTenant() != null) {
             widgetHeight = 3;
             PageWidget totalCost = new PageWidget(PageWidget.WidgetType.TENANT);
-            totalCost.addToLayoutParams(18, yOffset, 6, widgetHeight);
+            totalCost.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
             section.addWidget(totalCost);
             yOffset += widgetHeight;
         }
@@ -63,14 +67,14 @@ public class WorkorderPageFactory extends PageFactory {
         // responsibility widget
         widgetHeight = 6;
         PageWidget responsibility = new PageWidget(PageWidget.WidgetType.RESPONSIBILITY);
-        responsibility.addToLayoutParams(18, yOffset, 6, widgetHeight);
+        responsibility.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
         section.addWidget(responsibility);
         yOffset += widgetHeight;
 
         // workorderDetails widget
         widgetHeight = 10;
         PageWidget workorderDetails = new PageWidget(PageWidget.WidgetType.WORKORDER_DETAILS);
-        workorderDetails.addToLayoutParams(18, yOffset, 6, widgetHeight);
+        workorderDetails.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
         section.addWidget(workorderDetails);
         yOffset += widgetHeight;
     }
@@ -86,34 +90,34 @@ public class WorkorderPageFactory extends PageFactory {
 
         if (workorder.getDescription() != null && !workorder.getDescription().isEmpty()) {
             PageWidget descWidget = new PageWidget(PageWidget.WidgetType.WORKORDER_DESCRIPTION);
-            descWidget.addToLayoutParams(0, 0, 18, 3);
+            descWidget.addToLayoutParams(0, 0, 17, 3);
             summarySection.addWidget(descWidget);
             yOffset += 3;
         }
 
         // tasks completed widget
         PageWidget tasksCompleted = new PageWidget(PageWidget.WidgetType.TASKS_COMPLETED);
-        tasksCompleted.addToLayoutParams(0, yOffset, 6, 6);
+        tasksCompleted.addToLayoutParams(0, yOffset, 5, 6);
         summarySection.addWidget(tasksCompleted);
 
         // scheduled duration widget
         PageWidget scheduledDuration = new PageWidget(PageWidget.WidgetType.SCHEDULED_DURATION);
-        scheduledDuration.addToLayoutParams(6, yOffset, 6, 6);
+        scheduledDuration.addToLayoutParams(5, yOffset, 6, 6);
         summarySection.addWidget(scheduledDuration);
 
         // actual duration widget
         PageWidget actualDuration = new PageWidget(PageWidget.WidgetType.ACTUAL_DURATION);
-        actualDuration.addToLayoutParams(12, yOffset, 6, 6);
+        actualDuration.addToLayoutParams(11, yOffset, 6, 6);
         summarySection.addWidget(actualDuration);
 
         // comments widget
         PageWidget commentsWidget = new PageWidget(PageWidget.WidgetType.WORKORDER_COMMENTS);
-        commentsWidget.addToLayoutParams(0, 6 + yOffset, 18, 8);
+        commentsWidget.addToLayoutParams(0, 6 + yOffset, 17, 8);
         summarySection.addWidget(commentsWidget);
 
         // attachments widget
         PageWidget attachmentsWidget = new PageWidget(PageWidget.WidgetType.WORKORDER_ATTACHMENTS);
-        attachmentsWidget.addToLayoutParams(0, 14 + yOffset, 18, 8);
+        attachmentsWidget.addToLayoutParams(0, 14 + yOffset, 17, 8);
         summarySection.addWidget(attachmentsWidget);
 
         composeRightPanel(summarySection, workorder);
