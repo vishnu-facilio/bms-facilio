@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
 
+import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.*;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
@@ -76,7 +77,7 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 				if(dataPoint.getyAxis().getLookupFieldId() > 0) {
 					FacilioField facilioField = dataPoint.getxAxis().getField();
 					LookupField lookupField = (LookupField) modBean.getField(dataPoint.getxAxis().getLookupFieldId());
-					String fieldName = lookupField.getName() + "_" + facilioField.getName();
+					String fieldName = lookupField.getName() + "_" + facilioField.getModule().getName() + "_" + facilioField.getName();
 					xVal = prop.get(fieldName);
 				} else {
 					xVal = prop.get(dataPoint.getxAxis().getField().getName());
@@ -105,22 +106,10 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 								FacilioField field;
 								if(groupBy.getLookupFieldId() > 0 && report.getTypeEnum() == ReportContext.ReportType.PIVOT_REPORT)
 								{
-									FacilioModule baseModule;
-									if (report.getModuleId() > 0) {
-										baseModule = modBean.getModule(report.getModuleId());
-									} else {
-										baseModule = dataPoint.getxAxis().getModule();
-									}
 									String fieldName;
-
 									field = modBean.getField(groupBy.getLookupFieldId()).clone();
-									FacilioField facilioField = groupBy.getField();
-
-									if(baseModule.isParentOrChildModule(groupBy.getField().getModule())) {
-										fieldName = groupBy.getModule().getName() + "_" + facilioField.getName();
-									} else {
-										fieldName = field.getName() + "_" + facilioField.getName();
-									}
+									FacilioField facilioField = groupBy.getField().clone();
+									fieldName = field.getName() + "_" + facilioField.getModule().getName() + "_" + facilioField.getName();
 									field.setName(fieldName);
 								}
 								else {

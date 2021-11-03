@@ -2586,7 +2586,11 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.Reports.DATA, pivotparams.getData());
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, pivotparams.getModuleName());
 		context.put(FacilioConstants.ContextNames.CRITERIA, pivotparams.getCriteria());
-		context.put(FacilioConstants.ContextNames.SORTING, pivotparams.getSortBy());
+		if(sortBy != null) {
+			context.put(FacilioConstants.ContextNames.SORTING, sortBy);
+		} else {
+			context.put(FacilioConstants.ContextNames.SORTING, pivotparams.getSortBy());
+		}
 		context.put(FacilioConstants.ContextNames.TEMPLATE_JSON, pivotparams.getTemplateJSON());
 		context.put(FacilioConstants.ContextNames.DATE_FIELD, pivotparams.getDateFieldId());
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, pivotparams.getDateOperator());

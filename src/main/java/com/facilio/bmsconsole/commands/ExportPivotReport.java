@@ -12,10 +12,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ExportPivotReport extends FacilioCommand {
     @Override
@@ -39,29 +36,49 @@ public class ExportPivotReport extends FacilioCommand {
         List<String>  columnHeaders = (List<String>) context.get(FacilioConstants.ContextNames.DATA_HEADERS);
         Map<String, Object>  rowAlias = (Map<String, Object>) context.get(FacilioConstants.ContextNames.ROW_ALIAS);
         Map<String, Object> columnAlias = (Map<String, Object>) context.get(FacilioConstants.ContextNames.DATA_ALIAS);
+        List<ReportPivotTableRowsContext> rowColumns = (List<ReportPivotTableRowsContext>) context.get(FacilioConstants.Reports.ROWS);
+        List<ReportPivotTableDataContext> dataColumns = (List<ReportPivotTableDataContext>) context.get(FacilioConstants.Reports.DATA);
         JSONObject templateJson = (JSONObject) context.get(FacilioConstants.ContextNames.TEMPLATE_JSON);
-        Map<String,Object> JsonTable = (Map<String, Object>) templateJson.get("columnFormatting");
-        Map<String,String> aliasVsDisplayName = new HashMap<>();
-
+        LinkedHashMap<String,Object> JsonTable = (LinkedHashMap<String, Object>) templateJson.get("columnFormatting");
+        LinkedHashMap<String,String> aliasVsDisplayNameRows = new LinkedHashMap<>();
+        LinkedHashMap<String,String> aliasVsDisplayNameData = new LinkedHashMap<>();
 
         List<String> headers = new ArrayList<>();
         List<Map<String, Object>> pivotRecords = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.PIVOT_TABLE_DATA);
         List<Map<String, Object>> records = new ArrayList<>();
 
-        for(String key : JsonTable.keySet())
+//        for(String key : JsonTable.keySet())
+//        {
+//            Map<String,Object> data = (Map<String, Object>) JsonTable.get(key);
+//            headers.add((String) data.get("label"));
+//            aliasVsDisplayName.put(key,(String) data.get("label"));
+//        }
+
+        for(ReportPivotTableRowsContext row : rowColumns)
         {
+            String key = row.getAlias();
             Map<String,Object> data = (Map<String, Object>) JsonTable.get(key);
             headers.add((String) data.get("label"));
-            aliasVsDisplayName.put(key,(String) data.get("label"));
+            aliasVsDisplayNameRows.put(key,(String) data.get("label"));
+        }
+
+        for(ReportPivotTableDataContext prop : dataColumns)
+        {
+            String key = prop.getAlias();
+            Map<String,Object> data = (Map<String, Object>) JsonTable.get(key);
+            headers.add((String) data.get("label"));
+            aliasVsDisplayNameData.put(key,(String) data.get("label"));
         }
 
         for(Map<String, Object> record: pivotRecords){
-            Map<String, Object> tempRecord = new HashMap<>();
-            for(String key: record.keySet()){
-                Map<String,Object> column = (Map<String, Object>) record.get(key);
-                for (String actualKey: column.keySet()) {
-                    tempRecord.put(aliasVsDisplayName.get(actualKey), column.get(actualKey));
-                }
+            LinkedHashMap<String, Object> tempRecord = new LinkedHashMap<>();
+            Map<String,Object> row = (Map<String, Object>) record.get("rows");
+            Map<String,Object> data = (Map<String, Object>) record.get("data");
+            for (String actualKey: aliasVsDisplayNameRows.keySet()) {
+                tempRecord.put(aliasVsDisplayNameRows.get(actualKey), row.get(actualKey));
+            }
+            for (String actualKey: aliasVsDisplayNameData.keySet()) {
+                tempRecord.put(aliasVsDisplayNameData.get(actualKey), data.get(actualKey));
             }
             records.add(tempRecord);
         }
