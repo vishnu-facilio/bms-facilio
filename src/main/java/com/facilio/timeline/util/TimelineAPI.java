@@ -164,14 +164,17 @@ public class TimelineAPI {
             Object value = map.get(timelineGroupField.getName());
             String fieldValue = getFieldValue(value, timelineGroupField);
 
-            Map<String, Object> dateMap = new HashMap<>();
+            Map<String, Object> dateMap = (Map<String, Object>) aggregateMap.get(fieldValue);
+            if (dateMap == null) {
+                dateMap = new HashMap<>();
+                aggregateMap.put(fieldValue, dateMap);
+            }
+
+            String dateFormatValue = (String) map.get(startTimeField.getName());
             Map<String, Object> valueMap = new HashMap<>();
+            dateMap.put(dateFormatValue, valueMap);
             valueMap.put(MIN_START_DATE, map.get(MIN_START_DATE));
             valueMap.put("count", map.get("id"));
-
-            dateMap.put((String) map.get(startTimeField.getName()), valueMap);
-
-            aggregateMap.put(fieldValue, dateMap);
         }
         return aggregateMap;
     }
