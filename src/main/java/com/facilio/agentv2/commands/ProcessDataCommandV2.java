@@ -65,10 +65,6 @@ public class ProcessDataCommandV2 extends AgentV2Command {
 
                     if( ! pointNames.isEmpty()){
                         List<Map<String, Object>> pointsFromDb = getPointsFromDb(pointNames,controller);
-                        if (agent.getName().startsWith("bishop")){
-                            LOGGER.info("points from db "+pointsFromDb);
-                            LOGGER.info("size"+pointsFromDb.size());
-                        }
                         if (pointsFromDb.size() < pointNames.size() && controller != null &&
                                 (controller.getAgent().getAgentType() == AgentType.CLOUD.getKey()
                                         || controller.getAgent().getAgentType() == AgentType.REST.getKey()
