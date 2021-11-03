@@ -59,11 +59,8 @@ public class FetchReportDataCommand extends FacilioCommand {
     private List<Map<String, Object>> subModuleQueryResult = new ArrayList<>();
     private List<FacilioField> globalFields = new ArrayList<>();
     private Boolean isBaseModuleJoined = false;
-    private Queue<FacilioField> lookupQueue = new LinkedList<>();
-    private List<FacilioField> nonLookupFields = new ArrayList<>();
     private List<Map<String,Object>> pivotFieldsList = new ArrayList<>();
     private Map<String,FacilioField> lookupJoinMap = new HashMap<>();
-    private List<FacilioModule> joinedModules = new ArrayList<>();
     @Override
     public boolean executeCommand(Context context) throws Exception {
         modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -616,11 +613,9 @@ public class FetchReportDataCommand extends FacilioCommand {
                 FacilioField gField;
                 if (groupByField.getLookupFieldId() > 0 && reportType == ReportType.PIVOT_REPORT) {
                     gField = modBean.getField(groupByField.getLookupFieldId());
-                    lookupQueue.add(groupByField.getField());
                     handlePivotFields(groupByField.getField(),(LookupField) gField, false, groupByField.getModule());
                 } else {
                     gField = groupByField.getField().clone();
-                    nonLookupFields.add(gField);
                     handlePivotFields(groupByField.getField(),null,false, groupByField.getModule());
                 }
                 if (groupByField.getAggrEnum() != null) {
@@ -1008,7 +1003,6 @@ public class FetchReportDataCommand extends FacilioCommand {
         handleJoin(dp.getxAxis(), selectBuilder, addedModules);
         if(dp.getxAxis().getLookupFieldId() > 0)
         {
-            lookupQueue.add(dp.getxAxis().getField());
             LookupField lookupField = (LookupField) modBean.getField(dp.getxAxis().getLookupFieldId());
             handlePivotFields(dp.getxAxis().getField(),lookupField,false, dp.getxAxis().getModule());
         } else{
@@ -1205,10 +1199,6 @@ public class FetchReportDataCommand extends FacilioCommand {
             return;
         }
         while (module != null) {
-            if(!joinedModules.contains(module))
-            {
-                joinedModules.add(module);
-            }
             String tableName = module.getTableName() + " " + getAndSetModuleAlias(module.getName());
             String joinOn = getAndSetModuleAlias(module.getName()) + ".ID = " + module.getTableName() + ".ID";
             selectBuilder.innerJoin(tableName)
