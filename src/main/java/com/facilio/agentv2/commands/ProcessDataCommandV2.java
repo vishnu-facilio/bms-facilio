@@ -16,6 +16,7 @@ import org.json.simple.JSONObject;
 
 import java.util.*;
 
+import static com.facilio.agentv2.point.PointsAPI.getDevicePointsAsMapList;
 import static com.facilio.agentv2.point.PointsAPI.getPointsFromDb;
 
 public class ProcessDataCommandV2 extends AgentV2Command {
@@ -37,6 +38,9 @@ public class ProcessDataCommandV2 extends AgentV2Command {
 
                 Controller controller = (Controller) context.get(AgentConstants.CONTROLLER);
                 FacilioAgent agent = controller.getAgent();
+                if (agent.getName().equalsIgnoreCase("bishopbriggs") && controller.getName().startsWith("HTC")){
+                    LOGGER.info("Payload : " + payload);
+                }
                 if( containsCheck(AgentConstants.DATA,payload)){
                     JSONArray pointData = (JSONArray) payload.get(AgentConstants.DATA);
                     List<String> pointNames = new ArrayList<>();
@@ -65,7 +69,10 @@ public class ProcessDataCommandV2 extends AgentV2Command {
 
                     if( ! pointNames.isEmpty()){
                         List<Map<String, Object>> pointsFromDb = getPointsFromDb(pointNames,controller);
-                        if (pointsFromDb.size() < pointNames.size() && controller != null &&
+                        if (agent.getName().equalsIgnoreCase("bishopbriggs") && controller.getName().startsWith("HTC")) {
+                            LOGGER.info("pointsFromDb : "+pointsFromDb +" : Size : "+ pointsFromDb.size());
+                        }
+                            if (pointsFromDb.size() < pointNames.size() && controller != null &&
                                 (controller.getAgent().getAgentType() == AgentType.CLOUD.getKey()
                                         || controller.getAgent().getAgentType() == AgentType.REST.getKey()
                                         || controller.getAgent().getAgentType() == AgentType.FACILIO.getKey())) {
