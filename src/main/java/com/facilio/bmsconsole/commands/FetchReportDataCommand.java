@@ -289,6 +289,7 @@ public class FetchReportDataCommand extends FacilioCommand {
         if(reportType == ReportType.PIVOT_REPORT)
         {
             pivotFieldsList = pivotFieldsList.stream().distinct().collect(Collectors.toList());
+//            filterDuplicateItems(pivotFieldsList);
             for(Map<String,Object> pivotField: pivotFieldsList) {
                 handlePivotJoin(pivotField,selectBuilder);
             }
@@ -612,7 +613,7 @@ public class FetchReportDataCommand extends FacilioCommand {
                 }
                 FacilioField gField;
                 if (groupByField.getLookupFieldId() > 0 && reportType == ReportType.PIVOT_REPORT) {
-                    gField = modBean.getField(groupByField.getLookupFieldId());
+                    gField = modBean.getField(groupByField.getLookupFieldId()).clone();
                     handlePivotFields(groupByField.getField(),(LookupField) gField, false, groupByField.getModule());
                 } else {
                     gField = groupByField.getField().clone();
@@ -1068,7 +1069,7 @@ public class FetchReportDataCommand extends FacilioCommand {
             fields.add(dataPoint.getyAxis().getField());
             return false;
         } else {
-            FacilioField facilioField = dataPoint.getyAxis().getField();
+            FacilioField facilioField = dataPoint.getyAxis().getField().clone();
             if(reportType == ReportType.PIVOT_REPORT) {
                 facilioField.setTableAlias(getAndSetModuleAlias(facilioField.getModule().getName()));
             }
@@ -1239,7 +1240,7 @@ public class FetchReportDataCommand extends FacilioCommand {
                 }
                 prevModule = poll;
             }
-        } else if((Boolean) pivotField.get("isDataField") && !this.baseModule.getName().equals(module.getName())) {
+        } else if((Boolean) pivotField.get("isDataField") && !this.baseModule.getExtendedModuleIds().contains(module.getModuleId())) {
             System.out.println("submodule data field join");
             FacilioField dataField = FieldFactory.getIdField(module).clone();
 
@@ -1388,17 +1389,17 @@ public class FetchReportDataCommand extends FacilioCommand {
         return true;
     }
 
-    private Boolean isExtendedModuleField(FacilioField field) throws Exception {
-        FacilioModule module = field.getModule();
-        for(long id: module.getExtendedModuleIds())
-        {
-            if(baseModule.getExtendedModuleIds().contains(id))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
+//    private void filterDuplicateItems(List<Map<String,Object>> pivotFields) throws Exception {
+//        for (int i=0;i<pivotFields.size() - 1;i++){
+//            Map<String,Object> tempMap1 = pivotFields.get(i);
+//            for (int j=0;j<pivotFields.size() - 1;j++) {
+//                Map<String, Object> tempMap2 = pivotFields.get(j + 1);
+//                if (tempMap1.get("field").equals(tempMap2.get("field")) && i != j) {
+//                    pivotFields.remove(i);
+//                }
+//            }
+//        }
+//    }
 
     private void handlePivotFields(FacilioField field, LookupField lookupField, boolean isDataField, FacilioModule module) throws Exception {
 
@@ -1408,7 +1409,7 @@ public class FetchReportDataCommand extends FacilioCommand {
             tempMap.put("lookupField", lookupField.clone());
             tempMap.put("lookupModule", lookupField.getModule());
             tempMap.put("isLookupField",true);
-            field.setName(lookupField.getName() + "_" +field.getModule().getName() + "_" + field.getName());
+            field.setName(lookupField.getName() + "_" +module.getName() + "_" + field.getName());
             field.setTableAlias(getAndSetModuleAlias(field.getModule().getName() + "_" + field.getName()));
         } else {
             tempMap.put("isLookupField",false);
@@ -1417,38 +1418,47 @@ public class FetchReportDataCommand extends FacilioCommand {
                 field.setTableAlias(getAndSetModuleAlias(field.getModule().getName()));
             }
         }
-        tempMap.put("fieldModule", field.getModule());
         tempMap.put("field", field);
 
         List<FacilioModule> tempModulesList = new ArrayList<>();
 
         if(module != null) {
-            for (long id : module.getExtendedModuleIds()) {
-                tempModulesList.add(modBean.getModule(id));
+            FacilioModule lookupModule = module;
+            while (lookupModule != null){
+                tempModulesList.add(lookupModule);
+                lookupModule = lookupModule.getExtendModule();
             }
         }
 
         if(lookupField != null && !tempModulesList.contains(lookupField.getLookupModule()))
         {
             tempModulesList.clear();
-            for (long id : lookupField.getLookupModule().getExtendedModuleIds()) {
-                tempModulesList.add(modBean.getModule(id));
+            FacilioModule lookupModule = lookupField.getLookupModule();
+            while (lookupModule != null){
+                tempModulesList.add(lookupModule);
+                lookupModule = lookupModule.getExtendModule();
             }
-            tempMap.put("reverseFields", false);
+            tempMap.put("reverseFields",false);
         }
 
         if(lookupField != null && field.getModule().isParentOrChildModule(baseModule))
         {
             tempModulesList.clear();
-            for (long id : lookupField.getModule().getExtendedModuleIds()) {
-                tempModulesList.add(modBean.getModule(id));
+            FacilioModule lookupModule = lookupField.getModule();
+            while (lookupModule != null){
+                tempModulesList.add(lookupModule);
+                lookupModule = lookupModule.getExtendModule();
             }
-            tempMap.put("reverseFields", false);
+            tempMap.put("reverseFields",false);
         }
 
         if(lookupField != null && lookupField.getLookupModule().equals(field.getModule())){
             tempModulesList.clear();
             tempModulesList.add(lookupField.getLookupModule());
+        }
+
+        if(field.getModule() != null && field.getModule().equals(tempModulesList.get(tempModulesList.size() - 1))){
+            tempMap.put("reverseFields", false);
         }
 
         if(!tempMap.containsKey("reverseFields")) {

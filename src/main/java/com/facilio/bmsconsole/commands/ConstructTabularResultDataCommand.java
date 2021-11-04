@@ -77,7 +77,8 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 				if(dataPoint.getyAxis().getLookupFieldId() > 0) {
 					FacilioField facilioField = dataPoint.getxAxis().getField();
 					LookupField lookupField = (LookupField) modBean.getField(dataPoint.getxAxis().getLookupFieldId());
-					String fieldName = lookupField.getName() + "_" + facilioField.getModule().getName() + "_" + facilioField.getName();
+					FacilioModule module = dataPoint.getxAxis().getModule();
+					String fieldName = lookupField.getName() + "_" + module.getName() + "_" + facilioField.getName();
 					xVal = prop.get(fieldName);
 				} else {
 					xVal = prop.get(dataPoint.getxAxis().getField().getName());
@@ -108,8 +109,9 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 								{
 									String fieldName;
 									field = modBean.getField(groupBy.getLookupFieldId()).clone();
+									FacilioModule module = groupBy.getModule();
 									FacilioField facilioField = groupBy.getField().clone();
-									fieldName = field.getName() + "_" + facilioField.getModule().getName() + "_" + facilioField.getName();
+									fieldName = field.getName() + "_" + module.getName() + "_" + facilioField.getName();
 									field.setName(fieldName);
 								}
 								else {
