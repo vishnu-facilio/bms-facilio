@@ -201,11 +201,6 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 	}
 
 	@Override
-	public List<FacilioField> getAllFieldsWithDeleted(String moduleName) throws Exception {
-		return null;
-	}
-
-	@Override
 	public List<FacilioField> getModuleFields(String moduleName) throws Exception {
 		FacilioCache cache = 	LRUCache.getModuleFieldsCache();
 		Object key = CacheUtil.FIELDS_KEY(getOrgId(), moduleName);
