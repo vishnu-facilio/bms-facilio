@@ -61,12 +61,14 @@ public class AddInstalledBundleEntryCommand extends FacilioCommand {
 			toBeInstalledVersionList = IntStream.range(1, incommingVersion.intValue()+1).asDoubleStream().boxed().collect(Collectors.toList());
 		}
 		
-		context.put(BundleConstants.TO_BE_INSTALLED_VERSIONS_LIST, toBeInstalledVersionList);
-		
+		context.put(BundleConstants.GLOBAL_NAME, globalName);
 		
 		InstalledBundleContext installedBundle = addInstalledBundleEntry(globalName,incommingVersion);
 		
 		context.put(BundleConstants.INSTALLED_BUNDLE, installedBundle);
+		
+		context.put(BundleConstants.TO_BE_INSTALLED_VERSIONS_LIST, toBeInstalledVersionList);
+		
 		return false;
 	}
 

@@ -64,7 +64,7 @@ public class ModuleBundleComponent extends CommonBundleComponent {
 		
 		FacilioModule module = modBean.getModule(componentChange.getComponentId());
 		
-		String fileName = getFileName(context);
+		String fileName = getBundleXMLComponentFileName(context);
 		
 		BundleFileContext fileContext = new BundleFileContext(fileName, BundleConstants.XML_FILE_EXTN, componentChange.getComponentTypeEnum().getName(), null);
 		
@@ -83,7 +83,8 @@ public class ModuleBundleComponent extends CommonBundleComponent {
 		moduleFolder.addFile(fileName+"."+BundleConstants.XML_FILE_EXTN, fileContext);
 	}
 	
-	public String getFileName(FacilioContext context) throws Exception {
+	@Override
+	public String getBundleXMLComponentFileName(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		BundleChangeSetContext componentChange = (BundleChangeSetContext) context.get(BundleConstants.BUNDLE_CHANGE);
@@ -99,7 +100,7 @@ public class ModuleBundleComponent extends CommonBundleComponent {
 	public void fillBundleXML(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		String fileName = BundleComponentsEnum.MODULE.getName()+File.separatorChar+getFileName(context)+".xml";
+		String fileName = BundleComponentsEnum.MODULE.getName()+File.separatorChar+getBundleXMLComponentFileName(context)+".xml";
 		XMLBuilder bundleBuilder = (XMLBuilder) context.get(BundleConstants.BUNDLE_XML_BUILDER);
 		
 		BundleChangeSetContext componentChange = (BundleChangeSetContext) context.get(BundleConstants.BUNDLE_CHANGE);

@@ -23,16 +23,16 @@ import lombok.Getter;
 public enum BundleComponentsEnum {
 
 	MODULE(1,"Module",ModuleBundleComponent.class,null,
-			ModuleFactory.getModuleModule(),FieldFactory.getModuleFields(),"moduleId",null,null,null,null),
+			ModuleFactory.getModuleModule(),FieldFactory.getModuleFields(),"moduleId",null,null,null,null,null),
 	
 	FIELD(2,"Field",FieldBundleComponent.class,BundleComponentsEnum.MODULE,
-			ModuleFactory.getFieldsModule(),FieldFactory.getSelectFieldFields(),"fieldId",null,null,null,null),
+			ModuleFactory.getFieldsModule(),FieldFactory.getSelectFieldFields(),"fieldId",null,null,null,null,"deleted"),
 	
 	FUNCTION_NAME_SPACE(3,"Function_NameSpace",FunctionNameSpaceBundleComponent.class,null,
-			ModuleFactory.getWorkflowNamespaceModule(),FieldFactory.getWorkflowNamespaceFields(),null,"sysModifiedTime","sysCreatedTime","linkName","name"),
+			ModuleFactory.getWorkflowNamespaceModule(),FieldFactory.getWorkflowNamespaceFields(),null,"sysModifiedTime","sysCreatedTime","linkName","name","deleted"),
 	
 	FUNCTION(4,"Function",FunctionBundleComponent.class,BundleComponentsEnum.FUNCTION_NAME_SPACE,
-			ModuleFactory.getWorkflowUserFunctionModule(),UserFunctionAPI.getUserFunctionFields(),null,"sysModifiedTime","sysCreatedTime","linkName","name"),
+	ModuleFactory.getWorkflowUserFunctionModule(),UserFunctionAPI.getUserFunctionFields(),null,"sysModifiedTime","sysCreatedTime","linkName","name","deleted"),
 	
 //	WORKFLOW_RULE(5,"Workflow_Rule",WorkflowRuleBundleComponent.class,BundleComponentsEnum.MODULE,true),
 //	NOTIFICATION_RULE(6,"Notification_Rule",NotificationRuleBundleComponent.class,BundleComponentsEnum.MODULE,true),
@@ -43,6 +43,12 @@ public enum BundleComponentsEnum {
 	Class<? extends BundleComponentInterface> componentClass;
 	BundleComponentsEnum parent;
 	
+	int level = -1;
+	
+	private void setLevel(int level) {
+		this.level = level;
+	}
+	
 	FacilioModule module;
 	List<FacilioField> fields;
 	
@@ -51,9 +57,9 @@ public enum BundleComponentsEnum {
 	String createdTimeFieldName="createdTime";
 	String nameFieldName = "name";
 	String displayNameFieldName = "displayName";
-	String deletedFieldName = "isDeleted";
+	String deletedFieldName;
 	
-	BundleComponentsEnum(int value, String name,Class<? extends BundleComponentInterface> componentClass,BundleComponentsEnum parent,FacilioModule module,List<FacilioField> fields,String idFieldName,String modifiedTimeFieldName,String createdTime,String nameFieldName,String displayNameFieldName) {
+	BundleComponentsEnum(int value, String name,Class<? extends BundleComponentInterface> componentClass,BundleComponentsEnum parent,FacilioModule module,List<FacilioField> fields,String idFieldName,String modifiedTimeFieldName,String createdTime,String nameFieldName,String displayNameFieldName,String deletedFieldName) {
 		this.value = value;
 		this.name = name;
 		this.parent = parent;
@@ -67,6 +73,8 @@ public enum BundleComponentsEnum {
 		this.createdTimeFieldName = createdTime == null ? this.createdTimeFieldName : createdTime;
 		this.nameFieldName = nameFieldName == null ? this.nameFieldName : nameFieldName;
 		this.displayNameFieldName = displayNameFieldName == null ? this.displayNameFieldName : displayNameFieldName;
+		
+		this.deletedFieldName = deletedFieldName;
 	}
 	
 	public BundleComponentInterface getBundleComponentClassInstance() throws Exception {
@@ -84,9 +92,28 @@ public enum BundleComponentsEnum {
 	
 	private static final Map<BundleComponentsEnum, ArrayList<BundleComponentsEnum>> PARENT_CHILD_MAP = Collections.unmodifiableMap(initParentChildMap());
 	
+	private static List<BundleComponentsEnum> getAllValuesWithLevelFilled() {
+		
+		List<BundleComponentsEnum> values = new ArrayList<BundleComponentsEnum>();
+		for(BundleComponentsEnum type : values()) {
+			
+			BundleComponentsEnum temp = type;
+			if(type.getLevel() < 0) {
+				int level = 0;
+				while(temp.getParent() != null) {
+					temp = temp.getParent();
+					level++;
+				}
+				type.setLevel(level);
+			}
+			values.add(type);
+		}
+		return values;
+	}
+	
 	private static Map<Integer, BundleComponentsEnum> initAllBundleMap() {
 		Map<Integer, BundleComponentsEnum> typeMap = new HashMap<>();
-		for(BundleComponentsEnum type : values()) {
+		for(BundleComponentsEnum type : getAllValuesWithLevelFilled()) {
 			typeMap.put(type.getValue(), type);
 		}
 		return typeMap;
@@ -94,7 +121,7 @@ public enum BundleComponentsEnum {
 	
 	private static Map<String, BundleComponentsEnum> initAllBundleMapByName() {
 		Map<String, BundleComponentsEnum> typeMap = new HashMap<>();
-		for(BundleComponentsEnum type : values()) {
+		for(BundleComponentsEnum type : getAllValuesWithLevelFilled()) {
 			typeMap.put(type.getName(), type);
 		}
 		return typeMap;
@@ -102,7 +129,7 @@ public enum BundleComponentsEnum {
 	
 	private static ArrayList<BundleComponentsEnum> initParentComponentList() {
 		ArrayList<BundleComponentsEnum> parentComponents = new ArrayList<BundleComponentsEnum>();
-		for(BundleComponentsEnum type : values()) {
+		for(BundleComponentsEnum type : getAllValuesWithLevelFilled()) {
 			if(type.getParent() == null) {
 				parentComponents.add(type);
 			}
@@ -114,7 +141,7 @@ public enum BundleComponentsEnum {
 		
 		Map<BundleComponentsEnum, ArrayList<BundleComponentsEnum>> returnMap = new HashMap<BundleComponentsEnum, ArrayList<BundleComponentsEnum>>();
 		
-		for(BundleComponentsEnum type : values()) {
+		for(BundleComponentsEnum type : getAllValuesWithLevelFilled()) {
 			if(type.getParent() != null) {
 				ArrayList<BundleComponentsEnum> childList = returnMap.getOrDefault(type.getParent(), new ArrayList<BundleComponentsEnum>());
 				childList.add(type);
