@@ -12,6 +12,7 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.util.DisplayNameToLinkNameUtil;
 import com.facilio.workflows.context.WorkflowUserFunctionContext;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
@@ -26,7 +27,10 @@ public class AddUserFunctionCommand extends FacilioCommand {
 		userFunctionContext.fillFunctionHeaderFromScript();
 		
 		if(userFunctionContext.getLinkName() == null) {
-			userFunctionContext.setLinkName(userFunctionContext.getName());
+			
+			String linkName = DisplayNameToLinkNameUtil.getLinkName(userFunctionContext.getName(), ModuleFactory.getWorkflowUserFunctionModule(), FieldFactory.getAsMap(FieldFactory.getWorkflowUserFunctionFields()).get("linkName"));
+			
+			userFunctionContext.setLinkName(linkName);
 		}
 		
 		addUserFunction(userFunctionContext);

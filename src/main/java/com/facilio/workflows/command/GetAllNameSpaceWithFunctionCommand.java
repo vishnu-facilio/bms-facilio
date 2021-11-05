@@ -13,6 +13,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -34,7 +35,8 @@ public class GetAllNameSpaceWithFunctionCommand extends FacilioCommand {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(FieldFactory.getWorkflowNamespaceFields())
 				.table(ModuleFactory.getWorkflowNamespaceModule().getTableName())
-				.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getId(), ModuleFactory.getWorkflowNamespaceModule()));
+				.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getId(), ModuleFactory.getWorkflowNamespaceModule()))
+				.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", Boolean.FALSE.toString(), BooleanOperators.IS));
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		
@@ -87,6 +89,7 @@ public class GetAllNameSpaceWithFunctionCommand extends FacilioCommand {
 				.table(module.getTableName())
 				.innerJoin(ModuleFactory.getWorkflowModule().getTableName())
 				.on(ModuleFactory.getWorkflowModule().getTableName()+".ID="+module.getTableName()+".ID")
+				.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", Boolean.FALSE.toString(), BooleanOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("nameSpaceId"), StringUtils.join(nameSpaceIds, ","),NumberOperators.EQUALS));
 
 		List<Map<String, Object>> props = selectBuilder.get();

@@ -2,13 +2,14 @@ package com.facilio.workflows.command;
 
 import org.apache.commons.chain.Context;
 
-import com.facilio.bundle.enums.BundleComponentsEnum;
-import com.facilio.bundle.enums.BundleModeEnum;
-import com.facilio.bundle.utils.BundleUtil;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
-import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.workflowv2.contexts.WorkflowNamespaceContext;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
@@ -20,17 +21,18 @@ public class DeleteNameSpaceCommand extends FacilioCommand {
 		
 		WorkflowNamespaceContext workflowNamespaceContext = (WorkflowNamespaceContext) context.get(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT);
 		
-		deleteNameSpace(workflowNamespaceContext);
+		workflowNamespaceContext.setDeleted(Boolean.TRUE);
+		workflowNamespaceContext.setDeletedBy(AccountUtil.getCurrentUser().getId());
+		workflowNamespaceContext.setDeletedTime(DateTimeUtil.getCurrenTime());
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getWorkflowNamespaceModule().getTableName())
+				.fields(FieldFactory.getWorkflowNamespaceFields())
+				.andCondition(CriteriaAPI.getIdCondition(workflowNamespaceContext.getId(), ModuleFactory.getWorkflowNamespaceModule()));
+
+		updateBuilder.update(FieldUtil.getAsProperties(workflowNamespaceContext));
 		
 		return false;
 	}
 	
-	private void deleteNameSpace(WorkflowNamespaceContext namespaceContext) throws Exception {
-		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
-				.table(ModuleFactory.getWorkflowNamespaceModule().getTableName())
-				.andCondition(CriteriaAPI.getIdCondition(namespaceContext.getId(), ModuleFactory.getWorkflowNamespaceModule()));
-
-		deleteBuilder.delete();
-	}
-
 }
