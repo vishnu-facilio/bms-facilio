@@ -1,7 +1,5 @@
 package com.facilio.workflows.context;
 
-import java.util.logging.Logger;
-
 public class WorkflowUserFunctionContext extends WorkflowContext {
 	
 	/**
@@ -9,12 +7,11 @@ public class WorkflowUserFunctionContext extends WorkflowContext {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger LOGGER = Logger.getLogger(WorkflowUserFunctionContext.class.getName());
-	
 	Long nameSpaceId;
 	String name;
 	String linkName;
 	String nameSpaceName;
+	private long sourceBundle;
 	
 	public Long getNameSpaceId() {
 		return nameSpaceId;
@@ -39,6 +36,12 @@ public class WorkflowUserFunctionContext extends WorkflowContext {
 	}
 	public void setLinkName(String linkName) {
 		this.linkName = linkName;
+	}
+	public long getSourceBundle() {
+		return sourceBundle;
+	}
+	public void setSourceBundle(long sourceBundle) {
+		this.sourceBundle = sourceBundle;
 	}
 	
 }

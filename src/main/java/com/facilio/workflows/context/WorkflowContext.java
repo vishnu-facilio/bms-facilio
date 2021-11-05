@@ -716,6 +716,10 @@ public class WorkflowContext implements Serializable {
 		this.sysCreatedTime = sysCreatedTime;
 	}
 	
+	private Boolean deleted;
+	private long deletedBy;
+	private long deletedTime;
+	
 	private long sysModifiedTime = -1;
 	public long getSysModifiedTime() {
 		return sysModifiedTime;
@@ -754,5 +758,23 @@ public class WorkflowContext implements Serializable {
 	}
 	public void setSysModifiedByObj(IAMUser sysModifiedByObj) {
 		this.sysModifiedByObj = sysModifiedByObj;
+	}
+	public Boolean getDeleted() {
+		return deleted;
+	}
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+	}
+	public long getDeletedBy() {
+		return deletedBy;
+	}
+	public void setDeletedBy(long deletedBy) {
+		this.deletedBy = deletedBy;
+	}
+	public long getDeletedTime() {
+		return deletedTime;
+	}
+	public void setDeletedTime(long deletedTime) {
+		this.deletedTime = deletedTime;
 	}
 }
