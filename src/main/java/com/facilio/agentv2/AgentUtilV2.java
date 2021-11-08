@@ -176,7 +176,7 @@ public class AgentUtilV2
                     agent.setConnected(true);
                     dropAgentAlarm( agent);
                 }
-                    LogsApi.logAgentConnection(agent.getId(), status, connectionCount, timeStamp);
+                    //LogsApi.logAgentConnection(agent.getId(), status, connectionCount, timeStamp);
             }
             if(( ! payload.containsKey(AgentConstants.STATUS)) && (payload.containsKey(AgentConstants.MESSAGE_ID)) && (payload.containsKey(AgentConstants.COMMAND)) ){ // for PING
                 AckUtil.ackPing(agent.getId(),orgId,payload);
