@@ -20,6 +20,7 @@ import dev.samstevens.totp.time.SystemTimeProvider;
 import dev.samstevens.totp.time.TimeProvider;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import com.auth0.jwt.JWT;
@@ -106,7 +107,7 @@ public class IAMUserUtil {
 			FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().updateUserv2(userToBeUpdated, fieldsToBeUpdated));
 			FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().savePreviousPassword(uId, encryptedPassword));
 
-			List<Map<String, Object>> userSessionsv2 = IAMUtil.getTransactionalUserBean().getUserSessionsv2(AccountUtil.getCurrentUser().getUid(), true);
+			List<Map<String, Object>> userSessionsv2 = IAMUtil.getTransactionalUserBean().getUserSessionsv2(uId, true);
 
 			String token = "";
 			if (CollectionUtils.isNotEmpty(userSessionsv2)) {
@@ -119,9 +120,16 @@ public class IAMUserUtil {
 				}
 			}
 
+			if (StringUtils.isEmpty(token)) {
+				logger.error("Session token not matched for " + uId);
+			}
+
 			Criteria criteria = new Criteria();
 			criteria.addAndCondition(CriteriaAPI.getCondition("TOKEN", "token", token, StringOperators.ISN_T));
-			IAMUtil.getTransactionalUserBean().endUserSessionv2(uId, criteria);
+			boolean status = IAMUtil.getTransactionalUserBean().endUserSessionv2(uId, criteria);
+			if (status) {
+				logger.info("Cleared sessions for " + uId);
+			}
 
 			return true;
 		} else {
