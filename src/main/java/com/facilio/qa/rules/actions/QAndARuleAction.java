@@ -68,12 +68,7 @@ public class QAndARuleAction extends V3Action {
 
     public String addQandARuleAction() throws Exception {
         this.type = QAndARuleType.WORKFLOW;
-        FacilioChain chain = QAndARuleTransactionChainFactory.addRuleAction();
-        FacilioContext context = chain.getContext();
-        context.put(Constants.Command.RULES,addRules());
-        chain.execute();
-        List<QAndARule> rules = (List<QAndARule>) context.get(Constants.Command.RULES);
-        this.setData("rules", rules);
+        this.setData("rules", addRules());
         return SUCCESS;
     }
 

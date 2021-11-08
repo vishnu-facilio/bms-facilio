@@ -34,9 +34,8 @@ public class AddRuleActionCommand extends FacilioCommand {
             for (QAndARule rule : rules) {
                 List<ActionContext> actions = rule.getActions();
                 if (CollectionUtils.isNotEmpty(actions)) {
-                    actions = addActions(actions, rule);
-
-                    addQandARuleActionRel(rule.getId(), actions);
+                    actions = ActionAPI.addQandARuleActions(actions,rule.getName());
+                    addRuleActionRel(rule.getId(), actions);
                     rule.setActions(actions);
                 }
             }
@@ -44,37 +43,20 @@ public class AddRuleActionCommand extends FacilioCommand {
         return false;
     }
 
-    private void addQandARuleActionRel(Long ruleId, List<ActionContext> actions) throws SQLException {
-        for(ActionContext action:actions) {
-            Map<String, Object> qandaRuleActionProps = new HashMap<String, Object>();
-            qandaRuleActionProps.put("ruleId", ruleId);
-            qandaRuleActionProps.put("actionId", action.getId());
-            GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-                    .table(Constants.ModuleFactory.evalRuleActionRelModule().getTableName())
-                    .fields(Constants.FieldFactory.evalRuleActionRelFields())
-                    .addRecord(qandaRuleActionProps);
+    private void addRuleActionRel(Long ruleId, List<ActionContext> actions) throws SQLException {
+
+        GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+                .table(Constants.ModuleFactory.evalRuleActionRelModule().getTableName())
+                .fields(Constants.FieldFactory.evalRuleActionRelFields());
+
+        for (ActionContext action : actions) {
+
+            Map<String, Object> props = new HashMap<>();
+            props.put("ruleId", ruleId);
+            props.put("actionId", action.getId());
+
+            insertBuilder.addRecord(props);
             insertBuilder.save();
         }
-    }
-
-    private List<ActionContext> addActions(List<ActionContext> actions, QAndARule rule) throws Exception {
-
-        List<ActionContext> actionsToBeAdded = new ArrayList<>();
-        for (ActionContext action : actions) {
-            if (action.getId() == -1) {
-                if (action.getTemplate() == null && action.getTemplateJson() != null) {
-                    switch (action.getActionTypeEnum()) {
-                        default:
-                            break;
-                    }
-                }
-                if (action.getTemplateId() == -1) {
-                    action.setTemplateId(TemplateAPI.addTemplate(action.getTemplate()));
-                }
-                actionsToBeAdded.add(action);
-            }
-        }
-        ActionAPI.addActions(actionsToBeAdded);
-        return actions;
     }
 }

@@ -271,7 +271,7 @@ public class ActionAPI {
 		return null;
 	}
 	
-	private static List<ActionContext> getActionsFromPropList(List<Map<String, Object>> props) throws Exception {
+	public static List<ActionContext> getActionsFromPropList(List<Map<String, Object>> props) throws Exception {
 		if(props != null && props.size() > 0) {
 			List<ActionContext> actions = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
@@ -349,7 +349,52 @@ public class ActionAPI {
 	public static List<ActionContext> addActions(List<ActionContext> actions,WorkflowRuleContext rule) throws Exception {
 		return addActions(actions, rule, true);
 	}
-
+	public static List<ActionContext> addQandARuleActions(List<ActionContext> actions,String templatePrefix) throws Exception {
+		if (actions != null && !actions.isEmpty()) {
+			List<ActionContext> actionsToBeAdded = new ArrayList<>();
+			for(ActionContext action:actions) {
+				if (action.getId() == -1) {
+					if (action.getTemplate() == null && action.getTemplateJson() != null) {
+						System.out.println(action.getTemplateJson());
+						switch (action.getActionTypeEnum()) {
+							case EMAIL_NOTIFICATION:
+							case BULK_EMAIL_NOTIFICATION:
+								setEmailTemplate(action);
+								break;
+							case SMS_NOTIFICATION:
+							case BULK_SMS_NOTIFICATION:
+								setSMSTemplate(action);
+								break;
+							case MAKE_CALL:
+								setCallTemplate(action);
+								break;
+							case WHATSAPP_MESSAGE:
+								setWhatsappMessageTemplate(action);
+								break;
+							case PUSH_NOTIFICATION:
+								setMobileTemplate(action);
+								break;
+							case FORMULA_FIELD_CHANGE:
+							case ALARM_IMPACT_ACTION:
+							case IMPACTS:
+							case WORKFLOW_ACTION:
+							case WORKFLOW_ACTION_WITH_LIST_PARAMS:
+								setWorkflowTemplate(action,templatePrefix,Type.WORKFLOW);
+								break;
+							default:
+								break;
+						}
+					}
+					if (action.getTemplateId() == -1) {
+						action.setTemplateId(TemplateAPI.addTemplate(action.getTemplate()));
+					}
+					actionsToBeAdded.add(action);
+				}
+			}
+				ActionAPI.addActions(actionsToBeAdded);
+		}
+		return actions;
+	}
 	public static List<ActionContext> addActions(List<ActionContext> actions,WorkflowRuleContext rule, boolean shouldSave) throws Exception {
 		
 		if (actions != null && !actions.isEmpty()) {
@@ -395,7 +440,7 @@ public class ActionAPI {
 							case IMPACTS:
 							case WORKFLOW_ACTION:
 							case WORKFLOW_ACTION_WITH_LIST_PARAMS:
-								setWorkflowTemplate(action,rule,Type.WORKFLOW);
+								setWorkflowTemplate(action,rule.getName(),Type.WORKFLOW);
 								break;
 							case CONTROL_ACTION:
 								setControlActionTemplate(action, rule);
@@ -661,7 +706,7 @@ public class ActionAPI {
 		checkAndSetWorkflow(action.getTemplateJson(), jsonTemplate);
 	}
 	
-	private static void setWorkflowTemplate(ActionContext action, WorkflowRuleContext rule, Type templateType) throws Exception {
+	private static void setWorkflowTemplate(ActionContext action, String templatePrefix, Type templateType) throws Exception {
 		
 		JSONObject workflowTemplateJson = action.getTemplateJson();
 		
@@ -670,8 +715,8 @@ public class ActionAPI {
 		workflowTemplate.getResultWorkflowContext().setWorkflowString(null);
 		Long workflowId = WorkflowUtil.addWorkflow(workflowTemplate.getResultWorkflowContext());
 		
-		if(rule != null) {
-			workflowTemplate.setName(rule.getName()+"_json_template");
+		if(templatePrefix != null) {
+			workflowTemplate.setName(templatePrefix+"_json_template");
 		}
 		else {
 			workflowTemplate.setName("json_template");
