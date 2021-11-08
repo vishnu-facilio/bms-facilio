@@ -4,11 +4,13 @@ import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
@@ -27,7 +29,8 @@ public class AltayerVendorSiteValueGenerator extends ValueGenerator {
             try {
                 V3VendorContext vendor = V3PeopleAPI.getVendorForUser(AccountUtil.getCurrentUser().getId());
                 if (vendor != null) {
-                    List<Long> siteIds = getSiteIdsFromVendorMappingData(vendor.getId());
+                    long pplId = PeopleAPI.getPeopleIdForUser(AccountUtil.getCurrentUser().getId());
+                    List<Long> siteIds = getSiteIdsFromVendorMappingData(vendor.getId() , pplId);
                     if(CollectionUtils.isNotEmpty(siteIds)) {
                         return StringUtils.join(siteIds, ",");
                     }
@@ -40,7 +43,7 @@ public class AltayerVendorSiteValueGenerator extends ValueGenerator {
         return null;
     }
 
-    public List<Long> getSiteIdsFromVendorMappingData(long vendorID) throws Exception {
+    public List<Long> getSiteIdsFromVendorMappingData(long vendorID, long pplId) throws Exception {
         List<Long> siteIds = new ArrayList<>();
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule("custom_vendormapping");
@@ -52,6 +55,7 @@ public class AltayerVendorSiteValueGenerator extends ValueGenerator {
                 .fetchSupplement((LookupField) fieldMap.get("building"))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("vendor"), String.valueOf(vendorID), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleState"), "26327", NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("contacts"), String.valueOf(pplId), PickListOperators.IS))
 
                 ;
         List<Map<String, Object>> props = builder.getAsProps();

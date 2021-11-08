@@ -305,6 +305,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 					fields.add(fieldMap.get("pwdLastUpdatedTime"));
 
 					IAMUtil.getTransactionalUserBean().updateUserv2(user, fields);
+					IAMUtil.getTransactionalUserBean().endUserSessionv2(user.getUid());
 				} catch (Exception e) {
 					LOGGER.info("Exception occurred ", e);
 				}
@@ -989,7 +990,13 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public boolean endUserSessionv2(long uid, String token) throws Exception {
+	public boolean endUserSessionv2(long uid) throws Exception {
+		return endUserSessionv2(uid, (Criteria) null);
+	}
+
+
+	@Override
+	public boolean endUserSessionv2(long uid, Criteria criteria) throws Exception {
 		boolean status = false;
 		TransactionManager transactionManager = null;
 		try {
@@ -1003,10 +1010,12 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 					.table(IAMAccountConstants.getUserSessionModule().getTableName())
 					.fields(fields);
-			
+
 			updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
-			updateBuilder.andCondition(CriteriaAPI.getCondition("TOKEN", "token", token, StringOperators.IS));
-		
+
+			if (criteria != null) {
+				updateBuilder.andCriteria(criteria);
+			}
 
 			Map<String, Object> props = new HashMap<>();
 			props.put("endTime", System.currentTimeMillis());
@@ -1025,6 +1034,13 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			LOGGER.info("exception while adding ending user session ", e);
 		}
 		return status;
+	}
+
+	@Override
+	public boolean endUserSessionv2(long uid, String token) throws Exception {
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition("TOKEN", "token", token, StringOperators.IS));
+		return endUserSessionv2(uid, criteria);
 	}
 
 	@SneakyThrows

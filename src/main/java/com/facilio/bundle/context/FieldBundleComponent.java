@@ -71,7 +71,8 @@ public class FieldBundleComponent extends CommonBundleComponent {
 		SYSTEM_UN_PACKABLE_FIELD_NAMES.add("sysModifiedTime");
 	}
 	
-	public String getFileName(FacilioContext context) throws Exception {
+	@Override
+	public String getBundleXMLComponentFileName(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		Long fieldId = (Long)context.get(BundleConstants.COMPONENT_ID);
@@ -113,7 +114,7 @@ public class FieldBundleComponent extends CommonBundleComponent {
 	public void fillBundleXML(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		String fileName = getFileName(context)+".xml";
+		String fileName = getBundleXMLComponentFileName(context)+".xml";
 		XMLBuilder bundleBuilder = (XMLBuilder) context.get(BundleConstants.BUNDLE_XML_BUILDER);
 		
 		BundleChangeSetContext componentChange = (BundleChangeSetContext) context.get(BundleConstants.BUNDLE_CHANGE);
@@ -133,7 +134,7 @@ public class FieldBundleComponent extends CommonBundleComponent {
 		
 		FacilioField field = modBean.getField(componentChange.getComponentId());
 		
-		String fileName = getFileName(context);
+		String fileName = getBundleXMLComponentFileName(context);
 		
 		BundleFileContext fieldFile = new BundleFileContext(fileName, BundleConstants.XML_FILE_EXTN, componentChange.getComponentTypeEnum().getName(), null);
 		
@@ -185,15 +186,14 @@ public class FieldBundleComponent extends CommonBundleComponent {
 		
 		InstalledBundleContext installedBundle = (InstalledBundleContext) context.get(BundleConstants.INSTALLED_BUNDLE);
 		
-		XMLBuilder fieldElement = changeSetXMLFile.getXmlContent();
-		
-		String moduleName = null;
-		
 		BundleModeEnum modeEnum = (BundleModeEnum) context.get(BundleConstants.INSTALL_MODE);
-		moduleName = fieldElement.getAttribute(MODULE_NAME);
 		
 		switch(modeEnum) {
 		case ADD: {
+			XMLBuilder fieldElement = changeSetXMLFile.getXmlContent();
+			
+			String moduleName = fieldElement.getAttribute(MODULE_NAME);
+			
 			FacilioField field = new FacilioField();
 			
 			field.setDisplayName(fieldElement.getElement(BundleConstants.Components.DISPLAY_NAME).getText());
@@ -220,6 +220,10 @@ public class FieldBundleComponent extends CommonBundleComponent {
 		}
 		case UPDATE: {
 			
+			XMLBuilder fieldElement = changeSetXMLFile.getXmlContent();
+			
+			String moduleName = fieldElement.getAttribute(MODULE_NAME);
+			
 			String fieldName = fieldElement.getElement(BundleConstants.Components.NAME).getText();
 			String displayName = fieldElement.getElement(BundleConstants.Components.DISPLAY_NAME).getText();
 			
@@ -241,6 +245,17 @@ public class FieldBundleComponent extends CommonBundleComponent {
 			
 			break;
 			
+		}
+		case DELETE : {
+			
+			Long fieldid = (Long)context.get(BundleConstants.COMPONENT_ID);
+			
+			FacilioChain deleteFieldsChain = FacilioChainFactory.getdeleteFieldsChain();
+			
+			FacilioContext newContext = deleteFieldsChain.getContext();
+			newContext.put(FacilioConstants.ContextNames.MODULE_FIELD_IDS, Collections.singletonList(fieldid));
+			deleteFieldsChain.execute();
+			break;
 		}
 		}
 	}

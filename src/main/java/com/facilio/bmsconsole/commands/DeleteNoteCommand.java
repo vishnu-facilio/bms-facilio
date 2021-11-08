@@ -2,9 +2,12 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.command.FacilioCommand;
+import com.facilio.bmsconsole.activity.CommonActivityType;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.util.NotesAPI;
+import com.facilio.chain.FacilioContext;
+import com.facilio.command.FacilioCommand;
 import com.facilio.command.PostTransactionCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -12,6 +15,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import java.util.HashSet;
 import java.util.List;
@@ -60,6 +64,11 @@ public class DeleteNoteCommand extends FacilioCommand implements PostTransaction
 					.table(module.getTableName())
 					.andCondition(CriteriaAPI.getIdCondition(noteId, module));
 
+			JSONObject info = new JSONObject();
+			info.put(FacilioConstants.ContextNames.NOTES_COMMENT, note.getBody());
+			info.put("deletedBy", AccountUtil.getCurrentUser().getOuid());
+
+			CommonCommandUtil.addActivityToContext(note.getParentId(), -1, CommonActivityType.DELETE_COMMENT, info, (FacilioContext) context);
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, builder.delete());
 			
 		}

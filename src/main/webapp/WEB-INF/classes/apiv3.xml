@@ -137,6 +137,10 @@
                 class="com.facilio.v3.RESTAPIHandler"
                 method="count">
         </action>
+
+        <action name="timeline"
+                class="com.facilio.v3.RESTAPIHandler"
+                method="timeline" />
     </package>
 
 

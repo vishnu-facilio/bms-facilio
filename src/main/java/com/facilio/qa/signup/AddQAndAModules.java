@@ -54,10 +54,22 @@ public class AddQAndAModules extends SignUpData {
         addAnswerSubModules(modBean, answer);
         addRollUpFields(modBean, qAndA, response, page, question, answer);
         
+        changeSysCreatedTimeFieldDisplayName(response);
+        
         addAnswerAttachmentModule(answer);
     }
 
-    private void addAnswerAttachmentModule(FacilioModule answer) throws Exception {
+    private void changeSysCreatedTimeFieldDisplayName(FacilioModule response) throws Exception {
+
+    	ModuleBean modBean = Constants.getModBean();
+    	
+    	FacilioField createdTimeField = modBean.getField("sysCreatedTime", response.getName());
+    	
+    	createdTimeField.setDisplayName("System Created Time");
+    	modBean.updateField(createdTimeField);
+	}
+
+	private void addAnswerAttachmentModule(FacilioModule answer) throws Exception {
 		
     	FacilioModule module = new FacilioModule();
     	module.setName(FacilioConstants.QAndA.Answers.ATTACHMENT);

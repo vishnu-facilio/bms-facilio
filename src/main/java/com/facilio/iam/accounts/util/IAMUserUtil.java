@@ -8,6 +8,9 @@ import java.util.stream.Collectors;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.iam.accounts.context.SecurityPolicy;
 import com.facilio.modules.FieldFactory;
 import dev.samstevens.totp.code.CodeGenerator;
@@ -16,6 +19,7 @@ import dev.samstevens.totp.code.DefaultCodeVerifier;
 import dev.samstevens.totp.time.SystemTimeProvider;
 import dev.samstevens.totp.time.TimeProvider;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.json.simple.JSONObject;
 
 import com.auth0.jwt.JWT;
@@ -101,6 +105,24 @@ public class IAMUserUtil {
 			
 			FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().updateUserv2(userToBeUpdated, fieldsToBeUpdated));
 			FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().savePreviousPassword(uId, encryptedPassword));
+
+			List<Map<String, Object>> userSessionsv2 = IAMUtil.getTransactionalUserBean().getUserSessionsv2(AccountUtil.getCurrentUser().getUid(), true);
+
+			String token = "";
+			if (CollectionUtils.isNotEmpty(userSessionsv2)) {
+				for (Map<String, Object> userSession: userSessionsv2) {
+					long id = (Long) userSession.get("id");
+					if (AccountUtil.getCurrentAccount().getUserSessionId() == id) {
+						token = (String) userSession.get("token");
+						break;
+					}
+				}
+			}
+
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(CriteriaAPI.getCondition("TOKEN", "token", token, StringOperators.ISN_T));
+			IAMUtil.getTransactionalUserBean().endUserSessionv2(uId, criteria);
+
 			return true;
 		} else {
 			return false;

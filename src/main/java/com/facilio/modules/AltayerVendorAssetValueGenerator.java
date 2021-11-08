@@ -2,6 +2,7 @@ package com.facilio.modules;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.constants.FacilioConstants;
@@ -27,7 +28,8 @@ public class AltayerVendorAssetValueGenerator extends ValueGenerator{
         try {
             V3VendorContext vendor = V3PeopleAPI.getVendorForUser(AccountUtil.getCurrentUser().getId());
             if (vendor != null) {
-                List<Long> assetCategoryIds = getAssetCategoryData(vendor.getId());
+                long pplId = PeopleAPI.getPeopleIdForUser(AccountUtil.getCurrentUser().getId());
+                List<Long> assetCategoryIds = getAssetCategoryData(vendor.getId(), pplId);
                 if (CollectionUtils.isNotEmpty(assetCategoryIds)) {
                     return StringUtils.join(assetCategoryIds, ",");
                 }
@@ -39,7 +41,7 @@ public class AltayerVendorAssetValueGenerator extends ValueGenerator{
         return null;
     }
 
-    public List<Long> getAssetCategoryData(long vendorId) throws Exception {
+    public List<Long> getAssetCategoryData(long vendorId, long pplId) throws Exception {
         List<Long> categoryIds = new ArrayList<>();
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule("custom_vendormapping");
@@ -50,6 +52,7 @@ public class AltayerVendorAssetValueGenerator extends ValueGenerator{
                 .select(modBean.getAllFields(module.getName()))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("vendor"), String.valueOf(vendorId), PickListOperators.IS))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleState"), "26327", NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("contacts"), String.valueOf(pplId), PickListOperators.IS))
 
                 ;
 

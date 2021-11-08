@@ -53,6 +53,9 @@ public class PackBundleChangeSetCommand extends FacilioCommand {
 		
 		List<BundleChangeSetContext> changeSet = (List<BundleChangeSetContext>) context.get(BundleConstants.BUNDLE_CHANGE_SET_LIST);
 		
+		changeSet = changeSet.stream().filter((change) -> change.getModeEnum() == BundleModeEnum.ADD || change.getModeEnum() == BundleModeEnum.UPDATE)
+				.collect(Collectors.toList());
+		
 		BundleContext bundle = (BundleContext) context.get(BundleConstants.BUNDLE_CONTEXT);
 		
 		if(changeSet != null && !changeSet.isEmpty()) {

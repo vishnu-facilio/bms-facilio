@@ -4336,7 +4336,6 @@ public class TransactionChainFactory {
 	    	
 			c.addCommand(FacilioChainFactory.getDeleteAssetChain());			
 			c.addCommand(new DisconnectDeviceCommand());
-			c.addCommand(getUpdateAssetChain());
 			return c;
 	    	
 	    }

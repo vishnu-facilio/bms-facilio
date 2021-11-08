@@ -41,8 +41,6 @@ public class ParseZIPToFolderContentCommand extends FacilioCommand {
 		
 		BundleFolderContext rootFolder = parseFolderToBundleFolder(outputDirectory.getAbsolutePath());
 		
-		System.out.println("pathh1 -- " +outputDirectory.getAbsolutePath());
-		
 		FileUtils.deleteDirectory(outputDirectory);
 		
 		context.put(BundleConstants.BUNDLE_FOLDER, rootFolder);

@@ -3,6 +3,7 @@
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.db.criteria.Criteria;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.AppDomain;
@@ -49,6 +50,10 @@ public interface IAMUserBean {
 	public long startUserSessionv2(long uid, String token, String ipAddress, String userAgent, String userType) throws Exception;
     
     public boolean endUserSessionv2(long uid, String token) throws Exception;
+
+	public boolean endUserSessionv2(long uid) throws Exception;
+
+	public boolean endUserSessionv2(long uid, Criteria criteria) throws Exception;
     
     public List<Map<String, Object>> getUserSessionsv2(long uid, Boolean isActive) throws Exception;
     

@@ -50,6 +50,7 @@ public class FacilioDCAction extends V3Action {
 	public String addUser() throws Exception {
 		try {
 			IAMUserUtil.addDCLookup(user);
+			LOGGER.info("User added in DC_Lookup " + user.get("userName"));
 		} catch (InvocationTargetException ex) {
 			if (ex.getTargetException() instanceof IllegalArgumentException) {
 				throw new RESTException(ErrorCode.USER_ALREADY_EXISTS, ex.getTargetException().getMessage());
@@ -58,7 +59,7 @@ public class FacilioDCAction extends V3Action {
 			}
 		}
 		setData("result", "success");
-		
+
 		return SUCCESS;
 	}
 

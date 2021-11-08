@@ -13,6 +13,8 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FileField;
+import com.facilio.timeline.context.TimelineRequest;
+import com.facilio.timeline.util.TimelineAPI;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.commands.AttachmentCommand;
 import com.facilio.v3.context.Constants;
@@ -585,6 +587,21 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
                 }
             }
         }
+    }
+
+    private TimelineRequest timelineRequest;
+    public TimelineRequest getTimelineRequest() {
+        return timelineRequest;
+    }
+    public void setTimelineRequest(TimelineRequest timelineRequest) {
+        this.timelineRequest = timelineRequest;
+    }
+
+    public String timeline() throws Exception {
+        Map<String, Object> timeLineData = TimelineAPI.getTimeLineData(timelineRequest);
+
+        setData("timelineData", timeLineData);
+        return SUCCESS;
     }
 
 }

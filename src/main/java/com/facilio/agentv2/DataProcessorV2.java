@@ -37,6 +37,9 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.trigger.context.TriggerType;
 import com.facilio.util.AckUtil;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
+import com.facilio.workflowv2.util.WorkflowV2Util;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -79,6 +82,16 @@ public class DataProcessorV2
             }
 
             FacilioAgent agent = getFacilioAgentForPayload(payload);
+
+            if(agent.getTransformWorkflowId() > 0) {
+                WorkflowContext transformWorkflow = WorkflowUtil.getWorkflowContext(agent.getTransformWorkflowId());
+                FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
+                FacilioContext context = chain.getContext();
+                context.put(WorkflowV2Util.WORKFLOW_CONTEXT, transformWorkflow);
+                context.put(WorkflowV2Util.WORKFLOW_PARAMS, Collections.singletonList(payload));
+                chain.execute();
+                payload = (JSONObject) transformWorkflow.getReturnValue();
+            }
 
             Long timeStamp = System.currentTimeMillis();
             if(payload.containsKey(AgentConstants.TIMESTAMP)){

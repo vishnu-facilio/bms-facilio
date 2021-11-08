@@ -794,7 +794,12 @@ public class ModuleBeanImpl implements ModuleBean {
 		List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
 		return fields;
 	}
-	
+
+	@Override
+	public List<FacilioField> getAllFieldsWithDeleted(String moduleName) throws Exception {
+		return null;
+	}
+
 	@Override
 	public List<FacilioField> getModuleFields(String moduleName) throws Exception {
 		

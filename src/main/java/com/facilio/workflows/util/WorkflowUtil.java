@@ -44,6 +44,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.LookupOperator;
@@ -1114,6 +1115,7 @@ public class WorkflowUtil {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getWorkflowFields())
 				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", Boolean.FALSE.toString(), BooleanOperators.IS))
 				.andCondition(CriteriaAPI.getIdCondition(workflowId, module));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -1130,6 +1132,7 @@ public class WorkflowUtil {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getWorkflowFields())
 				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", Boolean.FALSE.toString(), BooleanOperators.IS))
 				.andCriteria(criteria);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -1149,7 +1152,7 @@ public class WorkflowUtil {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getWorkflowFields())
 				.table(module.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", Boolean.FALSE.toString(), BooleanOperators.IS))
 				.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		
 		List<Map<String, Object>> props = selectBuilder.get();

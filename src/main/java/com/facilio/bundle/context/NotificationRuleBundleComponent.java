@@ -28,4 +28,10 @@ public class NotificationRuleBundleComponent extends WorkflowRuleBaseBundleCompo
 		
 	}
 
+	@Override
+	public String getBundleXMLComponentFileName(FacilioContext context) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

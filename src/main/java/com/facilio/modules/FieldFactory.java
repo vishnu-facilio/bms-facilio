@@ -1324,6 +1324,16 @@ public class FieldFactory extends BaseFieldFactory {
 
         return fields;
     }
+    
+    public static List<FacilioField> getFieldFields() {
+    	
+    	List<FacilioField> fields = new ArrayList<FacilioField>();
+    	
+    	fields.addAll(getSelectFieldFields());
+    	fields.addAll(getUpdateFieldFields());
+    	
+		return fields;
+    }
 
     public static List<FacilioField> getSelectFieldFields() {
         List<FacilioField> fields = getAddFieldFields();
@@ -1385,6 +1395,10 @@ public class FieldFactory extends BaseFieldFactory {
         accessType.setColumnName("ACCESS_TYPE");
         accessType.setModule(module);
         fields.add(accessType);
+        
+        fields.add(getField("deleted", "IS_DELETED", module, FieldType.BOOLEAN));
+        fields.add(getField("deletedBy", "DELETED_BY", module, FieldType.NUMBER));
+        fields.add(getField("deletedTime", "DELETED_TIME", module, FieldType.NUMBER));
 
 //        FacilioField isSystemUpdatedField = new FacilioField();
 //        isSystemUpdatedField.setName("isSystemUpdated");
@@ -1460,6 +1474,10 @@ public class FieldFactory extends BaseFieldFactory {
         
         fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.NUMBER));
         fields.add(getField("sourceBundle", "SOURCE_BUNDLE", module, FieldType.NUMBER));
+        
+        fields.add(getField("deleted", "IS_DELETED", module, FieldType.BOOLEAN));
+        fields.add(getField("deletedBy", "DELETED_BY", module, FieldType.NUMBER));
+        fields.add(getField("deletedTime", "DELETED_TIME", module, FieldType.NUMBER));
 
         return fields;
     }
@@ -5771,6 +5789,10 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("isV2Script", "IS_V2", module, FieldType.BOOLEAN));
         fields.add(getField("runAsAdmin", "RUN_AS_ADMIN", module, FieldType.BOOLEAN));
         
+        fields.add(getField("deleted", "SYS_DELETED", module, FieldType.BOOLEAN));
+        fields.add(getField("deletedBy", "SYS_DELETED_BY", module, FieldType.NUMBER));
+        fields.add(getField("deletedTime", "SYS_DELETED_TIME", module, FieldType.NUMBER));
+        
         fields.addAll(FieldFactory.getSystemPointFields(module,true));
         
         return fields;
@@ -5782,9 +5804,10 @@ public class FieldFactory extends BaseFieldFactory {
 
         fields.add(getIdField(module));
 
-        fields.add(getField("name", "NAME", module, FieldType.STRING));
-        fields.add(getField("linkName", "BUNDLE_LINK_NAME", module, FieldType.STRING));
+        fields.add(getField("name", "DISPLAY_NAME", module, FieldType.STRING));
+        fields.add(getField("linkName", "LINK_NAME", module, FieldType.STRING));
         fields.add(getField("nameSpaceId", "NAMESPACE_ID", module, FieldType.LOOKUP));
+        fields.add(getField("sourceBundle", "SOURCE_BUNDLE", module, FieldType.NUMBER));
 
         return fields;
     }
@@ -5795,8 +5818,13 @@ public class FieldFactory extends BaseFieldFactory {
 
         fields.add(getIdField(module));
 
-        fields.add(getField("name", "NAME", module, FieldType.STRING));
-        fields.add(getField("linkName", "BUNDLE_LINK_NAME", module, FieldType.STRING));
+        fields.add(getField("name", "DISPLAY_NAME", module, FieldType.STRING));
+        fields.add(getField("linkName", "LINK_NAME", module, FieldType.STRING));
+        fields.add(getField("sourceBundle", "SOURCE_BUNDLE", module, FieldType.NUMBER));
+        
+        fields.add(getField("deleted", "SYS_DELETED", module, FieldType.BOOLEAN));
+        fields.add(getField("deletedBy", "SYS_DELETED_BY", module, FieldType.NUMBER));
+        fields.add(getField("deletedTime", "SYS_DELETED_TIME", module, FieldType.NUMBER));
         
         fields.addAll(FieldFactory.getSystemPointFields(module,true));
 

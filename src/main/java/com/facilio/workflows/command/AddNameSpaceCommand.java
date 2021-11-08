@@ -14,6 +14,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.util.DisplayNameToLinkNameUtil;
 import com.facilio.workflowv2.contexts.WorkflowNamespaceContext;
 import com.facilio.workflowv2.util.UserFunctionAPI;
 import com.facilio.workflowv2.util.WorkflowV2Util;
@@ -34,7 +35,9 @@ public class AddNameSpaceCommand extends FacilioCommand {
 		workflowNamespaceContext.setSysModifiedTime(DateTimeUtil.getCurrenTime());
 		
 		if(workflowNamespaceContext.getLinkName() == null) {
-			workflowNamespaceContext.setLinkName(workflowNamespaceContext.getName());
+
+			String linkName = DisplayNameToLinkNameUtil.getLinkName(workflowNamespaceContext.getName(), ModuleFactory.getWorkflowNamespaceModule(), FieldFactory.getAsMap(FieldFactory.getWorkflowNamespaceFields()).get("linkName"));
+			workflowNamespaceContext.setLinkName(linkName);
 		}
 		
 		workflowNamespaceContext.setOrgid(AccountUtil.getCurrentOrg().getId());

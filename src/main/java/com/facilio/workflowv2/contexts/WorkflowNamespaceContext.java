@@ -13,6 +13,12 @@ public class WorkflowNamespaceContext {
 	String name;
 	List<WorkflowUserFunctionContext> functions;
 	
+	private long sourceBundle;
+	
+	private Boolean deleted;
+	private long deletedBy;
+	private long deletedTime;
+	
 	public long getId() {
 		return id;
 	}
@@ -90,5 +96,29 @@ public class WorkflowNamespaceContext {
 	}
 	public void setLinkName(String linkName) {
 		this.linkName = linkName;
+	}
+	public long getSourceBundle() {
+		return sourceBundle;
+	}
+	public void setSourceBundle(long sourceBundle) {
+		this.sourceBundle = sourceBundle;
+	}
+	public Boolean getDeleted() {
+		return deleted;
+	}
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+	}
+	public long getDeletedBy() {
+		return deletedBy;
+	}
+	public void setDeletedBy(long deletedBy) {
+		this.deletedBy = deletedBy;
+	}
+	public long getDeletedTime() {
+		return deletedTime;
+	}
+	public void setDeletedTime(long deletedTime) {
+		this.deletedTime = deletedTime;
 	}
 }

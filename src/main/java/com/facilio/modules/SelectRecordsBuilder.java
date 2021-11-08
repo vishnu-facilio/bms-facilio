@@ -126,6 +126,14 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 				.append(" ");
 		return new JoinRecordBuilder<E>(this);
 	}
+
+	public JoinRecordBuilder<E> innerJoinQuery(String sql, String alias) {
+		joinBuilder.append(" INNER JOIN (")
+				.append(sql)
+				.append(") AS " + alias)
+				.append(" ");
+		return new JoinRecordBuilder<E>(this);
+	}
 	
 	@Override
 	public JoinRecordBuilder<E> leftJoin(String tableName) {

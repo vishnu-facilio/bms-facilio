@@ -199,7 +199,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 		
 		return allFields;
 	}
-	
+
 	@Override
 	public List<FacilioField> getModuleFields(String moduleName) throws Exception {
 		FacilioCache cache = 	LRUCache.getModuleFieldsCache();

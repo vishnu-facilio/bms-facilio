@@ -50,7 +50,7 @@ public interface ActivityType {
 		for (ActivityType type: QAndAActivityType.values()) {
 			activityMap.put(type.getValue(), type);
 		}
-		// Max number = 111
+		// Max number = 113
 
 		return activityMap;
 	}

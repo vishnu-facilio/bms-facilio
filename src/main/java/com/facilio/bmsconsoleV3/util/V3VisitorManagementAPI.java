@@ -688,7 +688,22 @@ public class V3VisitorManagementAPI {
                 ;
 
         if(StringUtils.isNotEmpty(phoneNumber)) {
-            builder.andCondition(CriteriaAPI.getCondition("PHONE", "phone", String.valueOf(phoneNumber), StringOperators.IS));
+        	String phoneNoWithPlus = null;
+        	String phoneNoWithoutPlus = null;
+        	if (phoneNumber.startsWith("+")) {
+        	   phoneNoWithPlus = phoneNumber;
+        	   phoneNoWithoutPlus = phoneNumber.replace("+", "");
+        	}
+        	else {
+        		phoneNoWithoutPlus = phoneNumber.trim();
+        	    phoneNoWithPlus = "+" + phoneNoWithoutPlus;
+        	}
+
+        	Criteria phoneCriteria = new Criteria();
+        	phoneCriteria.addOrCondition(CriteriaAPI.getCondition("PHONE", "phone", String.valueOf(phoneNoWithoutPlus), StringOperators.IS));
+        	phoneCriteria.addOrCondition(CriteriaAPI.getCondition("PHONE", "phone", String.valueOf(phoneNoWithPlus), StringOperators.IS));
+        	builder.andCriteria(phoneCriteria);
+            
         }
         if(id != null && id > 0) {
             builder.andCondition(CriteriaAPI.getIdCondition(id, module));
