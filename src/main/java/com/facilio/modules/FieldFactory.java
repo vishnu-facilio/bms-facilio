@@ -6455,12 +6455,21 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("parentWOTemplateId", "PARENT_WO_TEMPLATE_ID", module, FieldType.LOOKUP));
         fields.add(getField("jobPlanId", "JOB_PLAN_ID", module, FieldType.LOOKUP));
         fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.NUMBER));
-        fields.add(getField("spaceCategoryId", "SPACE_CATEGORY_ID", module, FieldType.LOOKUP));
-        fields.add(getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP));
         fields.add(getField("assignmentType", "ASSIGNMENT_TYPE", module, FieldType.NUMBER));
         fields.add(getField("inputType", "INPUT_TYPE", module, FieldType.NUMBER));
         fields.add(getField("attachmentRequired", "ATTACHMENT_REQUIRED", module, FieldType.BOOLEAN));
         fields.add(getField("additionalInfoJsonStr", "ADDITIONAL_INFO", module, FieldType.STRING));
+        
+        
+        LookupField spaceCategoryLookup = (LookupField) getField("spaceCategoryId", "SPACE_CATEGORY_ID", module, FieldType.LOOKUP);
+        spaceCategoryLookup.setLookupModule(ModuleFactory.getSpaceCategoryModule());
+        spaceCategoryLookup.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
+        fields.add(spaceCategoryLookup);
+        
+        LookupField assetCategoryLookup = (LookupField) getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP);
+        assetCategoryLookup.setLookupModule(ModuleFactory.getAssetCategoryModule());
+        assetCategoryLookup.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
+        fields.add(assetCategoryLookup);
         return fields;
     }
 
@@ -6493,8 +6502,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("pmId", "PM_ID", module, FieldType.NUMBER));
         fields.add(getField("parentType", "PARENT_TYPE", module, FieldType.NUMBER));
 
-        fields.add(getField("taskSectionTemplateId", "TASK_SECTION_TEMPLATE_ID", module, FieldType.LOOKUP));
-        fields.add(getField("taskTemplateId", "TASK_TEMPLATE_ID", module, FieldType.LOOKUP));
+        fields.add(getField("taskSectionTemplateId", "TASK_SECTION_TEMPLATE_ID", module, FieldType.NUMBER));
+        fields.add(getField("taskTemplateId", "TASK_TEMPLATE_ID", module, FieldType.NUMBER));
         
         LookupField resourceId = (LookupField) getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP);
         resourceId.setLookupModule(ModuleFactory.getResourceModule());

@@ -59,6 +59,7 @@ public class LookupSpecialTypeUtil {
 				|| EventConstants.EventContextNames.EVENT.equals(specialType)
 				|| FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)
 				|| ModuleFactory.getTaskTemplateModule().getName().equals(specialType)
+				|| ModuleFactory.getTaskSectionTemplateModule().getName().equals(specialType)
 				|| ModuleFactory.getTemplatesModule().getName().equals(specialType)
 				|| ModuleFactory.getPMIncludeExcludeResourceModule().getName().equals(specialType)
 				|| ModuleFactory.getPMTriggersModule().getName().equals(specialType)
@@ -859,6 +860,9 @@ public class LookupSpecialTypeUtil {
 		else if(ModuleFactory.getTaskTemplateModule().getName().equals(specialType)){
 			return ModuleFactory.getTaskTemplateModule();
 		}
+		else if(ModuleFactory.getTaskSectionTemplateModule().getName().equals(specialType)){
+			return ModuleFactory.getTaskSectionTemplateModule();
+		}
 		else if(ModuleFactory.getTemplatesModule().getName().equals(specialType)){
 			return ModuleFactory.getTemplatesModule();
 		}
@@ -972,6 +976,9 @@ public class LookupSpecialTypeUtil {
         }
 		else if(ModuleFactory.getTaskTemplateModule().getName().equals(specialType)){
 			return FieldFactory.getTaskTemplateFields();
+		}
+		else if(ModuleFactory.getTaskSectionTemplateModule().getName().equals(specialType)){
+			return FieldFactory.getTaskSectionTemplateFields();
 		}
 		else if(ModuleFactory.getTemplatesModule().getName().equals(specialType)){
 			return FieldFactory.getTemplateFields();
