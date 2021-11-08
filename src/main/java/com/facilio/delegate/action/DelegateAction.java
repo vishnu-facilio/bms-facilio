@@ -39,6 +39,8 @@ public class DelegateAction extends FacilioAction {
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.ONLY_MY_DELEGATION, onlyMyDelegation);
         context.put(FacilioConstants.ContextNames.APP_ID, appId);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.USER_DELEGATION);
+        constructListContext(context);
 
         chain.execute();
 

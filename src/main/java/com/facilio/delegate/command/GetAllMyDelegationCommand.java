@@ -6,6 +6,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.delegate.context.DelegationContext;
@@ -32,6 +33,11 @@ public class GetAllMyDelegationCommand extends FacilioCommand {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getUserDelegationModule().getTableName())
                 .select(FieldFactory.getUserDelegationFields());
+
+        Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+        if (filterCriteria != null && !filterCriteria.isEmpty()) {
+            builder.andCriteria(filterCriteria);
+        }
 
         if (onlyMyDelegation) {
             builder.andCondition(CriteriaAPI.getCondition("USER_ID", "userId", String.valueOf(AccountUtil.getCurrentUser().getId()), NumberOperators.EQUALS));
