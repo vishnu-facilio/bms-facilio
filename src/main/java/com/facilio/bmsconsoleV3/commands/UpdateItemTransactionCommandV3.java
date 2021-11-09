@@ -2,15 +2,11 @@ package com.facilio.bmsconsoleV3.commands;
 
 import java.util.*;
 
-import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.activity.AssetActivityType;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestLineItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestPurchasedItems;
-import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
@@ -29,8 +25,6 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.bmsconsole.util.ItemsApi;
-import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
 
 public class UpdateItemTransactionCommandV3 extends FacilioCommand {
     @SuppressWarnings("unchecked")
@@ -40,7 +34,7 @@ public class UpdateItemTransactionCommandV3 extends FacilioCommand {
        String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3TransferRequestContext> transferRequests = recordMap.get(moduleName);
-        if(!Objects.isNull(context.get(FacilioConstants.ContextNames.ITEM_TYPES_ID)) && transferRequests.get(0).getData().get("isStaged").equals(true)&&transferRequests.get(0).getData().get("isCompleted").equals(false) && transferRequests.get(0).getData().get("isShipped").equals(false)){
+        if(!Objects.isNull(context.get(FacilioConstants.ContextNames.ITEM_TYPES)) && transferRequests.get(0).getData().get("isStaged").equals(true)&&transferRequests.get(0).getData().get("isCompleted").equals(false) && transferRequests.get(0).getData().get("isShipped").equals(false)){
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule itemTransactionsModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
             List<FacilioField> itemTransactionsFields = modBean
@@ -49,69 +43,68 @@ public class UpdateItemTransactionCommandV3 extends FacilioCommand {
             List<FacilioField> purchasedItemFields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_ITEM);
             FacilioModule transferRequestpurchasedItemModule = modBean.getModule(FacilioConstants.ContextNames.TRANSFER_REQUEST_PURCHASED_ITEMS);
             List<FacilioField> transferRequestpurchasedItemFields = modBean.getAllFields(FacilioConstants.ContextNames.TRANSFER_REQUEST_PURCHASED_ITEMS);
+            List<V3TransferRequestLineItemContext> itemTypesList = (List<V3TransferRequestLineItemContext>) context.get(FacilioConstants.ContextNames.ITEM_TYPES);
+            for(V3TransferRequestLineItemContext itemTypeLineItem : itemTypesList){
+                List<ItemTransactionsContext> itemTransactiosnToBeAdded = new ArrayList<>();
+                List<V3TransferRequestPurchasedItems> transferRequestPurchasedItems = new ArrayList<>();
 
-            List<ItemTransactionsContext> itemTransactiosnToBeAdded = new ArrayList<>();
-            List<V3TransferRequestPurchasedItems> transferRequestPurchasedItems = new ArrayList<>();
 
-            long itemId = (long) context.get(FacilioConstants.ContextNames.ITEM_ID);
-            long itemTypeId = (long) context.get(FacilioConstants.ContextNames.ITEM_TYPES_ID);
-            ItemTypesContext itemType = ItemsApi.getItemTypes(itemTypeId);
-            double quantityTransferred = (double) context.get(FacilioConstants.ContextNames.TOTAL_QUANTITY);
-            long storeroomId = (long)context.get(FacilioConstants.ContextNames.STORE_ROOM_ID);
-            StoreRoomContext storeRoom = StoreroomApi.getStoreRoom(storeroomId);
-            String storeRoomName = storeRoom.getName();
-            if (CollectionUtils.isNotEmpty(transferRequests)) {
-                    ItemContext item = ItemsApi.getItems(itemId);
+                ItemTypesContext itemType = itemTypeLineItem.getItemType();
+                double quantityTransferred = itemTypeLineItem.getQuantityTransferred();
+                long storeroomId = (long)context.get(FacilioConstants.ContextNames.STORE_ROOM_ID);
+                StoreRoomContext storeRoom = StoreroomApi.getStoreRoom(storeroomId);
+                    ItemContext item = ItemsApi.getItem(itemType,storeRoom);
 
-                        List<PurchasedItemContext> purchasedItem = new ArrayList<>();
+                    List<PurchasedItemContext> purchasedItem = new ArrayList<>();
 
-                        if (item.getCostTypeEnum() == null || item.getCostType() <= 0
-                                || item.getCostTypeEnum() == CostType.FIFO) {
-                            purchasedItem = getPurchasedItemList(item.getId(), " asc", purchasedItemModule,
-                                    purchasedItemFields);
-                        } else if (item.getCostTypeEnum() == CostType.LIFO) {
-                            purchasedItem = getPurchasedItemList(item.getId(), " desc", purchasedItemModule,
-                                    purchasedItemFields);
-                        }
+                    if (item.getCostTypeEnum() == null || item.getCostType() <= 0
+                            || item.getCostTypeEnum() == CostType.FIFO) {
+                        purchasedItem = getPurchasedItemList(item.getId(), " asc", purchasedItemModule,
+                                purchasedItemFields);
+                    } else if (item.getCostTypeEnum() == CostType.LIFO) {
+                        purchasedItem = getPurchasedItemList(item.getId(), " desc", purchasedItemModule,
+                                purchasedItemFields);
+                    }
 
-                        if (purchasedItem != null && !purchasedItem.isEmpty()) {
-                            PurchasedItemContext pItem = purchasedItem.get(0);
-                            double requiredQuantity = -(quantityTransferred);
-                            if (pItem.getCurrentQuantity() >= quantityTransferred) {
-                                double newQuantity =pItem.getCurrentQuantity()-quantityTransferred;
-                                V3TransferRequestPurchasedItems transferRequestPurchasedItem = setTransferRequestPurchasedItem(item,transferRequests.get(0),pItem.getUnitcost(),quantityTransferred);
-                                ItemTransactionsContext woItem = setWorkorderItemObj(pItem, quantityTransferred, item, itemType,newQuantity,purchasedItemFields,purchasedItemModule);
+                    if (purchasedItem != null && !purchasedItem.isEmpty()) {
+                        PurchasedItemContext pItem = purchasedItem.get(0);
+                        double requiredQuantity = -(quantityTransferred);
+                        if (pItem.getCurrentQuantity() >= quantityTransferred) {
+                            double newQuantity =pItem.getCurrentQuantity()-quantityTransferred;
+                            V3TransferRequestPurchasedItems transferRequestPurchasedItem = setTransferRequestPurchasedItem(item,transferRequests.get(0),pItem.getUnitcost(),quantityTransferred);
+                            ItemTransactionsContext woItem = setWorkorderItemObj(pItem, quantityTransferred, item, itemType,newQuantity,purchasedItemFields,purchasedItemModule);
+                            itemTransactiosnToBeAdded.add(woItem);
+                            transferRequestPurchasedItems.add(transferRequestPurchasedItem);
+                        } else {
+                            for (PurchasedItemContext purchaseitem : purchasedItem) {
+                                ItemTransactionsContext woItem;
+                                double quantityUsedForTheCost = 0;
+                                if (purchaseitem.getCurrentQuantity() + requiredQuantity >= 0) {
+                                    quantityUsedForTheCost = requiredQuantity;
+                                } else {
+                                    quantityUsedForTheCost = -(purchaseitem.getCurrentQuantity());
+                                }
+                                double newQuantity =purchaseitem.getCurrentQuantity()+quantityUsedForTheCost;
+                                V3TransferRequestPurchasedItems transferRequestPurchasedItem = setTransferRequestPurchasedItem(item,transferRequests.get(0),purchaseitem.getUnitcost(),-(quantityUsedForTheCost));
+                                woItem = setWorkorderItemObj(purchaseitem, -(quantityUsedForTheCost), item, itemType, newQuantity, purchasedItemFields, purchasedItemModule);
                                 itemTransactiosnToBeAdded.add(woItem);
                                 transferRequestPurchasedItems.add(transferRequestPurchasedItem);
-                            } else {
-                                for (PurchasedItemContext purchaseitem : purchasedItem) {
-                                    ItemTransactionsContext woItem = new ItemTransactionsContext();
-                                    double quantityUsedForTheCost = 0;
-                                    if (purchaseitem.getCurrentQuantity() + requiredQuantity >= 0) {
-                                        quantityUsedForTheCost = requiredQuantity;
-                                    } else {
-                                        quantityUsedForTheCost = -(purchaseitem.getCurrentQuantity());
-                                    }
-                                    double newQuantity =purchaseitem.getCurrentQuantity()+quantityUsedForTheCost;
-                                    V3TransferRequestPurchasedItems transferRequestPurchasedItem = setTransferRequestPurchasedItem(item,transferRequests.get(0),purchaseitem.getUnitcost(),-(quantityUsedForTheCost));
-                                    woItem = setWorkorderItemObj(purchaseitem, -(quantityUsedForTheCost), item, itemType, newQuantity, purchasedItemFields, purchasedItemModule);
-                                    itemTransactiosnToBeAdded.add(woItem);
-                                    transferRequestPurchasedItems.add(transferRequestPurchasedItem);
-                                    requiredQuantity -= quantityUsedForTheCost;
-                                    if (requiredQuantity == 0) {
-                                        break;
-                                    }
+                                requiredQuantity -= quantityUsedForTheCost;
+                                if (requiredQuantity == 0) {
+                                    break;
                                 }
                             }
                         }
+                    }
                     InsertRecordBuilder<ItemTransactionsContext> readingBuilder = new InsertRecordBuilder<ItemTransactionsContext>()
                             .module(itemTransactionsModule).fields(itemTransactionsFields).addRecords(itemTransactiosnToBeAdded);
                     readingBuilder.save();
-                InsertRecordBuilder<V3TransferRequestPurchasedItems> insertRecordBuilder = new InsertRecordBuilder<V3TransferRequestPurchasedItems>()
-                        .module(transferRequestpurchasedItemModule).fields(transferRequestpurchasedItemFields).addRecords(transferRequestPurchasedItems);
-                insertRecordBuilder.save();
+                    InsertRecordBuilder<V3TransferRequestPurchasedItems> insertRecordBuilder = new InsertRecordBuilder<V3TransferRequestPurchasedItems>()
+                            .module(transferRequestpurchasedItemModule).fields(transferRequestpurchasedItemFields).addRecords(transferRequestPurchasedItems);
+                    insertRecordBuilder.save();
 
             }
+
         }
         return false;
     }

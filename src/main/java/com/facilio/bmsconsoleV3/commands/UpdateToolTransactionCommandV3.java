@@ -3,8 +3,10 @@ package com.facilio.bmsconsoleV3.commands;
 import java.util.*;
 
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.bmsconsole.util.ToolsApi;
 import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestLineItemContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
@@ -26,22 +28,21 @@ public class UpdateToolTransactionCommandV3 extends FacilioCommand {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3TransferRequestContext> transferRequests = recordMap.get(moduleName);
-        if (!Objects.isNull(context.get(FacilioConstants.ContextNames.TOOL_TYPES_ID)) && transferRequests.get(0).getData().get("isStaged").equals(true) && transferRequests.get(0).getData().get("isCompleted").equals(false)&& transferRequests.get(0).getData().get("isShipped").equals(false)) {
+        if (!Objects.isNull(context.get(FacilioConstants.ContextNames.TOOL_TYPES)) && transferRequests.get(0).getData().get("isStaged").equals(true) && transferRequests.get(0).getData().get("isCompleted").equals(false)&& transferRequests.get(0).getData().get("isShipped").equals(false)) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule toolTransactionsModule = modBean.getModule(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
             List<FacilioField> toolTransactionsFields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
-
-            List<ToolTransactionContext> toolTransactiosnToBeAdded = new ArrayList<>();
-
-            long toolId = (long) context.get(FacilioConstants.ContextNames.TOOL_ID);
-            long toolTypeId = (long) context.get(FacilioConstants.ContextNames.TOOL_TYPES_ID);
-            ToolTypesContext toolType = ToolsApi.getToolTypes(toolTypeId);
-            double quantityTransferred = (double)context.get(FacilioConstants.ContextNames.TOTAL_QUANTITY);
-            if (transferRequests != null && !transferRequests.isEmpty()) {
-                    ToolContext tool = ToolsApi.getTool(toolId);
+            List<V3TransferRequestLineItemContext> toolTypesList = (List<V3TransferRequestLineItemContext>) context.get(FacilioConstants.ContextNames.TOOL_TYPES);
+            for(V3TransferRequestLineItemContext toolTypeLineItem : toolTypesList) {
+                List<ToolTransactionContext> toolTransactiosnToBeAdded = new ArrayList<>();
+                ToolTypesContext toolType = toolTypeLineItem.getToolType();
+                double quantityTransferred = toolTypeLineItem.getQuantityTransferred();
+                long storeroomId = (long)context.get(FacilioConstants.ContextNames.STORE_ROOM_ID);
+                StoreRoomContext storeRoom = StoreroomApi.getStoreRoom(storeroomId);
+                    ToolContext tool = ToolsApi.getTool(toolType,storeRoom);
 
                     if (quantityTransferred <= tool.getQuantity()) {
-                        ToolTransactionContext woTool = new ToolTransactionContext();
+                        ToolTransactionContext woTool;
                         woTool = setWorkorderToolObj(quantityTransferred, tool, toolType);
                         toolTransactiosnToBeAdded.add(woTool);
                     }
