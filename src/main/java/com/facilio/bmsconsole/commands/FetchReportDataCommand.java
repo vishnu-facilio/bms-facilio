@@ -612,12 +612,16 @@ public class FetchReportDataCommand extends FacilioCommand {
                     groupByField.setField(groupByField.getModule(), modBean.getField(groupByField.getFieldId()));
                 }
                 FacilioField gField;
-                if (groupByField.getLookupFieldId() > 0 && reportType == ReportType.PIVOT_REPORT) {
-                    gField = modBean.getField(groupByField.getLookupFieldId()).clone();
-                    handlePivotFields(groupByField.getField(),(LookupField) gField, false, groupByField.getModule());
+                if(reportType == ReportType.PIVOT_REPORT){
+                    if (groupByField.getLookupFieldId() > 0) {
+                        gField = modBean.getField(groupByField.getLookupFieldId()).clone();
+                        handlePivotFields(groupByField.getField(), (LookupField) gField, false, groupByField.getModule());
+                    } else {
+                        gField = groupByField.getField().clone();
+                        handlePivotFields(groupByField.getField(), null, false, groupByField.getModule());
+                    }
                 } else {
                     gField = groupByField.getField().clone();
-                    handlePivotFields(groupByField.getField(),null,false, groupByField.getModule());
                 }
                 if (groupByField.getAggrEnum() != null) {
                     if (groupByField.getAggrEnum() instanceof SpaceAggregateOperator && !groupByField.getAggrEnum().getStringValue().equalsIgnoreCase(baseModule.getName())) {
@@ -1002,12 +1006,13 @@ public class FetchReportDataCommand extends FacilioCommand {
             }
         }
         handleJoin(dp.getxAxis(), selectBuilder, addedModules);
-        if(dp.getxAxis().getLookupFieldId() > 0)
-        {
-            LookupField lookupField = (LookupField) modBean.getField(dp.getxAxis().getLookupFieldId());
-            handlePivotFields(dp.getxAxis().getField(),lookupField,false, dp.getxAxis().getModule());
-        } else{
-            handlePivotFields(dp.getxAxis().getField(),null,false, dp.getxAxis().getModule());
+        if(reportType == ReportType.PIVOT_REPORT) {
+            if (dp.getxAxis().getLookupFieldId() > 0) {
+                LookupField lookupField = (LookupField) modBean.getField(dp.getxAxis().getLookupFieldId());
+                handlePivotFields(dp.getxAxis().getField(), lookupField, false, dp.getxAxis().getModule());
+            } else {
+                handlePivotFields(dp.getxAxis().getField(), null, false, dp.getxAxis().getModule());
+            }
         }
         return xAggrField;
     }
@@ -1055,7 +1060,9 @@ public class FetchReportDataCommand extends FacilioCommand {
         if(reportType == ReportType.PIVOT_REPORT)
         {
             return;
-        } else if (!reportField.getModule().equals(baseModule) && !isAlreadyAdded(addedModules, reportField.getModule()) && reportType != ReportType.PIVOT_REPORT) {        // inter-module support
+        }
+
+        if (!reportField.getModule().equals(baseModule) && !isAlreadyAdded(addedModules, reportField.getModule()) && reportType != ReportType.PIVOT_REPORT) {        // inter-module support
             List<FacilioField> allFields = modBean.getAllFields(baseModule.getName()); // for now base module is enough
             Map<String, LookupField> lookupFields = getLookupFields(allFields);
             handleLookupJoin(lookupFields, reportField.getModule(), selectBuilder, addedModules, reportField.getLookupFieldId());
@@ -1076,7 +1083,9 @@ public class FetchReportDataCommand extends FacilioCommand {
             FacilioField aggrField = dataPoint.getyAxis().getAggrEnum().getSelectField(facilioField);
             aggrField.setName(ReportUtil.getAggrFieldName(aggrField, dataPoint.getyAxis().getAggrEnum()));
             fields.add(aggrField);
-            handlePivotFields(aggrField,null, true, dataPoint.getyAxis().getModule());
+            if(reportType == ReportType.PIVOT_REPORT) {
+                handlePivotFields(aggrField, null, true, dataPoint.getyAxis().getModule());
+            }
             return true;
         }
     }
@@ -1388,18 +1397,6 @@ public class FetchReportDataCommand extends FacilioCommand {
         }
         return true;
     }
-
-//    private void filterDuplicateItems(List<Map<String,Object>> pivotFields) throws Exception {
-//        for (int i=0;i<pivotFields.size() - 1;i++){
-//            Map<String,Object> tempMap1 = pivotFields.get(i);
-//            for (int j=0;j<pivotFields.size() - 1;j++) {
-//                Map<String, Object> tempMap2 = pivotFields.get(j + 1);
-//                if (tempMap1.get("field").equals(tempMap2.get("field")) && i != j) {
-//                    pivotFields.remove(i);
-//                }
-//            }
-//        }
-//    }
 
     private void handlePivotFields(FacilioField field, LookupField lookupField, boolean isDataField, FacilioModule module) throws Exception {
 
