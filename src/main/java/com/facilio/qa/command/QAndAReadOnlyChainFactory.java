@@ -53,6 +53,13 @@ public class QAndAReadOnlyChainFactory {
         return c;
     }
     
+    public static FacilioChain afterSurveyTemplateFetch() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(commonAfterQAndATemplateFetch());
+        c.addCommand(new FetchRelatedItemsForSurveyTemplateCommand());
+        return c;
+    }
+    
     public static FacilioChain afterInductionTemplateFetch() {
         FacilioChain c = getDefaultChain();
         c.addCommand(commonAfterQAndATemplateFetch());

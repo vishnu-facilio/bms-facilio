@@ -23,6 +23,13 @@ public class QAndATransactionChainFactory {
         return c;
     }
     
+    public static FacilioChain surveyTemplateBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(commonQAndABeforeSave());
+        c.addCommand(new SurveyTemplateBeforeSaveCommand());
+        return c;
+    }
+    
     public static FacilioChain inductionTemplateBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(commonQAndABeforeSave());
@@ -56,6 +63,12 @@ public class QAndATransactionChainFactory {
         return c;
     }
     
+    public static FacilioChain surveyAfterSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddSurveyTriggersCommand());
+        return c;
+    }
+    
     public static FacilioChain inductionAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddInductionTriggersCommand());
@@ -70,6 +83,14 @@ public class QAndATransactionChainFactory {
         return c;
     }
     
+    public static FacilioChain surveyAfterUpdateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SurveyCheckForActiveandInActiveStateFlowCommand());
+        c.addCommand(new DeleteSurveyTriggersCommand());
+        c.addCommand(new AddSurveyTriggersCommand());
+        return c;
+    }
+    
     public static FacilioChain inductionAfterUpdateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new DeleteInductionTriggersCommand());
@@ -81,6 +102,12 @@ public class QAndATransactionChainFactory {
     public static FacilioChain inspectionTriggerBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddInspectionTriggersCommand());
+        return c;
+    }
+    
+    public static FacilioChain surveyTriggerBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddSurveyTriggersCommand());
         return c;
     }
 

@@ -1,23 +1,27 @@
 package com.facilio.qa.context;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.facilio.bmsconsoleV3.context.induction.InductionResponseContext;
 import com.facilio.bmsconsoleV3.context.induction.InductionTemplateContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
+import com.facilio.bmsconsoleV3.context.survey.SurveyResponseContext;
+import com.facilio.bmsconsoleV3.context.survey.SurveyTemplateContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioIntEnum;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 @Getter
 @AllArgsConstructor
 public enum QAndAType implements FacilioIntEnum {
     INSPECTION ("Inspection",FacilioConstants.Inspection.INSPECTION_TEMPLATE, InspectionTemplateContext.class, FacilioConstants.Inspection.INSPECTION_RESPONSE, InspectionResponseContext.class),
-    INDUCTION ("Induction",FacilioConstants.Induction.INDUCTION_TEMPLATE, InductionTemplateContext.class, FacilioConstants.Induction.INDUCTION_RESPONSE, InductionResponseContext.class)
+    INDUCTION ("Induction",FacilioConstants.Induction.INDUCTION_TEMPLATE, InductionTemplateContext.class, FacilioConstants.Induction.INDUCTION_RESPONSE, InductionResponseContext.class),
+    SURVEY ("Survey",FacilioConstants.Survey.SURVEY_TEMPLATE, SurveyTemplateContext.class, FacilioConstants.Survey.SURVEY_RESPONSE, SurveyResponseContext.class),
     ;
 
 	String name;

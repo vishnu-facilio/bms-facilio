@@ -1,4 +1,4 @@
-package com.facilio.bmsconsoleV3.context.inspection;
+package com.facilio.bmsconsoleV3.context.survey;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,11 +14,13 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ScheduleTypeInterface;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
 import com.facilio.bmsconsoleV3.util.BulkResourceAllocationUtil;
-import com.facilio.bmsconsoleV3.util.InspectionAPI;
+import com.facilio.bmsconsoleV3.util.SurveyAPI;
 import com.facilio.bmsconsoleV3.util.V3VisitorManagementAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.qa.context.ResponseContext;
 import com.facilio.time.DateRange;
@@ -26,17 +28,17 @@ import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 
-public class InspectionScheduler implements ScheduleTypeInterface {
+public class SurveyScheduler implements ScheduleTypeInterface {
 
 	public static int INSPECTION_PRE_GENERATE_INTERVAL_IN_DAYS = 90;
 	
 	@Override
 	public List<? extends ModuleBaseWithCustomFields> createRecords(BaseScheduleContext baseScheduleContext,boolean isUpdate, List<Map<String, Object>> parentRecordProps, boolean isManualOrScheduleTrigger) throws Exception {
 		
-		Long inspectionId = (Long)parentRecordProps.get(0).get("id");
-		FacilioContext context = V3Util.getSummary(FacilioConstants.Inspection.INSPECTION_TEMPLATE, Collections.singletonList(inspectionId));
+		Long surveyId = (Long)parentRecordProps.get(0).get("id");
+		FacilioContext context = V3Util.getSummary(FacilioConstants.Survey.SURVEY_TEMPLATE, Collections.singletonList(surveyId));
 		
-		InspectionTemplateContext template = (InspectionTemplateContext) Constants.getRecordList((FacilioContext) context).get(0);
+		SurveyTemplateContext template = (SurveyTemplateContext) Constants.getRecordList((FacilioContext) context).get(0);
 		
 		if(template.getStatus().equals(Boolean.FALSE)) {
 			return null;
@@ -50,11 +52,11 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 			
 			List<DateRange> times = baseScheduleContext.getScheduleInfo().getTimeIntervals(generatedUpto, endDate);
 			
-			List<InspectionResponseContext> responses = new ArrayList<InspectionResponseContext>();
+			List<SurveyResponseContext> responses = new ArrayList<SurveyResponseContext>();
 			
 			List<ResourceContext> resources = new ArrayList<ResourceContext>();
 			
-			if(template.getCreationType() == InspectionTemplateContext.CreationType.SINGLE.getIndex()) {
+			if(template.getCreationType() == SurveyTemplateContext.CreationType.SINGLE.getIndex()) {
 				if(template.getResource() != null) {
 					resources.add(ResourceAPI.getResource(template.getResource().getId()));
 				}
@@ -62,7 +64,7 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 					resources.add(null);
 				}
 			}
-			else if(template.getCreationType() == InspectionTemplateContext.CreationType.MULTIPLE.getIndex())  {
+			else if(template.getCreationType() == SurveyTemplateContext.CreationType.MULTIPLE.getIndex())  {
 				
 				resources = getMultipleResource(template,baseScheduleContext);
 			}
@@ -72,13 +74,13 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 				long createdtime = time.getEndTime()+1;
 				
 				for(ResourceContext resource : resources) {
-					InspectionResponseContext response = template.constructResponse();
+					SurveyResponseContext response = template.constructResponse();
 
 					response.setResStatus(ResponseContext.ResponseStatus.DISABLED); //This will be changed when the response is opened. Until then it can't be answered
 					response.setCreatedTime(createdtime);
 					response.setScheduledWorkStart(createdtime);
-					response.setStatus(InspectionResponseContext.Status.PRE_OPEN.getIndex());
-					response.setSourceType(InspectionResponseContext.SourceType.PLANNED.getIndex());
+					response.setStatus(SurveyResponseContext.Status.PRE_OPEN.getIndex());
+					response.setSourceType(SurveyResponseContext.SourceType.PLANNED.getIndex());
 					response.setResource(resource);
 					response.setSiteId(resource.getSiteId());
 					responses.add(response);
@@ -95,20 +97,20 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 		return null;
 	}
 	
-	public List<InspectionResponseContext> getResponses(InspectionTemplateContext template,BaseScheduleContext baseScheduleContext,List<DateRange> times) throws Exception {
+	public List<SurveyResponseContext> getResponses(SurveyTemplateContext template,BaseScheduleContext baseScheduleContext,List<DateRange> times) throws Exception {
 		
 		
 		
-		List<InspectionResponseContext> responses = new ArrayList<InspectionResponseContext>();
+		List<SurveyResponseContext> responses = new ArrayList<SurveyResponseContext>();
 		
 		List<ResourceContext> resources = new ArrayList<ResourceContext>();
 		
-		if(template.getCreationType() == InspectionTemplateContext.CreationType.SINGLE.getIndex()) {
+		if(template.getCreationType() == SurveyTemplateContext.CreationType.SINGLE.getIndex()) {
 			if(template.getResource() != null) {
 				resources.add(ResourceAPI.getResource(template.getResource().getId()));
 			}
 		}
-		else if(template.getCreationType() == InspectionTemplateContext.CreationType.MULTIPLE.getIndex())  {
+		else if(template.getCreationType() == SurveyTemplateContext.CreationType.MULTIPLE.getIndex())  {
 			
 			resources = getMultipleResource(template,baseScheduleContext);
 		}
@@ -118,12 +120,12 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 			long createdtime = time.getEndTime()+1;
 			
 			for(ResourceContext resource : resources) {
-				InspectionResponseContext response = template.constructResponse();
+				SurveyResponseContext response = template.constructResponse();
 
 				response.setResStatus(ResponseContext.ResponseStatus.DISABLED); //This will be changed when the response is opened. Until then it can't be answered
 				response.setCreatedTime(createdtime);
-				response.setStatus(InspectionResponseContext.Status.PRE_OPEN.getIndex());
-				response.setSourceType(InspectionResponseContext.SourceType.PLANNED.getIndex());
+				response.setStatus(SurveyResponseContext.Status.PRE_OPEN.getIndex());
+				response.setSourceType(SurveyResponseContext.SourceType.PLANNED.getIndex());
 				response.setResource(resource);
 				response.setSiteId(resource.getSiteId());
 				responses.add(response);
@@ -133,7 +135,7 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 		return responses;
 	}
 	
-	private List<ResourceContext> getMultipleResource(InspectionTemplateContext template, BaseScheduleContext baseScheduleContext) throws Exception {
+	private List<ResourceContext> getMultipleResource(SurveyTemplateContext template, BaseScheduleContext baseScheduleContext) throws Exception {
 		// TODO Auto-generated method stub
 		
 		List<Long> baseSpaceIds = null;
@@ -153,12 +155,12 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 		
 		if(baseScheduleContext != null) {
 			
-			InspectionTriggerContext trigger = InspectionAPI.getInspectionTriggerByScheduer(baseScheduleContext.getId(), true).get(0);
+			SurveyTriggerContext trigger = SurveyAPI.getSurveyTriggerByScheduer(baseScheduleContext.getId(), true).get(0);
 			
-			List<InspectionTriggerIncludeExcludeResourceContext> includeExcludeRess = trigger.getResInclExclList();
+			List<SurveyTriggerIncludeExcludeResourceContext> includeExcludeRess = trigger.getResInclExclList();
 			
 			if(includeExcludeRess != null && !includeExcludeRess.isEmpty()) {
-				for(InspectionTriggerIncludeExcludeResourceContext includeExcludeRes :includeExcludeRess) {
+				for(SurveyTriggerIncludeExcludeResourceContext includeExcludeRes :includeExcludeRess) {
 					if(includeExcludeRes.getIsInclude()) {
 						includedIds = includedIds == null ? new ArrayList<>() : includedIds; 
 						includedIds.add(includeExcludeRes.getResource().getId());
