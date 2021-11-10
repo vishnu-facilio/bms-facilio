@@ -69,6 +69,9 @@ public class GetAutomationModulesCommand extends FacilioCommand {
             modules.add(modBean.getModule(FacilioConstants.Induction.INDUCTION_TEMPLATE));
             modules.add(modBean.getModule(FacilioConstants.Induction.INDUCTION_RESPONSE));
 //        }
+            
+//            modules.add(modBean.getModule(FacilioConstants.Survey.SURVEY_TEMPLATE));
+//            modules.add(modBean.getModule(FacilioConstants.Survey.SURVEY_RESPONSE));
         
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.FACILITY_BOOKING)) {
             modules.add(modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY));

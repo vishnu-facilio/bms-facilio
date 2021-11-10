@@ -345,6 +345,7 @@ public class PageWidget {
 		INDUCTION_TEMPLATE_history("inductionHistory"),
 
 		INDUCTION_RESPONSE_WIDGET("inductionResponseWidget"),
+		
 		Q_AND_A_SECONDARY_DETAILS_WIDGET("qandASecondaryDetailsWidget"),
 
 		// Service Request Module Widgets
@@ -378,7 +379,18 @@ public class PageWidget {
 		QUOTATION("quotation"),
 		TENANT("tenant"),
 		TOTAL_COST("totalCost"),
-		TRANSFER_REQUEST_LINE_ITEMS("transferrequestlineitems");
+		TRANSFER_REQUEST_LINE_ITEMS("transferrequestlineitems"),
+		
+		SURVEY_TEMPLATE_surveyDetails("surveyDetails"),
+		SURVEY_TEMPLATE_surveyPageDetails("surveyPageDetails"),
+		SURVEY_TEMPLATE_surveyTriggers("surveyTriggers"),
+		SURVEY_TEMPLATE_surveyInsights("surveyInsights"),
+		SURVEY_TEMPLATE_surveyQuestions("surveyQuestions"),
+		SURVEY_TEMPLATE_history("surveyHistory"),
+
+		SURVEY_RESPONSE_WIDGET("surveyResponseWidget"),
+		
+		;
 
 		private String name;
 

@@ -1006,11 +1006,55 @@ public class ViewFactory {
 		
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("all",getAllSurveyTemplateViews().setOrder(order++));
+		viewsMap.put(FacilioConstants.Survey.SURVEY_TEMPLATE, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all",getAllSurveyResponseViews().setOrder(order++));
+		viewsMap.put(FacilioConstants.Survey.SURVEY_RESPONSE, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
 		views.put("all",getAllEmailConversationThreadingViews().setOrder(order++));
 		viewsMap.put(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME, views);
 		
 		
 		return viewsMap;
+	}
+
+	private static FacilioView getAllSurveyResponseViews() {
+		
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "Survey_Responses.ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Surveys");
+		allView.setModuleName(FacilioConstants.Survey.SURVEY_RESPONSE);
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
+
+	private static FacilioView getAllSurveyTemplateViews() {
+		
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "Survey_Templates.ID", FieldType.NUMBER), true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Survey Templates");
+		allView.setModuleName(FacilioConstants.Survey.SURVEY_TEMPLATE);
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
 	}
 
 	private static FacilioView getAllEmailConversationThreadingViews() {

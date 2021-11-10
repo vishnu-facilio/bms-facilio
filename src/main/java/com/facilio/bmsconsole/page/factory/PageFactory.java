@@ -7,16 +7,36 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.facilio.accounts.dto.AppDomain;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsoleV3.context.*;
-import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestContext;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext;
+import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.ClientContext;
+import com.facilio.bmsconsole.context.ConnectedAppWidgetContext;
+import com.facilio.bmsconsole.context.FloorContext;
+import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.context.HazardContext;
+import com.facilio.bmsconsole.context.InsuranceContext;
+import com.facilio.bmsconsole.context.InventoryRequestContext;
+import com.facilio.bmsconsole.context.MultiVariateAnomalyAlarm;
+import com.facilio.bmsconsole.context.OperationAlarmContext;
+import com.facilio.bmsconsole.context.PrecautionContext;
+import com.facilio.bmsconsole.context.ReadingAlarm;
+import com.facilio.bmsconsole.context.SafetyPlanContext;
+import com.facilio.bmsconsole.context.ServiceRequestContext;
+import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.context.SpaceContext;
+import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
+import com.facilio.bmsconsole.context.VendorContext;
+import com.facilio.bmsconsole.context.VisitorLoggingContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.WorkPermitContext;
 import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormSection;
@@ -31,6 +51,15 @@ import com.facilio.bmsconsole.templates.DefaultTemplate;
 import com.facilio.bmsconsole.util.ConnectedAppAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
+import com.facilio.bmsconsoleV3.context.InviteVisitorContextV3;
+import com.facilio.bmsconsoleV3.context.V3DeliveriesContext;
+import com.facilio.bmsconsoleV3.context.V3DepartmentContext;
+import com.facilio.bmsconsoleV3.context.V3LockersContext;
+import com.facilio.bmsconsoleV3.context.V3MovesContext;
+import com.facilio.bmsconsoleV3.context.V3ParkingStallContext;
+import com.facilio.bmsconsoleV3.context.V3ServiceContext;
+import com.facilio.bmsconsoleV3.context.V3TermsAndConditionContext;
+import com.facilio.bmsconsoleV3.context.VisitorLogContextV3;
 import com.facilio.bmsconsoleV3.context.communityfeatures.DealsAndOffersContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.NeighbourhoodContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.NewsAndInformationContext;
@@ -43,9 +72,12 @@ import com.facilio.bmsconsoleV3.context.induction.InductionResponseContext;
 import com.facilio.bmsconsoleV3.context.induction.InductionTemplateContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
+import com.facilio.bmsconsoleV3.context.survey.SurveyResponseContext;
+import com.facilio.bmsconsoleV3.context.survey.SurveyTemplateContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
@@ -60,7 +92,6 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.mv.context.MVProjectWrapper;
-import com.facilio.bmsconsoleV3.context.V3TermsAndConditionContext;
 
 public class PageFactory {
 
@@ -165,6 +196,11 @@ public class PageFactory {
 				return InductionPageFactory.getInductionTemplatePage((InductionTemplateContext) record, module);
 			case FacilioConstants.Induction.INDUCTION_RESPONSE:
 				return InductionPageFactory.getInductionResponsePage((InductionResponseContext) record, module);
+				
+			case FacilioConstants.Survey.SURVEY_TEMPLATE:
+				return SurveyPageFactory.getSurveyTemplatePage((SurveyTemplateContext) record, module);
+			case FacilioConstants.Survey.SURVEY_RESPONSE:
+				return SurveyPageFactory.getSurveyResponsePage((SurveyResponseContext) record, module);
 				
 			case ContextNames.SERVICE_REQUEST:
 				return ServiceRequestPageFactory.getServiceRequestPage((ServiceRequestContext) record, module);
