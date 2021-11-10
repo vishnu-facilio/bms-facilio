@@ -251,7 +251,7 @@ public class LoadViewCommand extends FacilioCommand {
 					.select(Arrays.asList(FieldFactory.getIdField(modBean.getModule((String) props.get(0).get("name")))))
 					.moduleName((String) props.get(0).get("name"))
 					.beanClass(ModuleBaseWithCustomFields.class)
-					.orderBy(sortableField.getColumnName() + " " + order);		
+					.orderBy(sortableField.getCompleteColumnName() + " " + order);		
 			
 			props = selectBuilder.getAsProps();
 		}
