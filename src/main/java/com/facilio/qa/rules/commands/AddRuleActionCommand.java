@@ -25,6 +25,9 @@ import java.util.Map;
 
 @Log4j
 public class AddRuleActionCommand extends FacilioCommand {
+
+    private static final String Q_AND_A_RULE = "Q_AND_A_RULE_";
+
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
@@ -34,7 +37,7 @@ public class AddRuleActionCommand extends FacilioCommand {
             for (QAndARule rule : rules) {
                 List<ActionContext> actions = rule.getActions();
                 if (CollectionUtils.isNotEmpty(actions)) {
-                    actions = ActionAPI.addQandARuleActions(actions,rule.getName());
+                    actions = ActionAPI.addQandARuleActions(actions,Q_AND_A_RULE+rule.getId());
                     addRuleActionRel(rule.getId(), actions);
                     rule.setActions(actions);
                 }

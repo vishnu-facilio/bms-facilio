@@ -35,22 +35,20 @@ public class ActionRuleCondition extends RuleCondition {
     public void executeTrueAction(QuestionContext question, AnswerContext answer) throws Exception {
 
         long startTime = System.currentTimeMillis();
-        if (actions == null) {
-            actions = getActiveActionsFromWorkflowRule(getRuleId());
-            Map<String, Object> placeHolders = new HashMap<>();
-            CommonCommandUtil.appendModuleNameInKey(null, "rule", FieldUtil.getAsProperties(this),placeHolders);
-            placeHolders.put("question",question.getQuestion());
-            placeHolders.put("answer",answer.getResponse());
-            LOGGER.debug("Time taken to fetch actions for Q_and_A_rule id : " + getRuleId() + " with actions : " + actions + " is " + (System.currentTimeMillis() - startTime));
-            if (actions != null) {
-                for (ActionContext action : actions) {
-//                    action.executeAction(placeHolders, context, this, record);
-                }
+        actions = getActiveActionsFromWorkflowRule(getRuleId());
+        Map<String, Object> placeHolders = new HashMap<>();
+        CommonCommandUtil.appendModuleNameInKey(null, "rule", FieldUtil.getAsProperties(this), placeHolders);
+        placeHolders.put("question", question.getQuestion());
+        placeHolders.put("answer", answer.getClientAnswerContext());
+        LOGGER.debug("Time taken to fetch actions for Q_and_A_rule id : " + getRuleId() + " with actions : " + actions + " is " + (System.currentTimeMillis() - startTime));
+        if (actions != null) {
+            for (ActionContext action : actions) {
+                action.executeAction(placeHolders, null, null, null);
             }
         }
     }
 
-    private static List<ActionContext> getActiveActionsFromWorkflowRule ( long ruleId) throws Exception {
+    private static List<ActionContext> getActiveActionsFromWorkflowRule(long ruleId) throws Exception {
         FacilioModule module = ModuleFactory.getActionModule();
         GenericSelectRecordBuilder actionBuilder = new GenericSelectRecordBuilder()
                 .select(FieldFactory.getActionFields())

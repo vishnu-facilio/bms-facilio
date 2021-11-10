@@ -25,7 +25,6 @@ public abstract class QAndARule<Condition extends RuleCondition> {
     private Long sysModifiedTime;
     private Long sysModifiedBy;
     private List<ActionContext> actions;
-    private String name;
 
     private List<Condition> ruleConditions; // For internal purpose
     public void setRuleConditions(List<Condition> ruleConditions) {

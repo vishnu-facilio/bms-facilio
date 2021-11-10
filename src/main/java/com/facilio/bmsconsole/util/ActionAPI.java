@@ -374,9 +374,6 @@ public class ActionAPI {
 							case PUSH_NOTIFICATION:
 								setMobileTemplate(action);
 								break;
-							case FORMULA_FIELD_CHANGE:
-							case ALARM_IMPACT_ACTION:
-							case IMPACTS:
 							case WORKFLOW_ACTION:
 							case WORKFLOW_ACTION_WITH_LIST_PARAMS:
 								setWorkflowTemplate(action,templatePrefix,Type.WORKFLOW);
