@@ -2254,6 +2254,7 @@ public class ReadOnlyChainFactory {
 
 	public static FacilioChain getAllMyDelegationChain() {
 		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GenerateCriteriaFromFilterForNonModulesCommand());
 		chain.addCommand(new GetAllMyDelegationCommand());
 		return chain;
 	}

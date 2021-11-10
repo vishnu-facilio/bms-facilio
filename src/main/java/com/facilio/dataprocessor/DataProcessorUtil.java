@@ -144,7 +144,9 @@ public class DataProcessorUtil {
                 return false;
             }
             JSONObject payLoad = record.getData();
-
+            if(record.getPartitionKey()!=null && !record.getPartitionKey().equals("")){
+                payLoad.put("agent",record.getPartitionKey());
+            }
             if ((payLoad != null) && (payLoad.isEmpty())) {
                 LOGGER.info(" Empty or null message received " + recordId);
                 updateAgentMessage(recordId, partitionId, MessageStatus.DATA_EMPTY);

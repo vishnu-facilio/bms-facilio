@@ -248,6 +248,7 @@ public class FacilioConstants {
 		public static final String GLOBAL_VARIABLE_GROUP = "globalVariableGroup";
 		public static final String GLOBAL_VARIABLE_LIST = "globalVariableList";
 		public static final String GLOBAL_VARIABLE = "globalVariable";
+		public static final String USER_DELEGATION = "userDelegation";
 
         public static class Reservation {
 			public static final String RESERVATION = "reservation";

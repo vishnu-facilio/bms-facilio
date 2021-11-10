@@ -578,8 +578,8 @@ public class PreventiveMaintenanceAPI {
 
 		return commonresourceIds;
  	}
-	
-	
+
+
 	public static long getEndTime(long startTime, List<PMTriggerContext> triggers) {
 		Optional<PMTriggerContext> minTrigger = triggers.stream().filter(i -> i.getTriggerExecutionSourceEnum() == TriggerExectionSource.SCHEDULE).min(Comparator.comparingInt(PMTriggerContext::getFrequency));
 
@@ -591,14 +591,24 @@ public class PreventiveMaintenanceAPI {
 		return startTime + (maxSchedulingDays * 24 * 60 * 60);
 	}
 
+	public static boolean lessThenEndDate(Pair<Long, Integer> currentDate, PMTriggerContext trigger) {
+		long endDate = trigger.getSchedule().getEndDate();
+		if (endDate <= 0) return true;
+		return (currentDate.getLeft() * 1000) <= trigger.getSchedule().getEndDate();
+	}
+
 	public static BulkWorkOrderContext createBulkWoContextsFromPM(Context context, PreventiveMaintenance pm, PMTriggerContext pmTrigger, long startTime, long endTime, long minTime, WorkorderTemplate woTemplate) throws Exception {
 		Pair<Long, Integer> nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(Pair.of(startTime, 0));
 		int currentCount = pm.getCurrentExecutionCount();
 		long currentTime = System.currentTimeMillis();
 		boolean isScheduled = false;
 		List<Long> nextExecutionTimes = new ArrayList<>();
-		LOGGER.log(Level.ERROR, "PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId() + " next exec time " + nextExecutionTime.getLeft() + " end time " + endTime);
-		while (nextExecutionTime.getLeft() <= endTime && (pm.getMaxCount() == -1 || currentCount < pm.getMaxCount()) && (pm.getEndTime() == -1 || nextExecutionTime.getLeft() <= pm.getEndTime())) {
+		LOGGER.log(Level.ERROR, "PM " + pm.getId() + " PM Trigger ID: " + pmTrigger.getId() + " next exec time " + nextExecutionTime.getLeft() + " end time " + endTime);
+		while (nextExecutionTime.getLeft() <= endTime &&
+				lessThenEndDate(nextExecutionTime, pmTrigger) &&
+				(pm.getMaxCount() == -1 || currentCount < pm.getMaxCount()) &&
+				(pm.getEndTime() == -1 || nextExecutionTime.getLeft() <= pm.getEndTime())) {
+
 			if ((nextExecutionTime.getLeft() * 1000) < currentTime || nextExecutionTime.getLeft() < minTime) {
 				nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
 				if (pmTrigger.getSchedule().getFrequencyTypeEnum() == FrequencyType.DO_NOT_REPEAT) {
@@ -606,6 +616,7 @@ public class PreventiveMaintenanceAPI {
 				}
 				continue;
 			}
+
 
 			nextExecutionTimes.add(nextExecutionTime.getLeft());
 

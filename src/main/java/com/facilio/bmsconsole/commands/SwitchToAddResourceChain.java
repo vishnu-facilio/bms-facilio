@@ -1,12 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.facilio.bmsconsole.templates.*;
-import com.facilio.command.FacilioCommand;
-import com.facilio.services.email.EmailClient;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -31,7 +32,13 @@ import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.bmsconsole.context.PurchasedToolContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.templates.EMailTemplate;
+import com.facilio.bmsconsole.templates.PushNotificationTemplate;
+import com.facilio.bmsconsole.templates.SMSTemplate;
+import com.facilio.bmsconsole.templates.TaskSectionTemplate;
+import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.Template.Type;
+import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.BimAPI;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.ImportAPI;
@@ -41,6 +48,7 @@ import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -53,6 +61,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.services.email.EmailClient;
 import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.ExpressionContext;
@@ -316,6 +325,10 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 					pm.setName(woTemplate.getSubject());
 					pm.setTitle(woTemplate.getSubject());
 					
+					if (pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE) {
+						pm.setSiteIds(Collections.singletonList(pm.getSiteId()));
+					}
+					
 					
 					Long pmId = null;
 					
@@ -376,20 +389,25 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 					String defaultValue = null;
 					String trueVal = null,falseVal = null;
 					Long pmId = null;
+					Long sectionId = null;
 					JSONArray optionsList = new JSONArray();
-					String sectionName = null;
 					
 					if(props.get("pmId") != null) {
 						pmId = Double.valueOf(props.remove("pmId").toString()).longValue();
+					}
+					if(props.get("sectionIdImport") != null) {
+						sectionId = Double.valueOf(props.remove("sectionIdImport").toString()).longValue();
 					}
 					if(props.get("defaultValue") != null) {
 						defaultValue = props.remove("defaultValue").toString();
 					}
 					if(props.get("trueVal") != null) {
 						trueVal = props.remove("trueVal").toString();
+						optionsList.add(trueVal);
 					}
 					if(props.get("falseVal") != null) {
 						falseVal = props.remove("falseVal").toString();
+						optionsList.add(falseVal);
 					}
 					if(props.get("options") != null) {
 						options = props.remove("options").toString();
@@ -400,11 +418,10 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 						}
 					}
 					
-					sectionName = (String) props.remove("sectionName");
-					
 					TaskTemplate taskTemplate = FieldUtil.getAsBeanFromMap(props, TaskTemplate.class);
+					
+					taskTemplate.setSectionId(sectionId);
 
-					taskTemplate.addAdditionInfo("sectionName", sectionName);
 					taskTemplate.setSiteId(-1l);
 					if(defaultValue != null) {
 						taskTemplate.addAdditionInfo("defaultValue", defaultValue);
@@ -432,36 +449,25 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				
 				List<TaskTemplate> taskTemplates = pmMap.get(pmId);
 				
-				Map<String,TaskSectionTemplate> sectionMap = new HashMap<String, TaskSectionTemplate>();
-				Map<String,TaskSectionTemplate> preRequisiteSectionMap = new HashMap<String, TaskSectionTemplate>();
 				int seq = 1;
+				Map<Long,TaskSectionTemplate> sectionMap = new HashMap<Long,TaskSectionTemplate>();
 				for(TaskTemplate taskTemplate : taskTemplates) {
-					String sectionName = (String) taskTemplate.getAdditionInfo().get("sectionName");
 					
-					TaskSectionTemplate sectionTemplate = null;
-					if(taskTemplate.isPreRequest()) {
-						sectionTemplate = preRequisiteSectionMap.getOrDefault(sectionName, new TaskSectionTemplate());
-					}
-					else {
-						sectionTemplate = sectionMap.getOrDefault(sectionName, new TaskSectionTemplate());
+					TaskSectionTemplate sectionTemplate = sectionMap.get(taskTemplate.getSectionId());
+					
+					if(sectionTemplate == null ) {
+						sectionTemplate =  (TaskSectionTemplate) TemplateAPI.getTemplate(taskTemplate.getSectionId());
+						sectionTemplate.setTaskTemplates(null);
 					}
 					
-					sectionTemplate.setName(sectionName);
-					sectionTemplate.setType(Type.PM_TASK_SECTION);
-					sectionTemplate.setAssignmentType(PMAssignmentType.CURRENT_ASSET.getVal());
-					
-					taskTemplate.setAssignmentType(PMAssignmentType.CURRENT_ASSET.getVal());
+					if(taskTemplate.getAssignmentType() <= 0) {
+						taskTemplate.setAssignmentType(PMAssignmentType.CURRENT_ASSET.getVal());
+					}
 					taskTemplate.setType(Type.PM_TASK);
 					taskTemplate.setSequence(seq++);
 					sectionTemplate.addTaskTemplates(taskTemplate);
 					
-					if(taskTemplate.isPreRequest()) {
-						sectionTemplate.setPreRequestSection(true);
-						preRequisiteSectionMap.put(sectionName, sectionTemplate);
-					}
-					else {
-						sectionMap.put(sectionName, sectionTemplate);
-					}
+					sectionMap.put(sectionTemplate.getId(), sectionTemplate);
 				}
 				
 				FacilioChain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceChain();
@@ -469,8 +475,6 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				FacilioContext newContext = updatePM.getContext();
 				
 				List<TaskSectionTemplate> sectionList = sectionMap.values().stream().collect(Collectors.toList());
-				
-				sectionList.addAll(preRequisiteSectionMap.values().stream().collect(Collectors.toList()));
 				
 				newContext.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(pmId));
 				newContext.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
@@ -482,9 +486,79 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				updatePM.execute();
 			}
 		}
+		else if(facilioModule.getName().equals(ModuleFactory.getTaskSectionTemplateModule().getName())) {
+			
+			Map<Long,List<TaskSectionTemplate>> sectionMap = new HashMap<Long, List<TaskSectionTemplate>>();
+			for(ReadingContext reading :readingsContext) {
+				Map<String, Object> props = FieldUtil.getAsProperties(reading);
+				
+				props = removeNullNodes.apply(props);
+				
+				if(reading.getId() <= 0) {
+					
+					Long pmId = null;
+					
+					if(props.get("pmId") != null) {
+						pmId = Double.valueOf(props.remove("pmId").toString()).longValue();
+					}
+					
+					Long assetCategoryId = null;
+					Long spaceCategoryId = null;
+					
+					if(props.get("assetCategoryId") != null) {
+						assetCategoryId = (Long) ((Map<String,Object>)props.remove("assetCategoryId")).get("id");
+					}
+					if(props.get("spaceCategoryId") != null) {
+						spaceCategoryId = (Long) ((Map<String,Object>)props.remove("spaceCategoryId")).get("id");
+					}
+					
+					
+					TaskSectionTemplate taskSectionTemplate = FieldUtil.getAsBeanFromMap(props, TaskSectionTemplate.class);
+					
+					if(assetCategoryId != null) {
+						taskSectionTemplate.setAssetCategoryId(assetCategoryId);
+					}
+					if(spaceCategoryId != null) {
+						taskSectionTemplate.setSpaceCategoryId(spaceCategoryId);
+					}
+					
+					taskSectionTemplate.setTaskTemplates(new ArrayList<TaskTemplate>());
+
+					List<TaskSectionTemplate> sections = sectionMap.getOrDefault(pmId, new ArrayList<TaskSectionTemplate>());
+					sections.add(taskSectionTemplate);
+					
+					sectionMap.put(pmId, sections);
+					
+				}
+			}
+			
+			for(Long pmId : sectionMap.keySet()) {
+				
+				PreventiveMaintenance pm = PreventiveMaintenanceAPI.getPMsDetails(Collections.singleton(pmId)).get(0);
+				
+				List<TaskSectionTemplate> sectionList = sectionMap.get(pmId).stream().collect(Collectors.toList());
+				
+				FacilioChain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceChain();
+				
+				FacilioContext newContext = updatePM.getContext();
+				
+				newContext.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(pmId));
+				newContext.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
+				newContext.put(FacilioConstants.ContextNames.WORK_ORDER, ((WorkorderTemplate)TemplateAPI.getTemplate(pm.getTemplateId())).getWorkorder());
+				newContext.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, sectionList);
+				newContext.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
+				newContext.put(FacilioConstants.ContextNames.SKIP_WO_CREATION,true);
+				
+				updatePM.execute();
+			}
+		}
 		else if(facilioModule.getName().equals(ModuleFactory.getPMIncludeExcludeResourceModule().getName())) {
 			
 			Map<Long,List<PMIncludeExcludeResourceContext>> pmMap = new HashMap<Long, List<PMIncludeExcludeResourceContext>>();
+			
+			Map<Long,List<PMIncludeExcludeResourceContext>> sectionMap = new HashMap<Long, List<PMIncludeExcludeResourceContext>>();
+			
+			Map<Long,List<PMIncludeExcludeResourceContext>> taskMap = new HashMap<Long, List<PMIncludeExcludeResourceContext>>();
 			
 			for(ReadingContext reading :readingsContext) {
 				Map<String, Object> props = FieldUtil.getAsProperties(reading);
@@ -496,8 +570,16 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				PMIncludeExcludeResourceContext inclExcl = FieldUtil.getAsBeanFromMap(props, PMIncludeExcludeResourceContext.class);
 				
 				inclExcl.setResourceId(resourceId);
-
-				inclExcl.setParentType(PMIncludeExcludeResourceContext.ParentType.PM.getVal());
+				if(inclExcl.getTaskTemplateId() != null) {
+					inclExcl.setParentType(PMIncludeExcludeResourceContext.ParentType.TASK_TEMPLATE.getVal());
+				}
+				else if(inclExcl.getTaskSectionTemplateId() != null) {
+					inclExcl.setParentType(PMIncludeExcludeResourceContext.ParentType.TASK_SECTION_TEMPLATE.getVal());
+				}
+				else if(inclExcl.getPmId() != null) {
+					inclExcl.setParentType(PMIncludeExcludeResourceContext.ParentType.PM.getVal());
+				}
+				
 				List<PMIncludeExcludeResourceContext> inclExclList = pmMap.getOrDefault(inclExcl.getPmId(), new ArrayList<PMIncludeExcludeResourceContext>());
 				
 				inclExclList.add(inclExcl);
@@ -510,9 +592,32 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				
 				PreventiveMaintenance pm = PreventiveMaintenanceAPI.getPMsDetails(Collections.singleton(pmId)).get(0);
 				
-				List<PMIncludeExcludeResourceContext> inclExcls = pmMap.get(pmId);
+				List<PMIncludeExcludeResourceContext> allInclExcls = pmMap.get(pmId);
 				
-				pm.setPmIncludeExcludeResourceContexts(inclExcls);
+				List<PMIncludeExcludeResourceContext> pmInclExcl = new ArrayList<PMIncludeExcludeResourceContext>();
+				Map<Long,List<PMIncludeExcludeResourceContext>> secInclExcl = new HashMap<Long,List<PMIncludeExcludeResourceContext>>();
+				Map<Long,List<PMIncludeExcludeResourceContext>> taskInclExcl = new HashMap<Long,List<PMIncludeExcludeResourceContext>>();
+				
+				for(PMIncludeExcludeResourceContext inclExcl : allInclExcls) {
+					if(inclExcl.getTaskTemplateId() != null) {
+						inclExcl.setPmId(null);
+						inclExcl.setTaskSectionTemplateId(null);
+						List<PMIncludeExcludeResourceContext> taskList = taskInclExcl.getOrDefault(inclExcl.getTaskTemplateId(), new ArrayList<PMIncludeExcludeResourceContext>());
+						taskList.add(inclExcl);
+						taskInclExcl.put(inclExcl.getTaskTemplateId(), taskList);
+					}
+					else if (inclExcl.getTaskSectionTemplateId() != null) {
+						inclExcl.setPmId(null);
+						List<PMIncludeExcludeResourceContext> sectionList = secInclExcl.getOrDefault(inclExcl.getTaskSectionTemplateId(), new ArrayList<PMIncludeExcludeResourceContext>());
+						sectionList.add(inclExcl);
+						secInclExcl.put(inclExcl.getTaskSectionTemplateId(), sectionList);
+					}
+					else if (inclExcl.getPmId() != null) {
+						pmInclExcl.add(inclExcl);
+					}
+				}
+				
+				pm.setPmIncludeExcludeResourceContexts(pmInclExcl);
 				
 				pm.setResourcePlanners(null);   			// resetting resource planner on incl and excl
 				
@@ -525,6 +630,24 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				List<TaskSectionTemplate> taskSectionTemplates = new ArrayList<TaskSectionTemplate>();
 				if(template.getSectionTemplates() != null) {
 					taskSectionTemplates.addAll(template.getSectionTemplates());
+					
+					for(TaskSectionTemplate sectionTemplate : template.getSectionTemplates()) {
+						
+						if(secInclExcl.get(sectionTemplate.getId()) != null) {
+							sectionTemplate.setPmIncludeExcludeResourceContexts(secInclExcl.get(sectionTemplate.getId()));
+						}
+						if(sectionTemplate.getTaskTemplates() != null) {
+							for(TaskTemplate task : sectionTemplate.getTaskTemplates()) {
+								
+								if(taskInclExcl.get(task.getId()) != null) {
+									task.setPmIncludeExcludeResourceContexts(taskInclExcl.get(task.getId()));
+								}
+							}
+						}
+						else {
+							sectionTemplate.setTaskTemplates(new ArrayList<TaskTemplate>());
+						}
+					}
 				}
 				if(template.getPreRequestSectionTemplates() != null && !template.getPreRequestSectionTemplates().isEmpty()) {
 					taskSectionTemplates.addAll(template.getPreRequestSectionTemplates());

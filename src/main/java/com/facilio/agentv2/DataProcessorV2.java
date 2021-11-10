@@ -42,8 +42,10 @@ import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.util.*;
 
@@ -83,6 +85,7 @@ public class DataProcessorV2
 
             FacilioAgent agent = getFacilioAgentForPayload(payload);
 
+            //preprocess the JSON data if necessary
             if(agent.getTransformWorkflowId() > 0) {
                 WorkflowContext transformWorkflow = WorkflowUtil.getWorkflowContext(agent.getTransformWorkflowId());
                 FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
@@ -90,7 +93,8 @@ public class DataProcessorV2
                 context.put(WorkflowV2Util.WORKFLOW_CONTEXT, transformWorkflow);
                 context.put(WorkflowV2Util.WORKFLOW_PARAMS, Collections.singletonList(payload));
                 chain.execute();
-                payload = (JSONObject) transformWorkflow.getReturnValue();
+                HashMap mapFromPreProcessor = (HashMap) transformWorkflow.getReturnValue();
+                payload = (JSONObject) new JSONParser().parse(JSONObject.toJSONString(mapFromPreProcessor));
             }
 
             Long timeStamp = System.currentTimeMillis();

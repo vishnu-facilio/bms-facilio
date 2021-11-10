@@ -141,6 +141,10 @@ public class ImportFieldFactory {
 				fields = getPMTaskImportFields();
 				break;
 			}
+			case "tasksectiontemplate" :{
+				fields = getPMTaskSectionImportFields();
+				break;
+			}
 			case "PMIncludeExcludeResource" :{
 				fields = getPMInclExclFields();
 				break;
@@ -202,6 +206,18 @@ public class ImportFieldFactory {
 	private static List<FacilioField> getPMInclExclFields() {
 		return FieldFactory.getPMIncludeExcludeResourceFields();
 	}
+	
+	public static List<FacilioField> getPMTaskSectionImportFields() {
+		// TODO Auto-generated method stub
+		
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+		
+		fields.addAll(FieldFactory.getTaskSectionTemplateFields());
+		fields.addAll(FieldFactory.getTemplateFields());
+		fields.add(FieldFactory.getField("pmId","PM Id",null, ModuleFactory.getTaskTemplateModule(), FieldType.STRING));
+		
+		return fields;
+	}
 
 	public static List<FacilioField> getPMTaskImportFields() {
 		
@@ -209,10 +225,10 @@ public class ImportFieldFactory {
 		
 		fields.addAll(FieldFactory.getTaskTemplateFields());
 		fields.addAll(FieldFactory.getTemplateFields());
+		fields.add(FieldFactory.getField("sectionIdImport","Section ID - Import",null, ModuleFactory.getTaskTemplateModule(), FieldType.STRING));
 		fields.add(FieldFactory.getField("pmId","PM Id",null, ModuleFactory.getTaskTemplateModule(), FieldType.STRING));
 		fields.add(FieldFactory.getField("defaultValue","Default Value",null, ModuleFactory.getTaskTemplateModule(), FieldType.STRING));
 		fields.add(FieldFactory.getField("options","Option List",null, ModuleFactory.getTaskTemplateModule(), FieldType.STRING));
-		fields.add(FieldFactory.getField("sectionName","Section Name",null, ModuleFactory.getTaskTemplateModule(), FieldType.STRING));
 		
 		fields.add(FieldFactory.getField("isPreRequest","Is Pre-Request",null, ModuleFactory.getTaskTemplateModule(), FieldType.BOOLEAN));
 		fields.add(FieldFactory.getField("trueVal","True Value",null, ModuleFactory.getTaskTemplateModule(), FieldType.STRING));
