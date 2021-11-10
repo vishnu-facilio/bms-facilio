@@ -3,6 +3,7 @@ package com.facilio.qa.command;
 import com.facilio.bmsconsole.commands.VerifyApprovalCommand;
 import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
 import com.facilio.chain.FacilioChain;
+import com.facilio.qa.rules.commands.ExecuteQAndAActionRules;
 import com.facilio.qa.rules.commands.ExecuteQAndARulesCommand;
 import com.facilio.qa.rules.commands.ExecuteQAndAScoringRules;
 import com.facilio.qa.rules.pojo.QAndARuleType;
@@ -54,8 +55,8 @@ public class QAndATransactionChainFactory {
         // So not adding roll-up field entry for total score and full score. We should add when we execute scoring rules while saving answer itself
         // Also when we implement action rules, that should be executed in post transaction
         c.addCommand(new ExecuteQAndAScoringRules());
-        c.addCommand(new ExecuteQAndARulesCommand(QAndARuleType.WORKFLOW));
         c.addCommand(new UpdateAnswerScoreCommand());
+        c.addCommand(new ExecuteQAndAActionRules());
 
         return c;
     }

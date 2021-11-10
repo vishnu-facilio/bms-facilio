@@ -11,6 +11,8 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.QuestionContext;
+import com.facilio.qa.rules.commands.ExecuteQAndARulesCommand;
+import com.facilio.qa.rules.commands.ExecuteQAndAScoringRules;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
@@ -34,28 +36,16 @@ public class ActionRuleCondition extends RuleCondition {
     @Override
     public void executeTrueAction(QuestionContext question, AnswerContext answer) throws Exception {
 
-        long startTime = System.currentTimeMillis();
-        actions = getActiveActionsFromWorkflowRule(getRuleId());
-        Map<String, Object> placeHolders = new HashMap<>();
-        CommonCommandUtil.appendModuleNameInKey(null, "rule", FieldUtil.getAsProperties(this), placeHolders);
-        placeHolders.put("question", question.getQuestion());
-        placeHolders.put("answer", answer.getClientAnswerContext());
-        LOGGER.debug("Time taken to fetch actions for Q_and_A_rule id : " + getRuleId() + " with actions : " + actions + " is " + (System.currentTimeMillis() - startTime));
-        if (actions != null) {
+        if (hasAction()) {
+            long startTime = System.currentTimeMillis();
+            Map<String, Object> placeHolders = new HashMap<>();
+            CommonCommandUtil.appendModuleNameInKey(null, "rule", FieldUtil.getAsProperties(this), placeHolders);
+            placeHolders.put("question", question.getQuestion());
+            placeHolders.put("answer", answer.getClientAnswerContext());
+            LOGGER.debug("Time taken to fetch actions for Q_and_A_rule id : " + getRuleId() + " with actions : " + actions + " is " + (System.currentTimeMillis() - startTime));
             for (ActionContext action : actions) {
                 action.executeAction(placeHolders, null, null, null);
             }
         }
-    }
-
-    private static List<ActionContext> getActiveActionsFromWorkflowRule(long ruleId) throws Exception {
-        FacilioModule module = ModuleFactory.getActionModule();
-        GenericSelectRecordBuilder actionBuilder = new GenericSelectRecordBuilder()
-                .select(FieldFactory.getActionFields())
-                .table(module.getTableName())
-                .innerJoin("Eval_Rule_Action_Rel")
-                .on("Action.ID = Eval_Rule_Action_Rel.ACTION_ID")
-                .andCustomWhere("Eval_Rule_Action_Rel.RULE_ID = ? AND Action.STATUS = ?", ruleId, true);
-        return ActionAPI.getActionsFromPropList(actionBuilder.get());
     }
 }
