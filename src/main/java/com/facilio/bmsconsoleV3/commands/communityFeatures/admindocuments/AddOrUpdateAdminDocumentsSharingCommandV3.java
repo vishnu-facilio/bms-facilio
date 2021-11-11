@@ -38,7 +38,7 @@ public class AddOrUpdateAdminDocumentsSharingCommandV3 extends FacilioCommand {
                 else if(doc.getAudience() != null && doc.getAudience().getId() > 0){
                     continue;
                 }
-                else if(doc.getAudience() != null && CollectionUtils.isNotEmpty(doc.getAudience().getAudienceSharing())){
+                else if(doc.getAudience() != null && CollectionUtils.isNotEmpty(doc.getAudience().getAudiencesharing())){
                     CommunityFeaturesAPI.addAudience(doc.getAudience());
                     doc.setAudience(doc.getAudience());
                 }

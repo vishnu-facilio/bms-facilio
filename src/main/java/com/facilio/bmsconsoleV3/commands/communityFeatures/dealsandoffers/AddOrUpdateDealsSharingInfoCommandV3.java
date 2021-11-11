@@ -38,7 +38,7 @@ public class AddOrUpdateDealsSharingInfoCommandV3 extends FacilioCommand {
                 else if(deal.getAudience() != null && deal.getAudience().getId() > 0){
                     continue;
                 }
-                else if(deal.getAudience() != null && CollectionUtils.isNotEmpty(deal.getAudience().getAudienceSharing())){
+                else if(deal.getAudience() != null && CollectionUtils.isNotEmpty(deal.getAudience().getAudiencesharing())){
                     CommunityFeaturesAPI.addAudience(deal.getAudience());
                     deal.setAudience(deal.getAudience());
                 }

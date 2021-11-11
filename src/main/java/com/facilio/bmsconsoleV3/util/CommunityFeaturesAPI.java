@@ -213,13 +213,13 @@ public class CommunityFeaturesAPI {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.Tenant.AUDIENCE_SHARING);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-        List<LookupField> fetchSupplementsList = Arrays.asList((LookupField) fieldsAsMap.get("sharedToSpace"));
+        List<LookupField> fetchSupplementsList = Arrays.asList((LookupField) fieldsAsMap.get("sharedToSpace"),(LookupField) fieldsAsMap.get("sharedToRole"),(LookupField) fieldsAsMap.get("sharedToPeople"));
 
         SelectRecordsBuilder<CommunitySharingInfoContext> builder = new SelectRecordsBuilder<CommunitySharingInfoContext>()
                 .moduleName(FacilioConstants.ContextNames.Tenant.AUDIENCE_SHARING)
                 .select(fields)
                 .beanClass(CommunitySharingInfoContext.class)
-                .fetchSupplements(fetchSupplementsList)
+                //.fetchSupplements(fetchSupplementsList)
                 .andCondition(CriteriaAPI.getCondition("AUDIENCE_ID", "audienceId", String.valueOf(audience.getId()), NumberOperators.EQUALS));
         List<CommunitySharingInfoContext> list = builder.get();
         return list;
@@ -237,12 +237,12 @@ public class CommunityFeaturesAPI {
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Tenant.AUDIENCE);
         V3RecordAPI.addRecord(false, Collections.singletonList(audience), module, modBean.getAllFields(FacilioConstants.ContextNames.Tenant.AUDIENCE));
 
-        for(CommunitySharingInfoContext sharing : audience.getAudienceSharing()){
+        for(CommunitySharingInfoContext sharing : audience.getAudiencesharing()){
             sharing.setAudienceId(audience.getId());
         }
 
         FacilioModule sharingInfoModule = modBean.getModule(FacilioConstants.ContextNames.Tenant.AUDIENCE_SHARING);
-        V3RecordAPI.addRecord(false, audience.getAudienceSharing(), sharingInfoModule, modBean.getAllFields(FacilioConstants.ContextNames.Tenant.AUDIENCE_SHARING));
+        V3RecordAPI.addRecord(false, audience.getAudiencesharing(), sharingInfoModule, modBean.getAllFields(FacilioConstants.ContextNames.Tenant.AUDIENCE_SHARING));
 
     }
 
