@@ -24,7 +24,7 @@ public class AudiencePageFactory extends PageFactory{
 
         PageWidget publishToWidget = new PageWidget(PageWidget.WidgetType.PUBLISH_TO_INFO);
         publishToWidget.addToLayoutParams(tab1Sec1, 24, 6);
-        publishToWidget.setTitle("Published To");
+        publishToWidget.setTitle("Publish To");
         publishToWidget.addToWidgetParams("sharingInfoModuleName", FacilioConstants.ContextNames.Tenant.ANNOUNCEMENTS_SHARING_INFO);
         tab1Sec1.addWidget(publishToWidget);
 

@@ -221,15 +221,22 @@ public class CommunityFeaturesAPI {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.Tenant.AUDIENCE_SHARING);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-        List<LookupField> fetchSupplementsList = Arrays.asList((LookupField) fieldsAsMap.get("sharedToSpace"),(LookupField) fieldsAsMap.get("sharedToRole"),(LookupField) fieldsAsMap.get("sharedToPeople"));
+        List<LookupField> fetchSupplementsList = Arrays.asList((LookupField) fieldsAsMap.get("sharedToSpace"),(LookupField) fieldsAsMap.get("sharedToPeople"));
 
         SelectRecordsBuilder<CommunitySharingInfoContext> builder = new SelectRecordsBuilder<CommunitySharingInfoContext>()
                 .moduleName(FacilioConstants.ContextNames.Tenant.AUDIENCE_SHARING)
                 .select(fields)
                 .beanClass(CommunitySharingInfoContext.class)
-                //.fetchSupplements(fetchSupplementsList)
+                .fetchSupplements(fetchSupplementsList)
                 .andCondition(CriteriaAPI.getCondition("AUDIENCE_ID", "audienceId", String.valueOf(audience.getId()), NumberOperators.EQUALS));
         List<CommunitySharingInfoContext> list = builder.get();
+
+        for(CommunitySharingInfoContext sharing:list){
+            if(sharing.getSharedToRoleId() != null && sharing.getSharedToRoleId() > 0){
+                sharing.setSharedToRole(AccountUtil.getRoleBean().getRole(sharing.getSharedToRoleId()));
+            }
+        }
+
         return list;
 
     }

@@ -71,6 +71,19 @@ public class CommunitySharingInfoContext extends V3Context {
         this.sharedToRole = sharedToRole;
     }
 
+    private Long sharedToRoleId;
+    public Long getSharedToRoleId() {
+        if(this.sharedToRole != null){
+            return this.sharedToRole.getRoleId();
+        }else {
+            return sharedToRoleId;
+        }
+    }
+
+    public void setSharedToRoleId(Long sharedToRoleId) {
+        this.sharedToRoleId = sharedToRoleId;
+    }
+
     public PeopleContext getSharedToPeople() {
         return sharedToPeople;
     }
