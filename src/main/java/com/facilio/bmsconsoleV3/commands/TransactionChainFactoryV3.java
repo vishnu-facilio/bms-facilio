@@ -7,6 +7,9 @@ import com.facilio.bmsconsole.automation.command.AddOrUpdateGlobalVariableGroupC
 import com.facilio.bmsconsole.automation.command.DeleteGlobalVariableCommand;
 import com.facilio.bmsconsole.automation.command.DeleteGlobalVariableGroupCommand;
 import com.facilio.bmsconsole.commands.*;
+import com.facilio.bmsconsoleV3.commands.accessibleSpaces.AddAccessibleSpacesCommand;
+import com.facilio.bmsconsoleV3.commands.accessibleSpaces.DeleteAccessibleSpacesCommand;
+import com.facilio.bmsconsoleV3.commands.accessibleSpaces.FetchAccessibleSpacesCommand;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
@@ -38,7 +41,6 @@ import com.facilio.bmsconsoleV3.commands.purchaseorder.POBeforeCreateOrEditV3Com
 import com.facilio.bmsconsoleV3.commands.purchaseorder.UpdateIsPoCreatedCommand;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.PreFillAddPurchaseRequestCommand;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.PurchaseRequestTotalCostRollUpCommandV3;
-import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.tenant.AddTenantSpaceRelationCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenant.AddTenantUserCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.CheckForMandatoryTenantIdCommandV3;
@@ -55,7 +57,6 @@ import com.facilio.bmsconsoleV3.commands.visitorlogging.*;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.chain.FacilioChain;
-import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.trigger.command.*;
 import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
@@ -1074,6 +1075,24 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdateItemTransactionAfterTransferCommandV3());
         c.addCommand(new UpdateToolTransactionAfterTransferCommandV3());
 
+        return c;
+    }
+
+    public static FacilioChain getAddAccessibleSpaceChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddAccessibleSpacesCommand());
+        return c;
+    }
+
+    public static FacilioChain getDeleteAccessibleSpaceChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new DeleteAccessibleSpacesCommand());
+        return c;
+    }
+
+    public static FacilioChain getFetchAccessibleSpaceChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchAccessibleSpacesCommand());
         return c;
     }
 }
