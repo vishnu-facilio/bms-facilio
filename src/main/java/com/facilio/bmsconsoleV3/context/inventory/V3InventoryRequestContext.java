@@ -104,14 +104,14 @@ public class V3InventoryRequestContext extends BaseLineItemsParentModuleContext 
         this.requiredTime = requiredTime;
     }
 
-    public void addLineItem(V3InventoryRequestLineItemContext lineItem) {
-        if (lineItem == null) {
+    public void addLineItem(V3InventoryRequestLineItemContext lineItems) {
+        if (lineItems == null) {
             return;
         }
         if (this.lineItems == null) {
             this.lineItems = new ArrayList<V3InventoryRequestLineItemContext>();
         }
-        this.lineItems.add(lineItem);
+        this.lineItems.add(lineItems);
     }
 
     private User requestedBy;

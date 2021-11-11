@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.page.factory;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestContext;
 import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONObject;
 
@@ -17,7 +18,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
 public class InventoryRequestPageFactory extends PageFactory {
-	public static Page getInventoryRequestPage(InventoryRequestContext inventoryRequest, FacilioModule module)
+	public static Page getInventoryRequestPage(V3InventoryRequestContext inventoryRequest, FacilioModule module)
 			throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		Page page = new Page();

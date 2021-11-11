@@ -2207,8 +2207,8 @@ public class FacilioConstants {
 			classMap.put(GATE_PASS, GatePassContext.class);
 			classMap.put(GATE_PASS_LINE_ITEMS, GatePassLineItemsContext.class);
 			classMap.put(CONNECTED_APPS, ConnectedAppContext.class);
-			classMap.put(INVENTORY_REQUEST, InventoryRequestContext.class);
-			classMap.put(INVENTORY_REQUEST_LINE_ITEMS, InventoryRequestLineItemContext.class);
+			classMap.put(INVENTORY_REQUEST, V3InventoryRequestContext.class);
+			classMap.put(INVENTORY_REQUEST_LINE_ITEMS, V3InventoryRequestLineItemContext.class);
 			classMap.put(SERVICE, V3ServiceContext.class);
 			classMap.put(WARRANTY_CONTRACTS, WarrantyContractContext.class);
 			classMap.put(WARRANTY_CONTRACTS_LINE_ITEMS, WarrantyContractLineItemContext.class);

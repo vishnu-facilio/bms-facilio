@@ -366,6 +366,30 @@ public class FormFactory {
 					sections.add(attendeeSection);
 				}
 			}
+
+			else if (moduleName.equals(ContextNames.INVENTORY_REQUEST)) {
+				List<FormSection> sections = new ArrayList<>();
+
+				List<FormField> defaultFields = new ArrayList<>();
+				List<FormField> lineItemFields = new ArrayList<>();
+
+				form.setSections(sections);
+				FormSection defaultSection = new FormSection("Inventory Request", 1, defaultFields, true);
+				FormSection lineItemSection = new FormSection("Line Items", 4, lineItemFields, true);
+
+
+				form.getFields().forEach(field -> {
+					if (field.getDisplayTypeEnum() == FieldDisplayType.INVREQUEST_LINE_ITEMS) {
+						lineItemFields.add(field);
+					}
+					else {
+						defaultFields.add(field);
+					}
+				});
+
+				sections.add(defaultSection);
+				sections.add(lineItemSection);
+			}
 			else if (moduleName.equals(ContextNames.TRANSFER_REQUEST)) {
 				List<FormSection> sections = new ArrayList<>();
 
@@ -2213,10 +2237,10 @@ public class FormFactory {
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("requestedTime", FieldDisplayType.DATE, "Requested Date", Required.OPTIONAL, 3, 2));
 		fields.add(new FormField("requiredTime", FieldDisplayType.DATE, "Required Date", Required.OPTIONAL, 3, 3));
-		fields.add(new FormField("requestedBy", FieldDisplayType.USER, "Requested By", Required.OPTIONAL, "requester", 4, 2));
-		fields.add(new FormField("requestedFor", FieldDisplayType.USER, "Requested For", Required.OPTIONAL, "requester", 4, 3));
+		fields.add(new FormField("requestedBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "user", 4, 2));
+		fields.add(new FormField("requestedFor", FieldDisplayType.LOOKUP_SIMPLE, "Requested For", Required.OPTIONAL, "user", 4, 3));
 		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", Required.OPTIONAL, "storeRoom", 5, 1));
-		fields.add(new FormField("lineItems", FieldDisplayType.INVREQUEST_LINE_ITEMS, "LINE ITEMS", Required.REQUIRED, 6, 1));
+		fields.add(new FormField("transferrequestlineitems", FieldDisplayType.INVREQUEST_LINE_ITEMS, "LINE ITEMS", Required.REQUIRED, 6, 1));
 		
 		return fields;
 	}

@@ -11,6 +11,7 @@ import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestLineItemContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -52,7 +53,7 @@ public class AddOrUpdateInventoryRequestCommandV3 extends FacilioCommand {
                                     .andCondition(CriteriaAPI.getCondition("INVENTORY_REQUEST_ID", "inventoryRequestId", String.valueOf(inventoryRequestContexts.getId()), NumberOperators.EQUALS));
                             deleteBuilder.delete();
                             updateLineItems(inventoryRequestContexts);
-                            RecordAPI.addRecord(false, inventoryRequestContexts.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+                            V3RecordAPI.addRecord(false, inventoryRequestContexts.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
                         }
                     }
                 }

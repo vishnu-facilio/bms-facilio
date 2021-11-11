@@ -12,6 +12,7 @@ import com.facilio.bmsconsoleV3.commands.accessibleSpaces.DeleteAccessibleSpaces
 import com.facilio.bmsconsoleV3.commands.accessibleSpaces.FetchAccessibleSpacesCommand;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.AddOrUpdateInventoryRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.ValidateInventoryRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.ValidateInventoryRequestUpdateCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
