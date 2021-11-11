@@ -711,7 +711,7 @@ public class CommonCommandUtil {
 					.filter(task -> task.getResource() != null)
 					.map(task -> task.getResource().getId())
 					.collect(Collectors.toList());
-			Map<Long, ResourceContext> resources = ResourceAPI.getExtendedResourcesAsMapFromIds(resourceIds, true);
+			Map<Long, ResourceContext> resources = ResourceAPI.getExtendedResourcesAsMapFromIds(resourceIds, true, true);
 			if(resources != null && !resources.isEmpty()) {
 				for(TaskContext task: tasks) {
 					ResourceContext resource = task.getResource();

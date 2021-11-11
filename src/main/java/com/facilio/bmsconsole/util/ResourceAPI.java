@@ -156,6 +156,11 @@ public class ResourceAPI {
 
 	public static List<ResourceContext> getExtendedResources(List<Long> resourceIds, boolean fetchDeleted)
 			throws Exception {
+		return getExtendedResources(resourceIds, fetchDeleted, false);
+	}
+
+	public static List<ResourceContext> getExtendedResources(List<Long> resourceIds, boolean fetchDeleted, boolean skipResourceScoping)
+			throws Exception {
 		List<ResourceContext> resources = getResources(resourceIds, fetchDeleted);
 		if (resources != null && !resources.isEmpty()) {
 			Set<Long> spaceIds = new HashSet<Long>();
@@ -177,8 +182,8 @@ public class ResourceAPI {
 					break;
 				}
 			}
-			Map<Long, BaseSpaceContext> spaceMap = spaceIds.isEmpty() ? null : getSpaces(spaceIds, fetchDeleted);
-			Map<Long, AssetContext> assetMap = assetIds.isEmpty() ? null : getAssets(assetIds, fetchDeleted);
+			Map<Long, BaseSpaceContext> spaceMap = spaceIds.isEmpty() ? null : getSpaces(spaceIds, fetchDeleted, skipResourceScoping);
+			Map<Long, AssetContext> assetMap = assetIds.isEmpty() ? null : getAssets(assetIds, fetchDeleted, skipResourceScoping);
 
 			for (int i = 0; i < resources.size(); i++) {
 				ResourceContext resource = resources.get(i);
@@ -204,8 +209,13 @@ public class ResourceAPI {
 	}
 
 	public static Map<Long, ResourceContext> getExtendedResourcesAsMapFromIds(List<Long> resourceIds,
-			boolean fetchDeleted) throws Exception {
-		List<ResourceContext> resources = getExtendedResources(resourceIds, fetchDeleted);
+																			  boolean fetchDeleted) throws Exception {
+		return getExtendedResourcesAsMapFromIds(resourceIds, fetchDeleted, false);
+	}
+
+	public static Map<Long, ResourceContext> getExtendedResourcesAsMapFromIds(List<Long> resourceIds,
+			boolean fetchDeleted, boolean skipResourceScoping) throws Exception {
+		List<ResourceContext> resources = getExtendedResources(resourceIds, fetchDeleted, skipResourceScoping);
 		Map<Long, ResourceContext> resourceMap = new HashMap<>();
 		if (resources != null && !resources.isEmpty()) {
 			for (ResourceContext resource : resources) {
@@ -216,6 +226,10 @@ public class ResourceAPI {
 	}
 
 	private static Map<Long, BaseSpaceContext> getSpaces(Set<Long> spaceIds, boolean fetchDeleted) throws Exception {
+		return getSpaces(spaceIds, fetchDeleted, false);
+	}
+
+	private static Map<Long, BaseSpaceContext> getSpaces(Set<Long> spaceIds, boolean fetchDeleted, boolean skipResourceScoping) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
@@ -226,10 +240,17 @@ public class ResourceAPI {
 		if (fetchDeleted) {
 			selectBuilder.fetchDeleted();
 		}
+		if(skipResourceScoping){
+			selectBuilder.skipScopeCriteria();
+		}
 		return selectBuilder.getAsMap();
 	}
 
 	private static Map<Long, AssetContext> getAssets(Set<Long> assetIds, boolean fetchDeleted) throws Exception {
+		return getAssets(assetIds, fetchDeleted, false);
+	}
+
+	private static Map<Long, AssetContext> getAssets(Set<Long> assetIds, boolean fetchDeleted, boolean skipScoping) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
@@ -239,6 +260,9 @@ public class ResourceAPI {
 				.andCondition(CriteriaAPI.getIdCondition(assetIds, module));
 		if (fetchDeleted) {
 			selectBuilder.fetchDeleted();
+		}
+		if(skipScoping) {
+			selectBuilder.skipScopeCriteria();
 		}
 		return selectBuilder.getAsMap();
 	}
@@ -298,7 +322,7 @@ public class ResourceAPI {
 					return;
 				}
 
-				Map<Long, ResourceContext> resources = ResourceAPI.getExtendedResourcesAsMapFromIds(resourceIds, true);
+				Map<Long, ResourceContext> resources = ResourceAPI.getExtendedResourcesAsMapFromIds(resourceIds, true, true);
 				if (resources != null && !resources.isEmpty()) {
 					for (ModuleBaseWithCustomFields record : records) {
 						if (record.getData() != null) {

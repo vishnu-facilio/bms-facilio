@@ -658,7 +658,7 @@ public class V3TicketAPI {
                     .filter(ticket -> ticket != null && ticket.getResource() != null)
                     .map(ticket -> ticket.getResource().getId())
                     .collect(Collectors.toList());
-            Map<Long, ResourceContext> resources = ResourceAPI.getExtendedResourcesAsMapFromIds(resourceIds, true);
+            Map<Long, ResourceContext> resources = ResourceAPI.getExtendedResourcesAsMapFromIds(resourceIds, true, true);
             if(resources != null && !resources.isEmpty()) {
                 for(V3TicketContext ticket : tickets) {
                     if (ticket != null) {
