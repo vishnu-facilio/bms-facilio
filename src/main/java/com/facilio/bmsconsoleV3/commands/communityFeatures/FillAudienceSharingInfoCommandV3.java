@@ -20,7 +20,7 @@ public class FillAudienceSharingInfoCommandV3 extends FacilioCommand {
         //temp handling.this command can be removed once fetch related records are fetched in v3
         if(CollectionUtils.isNotEmpty(list)) {
             for(AudienceContext audience : list) {
-                audience.setAudiencesharing(CommunityFeaturesAPI.setAudienceSharingInfo(audience));
+                audience.setAudienceSharing(CommunityFeaturesAPI.setAudienceSharingInfo(audience));
             }
         }
         recordMap.put(moduleName,list);

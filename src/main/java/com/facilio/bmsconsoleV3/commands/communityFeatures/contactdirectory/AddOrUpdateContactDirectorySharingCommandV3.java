@@ -38,7 +38,7 @@ public class AddOrUpdateContactDirectorySharingCommandV3 extends FacilioCommand 
                 else if(contact.getAudience() != null && contact.getAudience().getId() > 0){
                     continue;
                 }
-                else if(contact.getAudience() != null && CollectionUtils.isNotEmpty(contact.getAudience().getAudiencesharing())){
+                else if(contact.getAudience() != null && CollectionUtils.isNotEmpty(contact.getAudience().getAudienceSharing())){
                     CommunityFeaturesAPI.addAudience(contact.getAudience());
                     contact.setAudience(contact.getAudience());
                 }

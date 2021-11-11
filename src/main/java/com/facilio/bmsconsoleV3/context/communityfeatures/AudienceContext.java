@@ -17,13 +17,13 @@ public class AudienceContext extends V3Context {
         this.name = name;
     }
 
-    private List<CommunitySharingInfoContext> audiencesharing;
+    private List<CommunitySharingInfoContext> audienceSharing;
 
-    public List<CommunitySharingInfoContext> getAudiencesharing() {
-        return audiencesharing;
+    public List<CommunitySharingInfoContext> getAudienceSharing() {
+        return audienceSharing;
     }
 
-    public void setAudiencesharing(List<CommunitySharingInfoContext> audiencesharing) {
-        this.audiencesharing = audiencesharing;
+    public void setAudienceSharing(List<CommunitySharingInfoContext> audienceSharing) {
+        this.audienceSharing = audienceSharing;
     }
 }

@@ -38,7 +38,7 @@ public class AddOrUpdateNeighbourhoodSharingCommandV3 extends FacilioCommand {
                 else if(neighbourhood.getAudience() != null && neighbourhood.getAudience().getId() > 0){
                     continue;
                 }
-                else if(neighbourhood.getAudience() != null && CollectionUtils.isNotEmpty(neighbourhood.getAudience().getAudiencesharing())){
+                else if(neighbourhood.getAudience() != null && CollectionUtils.isNotEmpty(neighbourhood.getAudience().getAudienceSharing())){
                     CommunityFeaturesAPI.addAudience(neighbourhood.getAudience());
                     neighbourhood.setAudience(neighbourhood.getAudience());
                 }

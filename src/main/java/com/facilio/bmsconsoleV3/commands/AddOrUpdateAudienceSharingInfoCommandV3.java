@@ -30,11 +30,11 @@ public class AddOrUpdateAudienceSharingInfoCommandV3  extends FacilioCommand {
                     deleteAudienceSharing(audience.getId());
                 }
 
-                if(CollectionUtils.isNotEmpty(audience.getAudiencesharing())) {
-                    for(CommunitySharingInfoContext sharing : audience.getAudiencesharing()){
+                if(CollectionUtils.isNotEmpty(audience.getAudienceSharing())) {
+                    for(CommunitySharingInfoContext sharing : audience.getAudienceSharing()){
                         sharing.setAudienceId(audience.getId());
                     }
-                    V3RecordAPI.addRecord(false, audience.getAudiencesharing(), sharingInfoModule, modBean.getAllFields(FacilioConstants.ContextNames.Tenant.AUDIENCE_SHARING));
+                    V3RecordAPI.addRecord(false, audience.getAudienceSharing(), sharingInfoModule, modBean.getAllFields(FacilioConstants.ContextNames.Tenant.AUDIENCE_SHARING));
                 }
             }
         }

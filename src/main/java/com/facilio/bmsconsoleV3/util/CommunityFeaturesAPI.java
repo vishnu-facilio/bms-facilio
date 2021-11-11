@@ -252,12 +252,12 @@ public class CommunityFeaturesAPI {
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Tenant.AUDIENCE);
         V3RecordAPI.addRecord(false, Collections.singletonList(audience), module, modBean.getAllFields(FacilioConstants.ContextNames.Tenant.AUDIENCE));
 
-        for(CommunitySharingInfoContext sharing : audience.getAudiencesharing()){
+        for(CommunitySharingInfoContext sharing : audience.getAudienceSharing()){
             sharing.setAudienceId(audience.getId());
         }
 
         FacilioModule sharingInfoModule = modBean.getModule(FacilioConstants.ContextNames.Tenant.AUDIENCE_SHARING);
-        V3RecordAPI.addRecord(false, audience.getAudiencesharing(), sharingInfoModule, modBean.getAllFields(FacilioConstants.ContextNames.Tenant.AUDIENCE_SHARING));
+        V3RecordAPI.addRecord(false, audience.getAudienceSharing(), sharingInfoModule, modBean.getAllFields(FacilioConstants.ContextNames.Tenant.AUDIENCE_SHARING));
 
     }
 

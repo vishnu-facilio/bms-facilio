@@ -37,7 +37,7 @@ public class AddOrUpdateAnnouncementSharingInfoCommandV3 extends FacilioCommand 
                 else if(announcement.getAudience() != null && announcement.getAudience().getId() > 0){
                     continue;
                 }
-                else if(announcement.getAudience() != null && CollectionUtils.isNotEmpty(announcement.getAudience().getAudiencesharing())){
+                else if(announcement.getAudience() != null && CollectionUtils.isNotEmpty(announcement.getAudience().getAudienceSharing())){
                     CommunityFeaturesAPI.addAudience(announcement.getAudience());
                     announcement.setAudience(announcement.getAudience());
                 }

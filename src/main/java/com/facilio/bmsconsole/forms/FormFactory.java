@@ -3034,7 +3034,7 @@ public class FormFactory {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Group Name", Required.REQUIRED, 1, 1));
 
-		fields.add(new FormField("audiencesharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 6, 1));
+		fields.add(new FormField("audienceSharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 6, 1));
 		return fields;
 	}
 
