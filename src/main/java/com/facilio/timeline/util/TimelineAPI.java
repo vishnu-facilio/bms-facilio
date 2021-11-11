@@ -65,8 +65,9 @@ public class TimelineAPI {
                 .select(aggregateFields)
                 .groupBy(groupBy.toString())
                 .andCriteria(timeCriteria);
+        long startTime = System.currentTimeMillis();
         List<Map<String, Object>> aggregateValue = aggregateBuilder.getAsProps();
-        LOGGER.error("query for aggregate value: " + aggregateBuilder);
+        LOGGER.error("query for aggregate value: " + aggregateBuilder + "; time taken is: " + (System.currentTimeMillis() - startTime));
 
 
         List<FacilioField> allModuleFields = new ArrayList<>(allFields);
@@ -84,8 +85,9 @@ public class TimelineAPI {
         builder.andCustomWhere("FIND_IN_SET(" + startTimeField.getCompleteColumnName() + ", " + GROUP_CONCAT_FIELD_NAME + ") <= " + timelineRequest.getMaxResultPerCell());
         builder.andCriteria(timeCriteria);
 
+        startTime = System.currentTimeMillis();
         List<Map<String, Object>> recordMapList = builder.getAsProps();
-        LOGGER.error("query for actual record value: " + builder);
+        LOGGER.error("query for actual record value: " + builder + "; time take is: " + (System.currentTimeMillis() - startTime));
 
         return aggregateResult(timelineGroupField, startTimeField, recordMapList, aggregateValue);
 
