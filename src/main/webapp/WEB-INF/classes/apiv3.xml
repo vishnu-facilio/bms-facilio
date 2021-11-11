@@ -449,4 +449,17 @@
         </action>
     </package>
 
+    <package name="accessiblespaces" namespace="/api/v3/accessiblespace" extends="v3Api">
+        <action name="list"
+                class="com.facilio.bmsconsoleV3.actions.AccessibleSpacesAction"
+                method="list" />
+        <action name="add"
+                class="com.facilio.bmsconsoleV3.actions.AccessibleSpacesAction"
+                method="add"></action>
+        <action name="delete"
+                class="com.facilio.bmsconsoleV3.actions.AccessibleSpacesAction"
+                method="delete"></action>
+    </package>
+
+
 </struts>
