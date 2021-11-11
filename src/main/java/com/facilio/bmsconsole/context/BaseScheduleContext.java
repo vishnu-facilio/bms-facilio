@@ -13,6 +13,7 @@ import org.json.simple.parser.ParseException;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionScheduler;
+import com.facilio.bmsconsoleV3.context.survey.SurveyScheduler;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioIntEnum;
@@ -77,6 +78,7 @@ public class BaseScheduleContext implements Serializable {
 		PM(),
 		INSPECTION(new InspectionScheduler()),
 		INDUCTION(new InspectionScheduler()),			// should  change
+		SURVEY(new SurveyScheduler()),
 		;
 		
 		public Integer getIndex() {

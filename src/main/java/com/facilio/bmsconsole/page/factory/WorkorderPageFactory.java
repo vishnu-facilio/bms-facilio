@@ -204,12 +204,12 @@ public class WorkorderPageFactory extends PageFactory {
 
         // hazards widget
         PageWidget hazards = new PageWidget(PageWidget.WidgetType.HAZARDS);
-        hazards.addToLayoutParams(0, 0, 18, 8);
+        hazards.addToLayoutParams(0, 0, 17, 8);
         safetyPlanSection.addWidget(hazards);
 
         // precautions widget
         PageWidget precautions = new PageWidget(PageWidget.WidgetType.PRECAUTIONS);
-        precautions.addToLayoutParams(0, 8, 18, 8);
+        precautions.addToLayoutParams(0, 8, 17, 8);
         safetyPlanSection.addWidget(precautions);
 
         composeRightPanel(safetyPlanSection, workorder);

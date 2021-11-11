@@ -4,6 +4,7 @@ import java.util.*;
 
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestLineItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestPurchasedItems;
 import com.facilio.command.FacilioCommand;
 import com.facilio.v3.context.Constants;
@@ -34,14 +35,16 @@ public class UpdateItemTransactionAfterTransferCommandV3 extends FacilioCommand 
         List<V3TransferRequestContext> transferRequestContexts = recordMap.get(moduleName);
         if (CollectionUtils.isNotEmpty(transferRequestContexts)) {
             for (V3TransferRequestContext transferRequestContext : transferRequestContexts) {
-                if (!Objects.isNull(context.get(FacilioConstants.ContextNames.ITEM_TYPES_ID)) && transferRequestContext != null && transferRequestContext.getData().get("isCompleted").equals(true)) {
+                if (!Objects.isNull(context.get(FacilioConstants.ContextNames.ITEM_TYPES)) && transferRequestContext != null && transferRequestContext.getData().get("isCompleted").equals(true)) {
                     Long storeRoomId = transferRequestContext.getTransferToStore().getId();
-                    Long itemTypeId= (Long) context.get(FacilioConstants.ContextNames.ITEM_TYPES_ID);
-                    ItemContext item =ItemsApi.getItemsForTypeAndStore(storeRoomId,itemTypeId);
-                    Long itemId=item.getId();
-                    Long lastPurchasedDate=null;
-                    double lastPurchasedPrice=0;
-                    List<PurchasedItemContext> purchasedItems= new ArrayList<>();
+                    List<V3TransferRequestLineItemContext> itemTypesList = (List<V3TransferRequestLineItemContext>) context.get(FacilioConstants.ContextNames.ITEM_TYPES);
+                    for(V3TransferRequestLineItemContext itemTypeLineItem : itemTypesList){
+                    Long itemTypeId = itemTypeLineItem.getItemType().getId();
+                    ItemContext item = ItemsApi.getItemsForTypeAndStore(storeRoomId, itemTypeId);
+                    Long itemId = item.getId();
+                    Long lastPurchasedDate = null;
+                    double lastPurchasedPrice = 0;
+                    List<PurchasedItemContext> purchasedItems = new ArrayList<>();
                     List<ItemTransactionsContext> itemTransactionsToBeAdded = new ArrayList<>();
 
                     ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -54,13 +57,13 @@ public class UpdateItemTransactionAfterTransferCommandV3 extends FacilioCommand 
                             .select(fields)
                             .andCondition(CriteriaAPI.getCondition("TRANSFER_REQUEST_ID", "transferRequest", String.valueOf(transferRequestContext.getId()), NumberOperators.EQUALS));
                     List<V3TransferRequestPurchasedItems> records = selectRecordsBuilder.get();
-                    for(V3TransferRequestPurchasedItems record : records){
-                        PurchasedItemContext purchasedItem = setPurchasedItem(record,item);
-                        lastPurchasedDate=purchasedItem.getModifiedTime();
-                        lastPurchasedPrice=purchasedItem.getQuantity() * purchasedItem.getUnitcost();
+                    for (V3TransferRequestPurchasedItems record : records) {
+                        PurchasedItemContext purchasedItem = setPurchasedItem(record, item);
+                        lastPurchasedDate = purchasedItem.getModifiedTime();
+                        lastPurchasedPrice = purchasedItem.getQuantity() * purchasedItem.getUnitcost();
                         purchasedItems.add(purchasedItem);
                         //Item Transactions
-                        ItemTransactionsContext woItem = setItemTransaction(record,purchasedItem,item);
+                        ItemTransactionsContext woItem = setItemTransaction(record, purchasedItem, item);
                         itemTransactionsToBeAdded.add(woItem);
                     }
                     String itemModuleName = FacilioConstants.ContextNames.PURCHASED_ITEM;
@@ -69,7 +72,7 @@ public class UpdateItemTransactionAfterTransferCommandV3 extends FacilioCommand 
                     InsertRecordBuilder<PurchasedItemContext> readingBuilder = new InsertRecordBuilder<PurchasedItemContext>()
                             .module(module).fields(fields).addRecords(purchasedItems);
                     readingBuilder.save();
-                   //Item Transaction Insertion
+                    //Item Transaction Insertion
                     FacilioModule itemTransactionsModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
                     List<FacilioField> itemTransactionsFields = modBean
                             .getAllFields(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
@@ -93,7 +96,7 @@ public class UpdateItemTransactionAfterTransferCommandV3 extends FacilioCommand 
                             .module(module).fields(updatedFields)
                             .andCondition(CriteriaAPI.getIdCondition(itemId, module));
                     updateBuilder.updateViaMap(map);
-
+                }
                 }
             }
         }

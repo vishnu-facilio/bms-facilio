@@ -1,5 +1,7 @@
 package com.facilio.apiv3;
 
+import java.util.function.Supplier;
+
 import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
 import com.facilio.bmsconsoleV3.context.induction.InductionResponseContext;
 import com.facilio.bmsconsoleV3.context.induction.InductionTemplateContext;
@@ -10,19 +12,21 @@ import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerIncludeExcludeResourceContext;
-import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30;
+import com.facilio.bmsconsoleV3.context.survey.SurveyResponseContext;
+import com.facilio.bmsconsoleV3.context.survey.SurveyTemplateContext;
+import com.facilio.bmsconsoleV3.context.survey.SurveyTriggerContext;
+import com.facilio.bmsconsoleV3.context.survey.SurveyTriggerIncludeExcludeResourceContext;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount50;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.qa.command.InductionSupplementSupplyCommand;
 import com.facilio.qa.command.InspectionSupplementSupplyCommand;
 import com.facilio.qa.command.QAndAReadOnlyChainFactory;
 import com.facilio.qa.command.QAndATransactionChainFactory;
+import com.facilio.qa.command.SurveySupplementSupplyCommand;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
 import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
-
-import java.util.function.Supplier;
 
 @Config
 public class ExtendedQAndAV3Config {
@@ -110,6 +114,55 @@ public class ExtendedQAndAV3Config {
         return () -> new V3Config(InspectionTriggerIncludeExcludeResourceContext.class, null);
     }
     
+    
+    
+    @Module(FacilioConstants.Survey.SURVEY_TEMPLATE)
+    public static Supplier<V3Config> getSurvey() {
+        return () -> new V3Config(SurveyTemplateContext.class, new ModuleCustomFieldCount50())
+                .create()
+                .beforeSave(QAndATransactionChainFactory.surveyTemplateBeforeSaveChain())
+                .afterSave(QAndATransactionChainFactory.surveyAfterSaveChain())
+                .update()
+                .afterSave(QAndATransactionChainFactory.surveyAfterUpdateChain())
+                .list()
+                .beforeFetch(new SurveySupplementSupplyCommand())
+                .summary()
+                .beforeFetch(new SurveySupplementSupplyCommand())
+                .afterFetch(QAndAReadOnlyChainFactory.afterSurveyTemplateFetch())
+                .build();
+    }
+    
+    @Module(FacilioConstants.Survey.SURVEY_RESPONSE)
+    public static Supplier<V3Config> getSurveyResponse() {
+        return () -> new V3Config(SurveyResponseContext.class, new ModuleCustomFieldCount50())
+        		.create()
+        		.afterSave(new ConstructAddCustomActivityCommandV3())
+        		.afterTransaction(new AddActivitiesCommandV3())
+                .update()
+                .beforeSave(QAndATransactionChainFactory.commonBeforeQAndAResponseUpdate())
+                .afterTransaction(new AddActivitiesCommandV3())
+        		.list()
+        		.beforeFetch(new SurveySupplementSupplyCommand())
+        		.summary()
+        		.beforeFetch(new SurveySupplementSupplyCommand())
+                .afterFetch(QAndAReadOnlyChainFactory.commonAfterQAndAResponseFetch())
+                .build();
+    }
+
+    @Module(FacilioConstants.Survey.SURVEY_TRIGGER)
+    public static Supplier<V3Config> getSurveyTriggers() {
+        return () -> new V3Config(SurveyTriggerContext.class, null)
+        		.create()
+                	.beforeSave(QAndATransactionChainFactory.surveyTriggerBeforeSaveChain())
+                .update()
+                	.beforeSave(QAndATransactionChainFactory.surveyTriggerBeforeSaveChain())
+                .build();
+    }
+    
+    @Module(FacilioConstants.Survey.SURVEY_TRIGGER_INCL_EXCL)
+    public static Supplier<V3Config> getSurveyTriggerInclExcl() {
+        return () -> new V3Config(SurveyTriggerIncludeExcludeResourceContext.class, null);
+    }
     
     
     @Module(FacilioConstants.Induction.INDUCTION_TEMPLATE)

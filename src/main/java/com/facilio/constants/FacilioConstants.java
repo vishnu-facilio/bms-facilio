@@ -2511,6 +2511,17 @@ public class FacilioConstants {
 		public static final String INSPECTION_PRIORITY = "inspectionPriority";
 	}
 	
+	public static class Survey {
+		public static final String SURVEY_TEMPLATE = "surveyTemplate";
+		public static final String SURVEY_RESPONSE = "surveyResponse";
+		public static final String SURVEY_TRIGGER = "surveyTrigger";
+		
+		public static final String SURVEY_RESPONSE_ACTIVITY = "surveyResponseActivity";
+
+		public static final String SURVEY_TRIGGER_INCL_EXCL = "surveyTriggerResourceInclExcl";
+		
+	}
+	
 	public static class Induction {
 		public static final String INDUCTION_TEMPLATE = "inductionTemplate";
 		public static final String INDUCTION_RESPONSE = "inductionResponse";

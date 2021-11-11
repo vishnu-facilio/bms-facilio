@@ -2112,9 +2112,10 @@ public class FormFactory {
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("transferFromStore", FieldDisplayType.LOOKUP_SIMPLE, "Transfer from Store", Required.REQUIRED, "storeRoom", 3, 2));
 		fields.add(new FormField("transferToStore", FieldDisplayType.LOOKUP_SIMPLE, "Transfer to Store", Required.REQUIRED, "storeRoom", 3, 3));
-		fields.add(new FormField("transferredBy", FieldDisplayType.LOOKUP_SIMPLE, "Transferred By", Required.OPTIONAL, "people", 4, 1));
-		fields.add(new FormField("transferInitiatedOn", FieldDisplayType.DATE, "Transfer Date", Required.OPTIONAL, 5, 2));
-		fields.add(new FormField("expectedCompletionDate", FieldDisplayType.DATE, "Expected Arrival Date", Required.OPTIONAL, 5, 3));
+		fields.add(new FormField("transferInitiatedOn", FieldDisplayType.DATE, "Transfer Date", Required.OPTIONAL, 4, 2));
+		fields.add(new FormField("expectedCompletionDate", FieldDisplayType.DATE, "Expected Arrival Date", Required.OPTIONAL, 4, 3));
+		fields.add(new FormField("transferredBy", FieldDisplayType.LOOKUP_SIMPLE, "Transferred By", Required.OPTIONAL, "people", 5, 2));
+		fields.add(new FormField("isShipmentTrackingNeeded", FieldDisplayType.DECISION_BOX, "Is Shipment Tracking Needed", Required.OPTIONAL, 5, 3));
 		fields.add(new FormField("transferrequestlineitems", FieldDisplayType.INVREQUEST_LINE_ITEMS, "LINE ITEMS", Required.REQUIRED, 6, 1));
 
 		return fields;

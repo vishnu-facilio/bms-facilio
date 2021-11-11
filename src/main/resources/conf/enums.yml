@@ -190,6 +190,15 @@ enums:
   - name: InductionResponseStatus
     enumClassName: com.facilio.bmsconsoleV3.context.induction.InductionResponseContext$Status
 
+  - name: SurveyCreationType
+    enumClassName: com.facilio.bmsconsoleV3.context.survey.SurveyTemplateContext$CreationType
+
+  - name: SurveyResponseSourceType
+    enumClassName: com.facilio.bmsconsoleV3.context.survey.SurveyResponseContext$SourceType
+
+  - name: SurveyResponseStatus
+    enumClassName: com.facilio.bmsconsoleV3.context.survey.SurveyResponseContext$Status
+
   - name: TicketSourceType
     enumClassName: com.facilio.bmsconsole.context.TicketContext$SourceType
     
