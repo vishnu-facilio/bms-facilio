@@ -26,9 +26,9 @@ public class DeviceUtil {
 
     private static final Logger LOGGER = LogManager.getLogger(DeviceUtil.class.getName());
 
-    public static boolean deleteFieldDevice(long id) {
-        return deleteFieldDevices(Collections.singletonList(id));
-    }
+//    public static boolean deleteFieldDevice(long id) {
+//        return deleteFieldDevices(Collections.singletonList(id));
+//    }
 
     private static boolean containsValueCheck(String key, Map<String, Object> jsonObject) {
         if (jsonObject.containsKey(key) && (jsonObject.get(key) != null)) {
@@ -119,21 +119,21 @@ public class DeviceUtil {
         throw new Exception("Devices to add can't be empty");
     }
 
-    private static boolean deleteFieldDevices(List<Long> ids) {
-        FacilioChain chain = TransactionChainFactory.getDeleteFieldDeviceChain();
-        FacilioContext context = chain.getContext();
-        List<Long> deleteList = new ArrayList<>();
-        for (Long id : ids) {
-            if (id > 0) {
-                deleteList.add(id);
-            }
-        }
-        context.put(AgentConstants.ID, deleteList);
-        try {
-            return chain.execute();
-        } catch (Exception e) {
-            LOGGER.info("Exception occurred ", e);
-        }
-        return false;
-    }
+//    private static boolean deleteFieldDevices(List<Long> ids) {
+//        FacilioChain chain = TransactionChainFactory.getDeleteFieldDeviceChain();
+//        FacilioContext context = chain.getContext();
+//        List<Long> deleteList = new ArrayList<>();
+//        for (Long id : ids) {
+//            if (id > 0) {
+//                deleteList.add(id);
+//            }
+//        }
+//        context.put(AgentConstants.ID, deleteList);
+//        try {
+//            return chain.execute();
+//        } catch (Exception e) {
+//            LOGGER.info("Exception occurred ", e);
+//        }
+//        return false;
+//    }
 }

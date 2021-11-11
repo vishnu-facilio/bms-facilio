@@ -21,17 +21,17 @@ public class DeviceIdActions extends AgentActionV2 {
 
     private Long deviceId;
 
-    public String device(){
-        try {
-            setResult(AgentConstants.RESULT, FieldDeviceApi.getDevice(getDeviceId()));
-        }catch (Exception e){
-            LOGGER.info("Exception occurred while getting devices");
-            setResult(AgentConstants.RESULT,ERROR);
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
-            setResponseCode(HttpURLConnection.HTTP_OK);
-        }
-        return SUCCESS;
-    }
+//    public String device(){
+//        try {
+//            setResult(AgentConstants.RESULT, FieldDeviceApi.getDevice(getDeviceId()));
+//        }catch (Exception e){
+//            LOGGER.info("Exception occurred while getting devices");
+//            setResult(AgentConstants.RESULT,ERROR);
+//            setResult(AgentConstants.EXCEPTION,e.getMessage());
+//            setResponseCode(HttpURLConnection.HTTP_OK);
+//        }
+//        return SUCCESS;
+//    }
     public String getPenfingPointImports(){
         try{
             List<Map<String, Object>> maps = ModbusImportUtils.getpendingPointsImports(getDeviceId());

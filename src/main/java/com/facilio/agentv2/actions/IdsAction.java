@@ -127,20 +127,20 @@ public class IdsAction extends AgentActionV2
 
 
 
-    public String deleteDevice(){
-        try{
-            if(FieldDeviceApi.deleteDevices(getRecordIds())>0){
-                setResult(AgentConstants.RESULT,SUCCESS);
-                setResponseCode(HttpURLConnection.HTTP_OK);
-            }
-        } catch (Exception e) {
-            LOGGER.info("Exception occurred while getting agentDevices count", e);
-            setResult(AgentConstants.RESULT, ERROR);
-            setResult(AgentConstants.EXCEPTION, e.getMessage());
-            setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST);
-        }
-        return SUCCESS;
-    }
+//    public String deleteDevice(){
+//        try{
+//            if(FieldDeviceApi.deleteDevices(getRecordIds())>0){
+//                setResult(AgentConstants.RESULT,SUCCESS);
+//                setResponseCode(HttpURLConnection.HTTP_OK);
+//            }
+//        } catch (Exception e) {
+//            LOGGER.info("Exception occurred while getting agentDevices count", e);
+//            setResult(AgentConstants.RESULT, ERROR);
+//            setResult(AgentConstants.EXCEPTION, e.getMessage());
+//            setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST);
+//        }
+//        return SUCCESS;
+//    }
 
     public String makeWritable() {
         try {

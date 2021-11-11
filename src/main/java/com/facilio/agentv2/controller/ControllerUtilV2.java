@@ -104,10 +104,6 @@ public class ControllerUtilV2 {
                         controllerId = ControllerApiV2.addController(controller);
                     }
                     if (controllerId > 0) {
-                    int updatedCount = FieldDeviceApi.updateDeviceConfigured(device.getId());
-                    if(updatedCount > 0){
-                    	LOGGER.info(device.getId() + " is successfully set as Configured");
-                    }
                     controller.setId(controllerId);
                         deviceIdControllerMap.put(device.getId(), controller);
                         //deviceId.add(device.getId());

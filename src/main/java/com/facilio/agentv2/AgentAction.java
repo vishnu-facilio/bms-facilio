@@ -208,12 +208,6 @@ public class AgentAction extends AgentActionV2 {
                         .ofType(FacilioControllerType.valueOf(controllerType))
                         .pagination(context);
                 pointsData = getPointRequest.getPoints();
-            } else if ((deviceId != null) && (deviceId > 0) && (controllerType != null) && (controllerType > 0)) {
-                GetPointRequest getPointRequest = new GetPointRequest()
-                        .withDeviceId(deviceId)
-                        .ofType(FacilioControllerType.valueOf(controllerType))
-                        .pagination(context);
-                pointsData = getPointRequest.getPoints();
             } else {
                 if ((controllerId == null) && (deviceId == null)) {
                     GetPointRequest getPointRequest = new GetPointRequest()
@@ -240,36 +234,36 @@ public class AgentAction extends AgentActionV2 {
     }
 
 
-    public String countDevices() {
-        try {
-            if ((agentId != null) && (agentId > 0)) {
-                //TYPE AND AGENT ID
-                if ((controllerType != null) && (controllerType > 0)) {
-                    setResult(AgentConstants.DATA, FieldDeviceApi.getTypeDeviceCount(Arrays.asList(getAgentId()), FacilioControllerType.valueOf(getControllerType())));
-                }
-                // AGENT ID ALONE
-                else {
-                    setResult(AgentConstants.DATA, FieldDeviceApi.getAgentDeviceCount(Arrays.asList(getAgentId())));
-                }
-            }
-            // TYPE ALONE
-            else if ((controllerType != null) && (controllerType > 0)) {
-                setResult(AgentConstants.DATA, FieldDeviceApi.getTypeDeviceCount(null, FacilioControllerType.valueOf(getControllerType())));
-            }
-            //DEVICE POINT COUNT
-            else {
-                setResult(AgentConstants.DATA, FieldDeviceApi.getDeviceCount());
-            }
-            setResponseCode(HttpURLConnection.HTTP_OK);
-            setResult(AgentConstants.RESULT, SUCCESS);
-        } catch (Exception e) {
-            LOGGER.info("Exception occurred while getting agentDevices count", e);
-            setResult(AgentConstants.RESULT, ERROR);
-            setResult(AgentConstants.EXCEPTION, e.getMessage());
-            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
-        }
-        return SUCCESS;
-    }
+//    public String countDevices() {
+//        try {
+//            if ((agentId != null) && (agentId > 0)) {
+//                //TYPE AND AGENT ID
+//                if ((controllerType != null) && (controllerType > 0)) {
+//                    setResult(AgentConstants.DATA, FieldDeviceApi.getTypeDeviceCount(Arrays.asList(getAgentId()), FacilioControllerType.valueOf(getControllerType())));
+//                }
+//                // AGENT ID ALONE
+//                else {
+//                    setResult(AgentConstants.DATA, FieldDeviceApi.getAgentDeviceCount(Arrays.asList(getAgentId())));
+//                }
+//            }
+//            // TYPE ALONE
+//            else if ((controllerType != null) && (controllerType > 0)) {
+//                setResult(AgentConstants.DATA, FieldDeviceApi.getTypeDeviceCount(null, FacilioControllerType.valueOf(getControllerType())));
+//            }
+//            //DEVICE POINT COUNT
+//            else {
+//                setResult(AgentConstants.DATA, FieldDeviceApi.getDeviceCount());
+//            }
+//            setResponseCode(HttpURLConnection.HTTP_OK);
+//            setResult(AgentConstants.RESULT, SUCCESS);
+//        } catch (Exception e) {
+//            LOGGER.info("Exception occurred while getting agentDevices count", e);
+//            setResult(AgentConstants.RESULT, ERROR);
+//            setResult(AgentConstants.EXCEPTION, e.getMessage());
+//            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+//        }
+//        return SUCCESS;
+//    }
 
 
     public String PointsCount() {

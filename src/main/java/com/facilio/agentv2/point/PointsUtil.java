@@ -82,8 +82,8 @@ public class PointsUtil
         return false;
     }*/
 
-    public static boolean processPoints(JSONObject payload, Controller c, FacilioAgent agent) throws Exception {
-        LOGGER.info(" processing point " + c.toJSON());
+    public static boolean processPoints(JSONObject payload, Controller controller, FacilioAgent agent) throws Exception {
+        LOGGER.info(" processing point " + controller.toJSON());
 
 
         if (containsValueCheck(AgentConstants.DATA, payload)) {
@@ -130,8 +130,8 @@ public class PointsUtil
                 JSONObject pointJSON = (JSONObject) o;
               /*  pointJSON.put(AgentConstants.DEVICE_NAME, device.getName());
                 pointJSON.put(AgentConstants.DEVICE_ID, device.getId());*/
-                pointJSON.put(AgentConstants.POINT_TYPE, c.getControllerType());
-                pointJSON.put(AgentConstants.CONTROLLER_ID, c.getId());
+                pointJSON.put(AgentConstants.POINT_TYPE, controller.getControllerType());
+                pointJSON.put(AgentConstants.CONTROLLER_ID, controller.getId());
                 try {
                     if(!existingPoints.contains(pointJSON.get(AgentConstants.NAME))){
                         Point point = PointsAPI.getPointFromJSON(pointJSON);
