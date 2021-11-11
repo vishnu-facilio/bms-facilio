@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.CommunitySharingInfoContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceSharingInfoContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -31,10 +32,18 @@ public class AddOrUpdateAudienceSharingInfoCommandV3  extends FacilioCommand {
                 }
 
                 if(CollectionUtils.isNotEmpty(audience.getAudienceSharing())) {
+                    List<AudienceSharingInfoContext> audienceSharingList = new ArrayList<>();
                     for(CommunitySharingInfoContext sharing : audience.getAudienceSharing()){
-                        sharing.setAudienceId(audience.getId());
+                        AudienceSharingInfoContext audienceSharing = new AudienceSharingInfoContext();
+                        audienceSharing.setAudienceId(audience);
+                        audienceSharing.setSharingType(sharing.getSharingType());
+                        audienceSharing.setSharedToSpace(sharing.getSharedToSpace());
+                        audienceSharing.setSharedToRoleId(sharing.getSharedToRoleId());
+                        audienceSharing.setSharedToRole(sharing.getSharedToRole());
+                        audienceSharing.setSharedToPeople(sharing.getSharedToPeople());
+                        audienceSharingList.add(audienceSharing);
                     }
-                    V3RecordAPI.addRecord(false, audience.getAudienceSharing(), sharingInfoModule, modBean.getAllFields(FacilioConstants.ContextNames.Tenant.AUDIENCE_SHARING));
+                    V3RecordAPI.addRecord(false, audienceSharingList, sharingInfoModule, modBean.getAllFields(FacilioConstants.ContextNames.Tenant.AUDIENCE_SHARING));
                 }
             }
         }
