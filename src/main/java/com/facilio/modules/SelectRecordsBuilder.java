@@ -56,6 +56,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	private int limit = -1;
 	private ScopeHandler.ScopeFieldsAndCriteria scopeFieldsAndCriteria;
 	private boolean skipModuleCriteria = false;
+	private boolean skipScopeCriteria = false;
 
 	private boolean skipPermission;
 	private Collection<FacilioModule> joinModules;
@@ -94,6 +95,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			this.aggrFields = new ArrayList<>(selectBuilder.aggrFields);
 		}
 		this.skipModuleCriteria = selectBuilder.skipModuleCriteria;
+		this.skipScopeCriteria = selectBuilder.skipScopeCriteria;
 	}
 	
 	@Override
@@ -295,6 +297,11 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 
 	public SelectRecordsBuilder<E> skipModuleCriteria() {
 		this.skipModuleCriteria = true;
+		return this;
+	}
+
+	public SelectRecordsBuilder<E> skipScopeCriteria() {
+		this.skipScopeCriteria = true;
 		return this;
 	}
 	
@@ -644,8 +651,10 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 				prevModule = extendedModule;
 				extendedModule = extendedModule.getExtendModule();
 			}
-			
-			scopeFieldsAndCriteria = ScopeHandler.getInstance().getFieldsAndCriteriaForSelect(module, joinModules);
+
+			if(!skipScopeCriteria) {
+				scopeFieldsAndCriteria = ScopeHandler.getInstance().getFieldsAndCriteriaForSelect(module, joinModules);
+			}
 
 			Set<FacilioField> selectFields = computeFields(orgIdField, moduleIdField, deleteFields, extendedModule);
 			builder.select(selectFields);
