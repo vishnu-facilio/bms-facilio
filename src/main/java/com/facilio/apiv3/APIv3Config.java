@@ -768,7 +768,6 @@ public class APIv3Config {
                   .afterSave(TransactionChainFactoryV3.getWorkorderAfterUpdateChain(true))
                 .list()
                   .afterFetch(new LoadWorkorderLookupsAfterFetchcommandV3())
-                  .showStateFlowList()
                 .summary()
                   .afterFetch(ReadOnlyChainFactoryV3.getWorkorderAfterFetchOnSummaryChain())
                 .build();
