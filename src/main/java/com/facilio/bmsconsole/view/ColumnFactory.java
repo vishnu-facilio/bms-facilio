@@ -254,7 +254,11 @@ public class ColumnFactory {
 		columnMap.put(FacilioConstants.Induction.INDUCTION_TEMPLATE+"-default", getDefaultInductionTemplateColumns());
 		columnMap.put(FacilioConstants.Induction.INDUCTION_RESPONSE+"-default", getDefaultInductionResponseColumns());
 		
-		columnMap.put(FacilioConstants.Induction.INDUCTION_RESPONSE+"-hidden-all", getDefaultInductionResponseColumnsWithName());		
+		columnMap.put(FacilioConstants.Induction.INDUCTION_RESPONSE+"-hidden-all", getDefaultInductionResponseColumnsWithName());	
+		
+		columnMap.put(FacilioConstants.Survey.SURVEY_TEMPLATE+"-default", getDefaultSurveyTemplateColumns());
+		columnMap.put(FacilioConstants.Survey.SURVEY_RESPONSE+"-default", getDefaultSurveyResponseColumns());
+		
 		// Community Features
 		columnMap.put("announcement-default", getDefaultAnnouncementColumns());
 		columnMap.put("peopleannouncement-default", getDefaultAnnouncementColumns());
@@ -278,6 +282,36 @@ public class ColumnFactory {
 		return columnMap;
 	}
 	
+	private static List<ViewField> getDefaultSurveyResponseColumns() {
+		
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("responseStatus", "Completion Status"));
+		
+		columns.add(new ViewField("siteId", "Site"));
+		columns.add(new ViewField("resource", "Space / Asset"));
+		columns.add(new ViewField("assignedTo", "Assigned To"));
+		
+		columns.add(new ViewField("totalAnswered", "Total Answered"));
+
+		return columns;
+	}
+
+	private static List<ViewField> getDefaultSurveyTemplateColumns() {
+		
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("responseStatus", "Completion Status"));
+		
+		columns.add(new ViewField("siteId", "Site"));
+		columns.add(new ViewField("resource", "Space / Asset"));
+		columns.add(new ViewField("assignedTo", "Assigned To"));
+		
+		columns.add(new ViewField("totalAnswered", "Total Answered"));
+
+		return columns;
+	}
+
 	private static final Map<String, List<SortField>> defaultSortFields = Collections.unmodifiableMap(initDefaultSortFields());
 	
 	private static Map<String, List<SortField>> initDefaultSortFields() {

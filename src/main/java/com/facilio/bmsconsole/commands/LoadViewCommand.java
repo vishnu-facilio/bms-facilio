@@ -241,12 +241,19 @@ public class LoadViewCommand extends FacilioCommand {
 				order = field.getIsAscending() ? "desc" : "asc";
 			}
 			
-			builder = new GenericSelectRecordBuilder()
-					.select(Arrays.asList(FieldFactory.getIdField()))
-					.table((String) props.get(0).get("tableName"))
-					.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
-					.orderBy(sortableField.getColumnName() + " " + order);					
-			props = builder.get();
+//			builder = new GenericSelectRecordBuilder()
+//					.select(Arrays.asList(FieldFactory.getIdField()))
+//					.table((String) props.get(0).get("tableName"))
+//					.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+//					.orderBy(sortableField.getColumnName() + " " + order);					
+			
+			SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
+					.select(Arrays.asList(FieldFactory.getIdField(modBean.getModule((String) props.get(0).get("name")))))
+					.moduleName((String) props.get(0).get("name"))
+					.beanClass(ModuleBaseWithCustomFields.class)
+					.orderBy(sortableField.getCompleteColumnName() + " " + order);		
+			
+			props = selectBuilder.getAsProps();
 		}
 			else {	
 				fieldOrdering = FieldFactory.getSortableFieldName(((LookupField) field.getSortField()).getSpecialType());
