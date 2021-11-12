@@ -6,13 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.facilio.accounts.bean.*;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.facilio.accounts.bean.GroupBean;
-import com.facilio.accounts.bean.OrgBean;
-import com.facilio.accounts.bean.RoleBean;
-import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
@@ -310,6 +307,11 @@ public class AccountUtil {
 		if(currentAccount.get() != null) {
 			currentAccount.get().setJsonConversionTime(jsonConversionTime);
 		}
+	}
+
+	public static SecurityBean getSecurityBean() throws Exception {
+		SecurityBean securityBean = (SecurityBean) BeanFactory.lookup("SecurityBean");
+		return securityBean;
 	}
 	
 	public static UserBean getUserBean() throws Exception {

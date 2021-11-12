@@ -8,6 +8,7 @@
 	<bean name="OrgBean" class="com.facilio.accounts.impl.OrgBeanCacheImpl"></bean>
 	<bean name="GroupBean" class="com.facilio.accounts.impl.GroupBeanImpl"></bean>
 	<bean name="RoleBean" class="com.facilio.accounts.impl.RoleBeanCacheImpl"></bean>
+	<bean name="SecurityBean" class="com.facilio.accounts.impl.SecurityBeanImpl"></bean>
 	
 	<!-- v2 authentication -->
 	<bean name="IAMUserBean" class="com.facilio.iam.accounts.impl.IAMUserBeanImpl"></bean>

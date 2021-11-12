@@ -27,8 +27,11 @@ import com.facilio.bmsconsoleV3.commands.AddSignupDataCommandV3;
 import com.facilio.client.app.beans.ClientAppBean;
 import com.facilio.client.app.pojo.ClientAppConfig;
 import com.facilio.client.app.util.ClientAppUtil;
+import com.facilio.fw.validators.CustomFields;
+import com.facilio.fw.validators.V3fields;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.qa.rules.pojo.QAndARuleType;
+import com.facilio.security.requestvalidator.type.TypeFactory;
 import com.facilio.services.email.EmailClient;
 import com.facilio.tasker.FacilioInstantJobScheduler;
 import com.facilio.translation.TranslationConf;
@@ -155,7 +158,7 @@ public class FacilioContextListener implements ServletContextListener {
 			LOGGER.info("Loading the domain name as ######" + PortalAuthInterceptor.getPortalDomain());
 			initLocalHostName();
 			initClientAppConfig();
-
+			registerValidatorTypes();
 		} catch (Exception e) {
 			sendFailureEmail(e);
 			LOGGER.info("Shutting down, because of an exception ", e);
@@ -165,6 +168,11 @@ public class FacilioContextListener implements ServletContextListener {
 			HealthCheckFilter.setStatus(200);
 		}
 
+	}
+
+	private void registerValidatorTypes() {
+		TypeFactory.registerType("customfields", CustomFields::new);
+		TypeFactory.registerType("v3fields", V3fields::new);
 	}
 
 	private void initClientAppConfig() throws Exception {
