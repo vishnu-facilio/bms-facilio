@@ -440,6 +440,7 @@ public class FormFactory {
 		List<FacilioForm> quotationFormsList = Arrays.asList(getQuotationForm());
 		List<FacilioForm> serviceFormsList = Arrays.asList(getServiceForm());
 		List<FacilioForm> announcementFormsList = Arrays.asList(getAnnouncementForm());
+		List<FacilioForm> audienceFormsList = Arrays.asList(getAudienceForm());
 		List<FacilioForm> newsAndInformationFormsList = Arrays.asList(getNewsAndInformationForm());
 		List<FacilioForm> neighbourhoodFormsList = Arrays.asList(getNeighbourhoodForm(),getNeighbourhoodPortalForm());
 		List<FacilioForm> dealsAndOffersFormsList = Arrays.asList(getDealsAndOffersForm(), getDealsAndOffersPortalForm());
@@ -517,6 +518,7 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_TYPE_CHECKLIST, getFormMap(workPermitTypeChecklistForm))
 				.put(FacilioConstants.ContextNames.SERVICE, getFormMap(serviceFormsList))
 				.put(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT, getFormMap(announcementFormsList))
+				.put(ContextNames.Tenant.AUDIENCE, getFormMap(audienceFormsList))
 				.put(FacilioConstants.ContextNames.Tenant.NEIGHBOURHOOD, getFormMap(neighbourhoodFormsList))
 				.put(FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION, getFormMap(newsAndInformationFormsList))
 				.put(FacilioConstants.ContextNames.Tenant.DEALS_AND_OFFERS, getFormMap(dealsAndOffersFormsList))
@@ -2924,6 +2926,18 @@ public class FormFactory {
 		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
+
+	private static FacilioForm getAudienceForm() {
+
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Audience");
+		form.setName("default_audience_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.Tenant.AUDIENCE));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getAudienceFormFields());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
 	private static List<FormField> getQuotationFormFields() {
 
 
@@ -3011,6 +3025,16 @@ public class FormFactory {
 		attachment.addToConfig("fileTypes", "image/*,.pdf,.doc,.docx");
 		fields.add(attachment);
 		fields.add(new FormField("announcementsharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 6, 1));
+		return fields;
+	}
+
+	private static List<FormField> getAudienceFormFields() {
+
+
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Group Name", Required.REQUIRED, 1, 1));
+
+		fields.add(new FormField("audienceSharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 6, 1));
 		return fields;
 	}
 

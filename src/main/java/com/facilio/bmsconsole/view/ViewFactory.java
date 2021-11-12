@@ -850,6 +850,11 @@ public class ViewFactory {
 
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("all", getAllAudienceView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.Tenant.AUDIENCE, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
 		views.put("all", getAllPeopleAnnouncementView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.Tenant.PEOPLE_ANNOUNCEMENTS, views);
 
@@ -7945,6 +7950,23 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Announcements");
+		allView.setModuleName(module.getName());
+		allView.setSortFields(sortFields);
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+
+		return allView;
+	}
+
+	private static FacilioView getAllAudienceView() {
+
+		FacilioModule module = ModuleFactory.getAudienceModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("sysCreatedTime", "SYS_CREATED_TIME", FieldType.DATE_TIME), false));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Audiences");
 		allView.setModuleName(module.getName());
 		allView.setSortFields(sortFields);
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));

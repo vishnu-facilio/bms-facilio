@@ -561,7 +561,7 @@ public class WorkflowContext implements Serializable {
 		
 		Map<String, Map<String, Object>> liveVariables = GlobalVariableUtil.getLiveVariables();
 		if (MapUtils.isNotEmpty(liveVariables)) {
-			globalParameters.put("gs", liveVariables);		
+			globalParameters.put("cv", liveVariables);		
 		}
 	}
 	//	old workflow methods starts
