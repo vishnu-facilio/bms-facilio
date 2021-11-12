@@ -456,7 +456,7 @@ public class V3TaskContext extends V3Context {
     }
     public void setDeviationOperatorId(Integer operatorId) {
         this.deviationOperatorId = operatorId;
-        this.deviationOperator = operatorId > 0 ? Operator.getOperator(operatorId) : null;
+        this.deviationOperator = operatorId != null && operatorId > 0 ? Operator.getOperator(operatorId) : null;
     }
 
     private Operator deviationOperator;
