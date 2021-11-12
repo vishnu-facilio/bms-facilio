@@ -1,5 +1,6 @@
 package com.facilio.v3.commands;
 
+import com.facilio.agentv2.actions.AddMiscControllerAction;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -18,10 +19,14 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
+
 import java.util.*;
 
 public class DefaultInit extends FacilioCommand {
+    private static final Logger LOGGER = LogManager.getLogger(DefaultInit.class.getName());
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -65,7 +70,7 @@ public class DefaultInit extends FacilioCommand {
                 data.put(key, newVal);
             }
         }
-
+        LOGGER.debug(beanClass + " " + data);
         ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(data, beanClass);
         setFormData(context, data, moduleName, moduleRecord);
 
