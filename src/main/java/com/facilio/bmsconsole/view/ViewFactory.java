@@ -895,6 +895,11 @@ public class ViewFactory {
 
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("all", getAllTransferRequestShipmentView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.TRANSFER_REQUEST_SHIPMENT, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
 		views.put("all", getAllChartOfAccountView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.Budget.CHART_OF_ACCOUNT, views);
 		
@@ -8200,6 +8205,22 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Transfer Requests");
+		allView.setModuleName(module.getName());
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
+	private static FacilioView getAllTransferRequestShipmentView() {
+
+		FacilioModule module = ModuleFactory.getTransferRequestShipmentModule();
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("sysCreatedTime", "SYS_CREATED_TIME", FieldType.DATE_TIME), false));
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Transfer Request Shipment");
 		allView.setModuleName(module.getName());
 		allView.setSortFields(sortFields);
 

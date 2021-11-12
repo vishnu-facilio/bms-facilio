@@ -1071,6 +1071,7 @@ public class TransactionChainFactoryV3 {
     }
     public static FacilioChain getUpdateTransferRequestIsCompletedAfterSaveChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateStatusOfShipmentCommandV3());
         c.addCommand(new UpdateCurrentBalanceAfterTransferCommandV3());
         c.addCommand(new UpdateItemTransactionAfterTransferCommandV3());
         c.addCommand(new UpdateToolTransactionAfterTransferCommandV3());

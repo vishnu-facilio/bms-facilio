@@ -534,6 +534,19 @@ public class APIv3Config {
                 .create()
                 .update()
                 .list()
+                .beforeFetch(new LoadTrShipmentListLookupCommandV3())
+                .summary()
+                .beforeFetch(new LoadTrShipmentSummaryLookupCommandV3())
+                .afterFetch(new SetPendingLineItemsAndReceivablesCommandV3())
+                .delete()
+                .build();
+    }
+    @Module("transferrequestshipmentreceivables")
+    public static Supplier<V3Config> getTransferRequestShipmentReceivables() {
+        return () -> new V3Config(V3TransferRequestShipmentReceivablesContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .update()
+                .list()
                 .summary()
                 .delete()
                 .build();

@@ -472,6 +472,7 @@ public class FormFactory {
 		List<FacilioForm> warrantyContractFormsList = Arrays.asList(getWarrantyContractForm());
 
 		List<FacilioForm> trForm = Arrays.asList(getTransferRequestForm());
+		List<FacilioForm> trShipmentForm = Arrays.asList(getTransferRequestShipmentForm());
 
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
@@ -542,6 +543,7 @@ public class FormFactory {
 				.put(FacilioConstants.Induction.INDUCTION_RESPONSE, getFormMap(inductionFormList))
 				.put(ContextNames.WARRANTY_CONTRACTS, getFormMap(warrantyContractFormsList))
 				.put(ContextNames.TRANSFER_REQUEST, getFormMap(trForm))
+				.put(ContextNames.TRANSFER_REQUEST_SHIPMENT, getFormMap(trShipmentForm))
 				.build();
 	}
 	
@@ -2017,6 +2019,17 @@ public class FormFactory {
 		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
+
+	public static FacilioForm getTransferRequestShipmentForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("TRANSFER REQUEST SHIPMENT");
+		form.setName("default_trshipment_web");
+		form.setModule(ModuleFactory.getModule(ContextNames.TRANSFER_REQUEST_SHIPMENT));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getTransferRequestShipmentFormFields());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
 	public static FacilioForm getPurchaseContractForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("PURCHASE CONTRACT");
@@ -2120,6 +2133,11 @@ public class FormFactory {
 		fields.add(new FormField("isShipmentTrackingNeeded", FieldDisplayType.DECISION_BOX, "Is Shipment Tracking Needed", Required.OPTIONAL, 5, 3));
 		fields.add(new FormField("transferrequestlineitems", FieldDisplayType.INVREQUEST_LINE_ITEMS, "LINE ITEMS", Required.REQUIRED, 6, 1));
 
+		return fields;
+	}
+	private static List<FormField> getTransferRequestShipmentFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("expectedCompletionDate", FieldDisplayType.DATE, "Expected Completion Date", Required.OPTIONAL, 1, 1));
 		return fields;
 	}
 	private static List<FormField> getPurchaseContractFormFields() {

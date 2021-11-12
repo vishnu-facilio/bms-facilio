@@ -5,10 +5,13 @@ import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 
+import java.util.List;
+
 public class V3TransferRequestShipmentReceivablesContext extends V3Context {
     private static final long serialVersionUID = 1L;
 
     private V3TransferRequestShipmentContext shipment;
+    private V3TransferRequestLineItemContext lineItem;
     private InventoryType inventoryType;
     private ItemTypesContext itemType;
     private ToolTypesContext toolType;
@@ -66,6 +69,14 @@ public class V3TransferRequestShipmentReceivablesContext extends V3Context {
 
     public void setShipment(V3TransferRequestShipmentContext shipment) {
         this.shipment = shipment;
+    }
+
+    public V3TransferRequestLineItemContext getLineItem() {
+        return lineItem;
+    }
+
+    public void setLineItem(V3TransferRequestLineItemContext lineItem) {
+        this.lineItem = lineItem;
     }
 
     public ItemTypesContext getItemType() {
