@@ -66,13 +66,13 @@ public class QAndARuleAction extends V3Action {
         return SUCCESS;
     }
 
-    public String addQandARuleAction() throws Exception {
+    public String addQandARules() throws Exception {
         this.type = QAndARuleType.WORKFLOW;
         this.setData("rules", addRules());
         return SUCCESS;
     }
 
-    public String fetchQandARuleAction() throws Exception {
+    public String fetchQandARules() throws Exception {
         this.type = QAndARuleType.WORKFLOW;
         return fetchRules();
     }

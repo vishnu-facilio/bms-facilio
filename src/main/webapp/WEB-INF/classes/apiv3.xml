@@ -326,14 +326,17 @@
         </action>
     </package>
 
-    <package name="qandaRuleAction" namespace="/api/v3/qandaruleaction" extends="v3Api">
-        <action name="add" class="com.facilio.qa.rules.actions.QAndARuleAction"
-                method="addQandARuleAction">
+    <package name="qandaRulesAdd" namespace="/api/v3/qandarules/add" extends="v3Api">
+        <action name="*" class="com.facilio.qa.rules.actions.QAndARuleAction"
+                method="addQandARules">
         <param name="pageId">{1}</param>
         </action>
-        <action name="list"
+    </package>
+
+    <package name="qandaRulesFetch" namespace="/api/v3/qandarules/list" extends="v3Api">
+        <action name="*"
                 class="com.facilio.qa.rules.actions.QAndARuleAction"
-                method="fetchQandARuleAction">
+                method="fetchQandARules">
             <param name="pageId">{1}</param>
         </action>
     </package>

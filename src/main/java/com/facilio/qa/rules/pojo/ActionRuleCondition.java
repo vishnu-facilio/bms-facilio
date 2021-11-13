@@ -39,7 +39,8 @@ public class ActionRuleCondition extends RuleCondition {
         if (hasAction()) {
             long startTime = System.currentTimeMillis();
             Map<String, Object> placeHolders = new HashMap<>();
-            CommonCommandUtil.appendModuleNameInKey(null, "rule", FieldUtil.getAsProperties(this), placeHolders);
+            CommonCommandUtil.appendModuleNameInKey(null, "question", FieldUtil.getAsProperties("question"), placeHolders);
+            CommonCommandUtil.appendModuleNameInKey(null, "answer", FieldUtil.getAsProperties("answer"), placeHolders);
             placeHolders.put("question", question.getQuestion());
             placeHolders.put("answer", answer.getClientAnswerContext());
             LOGGER.debug("Time taken to fetch actions for Q_and_A_rule id : " + getRuleId() + " with actions : " + actions + " is " + (System.currentTimeMillis() - startTime));
