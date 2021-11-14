@@ -43,6 +43,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.devicepoints.DevicePointsUtil;
@@ -667,11 +668,18 @@ public class DataProcessorUtil {
             Criteria criteria = new Criteria();
             criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentKeys.RECORD_ID), String.valueOf(recordId), NumberOperators.EQUALS));
             criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.PARTITION_ID), String.valueOf(partitionId), NumberOperators.EQUALS));
+            
+            Criteria sourceCrtieria = new Criteria();
+            sourceCrtieria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.MESSAGE_SOURCE), messageSource.getName(), StringOperators.IS));
+            if (messageSource.getName().equals("facilio")) {
+            	sourceCrtieria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.MESSAGE_SOURCE), CommonOperators.IS_EMPTY));
+            }
+            
             GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                     .table(messageModule.getTableName())
                     .select(fieldMap.values())
                     .andCriteria(criteria)
-                    .andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.MESSAGE_SOURCE), messageSource.getName(), StringOperators.IS));
+                    .andCriteria(sourceCrtieria);
             List<Map<String, Object>> rows = builder.get();
             if (CollectionUtils.isNotEmpty(rows)) {
                 return rows.get(0);
