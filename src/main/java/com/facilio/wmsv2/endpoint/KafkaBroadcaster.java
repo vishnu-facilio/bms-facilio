@@ -1,9 +1,7 @@
 package com.facilio.wmsv2.endpoint;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -12,9 +10,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.producer.RecordMetadata;
-import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -23,6 +19,8 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.modules.FieldUtil;
+import com.facilio.queue.source.KafkaMessageSource;
+import com.facilio.queue.source.MessageSourceUtil;
 import com.facilio.server.ServerInfo;
 import com.facilio.services.kafka.FacilioKafkaProducer;
 import com.facilio.services.kafka.KafkaUtil;
@@ -65,8 +63,11 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
     }
 
     private Properties getProperties(String groupId, String client) {
+		// Assuming default source is kafka type. If not, source should be passed as a param from some config
+		KafkaMessageSource source = MessageSourceUtil.getDefaultSource();
+
         Properties props = new Properties();
-        props.put("bootstrap.servers", FacilioProperties.getKafkaConsumer());
+        props.put("bootstrap.servers", source.getBroker());
         props.put("group.id", groupId);
         props.put("enable.auto.commit", "false");
         props.put("session.timeout.ms", "300000");
@@ -76,7 +77,7 @@ public class KafkaBroadcaster extends AbstractBroadcaster {
 
         props.put("group.instance.id", client);
         props.put("client.id", client);
-        KafkaUtil.setKafkaAuthProps(props);
+        KafkaUtil.setKafkaAuthProps(props, source);
         return props;
     }
 

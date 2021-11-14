@@ -5,9 +5,13 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.misc.MiscPoint;
+import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;
+import com.facilio.agentv2.point.PointsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldUtil;
+
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -80,6 +84,7 @@ public class ProcessDataCommandV2 extends AgentV2Command {
                                 pointsFromDb.forEach(row -> pointsFromDbSet.add(row.get("name").toString()));
                                 Set<String> pointNamesSet = new HashSet<>(pointNames);
                                 pointNamesSet.removeAll(pointsFromDbSet);
+                                List<Map<String, Object>> points = new ArrayList<>();
                                 for (String name : pointNamesSet) {
                                     MiscPoint point = new MiscPoint(agent.getId(), controller.getControllerId());
                                     point.setName(name);
@@ -88,11 +93,14 @@ public class ProcessDataCommandV2 extends AgentV2Command {
                                     point.setConfigureStatus(3);
                                     point.setControllerId(controller.getId());
                                     point.setPath(name);
-                                    if (!PointsAPI.addPoint(point)) {
-                                        throw new Exception("Exception while adding misc point ");
-                                    }
+                                    point.setCreatedTime(System.currentTimeMillis());
                                     pointsFromDb.add(point.getPointJSON());
+                                    
+                                    Map<String, Object> pointMap = FieldUtil.getAsProperties(point.toJSON());
+                                    points.add(pointMap);
                                 }
+                                PointsUtil.addPoints(controller, points);
+                                
                         }
                         if( ! pointsFromDb.isEmpty() && controller!=null){
                             for (Map<String, Object> pointRow : pointsFromDb) {

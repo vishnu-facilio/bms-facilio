@@ -31,6 +31,7 @@ import com.facilio.db.builder.DBUtil;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.db.transaction.FacilioTransactionManager;
 import com.facilio.email.EmailUtil;
+import com.facilio.queue.source.MessageSource;
 import com.facilio.service.FacilioService;
 import com.facilio.services.email.EmailClient;
 import com.facilio.services.factory.FacilioFactory;
@@ -755,10 +756,6 @@ public class AwsUtil {
 	}
 */
 
-	public static String createIotPolicy(String clientName, String domain, String type) throws Exception {
-		IotPolicy policy = AwsPolicyUtils.createOrUpdateIotPolicy(clientName, domain, type, getIotClient());
-		return policy.getPolicyDocument().toString();
-	}
 
 /*	private static void deletePolicyVersion(AWSIot client, String policyName) {
 		AWSIotClient iotClient = (AWSIotClient) client;
@@ -857,28 +854,18 @@ public class AwsUtil {
 	}
 
 
-	private static CreateKeysAndCertificateResult createIotToKinesis(String clientName, String policyAndOrgDomainName, String type) throws Exception {
+	public static CreateKeysAndCertificateResult createIotToKinesis(String clientName, String policyAndOrgDomainName, String type) throws Exception {
 		Objects.requireNonNull(policyAndOrgDomainName, "policyAndOrgDomainName can't be null");
 		Objects.requireNonNull(type, " type can't be null");
 		LOGGER.info(" create Iot Kenesis " + policyAndOrgDomainName);
-		AWSIot iotClient = null;
-		iotClient = getIotClient();
-		IotPolicy policy;
-		policy = AwsPolicyUtils.createOrUpdateIotPolicy(clientName, policyAndOrgDomainName, type, iotClient);
+		AWSIot iotClient = getIotClient();
+		IotPolicy policy = AwsPolicyUtils.createOrUpdateIotPolicy(clientName, policyAndOrgDomainName, type, iotClient);
 		CreateKeysAndCertificateResult certificateResult = createCertificate(iotClient);
 		attachPolicy(iotClient, certificateResult, policyAndOrgDomainName);
 		createKinesisStream(getKinesisClient(), policyAndOrgDomainName);
-		// Creating topic in kafka
-		MessageQueueFactory.getMessageQueue().createQueue(policyAndOrgDomainName);
 		policy.setStreamName(policyAndOrgDomainName);
 		createIotTopicRule(iotClient, policyAndOrgDomainName);
 		return certificateResult;
-	}
-
-
-	public static CreateKeysAndCertificateResult signUpIotToKinesis(String orgDomainName, String clientName, String type) throws Exception {
-		LOGGER.info(" signing up to kinesis policyname " + orgDomainName);
-		return AwsUtil.createIotToKinesis(clientName, orgDomainName, type);
 	}
 
 	public static String getIotKinesisTopic(String orgDomainName) {

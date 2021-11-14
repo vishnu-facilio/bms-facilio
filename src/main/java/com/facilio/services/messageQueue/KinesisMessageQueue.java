@@ -9,11 +9,13 @@ import java.util.Map;
 
 import com.amazonaws.services.kinesis.AmazonKinesisClientBuilder;
 import com.amazonaws.services.kinesis.model.*;
-
+import com.facilio.queue.source.MessageSource;
 import com.facilio.services.impls.aws.AwsUtil;
 import com.facilio.services.kinesis.KinesisIRecordProcessorFactory;
 import com.facilio.services.kinesis.KinesisStreamProcessor;
 import com.facilio.services.procon.message.FacilioRecord;
+
+import lombok.NonNull;
 
 import org.apache.log4j.LogManager;
 
@@ -22,17 +24,11 @@ import com.amazonaws.services.kinesis.clientlibrary.interfaces.v2.IRecordProcess
 
 
 class KinesisMessageQueue extends MessageQueue {
-    private static org.apache.log4j.Logger log = LogManager.getLogger(KinesisMessageQueue.class.getName());
-    private static final KinesisMessageQueue INSTANCE =new KinesisMessageQueue();
-
+	
+	private static org.apache.log4j.Logger log = LogManager.getLogger(KinesisMessageQueue.class.getName());
+	
     private static volatile AmazonKinesis kinesis = null;
 
-    static MessageQueue getClient() {
-        return INSTANCE;
-    }
-
-
-    private KinesisMessageQueue(){}
     private static final Object LOCK = new Object();
 
     private static AmazonKinesis getKinesisClient() {
@@ -49,6 +45,15 @@ class KinesisMessageQueue extends MessageQueue {
         return kinesis;
     }
 
+    KinesisMessageQueue(@NonNull MessageSource messageQueueSource) {
+		super(messageQueueSource);
+	}
+    
+    @Override
+	protected MessageSource getSource() {
+    	// Implement kinesis message source when needed
+		return messageQueueSource;
+	}
 
     @Override
     public List<String> getTopics(){
@@ -87,18 +92,23 @@ class KinesisMessageQueue extends MessageQueue {
     }
 
 
-    private static IRecordProcessorFactory getProcessorFactory(long orgId, String orgDomainName, String type) {
-        return new KinesisIRecordProcessorFactory(orgId,orgDomainName);
+    private IRecordProcessorFactory getProcessorFactory(long orgId, String orgDomainName) {
+        return new KinesisIRecordProcessorFactory(orgId,orgDomainName, messageQueueSource);
     }
 
-
-    public int initiateProcessFactory(long orgId, String orgDomainName, String type, Map<String, Object> topicDetails, int currentThreadCount) throws Exception {
+    protected void initiateProcessFactory(long orgId, String topic, String applicationName, int processorId) throws Exception {
         try {
-            new Thread(() -> KinesisStreamProcessor.run(orgId, orgDomainName, type, getProcessorFactory(orgId, orgDomainName, type))).start();
+            new Thread(() -> KinesisStreamProcessor.run(orgId, topic, applicationName, getProcessorFactory(orgId, topic))).start();
         } catch (Exception e) {
             log.info("Exception occurred ", e);
         }
-        return 0;
     }
+
+
+	@Override
+	protected int getConsumersOnlineCount(String topic) throws Exception {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
 }

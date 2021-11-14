@@ -44,6 +44,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.devicepoints.DevicePointsUtil;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.tasker.tasks.EventUtil;
@@ -52,6 +53,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.queue.source.MessageSource;
 import com.facilio.service.FacilioService;
 import com.facilio.services.kinesis.ErrorDataProducer;
 import com.facilio.services.procon.message.FacilioRecord;
@@ -75,7 +77,7 @@ public class DataProcessorUtil {
     private Boolean isStage = !FacilioProperties.isProduction();
     private static final String TIME_TAKEN = "timetaken";
     private static final String TIME_TAKEN_IN_MILLIS = "timeInMillis";
-
+    private MessageSource messageSource;
 
     private static boolean isRestarted = true;
 
@@ -89,10 +91,11 @@ public class DataProcessorUtil {
     private DataProcessorV2 dataProcessorV2;
     private List<EventRuleContext> eventRules = new ArrayList<>();
 
-    public DataProcessorUtil(long orgId, String orgDomainName) {
+    public DataProcessorUtil(long orgId, String orgDomainName, MessageSource source) {
         LOGGER.info(" initializing dataprocessorutil ");
         this.orgId = orgId;
         this.orgDomainName = orgDomainName;
+        this.messageSource = source;
         this.errorStream = orgDomainName + "-error";
         agentUtil = new AgentUtil(orgId, orgDomainName);
         agentUtil.populateAgentContextMap(null, null);
@@ -459,7 +462,7 @@ public class DataProcessorUtil {
         }
     }
 
-    public static boolean checkIfDuplicate(long recordId, int partitionId) {
+    private boolean checkIfDuplicate(long recordId, int partitionId) {
         try {
             Map<String, Object> prop = getRecord(recordId, partitionId);
             if(prop == null) {
@@ -657,7 +660,7 @@ public class DataProcessorUtil {
      * @return true if not present and false if present
      * @throws Exception
      */
-    public static Map<String, Object> getRecord(long recordId, int partitionId) {
+    private Map<String, Object> getRecord(long recordId, int partitionId) {
         try {
             Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getAgentMessageFields());
             FacilioModule messageModule = ModuleFactory.getAgentMessageModule();
@@ -667,7 +670,8 @@ public class DataProcessorUtil {
             GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                     .table(messageModule.getTableName())
                     .select(fieldMap.values())
-                    .andCriteria(criteria);
+                    .andCriteria(criteria)
+                    .andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.MESSAGE_SOURCE), messageSource.getName(), StringOperators.IS));
             List<Map<String, Object>> rows = builder.get();
             if (CollectionUtils.isNotEmpty(rows)) {
                 return rows.get(0);
@@ -678,7 +682,7 @@ public class DataProcessorUtil {
         return null;
     }
 
-    public static boolean markMessageProcessed(long recordId) {
+    public boolean markMessageProcessed(long recordId) {
         try {
             //old processor so default partition 0
             return updateAgentMessage(recordId, 0, MessageStatus.PROCESSED);
@@ -688,15 +692,15 @@ public class DataProcessorUtil {
         return false;
     }
 
-    public static boolean addAgentMessage(long recordId, int partitionId) throws Exception {
+    private boolean addAgentMessage(long recordId, int partitionId) throws Exception {
         return addOrUpdateAgentMessage(recordId, partitionId, MessageStatus.RECIEVED);
     }
 
-    public static boolean updateAgentMessage(long recordId, int partitionId, MessageStatus messageStatus) throws Exception {
+    private boolean updateAgentMessage(long recordId, int partitionId, MessageStatus messageStatus) throws Exception {
         return addOrUpdateAgentMessage(recordId, partitionId, messageStatus);
     }
 
-    private static boolean addOrUpdateAgentMessage(long recordId, int partitionId, MessageStatus messageStatus) throws Exception {
+    private boolean addOrUpdateAgentMessage(long recordId, int partitionId, MessageStatus messageStatus) throws Exception {
         boolean status = false;
 
         Map<String, Object> map = new HashMap<>();
@@ -713,6 +717,7 @@ public class DataProcessorUtil {
 
         if (messageStatus == MessageStatus.RECIEVED) {
             try {
+            	map.put(AgentConstants.MESSAGE_SOURCE, messageSource.getName());
                 context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, map);
                 if (addAgentMessageChain.execute(context)) {
                    // LOGGER.info(" agentMessage added ");

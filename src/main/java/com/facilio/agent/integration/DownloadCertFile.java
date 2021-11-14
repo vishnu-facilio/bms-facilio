@@ -3,11 +3,16 @@ package com.facilio.agent.integration;
 import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.FacilioAgent;
+import com.facilio.agentv2.AgentUtilV2;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.queue.source.MessageSource;
+import com.facilio.queue.source.MessageSourceUtil;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
+import com.facilio.services.messageQueue.MessageQueueFactory;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -57,7 +62,7 @@ public class DownloadCertFile {
         return null;
     }
 
-    public static String downloadCertificateCommand(String policyName, String type) throws Exception {
+    private static String downloadCertificateCommand(String policyName, String type) throws Exception {
         Objects.requireNonNull(policyName, "policy name can't be null");
         LOGGER.info("policy name " + policyName);
         String certFileId = FacilioAgent.getCertFileId(type);
@@ -73,7 +78,7 @@ public class DownloadCertFile {
         if (url == null) {
             LOGGER.info(" url not present ");
             String orgDomainName = AccountUtil.getCurrentAccount().getOrg().getDomain();
-            CreateKeysAndCertificateResult certificateResult = AwsUtil.signUpIotToKinesis(orgDomainName, policyName, type);
+            CreateKeysAndCertificateResult certificateResult = AwsUtil.createIotToKinesis(policyName, orgDomainName, type);
             String directoryName = "facilio/";
             String outFileName = FacilioAgent.getCertFileName(type);
             File file = new File(System.getProperty("user.home") + outFileName);
@@ -89,27 +94,20 @@ public class DownloadCertFile {
                 CommonCommandUtil.insertOrgInfo(certFileId, String.valueOf(id));
                 file.delete();
             }
-            FacilioFactory.getMessageQueue().start();
         }
         return url;
     }
 
-    public static long addCert(String policyName, String type, com.facilio.agentv2.FacilioAgent agent) throws Exception {
-        return addCertificate(policyName, type, agent);
-    }
-
-    private static long addCertificate(String policyName, String type, com.facilio.agentv2.FacilioAgent agent) throws Exception {
+    public static long addCertificate(String policyName, String type) throws Exception {
 		long fileId = -1;
-		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		CreateKeysAndCertificateResult certificateResult = AwsUtil.signUpIotToKinesis(policyName, policyName,
-				type);
+		CreateKeysAndCertificateResult certificateResult = AwsUtil.createIotToKinesis(policyName, policyName, type);
 		String directoryName = "facilio/";
 		String certFileId = FacilioAgent.getCertFileId(type);
 		String outFileName = FacilioAgent.getCertFileName(type);
 		File file = new File(System.getProperty("user.home") + outFileName);
 		try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file))) {
-			addToZip(out, directoryName + "facilio.crt", certificateResult.getCertificatePem());
-			addToZip(out, directoryName + "facilio-private.key", certificateResult.getKeyPair().getPrivateKey());
+			addToZip(out, directoryName + FACILIO_CERT_FILE, certificateResult.getCertificatePem());
+			addToZip(out, directoryName + FACILIO_PRIVATE_KEY, certificateResult.getKeyPair().getPrivateKey());
             //addToZip(out, directoryName + "facilio.config", getFacilioConfig(policyName, agent.getName()));
 			out.finish();
 			out.flush();
@@ -118,16 +116,9 @@ public class DownloadCertFile {
 			CommonCommandUtil.insertOrgInfo(certFileId, String.valueOf(id));
 			file.delete();
 		}
-		FacilioFactory.getMessageQueue().start();
 		return fileId;
 	}
-
-    public static String downloadAgentCertificate(String policyName, String agentName, String type) throws Exception {
-        String url = downloadCertificate(policyName,type);
-        AwsUtil.addClientToPolicy(agentName,policyName,type);
-        return url;
-    }
-
+    
 /*    private static String getConfigFile(String policyName, String agentName) throws IOException {
         Properties properties = new Properties();
         properties.put("endpoint","avzdxo3ow2ja2-ats.iot.us-west-2.amazonaws.com"); //TODO read from aws-props
@@ -206,35 +197,6 @@ public class DownloadCertFile {
         } catch (IOException e) {
             LOGGER.info("Exception occurred ", e);
         }
-    }
-
-
-
-    public static Map<String, InputStream> getCertAndKeyFileAsInputStream(String policyName, String type) {
-        Map<String, InputStream> filesInputStream = new HashMap<>();
-        String url = DownloadCertFile.downloadCertificate(policyName, type);
-        LOGGER.info(" url for certFile " + url);
-        try {
-            DownloadCertFile.downloadFileFromUrl(AgentIntegrationKeys.CERT_KEY_FILE, url);
-            String home = System.getProperty("user.home");
-            DownloadCertFile.unzip(AgentIntegrationKeys.CERT_KEY_FILE, home);
-            String subDirectory = "/facilio/";
-            File certFile = new File(home + subDirectory + AgentIntegrationKeys.CERT_FILE_NAME);
-            File keyFile = new File(home + subDirectory + AgentIntegrationKeys.KEY_FILE_NAME);
-            LOGGER.info(" files downloaded certfile " + certFile.exists() + "   keyfile " + keyFile.exists());
-            InputStream certInputStream = new FileInputStream(certFile);
-            InputStream keyInputStream = new FileInputStream(keyFile);
-            certFile.delete();
-            keyFile.delete();
-            LOGGER.info(" files deleted ");
-            filesInputStream.put(AgentIntegrationKeys.CERT_FILE_NAME, certInputStream);
-            filesInputStream.put(AgentIntegrationKeys.KEY_FILE_NAME, keyInputStream);
-            return filesInputStream;
-        } catch (IOException e) {
-            LOGGER.info(" Exception occurred ", e);
-        }
-        LOGGER.info(" Exception while downloading cert and key file, returning empty map");
-        return new HashMap();
     }
 
     public static Map<String, InputStream> getCertKeyFileInputStreamsFromFileStore(String type) {

@@ -16,14 +16,11 @@ public class KinesisStreamProcessor {
 
     private static Logger log = LogManager.getLogger(KinesisStreamProcessor.class.getName());
 
-    public static void run(long orgId, String orgDomainName, String eventType, IRecordProcessorFactory recordProcessorFactory) {
+    public static void run(long orgId, String orgDomainName, String applicationName, IRecordProcessorFactory recordProcessorFactory) {
 
         try {
             AccountUtil.setCurrentAccount(orgId);
             String streamName = AwsUtil.getIotKinesisTopic(orgDomainName);
-            String clientName = orgDomainName +"-" + eventType + "-";
-            String environment = FacilioProperties.getConfig("environment");
-            String applicationName = clientName + environment;
             java.security.Security.setProperty("networkaddress.cache.ttl", "60");
 
             String workerId = InetAddress.getLocalHost().getHostName();

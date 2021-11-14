@@ -13,22 +13,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import com.facilio.util.FacilioUtil;
-import com.facilio.util.RequestUtil;
-import com.opensymphony.xwork2.ActionContext;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
 
 import com.amazonaws.services.secretsmanager.AWSSecretsManager;
 import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
 import com.amazonaws.services.secretsmanager.model.GetSecretValueRequest;
 import com.amazonaws.services.secretsmanager.model.GetSecretValueResult;
 import com.facilio.agent.AgentKeys;
+import com.facilio.util.FacilioUtil;
+import com.facilio.util.RequestUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.struts2.ServletActionContext;
-
-import javax.servlet.http.HttpServletRequest;
+import com.opensymphony.xwork2.ActionContext;
 
 public class FacilioProperties {
 
@@ -52,11 +52,6 @@ public class FacilioProperties {
     private static String pushNotificationKey;
     private static String portalPushNotificationKey;
     private static String environment;
-    private static String kafkaProducer;
-    private static String kafkaConsumer;
-    private static String kafkaAuthMode;
-    private static String kafkaSaslUsername;
-    private static String kafkaSaslPassword;
     private static String nodejs;
     private static String pdfjs;
     private static String anomalyTempDir;
@@ -73,7 +68,7 @@ public class FacilioProperties {
     private static String defaultAppDB;
     private static String defaultAppDBForNewOrg;
     private static String defaultDataSource;
-    private static String messageQueue;
+    private static String queueSource;
     private static boolean isOnpremise = false;
     private static boolean sysLogEnabled;
     private static boolean sentryEnabled;
@@ -194,11 +189,6 @@ public class FacilioProperties {
                 portalPushNotificationKey = PROPERTIES.getProperty("portal.push.notification.key");
                 allowedAppDomains = PROPERTIES.getProperty("allowedapp.domains");
                 stageDomains = parseCommaSeparatedProps("stage.domains", PROPERTIES.getProperty("stage.domains"));
-                kafkaProducer = PROPERTIES.getProperty("kafka.producer");
-                kafkaConsumer = PROPERTIES.getProperty("kafka.consumer");
-                kafkaAuthMode = PROPERTIES.getProperty("kafka.auth.mode", "none");
-                kafkaSaslUsername = PROPERTIES.getProperty("kafka.sasl.username");
-                kafkaSaslPassword = PROPERTIES.getProperty("kafka.sasl.password");
 
                 nodejs = PROPERTIES.getProperty("nodejs");
                 isSmtp = "smtp".equalsIgnoreCase(PROPERTIES.getProperty("email.type"));
@@ -223,7 +213,7 @@ public class FacilioProperties {
                 defaultDB = PROPERTIES.getProperty("db.default.db");
                 defaultAppDB = PROPERTIES.getProperty("db.default.app.db");
                 defaultAppDBForNewOrg = PROPERTIES.getProperty("db.default.app.db.new.org");
-                messageQueue = PROPERTIES.getProperty("service.mQueue");
+                queueSource = PROPERTIES.getProperty("mQueue.source");
                 domain = PROPERTIES.getProperty("domain");
                 iotUser = PROPERTIES.getProperty("iot.accessKeyId");
                 iotPassword = PROPERTIES.getProperty("iot.secretKeyId");
@@ -410,27 +400,6 @@ public class FacilioProperties {
         return portalPushNotificationKey;
     }
 
-    public static String getKafkaProducer() {
-        return kafkaProducer;
-    }
-
-    public static String getKafkaConsumer() {
-        return kafkaConsumer;
-    }
-
-
-    public static String getKafkaAuthMode() {
-        return kafkaAuthMode;
-    }
-
-    public static String getKafkaSaslUsername() {
-        return kafkaSaslUsername;
-    }
-
-    public static String getKafkaSaslPassword() {
-        return kafkaSaslPassword;
-    }
-
     public static String getNodeJSLocation() {
     	if (nodejs != null && !nodejs.trim().isEmpty()) {
     		return nodejs;
@@ -523,8 +492,8 @@ public class FacilioProperties {
         return defaultAppDBForNewOrg;
     }
 
-    public static String getMessageQueue() {
-        return messageQueue;
+    public static String getQueueSource() {
+        return queueSource;
     }
 
     public static boolean isOnpremise() {
@@ -790,10 +759,6 @@ public class FacilioProperties {
 	}
 	public static String getIncomingEmailS3Bucket() {
         return incomingEmailS3Bucket;
-    }
-	
-	public static String getCloudAgentUrl() {
-        return cloudAgentUrl;
     }
 	
     public static long getBuildNumber() {

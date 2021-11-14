@@ -40,7 +40,7 @@ public class DataProcessingAlertJob extends FacilioJob {
     public void execute(JobContext jc) throws Exception {
         try{
             long jobStart = System.currentTimeMillis();
-            List<Map<String,Object>> topicList = MessageQueueTopic.getTopics(null);
+            List<Map<String,Object>> topicList = MessageQueueTopic.getTopics(null, null);
             List<Long> orgIds = topicList.stream().map(p -> (long) p.get("orgId")).collect(Collectors.toList());
             List<Organization> organizationList = IAMOrgUtil.getOrgs(orgIds);
             for(Organization org : organizationList){

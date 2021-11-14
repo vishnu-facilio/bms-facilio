@@ -2,7 +2,6 @@ package com.facilio.services.kafka;
 
 import java.util.List;
 
-import com.facilio.constants.FacilioConstants;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.producer.RecordMetadata;
@@ -14,6 +13,7 @@ import com.facilio.agent.module.AgentFieldFactory;
 import com.facilio.agent.module.AgentModuleFactory;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.dataprocessor.DataProcessorUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -22,10 +22,13 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.queue.source.KafkaMessageSource;
 import com.facilio.server.ServerInfo;
 import com.facilio.service.FacilioService;
 import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.services.procon.processor.FacilioProcessor;
+
+import lombok.NonNull;
 
 //Renamed from Processor
 public class KafkaProcessor extends FacilioProcessor {
@@ -38,16 +41,13 @@ public class KafkaProcessor extends FacilioProcessor {
 	private DataProcessorUtil dataProcessorUtil;
     private int processorId;
 
-    public KafkaProcessor(long orgId, String topic, int processorId) {
+	public KafkaProcessor(long orgId, String topic, String consumerGroup, int processorId, @NonNull KafkaMessageSource source) {
         super(orgId, topic);
-        String clientName = topic + "-processor-";
         this.processorId = processorId;
-        String environment = FacilioProperties.getConfig("environment");
-        String consumerGroup = clientName + environment;
-        setConsumer(new FacilioKafkaConsumer(ServerInfo.getHostname()+"_"+processorId, consumerGroup, getTopic()));
-		setProducer(new FacilioKafkaProducer());
+        setConsumer(new FacilioKafkaConsumer(ServerInfo.getHostname()+"_"+processorId, consumerGroup, getTopic(), source));
+		setProducer(new FacilioKafkaProducer(source));
         setEventType("processor");
-        dataProcessorUtil = new DataProcessorUtil(orgId, topic);
+        dataProcessorUtil = new DataProcessorUtil(orgId, topic, source);
         LOGGER.info("Initializing processor " + topic + " - " + getThreadName());
     }
 

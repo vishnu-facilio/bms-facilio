@@ -1,0 +1,26 @@
+version: 1.0
+sources:
+  - name: local
+    type: kafka
+    configs:
+      broker: localhost:9092
+
+
+  - name: facilio # US Region
+    type: kafka
+    configs:
+      broker: 172.31.13.15:9092,172.31.68.95:9092,172.31.68.109:9092
+
+  - name: msk-ff #Frankfurt Region
+    type: kafka
+    configs:
+      broker: b-6.kafka-europe.i3i6kg.c6.kafka.eu-central-1.amazonaws.com:9096,b-3.kafka-europe.i3i6kg.c6.kafka.eu-central-1.amazonaws.com:9096,b-1.kafka-europe.i3i6kg.c6.kafka.eu-central-1.amazonaws.com:9096
+      auth: true
+
+  - name: msk-uk #London Region
+    type: kafka
+    configs:
+      broker: b-6.kafka-europe.i3i6kg.c6.kafka.eu-central-1.amazonaws.com:9096,b-3.kafka-europe.i3i6kg.c6.kafka.eu-central-1.amazonaws.com:9096,b-1.kafka-europe.i3i6kg.c6.kafka.eu-central-1.amazonaws.com:9096
+      auth: true
+
+

@@ -10,7 +10,8 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.aws.util.FacilioProperties;
+import com.facilio.queue.source.KafkaMessageSource;
+import com.facilio.queue.source.MessageSourceUtil;
 import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.services.procon.producer.FacilioProducer;
 
@@ -23,10 +24,18 @@ public class FacilioKafkaProducer implements FacilioProducer {
     private KafkaProducer<String, String> producer;
 
     public FacilioKafkaProducer() {
-        producer = new KafkaProducer<>(getProducerProperties());
+        this(getProducerProperties(null));
     }
 
     public FacilioKafkaProducer(Properties props) {
+        this(props, null);
+    }
+    
+    public FacilioKafkaProducer(KafkaMessageSource source) {
+        this(getProducerProperties(source), source);
+    }
+    
+    public FacilioKafkaProducer(Properties props, KafkaMessageSource source) {
         producer = new KafkaProducer<String, String>(props);
     }
 
@@ -49,9 +58,14 @@ public class FacilioKafkaProducer implements FacilioProducer {
         return recordMetadata;
     }
 
-    private Properties getProducerProperties() {
+    private static Properties getProducerProperties(KafkaMessageSource source) {
+    	if (source == null) {
+    		// Getting default source from props. If not, source should be passed as a param from some config
+    		source = MessageSourceUtil.getDefaultSource();
+    	}
+    	
         Properties props = new Properties();
-        props.put("bootstrap.servers", FacilioProperties.getKafkaProducer());
+        props.put("bootstrap.servers", source.getBroker());
         props.put("acks", "all");
         props.put("retries", 0);
         props.put("batch.size", 16384);
@@ -59,7 +73,7 @@ public class FacilioKafkaProducer implements FacilioProducer {
         props.put("buffer.memory", 33554432);
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        KafkaUtil.setKafkaAuthProps(props);
+        KafkaUtil.setKafkaAuthProps(props, source);
         
         return  props;
     }

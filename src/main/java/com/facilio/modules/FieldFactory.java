@@ -531,6 +531,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getAgentMessageStartTimeField(module));
         fields.add(getNumberField(AgentConstants.AGENT_ID, "AGENT_ID", module));
         fields.add(getNumberField(AgentConstants.PARTITION_ID, "PARTITION_ID", module));
+        fields.add(getStringField(AgentConstants.MESSAGE_SOURCE, "MESSAGE_SOURCE", module));
         fields.add(getField(AgentKeys.FINISH_TIME, "FINISH_TIME", module, FieldType.NUMBER));
         fields.add(getNumberField(AgentConstants.SELECT_QUERIES, "SELECT_QUERIES", module));
         fields.add(getNumberField(AgentConstants.INSERT_QUERIES, "INSERT_QUERIES", module));
@@ -639,6 +640,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getNumberField(AgentConstants.AGENT_CONNECTION_LOST_WORKFLOW_ID,"CONNECTION_LOST_WORKFLOW_ID",module));
         fields.add(getNumberField(AgentConstants.AGENT_CONNECTION_REGAIN_WORKFLOW_ID,"CONNECTION_REGAIN_WORKFLOW_ID",module));
         fields.add(getNumberField(AgentConstants.PARTITION_ID, "PARTITION_ID", module));
+        fields.add(getStringField(AgentConstants.MESSAGE_SOURCE, "MESSAGE_SOURCE", module));
         return fields;
     }
 

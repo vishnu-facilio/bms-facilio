@@ -20,6 +20,8 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.queue.source.KafkaMessageSource;
+import com.facilio.queue.source.MessageSourceUtil;
 import com.facilio.server.ServerInfo;
 import com.facilio.services.kafka.KafkaUtil;
 import com.facilio.wms.endpoints.SessionManager;
@@ -44,15 +46,17 @@ public class NotificationProcessor implements Runnable {
     }
 
     private Properties getProperties(String groupId) {
+    		// Assuming default source is kafka type. If not, it should be passed as a param
+    		KafkaMessageSource source = MessageSourceUtil.getDefaultSource();
         Properties props = new Properties();
-        props.put("bootstrap.servers", FacilioProperties.getKafkaConsumer());
+        props.put("bootstrap.servers", source.getBroker());
         props.put("group.id", groupId);
         props.put("enable.auto.commit", "false");
         props.put("auto.offset.reset", "latest");
         props.put("session.timeout.ms", "300000");
         props.put("key.deserializer", StringDeserializer.class.getName());
         props.put("value.deserializer", StringDeserializer.class.getName());
-        KafkaUtil.setKafkaAuthProps(props);        
+        KafkaUtil.setKafkaAuthProps(props, source);        
         return props;
     }
 

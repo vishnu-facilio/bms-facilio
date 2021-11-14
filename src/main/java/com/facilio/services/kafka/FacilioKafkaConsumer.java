@@ -18,27 +18,30 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.aws.util.FacilioProperties;
+import com.facilio.queue.source.KafkaMessageSource;
+import com.facilio.server.ServerInfo;
 import com.facilio.services.procon.consumer.FacilioConsumer;
 import com.facilio.services.procon.message.FacilioRecord;
+
+import lombok.NonNull;
 
 public class FacilioKafkaConsumer implements FacilioConsumer {
 
     private KafkaConsumer<String, String> consumer;
     private TopicPartition topicPartition = null;
     private JSONParser parser = new JSONParser();
-    private boolean isAuthCheckEnabled = false; 
+    private boolean isMsk = false; // Temp handling. Message got from aws msk wont have extra 'data' object sent from kinesis bridge
     private static final Logger LOGGER = LogManager.getLogger(FacilioKafkaConsumer.class.getName());
 
-    public FacilioKafkaConsumer(String client, String consumerGroup, String topic) {
-        consumer = new KafkaConsumer<>(getConsumerProperties(client, consumerGroup));
+    public FacilioKafkaConsumer(String client, String consumerGroup, String topic, @NonNull KafkaMessageSource messageSource) {
+        consumer = new KafkaConsumer<>(getConsumerProperties(client, consumerGroup, messageSource));
         subscribe(topic);
     }
 
-    private Properties getConsumerProperties(String client, String consumerGroup) {
+    private Properties getConsumerProperties(String client, String consumerGroup, KafkaMessageSource messageSource) {
 
         Properties props = new Properties();
-        props.put("bootstrap.servers", FacilioProperties.getKafkaConsumer());
+        props.put("bootstrap.servers", messageSource.getBroker());
         props.put("group.id", consumerGroup);
         props.put("enable.auto.commit", "false");
         props.put("key.deserializer", StringDeserializer.class.getName());
@@ -50,8 +53,8 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
         props.put("client.id", client);
         props.put("max.poll.interval.ms",300000);
         props.put("max.poll.records", 10);
-        KafkaUtil.setKafkaAuthProps(props);
-        isAuthCheckEnabled = FacilioProperties.getKafkaAuthMode().equalsIgnoreCase("sasl_ssl");        
+        KafkaUtil.setKafkaAuthProps(props, messageSource);
+        isMsk = messageSource.getName().equals("msk");      
         return props;
     }
 
@@ -67,7 +70,7 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
                 StringReader reader = new StringReader(record.value());
                 JSONObject object = null;
                 JSONObject data = null;
-                if (isAuthCheckEnabled) {
+                if (isMsk) {
                 	data = (JSONObject) parser.parse(reader);
                 } else {
                     object = (JSONObject) parser.parse(reader);
