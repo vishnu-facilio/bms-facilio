@@ -11,7 +11,9 @@ import lombok.Setter;
 import org.apache.struts2.json.annotations.JSON;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -52,13 +54,12 @@ public class AnswerContext extends V3Context {
     }
 
     @JsonIgnore
-    ClientAnswerContext clientAnswerContext;
+     private ClientAnswerContext answerContext;
 
     @JsonIgnore
-    public void setClientAnswerContext (AnswerContext answer){
-       clientAnswerContext.setComments(answer.getComments());
-       clientAnswerContext.setAttachmentList(answer.getAttachmentList());
-       clientAnswerContext.setResponseId(answer.getResponseId());
-       clientAnswerContext.setId(answer.getId());
+    public void setAnswerContext(QuestionContext question,AnswerContext answer){
+    	AnswerHandler answerHandler = question.getQuestionType().getAnswerHandler();
+        answerContext = FieldUtil.<ClientAnswerContext>getAsBeanFromMap(new HashMap<>(), answerHandler.getAnswerClass());
+        answerContext.setId(answer.getId());
     }
 }

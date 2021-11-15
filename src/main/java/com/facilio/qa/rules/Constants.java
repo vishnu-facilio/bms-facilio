@@ -73,7 +73,7 @@ public class Constants {
             fields.add(getIdField(module));
             fields.add(getField("ruleId", "RULE_ID", module, FieldType.NUMBER));
             fields.add(getField("actionId", "ACTION_ID", module, FieldType.NUMBER));
-            return Collections.unmodifiableList(fields);
+            return fields;
         }
 
         public static final List<FacilioField> ruleConditionFields() {
