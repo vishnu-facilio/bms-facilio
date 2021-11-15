@@ -1,5 +1,7 @@
 package com.facilio.fw.filter;
 
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.security.SecurityRequestWrapper;
 import com.facilio.security.requestvalidator.Executor;
 import com.facilio.security.requestvalidator.NodeError;
@@ -55,16 +57,18 @@ public class BeforeAuthInputFilter implements Filter {
         try {
             NodeError nodeError = executor.validatePreAuth();
             if (nodeError != null) {
-                Map<String, String> errorMap = new HashMap<>();
-                errorMap.put("message", nodeError.getErrorMessage());
-                write(errorMap, 400, servletResponse);
-                return;
+                if (!(FacilioProperties.isProduction() || FacilioProperties.isOnpremise())) {
+                    Map<String, String> errorMap = new HashMap<>();
+                    errorMap.put("message", nodeError.getErrorMessage());
+                    write(errorMap, 400, servletResponse);
+                    return;
+                } else {
+                    log(securityRequestWrapper, nodeError.getErrorMessage());
+                }
             }
             securityRequestWrapper.setAttribute("executor", executor);
         } catch (Exception ex) {
-            LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER, Level.INFO, ex.getMessage(), null);
-            RequestUtil.addRequestLogEvents(securityRequestWrapper, event);
-            LOGGER.callAppenders(event);
+            log(securityRequestWrapper, ex.getMessage());
             Map<String, String> errorMap = new HashMap<>();
             errorMap.put("message", "Error validating");
             write(errorMap, 500, servletResponse);
@@ -72,6 +76,12 @@ public class BeforeAuthInputFilter implements Filter {
         }
         securityRequestWrapper.reset();
         filterChain.doFilter(securityRequestWrapper, servletResponse);
+    }
+
+    private void log(SecurityRequestWrapper securityRequestWrapper, String message) {
+        LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER, Level.INFO, message, null);
+        RequestUtil.addRequestLogEvents(securityRequestWrapper, event);
+        LOGGER.callAppenders(event);
     }
 
     private void write(Map messageMap, int httpCode, ServletResponse servletResponse) throws IOException {
