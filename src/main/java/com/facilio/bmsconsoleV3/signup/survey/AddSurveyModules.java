@@ -1,4 +1,4 @@
-package com.facilio.bmsconsoleV3.signup.induction;
+package com.facilio.bmsconsoleV3.signup.survey;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -220,7 +220,7 @@ public class AddSurveyModules extends SignUpData {
       configFields.add(new FormField(fieldMap.get("name").getFieldId(), "name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, ++seq, 1));
       configFields.add(new FormField(fieldMap.get("description").getFieldId(), "description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, ++seq, 1));
       
-      configFields.add(new FormField(-1, "assignment", FacilioField.FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", FormField.Required.OPTIONAL, ++seq, 1));
+      configFields.add(new FormField(-1, "assignedTo", FacilioField.FieldDisplayType.LOOKUP_POPUP, "Staff", FormField.Required.OPTIONAL, ++seq, 1));
 
       configSection.setFields(configFields);
       
@@ -873,7 +873,7 @@ public class AddSurveyModules extends SignUpData {
         fields.add(resource);
         
         LookupField assignedTo = (LookupField) FieldFactory.getDefaultField("assignedTo", "Assigned To", "ASSIGNED_TO", FieldType.LOOKUP);
-        assignedTo.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.PEOPLE));
+        assignedTo.setSpecialType("users");
         fields.add(assignedTo);
         
         return fields;

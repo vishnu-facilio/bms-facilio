@@ -54,7 +54,7 @@ public class SurveyTemplateContext extends QAndATemplateContext <SurveyResponseC
     
     private Boolean status;
     
-    private PeopleContext people;
+    private PeopleContext assignedTo;
     
     public Integer getCreationType() { // Everything is wrapper in V3 for null handling
     	if(creationType != null) {
