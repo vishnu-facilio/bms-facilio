@@ -701,6 +701,36 @@
             <artifactId>esapi</artifactId>
             <version>2.1.0.1</version>
         </dependency>
+        <dependency>
+         <groupId>org.commonmark</groupId>
+         <artifactId>commonmark</artifactId>
+         <version>0.18.0</version>
+       </dependency>  
+       <dependency>
+           <groupId>org.commonmark</groupId>
+           <artifactId>commonmark-ext-autolink</artifactId>
+           <version>0.18.0</version>
+       </dependency>
+       <dependency>
+          <groupId>org.commonmark</groupId>
+          <artifactId>commonmark-ext-task-list-items</artifactId>
+          <version>0.18.0</version>
+       </dependency>
+       <dependency>
+           <groupId>org.commonmark</groupId>
+           <artifactId>commonmark-ext-gfm-strikethrough</artifactId>
+           <version>0.18.0</version>
+       </dependency>
+       <dependency>
+          <groupId>org.commonmark</groupId>
+          <artifactId>commonmark-ext-gfm-tables</artifactId>
+          <version>0.18.0</version>
+      </dependency>
+      <dependency>
+         <groupId>org.commonmark</groupId>
+         <artifactId>commonmark-ext-ins</artifactId>
+         <version>0.18.0</version>
+      </dependency>
     </dependencies>
     <build>
         <extensions>

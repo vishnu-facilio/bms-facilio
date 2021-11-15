@@ -22,6 +22,7 @@ import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
+import com.facilio.util.MarkDownUtil;
 
 import java.util.*;
 
@@ -84,6 +85,8 @@ public class AddNotesCommand extends FacilioCommand implements PostTransactionCo
 				parentIds.add(note.getParentId());
 				JSONObject info = new JSONObject();
 				info.put(FacilioConstants.ContextNames.NOTES_COMMENT, note.getBody());
+				//info.put(FacilioConstants.ContextNames.NOTES_COMMENT, note.getBodyText());
+				//info.put(FacilioConstants.ContextNames.RAW_COMMENT, note.getBody());
 				info.put("notifyRequester", note.getNotifyRequester());
 				isNotifyRequester = note.getNotifyRequester();
 				
