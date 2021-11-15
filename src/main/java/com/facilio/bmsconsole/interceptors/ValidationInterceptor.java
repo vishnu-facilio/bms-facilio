@@ -36,10 +36,10 @@ public class ValidationInterceptor extends AbstractInterceptor {
                 Map<String, String> errorMap = new HashMap<>();
                 errorMap.put("message", nodeError.getErrorMessage());
                 write(errorMap, 400, response);
+                return null;
             } else {
                 LOGGER.error(nodeError.getErrorMessage());
             }
-            return null;
         }
 
         return invocation.invoke();
