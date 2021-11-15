@@ -79,7 +79,7 @@ public class NoteAction extends FacilioAction {
 			parentModuleName = ticketModuleName;
 		}
 		context.put(FacilioConstants.ContextNames.PARENT_MODULE_NAME, parentModuleName);
-		context.put(FacilioConstants.ContextNames.NOTE, note);
+		//context.put(FacilioConstants.ContextNames.NOTE, note);
 		
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, module);
 		context.put(FacilioConstants.ContextNames.NOTE_ID, noteId);

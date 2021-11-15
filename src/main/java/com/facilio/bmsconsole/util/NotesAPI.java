@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.mysql.SelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
@@ -127,6 +128,27 @@ public class NotesAPI {
 
 		return getNotes(parentIds, moduleName, props);
 	}
+	public static NoteContext getNoteContext (long noteId, String moduleName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		
+		List<FacilioField> fields = modBean.getAllFields(moduleName);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		SelectRecordsBuilder<NoteContext> selectBuilder = new SelectRecordsBuilder<NoteContext>()
+				.select(fields)
+				.module(module)
+				.beanClass(NoteContext.class)
+				.maxLevel(0);
+		selectBuilder.andCondition(CriteriaAPI.getIdCondition(noteId, module));
+		NoteContext props = selectBuilder.fetchFirst();
+		if(props!=null)
+		{
+		return props;
+		}
+		return null;
+	}
+
 	
 	public static void updateNotesCount(Collection<Long> parentIds, String parentModule, String moduleString) throws Exception {
 		if (StringUtils.isNoneEmpty(parentModule) && CollectionUtils.isNotEmpty(parentIds)) {

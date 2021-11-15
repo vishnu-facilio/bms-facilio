@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.util.MarkDownUtil;
+
 
 public class NoteContext extends ModuleBaseWithCustomFields {
 	
@@ -41,6 +43,26 @@ public class NoteContext extends ModuleBaseWithCustomFields {
 		this.body = body;
 	}
 	
+	private String bodyHTML;
+	
+	public String getBodyHTML() {
+		if(body != null)
+		{
+			bodyHTML=MarkDownUtil.getHTMLRender(body);
+		}
+		return bodyHTML;
+	}
+	
+	private String bodyText;
+	
+	
+	public String getBodyText() {
+		if(body != null)
+		{
+			bodyText=MarkDownUtil.getTextRender(body);
+		}
+		return bodyText;
+	}
 	private long parentId = -1;
 	public long getParentId() {
 		return parentId;

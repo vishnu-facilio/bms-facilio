@@ -1884,6 +1884,7 @@ public class FacilioConstants {
 		public static final String APP_DOMAIN = "applicationDomain";
 
 		public static final String NOTES_COMMENT = "Comment";
+		public static final String RAW_COMMENT = "rawComment";
 		public static final String MODULE_STATE = "moduleState";
 		public static final String TERMS_NAME = "termsName";
 

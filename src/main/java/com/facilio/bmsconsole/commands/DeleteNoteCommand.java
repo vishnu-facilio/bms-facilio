@@ -66,6 +66,8 @@ public class DeleteNoteCommand extends FacilioCommand implements PostTransaction
 
 			JSONObject info = new JSONObject();
 			info.put(FacilioConstants.ContextNames.NOTES_COMMENT, note.getBody());
+			//info.put(FacilioConstants.ContextNames.NOTES_COMMENT, note.getBodyText());
+			//info.put(FacilioConstants.ContextNames.RAW_COMMENT, note.getBody());
 			info.put("deletedBy", AccountUtil.getCurrentUser().getOuid());
 
 			CommonCommandUtil.addActivityToContext(note.getParentId(), -1, CommonActivityType.DELETE_COMMENT, info, (FacilioContext) context);
