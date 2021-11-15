@@ -27,13 +27,13 @@ public class BulkResourceAllocationAction extends V3Action {
     Long assetCategoryId;
     
     List<Long> siteIds;
-    List<Long> buildingIds;
+    List<Long> baseSpaceIds;
     
     public String getModuleAndCrtieriaFromConfig(){
     	
-    	 if(buildingIds != null || siteIds != null) {
+    	 if(baseSpaceIds != null || siteIds != null) {
     		 
-    		 JSONObject res = BulkResourceAllocationUtil.getMultipleResourceCriteriaFromConfig(PreventiveMaintenance.PMAssignmentType.valueOf(assignmentTypeId), siteIds, buildingIds, spaceCategoryId, assetCategoryId);
+    		 JSONObject res = BulkResourceAllocationUtil.getMultipleResourceCriteriaFromConfig(PreventiveMaintenance.PMAssignmentType.valueOf(assignmentTypeId), siteIds, baseSpaceIds, spaceCategoryId, assetCategoryId);
         	 
         	 setData(res);
     	 }
