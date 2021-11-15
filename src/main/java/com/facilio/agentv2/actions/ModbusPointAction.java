@@ -1,16 +1,12 @@
 package com.facilio.agentv2.actions;
 
 import com.facilio.agent.controller.FacilioControllerType;
-import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.controller.GetControllerRequest;
-import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.agentv2.modbusrtu.ModbusRtuPointContext;
 import com.facilio.agentv2.modbustcp.ModbusTcpPointContext;
 import org.apache.log4j.LogManager;
-import org.json.simple.JSONObject;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -102,7 +98,7 @@ public class ModbusPointAction extends DeviceIdActions {
 
     public String createModbusPoint() {
         try {
-                Controller controller = FieldDeviceApi.getControllers(Collections.singletonList(controllerId),getAgentId());
+                Controller controller = FieldDeviceApi.getController(controllerId,getAgentId());
                 Objects.requireNonNull(controller, "controller can't be null");
                 if (getControllerType() == FacilioControllerType.MODBUS_IP.asInt()) {
                     ModbusTcpPointContext tcpPointContext = new ModbusTcpPointContext(-1, controller.getId());

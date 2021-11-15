@@ -2,32 +2,21 @@ package com.facilio.agentv2.device;
 
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.agentv2.actions.GetPointsAction;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
-import com.facilio.agentv2.controller.ControllerUtilV2;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
-import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.lang3.StringUtils;
+import nu.xom.jaxen.util.SingletonList;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
 
-import java.sql.SQLException;
 import java.util.*;
 
 public class FieldDeviceApi {
@@ -72,8 +61,30 @@ public class FieldDeviceApi {
 //        }
 //        return new ArrayList<>();
 //    }
+    public static List<Controller> getControllers(List<Long> controllerIds,Long agentId) throws Exception {
 
-    public static Controller getControllers(List<Long> controllerId,Long agentId) throws Exception {
+        List<Controller> controllers = new ArrayList<>();
+
+        GenericSelectRecordBuilder builder = getSelectControllersBuilder(controllerIds, agentId);
+
+        List<Map<String, Object>> rows = builder.get();
+        for (Map<String, Object> row : rows) {
+            if (row != null && !row.isEmpty()) {
+                FacilioControllerType ctype = FacilioControllerType.valueOf((Integer) row.get(AgentConstants.CONTROLLER_TYPE));
+                Long id = (Long) row.get(AgentConstants.ID);
+                Controller controller = ControllerApiV2.makeControllerFromMap(getControllerProps(ctype, id), ctype);
+                controller.setAgentId((long) row.get(AgentConstants.AGENT_ID));
+                controller.setName((String) row.get(AgentConstants.NAME));
+                controller.setId((Long) row.get(AgentConstants.ID));
+                controllers.add(controller);
+            }
+        }
+
+        return controllers;
+
+    }
+
+    private static GenericSelectRecordBuilder getSelectControllersBuilder(List<Long> controllerIds, Long agentId) {
         FacilioModule module = ModuleFactory.getNewControllerModule();
         FacilioModule resourceModule = ModuleFactory.getResourceModule();
         List<FacilioField> fields = new ArrayList<FacilioField>();
@@ -86,10 +97,15 @@ public class FieldDeviceApi {
                 .innerJoin(resourceModule.getTableName())
                 .on(resourceModule.getTableName()+".ID = "+module.getTableName()+".ID")
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getSysDeletedTimeField(resourceModule), "NULL", CommonOperators.IS_EMPTY))
-                .andCondition(CriteriaAPI.getIdCondition(controllerId,module));
-                if(agentId != null){
-                    builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(module),String.valueOf(agentId),NumberOperators.EQUALS));
-                }
+                .andCondition(CriteriaAPI.getIdCondition(controllerIds,module));
+        if(agentId != null){
+            builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(module),String.valueOf(agentId),NumberOperators.EQUALS));
+        }
+        return builder;
+    }
+
+    public static Controller getController(Long controllerId, Long agentId) throws Exception {
+        GenericSelectRecordBuilder builder = getSelectControllersBuilder(Collections.singletonList(controllerId), agentId);
 
         Map<String, Object> props = builder.fetchFirst();
         if(props != null && !props.isEmpty()) {
@@ -103,7 +119,7 @@ public class FieldDeviceApi {
         return null;
     }
 
-    private static Map<String,Object> getControllerProps(FacilioControllerType type,List<Long> controllerId) throws Exception{
+    private static Map<String,Object> getControllerProps(FacilioControllerType type,Long controllerId) throws Exception{
     	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
     	String moduleName = ControllerApiV2.getControllerModuleName(type);
     	FacilioModule module = modBean.getModule(moduleName);
@@ -122,9 +138,9 @@ public class FieldDeviceApi {
 		return  builder.fetchFirst();
     }
 
-    public static boolean discoverPoint(List<Long> controllerId) throws Exception {
+    public static boolean discoverPoint(long controllerId) throws Exception {
         try {
-            Controller controller = getControllers(controllerId,null);
+            Controller controller = getController(controllerId,null);
             Objects.requireNonNull(controller,"Controller doesn't exist");
             ControllerMessenger.discoverPoints(controller);
             return true;
