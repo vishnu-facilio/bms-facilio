@@ -5,6 +5,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.delegate.context.DelegationContext;
@@ -51,6 +52,9 @@ public class AddOrUpdateDelegateCommand extends FacilioCommand {
         if (delegationContext.getFromTime() == -1 || delegationContext.getToTime() == -1) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Time range is mandatory");
         }
+        if (delegationContext.getFromTime() > delegationContext.getToTime()) {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Start time cannot be greater than End Time");
+        }
         if (delegationContext.getUserId() == -1) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "User is mandatory");
         }
@@ -65,20 +69,54 @@ public class AddOrUpdateDelegateCommand extends FacilioCommand {
         }
         // check whether user is valid or not
 
+        // check whether user already delegated in same time
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("DELEGATE_USER_ID", "delegateUserId", String.valueOf(delegationContext.getUserId()), NumberOperators.EQUALS));
+        List<DelegationContext> delegatedUsersDelegations = getDelegationContext(delegationContext.getFromTime(), delegationContext.getToTime(), delegationContext.getId(), criteria);
+        if (CollectionUtils.isNotEmpty(delegatedUsersDelegations)) {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, String.format("Delegation for this date range already found in %s", delegatedUsersDelegations.get(0).getName()));
+        }
+
+        // check whether user has delegated to other user for same delegate type
+        criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("USER_ID", "userId", String.valueOf(delegationContext.getUserId()), NumberOperators.EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition("DELEGATION_TYPE & " + delegationContext.getDelegationType(), "checkDelegation", String.valueOf(0), NumberOperators.GREATER_THAN));
+        List<DelegationContext> otherDelegations = getDelegationContext(delegationContext.getFromTime(), delegationContext.getToTime(), delegationContext.getId(), criteria);
+        if (CollectionUtils.isNotEmpty(otherDelegations)) {
+            for (DelegationContext otherDelegation : otherDelegations) {
+                if (otherDelegation.getDelegateUserId() != delegationContext.getDelegateUserId()) {
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, String.format("One or few Delegation types is already granted in %s", otherDelegation.getName()));
+                }
+            }
+        }
+    }
+
+    private List<DelegationContext> getDelegationContext(long fromTime, long toTime, long ignoreId, Criteria otherCriteria) throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getUserDelegationModule().getTableName())
                 .select(FieldFactory.getUserDelegationFields());
-        if (delegationContext.getId() > 0) {
-            builder.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(delegationContext.getId()), NumberOperators.NOT_EQUALS));
+        Criteria timeCriteria = new Criteria();
+        timeCriteria.andCriteria(getTimeCriteria(fromTime));
+        timeCriteria.orCriteria(getTimeCriteria(toTime));
+        builder.andCriteria(timeCriteria);
+
+        if (otherCriteria != null && !otherCriteria.isEmpty()) {
+            builder.andCriteria(otherCriteria);
+        }
+
+        if (ignoreId > 0) {
+            builder.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(ignoreId), NumberOperators.NOT_EQUALS));
         }
         List<DelegationContext> otherDelegations =
                 FieldUtil.getAsBeanListFromMapList(builder.get(), DelegationContext.class);
-        if (CollectionUtils.isNotEmpty(otherDelegations)) {
-            for (DelegationContext other : otherDelegations) {
-                isBetween(other, delegationContext.getFromTime());
-                isBetween(other, delegationContext.getToTime());
-            }
-        }
+        return otherDelegations;
+    }
+
+    private Criteria getTimeCriteria(long time) {
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("FROM_TIME", "fromTime", String.valueOf(time), NumberOperators.LESS_THAN_EQUAL));
+        criteria.addAndCondition(CriteriaAPI.getCondition("TO_TIME", "toTime", String.valueOf(time), NumberOperators.GREATER_THAN_EQUAL));
+        return criteria;
     }
 
     private void isBetween(DelegationContext other, long time) throws RESTException {

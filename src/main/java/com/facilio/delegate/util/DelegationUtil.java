@@ -22,6 +22,7 @@ public class DelegationUtil {
                 .andCondition(CriteriaAPI.getCondition("FROM_TIME", "fromTime", String.valueOf(timestamp), NumberOperators.LESS_THAN_EQUAL))
                 .andCondition(CriteriaAPI.getCondition("TO_TIME", "toTime", String.valueOf(timestamp), NumberOperators.GREATER_THAN_EQUAL));
         builder.andCustomWhere("(? & User_Delegation.DELEGATION_TYPE = ?)", delegationType.getIndex(), delegationType.getIndex());
+        builder.orderBy("ID ASC");
         return builder;
     }
 
