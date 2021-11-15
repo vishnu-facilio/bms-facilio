@@ -85,8 +85,6 @@ public class AddNotesCommand extends FacilioCommand implements PostTransactionCo
 				parentIds.add(note.getParentId());
 				JSONObject info = new JSONObject();
 				info.put(FacilioConstants.ContextNames.NOTES_COMMENT, note.getBody());
-				//info.put(FacilioConstants.ContextNames.NOTES_COMMENT, note.getBodyText());
-				//info.put(FacilioConstants.ContextNames.RAW_COMMENT, note.getBody());
 				info.put("notifyRequester", note.getNotifyRequester());
 				isNotifyRequester = note.getNotifyRequester();
 				
