@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
-    <request path="/api/setup/test">
+    <request path="/api/setup/adduser">
         <requestbody type="object">
             <property name="appId" type="number"/>
             <property name="emailVerificationNeeded" type="boolean" />
@@ -11,5 +11,8 @@
                 <property name="roleId" type="number" />
             </property>
         </requestbody>
+    </request>
+    <request path="/api/v3/modules/data/create">
+        <requestbody type="v3fields" />
     </request>
 </config>

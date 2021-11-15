@@ -147,13 +147,14 @@ public class PointsUtil
                          if (agentType == AgentType.CUSTOM.getKey() || agentType == AgentType.REST.getKey() || agentType == AgentType.CLOUD.getKey()) {
                             point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
                         }
-                        if (controller.getControllerType() == FacilioControllerType.MODBUS_IP.asInt() || controller.getControllerType() == FacilioControllerType.MODBUS_RTU.asInt()) {
-                            if (agentType == AgentType.FACILIO.getKey()) {
-                                point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
-                            }
+                        if (controller.getControllerType() == FacilioControllerType.MODBUS_IP.asInt() ||
+                                controller.getControllerType() == FacilioControllerType.MODBUS_RTU.asInt() ||
+                                controller.getControllerType() == FacilioControllerType.RDM.asInt()) {
+                                    if (agentType == AgentType.FACILIO.getKey() || agentType == AgentType.AGENT_SERVICE.getKey()) {
+                                        point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
+                                    }
                         }
-                            Map<String, Object> pointMap =
-                           FieldUtil.getAsProperties(point.toJSON());
+                        Map<String, Object> pointMap = FieldUtil.getAsProperties(point.toJSON());
 
                         points.add(pointMap);
 

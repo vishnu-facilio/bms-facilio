@@ -136,6 +136,7 @@ public class ModuleFactory {
 		moduleMap.put(ContextNames.Tenant.DEALS_AND_OFFERS, getDealsAndOffersModule());
 		moduleMap.put(ContextNames.Tenant.NEIGHBOURHOOD, getNeighbourhoodModule());
 		moduleMap.put(ContextNames.Tenant.ANNOUNCEMENT, getAnnouncementModule());
+		moduleMap.put(ContextNames.Tenant.AUDIENCE, getAudienceModule());
 		moduleMap.put(ContextNames.Tenant.ADMIN_DOCUMENTS, getAdminDocumentsModule());
 		moduleMap.put(ContextNames.Tenant.CONTACT_DIRECTORY, getContactDirectoryModule());
 		moduleMap.put(ContextNames.Budget.BUDGET, getBudgetModule());
@@ -4310,6 +4311,14 @@ public class ModuleFactory {
 		module.setName("announcement");
 		module.setDisplayName("Announcements");
 		module.setTableName("Announcements");
+		return module;
+	}
+
+	public static FacilioModule getAudienceModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("audience");
+		module.setDisplayName("Audience");
+		module.setTableName("Sharing_Audience");
 		return module;
 	}
 

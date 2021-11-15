@@ -126,7 +126,7 @@
         <dependency>
             <groupId>com.facilio.security</groupId>
             <artifactId>security</artifactId>
-            <version>1.3-SNAPSHOT</version>
+            <version>1.5-SNAPSHOT</version>
         </dependency>
 
         <dependency>

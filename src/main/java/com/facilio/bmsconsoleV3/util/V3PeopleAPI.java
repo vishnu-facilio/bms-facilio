@@ -113,6 +113,22 @@ public class V3PeopleAPI {
 
     }
 
+    public static List<V3PeopleContext> getPeopleByRoleId(long roleId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+        List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.PEOPLE);
+
+        SelectRecordsBuilder<V3PeopleContext> builder = new SelectRecordsBuilder<V3PeopleContext>()
+                .module(module)
+                .beanClass(V3PeopleContext.class)
+                .select(fields)
+                .andCondition(CriteriaAPI.getCondition("ROLE_ID", "roleId", String.valueOf(roleId), StringOperators.IS));
+                ;
+        List<V3PeopleContext> records = builder.get();
+        return records;
+
+    }
+
     public static void addParentPrimaryContactAsPeople(V3PeopleContext tc, FacilioModule module, List<FacilioField> fields, long parentId, V3PeopleContext primaryContactForParent) throws Exception {
 
         if(primaryContactForParent != null) {
