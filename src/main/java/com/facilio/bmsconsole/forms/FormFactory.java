@@ -3024,7 +3024,7 @@ public class FormFactory {
 		FormField attachment = new FormField("announcementattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 5, 1);
 		attachment.addToConfig("fileTypes", "image/*,.pdf,.doc,.docx");
 		fields.add(attachment);
-		fields.add(new FormField("announcementsharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 6, 1));
+		fields.add(new FormField("audience", FieldDisplayType.LOOKUP_SIMPLE, "Audience", Required.REQUIRED, "audience",6, 1));
 		return fields;
 	}
 
