@@ -84,7 +84,7 @@ public class SurveyPageFactory extends PageFactory {
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), record.getId()+"", NumberOperators.EQUALS));
         
 		addChartParams(SurveyCountInsight, "donut",null, "responseStatus", null,  null , null, DateOperators.CURRENT_YEAR, null, criteria, "createdTime", FacilioConstants.Survey.SURVEY_RESPONSE);
-		SurveyCountInsight.addToWidgetParams("type", "surveyChart");
+		SurveyCountInsight.addToWidgetParams("type", "inspectionChart");
 		insightTabSec.addWidget(SurveyCountInsight);
 		
         PageWidget SurveyQuestions = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_inspectionQuestions);
