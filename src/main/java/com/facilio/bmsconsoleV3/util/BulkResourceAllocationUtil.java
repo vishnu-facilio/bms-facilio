@@ -182,7 +182,7 @@ public class BulkResourceAllocationUtil {
 					criteria.addAndCondition(CriteriaAPI.getCondition("SITE_ID", "siteId", StringUtils.join(siteIds, ","), PickListOperators.IS));
 				}
 				if(!CollectionUtils.isEmpty(baseSpaceIds)) {
-					criteria.addAndCondition(CriteriaAPI.getCondition("BUILDING_ID", "space", StringUtils.join(baseSpaceIds, ","), BuildingOperator.BUILDING_IS));
+					criteria.addAndCondition(CriteriaAPI.getCondition("SPACE_ID", "space", StringUtils.join(baseSpaceIds, ","), BuildingOperator.BUILDING_IS));
 				}
 				if(assetCategoryID != null && assetCategoryID > 0) {
 					criteria.addAndCondition(CriteriaAPI.getCondition("CATEGORY", "category", assetCategoryID+"", PickListOperators.IS));
