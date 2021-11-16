@@ -30,7 +30,7 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
     private KafkaConsumer<String, String> consumer;
     private TopicPartition topicPartition = null;
     private JSONParser parser = new JSONParser();
-    private boolean isMsk = false; // Temp handling. Message got from aws msk wont have extra 'data' object sent from kinesis bridge
+    private boolean parseData = true; // Temp handling. Message got from aws msk wont have extra 'data' object sent from kinesis bridge
     private static final Logger LOGGER = LogManager.getLogger(FacilioKafkaConsumer.class.getName());
 
     public FacilioKafkaConsumer(String client, String consumerGroup, String topic, @NonNull KafkaMessageSource messageSource) {
@@ -54,7 +54,7 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
         props.put("max.poll.interval.ms",300000);
         props.put("max.poll.records", 10);
         KafkaUtil.setKafkaAuthProps(props, messageSource);
-        isMsk = messageSource.getName().equals("msk");      
+        parseData = messageSource.getName().equals("facilio");      
         return props;
     }
 
@@ -70,7 +70,7 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
                 StringReader reader = new StringReader(record.value());
                 JSONObject object = null;
                 JSONObject data = null;
-                if (isMsk) {
+                if (!parseData) {
                 	data = (JSONObject) parser.parse(reader);
                 } else {
                     object = (JSONObject) parser.parse(reader);
