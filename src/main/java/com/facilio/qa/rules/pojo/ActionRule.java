@@ -8,6 +8,6 @@ public class ActionRule extends QAndARule<ActionRuleCondition> {
     @Override
     public void manipulateAnswer(QuestionContext question, AnswerContext answer) throws Exception {
 
-        answer.setAnswerContext(question,answer);
+        answer.setAnswerContext(question);
     }
 }

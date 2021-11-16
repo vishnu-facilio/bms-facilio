@@ -58,7 +58,7 @@ public class AnswerContext extends V3Context {
      private ClientAnswerContext answerContext;
 
     @JsonIgnore
-    public void setAnswerContext(QuestionContext question,AnswerContext answer) throws Exception {
+    public void setAnswerContext(QuestionContext question) throws Exception {
         answerContext = QAndAUtil.serializedAnswer(question,this);
     }
 }
