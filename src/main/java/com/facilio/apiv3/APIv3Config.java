@@ -545,6 +545,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getTransferRequestShipmentReceivables() {
         return () -> new V3Config(V3TransferRequestShipmentReceivablesContext.class, new ModuleCustomFieldCount30())
                 .create()
+                .afterSave(new UpdateQuantityReceivedInLineItemsCommandV3())
                 .update()
                 .list()
                 .summary()

@@ -11,6 +11,7 @@ import com.facilio.db.criteria.operators.FieldOperator;
 import com.facilio.db.criteria.operators.MultiFieldOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
@@ -32,14 +33,17 @@ public class SetPendingLineItemsAndReceivablesCommandV3 extends FacilioCommand {
         //set pending line items
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         String lineItemModuleName = FacilioConstants.ContextNames.TRANSFER_REQUEST_LINE_ITEM;
+        FacilioModule lineItemModule = modBean.getModule(lineItemModuleName);
         List<FacilioField> fields = modBean.getAllFields(lineItemModuleName);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+        FacilioField quantityReceived = fieldsAsMap.get("quantityReceived");
 
         SelectRecordsBuilder<V3TransferRequestLineItemContext> builder = new SelectRecordsBuilder<V3TransferRequestLineItemContext>()
                 .moduleName(lineItemModuleName)
                 .select(fields)
                 .beanClass(V3TransferRequestLineItemContext.class)
                 .andCondition(CriteriaAPI.getCondition("TRANSFER_REQUEST_ID", "transferRequest", String.valueOf(trId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("quantityTransferred"), lineItemModule.getName()+"."+quantityReceived.getName(), FieldOperator.GREATER_THAN))
                 .fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("itemType"), (LookupField) fieldsAsMap.get("toolType")));
         List<V3TransferRequestLineItemContext> list = builder.get();
         transferRequestShipmentContext.getTransferRequest().setLineItems(list);
