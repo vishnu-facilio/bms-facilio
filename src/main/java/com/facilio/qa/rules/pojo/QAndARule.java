@@ -58,5 +58,5 @@ public abstract class QAndARule<Condition extends RuleCondition> {
     }
 
 
-    public abstract void manipulateAnswer(QuestionContext question, AnswerContext answer);
+    public abstract void manipulateAnswer(QuestionContext question, AnswerContext answer) throws Exception;
 }

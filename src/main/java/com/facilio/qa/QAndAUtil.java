@@ -384,4 +384,17 @@ public class QAndAUtil {
         setDefaultPropsAsNullToReduceRespSize(question);
         question.setParent(null);
     }
+
+    public static ClientAnswerContext serializedAnswer(QuestionContext question,AnswerContext answer) throws Exception {
+        ClientAnswerContext clientAnswer = question.getQuestionType().getAnswerHandler().serialize(answer);
+        clientAnswer.addQuestionId(question);
+        clientAnswer.setId(answer._getId());
+        clientAnswer.setFullScore(answer.getFullScore());
+        clientAnswer.setScore(answer.getScore());
+        clientAnswer.setComments(answer.getComments());
+        clientAnswer.setResponseId(answer.getResponseId());
+        clientAnswer.setScorePercent(answer.getScorePercent());
+        clientAnswer.setAttachmentList(answer.getAttachmentList());
+        return clientAnswer;
+    }
 }

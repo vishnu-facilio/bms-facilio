@@ -6,7 +6,7 @@ import com.facilio.qa.context.QuestionContext;
 public class ActionRule extends QAndARule<ActionRuleCondition> {
 
     @Override
-    public void manipulateAnswer(QuestionContext question, AnswerContext answer) {
+    public void manipulateAnswer(QuestionContext question, AnswerContext answer) throws Exception {
 
         answer.setAnswerContext(question,answer);
     }

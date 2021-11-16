@@ -2,6 +2,7 @@ package com.facilio.qa.context;
 
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.modules.FieldUtil;
+import com.facilio.qa.QAndAUtil;
 import com.facilio.qa.context.answers.MultiFileAnswerContext;
 import com.facilio.qa.context.questions.MCQOptionContext;
 import com.facilio.v3.context.V3Context;
@@ -57,9 +58,7 @@ public class AnswerContext extends V3Context {
      private ClientAnswerContext answerContext;
 
     @JsonIgnore
-    public void setAnswerContext(QuestionContext question,AnswerContext answer){
-    	AnswerHandler answerHandler = question.getQuestionType().getAnswerHandler();
-        answerContext = FieldUtil.<ClientAnswerContext>getAsBeanFromMap(new HashMap<>(), answerHandler.getAnswerClass());
-        answerContext.setId(answer.getId());
+    public void setAnswerContext(QuestionContext question,AnswerContext answer) throws Exception {
+        answerContext = QAndAUtil.serializedAnswer(question,this);
     }
 }

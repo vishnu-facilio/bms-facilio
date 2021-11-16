@@ -50,13 +50,7 @@ public class SerializeAnswersCommand extends FacilioCommand {
         QuestionContext question = questions.get(answer.getQuestion()._getId());
         V3Util.throwRestException(question == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Question ID ({0}) is not present in given question map. This is not supposed to happen", answer.getQuestion()._getId()));
         answer.setQuestion(question);
-        ClientAnswerContext clientAnswer = question.getQuestionType().getAnswerHandler().serialize(answer);
-        clientAnswer.addQuestionId(question);
-        clientAnswer.setId(answer._getId());
-        clientAnswer.setFullScore(answer.getFullScore());
-        clientAnswer.setScore(answer.getScore());
-        clientAnswer.setScorePercent(answer.getScorePercent());
-        clientAnswer.setAttachmentList(answer.getAttachmentList());
+        ClientAnswerContext clientAnswer = QAndAUtil.serializedAnswer(question,answer);
 
         if (isSingleResponse) {
             clientAnswer.setComments(answer.getComments()); // Here not doing any check with question because comments can be disabled after few responses have been added
