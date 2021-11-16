@@ -20,6 +20,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.services.FacilioHttpUtils;
 import com.facilio.util.FacilioUtil;
 import com.facilio.util.RequestUtil;
+import com.facilio.util.ServiceHttpUtils;
 
 public class CloudAgentUtil {
 	
@@ -46,7 +47,7 @@ public class CloudAgentUtil {
 	private static String doPost(String url, String key, Map<String, Object> props) throws Exception {
 		JSONObject body = new JSONObject();
 		body.put(key, props);
-		return FacilioHttpUtils.doHttpPost(getUrl(url), getSecretKeyHeader(), null, body);
+		return ServiceHttpUtils.doHttpPost(FacilioProperties.getRegion(), Services.AGENT_SERVICE, getUrl(url), null, null, body);
 	}
 
 	private static String getUrl(String url) throws Exception {
@@ -64,22 +65,4 @@ public class CloudAgentUtil {
 		return (String) prop.get("domain");
 	}
 	
-	// Temp. Change once handled in framework
-	private static Map<String, String> getSecretKeyHeader() throws Exception {
-		String environment = FacilioProperties.getEnvironment();
-		String region = FacilioProperties.getRegion();
-		if (environment.equals("development")) {
-			region = "dev";
-		} else if (environment.equals("stage")) {
-			region = "us-west-2";
-		} else {
-			region = "us-west-2";
-		}
-
-		String jwt = AuthUtils.generateServiceToken(Services.DEFAULT_SERVICE, region, Services.AGENT_SERVICE);
-		Map<String, String> headers = new HashMap<>();
-		headers.put("Authorization", jwt);
-		return headers;
-	}
-
 }

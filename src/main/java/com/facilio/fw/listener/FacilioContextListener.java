@@ -72,6 +72,7 @@ import com.facilio.server.ServerInfo;
 import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.kafka.notification.NotificationProcessor;
+import com.facilio.services.messageQueue.MessageQueueFactory;
 import com.facilio.tasker.FacilioScheduler;
 
 public class FacilioContextListener implements ServletContextListener {
@@ -128,7 +129,7 @@ public class FacilioContextListener implements ServletContextListener {
 			AddSignupDataCommandV3.initSignUpDataClasses();
 			initializeDB();
 			ServerInfo.registerServer();
-			if( !FacilioProperties.isDevelopment() && StringUtils.isNotEmpty(FacilioProperties.getKafkaConsumer())) {
+			if( !FacilioProperties.isDevelopment() && StringUtils.isNotEmpty(FacilioProperties.getQueueSource())) {
 				 new Thread(new NotificationProcessor()).start();
 			}
 			BeanFactory.initBeans();
@@ -149,7 +150,7 @@ public class FacilioContextListener implements ServletContextListener {
 				downloadEnvironmentFiles();
 			}
 			if (FacilioProperties.isMessageProcessor()) {
-				FacilioFactory.getMessageQueue().start();
+				MessageQueueFactory.start();
 			}
 			
 			//AgentIntegrationQueueFactory.startIntegrationQueues();

@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -26,6 +27,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.services.filestore.FacilioFileStore;
 import lombok.Getter;
 import lombok.Setter;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -424,9 +427,6 @@ public class AgentAction extends AgentActionV2 {
 	public String downloadCertificate() {
 		try {
 			Organization currentOrg = AccountUtil.getCurrentOrg();
-			LOGGER.info("Downld certificate called..orgId :"+currentOrg.getOrgId());
-			String orgMessageTopic = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.AGENT_SERVICE,()->getMessageTopic(currentOrg.getDomain(),currentOrg.getOrgId()));
-			LOGGER.info("download certificate current org domain is :" + orgMessageTopic);
 			com.facilio.agentv2.FacilioAgent agent = AgentApiV2.getAgent(agentId);
 			Objects.requireNonNull(agent, "no such agent");
 			String certFileId = FacilioAgent.getCertFileId("facilio");
@@ -434,15 +434,9 @@ public class AgentAction extends AgentActionV2 {
 			long orgId = Objects.requireNonNull(AccountUtil.getCurrentOrg()).getOrgId();
 			Map<String, Object> orgInfo = CommonCommandUtil.getOrgInfo(orgId, certFileId);
 			long fileId = -1;
-			String url =null;
 			if (orgInfo != null) {
 				fileId = Long.parseLong((String) orgInfo.get("value"));
-				FileStore fs = FacilioFactory.getFileStore();
-				url = fs.getPrivateUrl(fileId);
 			}
-			if(url== null) {
-                fileId = DownloadCertFile.addCert(orgMessageTopic, "facilio", agent);
-	         }
 			if (fileId > 0) {
 				FileStore fs = FacilioFactory.getFileStore();
 				FileInfo fileInfo = fs.getFileInfo(fileId, true);
@@ -452,7 +446,7 @@ public class AgentAction extends AgentActionV2 {
 						String dateStamp = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss Z").format(new Date());
 						setLastModified(dateStamp);
 						setDayExpiry();
-						String fileName = orgMessageTopic+"_cert.zip";
+						String fileName = currentOrg.getDomain()+"_cert.zip";
 		    			setFilename(fileName);
 					} else {
 						throw new Exception("File not Found");
@@ -461,14 +455,8 @@ public class AgentAction extends AgentActionV2 {
 					setResponseCode(HttpURLConnection.HTTP_NOT_FOUND);
 				}
 			}
-			try {
-				AwsUtil.addClientToPolicy(agent.getName(), orgMessageTopic, "facilio");
-				ok();
-			} catch (Exception e) {
-				setResult(AgentConstants.EXCEPTION, " exception while adding to policy " + e.getMessage());
-				LOGGER.info("Exception  while adding client to policy", e);
-				internalError();
-			}
+			
+			ok();
 
 		} catch (Exception e) {
 			setResult(AgentConstants.EXCEPTION, e.getMessage());
@@ -515,19 +503,6 @@ public class AgentAction extends AgentActionV2 {
                     .append("isValidateJsonSchemaEnabled=false");
         }
         return builder.toString();
-    }
-
-
-    public static String getMessageTopic(String domain, long orgId) throws Exception {
-    	LOGGER.info("Downld current org :"+domain+" orgid "+orgId);
-    	GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().select(AgentFieldFactory.getMessageTopicFields())
-    			.table(AgentModuleFactory.getMessageToipcModule().getTableName())
-    			.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(AgentFieldFactory.getMessageTopicFields()).get("orgId"), String.valueOf(orgId), StringOperators.IS));
-    	Map<String,Object> prop =	builder.fetchFirst();
-    	if(MapUtils.isEmpty(prop)) {
-            return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.AGENT_SERVICE, () -> MessageQueueTopic.addMsgTopic(domain, orgId, 0)) ? domain : null;
-    	}
-    	return prop.get("topic").toString();
     }
 
 	public List<Long> getRecordIds() { return recordIds; }

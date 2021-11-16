@@ -22,9 +22,11 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.queue.source.MessageSource;
 import com.facilio.service.FacilioService;
 
 
@@ -35,12 +37,12 @@ public class MessageQueueTopic {
 	private static final List<FacilioField> MESSAGE_TOPIC_FIELDS = AgentFieldFactory.getMessageTopicFields();
 	private static final FacilioModule MESSAGE_TOIPC_MODULE = AgentModuleFactory.getMessageToipcModule();
 
-	public static boolean addMsgTopic(String topicName, long orgId, int partitionId) throws Exception {
+	public static boolean addMsgTopic(String topicName, long orgId, MessageSource source) throws Exception {
 		Map<String, Object> prop = new HashedMap<>();
 		prop.put(AgentConstants.MESSAGE_TOPIC, topicName);
 		prop.put(AgentConstants.CREATED_TIME, System.currentTimeMillis());
 		prop.put(AgentConstants.ORGID,orgId);
-		prop.put(AgentConstants.PARTITION_ID, partitionId);
+		prop.put(AgentConstants.MESSAGE_SOURCE, source.getName());
 		prop.put(AgentConstants.MAX_CONSUMERS_PER_INSTANCE,1);
 		prop.put(AgentConstants.MAX_CONSUMERS,2);
 		long count = new GenericInsertRecordBuilder().fields(MESSAGE_TOPIC_FIELDS)
@@ -53,17 +55,21 @@ public class MessageQueueTopic {
 		return false;
 	}
 	
-	public static List<Map<String, Object>> getTopics(List<Long> orgId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.AGENT_SERVICE,()->getAllMessageTopics(orgId));
+	public static List<Map<String, Object>> getTopics(List<Long> orgId, MessageSource source) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.AGENT_SERVICE,()->getAllMessageTopics(orgId, source));
 	}
 	
-	private static List<Map<String, Object>> getAllMessageTopics(List<Long> orgId) throws Exception {
+	private static List<Map<String, Object>> getAllMessageTopics(List<Long> orgId, MessageSource source) throws Exception {
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(MESSAGE_TOPIC_FIELDS);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().select(MESSAGE_TOPIC_FIELDS)
 				.table(MESSAGE_TOIPC_MODULE.getTableName());
 				if(CollectionUtils.isNotEmpty(orgId)) {
-					builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(MESSAGE_TOPIC_FIELDS).get(AgentConstants.ORGID),StringUtils.join(orgId,","),NumberOperators.EQUALS));
+					builder.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.ORGID),StringUtils.join(orgId,","),NumberOperators.EQUALS));
 				}
-				builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(MESSAGE_TOPIC_FIELDS).get(AgentConstants.IS_DISABLE),String.valueOf(false), BooleanOperators.IS));
+				if (source != null) {
+					builder.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.MESSAGE_SOURCE),source.getName(),StringOperators.IS));
+				}
+				builder.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.IS_DISABLE),String.valueOf(false), BooleanOperators.IS));
 			return builder.get();
 	}
 

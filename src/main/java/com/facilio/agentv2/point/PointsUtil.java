@@ -138,7 +138,7 @@ public class PointsUtil
                       if (!pointJSON.containsKey(AgentConstants.DISPLAY_NAME) && pointJSON.containsKey(AgentConstants.NAME)) {
                         point.setDisplayName(pointJSON.get(AgentConstants.NAME).toString());
                      }
-
+                      	point.setCreatedTime(System.currentTimeMillis());
                         setPointWritable(pointJSON, point);
                         if (point != null) {
                          point.setControllerId(controller.getId());

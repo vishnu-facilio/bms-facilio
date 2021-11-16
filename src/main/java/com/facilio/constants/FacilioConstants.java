@@ -2609,6 +2609,7 @@ public class FacilioConstants {
 		public static final String IS_OLD_AGENT = "isOldAgent";
 		public static final String DATA_PROCESSING_LOGGER_LEVEL = "dataProcessingLoggerLevel";		
 		public static final String MAX_AGENT_PARTITION = "maxAgentPartition";		
+		public static final String MESSAGE_QUEUE_SOURCE = "messageQueueSource";		
 	}
 
 	public static class Services{

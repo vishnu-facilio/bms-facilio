@@ -1,5 +1,19 @@
 package com.facilio.agentv2;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.alarms.AgentAlarmContext;
 import com.facilio.agent.alarms.AgentEventContext;
@@ -11,10 +25,12 @@ import com.facilio.agentv2.logs.LogsApi;
 import com.facilio.agentv2.metrics.MetricsApi;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.OrgInfoKeys;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -24,14 +40,10 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.queue.source.MessageSource;
+import com.facilio.queue.source.MessageSourceUtil;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.AckUtil;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public class AgentUtilV2
 {
@@ -343,5 +355,43 @@ public class AgentUtilV2
                 .limit(1);
         Map<String,Object> map = builder.fetchFirst();
         return (map!= null && !map.isEmpty()) ;
+    }
+    
+    public static MessageSource getMessageSource(long agentId){
+    	FacilioAgent agent = null;
+    	try {
+    		agent = AgentApiV2.getAgent(agentId);
+		} catch (Exception e) {
+			LOGGER.error("Error while fetching agent", e); 
+		}
+    	return getMessageSource(agent);
+    }
+    
+    public static MessageSource getMessageSource(FacilioAgent agent){
+    	String sourceName = null;
+    	
+    	if (agent != null && StringUtils.isNotEmpty(agent.getMessageSource())) {
+    		sourceName = agent.getMessageSource();
+    	}
+    	else {
+    		Map<String, String> orgInfo = null;
+        	String orgInfoKey = OrgInfoKeys.MESSAGE_QUEUE_SOURCE; 
+        	try { 
+        		if(AccountUtil.getCurrentOrg() != null) { 
+        			orgInfo = CommonCommandUtil.getOrgInfo(orgInfoKey); 
+        			if (!MapUtils.isEmpty(orgInfo)) {
+                		sourceName = orgInfo.get(orgInfoKey);
+                	}
+        		} 
+        	} catch (Exception e) {
+        		LOGGER.error("Error while fetching org info"); 
+        	}
+    	}
+    	
+    	if (sourceName != null) {
+    		return MessageSourceUtil.getSource(sourceName);
+    	}
+    	
+    	return MessageSourceUtil.getDefaultSource();
     }
 }

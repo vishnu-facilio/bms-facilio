@@ -25,6 +25,7 @@ public class AgentFieldFactory {
 			fields.add(FieldFactory.getField("lastModifiedTime", "LAST_MODIFIED_TIME", module, FieldType.NUMBER));
 			fields.add(FieldFactory.getField("lastEnabledTime", "LAST_ENABLED_TIME", module, FieldType.NUMBER));
 			fields.add(FieldFactory.getField("lastDisabledTime", "LAST_DISABLED_TIME", module, FieldType.NUMBER));
+			fields.add(FieldFactory.getField("messageSource", "MESSAGE_SOURCE", module, FieldType.STRING));
 			return fields;
 		}
 	 

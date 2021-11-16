@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.MapUtils;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -13,7 +14,10 @@ import org.json.simple.JSONObject;
 import com.facilio.agent.PublishType;
 import com.facilio.agent.module.AgentFieldFactory;
 import com.facilio.agent.module.AgentModuleFactory;
+import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.AgentUtilV2;
+import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.actions.AgentActionV2;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -26,7 +30,13 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.queue.source.KafkaMessageSource;
+import com.facilio.queue.source.MessageSourceUtil;
+import com.facilio.services.kafka.FacilioKafkaProducer;
 import com.facilio.services.kafka.KafkaProcessor;
+import com.facilio.services.messageQueue.MessageQueue;
+import com.facilio.services.messageQueue.MessageQueueFactory;
+import com.facilio.services.procon.message.FacilioRecord;
 
 public class AgentControl extends AgentActionV2 {
 	
@@ -56,9 +66,18 @@ public class AgentControl extends AgentActionV2 {
 	private void constructData() throws Exception{
 		try {
 			String topicName = getTopic();
-            KafkaProcessor processor = new KafkaProcessor(orgId, topicName, 0);
-			long recordId =processor.sendMsgToKafka(agentName,createRecord());
-			LOGGER.info("Agent control action recordId :"+recordId + " topic name is "+topicName);
+			FacilioAgent agent = AgentApiV2.getAgent(agentName);
+			KafkaMessageSource source = (KafkaMessageSource) AgentUtilV2.getMessageSource(agent);
+			
+			MessageQueue messageQueue = MessageQueueFactory.getMessageQueue(source);
+			FacilioRecord record = new FacilioRecord(agentName, createRecord());
+			Object meta = messageQueue.put(agentName, record);
+			long recordId = -1;
+			if (meta instanceof RecordMetadata) {
+				recordId = ((RecordMetadata)meta).offset();
+			}
+			
+	        LOGGER.info("Agent control action recordId :"+ recordId + " topic name is "+topicName);
 		}catch(Exception e) {
 			throw e;
 		}

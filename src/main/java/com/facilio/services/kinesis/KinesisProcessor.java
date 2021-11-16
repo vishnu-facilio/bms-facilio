@@ -6,7 +6,12 @@ import com.amazonaws.services.kinesis.clientlibrary.types.ProcessRecordsInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ShutdownInput;
 import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.dataprocessor.DataProcessorUtil;
+import com.facilio.queue.source.KafkaMessageSource;
+import com.facilio.queue.source.MessageSource;
 import com.facilio.services.procon.message.FacilioRecord;
+
+import lombok.NonNull;
+
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -29,10 +34,10 @@ public class KinesisProcessor implements IRecordProcessor {
 
     private final JSONParser parser = new JSONParser();
 
-    KinesisProcessor(long orgId, String orgDomainName){
+    KinesisProcessor(long orgId, String orgDomainName, @NonNull MessageSource source){
         this.orgDomainName = orgDomainName;
         this.errorStream = orgDomainName + "-error";
-        dataProcessorUtil = new DataProcessorUtil(orgId, orgDomainName);
+        dataProcessorUtil = new DataProcessorUtil(orgId, orgDomainName, source);
     }
 
     private void sendToKafka(Record record, String data) {
