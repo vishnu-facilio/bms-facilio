@@ -3021,10 +3021,13 @@ public class FormFactory {
 
 		descField.addToConfig("richText", true);
 
-		FormField attachment = new FormField("announcementattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 5, 1);
+		FormField attachment = new FormField("announcementattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 6, 1);
 		attachment.addToConfig("fileTypes", "image/*,.pdf,.doc,.docx");
 		fields.add(attachment);
-		fields.add(new FormField("audience", FieldDisplayType.LOOKUP_SIMPLE, "Audience", Required.REQUIRED, "audience",6, 1));
+		FormField field = new FormField("audience", FieldDisplayType.LOOKUP_SIMPLE, "Audience", Required.REQUIRED, "audience",5, 1);
+		field.setAllowCreateOptions(true);
+		field.addToConfig("canShowLookupWizard",true);
+		fields.add(field);
 		return fields;
 	}
 
