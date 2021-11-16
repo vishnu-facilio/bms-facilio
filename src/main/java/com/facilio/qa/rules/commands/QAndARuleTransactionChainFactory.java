@@ -17,8 +17,8 @@ public class QAndARuleTransactionChainFactory {
         c.addCommand(new UpdateRulesCommand());
         c.addCommand(new AddRulesCommand());
         c.addCommand(new AddConditionsCommand());
+        c.addCommand(new AddRuleActionCommand());
 
         return c;
     }
-
 }

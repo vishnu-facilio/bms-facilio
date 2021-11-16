@@ -326,6 +326,21 @@
         </action>
     </package>
 
+    <package name="qandaRulesAdd" namespace="/api/v3/qandarules/add" extends="v3Api">
+        <action name="*" class="com.facilio.qa.rules.actions.QAndARuleAction"
+                method="addQandARules">
+        <param name="pageId">{1}</param>
+        </action>
+    </package>
+
+    <package name="qandaRulesFetch" namespace="/api/v3/qandarules/list" extends="v3Api">
+        <action name="*"
+                class="com.facilio.qa.rules.actions.QAndARuleAction"
+                method="fetchQandARules">
+            <param name="pageId">{1}</param>
+        </action>
+    </package>
+
     <package name="scoringRulesFetch" namespace="/api/v3/scoringrules/list" extends="v3Api">
         <action name="*"
                 class="com.facilio.qa.rules.actions.QAndARuleAction"
