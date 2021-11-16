@@ -441,57 +441,7 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 				throw new FunctionParamException("Required Object is null or empty");
 			}
 		}
-	},
-	
-	ADD_ALL(8,"addAll") {
-		@Override
-		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
-			WorkflowReadingContext workflowReadingContext = (WorkflowReadingContext)objects[0];
-			
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			
-			FacilioField field = modBean.getField(workflowReadingContext.getFieldId());
-			
-			
-			Map<Long,Object> values = (HashMap<Long,Object>) objects[1];
-			
-			boolean ajustTTime = false;
-			boolean historyReadings = false;
-			if(objects.length >2) {
-				ajustTTime = (boolean) objects[2];
-			}
-			if(objects.length >3) {
-				historyReadings = (boolean) objects[3];
-			}
-			
-			List<ReadingContext> readingList = new ArrayList<ReadingContext>();
-			for(Map.Entry<Long, Object> entry : values.entrySet()) {
-				ReadingContext reading = new ReadingContext();
-				reading.setParentId(workflowReadingContext.getParentId());
-				reading.addReading(field.getName(), entry.getValue());
-				reading.setTtime(FacilioUtil.parseLong(entry.getKey()));
-				readingList.add(reading);
-			}
-			
-			
-			FacilioChain addCurrentReading = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
-			FacilioContext context = addCurrentReading.getContext();
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, field.getModule().getName());
-			context.put(FacilioConstants.ContextNames.READINGS, readingList);
-			context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.SCRIPT);
-			context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, ajustTTime);
-			context.put(FacilioConstants.ContextNames.HISTORY_READINGS, historyReadings);
-			
-			addCurrentReading.execute();
-			return null;
-		};
-		
-		public void checkParam(Object... objects) throws Exception {
-			if(objects == null || objects.length == 0) {
-				throw new FunctionParamException("Required Object is null or empty");
-			}
-		}
-	},
+	}
 	
 	;
 	
