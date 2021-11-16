@@ -578,7 +578,6 @@ public class ImportAPI {
 			if(facilioModule.getName().equals(FacilioConstants.ContextNames.TOOL)
 					|| facilioModule.getName().equals(FacilioConstants.ContextNames.PURCHASED_TOOL)
 					|| facilioModule.getName().equals(FacilioConstants.ContextNames.PURCHASED_ITEM)
-					|| facilioModule.getName().equals(FacilioConstants.ContextNames.ITEM)
 					|| ImportFieldFactory.isFieldsFromFieldFactoryModule(facilioModule.getName())
 					) {
 				fields.addAll(ImportFieldFactory.getImportFieldNames(facilioModule.getName()));
