@@ -7,8 +7,8 @@ public class V3TransferRequestPurchasedItems extends V3Context {
     private static final long serialVersionUID = 1L;
     private V3TransferRequestContext transferRequest;
     private ItemContext item;
-    private double unitPrice;
-    private double quantity;
+    private Double unitPrice;
+    private Double quantity;
 
     public V3TransferRequestContext getTransferRequest() {
         return transferRequest;
@@ -26,19 +26,19 @@ public class V3TransferRequestPurchasedItems extends V3Context {
         this.item = item;
     }
 
-    public double getUnitPrice() {
+    public Double getUnitPrice() {
         return unitPrice;
     }
 
-    public void setUnitPrice(double unitPrice) {
+    public void setUnitPrice(Double unitPrice) {
         this.unitPrice = unitPrice;
     }
 
-    public double getQuantity() {
+    public Double getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(double quantity) {
+    public void setQuantity(Double quantity) {
         this.quantity = quantity;
     }
 }
