@@ -41,11 +41,11 @@ public class SurveyPageFactory extends PageFactory {
         secondaryDetailsWidget.setWidgetParams(getSurveyTemplateSummaryParams());
         SummarySec.addWidget(secondaryDetailsWidget);
         
-        PageWidget SurveyDetails = new PageWidget(PageWidget.WidgetType.SURVEY_TEMPLATE_surveyDetails);
+        PageWidget SurveyDetails = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_inspectionDetails);
         SurveyDetails.addToLayoutParams(SummarySec, 24, 6);
         SummarySec.addWidget(SurveyDetails);
         
-        PageWidget SurveyPageDetails = new PageWidget(PageWidget.WidgetType.SURVEY_TEMPLATE_surveyPageDetails);
+        PageWidget SurveyPageDetails = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_inspectionPageDetails);
         SurveyPageDetails.addToLayoutParams(SummarySec, 24, 12);
         SummarySec.addWidget(SurveyPageDetails);
         
@@ -56,7 +56,7 @@ public class SurveyPageFactory extends PageFactory {
         Page.Tab triggerTab = page.new Tab("trigger");
         Page.Section triggerTabSec = page.new Section();
         
-        PageWidget SurveyTriggers = new PageWidget(PageWidget.WidgetType.SURVEY_TEMPLATE_surveyTriggers);
+        PageWidget SurveyTriggers = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_inspectionTriggers);
         SurveyTriggers.addToLayoutParams(triggerTabSec, 24, 24);
         
         triggerTabSec.addWidget(SurveyTriggers);
@@ -84,10 +84,10 @@ public class SurveyPageFactory extends PageFactory {
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), record.getId()+"", NumberOperators.EQUALS));
         
 		addChartParams(SurveyCountInsight, "donut",null, "responseStatus", null,  null , null, DateOperators.CURRENT_YEAR, null, criteria, "createdTime", FacilioConstants.Survey.SURVEY_RESPONSE);
-		SurveyCountInsight.addToWidgetParams("type", "surveyChart");
+		SurveyCountInsight.addToWidgetParams("type", "inspectionChart");
 		insightTabSec.addWidget(SurveyCountInsight);
 		
-        PageWidget SurveyQuestions = new PageWidget(PageWidget.WidgetType.SURVEY_TEMPLATE_surveyQuestions);
+        PageWidget SurveyQuestions = new PageWidget(PageWidget.WidgetType.INSPECTION_TEMPLATE_inspectionQuestions);
         SurveyQuestions.addToLayoutParams(insightTabSec, 24, 6);
         insightTabSec.addWidget(SurveyQuestions);
         

@@ -344,6 +344,7 @@ public class FacilioChainFactory {
 	
 	public static FacilioChain deleteNotesChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new FetchNoteCommand());
 		c.addCommand(new DeleteNoteCommand());
 		c.addCommand(new AddActivitiesCommand());
 		return c;

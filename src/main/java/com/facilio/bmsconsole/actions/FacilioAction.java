@@ -370,7 +370,7 @@ public class FacilioAction extends ActionSupport {
 	}
 	private int loggerLevel = -1;
 
-	public void sendAuditLogs(AuditLogHandler.AuditLogContext auditLog) {
+	protected void sendAuditLogs(AuditLogHandler.AuditLogContext auditLog) {
 		if (auditLog == null) {
 			return;
 		}
