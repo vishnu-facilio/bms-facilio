@@ -1,4 +1,4 @@
-package com.facilio.bmsconsoleV3.commands;
+package com.facilio.bmsconsoleV3.commands.transferRequest;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class LoadTrShipmentListLookupCommandV3 extends FacilioCommand {
+public class LoadTrShipmentSummaryLookupCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
@@ -29,9 +29,6 @@ public class LoadTrShipmentListLookupCommandV3 extends FacilioCommand {
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         List<LookupField> additionaLookups = new ArrayList<>();
         additionaLookups.add((LookupField) fieldsAsMap.get("transferRequest"));
-        additionaLookups.add((LookupField) fieldsAsMap.get("sysCreatedBy"));
-        additionaLookups.add((LookupField) fieldsAsMap.get("sysModifiedBy"));
-
         for (FacilioField field : fields) {
             if (!field.isDefault() && field.getDataTypeEnum() == FieldType.LOOKUP) {
                 additionaLookups.add((LookupField) field);

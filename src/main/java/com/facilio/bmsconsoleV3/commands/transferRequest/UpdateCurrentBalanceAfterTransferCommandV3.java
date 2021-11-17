@@ -1,4 +1,4 @@
-package com.facilio.bmsconsoleV3.commands;
+package com.facilio.bmsconsoleV3.commands.transferRequest;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
