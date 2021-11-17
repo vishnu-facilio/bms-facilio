@@ -398,7 +398,7 @@ public class FormFactory {
 	}	
 	
 	private static Map<String, Map<String, FacilioForm>>  initFormsList() {
-		List<FacilioForm> woForms = Arrays.asList(getWebWorkOrderForm(), getServiceWorkOrderForm(), getAlarmWorkOrderForm(), getMultiPMForm());
+		List<FacilioForm> woForms = Arrays.asList(getWebWorkOrderForm(), getServiceWorkOrderForm(), getAlarmWorkOrderForm(), getPMForm(), getMultiPMForm());
 		List<FacilioForm> assetForms = Arrays.asList(getAssetForm());
 		List<FacilioForm> energyMeterForm = Arrays.asList(getEnergyMeterForm());
 		List<FacilioForm> tenantForm = Arrays.asList(getTenantForm());
@@ -1039,6 +1039,7 @@ public class FormFactory {
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		form.setFields(getWebPMFormFields());
+		form.setHideInList(true);
 		return form;
 	}
 
@@ -1517,7 +1518,10 @@ public class FormFactory {
 		fields.add(new FormField("duration", FieldDisplayType.DURATION, "Due Duration", Required.OPTIONAL, "duration", 6, 1));
 		fields.add(new FormField("estimatedWorkDuration", FieldDisplayType.DURATION, "Estimated Duration", Required.OPTIONAL, "duration", 7, 1));
 		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL, "vendors", 11, 1));
-		fields.add(new FormField("groups",FieldDisplayType.LOOKUP_SIMPLE,"Team", Required.OPTIONAL, "groups", 8, 1));
+		FormField groups = new FormField("groups",FieldDisplayType.LOOKUP_SIMPLE,"Team", Required.OPTIONAL, "groups", 8, 1);
+		groups.addToConfig("isFiltersEnabled", true); // groups is special form field without actual field 
+		groups.addToConfig("lookupModuleName", "groups");
+		fields.add(groups);
 		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "attachment", 9, 1));
 		return Collections.unmodifiableList(fields);
 	}
@@ -1532,7 +1536,10 @@ public class FormFactory {
 		fields.add(new FormField("duration", FieldDisplayType.DURATION, "Due Duration", Required.OPTIONAL, "duration", 6, 1));
 		fields.add(new FormField("estimatedWorkDuration", FieldDisplayType.DURATION, "Estimated Duration", Required.OPTIONAL, "duration", 7, 1));
 		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL, "vendors", 11, 1));
-		fields.add(new FormField("groups",FieldDisplayType.LOOKUP_SIMPLE,"Team", Required.OPTIONAL, "groups", 8, 1));
+		FormField groups = new FormField("groups",FieldDisplayType.LOOKUP_SIMPLE,"Team", Required.OPTIONAL, "groups", 8, 1);
+		groups.addToConfig("isFiltersEnabled", true); // groups is special form field without actual field 
+		groups.addToConfig("lookupModuleName", "groups");
+		fields.add(groups);
 		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "attachment", 9, 1));
 		return Collections.unmodifiableList(fields);
 	}

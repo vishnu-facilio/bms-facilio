@@ -117,6 +117,10 @@ public class GetFormMetaCommand extends FacilioCommand {
 				}
 			}
 			else {
+				// For older webform client
+				if (formModuleName == null && form != null && form.getModule() != null) {
+					context.put(ContextNames.MODULE_NAME, form.getModule().getName());
+				}
 				if (formName.equalsIgnoreCase("web_pm")) {
 					for (FormField f : form.getFields()) {
 						if (StringUtils.isNotEmpty(f.getName()) && f.getName().equalsIgnoreCase("siteid")) {
