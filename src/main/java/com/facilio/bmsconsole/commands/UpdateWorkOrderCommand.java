@@ -95,6 +95,7 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 					workOrders.forEach(wo -> wo.setOfflineModifiedTime(workOrder.getOfflineModifiedTime()));
 				}
 				context.put(FacilioConstants.ContextNames.RECORD_LIST, workOrders);
+				context.put(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 			}
 			
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
