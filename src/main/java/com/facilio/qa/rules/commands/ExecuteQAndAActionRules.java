@@ -8,6 +8,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.qa.rules.pojo.ActionRule;
+import com.facilio.qa.rules.pojo.ActionRuleCondition;
 import com.facilio.qa.rules.pojo.QAndARule;
 import com.facilio.qa.rules.pojo.QAndARuleType;
 import org.apache.commons.collections4.CollectionUtils;
@@ -26,7 +27,10 @@ public class ExecuteQAndAActionRules extends ExecuteQAndARulesCommand{
         List<ActionRule> rules = super.fetchRules(type, templateId, questionIds, context);
         if (CollectionUtils.isNotEmpty(rules)) {
            for (ActionRule rule: rules){
-               rule.setActions(getActiveActionsFromWorkflowRule(rule.getId()));
+              List<ActionRuleCondition> ruleConditions = rule.getRuleConditions();
+              for (ActionRuleCondition ruleCondition : ruleConditions){
+                  ruleCondition.setActions(getActiveActionsFromWorkflowRule(rule.getId()));
+              }
            }
         }
         return (List<T>) rules;
