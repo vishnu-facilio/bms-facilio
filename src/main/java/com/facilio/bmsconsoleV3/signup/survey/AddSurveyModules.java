@@ -873,7 +873,7 @@ public class AddSurveyModules extends SignUpData {
         fields.add(resource);
         
         LookupField assignedTo = (LookupField) FieldFactory.getDefaultField("assignedTo", "Assigned To", "ASSIGNED_TO", FieldType.LOOKUP);
-        assignedTo.setSpecialType("users");
+        assignedTo.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.PEOPLE));
         fields.add(assignedTo);
         
         return fields;
