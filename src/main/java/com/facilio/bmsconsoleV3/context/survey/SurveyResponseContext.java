@@ -39,7 +39,7 @@ public class SurveyResponseContext extends ResponseContext <SurveyTemplateContex
     private Long scheduledWorkEnd;
     private Long actualWorkStart;
     private Long actualWorkEnd;
-    private PeopleContext people;
+    private PeopleContext assignedTo;
     
     public void setStatus(Integer status) { // Using wrapper object to avoid -1 being inserted
     	this.status = status == null ? null : Status.valueOf(status);
