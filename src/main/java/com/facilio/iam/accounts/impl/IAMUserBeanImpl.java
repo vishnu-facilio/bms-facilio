@@ -1560,8 +1560,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 		else {
 			addUserEntryV3(user, orgId);
-			// Get group type from AppDomain obj
-			IamClient.addUserToDC(user.getUserName(), null);
+			String[] s = StringUtils.split(identifier, '_');
+			IamClient.addUserToDC(user.getUserName(), GroupType.valueOf(Integer.parseInt(s[0])));
 		}
 		IAMUser userExistsForAnyOrg = getFacilioUserFromUserIdv3(user.getUid(), null);
 		if(userExistsForAnyOrg != null) {
