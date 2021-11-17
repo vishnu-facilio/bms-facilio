@@ -36,7 +36,7 @@ public class UpdateToolTransactionCommandV3 extends FacilioCommand {
             for(V3TransferRequestLineItemContext toolTypeLineItem : toolTypesList) {
                 List<ToolTransactionContext> toolTransactiosnToBeAdded = new ArrayList<>();
                 ToolTypesContext toolType = toolTypeLineItem.getToolType();
-                double quantityTransferred = toolTypeLineItem.getQuantityTransferred();
+                double quantityTransferred = toolTypeLineItem.getQuantity();
                 long storeroomId = (long)context.get(FacilioConstants.ContextNames.STORE_ROOM_ID);
                 StoreRoomContext storeRoom = StoreroomApi.getStoreRoom(storeroomId);
                     ToolContext tool = ToolsApi.getTool(toolType,storeRoom);

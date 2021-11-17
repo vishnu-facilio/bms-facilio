@@ -11,7 +11,7 @@ public class V3TransferRequestLineItemContext extends V3Context {
     private InventoryType inventoryType;
     private ItemTypesContext itemType;
     private ToolTypesContext toolType;
-    private Double quantityTransferred;
+    private Double quantity;
     private Double quantityReceived;
 
     public V3TransferRequestContext getTransferRequest() {
@@ -80,12 +80,12 @@ public class V3TransferRequestLineItemContext extends V3Context {
         this.toolType = toolType;
     }
 
-    public Double getQuantityTransferred() {
-        return quantityTransferred;
+    public Double getQuantity() {
+        return quantity;
     }
 
-    public void setQuantityTransferred(Double quantityTransferred) {
-        this.quantityTransferred = quantityTransferred;
+    public void setQuantity(Double quantity) {
+        this.quantity = quantity;
     }
 
     public Double getQuantityReceived() {

@@ -50,7 +50,7 @@ public class UpdateItemTransactionCommandV3 extends FacilioCommand {
 
 
                 ItemTypesContext itemType = itemTypeLineItem.getItemType();
-                double quantityTransferred = itemTypeLineItem.getQuantityTransferred();
+                double quantityTransferred = itemTypeLineItem.getQuantity();
                 long storeroomId = (long)context.get(FacilioConstants.ContextNames.STORE_ROOM_ID);
                 StoreRoomContext storeRoom = StoreroomApi.getStoreRoom(storeroomId);
                     ItemContext item = ItemsApi.getItem(itemType,storeRoom);
@@ -145,7 +145,7 @@ public class UpdateItemTransactionCommandV3 extends FacilioCommand {
         V3TransferRequestPurchasedItems transferRequestPurchasedItem = new V3TransferRequestPurchasedItems();
         transferRequestPurchasedItem.setTransferRequest(transferRequest);
         transferRequestPurchasedItem.setItem(item);
-        transferRequestPurchasedItem.setQuantityTransferred(quantityTransferred);
+        transferRequestPurchasedItem.setQuantity(quantityTransferred);
         transferRequestPurchasedItem.setUnitPrice(unitPrice);
         return transferRequestPurchasedItem;
     }

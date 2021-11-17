@@ -8,7 +8,7 @@ public class V3TransferRequestPurchasedItems extends V3Context {
     private V3TransferRequestContext transferRequest;
     private ItemContext item;
     private double unitPrice;
-    private double quantityTransferred;
+    private double quantity;
 
     public V3TransferRequestContext getTransferRequest() {
         return transferRequest;
@@ -34,11 +34,11 @@ public class V3TransferRequestPurchasedItems extends V3Context {
         this.unitPrice = unitPrice;
     }
 
-    public double getQuantityTransferred() {
-        return quantityTransferred;
+    public double getQuantity() {
+        return quantity;
     }
 
-    public void setQuantityTransferred(double quantityTransferred) {
-        this.quantityTransferred = quantityTransferred;
+    public void setQuantity(double quantity) {
+        this.quantity = quantity;
     }
 }

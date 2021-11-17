@@ -44,7 +44,7 @@ public class UpdateCurrentBalanceCommandV3 extends FacilioCommand {
                     List<V3TransferRequestLineItemContext> transferrequestlineitems = transferRequestContext.getLineItems();
                    for(V3TransferRequestLineItemContext lineItem : transferrequestlineitems){
                            Integer inventoryType = lineItem.getInventoryType();
-                           quantityTransferred = lineItem.getQuantityTransferred();
+                           quantityTransferred = lineItem.getQuantity();
                            double currentQuantity = 0;
 
                            if(inventoryType.equals(V3TransferRequestLineItemContext.InventoryType.ITEM.getIndex())){

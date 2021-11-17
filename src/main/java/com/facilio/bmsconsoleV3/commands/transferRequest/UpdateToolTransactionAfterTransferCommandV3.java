@@ -39,7 +39,7 @@ public class UpdateToolTransactionAfterTransferCommandV3 extends FacilioCommand 
             ToolContext tool = ToolsApi.getToolsForTypeAndStore(storeRoomId, toolTypeId);
 
             ToolTypesContext toolType = toolTypeLineItem.getToolType();
-            double quantityTransferred = toolTypeLineItem.getQuantityTransferred();
+            double quantityTransferred = toolTypeLineItem.getQuantity();
                 ToolTransactionContext woTool = setWorkorderToolObj(quantityTransferred, tool, toolType);
                 toolTransactiosnToBeAdded.add(woTool);
 

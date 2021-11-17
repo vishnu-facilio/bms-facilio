@@ -43,7 +43,7 @@ public class SetPendingLineItemsAndReceivablesCommandV3 extends FacilioCommand {
                 .select(fields)
                 .beanClass(V3TransferRequestLineItemContext.class)
                 .andCondition(CriteriaAPI.getCondition("TRANSFER_REQUEST_ID", "transferRequest", String.valueOf(trId), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("quantityTransferred"), lineItemModule.getName()+"."+quantityReceived.getName(), FieldOperator.GREATER_THAN))
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("quantity"), lineItemModule.getName()+"."+quantityReceived.getName(), FieldOperator.GREATER_THAN))
                 .fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("itemType"), (LookupField) fieldsAsMap.get("toolType")));
         List<V3TransferRequestLineItemContext> list = builder.get();
         transferRequestShipmentContext.getTransferRequest().setLineItems(list);
