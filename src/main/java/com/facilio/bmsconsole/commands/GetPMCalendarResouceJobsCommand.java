@@ -67,7 +67,7 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		
 		metricFieldMap = PMPlannerAPI.getMetricFieldMap();
-		
+
 		handleSettings(context);
 		
 		List<Map<String, Object>> titles = new ArrayList<>();
@@ -103,9 +103,9 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 		FacilioModule ticketModule = modBean.getModule(ContextNames.TICKET);
 		List<FacilioField> ticketFields = modBean.getAllFields(ticketModule.getName());
 		woFields.addAll(ticketFields);
-		
+		LOGGER.debug("Data builder ticketFields: " + ticketFields);
 		Map<String, FacilioField> woFieldMap = FieldFactory.getAsMap(woFields);
-		
+		LOGGER.debug("Data builder woFieldMap: " + woFieldMap);
 		//can be asset or basespace module
 		FacilioModule plannerResourceModule=null;
 		List<FacilioField> plannerResourceFields;
@@ -335,42 +335,47 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 			selectFields.add(resourceField);
 			selectFields.add(frequencyField);
 			selectFields.add(FieldFactory.getIdField(woModule));
-			for(String metric: selectedMetrics) {
+
+			LOGGER.debug("Data builder selectedMetrics: " + selectedMetrics);
+
+			for (String metric : selectedMetrics) {
 				selectFields.add(woFieldMap.get(metricFieldMap.get(metric)));
 			}
 			List<FacilioField> enumCustomFields = woFields.stream().filter(field -> !field.isDefault() && field instanceof EnumField).collect(Collectors.toList());
 			if (CollectionUtils.isNotEmpty(enumCustomFields)) {
-				selectFields.addAll(enumCustomFields);				
+				selectFields.addAll(enumCustomFields);
 			}
-			
-			
+
+
 			orderBy = new StringBuilder("FIELD(").append(resourceField.getCompleteColumnName()).append(", ")
 					.append(StringUtils.join(resourceIds, ",")).append(")");
-			
+
 			if (showFrequency) {
 				orderBy.append(",").append(frequencyField.getCompleteColumnName());
 //				orderBy.append(",").append("FIELD(").append(triggerField.getColumnName()).append(",")
 //				.append(StringUtils.join(triggerIds, ",")).append(")");
 			}
-			
+
+			LOGGER.debug("Data builder SelectFields: " + selectFields);
+
 			// To get the jobs data
 			SelectRecordsBuilder<ModuleBaseWithCustomFields> dataBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>(commonBuilder)
 					.select(selectFields)
 					.innerJoin(pmTriggerTable).on(triggerField.getCompleteColumnName() + "=" + pmTriggerTable + ".ID")
 					.andCondition(CriteriaAPI.getCondition(resourceField, resourceIds, NumberOperators.EQUALS))
 					.orderBy(orderBy.toString())
-					.limit((int) totalRecordCount)
-					;
-			
+					.limit((int) totalRecordCount);
+
 			props = dataBuilder.getAsProps();
-			
+
 			LOGGER.debug("Data builder: " + dataBuilder.toString());
-			
+			LOGGER.debug("Data builder props: " + props);
+
 			if (CollectionUtils.isNotEmpty(props)) {
 				List<Map<String, Object>> row;
 				long totalCount = 0;
-				
-				for(int i = 0, rowCount = titles.size(); i < rowCount; i++) {
+
+				for (int i = 0, rowCount = titles.size(); i < rowCount; i++) {
 					row = new ArrayList<>();
 					datas.add(row);
 
