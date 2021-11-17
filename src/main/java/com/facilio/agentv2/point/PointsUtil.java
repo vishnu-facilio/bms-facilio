@@ -7,7 +7,6 @@ import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.bacnet.BacnetIpPointContext;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.GetControllerRequest;
-import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.modbusrtu.RtuNetworkContext;
 import com.facilio.bacnet.BACNetUtil;
 import com.facilio.db.builder.DBUtil;

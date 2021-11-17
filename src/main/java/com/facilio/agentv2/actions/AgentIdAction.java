@@ -1,7 +1,6 @@
 package com.facilio.agentv2.actions;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +15,6 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.AgentUtilV2;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.ControllerApiV2;
-import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.iotmessage.IotMessageApiV2;
 import com.facilio.agentv2.logs.LogsApi;

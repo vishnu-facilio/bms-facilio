@@ -3,7 +3,6 @@ package com.facilio.agentv2.actions;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.ControllerApiV2;
-import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.point.PointsAPI;
 import org.apache.log4j.LogManager;
@@ -51,7 +50,7 @@ public class IdsAction extends AgentActionV2
             LOGGER.info(" discovering points for device " + getRecordIds());
             List<Long> deviceIds = getRecordIds();
             if( !deviceIds.isEmpty() ){
-                if(FieldDeviceApi.discoverPoint(deviceIds.get(0))){
+                if(ControllerApiV2.discoverPoint(deviceIds.get(0))){
                     setResult(AgentConstants.RESULT,SUCCESS);
                     setResponseCode(HttpURLConnection.HTTP_OK);
                     return SUCCESS;

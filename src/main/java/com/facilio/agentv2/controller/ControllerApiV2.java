@@ -26,8 +26,6 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.actions.GetPointsAction;
 import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
-import com.facilio.agentv2.device.Device;
-import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.lonWorks.LonWorksControllerContext;
 import com.facilio.agentv2.misc.MiscController;
@@ -707,126 +705,6 @@ public class ControllerApiV2 {
         return new GetControllerRequest().withAgentId(agentId).withNames(deviceNames);
     }
 
-    private static Controller getControllerFromDevice(Device device) throws Exception {
-        FacilioControllerType controllerType = FacilioControllerType.valueOf(device.getControllerType());
-        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        List<FacilioField> allFields = moduleBean.getAllFields("controller");
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
-        List<FacilioField> controllerFields = new ArrayList<>();
-        for (FacilioField field :
-                allFields) {
-            if (field.getModule().getName().equals("controller")){
-                controllerFields.add(field);
-            }
-        }
-        List<Long> deviceIds = new ArrayList<>();
-        deviceIds.add(device.getId());
-        GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
-                .table(ModuleFactory.getNewControllerModule().getTableName())
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("deviceId"),deviceIds,NumberOperators.EQUALS))
-                .limit(1);
-        switch (controllerType){
-            case BACNET_IP:
-                List<FacilioField> bacnetIpFields = moduleBean.getAllFields("bacnetipcontroller");
-                for (FacilioField field :
-                        bacnetIpFields) {
-                    if (field.getModule().getName().equals("bacnetipcontroller")) {
-                        controllerFields.add(field);
-                    }
-                }
-                LOGGER.info("Controller Fields : " + controllerFields);
-                select.select(controllerFields).innerJoin(moduleBean.getModule("bacnetipcontroller").getTableName())
-                        .on("Controllers.ID = BACnet_IP_Controller.ID");
-                List<Map<String, Object>> res = select.get();
-                if (res != null){
-                    return FieldUtil.getAsBeanFromMap(res.get(0),BacnetIpControllerContext.class);
-                }
-                break;
-            case NIAGARA:
-                for (FacilioField field :
-                        moduleBean.getAllFields("niagaracontroller")) {
-                    if (field.getModule().getName().equals("niagaracontroller")){
-                        controllerFields.add(field);
-                    }
-                }
-                select.select(controllerFields).innerJoin(moduleBean.getModule("niagaracontroller").getTableName())
-                        .on("Controllers.ID = Niagara_Controller.ID");
-                List<Map<String, Object>> res_2 = select.get();
-                if (res_2 != null){
-                    return FieldUtil.getAsBeanFromMap(res_2.get(0),NiagaraControllerContext.class);
-                }
-                break;
-            default:
-                LOGGER.info("Unknown controller type "+ controllerType);
-        }
-        return null;
-    }
-
-    public static List<Controller> getControllersFromDevices(List<Device> devices, FacilioControllerType controllerType) throws Exception {
-        List<Controller> controllers = new ArrayList<>();
-        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        List<FacilioField> allFields = moduleBean.getAllFields("controller");
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
-        List<FacilioField> controllerFields = new ArrayList<>();
-        for (FacilioField field :
-                allFields) {
-            if (field.getModule().getName().equals("controller")) {
-                controllerFields.add(field);
-            }
-        }
-        List<Long> deviceIds = new ArrayList<>();
-        Map<Long, String> idVsDeviceName = new HashMap<>();
-        devices.forEach(device -> {
-            idVsDeviceName.put(device.getId(), device.getName());
-            deviceIds.add(device.getId());
-        });
-        GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
-                .table(ModuleFactory.getNewControllerModule().getTableName())
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("deviceId"), deviceIds, NumberOperators.EQUALS))
-                .limit(500);
-        switch (controllerType) {
-            case BACNET_IP:
-                List<FacilioField> bacnetIpFields = moduleBean.getAllFields("bacnetipcontroller");
-                for (FacilioField field :
-                        bacnetIpFields) {
-                    if (field.getModule().getName().equals("bacnetipcontroller")) {
-                        controllerFields.add(field);
-                    }
-                }
-                LOGGER.info("Controller Fields : " + controllerFields);
-                select.select(controllerFields).innerJoin(moduleBean.getModule("bacnetipcontroller").getTableName())
-                        .on("Controllers.ID = BACnet_IP_Controller.ID");
-                List<Map<String, Object>> res = select.get();
-                if (res != null) {
-                    res.forEach(row -> {
-                        BacnetIpControllerContext c = FieldUtil.getAsBeanFromMap(row, BacnetIpControllerContext.class);
-                        c.setName(idVsDeviceName.get(c.getDeviceId()));
-                        controllers.add(c);
-                    });
-                }
-                break;
-            case NIAGARA:
-                for (FacilioField field :
-                        moduleBean.getAllFields("niagaracontroller")) {
-                    if (field.getModule().getName().equals("niagaracontroller")) {
-                        controllerFields.add(field);
-                    }
-                }
-                select.select(controllerFields).innerJoin(moduleBean.getModule("niagaracontroller").getTableName())
-                        .on("Controllers.ID = Niagara_Controller.ID");
-                List<Map<String, Object>> res_2 = select.get();
-                res_2.forEach(row -> {
-                    NiagaraControllerContext c = FieldUtil.getAsBeanFromMap(row, NiagaraControllerContext.class);
-                    c.setName(idVsDeviceName.get(c.getDeviceId()));
-                    controllers.add(c);
-                });
-                break;
-            default:
-                LOGGER.info("Unknown controller type " + controllerType);
-        }
-        return controllers;
-    }
-    
     public static List<Map<String, Object>> getControllers(Collection<Long> ids) throws Exception {
     		return (List<Map<String, Object>>) RecordAPI.getRecordsAsProps(ContextNames.CONTROLLER, ids, null);
     }
@@ -861,4 +739,103 @@ public class ControllerApiV2 {
         throw new FacilioException("Invalid no. of rows");
     }
 
+
+//    public static boolean discoverPoint(List<Long> controllerIds) throws Exception {
+//        try {
+//            Controller controller = getControllers(controllerIds,null).get(0);
+//            Objects.requireNonNull(controller,"Controller doesn't exist");
+//            ControllerMessenger.discoverPoints(controller);
+//            return true;
+//        }catch (Exception e){
+//            LOGGER.error("Exception while discoverPoints -> ", e);
+//            throw e;
+//        }
+//    }
+
+    public static boolean discoverPoint(long controllerId) throws Exception {
+        try {
+            Controller controller = getController(controllerId,null);
+            Objects.requireNonNull(controller,"Controller doesn't exist");
+            ControllerMessenger.discoverPoints(controller);
+            return true;
+        }catch (Exception e){
+            LOGGER.error("Exception while discoverPoints -> ", e);
+            throw e;
+        }
+    }
+    public static Controller getController(Long controllerId, Long agentId) throws Exception {
+        GenericSelectRecordBuilder builder = getSelectControllersBuilder(Collections.singletonList(controllerId), agentId);
+
+        Map<String, Object> props = builder.fetchFirst();
+        if(props != null && !props.isEmpty()) {
+            FacilioControllerType ctype = FacilioControllerType.valueOf((Integer)props.get(AgentConstants.CONTROLLER_TYPE));
+            Controller controller = ControllerApiV2.makeControllerFromMap(getControllerProps(ctype, controllerId),ctype);
+            controller.setAgentId((long)props.get(AgentConstants.AGENT_ID));
+            controller.setName((String)props.get(AgentConstants.NAME));
+            controller.setId((Long)props.get(AgentConstants.ID));
+            return controller;
+        }
+        return null;
+    }
+
+    public static List<Controller> getControllers(List<Long> controllerIds,Long agentId) throws Exception {
+
+        List<Controller> controllers = new ArrayList<>();
+
+        GenericSelectRecordBuilder builder = getSelectControllersBuilder(controllerIds, agentId);
+
+        List<Map<String, Object>> rows = builder.get();
+        for (Map<String, Object> row : rows) {
+            if (row != null && !row.isEmpty()) {
+                FacilioControllerType ctype = FacilioControllerType.valueOf((Integer) row.get(AgentConstants.CONTROLLER_TYPE));
+                Long id = (Long) row.get(AgentConstants.ID);
+                Controller controller = ControllerApiV2.makeControllerFromMap(getControllerProps(ctype, id), ctype);
+                controller.setAgentId((long) row.get(AgentConstants.AGENT_ID));
+                controller.setName((String) row.get(AgentConstants.NAME));
+                controller.setId((Long) row.get(AgentConstants.ID));
+                controllers.add(controller);
+            }
+        }
+
+        return controllers;
+
+    }
+
+    private static Map<String,Object> getControllerProps(FacilioControllerType type,Long controllerId) throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String moduleName = ControllerApiV2.getControllerModuleName(type);
+        FacilioModule module = modBean.getModule(moduleName);
+        List<FacilioField> fields = new ArrayList<FacilioField>();
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(module.getTableName())
+                .andCondition(CriteriaAPI.getIdCondition(controllerId,module));
+        if(type != null && type.asInt() == FacilioControllerType.MODBUS_RTU.asInt()){
+            fields.addAll(FieldFactory.getRtuNetworkFields());
+            fields.addAll(modBean.getModuleFields(module.getName()));
+            builder.select(fields).innerJoin(ModuleFactory.getRtuNetworkModule().getTableName())
+                    .on(module.getTableName() + ".NETWORK_ID = " + ModuleFactory.getRtuNetworkModule().getTableName() + ".ID");
+        }else {
+            builder.select(modBean.getModuleFields(moduleName));
+        }
+        return  builder.fetchFirst();
+    }
+    private static GenericSelectRecordBuilder getSelectControllersBuilder(List<Long> controllerIds, Long agentId) {
+        FacilioModule module = ModuleFactory.getNewControllerModule();
+        FacilioModule resourceModule = ModuleFactory.getResourceModule();
+        List<FacilioField> fields = new ArrayList<FacilioField>();
+        fields.add(FieldFactory.getNameField(resourceModule));
+        fields.addAll(FieldFactory.getControllersField());
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .select(fields)
+                .table(module.getTableName())
+                .innerJoin(resourceModule.getTableName())
+                .on(resourceModule.getTableName()+".ID = "+module.getTableName()+".ID")
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getSysDeletedTimeField(resourceModule), "NULL", CommonOperators.IS_EMPTY))
+                .andCondition(CriteriaAPI.getIdCondition(controllerIds,module));
+        if(agentId != null){
+            builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(module),String.valueOf(agentId),NumberOperators.EQUALS));
+        }
+        return builder;
+    }
 }

@@ -48,7 +48,6 @@ import com.facilio.agentv2.actions.AgentActionV2;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.GetControllerRequest;
-import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.IotMessage;
 import com.facilio.agentv2.iotmessage.IotMessageApiV2;
 import com.facilio.agentv2.modbusrtu.ModbusImportUtils;

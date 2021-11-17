@@ -5,13 +5,10 @@ import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
-import com.facilio.agentv2.device.Device;
-import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.misc.MiscController;
 import com.facilio.agentv2.misc.MiscPoint;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.bmsconsole.actions.FacilioAction;
-import com.facilio.bmsconsole.jobs.DataFetcherJob;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -55,29 +52,6 @@ public class WattsenseAction extends FacilioAction {
 
     public void setAgentId(long agentId) {
         this.agentId = agentId;
-    }
-
-    public String getDevices() {
-        try {
-            LOGGER.info("getting devices");
-            FacilioAgent agent = AgentApiV2.getAgent(getAgentId());
-            WattsenseClient client = new WattsenseClient(agent);
-            client.setApiKey(getApiKey());
-            client.setSecretKey(getSecretKey());
-            List<Device> devices = client.getDevices();
-            for (Device device : devices) {
-                // long id = FieldDeviceApi.addFieldDevice(device);
-                Controller controller = new MiscController();
-                // controller.setDeviceId(id);
-                controller.setAgentId(device.getAgentId());
-                controller.setName(device.getName());
-                ControllerApiV2.addController(controller);
-            }
-        } catch (Exception ex) {
-            LOGGER.info(ex.getMessage());
-            ex.printStackTrace();
-        }
-        return SUCCESS;
     }
 
     public String discoverPoints() {

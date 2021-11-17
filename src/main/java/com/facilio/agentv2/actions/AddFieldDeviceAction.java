@@ -1,17 +1,11 @@
 package com.facilio.agentv2.actions;
 
-import com.facilio.agentv2.device.Device;
-import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.bmsconsole.actions.FacilioAction;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import javax.validation.constraints.NotNull;
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class AddFieldDeviceAction extends FacilioAction {
     private static final Logger LOGGER = LogManager.getLogger(AddFieldDeviceAction.class.getName());

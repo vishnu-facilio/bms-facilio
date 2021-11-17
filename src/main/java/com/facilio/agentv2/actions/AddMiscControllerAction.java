@@ -1,11 +1,10 @@
 package com.facilio.agentv2.actions;
 
 import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.FacilioAgent;
+import com.facilio.agentv2.controller.Controller;
 import com.facilio.fw.FacilioException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -13,8 +12,6 @@ import org.apache.log4j.Logger;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.ControllerApiV2;
-import com.facilio.agentv2.device.Device;
-import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.misc.MiscController;
 
 public class AddMiscControllerAction extends AgentIdAction{
@@ -27,13 +24,6 @@ public class AddMiscControllerAction extends AgentIdAction{
 		try {
             FacilioAgent agent = AgentApiV2.getAgent(getAgentId());
             if (agent != null) {
-                Device fieldDevice = new Device();
-                fieldDevice.setName(getName());
-                fieldDevice.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-                fieldDevice.setAgentId(getAgentId());
-                fieldDevice.setControllerType(getControllerType());
-                fieldDevice.setCreatedTime(System.currentTimeMillis());
-                // Long deviceId = FieldDeviceApi.addFieldDevice(fieldDevice);
                 Long controllerId = null;
                 // if (deviceId != null && deviceId > 0) {
                     MiscController context = new MiscController();

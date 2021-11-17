@@ -1,12 +1,10 @@
 package com.facilio.agentv2.actions;
 
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.modbusrtu.ModbusImportUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.Map;
 

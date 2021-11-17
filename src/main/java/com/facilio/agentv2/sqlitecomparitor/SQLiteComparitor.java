@@ -1,22 +1,18 @@
 package com.facilio.agentv2.sqlitecomparitor;
 
 import com.facilio.agent.controller.FacilioControllerType;
-import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
 import com.facilio.agentv2.bacnet.BacnetIpPointContext;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.GetControllerRequest;
-import com.facilio.agentv2.device.Device;
-import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointEnum;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FieldUtil;
 import com.facilio.sqlUtils.constants.Columns;
 import com.facilio.sqlUtils.tables.BacNetIpControllerTable;
 import com.facilio.sqlUtils.tables.BacNetIpPointTable;
