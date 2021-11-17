@@ -63,8 +63,8 @@ public class ConstructTabularReportData extends FacilioCommand {
 		if (reportContext == null) {
 			reportContext = new ReportContext();
 			reportContext.setType(ReportType.PIVOT_REPORT);
-		} else {
-			reportContext.getDataPoints().clear();
+		} else if(reportContext.getDataPoints() != null){
+				reportContext.getDataPoints().clear();
 		}
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -89,7 +89,7 @@ public class ConstructTabularReportData extends FacilioCommand {
 		List<String> dataHeaders = new ArrayList<>();
 		Map<String, Object> rowAlias = new HashMap<>();
 		Map<String, Object> dataAlias = new HashMap<>();
-		if(reportContext.getDataPoints().size() == 0){
+		if(reportContext.getDataPoints() == null || reportContext.getDataPoints().size() == 0){
 		for (int i = 0; i < data.size(); i++) {
 			ReportPivotTableDataContext yData = data.get(i);
 			addDataPointContext(modBean, reportContext, rows, yData, module, sortBy, dateFieldId, startTime, endTime);
