@@ -5,6 +5,7 @@ Map cardLayout(Map params) {
     deskModuleId = Module("desks").getId();
     floorModule = Module("floor");
     buildingModule = Module("building");
+    deskModule = Module("desks");
 
     ticketStatus = Module("ticketstatus").fetch([parentModuleId == deskModuleId]);
 
@@ -191,10 +192,22 @@ Map cardLayout(Map params) {
             aggregation: "count"
         };
         value["floorCount"] = floorModule.fetch(buildingDb);
+        deskDb = {
+            criteria: [building == buildingId],
+            field: "id",
+            aggregation: "count"
+        };
+         value["deskCount"] = deskModule.fetch(deskDb);
     }
 
     if (floorId != null) {
         value["floor"] = floorModule.fetch([id == floorId]);
+          deskDb = {
+            criteria: [floor == floorId],
+            field: "id",
+            aggregation: "count"
+        };
+         value["deskCount"] = deskModule.fetch(deskDb);
     }
 
     result["valueMap"] = value;

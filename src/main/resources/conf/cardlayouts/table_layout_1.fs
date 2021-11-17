@@ -79,7 +79,7 @@ Map cardLayout(Map params) {
   	assetDb = {};
   	assetDb.put("criteria", criteriaObj);
     if (sorting.fieldName != null) {
-        assetDb.put("sortByFieldName", sorting.fieldName);
+        assetDb.put("orderBy", sorting.fieldName);
     }
     if (sorting.order != null) {
         assetDb.put("sortOrder", sorting.order);
