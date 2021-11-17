@@ -105,8 +105,14 @@ public enum QuestionType implements FacilioStringEnum {
             new BooleanQuestionHandler(),
             BooleanRuleHandler.INSTANCE,
             FieldType.BOOLEAN
-    )
-    ;
+    ),
+    STAR_RATING(
+            FacilioConstants.QAndA.Questions.STAR_RATING_QUESTION,
+            StarRatingQuestionContext.class,
+            new StarRatingHandler(StarRatingAnswerContext.class),
+            DefaultRuleHandler.NUMBER,
+            FieldType.NUMBER
+    );
 
     private static final Map<String, QuestionType> MODULE_VS_TYPE = initModuleVsTypeMap();
     private final String subModuleName;
