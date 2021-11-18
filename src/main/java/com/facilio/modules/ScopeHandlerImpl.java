@@ -203,7 +203,7 @@ public class ScopeHandlerImpl extends ScopeHandler {
 						}
 		             	else {
 		             		field = RecordAPI.getField(fieldName, module.getName());
-		             		if(field != null) {
+		             		if(field != null && !field.getDataTypeEnum().isMultiRecord()) {
 								fields.add(field);
 							}
 						}
