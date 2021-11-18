@@ -1,6 +1,8 @@
 package com.facilio.qa.context;
 
 import com.facilio.bmsconsole.context.AttachmentContext;
+import com.facilio.modules.FieldUtil;
+import com.facilio.qa.QAndAUtil;
 import com.facilio.qa.context.answers.MultiFileAnswerContext;
 import com.facilio.qa.context.questions.MCQOptionContext;
 import com.facilio.v3.context.V3Context;
@@ -10,7 +12,9 @@ import lombok.Setter;
 import org.apache.struts2.json.annotations.JSON;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -48,5 +52,13 @@ public class AnswerContext extends V3Context {
     @JsonIgnore @JSON(serialize = false)
     public Long getResponseId() {
         return response == null ? null : response._getId();
+    }
+
+    @JsonIgnore
+     private ClientAnswerContext answerContext;
+
+    @JsonIgnore
+    public void setAnswerContext(QuestionContext question) throws Exception {
+        answerContext = QAndAUtil.serializedAnswer(question,this);
     }
 }

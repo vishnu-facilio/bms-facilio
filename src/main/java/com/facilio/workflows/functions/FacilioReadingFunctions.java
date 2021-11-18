@@ -441,7 +441,7 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 				throw new FunctionParamException("Required Object is null or empty");
 			}
 		}
-	},
+	}
 	
 	;
 	

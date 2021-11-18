@@ -1,5 +1,6 @@
 package com.facilio.qa.rules.pojo;
 
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.QuestionType;
@@ -23,6 +24,7 @@ public abstract class QAndARule<Condition extends RuleCondition> {
     private Long sysCreatedBy;
     private Long sysModifiedTime;
     private Long sysModifiedBy;
+    private List<ActionContext> actions;
 
     private List<Condition> ruleConditions; // For internal purpose
     public void setRuleConditions(List<Condition> ruleConditions) {
@@ -56,5 +58,5 @@ public abstract class QAndARule<Condition extends RuleCondition> {
     }
 
 
-    public abstract void manipulateAnswer(QuestionContext question, AnswerContext answer);
+    public abstract void manipulateAnswer(QuestionContext question, AnswerContext answer) throws Exception;
 }

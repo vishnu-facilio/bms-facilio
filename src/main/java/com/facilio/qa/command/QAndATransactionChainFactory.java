@@ -3,7 +3,10 @@ package com.facilio.qa.command;
 import com.facilio.bmsconsole.commands.VerifyApprovalCommand;
 import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
 import com.facilio.chain.FacilioChain;
+import com.facilio.qa.rules.commands.ExecuteQAndAActionRules;
+import com.facilio.qa.rules.commands.ExecuteQAndARulesCommand;
 import com.facilio.qa.rules.commands.ExecuteQAndAScoringRules;
+import com.facilio.qa.rules.pojo.QAndARuleType;
 
 public class QAndATransactionChainFactory {
     private static FacilioChain getDefaultChain() {
@@ -53,6 +56,7 @@ public class QAndATransactionChainFactory {
         // Also when we implement action rules, that should be executed in post transaction
         c.addCommand(new ExecuteQAndAScoringRules());
         c.addCommand(new UpdateAnswerScoreCommand());
+        c.addCommand(new ExecuteQAndAActionRules());
 
         return c;
     }
