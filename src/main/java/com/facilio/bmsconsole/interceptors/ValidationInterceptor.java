@@ -26,6 +26,7 @@ public class ValidationInterceptor extends AbstractInterceptor {
         HttpServletRequest request = ServletActionContext.getRequest();
         Executor executor = (Executor) request.getAttribute("executor");
         if (executor == null) {
+            LOGGER.error(ServletActionContext.getActionMapping().getNamespace() + "/" + ServletActionContext.getActionMapping().getName());
             return invocation.invoke();
         }
 
