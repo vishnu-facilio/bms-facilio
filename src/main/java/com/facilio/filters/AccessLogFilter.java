@@ -127,6 +127,11 @@ public class AccessLogFilter implements Filter {
             if(ENABLE_FHR) {
                 event.setProperty(RequestUtil.RESPONSE_SIZE,String.valueOf(responseSize));
             }
+            if (request.getAttribute("executor") == null) {
+                event.setProperty("isInputValidated", "false");
+            } else {
+                event.setProperty("isInputValidated", "true");
+            }
             long timeTaken = System.currentTimeMillis() - startTime;
             String responseCode = String.valueOf(response.getStatus());
             event.setProperty(RESPONSE_CODE,String.valueOf(response.getStatus()));

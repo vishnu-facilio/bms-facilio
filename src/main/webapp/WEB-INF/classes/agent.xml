@@ -17,10 +17,13 @@
             <interceptor name="agentDownloadInterceptor"
                          class="com.facilio.bmsconsole.interceptors.AgentFileDownloadInterceptor">
             </interceptor>
+            <interceptor name="validationinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.ValidationInterceptor" />
 
             <interceptor-stack name="downloadInterceptorStack">
                 <interceptor-ref name="agentDownloadInterceptor"/>
                 <interceptor-ref name="defaultStack"/>
+                <interceptor-ref name="validationinterceptor"/>
             </interceptor-stack>
         </interceptors>
 
@@ -44,10 +47,13 @@
             <interceptor name="agentDownloadInterceptor"
                          class="com.facilio.bmsconsole.interceptors.AgentDownloadInterceptor">
             </interceptor>
+            <interceptor name="validationinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.ValidationInterceptor" />
 
             <interceptor-stack name="downloadInterceptorStack">
                 <interceptor-ref name="agentDownloadInterceptor"/>
                 <interceptor-ref name="defaultStack"/>
+                <interceptor-ref name="validationinterceptor"/>
             </interceptor-stack>
         </interceptors>
 
@@ -78,6 +84,8 @@
                          class="com.facilio.bmsconsole.interceptors.AuthInterceptor"/>
             <interceptor name="beanValidation"
                          class="com.facilio.interceptors.FacilioBeanValidationInterceptor"/>
+            <interceptor name="validationinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.ValidationInterceptor" />
             <interceptor-stack name="validator">
                 <interceptor-ref name="defaultStack"/>
                 <interceptor-ref name="json">
@@ -88,6 +96,7 @@
                 <interceptor-ref name="datasourceinterceptor"/>
                 <interceptor-ref name="scopeinterceptor"/>
                 <interceptor-ref name="cacheinterceptor"/>
+                <interceptor-ref name="validationinterceptor"/>
             </interceptor-stack>
         </interceptors>
         <default-interceptor-ref name="validator"/>
@@ -519,12 +528,15 @@
             <interceptor name="agentInboundConnectionInterceptor"
                          class="com.facilio.bmsconsole.interceptors.AgentInboundConnectionInterceptor">
             </interceptor>
+            <interceptor name="validationinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.ValidationInterceptor" />
             <interceptor-stack name="inboundInterceptorStack">
                 <interceptor-ref name="agentInboundConnectionInterceptor"/>
                 <interceptor-ref name="defaultStack"/>
                 <interceptor-ref name="json">
                     <param name="enableSMD">true</param>
                 </interceptor-ref>
+                <interceptor-ref name="validationinterceptor"/>
             </interceptor-stack>
         </interceptors>
         <default-interceptor-ref name="inboundInterceptorStack" />

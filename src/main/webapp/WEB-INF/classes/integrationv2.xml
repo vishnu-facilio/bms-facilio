@@ -7,11 +7,14 @@
 
 	<package name="internalApiv2" namespace="/api/internal/v2" extends="v2BaseApi">
 		<interceptors>
+			<interceptor name="validationinterceptor"
+						 class="com.facilio.bmsconsole.interceptors.ValidationInterceptor" />
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="defaultStack" />
 				<interceptor-ref name="json">
 					<param name="enableSMD">true</param>
 				</interceptor-ref>
+				<interceptor-ref name="validationinterceptor"/>
 			</interceptor-stack>
 		</interceptors>
 
