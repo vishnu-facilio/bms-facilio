@@ -64,23 +64,15 @@ public class AgentControl extends AgentActionV2 {
 	}
 	
 	private void constructData() throws Exception{
-		try {
-			String topicName = getTopic();
-			FacilioAgent agent = AgentApiV2.getAgent(agentName);
-			KafkaMessageSource source = (KafkaMessageSource) AgentUtilV2.getMessageSource(agent);
-			
-			MessageQueue messageQueue = MessageQueueFactory.getMessageQueue(source);
-			FacilioRecord record = new FacilioRecord(agentName, createRecord());
-			Object meta = messageQueue.put(agentName, record);
-			long recordId = -1;
-			if (meta instanceof RecordMetadata) {
-				recordId = ((RecordMetadata)meta).offset();
-			}
-			
-	        LOGGER.info("Agent control action recordId :"+ recordId + " topic name is "+topicName);
-		}catch(Exception e) {
-			throw e;
+		String topicName = getTopic();
+		FacilioAgent agent = AgentApiV2.getAgent(agentName);
+		KafkaMessageSource source = (KafkaMessageSource) AgentUtilV2.getMessageSource(agent);
+		long recordId = -1;
+		Object meta = AgentUtilV2.publishToQueue(topicName, agentName, createRecord(), source);
+		if (meta instanceof RecordMetadata) {
+			recordId = ((RecordMetadata)meta).offset();
 		}
+        LOGGER.info("Agent control action recordId :"+ recordId + " topic name is "+topicName);
 	}
 
 	public void updateAgent(long recordId) throws SQLException {

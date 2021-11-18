@@ -8,17 +8,23 @@ import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.services.kafka.FacilioKafkaProducer;
+import com.facilio.services.kafka.KafkaUtil;
+import com.facilio.services.messageQueue.MessageQueue;
+import com.facilio.services.messageQueue.MessageQueueFactory;
 import com.facilio.services.procon.message.FacilioRecord;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.agentv2.AgentApiV2;
+import com.facilio.agentv2.AgentUtilV2;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.fw.FacilioException;
+import com.facilio.queue.source.KafkaMessageSource;
+import com.facilio.queue.source.MessageSource;
 import com.facilio.taskengine.job.FacilioJob;
 import com.facilio.taskengine.job.JobContext;
 import com.facilio.time.DateTimeUtil;
@@ -50,21 +56,10 @@ public class CloudAgent extends FacilioJob {
     }
 
     private void pushToMessageQueue(FacilioAgent agent, List<JSONObject> results) throws Exception {
-
+    	String topic = AccountUtil.getCurrentOrg().getDomain();
+    	KafkaMessageSource source = (KafkaMessageSource) AgentUtilV2.getMessageSource(agent);
         for (JSONObject payload: results) {
-            //TimeSeriesAPI.processPayLoad(0, payload, null);
-            FacilioKafkaProducer producer = new FacilioKafkaProducer();
-            String topic = AccountUtil.getCurrentOrg().getDomain();
-            JSONObject data = new JSONObject();
-            data.put("data", payload.toJSONString());
-            FacilioRecord record = new FacilioRecord(agent.getName(), data);
-            try {
-                producer.putRecord(topic, record);
-            } catch (Exception e) {
-                LOGGER.info("Exception while put record ", e);
-            } finally {
-                producer.close();
-            }
+            AgentUtilV2.publishToQueue(topic, agent.getName(), payload, source);
         }
     }
 
