@@ -32,7 +32,7 @@ public class MarkDownUtil {
             public AttributeProvider create(AttributeProviderContext context) {
                 return new ImageAttributeProvider();
             }
-        }).escapeHtml(true).build();
+        }).escapeHtml(true).softbreak("<br>").sanitizeUrls(true).build();
 		return (renderer.render(document));
 		}
 		catch(Exception e) {
