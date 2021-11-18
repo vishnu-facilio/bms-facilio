@@ -40,8 +40,11 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.queue.source.KafkaMessageSource;
 import com.facilio.queue.source.MessageSource;
 import com.facilio.queue.source.MessageSourceUtil;
+import com.facilio.services.messageQueue.MessageQueue;
+import com.facilio.services.messageQueue.MessageQueueFactory;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.AckUtil;
 
@@ -393,5 +396,16 @@ public class AgentUtilV2
     	}
     	
     	return MessageSourceUtil.getDefaultSource();
+    }
+    
+   
+    public static Object publishToQueue(String topic, String key, JSONObject payload, KafkaMessageSource source) {
+		MessageQueue messageQueue = MessageQueueFactory.getMessageQueue(source);
+    	try {
+			return messageQueue.putRecord(topic, key, payload);
+		} catch (Exception e) {
+			LOGGER.info("Exception while put record ", e);
+		}
+    	return null;
     }
 }

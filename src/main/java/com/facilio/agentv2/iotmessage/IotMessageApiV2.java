@@ -59,14 +59,6 @@ public class IotMessageApiV2 {
 
     private static final int MAX_BUFFER = 45000; //45000 fix for db insert 112640  110KiB;  AWS IOT limits max publish message size to 128KiB
 
-    private static Map<String, FacilioKafkaProducer> producerMap = new HashMap<>();
-
-    private static void closeProducers() {
-        producerMap.forEach((k, v) -> {
-            v.close();
-        });
-    }
-
     public static boolean acknowdledgeMessage(long id, Status status) throws Exception {
         IotMessage iotMessage = getIotMessage(id);
         int rowUpdated = 0;
@@ -289,22 +281,8 @@ public class IotMessageApiV2 {
     }
 
     private static void publishToKafka(FacilioAgent agent, String client, JSONObject payload, KafkaMessageSource messageSource) {
-
-        FacilioKafkaProducer producer = producerMap.get(agent.getName());
-        if (producer == null) {
-            producer = new FacilioKafkaProducer(messageSource);
-            producerMap.put(agent.getName(), producer);
-        }
         String topic = client + "-cmds";
-        JSONObject data = new JSONObject();
-        data.put("data", payload.toJSONString());
-        FacilioRecord record = new FacilioRecord(agent.getName(), data);
-        try {
-            producer.putRecord(topic, record);
-        } catch (Exception e) {
-            LOGGER.info("Exception while put record ", e);
-        }
-
+        AgentUtilV2.publishToQueue(topic, agent.getName(), payload, messageSource);
     }
 
     public static void publishToRabbitMQ(String client, JSONObject object) throws Exception {
