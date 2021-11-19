@@ -60,7 +60,7 @@ public class TransferRequestPageFactory extends PageFactory{
     private static PageWidget addPurchasedItemsWidget(Page.Section section) {
 
         PageWidget purchasedItemsWidget = new PageWidget();
-        purchasedItemsWidget.addToLayoutParams(section, 24, 3);
+        purchasedItemsWidget.addToLayoutParams(section, 24, 7);
         purchasedItemsWidget.setWidgetType(PageWidget.WidgetType.TRANSFER_REQUEST_LINE_ITEMS);
         section.addWidget(purchasedItemsWidget);
 

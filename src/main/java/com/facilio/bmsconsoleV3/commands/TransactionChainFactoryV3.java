@@ -1079,7 +1079,12 @@ public class TransactionChainFactoryV3 {
 
         return c;
     }
-
+    public static FacilioChain getUpdateLineItemsAndShipmentIdAfterFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetLineItemsCommandV3());
+        c.addCommand(new UpdateShipmentIdCommandV3());
+        return c;
+    }
     public static FacilioChain getAddAccessibleSpaceChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddAccessibleSpacesCommand());

@@ -57,7 +57,7 @@ public class TransferRequestShipmentPageFactory extends PageFactory{
     private static PageWidget addShipmentReceivablesWidget(Page.Section section) {
 
         PageWidget shipmentReceivablesWidget = new PageWidget();
-        shipmentReceivablesWidget.addToLayoutParams(section, 24, 3);
+        shipmentReceivablesWidget.addToLayoutParams(section, 24, 7);
         shipmentReceivablesWidget.setWidgetType(PageWidget.WidgetType.TRANSFER_REQUEST_SHIPMENT_RECEIVABLES);
         section.addWidget(shipmentReceivablesWidget);
 
