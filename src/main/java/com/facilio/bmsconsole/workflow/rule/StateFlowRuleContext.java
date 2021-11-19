@@ -100,10 +100,6 @@ public class StateFlowRuleContext extends AbstractStateFlowRuleContext {
 			return false;
 		}
 
-		if (!isShouldCheckOnlyFormBased() && isDefaltStateFlow()) {
-			return true;
-		}
-
 		// Setting matchedFormLevel as false before evaluating
 		matchedFormLevel = false;
 
@@ -111,11 +107,16 @@ public class StateFlowRuleContext extends AbstractStateFlowRuleContext {
 		if (moduleRecord != null && moduleRecord.getStateFlowId() > 0 && moduleRecord.getModuleState() != null) {
 			return false;
 		}
+
+		if (!isShouldCheckOnlyFormBased() && isDefaltStateFlow()) {
+			return true;
+		}
+
 		if (isShouldCheckOnlyFormBased()) {
 			if (moduleRecord.getFormId() > 0) {
 				Criteria criteria = new Criteria();
 				criteria.addAndCondition(CriteriaAPI.getIdCondition(moduleRecord.getFormId(), ModuleFactory.getFormModule()));
-				List<FacilioForm> dbFormList = FormsAPI.getDBFormList(moduleName, criteria, null, false);
+				List<FacilioForm> dbFormList = FormsAPI.getDBFormList(moduleName, criteria, null, false, true);
 				if (CollectionUtils.isNotEmpty(dbFormList)) {
 					FacilioForm facilioForm = dbFormList.get(0);
 					long stateFlowId = facilioForm.getStateFlowId();

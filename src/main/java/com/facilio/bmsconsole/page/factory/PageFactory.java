@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestShipmentContext;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -227,6 +228,8 @@ public class PageFactory {
 				return ServicePageFactory.getServicePage((V3ServiceContext) record, module);
 			case ContextNames.TRANSFER_REQUEST:
 				return TransferRequestPageFactory.getTransferRequestPage((V3TransferRequestContext) record, module);
+			case ContextNames.TRANSFER_REQUEST_SHIPMENT:
+				return TransferRequestShipmentPageFactory.getTransferRequestShipmentPage((V3TransferRequestShipmentContext) record, module);
 
 		}
 		if (module.getExtendModule() == null) {	// temp

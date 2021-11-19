@@ -380,7 +380,6 @@ public class PageWidget {
 		TENANT("tenant"),
 		TOTAL_COST("totalCost"),
 		TRANSFER_REQUEST_LINE_ITEMS("transferrequestlineitems"),
-		
 		SURVEY_TEMPLATE_surveyDetails("surveyDetails"),
 		SURVEY_TEMPLATE_surveyPageDetails("surveyPageDetails"),
 		SURVEY_TEMPLATE_surveyTriggers("surveyTriggers"),
@@ -389,8 +388,8 @@ public class PageWidget {
 		SURVEY_TEMPLATE_history("surveyHistory"),
 
 		SURVEY_RESPONSE_WIDGET("surveyResponseWidget"),
-		
-		;
+		TRANSFER_REQUEST_SHIPMENT_RECEIVABLES("transferrequestshipmentreceivables");
+
 
 		private String name;
 

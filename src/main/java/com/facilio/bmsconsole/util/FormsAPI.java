@@ -729,6 +729,10 @@ public class FormsAPI {
 	public static List<FacilioForm> getDBFormList(String moduleName, Criteria criteria, Map<String, Object> selectParams, boolean fetchFields) throws Exception{
 		return getDBFormList(moduleName, criteria, selectParams, fetchFields, false, true, -1l);
 	}
+
+	public static List<FacilioForm> getDBFormList(String moduleName, Criteria criteria, Map<String, Object> selectParams, boolean fetchFields, boolean fetchExtendedModuleForms) throws Exception{
+		return getDBFormList(moduleName, criteria, selectParams, fetchFields, fetchExtendedModuleForms, true, -1l);
+	}
 	
 	public static List<FacilioForm> getDBFormList(String moduleName, Criteria criteria, Map<String, Object> selectParams, boolean fetchFields, Boolean fetchExtendedModuleForms,Boolean fetchDisabledForms, long appId) throws Exception{
 		

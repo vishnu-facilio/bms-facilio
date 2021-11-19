@@ -1,4 +1,4 @@
-package com.facilio.bmsconsoleV3.commands;
+package com.facilio.bmsconsoleV3.commands.transferRequest;
 
 import java.util.*;
 
@@ -104,8 +104,8 @@ public class UpdateItemTransactionAfterTransferCommandV3 extends FacilioCommand 
     }
       private PurchasedItemContext setPurchasedItem(V3TransferRequestPurchasedItems record,ItemContext item){
         PurchasedItemContext purchasedItem= new PurchasedItemContext();
-        purchasedItem.setQuantity(record.getQuantityTransferred());
-        purchasedItem.setCurrentQuantity(record.getQuantityTransferred());
+        purchasedItem.setQuantity(record.getQuantity());
+        purchasedItem.setCurrentQuantity(record.getQuantity());
         purchasedItem.setItem(item);
         purchasedItem.setItemType(item.getItemType());
         purchasedItem.setUnitcost(record.getUnitPrice());
@@ -123,7 +123,7 @@ public class UpdateItemTransactionAfterTransferCommandV3 extends FacilioCommand 
         if (purchasedItem != null) {
             woItem.setPurchasedItem(purchasedItem);
         }
-        woItem.setQuantity(record.getQuantityTransferred());
+        woItem.setQuantity(record.getQuantity());
         woItem.setTransactionType(TransactionType.STOCK.getValue());
         woItem.setItem(item);
         woItem.setStoreRoom(item.getStoreRoom());

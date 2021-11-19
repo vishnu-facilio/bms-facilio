@@ -78,6 +78,7 @@ import com.facilio.bmsconsoleV3.commands.tenantcontact.LoadTenantcontactLookupsC
 import com.facilio.bmsconsoleV3.commands.tenantunit.AddSpaceCommandV3;
 import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.tooltypes.SetToolTypesUnitCommandV3;
+import com.facilio.bmsconsoleV3.commands.transferRequest.*;
 import com.facilio.bmsconsoleV3.commands.vendor.AddOrUpdateLocationForVendorCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.LoadVendorLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorcontact.LoadVendorContactLookupCommandV3;
@@ -532,6 +533,20 @@ public class APIv3Config {
     public static Supplier<V3Config> getTransferRequestShipment() {
         return () -> new V3Config(V3TransferRequestShipmentContext.class, new ModuleCustomFieldCount30())
                 .create()
+                .update()
+                .list()
+                .beforeFetch(new LoadTrShipmentListLookupCommandV3())
+                .summary()
+                .beforeFetch(new LoadTrShipmentSummaryLookupCommandV3())
+                .afterFetch(new SetPendingLineItemsAndReceivablesCommandV3())
+                .delete()
+                .build();
+    }
+    @Module("transferrequestshipmentreceivables")
+    public static Supplier<V3Config> getTransferRequestShipmentReceivables() {
+        return () -> new V3Config(V3TransferRequestShipmentReceivablesContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .afterSave(new UpdateQuantityReceivedInLineItemsCommandV3())
                 .update()
                 .list()
                 .summary()

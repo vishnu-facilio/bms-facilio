@@ -143,6 +143,7 @@ public class ModuleFactory {
 		moduleMap.put(ContextNames.FacilityBooking.FACILITY_BOOKING, getFacilityBookingModule());
 		moduleMap.put(ContextNames.FacilityBooking.FACILITY, getFacilityModule());
 		moduleMap.put(ContextNames.TRANSFER_REQUEST, getTransferRequestModule());
+		moduleMap.put(ContextNames.TRANSFER_REQUEST_SHIPMENT, getTransferRequestShipmentModule());
 		return moduleMap;
 	}
 	
@@ -4505,6 +4506,14 @@ public class ModuleFactory {
 		module.setName(ContextNames.TRANSFER_REQUEST);
 		module.setDisplayName("Transfer Request");
 		module.setTableName("Transfer_Request");
+		return module;
+	}
+	public static FacilioModule getTransferRequestShipmentModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName(ContextNames.TRANSFER_REQUEST_SHIPMENT);
+		module.setDisplayName("Transfer Request Shipment");
+		module.setTableName("Transfer_Request_Shipment");
 		return module;
 	}
 	public static FacilioModule getTriggerModule()

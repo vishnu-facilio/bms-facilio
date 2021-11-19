@@ -1,4 +1,4 @@
-package com.facilio.bmsconsoleV3.commands;
+package com.facilio.bmsconsoleV3.commands.transferRequest;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
@@ -33,7 +33,7 @@ public class UpdateCurrentBalanceAfterTransferCommandV3 extends FacilioCommand {
                     if(!Objects.isNull(context.get(FacilioConstants.ContextNames.ITEM_TYPES))){
                         List<V3TransferRequestLineItemContext> itemTypesList = (List<V3TransferRequestLineItemContext>) context.get(FacilioConstants.ContextNames.ITEM_TYPES);
                         for(V3TransferRequestLineItemContext itemTypeLineItem : itemTypesList) {
-                            double quantityTransferred = itemTypeLineItem.getQuantityTransferred();
+                            double quantityTransferred = itemTypeLineItem.getQuantity();
                             ItemTypesContext itemType = itemTypeLineItem.getItemType();
                             Long itemTypeId = itemTypeLineItem.getItemType().getId();
                             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -81,7 +81,7 @@ public class UpdateCurrentBalanceAfterTransferCommandV3 extends FacilioCommand {
                     if(!Objects.isNull(context.get(FacilioConstants.ContextNames.TOOL_TYPES))) {
                         List<V3TransferRequestLineItemContext> toolTypesList = (List<V3TransferRequestLineItemContext>) context.get(FacilioConstants.ContextNames.TOOL_TYPES);
                         for(V3TransferRequestLineItemContext toolTypeLineItem : toolTypesList) {
-                        double quantityTransferred = toolTypeLineItem.getQuantityTransferred();
+                        double quantityTransferred = toolTypeLineItem.getQuantity();
                         long toolTypeId = toolTypeLineItem.getToolType().getId();
                         ToolTypesContext toolType = toolTypeLineItem.getToolType();
                         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

@@ -1607,7 +1607,7 @@ public class WorkOrderAction extends FacilioAction {
 		FacilioChain updateWorkOrder = TransactionChainFactory.getUpdateWorkOrderChain();
 		updateWorkOrder.execute(context);
 		rowsUpdated = (Integer) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
-		setWorkOrders((List<WorkOrderContext>) context.get(ContextNames.RECORD_LIST));
+		setWorkOrders((List<WorkOrderContext>) context.get(ContextNames.WORK_ORDER_LIST));
 		return SUCCESS;
 	}
 
