@@ -46,7 +46,7 @@ public class NoteContext extends ModuleBaseWithCustomFields {
 	private String bodyHTML;
 	
 	public String getBodyHTML() {
-		if(body != null)
+		if(body != null && bodyHTML == null)
 		{
 			bodyHTML=MarkDownUtil.getHTMLRender(body);
 		}
@@ -57,7 +57,7 @@ public class NoteContext extends ModuleBaseWithCustomFields {
 	
 	
 	public String getBodyText() {
-		if(body != null)
+		if(body != null && bodyText == null)
 		{
 			bodyText=MarkDownUtil.getTextRender(body);
 		}
