@@ -220,7 +220,7 @@ public class AddSurveyModules extends SignUpData {
       configFields.add(new FormField(fieldMap.get("name").getFieldId(), "name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, ++seq, 1));
       configFields.add(new FormField(fieldMap.get("description").getFieldId(), "description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, ++seq, 1));
       
-      configFields.add(new FormField(fieldMap.get("assignedTo").getFieldId(), "assignedTo", FacilioField.FieldDisplayType.LOOKUP_POPUP, "Staff", FormField.Required.OPTIONAL, ++seq, 1));
+      configFields.add(new FormField(fieldMap.get("assignedTo").getFieldId(), "assignedTo", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Staff", FormField.Required.OPTIONAL, ++seq, 1));
 
       configSection.setFields(configFields);
       
