@@ -4,6 +4,7 @@ import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsole.util.MailMessageUtil;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.asset.*;
@@ -45,10 +46,7 @@ import com.facilio.bmsconsoleV3.commands.floorplan.V3ValidateSpaceCommand;
 import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
-import com.facilio.bmsconsoleV3.commands.inventoryrequest.AddOrUpdateInventoryRequestCommandV3;
-import com.facilio.bmsconsoleV3.commands.inventoryrequest.FetchInventoryRequestDetailsCommandV3;
-import com.facilio.bmsconsoleV3.commands.inventoryrequest.LoadIRLookupCommandV3;
-import com.facilio.bmsconsoleV3.commands.inventoryrequest.SetIRLineItemsCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.SetItemTypesUnitCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksCommand;
@@ -1459,14 +1457,14 @@ public class APIv3Config {
     public static Supplier<V3Config> getInventoryRequest() {
         return () -> new V3Config(V3InventoryRequestContext.class, new ModuleCustomFieldCount30())
                 .create()
-                //.beforeSave(TransactionChainFactoryV3.getIRBeforeSaveChain())
-                //.afterSave(new AddOrUpdateInventoryRequestCommandV3())
+                .beforeSave(TransactionChainFactoryV3.getIRBeforeSaveChain())
                 .update()
                 .beforeSave(TransactionChainFactoryV3.getIRBeforeSaveChain())
-                .afterSave(new AddOrUpdateInventoryRequestCommandV3())
+                .afterSave(new IssueInvRequestCommandV3())
                 .list()
                 .beforeFetch(new LoadIRLookupCommandV3())
                 .summary()
+                .beforeFetch(new LoadIRLookupCommandV3())
                 .afterFetch(new FetchInventoryRequestDetailsCommandV3())
                 .delete()
                 .build();

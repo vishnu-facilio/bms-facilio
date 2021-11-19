@@ -37,7 +37,7 @@ public class FetchInventoryRequestDetailsCommandV3 extends FacilioCommand {
             String lineItemModuleName = FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS;
             List<FacilioField> fields = modBean.getAllFields(lineItemModuleName);
             List<V3InventoryRequestLineItemContext> list = InventoryRequestAPI.getLineItemsForInventoryRequestV3(String.valueOf(inventoryRequestContext.getId()), null, null);
-            inventoryRequestContext.setLineItems(list);
+            inventoryRequestContext.setInventoryrequestlineitems(list);
         }
         return false;
     }

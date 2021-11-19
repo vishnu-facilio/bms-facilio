@@ -278,8 +278,6 @@ public class ItemsApi {
      throw new IllegalArgumentException("Item(s) not available in selected store");
     }
 
-
-
 	public static List<ItemContext> getItemsForType(List<Long> itemTypeIds) throws Exception {
 		
 		String ids = StringUtils.join(itemTypeIds, ",");

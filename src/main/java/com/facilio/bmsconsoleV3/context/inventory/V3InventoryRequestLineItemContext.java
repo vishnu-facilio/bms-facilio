@@ -6,10 +6,15 @@ import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.ToolsApi;
 import com.facilio.bmsconsoleV3.context.BaseLineItemContext;
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
+import com.facilio.bmsconsoleV3.context.V3ToolTransactionContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
+import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
+import com.facilio.modules.FieldUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class V3InventoryRequestLineItemContext extends BaseLineItemContext {
 
@@ -199,26 +204,6 @@ public class V3InventoryRequestLineItemContext extends BaseLineItemContext {
         return woTool;
     }
 
-    public ItemTransactionsContext contructManualItemTransactionContext(User requestedFor) throws Exception {
-        ItemTransactionsContext transaction = new ItemTransactionsContext();
-        if (this.getStoreRoom() == null) {
-            throw new IllegalArgumentException("No appropriate Item found");
-        }
-        ItemContext item = ItemsApi.getItemsForTypeAndStore(this.getStoreRoom().getId(), this.getItemType().getId());
-        transaction.setItem(item);
-        transaction.setIssuedTo(requestedFor);
-        transaction.setParentId(requestedFor.getOuid());
-        //transaction.setRequestedLineItem(this);
-        transaction.setTransactionType(3);
-        transaction.setTransactionState(2);
-        transaction.setQuantity(this.getQuantity());
-        if (this.getAsset() != null && this.getAsset().getId() > 0) {
-            transaction.setAssetIds(Collections.singletonList(this.getAsset().getId()));
-        }
-        return transaction;
-
-    }
-
     public ToolTransactionContext contructManualToolTransactionContext(User requestedFor) throws Exception {
         ToolTransactionContext transaction = new ToolTransactionContext();
         if (this.getStoreRoom() == null) {
@@ -228,12 +213,38 @@ public class V3InventoryRequestLineItemContext extends BaseLineItemContext {
         transaction.setTool(tool);
         transaction.setIssuedTo(requestedFor);
         transaction.setParentId(requestedFor.getOuid());
-        //transaction.setRequestedLineItem(this);
+        transaction.setRequestedLineItem(getV2Object());
         transaction.setTransactionType(3);
         transaction.setTransactionState(2);
         transaction.setQuantity(this.getQuantity());
 
         if (this.getAsset() != null && this.getAsset().getId() > 0) {
+            transaction.setAssetIds(Collections.singletonList(this.getAsset().getId()));
+        }
+        return transaction;
+
+    }
+@JsonIgnore
+    public InventoryRequestLineItemContext getV2Object() throws Exception
+    {
+        Map<String, Object> map = FieldUtil.getAsProperties(this);
+        InventoryRequestLineItemContext inventoryRequestLineItemContext = FieldUtil.getAsBeanFromMap(map,InventoryRequestLineItemContext.class);
+        return inventoryRequestLineItemContext;
+    }
+    public ItemTransactionsContext contructManualItemTransactionContext(User requestedFor) throws Exception {
+        ItemTransactionsContext transaction = new ItemTransactionsContext();
+        if(this.getStoreRoom() == null) {
+            throw new IllegalArgumentException("No appropriate Item found");
+        }
+        ItemContext item = ItemsApi.getItemsForTypeAndStore(this.getStoreRoom().getId(), this.getItemType().getId());
+        transaction.setItem(item);
+        transaction.setIssuedTo(requestedFor);
+        transaction.setParentId(requestedFor.getOuid());
+        transaction.setRequestedLineItem(getV2Object());
+        transaction.setTransactionType(3);
+        transaction.setTransactionState(2);
+        transaction.setQuantity(this.getQuantity());
+        if(this.getAsset() != null && this.getAsset().getId() > 0) {
             transaction.setAssetIds(Collections.singletonList(this.getAsset().getId()));
         }
         return transaction;

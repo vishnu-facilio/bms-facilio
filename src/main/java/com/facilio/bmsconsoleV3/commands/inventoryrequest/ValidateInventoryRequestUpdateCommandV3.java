@@ -12,6 +12,7 @@ import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -29,11 +30,17 @@ public class ValidateInventoryRequestUpdateCommandV3 extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(inventoryRequestContexts)) {
             for (V3InventoryRequestContext inventoryRequestContext : inventoryRequestContexts) {
                 if (inventoryRequestContext != null && inventoryRequestContext.getId() > 0) {
-                    //inventory request should not updated after approval state.
-                    if (inventoryRequestContext.getApprovalFlowId() <= 0) {
-                        throw new IllegalArgumentException("The Inventory request cannot be updated");
+                    Map<String, Object> bodyParams = Constants.getBodyParams(context);
+                    if (MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("issue")) {
+                        inventoryRequestContext.setIsIssued(true);
                     } else {
-                        context.put(FacilioConstants.ContextNames.SKIP_APPROVAL_CHECK, true);
+                        //inventory request should not updated after approval state.
+                        V3InventoryRequestContext inv = (V3InventoryRequestContext) RecordAPI.getRecord(FacilioConstants.ContextNames.INVENTORY_REQUEST, inventoryRequestContext.getId());
+                        if (inv.getApprovalFlowId() <= 0) {
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "The Inventory request cannot be updated");
+                        } else {
+                            context.put(FacilioConstants.ContextNames.SKIP_APPROVAL_CHECK, true);
+                        }
                     }
                 }
             }

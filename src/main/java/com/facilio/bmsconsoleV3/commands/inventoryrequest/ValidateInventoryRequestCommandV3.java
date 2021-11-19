@@ -11,11 +11,14 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.context.SubFormContext;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -27,18 +30,14 @@ public class ValidateInventoryRequestCommandV3 extends FacilioCommand {
         List<V3InventoryRequestContext> inventoryRequestContext = recordMap.get(moduleName);
         if (CollectionUtils.isNotEmpty(inventoryRequestContext)) {
             for (V3InventoryRequestContext inventoryRequestContexts : inventoryRequestContext) {
-                if (inventoryRequestContexts != null) {
-                    if (inventoryRequestContexts.getId() <= 0 && CollectionUtils.isEmpty(inventoryRequestContexts.getLineItems())) {
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Line items cannot be empty");
-                    }
-                    if (inventoryRequestContexts.getRequestedFor() == null) {
-                        inventoryRequestContexts.setRequestedFor(AccountUtil.getCurrentUser());
-                    }
-                    if (inventoryRequestContexts.getRequestedTime() == null) {
-                        inventoryRequestContexts.setRequestedTime(System.currentTimeMillis());
-                    }
-                    inventoryRequestContexts.setStatus(V3InventoryRequestContext.Status.REQUESTED);
-
+                if (inventoryRequestContexts.getInventoryrequestlineitems() == null) {
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Line items cannot be empty");
+                }
+                if (inventoryRequestContexts.getRequestedFor() == null) {
+                    inventoryRequestContexts.setRequestedFor(AccountUtil.getCurrentUser());
+                }
+                if (inventoryRequestContexts.getRequestedTime() == null) {
+                    inventoryRequestContexts.setRequestedTime(System.currentTimeMillis());
                 }
             }
         }

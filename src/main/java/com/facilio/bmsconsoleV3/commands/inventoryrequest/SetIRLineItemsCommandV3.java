@@ -4,7 +4,6 @@ package com.facilio.bmsconsoleV3.commands.inventoryrequest;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestLineItemContext;
-import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestLineItemContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -39,7 +38,7 @@ public class SetIRLineItemsCommandV3 extends FacilioCommand {
                 .andCondition(CriteriaAPI.getCondition("INVENTORY_REQUEST_ID", "inventoryRequestId", String.valueOf(id), NumberOperators.EQUALS))
                 .fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("itemType"), (LookupField) fieldsAsMap.get("toolType")));
         List<V3InventoryRequestLineItemContext> list = builder.get();
-        inventoryRequestContext.setLineItems(list);
+        inventoryRequestContext.setInventoryrequestlineitems(list);
         return false;
     }
 }

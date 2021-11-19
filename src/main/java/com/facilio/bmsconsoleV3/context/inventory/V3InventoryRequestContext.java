@@ -54,14 +54,14 @@ public class V3InventoryRequestContext extends BaseLineItemsParentModuleContext 
     }
 
 
-    private List<V3InventoryRequestLineItemContext> lineItems;
+    private List<V3InventoryRequestLineItemContext> inventoryrequestlineitems;
 
-    public List<V3InventoryRequestLineItemContext> getLineItems() {
-        return lineItems;
+    public List<V3InventoryRequestLineItemContext>getInventoryrequestlineitems() {
+        return inventoryrequestlineitems;
     }
 
-    public void setLineItems(List<V3InventoryRequestLineItemContext> lineItems) {
-        this.lineItems = lineItems;
+    public void setInventoryrequestlineitems(List<V3InventoryRequestLineItemContext> inventoryrequestlineitems) {
+        this.inventoryrequestlineitems = inventoryrequestlineitems;
     }
 
     public static enum Status {
@@ -108,10 +108,10 @@ public class V3InventoryRequestContext extends BaseLineItemsParentModuleContext 
         if (lineItems == null) {
             return;
         }
-        if (this.lineItems == null) {
-            this.lineItems = new ArrayList<V3InventoryRequestLineItemContext>();
+        if (this.inventoryrequestlineitems == null) {
+            this.inventoryrequestlineitems = new ArrayList<V3InventoryRequestLineItemContext>();
         }
-        this.lineItems.add(lineItems);
+        this.inventoryrequestlineitems.add(lineItems);
     }
 
     private User requestedBy;

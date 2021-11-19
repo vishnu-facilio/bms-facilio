@@ -2240,7 +2240,7 @@ public class FormFactory {
 		fields.add(new FormField("requestedBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "user", 4, 2));
 		fields.add(new FormField("requestedFor", FieldDisplayType.LOOKUP_SIMPLE, "Requested For", Required.OPTIONAL, "user", 4, 3));
 		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", Required.OPTIONAL, "storeRoom", 5, 1));
-		fields.add(new FormField("transferrequestlineitems", FieldDisplayType.INVREQUEST_LINE_ITEMS, "LINE ITEMS", Required.REQUIRED, 6, 1));
+		fields.add(new FormField("inventoryrequestlineitems", FieldDisplayType.INVREQUEST_LINE_ITEMS, "LINE ITEMS", Required.REQUIRED, 6, 1));
 		
 		return fields;
 	}

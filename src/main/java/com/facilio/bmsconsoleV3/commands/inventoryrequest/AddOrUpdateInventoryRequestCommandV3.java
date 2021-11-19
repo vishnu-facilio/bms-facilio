@@ -47,13 +47,13 @@ public class AddOrUpdateInventoryRequestCommandV3 extends FacilioCommand {
                     FacilioModule lineModule = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
                     if (inventoryRequestContexts.getId() > 0) {
                         map = RecordAPI.updateRecord(inventoryRequestContexts, module, fields, true);
-                        if (inventoryRequestContexts.getLineItems() != null) {
-                            DeleteRecordBuilder<InventoryRequestLineItemContext> deleteBuilder = new DeleteRecordBuilder<InventoryRequestLineItemContext>()
+                        if (inventoryRequestContexts.getInventoryrequestlineitems() != null) {
+                            DeleteRecordBuilder<V3InventoryRequestLineItemContext> deleteBuilder = new DeleteRecordBuilder<V3InventoryRequestLineItemContext>()
                                     .module(lineModule)
                                     .andCondition(CriteriaAPI.getCondition("INVENTORY_REQUEST_ID", "inventoryRequestId", String.valueOf(inventoryRequestContexts.getId()), NumberOperators.EQUALS));
                             deleteBuilder.delete();
                             updateLineItems(inventoryRequestContexts);
-                            V3RecordAPI.addRecord(false, inventoryRequestContexts.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+                            V3RecordAPI.addRecord(false, inventoryRequestContexts.getInventoryrequestlineitems(), lineModule, modBean.getAllFields(lineModule.getName()));
                         }
                     }
                 }
@@ -67,7 +67,7 @@ public class AddOrUpdateInventoryRequestCommandV3 extends FacilioCommand {
         V3InventoryRequestContext invReq = new V3InventoryRequestContext();
         invReq.setId(inventoryRequestContext.getId());
 
-        for (V3InventoryRequestLineItemContext lineItemContext : inventoryRequestContext.getLineItems()) {
+        for (V3InventoryRequestLineItemContext lineItemContext : inventoryRequestContext.getInventoryrequestlineitems()) {
             lineItemContext.setInventoryRequestId(invReq);
             if (inventoryRequestContext.isIssued()) {
                 lineItemContext.setIssuedQuantity(lineItemContext.getQuantity());
@@ -116,7 +116,7 @@ public class AddOrUpdateInventoryRequestCommandV3 extends FacilioCommand {
             }
 
         }
-        inventoryRequestContext.getLineItems().addAll(rotatingItems);
+        inventoryRequestContext.getInventoryrequestlineitems().addAll(rotatingItems);
     }
 
 
