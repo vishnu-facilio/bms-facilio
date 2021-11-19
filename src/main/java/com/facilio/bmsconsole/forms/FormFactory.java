@@ -3049,10 +3049,11 @@ public class FormFactory {
 		FormField attachment = new FormField("announcementattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 6, 1);
 		attachment.addToConfig("fileTypes", "image/*,.pdf,.doc,.docx");
 		fields.add(attachment);
-		FormField field = new FormField("audience", FieldDisplayType.LOOKUP_SIMPLE, "Audience", Required.REQUIRED, "audience",5, 1);
+		fields.add(new FormField("announcementsharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 6, 1));
+		/*FormField field = new FormField("audience", FieldDisplayType.LOOKUP_SIMPLE, "Audience", Required.REQUIRED, "audience",5, 1);
 		field.setAllowCreateOptions(true);
 		field.addToConfig("canShowLookupWizard",true);
-		fields.add(field);
+		fields.add(field); */
 		return fields;
 	}
 
