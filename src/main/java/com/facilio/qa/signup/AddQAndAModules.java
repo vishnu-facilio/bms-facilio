@@ -249,6 +249,7 @@ public class AddQAndAModules extends SignUpData {
         modules.add(constructMCQSingleOption());
         modules.add(constructMCQMulti(question));
         modules.add(constructMCQMultiOption());
+        modules.add(constructStarRatingQuestion(question));
 
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
@@ -570,5 +571,20 @@ public class AddQAndAModules extends SignUpData {
             rollUp.setChildCriteriaId(CriteriaAPI.addCriteria(criteria));
         }
         return rollUp;
+    }
+
+    private FacilioModule constructStarRatingQuestion(FacilioModule question) {
+        FacilioModule module = new FacilioModule(FacilioConstants.QAndA.Questions.STAR_RATING_QUESTION,
+                "Q And A Star rating Questions",
+                "Q_And_A_Star_Rating_Questions",
+                FacilioModule.ModuleType.SUB_ENTITY,
+                question);
+
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(FieldFactory.getDefaultField("numberOfStars", "Num Of Stars", "NUM_OF_STARS", FieldType.NUMBER));
+        fields.add(FieldFactory.getDefaultField("displayFormat", "Display Format", "DISPLAY_FORMAT", FieldType.STRING));
+
+        module.setFields(fields);
+        return module;
     }
 }

@@ -109,7 +109,8 @@ public enum QuestionType implements FacilioStringEnum {
     STAR_RATING(
             FacilioConstants.QAndA.Questions.STAR_RATING_QUESTION,
             StarRatingQuestionContext.class,
-            new StarRatingHandler(StarRatingAnswerContext.class),
+            new StarRatingAnswerHandler(StarRatingAnswerContext.class),
+            new StarRatingQuestionHandler(),
             DefaultRuleHandler.NUMBER,
             FieldType.NUMBER
     );

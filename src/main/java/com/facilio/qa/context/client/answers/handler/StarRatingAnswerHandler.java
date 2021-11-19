@@ -9,9 +9,9 @@ import com.facilio.v3.util.V3Util;
 
 import java.text.MessageFormat;
 
-public class StarRatingHandler extends AnswerHandler<StarRatingAnswerContext> {
+public class StarRatingAnswerHandler extends AnswerHandler<StarRatingAnswerContext> {
 
-    public StarRatingHandler(Class<StarRatingAnswerContext> answerClass) {
+    public StarRatingAnswerHandler(Class<StarRatingAnswerContext> answerClass) {
         super(answerClass);
     }
 

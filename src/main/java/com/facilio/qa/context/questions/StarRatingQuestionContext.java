@@ -13,6 +13,6 @@ import lombok.extern.log4j.Log4j;
         use = JsonTypeInfo.Id.NONE
 )
 public class StarRatingQuestionContext extends QuestionContext {
-    private Integer stars;
+    private Integer numberOfStars;
     private String displayFormat;
 }

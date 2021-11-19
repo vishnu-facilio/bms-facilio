@@ -18,7 +18,8 @@ public enum DefaultRuleHandler implements RuleHandler {
     DECIMAL (AnswerContext::getDecimalAnswer),
     SHORT_ANSWER (AnswerContext::getShortAnswer),
     LONG_ANSWER (AnswerContext::getLongAnswer),
-    DATE_TIME (AnswerContext::getDateTimeAnswer)
+    DATE_TIME (AnswerContext::getDateTimeAnswer),
+    STAR_RATING(AnswerContext::getStarRatingAnswer)
     ;
 
     private Function<AnswerContext, Object> getAnswer;
