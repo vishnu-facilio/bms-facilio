@@ -42,7 +42,6 @@ class KafkaMessageQueue extends MessageQueue {
 	
 	private static org.apache.log4j.Logger LOGGER = LogManager.getLogger(KafkaMessageQueue.class.getName());
     private AdminClient kafkaClient = null;
-    private FacilioKafkaProducer producer = null;
 
     private AdminClient getKafkaClient() {
         if (kafkaClient==null){
@@ -93,9 +92,7 @@ class KafkaMessageQueue extends MessageQueue {
     @Override
     public List<RecordMetadata> put(String streamName, List<FacilioRecord> records) throws Exception {
         List<RecordMetadata> listOfRecordMetaData = new ArrayList<>();
-        if (producer == null) {
-        	producer = new FacilioKafkaProducer(getSource());
-        }
+        FacilioKafkaProducer producer = new FacilioKafkaProducer(getSource());
         try {
             for (FacilioRecord record : records) {
                 listOfRecordMetaData.add(producer.putRecord(streamName, record));
@@ -118,7 +115,7 @@ class KafkaMessageQueue extends MessageQueue {
     public void createQueue(String queueName) {
         LOGGER.info(" creating kafka stream "+queueName);
         try {
-            CreateTopicsResult result =getKafkaClient().createTopics(Collections.singletonList(new NewTopic(queueName, 1, (short)1)));
+            CreateTopicsResult result =getKafkaClient().createTopics(Collections.singletonList(new NewTopic(queueName, 1, (short)3)));
             result.values().get(queueName).get(10, TimeUnit.SECONDS);
             LOGGER.info("Stream created : " + queueName );
             

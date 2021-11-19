@@ -7,12 +7,10 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
 
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.queue.source.MessageSource;
-import com.facilio.services.kafka.KafkaUtil;
 import com.facilio.services.procon.message.FacilioRecord;
 
 import lombok.NonNull;
@@ -80,22 +78,6 @@ public abstract class MessageQueue {
      * @return
      */
     public abstract Object put(String streamName, List<FacilioRecord> records) throws Exception;
-    
-    public Object putRecord(String streamName, String key, JSONObject payload) throws Exception {
-        JSONObject data;
-        if (KafkaUtil.parseData(messageQueueSource)) {
-        	// Temp handling. Will be removed
-        	data = new JSONObject();
-            data.put("data", payload.toJSONString());
-        }
-        else {
-        	data = payload;
-        }
-        
-        FacilioRecord record = new FacilioRecord(key, data);
-        return put(streamName, record);
-    }
-
 
     /**
      * Loops over all orgs and starts the processor

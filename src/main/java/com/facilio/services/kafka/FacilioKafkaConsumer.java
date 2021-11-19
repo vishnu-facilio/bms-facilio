@@ -54,7 +54,7 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
         props.put("max.poll.interval.ms",300000);
         props.put("max.poll.records", 10);
         KafkaUtil.setKafkaAuthProps(props, messageSource);
-        parseData = KafkaUtil.parseData(messageSource);     
+        parseData = messageSource.getName().equals("facilio");      
         return props;
     }
 
