@@ -28,46 +28,25 @@ public class FunctionNameSpaceBundleComponent extends CommonBundleComponent {
 	}
 	
 	@Override
-	public void fillBundleXML(FacilioContext context) throws Exception {
-		// TODO Auto-generated method stub
-		
-		BundleChangeSetContext componentChange = (BundleChangeSetContext) context.get(BundleConstants.BUNDLE_CHANGE);
-		
-		String fileName = BundleComponentsEnum.FUNCTION_NAME_SPACE.getName()+File.separatorChar+getBundleXMLComponentFileName(context)+".xml";
-		XMLBuilder bundleBuilder = (XMLBuilder) context.get(BundleConstants.BUNDLE_XML_BUILDER);
-		bundleBuilder.element(BundleConstants.VALUES).attr("version", componentChange.getTempVersion()+"").text(fileName);
-	}
-	
-	@Override
 	public void getFormatedObject(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		BundleChangeSetContext componentChange = (BundleChangeSetContext) context.get(BundleConstants.BUNDLE_CHANGE);
-		BundleFolderContext componentFolder = (BundleFolderContext) context.get(BundleConstants.COMPONENTS_FOLDER);
+		Long nameSapceId = (Long)context.get(BundleConstants.COMPONENT_ID);
 		
-		WorkflowNamespaceContext nameSpace = UserFunctionAPI.getNameSpace(componentChange.getComponentId());
+		XMLBuilder xmlBuilder = (XMLBuilder) context.get(BundleConstants.COMPONENT_XML_BUILDER);
+		
+		WorkflowNamespaceContext nameSpace = UserFunctionAPI.getNameSpace(nameSapceId);
 
-		String fileName = getBundleXMLComponentFileName(context);
-		
-		BundleFolderContext functionNameSpaceFolder = componentFolder.getOrAddFolder(componentChange.getComponentTypeEnum().getName());
-		
-		BundleFileContext nsFile = new BundleFileContext(fileName, BundleConstants.XML_FILE_EXTN, componentChange.getComponentTypeEnum().getName(), null);
-		
-		XMLBuilder xmlBuilder = nsFile.getXmlContent();
-		
 		xmlBuilder.element(BundleConstants.Components.DISPLAY_NAME).text(nameSpace.getName())
 				  .p()
 				  .element(BundleConstants.Components.NAME).text(nameSpace.getLinkName());
-		
-		functionNameSpaceFolder.addFile(fileName+"."+BundleConstants.XML_FILE_EXTN, nsFile);
-		
 	}
 
 	@Override
 	public void install(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		BundleFileContext changeSetXMLFile = (BundleFileContext) context.get(BundleConstants.BUNDLED_XML_COMPONENT_FILE);
+		XMLBuilder xmlBuilder = (XMLBuilder) context.get(BundleConstants.COMPONENT_XML_BUILDER);
 		
 		BundleModeEnum modeEnum = (BundleModeEnum) context.get(BundleConstants.INSTALL_MODE);
 		
@@ -77,8 +56,8 @@ public class FunctionNameSpaceBundleComponent extends CommonBundleComponent {
 		case ADD: {
 			WorkflowNamespaceContext workflowNamespaceContext = new WorkflowNamespaceContext();
 			
-			workflowNamespaceContext.setName(changeSetXMLFile.getXmlContent().getElement(BundleConstants.Components.DISPLAY_NAME).getText());
-			workflowNamespaceContext.setLinkName(changeSetXMLFile.getXmlContent().getElement(BundleConstants.Components.NAME).getText());
+			workflowNamespaceContext.setName(xmlBuilder.getElement(BundleConstants.Components.DISPLAY_NAME).getText());
+			workflowNamespaceContext.setLinkName(xmlBuilder.getElement(BundleConstants.Components.NAME).getText());
 			workflowNamespaceContext.setSourceBundle(installedBundle.getId());
 			
 			FacilioChain addWorkflowChain =  TransactionChainFactory.getAddWorkflowNameSpaceChain();
@@ -90,9 +69,9 @@ public class FunctionNameSpaceBundleComponent extends CommonBundleComponent {
 			break;
 		}
 		case UPDATE: {
-			WorkflowNamespaceContext workflowNamespaceContext = UserFunctionAPI.getNameSpace(changeSetXMLFile.getXmlContent().getElement(BundleConstants.Components.NAME).getText());
+			WorkflowNamespaceContext workflowNamespaceContext = UserFunctionAPI.getNameSpace(xmlBuilder.getElement(BundleConstants.Components.NAME).getText());
 			
-			workflowNamespaceContext.setName(changeSetXMLFile.getXmlContent().getElement(BundleConstants.Components.DISPLAY_NAME).getText());
+			workflowNamespaceContext.setName(xmlBuilder.getElement(BundleConstants.Components.DISPLAY_NAME).getText());
 			workflowNamespaceContext.setSourceBundle(installedBundle.getId());
 			
 			FacilioChain addWorkflowChain =  TransactionChainFactory.getUpdateWorkflowNameSpaceChain();
@@ -114,12 +93,10 @@ public class FunctionNameSpaceBundleComponent extends CommonBundleComponent {
 	}
 
 	@Override
-	public void getInstallMode(FacilioContext context) throws Exception {
+	public BundleModeEnum getInstallMode(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		BundleFileContext changeSetXMLFile = (BundleFileContext) context.get(BundleConstants.BUNDLED_XML_COMPONENT_FILE);
-		
-		XMLBuilder xmlContent = changeSetXMLFile.getXmlContent();
+		XMLBuilder xmlContent = (XMLBuilder) context.get(BundleConstants.COMPONENT_XML_BUILDER);
 		
 		String name = xmlContent.getElement(BundleConstants.Components.NAME).getText();
 		
@@ -132,7 +109,7 @@ public class FunctionNameSpaceBundleComponent extends CommonBundleComponent {
 			installMode = BundleModeEnum.ADD;
 		}
 		
-		context.put(BundleConstants.INSTALL_MODE, installMode);
+		return installMode;
 		
 	}
 }

@@ -38,6 +38,12 @@ public class ScheduledWorkflowContext {
 	}
 
 	private String name;
+	private String linkName;
+	private long createdTime;
+	private long modifiedTime;
+	private boolean deleted;
+	private long sysDeletedBy;
+	
 	public String getName() {
 		return name;
 	}
@@ -131,5 +137,35 @@ public class ScheduledWorkflowContext {
 			}
 		}
 		return null;
+	}
+	public String getLinkName() {
+		return linkName;
+	}
+	public void setLinkName(String linkName) {
+		this.linkName = linkName;
+	}
+	public long getCreatedTime() {
+		return createdTime;
+	}
+	public void setCreatedTime(long createdTime) {
+		this.createdTime = createdTime;
+	}
+	public long getModifiedTime() {
+		return modifiedTime;
+	}
+	public void setModifiedTime(long modifiedTime) {
+		this.modifiedTime = modifiedTime;
+	}
+	public long getSysDeletedBy() {
+		return sysDeletedBy;
+	}
+	public void setSysDeletedBy(long sysDeletedBy) {
+		this.sysDeletedBy = sysDeletedBy;
+	}
+	public boolean isDeleted() {
+		return deleted;
+	}
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 }

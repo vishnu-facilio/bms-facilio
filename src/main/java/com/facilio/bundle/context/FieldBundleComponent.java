@@ -111,36 +111,19 @@ public class FieldBundleComponent extends CommonBundleComponent {
 	}
 	
 	@Override
-	public void fillBundleXML(FacilioContext context) throws Exception {
-		// TODO Auto-generated method stub
-		
-		String fileName = getBundleXMLComponentFileName(context)+".xml";
-		XMLBuilder bundleBuilder = (XMLBuilder) context.get(BundleConstants.BUNDLE_XML_BUILDER);
-		
-		BundleChangeSetContext componentChange = (BundleChangeSetContext) context.get(BundleConstants.BUNDLE_CHANGE);
-		
-		bundleBuilder.element(BundleConstants.VALUES).attr("version", componentChange.getTempVersion()+"").text(fileName);
-	}
-
-	@Override
 	public void getFormatedObject(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
 			
-		BundleChangeSetContext componentChange = (BundleChangeSetContext) context.get(BundleConstants.BUNDLE_CHANGE);
-		BundleFolderContext componentFolder = (BundleFolderContext) context.get(BundleConstants.COMPONENTS_FOLDER);
+		Long fieldid = (Long)context.get(BundleConstants.COMPONENT_ID);
+		
+		XMLBuilder xmlBuilder = (XMLBuilder) context.get(BundleConstants.COMPONENT_XML_BUILDER);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		FacilioField field = modBean.getField(componentChange.getComponentId());
-		
-		String fileName = getBundleXMLComponentFileName(context);
-		
-		BundleFileContext fieldFile = new BundleFileContext(fileName, BundleConstants.XML_FILE_EXTN, componentChange.getComponentTypeEnum().getName(), null);
+		FacilioField field = modBean.getField(fieldid);
 		
 		Boolean isRequired = field.getRequired() == null? false : field.getRequired();
-		
-		XMLBuilder xmlBuilder = fieldFile.getXmlContent();
 		
 		xmlBuilder
 					.attr(MODULE_NAME, field.getModule().getName())
@@ -171,9 +154,6 @@ public class FieldBundleComponent extends CommonBundleComponent {
 		}
 		}
 		
-		BundleFolderContext fieldFolder = componentFolder.getOrAddFolder(componentChange.getComponentTypeEnum().getName());
-		
-		fieldFolder.addFile(fileName+"."+BundleConstants.XML_FILE_EXTN, fieldFile);
 	}
 
 	
@@ -182,15 +162,13 @@ public class FieldBundleComponent extends CommonBundleComponent {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		BundleFileContext changeSetXMLFile = (BundleFileContext) context.get(BundleConstants.BUNDLED_XML_COMPONENT_FILE);
-		
 		InstalledBundleContext installedBundle = (InstalledBundleContext) context.get(BundleConstants.INSTALLED_BUNDLE);
 		
 		BundleModeEnum modeEnum = (BundleModeEnum) context.get(BundleConstants.INSTALL_MODE);
 		
 		switch(modeEnum) {
 		case ADD: {
-			XMLBuilder fieldElement = changeSetXMLFile.getXmlContent();
+			XMLBuilder fieldElement = (XMLBuilder) context.get(BundleConstants.COMPONENT_XML_BUILDER);;
 			
 			String moduleName = fieldElement.getAttribute(MODULE_NAME);
 			
@@ -220,7 +198,7 @@ public class FieldBundleComponent extends CommonBundleComponent {
 		}
 		case UPDATE: {
 			
-			XMLBuilder fieldElement = changeSetXMLFile.getXmlContent();
+			XMLBuilder fieldElement = (XMLBuilder) context.get(BundleConstants.COMPONENT_XML_BUILDER);;
 			
 			String moduleName = fieldElement.getAttribute(MODULE_NAME);
 			
@@ -261,12 +239,10 @@ public class FieldBundleComponent extends CommonBundleComponent {
 	}
 	
 	@Override
-	public void getInstallMode(FacilioContext context) throws Exception {
+	public BundleModeEnum getInstallMode(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		BundleFileContext changeSetXMLFile = (BundleFileContext) context.get(BundleConstants.BUNDLED_XML_COMPONENT_FILE);
-		
-		XMLBuilder fieldElement = changeSetXMLFile.getXmlContent();
+		XMLBuilder fieldElement = (XMLBuilder) context.get(BundleConstants.COMPONENT_XML_BUILDER);
 		
 		String moduleName = fieldElement.getAttribute(MODULE_NAME);
 		
@@ -283,7 +259,7 @@ public class FieldBundleComponent extends CommonBundleComponent {
 			installMode = BundleModeEnum.ADD;
 		}
 		
-		context.put(BundleConstants.INSTALL_MODE, installMode);
+		return installMode;
 		
 	}
 

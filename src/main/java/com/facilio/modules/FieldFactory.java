@@ -2399,6 +2399,12 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("isActive", "IS_ACTIVE", module, FieldType.BOOLEAN));
         fields.add(getField("scheduleJson", "SCHEDULE_INFO", module, FieldType.STRING));
         fields.add(getField("startTime", "START_TIME", module, FieldType.DATE_TIME));
+        
+        fields.add(getField("linkName", "LINK_NAME", module, FieldType.STRING));
+        fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.DATE_TIME));
+        fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.DATE_TIME));
+        fields.add(getField("deleted", "IS_DELETED", module, FieldType.BOOLEAN));
+        fields.add(getField("sysDeletedBy", "DELETED_BY", module, FieldType.NUMBER));
 
         return fields;
     }

@@ -50,33 +50,15 @@ public class FunctionBundleComponent extends CommonBundleComponent {
 	}
 	
 	@Override
-	public void fillBundleXML(FacilioContext context) throws Exception {
-		// TODO Auto-generated method stub
-		
-		BundleChangeSetContext componentChange = (BundleChangeSetContext) context.get(BundleConstants.BUNDLE_CHANGE);
-		
-		String fileName = BundleComponentsEnum.FUNCTION.getName()+File.separatorChar+getBundleXMLComponentFileName(context)+".xml";
-		XMLBuilder bundleBuilder = (XMLBuilder) context.get(BundleConstants.BUNDLE_XML_BUILDER);
-		bundleBuilder.element(BundleConstants.VALUES).attr("version", componentChange.getTempVersion()+"").text(fileName);
-	}
-
-	@Override
 	public void getFormatedObject(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		BundleChangeSetContext componentChange = (BundleChangeSetContext) context.get(BundleConstants.BUNDLE_CHANGE);
-		BundleFolderContext componentFolder = (BundleFolderContext) context.get(BundleConstants.COMPONENTS_FOLDER);
+		Long functionId = (Long)context.get(BundleConstants.COMPONENT_ID);
 		
-		WorkflowUserFunctionContext function = UserFunctionAPI.getUserFunction(componentChange.getComponentId());
+		XMLBuilder xmlBuilder = (XMLBuilder) context.get(BundleConstants.COMPONENT_XML_BUILDER);
+		
+		WorkflowUserFunctionContext function = UserFunctionAPI.getUserFunction(functionId);
 
-		String fileName = getBundleXMLComponentFileName(context);
-		
-		BundleFolderContext functionNameSpaceFolder = componentFolder.getOrAddFolder(componentChange.getComponentTypeEnum().getName());
-		
-		BundleFileContext functionXMLFile = new BundleFileContext(fileName, BundleConstants.XML_FILE_EXTN, componentChange.getComponentTypeEnum().getName(), null);
-		
-		XMLBuilder xmlBuilder = functionXMLFile.getXmlContent();
-		
 		xmlBuilder.attr(NAME_SPACE, function.getNameSpaceName())
 				  .element(BundleConstants.Components.DISPLAY_NAME)
 					.text(function.getName())
@@ -88,7 +70,13 @@ public class FunctionBundleComponent extends CommonBundleComponent {
 				    .text(function.getReturnTypeEnum().getStringValue())
 				    .p();
 		
-		functionNameSpaceFolder.addFile(fileName+"."+BundleConstants.XML_FILE_EXTN, functionXMLFile);
+		// adding .fs file to function folder
+		
+		BundleFolderContext componentFolder = (BundleFolderContext) context.get(BundleConstants.COMPONENTS_FOLDER);
+		
+		String fileName = getBundleXMLComponentFileName(context);
+		
+		BundleFolderContext functionNameSpaceFolder = componentFolder.getOrAddFolder(BundleComponentsEnum.FUNCTION.getName());
 		
 		BundleFileContext functionFile = new BundleFileContext(fileName, FS_EXTN, null, function.getWorkflowV2String());
 		
@@ -165,12 +153,10 @@ public class FunctionBundleComponent extends CommonBundleComponent {
 	}
 
 	@Override
-	public void getInstallMode(FacilioContext context) throws Exception {
+	public BundleModeEnum getInstallMode(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		BundleFileContext changeSetXMLFile = (BundleFileContext) context.get(BundleConstants.BUNDLED_XML_COMPONENT_FILE);
-		
-		XMLBuilder xmlContent = changeSetXMLFile.getXmlContent();
+		XMLBuilder xmlContent = (XMLBuilder) context.get(BundleConstants.COMPONENT_XML_BUILDER);
 		
 		String nameSpaceName = xmlContent.getAttribute(NAME_SPACE);
 		
@@ -185,7 +171,7 @@ public class FunctionBundleComponent extends CommonBundleComponent {
 			installMode = BundleModeEnum.ADD;
 		}
 		
-		context.put(BundleConstants.INSTALL_MODE, installMode);
+		return installMode;
 		
 	}
 	
