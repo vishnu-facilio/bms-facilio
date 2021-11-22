@@ -79,7 +79,7 @@ public class AddOrUpdateInventoryRequestCommandV3 extends FacilioCommand {
                 lineItemContext.setStoreRoom(inventoryRequestContext.getStoreRoom());
             }
             if (lineItemContext.getAssetIds() != null && lineItemContext.getAssetIds().size() > 0) {
-                V3AssetContext lineItemAsset = new V3AssetContext();
+                AssetContext lineItemAsset = new AssetContext();
                 lineItemAsset.setId(lineItemContext.getAssetIds().get(0));
                 lineItemContext.setAsset(lineItemAsset);
                 lineItemContext.setQuantity(1.0);
@@ -88,7 +88,7 @@ public class AddOrUpdateInventoryRequestCommandV3 extends FacilioCommand {
                 }
                 for (int i = 1; i < lineItemContext.getAssetIds().size(); i++) {
                     V3InventoryRequestLineItemContext lineItem = new V3InventoryRequestLineItemContext();
-                    V3AssetContext asset = new V3AssetContext();
+                    AssetContext asset = new AssetContext();
                     asset.setId(lineItemContext.getAssetIds().get(i));
                     lineItem.setAsset(asset);
                     lineItem.setInventoryType(lineItemContext.getInventoryType());

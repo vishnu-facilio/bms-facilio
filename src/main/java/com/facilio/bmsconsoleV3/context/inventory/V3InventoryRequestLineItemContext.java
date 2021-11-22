@@ -102,13 +102,13 @@ public class V3InventoryRequestLineItemContext extends BaseLineItemContext {
         this.assetIds = assetIds;
     }
 
-    private V3AssetContext asset;
+    private AssetContext asset;
 
-    public V3AssetContext getAsset() {
+    public AssetContext getAsset() {
         return asset;
     }
 
-    public void setAsset(V3AssetContext asset) {
+    public void setAsset(AssetContext asset) {
         this.asset = asset;
     }
 

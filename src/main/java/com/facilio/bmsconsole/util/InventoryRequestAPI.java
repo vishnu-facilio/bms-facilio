@@ -87,6 +87,27 @@ public class InventoryRequestAPI {
 		throw new IllegalArgumentException("No appropriate lineitem found");
 		
 	}
+	public static V3InventoryRequestLineItemContext getLineItemV3(long lineItemId) throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+
+		SelectRecordsBuilder<V3InventoryRequestLineItemContext> builder = new SelectRecordsBuilder<V3InventoryRequestLineItemContext>()
+				.module(module)
+				.beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
+				.select(fields)
+				.andCondition(CriteriaAPI.getIdCondition(lineItemId, module))
+
+				;
+		List<V3InventoryRequestLineItemContext> lineItems = builder.get();
+		if(CollectionUtils.isNotEmpty(lineItems)) {
+			return lineItems.get(0);
+		}
+		throw new IllegalArgumentException("No appropriate lineitem found");
+
+	}
+
 	public static boolean checkQuantityForWoToolNeedingApproval(ToolTypesContext toolType, InventoryRequestLineItemContext lineItem, WorkorderToolsContext woTool) throws Exception {
 		if(lineItem != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
