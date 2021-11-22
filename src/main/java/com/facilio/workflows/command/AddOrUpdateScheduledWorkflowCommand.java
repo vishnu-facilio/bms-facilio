@@ -36,6 +36,8 @@ public class AddOrUpdateScheduledWorkflowCommand extends FacilioCommand {
 			scheduledWorkflowContext.setStartTime(DateTimeUtil.getCurrenTime());
 		}
 		
+		scheduledWorkflowContext.setLinkName(scheduledWorkflowContext.getName());
+		
 //		scheduledWorkflowContext.setWorkflowId(workflow.getId());
 		scheduledWorkflowContext.setIsActive(true);
 		scheduledWorkflowContext.setOrgId(AccountUtil.getCurrentOrg().getId());
