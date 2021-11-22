@@ -27,6 +27,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -203,10 +204,23 @@ public class OrgBeanImpl implements OrgBean {
 			selectBuilder.offset(offset);
 			selectBuilder.limit(perPage);
 		}
-		if(!searchQuery.isEmpty())
-		{
-			String searchCondition = "(People.NAME like '%"+searchQuery+"%' or People.EMAIL like '%"+searchQuery+"%')";
-			selectBuilder.andCustomWhere(searchCondition);
+		if(searchQuery != null && !searchQuery.isEmpty())
+		{            
+			Criteria criteria = new Criteria();
+			Condition condition_name = new Condition();
+			condition_name.setColumnName("People.Name");
+			condition_name.setFieldName("name");
+			condition_name.setOperator(StringOperators.CONTAINS);
+			condition_name.setValue(searchQuery);
+            criteria.addOrCondition(condition_name);
+            
+            Condition condition_email = new Condition();
+            condition_email.setColumnName("People.EMAIL");
+            condition_email.setFieldName("email");
+            condition_email.setOperator(StringOperators.CONTAINS);
+            condition_email.setValue(searchQuery);
+            criteria.addOrCondition(condition_email);
+			selectBuilder.andCriteria(criteria);
 		}
 
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -259,7 +273,7 @@ public class OrgBeanImpl implements OrgBean {
 
 	@Override
 	public Long getAppUsersCount(long orgId, long appId, boolean fetchNonAppUsers) throws Exception {
-		return getAppUsersCount(orgId, appId, fetchNonAppUsers,"");
+		return getAppUsersCount(orgId, appId, fetchNonAppUsers,null);
 	}
 	
 	@Override
@@ -301,10 +315,23 @@ public class OrgBeanImpl implements OrgBean {
 		else {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("applicationId"), String.valueOf(appId), NumberOperators.EQUALS));
 		}
-		if(!searchQuery.isEmpty())
-		{
-			String searchCondition = "(People.NAME like '%"+searchQuery+"%' or People.EMAIL like '%"+searchQuery+"%')";
-			selectBuilder.andCustomWhere(searchCondition);
+		if(searchQuery != null && !searchQuery.isEmpty())
+		{            
+			Criteria criteria = new Criteria();
+			Condition condition_name = new Condition();
+			condition_name.setColumnName("People.Name");
+			condition_name.setFieldName("name");
+			condition_name.setOperator(StringOperators.CONTAINS);
+			condition_name.setValue(searchQuery);
+            criteria.addOrCondition(condition_name);
+            
+            Condition condition_email = new Condition();
+            condition_email.setColumnName("People.EMAIL");
+            condition_email.setFieldName("email");
+            condition_email.setOperator(StringOperators.CONTAINS);
+            condition_email.setValue(searchQuery);
+            criteria.addOrCondition(condition_email);
+			selectBuilder.andCriteria(criteria);
 		}
 		List<Map<String, Object>> props = selectBuilder.get();
 		if(CollectionUtils.isNotEmpty(props)) {

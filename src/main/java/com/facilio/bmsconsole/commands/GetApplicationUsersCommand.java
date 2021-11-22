@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import com.facilio.command.FacilioCommand;
@@ -33,7 +35,7 @@ public class GetApplicationUsersCommand extends FacilioCommand {
 				offset = 0;
 			}
 		}
-		String searchQuery = "";
+		String searchQuery = null;
 		if(context.get(FacilioConstants.ContextNames.SEARCH) != null)
 		{
 			searchQuery = context.get(FacilioConstants.ContextNames.SEARCH).toString();
