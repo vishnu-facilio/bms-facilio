@@ -42,11 +42,11 @@ public class GetApplicationUsersCommand extends FacilioCommand {
 		}
 		boolean fetchNonAppUsers= (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_NON_APP_USERS, false);
 		if(getCount == null || !getCount) {
-			List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), appId, -1, false, fetchNonAppUsers, offset, perPage, searchQuery);
+			List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), appId, -1, false, fetchNonAppUsers, offset, perPage, searchQuery,(int)context.get(FacilioConstants.ContextNames.INVITE_ACCEPT_STATUS));
 			context.put(FacilioConstants.ContextNames.USERS, users);
 		}
 		else {
-			Long count = AccountUtil.getOrgBean().getAppUsersCount(AccountUtil.getCurrentOrg().getOrgId(), appId, fetchNonAppUsers, searchQuery);
+			Long count = AccountUtil.getOrgBean().getAppUsersCount(AccountUtil.getCurrentOrg().getOrgId(), appId, fetchNonAppUsers, searchQuery,(int)context.get(FacilioConstants.ContextNames.INVITE_ACCEPT_STATUS));
 			context.put(FacilioConstants.ContextNames.COUNT, count);
 		}
 

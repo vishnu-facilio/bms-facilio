@@ -119,11 +119,11 @@ public class OrgBeanImpl implements OrgBean {
 	}
 
 	private List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage) throws Exception {
-		return getAppUsers(orgId,appId,ouId,checkAccessibleSites,fetchNonAppUsers,offset,perPage,"");
+		return getAppUsers(orgId,appId,ouId,checkAccessibleSites,fetchNonAppUsers,offset,perPage,null,-99);
 	}
 	
 	@Override
-	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery) throws Exception {
+	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,int inviteAcceptStatus) throws Exception {
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
 			return null;
@@ -204,25 +204,14 @@ public class OrgBeanImpl implements OrgBean {
 			selectBuilder.offset(offset);
 			selectBuilder.limit(perPage);
 		}
-		if(searchQuery != null && !searchQuery.isEmpty())
+		if(!StringUtils.isEmpty(searchQuery))	
 		{            
-			Criteria criteria = new Criteria();
-			Condition condition_name = new Condition();
-			condition_name.setColumnName("People.Name");
-			condition_name.setFieldName("name");
-			condition_name.setOperator(StringOperators.CONTAINS);
-			condition_name.setValue(searchQuery);
-            criteria.addOrCondition(condition_name);
-            
-            Condition condition_email = new Condition();
-            condition_email.setColumnName("People.EMAIL");
-            condition_email.setFieldName("email");
-            condition_email.setOperator(StringOperators.CONTAINS);
-            condition_email.setValue(searchQuery);
-            criteria.addOrCondition(condition_email);
-			selectBuilder.andCriteria(criteria);
+			selectBuilder.andCriteria(getUserSearchCriteria(searchQuery));
 		}
-
+		if(!(inviteAcceptStatus < 0))
+		{
+			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.INVITATION_ACCEPT_STATUS","inviteAcceptStatus", String.valueOf(inviteAcceptStatus), NumberOperators.EQUALS));
+		}
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
@@ -273,11 +262,11 @@ public class OrgBeanImpl implements OrgBean {
 
 	@Override
 	public Long getAppUsersCount(long orgId, long appId, boolean fetchNonAppUsers) throws Exception {
-		return getAppUsersCount(orgId, appId, fetchNonAppUsers,null);
+		return getAppUsersCount(orgId, appId, fetchNonAppUsers,null,-99);
 	}
 	
 	@Override
-	public Long getAppUsersCount(long orgId, long appId, boolean fetchNonAppUsers,String searchQuery) throws Exception {
+	public Long getAppUsersCount(long orgId, long appId, boolean fetchNonAppUsers,String searchQuery,int inviteAcceptStatus) throws Exception {
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
 			return null;
@@ -315,23 +304,13 @@ public class OrgBeanImpl implements OrgBean {
 		else {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("applicationId"), String.valueOf(appId), NumberOperators.EQUALS));
 		}
-		if(searchQuery != null && !searchQuery.isEmpty())
+		if(!StringUtils.isEmpty(searchQuery))	
 		{            
-			Criteria criteria = new Criteria();
-			Condition condition_name = new Condition();
-			condition_name.setColumnName("People.Name");
-			condition_name.setFieldName("name");
-			condition_name.setOperator(StringOperators.CONTAINS);
-			condition_name.setValue(searchQuery);
-            criteria.addOrCondition(condition_name);
-            
-            Condition condition_email = new Condition();
-            condition_email.setColumnName("People.EMAIL");
-            condition_email.setFieldName("email");
-            condition_email.setOperator(StringOperators.CONTAINS);
-            condition_email.setValue(searchQuery);
-            criteria.addOrCondition(condition_email);
-			selectBuilder.andCriteria(criteria);
+			selectBuilder.andCriteria(getUserSearchCriteria(searchQuery));
+		}
+		if(!(inviteAcceptStatus < 0))
+		{
+			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.INVITATION_ACCEPT_STATUS","inviteAcceptStatus", String.valueOf(inviteAcceptStatus), NumberOperators.EQUALS));
 		}
 		List<Map<String, Object>> props = selectBuilder.get();
 		if(CollectionUtils.isNotEmpty(props)) {
@@ -733,5 +712,24 @@ public class OrgBeanImpl implements OrgBean {
 				.andCondition(CriteriaAPI.getCondition("Application.ID", "id", appId+"", NumberOperators.EQUALS))
 				.get();
 	}
-
+	private Criteria getUserSearchCriteria(String searchQuery)
+	{		
+		Criteria criteria = new Criteria();
+		Condition condition_name = new Condition();
+		condition_name.setColumnName("People.Name");
+		condition_name.setFieldName("name");
+		condition_name.setOperator(StringOperators.CONTAINS);
+		condition_name.setValue(searchQuery);
+        criteria.addOrCondition(condition_name);
+        
+        Condition condition_email = new Condition();
+        condition_email.setColumnName("People.EMAIL");
+        condition_email.setFieldName("email");
+        condition_email.setOperator(StringOperators.CONTAINS);
+        condition_email.setValue(searchQuery);
+        criteria.addOrCondition(condition_email);
+        
+        
+        return criteria;
+	}
 }

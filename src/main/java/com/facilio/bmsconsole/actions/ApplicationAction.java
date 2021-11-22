@@ -161,7 +161,14 @@ public class ApplicationAction extends FacilioAction {
 	public void setVendorsCount(Long vendorsCount) {
 		this.vendorsCount = vendorsCount;
 	}
-
+	
+	private Boolean inviteAcceptStatus;
+	public Boolean getInviteAcceptStatus() {
+		return inviteAcceptStatus;
+	}
+	public void setInviteAcceptStatus(Boolean inviteAcceptStatus) {
+		this.inviteAcceptStatus = inviteAcceptStatus;
+	}
 
 	public String addOrUpdateApplication() throws Exception {
 		FacilioChain chain = TransactionChainFactory.getAddOrUpdateApplication();
@@ -285,7 +292,19 @@ public class ApplicationAction extends FacilioAction {
 		{
 			context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
 		}
-
+		int inviteAcceptStatus = -99;
+		if(getInviteAcceptStatus() != null)
+		{
+			if(getInviteAcceptStatus())
+			{
+				inviteAcceptStatus = 1;
+			}
+			else
+			{
+				inviteAcceptStatus = 0;
+			}
+		}
+		context.put(FacilioConstants.ContextNames.INVITE_ACCEPT_STATUS, inviteAcceptStatus);
 		chain.execute();
 		if(!getFetchCount()) {
 			setResult(FacilioConstants.ContextNames.USERS, context.get(FacilioConstants.ContextNames.USERS));
