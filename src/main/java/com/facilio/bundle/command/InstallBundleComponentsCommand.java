@@ -97,6 +97,7 @@ public class InstallBundleComponentsCommand extends FacilioCommand {
 					
 					newContext.put(BundleConstants.INSTALLED_BUNDLE, installedBundle);
 					newContext.put(BundleConstants.BUNDLED_XML_COMPONENT_FILE, changeSetXMLFile);
+					newContext.put(BundleConstants.COMPONENT_XML_BUILDER, changeSetXMLFile.getXmlContent());
 					newContext.put(BundleConstants.BUNDLE_FOLDER, parentFolder);
 					
 					bundleComponentEnum.getBundleComponentClassInstance().getInstallMode(newContext);

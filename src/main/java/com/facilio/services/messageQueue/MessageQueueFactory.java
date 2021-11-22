@@ -49,6 +49,7 @@ public class MessageQueueFactory {
 		MessageQueue mq = messageQueues.get(source);
 		if (mq == null) {
 			mq = getMessageQueueFromSource(source);
+			messageQueues.put(source, mq);
 		}
 		return mq;
 	}

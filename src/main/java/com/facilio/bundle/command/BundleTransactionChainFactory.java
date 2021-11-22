@@ -61,12 +61,6 @@ public class BundleTransactionChainFactory {
         return c;
     }
     
-    public static FacilioChain getPopulateBundleChain() {
-        FacilioChain c = getDefaultChain();
-        c.addCommand(new PopulateBundleToNewOrgCommand());			//as per the old flow, not using now. keeping it just for reference.
-        return c;
-    }
-
 	public static FacilioChain getAllInstalledBundlesChain() {
 		FacilioChain c = getDefaultChain();
         c.addCommand(new GetAllInstalledBundlesCommand());

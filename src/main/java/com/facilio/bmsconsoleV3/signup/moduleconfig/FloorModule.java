@@ -105,39 +105,4 @@ public class FloorModule extends SignUpData {
             ex.printStackTrace();
         }
     }
-
-    public static void addStateflowFieldsToExistingFloors() throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule floorModule = modBean.getModule(FacilioConstants.ContextNames.FLOOR);
-
-        StateFlowRuleContext defaultStateFlow = StateFlowRulesAPI.getDefaultStateFlow(floorModule);
-        FacilioStatus active = TicketAPI.getStatus(floorModule, "active");
-
-        SelectRecordsBuilder<FloorContext> builder = new SelectRecordsBuilder<FloorContext>()
-                .module(floorModule)
-                .beanClass(FloorContext.class)
-                .select(modBean.getAllFields(floorModule.getName()));
-        SelectRecordsBuilder.BatchResult<FloorContext> batches = builder.getInBatches("ID", 100);
-
-        List<FacilioField> fields = new ArrayList<>();
-        fields.add(modBean.getField("moduleState", floorModule.getName()));
-        fields.add(modBean.getField("stateFlowId", floorModule.getName()));
-        while (batches.hasNext()) {
-            List<FloorContext> floorContexts = batches.get();
-            if (CollectionUtils.isNotEmpty(floorContexts)) {
-                for (FloorContext floorContext : floorContexts) {
-                    if (floorContext.getStateFlowId() <= 0) {
-                        floorContext.setModuleState(active);
-                        floorContext.setStateFlowId(defaultStateFlow.getId());
-
-                        UpdateRecordBuilder<FloorContext> updateRecordBuilder = new UpdateRecordBuilder<FloorContext>()
-                                .module(floorModule)
-                                .fields(fields)
-                                .andCondition(CriteriaAPI.getIdCondition(floorContexts.stream().map(FloorContext::getId).collect(Collectors.toList()), floorModule));
-                        updateRecordBuilder.update(floorContext);
-                    }
-                }
-            }
-        }
-    }
 }

@@ -42,6 +42,7 @@ class KafkaMessageQueue extends MessageQueue {
 	
 	private static org.apache.log4j.Logger LOGGER = LogManager.getLogger(KafkaMessageQueue.class.getName());
     private AdminClient kafkaClient = null;
+    private FacilioKafkaProducer producer = null;
 
     private AdminClient getKafkaClient() {
         if (kafkaClient==null){
@@ -92,7 +93,9 @@ class KafkaMessageQueue extends MessageQueue {
     @Override
     public List<RecordMetadata> put(String streamName, List<FacilioRecord> records) throws Exception {
         List<RecordMetadata> listOfRecordMetaData = new ArrayList<>();
-        FacilioKafkaProducer producer = new FacilioKafkaProducer(getSource());
+        if (producer == null) {
+        	producer = new FacilioKafkaProducer(getSource());
+        }
         try {
             for (FacilioRecord record : records) {
                 listOfRecordMetaData.add(producer.putRecord(streamName, record));

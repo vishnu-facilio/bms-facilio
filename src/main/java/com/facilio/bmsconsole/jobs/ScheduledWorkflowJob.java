@@ -16,6 +16,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -75,6 +76,26 @@ public class ScheduledWorkflowJob extends FacilioJob{
 		if(isActive != null) {
 			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("isActive"), isActive.toString(), BooleanOperators.IS));
 		}
+		
+		List<Map<String, Object>> props = select.get();
+		
+		ScheduledWorkflowContext scheduledWorkflowContext = null;
+		if(props != null && !props.isEmpty()) {
+			scheduledWorkflowContext = FieldUtil.getAsBeanFromMap(props.get(0), ScheduledWorkflowContext.class);
+			
+			SchedulerAPI.getSchedulerActions(Collections.singletonList(scheduledWorkflowContext));
+		}
+		return scheduledWorkflowContext;
+	}
+	
+	public static ScheduledWorkflowContext getScheduledWorkflowContext(String scheduleName) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getScheduledWorkflowFields());
+		
+		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getScheduledWorkflowFields())
+				.table(ModuleFactory.getScheduledWorkflowModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("linkName"), scheduleName, StringOperators.IS));
 		
 		List<Map<String, Object>> props = select.get();
 		

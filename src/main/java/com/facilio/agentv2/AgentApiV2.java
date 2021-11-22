@@ -487,16 +487,8 @@ public class AgentApiV2 {
     }
 
     public static void scheduleRestJob(FacilioAgent agent) throws Exception {
-    		long interval = agent.getInterval();
-    		ScheduleInfo scheduleInfo = new ScheduleInfo();
-        scheduleInfo.setFrequencyType(ScheduleInfo.FrequencyType.DAILY);
-        long totalMinutesInADay = 60 * 24;
-        LocalTime time = LocalTime.of(0, 0);
-        for (long frequency = totalMinutesInADay / interval; frequency > 0; frequency--) {
-            time = time.plusMinutes(interval);
-            scheduleInfo.addTime(time);
-        }
-    		FacilioTimer.scheduleCalendarJob(agent.getId(), Job.CLOUD_AGENT_JOB_NAME, System.currentTimeMillis(), scheduleInfo, "facilio");
+    	long interval = 60 * agent.getInterval();
+    	FacilioTimer.schedulePeriodicJob(agent.getId(), Job.CLOUD_AGENT_JOB_NAME, interval, (int)interval, "facilio");
     }
 
     

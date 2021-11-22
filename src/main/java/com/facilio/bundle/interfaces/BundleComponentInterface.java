@@ -1,5 +1,6 @@
 package com.facilio.bundle.interfaces;
 
+import com.facilio.bundle.enums.BundleModeEnum;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.criteria.Condition;
 
@@ -12,7 +13,7 @@ public interface BundleComponentInterface {
 	
 	void getInstalledComponents(FacilioContext context) throws Exception;
 	
-	void getInstallMode(FacilioContext context) throws Exception;
+	BundleModeEnum getInstallMode(FacilioContext context) throws Exception;
 	
 	void install(FacilioContext context) throws Exception;
 	void postInstall(FacilioContext context) throws Exception;

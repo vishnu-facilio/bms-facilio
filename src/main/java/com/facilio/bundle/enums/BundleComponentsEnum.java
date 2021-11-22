@@ -10,6 +10,7 @@ import com.facilio.bundle.context.FieldBundleComponent;
 import com.facilio.bundle.context.FunctionBundleComponent;
 import com.facilio.bundle.context.FunctionNameSpaceBundleComponent;
 import com.facilio.bundle.context.ModuleBundleComponent;
+import com.facilio.bundle.context.ScheduledActionBundleComponent;
 import com.facilio.bundle.interfaces.BundleComponentInterface;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -34,8 +35,9 @@ public enum BundleComponentsEnum {
 	FUNCTION(4,"Function",FunctionBundleComponent.class,BundleComponentsEnum.FUNCTION_NAME_SPACE,
 	ModuleFactory.getWorkflowUserFunctionModule(),UserFunctionAPI.getUserFunctionFields(),null,"sysModifiedTime","sysCreatedTime","linkName","name","deleted"),
 	
-//	WORKFLOW_RULE(5,"Workflow_Rule",WorkflowRuleBundleComponent.class,BundleComponentsEnum.MODULE,true),
-//	NOTIFICATION_RULE(6,"Notification_Rule",NotificationRuleBundleComponent.class,BundleComponentsEnum.MODULE,true),
+	SCHEDULED_ACTIONS(5,"Scheduled_Actions",ScheduledActionBundleComponent.class,null,
+			ModuleFactory.getScheduledWorkflowModule(),FieldFactory.getScheduledWorkflowFields(),null,null,null,"linkName","name","deleted"),
+	
 	;
 	
 	int value;

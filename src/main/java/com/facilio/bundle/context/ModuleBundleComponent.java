@@ -57,30 +57,19 @@ public class ModuleBundleComponent extends CommonBundleComponent {
 	@Override
 	public void getFormatedObject(FacilioContext context) throws Exception {
 		
-		BundleChangeSetContext componentChange = (BundleChangeSetContext) context.get(BundleConstants.BUNDLE_CHANGE);
-		BundleFolderContext componentFolder = (BundleFolderContext) context.get(BundleConstants.COMPONENTS_FOLDER);
+		Long moduleId = (Long)context.get(BundleConstants.COMPONENT_ID);
+		
+		XMLBuilder xmlBuilder = (XMLBuilder) context.get(BundleConstants.COMPONENT_XML_BUILDER);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		FacilioModule module = modBean.getModule(componentChange.getComponentId());
+		FacilioModule module = modBean.getModule(moduleId);
 		
-		String fileName = getBundleXMLComponentFileName(context);
-		
-		BundleFileContext fileContext = new BundleFileContext(fileName, BundleConstants.XML_FILE_EXTN, componentChange.getComponentTypeEnum().getName(), null);
-		
-		XMLBuilder xmlBuilder = fileContext.getXmlContent();
-		
-		if(componentChange.getModeEnum() != BundleModeEnum.DELETE) {
-			xmlBuilder = xmlBuilder.element(BundleConstants.Components.NAME).t(module.getName()).p()
-								   .element(BundleConstants.Components.DISPLAY_NAME).t(module.getDisplayName()).p()
-								   .element(DESCRIPTION).t(module.getDescription()).p()
-								   .element(STATEFLOW_ENABLED).t(module.isStateFlowEnabled().toString()).p()
-								   ;
-		}
-		
-		BundleFolderContext moduleFolder = componentFolder.getOrAddFolder(componentChange.getComponentTypeEnum().getName());
-		
-		moduleFolder.addFile(fileName+"."+BundleConstants.XML_FILE_EXTN, fileContext);
+		xmlBuilder = xmlBuilder.element(BundleConstants.Components.NAME).t(module.getName()).p()
+							   .element(BundleConstants.Components.DISPLAY_NAME).t(module.getDisplayName()).p()
+							   .element(DESCRIPTION).t(module.getDescription()).p()
+							   .element(STATEFLOW_ENABLED).t(module.isStateFlowEnabled().toString()).p()
+							   ;
 	}
 	
 	@Override
@@ -97,27 +86,14 @@ public class ModuleBundleComponent extends CommonBundleComponent {
 	}
 	
 	@Override
-	public void fillBundleXML(FacilioContext context) throws Exception {
-		// TODO Auto-generated method stub
-		
-		String fileName = BundleComponentsEnum.MODULE.getName()+File.separatorChar+getBundleXMLComponentFileName(context)+".xml";
-		XMLBuilder bundleBuilder = (XMLBuilder) context.get(BundleConstants.BUNDLE_XML_BUILDER);
-		
-		BundleChangeSetContext componentChange = (BundleChangeSetContext) context.get(BundleConstants.BUNDLE_CHANGE);
-		
-		bundleBuilder.element(BundleConstants.VALUES).attr("version", componentChange.getTempVersion()+"").text(fileName);
-	}
-
-	@Override
 	public void install(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		BundleFileContext changeSetXMLFile = (BundleFileContext) context.get(BundleConstants.BUNDLED_XML_COMPONENT_FILE);
+		BundleModeEnum modeEnum = (BundleModeEnum) context.get(BundleConstants.INSTALL_MODE);
 		
 		InstalledBundleContext installedBundle = (InstalledBundleContext) context.get(BundleConstants.INSTALLED_BUNDLE);
 		
-		XMLBuilder xmlContent = changeSetXMLFile.getXmlContent();
-		BundleModeEnum modeEnum = (BundleModeEnum) context.get(BundleConstants.INSTALL_MODE);
+		XMLBuilder xmlContent = (XMLBuilder) context.get(BundleConstants.COMPONENT_XML_BUILDER);
 		
 		String name = xmlContent.getElement(BundleConstants.Components.NAME).getText();
 		String displayName = xmlContent.getElement(BundleConstants.Components.DISPLAY_NAME).getText();
@@ -178,12 +154,10 @@ public class ModuleBundleComponent extends CommonBundleComponent {
 	}
 
 	@Override
-	public void getInstallMode(FacilioContext context) throws Exception {
+	public BundleModeEnum getInstallMode(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		BundleFileContext changeSetXMLFile = (BundleFileContext) context.get(BundleConstants.BUNDLED_XML_COMPONENT_FILE);
-		
-		XMLBuilder xmlContent = changeSetXMLFile.getXmlContent();
+		XMLBuilder xmlContent = (XMLBuilder) context.get(BundleConstants.COMPONENT_XML_BUILDER);
 		
 		String name = xmlContent.getElement(BundleConstants.Components.NAME).getText();
 		
@@ -198,7 +172,7 @@ public class ModuleBundleComponent extends CommonBundleComponent {
 			installMode = BundleModeEnum.ADD;
 		}
 		
-		context.put(BundleConstants.INSTALL_MODE, installMode);
+		return installMode;
 		
 	}
 

@@ -255,7 +255,7 @@ public enum GrantType implements GrantTypeInterface{
 		}
 		
 	},
-	IMPLICIT("Implicit","") {			// moastly not using now
+	IMPLICIT("Implicit","") {			// mostly not using now
 
 		@Override
 		public void updateAuthToken(ConnectionContext connectionContext) throws Exception {

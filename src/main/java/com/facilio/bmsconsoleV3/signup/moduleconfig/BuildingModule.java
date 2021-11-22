@@ -70,39 +70,4 @@ public class BuildingModule extends SignUpData {
         activeToInactive.setStateFlowId(stateFlowRuleContext.getId());
         WorkflowRuleAPI.addWorkflowRule(activeToInactive);
     }
-
-    public static void addStateflowFieldsToExistingBuildings() throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule buildingModule = modBean.getModule(FacilioConstants.ContextNames.BUILDING);
-
-        StateFlowRuleContext defaultStateFlow = StateFlowRulesAPI.getDefaultStateFlow(buildingModule);
-        FacilioStatus active = TicketAPI.getStatus(buildingModule, "active");
-
-        SelectRecordsBuilder<BuildingContext> builder = new SelectRecordsBuilder<BuildingContext>()
-                .module(buildingModule)
-                .beanClass(BuildingContext.class)
-                .select(modBean.getAllFields(buildingModule.getName()));
-        SelectRecordsBuilder.BatchResult<BuildingContext> batches = builder.getInBatches("ID", 100);
-
-        List<FacilioField> fields = new ArrayList<>();
-        fields.add(modBean.getField("moduleState", buildingModule.getName()));
-        fields.add(modBean.getField("stateFlowId", buildingModule.getName()));
-        while (batches.hasNext()) {
-            List<BuildingContext> buildingContexts = batches.get();
-            if (CollectionUtils.isNotEmpty(buildingContexts)) {
-                for (BuildingContext buildingContext : buildingContexts) {
-                    if (buildingContext.getStateFlowId() <= 0) {
-                        buildingContext.setModuleState(active);
-                        buildingContext.setStateFlowId(defaultStateFlow.getId());
-
-                        UpdateRecordBuilder<BuildingContext> updateRecordBuilder = new UpdateRecordBuilder<BuildingContext>()
-                                .module(buildingModule)
-                                .fields(fields)
-                                .andCondition(CriteriaAPI.getIdCondition(buildingContexts.stream().map(BuildingContext::getId).collect(Collectors.toList()), buildingModule));
-                        updateRecordBuilder.update(buildingContext);
-                    }
-                }
-            }
-        }
-    }
 }

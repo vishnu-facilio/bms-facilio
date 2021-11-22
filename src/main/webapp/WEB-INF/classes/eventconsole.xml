@@ -13,12 +13,15 @@
 		<interceptors>
 			<interceptor name="authinterceptor"
 				class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
+			<interceptor name="validationinterceptor"
+						 class="com.facilio.bmsconsole.interceptors.ValidationInterceptor" />
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="defaultStack" />
 				<interceptor-ref name="authinterceptor" />
 				<interceptor-ref name="json">
 					<param name="enableSMD">true</param>
 				</interceptor-ref>
+				<interceptor-ref name="validationinterceptor"/>
 			</interceptor-stack>
 		</interceptors>
 

@@ -1,5 +1,6 @@
 package com.facilio.bundle.context;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.xml.builder.XMLBuilder;
 
 import io.jsonwebtoken.lang.Collections;
 
@@ -38,6 +40,19 @@ public abstract class CommonBundleComponent implements BundleComponentInterface 
 	@Override
 	public boolean isPackableComponent(FacilioContext context) throws Exception {
 		return true;
+	}
+	
+	@Override
+	public void fillBundleXML(FacilioContext context) throws Exception {
+		
+		BundleChangeSetContext componentChange = (BundleChangeSetContext) context.get(BundleConstants.BUNDLE_CHANGE);
+		
+		XMLBuilder bundleBuilder = (XMLBuilder) context.get(BundleConstants.BUNDLE_XML_BUILDER);
+		
+		String fileName =  componentChange.getComponentTypeEnum().getName()+File.separatorChar+getBundleXMLComponentFileName(context)+".xml";
+		
+		bundleBuilder.element(BundleConstants.VALUES).attr("version", componentChange.getTempVersion()+"").text(fileName);
+		
 	}
 	
 	@Override
