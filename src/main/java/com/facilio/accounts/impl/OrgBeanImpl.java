@@ -118,6 +118,11 @@ public class OrgBeanImpl implements OrgBean {
 	}
 
 	private List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage) throws Exception {
+		return getAppUsers(orgId,appId,ouId,checkAccessibleSites,fetchNonAppUsers,offset,perPage,"");
+	}
+	
+	@Override
+	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery) throws Exception {
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
 			return null;
@@ -139,6 +144,8 @@ public class OrgBeanImpl implements OrgBean {
 				.table("ORG_Users")
 				.innerJoin("ORG_User_Apps")
 				.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
+				.innerJoin("Account_Users")
+				.on("Account_Users.USERID = ORG_Users.USERID")
 				.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS))
 				;
 
@@ -196,6 +203,11 @@ public class OrgBeanImpl implements OrgBean {
 			selectBuilder.offset(offset);
 			selectBuilder.limit(perPage);
 		}
+		if(!searchQuery.isEmpty())
+		{
+			String searchCondition = "(Account_Users.NAME like '%"+searchQuery+"%' or Account_Users.EMAIL like '%"+searchQuery+"%')";
+			selectBuilder.andCustomWhere(searchCondition);
+		}
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -236,7 +248,6 @@ public class OrgBeanImpl implements OrgBean {
 		}
 		return null;
 	}
-
 	@Override
 	public User getAppUser(long orgId, long appId, long ouId) throws Exception {
 		List<User> users = getAppUsers(orgId, appId, ouId, false, false, -1, -1);
@@ -248,7 +259,11 @@ public class OrgBeanImpl implements OrgBean {
 
 	@Override
 	public Long getAppUsersCount(long orgId, long appId, boolean fetchNonAppUsers) throws Exception {
-
+		return getAppUsersCount(orgId, appId, fetchNonAppUsers,"");
+	}
+	
+	@Override
+	public Long getAppUsersCount(long orgId, long appId, boolean fetchNonAppUsers,String searchQuery) throws Exception {
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
 			return null;
@@ -272,6 +287,8 @@ public class OrgBeanImpl implements OrgBean {
 				.table("ORG_Users")
 				.innerJoin("ORG_User_Apps")
 				.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
+				.innerJoin("Account_Users")
+				.on("Account_Users.USERID = ORG_Users.USERID")
 				.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS))
 				;
 
@@ -284,14 +301,17 @@ public class OrgBeanImpl implements OrgBean {
 		else {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("applicationId"), String.valueOf(appId), NumberOperators.EQUALS));
 		}
-
+		if(!searchQuery.isEmpty())
+		{
+			String searchCondition = "(Account_Users.NAME like '%"+searchQuery+"%' or Account_Users.EMAIL like '%"+searchQuery+"%')";
+			selectBuilder.andCustomWhere(searchCondition);
+		}
 		List<Map<String, Object>> props = selectBuilder.get();
 		if(CollectionUtils.isNotEmpty(props)) {
 			return (Long)props.get(0).get("count");
 		}
 
 		return null;
-
 	}
 
     private List<Long> getAppUserIds(long appId, GenericSelectRecordBuilder builder, Map<String, FacilioField> fieldMap) throws Exception {

@@ -281,6 +281,11 @@ public class ApplicationAction extends FacilioAction {
 			}
 			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		}
+		if(getSearch() != null)
+		{
+			context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
+		}
+
 		chain.execute();
 		if(!getFetchCount()) {
 			setResult(FacilioConstants.ContextNames.USERS, context.get(FacilioConstants.ContextNames.USERS));
