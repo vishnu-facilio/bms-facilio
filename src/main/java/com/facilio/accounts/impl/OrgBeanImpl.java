@@ -144,8 +144,8 @@ public class OrgBeanImpl implements OrgBean {
 				.table("ORG_Users")
 				.innerJoin("ORG_User_Apps")
 				.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
-				.innerJoin("Account_Users")
-				.on("Account_Users.USERID = ORG_Users.USERID")
+				.innerJoin("People")
+				.on("People.ID = ORG_Users.PEOPLE_ID")
 				.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS))
 				;
 
@@ -205,7 +205,7 @@ public class OrgBeanImpl implements OrgBean {
 		}
 		if(!searchQuery.isEmpty())
 		{
-			String searchCondition = "(Account_Users.NAME like '%"+searchQuery+"%' or Account_Users.EMAIL like '%"+searchQuery+"%')";
+			String searchCondition = "(People.NAME like '%"+searchQuery+"%' or People.EMAIL like '%"+searchQuery+"%')";
 			selectBuilder.andCustomWhere(searchCondition);
 		}
 
@@ -287,8 +287,8 @@ public class OrgBeanImpl implements OrgBean {
 				.table("ORG_Users")
 				.innerJoin("ORG_User_Apps")
 				.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
-				.innerJoin("Account_Users")
-				.on("Account_Users.USERID = ORG_Users.USERID")
+				.innerJoin("People")
+				.on("People.ID = ORG_Users.PEOPLE_ID")
 				.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS))
 				;
 
@@ -303,7 +303,7 @@ public class OrgBeanImpl implements OrgBean {
 		}
 		if(!searchQuery.isEmpty())
 		{
-			String searchCondition = "(Account_Users.NAME like '%"+searchQuery+"%' or Account_Users.EMAIL like '%"+searchQuery+"%')";
+			String searchCondition = "(People.NAME like '%"+searchQuery+"%' or People.EMAIL like '%"+searchQuery+"%')";
 			selectBuilder.andCustomWhere(searchCondition);
 		}
 		List<Map<String, Object>> props = selectBuilder.get();
