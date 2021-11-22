@@ -572,6 +572,9 @@ public class FetchReportDataCommand extends FacilioCommand {
 //                newSelectBuilder.fetchSupplements(lookupFieldList);
             }
 //            String query = newSelectBuilder.constructQueryString();
+            if(reportType == ReportType.PIVOT_REPORT && globalContext.get(FacilioConstants.ContextNames.FILTER_CRITERIA) != null) {
+                newSelectBuilder.andCriteria((Criteria) globalContext.get(FacilioConstants.ContextNames.FILTER_CRITERIA));
+            }
             props = newSelectBuilder.getAsProps();
             pivotFieldsList.clear();
             isBaseModuleJoined = false;
