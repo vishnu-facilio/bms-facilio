@@ -896,16 +896,22 @@ public class ExportUtil {
 			FacilioField field = viewField.getField();
 			if (field != null && field.getDataTypeEnum() != null && field.getDataTypeEnum() == FieldType.FILE) {
 				viewFields.remove(viewFields.get(j));
-			}
-			else if (viewField.getFieldName() != null && viewField.getFieldName().equals("siteId")) {
+			} else if (viewField.getFieldName() != null && viewField.getFieldName().equals("siteId")) {
 				viewField.setField(FieldFactory.getSiteIdField(module));
-			}
-			else if (field == null) {
+			} else if (field == null) {
 				if (FieldFactory.isSystemField(viewField.getFieldName())) {
 					viewField.setField(FieldFactory.getSystemField(viewField.getFieldName(), module));
 				}
 			}
-			
+
+		}
+		// could have added in the above if check for WO;
+		// but the field has to be appended at the end of the list
+		if (moduleName.equals("workorder")) {
+			ViewField tasksComplete = new ViewField("noOfClosedTasks", "Tasks Complete");
+			tasksComplete.setField(modBean.getField("noOfClosedTasks", moduleName));
+			viewFields.add(tasksComplete);
+
 		}
 	}
 	
