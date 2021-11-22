@@ -43,6 +43,7 @@ public class ScheduledWorkflowContext {
 	private long modifiedTime;
 	private boolean deleted;
 	private long sysDeletedBy;
+	private long sourceBundle;
 	
 	public String getName() {
 		return name;
@@ -167,5 +168,11 @@ public class ScheduledWorkflowContext {
 	}
 	public void setDeleted(boolean deleted) {
 		this.deleted = deleted;
+	}
+	public long getSourceBundle() {
+		return sourceBundle;
+	}
+	public void setSourceBundle(long sourceBundle) {
+		this.sourceBundle = sourceBundle;
 	}
 }

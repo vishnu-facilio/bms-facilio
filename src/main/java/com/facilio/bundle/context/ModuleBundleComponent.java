@@ -76,11 +76,11 @@ public class ModuleBundleComponent extends CommonBundleComponent {
 	public String getBundleXMLComponentFileName(FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		BundleChangeSetContext componentChange = (BundleChangeSetContext) context.get(BundleConstants.BUNDLE_CHANGE);
+		long moduleID = (long) context.get(BundleConstants.COMPONENT_ID);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		FacilioModule module = modBean.getModule(componentChange.getComponentId());
+		FacilioModule module = modBean.getModule(moduleID);
 		
 		return module.getName();
 	}

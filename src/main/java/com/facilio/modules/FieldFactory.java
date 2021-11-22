@@ -2405,6 +2405,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.DATE_TIME));
         fields.add(getField("deleted", "IS_DELETED", module, FieldType.BOOLEAN));
         fields.add(getField("sysDeletedBy", "DELETED_BY", module, FieldType.NUMBER));
+        fields.add(getField("sourceBundle", "SOURCE_BUNDLE", module, FieldType.NUMBER));
 
         return fields;
     }

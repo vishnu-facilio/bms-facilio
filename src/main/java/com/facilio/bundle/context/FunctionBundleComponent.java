@@ -91,54 +91,65 @@ public class FunctionBundleComponent extends CommonBundleComponent {
 		BundleFileContext changeSetXMLFile = (BundleFileContext) context.get(BundleConstants.BUNDLED_XML_COMPONENT_FILE);
 		BundleFolderContext parentFolder = (BundleFolderContext) context.get(BundleConstants.BUNDLE_FOLDER);
 		
-		String scriptContent = parentFolder.getFile(changeSetXMLFile.getName()+"."+FS_EXTN).getFileContent();
-		
 		BundleModeEnum modeEnum = (BundleModeEnum) context.get(BundleConstants.INSTALL_MODE);
-		
-		String nameSpaceName = changeSetXMLFile.getXmlContent().getAttribute(NAME_SPACE);
-		
-		String returnType = changeSetXMLFile.getXmlContent().getElement(RETURN_STRING).getText();
 		
 		InstalledBundleContext installedBundle = (InstalledBundleContext) context.get(BundleConstants.INSTALLED_BUNDLE);
 		
 		switch(modeEnum) {
-		case ADD: {
-			WorkflowUserFunctionContext userFunction = new WorkflowUserFunctionContext();
-			
-			userFunction.setWorkflowV2String(scriptContent);
-			userFunction.setLinkName(changeSetXMLFile.getXmlContent().getElement(BundleConstants.Components.NAME).getText());
-			userFunction.setIsV2Script(Boolean.TRUE);
-			userFunction.setReturnType(WorkflowFieldType.getStringvaluemap().get(returnType).getIntValue());
-			userFunction.setNameSpaceId(UserFunctionAPI.getNameSpace(nameSpaceName).getId());
-			
-			userFunction.setSourceBundle(installedBundle.getId());
-			
-			FacilioChain addWorkflowChain =  TransactionChainFactory.getAddWorkflowUserFunctionChain();
-			FacilioContext newContext = addWorkflowChain.getContext();
-			
-			newContext.put(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
-			addWorkflowChain.execute();
-			
-			break;
-		}
-		
+		case ADD: 
 		case UPDATE: {
 			
-			String functionName = changeSetXMLFile.getXmlContent().getElement(BundleConstants.Components.NAME).getText();
+			String scriptContent = parentFolder.getFile(changeSetXMLFile.getName()+"."+FS_EXTN).getFileContent();
+			String nameSpaceName = changeSetXMLFile.getXmlContent().getAttribute(NAME_SPACE);
+			String returnType = changeSetXMLFile.getXmlContent().getElement(RETURN_STRING).getText();
+			if(modeEnum == BundleModeEnum.ADD) {
+				
+				WorkflowUserFunctionContext userFunction = new WorkflowUserFunctionContext();
+				
+				userFunction.setWorkflowV2String(scriptContent);
+				userFunction.setLinkName(changeSetXMLFile.getXmlContent().getElement(BundleConstants.Components.NAME).getText());
+				userFunction.setIsV2Script(Boolean.TRUE);
+				userFunction.setReturnType(WorkflowFieldType.getStringvaluemap().get(returnType).getIntValue());
+				userFunction.setNameSpaceId(UserFunctionAPI.getNameSpace(nameSpaceName).getId());
+				
+				userFunction.setSourceBundle(installedBundle.getId());
+				
+				FacilioChain addWorkflowChain =  TransactionChainFactory.getAddWorkflowUserFunctionChain();
+				FacilioContext newContext = addWorkflowChain.getContext();
+				
+				newContext.put(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
+				addWorkflowChain.execute();
+			}
+			else if(modeEnum == BundleModeEnum.UPDATE) {
+				
+				String functionName = changeSetXMLFile.getXmlContent().getElement(BundleConstants.Components.NAME).getText();
+				
+				WorkflowUserFunctionContext userFunction = (WorkflowUserFunctionContext) UserFunctionAPI.getWorkflowFunctionFromLinkName(nameSpaceName, functionName);
+				
+				userFunction.setWorkflowV2String(scriptContent);
+				userFunction.setIsV2Script(Boolean.TRUE);
+				
+				userFunction.setSourceBundle(installedBundle.getId());
+				
+				FacilioChain updateWorkflowChain =  TransactionChainFactory.getUpdateWorkflowUserFunctionChain();
+				FacilioContext newContext = updateWorkflowChain.getContext();
+				
+				newContext.put(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
+				updateWorkflowChain.execute();
+			}
+			break;
+		}
+		case DELETE: {
 			
-			WorkflowUserFunctionContext userFunction = (WorkflowUserFunctionContext) UserFunctionAPI.getWorkflowFunctionFromLinkName(nameSpaceName, functionName);
+			Long functionId = (Long)context.get(BundleConstants.COMPONENT_ID);
 			
-			userFunction.setWorkflowV2String(scriptContent);
-			userFunction.setIsV2Script(Boolean.TRUE);
+			FacilioChain addWorkflowChain =  TransactionChainFactory.getDeleteWorkflowUserFunctionChain();
+
+			FacilioContext newContext = addWorkflowChain.getContext();
 			
-			userFunction.setSourceBundle(installedBundle.getId());
-			
-			FacilioChain updateWorkflowChain =  TransactionChainFactory.getUpdateWorkflowUserFunctionChain();
-			FacilioContext newContext = updateWorkflowChain.getContext();
-			
-			newContext.put(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
-			updateWorkflowChain.execute();
-			
+			newContext.put(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, UserFunctionAPI.getUserFunction(functionId));
+			addWorkflowChain.execute();
+
 			break;
 		}
 		

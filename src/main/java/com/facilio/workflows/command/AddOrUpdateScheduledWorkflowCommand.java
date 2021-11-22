@@ -7,6 +7,8 @@ import java.util.Map;
 
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
+import com.facilio.bundle.context.InstalledBundleContext;
+import com.facilio.bundle.utils.BundleConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import org.apache.commons.chain.Context;
@@ -42,8 +44,11 @@ public class AddOrUpdateScheduledWorkflowCommand extends FacilioCommand {
 		scheduledWorkflowContext.setIsActive(true);
 		scheduledWorkflowContext.setOrgId(AccountUtil.getCurrentOrg().getId());
 		scheduledWorkflowContext.setTimeZone(AccountUtil.getCurrentAccount().getTimeZone());
+		
+		scheduledWorkflowContext.setModifiedTime(DateTimeUtil.getCurrenTime());
 
 		if (scheduledWorkflowContext.getId() < 0) {
+			scheduledWorkflowContext.setCreatedTime(DateTimeUtil.getCurrenTime());
 			addScheduledWorkflow(scheduledWorkflowContext);
 		} else {
 			FacilioTimer.deleteJob(scheduledWorkflowContext.getId(), WorkflowV2Util.SCHEDULED_WORKFLOW_JOB_NAME);
