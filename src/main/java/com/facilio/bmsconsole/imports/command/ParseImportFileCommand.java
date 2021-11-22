@@ -24,8 +24,11 @@ import org.apache.poi.ss.usermodel.*;
 
 import java.io.InputStream;
 import java.util.*;
+import java.util.logging.Logger;
 
 public class ParseImportFileCommand extends FacilioCommand {
+
+    private static final Logger LOGGER = Logger.getLogger(ParseImportFileCommand.class.getName());
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -69,10 +72,11 @@ public class ParseImportFileCommand extends FacilioCommand {
             }
         }
 
-        RowFunction rowFunction = (RowFunction) context.get(ImportAPI.ImportProcessConstants.UNIQUE_FUNCTION);
-        if (rowFunction == null) {
-            rowFunction = ParseImportFileCommand::getUniqueFunction;
+        RowFunction uniqueFunction = (RowFunction) context.get(ImportAPI.ImportProcessConstants.UNIQUE_FUNCTION);
+        if (uniqueFunction == null) {
+            uniqueFunction = ParseImportFileCommand::getUniqueFunction;
         }
+        RowFunction rowFunction = (RowFunction) context.get(ImportAPI.ImportProcessConstants.ROW_FUNCTION);
 
         String sheetName = (String) context.get(FacilioConstants.ContextNames.SHEET_NAME);
         int totalRowCount = 0;
@@ -124,10 +128,21 @@ public class ParseImportFileCommand extends FacilioCommand {
                     checkMandatoryFields(requiredFields, context, rowVal, rowNo);
                 }
 
-                String uniqueString = rowFunction.apply(rowNo, rowVal, context);
+                Object uniqueStringObject = uniqueFunction.apply(rowNo, rowVal, context);
+                String uniqueString;
+                if (uniqueStringObject == null) {
+                    LOGGER.info("Unique string is null -> fallback to default method");
+                    uniqueString = getUniqueFunction(rowNo, rowVal, context);
+                } else {
+                    uniqueString = uniqueStringObject.toString();
+                }
 
                 if(importProcessContext.getImportSetting() != ImportProcessContext.ImportSetting.INSERT.getValue()) {
                     checkMandatoryUniqueFields(importProcessContext, rowVal, fieldMapping, rowNo);
+                }
+
+                if (rowFunction != null) {
+                    rowFunction.apply(rowNo, rowVal, context);
                 }
 
                 if (!groupedContext.containsKey(uniqueString)) {

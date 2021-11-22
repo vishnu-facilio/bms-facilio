@@ -846,6 +846,9 @@ public class ImportAPI {
 		public static final String ADDED_BASE_SPACE_IDS = "baseSpaceIds";
 		public static final String REQUIRED_FIELDS = "requiredFields";
 		public static final String UNIQUE_FUNCTION = "uniqueFunction";
+		public static final String ROW_FUNCTION = "rowFunction";
+		public static final String BEFORE_IMPORT_FUNCTION = "beforeImportFunction";
+		public static final String AFTER_IMPORT_FUNCTION = "afterImportFunction";
 
 	}
 	

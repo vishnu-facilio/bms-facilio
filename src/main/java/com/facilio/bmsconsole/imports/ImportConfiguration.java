@@ -21,7 +21,7 @@ public class ImportConfiguration {
                     }
                 }).done()
                 .parseHandler()
-                .rowFunction((rowNumber, rowValue, context) -> {
+                .uniqueFunction((rowNumber, rowValue, context) -> {
                     return null;
                 }).done()
                 .importHandler()

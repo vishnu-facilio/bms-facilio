@@ -14,6 +14,11 @@ public class ParseHandler {
         return afterParseCommand;
     }
 
+    private RowFunction uniqueFunction;
+    public RowFunction getUniqueFunction() {
+        return uniqueFunction;
+    }
+
     private RowFunction rowFunction;
     public RowFunction getRowFunction() {
         return rowFunction;
@@ -22,6 +27,7 @@ public class ParseHandler {
     public ParseHandler(ParseHandlerBuilder builder) {
         this.beforeParseCommand = builder.beforeParseCommand;
         this.afterParseCommand = builder.afterParseCommand;
+        this.uniqueFunction = builder.uniqueFunction;
         this.rowFunction = builder.rowFunction;
     }
 
@@ -35,6 +41,12 @@ public class ParseHandler {
         private Command afterParseCommand;
         public ParseHandlerBuilder afterParseCommand(Command command) {
             this.afterParseCommand = command;
+            return this;
+        }
+
+        private RowFunction uniqueFunction;
+        public ParseHandlerBuilder uniqueFunction(RowFunction rowFunction) {
+            this.uniqueFunction = rowFunction;
             return this;
         }
 

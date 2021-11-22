@@ -14,15 +14,21 @@ public class ImportHandler {
         return afterImportCommand;
     }
 
-    private RowFunction rowFunction;
-    public RowFunction getRowFunction() {
-        return rowFunction;
+    private RowFunction beforeImportFunction;
+    public RowFunction getBeforeImportFunction() {
+        return beforeImportFunction;
+    }
+
+    private RowFunction afterImportFunction;
+    public RowFunction getAfterImportFunction() {
+        return afterImportFunction;
     }
 
     public ImportHandler(ImportHandlerBuilder importHandlerBuilder) {
         this.beforeImportCommand = importHandlerBuilder.beforeImportCommand;
         this.afterImportCommand = importHandlerBuilder.afterImportCommand;
-        this.rowFunction = importHandlerBuilder.rowFunction;
+        this.beforeImportFunction = importHandlerBuilder.beforeImportFunction;
+        this.afterImportFunction = importHandlerBuilder.afterImportFunction;
     }
 
     public static class ImportHandlerBuilder extends NesterBuilder<ImportConfig.ImportConfigBuilder> {
@@ -38,9 +44,15 @@ public class ImportHandler {
             return this;
         }
 
-        private RowFunction rowFunction;
-        public ImportHandlerBuilder rowFunction(RowFunction rowFunction) {
-            this.rowFunction = rowFunction;
+        private RowFunction beforeImportFunction;
+        public ImportHandlerBuilder beforeImportFunction(RowFunction rowFunction) {
+            this.beforeImportFunction = rowFunction;
+            return this;
+        }
+
+        private RowFunction afterImportFunction;
+        public ImportHandlerBuilder afterImportFunction(RowFunction rowFunction) {
+            this.afterImportFunction = rowFunction;
             return this;
         }
 
