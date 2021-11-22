@@ -46,6 +46,11 @@ public class SummaryCommand extends FacilioCommand {
             selectRecordsBuilder.fetchSupplements(supplementFields);
         }
 
+        boolean skipModuleCriteria = (boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, false);
+        if (skipModuleCriteria) {
+            selectRecordsBuilder.skipModuleCriteria();
+        }
+
         List<ModuleBaseWithCustomFields> list = selectRecordsBuilder.get();
 
         Map<String, List<ModuleBaseWithCustomFields>> recordMap = new HashMap<>();

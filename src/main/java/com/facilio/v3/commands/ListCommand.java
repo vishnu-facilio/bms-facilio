@@ -176,14 +176,18 @@ public class ListCommand extends FacilioCommand {
             selectRecordsBuilder.andCriteria(searchCriteria);
         }
 
+        boolean skipModuleCriteria = (boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, false);
+        if (skipModuleCriteria) {
+            selectRecordsBuilder.skipModuleCriteria();
+        }
+
         Object serverCriteria = context.get(FacilioConstants.ContextNames.FILTER_SERVER_CRITERIA);
         if (serverCriteria != null) {
             if (serverCriteria instanceof Criteria) {
                 if (!((Criteria) serverCriteria).isEmpty()) {
                     selectRecordsBuilder.andCriteria((Criteria) serverCriteria);
                 }
-            }
-            else {
+            } else {
                 selectRecordsBuilder.andCondition((Condition) serverCriteria);
             }
         }
