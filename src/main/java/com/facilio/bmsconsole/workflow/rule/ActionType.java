@@ -167,8 +167,8 @@ public enum ActionType {
 					}
 
 					if (toEmails != null && !toEmails.isEmpty()) {
-						boolean sendAsSeparateMail = (boolean) obj.getOrDefault("sendAsSeparateMail", false);
-						if (!sendAsSeparateMail) {
+						Boolean sendAsSeparateMail = (Boolean) obj.getOrDefault("sendAsSeparateMail", false);
+						if (sendAsSeparateMail == null || !sendAsSeparateMail) {
 							StringJoiner activeToEmails = new StringJoiner(",");
 							for (Object toEmail : toEmails) {
 								String to = (String) toEmail;
