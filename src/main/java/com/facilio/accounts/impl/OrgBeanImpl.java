@@ -30,6 +30,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
@@ -119,11 +120,11 @@ public class OrgBeanImpl implements OrgBean {
 	}
 
 	private List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage) throws Exception {
-		return getAppUsers(orgId,appId,ouId,checkAccessibleSites,fetchNonAppUsers,offset,perPage,null,-99);
+		return getAppUsers(orgId,appId,ouId,checkAccessibleSites,fetchNonAppUsers,offset,perPage,null,null);
 	}
 	
 	@Override
-	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,int inviteAcceptStatus) throws Exception {
+	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,Boolean inviteAcceptStatus) throws Exception {
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
 			return null;
@@ -208,9 +209,9 @@ public class OrgBeanImpl implements OrgBean {
 		{            
 			selectBuilder.andCriteria(getUserSearchCriteria(searchQuery));
 		}
-		if(!(inviteAcceptStatus < 0))
+		if(inviteAcceptStatus != null)
 		{
-			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.INVITATION_ACCEPT_STATUS","inviteAcceptStatus", String.valueOf(inviteAcceptStatus), NumberOperators.EQUALS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.INVITATION_ACCEPT_STATUS","inviteAcceptStatus", String.valueOf(inviteAcceptStatus), BooleanOperators.IS));
 		}
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -262,11 +263,11 @@ public class OrgBeanImpl implements OrgBean {
 
 	@Override
 	public Long getAppUsersCount(long orgId, long appId, boolean fetchNonAppUsers) throws Exception {
-		return getAppUsersCount(orgId, appId, fetchNonAppUsers,null,-99);
+		return getAppUsersCount(orgId, appId, fetchNonAppUsers,null,null);
 	}
 	
 	@Override
-	public Long getAppUsersCount(long orgId, long appId, boolean fetchNonAppUsers,String searchQuery,int inviteAcceptStatus) throws Exception {
+	public Long getAppUsersCount(long orgId, long appId, boolean fetchNonAppUsers,String searchQuery,Boolean inviteAcceptStatus) throws Exception {
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
 			return null;
@@ -308,9 +309,9 @@ public class OrgBeanImpl implements OrgBean {
 		{            
 			selectBuilder.andCriteria(getUserSearchCriteria(searchQuery));
 		}
-		if(!(inviteAcceptStatus < 0))
+		if(inviteAcceptStatus != null)
 		{
-			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.INVITATION_ACCEPT_STATUS","inviteAcceptStatus", String.valueOf(inviteAcceptStatus), NumberOperators.EQUALS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.INVITATION_ACCEPT_STATUS","inviteAcceptStatus", String.valueOf(inviteAcceptStatus), BooleanOperators.IS));
 		}
 		List<Map<String, Object>> props = selectBuilder.get();
 		if(CollectionUtils.isNotEmpty(props)) {

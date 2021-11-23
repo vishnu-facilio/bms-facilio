@@ -20,8 +20,10 @@ public class GetApplicationUsersCommand extends FacilioCommand {
 		Long appId = (Long)context.get(FacilioConstants.ContextNames.APPLICATION_ID);
 		Boolean getCount = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+		Boolean inviteAcceptStatus = (Boolean)context.get(FacilioConstants.ContextNames.INVITE_ACCEPT_STATUS);
 		int page, perPage = -1, offset = -1;
-
+		String searchQuery = (String) context.get(FacilioConstants.ContextNames.SEARCH);
+		
 		if(appId <= 0) {
 			throw new IllegalArgumentException("Invalid app id");
 		}
@@ -35,18 +37,14 @@ public class GetApplicationUsersCommand extends FacilioCommand {
 				offset = 0;
 			}
 		}
-		String searchQuery = null;
-		if(context.get(FacilioConstants.ContextNames.SEARCH) != null)
-		{
-			searchQuery = context.get(FacilioConstants.ContextNames.SEARCH).toString();
-		}
+		
 		boolean fetchNonAppUsers= (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_NON_APP_USERS, false);
 		if(getCount == null || !getCount) {
-			List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), appId, -1, false, fetchNonAppUsers, offset, perPage, searchQuery,(int)context.get(FacilioConstants.ContextNames.INVITE_ACCEPT_STATUS));
+			List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), appId, -1, false, fetchNonAppUsers, offset, perPage, searchQuery, inviteAcceptStatus);
 			context.put(FacilioConstants.ContextNames.USERS, users);
 		}
 		else {
-			Long count = AccountUtil.getOrgBean().getAppUsersCount(AccountUtil.getCurrentOrg().getOrgId(), appId, fetchNonAppUsers, searchQuery,(int)context.get(FacilioConstants.ContextNames.INVITE_ACCEPT_STATUS));
+			Long count = AccountUtil.getOrgBean().getAppUsersCount(AccountUtil.getCurrentOrg().getOrgId(), appId, fetchNonAppUsers, searchQuery, inviteAcceptStatus);
 			context.put(FacilioConstants.ContextNames.COUNT, count);
 		}
 

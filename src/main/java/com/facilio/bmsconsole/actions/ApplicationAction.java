@@ -292,19 +292,7 @@ public class ApplicationAction extends FacilioAction {
 		{
 			context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
 		}
-		int inviteAcceptStatus = -99;
-		if(getInviteAcceptStatus() != null)
-		{
-			if(getInviteAcceptStatus())
-			{
-				inviteAcceptStatus = 1;
-			}
-			else
-			{
-				inviteAcceptStatus = 0;
-			}
-		}
-		context.put(FacilioConstants.ContextNames.INVITE_ACCEPT_STATUS, inviteAcceptStatus);
+		context.put(FacilioConstants.ContextNames.INVITE_ACCEPT_STATUS, getInviteAcceptStatus());
 		chain.execute();
 		if(!getFetchCount()) {
 			setResult(FacilioConstants.ContextNames.USERS, context.get(FacilioConstants.ContextNames.USERS));
