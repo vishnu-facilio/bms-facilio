@@ -869,7 +869,7 @@ public class FetchReportDataCommand extends FacilioCommand {
         return spaceField;
     }
 
-    private String getJoinOn(LookupField lookupField) {
+    private String getJoinOnPivot(LookupField lookupField) {
         FacilioField idField = null;
         if (LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
             idField = LookupSpecialTypeUtil.getIdField(lookupField.getSpecialType());
@@ -889,11 +889,26 @@ public class FetchReportDataCommand extends FacilioCommand {
         return lookupField.getCompleteColumnName() + " = " + idField.getCompleteColumnName();
     }
 
+    private String getJoinOn(LookupField lookupField) {
+        FacilioField idField = null;
+        if (LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
+            idField = LookupSpecialTypeUtil.getIdField(lookupField.getSpecialType());
+        } else {
+            idField = FieldFactory.getIdField(lookupField.getLookupModule());
+        }
+        if (idField.getModule() != null && (idField.getModule().isCustom() && !baseModule.equals(idField.getModule()))) {
+            String alias = getAndSetModuleAlias(idField.getModule().getName());
+            idField = idField.clone();
+            idField.setTableAlias(alias);
+        }
+        return lookupField.getCompleteColumnName() + " = " + idField.getCompleteColumnName();
+    }
+
     private String getJoinOn(FacilioField facilioField, String idFieldAlias) throws Exception {
         FacilioField idField = null;
         if (facilioField instanceof LookupField) {
             LookupField lookupField = (LookupField) facilioField;
-            return getJoinOn(lookupField);
+            return getJoinOnPivot(lookupField);
         } else {
             idField = FieldFactory.getIdField(this.baseModule);
             FacilioField submoduleLookupField = null;
