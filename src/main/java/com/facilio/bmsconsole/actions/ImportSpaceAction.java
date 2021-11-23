@@ -169,7 +169,7 @@ public class ImportSpaceAction {
 																	.andCondition(CriteriaAPI.getCondition(field, spaceName.replace(",", StringOperators.DELIMITED_COMMA), StringOperators.IS))
 																	.andCondition(CriteriaAPI.getCondition(field1, ""+buildingId, StringOperators.IS))
 																	.andCondition(CriteriaAPI.getCondition(field2, "", CommonOperators.IS_EMPTY))
-																	.andCondition(CriteriaAPI.getCondition(space1, "", CommonOperators.IS_NOT_EMPTY))
+																	.andCondition(CriteriaAPI.getCondition(space1, "", CommonOperators.IS_EMPTY))
 																	;
 		List<SpaceContext> spaces = selectBuilder.get();
 		
@@ -201,7 +201,7 @@ public class ImportSpaceAction {
 																	.andCondition(CriteriaAPI.getCondition(field1, ""+siteId, StringOperators.IS))
 																	.andCondition(CriteriaAPI.getCondition(field2, "", CommonOperators.IS_EMPTY))
 																	.andCondition(CriteriaAPI.getCondition(field3, "", CommonOperators.IS_EMPTY))
-																	.andCondition(CriteriaAPI.getCondition(space1, "", CommonOperators.IS_NOT_EMPTY))
+																	.andCondition(CriteriaAPI.getCondition(space1, "", CommonOperators.IS_EMPTY))
 																	;
 		List<SpaceContext> spaces = selectBuilder.get();
 		
