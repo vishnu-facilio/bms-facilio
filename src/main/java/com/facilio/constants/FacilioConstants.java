@@ -1565,6 +1565,7 @@ public class FacilioConstants {
 		public static final String INVENTORY_REQUEST = "inventoryrequest";
 		public static final String INVENTORY_REQUESTS = "inventoryrequests";
 		public static final String INVENTORY_REQUEST_LINE_ITEMS = "inventoryrequestlineitems";
+		public static final String INVENTORY_REQUEST_ACTIVITY = "inventoryrequestactivity";
 
 		public static final String LOG = "log";
 		public static final String UNIT_POINTS="unit";
@@ -1880,6 +1881,7 @@ public class FacilioConstants {
 		public static final String QUOTE_MAIL_ATTACHMENTS = "quoteMailAttachments";
 		public static final String QUOTE_PDF_URL = "quotePdfUrl";
 		public static final String QUOTE_ACTIVITY = "quoteactivity";
+
 
 		public static final String FETCH_MY_APPS = "fetchMyApps";
 		public static final String APP_DOMAIN = "applicationDomain";
