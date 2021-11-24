@@ -418,4 +418,11 @@ public class StateFlowAction extends FacilioAction {
 
 		return SUCCESS;
 	}
+	
+	public String getTimeLog() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.getTimeLogChain();
+
+		chain.execute();
+		return SUCCESS;
+	}
 }

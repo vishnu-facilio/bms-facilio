@@ -1204,6 +1204,12 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
+	public static FacilioChain getTimeLogChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetTimeLogCommand());
+		return c;
+	}
+
 	public static FacilioChain getModuleList() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetModuleListCommand());

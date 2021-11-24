@@ -507,6 +507,9 @@
 		<action name="confirmationDialogs"
 				class="com.facilio.bmsconsole.actions.StateFlowAction"
 				method="getConfirmationDialogs" />
+		<action name="timelog"
+				class="com.facilio.bmsconsole.actions.StateFlowAction"
+				method="getTimeLog" />
 		<action name="addOrUpdate"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="addOrUpdateStateTransition" />
