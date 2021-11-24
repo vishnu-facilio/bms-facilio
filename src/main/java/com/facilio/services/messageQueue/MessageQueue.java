@@ -1,10 +1,10 @@
 package com.facilio.services.messageQueue;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -21,9 +21,8 @@ public abstract class MessageQueue {
 
     private static final Logger LOGGER = LogManager.getLogger(MessageQueue.class.getName());
     private static final HashSet<String> STREAMS = new HashSet<>();
-    
     protected MessageSource messageQueueSource;
-    
+    protected boolean started = false;
     MessageQueue(@NonNull MessageSource messageQueueSource) {
     	this.messageQueueSource = messageQueueSource;
     }
@@ -33,17 +32,24 @@ public abstract class MessageQueue {
     /**
      * Entry point for starting processors
      */
-    public void start(Map<String, Object> messageTopic, boolean fetchStream) {
-    	if (fetchStream) {
-    		updateStream();
-    	}
-        /*
-        //In case of server restart,
-        //this wait time ensures that the broker knows the consumer has been killed.
-        //i.e active members list entry for all the consumers in the current machine expires
-        Thread.sleep(MIN_SESSION_TIMEOUT);
-        */
-        startProcessor(messageTopic);
+    public int startIfNotStarted(Map<String, Object> messageTopic, boolean fetchStream,int currentThreadCount) {
+        if(!started){
+            if (fetchStream) {
+                updateStream();
+            }
+            currentThreadCount = startProcessor(messageTopic,currentThreadCount);
+        }
+        started = true;
+        return currentThreadCount;
+    }
+
+    public void forceStart(Map<String, Object> messageTopic, boolean fetchStream,int currentThreadCount) {
+
+        if (fetchStream) {
+            updateStream();
+        }
+        startProcessor(messageTopic,currentThreadCount);
+        started = true;
     }
 
 
@@ -100,10 +106,9 @@ public abstract class MessageQueue {
     /**
      * Loops over all orgs and starts the processor
      */
-    private void startProcessor(Map<String, Object> topicDetails) {
-        int currentThreadCount = 0;
+    private int startProcessor(Map<String, Object> topicDetails,int currentThreadCount) {
         try {
-        	Long orgId = (Long) topicDetails.get(AgentConstants.ORGID);
+            Long orgId = (Long) topicDetails.get(AgentConstants.ORGID);
             String topic = (String) topicDetails.get(AgentConstants.MESSAGE_TOPIC);
             
             if (currentThreadCount < FacilioProperties.getMaxProcessorThreads()) {
@@ -112,6 +117,7 @@ public abstract class MessageQueue {
         } catch (Exception e) {
             LOGGER.info("Exception occurred ", e);
         }
+        return currentThreadCount;
     }
     
     protected abstract int getConsumersOnlineCount(String topic) throws Exception;
@@ -181,4 +187,13 @@ public abstract class MessageQueue {
         return properties;
     }
 
+    /*@Override
+    public boolean equals(Object o){
+        if(!(o instanceof MessageQueue)){
+            return false;
+        }
+        MessageQueue obj = (MessageQueue) o;
+        return (Objects.equals(orgId, obj.getOrgId()) && Objects.equals(topic, obj.getTopic()));
+    }
+*/
 }

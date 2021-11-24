@@ -13,6 +13,10 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -79,6 +83,7 @@ public class FacilioContextListener implements ServletContextListener {
 
 	private Timer timer = new Timer();
 	private static final Logger LOGGER = LogManager.getLogger(FacilioContextListener.class.getName());
+	private static final ScheduledThreadPoolExecutor SCHEDULED_EXECUTOR_SERVICE = new ScheduledThreadPoolExecutor(1);
 	private static String instanceId = null;
 
 	public void contextDestroyed(ServletContextEvent event) {
@@ -150,7 +155,7 @@ public class FacilioContextListener implements ServletContextListener {
 				downloadEnvironmentFiles();
 			}
 			if (FacilioProperties.isMessageProcessor()) {
-				MessageQueueFactory.start();
+				SCHEDULED_EXECUTOR_SERVICE.scheduleAtFixedRate(MessageQueueFactory::start,0,5, TimeUnit.MINUTES);
 			}
 			
 			//AgentIntegrationQueueFactory.startIntegrationQueues();

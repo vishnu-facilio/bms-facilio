@@ -280,7 +280,7 @@ public class IotMessageApiV2 {
         }
     }
 
-    private static void publishToKafka(FacilioAgent agent, String client, JSONObject payload, KafkaMessageSource messageSource) {
+    private static void publishToKafka(FacilioAgent agent, String client, JSONObject payload, KafkaMessageSource messageSource) throws Exception {
         String topic = client + "-cmds";
         AgentUtilV2.publishToQueue(topic, agent.getName(), payload, messageSource);
     }
