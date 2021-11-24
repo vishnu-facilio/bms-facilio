@@ -107,6 +107,10 @@ public class FacilioConstants {
 			return userPool.toJSONString();
 		}
 	}
+
+	public static class SystemLookup {
+		public static final String URL_RECORD = "urlRecord";
+	}
 	
 	public static class TicketActivity {
 		public static final String TICKET_ACTIVITIES = "ticketActivities";

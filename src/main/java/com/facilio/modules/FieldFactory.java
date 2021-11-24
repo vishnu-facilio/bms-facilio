@@ -1103,6 +1103,17 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getUrlFieldFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getUrlFieldsModule();
+
+        fields.add(getField("fieldId", "FIELDID", module, FieldType.ID));
+        fields.add(getField("target", "TARGET", module, FieldType.STRING));
+        fields.add(getField("showAlt", "SHOW_ALT", module, FieldType.BOOLEAN));
+
+        return fields;
+    }
+
     public static List<FacilioField> getRollUpFieldFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getRollUpFieldsModule();
@@ -10023,6 +10034,8 @@ public class FieldFactory extends BaseFieldFactory {
                 return (F) new MultiEnumField();
             case LARGE_TEXT:
                 return (F) new LargeTextField();
+            case URL_FIELD:
+                return (F) new UrlField();
             default:
                 return BaseFieldFactory.getNewFieldObject(type);
         }

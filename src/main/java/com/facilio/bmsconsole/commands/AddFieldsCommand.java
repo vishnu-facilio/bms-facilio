@@ -1,15 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount50;
-import com.facilio.bundle.enums.BundleComponentsEnum;
-import com.facilio.bundle.utils.BundleConstants;
-import com.facilio.bundle.utils.BundleUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -122,7 +118,7 @@ public class AddFieldsCommand extends FacilioCommand {
 	private void setColumnName(FacilioField field, Map<FieldType, List<String>> existingColumns) throws Exception {
 		FieldType dataType = field.getDataTypeEnum();
 		if(dataType != null) {
-			if (!dataType.isMultiRecord()) {
+			if (!dataType.isRelRecordField()) {
 				List<String> existingColumnNames = existingColumns.get(dataType);
 				if (existingColumnNames == null) {
 					existingColumnNames = new ArrayList<>();

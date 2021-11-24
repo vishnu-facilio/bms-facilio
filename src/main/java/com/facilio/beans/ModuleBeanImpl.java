@@ -632,6 +632,10 @@ public class ModuleBeanImpl implements ModuleBean {
 							lineItemField.setChildLookupField(childLookupField);
 							field = lineItemField;
 							break;
+						case URL_FIELD:
+							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
+							field = constructSystemLookupField(prop, UrlField.class);
+							break;
 //						case SCORE:
 //							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
 //							field = FieldUtil.getAsBeanFromMap(prop, ScoreField.class);
@@ -669,6 +673,16 @@ public class ModuleBeanImpl implements ModuleBean {
 		LargeTextField field = FieldUtil.getAsBeanFromMap(props, LargeTextField.class);
 		FacilioModule relModule = getModule(field.getRelModuleId());
 		field.setRelModule(relModule);
+
+		return field;
+	}
+
+	private <T extends BaseSystemLookupField> T constructSystemLookupField (Map<String, Object> props, Class<T> fieldClass) throws Exception {
+		T field = FieldUtil.getAsBeanFromMap(props, fieldClass);
+		FacilioModule relModule = getModule(field.getLookupModuleName());
+		FacilioUtil.throwRunTimeException(relModule == null, MessageFormat.format("System Lookup module is null for field - {0} with type {1}. This is not supposed to happen", field.getName(), field.getDataTypeEnum()));
+		field.setLookupModule(relModule);
+		field.setLookupModuleId(relModule.getModuleId());
 
 		return field;
 	}
@@ -723,6 +737,9 @@ public class ModuleBeanImpl implements ModuleBean {
 					break;
 				case LARGE_TEXT:
 					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getLargeTextFieldsModule(), FieldFactory.getLargeTextFieldFields(), entry.getValue()));
+					break;
+				case URL_FIELD:
+					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getUrlFieldsModule(), FieldFactory.getUrlFieldFields(), entry.getValue()));
 					break;
 				default:
 					break;
@@ -1073,6 +1090,16 @@ public class ModuleBeanImpl implements ModuleBean {
 					else {
 						throw new IllegalArgumentException("Invalid Field instance for the LINE_ITEM data type");
 					}
+					break;
+				case URL_FIELD:
+					if (field instanceof UrlField) {
+						validateUrlField((UrlField) field, fieldProps);
+						addExtendedProps(ModuleFactory.getUrlFieldsModule(), FieldFactory.getUrlFieldFields(), fieldProps);
+					}
+					else {
+						throw new IllegalArgumentException("Invalid Field instance for the URL_FIELD data type");
+					}
+					break;
 				default:
 					break;
 			}
@@ -1081,6 +1108,14 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 		else {
 			throw new IllegalArgumentException("Invalid field object for addition");
+		}
+	}
+
+	private void validateUrlField (UrlField field, Map<String, Object> fieldProps) throws Exception {
+		FacilioUtil.throwIllegalArgumentException(field.getTarget() == null, "Target cannot be null while adding url field");
+		if (field.getShowAlt() == null) {
+			field.setShowAlt(false);
+			fieldProps.put("showAlt", false);
 		}
 	}
 
@@ -1472,6 +1507,9 @@ public class ModuleBeanImpl implements ModuleBean {
 			}
 			else if (field instanceof MultiEnumField) {
 				extendendPropsCount = updateMultiEnumField((MultiEnumField) field);
+			}
+			else if (field instanceof UrlField) {
+				extendendPropsCount = updateExtendedProps(ModuleFactory.getUrlFieldsModule(), FieldFactory.getUrlFieldFields(), field);
 			}
 //			else if (field instanceof ScoreField) {
 //				extendendPropsCount = updateExtendedProps(ModuleFactory.getScoreFieldModule(), FieldFactory.getScoreFieldFields(), field);

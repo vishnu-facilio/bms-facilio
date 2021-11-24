@@ -2,6 +2,9 @@ version: 1.0
 
 # The following classes should implement SignUpData interface and shouldn't have any state variables as only one instance will be created
 classes:
+  # Adding system fields/ modules
+  - com.facilio.modules.signup.AddSystemLookupModules
+
   - com.facilio.bmsconsoleV3.signup.scoping.DealsAndOffersScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.ReservationScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.WorkPermitScopingConfig

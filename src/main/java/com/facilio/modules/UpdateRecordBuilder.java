@@ -331,7 +331,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				UpdateSupplementHandler handler = record.newUpdateHandler();
 				if (handler != null) {
 					if (CollectionUtils.isNotEmpty(fetchIds())) {
-						handler.updateSupplements(props, fetchIds());
+						handler.updateSupplements(props, fetchIds(), ignoreSplNullHandling);
 					}
 				}
 			}
@@ -551,6 +551,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			module = modBean.getModule(moduleName);
 		}
 
+		updateSupplements(SupplementRecord.filterSystemSupplement(fields));
 		if (updateSupplements != null) {
 			updateSupplements = updateSupplements.stream().filter(SupplementRecord.distinctSupplementRecord()).collect(Collectors.toList());
 		}

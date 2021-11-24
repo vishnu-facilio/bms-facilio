@@ -1068,7 +1068,7 @@ public class CommonCommandUtil {
 						supplements.add((MultiEnumField)field);
 						break;
 					default:
-						if (field.getDataTypeEnum().isMultiRecord()) {
+						if (field.getDataTypeEnum().isRelRecordField()) {
 							supplements.add((SupplementRecord)field);
 						}
 				}

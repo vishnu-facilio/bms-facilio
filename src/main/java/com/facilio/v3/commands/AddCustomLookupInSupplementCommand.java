@@ -38,7 +38,7 @@ public class AddCustomLookupInSupplementCommand extends FacilioCommand {
                     (!f.isDefault() &&
                         (f.getDataTypeEnum() == FieldType.LOOKUP || f.getDataTypeEnum() == FieldType.MULTI_LOOKUP || f.getDataTypeEnum() == FieldType.MULTI_ENUM)
                     )
-                    || (isSummary && f.getDataTypeEnum().isMultiRecord()) // Adding multi record fields for summary alone. Custom or otherwise
+                    || (isSummary && f.getDataTypeEnum().isRelRecordField()) // Adding multi record fields for summary alone. Custom or otherwise
                 ) {
                 customLookupFields.add((SupplementRecord) f);
             }

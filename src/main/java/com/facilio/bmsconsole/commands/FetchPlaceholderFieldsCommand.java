@@ -28,7 +28,6 @@ import com.facilio.iam.accounts.util.IAMAccountConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.modules.fields.LookupField;
@@ -220,7 +219,7 @@ public class FetchPlaceholderFieldsCommand extends FacilioCommand {
 	}
 	
 	private boolean excludeField(FacilioField field) {
-		if (field.getDataTypeEnum().isMultiRecord()) {
+		if (field.getDataTypeEnum().isRelRecordField()) {
 			return true;
 		}
 		
