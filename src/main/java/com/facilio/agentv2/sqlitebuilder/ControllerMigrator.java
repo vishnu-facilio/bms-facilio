@@ -149,7 +149,7 @@ public class ControllerMigrator {
         if (controller != null) {
             ModbusRtuController agentController = new ModbusRtuController();
             makeAgentController(controller, agentController);
-            agentController.setNetworkId(controller.getNetworkId());
+            //agentController.setNetworkId(controller.getNetworkId());
             agentController.setSlaveId(controller.getSlaveId());
             return agentController;
         } else {
