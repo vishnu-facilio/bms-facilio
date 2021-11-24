@@ -40,7 +40,7 @@ public class UpdateToolTransactionAfterTransferCommandV3 extends FacilioCommand 
 
             ToolTypesContext toolType = toolTypeLineItem.getToolType();
             double quantityTransferred = toolTypeLineItem.getQuantity();
-                ToolTransactionContext woTool = setWorkorderToolObj(quantityTransferred, tool, toolType);
+                ToolTransactionContext woTool = setWorkorderToolObj(quantityTransferred, tool, toolType,transferRequests.get(0).getId());
                 toolTransactiosnToBeAdded.add(woTool);
 
                 InsertRecordBuilder<ToolTransactionContext> readingBuilder = new InsertRecordBuilder<ToolTransactionContext>()
@@ -51,13 +51,13 @@ public class UpdateToolTransactionAfterTransferCommandV3 extends FacilioCommand 
         }
         return false;
     }
-   private ToolTransactionContext setWorkorderToolObj(double quantity, ToolContext tool, ToolTypesContext toolTypes){
+   private ToolTransactionContext setWorkorderToolObj(double quantity, ToolContext tool, ToolTypesContext toolTypes,Long id){
         ToolTransactionContext woTool = new ToolTransactionContext();
         woTool.setTransactionState(TransactionState.TRANSFERRED_TO);
         woTool.setIsReturnable(false);
         woTool.setQuantity(quantity);
         woTool.setTransactionType(TransactionType.STOCK.getValue());
-        woTool.setParentId(tool.getId());
+        woTool.setParentId(id);
         woTool.setTool(tool);
         woTool.setStoreRoom(tool.getStoreRoom());
         woTool.setToolType(toolTypes);
