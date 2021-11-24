@@ -27,6 +27,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -118,6 +119,11 @@ public class OrgBeanImpl implements OrgBean {
 	}
 
 	private List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage) throws Exception {
+		return getAppUsers(orgId,appId,ouId,checkAccessibleSites,fetchNonAppUsers,offset,perPage,null,-99);
+	}
+	
+	@Override
+	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,int inviteAcceptStatus) throws Exception {
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
 			return null;
@@ -139,6 +145,8 @@ public class OrgBeanImpl implements OrgBean {
 				.table("ORG_Users")
 				.innerJoin("ORG_User_Apps")
 				.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
+				.innerJoin("People")
+				.on("People.ID = ORG_Users.PEOPLE_ID")
 				.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS))
 				;
 
@@ -196,7 +204,14 @@ public class OrgBeanImpl implements OrgBean {
 			selectBuilder.offset(offset);
 			selectBuilder.limit(perPage);
 		}
-
+		if(!StringUtils.isEmpty(searchQuery))	
+		{            
+			selectBuilder.andCriteria(getUserSearchCriteria(searchQuery));
+		}
+		if(!(inviteAcceptStatus < 0))
+		{
+			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.INVITATION_ACCEPT_STATUS","inviteAcceptStatus", String.valueOf(inviteAcceptStatus), NumberOperators.EQUALS));
+		}
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
@@ -236,7 +251,6 @@ public class OrgBeanImpl implements OrgBean {
 		}
 		return null;
 	}
-
 	@Override
 	public User getAppUser(long orgId, long appId, long ouId) throws Exception {
 		List<User> users = getAppUsers(orgId, appId, ouId, false, false, -1, -1);
@@ -248,7 +262,11 @@ public class OrgBeanImpl implements OrgBean {
 
 	@Override
 	public Long getAppUsersCount(long orgId, long appId, boolean fetchNonAppUsers) throws Exception {
-
+		return getAppUsersCount(orgId, appId, fetchNonAppUsers,null,-99);
+	}
+	
+	@Override
+	public Long getAppUsersCount(long orgId, long appId, boolean fetchNonAppUsers,String searchQuery,int inviteAcceptStatus) throws Exception {
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
 			return null;
@@ -272,6 +290,8 @@ public class OrgBeanImpl implements OrgBean {
 				.table("ORG_Users")
 				.innerJoin("ORG_User_Apps")
 				.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
+				.innerJoin("People")
+				.on("People.ID = ORG_Users.PEOPLE_ID")
 				.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS))
 				;
 
@@ -284,14 +304,20 @@ public class OrgBeanImpl implements OrgBean {
 		else {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("applicationId"), String.valueOf(appId), NumberOperators.EQUALS));
 		}
-
+		if(!StringUtils.isEmpty(searchQuery))	
+		{            
+			selectBuilder.andCriteria(getUserSearchCriteria(searchQuery));
+		}
+		if(!(inviteAcceptStatus < 0))
+		{
+			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.INVITATION_ACCEPT_STATUS","inviteAcceptStatus", String.valueOf(inviteAcceptStatus), NumberOperators.EQUALS));
+		}
 		List<Map<String, Object>> props = selectBuilder.get();
 		if(CollectionUtils.isNotEmpty(props)) {
 			return (Long)props.get(0).get("count");
 		}
 
 		return null;
-
 	}
 
     private List<Long> getAppUserIds(long appId, GenericSelectRecordBuilder builder, Map<String, FacilioField> fieldMap) throws Exception {
@@ -686,5 +712,24 @@ public class OrgBeanImpl implements OrgBean {
 				.andCondition(CriteriaAPI.getCondition("Application.ID", "id", appId+"", NumberOperators.EQUALS))
 				.get();
 	}
-
+	private Criteria getUserSearchCriteria(String searchQuery)
+	{		
+		Criteria criteria = new Criteria();
+		Condition condition_name = new Condition();
+		condition_name.setColumnName("People.Name");
+		condition_name.setFieldName("name");
+		condition_name.setOperator(StringOperators.CONTAINS);
+		condition_name.setValue(searchQuery);
+        criteria.addOrCondition(condition_name);
+        
+        Condition condition_email = new Condition();
+        condition_email.setColumnName("People.EMAIL");
+        condition_email.setFieldName("email");
+        condition_email.setOperator(StringOperators.CONTAINS);
+        condition_email.setValue(searchQuery);
+        criteria.addOrCondition(condition_email);
+        
+        
+        return criteria;
+	}
 }

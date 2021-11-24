@@ -127,6 +127,7 @@ public class SurveyTemplateContext extends QAndATemplateContext <SurveyResponseC
         response.setCreatedTime(System.currentTimeMillis());
         response.setScheduledWorkStart(response.getCreatedTime());
         response.setStatus(InductionResponseContext.Status.OPEN.getIndex());
+        response.setAssignedTo(this.getAssignedTo());
     }
 
     @AllArgsConstructor

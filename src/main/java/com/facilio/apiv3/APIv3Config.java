@@ -521,13 +521,15 @@ public class APIv3Config {
     public static Supplier<V3Config> getTransferRequest() {
         return () -> new V3Config(V3TransferRequestContext.class, new ModuleCustomFieldCount30())
                 .create()
+                .beforeSave(new TransferRequestValidationCommandV3())
                 .update()
+                .beforeSave(new TransferRequestValidationCommandV3())
                 .afterSave(TransactionChainFactoryV3.getUpdateTransferRequestIsStagedAfterSaveChain())
                 .list()
                 .beforeFetch(new LoadTrListLookupCommandV3())
                 .summary()
                 .beforeFetch(new LoadTrSummaryLookupCommandV3())
-                .afterFetch(new SetLineItemsCommandV3())
+                .afterFetch(TransactionChainFactoryV3.getUpdateLineItemsAndShipmentIdAfterFetchChain())
                 .delete()
                 .build();
     }

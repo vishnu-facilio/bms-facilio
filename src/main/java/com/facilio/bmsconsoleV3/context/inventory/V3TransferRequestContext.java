@@ -20,6 +20,7 @@ public class V3TransferRequestContext extends V3Context {
     private Boolean isShipped;
     private Boolean isCompleted;
     private Boolean isShipmentTrackingNeeded;
+    private Long shipmentId;
 
     public String getRequestSubject() {
         return requestSubject;
@@ -127,5 +128,13 @@ public class V3TransferRequestContext extends V3Context {
 
     public void setShipmentTrackingNeeded(Boolean shipmentTrackingNeeded) {
         isShipmentTrackingNeeded = shipmentTrackingNeeded;
+    }
+
+    public Long getShipmentId() {
+        return shipmentId;
+    }
+
+    public void setShipmentId(Long shipmentId) {
+        this.shipmentId = shipmentId;
     }
 }
