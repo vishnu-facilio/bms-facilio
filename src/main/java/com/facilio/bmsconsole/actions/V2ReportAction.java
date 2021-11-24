@@ -2582,16 +2582,33 @@ public class V2ReportAction extends FacilioAction {
 		}
 		JSONParser parser = new JSONParser();
 		ReportPivotParamsContext pivotparams = FieldUtil.getAsBeanFromJson((JSONObject) parser.parse(reportContext.getTabularState()), ReportPivotParamsContext.class);
+
+		if(getFilters() != null) {
+			chain.addCommand(new GenerateCriteriaFromFilterCommand());
+			JSONObject filter = (JSONObject)parser.parse(getFilters());
+			context.put(FacilioConstants.ContextNames.FILTERS, filter);
+		}
+
 		context.put(FacilioConstants.Reports.ROWS, pivotparams.getRows());
 		context.put(FacilioConstants.Reports.DATA, pivotparams.getData());
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, pivotparams.getModuleName());
 		context.put(FacilioConstants.ContextNames.CRITERIA, pivotparams.getCriteria());
-		context.put(FacilioConstants.ContextNames.SORTING, pivotparams.getSortBy());
+		if(sortBy != null) {
+			context.put(FacilioConstants.ContextNames.SORTING, sortBy);
+		} else {
+			context.put(FacilioConstants.ContextNames.SORTING, pivotparams.getSortBy());
+		}
 		context.put(FacilioConstants.ContextNames.TEMPLATE_JSON, pivotparams.getTemplateJSON());
 		context.put(FacilioConstants.ContextNames.DATE_FIELD, pivotparams.getDateFieldId());
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, pivotparams.getDateOperator());
-		context.put(FacilioConstants.ContextNames.START_TIME, pivotparams.getStartTime());
-		context.put(FacilioConstants.ContextNames.END_TIME, pivotparams.getEndTime());
+		if(getStartTime() > 0 && getEndTime() > 0)
+		{
+			context.put(FacilioConstants.ContextNames.START_TIME, getStartTime());
+			context.put(FacilioConstants.ContextNames.END_TIME, getEndTime());
+		} else {
+			context.put(FacilioConstants.ContextNames.START_TIME, pivotparams.getStartTime());
+			context.put(FacilioConstants.ContextNames.END_TIME, pivotparams.getEndTime());
+		}
 		context.put(FacilioConstants.ContextNames.TIME_FILTER, pivotparams.getShowTimelineFilter());
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE,pivotparams.getDateValue());
 		
@@ -2607,6 +2624,16 @@ public class V2ReportAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.SORTING, pivotparams.getSortBy());
 		setResult(FacilioConstants.ContextNames.CRITERIA, pivotparams.getCriteria());
 		setResult(FacilioConstants.ContextNames.PIVOT_TEMPLATE_JSON, pivotparams.getTemplateJSON());
+
+		setResult(FacilioConstants.Reports.ROWS, pivotparams.getRows());
+		setResult(FacilioConstants.Reports.DATA, pivotparams.getData());
+		setResult(FacilioConstants.ContextNames.MODULE_NAME, pivotparams.getModuleName());
+		setResult(FacilioConstants.ContextNames.DATE_FIELD, pivotparams.getDateFieldId());
+		setResult(FacilioConstants.ContextNames.DATE_OPERATOR, pivotparams.getDateOperator());
+		setResult(FacilioConstants.ContextNames.START_TIME, pivotparams.getStartTime());
+		setResult(FacilioConstants.ContextNames.END_TIME, pivotparams.getEndTime());
+		setResult((String) FacilioConstants.ContextNames.TIME_FILTER, pivotparams.getShowTimelineFilter());
+		setResult(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE,pivotparams.getDateValue());
 		
 		return SUCCESS;
 	}

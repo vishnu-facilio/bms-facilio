@@ -297,7 +297,7 @@ public class DashboardFilterUtil {
 			 ReportContext report=ReportUtil.getReport(widgetChart.getNewReportId(), true);
 			 
 			 				 
-			 if(report.getTypeEnum()==ReportType.WORKORDER_REPORT)
+			 if(report.getTypeEnum()==ReportType.WORKORDER_REPORT || report.getTypeEnum()==ReportType.PIVOT_REPORT)
 			 {				 
 				 moduleId=report.getModuleId();
 			 }

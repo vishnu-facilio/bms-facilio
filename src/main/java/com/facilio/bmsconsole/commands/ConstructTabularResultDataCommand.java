@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
 
+import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.*;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
@@ -68,10 +69,21 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 	}
 	
 	private void constructData(ReportContext report, ReportDataPointContext dataPoint, List<Map<String, Object>> props, ReportBaseLineContext baseLine, Collection<Map<String, Object>> transformedData, Map<String, Object> directHelperData, Map<String, Object> lookupMap) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		HashMap<ReportFieldContext, List<Long>> dpLookUpMap = new HashMap();
 		if (props != null && !props.isEmpty()) {
 			for (Map<String, Object> prop : props) {
-				Object xVal = prop.get(dataPoint.getxAxis().getField().getName());
+				Object xVal;
+				if(dataPoint.getyAxis().getLookupFieldId() > 0) {
+					FacilioField facilioField = dataPoint.getxAxis().getField();
+					LookupField lookupField = (LookupField) modBean.getField(dataPoint.getxAxis().getLookupFieldId());
+					FacilioModule module = dataPoint.getxAxis().getModule();
+					String fieldName = lookupField.getName() + "_" + module.getName() + "_" + facilioField.getName();
+					xVal = prop.get(fieldName);
+				} else {
+					xVal = prop.get(dataPoint.getxAxis().getField().getName());
+				}
+
 				if (xVal != null) {
 					xVal = getBaseLineAdjustedXVal(xVal, dataPoint.getxAxis(), baseLine);
 					Object formattedxVal = formatVal(dataPoint.getxAxis(), report.getxAggrEnum(), xVal, null, false, dpLookUpMap,lookupMap);
@@ -91,8 +103,21 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 							Map<String, Object> rows = new HashMap<>();
 							data.put("rows", rows);
 							for (ReportGroupByField groupBy : dataPoint.getGroupByFields()) {
-								FacilioField field = groupBy.getField();
-								Object groupByVal = prop.get(field.getName());
+								Object groupByVal;
+								FacilioField field;
+								if(groupBy.getLookupFieldId() > 0 && report.getTypeEnum() == ReportContext.ReportType.PIVOT_REPORT)
+								{
+									String fieldName;
+									field = modBean.getField(groupBy.getLookupFieldId()).clone();
+									FacilioModule module = groupBy.getModule();
+									FacilioField facilioField = groupBy.getField().clone();
+									fieldName = field.getName() + "_" + module.getName() + "_" + facilioField.getName();
+									field.setName(fieldName);
+								}
+								else {
+									field = groupBy.getField();
+								}
+								groupByVal = prop.get(field.getName());
 								groupByVal = formatVal(groupBy, null, groupByVal, xVal, dataPoint.isHandleEnum(), dpLookUpMap,lookupMap);
 								rows.put(groupBy.getAlias(), groupByVal);
 								key.add(groupBy.getAlias()+"_"+groupByVal.toString());
