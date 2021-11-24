@@ -399,7 +399,7 @@ public class AgentUtilV2
     }
     
    
-    public static Object publishToQueue(String topic, String key, JSONObject payload, KafkaMessageSource source) throws Exception {
+    public static Object publishToQueue(String topic, String key, JSONObject payload, KafkaMessageSource source) {
 		MessageQueue messageQueue = MessageQueueFactory.getMessageQueue(source);
     	try {
 			return messageQueue.putRecord(topic, key, payload);
