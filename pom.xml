@@ -626,11 +626,6 @@
             <artifactId>sqlite-jdbc</artifactId>
             <version>3.27.2.1</version>
         </dependency>
-        <dependency>
-            <groupId>com.serotonin</groupId>
-            <artifactId>bacnet4j</artifactId>
-            <version>4.1.6</version>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -647,7 +642,7 @@
         <dependency>
             <groupId>com.facilio</groupId>
             <artifactId>sqlite-utils</artifactId>
-            <version>0.0.12-rc1</version>
+            <version>0.0.18</version>
         </dependency>
 
         <dependency>
