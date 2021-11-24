@@ -1,8 +1,11 @@
 package com.facilio.services.messageQueue;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import com.facilio.fw.FacilioException;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.queue.source.MessageSource;
@@ -13,34 +16,36 @@ import lombok.extern.log4j.Log4j;
 @Log4j
 public class MessageQueueFactory {
 	
-	private static final Map<MessageSource, MessageQueue> messageQueues = new HashMap<>();
-	private static int currentThreadCount = 0;
+	private static Map<MessageSource, MessageQueue> messageQueues = new HashMap<>();
+
 	public static void start() {
         try {
 			List<Map<String, Object>> orgMessageTopics = MessageQueueTopic.getTopics(null, null);
-			for (Map<String, Object> topicDetails : orgMessageTopics) {
-				currentThreadCount = start(topicDetails,currentThreadCount);
-			}
+			start(orgMessageTopics);
 		} catch (Exception e) {
 			LOGGER.info("Exception occurred on starting processor", e);
 		}
 	}
 
-	public static int start(Map<String, Object> topicDetails,int currentThreadCount) throws Exception {
-
-		String sourceName = (String) topicDetails.get(AgentConstants.MESSAGE_SOURCE);
-		MessageSource source = MessageSourceUtil.getSource(sourceName);
-		MessageQueue mq = messageQueues.get(source);
-		boolean fetchStream = false;
-		if (mq == null) {
-			mq = getMessageQueueFromSource(source);
-			fetchStream = true;
-			messageQueues.put(source, mq);
+	// This is also used when a new message topic is added 
+	public static void start(List<Map<String, Object>> messageTopics) {
+		if (CollectionUtils.isNotEmpty(messageTopics)) {
+			for(Map<String, Object> topicDetails: messageTopics) {
+				String sourceName = (String) topicDetails.get(AgentConstants.MESSAGE_SOURCE);
+				MessageSource source = MessageSourceUtil.getSource(sourceName);
+				MessageQueue mq = messageQueues.get(source);
+				boolean fetchStream = false;
+				if (mq == null) {
+					mq = getMessageQueueFromSource(source);
+					messageQueues.put(source, mq);
+					fetchStream = true;
+				}
+				mq.start(topicDetails, fetchStream);
+			}
 		}
-		return mq.startIfNotStarted(topicDetails, fetchStream,currentThreadCount);
 	}
 	
-	public static MessageQueue getMessageQueue(MessageSource source) throws FacilioException {
+	public static MessageQueue getMessageQueue(MessageSource source) {
 		MessageQueue mq = messageQueues.get(source);
 		if (mq == null) {
 			mq = getMessageQueueFromSource(source);
@@ -49,11 +54,12 @@ public class MessageQueueFactory {
 		return mq;
 	}
 	
-	private static MessageQueue getMessageQueueFromSource(MessageSource source) throws FacilioException {
-		if (source.getType() == MessageSource.QueueType.KAFKA) {
-			return new KafkaMessageQueue(source);
+	private static MessageQueue getMessageQueueFromSource(MessageSource source) {
+		switch(source.getType()) {
+			case KAFKA:
+				return new KafkaMessageQueue(source);
 		}
-		throw new FacilioException("Unknown source type");
+		return null;
 	}
 
 }
