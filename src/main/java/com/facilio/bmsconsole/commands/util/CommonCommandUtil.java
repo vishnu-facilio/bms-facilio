@@ -17,6 +17,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.facilio.delegate.context.DelegationType;
+import com.facilio.delegate.util.DelegationUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -512,6 +514,16 @@ public class CommonCommandUtil {
 					.select(AccountConstants.getAccessbileSpaceFields())
 					.table(accessibleSpaceMod.getTableName())
 					.andCustomWhere("ORG_USER_ID = ?", AccountUtil.getCurrentAccount().getUser().getOuid());
+			//handling user delegation
+			User delegatedUser = null;
+			try {
+				delegatedUser = DelegationUtil.getUser(AccountUtil.getCurrentAccount().getUser(), System.currentTimeMillis(), DelegationType.USER_SCOPING);
+				if(delegatedUser != null && delegatedUser.getId() != AccountUtil.getCurrentAccount().getUser().getId()) {
+					selectAccessibleBuilder.orCondition(CriteriaAPI.getCondition("ORG_USER_ID", "orgUserID", String.valueOf(delegatedUser.getOuid()), NumberOperators.EQUALS));
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			List<Map<String, Object>> props = selectAccessibleBuilder.get();
 			Set<Long> siteIds = new HashSet<>();
 			if (props != null && !props.isEmpty()) {

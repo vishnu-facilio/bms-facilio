@@ -60,7 +60,7 @@ public class PermissionUtil {
 		try {
 			delegatedUser = DelegationUtil.getUser(user, System.currentTimeMillis(), DelegationType.USER_SCOPING);
 			if(delegatedUser != null && delegatedUser.getId() != user.getId()) {
-				accessibleSpace.addAll(delegatedUser.getAccessibleSpace());
+				accessibleSpace.addAll(AccountUtil.getUserBean().getAccessibleSpaceList(delegatedUser.getOuid()));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
