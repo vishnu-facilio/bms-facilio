@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -226,7 +227,7 @@ public class UserAction extends FacilioAction {
 		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		ApplicationContext app = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
-		AccountUtil.getRoleBean(orgId).getRoles(app.getId());
+		AccountUtil.getRoleBean(orgId).getRolesForApps(Collections.singletonList(app.getId()));
 		// AccountUtil.getUserBean().updateUserLicense(2, 4);
 		Role admin = AccountUtil.getRoleBean().getRole(orgId, "Administrator", false);
 		System.out.println(admin.getId());
