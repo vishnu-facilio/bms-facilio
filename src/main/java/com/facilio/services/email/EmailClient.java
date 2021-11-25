@@ -1,5 +1,31 @@
 package com.facilio.services.email;
 
+import java.net.URL;
+import java.text.MessageFormat;
+import java.time.ZoneId;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
+import javax.activation.URLDataSource;
+import javax.mail.Message;
+import javax.mail.Session;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -13,32 +39,14 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.delegate.context.DelegationType;
+import com.facilio.delegate.util.DelegationUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
-import javax.activation.URLDataSource;
-import javax.mail.Message;
-import javax.mail.Session;
-import javax.mail.internet.*;
-import java.net.URL;
-import java.text.MessageFormat;
-import java.time.ZoneId;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public abstract class EmailClient {
 
@@ -78,15 +86,66 @@ public abstract class EmailClient {
 
     public void sendEmailWithActiveUserCheck (JSONObject mailJson) throws Exception {
         if (removeInActiveUsers(mailJson)) {
+        	checkUserDelegation(mailJson);
             sendEmail(mailJson);
         }
     }
 
-    public void sendEmailWithActiveUserCheck (JSONObject mailJson, Map<String, String> files) throws Exception {
-        if (removeInActiveUsers(mailJson)) {
-        	if(AccountUtil.getCurrentOrg().getId() == 75l) {
-        		LOGGER.error("mailJson ---- "+mailJson);
+    public void checkUserDelegation(JSONObject mailJson) throws Exception {
+    	
+    	Set<String> toEmails = getEmailAddresses(mailJson, TO);
+    	
+    	Set<String> modifiedToEmailList = changeEmailToDelegatedUserEmail(toEmails);
+    	
+    	if(!CollectionUtils.isEmpty(modifiedToEmailList)) {
+    		mailJson.put(TO, combineEmailsAgain(modifiedToEmailList));
+    	}
+    	
+    	Set<String> toCCEmails = getEmailAddresses(mailJson, CC);
+    	
+    	Set<String> modifiedToCCEmailList = changeEmailToDelegatedUserEmail(toCCEmails);
+    	
+    	if(!CollectionUtils.isEmpty(modifiedToCCEmailList)) {
+    		mailJson.put(CC, combineEmailsAgain(modifiedToCCEmailList));
+    	}
+    	
+    	Set<String> toBCCEmails = getEmailAddresses(mailJson, BCC);
+    	
+    	Set<String> modifiedToBCCEmailList = changeEmailToDelegatedUserEmail(toBCCEmails);
+    	
+    	if(!CollectionUtils.isEmpty(modifiedToBCCEmailList)) {
+    		mailJson.put(BCC, combineEmailsAgain(modifiedToBCCEmailList));
+    	}
+    }
+    
+    private Set<String> changeEmailToDelegatedUserEmail(Set<String> toEmails) throws Exception {
+    	
+    	if(!CollectionUtils.isEmpty(toEmails)) {
+    		
+    		List<String> toEmailsList = toEmails.stream().collect(Collectors.toList());
+    		
+    		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+    		
+    		for(int i=0;i<toEmailsList.size();i++) {
+        		
+    			String email = toEmailsList.get(i);
+    			
+    			User user = userBean.getUserFromEmail(email, null, AccountUtil.getCurrentOrg().getOrgId(), true);
+    			if(user != null) {
+    				User delegatedUser = DelegationUtil.getDelegatedUser(user, DateTimeUtil.getCurrenTime(), DelegationType.EMAIL_NOTIFICATION);
+        			
+        			toEmailsList.set(i, delegatedUser.getEmail());
+    			}
         	}
+    		
+    		return toEmailsList.stream().collect(Collectors.toSet());
+    	}
+    	return null;
+    }
+
+	public void sendEmailWithActiveUserCheck (JSONObject mailJson, Map<String, String> files) throws Exception {
+        if (removeInActiveUsers(mailJson)) {
+        	checkUserDelegation(mailJson);
             sendEmail(mailJson, files);
         }
     }

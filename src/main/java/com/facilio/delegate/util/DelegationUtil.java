@@ -58,7 +58,7 @@ public class DelegationUtil {
         if (delegationContext != null) {
             UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
             long appId = AccountUtil.getCurrentApp() != null ? AccountUtil.getCurrentApp().getId() : -1L;
-            User delegatedUser = userBean.getUser(appId, delegationContext.getUserId());
+            User delegatedUser = userBean.getUser(appId, delegationContext.getDelegateUserId());
             if (delegatedUser != null) {
                 return delegatedUser;
             }
