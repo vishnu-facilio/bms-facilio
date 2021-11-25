@@ -70,7 +70,8 @@ public class ScheduledWorkflowJob extends FacilioJob{
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getScheduledWorkflowFields())
 				.table(ModuleFactory.getScheduledWorkflowModule().getTableName())
-				.andCondition(CriteriaAPI.getIdCondition(scheduledWorkflowId, ModuleFactory.getScheduledWorkflowModule()));
+				.andCondition(CriteriaAPI.getIdCondition(scheduledWorkflowId, ModuleFactory.getScheduledWorkflowModule()))
+				.andCondition(CriteriaAPI.getCondition("IS_DELETED", "deleted", Boolean.FALSE.toString(), BooleanOperators.IS));
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getScheduledWorkflowFields());
 		if(isActive != null) {
@@ -95,7 +96,8 @@ public class ScheduledWorkflowJob extends FacilioJob{
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getScheduledWorkflowFields())
 				.table(ModuleFactory.getScheduledWorkflowModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("linkName"), scheduleName, StringOperators.IS));
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("linkName"), scheduleName, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition("IS_DELETED", "deleted", Boolean.FALSE.toString(), BooleanOperators.IS));
 		
 		List<Map<String, Object>> props = select.get();
 		

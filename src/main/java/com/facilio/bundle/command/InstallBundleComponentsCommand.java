@@ -100,7 +100,10 @@ public class InstallBundleComponentsCommand extends FacilioCommand {
 					newContext.put(BundleConstants.COMPONENT_XML_BUILDER, changeSetXMLFile.getXmlContent());
 					newContext.put(BundleConstants.BUNDLE_FOLDER, parentFolder);
 					
-					bundleComponentEnum.getBundleComponentClassInstance().getInstallMode(newContext);
+					BundleModeEnum modeEnum = bundleComponentEnum.getBundleComponentClassInstance().getInstallMode(newContext);
+					
+					newContext.put(BundleConstants.INSTALL_MODE, modeEnum);
+					
 					bundleComponentEnum.getBundleComponentClassInstance().install(newContext);
 				}
 			}
@@ -151,9 +154,9 @@ public class InstallBundleComponentsCommand extends FacilioCommand {
 						
 						newContext.put(BundleConstants.COMPONENT_ID,installedComponent.getComponentId());
 						
-						String fileName = componentEnum.getBundleComponentClassInstance().getBundleXMLComponentFileName(newContext);
+						String fileName = componentEnum.getName()+"/"+componentEnum.getBundleComponentClassInstance().getBundleXMLComponentFileName(newContext)+".xml";
 						
-						if(!availableComponentsFileName.contains(fileName+".xml")) {
+						if(availableComponentsFileName == null || !availableComponentsFileName.contains(fileName)) {
 							toBeDeletedList.add(installedComponent);
 						}
 					}

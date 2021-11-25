@@ -6,6 +6,7 @@ import java.util.List;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.ToolsApi;
+import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields {

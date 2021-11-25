@@ -173,7 +173,11 @@ public class ImportAPI {
 	}
 	
 	public static void updateImportProcess(ImportProcessContext importProcessContext) throws Exception {
-		
+		ImportProcessContext existingProcess = getImportProcessContext(importProcessContext.getId());
+		if (existingProcess == null) {
+			throw new IllegalArgumentException("Import Process doesn't exists");
+		}
+
 		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder();
 		update.table(ModuleFactory.getImportProcessModule().getTableName());
 		update.fields(FieldFactory.getImportProcessFields());
@@ -551,6 +555,9 @@ public class ImportAPI {
 	}
 	
 	public static ImportProcessContext getImportProcessContext(Long id) throws Exception {
+		if (id == null) {
+			return null;
+		}
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getImportProcessFields())
@@ -837,7 +844,12 @@ public class ImportAPI {
 		public static final String CHOOSEN_MODULE = "choosenModule";
 		public static final String IS_FROM_IMPORT = "isFromImport";
 		public static final String ADDED_BASE_SPACE_IDS = "baseSpaceIds";
-		
+		public static final String REQUIRED_FIELDS = "requiredFields";
+		public static final String UNIQUE_FUNCTION = "uniqueFunction";
+		public static final String ROW_FUNCTION = "rowFunction";
+		public static final String BEFORE_IMPORT_FUNCTION = "beforeImportFunction";
+		public static final String AFTER_IMPORT_FUNCTION = "afterImportFunction";
+
 	}
 	
 	

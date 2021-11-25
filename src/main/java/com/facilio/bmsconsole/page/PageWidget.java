@@ -286,6 +286,7 @@ public class PageWidget {
 		INVENTORY_REQUEST_CARD1("inventoryrequestcard1"),
 		INVENTORY_REQUEST_CARD2("inventoryrequestcard2"),
 		INVENTORY_REQUEST_CARD3("inventoryrequestcard3"),
+		INVENTORY_REQUEST_LINE_ITEMS("inventoryrequestlineitems"),
 
 		SERVICE_VENDORS("servicevendors"),
 		

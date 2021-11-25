@@ -1,11 +1,16 @@
 package com.facilio.workflows.command;
 
+import java.util.Map;
+
 import org.apache.commons.chain.Context;
 
 import com.facilio.command.FacilioCommand;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.workflows.context.ScheduledWorkflowContext;
@@ -20,20 +25,17 @@ public class DeleteScheduledWorkflowCommand extends FacilioCommand {
 		
 		FacilioTimer.deleteJob(scheduledWorkflowContext.getId(), WorkflowV2Util.SCHEDULED_WORKFLOW_JOB_NAME);
 
-		SchedulerAPI.deleteAllActions(scheduledWorkflowContext.getId());
-		deleteScheduledWorkflows(scheduledWorkflowContext);
+		scheduledWorkflowContext.setDeleted(Boolean.TRUE);
+		
+		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder();
+		update.table(ModuleFactory.getScheduledWorkflowModule().getTableName());
+		update.fields(FieldFactory.getScheduledWorkflowFields())
+				.andCondition(CriteriaAPI.getIdCondition(scheduledWorkflowContext.getId(), ModuleFactory.getScheduledWorkflowModule()));
+
+		Map<String, Object> prop = FieldUtil.getAsProperties(scheduledWorkflowContext);
+		update.update(prop);
 		
 		return false;
-	}
-	
-	private void deleteScheduledWorkflows(ScheduledWorkflowContext scheduledWorkflowContext) throws Exception {
-		FacilioModule module = ModuleFactory.getScheduledWorkflowModule();
-		
-		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
-														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getIdCondition(scheduledWorkflowContext.getId(), module));
-		
-		deleteBuilder.delete();
 	}
 
 }

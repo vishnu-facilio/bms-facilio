@@ -422,7 +422,7 @@ public class ChainUtil {
         Class<?> declaringClass = method.getDeclaringClass();
         boolean isPresent = declaringClass.isAnnotationPresent(Config.class);
         if (!isPresent) {
-            throw new IllegalStateException("Module annotation should be part of Config class.");
+            throw new IllegalStateException("Module annotation should be part of " + declaringClass.getName() + " Config class.");
         }
 
         Type[] genericParameterTypes = method.getGenericParameterTypes();

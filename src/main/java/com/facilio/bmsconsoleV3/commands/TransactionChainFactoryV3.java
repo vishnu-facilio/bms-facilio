@@ -12,6 +12,7 @@ import com.facilio.bmsconsoleV3.commands.accessibleSpaces.DeleteAccessibleSpaces
 import com.facilio.bmsconsoleV3.commands.accessibleSpaces.FetchAccessibleSpacesCommand;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.transferRequest.*;
 import com.facilio.command.FacilioCommand;
@@ -65,6 +66,8 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import java.util.Collections;
+
+import static com.facilio.bmsconsole.commands.TransactionChainFactory.getUpdateItemQuantityRollupChain;
 
 public class TransactionChainFactoryV3 {
     private static FacilioChain getDefaultChain() {
@@ -1014,6 +1017,14 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ValidateDateCommandV3());
         return c;
     }
+    public static FacilioChain getIRBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetLocalIdCommandV3());
+        c.addCommand(new ValidateInventoryRequestUpdateCommandV3());
+        c.addCommand(new ValidateInventoryRequestCommandV3());
+        return c;
+    }
+
 
     public static FacilioChain getAddOrUpdateItemStockTransactionChain(){
         FacilioChain c = getDefaultChain();
@@ -1079,6 +1090,7 @@ public class TransactionChainFactoryV3 {
 
         return c;
     }
+
     public static FacilioChain getUpdateLineItemsAndShipmentIdAfterFetchChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetLineItemsCommandV3());
@@ -1102,4 +1114,61 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new FetchAccessibleSpacesCommand());
         return c;
     }
+
+    public static  FacilioChain getIssueInventoryRequestChainV3()
+    {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddOrUpdateInventoryRequestCommandV3());
+        c.addCommand(new LoadItemTransactionEntryInputCommandV3());
+        c.addCommand(TransactionChainFactoryV3.getAddOrUpdateItemTransactionsChainV3());
+        c.addCommand(new CopyToToolTransactionCommandV3());
+        c.addCommand(TransactionChainFactoryV3.getAddOrUdpateToolTransactionsChainV3());
+
+        return c;
+    }
+    public static FacilioChain getAddOrUpdateItemTransactionsChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddOrUpdateManualItemTransactionCommandV3());
+        c.addCommand(getItemTransactionRemainingQuantityRollupChainV3());
+        c.addCommand(new PurchasedItemsQuantityRollUpCommandV3());
+        c.addCommand(getUpdateItemQuantityRollupChain());
+        c.addCommand(new UpdateRequestedItemIssuedQuantityCommandV3());
+
+        return c;
+    }
+    public static FacilioChain getItemTransactionRemainingQuantityRollupChainV3(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(SetTableNamesCommand.getForItemTransactions());
+        c.addCommand(new ItemTransactionRemainingQuantityRollupCommandV3());
+        return c;
+    }
+    public static FacilioChain getAddOrUdpateToolTransactionsChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(SetTableNamesCommand.getForToolTranaction());
+        c.addCommand(new AddOrUpdateManualToolTransactionsCommandV3());
+        c.addCommand(getToolTransactionRemainingQuantityRollupChainV3());
+        c.addCommand(new ExecuteAllWorkflowsCommand());
+        c.addCommand(getUpdatetoolQuantityRollupChainV3());
+        c.addCommand(new UpdateRequestedToolIssuedQuantityCommandV3());
+        c.addCommand(new AddActivitiesCommand());
+
+
+        return c;
+    }
+    public static FacilioChain getToolTransactionRemainingQuantityRollupChainV3(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(SetTableNamesCommand.getForToolTranaction());
+        c.addCommand(new ToolTransactionRemainingQuantityRollupCommandV3());
+        return c;
+    }
+    public static FacilioChain getUpdatetoolQuantityRollupChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ToolQuantityRollUpCommand());
+        c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE));
+        c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_OUT_OF_STOCK_NOTIFICATION_RULE));
+        c.addCommand(getUpdateToolTypeQuantityRollupChain());
+        return c;
+    }
+
+
 }

@@ -7,8 +7,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestShipmentContext;
+import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsoleV3.context.*;
+import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestContext;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -221,7 +228,7 @@ public class PageFactory {
 			case ContextNames.DEPARTMENT:
 				return DepartmentPageFactory.getDepartmentPage((V3DepartmentContext) record, module);
 			case ContextNames.INVENTORY_REQUEST:
-				return InventoryRequestPageFactory.getInventoryRequestPage((InventoryRequestContext) record, module);
+				return InventoryRequestPageFactory.getInventoryRequestPage((V3InventoryRequestContext) record, module);
 			case ContextNames.TERMS_AND_CONDITIONS:
 				return TermsAndConditionsPageFactory.getTermsAndConditionsPage((V3TermsAndConditionContext) record, module);
 			case ContextNames.SERVICE:

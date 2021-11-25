@@ -82,6 +82,18 @@ public class FunctionNameSpaceBundleComponent extends CommonBundleComponent {
 			
 			break;
 		}
+		case DELETE: {
+			
+			Long nameSpaceId = (Long)context.get(BundleConstants.COMPONENT_ID);
+			
+			FacilioChain addWorkflowChain =  TransactionChainFactory.getDeleteWorkflowNameSpaceChain();
+
+			FacilioContext newContext = addWorkflowChain.getContext();
+			
+			newContext.put(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT, UserFunctionAPI.getNameSpace(nameSpaceId));
+			addWorkflowChain.execute();
+			break;
+		}
 		}
 		
 	}
