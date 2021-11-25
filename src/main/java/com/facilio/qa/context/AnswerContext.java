@@ -32,7 +32,7 @@ public class AnswerContext extends V3Context {
     private Boolean booleanAnswer;
     private String shortAnswer, longAnswer;
     private Long dateTimeAnswer;
-    private Integer starRatingAnswer;
+    private Integer ratingAnswer;
 
     private Long fileAnswerId;
     private String fileAnswerUrl, fileAnswerFileName, fileAnswerContentType;

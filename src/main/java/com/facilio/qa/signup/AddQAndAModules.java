@@ -53,33 +53,33 @@ public class AddQAndAModules extends SignUpData {
         addQuestionSubModules(question);
         addAnswerSubModules(modBean, answer);
         addRollUpFields(modBean, qAndA, response, page, question, answer);
-        
+
         changeSysCreatedTimeFieldDisplayName(response);
-        
+
         addAnswerAttachmentModule(answer);
     }
 
     private void changeSysCreatedTimeFieldDisplayName(FacilioModule response) throws Exception {
 
-    	ModuleBean modBean = Constants.getModBean();
-    	
-    	FacilioField createdTimeField = modBean.getField("sysCreatedTime", response.getName());
-    	
-    	createdTimeField.setDisplayName("System Created Time");
-    	modBean.updateField(createdTimeField);
-	}
+        ModuleBean modBean = Constants.getModBean();
 
-	private void addAnswerAttachmentModule(FacilioModule answer) throws Exception {
-		
-    	FacilioModule module = new FacilioModule();
-    	module.setName(FacilioConstants.QAndA.Answers.ATTACHMENT);
-    	module.setDisplayName(answer.getDisplayName() + " Attachments");
-    	module.setTableName("Q_And_A_Answer_Attachments");
-    	module.setType(FacilioModule.ModuleType.ATTACHMENTS);
-    	
-    	List<FacilioField> fields = new ArrayList<FacilioField>();
+        FacilioField createdTimeField = modBean.getField("sysCreatedTime", response.getName());
 
-    	FacilioField attachmentCreatedTime =  FieldFactory.getField("createdTime", "Created Time", "CREATED_TIME", module, FieldType.NUMBER);
+        createdTimeField.setDisplayName("System Created Time");
+        modBean.updateField(createdTimeField);
+    }
+
+    private void addAnswerAttachmentModule(FacilioModule answer) throws Exception {
+
+        FacilioModule module = new FacilioModule();
+        module.setName(FacilioConstants.QAndA.Answers.ATTACHMENT);
+        module.setDisplayName(answer.getDisplayName() + " Attachments");
+        module.setTableName("Q_And_A_Answer_Attachments");
+        module.setType(FacilioModule.ModuleType.ATTACHMENTS);
+
+        List<FacilioField> fields = new ArrayList<FacilioField>();
+
+        FacilioField attachmentCreatedTime = FieldFactory.getField("createdTime", "Created Time", "CREATED_TIME", module, FieldType.NUMBER);
         fields.add(attachmentCreatedTime);
 
         FileField fileField = (FileField) FieldFactory.getField("file", "File ID", "FILE_ID", module, FieldType.FILE);
@@ -92,21 +92,21 @@ public class AddQAndAModules extends SignUpData {
         attachmentParentId.setLookupModule(answer);
         fields.add(attachmentParentId);
         module.setFields(fields);
-		
-		FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
+
+        FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
         addModuleChain.execute();
-		
-        
-        Constants.getModBean().addSubModule(answer.getModuleId(), module.getModuleId());
-	}
 
-	private FacilioModule constructQAndA() {
+
+        Constants.getModBean().addSubModule(answer.getModuleId(), module.getModuleId());
+    }
+
+    private FacilioModule constructQAndA() {
         FacilioModule module = new FacilioModule(FacilioConstants.QAndA.Q_AND_A_TEMPLATE,
-                                                "Q And A Templates",
-                                                "Q_And_A_Templates",
-                                                FacilioModule.ModuleType.Q_AND_A,
-                                                true);
+                "Q And A Templates",
+                "Q_And_A_Templates",
+                FacilioModule.ModuleType.Q_AND_A,
+                true);
 
         List<FacilioField> fields = new ArrayList<>();
         fields.add(FieldFactory.getDefaultField("name", "Name", "NAME", FieldType.STRING, true));
@@ -124,10 +124,10 @@ public class AddQAndAModules extends SignUpData {
 
     private FacilioModule constructPage(FacilioModule qAndA) {
         FacilioModule module = new FacilioModule(FacilioConstants.QAndA.PAGE,
-                                    "Page",
-                                    "Q_And_A_Pages",
-                                    FacilioModule.ModuleType.SUB_ENTITY,
-                                    true);
+                "Page",
+                "Q_And_A_Pages",
+                FacilioModule.ModuleType.SUB_ENTITY,
+                true);
 
         List<FacilioField> fields = new ArrayList<>();
         fields.add(FieldFactory.getDefaultField("name", "Name", "NAME", FieldType.STRING, true));
@@ -143,10 +143,10 @@ public class AddQAndAModules extends SignUpData {
 
     private FacilioModule constructQuestion(FacilioModule qAndA, FacilioModule page) {
         FacilioModule module = new FacilioModule(FacilioConstants.QAndA.QUESTION,
-                                    "Questions",
-                                    "Q_And_A_Questions",
-                                    FacilioModule.ModuleType.SUB_ENTITY,
-                                    true);
+                "Questions",
+                "Q_And_A_Questions",
+                FacilioModule.ModuleType.SUB_ENTITY,
+                true);
 
         List<FacilioField> fields = new ArrayList<>();
         fields.add(FieldFactory.getDefaultField("question", "Question", "QUESTION", FieldType.STRING, true));
@@ -169,7 +169,7 @@ public class AddQAndAModules extends SignUpData {
         return module;
     }
 
-    private FacilioModule constructResponse (FacilioModule qAndA) {
+    private FacilioModule constructResponse(FacilioModule qAndA) {
         FacilioModule module = new FacilioModule(FacilioConstants.QAndA.RESPONSE,
                 "Q And A Responses",
                 "Q_And_A_Responses",
@@ -195,7 +195,7 @@ public class AddQAndAModules extends SignUpData {
         return module;
     }
 
-    private FacilioModule constructAnswer (FacilioModule qAndA, FacilioModule response, FacilioModule question) {
+    private FacilioModule constructAnswer(FacilioModule qAndA, FacilioModule response, FacilioModule question) {
         FacilioModule module = new FacilioModule(FacilioConstants.QAndA.ANSWER,
                 "Q And A Answer",
                 "Q_And_A_Answers",
@@ -250,6 +250,10 @@ public class AddQAndAModules extends SignUpData {
         modules.add(constructMCQMulti(question));
         modules.add(constructMCQMultiOption());
         modules.add(constructStarRatingQuestion(question));
+        modules.add(constructStarRatingOption());
+        modules.add(constructSmileyRatingQuestion(question));
+        modules.add(constructSmileyRatingOption());
+
 
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
@@ -259,7 +263,7 @@ public class AddQAndAModules extends SignUpData {
         addRichTextField(headingQuestion, headingRichText);
     }
 
-    private void addRichTextField (FacilioModule headingQuestion, FacilioModule richText) throws Exception {
+    private void addRichTextField(FacilioModule headingQuestion, FacilioModule richText) throws Exception {
         LargeTextField field = (LargeTextField) FieldFactory.getDefaultField("richText", "Rich Text", null, FieldType.LARGE_TEXT);
         field.setModule(headingQuestion);
         field.setRelModuleId(richText.getModuleId());
@@ -267,12 +271,12 @@ public class AddQAndAModules extends SignUpData {
         Constants.getModBean().addField(field);
     }
 
-    private FacilioModule constructHeadingRichTextField (FacilioModule headingQuestion) throws Exception {
+    private FacilioModule constructHeadingRichTextField(FacilioModule headingQuestion) throws Exception {
         FacilioModule module = new FacilioModule(FacilioConstants.QAndA.Questions.HEADING_QUESTION_RICH_TEXT,
                 "Q And A Heading Question Rich Text",
                 "Q_And_A_Heading_Question_Rich_Text",
                 FacilioModule.ModuleType.SUB_ENTITY
-                );
+        );
 
         List<FacilioField> fields = new ArrayList<>();
         LookupField parentField = (LookupField) FieldFactory.getDefaultField("parentId", "Parent ID", "PARENT_ID", FieldType.LOOKUP);
@@ -402,9 +406,9 @@ public class AddQAndAModules extends SignUpData {
 
     private FacilioModule constructMCQSingleOption() {
         FacilioModule module = new FacilioModule(FacilioConstants.QAndA.Questions.MCQ_SINGLE_OPTIONS,
-                        "Q And A MCQ Single Options",
-                        "Q_And_A_MCQ_Single_Options",
-                        FacilioModule.ModuleType.SUB_ENTITY);
+                "Q And A MCQ Single Options",
+                "Q_And_A_MCQ_Single_Options",
+                FacilioModule.ModuleType.SUB_ENTITY);
 
         module.setFields(constructMcqOptionFields());
         return module;
@@ -430,7 +434,7 @@ public class AddQAndAModules extends SignUpData {
         return fields;
     }
 
-    private FacilioModule constructFileUploadQuestion (FacilioModule question) {
+    private FacilioModule constructFileUploadQuestion(FacilioModule question) {
         FacilioModule module = new FacilioModule(FacilioConstants.QAndA.Questions.FILE_UPLOAD_QUESTION,
                 "Q And A File Upload Questions",
                 "Q_And_A_File_Upload_Questions",
@@ -444,7 +448,7 @@ public class AddQAndAModules extends SignUpData {
         return module;
     }
 
-    private FacilioModule constructMultiFileUploadQuestion (FacilioModule question) {
+    private FacilioModule constructMultiFileUploadQuestion(FacilioModule question) {
         FacilioModule module = new FacilioModule(FacilioConstants.QAndA.Questions.MULTI_FILE_UPLOAD_QUESTION,
                 "Q And A Multi File Upload Questions",
                 "Q_And_A_Multi_File_Upload_Questions",
@@ -459,7 +463,7 @@ public class AddQAndAModules extends SignUpData {
         return module;
     }
 
-    private FacilioModule constructBooleanQuestion (FacilioModule question) {
+    private FacilioModule constructBooleanQuestion(FacilioModule question) {
         FacilioModule module = new FacilioModule(FacilioConstants.QAndA.Questions.BOOLEAN_QUESTION,
                 "Q And A Boolean Questions",
                 "Q_And_A_Boolean_Questions",
@@ -489,7 +493,7 @@ public class AddQAndAModules extends SignUpData {
         addMultiEnumLookupField(modBean, answer);
     }
 
-    private FacilioModule constructMultiFileAnswer (FacilioModule answer) {
+    private FacilioModule constructMultiFileAnswer(FacilioModule answer) {
         FacilioModule module = new FacilioModule(FacilioConstants.QAndA.Answers.MULTI_FILE_ANSWER,
                 "Q And A Multi File Answers",
                 "Q_And_A_Multi_File_Answers",
@@ -519,7 +523,7 @@ public class AddQAndAModules extends SignUpData {
         modBean.addField(lineItemField);
     }
 
-    private void addMultiEnumLookupField (ModuleBean modBean, FacilioModule answer) throws Exception {
+    private void addMultiEnumLookupField(ModuleBean modBean, FacilioModule answer) throws Exception {
         FacilioModule mcqMultiOption = modBean.getModule(FacilioConstants.QAndA.Questions.MCQ_MULTI_OPTIONS);
         FacilioUtil.throwIllegalArgumentException(mcqMultiOption == null, "Mcq multi field option shouldn't be null. This shouldn't happen");
 
@@ -575,16 +579,59 @@ public class AddQAndAModules extends SignUpData {
 
     private FacilioModule constructStarRatingQuestion(FacilioModule question) {
         FacilioModule module = new FacilioModule(FacilioConstants.QAndA.Questions.STAR_RATING_QUESTION,
-                "Q And A Star rating Questions",
-                "Q_And_A_Star_Rating_Questions",
+                "Q And A Star Rating Questions",
+                "Q_And_A_StarRating_Questions",
                 FacilioModule.ModuleType.SUB_ENTITY,
                 question);
 
         List<FacilioField> fields = new ArrayList<>();
-        fields.add(FieldFactory.getDefaultField("numberOfStars", "Num Of Stars", "NUM_OF_STARS", FieldType.NUMBER));
+        fields.add(FieldFactory.getDefaultField("ratingScale", "Rating Scale", "RATING_SCALE", FieldType.NUMBER));
         fields.add(FieldFactory.getDefaultField("displayFormat", "Display Format", "DISPLAY_FORMAT", FieldType.STRING));
 
         module.setFields(fields);
         return module;
+    }
+
+    private FacilioModule constructSmileyRatingQuestion(FacilioModule question) {
+        FacilioModule module = new FacilioModule(FacilioConstants.QAndA.Questions.SMILEY_RATING_QUESTION,
+                "Q And A Smiley Rating Questions",
+                "Q_And_A_SmileyRating_Questions",
+                FacilioModule.ModuleType.SUB_ENTITY,
+                question);
+
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(FieldFactory.getDefaultField("ratingScale", "Rating Scale", "RATING_SCALE", FieldType.NUMBER));
+        fields.add(FieldFactory.getDefaultField("displayFormat", "Display Format", "DISPLAY_FORMAT", FieldType.STRING));
+
+        module.setFields(fields);
+        return module;
+    }
+
+    private FacilioModule constructStarRatingOption() {
+        FacilioModule module = new FacilioModule(FacilioConstants.QAndA.Questions.STAR_RATING_OPTIONS,
+                "Q And A Star Rating Options",
+                "Q_And_A_StarRating_Options",
+                FacilioModule.ModuleType.SUB_ENTITY);
+
+        module.setFields(constructRatingOptionFields());
+        return module;
+    }
+
+    private FacilioModule constructSmileyRatingOption() {
+        FacilioModule module = new FacilioModule(FacilioConstants.QAndA.Questions.SMILEY_RATING_OPTIONS,
+                "Q And A Smiley Rating Options",
+                "Q_And_A_SmileyRating_Options",
+                FacilioModule.ModuleType.SUB_ENTITY);
+
+        module.setFields(constructRatingOptionFields());
+        return module;
+    }
+
+    private List<FacilioField> constructRatingOptionFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(FieldFactory.getDefaultField("parentId", "Parent Id", "PARENT_ID", FieldType.NUMBER));
+        fields.add(FieldFactory.getDefaultField("label", "Label", "LABEL", FieldType.STRING));
+        fields.add(FieldFactory.getDefaultField("position", "Position", "POSITION_VAL", FieldType.NUMBER));
+        return fields;
     }
 }

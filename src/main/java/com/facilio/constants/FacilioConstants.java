@@ -2573,6 +2573,9 @@ public class FacilioConstants {
 			public static final String MULTI_FILE_UPLOAD_QUESTION = "qandaMultiFileUploadQuestion";
 			public static final String BOOLEAN_QUESTION = "qandaBooleanQuestion";
 			public static final String STAR_RATING_QUESTION ="qandaStarRatingQuestion";
+			public static final String SMILEY_RATING_QUESTION ="qandaSmileyRatingQuestion";
+			public static final String STAR_RATING_OPTIONS = "qandaStarRatingOptions";
+			public static final String SMILEY_RATING_OPTIONS = "qandaSmileyRatingOptions";
 		}
 
 		public static class Answers {

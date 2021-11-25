@@ -10,9 +10,9 @@ import lombok.extern.log4j.Log4j;
 @Setter
 @Log4j
 @NoArgsConstructor
-public class StarRatingOptionContext extends V3Context {
+public class RatingOptionContext extends V3Context {
 
-    public StarRatingOptionContext (Long id) {
+    public RatingOptionContext(Long id) {
         super(id);
     }
 

@@ -6,6 +6,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class StarRatingAnswerContext extends ClientAnswerContext<Integer> {
+public class RatingAnswerContext extends ClientAnswerContext<Integer> {
     private Integer answer;
 }

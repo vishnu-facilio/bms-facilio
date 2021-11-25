@@ -1,7 +1,7 @@
 package com.facilio.qa.context.questions;
 
 import com.facilio.qa.context.QuestionContext;
-import com.facilio.qa.context.questions.handler.StarRatingOptionContext;
+import com.facilio.qa.context.questions.handler.RatingOptionContext;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,11 +16,11 @@ import java.util.List;
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NONE
 )
-public class StarRatingQuestionContext extends QuestionContext {
-    private Integer numberOfStars;
+public class RatingQuestionContext extends QuestionContext {
+    private Integer ratingScale;
     private String displayFormat;
-    private List<StarRatingOptionContext> options;
-    private List<StarRatingQuestionContext.OptionSummary> summary;
+    private List<RatingOptionContext> options;
+    private List<RatingQuestionContext.OptionSummary> summary;
 
     @Getter
     @AllArgsConstructor

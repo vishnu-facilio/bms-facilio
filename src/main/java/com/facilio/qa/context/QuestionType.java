@@ -10,7 +10,7 @@ import com.facilio.qa.context.questions.handler.*;
 import com.facilio.qa.rules.pojo.BooleanRuleHandler;
 import com.facilio.qa.rules.pojo.DefaultRuleHandler;
 import com.facilio.qa.rules.pojo.MCQRuleHandler;
-import com.facilio.qa.rules.pojo.StarRatingRuleHandler;
+import com.facilio.qa.rules.pojo.RatingRuleHandler;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
@@ -109,10 +109,17 @@ public enum QuestionType implements FacilioStringEnum {
     ),
     STAR_RATING(
             FacilioConstants.QAndA.Questions.STAR_RATING_QUESTION,
-            StarRatingQuestionContext.class,
-            new StarRatingAnswerHandler(StarRatingAnswerContext.class),
-            new StarRatingQuestionHandler(),
-            StarRatingRuleHandler.STAR_RATING
+            RatingQuestionContext.class,
+            new RatingAnswerHandler(RatingAnswerContext.class),
+            new RatingQuestionHandler(),
+            RatingRuleHandler.STAR_RATING
+    ),
+    SMILEY_RATING(
+            FacilioConstants.QAndA.Questions.SMILEY_RATING_QUESTION,
+            RatingQuestionContext.class,
+            new RatingAnswerHandler(RatingAnswerContext.class),
+            new RatingQuestionHandler(),
+            RatingRuleHandler.SMILEY_RATING
     );
 
     private static final Map<String, QuestionType> MODULE_VS_TYPE = initModuleVsTypeMap();
