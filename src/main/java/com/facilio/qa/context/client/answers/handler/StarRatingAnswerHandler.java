@@ -1,5 +1,6 @@
 package com.facilio.qa.context.client.answers.handler;
 
+import com.facilio.constants.FacilioConstants;
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.AnswerHandler;
 import com.facilio.qa.context.QuestionContext;
@@ -24,10 +25,8 @@ public class StarRatingAnswerHandler extends AnswerHandler<StarRatingAnswerConte
 
     @Override
     public AnswerContext deSerialize(StarRatingAnswerContext answer, QuestionContext question) throws Exception {
-        Integer minValue =1;
-        Integer maxValue = 10;
-        V3Util.throwRestException(minValue != null && answer.getAnswer() < minValue, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Answer ({0}) cannot be less than the min value ({1})", answer.getAnswer(), minValue));
-        V3Util.throwRestException(maxValue != null && answer.getAnswer() > maxValue, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Answer ({0}) cannot be greater than the max value ({1})", answer.getAnswer(), maxValue));
+        V3Util.throwRestException(answer.getAnswer() < FacilioConstants.QAndA.MIN_VAL, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Answer ({0}) cannot be less than the min value ({1})", answer.getAnswer(), FacilioConstants.QAndA.MIN_VAL));
+        V3Util.throwRestException(answer.getAnswer() > FacilioConstants.QAndA.MAX_VAL, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Answer ({0}) cannot be greater than the max value ({1})", answer.getAnswer(), FacilioConstants.QAndA.MAX_VAL));
         AnswerContext answerContext = new AnswerContext();
         answerContext.setStarRatingAnswer(answer.getAnswer());
         return answerContext;

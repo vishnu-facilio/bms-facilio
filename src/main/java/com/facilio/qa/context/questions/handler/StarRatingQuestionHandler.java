@@ -1,5 +1,6 @@
 package com.facilio.qa.context.questions.handler;
 
+import com.facilio.constants.FacilioConstants;
 import com.facilio.qa.context.QuestionHandler;
 import com.facilio.qa.context.questions.StarRatingQuestionContext;
 import com.facilio.v3.exception.ErrorCode;
@@ -11,12 +12,10 @@ import java.util.List;
 public class StarRatingQuestionHandler implements QuestionHandler<StarRatingQuestionContext> {
 
     private void commonValidate(List<StarRatingQuestionContext> questions) throws Exception {
-        Integer minVal = 1;
-        Integer maxVal = 10;
         for (StarRatingQuestionContext q : questions) {
             Integer starCount = q.getNumberOfStars();
-            V3Util.throwRestException(starCount != null && starCount != null && starCount < minVal, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Star Rating value ({0}) cannot be less than Min value ({1})", starCount, minVal));
-            V3Util.throwRestException(starCount != null && starCount != null && starCount > maxVal, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Star Rating value ({0}) cannot be more than Max value ({1})", starCount, maxVal));
+            V3Util.throwRestException(starCount != null && starCount != null && starCount < FacilioConstants.QAndA.MIN_VAL, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Star Rating value ({0}) cannot be less than Min value ({1})", starCount, FacilioConstants.QAndA.MIN_VAL));
+            V3Util.throwRestException(starCount != null && starCount != null && starCount > FacilioConstants.QAndA.MAX_VAL, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Star Rating value ({0}) cannot be more than Max value ({1})", starCount, FacilioConstants.QAndA.MAX_VAL));
         }
     }
 
@@ -33,7 +32,7 @@ public class StarRatingQuestionHandler implements QuestionHandler<StarRatingQues
 
     @Override
     public void validateUpdate(List<StarRatingQuestionContext> questions) throws Exception {
-
+        commonValidate(questions);
     }
 
     @Override
