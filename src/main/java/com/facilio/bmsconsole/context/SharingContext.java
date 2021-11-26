@@ -107,9 +107,9 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 	}
 
 	public boolean isMatching (SingleSharingContext permission, User user, Object object, DelegationType delegationType) throws Exception {
-		User delegationUser = user;
+		List<User> delegationUsers = null;
 		if (delegationType != null) {
-			delegationUser = DelegationUtil.getUser(user, System.currentTimeMillis(), delegationType);
+			delegationUsers = DelegationUtil.getUser(user, System.currentTimeMillis(), delegationType);
 		}
 
 		switch (permission.getTypeEnum()) {
@@ -117,9 +117,11 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 				if (permission.getUserId() == user.getOuid()) {
 					return true;
 				}
-				if (delegationUser.getId() != user.getId()) {
-					if (permission.getUserId() == delegationUser.getId()) {
-						return true;
+				if (CollectionUtils.isNotEmpty(delegationUsers)) {
+					for (User delegationUser : delegationUsers) {
+						if (permission.getUserId() == delegationUser.getId()) {
+							return true;
+						}
 					}
 				}
 				break;
@@ -127,9 +129,11 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 				if (permission.getRoleId() == user.getRoleId()) {
 					return true;
 				}
-				if (delegationUser.getId() != user.getId()) {
-					if (permission.getRoleId() == delegationUser.getRoleId()) {
-						return true;
+				if (CollectionUtils.isNotEmpty(delegationUsers)) {
+					for (User delegationUser : delegationUsers) {
+						if (permission.getRoleId() == delegationUser.getRoleId()) {
+							return true;
+						}
 					}
 				}
 			case GROUP:
@@ -141,8 +145,15 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 
 				if (permission.getGroupMembers() != null && !permission.getGroupMembers().isEmpty()) {
 					for (GroupMember member : permission.getGroupMembers()) {
-						if (member.getOuid() == user.getOuid() || member.getOuid() == delegationUser.getOuid()) {
+						if (member.getOuid() == user.getOuid()) {
 							return true;
+						}
+						if (CollectionUtils.isNotEmpty(delegationUsers)) {
+							for (User delegationUser : delegationUsers) {
+								if (member.getOuid() == delegationUser.getOuid()) {
+									return true;
+								}
+							}
 						}
 					}
 				}
@@ -159,14 +170,28 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 								List<Long> objIds = getUserIdsForField(moduleDataMap, field);
 								if (CollectionUtils.isNotEmpty(objIds)) {
 									if ("users".equals(lookupModule.getName())) {
-										if (objIds.contains(user.getOuid()) || objIds.contains(delegationUser.getOuid())) {
+										if (objIds.contains(user.getOuid())) {
 											return true;
+										}
+										if (CollectionUtils.isNotEmpty(delegationUsers)) {
+											for (User delegationUser : delegationUsers) {
+												if (objIds.contains(delegationUser.getOuid())) {
+													return true;
+												}
+											}
 										}
 									} else {
 										FacilioModule peopleModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
 										if (lookupModule.getExtendedModuleIds().contains(peopleModule.getModuleId())) {
-											if (objIds.contains(user.getPeopleId()) || objIds.contains(delegationUser.getPeopleId())) {
+											if (objIds.contains(user.getPeopleId())) {
 												return true;
+											}
+											if (CollectionUtils.isNotEmpty(delegationUsers)) {
+												for (User delegationUser : delegationUsers) {
+													if (objIds.contains(delegationUser.getPeopleId())) {
+														return true;
+													}
+												}
 											}
 										}
 									}
