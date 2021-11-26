@@ -168,7 +168,7 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 								}
 							
 								if (filterApplicableField != null) {
-									// add WIDGET->Widget-Field to apply filter in filter obj
+									// add WIDGET->Widget-Field to apply filtwidgetUserFiltersMaper in filter obj
 									filter.getWidgetFieldMap().put(widgetId, filterApplicableField);
 
 									// add filter to list of applicable filters in widget

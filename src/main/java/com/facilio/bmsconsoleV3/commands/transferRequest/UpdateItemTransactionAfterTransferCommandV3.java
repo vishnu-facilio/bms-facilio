@@ -63,7 +63,7 @@ public class UpdateItemTransactionAfterTransferCommandV3 extends FacilioCommand 
                         lastPurchasedPrice = purchasedItem.getQuantity() * purchasedItem.getUnitcost();
                         purchasedItems.add(purchasedItem);
                         //Item Transactions
-                        ItemTransactionsContext woItem = setItemTransaction(record, purchasedItem, item);
+                        ItemTransactionsContext woItem = setItemTransaction(record, purchasedItem, item,transferRequestContext.getId());
                         itemTransactionsToBeAdded.add(woItem);
                     }
                     String itemModuleName = FacilioConstants.ContextNames.PURCHASED_ITEM;
@@ -116,7 +116,7 @@ public class UpdateItemTransactionAfterTransferCommandV3 extends FacilioCommand 
         purchasedItem.setTtime(System.currentTimeMillis());
         return purchasedItem;
     }
-    private ItemTransactionsContext setItemTransaction(V3TransferRequestPurchasedItems record,PurchasedItemContext purchasedItem,ItemContext item){
+    private ItemTransactionsContext setItemTransaction(V3TransferRequestPurchasedItems record,PurchasedItemContext purchasedItem,ItemContext item,Long id){
         ItemTransactionsContext woItem = new ItemTransactionsContext();
         woItem.setTransactionState(TransactionState.TRANSFERRED_TO);
         woItem.setIsReturnable(false);
@@ -129,7 +129,7 @@ public class UpdateItemTransactionAfterTransferCommandV3 extends FacilioCommand 
         woItem.setStoreRoom(item.getStoreRoom());
         woItem.setItemType(item.getItemType());
         woItem.setSysModifiedTime(System.currentTimeMillis());
-        woItem.setParentId(item.getId());
+        woItem.setParentId(id);
         woItem.setApprovedState(1);
         woItem.setRemainingQuantity(0);
         return woItem;

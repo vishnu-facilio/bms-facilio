@@ -29,7 +29,14 @@ public enum FacilioNotificationFunctions implements FacilioWorkflowFunctionInter
 			}
 			
 			Map<String,Object> sendMailMap =  (Map<String, Object>) objects[0];
-			sendMailMap.put("sender", EmailFactory.getEmailClient().getSystemFromAddress(EmailFromAddress.SourceType.NOTIFICATION));
+			String sender = null;
+			if(sendMailMap.containsKey("from") && sendMailMap.get("from") != null) {
+				sender = EmailFactory.getEmailClient().getNotificationFromAddressEmailFromName((String)sendMailMap.get("from"));
+			}
+			if(sender == null) {
+				sender = EmailFactory.getEmailClient().getSystemFromAddress(EmailFromAddress.SourceType.NOTIFICATION);
+			}
+			sendMailMap.put("sender", sender);
 			Map<String,String> attachements = (Map<String,String>)sendMailMap.get("attachments");
 			
 			FacilioContext context = new FacilioContext();

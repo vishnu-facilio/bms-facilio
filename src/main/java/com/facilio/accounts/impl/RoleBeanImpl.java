@@ -245,9 +245,9 @@ public class RoleBeanImpl implements RoleBean {
 	}
 
 	@Override
-	public List<Role> getRoles(long appId) throws Exception {
+	public List<Role> getRolesForApps(Collection<Long> appIds) throws Exception {
 
-		List<Long> roleIds = getRolesForApp(appId);
+		List<Long> roleIds = getRolesForApp(appIds);
 		if(CollectionUtils.isNotEmpty(roleIds)) {
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 					.select(AccountConstants.getRoleFields())
@@ -443,14 +443,14 @@ public class RoleBeanImpl implements RoleBean {
 		return null;
 	}
 
-	private List<Long> getRolesForApp(Long appId) throws Exception {
+	private List<Long> getRolesForApp(Collection<Long> appIds) throws Exception {
 
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getRolesAppsFields())
 				.table(AccountConstants.getRolesAppsModule().getTableName());
 
-		if(appId > 0) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", String.valueOf(appId), NumberOperators.EQUALS));
+		if(CollectionUtils.isNotEmpty(appIds)) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", StringUtils.join(appIds, ","), NumberOperators.EQUALS));
 		}
 
 		List<Map<String, Object>> props = selectBuilder.get();

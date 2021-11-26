@@ -84,6 +84,7 @@ public class GetSortableFieldsCommand extends FacilioCommand {
 		case MULTI_ENUM:
 		case MULTI_LOOKUP:
 		case LARGE_TEXT:
+		case URL_FIELD:
 			return null;
 		case LOOKUP:
 			if ( ((LookupField)field).getLookupModule().getTypeEnum() != ModuleType.PICK_LIST) {

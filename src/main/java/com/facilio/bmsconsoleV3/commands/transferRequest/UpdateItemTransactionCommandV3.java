@@ -72,7 +72,7 @@ public class UpdateItemTransactionCommandV3 extends FacilioCommand {
                         if (pItem.getCurrentQuantity() >= quantityTransferred) {
                             double newQuantity =pItem.getCurrentQuantity()-quantityTransferred;
                             V3TransferRequestPurchasedItems transferRequestPurchasedItem = setTransferRequestPurchasedItem(item,transferRequests.get(0),pItem.getUnitcost(),quantityTransferred);
-                            ItemTransactionsContext woItem = setWorkorderItemObj(pItem, quantityTransferred, item, itemType,newQuantity,purchasedItemFields,purchasedItemModule);
+                            ItemTransactionsContext woItem = setWorkorderItemObj(pItem, quantityTransferred, item, itemType,newQuantity,purchasedItemFields,purchasedItemModule,transferRequests.get(0).getId());
                             itemTransactiosnToBeAdded.add(woItem);
                             transferRequestPurchasedItems.add(transferRequestPurchasedItem);
                         } else {
@@ -86,7 +86,7 @@ public class UpdateItemTransactionCommandV3 extends FacilioCommand {
                                 }
                                 double newQuantity =purchaseitem.getCurrentQuantity()+quantityUsedForTheCost;
                                 V3TransferRequestPurchasedItems transferRequestPurchasedItem = setTransferRequestPurchasedItem(item,transferRequests.get(0),purchaseitem.getUnitcost(),-(quantityUsedForTheCost));
-                                woItem = setWorkorderItemObj(purchaseitem, -(quantityUsedForTheCost), item, itemType, newQuantity, purchasedItemFields, purchasedItemModule);
+                                woItem = setWorkorderItemObj(purchaseitem, -(quantityUsedForTheCost), item, itemType, newQuantity, purchasedItemFields, purchasedItemModule,transferRequests.get(0).getId());
                                 itemTransactiosnToBeAdded.add(woItem);
                                 transferRequestPurchasedItems.add(transferRequestPurchasedItem);
                                 requiredQuantity -= quantityUsedForTheCost;
@@ -110,7 +110,7 @@ public class UpdateItemTransactionCommandV3 extends FacilioCommand {
     }
 
    private ItemTransactionsContext setWorkorderItemObj(PurchasedItemContext purchasedItem, double quantity,
-                                                        ItemContext item, ItemTypesContext itemTypes,double newQuantity,List<FacilioField> fields,FacilioModule module) throws Exception {
+                                                        ItemContext item, ItemTypesContext itemTypes,double newQuantity,List<FacilioField> fields,FacilioModule module,Long id) throws Exception {
         List<FacilioField> updatedFields = new ArrayList<>();
         Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
         updatedFields.add(fieldsMap.get("currentQuantity"));
@@ -135,7 +135,7 @@ public class UpdateItemTransactionCommandV3 extends FacilioCommand {
         woItem.setStoreRoom(item.getStoreRoom());
         woItem.setItemType(itemTypes);
         woItem.setSysModifiedTime(System.currentTimeMillis());
-        woItem.setParentId(purchasedItem.getId());
+        woItem.setParentId(id);
         woItem.setApprovedState(1);
         woItem.setRemainingQuantity(0);
 

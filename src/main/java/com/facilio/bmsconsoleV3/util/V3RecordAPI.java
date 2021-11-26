@@ -140,9 +140,12 @@ public class V3RecordAPI {
         SelectRecordsBuilder<T> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
                 .module(module)
                 .beanClass(beanClassName)
-                .select(fields)
-                .andCondition(CriteriaAPI.getIdCondition(recordIds, module))
-                ;
+                .select(fields);
+
+        if(CollectionUtils.isNotEmpty(recordIds)) {
+                builder.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
+        }
+
 
         if (criteria != null && !criteria.isEmpty()) {
             builder.andCriteria(criteria);

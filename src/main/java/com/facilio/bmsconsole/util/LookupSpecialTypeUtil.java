@@ -147,7 +147,7 @@ public class LookupSpecialTypeUtil {
 			return groupList;
 		}
 		else if (FacilioConstants.ContextNames.ROLE.equals(specialType)) {
-			List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getId()).getRoles(AccountUtil.getCurrentApp().getId());
+			List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getId()).getRolesForApps(Collections.singletonList(AccountUtil.getCurrentApp().getId()));
 			List<FieldOption<Long>> roleList = null;
 			if (CollectionUtils.isNotEmpty(roles)) {
 				roleList = roles.stream()
@@ -215,7 +215,7 @@ public class LookupSpecialTypeUtil {
 			return groupList;
 		}
 		else if (FacilioConstants.ContextNames.ROLE.equals(specialType)) {
-			List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getId()).getRoles(AccountUtil.getCurrentApp().getId());
+			List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getId()).getRolesForApps(Collections.singletonList(AccountUtil.getCurrentApp().getId()));
 			return roles.stream().collect(Collectors.toMap(Role::getRoleId, Role::getName));
 		}
 		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)){

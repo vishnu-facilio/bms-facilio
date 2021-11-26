@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,13 +87,43 @@ public class RoleAction extends ActionSupport {
         this.linkName = linkName;
     }
 
+    private List<String> linkNames;
+
+    public List<String> getLinkNames() {
+        return linkNames;
+    }
+
+    public void setLinkNames(List<String> linkNames) {
+        this.linkNames = linkNames;
+    }
+
+    private List<Long> appIds;
+
+    public List<Long> getAppIds() {
+        return appIds;
+    }
+
+    public void setAppIds(List<Long> appIds) {
+        this.appIds = appIds;
+    }
+
     public String roleList() throws Exception {
 
         setSetup(SetupLayout.getRolesListLayout());
-        if(appId <= 0 && StringUtils.isNotEmpty(linkName)) {
-            appId = ApplicationApi.getApplicationIdForLinkName(linkName);
+        if(appIds == null) {
+            appIds = new ArrayList<>();
         }
-        List<Role> rolesList = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getOrgId()).getRoles(appId);
+        if(appId > 0){
+            appIds.add(appId);
+        }
+        else if (appId <= 0 && StringUtils.isNotEmpty(linkName)) {
+            appIds.add(ApplicationApi.getApplicationIdForLinkName(linkName));
+        } else if (appId <= 0 && StringUtils.isEmpty(linkName) && CollectionUtils.isNotEmpty(linkNames)) {
+            for(String linkName : linkNames) {
+                appIds.add(ApplicationApi.getApplicationIdForLinkName(linkName));
+            }
+        }
+        List<Role> rolesList = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getOrgId()).getRolesForApps(appIds);
         setRoles(rolesList);
 //	x	setGroups(AccountUtil.getGroupBean().getAllOrgGroups(AccountUtil.getCurrentOrg().getOrgId()));
         ActionContext.getContext().getValueStack().set("roles", getRoles());

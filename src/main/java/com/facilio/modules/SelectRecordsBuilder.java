@@ -19,7 +19,6 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FetchSupplementHandler;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
-import com.facilio.util.FacilioStreamUtil;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -32,6 +31,7 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implements SelectBuilderIfc<E> {
 
@@ -748,6 +748,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			module = modBean.getModule(moduleName);
 		}
 
+		fetchSupplements(SupplementRecord.filterSystemSupplement(select));
 		if (fetchSupplements != null) {
 			fetchSupplements = fetchSupplements.stream().filter(SupplementRecord.distinctSupplementRecord()).collect(Collectors.toList());
 		}

@@ -251,7 +251,7 @@ public class QAndAUtil {
                 ;
 
         builder.fetchSupplements(fields.stream()
-                .filter(f -> f.getDataTypeEnum().isMultiRecord())
+                .filter(f -> f.getDataTypeEnum().isRelRecordField())
                 .map(SupplementRecord.class::cast)
                 .collect(Collectors.toList()));
 

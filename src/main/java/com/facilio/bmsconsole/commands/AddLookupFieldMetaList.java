@@ -61,7 +61,7 @@ public class AddLookupFieldMetaList extends FacilioCommand {
 				else if (f instanceof MultiEnumField) {
 					supplements.add((MultiEnumField) f);
 				}
-				else if (isSummary && f.getDataTypeEnum().isMultiRecord()) { // Adding multi record fields for summary alone. Custom or otherwise
+				else if (isSummary && f.getDataTypeEnum().isRelRecordField()) { // Adding multi record fields for summary alone. Custom or otherwise
 					supplements.add((SupplementRecord) f);
 				}
 			}

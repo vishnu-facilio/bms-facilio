@@ -371,12 +371,21 @@ public class ModuleFactory {
 		fieldModule.setExtendModule(getFieldsModule());
 		return fieldModule;
 	}
-	
+
 	public static FacilioModule getLargeTextFieldsModule() {
 		FacilioModule fieldModule = new FacilioModule();
 		fieldModule.setName("largeTextField");
 		fieldModule.setDisplayName("Large Text Field");
 		fieldModule.setTableName("LargeTextFields");
+		fieldModule.setExtendModule(getFieldsModule());
+		return fieldModule;
+	}
+
+	public static FacilioModule getUrlFieldsModule() {
+		FacilioModule fieldModule = new FacilioModule();
+		fieldModule.setName("urlField");
+		fieldModule.setDisplayName("URL Field");
+		fieldModule.setTableName("UrlFields");
 		fieldModule.setExtendModule(getFieldsModule());
 		return fieldModule;
 	}

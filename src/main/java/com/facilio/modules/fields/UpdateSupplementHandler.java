@@ -4,5 +4,5 @@ import java.util.Collection;
 import java.util.Map;
 
 public interface UpdateSupplementHandler {
-    public void updateSupplements(Map<String,Object> record, Collection<Long> ids) throws Exception;
+    public void updateSupplements(Map<String,Object> record, Collection<Long> ids, boolean ignoreSplNullHandling) throws Exception;
 }

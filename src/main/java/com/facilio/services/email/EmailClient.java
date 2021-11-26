@@ -10,7 +10,9 @@ import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsoleV3.context.EmailFromAddress;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
@@ -167,6 +169,30 @@ public abstract class EmailClient {
 		}
 		return emailAddress;
     	
+    }
+    
+    public static String getNotificationFromAddressEmailFromName(String name) throws Exception {
+        
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME));
+		
+		SelectRecordsBuilder<EmailFromAddress> select = new SelectRecordsBuilder<EmailFromAddress>()
+				.moduleName(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME)
+				.beanClass(EmailFromAddress.class)
+				.select(modBean.getAllFields(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), name, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("verificationStatus"), Boolean.TRUE.toString(), BooleanOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("sourceType"), EmailFromAddress.SourceType.NOTIFICATION.getIndex()+"", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("activeStatus"), Boolean.TRUE.toString(), BooleanOperators.IS));
+		
+		EmailFromAddress fromAddress = select.fetchFirst();
+		if(fromAddress != null) {
+			String emailAddress = MailMessageUtil.getWholeEmailFromNameAndEmail.apply(fromAddress.getDisplayName(), fromAddress.getEmail());
+			return emailAddress;
+		}
+		
+		return null;
     }
 
     public static String getFromEmail(String localPart) {

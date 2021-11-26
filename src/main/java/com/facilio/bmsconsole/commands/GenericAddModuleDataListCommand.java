@@ -40,7 +40,7 @@ public class GenericAddModuleDataListCommand extends FacilioCommand {
 																						;
 			List<SupplementRecord> supplements = new ArrayList<>();
 			for(FacilioField field : fields) {
-				if(field.getDataTypeEnum().isMultiRecord())  {
+				if(field.getDataTypeEnum().isRelRecordField())  {
 					supplements.add((SupplementRecord) field);
 				}
 			}

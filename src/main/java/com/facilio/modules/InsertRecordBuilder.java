@@ -187,6 +187,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			module = modBean.getModule(moduleName);
 		}
 
+		insertSupplements(SupplementRecord.filterSystemSupplement(fields));
 		if (insertSupplements != null) {
 			insertSupplements = insertSupplements.stream().filter(SupplementRecord.distinctSupplementRecord()).collect(Collectors.toList());
 		}
@@ -395,7 +396,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		
 		// TODO check this again
 		for(FacilioField field : fields) {
-			if (field.getDataTypeEnum() != null && !field.getDataTypeEnum().isMultiRecord()) { //Not including multi record data
+			if (field.getDataTypeEnum() != null && !field.getDataTypeEnum().isRelRecordField()) { //Not including multi record data
 				FacilioModule module = field.getModule();
 				long moduleId = -1;
 				if (module != null) {

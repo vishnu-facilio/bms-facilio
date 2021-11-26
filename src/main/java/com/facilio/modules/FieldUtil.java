@@ -643,6 +643,9 @@ public class FieldUtil {
 				case LINE_ITEM:
 					facilioField = (LineItemField) FieldUtil.getAsBeanFromMap(fieldJson, LineItemField.class);
 					break;
+				case URL_FIELD:
+					facilioField = FieldUtil.getAsBeanFromMap(fieldJson, UrlField.class);
+					break;
 				default:
 					facilioField = (FacilioField) FieldUtil.getAsBeanFromMap(fieldJson, FacilioField.class);
 					break;
@@ -699,7 +702,7 @@ public class FieldUtil {
 	public static List<FacilioField> removeMultiRecordFields(Collection<FacilioField> fields) {
 		return	fields
 				.stream()
-				.filter(f -> !(f.getDataTypeEnum() != null && f.getDataTypeEnum().isMultiRecord()))
+				.filter(f -> !(f.getDataTypeEnum() != null && f.getDataTypeEnum().isRelRecordField()))
 				.collect(Collectors.toList());
 	}
 

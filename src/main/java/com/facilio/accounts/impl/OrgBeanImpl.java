@@ -220,7 +220,7 @@ public class OrgBeanImpl implements OrgBean {
 			AppDomain appDomain = ApplicationApi.getAppDomainForApplication((long) props.get(0).get("applicationId"));
 			RoleBean roleBean = (RoleBean) BeanFactory.lookup("RoleBean", orgId);
 
-			List<Role> roles = roleBean.getRoles(appId);
+			List<Role> roles = roleBean.getRolesForApps(Collections.singletonList(appId));
 			Map<Long, Role> roleMap = new HashMap<>();
 			for(Role role : roles){
 				roleMap.put(role.getId(), role);

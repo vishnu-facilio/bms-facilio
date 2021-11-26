@@ -159,7 +159,7 @@ public enum QuestionType implements FacilioStringEnum {
     }
 
     public boolean isOperatorSupportedForRules() {
-        return isRuleSupported() && getAnswerFieldType() != null && !getAnswerFieldType().isMultiRecord();
+        return isRuleSupported() && getAnswerFieldType() != null && !getAnswerFieldType().isRelRecordField();
     }
 
     public boolean isRuleSupported() {

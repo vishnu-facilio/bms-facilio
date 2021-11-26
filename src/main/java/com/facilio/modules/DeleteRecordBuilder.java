@@ -284,14 +284,15 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	}
 	
 	private void checkForNullAndSanitize() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		if(module == null) {
 			if(moduleName == null || moduleName.isEmpty()) {
 				throw new IllegalArgumentException("Both Module and Module Name cannot be empty");
 			}
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			module = modBean.getModule(moduleName);
 		}
 
+		deleteSupplements(SupplementRecord.filterSystemSupplement(modBean.getAllFields(module.getName())));
 		if (deleteSupplements != null) {
 			deleteSupplements = deleteSupplements.stream().filter(SupplementRecord.distinctSupplementRecord()).collect(Collectors.toList());
 		}

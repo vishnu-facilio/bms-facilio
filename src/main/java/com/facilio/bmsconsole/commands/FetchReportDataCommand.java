@@ -15,9 +15,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
@@ -59,9 +57,10 @@ public class FetchReportDataCommand extends FacilioCommand {
     private Context globalContext;
     private Boolean isSubmoduleDataFetched = false;
     private List<Map<String, Object>> subModuleQueryResult = new ArrayList<>();
-    private String innerJoinString = "";
     private List<FacilioField> globalFields = new ArrayList<>();
-
+    private Boolean isBaseModuleJoined = false;
+    private List<Map<String,Object>> pivotFieldsList = new ArrayList<>();
+    private Map<String,FacilioField> lookupJoinMap = new HashMap<>();
     @Override
     public boolean executeCommand(Context context) throws Exception {
         modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -224,6 +223,7 @@ public class FetchReportDataCommand extends FacilioCommand {
         Set<FacilioModule> addedModules = new HashSet<>();
         addedModules.add(baseModule);
 
+
 //		if (report.getModuleId() > 0 && report.getTypeEnum() == ReportType.PIVOT_REPORT) {
 //			reportModule = modBean.getModule(report.getModuleId());
 //			if(!baseModule.equals(reportModule)) {
@@ -248,6 +248,8 @@ public class FetchReportDataCommand extends FacilioCommand {
                     } else {
                         handleJoin(point.getyAxis(), selectBuilder, addedModules);
                     }
+                } else {
+                    handleJoin(point.getyAxis(), selectBuilder, addedModules);
                 }
             }
 
@@ -262,21 +264,36 @@ public class FetchReportDataCommand extends FacilioCommand {
         }
         setYFieldsAndGroupByFields(dataPointList, fields, xAggrField, groupBy, dp, selectBuilder, addedModules);
         List<FacilioField> cloneFields = new ArrayList<>();
-        for (FacilioField field : fields) {
-            if (field != null && field.getModule() != null && field.getModule().isCustom()) {
-                String alias = getAndSetModuleAlias(field.getModule().getName());
-                FacilioField cloneField = field.clone();
-                if(report.getTypeEnum() == ReportType.PIVOT_REPORT) {
-                    cloneField.setTableAlias(alias);
+        if (reportType == ReportType.PIVOT_REPORT){
+            fields.clear();
+            for(Map<String,Object> pivotField: pivotFieldsList)
+            {
+                FacilioField facilioField = (FacilioField) pivotField.get("field");
+                cloneFields.add(facilioField);
+                fields.add(facilioField);
+            }
+        } else {
+            for (FacilioField field : fields) {
+                if (field != null) {
+                    FacilioField cloneField = field.clone();
+                    cloneFields.add(cloneField);
                 }
-                cloneFields.add(cloneField);
-            } else if(field != null ){
-                cloneFields.add(field.clone());
             }
         }
-        globalFields = fields;
-        cloneFields.add(FieldFactory.getIdField(baseModule));
+        globalFields = cloneFields;
+        if (report.getTypeEnum() == ReportType.PIVOT_REPORT) {
+            cloneFields.add(FieldFactory.getIdField(baseModule));
+        }
         selectBuilder.select(cloneFields);
+
+        if(reportType == ReportType.PIVOT_REPORT)
+        {
+            pivotFieldsList = pivotFieldsList.stream().distinct().collect(Collectors.toList());
+//            filterDuplicateItems(pivotFieldsList);
+            for(Map<String,Object> pivotField: pivotFieldsList) {
+                handlePivotJoin(pivotField,selectBuilder);
+            }
+        }
 
         boolean noMatch = hasSortedDp && (xValues == null || xValues.isEmpty());
         Map<String, List<Map<String, Object>>> props = new HashMap<>();
@@ -374,7 +391,7 @@ public class FetchReportDataCommand extends FacilioCommand {
         while (extendedModule != null) {
             selectBuilder.addJoinModules(Collections.singletonList(extendedModule));
             selectBuilder.innerJoin(extendedModule.getTableName())
-                    .on(prevModule.getTableName() + ".ID = " + extendedModule.getTableName() + ".ID");
+                        .on(prevModule.getTableName() + ".ID = " + extendedModule.getTableName() + ".ID");
             prevModule = extendedModule;
             extendedModule = extendedModule.getExtendModule();
         }
@@ -494,7 +511,7 @@ public class FetchReportDataCommand extends FacilioCommand {
         }
 
 
-        List<Map<String, Object>> props;
+        List<Map<String, Object>> props = new ArrayList<>();
 
         ReportFieldContext reportFieldContext = dp.getxAxis();
         boolean outerJoin = reportFieldContext.isOuterJoin();
@@ -544,7 +561,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 
             props = newSelect.get();
         } else {
-            if(report.getTypeEnum() == ReportType.PIVOT_REPORT) {
+            if (report.getTypeEnum() == ReportType.PIVOT_REPORT) {
                 List<SupplementRecord> customLookupFields = new ArrayList<>();
                 for (FacilioField field : globalFields) {
                     if (field != null && field.getDataTypeEnum() == FieldType.MULTI_ENUM) {
@@ -552,11 +569,16 @@ public class FetchReportDataCommand extends FacilioCommand {
                     }
                 }
                 newSelectBuilder.fetchSupplements(customLookupFields);
+//                newSelectBuilder.fetchSupplements(lookupFieldList);
             }
-
+//            String query = newSelectBuilder.constructQueryString();
+            if(reportType == ReportType.PIVOT_REPORT && globalContext.get(FacilioConstants.ContextNames.FILTER_CRITERIA) != null) {
+                newSelectBuilder.andCriteria((Criteria) globalContext.get(FacilioConstants.ContextNames.FILTER_CRITERIA));
+            }
             props = newSelectBuilder.getAsProps();
+            pivotFieldsList.clear();
+            isBaseModuleJoined = false;
         }
-        innerJoinString = "";
         LOGGER.debug("SELECT BUILDER --- " + newSelectBuilder);
 
         if (!FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getId() == 75l) {
@@ -569,7 +591,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 
     private boolean isAlreadyAdded(Set<FacilioModule> addedModules, FacilioModule module) {
         if (CollectionUtils.isEmpty(addedModules)) {
-            return true;
+            return false;
         }
 
         for (FacilioModule m : addedModules) {
@@ -592,9 +614,18 @@ public class FetchReportDataCommand extends FacilioCommand {
                     ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                     groupByField.setField(groupByField.getModule(), modBean.getField(groupByField.getFieldId()));
                 }
-
-                FacilioField gField = groupByField.getField().clone();
-
+                FacilioField gField;
+                if(reportType == ReportType.PIVOT_REPORT){
+                    if (groupByField.getLookupFieldId() > 0) {
+                        gField = modBean.getField(groupByField.getLookupFieldId()).clone();
+                        handlePivotFields(groupByField.getField(), (LookupField) gField, false, groupByField.getModule());
+                    } else {
+                        gField = groupByField.getField().clone();
+                        handlePivotFields(groupByField.getField(), null, false, groupByField.getModule());
+                    }
+                } else {
+                    gField = groupByField.getField().clone();
+                }
                 if (groupByField.getAggrEnum() != null) {
                     if (groupByField.getAggrEnum() instanceof SpaceAggregateOperator && !groupByField.getAggrEnum().getStringValue().equalsIgnoreCase(baseModule.getName())) {
                         gField = applySpaceAggregation(dp, groupByField.getAggrEnum(), selectBuilder, addedModules, groupByField.getField());
@@ -605,7 +636,7 @@ public class FetchReportDataCommand extends FacilioCommand {
                 if (gField.getModule() != null && (gField.getModule().isCustom() && !baseModule.equals(gField.getModule()))) {
                     gField.setTableAlias(getAndSetModuleAlias(gField.getModule().getName()));
                 } else if (gField.getModule() != null && groupByField.getAlias() != null && reportType == ReportType.PIVOT_REPORT) {
-                    gField.setTableAlias(getAndSetModuleAlias(gField.getModule().getName(), groupByField.getAlias()));
+                    gField.setTableAlias(getAndSetModuleAlias(gField.getModule().getName()));
                 }
                 fields.add(gField);
                 if (reportType == ReportType.PIVOT_REPORT && gField.getModule().equals(baseModule) && !gField.getCompleteColumnName().endsWith("null")) {
@@ -840,6 +871,26 @@ public class FetchReportDataCommand extends FacilioCommand {
         return spaceField;
     }
 
+    private String getJoinOnPivot(LookupField lookupField) {
+        FacilioField idField = null;
+        if (LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
+            idField = LookupSpecialTypeUtil.getIdField(lookupField.getSpecialType());
+        } else {
+            idField = FieldFactory.getIdField(lookupField.getLookupModule());
+        }
+        if (idField.getModule() != null && (idField.getModule().isCustom() && !baseModule.equals(idField.getModule()))) {
+            String alias = getAndSetModuleAlias(lookupField.getName());
+            idField = idField.clone();
+            idField.setTableAlias(alias);
+        } else {
+            String alias = getAndSetModuleAlias(lookupField.getLookupModule().getName());
+            idField = idField.clone();
+            idField.setTableAlias(alias);
+        }
+
+        return lookupField.getCompleteColumnName() + " = " + idField.getCompleteColumnName();
+    }
+
     private String getJoinOn(LookupField lookupField) {
         FacilioField idField = null;
         if (LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
@@ -855,37 +906,11 @@ public class FetchReportDataCommand extends FacilioCommand {
         return lookupField.getCompleteColumnName() + " = " + idField.getCompleteColumnName();
     }
 
-
-    private String getJoinOn(LookupField lookupField, String idFieldAlias) {
-        FacilioField idField = null;
-        if (LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
-            idField = LookupSpecialTypeUtil.getIdField(lookupField.getSpecialType());
-        } else {
-            idField = FieldFactory.getIdField(lookupField.getLookupModule());
-        }
-        if (idFieldAlias != null) {
-            String alias = getAndSetModuleAlias(idField.getModule().getName(), idFieldAlias);
-            idField = idField.clone();
-            idField.setTableAlias(alias);
-        }
-        return lookupField.getCompleteColumnName() + " = " + idField.getCompleteColumnName();
-    }
-
     private String getJoinOn(FacilioField facilioField, String idFieldAlias) throws Exception {
         FacilioField idField = null;
         if (facilioField instanceof LookupField) {
             LookupField lookupField = (LookupField) facilioField;
-            if (LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
-                idField = LookupSpecialTypeUtil.getIdField(lookupField.getSpecialType());
-            } else {
-                idField = FieldFactory.getIdField(facilioField.getModule());
-            }
-            if (idFieldAlias != null) {
-                String alias = getAndSetModuleAlias(idField.getModule().getName(), idFieldAlias);
-                idField = idField.clone();
-                idField.setTableAlias(alias);
-            }
-            return facilioField.getCompleteColumnName() + " = " + idField.getCompleteColumnName();
+            return getJoinOnPivot(lookupField);
         } else {
             idField = FieldFactory.getIdField(this.baseModule);
             FacilioField submoduleLookupField = null;
@@ -897,7 +922,7 @@ public class FetchReportDataCommand extends FacilioCommand {
             }
 
             if (idFieldAlias != null) {
-                String alias = getAndSetModuleAlias(idField.getModule().getName(), idFieldAlias);
+                String alias = getAndSetModuleAlias(idField.getModule().getName());
                 idField = idField.clone();
                 idField.setTableAlias(alias);
             }
@@ -908,29 +933,7 @@ public class FetchReportDataCommand extends FacilioCommand {
             }
             return submoduleLookupField.getCompleteColumnName() + " = " + idField.getCompleteColumnName();
         }
-//        else {
-//            idField = FieldFactory.getIdField(this.baseModule);
-//            if (idFieldAlias != null) {
-//                String alias = getAndSetModuleAlias(idField.getModule().getName(), idFieldAlias);
-//                idField = idField.clone();
-//                idField.setTableAlias(alias);
-//            }
-//            return facilioField.getCompleteColumnName() + " = " + idField.getCompleteColumnName();
-//        }
     }
-
-//	private String getDataJoinOn(FacilioField facilioField, String idFieldAlias){
-//		if(facilioField instanceof LookupField){
-//			return getJoinOn(facilioField,idFieldAlias);
-//		}
-//		FacilioField idField = FieldFactory.getIdField(facilioField.getModule());
-//		if(idFieldAlias != null) {
-//			String alias = getAndSetModuleAlias(idField.getModule().getName(),idFieldAlias);
-//			idField = idField.clone();
-//			idField.setTableAlias(alias);
-//		}
-//		return facilioField.getCompleteColumnName()+" = "+idField.getCompleteColumnName();
-//	}
 
     private Map<String, LookupField> getLookupFields(List<FacilioField> fields) {
         Map<String, LookupField> lookupFields = new HashMap<>();
@@ -1005,7 +1008,7 @@ public class FetchReportDataCommand extends FacilioCommand {
             if (xAggrField.getModule() != null && (xAggrField.getModule().isCustom() && !baseModule.equals(xAggrField.getModule()))) {
                 xAggrField.setTableAlias(getAndSetModuleAlias(xAggrField.getModule().getName()));
             } else if (xAggrField.getModule() != null && dp.getxAxis().getAlias() != null && reportType == ReportType.PIVOT_REPORT) {
-                xAggrField.setTableAlias(getAndSetModuleAlias(xAggrField.getModule().getName(), dp.getxAxis().getAlias()));
+                xAggrField.setTableAlias(getAndSetModuleAlias(xAggrField.getModule().getName()));
             }
             groupBy.add(xAggrField.getCompleteColumnName());
 
@@ -1023,6 +1026,14 @@ public class FetchReportDataCommand extends FacilioCommand {
             }
         }
         handleJoin(dp.getxAxis(), selectBuilder, addedModules);
+        if(reportType == ReportType.PIVOT_REPORT) {
+            if (dp.getxAxis().getLookupFieldId() > 0) {
+                LookupField lookupField = (LookupField) modBean.getField(dp.getxAxis().getLookupFieldId());
+                handlePivotFields(dp.getxAxis().getField(), lookupField, false, dp.getxAxis().getModule());
+            } else {
+                handlePivotFields(dp.getxAxis().getField(), null, false, dp.getxAxis().getModule());
+            }
+        }
         return xAggrField;
     }
 
@@ -1066,9 +1077,12 @@ public class FetchReportDataCommand extends FacilioCommand {
 
     @SuppressWarnings("unchecked")
     private void handleJoin(ReportFieldContext reportField, SelectRecordsBuilder selectBuilder, Set<FacilioModule> addedModules) throws Exception {
-        if (reportType == ReportType.PIVOT_REPORT) {
-            handlePivotJoin(reportField, selectBuilder);
-        } else if (!reportField.getModule().equals(baseModule) && !isAlreadyAdded(addedModules, reportField.getModule()) && reportType != ReportType.PIVOT_REPORT) {        // inter-module support
+        if(reportType == ReportType.PIVOT_REPORT)
+        {
+            return;
+        }
+
+        if (!reportField.getModule().equals(baseModule) && !isAlreadyAdded(addedModules, reportField.getModule()) && reportType != ReportType.PIVOT_REPORT) {        // inter-module support
             List<FacilioField> allFields = modBean.getAllFields(baseModule.getName()); // for now base module is enough
             Map<String, LookupField> lookupFields = getLookupFields(allFields);
             handleLookupJoin(lookupFields, reportField.getModule(), selectBuilder, addedModules, reportField.getLookupFieldId());
@@ -1082,9 +1096,16 @@ public class FetchReportDataCommand extends FacilioCommand {
             fields.add(dataPoint.getyAxis().getField());
             return false;
         } else {
-            FacilioField aggrField = dataPoint.getyAxis().getAggrEnum().getSelectField(dataPoint.getyAxis().getField());
+            FacilioField facilioField = dataPoint.getyAxis().getField().clone();
+            if(reportType == ReportType.PIVOT_REPORT) {
+                facilioField.setTableAlias(getAndSetModuleAlias(facilioField.getModule().getName()));
+            }
+            FacilioField aggrField = dataPoint.getyAxis().getAggrEnum().getSelectField(facilioField);
             aggrField.setName(ReportUtil.getAggrFieldName(aggrField, dataPoint.getyAxis().getAggrEnum()));
             fields.add(aggrField);
+            if(reportType == ReportType.PIVOT_REPORT) {
+                handlePivotFields(aggrField, null, true, dataPoint.getyAxis().getModule());
+            }
             return true;
         }
     }
@@ -1188,140 +1209,73 @@ public class FetchReportDataCommand extends FacilioCommand {
     private String getAndSetModuleAlias(String moduleName) {
         String alias = "";
         if (moduleVsAlias.containsKey(moduleName)) {
-            alias = moduleVsAlias.get(moduleName);
-        } else {
-            if (moduleVsAlias.values().size() > 0) {
-                alias = ReportUtil.getAlias((String) moduleVsAlias.values().toArray()[moduleVsAlias.values().size() - 1]);
-            } else {
-                alias = ReportUtil.getAlias("");
-            }
-            moduleVsAlias.put(moduleName, alias);
+            return moduleVsAlias.get(moduleName);
         }
+
+        if (moduleVsAlias.values().size() > 0) {
+            alias = ReportUtil.getAlias((String) moduleVsAlias.values().toArray()[moduleVsAlias.values().size() - 1]);
+        } else {
+            alias = ReportUtil.getAlias("");
+        }
+
+        moduleVsAlias.put(moduleName, alias);
+
         return alias;
     }
 
-    private String getAndSetModuleAlias(String moduleName, String fieldAlias) {
-        String alias = "";
-        String moduleAlias = moduleName + "_" + fieldAlias;
-        if (moduleVsAlias.containsKey(moduleAlias)) {
-            alias = moduleVsAlias.get(moduleAlias);
-        } else {
-            if (moduleVsAlias.values().size() > 0) {
-                alias = ReportUtil.getAlias((String) moduleVsAlias.values().toArray()[moduleVsAlias.values().size() - 1]);
-            } else {
-                alias = ReportUtil.getAlias("");
-            }
-            moduleVsAlias.put(moduleAlias, alias);
-        }
-        return alias;
-    }
-
-    private void handleExtendedModuleJoin(String tableAlias, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) {
+    private void handleExtendedModuleJoin(SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) {
         FacilioModule module = baseModule;
+        if (isBaseModuleJoined) {
+            return;
+        }
         while (module != null) {
-            String tableName = module.getTableName() + " " + getAndSetModuleAlias(module.getName(), tableAlias);
-            String joinOn = getAndSetModuleAlias(module.getName(), tableAlias) + ".ID = " + module.getTableName() + ".ID";
-            String joinString = tableName + " " + joinOn;
-            if (innerJoinString.contains(joinString)) {
-                return;
-            }
-            innerJoinString += joinString + " ";
+            String tableName = module.getTableName() + " " + getAndSetModuleAlias(module.getName());
+            String joinOn = getAndSetModuleAlias(module.getName()) + ".ID = " + module.getTableName() + ".ID";
             selectBuilder.innerJoin(tableName)
                     .on(joinOn);
             module = module.getExtendModule();
         }
+        isBaseModuleJoined = true;
     }
 
-    private void handlePivotJoin(ReportFieldContext reportField, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) throws Exception {
-        FacilioModule module;
-        if (StringUtils.isNotEmpty(reportField.getModuleName())) {
-            module = modBean.getModule(reportField.getModuleName());
-        } else if (reportField.getField() != null && reportField.getField().getModule() != null) {
-            module = reportField.getField().getModule();
-        } else {
-            module = reportField.getModule();
-        }
-        String tableAlias = reportField.getAlias();
-        handleExtendedModuleJoin(tableAlias, selectBuilder);
-//        if (reportField.getSubModuleFieldId() > 0) {
-//            FacilioField numberFieldClone = (FacilioField) modBean.getField(reportField.getSubModuleFieldId()).clone();
-//            numberFieldClone.setTableAlias(getAndSetModuleAlias(numberFieldClone.getModule().getName(), tableAlias));
-//            String SubmodulejoinOn = getJoinOn(numberFieldClone, tableAlias);
-//            FacilioModule lookupFieldModule = numberFieldClone.getModule();
-//
-//            Stack<FacilioModule> stack = new Stack<>();
-//            FacilioModule prevModule = null;
-//            FacilioModule subModule = module;
-//
-//            while (subModule != null) {
-//                if (subModule.equals(lookupFieldModule)) {
-//                    prevModule = subModule;
-//                    selectBuilder.leftJoin(module.getTableName() + " " + getAndSetModuleAlias(module.getName(), tableAlias)).on(SubmodulejoinOn);
-//                    break;
-//                }
-//                stack.push(subModule);
-//                subModule = subModule.getExtendModule();
-//            }
-//
-//            while (prevModule != null && CollectionUtils.isNotEmpty(stack)) {
-//                FacilioModule pop = stack.pop();
-//                selectBuilder.innerJoin(pop.getTableName() + " " + getAndSetModuleAlias(pop.getName(), tableAlias))
-//                        .on(getAndSetModuleAlias(prevModule.getName(), tableAlias) + ".ID = " + getAndSetModuleAlias(pop.getName(), tableAlias) + ".ID");
-//                prevModule = pop;
-//            }
-//        } else
-        if (reportField.getLookupFieldId() > 0) {
+    private void handlePivotJoin(Map<String,Object> pivotField,SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) throws Exception {
+        handleExtendedModuleJoin(selectBuilder);
+        FacilioModule module = (FacilioModule) pivotField.get("module");
+        if((Boolean) pivotField.get("isLookupField")){
+            List<FacilioModule> extendedModules = (List<FacilioModule>) pivotField.get("extendedModules");
+            LookupField lookupFieldClone = (LookupField) pivotField.get("lookupField");
+            FacilioField facilioField = (FacilioField) pivotField.get("field");
 
-            LookupField lookupFieldClone = (LookupField) modBean.getField(reportField.getLookupFieldId()).clone();
-            lookupFieldClone.setTableAlias(getAndSetModuleAlias(lookupFieldClone.getModule().getName(), tableAlias));
-            String LookupjoinOn = getJoinOn(lookupFieldClone, tableAlias);
-            FacilioModule lookupFieldModule = lookupFieldClone.getLookupModule();
+            boolean reverseModules = (boolean) pivotField.get("reverseFields");
 
-            Queue<FacilioModule> queue = new LinkedList<>();
-            FacilioModule prevModule = null;
-
-            while (lookupFieldModule != null) {
-                if (module.equals(lookupFieldModule)) {
-                    prevModule = lookupFieldModule;
-                    queue.add(lookupFieldModule);
-                    break;
-                }
-                queue.add(lookupFieldModule);
-                lookupFieldModule = lookupFieldModule.getExtendModule();
+            if(reverseModules) {
+                Collections.reverse(extendedModules);
             }
 
-            while (prevModule != null && CollectionUtils.isNotEmpty(queue)) {
-                FacilioModule poll = queue.poll();
-                if (poll.equals(lookupFieldClone.getLookupModule())) {
-                    selectBuilder.leftJoin(lookupFieldClone.getLookupModule().getTableName() + " " + getAndSetModuleAlias(poll.getName(), tableAlias)).on(LookupjoinOn);
+            FacilioModule prevModule = extendedModules.get(extendedModules.size() - 1);
+
+            String currentModuleAlias;
+            String prevModuleAlias;
+            for (FacilioModule poll: extendedModules){
+                if (poll != null && poll.equals(lookupFieldClone.getLookupModule())) {
+                    currentModuleAlias = getAndSetModuleAlias(poll.getName() + "_" + facilioField.getName());
+                    String LookupJoinOn = lookupFieldClone.getCompleteColumnName() + " = " + currentModuleAlias + ".ID";
+                    selectBuilder.leftJoin(lookupFieldClone.getLookupModule().getTableName() + " " + currentModuleAlias).on(LookupJoinOn);
                 } else {
-                    selectBuilder.innerJoin(poll.getTableName() + " " + getAndSetModuleAlias(poll.getName(), tableAlias))
-                            .on(getAndSetModuleAlias(prevModule.getName(), tableAlias) + ".ID = " + getAndSetModuleAlias(poll.getName(), tableAlias) + ".ID");
+                    currentModuleAlias = getAndSetModuleAlias(poll.getName() + "_" + facilioField.getName());
+                    prevModuleAlias = getAndSetModuleAlias(prevModule.getName() + "_" + facilioField.getName());
+                    selectBuilder.leftJoin(poll.getTableName() + " " + currentModuleAlias)
+                                .on(prevModuleAlias + ".ID = " + currentModuleAlias + ".ID");
                 }
                 prevModule = poll;
             }
+        } else if((Boolean) pivotField.get("isDataField") && !this.baseModule.getExtendedModuleIds().contains(module.getModuleId())) {
+            System.out.println("submodule data field join");
+            FacilioField dataField = FieldFactory.getIdField(module).clone();
 
-        } else if (!this.baseModule.getName().equals(reportField.getModuleName()) && reportField.getAlias().contains("data_")) {
+            dataField.setTableAlias(getAndSetModuleAlias(dataField.getModule().getName()));
 
-            if (reportField.getSubModuleFieldId() > 0) {
-                return;
-            }
-
-            String moduleName = reportField.getModuleName();
-            List<FacilioField> fields = modBean.getAllFields(moduleName);
-            FacilioField dataField = null;
-            for (FacilioField field : fields) {
-                FacilioField cloneField = field.clone();
-                if (cloneField.getName().equals(reportField.getField().getName())) {
-                    dataField = cloneField;
-                }
-            }
-            if (dataField == null) {
-                dataField = FieldFactory.getIdField(reportField.getModule()).clone();
-            }
-
-            dataField.setTableAlias(getAndSetModuleAlias(dataField.getModule().getName(), tableAlias));
-            String submoduleJoinOn = getJoinOn(dataField, tableAlias);
+            String submoduleJoinOn = getJoinOn(dataField, null);
             FacilioModule lookupFieldModule = dataField.getModule();
 
             Stack<FacilioModule> stack = new Stack<>();
@@ -1331,7 +1285,7 @@ public class FetchReportDataCommand extends FacilioCommand {
             while (subModule != null) {
                 if (subModule.equals(lookupFieldModule)) {
                     prevModule = subModule;
-                    String tableName = module.getTableName() + " " + getAndSetModuleAlias(module.getName(), tableAlias);
+                    String tableName = module.getTableName() + " " + getAndSetModuleAlias(module.getName());
                     selectBuilder.leftJoin(tableName).on(submoduleJoinOn);
                     break;
                 }
@@ -1341,8 +1295,8 @@ public class FetchReportDataCommand extends FacilioCommand {
 
             while (prevModule != null && CollectionUtils.isNotEmpty(stack)) {
                 FacilioModule pop = stack.pop();
-                selectBuilder.innerJoin(pop.getTableName() + " " + getAndSetModuleAlias(pop.getName(), tableAlias))
-                        .on(getAndSetModuleAlias(prevModule.getName(), tableAlias) + ".ID = " + getAndSetModuleAlias(pop.getName(), tableAlias) + ".ID");
+                selectBuilder.innerJoin(pop.getTableName() + " " + getAndSetModuleAlias(pop.getName()))
+                        .on(getAndSetModuleAlias(prevModule.getName()) + ".ID = " + getAndSetModuleAlias(pop.getName()) + ".ID");
                 prevModule = pop;
             }
         }
@@ -1363,77 +1317,68 @@ public class FetchReportDataCommand extends FacilioCommand {
             }
             return props;
         }
-        for (Map<String, Object> record : props) {
-            List<FacilioField> baseFields = new ArrayList<>();
-//            List<FacilioField> submoduleFields = new ArrayList<>();
-            for (ReportPivotTableRowsContext row : rows) {
-                FacilioField field = null;
-                if (!baseModule.getName().equals(row.getModuleName())) {
-                    field = modBean.getField(row.getField().getId());
+//      List<FacilioField> submoduleFields = new ArrayList<>();
+        for (ReportPivotTableRowsContext row : rows) {
+            FacilioField field = null;
+            if (!baseModule.getName().equals(row.getModuleName())) {
+                field = modBean.getField(row.getField().getId());
 //                    submoduleFields.add(field);
-                    Map<String, Object> fieldsMap = buildSubmoduleQueryFields(record, field, rows);
-                    fieldsList.add(fieldsMap);
-                } else {
-                    field = modBean.getField(row.getField().getId());
-                    baseFields.add(field);
-                }
+                Map<String, Object> fieldsMap = buildSubmoduleQueryFields(props, field, rows);
+                fieldsList.add(fieldsMap);
             }
+        }
 
-            for (Map<String, Object> submoduleMap : fieldsList) {
-                List<FacilioField> fields = new ArrayList<>();
-                FacilioField subField = (FacilioField) submoduleMap.get("field");
-                ReportPivotTableRowsContext row = (ReportPivotTableRowsContext) submoduleMap.get("row");
-                fields.add(subField);
-                GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder().select(fields).table(subField.getTableName());
-                if (row.getCriteria() != null) {
-                    selectRecordBuilder.andCriteria(row.getCriteria());
-                }
-                List<Map<String, Object>> conditionList = (List<Map<String, Object>>) submoduleMap.get("condition");
-                for (Map<String, Object> condition : conditionList) {
-                    selectRecordBuilder.andCustomWhere((String) condition.get("condition"));
-                }
-                getSubmoduleJoinOn(subField, selectRecordBuilder);
-                if (row.getSortField() != null) {
-                    FacilioField orderByField = modBean.getField(row.getSortField().getId());
-                    selectRecordBuilder.orderBy(subField.getTableName() + "." + orderByField.getColumnName());
-                }
+        for (Map<String, Object> submoduleMap : fieldsList) {
+            List<FacilioField> fields = new ArrayList<>();
+            FacilioField subField = (FacilioField) submoduleMap.get("field");
+            FacilioField baseField = FieldFactory.getIdField(baseModule);
+            ReportPivotTableRowsContext row = (ReportPivotTableRowsContext) submoduleMap.get("row");
+            fields.add(subField);
+            fields.add(baseField);
+            GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder().select(fields).table(subField.getTableName());
+            if (row.getCriteria() != null) {
+                selectRecordBuilder.andCriteria(row.getCriteria());
+            }
+            List<Long> conditionList = (List<Long>) submoduleMap.get("condition");
+
+            selectRecordBuilder.andCondition(CriteriaAPI.getCondition(baseField, conditionList, NumberOperators.EQUALS));
+
+            getSubmoduleJoinOn(subField, selectRecordBuilder);
+            if (row.getSortField() != null) {
+                FacilioField orderByField = modBean.getField(row.getSortField().getId());
+                selectRecordBuilder.orderBy(subField.getTableName() + "." + orderByField.getColumnName());
+            }
 //                if(row.getSortOrder() > 0){
 //                    selectRecordBuilder.
 //                }
-                Map<String, Object> result = selectRecordBuilder.fetchFirst();
+
+            List<Map<String, Object>> result = selectRecordBuilder.get();
+            for (Map<String, Object> record : props) {
                 if (result != null) {
-                    record.put(subField.getName(), result.get(subField.getName()));
+                    record.put(subField.getName(), result.get(0));
                 }
-                String query = selectRecordBuilder.constructSelectStatement();
-                System.out.println("query -> " + query);
             }
+
+            System.out.println("query -> " + selectRecordBuilder);
         }
+
         isSubmoduleDataFetched = true;
         subModuleQueryResult = props;
         return props;
     }
 
-    private Map<String, Object> buildSubmoduleQueryFields(Map<String, Object> conditions, FacilioField field, List<ReportPivotTableRowsContext> rows) throws Exception {
+    private Map<String, Object> buildSubmoduleQueryFields(List<Map<String, Object>> conditions, FacilioField field, List<ReportPivotTableRowsContext> rows) throws Exception {
         Map<String, Object> result = new HashMap<>();
-        List<Map<String, Object>> conditionList = new ArrayList<>();
+        List<Long> conditionList = new ArrayList<>();
         result.put("field", field);
         for (ReportPivotTableRowsContext row : rows) {
-            if (row.getModuleName().equals(baseModule.getName())) {
-                Map<String, Object> conditionMap = new HashMap<>();
-                FacilioField baseModuleField = modBean.getField(row.getField().getId());
-                String condition = "";
-                switch (baseModuleField.getDataTypeEnum()) {
-                    case STRING:
-                        condition = baseModuleField.getCompleteColumnName() + " =  '" + conditions.get(baseModuleField.getName()) + "'";
-                        break;
-                    default:
-                        condition = baseModuleField.getCompleteColumnName() + " =  " + conditions.get(baseModuleField.getName());
-                }
-                conditionMap.put("condition", condition);
-                conditionList.add(conditionMap);
-            } else {
+            if (!row.getModuleName().equals(baseModule.getName())) {
                 result.put("row", row);
             }
+        }
+        for (Map<String, Object> record : conditions) {
+            FacilioField baseModuleField = FieldFactory.getIdField(baseModule);
+            conditionList.add((Long) record.get(baseModuleField.getName()));
         }
         result.put("condition", conditionList);
         return result;
@@ -1445,14 +1390,13 @@ public class FetchReportDataCommand extends FacilioCommand {
         FacilioField dataField = null;
         for (FacilioField field : fields) {
             if (field.getName().equals(baseModule.getName())) {
-                dataField = field;
+                dataField = field.clone();
             }
         }
         if (dataField == null) {
-            dataField = FieldFactory.getIdField(submoduleField.getModule());
+            dataField = FieldFactory.getIdField(submoduleField.getModule()).clone();
         }
 
-        FacilioModule module = dataField.getModule();
         FacilioField idField = FieldFactory.getIdField(baseModule);
         selectRecordBuilder.rightJoin(baseModule.getTableName()).on(dataField.getTableName() + "." + dataField.getColumnName() + " = " + idField.getCompleteColumnName());
     }
@@ -1472,6 +1416,76 @@ public class FetchReportDataCommand extends FacilioCommand {
             }
         }
         return true;
+    }
+
+    private void handlePivotFields(FacilioField field, LookupField lookupField, boolean isDataField, FacilioModule module) throws Exception {
+
+        Map<String, Object> tempMap = new HashMap<>();
+        field = field.clone();
+        if(lookupField != null){
+            tempMap.put("lookupField", lookupField.clone());
+            tempMap.put("lookupModule", lookupField.getModule());
+            tempMap.put("isLookupField",true);
+            field.setName(lookupField.getName() + "_" +module.getName() + "_" + field.getName());
+            field.setTableAlias(getAndSetModuleAlias(field.getModule().getName() + "_" + field.getName()));
+        } else {
+            tempMap.put("isLookupField",false);
+            if(field.getModule() != null) {
+                field.setName(field.getName());
+                field.setTableAlias(getAndSetModuleAlias(field.getModule().getName()));
+            }
+        }
+        tempMap.put("field", field);
+
+        List<FacilioModule> tempModulesList = new ArrayList<>();
+
+        if(module != null) {
+            FacilioModule lookupModule = module;
+            while (lookupModule != null){
+                tempModulesList.add(lookupModule);
+                lookupModule = lookupModule.getExtendModule();
+            }
+        }
+
+        if(lookupField != null && !tempModulesList.contains(lookupField.getLookupModule()))
+        {
+            tempModulesList.clear();
+            FacilioModule lookupModule = lookupField.getLookupModule();
+            while (lookupModule != null){
+                tempModulesList.add(lookupModule);
+                lookupModule = lookupModule.getExtendModule();
+            }
+            tempMap.put("reverseFields",false);
+        }
+
+        if(lookupField != null && field.getModule().isParentOrChildModule(baseModule))
+        {
+            tempModulesList.clear();
+            FacilioModule lookupModule = lookupField.getModule();
+            while (lookupModule != null){
+                tempModulesList.add(lookupModule);
+                lookupModule = lookupModule.getExtendModule();
+            }
+            tempMap.put("reverseFields",false);
+        }
+
+        if(lookupField != null && lookupField.getLookupModule().equals(field.getModule())){
+            tempModulesList.clear();
+            tempModulesList.add(lookupField.getLookupModule());
+        }
+
+        if(field.getModule() != null && field.getModule().equals(tempModulesList.get(tempModulesList.size() - 1))){
+            tempMap.put("reverseFields", false);
+        }
+
+        if(!tempMap.containsKey("reverseFields")) {
+            tempMap.put("reverseFields", true);
+        }
+
+        tempMap.put("isDataField", isDataField);
+        tempMap.put("module", module);
+        tempMap.put("extendedModules",tempModulesList);
+        pivotFieldsList.add(tempMap);
     }
 }
 

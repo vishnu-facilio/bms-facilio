@@ -313,7 +313,7 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 					}
 					updateBuilder = appendUpdateBuilderConditions(readingsList, j, updateBuilder, facilioField, module);
 				}
-				List<SupplementRecord> supplements = fields.stream().filter(f -> f.getDataTypeEnum().isMultiRecord())
+				List<SupplementRecord> supplements = fields.stream().filter(f -> f.getDataTypeEnum().isRelRecordField())
 						.map(f -> (SupplementRecord) f)
 						.collect(Collectors.toList());
 				if(CollectionUtils.isNotEmpty(supplements)) {
@@ -516,7 +516,7 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 						.fields(fields)
 						.addRecords(readingsList);
 
-				List<SupplementRecord> supplements = fields.stream().filter(f -> f.getDataTypeEnum().isMultiRecord())
+				List<SupplementRecord> supplements = fields.stream().filter(f -> f.getDataTypeEnum().isRelRecordField())
 						.map(f -> (SupplementRecord) f)
 						.collect(Collectors.toList());
 				if(CollectionUtils.isNotEmpty(supplements)) {
