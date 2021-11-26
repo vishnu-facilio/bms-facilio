@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.AssetActivityType;
+import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestLineItemContext;
+import com.facilio.bmsconsoleV3.util.V3InventoryRequestAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
@@ -56,7 +58,7 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 				ToolTypesContext toolTypes = getToolType(toolTypesId);
 				StoreRoomContext storeRoom = tool.getStoreRoom();
 				if (workorderTool.getRequestedLineItem() != null && workorderTool.getRequestedLineItem().getId() > 0) {
-					if(!InventoryRequestAPI.checkQuantityForWoToolNeedingApproval(toolTypes, workorderTool.getRequestedLineItem(), workorderTool)) {
+					if(!V3InventoryRequestAPI.checkQuantityForWoToolNeedingApproval(toolTypes, workorderTool.getRequestedLineItem(), workorderTool)) {
 						throw new IllegalArgumentException("Please check the quantity approved/issued in the request");
 					}
 				}
@@ -169,8 +171,8 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 	}
 
 	private WorkorderToolsContext setWorkorderItemObj(PurchasedToolContext purchasedtool, double quantity,
-			ToolContext tool, long parentId, WorkOrderContext workorder, WorkorderToolsContext workorderTools,
-			ApprovalState approvalState, AssetContext asset, InventoryRequestLineItemContext lineItem, long parentTransactionId, Context context) throws Exception{
+													  ToolContext tool, long parentId, WorkOrderContext workorder, WorkorderToolsContext workorderTools,
+													  ApprovalState approvalState, AssetContext asset, V3InventoryRequestLineItemContext lineItem, long parentTransactionId, Context context) throws Exception{
 		WorkorderToolsContext woTool = new WorkorderToolsContext();
 		woTool.setIssueTime(workorderTools.getIssueTime());
 		woTool.setReturnTime(workorderTools.getReturnTime());

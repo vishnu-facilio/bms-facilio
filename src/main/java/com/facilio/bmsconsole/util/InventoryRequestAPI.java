@@ -55,18 +55,6 @@ public class InventoryRequestAPI {
 
 	}
 	
-	public static boolean checkQuantityForWoItemNeedingApproval(ItemTypesContext itemType, InventoryRequestLineItemContext lineItem, double woItemQuantity) throws Exception {
-		if(lineItem != null) {
-			lineItem = getLineItem(lineItem.getId());
-				if(woItemQuantity <= (lineItem.getIssuedQuantity())) {
-					updateRequestUsedQuantity(lineItem, woItemQuantity);
-					return true;
-				}
-				return false;
-		}
-		throw new IllegalArgumentException("Please request approval for the item before using it");
-	}
-	
 	public static InventoryRequestLineItemContext getLineItem(long lineItemId) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

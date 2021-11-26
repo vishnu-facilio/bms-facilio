@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
+import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestLineItemContext;
+import com.facilio.bmsconsoleV3.util.V3InventoryRequestAPI;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
@@ -23,8 +25,8 @@ public class RequestedLineItemQuantityRollUpCommand extends FacilioCommand {
         	if(costType == 1) {
         		WorkorderItemContext woItem = WorkOrderAPI.getWorkOrderItem(id);
         		if(woItem.getRequestedLineItem() != null && woItem.getRequestedLineItem().getId() > 0) {
-	        		InventoryRequestLineItemContext woLineItem = InventoryRequestAPI.getLineItem(woItem.getRequestedLineItem().getId());
-	        		InventoryRequestAPI.updateRequestUsedQuantity(woItem.getRequestedLineItem(), woLineItem.getUsedQuantity() - woItem.getQuantity());
+	        		V3InventoryRequestLineItemContext woLineItem = V3InventoryRequestAPI.getLineItem(woItem.getRequestedLineItem().getId());
+	        		V3InventoryRequestAPI.updateRequestUsedQuantity(woItem.getRequestedLineItem(), woLineItem.getUsedQuantity() - woItem.getQuantity());
         		}
         	}
 //        	else if(costType == 2) {

@@ -213,7 +213,7 @@ public class V3InventoryRequestLineItemContext extends BaseLineItemContext {
         transaction.setTool(tool);
         transaction.setIssuedTo(requestedFor);
         transaction.setParentId(requestedFor.getOuid());
-        transaction.setRequestedLineItem(getV2Object());
+        transaction.setRequestedLineItem(this);
         transaction.setTransactionType(3);
         transaction.setTransactionState(2);
         transaction.setQuantity(this.getQuantity());
@@ -224,14 +224,8 @@ public class V3InventoryRequestLineItemContext extends BaseLineItemContext {
         return transaction;
 
     }
-@JsonIgnore
-    public InventoryRequestLineItemContext getV2Object() throws Exception
-    {
-        Map<String, Object> map = FieldUtil.getAsProperties(this);
-        InventoryRequestLineItemContext inventoryRequestLineItemContext = FieldUtil.getAsBeanFromMap(map,InventoryRequestLineItemContext.class);
-        return inventoryRequestLineItemContext;
-    }
-    public ItemTransactionsContext contructManualItemTransactionContext(User requestedFor) throws Exception {
+
+        public ItemTransactionsContext contructManualItemTransactionContext(User requestedFor) throws Exception {
         ItemTransactionsContext transaction = new ItemTransactionsContext();
         if(this.getStoreRoom() == null) {
             throw new IllegalArgumentException("No appropriate Item found");
@@ -240,7 +234,7 @@ public class V3InventoryRequestLineItemContext extends BaseLineItemContext {
         transaction.setItem(item);
         transaction.setIssuedTo(requestedFor);
         transaction.setParentId(requestedFor.getOuid());
-        transaction.setRequestedLineItem(getV2Object());
+        transaction.setRequestedLineItem(this);
         transaction.setTransactionType(3);
         transaction.setTransactionState(2);
         transaction.setQuantity(this.getQuantity());

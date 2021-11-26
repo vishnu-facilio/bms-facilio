@@ -26,6 +26,7 @@ import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesComman
 import com.facilio.bmsconsole.commands.reservation.CreateInternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.ValidateAndSetReservationPropCommand;
 import com.facilio.bmsconsole.localization.translation.AddOrUpdateTranslationCommand;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.UseInventoryRequestLineItemsCommandV3;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsole.workflow.rule.impact.AddOrUpdateAlarmImpactCommand;
@@ -3081,7 +3082,7 @@ public class TransactionChainFactory {
 
 		public static FacilioChain getUseLineItemsForItemsChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new UseInventoryRequestLineItemsCommand());
+			c.addCommand(new UseInventoryRequestLineItemsCommandV3());
 			c.addCommand(getAddOrUdpateWorkorderItemsChain());
 			return c;
 		}
