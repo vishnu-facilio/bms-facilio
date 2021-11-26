@@ -20,7 +20,7 @@ files:
   - source: /setenv-syd.sh
     destination: /home/facilio
   - source: /setenv-uk.sh
-    destination: /home/facilio    
+    destination: /home/facilio
   - source: /threaddump.sh
     destination: /home/facilio
   - source: /move_hprof.sh
@@ -34,6 +34,8 @@ files:
   - source: /awsprops-kinesis.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-stage.properties
+    destination: /home/facilio/deployment-files/
+  - source: /awsprops-stage2.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-user.properties
     destination: /home/facilio/deployment-files/
@@ -62,11 +64,11 @@ files:
   - source: /log4j-uk-scheduler.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-uk-kafka.properties
-    destination: /home/facilio/deployment-files/    
+    destination: /home/facilio/deployment-files/
   - source: /log4j-sp-user.properties
     destination: /home/facilio/deployment-files/
   - source: /log4j-sp-scheduler.properties
-    destination: /home/facilio/deployment-files/    
+    destination: /home/facilio/deployment-files/
   - source: /agentIntegration-production.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-sp-scheduler.properties
@@ -76,7 +78,7 @@ files:
   - source: /awsprops-uk-scheduler.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-uk-user.properties
-    destination: /home/facilio/deployment-files/    
+    destination: /home/facilio/deployment-files/
   - source: /awsprops-syd-scheduler.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-syd-user.properties
@@ -104,7 +106,7 @@ files:
   - source: /service-syd.yml
     destination: /home/facilio/deployment-files/
   - source: /service-uk.yml
-    destination: /home/facilio/deployment-files/    
+    destination: /home/facilio/deployment-files/
   - source: /clientAppConfig-stage.yml
     destination: /home/facilio/deployment-files/
 
@@ -136,7 +138,6 @@ permissions:
     owner: facilio
     group: facilio
     mode: 755
-
 
 hooks:
   ApplicationStop:
