@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.agent.controller.FacilioControllerType;
+import com.facilio.agentv2.AgentConstants;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.CommissioningLogContext;
@@ -17,25 +18,25 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fs.FileInfo.FileFormat;
 
-/**
- * @author facilio
- *
- */
+import lombok.Getter;
+import lombok.Setter;
+
 public class CommissionAction extends FacilioAction{
 
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 
-	public String exportPointsModule() throws Exception {
-		
-		FacilioContext context=new FacilioContext();
-		context.put(FacilioConstants.ContextNames.FILE_FORMAT, FileFormat.getFileFormat(type));
-		context.put(FacilioConstants.ContextNames.CONTROLLER_ID, getControllerId());
+	@Getter @Setter
+	private long agentId = -1;
 
+	public String exportPoints() throws Exception {
+		
 		FacilioChain exportModule = TransactionChainFactory.getExportPointsChain();
-		exportModule.execute(context);
+		FacilioContext context = exportModule.getContext();
+		context.put(FacilioConstants.ContextNames.FILE_FORMAT, FileFormat.getFileFormat(type));
+		context.put(AgentConstants.AGENT_ID, agentId);
+
+		exportModule.execute();
 		String fileUrl = (String) context.get(FacilioConstants.ContextNames.FILE_URL);
 		setResult("fileUrl", fileUrl);
 		return SUCCESS;
