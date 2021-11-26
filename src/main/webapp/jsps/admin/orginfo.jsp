@@ -26,7 +26,7 @@
 	  result = AccountUtil.getOrgBean(orgId).orgInfo();
 	  users = AccountUtil.getOrgBean(orgId).getAppUsers(orgId, -1, false);
 	  //considering main app for now here
-	  roles = AccountUtil.getRoleBean(orgId).getRoles(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+	  roles = AccountUtil.getRoleBean(orgId).getRolesForApps(Collections.singletonList(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)));
 	  features  = AccountUtil.getFeatureLicenseMap(orgId);
   }
 %>
