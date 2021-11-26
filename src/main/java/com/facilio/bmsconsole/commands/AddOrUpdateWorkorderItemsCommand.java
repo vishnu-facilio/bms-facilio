@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestLineItemContext;
+import com.facilio.bmsconsoleV3.util.V3InventoryRequestAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -71,7 +73,7 @@ public class AddOrUpdateWorkorderItemsCommand extends FacilioCommand {
 				StoreRoomContext storeRoom = item.getStoreRoom();
 				WorkOrderContext wo = getWorkorderContext(parentId);
 				if (workorderitem.getRequestedLineItem() != null && workorderitem.getRequestedLineItem().getId() > 0) {
-					if(!InventoryRequestAPI.checkQuantityForWoItemNeedingApproval(itemType, workorderitem.getRequestedLineItem(), workorderitem.getQuantity())) {
+					if(!V3InventoryRequestAPI.checkQuantityForWoItemNeedingApproval(itemType, workorderitem.getRequestedLineItem(), workorderitem.getQuantity())) {
 						throw new IllegalArgumentException("Please check the quantity approved/issued in the request");
 					}
 				}
@@ -223,7 +225,7 @@ public class AddOrUpdateWorkorderItemsCommand extends FacilioCommand {
 	}
 
 	private WorkorderItemContext setWorkorderItemObj(PurchasedItemContext purchasedItem, double quantity,
-			ItemContext item, long parentId, ApprovalState approvalState, WorkOrderContext wo, AssetContext asset, InventoryRequestLineItemContext lineItem, long parentTransactionId, Context context) throws Exception{
+													 ItemContext item, long parentId, ApprovalState approvalState, WorkOrderContext wo, AssetContext asset, V3InventoryRequestLineItemContext lineItem, long parentTransactionId, Context context) throws Exception{
 		WorkorderItemContext woItem = new WorkorderItemContext();
 		woItem.setTransactionType(TransactionType.WORKORDER);
 		woItem.setIsReturnable(false);

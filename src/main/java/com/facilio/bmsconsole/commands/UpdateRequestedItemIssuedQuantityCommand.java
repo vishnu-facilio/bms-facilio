@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestLineItemContext;
+import com.facilio.bmsconsoleV3.util.V3InventoryRequestAPI;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -29,7 +31,7 @@ public class UpdateRequestedItemIssuedQuantityCommand extends FacilioCommand {
 		List<ItemTransactionsContext> itemTransactions = (List<ItemTransactionsContext>) context
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
 	   if(CollectionUtils.isNotEmpty(itemTransactions) && itemTransactions.get(0).getRequestedLineItem() != null && itemTransactions.get(0).getRequestedLineItem().getId() > 0) {
-		InventoryRequestLineItemContext lineItem = InventoryRequestAPI.getLineItem(itemTransactions.get(0).getRequestedLineItem().getId());
+		V3InventoryRequestLineItemContext lineItem = V3InventoryRequestAPI.getLineItem(itemTransactions.get(0).getRequestedLineItem().getId());
 		   if(lineItem != null && itemTransactions.get(0).getTransactionStateEnum() == TransactionState.RETURN) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule lineItemModule = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);

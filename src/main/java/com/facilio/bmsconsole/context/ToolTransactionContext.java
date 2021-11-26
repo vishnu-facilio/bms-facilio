@@ -6,6 +6,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
+import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestLineItemContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class ToolTransactionContext extends ModuleBaseWithCustomFields {
@@ -210,11 +211,11 @@ public class ToolTransactionContext extends ModuleBaseWithCustomFields {
 		this.assetIds = assetIds;
 	}
 
-	private InventoryRequestLineItemContext requestedLineItem;
-	public InventoryRequestLineItemContext getRequestedLineItem() {
+	private V3InventoryRequestLineItemContext requestedLineItem;
+	public V3InventoryRequestLineItemContext getRequestedLineItem() {
 		return requestedLineItem;
 	}
-	public void setRequestedLineItem(InventoryRequestLineItemContext requestedLineItem) {
+	public void setRequestedLineItem(V3InventoryRequestLineItemContext requestedLineItem) {
 		this.requestedLineItem = requestedLineItem;
 	}
 	private ResourceContext resource;
