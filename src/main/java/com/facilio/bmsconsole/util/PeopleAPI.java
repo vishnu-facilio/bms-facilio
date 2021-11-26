@@ -877,4 +877,29 @@ public class PeopleAPI {
 	}
 
 
+	public static List<Map<String, Object>> getPeopleForRoles(List<Long> roleIds) throws Exception {
+
+		if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(roleIds)) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule peopleModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.table(ModuleFactory.getPeopleModule().getTableName())
+					.select(modBean.getAllFields(peopleModule.getName()))
+					.innerJoin("ORG_Users")
+					.on("ORG_Users.PEOPLE_ID = People.ID")
+					.innerJoin("ORG_User_Apps")
+					.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
+					.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.ROLE_ID", "roleId", String.valueOf(StringUtils.join(roleIds, ",")), NumberOperators.EQUALS));
+
+			List<Map<String, Object>> props = selectBuilder.get();
+			if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(props)) {
+				return props;
+			}
+		}
+		return null;
+
+
+	}
+
 }
