@@ -31,6 +31,8 @@ public class LoadTrListLookupCommandV3 extends FacilioCommand {
         additionaLookups.add((LookupField) fieldsAsMap.get("transferFromStore"));
         additionaLookups.add((LookupField) fieldsAsMap.get("transferToStore"));
         additionaLookups.add((LookupField) fieldsAsMap.get("transferredBy"));
+        additionaLookups.add((LookupField) fieldsAsMap.get("sysCreatedBy"));
+        additionaLookups.add((LookupField) fieldsAsMap.get("sysModifiedBy"));
 
         for (FacilioField field : fields) {
             if (!field.isDefault() && field.getDataTypeEnum() == FieldType.LOOKUP) {
