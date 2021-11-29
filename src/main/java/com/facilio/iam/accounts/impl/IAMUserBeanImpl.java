@@ -871,6 +871,18 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			throw new IllegalArgumentException("Duplicate entries for the user name.");
 		}
 
+		List<Map<String, Object>> res = new GenericSelectRecordBuilder().
+				table(IAMAccountConstants.getDCLookupModule().getTableName())
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("userName"), String.valueOf(props.get("userName")), StringOperators.IS))
+				.get();
+
+		if (CollectionUtils.isNotEmpty(res)) {
+			if (!res.get(0).get("dc").toString().equals(props.get("dc").toString())) {
+				throw new IllegalArgumentException("User cannot be of different DC.");
+			}
+		}
+
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(IAMAccountConstants.getDCLookupModule().getTableName())
 				.fields(fields);
