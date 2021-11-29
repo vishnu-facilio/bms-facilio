@@ -34,7 +34,6 @@ public class AttachmentContextCommand extends FacilioCommand {
 				attachments.add(attachment);
 			}
 			context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTEXT_LIST, attachments);
-			context.put(FacilioConstants.ContextNames.RECORD_LIST, attachments);
 		}
 		return false;
 	}
