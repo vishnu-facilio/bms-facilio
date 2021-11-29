@@ -418,4 +418,18 @@ public class StateFlowAction extends FacilioAction {
 
 		return SUCCESS;
 	}
+	
+	public String getTimeLog() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.getTimeLogChain();
+		FacilioContext context = chain.getContext();
+
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.ID, id);
+		constructListContext(context);
+
+		chain.execute();
+		setResult(FacilioConstants.ContextNames.WORK_ORDER, context.get(FacilioConstants.ContextNames.WORK_ORDER));
+
+		return SUCCESS;
+	}
 }
