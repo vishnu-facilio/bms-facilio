@@ -33,7 +33,7 @@ public class FetchInventoryRequestDetailsCommandV3 extends FacilioCommand {
         long id = Constants.getRecordIds(context).get(0);
         V3InventoryRequestContext inventoryRequestContext = (V3InventoryRequestContext) CommandUtil.getModuleData(context, FacilioConstants.ContextNames.INVENTORY_REQUEST, id);
             if (inventoryRequestContext != null) {
-                if(inventoryRequestContext.getParentId()!= null && inventoryRequestContext.getParentId() >=0 ) {
+                if(inventoryRequestContext.getParentId()!= null && inventoryRequestContext.getParentId() > 0 ) {
                     WorkOrderContext workOrder = WorkOrderAPI.getWorkOrder(inventoryRequestContext.getParentId());
                     if (workOrder != null) {
                         inventoryRequestContext.setWorkOrderLocalId(workOrder.getLocalId());
