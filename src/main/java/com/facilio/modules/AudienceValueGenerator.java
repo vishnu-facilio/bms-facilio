@@ -2,20 +2,26 @@ package com.facilio.modules;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.TenantsAPI;
+import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceSharingInfoContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class AudienceValueGenerator extends ValueGenerator{
     @Override
@@ -24,6 +30,7 @@ public class AudienceValueGenerator extends ValueGenerator{
         List<Long> siteIds = new ArrayList<Long>();
 
         try {
+            Criteria criteria = new Criteria();
             if (appType == AppDomain.AppDomainType.TENANT_PORTAL.getIndex() || appType == AppDomain.AppDomainType.SERVICE_PORTAL.getIndex()) {
                 TenantContext tenant = PeopleAPI.getTenantForUser(AccountUtil.getCurrentUser().getId());
                 if (tenant != null) {
@@ -39,7 +46,6 @@ public class AudienceValueGenerator extends ValueGenerator{
                                 }
                             }
                         }
-                        Criteria criteria = new Criteria();
 
                         Criteria spaceCriteria = new Criteria();
                         spaceCriteria.addAndCondition(CriteriaAPI.getCondition("SHARING_TYPE", "sharingType", "1,2,3", StringOperators.IS));
@@ -53,7 +59,7 @@ public class AudienceValueGenerator extends ValueGenerator{
                         criteria.andCriteria(spaceCriteria);
                         criteria.orCriteria(getRoleCriteria());
                         criteria.orCriteria(getPeopleCriteria());
-                        return criteria;
+
                     }
                 }
             } else if (appType == AppDomain.AppDomainType.FACILIO.getIndex()) {
@@ -61,12 +67,28 @@ public class AudienceValueGenerator extends ValueGenerator{
             } else if (appType == AppDomain.AppDomainType.CLIENT_PORTAL.getIndex()) {
 
             } else if (appType == AppDomain.AppDomainType.VENDOR_PORTAL.getIndex()) {
-
-                Criteria criteria = new Criteria();
                 criteria.andCriteria(getRoleCriteria());
                 criteria.orCriteria(getPeopleCriteria());
-                return criteria;
+            }
 
+            if(!criteria.isEmpty()) {
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+                FacilioModule subModule = modBean.getModule(FacilioConstants.ContextNames.Tenant.AUDIENCE_SHARING);
+                SelectRecordsBuilder<AudienceSharingInfoContext> builderCategory = new SelectRecordsBuilder<AudienceSharingInfoContext>()
+                        .module(subModule)
+                        .beanClass(AudienceSharingInfoContext.class)
+                        .select(modBean.getAllFields(subModule.getName()))
+                        .andCriteria(criteria)
+                        ;
+                List<AudienceSharingInfoContext> list = builderCategory.get();
+                if(CollectionUtils.isNotEmpty(list)){
+                    List<Long> ids = new ArrayList<>();
+                    for(AudienceSharingInfoContext sh : list) {
+                        ids.add(sh.getAudienceId().getId());
+                    }
+                    return StringUtils.join(ids, ",");
+                }
             }
 
         }
@@ -79,18 +101,15 @@ public class AudienceValueGenerator extends ValueGenerator{
     private Criteria getRoleCriteria() {
         Criteria roleCriteria = new Criteria();
         roleCriteria.addAndCondition(CriteriaAPI.getCondition("SHARING_TYPE", "sharingType", "4", StringOperators.IS));
-        Criteria roleSubCriteria = new Criteria();
-        roleSubCriteria.addAndCondition(CriteriaAPI.getCondition("SHARED_TO_ROLE_ID", "sharedToRoleId", StringUtils.join(AccountUtil.getCurrentUser().getRole().getId()), PickListOperators.IS));
-        roleCriteria.andCriteria(roleSubCriteria);
+        roleCriteria.addAndCondition(CriteriaAPI.getCondition("SHARED_TO_ROLE_ID", "sharedToRoleId", StringUtils.join(AccountUtil.getCurrentUser().getRole().getId()), PickListOperators.IS));
+        roleCriteria.andCriteria(roleCriteria);
         return roleCriteria;
     }
 
     private Criteria getPeopleCriteria() {
         Criteria pplCriteria = new Criteria();
         pplCriteria.addAndCondition(CriteriaAPI.getCondition("SHARING_TYPE", "sharingType", "5", StringOperators.IS));
-        Criteria pplSubCriteria = new Criteria();
-        pplSubCriteria.addAndCondition(CriteriaAPI.getCondition("SHARED_TO_PEOPLE_ID", "sharedToPeopleId", StringUtils.join(AccountUtil.getCurrentUser().getPeopleId()), PickListOperators.IS));
-        pplSubCriteria.andCriteria(pplSubCriteria);
+        pplCriteria.addAndCondition(CriteriaAPI.getCondition("SHARED_TO_PEOPLE_ID", "sharedToPeopleId", StringUtils.join(AccountUtil.getCurrentUser().getPeopleId()), PickListOperators.IS));
         return pplCriteria;
     }
 }

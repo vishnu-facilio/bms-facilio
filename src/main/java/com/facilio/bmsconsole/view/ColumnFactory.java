@@ -301,13 +301,10 @@ public class ColumnFactory {
 		
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
-		columns.add(new ViewField("responseStatus", "Completion Status"));
-		
-		columns.add(new ViewField("siteId", "Site"));
-		columns.add(new ViewField("resource", "Space / Asset"));
-		columns.add(new ViewField("assignedTo", "Assigned To"));
-		
-		columns.add(new ViewField("totalAnswered", "Total Answered"));
+		columns.add(new ViewField("sites", "Sites"));
+		columns.add(new ViewField("totalPages", "Total Pages"));
+		columns.add(new ViewField("totalQuestions", "Total Questions"));
+		columns.add(new ViewField("moduleState", "Status"));
 
 		return columns;
 	}

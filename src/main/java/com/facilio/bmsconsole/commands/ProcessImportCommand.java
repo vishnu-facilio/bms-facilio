@@ -609,7 +609,7 @@ public class ProcessImportCommand extends FacilioCommand {
 							// TODO remove this handle based on data type
 							Map<String, Object> specialLookupList;
 							try {
-								specialLookupList = getSpecialLookupProps(lookupField, colVal, importProcessContext);
+								specialLookupList = getSpecialLookupProps(lookupField, colVal, fieldMapping.get(key), importProcessContext);
 							} catch (Exception e) {
 								if (colVal.get(fieldMapping.get(key)) == null) {
 									LOGGER.severe("Process Import Special Lookup Exception -- Row No --" + row_no + " Fields Mapping --" + fieldMapping.get(key));
@@ -833,7 +833,7 @@ public class ProcessImportCommand extends FacilioCommand {
 		return isNewFormat;
 
 	}
-	public static Map<String, Object> getSpecialLookupProps(LookupField lookupField, HashMap<String,Object> colVal, ImportProcessContext importProcessContext) throws Exception{
+	public static Map<String, Object> getSpecialLookupProps(LookupField lookupField, HashMap<String,Object> colVal, String key, ImportProcessContext importProcessContext) throws Exception{
 
 		Object value = colVal.get(importProcessContext.getFieldMapping().get(lookupField.getModule().getName()+ "__" + lookupField.getName()));
 
@@ -921,6 +921,13 @@ public class ProcessImportCommand extends FacilioCommand {
 						}
 					}
 					return null;
+				}
+				default : {
+					
+					List<Map<String, Object>> lookupPropsList = getLookupProps(lookupField, colVal, key, importProcessContext);
+					if(CollectionUtils.isNotEmpty(lookupPropsList)) {
+						return lookupPropsList.get(0);
+					}
 				}
 			}
 

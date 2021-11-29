@@ -18,6 +18,7 @@ import org.apache.tiles.request.collection.CollectionUtil;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
@@ -28,12 +29,16 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.delegate.context.DelegationType;
+import com.facilio.delegate.util.DelegationUtil;
+import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.wms.message.WmsNotification;
 import com.facilio.wms.util.WmsApi;
 
@@ -63,7 +68,35 @@ public class NotificationAPI {
 		return mobileInstanceIds;
 	}
 	
+	public static List<Long> checkUserDelegation(List<Long> userIds) throws Exception {
+		
+		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+		
+		if(userIds != null && !userIds.isEmpty()) {
+			List<Long> updatedUserIds = new ArrayList<Long>();
+			
+			for(Long userId : userIds) {
+				
+				User user = userBean.getUser(userId, false);
+				if(user != null) {
+					
+					User delegatedUser = DelegationUtil.getDelegatedUser(user, DateTimeUtil.getCurrenTime(), DelegationType.EMAIL_NOTIFICATION);
+					
+					if(!updatedUserIds.contains(delegatedUser.getOuid())) {
+						updatedUserIds.add(delegatedUser.getOuid());
+					}
+				}
+			}
+			
+			return updatedUserIds;
+		}
+		
+		return userIds;
+	}
+	
 	public static void sendPushNotification(List<Long> userIds,JSONObject message) throws Exception {
+		
+		userIds = checkUserDelegation(userIds);
 
 		List<Pair<String, Boolean>> mobileInstanceSettings = getMobileInstanceIDs(userIds);
 		LOGGER.info("Sending push notifications for ids : "+userIds);
@@ -95,6 +128,8 @@ public class NotificationAPI {
 	}
 	
 	public static void sendNotification(List<Long> recipients, NotificationContext notification) throws Exception {
+		
+		recipients = checkUserDelegation(recipients);
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getNotificationModule().getTableName())

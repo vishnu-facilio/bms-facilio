@@ -445,6 +445,13 @@ public enum ActionType {
 							continue;
 						}
 						long id = Long.valueOf(toId);
+						
+						List<Long> delegatedUserList = NotificationAPI.checkUserDelegation(Collections.singletonList(id));
+						
+						if(CollectionUtils.isNotEmpty(delegatedUserList)) {
+							id = delegatedUserList.get(0);
+						}
+						
 						LOGGER.info("Notification Modules entry : "+ id);
 						UserNotificationContext userNotification = UserNotificationContext.instance(obj);
 						User user = new User();
