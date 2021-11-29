@@ -842,6 +842,18 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 		throw new IllegalArgumentException("username not found");
 	}
+
+	@Override
+	public void deleteDCLookup(String username, GroupType groupType) throws Exception {
+		List<FacilioField> fields = IAMAccountConstants.getDCFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(IAMAccountConstants.getDCLookupModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("userName"), username, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("groupType"), groupType.getIndex()+"", NumberOperators.EQUALS));
+		deleteRecordBuilder.delete();
+	}
 	
 	@Override
 	public long addDCLookup(Map<String, Object> props) throws Exception {

@@ -28,6 +28,8 @@ import com.facilio.client.app.beans.ClientAppBean;
 import com.facilio.client.app.pojo.ClientAppConfig;
 import com.facilio.client.app.util.ClientAppUtil;
 import com.facilio.fw.validators.CustomFields;
+import com.facilio.fw.validators.Date;
+import com.facilio.fw.validators.DateTime;
 import com.facilio.fw.validators.V3fields;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.qa.rules.pojo.QAndARuleType;
@@ -174,6 +176,9 @@ public class FacilioContextListener implements ServletContextListener {
 	private void registerValidatorTypes() {
 		TypeFactory.registerType("customfields", CustomFields::new);
 		TypeFactory.registerType("v3fields", V3fields::new);
+		TypeFactory.registerType("date", Date::new);
+		TypeFactory.registerType("date_time", DateTime::new);
+
 	}
 
 	private void initClientAppConfig() throws Exception {
