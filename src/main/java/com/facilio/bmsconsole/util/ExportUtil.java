@@ -967,7 +967,7 @@ public class ExportUtil {
 	public static String getZipFileUrl(File rootFolder) throws Exception {
 		File zipFile = new File(rootFolder.getPath()+".zip");
 		
-		ZipUtil.pack(rootFolder, zipFile);
+		ZipUtil.pack(rootFolder, zipFile, true);
 		
 		FileStore fs = FacilioFactory.getFileStore();
 		
@@ -976,7 +976,7 @@ public class ExportUtil {
 		FileUtils.deleteDirectory(rootFolder);
 		zipFile.delete();
 		
-		return fs.getPrivateUrl(fileId);
+		return fs.getDownloadUrl(fileId);
 	}
 	
 }
