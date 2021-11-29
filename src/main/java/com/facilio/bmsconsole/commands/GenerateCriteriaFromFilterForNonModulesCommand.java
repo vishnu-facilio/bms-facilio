@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
@@ -7,6 +8,8 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.FieldOperator;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
@@ -135,10 +138,15 @@ public class GenerateCriteriaFromFilterForNonModulesCommand extends FacilioComma
         conditionList.add(condition);
     }
 
-    private List<FacilioField> getAllFields(String moduleName) {
+    private List<FacilioField> getAllFields(String moduleName) throws Exception {
         switch (moduleName) {
             case FacilioConstants.ContextNames.USER_DELEGATION:
                 return FieldFactory.getUserDelegationFields();
+        }
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = moduleBean.getModule(moduleName);
+        if (module.getTypeEnum() == FacilioModule.ModuleType.TIME_LOG ){
+            return FieldFactory.getTimeLogFields(module);
         }
         return null;
     }
