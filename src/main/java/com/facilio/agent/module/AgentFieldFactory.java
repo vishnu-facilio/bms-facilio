@@ -51,7 +51,6 @@ public class AgentFieldFactory {
 	        fields.add(FieldFactory.getField(AgentConstants.TARGET_NAME, "TARGET_NAME", module, FieldType.STRING));
 	        fields.add(FieldFactory.getField(AgentConstants.TARGET_COMP, "TARGET_COMP", module, FieldType.STRING));
 	        fields.add(FieldFactory.getField(AgentConstants.LINK_TYPE, "LINK_TYPE", module, FieldType.STRING));
-	        fields.add(FieldFactory.getFieldDeviceId(module));
 	        return fields;
 	    }
 
@@ -64,7 +63,6 @@ public class AgentFieldFactory {
 		fields.add(FieldFactory.getField(AgentConstants.PATH, "PATH", module, FieldType.STRING));
 		fields.add(FieldFactory.getField(AgentConstants.DETAILS, "DETAILS", module, FieldType.STRING));
 		fields.add(FieldFactory.getField(AgentConstants.RDM_POINT_CLASS, "CLASS", module, FieldType.STRING));
-		fields.add(FieldFactory.getFieldDeviceId(module));
 		return fields;
 	}
 }

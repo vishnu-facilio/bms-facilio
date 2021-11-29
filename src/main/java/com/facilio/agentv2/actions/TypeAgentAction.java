@@ -1,7 +1,6 @@
 package com.facilio.agentv2.actions;
 
 import java.net.HttpURLConnection;
-import java.util.List;
 import java.util.Map;
 
 import javax.validation.constraints.Min;
@@ -16,11 +15,8 @@ import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.GetControllerRequest;
-import com.facilio.agentv2.device.Device;
-import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.chain.FacilioContext;
-import com.facilio.modules.FieldUtil;
 
 public class TypeAgentAction extends AgentIdAction {
 

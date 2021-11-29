@@ -1,17 +1,11 @@
 package com.facilio.agentv2.actions;
 
-import com.facilio.agentv2.device.Device;
-import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.bmsconsole.actions.FacilioAction;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import javax.validation.constraints.NotNull;
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class AddFieldDeviceAction extends FacilioAction {
     private static final Logger LOGGER = LogManager.getLogger(AddFieldDeviceAction.class.getName());
@@ -27,7 +21,8 @@ public class AddFieldDeviceAction extends FacilioAction {
     }
 
     public String addDevice() throws Exception {
-        try {
+        throw new Exception("Field Devices are not supported anymore");
+        /*try {
             JSONObject d = getDevice();
             if (d != null) {
                 if (d.containsKey("name") &&
@@ -82,6 +77,6 @@ public class AddFieldDeviceAction extends FacilioAction {
             LOGGER.info("Exception while adding Field Device :" + ex.getMessage());
             setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
             return ERROR;
-        }
+        }*/
     }
 }

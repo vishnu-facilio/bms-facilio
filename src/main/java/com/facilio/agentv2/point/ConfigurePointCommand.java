@@ -2,11 +2,14 @@ package com.facilio.agentv2.point;
 
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.rdm.RdmControllerContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -17,6 +20,22 @@ public class ConfigurePointCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        if(context.containsKey(AgentConstants.ID)){
+            Long controllerId = (Long) context.get(AgentConstants.ID);
+            List<Controller> controllers = FieldUtil.getAsBeanListFromMapList(ControllerApiV2.getControllers(Collections.singletonList(controllerId)), Controller.class);
+
+            if(controllers.isEmpty()){
+                throw new Exception(" no controllers found ");
+            }
+            if(controllers.size() > 1){
+                throw new Exception(" multiple controllers found->"+controllers.size());
+            }
+            context.put(AgentConstants.CONTROLLER,controllers.get(0));
+        }else {
+            LOGGER.info(" Exception Occurred,ids missing from contest to get Controller");
+            throw new Exception("id missing from context to get Controller");
+        }
+
         if (containsAndNotNull(context, AgentConstants.POINTS) && containsAndNotNull(context, AgentConstants.CONTROLLER)) {
             Controller controller = (Controller) context.get(AgentConstants.CONTROLLER);
             if(controller.getControllerType()==13){

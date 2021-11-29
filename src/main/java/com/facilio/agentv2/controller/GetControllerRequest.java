@@ -3,8 +3,6 @@ package com.facilio.agentv2.controller;
 import com.facilio.agent.FacilioAgent;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.agentv2.device.Device;
-import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -15,9 +13,11 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -69,6 +69,16 @@ public class GetControllerRequest
             context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, criteria);
         }else {
             throw new Exception(" agentId cant be less than 1 "+agentId);
+        }
+        return this;
+    }
+
+    public GetControllerRequest withNames(Set<String> names) throws Exception {
+        if (names != null && names.size() > 0) {
+            criteria.addAndCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.NAME), StringUtils.join(names, ','), StringOperators.IS));
+            context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, criteria);
+        } else {
+            throw new Exception("list is invalid");
         }
         return this;
     }

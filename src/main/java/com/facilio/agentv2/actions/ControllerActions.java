@@ -4,12 +4,9 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.ControllerUtilV2;
-import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
 
-import com.sun.net.httpserver.Authenticator;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.log4j.LogManager;
