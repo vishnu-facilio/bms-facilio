@@ -109,7 +109,7 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 	public boolean isMatching (SingleSharingContext permission, User user, Object object, DelegationType delegationType) throws Exception {
 		List<User> delegationUsers = null;
 		if (delegationType != null) {
-			delegationUsers = DelegationUtil.getUser(user, System.currentTimeMillis(), delegationType);
+			delegationUsers = DelegationUtil.getUsers(user, System.currentTimeMillis(), delegationType);
 		}
 
 		switch (permission.getTypeEnum()) {

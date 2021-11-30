@@ -30,7 +30,36 @@ public class DelegationUtil {
         return builder;
     }
 
-    public static List<User> getUser(User delegatedUser, long timestamp, DelegationType delegationType) throws Exception {
+    /** This method will return only one user. User {@link DelegationUtil#getUsers} instead
+     *
+     * @param delegatedUser
+     * @param timestamp
+     * @param delegationType
+     * @return
+     * @throws Exception
+     */
+    @Deprecated
+    public static User getUser(User delegatedUser, long timestamp, DelegationType delegationType) throws Exception {
+        if (delegatedUser == null) {
+            throw new NullPointerException("deletegatedUser cannot be empty");
+        }
+        GenericSelectRecordBuilder builder = getBuilder(timestamp, delegationType);
+        builder.andCondition(CriteriaAPI.getCondition("DELEGATE_USER_ID", "delegateUserId", String.valueOf(delegatedUser.getId()), NumberOperators.EQUALS));
+
+        DelegationContext delegationContext = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), DelegationContext.class);
+        if (delegationContext != null) {
+            UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+            long appId = AccountUtil.getCurrentApp() != null ? AccountUtil.getCurrentApp().getId() : -1L;
+            User user = userBean.getUser(appId, delegationContext.getUserId());
+            if (user != null) {
+                return user;
+            }
+        }
+
+        return delegatedUser;
+    }
+
+    public static List<User> getUsers(User delegatedUser, long timestamp, DelegationType delegationType) throws Exception {
         if (delegatedUser == null) {
             throw new NullPointerException("deletegatedUser cannot be empty");
         }
