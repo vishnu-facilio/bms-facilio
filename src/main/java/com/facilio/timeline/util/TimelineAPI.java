@@ -1,9 +1,9 @@
 package com.facilio.timeline.util;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
@@ -14,6 +14,7 @@ import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.ChainUtil;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -29,6 +30,10 @@ public class TimelineAPI {
 
     public static Map<String, Object> getTimeLineData(TimelineRequest timelineRequest) throws Exception {
 
+        if (!timelineRequest.isGetUnGrouped() && CollectionUtils.isEmpty(timelineRequest.getGroupIds())) {
+            throw new IllegalArgumentException("At least one group id should be passed");
+        }
+
         V3Config config = ChainUtil.getV3Config(timelineRequest.getModuleName());
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -40,9 +45,20 @@ public class TimelineAPI {
         FacilioField startTimeField = fieldMap.get("actualWorkStart");
         FacilioField endTimeField = fieldMap.get("actualWorkEnd");
 
+        Criteria mainCriteria = new Criteria();
         Criteria timeCriteria = new Criteria();
         timeCriteria.addAndCondition(CriteriaAPI.getCondition(startTimeField, timelineRequest.getDateValue(), DateOperators.BETWEEN));
         timeCriteria.addOrCondition(CriteriaAPI.getCondition(endTimeField, timelineRequest.getDateValue(), DateOperators.BETWEEN));
+        mainCriteria.andCriteria(timeCriteria);
+
+        Criteria groupCriteria = new Criteria();
+        if (CollectionUtils.isNotEmpty(timelineRequest.getGroupIds())) {
+            groupCriteria.addAndCondition(CriteriaAPI.getCondition(timelineGroupField, StringUtils.join(timelineRequest.getGroupIds(), ","), NumberOperators.EQUALS));
+        }
+        if (timelineRequest.isGetUnGrouped()) {
+            groupCriteria.addOrCondition(CriteriaAPI.getCondition(timelineGroupField, CommonOperators.IS_EMPTY));
+        }
+        mainCriteria.andCriteria(groupCriteria);
 
         StringJoiner groupBy = new StringJoiner(",");
         Collection<FacilioField> aggregateFields = new ArrayList<>();
@@ -64,7 +80,7 @@ public class TimelineAPI {
                 .setAggregation()
                 .select(aggregateFields)
                 .groupBy(groupBy.toString())
-                .andCriteria(timeCriteria);
+                .andCriteria(mainCriteria);
         long startTime = System.currentTimeMillis();
         List<Map<String, Object>> aggregateValue = aggregateBuilder.getAsProps();
         LOGGER.error("query for aggregate value: " + aggregateBuilder + "; time taken is: " + (System.currentTimeMillis() - startTime));
@@ -72,7 +88,7 @@ public class TimelineAPI {
 
         List<FacilioField> allModuleFields = new ArrayList<>(allFields);
         allModuleFields.add(FieldFactory.getStringField(DATE_FORMAT, "groupMax." + DATE_FORMAT, null));
-        String subQuery = getQueryContactQuery(module, timelineGroupField, startTimeField, timelineRequest.getDateAggregator(), timeCriteria);
+        String subQuery = getQueryContactQuery(module, timelineGroupField, startTimeField, timelineRequest.getDateAggregator(), mainCriteria);
 
         SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<>()
                 .module(module)
@@ -83,15 +99,13 @@ public class TimelineAPI {
                 .select(allModuleFields);
 
         builder.andCustomWhere("FIND_IN_SET(" + startTimeField.getCompleteColumnName() + ", " + GROUP_CONCAT_FIELD_NAME + ") <= " + timelineRequest.getMaxResultPerCell());
-        builder.andCriteria(timeCriteria);
+        builder.andCriteria(mainCriteria);
 
         startTime = System.currentTimeMillis();
         List<Map<String, Object>> recordMapList = builder.getAsProps();
         LOGGER.error("query for actual record value: " + builder + "; time take is: " + (System.currentTimeMillis() - startTime));
 
         return aggregateResult(timelineGroupField, startTimeField, recordMapList, aggregateValue);
-
-//        return v3Contexts;
     }
 
     private static Map<String, Object> aggregateResult(FacilioField timelineGroupField,
@@ -188,7 +202,6 @@ public class TimelineAPI {
                 .module(module)
                 .beanClass(V3Context.class)
                 .andCriteria(timeCriteria);
-//        joinAllExtendedModules(groupConcatQuery, module);
 
         StringJoiner groupByJoiner = new StringJoiner(",");
         Collection<FacilioField> fields = new ArrayList<>();
@@ -217,17 +230,6 @@ public class TimelineAPI {
         field.setFieldId(field.getFieldId());
         field.setDataType(FieldType.STRING);
         return field;
-    }
-
-    private static void joinAllExtendedModules(GenericSelectRecordBuilder groupConcatQuery, FacilioModule module) {
-        FacilioModule prevModule = module;
-        FacilioModule extendedModule = module.getExtendModule();
-        while (extendedModule != null) {
-            groupConcatQuery.innerJoin(extendedModule.getTableName())
-                    .on(prevModule.getTableName() + ".ID = " + extendedModule.getTableName() + ".ID");
-            prevModule = extendedModule;
-            extendedModule = extendedModule.getExtendModule();
-        }
     }
 
     public static class TimelineResponse {
