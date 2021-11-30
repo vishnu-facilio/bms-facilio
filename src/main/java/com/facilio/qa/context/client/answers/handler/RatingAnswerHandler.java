@@ -1,14 +1,28 @@
 package com.facilio.qa.context.client.answers.handler;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.qa.QAndAUtil;
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.AnswerHandler;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.client.answers.RatingAnswerContext;
+import com.facilio.time.DateRange;
+import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
 
 import java.text.MessageFormat;
+import java.util.List;
+import java.util.Map;
+import java.util.StringJoiner;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class RatingAnswerHandler extends AnswerHandler<RatingAnswerContext> {
 
@@ -18,9 +32,9 @@ public class RatingAnswerHandler extends AnswerHandler<RatingAnswerContext> {
 
     @Override
     public RatingAnswerContext serialize(AnswerContext answer) throws Exception {
-        RatingAnswerContext starAnswer = new RatingAnswerContext();
-        starAnswer.setAnswer(answer.getRatingAnswer());
-        return starAnswer;
+        RatingAnswerContext ratingAnswer = new RatingAnswerContext();
+        ratingAnswer.setAnswer(answer.getRatingAnswer());
+        return ratingAnswer;
     }
 
     @Override
@@ -40,5 +54,24 @@ public class RatingAnswerHandler extends AnswerHandler<RatingAnswerContext> {
     @Override
     public String getAnswerStringValue(AnswerContext answer, QuestionContext question) throws Exception {
         return answer.getRatingAnswer().toString();
+    }
+
+    @Override
+    public void setSummaryOfResponses(Long parentId, List<QuestionContext> questions, DateRange range) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule module = modBean.getModule(FacilioConstants.QAndA.ANSWER);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
+        FacilioField questionField = fieldMap.get("question");
+        FacilioField ratingAnswerField = fieldMap.get("ratingAnswer");
+        Map<Long, QuestionContext> questionMap = questions.stream().collect(Collectors.toMap(QuestionContext::_getId, Function.identity()));
+
+        FacilioField idField = FieldFactory.getIdField(module);
+        List<Map<String, Object>> props = QAndAUtil.constructAnswerSelectWithQuestionAndResponseTimeRange(modBean, questionMap.keySet(), parentId, range)
+                .select(Stream.of(questionField, ratingAnswerField).collect(Collectors.toList()))
+                .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, idField)
+                .groupBy(new StringJoiner(",").add(questionField.getCompleteColumnName()).add(ratingAnswerField.getCompleteColumnName()).toString())
+                .getAsProps();
+
+        QAndAUtil.populateRatingSummary(props, questionMap, questionField, ratingAnswerField, idField);
     }
 }

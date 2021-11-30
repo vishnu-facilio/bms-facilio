@@ -108,18 +108,18 @@ public enum QuestionType implements FacilioStringEnum {
             FieldType.BOOLEAN
     ),
     STAR_RATING(
-            FacilioConstants.QAndA.Questions.STAR_RATING_QUESTION,
+            FacilioConstants.QAndA.Questions.RATING_QUESTION,
             RatingQuestionContext.class,
             new RatingAnswerHandler(RatingAnswerContext.class),
             new RatingQuestionHandler(),
-            RatingRuleHandler.STAR_RATING
+            RatingRuleHandler.RATING
     ),
     SMILEY_RATING(
-            FacilioConstants.QAndA.Questions.SMILEY_RATING_QUESTION,
+            FacilioConstants.QAndA.Questions.RATING_QUESTION,
             RatingQuestionContext.class,
             new RatingAnswerHandler(RatingAnswerContext.class),
             new RatingQuestionHandler(),
-            RatingRuleHandler.SMILEY_RATING
+            RatingRuleHandler.RATING
     );
 
     private static final Map<String, QuestionType> MODULE_VS_TYPE = initModuleVsTypeMap();

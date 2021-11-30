@@ -1,7 +1,6 @@
 package com.facilio.qa.signup;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.AddSubModulesSystemFieldsCommad;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.RollUpField;
 import com.facilio.bmsconsole.util.RollUpFieldUtil;
@@ -11,13 +10,11 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.*;
-import com.facilio.qa.context.ResponseContext;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 
@@ -222,6 +219,7 @@ public class AddQAndAModules extends SignUpData {
         fields.add(FieldFactory.getDefaultField("longAnswer", "Long Answer", "LONG_ANSWER", FieldType.BIG_STRING));
         fields.add(FieldFactory.getDefaultField("dateTimeAnswer", "Date/Time Answer", "DATE_TIME_ANSWER", FieldType.DATE_TIME));
         fields.add(FieldFactory.getDefaultField("fileAnswer", "File Answer", "FILE_ANSWER", FieldType.FILE));
+        fields.add(FieldFactory.getDefaultField("ratingAnswer", "Rating Answer", "RATING_ANSWER", FieldType.NUMBER));
 
         fields.add(FieldFactory.getDefaultField("fullScore", "Full Score", "FULL_SCORE", FieldType.DECIMAL));
         fields.add(FieldFactory.getDefaultField("score", "Score", "SCORE", FieldType.DECIMAL));
@@ -249,10 +247,7 @@ public class AddQAndAModules extends SignUpData {
         modules.add(constructMCQSingleOption());
         modules.add(constructMCQMulti(question));
         modules.add(constructMCQMultiOption());
-        modules.add(constructStarRatingQuestion(question));
-        modules.add(constructStarRatingOption());
-        modules.add(constructSmileyRatingQuestion(question));
-        modules.add(constructSmileyRatingOption());
+        modules.add(constructRatingQuestion(question));
 
 
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
@@ -577,10 +572,10 @@ public class AddQAndAModules extends SignUpData {
         return rollUp;
     }
 
-    private FacilioModule constructStarRatingQuestion(FacilioModule question) {
-        FacilioModule module = new FacilioModule(FacilioConstants.QAndA.Questions.STAR_RATING_QUESTION,
-                "Q And A Star Rating Questions",
-                "Q_And_A_StarRating_Questions",
+    private FacilioModule constructRatingQuestion(FacilioModule question) {
+        FacilioModule module = new FacilioModule(FacilioConstants.QAndA.Questions.RATING_QUESTION,
+                "Q And A Rating Questions",
+                "Q_And_A_Rating_Questions",
                 FacilioModule.ModuleType.SUB_ENTITY,
                 question);
 
@@ -590,48 +585,5 @@ public class AddQAndAModules extends SignUpData {
 
         module.setFields(fields);
         return module;
-    }
-
-    private FacilioModule constructSmileyRatingQuestion(FacilioModule question) {
-        FacilioModule module = new FacilioModule(FacilioConstants.QAndA.Questions.SMILEY_RATING_QUESTION,
-                "Q And A Smiley Rating Questions",
-                "Q_And_A_SmileyRating_Questions",
-                FacilioModule.ModuleType.SUB_ENTITY,
-                question);
-
-        List<FacilioField> fields = new ArrayList<>();
-        fields.add(FieldFactory.getDefaultField("ratingScale", "Rating Scale", "RATING_SCALE", FieldType.NUMBER));
-        fields.add(FieldFactory.getDefaultField("displayFormat", "Display Format", "DISPLAY_FORMAT", FieldType.STRING));
-
-        module.setFields(fields);
-        return module;
-    }
-
-    private FacilioModule constructStarRatingOption() {
-        FacilioModule module = new FacilioModule(FacilioConstants.QAndA.Questions.STAR_RATING_OPTIONS,
-                "Q And A Star Rating Options",
-                "Q_And_A_StarRating_Options",
-                FacilioModule.ModuleType.SUB_ENTITY);
-
-        module.setFields(constructRatingOptionFields());
-        return module;
-    }
-
-    private FacilioModule constructSmileyRatingOption() {
-        FacilioModule module = new FacilioModule(FacilioConstants.QAndA.Questions.SMILEY_RATING_OPTIONS,
-                "Q And A Smiley Rating Options",
-                "Q_And_A_SmileyRating_Options",
-                FacilioModule.ModuleType.SUB_ENTITY);
-
-        module.setFields(constructRatingOptionFields());
-        return module;
-    }
-
-    private List<FacilioField> constructRatingOptionFields() {
-        List<FacilioField> fields = new ArrayList<>();
-        fields.add(FieldFactory.getDefaultField("parentId", "Parent Id", "PARENT_ID", FieldType.NUMBER));
-        fields.add(FieldFactory.getDefaultField("label", "Label", "LABEL", FieldType.STRING));
-        fields.add(FieldFactory.getDefaultField("position", "Position", "POSITION_VAL", FieldType.NUMBER));
-        return fields;
     }
 }
