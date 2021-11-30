@@ -515,11 +515,14 @@ public class CommonCommandUtil {
 					.table(accessibleSpaceMod.getTableName())
 					.andCustomWhere("ORG_USER_ID = ?", AccountUtil.getCurrentAccount().getUser().getOuid());
 			//handling user delegation
-			User delegatedUser = null;
 			try {
-				delegatedUser = DelegationUtil.getUser(AccountUtil.getCurrentAccount().getUser(), System.currentTimeMillis(), DelegationType.USER_SCOPING);
-				if(delegatedUser != null && delegatedUser.getId() != AccountUtil.getCurrentAccount().getUser().getId()) {
-					selectAccessibleBuilder.orCondition(CriteriaAPI.getCondition("ORG_USER_ID", "orgUserID", String.valueOf(delegatedUser.getOuid()), NumberOperators.EQUALS));
+				List<User> delegatedUsers = DelegationUtil.getUsers(AccountUtil.getCurrentAccount().getUser(), System.currentTimeMillis(), DelegationType.USER_SCOPING);
+				if(CollectionUtils.isNotEmpty(delegatedUsers)) {
+					for(User delegatedUser : delegatedUsers) {
+						if (delegatedUser.getId() != AccountUtil.getCurrentAccount().getUser().getId()) {
+							selectAccessibleBuilder.orCondition(CriteriaAPI.getCondition("ORG_USER_ID", "orgUserID", String.valueOf(delegatedUser.getOuid()), NumberOperators.EQUALS));
+						}
+					}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
