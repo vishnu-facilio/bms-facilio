@@ -6,14 +6,11 @@ import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.RuleHandler;
 import com.facilio.qa.context.questions.RatingQuestionContext;
-import com.facilio.qa.context.questions.handler.RatingOptionContext;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
 import lombok.AllArgsConstructor;
 
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public enum RatingRuleHandler implements RuleHandler {
