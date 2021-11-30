@@ -36,10 +36,20 @@ public class WorkorderScopingConfig extends SignUpData {
             occupantScoping.setFieldValueGenerator("com.facilio.modules.UserValueGenerator");
             occupantScoping.setModuleId(module.getModuleId());
 
+            //adding site scope in Maintenance App
+            long maintenanceScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+            ScopingConfigContext maintenanceScoping = new ScopingConfigContext();
+            maintenanceScoping.setFieldName("siteId");
+            maintenanceScoping.setScopingId(maintenanceScopingId);
+            maintenanceScoping.setOperatorId(36);
+            maintenanceScoping.setFieldValueGenerator("com.facilio.modules.SiteValueGenerator");
+            maintenanceScoping.setModuleId(module.getModuleId());
+
 
             List<ScopingConfigContext> scopingList = new ArrayList<>();
             scopingList.add(scoping);
             scopingList.add(occupantScoping);
+            scopingList.add(maintenanceScoping);
 
             ApplicationApi.addScopingConfigForApp(scopingList);
         }
