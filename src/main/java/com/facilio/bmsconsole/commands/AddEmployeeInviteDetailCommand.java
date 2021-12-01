@@ -33,7 +33,7 @@ public class AddEmployeeInviteDetailCommand extends FacilioCommand {
 					boolean showInviteOption = false;
 					if(accSso != null)
 					{
-						if(accSso.getIsActive() && !emp.getIsAppAccess())
+						if(accSso.getIsActive() && !emp.isAppAccess())
 		                {
 		                	showInviteOption = true;
 		                }
