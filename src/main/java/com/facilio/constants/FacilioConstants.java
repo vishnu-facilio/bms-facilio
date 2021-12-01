@@ -2554,8 +2554,6 @@ public class FacilioConstants {
 		public static final String QUESTION = "qandaQuestion";
 		public static final String RESPONSE = "qandaResponse";
 		public static final String ANSWER = "qandaAnswer";
-		public static final Integer MIN_VAL = 1;
-		public static final Integer MAX_VAL = 10;
 
 		public static class Questions {
 			public static final String HEADING_QUESTION = "qandaHeadingQuestion";

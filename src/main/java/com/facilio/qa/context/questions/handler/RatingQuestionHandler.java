@@ -26,8 +26,7 @@ public class RatingQuestionHandler implements QuestionHandler<RatingQuestionCont
     private void commonValidate(List<RatingQuestionContext> questions) throws Exception {
         for (RatingQuestionContext q : questions) {
             Integer ratingScale = q.getRatingScale();
-            V3Util.throwRestException(ratingScale != null && ratingScale != null && ratingScale < FacilioConstants.QAndA.MIN_VAL, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Star Rating value ({0}) cannot be less than Min value ({1})", ratingScale, FacilioConstants.QAndA.MIN_VAL));
-            V3Util.throwRestException(ratingScale != null && ratingScale != null && ratingScale > FacilioConstants.QAndA.MAX_VAL, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Star Rating value ({0}) cannot be more than Max value ({1})", ratingScale, FacilioConstants.QAndA.MAX_VAL));
+            V3Util.throwRestException(( ratingScale <= RatingQuestionContext.MAX_VAL && RatingQuestionContext.MIN_VAL <= ratingScale) , ErrorCode.VALIDATION_ERROR, MessageFormat.format("Rating scale ({0}) cannot be less than the min value ({1}) and more than max value ({2})", ratingScale, RatingQuestionContext.MIN_VAL, RatingQuestionContext.MAX_VAL));
         }
     }
 

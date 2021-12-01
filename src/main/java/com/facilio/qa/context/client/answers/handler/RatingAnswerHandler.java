@@ -11,6 +11,7 @@ import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.AnswerHandler;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.client.answers.RatingAnswerContext;
+import com.facilio.qa.context.questions.RatingQuestionContext;
 import com.facilio.time.DateRange;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
@@ -39,8 +40,8 @@ public class RatingAnswerHandler extends AnswerHandler<RatingAnswerContext> {
 
     @Override
     public AnswerContext deSerialize(RatingAnswerContext answer, QuestionContext question) throws Exception {
-        V3Util.throwRestException(answer.getAnswer() < FacilioConstants.QAndA.MIN_VAL, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Answer ({0}) cannot be less than the min value ({1})", answer.getAnswer(), FacilioConstants.QAndA.MIN_VAL));
-        V3Util.throwRestException(answer.getAnswer() > FacilioConstants.QAndA.MAX_VAL, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Answer ({0}) cannot be greater than the max value ({1})", answer.getAnswer(), FacilioConstants.QAndA.MAX_VAL));
+        RatingQuestionContext rq = (RatingQuestionContext) question;
+        V3Util.throwRestException((answer.getAnswer() >= rq.MIN_VAL && rq.getRatingScale() >= answer.getAnswer()), ErrorCode.VALIDATION_ERROR, MessageFormat.format("Answer ({0}) cannot be less than the min value ({1}) and more than max value ({2})", answer.getAnswer(), rq.MIN_VAL,rq.getRatingScale()));
         AnswerContext answerContext = new AnswerContext();
         answerContext.setRatingAnswer(answer.getAnswer());
         return answerContext;
