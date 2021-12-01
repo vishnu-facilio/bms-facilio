@@ -87,16 +87,23 @@ public class ServiceCatalogAction extends FacilioAction {
         this.serviceCatalogGroupOrderBy = serviceCatalogGroupOrderBy;
     }
     
+    private long appId = -1;
     public long getAppId() {
 		return appId;
 	}
 	public void setAppId(long appId) {
 		this.appId = appId;
 	}
-
-	private long appId = -1;
-
-    public String getServiceCatalogList() throws Exception {
+	
+	private Boolean fromSetup;
+    public Boolean getFromSetup() {
+		return fromSetup;
+	}
+	public void setFromSetup(Boolean fromSetup) {
+		this.fromSetup = fromSetup;
+	}
+	
+	public String getServiceCatalogList() throws Exception {
         FacilioChain chain = ReadOnlyChainFactory.getServiceCatalogListChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.GROUP_ID, groupId);
@@ -109,6 +116,11 @@ public class ServiceCatalogAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
         context.put(FacilioConstants.ContextNames.FETCH_FULL_FORM, fetchFullForm);
         context.put(FacilioConstants.ContextNames.SERVICE_CATALOG_GROUP_ORDER_BY, serviceCatalogGroupOrderBy);
+        // Temp...needs to have a separate api or handling for admin actions
+        if (fromSetup == null) {
+        	fromSetup = false;
+        }
+        context.put(FacilioConstants.ContextNames.RESTRICT_PERMISSIONS, fromSetup);
 
         chain.execute();
 
