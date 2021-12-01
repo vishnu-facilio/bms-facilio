@@ -282,10 +282,10 @@ public class AgentUtilV2
         String description = null;
         String message = null;
         if (severity.equals(FacilioConstants.Alarm.CRITICAL_SEVERITY)) {
-            description = "Agent " + agent.getName() + " has lost connection with the facilio cloud @"+ DateTimeUtil.getFormattedTime(currentTime);
+            description = "Agent " + agent.getName() + " has lost connection with the facilio cloud on" + DateTimeUtil.getFormattedTime(currentTime);
             message = "agent "+agent.getName() +" connection lost ";
         } else if (severity.equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
-            description = "Agent " + agent.getName() + " has lost connection with the facilio cloud @"+ DateTimeUtil.getFormattedTime(currentTime);
+            description = "Agent " + agent.getName() + " has lost connection with the facilio cloud on" + DateTimeUtil.getFormattedTime(currentTime);
             message = "agent "+agent.getName() +" connection reestablished";
         }
         event.setMessage(message);

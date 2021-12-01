@@ -1,17 +1,10 @@
 package com.facilio.agent.integration.wattsense;
 
 import com.facilio.agent.controller.FacilioControllerType;
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
-import com.facilio.agentv2.device.Device;
-import com.facilio.agentv2.device.FieldDeviceApi;
-import com.facilio.agentv2.misc.MiscController;
 import com.facilio.agentv2.misc.MiscPoint;
-import com.facilio.bmsconsole.jobs.DataFetcherJob;
-import com.facilio.bmsconsole.util.DeviceAPI;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -29,8 +22,6 @@ import java.util.*;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 
 /** Usage Sample
  * <pre>
@@ -122,33 +113,6 @@ public class WattsenseClient
     public String getUserName() { return userName; }
     public void setUserName(String userName) { this.userName = userName; }
 
-    public List<Device> getDevices() throws Exception {
-        List<Device> controllers = new ArrayList<>();
-        long timestamp = System.currentTimeMillis();
-        HttpResponse response = get(BASE_URL,GET_DEVICES_PATH,timestamp);
-        JSONArray jsonArray = getArrayFromResponse(response);
-        LOGGER.info("Json array : " + jsonArray );
-        if (jsonArray.size()!=0){
-            jsonArray.forEach(wattSenseDevice -> {
-                JSONObject device = (JSONObject) wattSenseDevice;
-                if (device.containsKey("deviceId") && device.containsKey(NAME)) {
-                    Device fieldDevice = new Device();
-                    fieldDevice.setControllerType(FacilioControllerType.MISC.asInt());
-                    fieldDevice.setName(((JSONObject) wattSenseDevice).get("deviceId").toString());
-                    //fieldDevice.setDisplayName(((JSONObject) wattSenseDevice).get("name").toString());
-                    fieldDevice.setAgentId(getAgent().getId());
-                    controllers.add(fieldDevice);
-                }else{
-                    //handle invalid json from wattsense
-                }
-            });
-        }else{
-            //throw empty list exception
-        }
-        return controllers;
-    }
-
-
     private static String getHmac(String method, String path, String payload, long timestamp, WattsenseClient client){
         Mac sha512Hmac;
         String hash = null;
@@ -210,10 +174,11 @@ public class WattsenseClient
         Map<String, JSONArray> controllerVsValues = new HashMap<>();
         FacilioAgent agent = getAgent();
         if (agent != null && agent.getId() > 0) {
-            List<Map<String, Object>> devices = FieldDeviceApi.getDevicesForAgent(agent.getId());
-            LOGGER.info("devices size :" + devices.size());
-            for (Map<String, Object> device : devices) {
-                String deviceName = device.get(NAME).toString();
+            List<Controller> controllers = ControllerApiV2.getControllersUsingAgentId(agent.getId());
+            // List<Map<String, Object>> devices = FieldDeviceApi.getDevicesForAgent(agent.getId());
+            LOGGER.info("devices size :" + controllers.size());
+            for (Controller c : controllers) {
+                String deviceName = c.getName();
                 JSONArray jsonArray = getProperties(deviceName);
                 LOGGER.info("Properties : " + jsonArray);
                 controllerVsValues.put(deviceName, jsonArray);
@@ -233,18 +198,17 @@ public class WattsenseClient
         return (JSONArray) parser.parse(WattsenseUtil.getResponseString(response));
     }
 
-    public List<MiscPoint> getPoints(Device device) throws IOException, ParseException {
+    public List<MiscPoint> getPoints(Controller controller) throws IOException, ParseException {
         List<MiscPoint> pointsList = new ArrayList<>();
-        String deviceName = device.getName();
+        String deviceName = controller.getName();
         JSONArray points = getProperties(deviceName);
         for (Object p : points) {
             JSONObject point = (JSONObject) p;
-            MiscPoint miscPoint = new MiscPoint(device.getAgentId());
+            MiscPoint miscPoint = new MiscPoint(controller.getAgentId());
             String name = point.get(PROPERTY).toString();
             miscPoint.setName(name);
             miscPoint.setPath(name);
             miscPoint.setDisplayName(point.get(NAME).toString());
-            miscPoint.setDeviceId(device.getId());
             miscPoint.setDeviceName(deviceName);
             pointsList.add(miscPoint);
         }

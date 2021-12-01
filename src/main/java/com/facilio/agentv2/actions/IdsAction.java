@@ -3,7 +3,6 @@ package com.facilio.agentv2.actions;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.ControllerApiV2;
-import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.point.PointsAPI;
 import org.apache.log4j.LogManager;
@@ -51,7 +50,7 @@ public class IdsAction extends AgentActionV2
             LOGGER.info(" discovering points for device " + getRecordIds());
             List<Long> deviceIds = getRecordIds();
             if( !deviceIds.isEmpty() ){
-                if(FieldDeviceApi.discoverPoint(deviceIds)){
+                if(ControllerApiV2.discoverPoint(deviceIds.get(0))){
                     setResult(AgentConstants.RESULT,SUCCESS);
                     setResponseCode(HttpURLConnection.HTTP_OK);
                     return SUCCESS;
@@ -127,20 +126,20 @@ public class IdsAction extends AgentActionV2
 
 
 
-    public String deleteDevice(){
-        try{
-            if(FieldDeviceApi.deleteDevices(getRecordIds())>0){
-                setResult(AgentConstants.RESULT,SUCCESS);
-                setResponseCode(HttpURLConnection.HTTP_OK);
-            }
-        } catch (Exception e) {
-            LOGGER.info("Exception occurred while getting agentDevices count", e);
-            setResult(AgentConstants.RESULT, ERROR);
-            setResult(AgentConstants.EXCEPTION, e.getMessage());
-            setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST);
-        }
-        return SUCCESS;
-    }
+//    public String deleteDevice(){
+//        try{
+//            if(FieldDeviceApi.deleteDevices(getRecordIds())>0){
+//                setResult(AgentConstants.RESULT,SUCCESS);
+//                setResponseCode(HttpURLConnection.HTTP_OK);
+//            }
+//        } catch (Exception e) {
+//            LOGGER.info("Exception occurred while getting agentDevices count", e);
+//            setResult(AgentConstants.RESULT, ERROR);
+//            setResult(AgentConstants.EXCEPTION, e.getMessage());
+//            setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST);
+//        }
+//        return SUCCESS;
+//    }
 
     public String makeWritable() {
         try {

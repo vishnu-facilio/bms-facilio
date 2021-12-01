@@ -7,6 +7,7 @@ import com.facilio.accounts.dto.AppDomain.GroupType;
 import com.facilio.bmsconsole.util.DevicesUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.iam.accounts.util.IAMUserUtil;
+import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.service.FacilioService;
 import com.facilio.v3.V3Action;
 
@@ -84,6 +85,12 @@ public class FacilioDCAction extends V3Action {
 
 	public String deleteDevicePasscode() throws Exception {
 		FacilioService.runAsService(FacilioConstants.Services.DEFAULT_SERVICE,() ->  DevicesUtil.deleteDevicePasscode(getDeviceCode()));
+		setData("result", "success");
+		return SUCCESS;
+	}
+
+	public String deleteUserFromDCLookup() throws Exception {
+		IAMUtil.getUserBean().deleteDCLookup(getUserName(), getGroupType());
 		setData("result", "success");
 		return SUCCESS;
 	}

@@ -278,7 +278,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		FacilioTimer.scheduleOneTimeJobWithDelay((long) prop.get("id"), "StateFlowScheduledRule", stateFlow.getScheduleTime(), "priority");
 	}
 
-	private static FacilioModule getTimeLogModule(FacilioModule module) throws Exception {
+	public static FacilioModule getTimeLogModule(FacilioModule module) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioModule> subModules = modBean.getSubModules(module.getModuleId(), ModuleType.TIME_LOG);
 		if (CollectionUtils.isNotEmpty(subModules)) {

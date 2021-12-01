@@ -423,6 +423,7 @@ public class ActionAPI {
 								setJsonTemplate(action, rule, Type.ALARM);
 								break;
 							case CREATE_WO_FROM_ALARM:
+							case CLOSE_WO_FROM_ALARM:
 								setWorkorderTemplate(action, rule);
 								break;
 							case FIELD_CHANGE:

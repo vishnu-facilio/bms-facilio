@@ -73,10 +73,17 @@ public class V3fields extends ValidatorBase {
                     validator = TypeFactory.getValidatorForNode(requestConfig, getAsProperty(key, "string"));
                     break;
                 case NUMBER:
+                case DECIMAL:
                     validator = TypeFactory.getValidatorForNode(requestConfig, getAsProperty(key, "number"));
                     break;
                 case BOOLEAN:
                     validator = TypeFactory.getValidatorForNode(requestConfig, getAsProperty(key, "boolean"));
+                    break;
+                case DATE:
+                    validator = TypeFactory.getValidatorForNode(requestConfig, getAsProperty(key, "date"));
+                    break;
+                case DATE_TIME:
+                    validator = TypeFactory.getValidatorForNode(requestConfig, getAsProperty(key, "date_time"));
                     break;
             }
 

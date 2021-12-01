@@ -7,7 +7,6 @@ import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.bacnet.BacnetIpPointContext;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.GetControllerRequest;
-import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.modbusrtu.RtuNetworkContext;
 import com.facilio.bacnet.BACNetUtil;
 import com.facilio.db.builder.DBUtil;
@@ -82,9 +81,9 @@ public class PointsUtil
         return false;
     }*/
 
+    public static boolean processPoints(JSONObject payload, Controller controller, FacilioAgent agent) throws Exception {
+        LOGGER.info(" processing point " + controller.toJSON());
 
-    public static boolean processPoints(JSONObject payload, Device device, FacilioAgent agent) throws Exception {
-        LOGGER.info(" processing point "+device.getControllerProps());
 
         if (containsValueCheck(AgentConstants.DATA, payload)) {
             JSONArray pointsJSON = (JSONArray) payload.get(AgentConstants.DATA);
@@ -92,8 +91,8 @@ public class PointsUtil
             if (incomingCount == 0) {
                 throw new Exception(" pointJSON cant be empty");
             }
-            Controller controller;
-            int deviceType = device.getControllerType();
+            // Controller controller;
+           /* int deviceType = device.getControllerType();
 
             GetControllerRequest getControllerRequest = new GetControllerRequest()
                     .forDevice(device.getId()).ofType(FacilioControllerType.valueOf(deviceType));
@@ -114,7 +113,7 @@ public class PointsUtil
                 getControllerRequest.withControllerProperties((JSONObject) device.getControllerProps().get(AgentConstants.CONTROLLER), FacilioControllerType.MODBUS_RTU)
                         .withAgentId(device.getAgentId());
             }
-            controller = getControllerRequest.getController();
+            controller = getControllerRequest.getController();*/
 
             //getting points name
             List<String>pointName = (List<String>) pointsJSON.stream().map(x -> ((JSONObject)x).get(AgentConstants.NAME).toString()).collect(Collectors.toList());
@@ -128,9 +127,9 @@ public class PointsUtil
             List<Map<String,Object>> points = new ArrayList<>();
             for (Object o : pointsJSON) {
                 JSONObject pointJSON = (JSONObject) o;
-                pointJSON.put(AgentConstants.DEVICE_NAME, device.getName());
-                pointJSON.put(AgentConstants.DEVICE_ID, device.getId());
-                pointJSON.put(AgentConstants.POINT_TYPE, device.getControllerType());
+              /*  pointJSON.put(AgentConstants.DEVICE_NAME, device.getName());
+                pointJSON.put(AgentConstants.DEVICE_ID, device.getId());*/
+                pointJSON.put(AgentConstants.POINT_TYPE, controller.getControllerType());
                 pointJSON.put(AgentConstants.CONTROLLER_ID, controller.getId());
                 try {
                     if(!existingPoints.contains(pointJSON.get(AgentConstants.NAME))){
