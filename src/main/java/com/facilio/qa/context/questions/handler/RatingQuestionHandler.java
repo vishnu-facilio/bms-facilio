@@ -26,7 +26,7 @@ public class RatingQuestionHandler implements QuestionHandler<RatingQuestionCont
     private void commonValidate(List<RatingQuestionContext> questions) throws Exception {
         for (RatingQuestionContext q : questions) {
             Integer ratingScale = q.getRatingScale();
-            V3Util.throwRestException(( ratingScale <= RatingQuestionContext.MAX_VAL && RatingQuestionContext.MIN_VAL <= ratingScale) , ErrorCode.VALIDATION_ERROR, MessageFormat.format("Rating scale ({0}) cannot be less than the min value ({1}) and more than max value ({2})", ratingScale, RatingQuestionContext.MIN_VAL, RatingQuestionContext.MAX_VAL));
+            V3Util.throwRestException((ratingScale < RatingQuestionContext.MIN_VAL || ratingScale > RatingQuestionContext.MAX_VAL), ErrorCode.VALIDATION_ERROR, MessageFormat.format("Rating scale ({0}) cannot be less than the min value ({1}) and more than max value ({2})", ratingScale, RatingQuestionContext.MIN_VAL, RatingQuestionContext.MAX_VAL));
         }
     }
 
