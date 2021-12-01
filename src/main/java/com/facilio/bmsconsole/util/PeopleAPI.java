@@ -272,8 +272,10 @@ public class PeopleAPI {
 		
 	}
 	
-	
 	public static void updateEmployeeAppPortalAccess(EmployeeContext person, String linkname) throws Exception {
+		updateEmployeeAppPortalAccess(person, linkname,true);
+	}
+	public static void updateEmployeeAppPortalAccess(EmployeeContext person, String linkname,boolean sendInvite) throws Exception {
 	   
 		EmployeeContext existingPeople = (EmployeeContext) RecordAPI.getRecord(FacilioConstants.ContextNames.EMPLOYEE, person.getId());
 		if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isAppAccess())){
@@ -285,11 +287,6 @@ public class PeopleAPI {
 			long appId = -1;
 			appId = ApplicationApi.getApplicationIdForLinkName(linkname);
 			appDomain = ApplicationApi.getAppDomainForApplication(appId);
-			boolean sendInvite = true;
-			if(person.getSendInvite() != null && person.getSendInvite() == false)
-			{
-				sendInvite = false;
-			}
 			if(appDomain != null) {
 				User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
 				if((linkname.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP) && existingPeople.isAppAccess())) {
@@ -306,20 +303,14 @@ public class PeopleAPI {
 						if(!sendInvite)
 						{
 							user.setUserVerified(true);
+							user.setInviteAcceptStatus(true);
 						}		
 						ApplicationApi.addUserInApp(user, false, sendInvite);
 						AccountUtil.getUserBean().updateUser(user);
 					}
 					else 
 					{
-						if(!sendInvite)
-						{
-							addAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, roleId,false,true);
-						}
-						else
-						{
-							addAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, roleId);
-						}					
+						addAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, roleId, sendInvite);
 					}
 				}
 				else {
@@ -589,9 +580,9 @@ public class PeopleAPI {
 	}
 	
 	public static User addAppUser(PeopleContext existingPeople, String linkName, Long roleId) throws Exception {
-		return addAppUser(existingPeople,linkName,roleId,true,false);
+		return addAppUser(existingPeople,linkName,roleId,true);
 		}
-	public static User addAppUser(PeopleContext existingPeople, String linkName, Long roleId,boolean isEmailVerificationNeeded,boolean userVerified) throws Exception {
+	public static User addAppUser(PeopleContext existingPeople, String linkName, Long roleId,boolean isEmailVerificationNeeded) throws Exception {
 		 		
 		if(StringUtils.isEmpty(linkName)) {
 			throw new IllegalArgumentException("Invalid Link name");
@@ -602,8 +593,8 @@ public class PeopleAPI {
 		user.setEmail(existingPeople.getEmail());
 		user.setPhone(existingPeople.getPhone());
 		user.setName(existingPeople.getName());
-		user.setUserVerified(userVerified);
-		user.setInviteAcceptStatus(false);
+		user.setUserVerified(!isEmailVerificationNeeded);         //Set user verified as true when email verification not needed
+		user.setInviteAcceptStatus(!isEmailVerificationNeeded);   //Set user invite accept status as true when email verification not needed
 		user.setInvitedTime(System.currentTimeMillis());
 		user.setPeopleId(existingPeople.getId());
 		user.setUserType(AccountConstants.UserType.USER.getValue());

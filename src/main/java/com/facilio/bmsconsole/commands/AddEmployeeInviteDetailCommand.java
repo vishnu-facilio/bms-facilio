@@ -26,29 +26,19 @@ public class AddEmployeeInviteDetailCommand extends FacilioCommand {
 	            	 empList.add(emp);
 	             }
 	         }
+			 AccountSSO accSso = IAMOrgUtil.getAccountSSO(AccountUtil.getCurrentOrg().getId());
+
 	         if(CollectionUtils.isNotEmpty(empList)) {
 	             for(EmployeeContext emp : empList) {
-		            PeopleContext ppl = (PeopleContext) emp;
-		            AppDomain appDomain = null;
-					long appId = -1;
-					appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
-					appDomain = ApplicationApi.getAppDomainForApplication(appId);
-					if(appDomain != null)
+					boolean showInviteOption = false;
+					if(accSso != null)
 					{
-						User user = AccountUtil.getUserBean().getUser(ppl.getEmail(), appDomain.getIdentifier());
-						boolean showInviteOption = false;
-						User appUser = AccountUtil.getUserBean().getAppUserForUserName(user.getUserName(), appId, AccountUtil.getCurrentOrg().getId());
-						AccountSSO accSso = IAMOrgUtil.getAccountSSO(AccountUtil.getCurrentOrg().getId());
-						if(accSso != null)
-						{
-							if(accSso.getIsActive() && (appUser == null))
-			                {
-			                	showInviteOption = true;
-			                }
-						}
-	                	emp.setShowInviteOption(showInviteOption);
+						if(accSso.getIsActive() && !emp.getIsAppAccess())
+		                {
+		                	showInviteOption = true;
+		                }
 					}
-
+	            	emp.setShowInviteOption(showInviteOption);
 	             }
 	         }
 	         return false;
