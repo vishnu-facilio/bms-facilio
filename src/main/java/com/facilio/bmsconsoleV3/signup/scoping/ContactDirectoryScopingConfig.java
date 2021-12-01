@@ -20,10 +20,10 @@ public class ContactDirectoryScopingConfig extends SignUpData {
             //adding building scope in Tenant Portal
             long applicationScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
             ScopingConfigContext scoping = new ScopingConfigContext();
-            scoping.setFieldName("contactdirectorysharing.contactDirectory");
+            scoping.setFieldName("audience");
             scoping.setScopingId(applicationScopingId);
-            scoping.setOperatorId(88);
-            scoping.setFieldValueGenerator("com.facilio.modules.CommunityBuildingValueGenerator");
+            scoping.setOperatorId(36);
+            scoping.setFieldValueGenerator("com.facilio.modules.AudienceValueGenerator");
             scoping.setModuleId(module.getModuleId());
             ApplicationApi.addScopingConfigForApp(Collections.singletonList(scoping));
         } catch (Exception e) {
