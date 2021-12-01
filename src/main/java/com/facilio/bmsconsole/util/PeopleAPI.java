@@ -579,9 +579,6 @@ public class PeopleAPI {
 		return -1;
 	}
 	
-	public static User addAppUser(PeopleContext existingPeople, String linkName, Long roleId) throws Exception {
-		return addAppUser(existingPeople,linkName,roleId,true);
-		}
 	public static User addAppUser(PeopleContext existingPeople, String linkName, Long roleId,boolean isEmailVerificationNeeded) throws Exception {
 		 		
 		if(StringUtils.isEmpty(linkName)) {

@@ -125,7 +125,7 @@ private static final long serialVersionUID = 1L;
 	private Boolean sendInvite;
 	public Boolean getSendInvite() {
 		if (sendInvite == null) {
-			return false;
+			return true;
 		}
 		return sendInvite;
 	}
