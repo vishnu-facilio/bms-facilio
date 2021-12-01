@@ -6,6 +6,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.EmployeeContext;
 import com.facilio.bmsconsole.context.PeopleContext;
@@ -35,12 +36,16 @@ public class AddEmployeeInviteDetailCommand extends FacilioCommand {
 					if(appDomain != null)
 					{
 						User user = AccountUtil.getUserBean().getUser(ppl.getEmail(), appDomain.getIdentifier());
-						System.out.println(user);
 						boolean showInviteOption = false;
-		                if(IAMOrgUtil.getAccountSSO(AccountUtil.getCurrentOrg().getId()) != null && (user == null))
-		                {
-		                	showInviteOption = true;
-		                }
+						User appUser = AccountUtil.getUserBean().getAppUserForUserName(user.getUserName(), appId, AccountUtil.getCurrentOrg().getId());
+						AccountSSO accSso = IAMOrgUtil.getAccountSSO(AccountUtil.getCurrentOrg().getId());
+						if(accSso != null)
+						{
+							if(accSso.getIsActive() && (appUser == null))
+			                {
+			                	showInviteOption = true;
+			                }
+						}
 	                	emp.setShowInviteOption(showInviteOption);
 					}
 
