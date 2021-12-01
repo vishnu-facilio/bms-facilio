@@ -145,7 +145,8 @@ public class GetAllServiceCatalogCommand extends FacilioCommand {
                 
             }
         }
-        
+        boolean restrictPermissionCheck = (boolean) context.getOrDefault(FacilioConstants.ContextNames.RESTRICT_PERMISSIONS, false);
+
 		Map<Long, SharingContext<SingleSharingContext>> sharingMap = SharingAPI.getSharingMap(ModuleFactory.getServiceCatalogItemSharingModule(), SingleSharingContext.class);
 		if (!serviceCatalogs.isEmpty() && serviceCatalogs != null) {
 			List<ServiceCatalogContext> serviceCatalogsToBeRemoved = new ArrayList<ServiceCatalogContext>();
@@ -158,7 +159,9 @@ public class GetAllServiceCatalogCommand extends FacilioCommand {
 						}
 					}
 			}
-			serviceCatalogs.removeAll(serviceCatalogsToBeRemoved);
+			if (!restrictPermissionCheck) {
+				serviceCatalogs.removeAll(serviceCatalogsToBeRemoved);
+			}
 		}
 
         context.put(FacilioConstants.ContextNames.SERVICE_CATALOGS, serviceCatalogs);
