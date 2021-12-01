@@ -48,7 +48,7 @@ public class ExecuteStateTransitionsCommand extends ExecuteAllWorkflowsCommand {
 
 		Set<Long> stateFlowIds = new HashSet<>();
 		Set<Long> fromStateIds = new HashSet<>();
-		if (CollectionUtils.isNotEmpty(records)) {
+		if (CollectionUtils.isNotEmpty(records) && CollectionUtils.isNotEmpty(workflowRules)) {
 			for (ModuleBaseWithCustomFields record : records) {
 				stateFlowIds.add(record.getStateFlowId());
 				if (record.getModuleState() != null) {
