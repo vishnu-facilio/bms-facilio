@@ -219,7 +219,7 @@ public class MandrillEmailClient extends EmailClient {
             SendMessageResponse response = messagesRequest.sendMessage(mmr);
             for(MessageResponse messageResponse: response.getList()) {
                 if( "sent".equalsIgnoreCase(messageResponse.getStatus())) {
-                    AwsUtil.logEmail(mailJson);
+                    //AwsUtil.logEmail(mailJson);
                 } else if (messageResponse.getRejectReason() != null) {
                     LOGGER.info("Email sending failed : to "+ messageResponse.getEmail() +" reason: " + messageResponse.getRejectReason() + " , status: " + messageResponse.getStatus());
                 }
