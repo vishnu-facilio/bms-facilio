@@ -330,9 +330,13 @@ public class ApplicationApi {
     }
 
     public static void addUserInApp(User user, boolean shouldThrowError) throws Exception {
-        OrgUserApp userExisitsInApp = checkIfUserAlreadyPresentInApp(user.getUid(), user.getApplicationId(), user.getOrgId());
-        if (userExisitsInApp == null) {
-            AccountUtil.getUserBean().addToORGUsersApps(user, true);
+    	addUserInApp(user,shouldThrowError,true);
+    }
+  
+    public static void addUserInApp(User user, boolean shouldThrowError,boolean isEmailVerificationNeeded) throws Exception {
+    	OrgUserApp userExisitsInApp = checkIfUserAlreadyPresentInApp(user.getUid(), user.getApplicationId(), user.getOrgId());
+    	if (userExisitsInApp == null) {
+    		AccountUtil.getUserBean().addToORGUsersApps(user, isEmailVerificationNeeded);
         } else {
             if (shouldThrowError) {
                 throw new IllegalArgumentException("User already exists in app");

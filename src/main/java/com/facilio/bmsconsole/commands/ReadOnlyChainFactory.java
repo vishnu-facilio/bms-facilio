@@ -2612,7 +2612,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(SetTableNamesCommand.getForEmployee());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new FetchRolesForPeopleCommand());
-
+		c.addCommand(new AddEmployeeInviteDetailCommand());
 		return c;
 	}
 	

@@ -285,7 +285,11 @@ public class PeopleAPI {
 			long appId = -1;
 			appId = ApplicationApi.getApplicationIdForLinkName(linkname);
 			appDomain = ApplicationApi.getAppDomainForApplication(appId);
-					
+			boolean sendInvite = true;
+			if(person.getSendInvite() != null && person.getSendInvite() == false)
+			{
+				sendInvite = false;
+			}
 			if(appDomain != null) {
 				User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
 				if((linkname.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP) && existingPeople.isAppAccess())) {
@@ -299,11 +303,23 @@ public class PeopleAPI {
 						user.setAppDomain(appDomain);
 						user.setRoleId(roleId);
 						user.setLanguage(person.getLanguage());
-						ApplicationApi.addUserInApp(user, false);
+						if(!sendInvite)
+						{
+							user.setUserVerified(true);
+						}		
+						ApplicationApi.addUserInApp(user, false, sendInvite);
 						AccountUtil.getUserBean().updateUser(user);
 					}
-					else {
-						addAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, roleId);
+					else 
+					{
+						if(!sendInvite)
+						{
+							addAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, roleId,false,true);
+						}
+						else
+						{
+							addAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, roleId);
+						}					
 					}
 				}
 				else {
@@ -573,6 +589,10 @@ public class PeopleAPI {
 	}
 	
 	public static User addAppUser(PeopleContext existingPeople, String linkName, Long roleId) throws Exception {
+		return addAppUser(existingPeople,linkName,roleId,true,false);
+		}
+	public static User addAppUser(PeopleContext existingPeople, String linkName, Long roleId,boolean isEmailVerificationNeeded,boolean userVerified) throws Exception {
+		 		
 		if(StringUtils.isEmpty(linkName)) {
 			throw new IllegalArgumentException("Invalid Link name");
 		}
@@ -582,7 +602,7 @@ public class PeopleAPI {
 		user.setEmail(existingPeople.getEmail());
 		user.setPhone(existingPeople.getPhone());
 		user.setName(existingPeople.getName());
-		user.setUserVerified(false);
+		user.setUserVerified(userVerified);
 		user.setInviteAcceptStatus(false);
 		user.setInvitedTime(System.currentTimeMillis());
 		user.setPeopleId(existingPeople.getId());
@@ -593,7 +613,7 @@ public class PeopleAPI {
 		user.setApplicationId(appId);
 		user.setAppDomain(appDomainObj);
 		
-		AccountUtil.getUserBean().createUser(AccountUtil.getCurrentOrg().getOrgId(), user, appDomainObj.getIdentifier(), true, false);
+		AccountUtil.getUserBean().createUser(AccountUtil.getCurrentOrg().getOrgId(), user, appDomainObj.getIdentifier(), isEmailVerificationNeeded, false);
 		return user;
 		
 	}
