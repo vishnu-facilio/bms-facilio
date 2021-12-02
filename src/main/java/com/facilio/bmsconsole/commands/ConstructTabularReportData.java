@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
@@ -228,7 +229,6 @@ public class ConstructTabularReportData extends FacilioCommand {
 					yField =  modBean.getField(data.getReadingField().getId()).clone();
 					}
 					yAxisModule = modBean.getModule(data.getReadingField().getModuleId());
-					yAggr = NumberAggregateOperator.SUM;
 				} else if(data.getField() != null){
 					if (data.getField().getModuleId() > 0) {
 						yAxisModule = modBean.getModule(data.getField().getModuleId());
@@ -266,6 +266,21 @@ public class ConstructTabularReportData extends FacilioCommand {
 				} else if(data.getDateFieldId() > 0 && data.getDatePeriod() > 0) {
 					FacilioField dateField = modBean.getField(data.getDateFieldId(), yAxisModule.getName()).clone();
 					dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));
+					Operator dateOperator = Operator.getOperator(data.getDatePeriod());
+					Criteria otherCrit = new Criteria();
+					Condition newCond = CriteriaAPI.getCondition(dateField, dateOperator);
+					otherCrit.addAndCondition(newCond);
+					dataPointContext.setOtherCriteria(otherCrit);
+				}  else if(startTime > 0 && endTime > 0 && yField.getModule().getTypeEnum() == FacilioModule.ModuleType.READING && reportContext.getTypeEnum() == ReportType.PIVOT_REPORT) {
+					FacilioField dateField = FieldFactory.getDateField("actual_ttime", "ACTUAL_TTIME", yField.getModule()).clone();
+					DateRange range = new DateRange(startTime,endTime);
+					Criteria otherCrit = new Criteria();
+					Condition newCond = CriteriaAPI.getCondition(dateField, range.toString(), DateOperators.BETWEEN);
+					otherCrit.addAndCondition(newCond);
+					dataPointContext.setOtherCriteria(otherCrit);
+				} else if(data.getDatePeriod() > 0 && yField.getModule().getTypeEnum() == FacilioModule.ModuleType.READING && reportContext.getTypeEnum() == ReportType.PIVOT_REPORT) {
+					FacilioField dateField = FieldFactory.getDateField("actual_ttime", "ACTUAL_TTIME", yField.getModule()).clone();
+//					dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));
 					Operator dateOperator = Operator.getOperator(data.getDatePeriod());
 					Criteria otherCrit = new Criteria();
 					Condition newCond = CriteriaAPI.getCondition(dateField, dateOperator);

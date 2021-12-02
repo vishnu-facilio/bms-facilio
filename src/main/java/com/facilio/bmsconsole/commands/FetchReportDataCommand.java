@@ -74,6 +74,8 @@ public class FetchReportDataCommand extends FacilioCommand {
             return false;
         }
 
+        reportModule = modBean.getModule(report.getModuleId());
+
         LinkedHashMap<String, String> tableAlias = (LinkedHashMap<String, String>) context.get(FacilioConstants.ContextNames.TABLE_ALIAS);
 
         if (tableAlias != null) {
@@ -795,20 +797,23 @@ public class FetchReportDataCommand extends FacilioCommand {
         for (List<ReportDataPointContext> dataPointList : groupedList) {
             ReportDataPointContext rdp = dataPointList.get(0);
             if (rdp.getxAxis().getField().equals(dataPoint.getxAxis().getField()) &&                                    // xaxis should be same
-                    rdp.getyAxis().getModule().equals(dataPoint.getyAxis().getModule()) &&        // yaxis Module should be same
+                    rdp.getyAxis().getModule().equals(dataPoint.getyAxis().getModule()) &&                              // yaxis Module should be same
                     Objects.equals(rdp.getOrderBy(), dataPoint.getOrderBy()) &&                                        // Order BY should be same
                     rdp.isHandleEnum() == dataPoint.isHandleEnum() &&                                            // Both should be of same type
                     isSameTable(rdp, dataPoint)                                                    //Both should have same table alias - case of pivot table
             ) {
                 OrderByFunction rdpFunc = rdp.getOrderByFuncEnum() == null ? OrderByFunction.NONE : rdp.getOrderByFuncEnum();
                 OrderByFunction dataPointFunc = dataPoint.getOrderByFuncEnum() == null ? OrderByFunction.NONE : dataPoint.getOrderByFuncEnum();
+//                Map<String, Condition> rdpCondition = rdp.getOtherCriteria().getConditions();
+//                Map<String, Condition> dataPointCondition = dataPoint.getOtherCriteria().getConditions();
 //				int rdpAggr = rdp.getxAxis().getAggrEnum() == null && rdp.getyAxis().getAggrEnum() == null ? 0 : 1;
 //				int dataPointAggr = dataPoint.getxAxis().getAggrEnum() == null && dataPoint.getyAxis().getAggrEnum() == null ? 0 : 1;
                 if (rdpFunc == dataPointFunc &&                                                                        // order by function should be same
                         Objects.equals(rdp.getCriteria(), dataPoint.getCriteria()) &&                                    // criteria should be same
 //						rdpAggr == dataPointAggr &&																		// x and y aggregation (either both null or both should be not null)
 //						(rdpAggr == 0 || (rdp.getxAxis().getAggrEnum() == dataPoint.getxAxis().getAggrEnum())) &&		// x aggregation should be same;
-                        Objects.equals(rdp.getGroupByFields(), dataPoint.getGroupByFields())) {                            // group by field should be same;
+                        Objects.equals(rdp.getGroupByFields(), dataPoint.getGroupByFields()) &&
+                        rdp.getOtherCriteria() == null && dataPoint.getOtherCriteria() == null) {                            // group by field should be same;
                     dataPointList.add(dataPoint);
                     return;
                 }
@@ -818,6 +823,12 @@ public class FetchReportDataCommand extends FacilioCommand {
         dataPointList.add(dataPoint);
         groupedList.add(dataPointList);
     }
+
+//    private boolean compareCriteria(Criteria criteria1, Criteria criteria2){
+//        Map<String, Condition> conditions1 = criteria1.getConditions();
+//        Map<String, Condition> conditions2 = criteria2.getConditions();
+//        return conditions1.get("1").equals(conditions2.get("1"));
+//    }
 
     private FacilioField applySpaceAggregation(ReportDataPointContext dp, AggregateOperator aggr, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules, FacilioField field) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -1044,7 +1055,7 @@ public class FetchReportDataCommand extends FacilioCommand {
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(yAxisModule.getName()));
 
         if (!addedModules.contains(reportModule)) {
-            if (reportModule.getName().equalsIgnoreCase(FacilioConstants.ContextNames.ASSET)) {
+            if (reportModule != null && reportModule.getName().equalsIgnoreCase(FacilioConstants.ContextNames.ASSET)) {
                 selectBuilder.addJoinModules(Collections.singletonList(reportModule));
                 selectBuilder.innerJoin(reportModule.getTableName())
                         .on(resourceModule.getTableName() + ".ID = " + reportModule.getTableName() + ".ID");
@@ -1097,8 +1108,10 @@ public class FetchReportDataCommand extends FacilioCommand {
             return false;
         } else {
             FacilioField facilioField = dataPoint.getyAxis().getField().clone();
-            if(reportType == ReportType.PIVOT_REPORT) {
+            if(reportType == ReportType.PIVOT_REPORT && dataPoint.getyAxis().getModule().getTypeEnum() != ModuleType.READING) {
                 facilioField.setTableAlias(getAndSetModuleAlias(facilioField.getModule().getName()));
+            } else if(reportType == ReportType.PIVOT_REPORT && dataPoint.getyAxis().getModule().getTypeEnum() == ModuleType.READING) {
+                facilioField.setTableAlias(null);
             }
             FacilioField aggrField = dataPoint.getyAxis().getAggrEnum().getSelectField(facilioField);
             aggrField.setName(ReportUtil.getAggrFieldName(aggrField, dataPoint.getyAxis().getAggrEnum()));
@@ -1269,7 +1282,7 @@ public class FetchReportDataCommand extends FacilioCommand {
                 }
                 prevModule = poll;
             }
-        } else if((Boolean) pivotField.get("isDataField") && !this.baseModule.getExtendedModuleIds().contains(module.getModuleId())) {
+        } else if((Boolean) pivotField.get("isDataField") && !this.baseModule.getExtendedModuleIds().contains(module.getModuleId()) && module.getTypeEnum() != ModuleType.READING) {
             System.out.println("submodule data field join");
             FacilioField dataField = FieldFactory.getIdField(module).clone();
 
@@ -1299,6 +1312,11 @@ public class FetchReportDataCommand extends FacilioCommand {
                         .on(getAndSetModuleAlias(prevModule.getName()) + ".ID = " + getAndSetModuleAlias(pop.getName()) + ".ID");
                 prevModule = pop;
             }
+        }
+
+        if(module.getTypeEnum() == ModuleType.READING){
+            FacilioField facilioField = (FacilioField) pivotField.get("field");
+//            selectBuilder.groupBy(facilioField.getName());
         }
     }
 
@@ -1430,7 +1448,7 @@ public class FetchReportDataCommand extends FacilioCommand {
             field.setTableAlias(getAndSetModuleAlias(field.getModule().getName() + "_" + field.getName()));
         } else {
             tempMap.put("isLookupField",false);
-            if(field.getModule() != null) {
+            if(field.getModule() != null && field.getModule().getTypeEnum() != ModuleType.READING) {
                 field.setName(field.getName());
                 field.setTableAlias(getAndSetModuleAlias(field.getModule().getName()));
             }
