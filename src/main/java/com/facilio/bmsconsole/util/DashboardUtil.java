@@ -1801,6 +1801,7 @@ public class DashboardUtil {
 			List<Map<String, Object>> props = selectBuilder.get();
 			
 			if (props != null && !props.isEmpty()) {
+				try {
 				User delegateuser = DelegationUtil.getUser(AccountUtil.getCurrentAccount().getUser(), System.currentTimeMillis(), getDelegationType());
 				User currentuser = AccountUtil.getCurrentAccount().getUser();
 				List<User> alluser = new ArrayList<User>();
@@ -1853,6 +1854,11 @@ public class DashboardUtil {
 					for (Long dashboardId : dashboardIds) {
 						dashboardList.add(dashboardMap.get(dashboardId));
 					}
+				}
+			}
+		     catch(Exception e)
+				{
+		    	 LOGGER.info("Exception occurred :"+ e);
 				}
 			}
 			else {
