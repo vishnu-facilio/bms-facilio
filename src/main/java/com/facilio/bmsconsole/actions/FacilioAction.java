@@ -375,7 +375,7 @@ public class FacilioAction extends ActionSupport {
 			return;
 		}
 		long orgId = AccountUtil.getCurrentOrg() != null ? AccountUtil.getCurrentOrg().getOrgId() : -1;
-		if (FacilioProperties.isDevelopment() || orgId == 173L) {	// send audit logs for Thalir org alone.
+		if (orgId > 0L) {
 			SessionManager.getInstance().sendMessage(new Message()
 					.setTopic(Topics.System.auditLogs)
 					.setOrgId(orgId)
