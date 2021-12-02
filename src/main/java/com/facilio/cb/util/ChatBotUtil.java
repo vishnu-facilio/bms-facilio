@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
-import org.eclipse.milo.opcua.sdk.client.model.types.objects.FileType;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 

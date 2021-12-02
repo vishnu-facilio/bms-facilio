@@ -13,13 +13,13 @@ import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointEnum;
 import com.facilio.agentv2.point.PointsAPI;
-import com.facilio.sqlUtils.contexts.bacnet.ip.BacnetIpController;
-import com.facilio.sqlUtils.contexts.modbus.ip.ModbusTcpController;
-import com.facilio.sqlUtils.contexts.modbus.rtu.ModbusRtuController;
-import com.facilio.sqlUtils.contexts.opc.ua.OpcUaController;
-import com.facilio.sqlUtils.contexts.opc.xmlda.OpcXmlDaController;
-import com.facilio.sqlUtils.sqllite.SQLiteUtil;
-import com.facilio.sqlUtils.utilities.FacilioJavaController;
+//import com.facilio.sqlUtils.contexts.bacnet.ip.BacnetIpController;
+//import com.facilio.sqlUtils.contexts.modbus.ip.ModbusTcpController;
+//import com.facilio.sqlUtils.contexts.modbus.rtu.ModbusRtuController;
+//import com.facilio.sqlUtils.contexts.opc.ua.OpcUaController;
+//import com.facilio.sqlUtils.contexts.opc.xmlda.OpcXmlDaController;
+//import com.facilio.sqlUtils.sqllite.SQLiteUtil;
+//import com.facilio.sqlUtils.utilities.FacilioJavaController;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -28,7 +28,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
-public class ControllerMigrator {
+public class ControllerMigrator {/*
     private static final Logger LOGGER = LogManager.getLogger(ControllerMigrator.class.getName());
 
     public static boolean migrateControllers(long agentId, Map<Long, FacilioControllerType> controllerIdsType) throws Exception {
@@ -197,7 +197,7 @@ public class ControllerMigrator {
     }
 
 
- /*   private static Niagara getOpcUaController(NiagaraController controller) throws Exception {
+ *//*   private static Niagara getOpcUaController(NiagaraController controller) throws Exception {
         if(controller != null){
             OpcUaController agentController = new OpcUaController();
             makeAgentController(controller,agentController);
@@ -210,7 +210,7 @@ public class ControllerMigrator {
             throw new Exception(" controller cant be null");
         }
     }
-*/
+*//*
 
     private static void makeAgentController(Controller controller, FacilioJavaController agentController) {
         agentController.setName(controller.getName());
@@ -239,6 +239,6 @@ public class ControllerMigrator {
             throw new Exception("controller cant be null");
         }
     }
-
+*/
 
 }
