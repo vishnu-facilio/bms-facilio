@@ -1801,14 +1801,19 @@ public class DashboardUtil {
 			List<Map<String, Object>> props = selectBuilder.get();
 			
 			if (props != null && !props.isEmpty()) {
-				try {
-				User delegateuser = DelegationUtil.getUser(AccountUtil.getCurrentAccount().getUser(), System.currentTimeMillis(), getDelegationType());
 				User currentuser = AccountUtil.getCurrentAccount().getUser();
 				List<User> alluser = new ArrayList<User>();
 				alluser.add(currentuser);
-				if(delegateuser !=null)
+				try {
+					User delegateuser = DelegationUtil.getUser(AccountUtil.getCurrentAccount().getUser(), System.currentTimeMillis(), getDelegationType());
+				    if(delegateuser !=null)
+				    {
+					 alluser.add(delegateuser);
+				    }
+				}
+				catch(Exception e)
 				{
-					alluser.add(delegateuser);
+		    	 LOGGER.info("Exception occurred :"+ e);
 				}
 				for (Map<String, Object> prop : props) {
 					DashboardSharingContext dashboardSharing = FieldUtil.getAsBeanFromMap(prop, DashboardSharingContext.class);
@@ -1855,11 +1860,7 @@ public class DashboardUtil {
 						dashboardList.add(dashboardMap.get(dashboardId));
 					}
 				}
-			}
-		     catch(Exception e)
-				{
-		    	 LOGGER.info("Exception occurred :"+ e);
-				}
+		    
 			}
 			else {
 				if(AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO) { 
