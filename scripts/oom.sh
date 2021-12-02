@@ -6,6 +6,7 @@ environment=`grep "environment=" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
 schedulerServer=`grep "schedulerServer=" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
 messageProcessor=`grep "messageProcessor=" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
 region_name=`grep "region=" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
+region_name=`echo $region_name | cut -d ' ' -f1`
 case $region_name in
         'us-west-2')
                 region_name="US"
