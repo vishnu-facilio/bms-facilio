@@ -7,6 +7,14 @@ import java.util.List;
 
 public class TimelineRequest {
 
+    private String viewName;
+    public String getViewName() {
+        return viewName;
+    }
+    public void setViewName(String viewName) {
+        this.viewName = viewName;
+    }
+
     private String moduleName;
     public String getModuleName() {
         return moduleName;
@@ -21,6 +29,14 @@ public class TimelineRequest {
     }
     public void setGroupIds(List<Object> groupIds) {
         this.groupIds = groupIds;
+    }
+
+    private boolean getUnGrouped = false;
+    public boolean isGetUnGrouped() {
+        return getUnGrouped;
+    }
+    public void setGetUnGrouped(boolean getUnGrouped) {
+        this.getUnGrouped = getUnGrouped;
     }
 
     private Long startTime;
