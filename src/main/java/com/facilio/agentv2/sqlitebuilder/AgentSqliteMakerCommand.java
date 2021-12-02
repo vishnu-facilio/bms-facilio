@@ -7,7 +7,7 @@ import com.facilio.agentv2.commands.AgentV2Command;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
-import com.facilio.sqlUtils.sqllite.SQLiteUtil;
+//import com.facilio.sqlUtils.sqllite.SQLiteUtil;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -21,7 +21,7 @@ public class AgentSqliteMakerCommand extends AgentV2Command {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        if (containsCheck(AgentConstants.AGENT_ID, context)) {
+       /* if (containsCheck(AgentConstants.AGENT_ID, context)) {
             long agentId = Long.parseLong(String.valueOf(context.get(AgentConstants.AGENT_ID)));
             SqliteBridge bridge = new SqliteBridge();
             File file = bridge.getSqliteFile(agentId);
@@ -45,7 +45,7 @@ public class AgentSqliteMakerCommand extends AgentV2Command {
                 file.delete();
                 throw new Exception(" no controllers found for agent " + agentId);
             }
-        }
+        }*/
         return false;
     }
 

@@ -13,11 +13,11 @@ import com.facilio.agentv2.point.PointEnum;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.sqlUtils.constants.Columns;
-import com.facilio.sqlUtils.tables.BacNetIpControllerTable;
-import com.facilio.sqlUtils.tables.BacNetIpPointTable;
-import com.facilio.sqlUtils.tables.ControllerTable;
-import com.facilio.sqlUtils.tables.PointTable;
+//import com.facilio.sqlUtils.constants.Columns;
+//import com.facilio.sqlUtils.tables.BacNetIpControllerTable;
+//import com.facilio.sqlUtils.tables.BacNetIpPointTable;
+//import com.facilio.sqlUtils.tables.ControllerTable;
+//import com.facilio.sqlUtils.tables.PointTable;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.poi.util.StringUtil;
@@ -29,7 +29,7 @@ import java.util.*;
 
 public class SQLiteComparitor {
 
-    private static final Logger LOGGER = LogManager.getLogger(SQLiteComparitor.class.getName());
+   /* private static final Logger LOGGER = LogManager.getLogger(SQLiteComparitor.class.getName());
 
     private File sqLiteFile;
     private Connection connection = null;
@@ -209,7 +209,7 @@ public class SQLiteComparitor {
         return dbControllersMinusSqliteControllers;
     }
 
-    /* List<Device> getDevicesFromDb(int limit, int offset, FacilioControllerType controllerType) {
+    *//* List<Device> getDevicesFromDb(int limit, int offset, FacilioControllerType controllerType) {
          List<Device> devices = new ArrayList<>();
          try {
              FacilioContext context = new FacilioContext();
@@ -223,7 +223,7 @@ public class SQLiteComparitor {
          }
          return devices;
      }
-     */
+     *//*
     private void dbPointsMinusSqlitePoints(Controller dbController, Controller sqliteController, FacilioControllerType controllerType) {
         try {
             int offset = 0;
@@ -497,5 +497,5 @@ public class SQLiteComparitor {
         paginationObject.put("page", offset == 0 ? 1 : (offset / limit) + 1);
         paginationObject.put("perPage", limit);
         return paginationObject;
-    }
+    }*/
 }
