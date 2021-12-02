@@ -24,7 +24,7 @@ case $region_name in
                 region_name="UK - London"
                 ;;
         *)
-                region_name="unknown"
+                region_name="US"
 esac
 aws ses send-email --region us-west-2 --from oomsh@facilio.com --to devops@facilio.com --subject "OOM Occurred in $environment $ipAddress" --text "scheduler=$schedulerServer  kinesis=$messageProcessor region=$region_name"
 nohup sh /home/facilio/move_hprof.sh &
