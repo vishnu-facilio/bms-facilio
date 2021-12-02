@@ -25,6 +25,9 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.*;
+import com.facilio.delegate.context.DelegationType;
+import com.facilio.delegate.util.DelegationUtil;
+import com.facilio.accounts.dto.User;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.BaseLineContext.RangeType;
@@ -102,7 +105,10 @@ public class DashboardUtil {
 		RESERVED_DASHBOARD_LINK_NAME.add("buildingdashboard");
 	}
 	
-	
+    public static DelegationType getDelegationType() {
+        return DelegationType.DASHBOARD;
+    }
+    
 	public static FacilioField getField(String moduleName,String fieldName) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -1795,21 +1801,30 @@ public class DashboardUtil {
 			List<Map<String, Object>> props = selectBuilder.get();
 			
 			if (props != null && !props.isEmpty()) {
+				User delegateuser = DelegationUtil.getUser(AccountUtil.getCurrentAccount().getUser(), System.currentTimeMillis(), getDelegationType());
+				User currentuser = AccountUtil.getCurrentAccount().getUser();
+				List<User> alluser = new ArrayList<User>();
+				alluser.add(currentuser);
+				if(delegateuser !=null)
+				{
+					alluser.add(delegateuser);
+				}
 				for (Map<String, Object> prop : props) {
 					DashboardSharingContext dashboardSharing = FieldUtil.getAsBeanFromMap(prop, DashboardSharingContext.class);
 					if (dashboardIds.contains(dashboardSharing.getDashboardId())) {
 						dashboardIds.remove(dashboardSharing.getDashboardId());
 					}
-					
+					for(User user : alluser)
+					{
 					if(!dashboardList.contains(dashboardMap.get(dashboardSharing.getDashboardId()))) {
-						if (dashboardSharing.getSharingTypeEnum().equals(SharingType.USER) && dashboardSharing.getOrgUserId() == AccountUtil.getCurrentAccount().getUser().getOuid()) {
+						if (dashboardSharing.getSharingTypeEnum().equals(SharingType.USER) && dashboardSharing.getOrgUserId() == user.getOuid()) {
 							dashboardList.add(dashboardMap.get(dashboardSharing.getDashboardId()));
 						}
-						else if (dashboardSharing.getSharingTypeEnum().equals(SharingType.ROLE) && dashboardSharing.getRoleId() == AccountUtil.getCurrentAccount().getUser().getRoleId()) {
+						else if (dashboardSharing.getSharingTypeEnum().equals(SharingType.ROLE) && dashboardSharing.getRoleId() == user.getRoleId()) {
 							dashboardList.add(dashboardMap.get(dashboardSharing.getDashboardId()));
 						}
 						else if (dashboardSharing.getSharingTypeEnum().equals(SharingType.GROUP)) {
-							List<Group> mygroups = AccountUtil.getGroupBean().getMyGroups(AccountUtil.getCurrentAccount().getUser().getOuid());
+							List<Group> mygroups = AccountUtil.getGroupBean().getMyGroups(user.getOuid());
 							for (Group group : mygroups) {
 								if (dashboardSharing.getGroupId() == group.getGroupId() && !dashboardList.contains(dashboardMap.get(dashboardSharing.getDashboardId()))) {
 									dashboardList.add(dashboardMap.get(dashboardSharing.getDashboardId()));
@@ -1818,7 +1833,7 @@ public class DashboardUtil {
 						}
 						else if (dashboardSharing.getSharingTypeEnum().equals(SharingType.PORTAL)) {
 							if(dashboardSharing.getOrgUserId() > 0) {
-								if(dashboardSharing.getOrgUserId() == AccountUtil.getCurrentAccount().getUser().getOuid()) {
+								if(dashboardSharing.getOrgUserId() == user.getOuid()) {
 									dashboardList.add(dashboardMap.get(dashboardSharing.getDashboardId()));
 								}
 							}
@@ -1830,6 +1845,9 @@ public class DashboardUtil {
 							dashboardList.add(dashboardMap.get(dashboardSharing.getDashboardId()));
 						}
 					}
+					}
+					
+					
 				}
 				if(AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomainType.FACILIO) {
 					for (Long dashboardId : dashboardIds) {
