@@ -11,6 +11,8 @@ public enum DelegationType implements FacilioIntEnum {
     STATE_FLOW("State Flow", 1 << 1),
     APPROVAL("Approval", 1 << 2),
     CUSTOM_BUTTON("Custom Button", 1 << 3),
+    DASHBOARD("Dashboard", 1 << 4),
+    LIST_VIEWS("List Views", 1 << 5),
     ;
 
     private String name;
