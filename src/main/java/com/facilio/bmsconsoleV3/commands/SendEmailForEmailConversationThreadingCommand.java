@@ -180,7 +180,7 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 		
 		LOGGER.error("emailConversation -- "+emailConversation.getId()+" mail JSON --- "+mailJson +" files -- "+files);
 		
-		String returnMessageId = AwsUtil.sendEmailViaMimeMessage(mailJson, files);
+		String returnMessageId = AwsUtil.sendMail(mailJson, files);
 		
 		return returnMessageId;
 		

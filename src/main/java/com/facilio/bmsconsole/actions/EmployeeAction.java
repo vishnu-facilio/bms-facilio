@@ -121,6 +121,18 @@ private static final long serialVersionUID = 1L;
 		return this.count;
 	}
 
+
+	private Boolean sendInvite;
+	public Boolean getSendInvite() {
+		if (sendInvite == null) {
+			return true;
+		}
+		return sendInvite;
+	}
+	public void setSendInvite(Boolean sendInvite) {
+		this.sendInvite = sendInvite;
+	}
+	
 	public String addEmployees() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(employees)) {
@@ -146,13 +158,12 @@ private static final long serialVersionUID = 1L;
 			employees = new ArrayList<>();
 			employees.add(employee);
 		}
-		
 		if(!CollectionUtils.isEmpty(employees)) {
 			FacilioChain c = TransactionChainFactory.updateEmployeeChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
 			c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
-			
+			c.getContext().put(FacilioConstants.ContextNames.SEND_INVITE,getSendInvite());
 			for(EmployeeContext emp : employees) {
 				emp.parseFormData();
 				RecordAPI.handleCustomLookup(emp.getData(), FacilioConstants.ContextNames.EMPLOYEE);

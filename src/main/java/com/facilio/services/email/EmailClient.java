@@ -41,6 +41,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.delegate.context.DelegationType;
 import com.facilio.delegate.util.DelegationUtil;
+import com.facilio.email.BaseEmailClient;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
@@ -48,26 +49,11 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 
-public abstract class EmailClient {
+public abstract class EmailClient extends BaseEmailClient {
 
     private static final Logger LOGGER = LogManager.getLogger(EmailClient.class.getName());
     public static final String mailDomain = FacilioProperties.getMailDomain();
-    public static final String SENDER="sender";
-    public static final String MESSAGE="message";
-    public static final String SUBJECT="subject";
-    public static final String CC="cc";
-    public static final String BCC="bcc";
-    public static final String MAIL_TYPE="mailType";
-    public static final String CONTENT_TYPE_TEXT_HTML="text/html; charset=UTF-8";
-    public static final String CONTENT_TYPE_TEXT_PLAIN="text/plain; charset=UTF-8";
-    public static final String MIME_MULTIPART_SUBTYPE_ALTERNATIVE="alternative";
-    public static final String MIME_MULTIPART_SUBTYPE_MIXED="mixed";
-    public static final String HEADER="header";
-    public static final String CONTENT_TRANSFER_ENCODING="Content-Transfer-Encoding";
-    public static final String BASE_64 = "base64";
-    public static final String HTML="html";
-    public static final String HOST = "host";
-    public static final String TO = "to";
+    
     public static final String ERROR_MAIL_FROM="mlerror@" + mailDomain;
     public static final String ERROR_MAIL_TO="ai@" + mailDomain;
     public static final String ERROR_AT_FACILIO="error@" + mailDomain;
@@ -263,77 +249,6 @@ public abstract class EmailClient {
         builder.append(mailDomain);
 
         return builder.toString();
-    }
-
-    public static MimeMessage constructMimeMessageContent(JSONObject mailJson, Session session,Map<String, String> files) throws Exception {
-        //String DefaultCharSet = MimeUtility.getDefaultJavaCharset();
-
-        String sender = (String) mailJson.get(SENDER);
-
-        MimeMessage message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(sender));
-        message.setRecipients(javax.mail.Message.RecipientType.TO, InternetAddress.parse((String) mailJson.get("to")));
-        String cc = (String) mailJson.get("cc");
-        if (cc != null && StringUtils.isNotEmpty(cc)) {
-            message.setRecipients(Message.RecipientType.CC, InternetAddress.parse(cc));
-        }
-        String bcc = (String) mailJson.get("bcc");
-        if (bcc != null && StringUtils.isNotEmpty(bcc)) {
-            message.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(bcc));
-        }
-        message.setSubject((String) mailJson.get(SUBJECT));
-
-        MimeMultipart messageBody = new MimeMultipart(MIME_MULTIPART_SUBTYPE_ALTERNATIVE);
-        MimeBodyPart textPart = new MimeBodyPart();
-
-        String type = CONTENT_TYPE_TEXT_PLAIN;
-        if(mailJson.get(MAIL_TYPE) != null && mailJson.get(MAIL_TYPE).equals(HTML)) {
-            type = CONTENT_TYPE_TEXT_HTML;
-        }
-        textPart.setContent((String) mailJson.get(MESSAGE), type);
-        textPart.setHeader(CONTENT_TRANSFER_ENCODING, BASE_64);
-        messageBody.addBodyPart(textPart);
-
-        MimeBodyPart wrap = new MimeBodyPart();
-        wrap.setContent(messageBody);
-
-        MimeMultipart messageContent = new MimeMultipart(MIME_MULTIPART_SUBTYPE_MIXED);
-        messageContent.addBodyPart(wrap);
-
-        if(files != null) {
-        	for (Map.Entry<String, String> file : files.entrySet()) {
-                String fileUrl = file.getValue();
-                if(fileUrl == null) {	// Temporary check for local filestore.
-                    continue;
-                }
-                MimeBodyPart attachment = new MimeBodyPart();
-                DataSource fileDataSource = null;
-                if (FacilioProperties.isDevelopment()) {
-                    fileDataSource = new FileDataSource(fileUrl);
-                } else {
-                    URL url = new URL(fileUrl);
-                    fileDataSource = new URLDataSource(url);
-                }
-                attachment.setDataHandler(new DataHandler(fileDataSource));
-                attachment.setFileName(file.getKey());
-                attachment.setHeader("Content-ID", "<"+file.getKey()+">");
-                messageContent.addBodyPart(attachment);
-            }
-        }
-        
-        if(mailJson.get(HEADER) != null) {
-        	JSONObject headerJSON = (JSONObject)mailJson.get(HEADER);
-        	
-        	for(Object headerNameObject : headerJSON.keySet()) {
-        		String headerName = (String) headerNameObject;
-        		String headerValue = (String) headerJSON.get(headerNameObject);
-        		
-        		message.setHeader(headerName, headerValue);
-        	}
-        }
-
-        message.setContent(messageContent);
-        return message;
     }
 
     public void sendErrorMail(long orgid,long ml_id,String error)

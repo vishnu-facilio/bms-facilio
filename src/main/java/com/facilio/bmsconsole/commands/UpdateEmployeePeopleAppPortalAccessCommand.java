@@ -25,7 +25,7 @@ public class UpdateEmployeePeopleAppPortalAccessCommand extends FacilioCommand {
 			for(EmployeeContext emp : employees) {
 				List<UpdateChangeSet> changes = changeSet.get(emp.getId());
 				if((CollectionUtils.isNotEmpty(changes) && (RecordAPI.checkChangeSet(changes, "isAppAccess", FacilioConstants.ContextNames.EMPLOYEE) || RecordAPI.checkChangeSet(changes, "roleId", FacilioConstants.ContextNames.EMPLOYEE))) || MapUtils.isNotEmpty(emp.getRolesMap())) {
-					PeopleAPI.updateEmployeeAppPortalAccess(emp, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+					PeopleAPI.updateEmployeeAppPortalAccess(emp, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,(boolean)context.get(FacilioConstants.ContextNames.SEND_INVITE));
 				}
 				if((CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes, "isOccupantPortalAccess", FacilioConstants.ContextNames.EMPLOYEE)) || MapUtils.isNotEmpty(emp.getRolesMap())) {
 					PeopleAPI.updatePeoplePortalAccess(emp, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
