@@ -189,7 +189,7 @@ public class ConstructTabularReportData extends FacilioCommand {
         if (firstRow.getLookupFieldId() > 0) {
             String fieldName;
             LookupField field = (LookupField) modBean.getField(firstRow.getLookupFieldId()).clone();
-            fieldName = field.getLookupModule().getName() + "_" + field.getName() + "_" + xAxisModule.getName() + "_" + xField.getName();
+            fieldName = xAxisModule.getName() + "_" + xField.getName();
 //			xField.setName(fieldName);
             xField.setTableAlias(getAndSetTableAlias(fieldName));
         } else {
@@ -373,7 +373,13 @@ public class ConstructTabularReportData extends FacilioCommand {
                         if (gField.getModule() != null) {
                             groupByModule = gField.getModule();
                         }
-                        fieldName = field.getLookupModule().getName() + "_" + field.getName() + "_" + groupByRow.getModuleName() + "_" + gField.getName();
+
+                        if (gField.equals(xField)) {
+                            fieldName = groupByRow.getModuleName() + "_" + gField.getName();
+                        } else {
+                            fieldName = field.getLookupModule().getName() + "_" + field.getName() + "_" + groupByRow.getModuleName() + "_" + gField.getName();
+                        }
+
 //						gField.setName(fieldName);
                         gField.setTableAlias(getAndSetTableAlias(fieldName));
                     } else {
