@@ -273,7 +273,7 @@ public class ConstructTabularReportData extends FacilioCommand {
                     Condition newCond = CriteriaAPI.getCondition(dateField, range.toString(), DateOperators.BETWEEN);
                     otherCrit.addAndCondition(newCond);
                     dataPointContext.setOtherCriteria(otherCrit);
-                } else if (dateFieldId > 0 && data.getDatePeriod() > 0 && data.getDateFieldId() < 0 && !showTimelineFilter ^ isTimeLineFilterApplied) {
+                } else if (dateFieldId > 0 && data.getDatePeriod() > 0 && data.getDateFieldId() < 0 && !showTimelineFilter ^ !isTimeLineFilterApplied) {
                     FacilioField dateField = modBean.getField(dateFieldId).clone();
                     dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));
                     Operator dateOperator = Operator.getOperator(data.getDatePeriod());
