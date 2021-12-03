@@ -2603,9 +2603,11 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, pivotparams.getDateOperator());
 		if(getStartTime() > 0 && getEndTime() > 0)
 		{
+			context.put(FacilioConstants.ContextNames.IS_TIMELINE_FILTER_APPLIED, true);
 			context.put(FacilioConstants.ContextNames.START_TIME, getStartTime());
 			context.put(FacilioConstants.ContextNames.END_TIME, getEndTime());
 		} else {
+			context.put(FacilioConstants.ContextNames.IS_TIMELINE_FILTER_APPLIED, false);
 			context.put(FacilioConstants.ContextNames.START_TIME, pivotparams.getStartTime());
 			context.put(FacilioConstants.ContextNames.END_TIME, pivotparams.getEndTime());
 		}
