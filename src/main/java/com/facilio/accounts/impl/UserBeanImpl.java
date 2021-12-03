@@ -1185,6 +1185,13 @@ public class UserBeanImpl implements UserBean {
 		String inviteToken = IAMUserUtil.getEncodedToken(user);
 		String hostname = "";
 		if (appDomainObj != null && StringUtils.isNotEmpty(appDomainObj.getDomain())) {
+			List<AppDomain> appDomains = IAMAppUtil.getAppDomain(appDomainObj.getAppDomainTypeEnum(), appDomainObj.getOrgId());
+			for (AppDomain appDomain: appDomains) {
+				if (appDomain.getDomainTypeEnum() == AppDomain.DomainType.CUSTOM) {
+					appDomainObj = appDomain;
+					break;
+				}
+			}
 			hostname = "https://" + appDomainObj.getDomain();
 //				if (appDomainObj.getAppDomainTypeEnum() != AppDomainType.FACILIO) {
 //					hostname = hostname + "/service";
