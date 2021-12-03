@@ -41,7 +41,7 @@ public class RatingAnswerHandler extends AnswerHandler<RatingAnswerContext> {
     @Override
     public AnswerContext deSerialize(RatingAnswerContext answer, QuestionContext question) throws Exception {
         RatingQuestionContext rq = (RatingQuestionContext) question;
-        V3Util.throwRestException((answer.getAnswer() < rq.MIN_VAL || answer.getAnswer() > rq.getRatingScale()), ErrorCode.VALIDATION_ERROR, MessageFormat.format("Answer ({0}) cannot be less than the min value ({1}) and more than max value ({2})", answer.getAnswer(), rq.MIN_VAL,rq.getRatingScale()));
+        V3Util.throwRestException((answer.getAnswer() < rq.MIN_RATING || answer.getAnswer() > rq.getRatingScale()), ErrorCode.VALIDATION_ERROR, MessageFormat.format("Answer ({0}) cannot be less than the min value ({1}) and more than max value ({2})", answer.getAnswer(), rq.MIN_RATING,rq.getRatingScale()));
         AnswerContext answerContext = new AnswerContext();
         answerContext.setRatingAnswer(answer.getAnswer());
         return answerContext;

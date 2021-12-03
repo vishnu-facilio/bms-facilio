@@ -1,6 +1,5 @@
 package com.facilio.qa.context.questions.handler;
 
-import com.facilio.constants.FacilioConstants;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.QuestionHandler;
 import com.facilio.qa.context.questions.RatingQuestionContext;
@@ -26,7 +25,7 @@ public class RatingQuestionHandler implements QuestionHandler<RatingQuestionCont
     private void commonValidate(List<RatingQuestionContext> questions) throws Exception {
         for (RatingQuestionContext q : questions) {
             Integer ratingScale = q.getRatingScale();
-            V3Util.throwRestException((ratingScale < RatingQuestionContext.MIN_VAL || ratingScale > RatingQuestionContext.MAX_VAL), ErrorCode.VALIDATION_ERROR, MessageFormat.format("Rating scale ({0}) cannot be less than the min value ({1}) and more than max value ({2})", ratingScale, RatingQuestionContext.MIN_VAL, RatingQuestionContext.MAX_VAL));
+            V3Util.throwRestException((ratingScale < RatingQuestionContext.MIN_RATING || ratingScale > RatingQuestionContext.MAX_RATING), ErrorCode.VALIDATION_ERROR, MessageFormat.format("Rating scale ({0}) cannot be less than the min value ({1}) and more than max value ({2})", ratingScale, RatingQuestionContext.MIN_RATING, RatingQuestionContext.MAX_RATING));
         }
     }
 

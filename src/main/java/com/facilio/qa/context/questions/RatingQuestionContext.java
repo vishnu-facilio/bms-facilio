@@ -16,8 +16,8 @@ import java.util.List;
         use = JsonTypeInfo.Id.NONE
 )
 public class RatingQuestionContext extends QuestionContext {
-    public static final Integer MIN_VAL = 1;
-    public static final Integer MAX_VAL = 10;
+    public static final Integer MIN_RATING = 1;
+    public static final Integer MAX_RATING = 10;
     private Integer ratingScale;
     private String displayFormat;
     private List<RatingQuestionContext.OptionSummary> summary;
