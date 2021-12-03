@@ -19,6 +19,7 @@ import com.facilio.qa.command.QAndAReadOnlyChainFactory;
 import com.facilio.qa.context.*;
 import com.facilio.qa.context.questions.BaseMCQContext;
 import com.facilio.qa.context.questions.MCQOptionContext;
+import com.facilio.qa.context.questions.RatingQuestionContext;
 import com.facilio.time.DateRange;
 import com.facilio.util.FacilioStreamUtil;
 import com.facilio.util.MathUtil;
@@ -397,4 +398,36 @@ public class QAndAUtil {
         clientAnswer.setAttachmentList(answer.getAttachmentList());
         return clientAnswer;
     }
+
+    public static void populateRatingSummary(List<Map<String, Object>> props, Map<Long, QuestionContext> questionMap, FacilioField questionField, FacilioField ratingAnswerField, FacilioField idField) throws Exception {
+        if (CollectionUtils.isNotEmpty(props)) {
+            Map<Long, Map<Long, RatingQuestionContext.OptionSummary>> summaryMap = new HashMap<>();
+            for (Map<String, Object> prop : props) {
+                Long questionId = (Long) ((Map<String, Object>) prop.get(questionField.getName())).get("id");
+                Number ratingAnswer = Math.toIntExact(ratingAnswerField.getDataTypeEnum() == FieldType.NUMBER ? (Integer) prop.get(ratingAnswerField.getName()) : (Integer) ((Map<String, Object>) prop.get(ratingAnswerField.getName())).get("id"));
+                RatingQuestionContext rq = (RatingQuestionContext) questionMap.get(questionId);
+                double count = ((Number) prop.get(idField.getName())).doubleValue();
+                double total = rq.getAnswered() == null ? 0 : rq.getAnswered().doubleValue();
+                V3Util.throwRestException(total < count, ErrorCode.UNHANDLED_EXCEPTION, "Total answered cannot be less than individual mcq answer count. This is not supposed to happen");
+
+                RatingQuestionContext.OptionSummary summary = new RatingQuestionContext.OptionSummary(ratingAnswer.longValue(), MathUtil.calculatePercentage(count, total), (int) count);
+                summaryMap.computeIfAbsent(questionId, k -> new HashMap<>()).put(ratingAnswer.longValue(), summary);
+            }
+            questionMap.values().forEach(q -> populateIndividualRatingSummary((RatingQuestionContext) q, summaryMap));
+        }
+    }
+
+    private static void populateIndividualRatingSummary (RatingQuestionContext question, Map<Long, Map<Long, RatingQuestionContext.OptionSummary>> summaryMap) {
+        Map<Long, RatingQuestionContext.OptionSummary> questionSummary = summaryMap.get(question._getId());
+        if (questionSummary != null) {
+            List<RatingQuestionContext.OptionSummary> summaryList = new ArrayList<>();
+            int ratingScale = question.getRatingScale()+1;
+            for (long i=1;i<ratingScale;i++) {
+                RatingQuestionContext.OptionSummary summary = questionSummary.get(i);
+                summaryList.add(summary == null ? new RatingQuestionContext.OptionSummary((long) i, 0f, 0) : summary);
+            }
+            question.setSummary(summaryList);
+        }
+    }
+
 }
