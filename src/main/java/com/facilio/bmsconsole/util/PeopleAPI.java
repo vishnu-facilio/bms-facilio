@@ -368,10 +368,9 @@ public class PeopleAPI {
 	}
 
 	public static void updatePeoplePortalAccess(PeopleContext person, String linkName) throws Exception {
-		updatePeoplePortalAccess(person, linkName, false);
+		updatePeoplePortalAccess(person, linkName, false, true);
 	}
-	
-	public static void updatePeoplePortalAccess(PeopleContext person, String linkName, boolean verifyUser) throws Exception {
+	public static void updatePeoplePortalAccess(PeopleContext person, String linkName, boolean verifyUser,boolean sendInvite) throws Exception {
 	
 		PeopleContext existingPeople = (PeopleContext) RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE, person.getId());
 		if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isOccupantPortalAccess())){
@@ -393,11 +392,16 @@ public class PeopleAPI {
 						user.setApplicationId(appId);
 						user.setRoleId(roleId);
 						user.setLanguage(person.getLanguage());
-						ApplicationApi.addUserInApp(user, false);
+						if(!sendInvite)
+						{
+							user.setUserVerified(true);
+							user.setInviteAcceptStatus(true);
+						}		
+						ApplicationApi.addUserInApp(user, false, sendInvite);
 						AccountUtil.getUserBean().updateUser(user);
 					}
 					else {
-						addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, appDomain.getIdentifier(), verifyUser, roleId);
+						addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, appDomain.getIdentifier(), verifyUser, roleId, sendInvite);
 					}
 				}
 				else {
@@ -609,8 +613,10 @@ public class PeopleAPI {
 	public static User addPortalAppUser(PeopleContext existingPeople, String linkName, String identifier, long roleId) throws Exception {
 		return addPortalAppUser(existingPeople, linkName, identifier, false, roleId);
 	}
-	
 	public static User addPortalAppUser(PeopleContext existingPeople, String linkName, String identifier, boolean verifyUser, long roleId) throws Exception {
+		return addPortalAppUser(existingPeople, linkName, identifier, false, roleId, true);
+	}
+	public static User addPortalAppUser(PeopleContext existingPeople, String linkName, String identifier, boolean verifyUser, long roleId,boolean isEmailVerificationNeeded) throws Exception {
 		if(StringUtils.isEmpty(linkName)) {
 			throw new IllegalArgumentException("Invalid link name");
 		}
@@ -621,7 +627,7 @@ public class PeopleAPI {
 		user.setPhone(existingPeople.getPhone());
 		user.setName(existingPeople.getName());
 		user.setUserVerified(verifyUser);
-		user.setInviteAcceptStatus(false);
+		user.setInviteAcceptStatus(!isEmailVerificationNeeded);
 		user.setInvitedTime(System.currentTimeMillis());
 		user.setPeopleId(existingPeople.getId());
 		user.setUserType(AccountConstants.UserType.REQUESTER.getValue());
