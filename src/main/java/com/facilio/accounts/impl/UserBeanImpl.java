@@ -1187,7 +1187,11 @@ public class UserBeanImpl implements UserBean {
 		String inviteToken = IAMUserUtil.getEncodedToken(user);
 		String hostname = "";
 		if (appDomainObj != null && StringUtils.isNotEmpty(appDomainObj.getDomain())) {
-			List<AppDomain> appDomains = IAMOrgUtil.getCustomAppDomain(appDomainObj.getAppDomainTypeEnum(), AccountUtil.getCurrentOrg().getOrgId());
+			long orgId = appDomainObj.getOrgId();  // using this when reset password link is called
+			if (AccountUtil.getCurrentOrg() != null) {
+				orgId = AccountUtil.getCurrentOrg().getOrgId();
+			}
+			List<AppDomain> appDomains = IAMOrgUtil.getCustomAppDomain(appDomainObj.getAppDomainTypeEnum(), orgId);
 			for (AppDomain appDomain: appDomains) {
 				if (appDomain.getDomainTypeEnum() == AppDomain.DomainType.CUSTOM) {
 					appDomainObj = appDomain;
