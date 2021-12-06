@@ -38,6 +38,8 @@ public interface IAMOrgBean {
 
  	public List<IAMUser> getAllOrgUsersv2(long orgId) throws Exception;
 
+	List<AppDomain> getCustomAppDomain(AppDomain.AppDomainType type, long orgId) throws Exception;
+
  	public boolean addOrUpdateDomainSSO(DomainSSO sso) throws Exception;
  	
  	public boolean addOrUpdateAccountSSO(long orgId, AccountSSO sso) throws Exception;

@@ -1187,7 +1187,7 @@ public class UserBeanImpl implements UserBean {
 		String inviteToken = IAMUserUtil.getEncodedToken(user);
 		String hostname = "";
 		if (appDomainObj != null && StringUtils.isNotEmpty(appDomainObj.getDomain())) {
-			List<AppDomain> appDomains = getCustomAppDomain(appDomainObj.getAppDomainTypeEnum(), AccountUtil.getCurrentOrg().getOrgId());
+			List<AppDomain> appDomains = IAMOrgUtil.getCustomAppDomain(appDomainObj.getAppDomainTypeEnum(), AccountUtil.getCurrentOrg().getOrgId());
 			for (AppDomain appDomain: appDomains) {
 				if (appDomain.getDomainTypeEnum() == AppDomain.DomainType.CUSTOM) {
 					appDomainObj = appDomain;
@@ -1203,22 +1203,6 @@ public class UserBeanImpl implements UserBean {
 			hostname = hostname + "/auth";
 		}
 		return hostname + url + inviteToken;
-	}
-
-	private List<AppDomain> getCustomAppDomain(AppDomainType type, long orgId) throws Exception {
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(IAMAccountConstants.getAppDomainFields())
-				.table("App_Domain");
-
-		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.APP_DOMAIN_TYPE", "appDomainType", String.valueOf(type.getIndex()), EnumOperators.IS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.DOMAIN_TYPE", "domainType", String.valueOf(AppDomain.DomainType.CUSTOM.getIndex()), NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (org.apache.commons.collections.CollectionUtils.isNotEmpty(props)) {
-			return FieldUtil.getAsBeanListFromMapList(props, AppDomain.class);
-		}
-		return Collections.EMPTY_LIST;
 	}
 	
 	public static GenericSelectRecordBuilder fetchUserSelectBuilder (long appId, Criteria criteria, long orgId, Collection<Long>... ouids) throws Exception {

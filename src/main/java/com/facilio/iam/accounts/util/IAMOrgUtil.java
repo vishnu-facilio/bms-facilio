@@ -117,4 +117,8 @@ public class IAMOrgUtil {
 		FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getOrgBean().disableTotp(orgId, groupType));
 		
 	}
+
+	public static List<AppDomain> getCustomAppDomain(AppDomain.AppDomainType type, long orgId) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getOrgBean().getCustomAppDomain(type, orgId));
+	}
 }
