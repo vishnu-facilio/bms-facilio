@@ -301,7 +301,8 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 	private List<FormField> getFieldsForAtre (ModuleBean modBean) throws Exception {
 		List<FormField> fields = new ArrayList<FormField>();
 
-		Map<String, FacilioField> fieldMap = allFields.stream().collect(Collectors.toMap(FacilioField::getName, Function.identity()));
+		Map<String, FacilioField> fieldMap = allFields.stream().collect(Collectors.toMap(FacilioField::getName, Function.identity(),
+				(prevValue, curValue) -> prevValue));
 		List<String> atreFields = getAtreFieldMap().get(moduleName);
 		if (atreFields == null) {
 			return null;
