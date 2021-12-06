@@ -5,8 +5,11 @@ import java.util.List;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.dto.AppDomain.AppDomainType;
+import com.facilio.accounts.dto.AppDomain.GroupType;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.sso.AccountSSO;
+import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.EmployeeContext;
 import com.facilio.bmsconsole.context.PeopleContext;
@@ -26,11 +29,12 @@ public class AddEmployeeInviteDetailCommand extends FacilioCommand {
 	            	 empList.add(emp);
 	             }
 	         }
-			 AccountSSO accSso = IAMOrgUtil.getAccountSSO(AccountUtil.getCurrentOrg().getId());
-
+	         long orgId = AccountUtil.getCurrentOrg().getId();
+			 AccountSSO accSso = IAMOrgUtil.getAccountSSO(orgId);
+			 DomainSSO domainSso = IAMOrgUtil.getDomainSSODetails(orgId, AppDomain.AppDomainType.SERVICE_PORTAL, AppDomain.GroupType.TENANT_OCCUPANT_PORTAL, AppDomain.DomainType.DEFAULT);
 	         if(CollectionUtils.isNotEmpty(empList)) {
 	             for(EmployeeContext emp : empList) {
-					boolean showInviteOption = false;
+					boolean showInviteOption = false,showPortalInviteOption = false;
 					if(accSso != null)
 					{
 						if(accSso.getIsActive() && !emp.isAppAccess())
@@ -38,7 +42,16 @@ public class AddEmployeeInviteDetailCommand extends FacilioCommand {
 		                	showInviteOption = true;
 		                }
 					}
-	            	emp.setShowInviteOption(showInviteOption);
+					if(domainSso != null)
+					{
+						if(domainSso.getIsActive() && !emp.isOccupantPortalAccess())
+						{
+							showPortalInviteOption = true;
+						}
+					}
+	            	emp.setShowAppInviteOption(showInviteOption);
+	            	emp.setShowPortalInviteOption(showPortalInviteOption);
+
 	             }
 	         }
 	         return false;
