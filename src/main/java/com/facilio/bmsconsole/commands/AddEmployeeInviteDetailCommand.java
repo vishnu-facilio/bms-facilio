@@ -31,29 +31,45 @@ public class AddEmployeeInviteDetailCommand extends FacilioCommand {
 	         }
 	         long orgId = AccountUtil.getCurrentOrg().getId();
 			 AccountSSO accSso = IAMOrgUtil.getAccountSSO(orgId);
-			 DomainSSO domainSso = IAMOrgUtil.getDomainSSODetails(orgId, AppDomain.AppDomainType.SERVICE_PORTAL, AppDomain.GroupType.TENANT_OCCUPANT_PORTAL, AppDomain.DomainType.DEFAULT);
-	         if(CollectionUtils.isNotEmpty(empList)) {
+			
+			 if(CollectionUtils.isNotEmpty(empList)) {
 	             for(EmployeeContext emp : empList) {
-					boolean showInviteOption = false,showPortalInviteOption = false;
+					boolean showAppInviteOption = false,showPortalInviteOption = false;
 					if(accSso != null)
 					{
 						if(accSso.getIsActive() && !emp.isAppAccess())
 		                {
-		                	showInviteOption = true;
+		                	showAppInviteOption = true;
 		                }
 					}
-					if(domainSso != null)
-					{
-						if(domainSso.getIsActive() && !emp.isOccupantPortalAccess())
-						{
-							showPortalInviteOption = true;
-						}
-					}
-	            	emp.setShowAppInviteOption(showInviteOption);
+					showPortalInviteOption = isOccupantPortalSsoActive(orgId) && !emp.getIsOccupantPortalAccess();
+					
+	            	emp.setShowAppInviteOption(showAppInviteOption);
 	            	emp.setShowPortalInviteOption(showPortalInviteOption);
 
 	             }
 	         }
 	         return false;
+	    }
+	    
+	    private boolean isOccupantPortalSsoActive(long orgId) throws Exception
+	    {
+	    	DomainSSO defaultDomainSso = IAMOrgUtil.getDomainSSODetails(orgId, AppDomain.AppDomainType.SERVICE_PORTAL, AppDomain.GroupType.TENANT_OCCUPANT_PORTAL, AppDomain.DomainType.DEFAULT);
+			DomainSSO customDomainSso = IAMOrgUtil.getDomainSSODetails(orgId, AppDomain.AppDomainType.SERVICE_PORTAL, AppDomain.GroupType.TENANT_OCCUPANT_PORTAL, AppDomain.DomainType.CUSTOM);
+	    	if(defaultDomainSso != null)
+			{
+				if(defaultDomainSso.getIsActive())
+				{
+					return true;
+				}
+			}
+			if(customDomainSso != null)
+			{
+				if(customDomainSso.getIsActive())
+				{
+					return true;
+				}
+			}
+			return false;
 	    }
 }
