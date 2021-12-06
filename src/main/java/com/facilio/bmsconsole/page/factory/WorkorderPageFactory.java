@@ -46,7 +46,7 @@ public class WorkorderPageFactory extends PageFactory {
 
         // maintenance cost & quotation widget
         if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
-            widgetHeight = QuotationAPI.getQuoteCount(workorder.getId()) > 0 ? 9 : 3;
+            widgetHeight = QuotationAPI.getQuoteCount(workorder.getId()) > 0 ? 8 : 3;
             PageWidget totalCost = new PageWidget(PageWidget.WidgetType.QUOTATION);
             totalCost.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
             totalCost.addToWidgetParams("hideBg", true);
@@ -123,19 +123,45 @@ public class WorkorderPageFactory extends PageFactory {
         composeRightPanel(summarySection, workorder);
     }
 
-    private static void addInventoryTab(Page page) {
+    private static void addInventoryTab(Page page) throws Exception {
         Page.Tab itemsAndLaborTab = page.new Tab("items & labor");
         page.addTab(itemsAndLaborTab);
 
         Page.Section itemsAndLaborSection = page.new Section();
         itemsAndLaborTab.addSection(itemsAndLaborSection);
 
-        // TODO::VR monolith, to be decomposed.
-        // items & labor widget
-        PageWidget itemsAndLabor = new PageWidget(PageWidget.WidgetType.ITEMS_AND_LABOR);
-        itemsAndLabor.addToLayoutParams(itemsAndLaborSection, 24, 18);
-        itemsAndLabor.addToWidgetParams("hideBg", true);
-        itemsAndLaborSection.addWidget(itemsAndLabor);
+        int yOffset = 0;
+
+        // overall cost
+        PageWidget overallCost = new PageWidget(PageWidget.WidgetType.INVENTORY_OVERALL_COST);
+        overallCost.addToLayoutParams(16, 0, 8, 10);
+        itemsAndLaborSection.addWidget(overallCost);
+
+        // items
+        PageWidget items = new PageWidget(PageWidget.WidgetType.INVENTORY_ITEMS);
+        items.addToLayoutParams(itemsAndLaborSection, 16, 7 + yOffset);
+        itemsAndLaborSection.addWidget(items);
+        yOffset += 7;
+
+        // services
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CONTRACT)) {
+            PageWidget services = new PageWidget(PageWidget.WidgetType.INVENTORY_SERVICES);
+            services.addToLayoutParams(0, yOffset, 16, 7);
+            itemsAndLaborSection.addWidget(services);
+            yOffset += 7;
+        }
+
+        // labor
+        PageWidget labor = new PageWidget(PageWidget.WidgetType.INVENTORY_LABOR);
+        labor.addToLayoutParams(0, yOffset, 16, 7);
+        itemsAndLaborSection.addWidget(labor);
+        yOffset += 7;
+
+        // tools
+        PageWidget tools = new PageWidget(PageWidget.WidgetType.INVENTORY_TOOLS);
+        tools.addToLayoutParams(0, yOffset, 16, 7);
+        itemsAndLaborSection.addWidget(tools);
+        yOffset += 7;
     }
 
     private static void addHistoryTab(Page page) {

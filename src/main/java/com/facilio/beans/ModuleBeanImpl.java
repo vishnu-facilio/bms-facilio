@@ -1112,7 +1112,10 @@ public class ModuleBeanImpl implements ModuleBean {
 	}
 
 	private void validateUrlField (UrlField field, Map<String, Object> fieldProps) throws Exception {
-		FacilioUtil.throwIllegalArgumentException(field.getTarget() == null, "Target cannot be null while adding url field");
+//		FacilioUtil.throwIllegalArgumentException(field.getTarget() == null, "Target cannot be null while adding url field");
+		if (field.getTarget() == null) {
+			field.setTarget(UrlField.UrlTarget._blank);
+		}
 		if (field.getShowAlt() == null) {
 			field.setShowAlt(false);
 			fieldProps.put("showAlt", false);
