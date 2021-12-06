@@ -120,18 +120,6 @@ private static final long serialVersionUID = 1L;
 	public int getCount() {
 		return this.count;
 	}
-
-
-	private Boolean sendInvite;
-	public Boolean getSendInvite() {
-		if (sendInvite == null) {
-			return true;
-		}
-		return sendInvite;
-	}
-	public void setSendInvite(Boolean sendInvite) {
-		this.sendInvite = sendInvite;
-	}
 	
 	public String addEmployees() throws Exception {
 		
@@ -163,7 +151,6 @@ private static final long serialVersionUID = 1L;
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
 			c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
-			c.getContext().put(FacilioConstants.ContextNames.SEND_INVITE,getSendInvite());
 			for(EmployeeContext emp : employees) {
 				emp.parseFormData();
 				RecordAPI.handleCustomLookup(emp.getData(), FacilioConstants.ContextNames.EMPLOYEE);
