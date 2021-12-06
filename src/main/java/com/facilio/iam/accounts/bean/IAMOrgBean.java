@@ -54,6 +54,8 @@ public interface IAMOrgBean {
 
 	public DomainSSO getDomainSSODetails(long orgId, AppDomain.AppDomainType appDomainType, AppDomain.GroupType groupType, AppDomain.DomainType domainType) throws Exception;
 	
+	public List<Map<String, Object>> getDomainSSODetails(long orgId, AppDomain.AppDomainType appDomainType, AppDomain.GroupType groupType) throws Exception;
+
 	public AccountSSO getAccountSSO(String orgDomain) throws Exception;
 
 	public boolean deleteDomainSSO(String domain) throws Exception;

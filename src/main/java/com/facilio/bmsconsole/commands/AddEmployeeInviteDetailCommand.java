@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.accounts.dto.AppDomain;
@@ -17,6 +19,7 @@ import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
+import com.facilio.modules.FieldUtil;
 
 public class AddEmployeeInviteDetailCommand extends FacilioCommand {
 	    @Override
@@ -42,7 +45,7 @@ public class AddEmployeeInviteDetailCommand extends FacilioCommand {
 		                	showAppInviteOption = true;
 		                }
 					}
-					showPortalInviteOption = isOccupantPortalSsoActive(orgId) && !emp.getIsOccupantPortalAccess();
+					showPortalInviteOption = isOccupantPortalSsoActive(orgId) && !emp.isOccupantPortalAccess();
 					
 	            	emp.setShowAppInviteOption(showAppInviteOption);
 	            	emp.setShowPortalInviteOption(showPortalInviteOption);
@@ -54,22 +57,25 @@ public class AddEmployeeInviteDetailCommand extends FacilioCommand {
 	    
 	    private boolean isOccupantPortalSsoActive(long orgId) throws Exception
 	    {
-	    	DomainSSO defaultDomainSso = IAMOrgUtil.getDomainSSODetails(orgId, AppDomain.AppDomainType.SERVICE_PORTAL, AppDomain.GroupType.TENANT_OCCUPANT_PORTAL, AppDomain.DomainType.DEFAULT);
-			DomainSSO customDomainSso = IAMOrgUtil.getDomainSSODetails(orgId, AppDomain.AppDomainType.SERVICE_PORTAL, AppDomain.GroupType.TENANT_OCCUPANT_PORTAL, AppDomain.DomainType.CUSTOM);
-	    	if(defaultDomainSso != null)
-			{
-				if(defaultDomainSso.getIsActive())
-				{
-					return true;
-				}
-			}
-			if(customDomainSso != null)
-			{
-				if(customDomainSso.getIsActive())
-				{
-					return true;
-				}
-			}
+	    	List<Map<String, Object>> domainSsoList = IAMOrgUtil.getDomainSSODetails(orgId, AppDomain.AppDomainType.SERVICE_PORTAL, AppDomain.GroupType.TENANT_OCCUPANT_PORTAL);
+	    	if(!CollectionUtils.isEmpty(domainSsoList))
+	    	{
+	    		for(Map<String,Object> domainSso : domainSsoList)
+	    		{
+	    			if(!domainSso.isEmpty())
+	    			{
+		    			DomainSSO sso = FieldUtil.getAsBeanFromMap(domainSso, DomainSSO.class);
+		    			if(sso.getIsActive() != null)
+		    			{
+		    				if(sso.getIsActive())
+		    				{
+		    					return true;
+		    				}
+		    			}
+	    			}
+
+	    		}
+	    	}
 			return false;
 	    }
 }

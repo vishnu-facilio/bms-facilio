@@ -555,7 +555,20 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		DomainSSO sso = FieldUtil.getAsBeanFromMap(maps.get(0), DomainSSO.class);
 		return sso;
 	}
+	
+	public List<Map<String, Object>> getDomainSSODetails(long orgId, AppDomain.AppDomainType appDomainType, AppDomain.GroupType groupType) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getDomainSSOFields())
+				.table(IAMAccountConstants.getDomainSSOModule().getTableName())
+				.innerJoin("App_Domain")
+				.on("App_Domain.ID = Domain_SSO.APP_DOMAIN_ID");
 
+		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.APP_DOMAIN_TYPE", "appDomainType", appDomainType.getIndex()+"", StringOperators.IS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.APP_GROUP_TYPE", "appGroupType", groupType.getIndex()+"", StringOperators.IS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.ORGID", "orgId", orgId+"", NumberOperators.EQUALS));
+		return selectBuilder.get();
+	}
+	
 	private List<Map<String, Object>> getAccountSSODetails(List<Long> orgIds) throws Exception{
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(IAMAccountConstants.getAccountSSOFields())
