@@ -10,6 +10,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class ShipmentReceivablesValidationCommandV3 extends FacilioCommand {
     @Override
@@ -19,9 +20,9 @@ public class ShipmentReceivablesValidationCommandV3 extends FacilioCommand {
         List<V3TransferRequestShipmentReceivablesContext> receivablesContexts = recordMap.get(moduleName);
         if (CollectionUtils.isNotEmpty(receivablesContexts)) {
             for (V3TransferRequestShipmentReceivablesContext receivablesContext : receivablesContexts) {
-                if (receivablesContext != null) {
+                if (receivablesContext != null ) {
                     // Date Validation
-                   if(receivablesContext.getReceiptDate()==0){
+                   if(Objects.isNull(receivablesContext.getReceiptDate())){
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Receipt Date cannot be empty");
                     }
                 }
