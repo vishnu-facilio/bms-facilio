@@ -4,6 +4,8 @@ import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.dto.RoleApp;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.sso.AccountSSO;
+import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -27,6 +29,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMAppUtil;
+import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections.CollectionUtils;
@@ -273,11 +276,9 @@ public class PeopleAPI {
 	}
 	
 	public static void updateEmployeeAppPortalAccess(EmployeeContext person, String linkname) throws Exception {
-		updateEmployeeAppPortalAccess(person, linkname,true);
-	}
-	public static void updateEmployeeAppPortalAccess(EmployeeContext person, String linkname,boolean sendInvite) throws Exception {
 	   
 		EmployeeContext existingPeople = (EmployeeContext) RecordAPI.getRecord(FacilioConstants.ContextNames.EMPLOYEE, person.getId());
+		boolean isSsoEnabled = isSsoEnabledForApplication(linkname);
 		if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isAppAccess())){
 			throw new IllegalArgumentException("Email Id associated with this contact is empty");
 		}
@@ -300,17 +301,17 @@ public class PeopleAPI {
 						user.setAppDomain(appDomain);
 						user.setRoleId(roleId);
 						user.setLanguage(person.getLanguage());
-						if(!sendInvite)
+						if(isSsoEnabled)
 						{
 							user.setUserVerified(true);
 							user.setInviteAcceptStatus(true);
 						}		
-						ApplicationApi.addUserInApp(user, false, sendInvite);
+						ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
 						AccountUtil.getUserBean().updateUser(user);
 					}
 					else 
 					{
-						addAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, roleId, sendInvite);
+						addAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, roleId, !isSsoEnabled);
 					}
 				}
 				else {
@@ -370,12 +371,15 @@ public class PeopleAPI {
 	public static void updatePeoplePortalAccess(PeopleContext person, String linkName) throws Exception {
 		updatePeoplePortalAccess(person, linkName, false);
 	}
-	
 	public static void updatePeoplePortalAccess(PeopleContext person, String linkName, boolean verifyUser) throws Exception {
 	
 		PeopleContext existingPeople = (PeopleContext) RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE, person.getId());
 		if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isOccupantPortalAccess())){
 			throw new IllegalArgumentException("Email Id associated with this contact is empty");
+		}
+		boolean isSsoEnabled = isSsoEnabledForApplication(linkName);
+		if(isSsoEnabled){
+			verifyUser = true;
 		}
 		if(StringUtils.isNotEmpty(existingPeople.getEmail())) {
 			AppDomain appDomain = null;
@@ -393,7 +397,12 @@ public class PeopleAPI {
 						user.setApplicationId(appId);
 						user.setRoleId(roleId);
 						user.setLanguage(person.getLanguage());
-						ApplicationApi.addUserInApp(user, false);
+						if(isSsoEnabled)
+						{
+							user.setUserVerified(true);
+							user.setInviteAcceptStatus(true);
+						}		
+						ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
 						AccountUtil.getUserBean().updateUser(user);
 					}
 					else {
@@ -609,7 +618,6 @@ public class PeopleAPI {
 	public static User addPortalAppUser(PeopleContext existingPeople, String linkName, String identifier, long roleId) throws Exception {
 		return addPortalAppUser(existingPeople, linkName, identifier, false, roleId);
 	}
-	
 	public static User addPortalAppUser(PeopleContext existingPeople, String linkName, String identifier, boolean verifyUser, long roleId) throws Exception {
 		if(StringUtils.isEmpty(linkName)) {
 			throw new IllegalArgumentException("Invalid link name");
@@ -621,7 +629,7 @@ public class PeopleAPI {
 		user.setPhone(existingPeople.getPhone());
 		user.setName(existingPeople.getName());
 		user.setUserVerified(verifyUser);
-		user.setInviteAcceptStatus(false);
+		user.setInviteAcceptStatus(verifyUser);
 		user.setInvitedTime(System.currentTimeMillis());
 		user.setPeopleId(existingPeople.getId());
 		user.setUserType(AccountConstants.UserType.REQUESTER.getValue());
@@ -908,6 +916,63 @@ public class PeopleAPI {
 		return null;
 
 
+	}
+	
+	private static boolean isSsoEnabledForApplication(String linkname) throws Exception
+	{
+        
+		long orgId = AccountUtil.getCurrentOrg().getId();
+		if(linkname.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP))
+		{
+			AccountSSO accSso = IAMOrgUtil.getAccountSSO(orgId);
+			if(accSso != null)
+			{
+			   if(accSso.getIsActive())
+		       {
+		       	 return true;
+		       }
+			}
+		}
+		else
+		{
+			List<Map<String, Object>> domainSsoList;
+			if(linkname.equals(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP))
+			{
+				domainSsoList = IAMOrgUtil.getDomainSSODetails(orgId, AppDomain.AppDomainType.SERVICE_PORTAL, AppDomain.GroupType.TENANT_OCCUPANT_PORTAL);
+			}
+			else if(linkname.equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP))
+			{
+				domainSsoList = IAMOrgUtil.getDomainSSODetails(orgId, AppDomain.AppDomainType.TENANT_PORTAL, AppDomain.GroupType.TENANT_OCCUPANT_PORTAL);
+			}
+			else if(linkname.equals(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP))
+			{
+				domainSsoList = IAMOrgUtil.getDomainSSODetails(orgId, AppDomain.AppDomainType.VENDOR_PORTAL, AppDomain.GroupType.VENDOR_PORTAL);
+			}
+			else
+			{
+				return false;
+			}
+	    	if(!CollectionUtils.isEmpty(domainSsoList))
+	    	{
+	    		for(Map<String,Object> domainSso : domainSsoList)
+	    		{
+	    			if(!domainSso.isEmpty())
+	    			{
+		    			DomainSSO sso = FieldUtil.getAsBeanFromMap(domainSso, DomainSSO.class);
+		    			if(sso.getIsActive() != null)
+		    			{
+		    				if(sso.getIsActive())
+		    				{
+		    					return true;
+		    				}
+		    			}
+	    			}
+
+	    		}
+	    	}
+		}
+		return false;
+		
 	}
 
 }

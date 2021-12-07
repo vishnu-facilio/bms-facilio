@@ -68,12 +68,4 @@ public class EmployeeContext extends PeopleContext{
 		this.space = space;
 	}
 	
-	private Boolean showInviteOption;
-	public Boolean getShowInviteOption() {
-		return showInviteOption;
-	}
-	public void setShowInviteOption(Boolean showInviteOption) {
-		this.showInviteOption = showInviteOption;
-	}
-	
 }
