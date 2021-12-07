@@ -23,4 +23,14 @@ public class MCQOptionContext extends V3Context {
     public boolean otherEnabled() {
         return other == null ? false : other.booleanValue();
     }
+
+    @Override
+    public String toString() {
+        return "MCQOptionContext{" +
+                ", id='" + getId() + '\'' +
+                ", label='" + label + '\'' +
+                ", position=" + position +
+                ", other=" + other +
+                '}';
+    }
 }
