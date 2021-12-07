@@ -2,7 +2,9 @@ package com.facilio.bmsconsole.page.factory;
 
 import static com.facilio.bmsconsole.page.factory.AssetPageFactory.addRelatedListWidget;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
@@ -127,7 +129,7 @@ public class InspectionPageFactory extends PageFactory {
 	}
 	
 	
-	private static JSONObject getdetailsWidgetParam2(InspectionTemplateContext record, FacilioModule module) {
+	private static JSONObject getdetailsWidgetParam2(InspectionTemplateContext record, FacilioModule module) throws Exception {
 		// TODO Auto-generated method stub
 		
 		JSONObject widgetParam = new JSONObject();
@@ -141,6 +143,12 @@ public class InspectionPageFactory extends PageFactory {
 		fieldList.add("assignmentGroup");
 		fieldList.add("assignedTo");
 		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		List<FacilioField> customFields = modBean.getAllCustomFields(module.getName());
+		if(customFields != null) {
+			fieldList.addAll(customFields.stream().map(FacilioField::getName).collect(Collectors.toList()));
+		}
 		
 		widgetParam.put("fields", fieldList);
 		
@@ -148,16 +156,19 @@ public class InspectionPageFactory extends PageFactory {
 		
 	}
 	
-	private static JSONObject getInspectionResponseWidgetParams() {
+	private static JSONObject getInspectionResponseWidgetParams(FacilioModule inspectionResponse) throws Exception {
 		JSONObject widgetParam = new JSONObject();
 		
 		JSONArray fieldList = new JSONArray();
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		fieldList.add("description");
 		fieldList.add("siteId");
 		fieldList.add("responseStatus");
 		fieldList.add("moduleState");
 		fieldList.add("totalAnswered");
+		fieldList.add("resource");
 		
 		fieldList.add("vendor");
 		fieldList.add("tenant");
@@ -175,6 +186,11 @@ public class InspectionPageFactory extends PageFactory {
 		fieldList.add("sysCreatedBy");
 		fieldList.add("sysModifiedTime");
 		fieldList.add("sysModifiedBy");
+		
+		List<FacilioField> customFields = modBean.getAllCustomFields(inspectionResponse.getName());
+		if(customFields != null) {
+			fieldList.addAll(customFields.stream().map(FacilioField::getName).collect(Collectors.toList()));
+		}
 		
 		widgetParam.put("fields", fieldList);
 		
@@ -234,7 +250,7 @@ public class InspectionPageFactory extends PageFactory {
             
             PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.Q_AND_A_SECONDARY_DETAILS_WIDGET);
             secondaryDetailsWidget.addToLayoutParams(notesAndAttachmentSec, 24, 7);
-            secondaryDetailsWidget.setWidgetParams(getInspectionResponseWidgetParams());
+            secondaryDetailsWidget.setWidgetParams(getInspectionResponseWidgetParams(module));
             notesAndAttachmentSec.addWidget(secondaryDetailsWidget);
             
             PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT,"Notes");
