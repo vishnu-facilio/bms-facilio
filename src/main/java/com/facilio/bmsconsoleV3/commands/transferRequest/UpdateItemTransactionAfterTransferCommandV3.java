@@ -34,9 +34,8 @@ public class UpdateItemTransactionAfterTransferCommandV3 extends FacilioCommand 
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3TransferRequestContext> transferRequestContexts = recordMap.get(moduleName);
         if (CollectionUtils.isNotEmpty(transferRequestContexts)) {
-            for (V3TransferRequestContext transferRequestContext : transferRequestContexts) {
-                if (!Objects.isNull(context.get(FacilioConstants.ContextNames.ITEM_TYPES)) && transferRequestContext != null && transferRequestContext.getData().get("isCompleted").equals(true)) {
-                    Long storeRoomId = transferRequestContext.getTransferToStore().getId();
+                if (!Objects.isNull(context.get(FacilioConstants.ContextNames.ITEM_TYPES)) && transferRequestContexts.get(0).getData().get("isStaged").equals(true)&& transferRequestContexts.get(0).getData().get("isCompleted").equals(true)) {
+                    Long storeRoomId = transferRequestContexts.get(0).getTransferToStore().getId();
                     List<V3TransferRequestLineItemContext> itemTypesList = (List<V3TransferRequestLineItemContext>) context.get(FacilioConstants.ContextNames.ITEM_TYPES);
                     for(V3TransferRequestLineItemContext itemTypeLineItem : itemTypesList){
                     Long itemTypeId = itemTypeLineItem.getItemType().getId();
@@ -55,7 +54,7 @@ public class UpdateItemTransactionAfterTransferCommandV3 extends FacilioCommand 
                             .module(module)
                             .beanClass(V3TransferRequestPurchasedItems.class)
                             .select(fields)
-                            .andCondition(CriteriaAPI.getCondition("TRANSFER_REQUEST_ID", "transferRequest", String.valueOf(transferRequestContext.getId()), NumberOperators.EQUALS));
+                            .andCondition(CriteriaAPI.getCondition("TRANSFER_REQUEST_ID", "transferRequest", String.valueOf(transferRequestContexts.get(0).getId()), NumberOperators.EQUALS));
                     List<V3TransferRequestPurchasedItems> records = selectRecordsBuilder.get();
                     for (V3TransferRequestPurchasedItems record : records) {
                         PurchasedItemContext purchasedItem = setPurchasedItem(record, item);
@@ -63,7 +62,7 @@ public class UpdateItemTransactionAfterTransferCommandV3 extends FacilioCommand 
                         lastPurchasedPrice = purchasedItem.getQuantity() * purchasedItem.getUnitcost();
                         purchasedItems.add(purchasedItem);
                         //Item Transactions
-                        ItemTransactionsContext woItem = setItemTransaction(record, purchasedItem, item,transferRequestContext.getId());
+                        ItemTransactionsContext woItem = setItemTransaction(record, purchasedItem, item,transferRequestContexts.get(0).getId());
                         itemTransactionsToBeAdded.add(woItem);
                     }
                     String itemModuleName = FacilioConstants.ContextNames.PURCHASED_ITEM;
@@ -98,7 +97,6 @@ public class UpdateItemTransactionAfterTransferCommandV3 extends FacilioCommand 
                     updateBuilder.updateViaMap(map);
                 }
                 }
-            }
         }
         return false;
     }

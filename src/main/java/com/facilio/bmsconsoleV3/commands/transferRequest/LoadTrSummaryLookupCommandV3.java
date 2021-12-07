@@ -8,7 +8,6 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.LookupFieldMeta;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;

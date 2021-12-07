@@ -3,8 +3,6 @@ package com.facilio.bmsconsoleV3.commands.transferRequest;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestLineItemContext;
-import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
-import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderLineItemContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;

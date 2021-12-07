@@ -5,12 +5,13 @@ import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
+import com.facilio.bmsconsole.util.ItemsApi;
+import com.facilio.bmsconsole.util.ToolsApi;
 import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestLineItemContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -35,13 +36,12 @@ public class UpdateCurrentBalanceCommandV3 extends FacilioCommand {
         Long toolTypeId=null;
         double quantityTransferred=0;
         if (CollectionUtils.isNotEmpty(transferRequestContexts)){
-            for (V3TransferRequestContext transferRequestContext : transferRequestContexts) {
-                if (transferRequestContext != null && transferRequestContext.getData().get("isStaged").equals(true)) {
+                if (transferRequestContexts.get(0).getData().get("isStaged").equals(true)) {
                     List<V3TransferRequestLineItemContext> itemTypesList = new ArrayList<>();
                     List<V3TransferRequestLineItemContext> toolTypesList = new ArrayList<>();
-                    Long storeroomId = transferRequestContext.getTransferFromStore().getId();
+                    Long storeroomId = transferRequestContexts.get(0).getTransferFromStore().getId();
                     context.put(FacilioConstants.ContextNames.STORE_ROOM_ID,storeroomId);
-                    List<V3TransferRequestLineItemContext> transferrequestlineitems = transferRequestContext.getLineItems();
+                    List<V3TransferRequestLineItemContext> transferrequestlineitems = transferRequestContexts.get(0).getLineItems();
                    for(V3TransferRequestLineItemContext lineItem : transferrequestlineitems){
                            Integer inventoryType = lineItem.getInventoryType();
                            quantityTransferred = lineItem.getQuantity();
@@ -52,27 +52,18 @@ public class UpdateCurrentBalanceCommandV3 extends FacilioCommand {
                                itemTypesList.add(lineItem);
                                if(itemType!=null) {
                                   itemTypeId = itemType.getId();
-                                      ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                                      String itemModuleName = FacilioConstants.ContextNames.ITEM;
-                                      FacilioModule module = modBean.getModule(itemModuleName);
-                                      List<FacilioField> fields = modBean.getAllFields(itemModuleName);
-
-                                      SelectRecordsBuilder<ItemContext> selectRecordsBuilder = new SelectRecordsBuilder<ItemContext>()
-                                              .module(module)
-                                              .beanClass(ItemContext.class)
-                                              .select(fields)
-                                              .andCondition(CriteriaAPI.getCondition("ITEM_TYPES_ID", "itemType", String.valueOf(itemTypeId), NumberOperators.EQUALS))
-                                              .andCondition(CriteriaAPI.getCondition("STORE_ROOM_ID", "storeRoom", String.valueOf(storeroomId), NumberOperators.EQUALS));
-                                      List<ItemContext> items = selectRecordsBuilder.get();
-                                      for(ItemContext item : items){
-                                          itemId = item.getId();
-                                          currentQuantity = item.getQuantity();
-                                      }
-                                   if(transferRequestContext.getData().get("isCompleted").equals(false) && transferRequestContext.getData().get("isShipped").equals(false)){
+                                   ItemContext item = ItemsApi.getItemsForTypeAndStore(storeroomId, itemTypeId);
+                                   itemId = item.getId();
+                                   currentQuantity = item.getQuantity();
+                                   if(transferRequestContexts.get(0).getData().get("isCompleted").equals(false) && transferRequestContexts.get(0).getData().get("isShipped").equals(false)){
                                       if(currentQuantity<quantityTransferred){
                                           throw new IllegalArgumentException("Quantity transferred is more than available quantity");
                                       }
                                       else{
+                                          ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                                          String itemModuleName = FacilioConstants.ContextNames.ITEM;
+                                          FacilioModule module = modBean.getModule(itemModuleName);
+                                          List<FacilioField> fields = modBean.getAllFields(itemModuleName);
                                           List<FacilioField> updatedFields = new ArrayList<>();
                                           Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
                                           updatedFields.add(fieldsMap.get("quantity"));
@@ -90,9 +81,7 @@ public class UpdateCurrentBalanceCommandV3 extends FacilioCommand {
 
                                       }
                                   }
-
                                    context.put(FacilioConstants.ContextNames.ITEM_TYPES,itemTypesList);
-
                                }
                            }
                            else if(inventoryType.equals(V3TransferRequestLineItemContext.InventoryType.TOOL.getIndex())){
@@ -100,26 +89,17 @@ public class UpdateCurrentBalanceCommandV3 extends FacilioCommand {
                                toolTypesList.add(lineItem);
                                if(toolType!=null){
                                    toolTypeId = toolType.getId();
-                                   ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                                   String toolModuleName = FacilioConstants.ContextNames.TOOL;
-                                   FacilioModule module = modBean.getModule(toolModuleName);
-                                   List<FacilioField> fields = modBean.getAllFields(toolModuleName);
-
-                                   SelectRecordsBuilder<ToolContext> selectRecordsBuilder = new SelectRecordsBuilder<ToolContext>()
-                                           .module(module)
-                                           .beanClass(ToolContext.class)
-                                           .select(fields)
-                                           .andCondition(CriteriaAPI.getCondition("TOOL_TYPE_ID", "toolType", String.valueOf(toolTypeId), NumberOperators.EQUALS))
-                                           .andCondition(CriteriaAPI.getCondition("STORE_ROOM_ID", "storeRoom", String.valueOf(storeroomId), NumberOperators.EQUALS));
-                                   List<ToolContext> tools = selectRecordsBuilder.get();
-                                   for(ToolContext tool : tools){
-                                       toolId = tool.getId();
-                                       currentQuantity = tool.getCurrentQuantity();
-                                   }
-                                   if(transferRequestContext.getData().get("isCompleted").equals(false) && transferRequestContext.getData().get("isShipped").equals(false)) {
+                                   ToolContext tool = ToolsApi.getToolsForTypeAndStore(storeroomId, toolTypeId);
+                                   toolId = tool.getId();
+                                   currentQuantity = tool.getCurrentQuantity();
+                                   if(transferRequestContexts.get(0).getData().get("isCompleted").equals(false) && transferRequestContexts.get(0).getData().get("isShipped").equals(false)) {
                                        if (currentQuantity < quantityTransferred) {
                                            throw new IllegalArgumentException("Quantity transferred is more than available quantity");
                                        } else {
+                                           ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                                           String toolModuleName = FacilioConstants.ContextNames.TOOL;
+                                           FacilioModule module = modBean.getModule(toolModuleName);
+                                           List<FacilioField> fields = modBean.getAllFields(toolModuleName);
                                            List<FacilioField> updatedFields = new ArrayList<>();
                                            Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
                                            updatedFields.add(fieldsMap.get("currentQuantity"));
@@ -137,22 +117,12 @@ public class UpdateCurrentBalanceCommandV3 extends FacilioCommand {
 
                                        }
                                    }
-
                                    context.put(FacilioConstants.ContextNames.TOOL_TYPES,toolTypesList);
-
                                }
                            }
-
-
-
                    }
                 }
-
-            }
-
         }
-
         return false;
     }
-
 }

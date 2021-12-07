@@ -1,8 +1,5 @@
 package com.facilio.bmsconsoleV3.commands.transferRequest;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.util.ItemsApi;
@@ -10,13 +7,7 @@ import com.facilio.bmsconsole.util.ToolsApi;
 import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestLineItemContext;
 import com.facilio.command.FacilioCommand;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -81,10 +72,10 @@ public class TransferRequestValidationCommandV3 extends FacilioCommand {
     private Boolean isRotating(Long id, int inventoryType) throws Exception {
         if (inventoryType == 1) {
             ItemTypesContext record = ItemsApi.getItemTypes(id);
-            return record.getIsRotating();
+            return record.isRotating();
         } else{
             ToolTypesContext record = ToolsApi.getToolTypes(id);
-            return record.getIsRotating();
+            return record.isRotating();
         }
     }
 }
