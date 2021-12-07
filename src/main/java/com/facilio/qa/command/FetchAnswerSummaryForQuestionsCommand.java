@@ -49,9 +49,9 @@ public class FetchAnswerSummaryForQuestionsCommand extends FacilioCommand {
                     try {
                         DateRange range = new DateRange(FacilioUtil.parseLong(startTimeObj), FacilioUtil.parseLong(endTimeObj));
                         Map<Long, QuestionContext> questions = pages.stream().flatMap(QAndAUtil::getQuestionStream)
-                                                            .collect(Collectors.toMap(QuestionContext::_getId, Function.identity()));
+                                                            .collect(Collectors.toMap(QuestionContext::getId, Function.identity()));
                         if (MapUtils.isNotEmpty(questions)) {
-                            Long parentId = pages.get(0).getParent()._getId();
+                            Long parentId = pages.get(0).getParent().getId();
                             fetchAnswered(questions, parentId, range);
                             handleTypeWiseSummary(questions, parentId, range);
                         }

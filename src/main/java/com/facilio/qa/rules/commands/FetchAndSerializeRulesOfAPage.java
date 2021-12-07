@@ -30,7 +30,7 @@ public class FetchAndSerializeRulesOfAPage extends FacilioCommand {
                 List<QAndARule> rules = Constants.getRuleBean().getRulesOfQuestionsOfType(templateId, getQuestionIds(ruleQuestions), type);
                 Map<Long, QAndARule> questionVsRules = rules == null ? Collections.EMPTY_MAP : questionVsRules(rules);
                 for (QuestionContext question : ruleQuestions) {
-                    QAndARule serializedRule = serializeConditions(type, question, templateId, questionVsRules.get(question._getId()));
+                    QAndARule serializedRule = serializeConditions(type, question, templateId, questionVsRules.get(question.getId()));
                     if (serializedRule != null) {
                         getSerializedRules().add(serializedRule);
                     }
@@ -57,7 +57,7 @@ public class FetchAndSerializeRulesOfAPage extends FacilioCommand {
 
     private Collection<Long> getQuestionIds (List<QuestionContext> questions) {
         return questions.stream()
-                .map(QuestionContext::_getId)
+                .map(QuestionContext::getId)
                 .collect(Collectors.toList());
     }
 
@@ -80,7 +80,7 @@ public class FetchAndSerializeRulesOfAPage extends FacilioCommand {
         }
 
         if (rule != null) {
-            rule.setQuestionId(question._getId());
+            rule.setQuestionId(question.getId());
             rule.setQuestion(question.getQuestion());
             rule.setQuestionType(question.getQuestionType());
             rule.setRuleConditions(null);

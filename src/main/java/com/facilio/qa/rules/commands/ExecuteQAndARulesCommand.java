@@ -40,7 +40,7 @@ public class ExecuteQAndARulesCommand extends FacilioCommand {
         Map<Long, QuestionContext> questions = (Map<Long, QuestionContext>) context.get(FacilioConstants.QAndA.Command.QUESTION_MAP);
         FacilioUtil.throwRunTimeException(MapUtils.isEmpty(questions), "Question map cannot be null for Q And A rule evaluation");
 
-        List<Long> questionIds = questions.values().stream().filter(QuestionContext::isRuleSupported).map(QuestionContext::_getId).collect(Collectors.toList());
+        List<Long> questionIds = questions.values().stream().filter(QuestionContext::isRuleSupported).map(QuestionContext::getId).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(questionIds)) {
             LOGGER.debug("Rule evaluation is not done because no rule supported questions");
             return false;
@@ -58,7 +58,7 @@ public class ExecuteQAndARulesCommand extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(rules)) {
             Map<Long, QAndARule> questionVsRule = rules.stream().collect(Collectors.toMap(QAndARule::getQuestionId, Function.identity()));
             for (AnswerContext answer : answers) {
-                evaluateRule(answer, questions.get(answer.getQuestion()._getId()), questionVsRule.get(answer.getQuestion()._getId()));
+                evaluateRule(answer, questions.get(answer.getQuestion().getId()), questionVsRule.get(answer.getQuestion().getId()));
             }
         }
         else {

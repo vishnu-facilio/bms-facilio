@@ -48,9 +48,9 @@ public class FetchOtherOptionsOfMCQ extends FacilioCommand {
 
     private Map<String, Object> constructOtherResponse (AnswerContext answer) {
         Map<String, Object> other = new HashMap<>();
-        other.put("id", answer._getId());
+        other.put("id", answer.getId());
         other.put("other", answer.getEnumOtherAnswer());
-        other.put("response", answer.getResponse()._getId());
+        other.put("response", answer.getResponse().getId());
 
         return other;
     }
@@ -63,7 +63,7 @@ public class FetchOtherOptionsOfMCQ extends FacilioCommand {
             Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
             FacilioField questionField = fieldMap.get("question");
 
-            SelectRecordsBuilder<AnswerContext> answerBuilder = QAndAUtil.constructAnswerSelectWithQuestionAndResponseTimeRange(modBean, Collections.singletonList(question._getId()), question.getParent().getId(), range)
+            SelectRecordsBuilder<AnswerContext> answerBuilder = QAndAUtil.constructAnswerSelectWithQuestionAndResponseTimeRange(modBean, Collections.singletonList(question.getId()), question.getParent().getId(), range)
                                                                 .select(Stream.of(questionField, fieldMap.get("enumOtherAnswer"), fieldMap.get("response")).collect(Collectors.toList()))
                                                                 .beanClass(AnswerContext.class)
                                                                 ;

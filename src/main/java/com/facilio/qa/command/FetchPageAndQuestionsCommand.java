@@ -22,7 +22,7 @@ public class FetchPageAndQuestionsCommand extends FacilioCommand {
         QAndAUtil.populateQuestionsInPages(Collections.singletonList(page));
         context.put(FacilioConstants.QAndA.PAGE, page);
         context.put(FacilioConstants.QAndA.Command.QUESTION_LIST, page.getQuestions());
-        context.put(FacilioConstants.QAndA.Command.TEMPLATE_ID, page.getParent()._getId());
+        context.put(FacilioConstants.QAndA.Command.TEMPLATE_ID, page.getParent().getId());
 
         return false;
     }

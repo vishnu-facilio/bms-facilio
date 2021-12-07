@@ -64,7 +64,7 @@ public class RatingAnswerHandler extends AnswerHandler<RatingAnswerContext> {
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
         FacilioField questionField = fieldMap.get("question");
         FacilioField ratingAnswerField = fieldMap.get("ratingAnswer");
-        Map<Long, QuestionContext> questionMap = questions.stream().collect(Collectors.toMap(QuestionContext::_getId, Function.identity()));
+        Map<Long, QuestionContext> questionMap = questions.stream().collect(Collectors.toMap(QuestionContext::getId, Function.identity()));
 
         FacilioField idField = FieldFactory.getIdField(module);
         List<Map<String, Object>> props = QAndAUtil.constructAnswerSelectWithQuestionAndResponseTimeRange(modBean, questionMap.keySet(), parentId, range)
