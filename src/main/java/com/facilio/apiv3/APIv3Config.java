@@ -19,6 +19,7 @@ import com.facilio.bmsconsoleV3.commands.client.UpdateAddressForClientLocationCo
 import com.facilio.bmsconsoleV3.commands.client.UpdateClientIdInSiteCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.LoadClientContactLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.FillAudienceSharingInfoCommandV3;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.LoadAudienceLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.admindocuments.FillAdminDocumentsSharingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.admindocuments.LoadAdminDocumentsLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.AnnouncementFillDetailsCommandV3;
@@ -950,6 +951,7 @@ public class APIv3Config {
                 .update()
                 .afterSave(new AddOrUpdateAudienceSharingInfoCommandV3())
                 .list()
+                  .beforeFetch(new LoadAudienceLookupCommandV3())
                   .afterFetch(new FillAudienceSharingInfoCommandV3())
                 .summary()
                     .afterFetch(new FillAudienceSharingInfoCommandV3())
