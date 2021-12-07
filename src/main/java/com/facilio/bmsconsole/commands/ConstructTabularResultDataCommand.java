@@ -28,14 +28,21 @@ import com.facilio.report.context.ReportGroupByField;
 import com.facilio.report.util.ReportUtil;
 
 public class ConstructTabularResultDataCommand extends ConstructReportDataCommand {
+	Context globalContext;
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
+		globalContext = context;
 		List<ReportDataContext> reportData = (List<ReportDataContext>) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		String xAlias = getxAlias(report);
 		Map<String, Object> lookupMap = new HashMap<>();
-		Collection<Map<String, Object>> transformedData = initList(xAlias, isTimeSeries(reportData));
+		Collection<Map<String, Object>> transformedData;
+		if(report.getTypeEnum() == ReportContext.ReportType.PIVOT_REPORT){
+			transformedData = new ArrayList<>();
+		} else {
+			transformedData = initList(xAlias, isTimeSeries(reportData));
+		}
 		Map<String, Object> intermediateData = new HashMap<>();
 		for (ReportDataContext data : reportData ) {
 			Map<String, List<Map<String, Object>>> reportProps = data.getProps();
@@ -167,7 +174,10 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 		if (val == null) {
 			return "";
 		}
-		
+		boolean isExportReport = false;
+		if(globalContext != null && globalContext.containsKey(FacilioConstants.ContextNames.IS_EXPORT_REPORT)){
+			isExportReport = (boolean) globalContext.get(FacilioConstants.ContextNames.IS_EXPORT_REPORT);
+		}
 		switch (field.getDataTypeEnum()) {
 			case DECIMAL:
 				val = DECIMAL_FORMAT.format(val);
@@ -201,13 +211,18 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 				val = enumMap.get(val);
 				break;
 			case DATE:
-				val =  DateTimeUtil.getFormattedTime((Long) val);
-			case DATE_TIME:
-				if (aggr != null && aggr instanceof DateAggregateOperator) {
-					val = ((DateAggregateOperator)aggr).getAdjustedTimestamp((long) val);
+				if(isExportReport) {
+					val = DateTimeUtil.getFormattedTime((Long) val);
+					break;
 				}
-				val = DateTimeUtil.getFormattedTime((Long)val);
-				break;
+			case DATE_TIME:
+				if (isExportReport) {
+					if (aggr != null && aggr instanceof DateAggregateOperator) {
+						val = ((DateAggregateOperator) aggr).getAdjustedTimestamp((long) val);
+					}
+					val = DateTimeUtil.getFormattedTime((Long) val);
+					break;
+				}
 			case NUMBER:
 				if (StringUtils.isNotEmpty(field.getName()) && field.getName().equals("siteId")) {
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -217,11 +232,11 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 			case MULTI_ENUM:
 				MultiEnumField multiEnumField = (MultiEnumField) field;
 				List<Integer> values = (List<Integer>) val;
-				StringBuilder valueString = new StringBuilder();
+				StringJoiner valueString = new StringJoiner(",");
 				for(int index : values){
-					valueString.append(multiEnumField.getValue(index)).append(", ");
+					valueString.add(multiEnumField.getValue(index));
 				}
-				val = valueString.substring(0, valueString.length()-2);
+				val = valueString.toString();
 				break;
 			case LOOKUP:
 				if (val instanceof Map) {
