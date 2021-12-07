@@ -39,7 +39,7 @@ public class ValidateQuestionUpdateAndUpdatePos extends FacilioCommand {
             if (CollectionUtils.isNotEmpty(positionToBeUpdated)) {
                 Map<Long, List<QuestionContext>> pageVsQuestions = new HashMap<>();
                 for (QuestionContext question : positionToBeUpdated) {
-                    pageVsQuestions.computeIfAbsent(question.getPage()._getId(), k -> new ArrayList<>()).add(question);
+                    pageVsQuestions.computeIfAbsent(question.getPage().getId(), k -> new ArrayList<>()).add(question);
                 }
 
                 if (!pageVsQuestions.isEmpty()) {

@@ -47,8 +47,8 @@ public class SerializeAnswersCommand extends FacilioCommand {
 
     @SneakyThrows
     private ClientAnswerContext serialze(AnswerContext answer, Map<Long, QuestionContext> questions, boolean isSingleResponse) {
-        QuestionContext question = questions.get(answer.getQuestion()._getId());
-        V3Util.throwRestException(question == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Question ID ({0}) is not present in given question map. This is not supposed to happen", answer.getQuestion()._getId()));
+        QuestionContext question = questions.get(answer.getQuestion().getId());
+        V3Util.throwRestException(question == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Question ID ({0}) is not present in given question map. This is not supposed to happen", answer.getQuestion().getId()));
         answer.setQuestion(question);
         ClientAnswerContext clientAnswer = QAndAUtil.serializedAnswer(question,answer);
 
@@ -56,14 +56,14 @@ public class SerializeAnswersCommand extends FacilioCommand {
             clientAnswer.setComments(answer.getComments()); // Here not doing any check with question because comments can be disabled after few responses have been added
         }
         else {
-            clientAnswer.setResponseId(answer.getResponse()._getId());
+            clientAnswer.setResponseId(answer.getResponse().getId());
         }
 
         return clientAnswer;
     }
 
     private Map<Long, QuestionContext> fetchQuestions (Collection<AnswerContext> answers) throws Exception {
-        List<Long> questionIds = answers.stream().map(a -> a.getQuestion()._getId()).collect(Collectors.toList());
+        List<Long> questionIds = answers.stream().map(a -> a.getQuestion().getId()).collect(Collectors.toList());
         Map<Long, QuestionContext> questions = QAndAUtil.fetchExtendedQuestionMap(questionIds, true);
         return questions;
     }

@@ -28,7 +28,7 @@ public class ValidateResponseStatus extends FacilioCommand {
 
         // TODO Check if record is locked
         response = ExtendedModuleUtil.fetchExtendedRecord(response, r -> r.getQAndAType().getResponseModule());
-        QAndATemplateContext parent = V3RecordAPI.getRecord(response.getQAndAType().getTemplateModule(), response.getParent()._getId());
+        QAndATemplateContext parent = V3RecordAPI.getRecord(response.getQAndAType().getTemplateModule(), response.getParent().getId());
         V3Util.throwRestException(parent == null, ErrorCode.VALIDATION_ERROR, "Cannot add/ update answer when the template is deleted");
         context.put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(response));
         context.put(FacilioConstants.QAndA.RESPONSE, response);

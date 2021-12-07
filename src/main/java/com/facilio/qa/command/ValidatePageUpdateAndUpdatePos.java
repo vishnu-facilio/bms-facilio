@@ -33,7 +33,7 @@ public class ValidatePageUpdateAndUpdatePos extends FacilioCommand {
             if (CollectionUtils.isNotEmpty(positionToBeUpdated)) {
                 Map<Long, List<PageContext>> templateVsPages = new HashMap<>();
                 for (PageContext page : positionToBeUpdated) {
-                    templateVsPages.computeIfAbsent(page.getParent()._getId(), k -> new ArrayList<>()).add(page);
+                    templateVsPages.computeIfAbsent(page.getParent().getId(), k -> new ArrayList<>()).add(page);
                 }
                 if (!templateVsPages.isEmpty()) {
                     PositionUtil.computeAndUpdatePosition(FacilioConstants.QAndA.PAGE,

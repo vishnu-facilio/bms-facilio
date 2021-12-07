@@ -25,9 +25,9 @@ public class ValidateMandatoryQuestions extends FacilioCommand {
 
         if (CollectionUtils.isNotEmpty(questions)) {
             List<AnswerContext> answers = (List<AnswerContext>) context.get(FacilioConstants.QAndA.Command.ANSWER_LIST);
-            Map<Long, AnswerContext> questionVsAnswer = answers == null ? Collections.EMPTY_MAP : answers.stream().collect(Collectors.toMap(a -> a.getQuestion()._getId(), Function.identity()));
+            Map<Long, AnswerContext> questionVsAnswer = answers == null ? Collections.EMPTY_MAP : answers.stream().collect(Collectors.toMap(a -> a.getQuestion().getId(), Function.identity()));
             for (QuestionContext question : questions) {
-                AnswerContext answer = questionVsAnswer.get(question._getId());
+                AnswerContext answer = questionVsAnswer.get(question.getId());
                 if (answer != null) {
                     answer.setQuestion(question);
                 }
@@ -40,7 +40,7 @@ public class ValidateMandatoryQuestions extends FacilioCommand {
                 }
             }
             if (CollectionUtils.isNotEmpty(unAnsweredMandatoryQuestion)) {
-                throw new RESTException(ErrorCode.VALIDATION_ERROR, MessageFormat.format("Cannot submit response ({0}) since all mandatory questions haven't been answered", response._getId()), constructErrorMessage(unAnsweredMandatoryQuestion));
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, MessageFormat.format("Cannot submit response ({0}) since all mandatory questions haven't been answered", response.getId()), constructErrorMessage(unAnsweredMandatoryQuestion));
             }
         }
         return false;
@@ -57,8 +57,8 @@ public class ValidateMandatoryQuestions extends FacilioCommand {
         for (QuestionContext question : unAnsweredMandatoryQuestion) {
             JSONObject error = new JSONObject();
             error.put("question", question.getQuestion());
-            error.put("id", question._getId());
-            error.put("page", question.getPage()._getId());
+            error.put("id", question.getId());
+            error.put("page", question.getPage().getId());
 
             unAnswered.add(error);
         }

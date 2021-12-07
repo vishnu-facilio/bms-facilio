@@ -26,7 +26,7 @@ public class FetchQuestionsAndAnswersOfResponse extends FacilioCommand {
         List<QuestionContext> questions = QAndAUtil.getQuestionsFromTemplate(templateId);
         context.put(FacilioConstants.QAndA.Command.TEMPLATE_ID, templateId);
         if (CollectionUtils.isNotEmpty(questions)) {
-            Map<Long, QuestionContext> questionMap = questions.stream().collect(Collectors.toMap(QuestionContext::_getId, Function.identity()));
+            Map<Long, QuestionContext> questionMap = questions.stream().collect(Collectors.toMap(QuestionContext::getId, Function.identity()));
             List<AnswerContext> answers = QAndAUtil.getAnswersFromTemplateAndResponse(templateId, response.getId());
             resetScores(answers);
 

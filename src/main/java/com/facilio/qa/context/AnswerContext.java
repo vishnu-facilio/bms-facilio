@@ -52,7 +52,7 @@ public class AnswerContext extends V3Context {
 
     @JsonIgnore @JSON(serialize = false)
     public Long getResponseId() {
-        return response == null ? null : response._getId();
+        return response == null ? null : response.getId();
     }
 
     @JsonIgnore

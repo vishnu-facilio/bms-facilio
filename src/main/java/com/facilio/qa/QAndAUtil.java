@@ -204,7 +204,7 @@ public class QAndAUtil {
         Constants.setV3config(context, v3Config);
         Constants.setModuleName(context, moduleName);
         Constants.addToOldRecordMap(context, moduleName, oldRecord);
-        context.put(Constants.RECORD_ID, record._getId());
+        context.put(Constants.RECORD_ID, record.getId());
         context.put(Constants.BEAN_CLASS, beanClass);
         context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
         context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
@@ -281,12 +281,12 @@ public class QAndAUtil {
     }
 
     private static void populateIndividualSummary (BaseMCQContext question, Map<Long, Map<Long, BaseMCQContext.OptionSummary>> summaryMap) {
-        Map<Long, BaseMCQContext.OptionSummary> questionSummary = summaryMap.get(question._getId());
+        Map<Long, BaseMCQContext.OptionSummary> questionSummary = summaryMap.get(question.getId());
         if (questionSummary != null) {
             List<BaseMCQContext.OptionSummary> summaryList = new ArrayList<>();
             for (MCQOptionContext option : question.getOptions()) {
-                BaseMCQContext.OptionSummary summary = questionSummary.get(option._getId());
-                summaryList.add(summary == null ? new BaseMCQContext.OptionSummary(option._getId(), 0f, 0) : summary);
+                BaseMCQContext.OptionSummary summary = questionSummary.get(option.getId());
+                summaryList.add(summary == null ? new BaseMCQContext.OptionSummary(option.getId(), 0f, 0) : summary);
             }
             question.setSummary(summaryList);
         }
@@ -389,7 +389,7 @@ public class QAndAUtil {
     public static ClientAnswerContext serializedAnswer(QuestionContext question,AnswerContext answer) throws Exception {
         ClientAnswerContext clientAnswer = question.getQuestionType().getAnswerHandler().serialize(answer);
         clientAnswer.addQuestionId(question);
-        clientAnswer.setId(answer._getId());
+        clientAnswer.setId(answer.getId());
         clientAnswer.setFullScore(answer.getFullScore());
         clientAnswer.setScore(answer.getScore());
         clientAnswer.setComments(answer.getComments());
@@ -418,7 +418,7 @@ public class QAndAUtil {
     }
 
     private static void populateIndividualRatingSummary (RatingQuestionContext question, Map<Long, Map<Long, RatingQuestionContext.OptionSummary>> summaryMap) {
-        Map<Long, RatingQuestionContext.OptionSummary> questionSummary = summaryMap.get(question._getId());
+        Map<Long, RatingQuestionContext.OptionSummary> questionSummary = summaryMap.get(question.getId());
         if (questionSummary != null) {
             List<RatingQuestionContext.OptionSummary> summaryList = new ArrayList<>();
             int ratingScale = question.getRatingScale()+1;

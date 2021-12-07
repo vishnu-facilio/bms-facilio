@@ -32,9 +32,9 @@ public class ExecuteOnSubmitProcessOfResponse extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(responses)) {
             Map<Long, ? extends ResponseContext> oldResponseMap = Constants.getOldRecordMap(context);
             for (ResponseContext response : responses) {
-                ResponseContext oldResponse = oldResponseMap.get(response._getId());
-                V3Util.throwRestException(oldResponse == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid response ID ({0}) is specified for updating", response._getId()));
-                V3Util.throwRestException(response.getParent() != null && response.getParent().getId() > 0 && response.getParent().getId() != oldResponse.getParent().getId(), ErrorCode.VALIDATION_ERROR, MessageFormat.format("Cannot update parent of response : {0}", response._getId()));
+                ResponseContext oldResponse = oldResponseMap.get(response.getId());
+                V3Util.throwRestException(oldResponse == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid response ID ({0}) is specified for updating", response.getId()));
+                V3Util.throwRestException(response.getParent() != null && response.getParent().getId() > 0 && response.getParent().getId() != oldResponse.getParent().getId(), ErrorCode.VALIDATION_ERROR, MessageFormat.format("Cannot update parent of response : {0}", response.getId()));
                 if (response.getResStatus() != oldResponse.getResStatus() && response.getResStatus() == ResponseContext.ResponseStatus.COMPLETED) {
                     FacilioChain onSubmitProcess = QAndATransactionChainFactory.onSubmitProcessOfResponse();
                     onSubmitProcess.getContext().put(FacilioConstants.QAndA.RESPONSE, response);

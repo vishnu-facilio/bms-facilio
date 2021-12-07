@@ -57,7 +57,7 @@ public enum MCQRuleHandler implements RuleHandler {
     @Override
     public List<RuleCondition> deserializeConditions(QAndARuleType type, QuestionContext question, List<Map<String, Object>> conditionProps) throws Exception {
         BaseMCQContext mcq = (BaseMCQContext) question;
-        Map<Long, MCQOptionContext> options = mcq.getOptions().stream().collect(Collectors.toMap(MCQOptionContext::_getId, Function.identity()));
+        Map<Long, MCQOptionContext> options = mcq.getOptions().stream().collect(Collectors.toMap(MCQOptionContext::getId, Function.identity()));
         List<RuleCondition> conditions = new ArrayList<>();
         for (Map<String, Object> prop : conditionProps) {
             Long value = (Long) prop.remove("option");
@@ -77,10 +77,10 @@ public enum MCQRuleHandler implements RuleHandler {
             case SINGLE:
                 return RuleHandler.constructSingletonAnswerProp(question, answer.getEnumAnswer());
             case MULTI:
-                FacilioUtil.throwIllegalArgumentException(CollectionUtils.isEmpty(answer.getMultiEnumAnswer()), MessageFormat.format("At least one option needs to be present for rule evaluation of question : {0}. This is not supposed to happen", question._getId()));
+                FacilioUtil.throwIllegalArgumentException(CollectionUtils.isEmpty(answer.getMultiEnumAnswer()), MessageFormat.format("At least one option needs to be present for rule evaluation of question : {0}. This is not supposed to happen", question.getId()));
                 List<Map<String, Object>> answerProps = new ArrayList<>();
                 for (MCQOptionContext option : answer.getMultiEnumAnswer()) {
-                    answerProps.add(Collections.singletonMap(RuleCondition.ANSWER_FIELD_NAME, option._getId()));
+                    answerProps.add(Collections.singletonMap(RuleCondition.ANSWER_FIELD_NAME, option.getId()));
                 }
                 return answerProps;
             default:
@@ -89,7 +89,7 @@ public enum MCQRuleHandler implements RuleHandler {
     }
 
     private void addOptionProps (Map<String, Object> props, MCQOptionContext option) {
-        props.put("option", option._getId());
+        props.put("option", option.getId());
         props.put("label", option.getLabel());
     }
 

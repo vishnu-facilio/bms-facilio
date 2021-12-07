@@ -35,12 +35,12 @@ public class UpdateAnswersCommand extends FacilioCommand {
         List<AnswerContext> answers = (List<AnswerContext>) context.get(FacilioConstants.QAndA.Command.ANSWERS_TO_BE_UPDATED);
         if (CollectionUtils.isNotEmpty(answers)) {
             ResponseContext response = (ResponseContext) context.get(FacilioConstants.QAndA.RESPONSE);
-            List<Long> ids = answers.stream().map(AnswerContext::_getId).collect(Collectors.toList());
+            List<Long> ids = answers.stream().map(AnswerContext::getId).collect(Collectors.toList());
             Map<String, FacilioField> fields = FieldFactory.getAsMap(Constants.getModBean().getAllFields(FacilioConstants.QAndA.ANSWER));
 
             Criteria criteria = new Criteria();
-            criteria.addAndCondition(CriteriaAPI.getCondition(fields.get("parent"), String.valueOf(response.getParent()._getId()), PickListOperators.IS));
-            criteria.addAndCondition(CriteriaAPI.getCondition(fields.get("response"), String.valueOf(response._getId()), PickListOperators.IS));
+            criteria.addAndCondition(CriteriaAPI.getCondition(fields.get("parent"), String.valueOf(response.getParent().getId()), PickListOperators.IS));
+            criteria.addAndCondition(CriteriaAPI.getCondition(fields.get("response"), String.valueOf(response.getId()), PickListOperators.IS));
 
             Map<Long, AnswerContext> oldRecords = V3RecordAPI.getRecordsMap(FacilioConstants.QAndA.ANSWER, ids, criteria);
             answers.stream().forEach(a -> setDefaultProps(a, oldRecords));
@@ -68,7 +68,7 @@ public class UpdateAnswersCommand extends FacilioCommand {
 
     @SneakyThrows
     private void setDefaultProps(AnswerContext answer, Map<Long, AnswerContext> oldRecords) {
-        AnswerContext oldAnswer = oldRecords.get(answer._getId());
+        AnswerContext oldAnswer = oldRecords.get(answer.getId());
         V3Util.throwRestException(oldAnswer == null || oldAnswer.getQuestion().getId() != answer.getQuestion().getId()
                                     , ErrorCode.VALIDATION_ERROR, "Invalid answer id sent while saving answer");
 

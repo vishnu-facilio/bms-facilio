@@ -28,7 +28,7 @@ public class ValidateQuestionAddAndUpdatePos extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(list)) {
             Map<Long, List<QuestionContext>> pageVsQuestions = new HashMap<>();
             for (QuestionContext question : list) {
-                Long pageId = question.getPage() == null ? null : question.getPage()._getId();
+                Long pageId = question.getPage() == null ? null : question.getPage().getId();
                 V3Util.throwRestException(pageId == null, ErrorCode.VALIDATION_ERROR, "Parent page of question cannot be null");
                 V3Util.throwRestException(question.getQuestionType() == null, ErrorCode.VALIDATION_ERROR, "Question type cannot be null");
                 V3Util.throwRestException(question.getPosition() == null || question.getPosition() <= 0, ErrorCode.VALIDATION_ERROR, "Invalid position for question");
