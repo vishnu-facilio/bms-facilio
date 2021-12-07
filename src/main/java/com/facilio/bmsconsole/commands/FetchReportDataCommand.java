@@ -59,8 +59,9 @@ public class FetchReportDataCommand extends FacilioCommand {
     private List<Map<String, Object>> subModuleQueryResult = new ArrayList<>();
     private List<FacilioField> globalFields = new ArrayList<>();
     private Boolean isBaseModuleJoined = false;
-    private List<Map<String,Object>> pivotFieldsList = new ArrayList<>();
-    private Map<String,FacilioField> lookupJoinMap = new HashMap<>();
+    private List<Map<String, Object>> pivotFieldsList = new ArrayList<>();
+    private Map<String, FacilioField> lookupJoinMap = new HashMap<>();
+
     @Override
     public boolean executeCommand(Context context) throws Exception {
         modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -73,6 +74,8 @@ public class FetchReportDataCommand extends FacilioCommand {
         if (report.getDataPoints() == null || report.getDataPoints().isEmpty()) {
             return false;
         }
+
+        reportModule = modBean.getModule(report.getModuleId());
 
         LinkedHashMap<String, String> tableAlias = (LinkedHashMap<String, String>) context.get(FacilioConstants.ContextNames.TABLE_ALIAS);
 
@@ -264,10 +267,9 @@ public class FetchReportDataCommand extends FacilioCommand {
         }
         setYFieldsAndGroupByFields(dataPointList, fields, xAggrField, groupBy, dp, selectBuilder, addedModules);
         List<FacilioField> cloneFields = new ArrayList<>();
-        if (reportType == ReportType.PIVOT_REPORT){
+        if (reportType == ReportType.PIVOT_REPORT) {
             fields.clear();
-            for(Map<String,Object> pivotField: pivotFieldsList)
-            {
+            for (Map<String, Object> pivotField : pivotFieldsList) {
                 FacilioField facilioField = (FacilioField) pivotField.get("field");
                 cloneFields.add(facilioField);
                 fields.add(facilioField);
@@ -286,12 +288,11 @@ public class FetchReportDataCommand extends FacilioCommand {
         }
         selectBuilder.select(cloneFields);
 
-        if(reportType == ReportType.PIVOT_REPORT)
-        {
+        if (reportType == ReportType.PIVOT_REPORT) {
             pivotFieldsList = pivotFieldsList.stream().distinct().collect(Collectors.toList());
 //            filterDuplicateItems(pivotFieldsList);
-            for(Map<String,Object> pivotField: pivotFieldsList) {
-                handlePivotJoin(pivotField,selectBuilder);
+            for (Map<String, Object> pivotField : pivotFieldsList) {
+                handlePivotJoin(pivotField, selectBuilder);
             }
         }
 
@@ -391,7 +392,7 @@ public class FetchReportDataCommand extends FacilioCommand {
         while (extendedModule != null) {
             selectBuilder.addJoinModules(Collections.singletonList(extendedModule));
             selectBuilder.innerJoin(extendedModule.getTableName())
-                        .on(prevModule.getTableName() + ".ID = " + extendedModule.getTableName() + ".ID");
+                    .on(prevModule.getTableName() + ".ID = " + extendedModule.getTableName() + ".ID");
             prevModule = extendedModule;
             extendedModule = extendedModule.getExtendModule();
         }
@@ -572,11 +573,12 @@ public class FetchReportDataCommand extends FacilioCommand {
 //                newSelectBuilder.fetchSupplements(lookupFieldList);
             }
 //            String query = newSelectBuilder.constructQueryString();
-            if(reportType == ReportType.PIVOT_REPORT && globalContext.get(FacilioConstants.ContextNames.FILTER_CRITERIA) != null) {
+            if (reportType == ReportType.PIVOT_REPORT && globalContext.get(FacilioConstants.ContextNames.FILTER_CRITERIA) != null) {
                 newSelectBuilder.andCriteria((Criteria) globalContext.get(FacilioConstants.ContextNames.FILTER_CRITERIA));
             }
             props = newSelectBuilder.getAsProps();
             pivotFieldsList.clear();
+
             isBaseModuleJoined = false;
         }
         LOGGER.debug("SELECT BUILDER --- " + newSelectBuilder);
@@ -615,13 +617,13 @@ public class FetchReportDataCommand extends FacilioCommand {
                     groupByField.setField(groupByField.getModule(), modBean.getField(groupByField.getFieldId()));
                 }
                 FacilioField gField;
-                if(reportType == ReportType.PIVOT_REPORT){
+                if (reportType == ReportType.PIVOT_REPORT) {
                     if (groupByField.getLookupFieldId() > 0) {
                         gField = modBean.getField(groupByField.getLookupFieldId()).clone();
-                        handlePivotFields(groupByField.getField(), (LookupField) gField, false, groupByField.getModule());
+                        handlePivotFields(groupByField.getField(), (LookupField) gField, false, groupByField.getModule(), false);
                     } else {
                         gField = groupByField.getField().clone();
-                        handlePivotFields(groupByField.getField(), null, false, groupByField.getModule());
+                        handlePivotFields(groupByField.getField(), null, false, groupByField.getModule(), false);
                     }
                 } else {
                     gField = groupByField.getField().clone();
@@ -641,7 +643,7 @@ public class FetchReportDataCommand extends FacilioCommand {
                 fields.add(gField);
                 if (reportType == ReportType.PIVOT_REPORT && gField.getModule().equals(baseModule) && !gField.getCompleteColumnName().endsWith("null")) {
                     groupBy.add(gField.getCompleteColumnName());
-                } else if(reportType != ReportType.PIVOT_REPORT) {
+                } else if (reportType != ReportType.PIVOT_REPORT) {
                     groupBy.add(gField.getCompleteColumnName());
                 }
                 handleJoin(groupByField, selectBuilder, addedModules);
@@ -795,20 +797,23 @@ public class FetchReportDataCommand extends FacilioCommand {
         for (List<ReportDataPointContext> dataPointList : groupedList) {
             ReportDataPointContext rdp = dataPointList.get(0);
             if (rdp.getxAxis().getField().equals(dataPoint.getxAxis().getField()) &&                                    // xaxis should be same
-                    rdp.getyAxis().getModule().equals(dataPoint.getyAxis().getModule()) &&        // yaxis Module should be same
+                    rdp.getyAxis().getModule().equals(dataPoint.getyAxis().getModule()) &&                              // yaxis Module should be same
                     Objects.equals(rdp.getOrderBy(), dataPoint.getOrderBy()) &&                                        // Order BY should be same
                     rdp.isHandleEnum() == dataPoint.isHandleEnum() &&                                            // Both should be of same type
                     isSameTable(rdp, dataPoint)                                                    //Both should have same table alias - case of pivot table
             ) {
                 OrderByFunction rdpFunc = rdp.getOrderByFuncEnum() == null ? OrderByFunction.NONE : rdp.getOrderByFuncEnum();
                 OrderByFunction dataPointFunc = dataPoint.getOrderByFuncEnum() == null ? OrderByFunction.NONE : dataPoint.getOrderByFuncEnum();
+//                Map<String, Condition> rdpCondition = rdp.getOtherCriteria().getConditions();
+//                Map<String, Condition> dataPointCondition = dataPoint.getOtherCriteria().getConditions();
 //				int rdpAggr = rdp.getxAxis().getAggrEnum() == null && rdp.getyAxis().getAggrEnum() == null ? 0 : 1;
 //				int dataPointAggr = dataPoint.getxAxis().getAggrEnum() == null && dataPoint.getyAxis().getAggrEnum() == null ? 0 : 1;
                 if (rdpFunc == dataPointFunc &&                                                                        // order by function should be same
                         Objects.equals(rdp.getCriteria(), dataPoint.getCriteria()) &&                                    // criteria should be same
 //						rdpAggr == dataPointAggr &&																		// x and y aggregation (either both null or both should be not null)
 //						(rdpAggr == 0 || (rdp.getxAxis().getAggrEnum() == dataPoint.getxAxis().getAggrEnum())) &&		// x aggregation should be same;
-                        Objects.equals(rdp.getGroupByFields(), dataPoint.getGroupByFields())) {                            // group by field should be same;
+                        Objects.equals(rdp.getGroupByFields(), dataPoint.getGroupByFields()) &&
+                        rdp.getOtherCriteria() == null && dataPoint.getOtherCriteria() == null) {                            // group by field should be same;
                     dataPointList.add(dataPoint);
                     return;
                 }
@@ -818,6 +823,12 @@ public class FetchReportDataCommand extends FacilioCommand {
         dataPointList.add(dataPoint);
         groupedList.add(dataPointList);
     }
+
+//    private boolean compareCriteria(Criteria criteria1, Criteria criteria2){
+//        Map<String, Condition> conditions1 = criteria1.getConditions();
+//        Map<String, Condition> conditions2 = criteria2.getConditions();
+//        return conditions1.get("1").equals(conditions2.get("1"));
+//    }
 
     private FacilioField applySpaceAggregation(ReportDataPointContext dp, AggregateOperator aggr, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules, FacilioField field) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -1007,6 +1018,8 @@ public class FetchReportDataCommand extends FacilioCommand {
             }
             if (xAggrField.getModule() != null && (xAggrField.getModule().isCustom() && !baseModule.equals(xAggrField.getModule()))) {
                 xAggrField.setTableAlias(getAndSetModuleAlias(xAggrField.getModule().getName()));
+            } else if (xAggrField.getModule() != null && dp.getxAxis().getAlias() != null && dp.getxAxis().getLookupFieldId() > 0 && reportType == ReportType.PIVOT_REPORT) {
+                xAggrField.setTableAlias(getAndSetModuleAlias(xAggrField.getModule().getName() + "_" + dp.getxAxis().getField().getName()));
             } else if (xAggrField.getModule() != null && dp.getxAxis().getAlias() != null && reportType == ReportType.PIVOT_REPORT) {
                 xAggrField.setTableAlias(getAndSetModuleAlias(xAggrField.getModule().getName()));
             }
@@ -1026,12 +1039,12 @@ public class FetchReportDataCommand extends FacilioCommand {
             }
         }
         handleJoin(dp.getxAxis(), selectBuilder, addedModules);
-        if(reportType == ReportType.PIVOT_REPORT) {
+        if (reportType == ReportType.PIVOT_REPORT) {
             if (dp.getxAxis().getLookupFieldId() > 0) {
                 LookupField lookupField = (LookupField) modBean.getField(dp.getxAxis().getLookupFieldId());
-                handlePivotFields(dp.getxAxis().getField(), lookupField, false, dp.getxAxis().getModule());
+                handlePivotFields(dp.getxAxis().getField(), lookupField, false, dp.getxAxis().getModule(), true);
             } else {
-                handlePivotFields(dp.getxAxis().getField(), null, false, dp.getxAxis().getModule());
+                handlePivotFields(dp.getxAxis().getField(), null, false, dp.getxAxis().getModule(), false);
             }
         }
         return xAggrField;
@@ -1044,7 +1057,7 @@ public class FetchReportDataCommand extends FacilioCommand {
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(yAxisModule.getName()));
 
         if (!addedModules.contains(reportModule)) {
-            if (reportModule.getName().equalsIgnoreCase(FacilioConstants.ContextNames.ASSET)) {
+            if (reportModule != null && reportModule.getName().equalsIgnoreCase(FacilioConstants.ContextNames.ASSET)) {
                 selectBuilder.addJoinModules(Collections.singletonList(reportModule));
                 selectBuilder.innerJoin(reportModule.getTableName())
                         .on(resourceModule.getTableName() + ".ID = " + reportModule.getTableName() + ".ID");
@@ -1077,8 +1090,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 
     @SuppressWarnings("unchecked")
     private void handleJoin(ReportFieldContext reportField, SelectRecordsBuilder selectBuilder, Set<FacilioModule> addedModules) throws Exception {
-        if(reportType == ReportType.PIVOT_REPORT)
-        {
+        if (reportType == ReportType.PIVOT_REPORT) {
             return;
         }
 
@@ -1097,14 +1109,16 @@ public class FetchReportDataCommand extends FacilioCommand {
             return false;
         } else {
             FacilioField facilioField = dataPoint.getyAxis().getField().clone();
-            if(reportType == ReportType.PIVOT_REPORT) {
+            if(reportType == ReportType.PIVOT_REPORT && dataPoint.getyAxis().getModule().getTypeEnum() != ModuleType.READING) {
                 facilioField.setTableAlias(getAndSetModuleAlias(facilioField.getModule().getName()));
+            } else if(reportType == ReportType.PIVOT_REPORT && dataPoint.getyAxis().getModule().getTypeEnum() == ModuleType.READING) {
+                facilioField.setTableAlias(null);
             }
             FacilioField aggrField = dataPoint.getyAxis().getAggrEnum().getSelectField(facilioField);
             aggrField.setName(ReportUtil.getAggrFieldName(aggrField, dataPoint.getyAxis().getAggrEnum()));
             fields.add(aggrField);
-            if(reportType == ReportType.PIVOT_REPORT) {
-                handlePivotFields(aggrField, null, true, dataPoint.getyAxis().getModule());
+            if (reportType == ReportType.PIVOT_REPORT) {
+                handlePivotFields(aggrField, null, true, dataPoint.getyAxis().getModule(), false);
             }
             return true;
         }
@@ -1238,17 +1252,17 @@ public class FetchReportDataCommand extends FacilioCommand {
         isBaseModuleJoined = true;
     }
 
-    private void handlePivotJoin(Map<String,Object> pivotField,SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) throws Exception {
+    private void handlePivotJoin(Map<String, Object> pivotField, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) throws Exception {
         handleExtendedModuleJoin(selectBuilder);
         FacilioModule module = (FacilioModule) pivotField.get("module");
-        if((Boolean) pivotField.get("isLookupField")){
+        if ((Boolean) pivotField.get("isLookupField")) {
             List<FacilioModule> extendedModules = (List<FacilioModule>) pivotField.get("extendedModules");
             LookupField lookupFieldClone = (LookupField) pivotField.get("lookupField");
             FacilioField facilioField = (FacilioField) pivotField.get("field");
 
             boolean reverseModules = (boolean) pivotField.get("reverseFields");
 
-            if(reverseModules) {
+            if (reverseModules) {
                 Collections.reverse(extendedModules);
             }
 
@@ -1256,7 +1270,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 
             String currentModuleAlias;
             String prevModuleAlias;
-            for (FacilioModule poll: extendedModules){
+            for (FacilioModule poll : extendedModules) {
                 if (poll != null && poll.equals(lookupFieldClone.getLookupModule())) {
                     currentModuleAlias = getAndSetModuleAlias(poll.getName() + "_" + facilioField.getName());
                     String LookupJoinOn = lookupFieldClone.getCompleteColumnName() + " = " + currentModuleAlias + ".ID";
@@ -1265,11 +1279,11 @@ public class FetchReportDataCommand extends FacilioCommand {
                     currentModuleAlias = getAndSetModuleAlias(poll.getName() + "_" + facilioField.getName());
                     prevModuleAlias = getAndSetModuleAlias(prevModule.getName() + "_" + facilioField.getName());
                     selectBuilder.leftJoin(poll.getTableName() + " " + currentModuleAlias)
-                                .on(prevModuleAlias + ".ID = " + currentModuleAlias + ".ID");
+                            .on(prevModuleAlias + ".ID = " + currentModuleAlias + ".ID");
                 }
                 prevModule = poll;
             }
-        } else if((Boolean) pivotField.get("isDataField") && !this.baseModule.getExtendedModuleIds().contains(module.getModuleId())) {
+        } else if((Boolean) pivotField.get("isDataField") && !this.baseModule.getExtendedModuleIds().contains(module.getModuleId()) && module.getTypeEnum() != ModuleType.READING) {
             System.out.println("submodule data field join");
             FacilioField dataField = FieldFactory.getIdField(module).clone();
 
@@ -1299,6 +1313,11 @@ public class FetchReportDataCommand extends FacilioCommand {
                         .on(getAndSetModuleAlias(prevModule.getName()) + ".ID = " + getAndSetModuleAlias(pop.getName()) + ".ID");
                 prevModule = pop;
             }
+        }
+
+        if(module.getTypeEnum() == ModuleType.READING){
+            FacilioField facilioField = (FacilioField) pivotField.get("field");
+//            selectBuilder.groupBy(facilioField.getName());
         }
     }
 
@@ -1418,19 +1437,24 @@ public class FetchReportDataCommand extends FacilioCommand {
         return true;
     }
 
-    private void handlePivotFields(FacilioField field, LookupField lookupField, boolean isDataField, FacilioModule module) throws Exception {
+    private void handlePivotFields(FacilioField field, LookupField lookupField, boolean isDataField, FacilioModule module, boolean firstRow) throws Exception {
 
         Map<String, Object> tempMap = new HashMap<>();
         field = field.clone();
-        if(lookupField != null){
+        if (firstRow) {
             tempMap.put("lookupField", lookupField.clone());
             tempMap.put("lookupModule", lookupField.getModule());
-            tempMap.put("isLookupField",true);
-            field.setName(lookupField.getName() + "_" +module.getName() + "_" + field.getName());
+            tempMap.put("isLookupField", true);
+            field.setTableAlias(getAndSetModuleAlias(field.getModule().getName() + "_" + field.getName()));
+        } else if (lookupField != null) {
+            tempMap.put("lookupField", lookupField.clone());
+            tempMap.put("lookupModule", lookupField.getModule());
+            tempMap.put("isLookupField", true);
+            field.setName(lookupField.getName() + "_" + module.getName() + "_" + field.getName());
             field.setTableAlias(getAndSetModuleAlias(field.getModule().getName() + "_" + field.getName()));
         } else {
             tempMap.put("isLookupField",false);
-            if(field.getModule() != null) {
+            if(field.getModule() != null && field.getModule().getTypeEnum() != ModuleType.READING) {
                 field.setName(field.getName());
                 field.setTableAlias(getAndSetModuleAlias(field.getModule().getName()));
             }
@@ -1439,52 +1463,51 @@ public class FetchReportDataCommand extends FacilioCommand {
 
         List<FacilioModule> tempModulesList = new ArrayList<>();
 
-        if(module != null) {
+        if (module != null) {
             FacilioModule lookupModule = module;
-            while (lookupModule != null){
+            while (lookupModule != null) {
                 tempModulesList.add(lookupModule);
                 lookupModule = lookupModule.getExtendModule();
             }
         }
 
-        if(lookupField != null && !tempModulesList.contains(lookupField.getLookupModule()))
-        {
+        if (lookupField != null && !tempModulesList.contains(lookupField.getLookupModule())) {
             tempModulesList.clear();
             FacilioModule lookupModule = lookupField.getLookupModule();
-            while (lookupModule != null){
+            while (lookupModule != null) {
                 tempModulesList.add(lookupModule);
                 lookupModule = lookupModule.getExtendModule();
             }
-            tempMap.put("reverseFields",false);
+            tempMap.put("reverseFields", false);
         }
 
-        if(lookupField != null && field.getModule().isParentOrChildModule(baseModule))
-        {
+        if (lookupField != null && field.getModule().isParentOrChildModule(baseModule)) {
             tempModulesList.clear();
             FacilioModule lookupModule = lookupField.getModule();
-            while (lookupModule != null){
+            while (lookupModule != null) {
                 tempModulesList.add(lookupModule);
                 lookupModule = lookupModule.getExtendModule();
             }
-            tempMap.put("reverseFields",false);
+            tempMap.put("reverseFields", false);
         }
 
-        if(lookupField != null && lookupField.getLookupModule().equals(field.getModule())){
+        if (lookupField != null && lookupField.getLookupModule().equals(field.getModule())) {
             tempModulesList.clear();
             tempModulesList.add(lookupField.getLookupModule());
         }
 
-        if(field.getModule() != null && field.getModule().equals(tempModulesList.get(tempModulesList.size() - 1))){
+        if (field.getModule() != null && field.getModule().equals(tempModulesList.get(tempModulesList.size() - 1))) {
             tempMap.put("reverseFields", false);
         }
 
-        if(!tempMap.containsKey("reverseFields")) {
+        if (!tempMap.containsKey("reverseFields")) {
             tempMap.put("reverseFields", true);
         }
 
         tempMap.put("isDataField", isDataField);
+        tempMap.put("firstRow", firstRow);
         tempMap.put("module", module);
-        tempMap.put("extendedModules",tempModulesList);
+        tempMap.put("extendedModules", tempModulesList);
         pivotFieldsList.add(tempMap);
     }
 }

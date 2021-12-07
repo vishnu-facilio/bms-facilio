@@ -74,15 +74,7 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 		if (props != null && !props.isEmpty()) {
 			for (Map<String, Object> prop : props) {
 				Object xVal;
-				if(dataPoint.getyAxis().getLookupFieldId() > 0) {
-					FacilioField facilioField = dataPoint.getxAxis().getField();
-					LookupField lookupField = (LookupField) modBean.getField(dataPoint.getxAxis().getLookupFieldId());
-					FacilioModule module = dataPoint.getxAxis().getModule();
-					String fieldName = lookupField.getName() + "_" + module.getName() + "_" + facilioField.getName();
-					xVal = prop.get(fieldName);
-				} else {
-					xVal = prop.get(dataPoint.getxAxis().getField().getName());
-				}
+				xVal = prop.get(dataPoint.getxAxis().getField().getName());
 
 				if (xVal != null) {
 					xVal = getBaseLineAdjustedXVal(xVal, dataPoint.getxAxis(), baseLine);
