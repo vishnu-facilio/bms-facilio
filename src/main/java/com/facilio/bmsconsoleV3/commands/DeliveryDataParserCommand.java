@@ -25,7 +25,8 @@ public class DeliveryDataParserCommand extends FacilioCommand {
         Organization currentOrg = AccountUtil.getCurrentOrg();
         Objects.requireNonNull(currentOrg, "current org null");
         FileStore fileStore = FacilioFactory.getFileStoreFromOrg(currentOrg.getOrgId());
-        Map<String, Long> fileMap = Constants.getAttachmentNameVsId(context);
+        Map<String, Long> fileMap = new HashMap<>();
+        fileMap = Constants.getAttachmentNameVsId(context);
 
         List<V3DeliveriesContext> deliveriesContextList = new ArrayList<>();
         for (String key : fileMap.keySet()) {
