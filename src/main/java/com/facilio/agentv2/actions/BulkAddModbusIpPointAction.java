@@ -17,13 +17,20 @@ public class BulkAddModbusIpPointAction extends AgentActionV2
 
     private static final org.apache.log4j.Logger LOGGER = LogManager.getLogger(BulkAddModbusIpPointAction.class.getName());
 
+
     @NotNull
-    private Long deviceId;
+    private Long controllerId;
     @NotNull
     List<ModbusTcpPointContext> points;
 
-    public Long getDeviceId() { return deviceId; }
-    public void setDeviceId(Long deviceId) { this.deviceId = deviceId; }
+
+    public Long getControllerId() {
+        return controllerId;
+    }
+
+    public void setControllerId(Long controllerId) {
+        this.controllerId = controllerId;
+    }
 
     public List<ModbusTcpPointContext> getPoints() { return points; }
     public void setPoints(List<ModbusTcpPointContext> points) { this.points = points; }
@@ -31,14 +38,13 @@ public class BulkAddModbusIpPointAction extends AgentActionV2
     public String addPoints(){
         try{
             GetControllerRequest getControllerRequest = new GetControllerRequest()
-                    .forDevice(deviceId);
+                    .withControllerId(controllerId);
             Controller controller = getControllerRequest.getController();
             Objects.requireNonNull(controller);
             LOGGER.info(points);
             LOGGER.info("points size "+points);
             for (ModbusTcpPointContext point : points) {
                 point.setControllerId(controller.getId());
-                point.setDeviceId(controller.getDeviceId());
             }
             ControllerMessenger.sendConfigureModbusTcpPoints(controller,new ArrayList<>(points));
             ok();

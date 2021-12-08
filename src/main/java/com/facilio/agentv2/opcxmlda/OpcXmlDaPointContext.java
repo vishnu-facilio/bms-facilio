@@ -55,7 +55,6 @@ public class  OpcXmlDaPointContext extends Point {
     public JSONObject getChildJSON() {
         JSONObject childPointJSON = new JSONObject();
         childPointJSON.put(AgentConstants.ID, getId());
-        childPointJSON.put(AgentConstants.DEVICE_ID,getDeviceId());
         childPointJSON.put(AgentConstants.PATH, getPath());
         childPointJSON.put(AgentConstants.CONTROLLER_ID, getControllerId());
         return childPointJSON;
