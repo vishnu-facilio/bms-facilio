@@ -896,43 +896,48 @@ public class FormsAPI {
 		List<FormField> fields = new ArrayList<>();
 		if (form.getModule().getName() != null) {
 			switch (form.getModule().getName()) {
-			case ContextNames.WORK_ORDER:
-				fields.addAll(FormFactory.getRequesterFormFields(false, false));
-				fields.add(new FormField("dueDate", FieldDisplayType.DATETIME, "Due Date", Required.OPTIONAL, 1, 1));
-				fields.add(new FormField("isSignatureRequired", FieldDisplayType.DECISION_BOX, "Is Signature Required ", Required.OPTIONAL, 1, 1));
-				fields.add(new FormField("responseDueDate", FieldDisplayType.DATETIME, "Response Due Date", Required.OPTIONAL, 1, 1));
-				if (AccountUtil.isFeatureEnabled(FeatureLicense.TENANTS)) {
-					fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL,"tenant", 1, 1));
-				}
-				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLIENT)) {
-					fields.add(new FormField("client", FieldDisplayType.LOOKUP_SIMPLE, "Client", Required.OPTIONAL, "client", 1, 1));
-				}
-				break;
-			case ContextNames.WorkPermit.WORKPERMIT:
-				fields.add(new FormField("expectedStartTime", FieldDisplayType.DATETIME, "Valid From", Required.OPTIONAL, 1, 1));
-				fields.add(new FormField("expectedEndTime", FieldDisplayType.DATETIME, "Valid Till", Required.OPTIONAL, 1, 1));
-				break;
-			case ContextNames.ASSET:
-				fields.add(new FormField("salvageAmount", FieldDisplayType.NUMBER, "Salvage Amount", Required.OPTIONAL, 1, 1));
-				break;
-			case ContextNames.INVITE_VISITOR:
-				fields.add(new FormField("isVip", FieldDisplayType.DECISION_BOX, "VIP", Required.OPTIONAL, 1, 1));
-				break;
-			case ContextNames.SERVICE_REQUEST:
-				fields.add(new FormField("dueDate", FieldDisplayType.DATETIME, "Due Date", Required.OPTIONAL, 1, 1));
-				break;
-			case ContextNames.VISITOR_LOG:
-				fields.add(new FormField("isVip", FieldDisplayType.DECISION_BOX, "VIP", Required.OPTIONAL, 1, 1));
-				break;
-			case ContextNames.INSURANCE:
-				fields.add(new FormField("insuranceType", FieldDisplayType.SELECTBOX, "Insurance Type", FormField.Required.OPTIONAL, 1, 1));
-				break;
-			case ContextNames.SPACE:
-				fields.add(new FormField("building", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Building Associated", FormField.Required.REQUIRED,"building", 5, 1,true));
-				fields.add(new FormField("floor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Floor Associated", FormField.Required.REQUIRED,"floor", 5, 1,true));
-				fields.add(FormFactory.getSpaceAssociatedField());
-				break;
-				
+				case ContextNames.WORK_ORDER:
+					fields.addAll(FormFactory.getRequesterFormFields(false, false));
+					fields.add(new FormField("dueDate", FieldDisplayType.DATETIME, "Due Date", Required.OPTIONAL, 1, 1));
+					fields.add(new FormField("isSignatureRequired", FieldDisplayType.DECISION_BOX, "Is Signature Required ", Required.OPTIONAL, 1, 1));
+					fields.add(new FormField("responseDueDate", FieldDisplayType.DATETIME, "Response Due Date", Required.OPTIONAL, 1, 1));
+
+					// scheduled duration specific
+					fields.add(new FormField("scheduledStart", FieldDisplayType.DATETIME, "Scheduled Start", Required.OPTIONAL, 1, 1));
+					fields.add(new FormField("estimatedEnd", FieldDisplayType.DATETIME, "Estimated End", Required.OPTIONAL, 1, 1));
+
+					if (AccountUtil.isFeatureEnabled(FeatureLicense.TENANTS)) {
+						fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL, "tenant", 1, 1));
+					}
+					if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLIENT)) {
+						fields.add(new FormField("client", FieldDisplayType.LOOKUP_SIMPLE, "Client", Required.OPTIONAL, "client", 1, 1));
+					}
+					break;
+				case ContextNames.WorkPermit.WORKPERMIT:
+					fields.add(new FormField("expectedStartTime", FieldDisplayType.DATETIME, "Valid From", Required.OPTIONAL, 1, 1));
+					fields.add(new FormField("expectedEndTime", FieldDisplayType.DATETIME, "Valid Till", Required.OPTIONAL, 1, 1));
+					break;
+				case ContextNames.ASSET:
+					fields.add(new FormField("salvageAmount", FieldDisplayType.NUMBER, "Salvage Amount", Required.OPTIONAL, 1, 1));
+					break;
+				case ContextNames.INVITE_VISITOR:
+					fields.add(new FormField("isVip", FieldDisplayType.DECISION_BOX, "VIP", Required.OPTIONAL, 1, 1));
+					break;
+				case ContextNames.SERVICE_REQUEST:
+					fields.add(new FormField("dueDate", FieldDisplayType.DATETIME, "Due Date", Required.OPTIONAL, 1, 1));
+					break;
+				case ContextNames.VISITOR_LOG:
+					fields.add(new FormField("isVip", FieldDisplayType.DECISION_BOX, "VIP", Required.OPTIONAL, 1, 1));
+					break;
+				case ContextNames.INSURANCE:
+					fields.add(new FormField("insuranceType", FieldDisplayType.SELECTBOX, "Insurance Type", FormField.Required.OPTIONAL, 1, 1));
+					break;
+				case ContextNames.SPACE:
+					fields.add(new FormField("building", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Building Associated", FormField.Required.REQUIRED, "building", 5, 1, true));
+					fields.add(new FormField("floor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Floor Associated", FormField.Required.REQUIRED, "floor", 5, 1, true));
+					fields.add(FormFactory.getSpaceAssociatedField());
+					break;
+
 				// Add fields here if it has to be shown in unused list and not there in the default form
 			}
 		}
