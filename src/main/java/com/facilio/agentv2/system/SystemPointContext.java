@@ -41,7 +41,6 @@ public class SystemPointContext extends Point {
         jsonObject.put(AgentConstants.ID,getId());
         jsonObject.put(AgentConstants.NAME,getName());
         jsonObject.put(AgentConstants.CONTROLLER_ID,getControllerId());
-        jsonObject.put(AgentConstants.DEVICE_ID,getDeviceId());
         return jsonObject;
     }
 }
