@@ -134,30 +134,31 @@ public class PointsUtil
                 try {
                     if(!existingPoints.contains(pointJSON.get(AgentConstants.NAME))){
                         Point point = PointsAPI.getPointFromJSON(pointJSON);
-                      if (!pointJSON.containsKey(AgentConstants.DISPLAY_NAME) && pointJSON.containsKey(AgentConstants.NAME)) {
-                        point.setDisplayName(pointJSON.get(AgentConstants.NAME).toString());
-                     }
-                      	point.setCreatedTime(System.currentTimeMillis());
+                        if (!pointJSON.containsKey(AgentConstants.DISPLAY_NAME) && pointJSON.containsKey(AgentConstants.NAME)) {
+                            point.setDisplayName(pointJSON.get(AgentConstants.NAME).toString());
+                        }
+                        point.setCreatedTime(System.currentTimeMillis());
                         setPointWritable(pointJSON, point);
                         if (point != null) {
-                         point.setControllerId(controller.getId());
-                         point.setAgentId(controller.getAgentId());
-                         int agentType = agent.getAgentType();
-                         if (agentType == AgentType.CUSTOM.getKey() || agentType == AgentType.REST.getKey() || agentType == AgentType.CLOUD.getKey()) {
-                            point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
-                        }
-                        if (controller.getControllerType() == FacilioControllerType.MODBUS_IP.asInt() ||
-                                controller.getControllerType() == FacilioControllerType.MODBUS_RTU.asInt() ||
-                                controller.getControllerType() == FacilioControllerType.RDM.asInt()) {
-                                    if (agentType == AgentType.FACILIO.getKey() || agentType == AgentType.AGENT_SERVICE.getKey()) {
-                                        point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
-                                    }
-                        }
-                        Map<String, Object> pointMap = FieldUtil.getAsProperties(point.toJSON());
+                            point.setControllerId(controller.getId());
+                            point.setAgentId(controller.getAgentId());
+                            point.setDeviceName(controller.getName());
+                            int agentType = agent.getAgentType();
+                            if (agentType == AgentType.CUSTOM.getKey() || agentType == AgentType.REST.getKey() || agentType == AgentType.CLOUD.getKey()) {
+                                point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
+                            }
+                            if (controller.getControllerType() == FacilioControllerType.MODBUS_IP.asInt() ||
+                                    controller.getControllerType() == FacilioControllerType.MODBUS_RTU.asInt() ||
+                                    controller.getControllerType() == FacilioControllerType.RDM.asInt()) {
+                                if (agentType == AgentType.FACILIO.getKey() || agentType == AgentType.AGENT_SERVICE.getKey()) {
+                                    point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
+                                }
+                            }
+                            Map<String, Object> pointMap = FieldUtil.getAsProperties(point.toJSON());
 
-                        points.add(pointMap);
+                            points.add(pointMap);
 
-                    }
+                        }
                 }
                 } catch (Exception e) {
                     LOGGER.info("Exception occurred while getting point",e);
