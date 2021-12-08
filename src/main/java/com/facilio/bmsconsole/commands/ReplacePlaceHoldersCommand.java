@@ -11,6 +11,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
@@ -34,13 +35,13 @@ public class ReplacePlaceHoldersCommand extends FacilioCommand {
             }
 
             List<FacilioField> fields = modBean.getAllFields(moduleName);
-            List<FacilioField> lookupFields = fields.stream().filter(f -> f.getDataTypeEnum() == FieldType.LOOKUP).collect(Collectors.toList());
+            List<FacilioField> supplementFields = fields.stream().filter(f -> f instanceof SupplementRecord).collect(Collectors.toList());
 
             SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<>()
                     .select(fields)
                     .module(module)
                     .beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
-                    .fetchSupplements(lookupFields)
+                    .fetchSupplements(supplementFields)
                     .andCondition(CriteriaAPI.getIdCondition(id, module));
             ModuleBaseWithCustomFields moduleData = builder.fetchFirst();
 
