@@ -46,7 +46,7 @@ public class WorkorderPageFactory extends PageFactory {
 
         // maintenance cost & quotation widget
         if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
-            widgetHeight = QuotationAPI.getQuoteCount(workorder.getId()) > 0 ? 8 : 3;
+            widgetHeight = QuotationAPI.getQuoteCount(workorder.getId()) > 0 ? 8 : 4;
             PageWidget totalCost = new PageWidget(PageWidget.WidgetType.QUOTATION);
             totalCost.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
             totalCost.addToWidgetParams("hideBg", true);
