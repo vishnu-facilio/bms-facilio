@@ -197,6 +197,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			updateSupplements = new ArrayList<>();
 		}
 		updateSupplements.add(supplement);
+		selectBuilder.fetchSupplement(supplement);
 		return this;
 	}
 
@@ -207,6 +208,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			updateSupplements = new ArrayList<>();
 		}
 		updateSupplements.addAll(supplements);
+		selectBuilder.fetchSupplements(supplements);
 		return this;
 	}
 
