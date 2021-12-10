@@ -23,4 +23,13 @@ sources:
       broker: b-3.uk-kafka.qyvgf4.c2.kafka.eu-west-2.amazonaws.com:9096,b-1.uk-kafka.qyvgf4.c2.kafka.eu-west-2.amazonaws.com:9096,b-4.uk-kafka.qyvgf4.c2.kafka.eu-west-2.amazonaws.com:9096
       auth: true
 
+  - name: facilio-au # AU Region
+    type: kafka
+    configs:
+      broker: 172.31.86.53:9092
 
+  - name: msk-sp #Singapore Region
+    type: kafka
+    configs:
+      broker: b-2.sp-kafka.89tf4q.c2.kafka.ap-southeast-1.amazonaws.com:9096,b-3.sp-kafka.89tf4q.c2.kafka.ap-southeast-1.amazonaws.com:9096,b-4.sp-kafka.89tf4q.c2.kafka.ap-southeast-1.amazonaws.com:9096
+      auth: true
