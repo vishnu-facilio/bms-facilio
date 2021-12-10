@@ -5,8 +5,6 @@ import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 
-import java.util.List;
-
 public class V3TransferRequestShipmentReceivablesContext extends V3Context {
     private static final long serialVersionUID = 1L;
 
@@ -15,8 +13,8 @@ public class V3TransferRequestShipmentReceivablesContext extends V3Context {
     private InventoryType inventoryType;
     private ItemTypesContext itemType;
     private ToolTypesContext toolType;
-    private double quantityReceived;
-    private long receiptDate;
+    private Double quantityReceived;
+    private Long receiptDate;
     private String remarks;
 
 
@@ -95,19 +93,19 @@ public class V3TransferRequestShipmentReceivablesContext extends V3Context {
         this.toolType = toolType;
     }
 
-    public double getQuantityReceived() {
+    public Double getQuantityReceived() {
         return quantityReceived;
     }
 
-    public void setQuantityReceived(double quantityReceived) {
+    public void setQuantityReceived(Double quantityReceived) {
         this.quantityReceived = quantityReceived;
     }
 
-    public long getReceiptDate() {
+    public Long getReceiptDate() {
         return receiptDate;
     }
 
-    public void setReceiptDate(long receiptDate) {
+    public void setReceiptDate(Long receiptDate) {
         this.receiptDate = receiptDate;
     }
 

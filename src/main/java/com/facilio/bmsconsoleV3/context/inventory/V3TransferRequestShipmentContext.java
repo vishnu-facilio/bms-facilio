@@ -1,14 +1,13 @@
 package com.facilio.bmsconsoleV3.context.inventory;
 
 import com.facilio.v3.context.V3Context;
-
 import java.util.List;
 
 public class V3TransferRequestShipmentContext extends V3Context {
     private static final long serialVersionUID = 1L;
 
     private V3TransferRequestContext transferRequest;
-    private long expectedCompletionDate;
+    private Long expectedCompletionDate;
     private Boolean isCompleted;
     private List<V3TransferRequestShipmentReceivablesContext> shipmentReceivables;
 
@@ -20,11 +19,11 @@ public class V3TransferRequestShipmentContext extends V3Context {
         this.transferRequest = transferRequest;
     }
 
-    public long getExpectedCompletionDate() {
+    public Long getExpectedCompletionDate() {
         return expectedCompletionDate;
     }
 
-    public void setExpectedCompletionDate(long expectedCompletionDate) {
+    public void setExpectedCompletionDate(Long expectedCompletionDate) {
         this.expectedCompletionDate = expectedCompletionDate;
     }
 
