@@ -17,6 +17,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.facilio.db.criteria.Condition;
 import com.facilio.delegate.context.DelegationType;
 import com.facilio.delegate.util.DelegationUtil;
 import org.apache.commons.chain.Context;
@@ -514,18 +515,10 @@ public class CommonCommandUtil {
 					.select(AccountConstants.getAccessbileSpaceFields())
 					.table(accessibleSpaceMod.getTableName())
 					.andCustomWhere("ORG_USER_ID = ?", AccountUtil.getCurrentAccount().getUser().getOuid());
-			//handling user delegation
-			try {
-				List<User> delegatedUsers = DelegationUtil.getUsers(AccountUtil.getCurrentAccount().getUser(), System.currentTimeMillis(), DelegationType.USER_SCOPING);
-				if(CollectionUtils.isNotEmpty(delegatedUsers)) {
-					for(User delegatedUser : delegatedUsers) {
-						if (delegatedUser.getId() != AccountUtil.getCurrentAccount().getUser().getId()) {
-							selectAccessibleBuilder.orCondition(CriteriaAPI.getCondition("ORG_USER_ID", "orgUserID", String.valueOf(delegatedUser.getOuid()), NumberOperators.EQUALS));
-						}
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
+
+			Condition userDelegation = getUserDelegationCondition();
+			if(userDelegation != null) {
+				selectAccessibleBuilder.orCondition(userDelegation);
 			}
 			List<Map<String, Object>> props = selectAccessibleBuilder.get();
 			Set<Long> siteIds = new HashSet<>();
@@ -569,6 +562,10 @@ public class CommonCommandUtil {
 						.table(accessibleSpaceMod.getTableName())
 						.andCustomWhere("ORG_USER_ID = ?", AccountUtil.getCurrentAccount().getUser().getOuid());
 
+				Condition userDelegation = getUserDelegationCondition();
+				if(userDelegation != null) {
+					selectAccessibleBuilder.orCondition(userDelegation);
+				}
 				List<Map<String, Object>> props = selectAccessibleBuilder.get();
 
 				if (props != null && !props.isEmpty()) {
@@ -601,6 +598,23 @@ public class CommonCommandUtil {
 
 			return accessibleBaseSpace;
 		}
+	}
+
+	private static Condition getUserDelegationCondition() throws Exception {
+		//handling user delegation
+		try {
+			List<User> delegatedUsers = DelegationUtil.getUsers(AccountUtil.getCurrentAccount().getUser(), System.currentTimeMillis(), DelegationType.USER_SCOPING);
+			if(CollectionUtils.isNotEmpty(delegatedUsers)) {
+				for(User delegatedUser : delegatedUsers) {
+					if (delegatedUser.getId() != AccountUtil.getCurrentAccount().getUser().getId()) {
+						return CriteriaAPI.getCondition("ORG_USER_ID", "orgUserID", String.valueOf(delegatedUser.getOuid()), NumberOperators.EQUALS);
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public static Map<String, String> getOrgInfo(String... names) throws Exception {
