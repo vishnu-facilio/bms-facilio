@@ -53,8 +53,7 @@ public class POAfterCreateOrEditV3Command extends FacilioCommand {
                             }
                             RecordAPI.addRecord(false, purchaseOrderContext.getLineItems(), lineItemsModule, modBean.getAllFields(lineItemsModule.getName()));
                         }
-                        Long poId = (Long) context.get(Constants.RECORD_ID);
-                        if (poId == null || poId <= 0) {
+                        if (purchaseOrderContext.getReceivableContext() == null || purchaseOrderContext.getReceivableContext().getId() <= 0) {
 
                             FacilioModule receivableModule = modBean.getModule(FacilioConstants.ContextNames.RECEIVABLE);
                             V3ReceivableContext receivableContext = new V3ReceivableContext();
