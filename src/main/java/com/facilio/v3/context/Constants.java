@@ -357,9 +357,16 @@ public class Constants {
     public static Map<String, List<Long>> getDeleteRecordIdMap(Context context) {
         return (Map<String, List<Long>>) context.get(DELETE_RECORD_ID_MAP);
     }
-
     public static void setDeleteRecordIdMap(Context context, Map<String, List<Long>> deleteRecordIdMap) {
         context.put(DELETE_RECORD_ID_MAP, deleteRecordIdMap);
+    }
+
+    private static final String DELETED_RECORDS = "deletedRecords";
+    public static <T extends ModuleBaseWithCustomFields> List<T> getDeletedRecords(Context context) {
+        return (List<T>) context.get(DELETED_RECORDS);
+    }
+    public static <T extends ModuleBaseWithCustomFields> void setDeletedRecords(Context context, List<T> deletedRecords) {
+        context.put(DELETED_RECORDS, deletedRecords);
     }
 
     private static final String V3CONFIG = "v3Config";
