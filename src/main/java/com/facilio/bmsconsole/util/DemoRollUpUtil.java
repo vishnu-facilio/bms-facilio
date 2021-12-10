@@ -155,8 +155,10 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("MV_Project", Arrays.asList("START_TIME", "END_TIME", "REPORTING_START_TIME", "REPORTING_END_TIME"));
 		tablesContainsDateField.put("MV_Baseline", Arrays.asList("START_TIME", "END_TIME"));
 		tablesContainsDateField.put("MV_Adjustment", Arrays.asList("START_TIME", "END_TIME"));
-			
-		
+		tablesContainsDateField.put("Desks", Arrays.asList("SYS_CREATED_TIME", "SYS_MODIFIED_TIME"));
+		tablesContainsDateField.put("Parking_Stall", Arrays.asList("SYS_CREATED_TIME", "SYS_MODIFIED_TIME"));
+		tablesContainsDateField.put("Service_Requests", Arrays.asList("SYS_CREATED_TIME", "SYS_MODIFIED_TIME","SYS_DELETED_TIME"));
+
 		return tablesContainsDateField;
 		
 	}
