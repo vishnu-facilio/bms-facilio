@@ -35,7 +35,7 @@ public class ReviseTandCCommand extends FacilioCommand {
             List<V3TermsAndConditionContext> list = recordMap.get(moduleName);
             if (CollectionUtils.isNotEmpty(list)) {
                 for (V3TermsAndConditionContext termsAndConditionContext : list) {
-                    if (termsAndConditionContext.isPublished() == false) {
+                    if (!termsAndConditionContext.isPublished()) {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Only published record can be revised");
                     }
                 }
