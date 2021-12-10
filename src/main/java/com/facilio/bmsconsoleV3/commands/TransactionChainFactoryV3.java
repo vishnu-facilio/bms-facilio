@@ -14,6 +14,7 @@ import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCom
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
+import com.facilio.bmsconsoleV3.commands.termsandconditions.ReviseTandCCommand;
 import com.facilio.bmsconsoleV3.commands.transferRequest.*;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
@@ -66,9 +67,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import java.util.Collections;
-
 import static com.facilio.bmsconsole.commands.TransactionChainFactory.getUpdateItemQuantityRollupChain;
-
 public class TransactionChainFactoryV3 {
     private static FacilioChain getDefaultChain() {
         return FacilioChain.getTransactionChain();
@@ -303,7 +302,11 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new QuotationValidationAndCostCalculationCommand());
         return c;
     }
-
+    public static FacilioChain getTermsBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ReviseTandCCommand());
+        return c;
+    }
     public static FacilioChain getVendorsAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddVendorContactsCommandV3());
