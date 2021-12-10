@@ -45,6 +45,7 @@ public class PeopleModulesPageFactory extends PageFactory {
 		tab2.addSection(tab2Sec1);
 		addRelatedListWidgets(tab2Sec1, record.getModuleId(), formSubModules, false);
 		
+		//Booking module hardcoded in people module related list - to be removed
 		if( module != null && "people".equalsIgnoreCase(module.getName())) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule bookingModule = modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
