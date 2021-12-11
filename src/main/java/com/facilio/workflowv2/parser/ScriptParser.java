@@ -41,6 +41,12 @@ import com.facilio.workflowv2.contexts.Value;
 import com.facilio.workflowv2.contexts.WorkflowNamespaceContext;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
+/**
+ * @author krishna
+ *
+ * This class is to parse script(string) into workflow contexts (Expressions, ReturnType , name , Params). 
+ * still work in progress.  
+ */
 public class ScriptParser extends CommonParser<Value> {
 
 	private static final Logger LOGGER = Logger.getLogger(ScriptParser.class.getName());
@@ -55,6 +61,10 @@ public class ScriptParser extends CommonParser<Value> {
 		this.workflowContext = workflowContext;
 	}
 	
+	
+	/**
+	 * To check whether the specified module is valid or not
+	 */
 	@Override 
     public Value visitCustomModuleInitialization(WorkflowV2Parser.CustomModuleInitializationContext ctx) {
     	try {
