@@ -128,6 +128,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			Instant plus7Days = creationInstant.plus(7, ChronoUnit.DAYS);
 			Instant currentTime = Instant.ofEpochMilli(System.currentTimeMillis());
 			if (currentTime.isAfter(plus7Days)) {
+				LOGGER.error("user token expired " + userToken);
 				return null;
 			}
 			user = getFacilioUser(Long.parseLong(userObj[0]), Long.parseLong(userObj[1]), true);
@@ -2216,6 +2217,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			IAMUser iamUser = createUserFromProps(mapList.get(0));
 			return iamUser;
 		}
+		LOGGER.error("getFacilioUser is null");
 		return null;
 	
 	}

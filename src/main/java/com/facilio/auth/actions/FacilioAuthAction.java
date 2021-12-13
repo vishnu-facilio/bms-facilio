@@ -1801,6 +1801,8 @@ public class FacilioAuthAction extends FacilioAction {
 			org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
 			AccountUtil.cleanCurrentAccount();
 			AccountUtil.setCurrentAccount(new Account(org, user));
+		} else {
+			LOGGER.severe("user is empty");
 		}
 		
 		if (user != null && !user.isInviteAcceptStatus()) {
