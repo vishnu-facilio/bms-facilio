@@ -389,7 +389,7 @@ public class PageWidget {
 		TRANSFER_REQUEST_CARD1("transferrequestcard1"),
 		TRANSFER_REQUEST_CARD2("transferrequestcard2"),
 		TRANSFER_REQUEST_CARD3("transferrequestcard3"),
-		TRANSFER_REQUEST_DESCRIPTION_CARD("transferrequestdescriptioncard"),
+		DESCRIPTION_CARD("descriptioncard"),
 		SURVEY_TEMPLATE_surveyDetails("surveyDetails"),
 		SURVEY_TEMPLATE_surveyPageDetails("surveyPageDetails"),
 		SURVEY_TEMPLATE_surveyTriggers("surveyTriggers"),
