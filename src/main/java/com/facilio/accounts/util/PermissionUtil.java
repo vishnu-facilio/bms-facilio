@@ -6,6 +6,10 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import com.facilio.accounts.dto.*;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.delegate.context.DelegationType;
+import com.facilio.delegate.util.DelegationUtil;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -49,9 +53,25 @@ public class PermissionUtil {
     private static Criteria getUserScopeCriteria(User user, String moduleName, FacilioField...fields) {
 		Criteria criteria = null;
         List<Long> accessibleSpace = user.getAccessibleSpace();
+
 		if(accessibleSpace == null) {
 			return null;
 		}
+
+		//handling user delegation
+		try {
+			List<User> delegatedUsers = DelegationUtil.getUsers(AccountUtil.getCurrentAccount().getUser(), System.currentTimeMillis(), DelegationType.USER_SCOPING);
+			if(CollectionUtils.isNotEmpty(delegatedUsers)) {
+				for(User delegatedUser : delegatedUsers) {
+					if (delegatedUser.getId() != AccountUtil.getCurrentAccount().getUser().getId()) {
+						accessibleSpace.addAll(AccountUtil.getUserBean().getAccessibleSpaceList(delegatedUser.getOuid()));
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		if (moduleName.equals("pmjobs")) {
 			Condition templateResourceCondition = new Condition();
 			templateResourceCondition.setColumnName("Workorder_Template.RESOURCE_ID");

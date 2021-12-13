@@ -1,21 +1,20 @@
 package com.facilio.v3.commands;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.constants.FacilioConstants;
+import com.facilio.command.FacilioCommand;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.MultiLookupField;
+import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
+import com.facilio.v3.util.ChainUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -31,10 +30,29 @@ public class DeleteCommand extends FacilioCommand {
         String moduleName = Constants.getModuleName(context);
         List<Long> recordIds = Constants.getRecordIds(context);
 
+        getDeletedRecords(moduleName, recordIds, context);
+
         Map<String, Integer> deleteCount = new HashMap<>();
         deleteModuleRecords(recordIds, moduleName, deleteCount);
         Constants.setCountMap(context, deleteCount);
         return false;
+    }
+
+    private void getDeletedRecords(String moduleName, List<Long> recordIds, Context context) throws Exception {
+        ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = bean.getModule(moduleName);
+
+        V3Config v3Config = Constants.getV3Config(context);
+        Class beanClass = ChainUtil.getBeanClass(v3Config, module);
+
+        SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<>()
+                .module(module)
+                .beanClass(beanClass)
+                .select(Collections.singletonList(bean.getPrimaryField(moduleName)))
+                .andCondition(CriteriaAPI.getIdCondition(recordIds, module));
+        List<ModuleBaseWithCustomFields> deletedRecords = builder.get();
+
+        Constants.setDeletedRecords(context, deletedRecords);
     }
 
     private void deleteModuleRecords(List<Long> recordIds,  String moduleName, Map<String, Integer> deleteCount) throws Exception {
@@ -87,14 +105,14 @@ public class DeleteCommand extends FacilioCommand {
     private int deleteRows(FacilioModule module, List<Long> rowIds) throws Exception {
         DeleteRecordBuilder builder = new DeleteRecordBuilder()
                 .module(module)
-                .andCondition(CriteriaAPI.getIdCondition(rowIds, module))
                 ;
 
         if (module.isTrashEnabled()) {
+            builder.andCondition(CriteriaAPI.getIdCondition(rowIds, module));
             return builder.markAsDelete();
         }
         else {
-            return builder.delete();
+            return builder.batchDeleteById(rowIds);
         }
     }
 

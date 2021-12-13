@@ -19,6 +19,8 @@ public abstract class BaseSystemLookupField<LookupClass extends BaseSystemLookup
 
     public abstract void addDefaultPropsToLookupRecordDuringFetch(LookupClass lookupRecord);
 
+    public abstract void validateRecord (Map<String, Object> lookupRecord) throws Exception;
+
     @Override
     public String linkName() {
         return super.getName();

@@ -108,7 +108,7 @@ public class AuditLogHandler extends BaseHandler {
             return this;
         }
 
-        private long recordId;
+        private long recordId = -1;
         public long getRecordId() {
             return recordId;
         }
