@@ -568,6 +568,7 @@ public class UserBeanImpl implements UserBean {
 				return user;
 			}
 		}
+		LOGGER.error("get user is returning null");
 		return null;
 	}
 
