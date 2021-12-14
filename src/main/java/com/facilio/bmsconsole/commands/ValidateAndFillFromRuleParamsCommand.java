@@ -11,8 +11,10 @@ import java.util.stream.Collectors;
 import com.facilio.command.FacilioCommand;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
+import org.owasp.esapi.util.CollectionsUtil;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
@@ -22,6 +24,7 @@ import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 
 public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
@@ -84,11 +87,11 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 		
 		if (formData != null && !formData.isEmpty()) {	
 					
-					if (formData.containsKey("data")) {
-						Map<String,Object> customData = (Map<String, Object>) formData.get("data");
-						formData.putAll(customData);
-						//formData.remove("data");
-					}
+				if (formData.containsKey("data")) {
+					Map<String,Object> customData = (Map<String, Object>) formData.get("data");
+					formData.putAll(customData);
+					//formData.remove("data");
+				}
 				
 				Map<String, Object> lookupFormData = new HashMap<>();			
 				for (String eachKey : formData.keySet()) {
@@ -118,9 +121,22 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 								hasValue = true;
 							}
 						}
-						
 						else if (formData.containsKey(respectiveFormField.getField().getName())) {
 							hasValue = true;
+						}
+						
+						if(respectiveFormField.getField() != null) {
+							if(respectiveFormField.getField().getDataTypeEnum() == FieldType.MULTI_LOOKUP) {
+								List<HashMap<String, Long>> multilookupValues = (List<HashMap<String, Long>>) formData.get(respectiveFormField.getField().getName());
+								if(CollectionUtils.isNotEmpty(multilookupValues)) {
+									List<Long> multiLookupIds = new ArrayList<Long>(); 
+									for(HashMap<String, Long> multilookupValue : multilookupValues) {
+										Long id = (Long)multilookupValue.get("id");
+										multiLookupIds.add(id);
+									}
+									lookupFormData.put(eachKey+".id", StringUtils.join(multiLookupIds, ","));
+								}
+							}
 						}
 						
 					}
