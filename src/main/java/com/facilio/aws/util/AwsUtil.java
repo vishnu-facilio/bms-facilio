@@ -248,6 +248,7 @@ public class AwsUtil extends BaseAwsUtil{
 	public static TextractClient getAmazonTextractClient() {
 		if (AWS_TEXTRACT_CLIENT == null) {
 			Region region = getRegionV2(getRegion());
+			LOGGER.info("AWS TEXTRACT - "+region);
 			software.amazon.awssdk.auth.credentials.InstanceProfileCredentialsProvider awsCred = getAwsTextractCreds();
 			AWS_TEXTRACT_CLIENT = TextractClient.builder().region(region).credentialsProvider(awsCred).build();
 		}
