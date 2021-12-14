@@ -46,7 +46,7 @@ public class WorkorderPageFactory extends PageFactory {
 
         // maintenance cost & quotation widget
         if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
-            widgetHeight = QuotationAPI.getQuoteCount(workorder.getId()) > 0 ? 8 : 3;
+            widgetHeight = QuotationAPI.getQuoteCount(workorder.getId()) > 0 ? 8 : 4;
             PageWidget totalCost = new PageWidget(PageWidget.WidgetType.QUOTATION);
             totalCost.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
             totalCost.addToWidgetParams("hideBg", true);
@@ -207,18 +207,6 @@ public class WorkorderPageFactory extends PageFactory {
         tasksMonolith.addToLayoutParams(tasksSection, 24, 18);
         tasksMonolith.addToWidgetParams("hideBg", true);
         tasksSection.addWidget(tasksMonolith);
-
-//        // workorder progress widget
-//        PageWidget workorderProgress = new PageWidget(PageWidget.WidgetType.WORKORDER_PROGRESS);
-//        workorderProgress.addToLayoutParams(tasksSection, 18, 2);
-//        tasksSection.addWidget(workorderProgress);
-//
-//        // tasks widget
-//        PageWidget tasks = new PageWidget(PageWidget.WidgetType.TASKS);
-//        tasks.addToLayoutParams(0, 2, 18, 8);
-//        tasksSection.addWidget(tasks);
-//
-//        composeRightPanel(tasksSection);
     }
 
     private static Page.Section addSafetyPlanTab(Page page, WorkOrderContext workorder) throws Exception {
@@ -260,10 +248,9 @@ public class WorkorderPageFactory extends PageFactory {
 
         // prerequisites widget
         PageWidget prerequisites = new PageWidget(PageWidget.WidgetType.PREREQUISITES);
-        prerequisites.addToLayoutParams(0, 0, 18, 16);
+        prerequisites.addToLayoutParams(0, 0, 24, 16);
+        prerequisites.addToWidgetParams("hideBg", true);
         prerequisiteSection.addWidget(prerequisites);
-
-        composeRightPanel(prerequisiteSection, workorder);
     }
 
     public static Page getWorkorderPage(WorkOrderContext workorder) throws Exception {
