@@ -23,12 +23,11 @@ public class CloneAnnouncementCommandV3 extends FacilioCommand {
                 if (CollectionUtils.isNotEmpty(announcements)) {
                     List < AnnouncementContext > cloneRecordList = new ArrayList < > ();
                     for (AnnouncementContext announcement: announcements) {
-                        AnnouncementContext existingRecordContext = (AnnouncementContext) V3RecordAPI.getRecord(moduleName, announcement.getId(), AnnouncementContext.class);
-                        existingRecordContext.setIsPublished(false);
-                        existingRecordContext.setIsCancelled(false);
-                        existingRecordContext.setModuleState(null);
-                        existingRecordContext.setApprovalStatus(null);
-                        cloneRecordList.add(existingRecordContext);
+                    	announcement.setIsPublished(false);
+                    	announcement.setIsCancelled(false);
+                    	announcement.setModuleState(null);
+                    	announcement.setApprovalStatus(null);
+                        cloneRecordList.add(announcement);
                     }
                     recordMap.put(moduleName, cloneRecordList);
                 }
