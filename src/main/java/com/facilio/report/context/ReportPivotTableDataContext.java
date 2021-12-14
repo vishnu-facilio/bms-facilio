@@ -108,6 +108,15 @@ public class ReportPivotTableDataContext {
 		this.subModuleFieldId = subModuleFieldId;
 	}
 
+
+	private long assetModuleId = -1;
+	public long getAssetModuleId() {
+		return assetModuleId;
+	}
+	public void setAssetModuleId(long assetModuleId) {
+		this.assetModuleId = assetModuleId;
+	}
+
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
