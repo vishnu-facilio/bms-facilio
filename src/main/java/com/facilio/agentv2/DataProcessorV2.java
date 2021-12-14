@@ -317,6 +317,9 @@ public class DataProcessorV2
                 JSONObject controllerJSON = (JSONObject) payload.get(AgentConstants.CONTROLLER);
                 if (containsCheck(AgentConstants.CONTROLLER_TYPE, payload)) {
                     FacilioControllerType controllerType = FacilioControllerType.valueOf(((Number) payload.get(AgentConstants.CONTROLLER_TYPE)).intValue());
+                    if(controllerType==FacilioControllerType.NIAGARA && payload.containsKey(AgentConstants.PORT_NUMBER)){
+                        controllerJSON.put(AgentConstants.PORT_NUMBER,payload.get(AgentConstants.PORT_NUMBER));
+                    }
                     if (!controllerJSON.isEmpty()) {
                         Controller controller = controllerUtil.getCachedController(controllerJSON, controllerType);
                         //Controller controller = ControllerApiV2.getControllerFromDb(controllerJSON, agentId, controllerType);
