@@ -5,6 +5,9 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.point.PointsAPI;
+import com.facilio.bmsconsole.instant.jobs.BulkPointDiscoverJob;
+import com.facilio.chain.FacilioContext;
+import com.facilio.taskengine.job.InstantJob;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -48,13 +51,16 @@ public class IdsAction extends AgentActionV2
     public String discoverDevicePoints(){
         try{
             LOGGER.info(" discovering points for device " + getRecordIds());
-            List<Long> deviceIds = getRecordIds();
-            if( !deviceIds.isEmpty() ){
-                if(ControllerApiV2.discoverPoint(deviceIds.get(0))){
-                    setResult(AgentConstants.RESULT,SUCCESS);
-                    setResponseCode(HttpURLConnection.HTTP_OK);
-                    return SUCCESS;
-                }
+            List<Long> controllerIds = getRecordIds();
+            if( !controllerIds.isEmpty() ){
+                FacilioContext context = new FacilioContext();
+                context.put(AgentConstants.RECORD_IDS,recordIds);
+                InstantJob discoverJob = new BulkPointDiscoverJob();
+                discoverJob.execute(context);
+                setResult(AgentConstants.RESULT,SUCCESS);
+                setResponseCode(HttpURLConnection.HTTP_OK);
+                return SUCCESS;
+
             }else {
                 setResult(AgentConstants.RESULT,ERROR);
                 setResult(AgentConstants.EXCEPTION," Ids can't be empty ");
