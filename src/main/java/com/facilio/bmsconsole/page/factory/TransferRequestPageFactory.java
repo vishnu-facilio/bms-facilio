@@ -28,17 +28,17 @@ public class TransferRequestPageFactory extends PageFactory{
         }
         Page.Section tab1Sec2 = page.new Section();
         tab1.addSection(tab1Sec2);
-        PageWidget card1= new PageWidget(PageWidget.WidgetType.TRANSFER_REQUEST_CARD1);
+        PageWidget card1= new PageWidget(PageWidget.WidgetType.TRANSFER_REQUEST_CARD);
         card1.addToLayoutParams(tab1Sec2, 8, 6);
         card1.addToWidgetParams("card","transferrequestcard1");
         tab1Sec2.addWidget(card1);
 
-        PageWidget card2= new PageWidget(PageWidget.WidgetType.TRANSFER_REQUEST_CARD2);
+        PageWidget card2= new PageWidget(PageWidget.WidgetType.TRANSFER_REQUEST_CARD);
         card2.addToLayoutParams(tab1Sec2, 8, 6);
         card2.addToWidgetParams("card","transferrequestcard2");
         tab1Sec2.addWidget(card2);
 
-        PageWidget card3= new PageWidget(PageWidget.WidgetType.TRANSFER_REQUEST_CARD3);
+        PageWidget card3= new PageWidget(PageWidget.WidgetType.TRANSFER_REQUEST_CARD);
         card3.addToLayoutParams(tab1Sec2, 8, 6);
         card3.addToWidgetParams("card","transferrequestcard3");
         tab1Sec2.addWidget(card3);
