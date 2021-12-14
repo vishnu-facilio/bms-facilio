@@ -33,3 +33,5 @@ operators: #Names of enum class that implements Operator Ifc with field types
     enumClassName: com.facilio.db.criteria.operators.MultiFieldOperators
   - types: [ STRING_SYSTEM_ENUM ]
     enumClassName: com.facilio.db.criteria.operators.StringSystemEnumOperators
+  - types: [URL_FIELD]
+    enumClassName: com.facilio.db.criteria.operators.UrlOperators
