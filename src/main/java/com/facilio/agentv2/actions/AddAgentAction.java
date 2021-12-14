@@ -1,6 +1,7 @@
 package com.facilio.agentv2.actions;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.AgentKeys;
 import com.facilio.agent.AgentType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
@@ -59,7 +60,13 @@ public class AddAgentAction extends AgentActionV2
             FacilioChain addAgentChain = TransactionChainFactory.createAgentChain();
             FacilioContext context = addAgentChain.getContext();
             FacilioAgent agent = new FacilioAgent();
-            agent.setName(getAgentName());
+
+            if(AgentType.valueOf(agentType) == AgentType.NIAGARA || getAgentName()!=null || !getAgentName().isEmpty()){
+                agent.setName(getAgentName());
+            }
+            else {
+                agent.setName(AccountUtil.getCurrentOrg().getDomain()+"-"+getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]",""));
+            }
             agent.setInterval(getDataInterval());
             agent.setSiteId(getSiteId()); //TODO validate SITE ID.
             agent.setAgentType(getAgentType());
