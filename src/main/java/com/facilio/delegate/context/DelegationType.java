@@ -13,6 +13,7 @@ public enum DelegationType implements FacilioIntEnum {
     CUSTOM_BUTTON("Custom Button", 1 << 3),
     DASHBOARD("Dashboard", 1 << 4),
     LIST_VIEWS("List Views", 1 << 5),
+    USER_SCOPING("User Scoping", 1 << 6)
     ;
 
     private String name;

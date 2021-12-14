@@ -56,8 +56,6 @@ public abstract class Point extends FacilioPoint{
     @JsonInclude
     private long mappedTime;
     @JsonInclude
-    private long deviceId;
-    @JsonInclude
     private boolean agentWritable;
     
     public boolean isAgentWritable() {
@@ -93,7 +91,6 @@ public abstract class Point extends FacilioPoint{
         pointJSON.put(AgentConstants.DATA_TYPE,getDataTypeAsInt());
         pointJSON.put(AgentConstants.POINT_TYPE,getPointType());
         pointJSON.put(AgentConstants.DEVICE_NAME,getDeviceName());
-        pointJSON.put(AgentConstants.DEVICE_ID,getDeviceId());
         pointJSON.put(AgentConstants.CONTROLLER_ID,getControllerId());
         pointJSON.put(AgentConstants.ASSET_CATEGORY_ID, getCategoryId());
         pointJSON.put(AgentConstants.RESOURCE_ID,getResourceId());
@@ -174,8 +171,6 @@ public abstract class Point extends FacilioPoint{
     public void setSubscribestatus(PointEnum.SubscribeStatus subscribestatus) { this.subscribestatus = subscribestatus; }*/
     public void setSubscribeStatus(int subscribestatus) { this.subscribeStatus = PointEnum.SubscribeStatus.valueOf(subscribestatus); }
 
-    public long getDeviceId() { return deviceId; }
-    public void setDeviceId(long deviceId) { this.deviceId = deviceId; }
 
     /**
      * This method builds pointObject using map
@@ -233,9 +228,6 @@ public abstract class Point extends FacilioPoint{
         }
         if(row.containsKey(AgentConstants.IDENTIFIER)){
             setDeviceName(String.valueOf(row.get(AgentConstants.IDENTIFIER)));
-        }
-        if(row.containsKey(AgentConstants.DEVICE_ID)){
-            setDeviceId((Long) row.get(AgentConstants.DEVICE_ID));
         }
         if(row.containsKey(AgentConstants.RESOURCE_ID)){
             setResourceId((Long) row.get(AgentConstants.RESOURCE_ID));

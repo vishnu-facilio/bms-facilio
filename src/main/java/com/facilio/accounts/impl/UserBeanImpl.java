@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 import com.facilio.accounts.dto.*;
 import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.iam.accounts.util.IAMAccountConstants;
+import com.facilio.delegate.context.DelegationType;
+import com.facilio.delegate.util.DelegationUtil;
 import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.util.FacilioUtil;
@@ -566,6 +568,7 @@ public class UserBeanImpl implements UserBean {
 				return user;
 			}
 		}
+		LOGGER.error("get user is returning null");
 		return null;
 	}
 

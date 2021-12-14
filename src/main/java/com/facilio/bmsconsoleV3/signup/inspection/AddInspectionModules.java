@@ -321,7 +321,7 @@ public class AddInspectionModules extends SignUpData {
       addSingleAssetSelectRule(defaultForm, fieldMap, formFieldMap);
       addMultipleAssetSelectRule(defaultForm, fieldMap, formFieldMap);
       
-//    addBuildingFilteringWithSiteRule(defaultForm, fieldMap, formFieldMap);
+      addBuildingFilteringWithSiteRule(defaultForm, fieldMap, formFieldMap);
       
       addAssetCategoryShowRule(defaultForm, fieldMap, formFieldMap);
       addAssetCategoryHideRule(defaultForm, fieldMap, formFieldMap);
@@ -356,7 +356,7 @@ public class AddInspectionModules extends SignUpData {
 	      
 	      Criteria criteria = new Criteria();
 	      
-	      criteria.addAndCondition(CriteriaAPI.getCondition(null,"site", "${sites}", NumberOperators.EQUALS));	// set this property
+	      criteria.addAndCondition(CriteriaAPI.getCondition("SITE_ID","site", "${inspectionTemplate.sites.id}", NumberOperators.EQUALS));
 	      
 	      actionField.setCriteria(criteria);
 	      

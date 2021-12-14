@@ -1,5 +1,7 @@
 package com.facilio.bmsconsoleV3.context;
 
+import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
+import com.facilio.modules.FieldUtil;
 import com.facilio.v3.context.V3Context;
 
 public class V3TermsAndConditionContext extends V3Context {
@@ -13,6 +15,49 @@ public class V3TermsAndConditionContext extends V3Context {
     public Boolean isEditable;
     public Boolean defaultOnPo;
     public Boolean defaultOnQuotation;
+    private Long parentId;
+    private Boolean isRevised;
+    private Boolean isPublished;
+
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
+    }
+
+
+    public Boolean getIsRevised() {
+        return isRevised;
+    }
+
+    public void setIsRevised(Boolean isRevised) {
+        this.isRevised = isRevised;
+    }
+
+    public Boolean isRevised() {
+        if (isRevised != null) {
+            return isRevised.booleanValue();
+        }
+        return false;
+    }
+
+    public Boolean getIsPublished() {
+        return isPublished;
+    }
+
+    public void setIsPublished(Boolean isPublished) {
+        this.isPublished = isPublished;
+    }
+
+    public Boolean isPublished() {
+        if (isPublished != null) {
+            return isPublished.booleanValue();
+        }
+        return false;
+    }
+
 
     public String getName() {
         return name;
@@ -83,6 +128,16 @@ public class V3TermsAndConditionContext extends V3Context {
             public void setDefaultOnQuotation(Boolean defaultOnQuotation) {
                 this.defaultOnQuotation = defaultOnQuotation;
             }
+    public V3TermsAndConditionContext clone() {
+
+        V3TermsAndConditionContext newTerms = FieldUtil.cloneBean(this, V3TermsAndConditionContext.class);
+        newTerms.setId(-1);
+        newTerms.setParentId(this.getId());
+        newTerms.setIsPublished(false);
+        newTerms.setIsRevised(false);
+        return newTerms;
+
+    }
 
 }
 

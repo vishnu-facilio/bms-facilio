@@ -109,7 +109,7 @@ public class PageFactory {
 		if (isApproval) {
 			return ApprovalPageFactory.getApprovalPage(module, (ModuleBaseWithCustomFields) record);
 		}
-		
+
 		switch(module.getName()) {
 			case ContextNames.ASSET:
 				return AssetPageFactory.getAssetPage((AssetContext) record);
@@ -237,6 +237,8 @@ public class PageFactory {
 				return TransferRequestPageFactory.getTransferRequestPage((V3TransferRequestContext) record, module);
 			case ContextNames.TRANSFER_REQUEST_SHIPMENT:
 				return TransferRequestShipmentPageFactory.getTransferRequestShipmentPage((V3TransferRequestShipmentContext) record, module);
+			case ContextNames.PEOPLE:
+				return PeopleModulesPageFactory.getPeopleModulePage((PeopleContext) record, module);
 
 		}
 		if (module.getExtendModule() == null) {	// temp

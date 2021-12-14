@@ -76,7 +76,6 @@ public class BacnetIpPointContext extends Point {
     public JSONObject getChildJSON() {
         JSONObject bacnetPointJSON = new JSONObject();
         bacnetPointJSON.put(AgentConstants.ID,getId());
-        bacnetPointJSON.put(AgentConstants.DEVICE_ID,getDeviceId());
             bacnetPointJSON.put(AgentConstants.CONTROLLER_ID, getControllerId());
         bacnetPointJSON.put(AgentConstants.INSTANCE_NUMBER,instanceNumber);
         bacnetPointJSON.put(AgentConstants.INSTANCE_TYPE,instanceType);

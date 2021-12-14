@@ -260,7 +260,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddTenantUserCommand());
 			c.addCommand(new AddTenantSpaceRelationCommand());
 			c.addCommand(new ExecuteStateFlowCommand());
-			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.MODULE_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ConstructAddCustomActivityCommand());
 			c.addCommand(new AddActivitiesCommand());
@@ -277,7 +277,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddTenantUnitSpaceRelationCommand());
 			c.addCommand(new GenericGetModuleDataListCommand());
 			c.addCommand(new UpdateStateForModuleDataCommand());
-			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.MODULE_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ConstructUpdateCustomActivityCommand());
 			c.addCommand(new AddActivitiesCommand());
@@ -4735,7 +4735,7 @@ public class TransactionChainFactory {
 		c.addCommand(new ValidateDateCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new ExecuteStateFlowCommand());
-		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.MODULE_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 		c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
@@ -4752,7 +4752,7 @@ public class TransactionChainFactory {
 		c.addCommand(new ChangeApprovalStatusForModuleDataCommand());
 		c.addCommand(new UpdateStateForModuleDataCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
-		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.MODULE_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 		c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
@@ -5377,8 +5377,12 @@ public class TransactionChainFactory {
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		c.addCommand(new UpdateTenantAppPortalAccessCommand());
 		c.addCommand(new ExecuteStateFlowCommand());
-		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.MODULE_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+		c.addCommand(new ForkChainToInstantJobCommand()
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
+
 
 
 		return c;
@@ -5393,9 +5397,12 @@ public class TransactionChainFactory {
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		c.addCommand(new UpdateVendorContactAppPortalAccessCommand());
 		c.addCommand(new ExecuteStateFlowCommand());
-		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.MODULE_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+		c.addCommand(new ForkChainToInstantJobCommand()
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 
 		return c;
 	}
@@ -5408,8 +5415,12 @@ public class TransactionChainFactory {
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new UpdateEmployeePeopleAppPortalAccessCommand());
 		c.addCommand(new ExecuteStateFlowCommand());
-		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.MODULE_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+		c.addCommand(new ForkChainToInstantJobCommand()
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
+
 
 		return c;
 	}
@@ -5429,8 +5440,12 @@ public class TransactionChainFactory {
 		c.addCommand(new UpdateTenantAppPortalAccessCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new UpdateStateForModuleDataCommand());
-		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.MODULE_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+		c.addCommand(new ForkChainToInstantJobCommand()
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
+
 
 		return c;
 	}
@@ -5445,9 +5460,12 @@ public class TransactionChainFactory {
 		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new ChangeApprovalStatusForModuleDataCommand());
 		c.addCommand(new UpdateStateForModuleDataCommand());
-		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.MODULE_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+		c.addCommand(new ForkChainToInstantJobCommand()
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 
 
 		return c;
@@ -5462,8 +5480,11 @@ public class TransactionChainFactory {
 		c.addCommand(new UpdateEmployeePeopleAppPortalAccessCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new UpdateStateForModuleDataCommand());
-		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.MODULE_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+		c.addCommand(new ForkChainToInstantJobCommand()
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+
 
 
 

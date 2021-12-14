@@ -1922,6 +1922,7 @@ public class FacilioConstants {
 		public static final String JOB_PLAN_TASK = "jobplantask";
 
 		public static final String AUDIENCE_SHARING = "audienceSharing";
+		public static final String AUDIENCE = "audience";
 		
 		public static final String DEPARTMENT = "department";
 		public static final String MOVES = "moves";

@@ -399,13 +399,13 @@ public class PointsAPI {
         if ((pointIds != null) && (!pointIds.isEmpty())) {
             List<Point> points = new GetPointRequest().ofType(controllerType).fromIds(pointIds).getPoints();
             if (points != null && (!points.isEmpty())) {
-                Long deviceId = points.get(0).getDeviceId();
-                if(deviceId < 0){
-                    throw new Exception("Point's device Id can't be less than 1");
+                Long controllerId = points.get(0).getControllerId();
+                if(controllerId < 0){
+                    throw new Exception("Point's Controller Id Id can't be less than 1");
                 }
                 FacilioChain chain = TransactionChainFactory.getConfigurePointAndProcessControllerV2Chain();
                 FacilioContext context = chain.getContext();
-                context.put(AgentConstants.ID, deviceId);
+                context.put(AgentConstants.CONTROLLER_ID, controllerId);
                 context.put(AgentConstants.POINTS, points);
                 context.put(AgentConstants.RECORD_IDS, pointIds);
                 context.put(AgentConstants.CONTROLLER_TYPE, controllerType);

@@ -2,6 +2,8 @@ package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.sso.AccountSSO;
+import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -24,8 +26,10 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.exception.ErrorCode;
@@ -401,8 +405,11 @@ public class V3PeopleAPI {
             }
         }
     }
-
-    public static User addPortalAppUser(V3PeopleContext existingPeople, String linkName, String identifier, Long roleId) throws Exception {
+    public static User addPortalAppUser(V3PeopleContext existingPeople, String linkName, String identifier, long roleId) throws Exception {
+		return addPortalAppUser(existingPeople, linkName, identifier, false, roleId);
+	}
+    
+    public static User addPortalAppUser(V3PeopleContext existingPeople, String linkName, String identifier, boolean verifyUser, Long roleId) throws Exception {
         if(StringUtils.isEmpty(linkName)) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid link name");
         }
@@ -412,8 +419,8 @@ public class V3PeopleAPI {
         user.setEmail(existingPeople.getEmail());
         user.setPhone(existingPeople.getPhone());
         user.setName(existingPeople.getName());
-        user.setUserVerified(false);
-        user.setInviteAcceptStatus(false);
+        user.setUserVerified(verifyUser);
+		user.setInviteAcceptStatus(verifyUser);
         user.setInvitedTime(System.currentTimeMillis());
         user.setPeopleId(existingPeople.getId());
         user.setUserType(AccountConstants.UserType.REQUESTER.getValue());
@@ -435,6 +442,10 @@ public class V3PeopleAPI {
         if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isOccupantPortalAccess())){
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Email Id associated with this contact is empty");
         }
+        boolean isSsoEnabled = isSsoEnabledForApplication(linkName),verifyUser = false;
+		if(isSsoEnabled){
+			verifyUser = true;
+		}
         if(StringUtils.isNotEmpty(existingPeople.getEmail())) {
             AppDomain appDomain = null;
             long appId = ApplicationApi.getApplicationIdForLinkName(linkName);
@@ -450,10 +461,15 @@ public class V3PeopleAPI {
                         user.setAppDomain(appDomain);
                         user.setApplicationId(appId);
                         user.setRoleId(roleId);
-                        ApplicationApi.addUserInApp(user, false);
+                        if(isSsoEnabled)
+						{
+							user.setUserVerified(true);
+							user.setInviteAcceptStatus(true);
+						}
+                        ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
                     }
                     else {
-                        addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, appDomain.getIdentifier(), roleId);
+                        addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, appDomain.getIdentifier(), verifyUser , roleId);
                     }
                 }
                 else {
@@ -512,6 +528,7 @@ public class V3PeopleAPI {
     public static void updateEmployeeAppPortalAccess(V3EmployeeContext person, String linkname) throws Exception {
 
         V3EmployeeContext existingPeople = (V3EmployeeContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.EMPLOYEE, person.getId(),  V3EmployeeContext.class);
+		boolean isSsoEnabled = isSsoEnabledForApplication(linkname);
         if(StringUtils.isEmpty(existingPeople.getEmail()) && (existingPeople.isAppAccess())){
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Email Id associated with this contact is empty");
         }
@@ -534,11 +551,15 @@ public class V3PeopleAPI {
                         user.setApplicationId(appId);
                         user.setAppDomain(appDomain);
                         user.setRoleId(roleId);
-
-                        ApplicationApi.addUserInApp(user, false);
+                        if(isSsoEnabled)
+						{
+							user.setUserVerified(true);
+							user.setInviteAcceptStatus(true);
+						}	
+						ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
                     }
                     else {
-                        addAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, roleId);
+                        addAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, roleId, !isSsoEnabled);
                     }
                 }
                 else {
@@ -554,7 +575,7 @@ public class V3PeopleAPI {
 
     }
 
-    public static User addAppUser(V3PeopleContext existingPeople, String linkName, Long roleId) throws Exception {
+    public static User addAppUser(V3PeopleContext existingPeople, String linkName, Long roleId, boolean isEmailVerificationNeeded) throws Exception {
         if(StringUtils.isEmpty(linkName)) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid Link name");
         }
@@ -564,8 +585,8 @@ public class V3PeopleAPI {
         user.setEmail(existingPeople.getEmail());
         user.setPhone(existingPeople.getPhone());
         user.setName(existingPeople.getName());
-        user.setUserVerified(false);
-        user.setInviteAcceptStatus(false);
+        user.setUserVerified(!isEmailVerificationNeeded);
+		user.setInviteAcceptStatus(!isEmailVerificationNeeded);
         user.setInvitedTime(System.currentTimeMillis());
         user.setPeopleId(existingPeople.getId());
         user.setUserType(AccountConstants.UserType.USER.getValue());
@@ -651,6 +672,43 @@ public class V3PeopleAPI {
         }
         return Collections.emptyList();
     }
+    private static boolean isSsoEnabledForApplication(String linkname) throws Exception {
 
+        long orgId = AccountUtil.getCurrentOrg().getId();
+        if (linkname.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
+            AccountSSO accSso = IAMOrgUtil.getAccountSSO(orgId);
+            if (accSso != null) {
+                if (accSso.getIsActive()) {
+                    return true;
+                }
+            }
+        } else {
+            List < Map < String, Object >> domainSsoList;
+            if (linkname.equals(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP)) {
+                domainSsoList = IAMOrgUtil.getDomainSSODetails(orgId, AppDomain.AppDomainType.SERVICE_PORTAL, AppDomain.GroupType.TENANT_OCCUPANT_PORTAL);
+            } else if (linkname.equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP)) {
+                domainSsoList = IAMOrgUtil.getDomainSSODetails(orgId, AppDomain.AppDomainType.TENANT_PORTAL, AppDomain.GroupType.TENANT_OCCUPANT_PORTAL);
+            } else if (linkname.equals(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP)) {
+                domainSsoList = IAMOrgUtil.getDomainSSODetails(orgId, AppDomain.AppDomainType.VENDOR_PORTAL, AppDomain.GroupType.VENDOR_PORTAL);
+            } else {
+                return false;
+            }
+            if (!CollectionUtils.isEmpty(domainSsoList)) {
+                for (Map < String, Object > domainSso: domainSsoList) {
+                    if (!domainSso.isEmpty()) {
+                        DomainSSO sso = FieldUtil.getAsBeanFromMap(domainSso, DomainSSO.class);
+                        if (sso.getIsActive() != null) {
+                            if (sso.getIsActive()) {
+                                return true;
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+        return false;
+
+    }
 
 }

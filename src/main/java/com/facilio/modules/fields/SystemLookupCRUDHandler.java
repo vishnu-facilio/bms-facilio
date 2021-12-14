@@ -69,6 +69,7 @@ public class SystemLookupCRUDHandler<SystemLookupRecord extends BaseSystemLookup
     public static final String FIELD_ID_FIELD_NAME = "fieldId";
     @Override
     protected Map<String, Object> createRelRecord(long parentId, Map<String, Object> prop) throws Exception {
+        ((SystemLookupField) getField()).validateRecord(prop);
         prop.put(getParentFieldName(), parentId);
         prop.put(FIELD_ID_FIELD_NAME, getField().getFieldId());
         return prop;
