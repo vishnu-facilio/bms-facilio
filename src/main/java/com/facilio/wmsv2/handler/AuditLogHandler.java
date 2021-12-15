@@ -2,7 +2,8 @@ package com.facilio.wmsv2.handler;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.util.AuditLogUtil;
+import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FieldUtil;
 import com.facilio.v3.context.V3Context;
@@ -36,18 +37,11 @@ public class AuditLogHandler extends BaseHandler {
     @Override
     public Message processOutgoingMessage(Message message) {
         try {
-            if (AccountUtil.getCurrentAccount() == null) {
-                AccountUtil.setCurrentAccount(message.getOrgId());
-            }
-            if (AccountUtil.getCurrentAccount() == null) {
-                // don't process if the current account is empty
-                return null;
-            }
-
             LOGGER.error(message.toString());
             JSONObject content = message.getContent();
             AuditLogContext auditLog = FieldUtil.getAsBeanFromJson(content, AuditLogContext.class);
-            AuditLogUtil.insertAuditLog(auditLog);
+            ModuleCRUDBean moduleCRUD = (ModuleCRUDBean) TransactionBeanFactory.lookup("ModuleCRUD", message.getOrgId());
+            moduleCRUD.addAuditLog(auditLog);
         } catch (Exception e) {
             LOGGER.error("Error in inserting log", e);
         }

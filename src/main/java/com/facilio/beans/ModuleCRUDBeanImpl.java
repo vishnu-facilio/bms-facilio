@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.jobs.DataProcessingAlertJob;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.modules.*;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.wmsv2.handler.AuditLogHandler;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
@@ -1540,6 +1541,11 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	@Override
 	public Object executeWorkflow(WorkflowContext workflowContext) throws Exception {
 		return workflowContext.executeWorkflowScoped();
+	}
+
+	@Override
+	public void addAuditLog(AuditLogHandler.AuditLogContext auditLog) throws Exception {
+		AuditLogUtil.insertAuditLog(auditLog);
 	}
 }
 

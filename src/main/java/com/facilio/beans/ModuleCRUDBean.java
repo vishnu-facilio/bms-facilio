@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.context.*;
+import com.facilio.wmsv2.handler.AuditLogHandler;
 import org.apache.commons.chain.Context;
 import org.apache.commons.mail.util.MimeMessageParser;
 import org.json.simple.JSONObject;
@@ -155,4 +156,6 @@ public interface ModuleCRUDBean {
 	public long addRequestFromEmail(MimeMessage emailMsg, MimeMessageParser parser, SupportEmailContext supportEmail) throws Exception;
 	
 	public Object executeWorkflow(WorkflowContext workflowContext) throws Exception;
+
+	void addAuditLog(AuditLogHandler.AuditLogContext auditLog) throws Exception;
 }
