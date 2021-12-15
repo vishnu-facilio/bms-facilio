@@ -442,14 +442,16 @@ public class FetchReportDataCommand extends FacilioCommand {
             if (xValues == null || report.getTypeEnum() == ReportType.PIVOT_REPORT) {
                 if (dp.getAllCriteria() != null) {
                     Criteria allCriteria = dp.getAllCriteria();
-                    if(dp.getyAxis().getSubModuleFieldId() > 0){
+                    if(!baseModule.getExtendedModuleIds().contains((dp.getyAxis().getModule().getModuleId()))){
                         Map<String,Condition> conditions = (Map<String, Condition>) allCriteria.getConditions();
                         for (String key : allCriteria.getConditions().keySet()) {
                             Condition condition = conditions.get(key);
-                            String tableNameAndColumnName = condition.getColumnName();
-                            String columnName = tableNameAndColumnName.split("\\.")[1];
-                            tableNameAndColumnName = getAndSetModuleAlias(dp.getyAxis().getModuleName()) + "." + columnName;
-                            dp.getAllCriteria().getConditions().get(key).setColumnName(tableNameAndColumnName);
+                            if(dp.getCriteria() != null && dp.getCriteria().getConditions().containsValue(condition)) {
+                                String tableNameAndColumnName = condition.getColumnName();
+                                String columnName = tableNameAndColumnName.split("\\.")[1];
+                                tableNameAndColumnName = getAndSetModuleAlias(dp.getyAxis().getModuleName()) + "." + columnName;
+                                dp.getAllCriteria().getConditions().get(key).setColumnName(tableNameAndColumnName);
+                            }
                         }
                     }
                     newSelectBuilder.andCriteria(allCriteria);
