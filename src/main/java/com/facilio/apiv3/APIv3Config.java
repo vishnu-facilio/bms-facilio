@@ -79,6 +79,7 @@ import com.facilio.bmsconsoleV3.commands.tenant.FillTenantsLookupCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.ValidateTenantSpaceCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.LoadTenantcontactLookupsCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantunit.AddSpaceCommandV3;
+import com.facilio.bmsconsoleV3.commands.termsandconditions.CheckForPublishedCommand;
 import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.tooltypes.SetToolTypesUnitCommandV3;
 import com.facilio.bmsconsoleV3.commands.transferRequest.*;
@@ -438,7 +439,9 @@ public class APIv3Config {
     public static Supplier<V3Config> getTermsAndCondition() {
         return () -> new V3Config(V3TermsAndConditionContext.class, new ModuleCustomFieldCount30())
                                .create()
+                                   .beforeSave(TransactionChainFactoryV3.getTermsBeforeSaveChain())
                                .update()
+                                    .afterSave(new CheckForPublishedCommand())
                                .list()
                                .summary()
                                .delete()
