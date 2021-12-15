@@ -396,7 +396,8 @@ public class PageWidget {
 		SURVEY_TEMPLATE_history("surveyHistory"),
 
 		SURVEY_RESPONSE_WIDGET("surveyResponseWidget"),
-		TRANSFER_REQUEST_SHIPMENT_RECEIVABLES("transferrequestshipmentreceivables");
+		TRANSFER_REQUEST_SHIPMENT_RECEIVABLES("transferrequestshipmentreceivables"),
+		STATE_TRANSITION_TIME_LOG("statetransitiontimelog");
 
 
 		private String name;
