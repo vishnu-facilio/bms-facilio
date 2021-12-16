@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -273,5 +274,13 @@ public class CriteriaAPI extends BaseCriteriaAPI {
 
 	public static Condition getNameCondition(Collection<String>names,FacilioModule module) {
 		return getNameCondition(StringUtils.join(names,","),module);
+	}
+
+	public static FacilioField fetchFieldFromFQFieldName(String fullyQualifiedFieldName) throws Exception {
+		String[] module = fullyQualifiedFieldName.split("\\.");
+		FacilioUtil.throwIllegalArgumentException(module.length <= 1, "Invalid Fully Qualified name for field while parsing from operator");
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioField field = modBean.getField(module[1], module[0]);
+		return field;
 	}
 }

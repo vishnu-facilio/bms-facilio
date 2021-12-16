@@ -114,13 +114,13 @@
         <dependency>
             <groupId>com.facilio.framework</groupId>
             <artifactId>facilio-framework</artifactId>
-            <version>1.0.439</version>
+            <version>1.0.440</version>
         </dependency>
 
         <dependency>
             <groupId>com.facilio.taskengine</groupId>
             <artifactId>facilio-taskengine</artifactId>
-            <version>0.0.8</version>
+            <version>0.0.9</version>
         </dependency>
 
         <dependency>

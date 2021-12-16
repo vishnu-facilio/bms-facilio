@@ -2,6 +2,7 @@ package com.facilio.timeline.context;
 
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators;
+import org.json.simple.JSONObject;
 
 import java.util.List;
 
@@ -53,6 +54,14 @@ public class TimelineRequest {
     }
     public void setEndTime(Long endTime) {
         this.endTime = endTime;
+    }
+
+    private JSONObject filters;
+    public JSONObject getFilters() {
+        return filters;
+    }
+    public void setFilters(JSONObject filters) {
+        this.filters = filters;
     }
 
     public String getDateValue() {

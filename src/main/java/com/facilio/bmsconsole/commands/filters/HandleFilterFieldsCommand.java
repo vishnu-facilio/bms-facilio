@@ -107,7 +107,6 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
             case MISC:
             case LINE_ITEM:
             case LARGE_TEXT:
-            case URL_FIELD: // For now
                 return null;
         }
 

@@ -1,6 +1,8 @@
-package com.facilio.timeline.util;
+package com.facilio.v3.util;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
@@ -12,7 +14,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.timeline.context.TimelineRequest;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.V3Context;
-import com.facilio.v3.util.ChainUtil;
+import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -20,15 +22,17 @@ import org.apache.log4j.Logger;
 
 import java.util.*;
 
-public class TimelineAPI {
+public class GetTimeLineDataCommand extends FacilioCommand {
 
-    private static final Logger LOGGER = LogManager.getLogger(TimelineAPI.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(GetTimeLineDataCommand.class.getName());
 
     private static final String GROUP_CONCAT_FIELD_NAME = "__groupConcat";
     private static final String MIN_START_DATE = "__minStartDate";
     private static final String DATE_FORMAT = "__date_format";
 
-    public static Map<String, Object> getTimeLineData(TimelineRequest timelineRequest) throws Exception {
+    @Override
+    public boolean executeCommand(Context context) throws Exception {
+        TimelineRequest timelineRequest = (TimelineRequest) context.get(FacilioConstants.ContextNames.TIMELINE_REQUEST);
 
         if (!timelineRequest.isGetUnGrouped() && CollectionUtils.isEmpty(timelineRequest.getGroupIds())) {
             throw new IllegalArgumentException("At least one group id should be passed");
@@ -45,21 +49,7 @@ public class TimelineAPI {
         FacilioField startTimeField = fieldMap.get("actualWorkStart");
         FacilioField endTimeField = fieldMap.get("actualWorkEnd");
 
-        Criteria mainCriteria = new Criteria();
-        Criteria timeCriteria = new Criteria();
-        timeCriteria.addAndCondition(CriteriaAPI.getCondition(startTimeField, timelineRequest.getDateValue(), DateOperators.BETWEEN));
-        timeCriteria.addOrCondition(CriteriaAPI.getCondition(endTimeField, timelineRequest.getDateValue(), DateOperators.BETWEEN));
-        mainCriteria.andCriteria(timeCriteria);
-
-        Criteria groupCriteria = new Criteria();
-        if (CollectionUtils.isNotEmpty(timelineRequest.getGroupIds())) {
-            groupCriteria.addAndCondition(CriteriaAPI.getCondition(timelineGroupField, StringUtils.join(timelineRequest.getGroupIds(), ","), NumberOperators.EQUALS));
-        }
-        if (timelineRequest.isGetUnGrouped()) {
-            groupCriteria.addOrCondition(CriteriaAPI.getCondition(timelineGroupField, CommonOperators.IS_EMPTY));
-        }
-        mainCriteria.andCriteria(groupCriteria);
-
+        Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
         StringJoiner groupBy = new StringJoiner(",");
         Collection<FacilioField> aggregateFields = new ArrayList<>();
 
@@ -80,7 +70,7 @@ public class TimelineAPI {
                 .setAggregation()
                 .select(aggregateFields)
                 .groupBy(groupBy.toString())
-                .andCriteria(mainCriteria);
+                .andCriteria(buildMainCriteria(startTimeField, endTimeField, timelineRequest, timelineGroupField, filterCriteria, true));
         long startTime = System.currentTimeMillis();
         List<Map<String, Object>> aggregateValue = aggregateBuilder.getAsProps();
         LOGGER.error("query for aggregate value: " + aggregateBuilder + "; time taken is: " + (System.currentTimeMillis() - startTime));
@@ -88,27 +78,53 @@ public class TimelineAPI {
 
         List<FacilioField> allModuleFields = new ArrayList<>(allFields);
         allModuleFields.add(FieldFactory.getStringField(DATE_FORMAT, "groupMax." + DATE_FORMAT, null));
-        String subQuery = getQueryContactQuery(module, timelineGroupField, startTimeField, timelineRequest.getDateAggregator(), mainCriteria);
+        String subQuery = getQueryContactQuery(module, timelineGroupField, startTimeField, timelineRequest.getDateAggregator(), buildMainCriteria(startTimeField, endTimeField, timelineRequest, timelineGroupField, filterCriteria, false));
 
         SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<>()
                 .module(module)
                 .innerJoinQuery(subQuery, "groupMax")
-                    .on(timelineGroupField.getCompleteColumnName() + " <=> groupMax." + timelineGroupField.getName() + " AND "
-                            + timelineRequest.getDateAggregator().getSelectField(startTimeField).getColumnName() + " = groupMax." + DATE_FORMAT)
+                .on(timelineGroupField.getCompleteColumnName() + " <=> groupMax." + timelineGroupField.getName() + " AND "
+                        + timelineRequest.getDateAggregator().getSelectField(startTimeField).getColumnName() + " = groupMax." + DATE_FORMAT)
                 .beanClass(ChainUtil.getBeanClass(config, module))
                 .select(allModuleFields);
 
         builder.andCustomWhere("FIND_IN_SET(" + startTimeField.getCompleteColumnName() + ", " + GROUP_CONCAT_FIELD_NAME + ") <= " + timelineRequest.getMaxResultPerCell());
-        builder.andCriteria(mainCriteria);
+        builder.andCriteria(buildMainCriteria(startTimeField, endTimeField, timelineRequest, timelineGroupField, filterCriteria, true));
 
         startTime = System.currentTimeMillis();
         List<Map<String, Object>> recordMapList = builder.getAsProps();
         LOGGER.error("query for actual record value: " + builder + "; time take is: " + (System.currentTimeMillis() - startTime));
 
-        return aggregateResult(timelineGroupField, startTimeField, recordMapList, aggregateValue);
+        Map<String, Object> timelineResponse = aggregateResult(timelineGroupField, startTimeField, recordMapList, aggregateValue);
+        context.put(FacilioConstants.ContextNames.TIMELINE_DATA, timelineResponse);
+        return false;
     }
 
-    private static Map<String, Object> aggregateResult(FacilioField timelineGroupField,
+    private Criteria buildMainCriteria(FacilioField startTimeField, FacilioField endTimeField, TimelineRequest timelineRequest, FacilioField timelineGroupField, Criteria filterCriteria, boolean applyFilter) {
+        Criteria mainCriteria = new Criteria();
+        Criteria timeCriteria = new Criteria();
+        timeCriteria.addAndCondition(CriteriaAPI.getCondition(startTimeField, timelineRequest.getDateValue(), DateOperators.BETWEEN));
+        timeCriteria.addOrCondition(CriteriaAPI.getCondition(endTimeField, timelineRequest.getDateValue(), DateOperators.BETWEEN));
+        mainCriteria.andCriteria(timeCriteria);
+
+        Criteria groupCriteria = new Criteria();
+        if (CollectionUtils.isNotEmpty(timelineRequest.getGroupIds())) {
+            groupCriteria.addAndCondition(CriteriaAPI.getCondition(timelineGroupField, StringUtils.join(timelineRequest.getGroupIds(), ","), NumberOperators.EQUALS));
+        }
+        if (timelineRequest.isGetUnGrouped()) {
+            groupCriteria.addOrCondition(CriteriaAPI.getCondition(timelineGroupField, CommonOperators.IS_EMPTY));
+        }
+        mainCriteria.andCriteria(groupCriteria);
+
+        if (applyFilter && filterCriteria != null && !filterCriteria.isEmpty()) {
+            Criteria criteria = new Criteria();
+            criteria.andCriteria(filterCriteria);
+            mainCriteria.andCriteria(criteria);
+        }
+        return mainCriteria;
+    }
+
+    private Map<String, Object> aggregateResult(FacilioField timelineGroupField,
                                                        FacilioField startTimeField, List<Map<String, Object>> v3Contexts,
                                                        List<Map<String, Object>> aggregateValue) throws Exception {
         Map<String, Object> timelineResult = new HashMap<>();
@@ -156,7 +172,7 @@ public class TimelineAPI {
         return timelineResult;
     }
 
-    private static String getFieldValue(Object o, FacilioField timelineGroupField) {
+    private String getFieldValue(Object o, FacilioField timelineGroupField) {
         String value = null;
         if (o == null) {
             return "-1";
@@ -170,7 +186,7 @@ public class TimelineAPI {
         return value;
     }
 
-    private static Map<String, Object> getAggregateMap(List<Map<String, Object>> aggregateValue, FacilioField timelineGroupField, FacilioField startTimeField) {
+    private Map<String, Object> getAggregateMap(List<Map<String, Object>> aggregateValue, FacilioField timelineGroupField, FacilioField startTimeField) {
         if (CollectionUtils.isEmpty(aggregateValue)) {
             return null;
         }
@@ -195,7 +211,7 @@ public class TimelineAPI {
         return aggregateMap;
     }
 
-    private static String getQueryContactQuery(FacilioModule module, FacilioField timelineGroupField,
+    private String getQueryContactQuery(FacilioModule module, FacilioField timelineGroupField,
                                                FacilioField startTimeField,
                                                BmsAggregateOperators.DateAggregateOperator dateAggregator, Criteria timeCriteria) throws Exception {
         SelectRecordsBuilder groupConcatQuery = new SelectRecordsBuilder()
@@ -222,7 +238,7 @@ public class TimelineAPI {
         return groupConcatQuery.constructQueryString();
     }
 
-    private static FacilioField getGroupConcatField(FacilioField startDateField) {
+    private FacilioField getGroupConcatField(FacilioField startDateField) {
         FacilioField field = new FacilioField();
         field.setName(GROUP_CONCAT_FIELD_NAME);
         field.setDisplayName(field.getDisplayName());
@@ -230,9 +246,5 @@ public class TimelineAPI {
         field.setFieldId(field.getFieldId());
         field.setDataType(FieldType.STRING);
         return field;
-    }
-
-    public static class TimelineResponse {
-
     }
 }

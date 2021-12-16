@@ -253,6 +253,8 @@ public class FacilioConstants {
 		public static final String GLOBAL_VARIABLE_LIST = "globalVariableList";
 		public static final String GLOBAL_VARIABLE = "globalVariable";
 		public static final String USER_DELEGATION = "userDelegation";
+		public static final String TIMELINE_REQUEST = "timelineRequest";
+		public static final String TIMELINE_DATA = "timelineData";
 
         public static class Reservation {
 			public static final String RESERVATION = "reservation";
