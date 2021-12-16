@@ -29,7 +29,19 @@ public class WidgetCardContext extends DashboardWidgetContext {
 	}
 	
 	public void setScriptModeInt(int scriptModeInt) {
-		this.scriptMode = scriptModeInt == 1 ? ScriptMode.DEFAULT_SCRIPT : ScriptMode.CUSTOM_SCRIPT;
+
+		 if (scriptModeInt == 3) {
+			this.scriptMode = ScriptMode.NONE;
+		}
+		else if(scriptModeInt == 1) {
+			this.scriptMode = ScriptMode.DEFAULT_SCRIPT;
+		}
+		else if(scriptModeInt == 2) {
+			this.scriptMode = ScriptMode.CUSTOM_SCRIPT;
+		}
+		else {
+			this.scriptMode = ScriptMode.NONE;
+		}
 	}
 	
 	public int getScriptModeInt() {
@@ -215,6 +227,10 @@ public void setCardCustomScriptFilters(DashboardCustomScriptFilter cardCustomScr
 		dataOptionsJson.put("cardState", cardState);
 		dataOptionsJson.put("cardDrilldown", cardDrilldown);
 		dataOptionsJson.put("conditionalFormatting", conditionalFormatting);
+		dataOptionsJson.put("scriptModeInt",getScriptModeInt());
+		dataOptionsJson.put("customScriptId",getCustomScriptId());
+
+		
 		
 		resultJson.put("dataOptions", dataOptionsJson);
 		
@@ -228,7 +244,8 @@ public void setCardCustomScriptFilters(DashboardCustomScriptFilter cardCustomScr
 	
 	public static enum ScriptMode {
 		DEFAULT_SCRIPT(1),
-		CUSTOM_SCRIPT(2);
+		CUSTOM_SCRIPT(2),
+		NONE(3);
 		
 		private int value;
 		
