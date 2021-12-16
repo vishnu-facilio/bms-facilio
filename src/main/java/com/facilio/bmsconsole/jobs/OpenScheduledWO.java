@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.util.AccountUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -36,8 +39,18 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.taskengine.job.FacilioJob;
 import com.facilio.taskengine.job.JobContext;
 
+
 public class OpenScheduledWO extends FacilioJob {
     private static final Logger LOGGER = LogManager.getLogger(OpenScheduledWO.class.getName());
+
+    private boolean isNMDP() {
+        final long NMDP_ID = 429L;
+        Organization nmdp = AccountUtil.getCurrentOrg();
+        if (nmdp != null) {
+            return nmdp.getOrgId() == NMDP_ID;
+        }
+        return false;
+    }
 
     @Override
     public void execute(JobContext jc) throws Exception {
@@ -131,10 +144,10 @@ public class OpenScheduledWO extends FacilioJob {
                     .andCondition(CriteriaAPI.getIdCondition(woId, module))
                     .skipModuleCriteria();
             updateRecordBuilder.update(wo);
-            
+
 
             FacilioContext context = new FacilioContext();
-            
+
             List<EventType> activities = new ArrayList<>();
             activities.add(EventType.CREATE);
 
@@ -142,9 +155,17 @@ public class OpenScheduledWO extends FacilioJob {
             context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 
             String status = wo.getStatus().getStatus();
+            if (isNMDP()) {
+                LOGGER.info("status: " + status);
+                LOGGER.info("activities PRE: " + activities);
+            }
             if (status != null && status.equals("Assigned")) {
                 activities.add(EventType.ASSIGN_TICKET);
             }
+            if (isNMDP()) {
+                LOGGER.info("activities POST: " + activities);
+            }
+
             context.put(FacilioConstants.ContextNames.EVENT_TYPE_LIST, activities);
 
             List<UpdateChangeSet> changeSets = FieldUtil.constructChangeSet(wo.getId(), FieldUtil.getAsProperties(wo), fieldMap);
@@ -153,40 +174,40 @@ public class OpenScheduledWO extends FacilioJob {
                 changeSetMap.put(woId, changeSets);
                 context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, Collections.singletonMap(FacilioConstants.ContextNames.WORK_ORDER, changeSetMap));
             }
-			if (!changeSets.isEmpty()) {
-				context.put(FacilioConstants.ContextNames.CHANGE_SET, changeSets);
-				Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = CommonCommandUtil.getChangeSetMap(context);
-				Map<Long, List<UpdateChangeSet>> currentChangeSet = changeSetMap.get(FacilioConstants.ContextNames.WORK_ORDER);
-				
-				List<UpdateChangeSet> changeSetList = currentChangeSet.get(wo.getId());
+            if (!changeSets.isEmpty()) {
+                context.put(FacilioConstants.ContextNames.CHANGE_SET, changeSets);
+                Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = CommonCommandUtil.getChangeSetMap(context);
+                Map<Long, List<UpdateChangeSet>> currentChangeSet = changeSetMap.get(FacilioConstants.ContextNames.WORK_ORDER);
+
+                List<UpdateChangeSet> changeSetList = currentChangeSet.get(wo.getId());
                 JSONObject addWO = new JSONObject();
                 List<Object> wolist = new ArrayList<Object>();
-               
-				JSONObject newinfo = new JSONObject();
-				newinfo.put("pmid", wo.getPm().getId());
+
+                JSONObject newinfo = new JSONObject();
+                newinfo.put("pmid", wo.getPm().getId());
                 wolist.add(newinfo);
 
 
-				for (UpdateChangeSet changeset : changeSetList) {
-				    long fieldid = changeset.getFieldId();
-					Object oldValue = changeset.getOldValue();
-					Object newValue = changeset.getNewValue();
-					FacilioField field = modBean.getField(fieldid, "workorder");
-					
-					JSONObject info = new JSONObject();
-					info.put("field", field.getName());
-					info.put("displayName", field.getDisplayName());
-					info.put("oldValue", oldValue);
-					info.put("newValue", newValue);
-	                wolist.add(info);
-				}	
+                for (UpdateChangeSet changeset : changeSetList) {
+                    long fieldid = changeset.getFieldId();
+                    Object oldValue = changeset.getOldValue();
+                    Object newValue = changeset.getNewValue();
+                    FacilioField field = modBean.getField(fieldid, "workorder");
 
-				addWO.put("addPMWO", wolist);
+                    JSONObject info = new JSONObject();
+                    info.put("field", field.getName());
+                    info.put("displayName", field.getDisplayName());
+                    info.put("oldValue", oldValue);
+                    info.put("newValue", newValue);
+                    wolist.add(info);
+                }
 
-				CommonCommandUtil.addActivityToContext(wo.getId(), -1, WorkOrderActivityType.ADD_PM_WO, addWO, context);
-                
+                addWO.put("addPMWO", wolist);
 
-			}
+                CommonCommandUtil.addActivityToContext(wo.getId(), -1, WorkOrderActivityType.ADD_PM_WO, addWO, context);
+
+
+            }
             context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(FacilioConstants.ContextNames.WORK_ORDER, Collections.singletonList(wo)));
             context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(wo.getId()));
             
