@@ -14,6 +14,9 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.agentv2.controller.Controller;
+import com.facilio.chain.FacilioChain;
+import com.facilio.tasker.FacilioTimer;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -146,10 +149,10 @@ public class AgentApiV2 {
             if (agent.getWritable() != currWriteble) {
                 agent.setWritable(currWriteble);
                 agent.setLastModifiedTime(currTime);
-               List<Long> controllerIds =  ControllerApiV2.getControllersUsingAgentId(agent.getId());
-               controllerIds.forEach(controllerId -> {
+                List<Controller> controllers = ControllerApiV2.getControllersUsingAgentId(agent.getId());
+                controllers.forEach(controller -> {
             	   try {
-					ControllerApiV2.editController(controllerId, jsonObject);
+                       ControllerApiV2.editController(controller.getControllerId(), jsonObject);
 				} catch (Exception e) {
 					LOGGER.error("Exception occurred while Controller writable updating....");
 				}

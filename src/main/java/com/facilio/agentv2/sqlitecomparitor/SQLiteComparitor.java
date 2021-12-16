@@ -1,26 +1,23 @@
 package com.facilio.agentv2.sqlitecomparitor;
 
 import com.facilio.agent.controller.FacilioControllerType;
-import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
 import com.facilio.agentv2.bacnet.BacnetIpPointContext;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
-import com.facilio.agentv2.device.Device;
-import com.facilio.agentv2.device.FieldDeviceApi;
+import com.facilio.agentv2.controller.GetControllerRequest;
 import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointEnum;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FieldUtil;
-import com.facilio.sqlUtils.constants.Columns;
-import com.facilio.sqlUtils.tables.BacNetIpControllerTable;
-import com.facilio.sqlUtils.tables.BacNetIpPointTable;
-import com.facilio.sqlUtils.tables.ControllerTable;
-import com.facilio.sqlUtils.tables.PointTable;
+//import com.facilio.sqlUtils.constants.Columns;
+//import com.facilio.sqlUtils.tables.BacNetIpControllerTable;
+//import com.facilio.sqlUtils.tables.BacNetIpPointTable;
+//import com.facilio.sqlUtils.tables.ControllerTable;
+//import com.facilio.sqlUtils.tables.PointTable;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.poi.util.StringUtil;
@@ -32,7 +29,7 @@ import java.util.*;
 
 public class SQLiteComparitor {
 
-    private static final Logger LOGGER = LogManager.getLogger(SQLiteComparitor.class.getName());
+   /* private static final Logger LOGGER = LogManager.getLogger(SQLiteComparitor.class.getName());
 
     private File sqLiteFile;
     private Connection connection = null;
@@ -179,9 +176,8 @@ public class SQLiteComparitor {
         try {
             int offset = 0;
             int limit = 100;
-            List<Device> devices = getDevicesFromDb(limit, offset, controllerType);
-            Map<String, Controller> dbControllersMap = getControllersFromDb(devices, controllerType);
-            while (dbControllersMap.size() > 0 || devices.size() > 0) {
+            Map<String, Controller> dbControllersMap = getControllersFromDb(controllerType);
+            while (dbControllersMap.size() > 0) {
                 Set<String> dbControllerNames = new HashSet<>();
                 dbControllersMap.forEach((k, v) -> dbControllerNames.add(k));
                 Map<String, Controller> sqliteControllersMap = getControllersFromSqlite(dbControllerNames, controllerType);
@@ -205,8 +201,7 @@ public class SQLiteComparitor {
                 }
 
                 offset = offset + limit;
-                devices = getDevicesFromDb(limit, offset, controllerType);
-                dbControllersMap = getControllersFromDb(devices, controllerType);
+                dbControllersMap = getControllersFromDb(controllerType);
             }
         } catch (Exception ex) {
             LOGGER.info("Exception while", ex);
@@ -214,21 +209,21 @@ public class SQLiteComparitor {
         return dbControllersMinusSqliteControllers;
     }
 
-    List<Device> getDevicesFromDb(int limit, int offset, FacilioControllerType controllerType) {
-        List<Device> devices = new ArrayList<>();
-        try {
-            FacilioContext context = new FacilioContext();
-            context.put(AgentConstants.AGENT_ID, agent.getId());
-            context.put(AgentConstants.CONTROLLER_TYPE, controllerType.asInt());
-            context.put(FacilioConstants.ContextNames.PAGINATION, getPagination(limit, offset));
-            context.put(FacilioConstants.ContextNames.CONFIGURE, "1");
-            devices = FieldUtil.getAsBeanListFromMapList(FieldDeviceApi.getDevices(context), Device.class);
-        } catch (Exception e) {
-            LOGGER.info("Exception while fetching devices from db", e);
-        }
-        return devices;
-    }
-
+    *//* List<Device> getDevicesFromDb(int limit, int offset, FacilioControllerType controllerType) {
+         List<Device> devices = new ArrayList<>();
+         try {
+             FacilioContext context = new FacilioContext();
+             context.put(AgentConstants.AGENT_ID, agent.getId());
+             context.put(AgentConstants.CONTROLLER_TYPE, controllerType.asInt());
+             context.put(FacilioConstants.ContextNames.PAGINATION, getPagination(limit, offset));
+             context.put(FacilioConstants.ContextNames.CONFIGURE, "1");
+             devices = FieldUtil.getAsBeanListFromMapList(FieldDeviceApi.getDevices(context), Device.class);
+         } catch (Exception e) {
+             LOGGER.info("Exception while fetching devices from db", e);
+         }
+         return devices;
+     }
+     *//*
     private void dbPointsMinusSqlitePoints(Controller dbController, Controller sqliteController, FacilioControllerType controllerType) {
         try {
             int offset = 0;
@@ -356,13 +351,12 @@ public class SQLiteComparitor {
         return sqliteNameVsController;
     }
 
-    private Map<String, Controller> getControllersFromDb(List<Device> devices, FacilioControllerType controllerType) {
+    private Map<String, Controller> getControllersFromDb(FacilioControllerType controllerType) {
         Map<String, Controller> controllerMap = new HashMap<>();
         try {
-            if (devices != null && devices.size() > 0) {
-                List<Controller> controllers = ControllerApiV2.getControllersFromDevices(devices, controllerType);
+            List<Controller> controllers = new GetControllerRequest().withAgentId(agent.getId()).ofType(controllerType).getControllers();
                 controllers.forEach(c -> controllerMap.put(c.getName(), c));
-            }
+
         } catch (Exception e) {
             LOGGER.info("Exception while getting controllers from db ", e);
         }
@@ -503,5 +497,5 @@ public class SQLiteComparitor {
         paginationObject.put("page", offset == 0 ? 1 : (offset / limit) + 1);
         paginationObject.put("perPage", limit);
         return paginationObject;
-    }
+    }*/
 }

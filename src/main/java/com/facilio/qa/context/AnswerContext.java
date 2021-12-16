@@ -32,6 +32,7 @@ public class AnswerContext extends V3Context {
     private Boolean booleanAnswer;
     private String shortAnswer, longAnswer;
     private Long dateTimeAnswer;
+    private Integer ratingAnswer;
 
     private Long fileAnswerId;
     private String fileAnswerUrl, fileAnswerFileName, fileAnswerContentType;
@@ -51,7 +52,7 @@ public class AnswerContext extends V3Context {
 
     @JsonIgnore @JSON(serialize = false)
     public Long getResponseId() {
-        return response == null ? null : response._getId();
+        return response == null ? null : response.getId();
     }
 
     @JsonIgnore

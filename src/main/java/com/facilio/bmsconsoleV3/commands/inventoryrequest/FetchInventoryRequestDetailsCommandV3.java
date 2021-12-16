@@ -32,17 +32,20 @@ public class FetchInventoryRequestDetailsCommandV3 extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         long id = Constants.getRecordIds(context).get(0);
         V3InventoryRequestContext inventoryRequestContext = (V3InventoryRequestContext) CommandUtil.getModuleData(context, FacilioConstants.ContextNames.INVENTORY_REQUEST, id);
-        if (inventoryRequestContext != null) {
-            WorkOrderContext workOrder = WorkOrderAPI.getWorkOrder(inventoryRequestContext.getParentId());
-            if(workOrder != null) {
-                inventoryRequestContext.setWorkOrderLocalId(workOrder.getLocalId());
-            }
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            String lineItemModuleName = FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS;
-            List<FacilioField> fields = modBean.getAllFields(lineItemModuleName);
-            List<V3InventoryRequestLineItemContext> list = InventoryRequestAPI.getLineItemsForInventoryRequestV3(String.valueOf(inventoryRequestContext.getId()), null, null);
-            inventoryRequestContext.setInventoryrequestlineitems(list);
-        }
+            if (inventoryRequestContext != null) {
+                if(inventoryRequestContext.getParentId()!= null && inventoryRequestContext.getParentId() > 0 ) {
+                    WorkOrderContext workOrder = WorkOrderAPI.getWorkOrder(inventoryRequestContext.getParentId());
+                    if (workOrder != null) {
+                        inventoryRequestContext.setWorkOrderLocalId(workOrder.getLocalId());
+                    }
+                }
+                    ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                    String lineItemModuleName = FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS;
+                    List<FacilioField> fields = modBean.getAllFields(lineItemModuleName);
+                    List<V3InventoryRequestLineItemContext> list = InventoryRequestAPI.getLineItemsForInventoryRequestV3(String.valueOf(inventoryRequestContext.getId()), null, null);
+                    inventoryRequestContext.setInventoryrequestlineitems(list);
+                }
+
         return false;
     }
 }

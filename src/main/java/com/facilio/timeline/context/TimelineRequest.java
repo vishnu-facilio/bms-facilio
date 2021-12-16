@@ -2,10 +2,19 @@ package com.facilio.timeline.context;
 
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators;
+import org.json.simple.JSONObject;
 
 import java.util.List;
 
 public class TimelineRequest {
+
+    private String viewName;
+    public String getViewName() {
+        return viewName;
+    }
+    public void setViewName(String viewName) {
+        this.viewName = viewName;
+    }
 
     private String moduleName;
     public String getModuleName() {
@@ -23,6 +32,14 @@ public class TimelineRequest {
         this.groupIds = groupIds;
     }
 
+    private boolean getUnGrouped = false;
+    public boolean isGetUnGrouped() {
+        return getUnGrouped;
+    }
+    public void setGetUnGrouped(boolean getUnGrouped) {
+        this.getUnGrouped = getUnGrouped;
+    }
+
     private Long startTime;
     public Long getStartTime() {
         return startTime;
@@ -37,6 +54,14 @@ public class TimelineRequest {
     }
     public void setEndTime(Long endTime) {
         this.endTime = endTime;
+    }
+
+    private JSONObject filters;
+    public JSONObject getFilters() {
+        return filters;
+    }
+    public void setFilters(JSONObject filters) {
+        this.filters = filters;
     }
 
     public String getDateValue() {

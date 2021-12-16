@@ -34,7 +34,7 @@ class AwsEmailClient extends EmailClient {
 
     private void sendEmailViaAws(JSONObject mailJson) throws Exception  {
         if(canSendEmail(mailJson)) {
-            AwsUtil.sendMailViaMessage(mailJson, getEmailAddresses(mailJson, TO), getEmailAddresses(mailJson, CC),getEmailAddresses(mailJson, BCC));
+            AwsUtil.sendMail(mailJson, getEmailAddresses(mailJson, TO), getEmailAddresses(mailJson, CC),getEmailAddresses(mailJson, BCC));
         }
     }
 
@@ -55,7 +55,7 @@ class AwsEmailClient extends EmailClient {
 
         if(canSendEmail(mailJson,files)) {
             try {
-                AwsUtil.sendEmailViaMimeMessage(mailJson, files);
+                AwsUtil.sendMail(mailJson, files);
             } catch (Exception ex) {
                 LOGGER.info("The email was not sent.");
                 LOGGER.info("Error message: "+ex.getMessage());

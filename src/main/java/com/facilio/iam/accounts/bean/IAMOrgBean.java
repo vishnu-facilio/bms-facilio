@@ -38,6 +38,8 @@ public interface IAMOrgBean {
 
  	public List<IAMUser> getAllOrgUsersv2(long orgId) throws Exception;
 
+	List<AppDomain> getCustomAppDomain(AppDomain.AppDomainType type, long orgId) throws Exception;
+
  	public boolean addOrUpdateDomainSSO(DomainSSO sso) throws Exception;
  	
  	public boolean addOrUpdateAccountSSO(long orgId, AccountSSO sso) throws Exception;
@@ -52,6 +54,8 @@ public interface IAMOrgBean {
 
 	public DomainSSO getDomainSSODetails(long orgId, AppDomain.AppDomainType appDomainType, AppDomain.GroupType groupType, AppDomain.DomainType domainType) throws Exception;
 	
+	public List<Map<String, Object>> getDomainSSODetails(long orgId, AppDomain.AppDomainType appDomainType, AppDomain.GroupType groupType) throws Exception;
+
 	public AccountSSO getAccountSSO(String orgDomain) throws Exception;
 
 	public boolean deleteDomainSSO(String domain) throws Exception;

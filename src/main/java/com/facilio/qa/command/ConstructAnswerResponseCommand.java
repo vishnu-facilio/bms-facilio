@@ -22,7 +22,7 @@ public class ConstructAnswerResponseCommand extends FacilioCommand {
 
         for (ClientAnswerContext answer : answers) {
             AnswerContext answerContext = questionVsAnswer.get(answer.getQuestion());
-            answer.setId(answerContext._getId());
+            answer.setId(answerContext.getId());
         }
 
         return false;

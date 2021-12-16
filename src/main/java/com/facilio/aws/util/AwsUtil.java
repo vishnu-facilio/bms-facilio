@@ -33,7 +33,6 @@ import com.facilio.db.transaction.FacilioTransactionManager;
 import com.facilio.email.EmailUtil;
 import com.facilio.queue.source.MessageSource;
 import com.facilio.service.FacilioService;
-import com.facilio.services.email.EmailClient;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.messageQueue.MessageQueueFactory;
 import com.facilio.time.DateTimeUtil;
@@ -64,8 +63,6 @@ import software.amazon.awssdk.services.textract.model.TextractException;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.mail.Session;
-import javax.mail.internet.MimeMessage;
 import javax.transaction.SystemException;
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -80,7 +77,7 @@ import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.util.*;
 
-public class AwsUtil {
+public class AwsUtil extends BaseAwsUtil{
 
 	private static final Logger LOGGER = LogManager.getLogger(AwsUtil.class.getName());
 
@@ -101,13 +98,11 @@ public class AwsUtil {
 	private static AmazonRekognition AWS_REKOGNITION_CLIENT = null;
 
 	private static volatile AWSCredentials basicCredentials = null;
-	private static volatile AWSCredentialsProvider credentialsProvider = null;
 	private static volatile AWSIot awsIot = null;
 	private static volatile AmazonSQS awsSQS = null;
 	// private static volatile User user = null;
 	private static volatile AmazonKinesis kinesis = null;
 	private static String region = null;
-	private static final Object LOCK = new Object();
 
 	public static Map<String, Object> getClientInfoAsService() throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE, () -> getClientInfo());
@@ -253,6 +248,7 @@ public class AwsUtil {
 	public static TextractClient getAmazonTextractClient() {
 		if (AWS_TEXTRACT_CLIENT == null) {
 			Region region = getRegionV2(getRegion());
+			LOGGER.info("AWS TEXTRACT - "+region);
 			software.amazon.awssdk.auth.credentials.InstanceProfileCredentialsProvider awsCred = getAwsTextractCreds();
 			AWS_TEXTRACT_CLIENT = TextractClient.builder().region(region).credentialsProvider(awsCred).build();
 		}
@@ -394,68 +390,6 @@ public class AwsUtil {
 		return result.toString();
 	}
 
-	@Deprecated
-	public static void sendEmail(JSONObject mailJson) throws Exception {
-		if (FacilioProperties.isDevelopment()) {
-			mailJson.put("subject", "Local - " + mailJson.get("subject"));
-			logEmail(mailJson);
-			return;
-		}
-		if (FacilioProperties.isSmtp()) {
-			EmailUtil.sendEmail(mailJson);
-		} else {
-			sendEmailViaAws(mailJson);
-		}
-		logEmail(mailJson);
-	}
-
-	private static void sendEmailViaAws(JSONObject mailJson) throws Exception {
-		String toAddress = (String) mailJson.get("to");
-		String ccAddress = (String) mailJson.get("cc");
-		String bccAddress = (String) mailJson.get("bcc");
-		boolean sendEmail = true;
-		HashSet<String> to = new HashSet<>();
-		HashSet<String> cc = new HashSet<>();
-		HashSet<String> bcc = new HashSet<>();
-		if (!FacilioProperties.isProduction()) {
-			if (toAddress != null) {
-				for (String address : toAddress.split(",")) {
-					if (address.contains("@facilio.com")) {
-						to.add(address);
-					}
-				}
-				if (ccAddress != null && StringUtils.isNotEmpty(ccAddress)) {
-					for (String address : ccAddress.split(",")) {
-						if (address.contains("@facilio.com")) {
-							cc.add(address);
-						}
-					}
-				}
-				if (bccAddress != null && StringUtils.isNotEmpty(bccAddress)) {
-					for (String address : bccAddress.split(",")) {
-						if (address.contains("@facilio.com")) {
-							bcc.add(address);
-						}
-					}
-				}
-				if (to.size() == 0) {
-					sendEmail = false;
-				}
-			} else {
-				sendEmail = false;
-			}
-		} else {
-			for (String address : toAddress.split(",")) {
-				if (address != null && address.contains("@")) {
-					to.add(address);
-				}
-			}
-		}
-		if (sendEmail && to.size() > 0) {
-			sendMailViaMessage(mailJson, to, cc, bcc);
-		}
-	}
-
 	public static void sendVerificationMailForFromAddressConfig(String email) {
 
 		try {
@@ -518,140 +452,6 @@ public class AwsUtil {
 		return null;
 	}
 
-	public static void sendMailViaMessage(JSONObject mailJson, Set<String> to, Set<String> cc, Set<String> bcc) {
-
-		Destination destination = new Destination().withToAddresses(to);
-		if (CollectionUtils.isNotEmpty(cc)) {
-			destination.withCcAddresses(cc);
-		}
-		if (CollectionUtils.isNotEmpty(bcc)) {
-			destination.withBccAddresses(bcc);
-		}
-		Content subjectContent = new Content().withData((String) mailJson.get("subject"));
-		Content bodyContent = new Content().withData((String) mailJson.get("message"));
-
-		Body body = null;
-		if (mailJson.get("mailType") != null && mailJson.get("mailType").equals("html")) {
-			body = new Body().withHtml(bodyContent);
-		} else {
-			body = new Body().withText(bodyContent);
-		}
-
-		Message message = new Message().withSubject(subjectContent).withBody(body);
-
-		try {
-			SendEmailRequest request = new SendEmailRequest().withSource((String) mailJson.get("sender"))
-					.withDestination(destination).withMessage(message);
-			AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
-					.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
-			client.sendEmail(request);
-			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 151) {
-				LOGGER.info("Email sent to " + to.toString() + "\n" + mailJson);
-			}
-		} catch (Exception ex) {
-			LOGGER.info("Error message: " + to.toString() + " " + ex.getMessage());
-			throw ex;
-		}
-	}
-
-	// This method is not called during sending email
-	public static void logEmail(JSONObject mailJson) throws Exception {
-
-		try {
-			String toAddress = (String) mailJson.get("to");
-			if (!"error+alert@facilio.com".equals(toAddress) && !"error@facilio.com".equals(toAddress)) {
-				toAddress = toAddress == null ? "" : toAddress;
-				JSONObject info = new JSONObject();
-				info.put("from", mailJson.get("sender"));
-				info.put("subject", mailJson.get("subject"));
-				if (mailJson.get("cc") != null) {
-					info.put("cc", mailJson.get("cc"));
-				}
-				if (mailJson.get("bcc") != null) {
-					info.put("bcc", mailJson.get("bcc"));
-				}
-				CommonAPI.addNotificationLogger(NotificationType.EMAIL, toAddress, info);
-			}
-		} catch (Exception e) {
-			LOGGER.error("Error occurred while logging email", e);
-		}
-	}
-
-	@Deprecated
-	public static void sendEmail(JSONObject mailJson, Map<String, String> files) throws Exception {
-
-		FacilioFactory.getEmailClient().sendEmail(mailJson, files);
-		if (files == null || files.isEmpty()) {
-			sendEmail(mailJson);
-			return;
-		}
-		logEmail(mailJson);
-		if (FacilioProperties.isSmtp()) {
-			EmailUtil.sendEmail(mailJson, files);
-		} else {
-			sendEmailViaAws(mailJson, files);
-		}
-	}
-
-	private static void sendEmailViaAws(JSONObject mailJson, Map<String, String> files) throws Exception {
-		if (files == null || files.isEmpty()) {
-			sendEmail(mailJson);
-			return;
-		}
-		String toAddress = (String) mailJson.get("to");
-		HashSet<String> to = new HashSet<>();
-		boolean sendEmail = true;
-		if (!FacilioProperties.isProduction()) {
-			if (toAddress != null) {
-				for (String address : toAddress.split(",")) {
-					if (address.contains("@facilio.com")) {
-						to.add(address);
-					}
-				}
-			} else {
-				sendEmail = false;
-			}
-		} else {
-			for (String address : toAddress.split(",")) {
-				if (address != null && address.contains("@")) {
-					to.add(address);
-				}
-			}
-		}
-		if (sendEmail && to.size() > 0) {
-			try {
-				if (FacilioProperties.isDevelopment()) {
-//					mailJson.put("subject", "Local - " + mailJson.get("subject"));
-					return;
-				}
-				sendEmailViaMimeMessage(mailJson, files);
-
-				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 151) {
-					LOGGER.info("Email sent to " + toAddress + "\n" + mailJson);
-				}
-
-			} catch (Exception ex) {
-				LOGGER.info("The email was not sent.");
-				LOGGER.info("Error message: " + toAddress + " " + ex.getMessage());
-				throw ex;
-			}
-		}
-	}
-
-	public static String sendEmailViaMimeMessage(JSONObject mailJson, Map<String, String> files) throws Exception {
-		MimeMessage message = getEmailMessage(mailJson, files);
-		try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-			message.writeTo(outputStream);
-			RawMessage rawMessage = new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
-			SendRawEmailRequest request = new SendRawEmailRequest(rawMessage);
-			AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
-					.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
-
-			SendRawEmailResult response = client.sendRawEmail(request);
-			return response.getMessageId() + "@" + Regions.US_WEST_2.getName() + ".amazonses.com";
-		}
-	}
-
 	private static AWSCredentials getBasicAwsCredentials() {
 		if (basicCredentials == null) {
 			synchronized (LOCK) {
@@ -661,17 +461,6 @@ public class AwsUtil {
 			}
 		}
 		return basicCredentials;
-	}
-
-	public static AWSCredentialsProvider getAWSCredentialsProvider() {
-		if (credentialsProvider == null) {
-			synchronized (LOCK) {
-				if (credentialsProvider == null) {
-					credentialsProvider = InstanceProfileCredentialsProvider.createAsyncRefreshingProvider(false);
-				}
-			}
-		}
-		return credentialsProvider;
 	}
 
 	public static String getRegion() {
@@ -870,38 +659,6 @@ public class AwsUtil {
 
 	public static String getIotKinesisTopic(String orgDomainName) {
 		return orgDomainName;
-	}
-
-	@Deprecated
-	public static void sendErrorMail(long orgid, long ml_id, String error) {
-		try {
-			JSONObject json = new JSONObject();
-			json.put("sender", EmailClient.getFromEmail("mlerror"));
-			json.put("to", "ai@facilio.com");
-			json.put("subject", orgid + " - " + ml_id);
-
-			StringBuilder body = new StringBuilder()
-					.append(error)
-					.append("\n\nInfo : \n--------\n")
-					.append("\n Org Time : ").append(DateTimeUtil.getDateTime())
-					.append("\n Indian Time : ").append(DateTimeUtil.getDateTime(ZoneId.of("Asia/Kolkata")))
-					.append("\n\nMsg : ")
-					.append(error)
-					.append("\n\nOrg Info : \n--------\n")
-					.append(orgid);
-			json.put("message", body.toString());
-
-			sendEmail(json);
-		} catch (Exception e) {
-			LOGGER.error("Error while sending mail ", e);
-		}
-	}
-
-	private static MimeMessage getEmailMessage(JSONObject mailJson, Map<String, String> files) throws Exception {
-		Session session = Session.getDefaultInstance(new Properties());
-		MimeMessage message = EmailClient.constructMimeMessageContent(mailJson, session, files);
-		message.addHeader("host", FacilioProperties.getAppDomain());
-		return message;
 	}
 
 	public static void addClientToPolicy(String agentName, String policyName, String type) throws Exception {

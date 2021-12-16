@@ -6891,9 +6891,9 @@ public class FieldFactory extends BaseFieldFactory {
         return getField(AgentConstants.DELETED_TIME, "DELETED_TIME", module, FieldType.NUMBER);
     }
 
-    public static FacilioField getFieldDeviceId(FacilioModule module) {
-        return getField(AgentConstants.DEVICE_ID, "DEVICE_ID", module, FieldType.NUMBER);
-    }
+//    public static FacilioField getFieldDeviceId(FacilioModule module) {
+//        return getField(AgentConstants.DEVICE_ID, "DEVICE_ID", module, FieldType.NUMBER);
+//    }
 
     // using this
     public static List<FacilioField> getPointFields() {
@@ -6908,7 +6908,6 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField(AgentConstants.DEVICE_NAME, "DEVICE_NAME", module, FieldType.STRING));
         fields.add(getField(AgentConstants.LOGICAL, "LOGICAL", module, FieldType.BOOLEAN));
         fields.add(getNewControllerIdField(module));
-        fields.add(getFieldDeviceId(module));
         fields.add(getPointAssetCategoryIdField(module));
         fields.add(getPointResourceIdField(module));
         fields.add(getPointFieldIdField(module));
@@ -6979,7 +6978,6 @@ public class FieldFactory extends BaseFieldFactory {
         fields.addAll(getPointFields());
         fields.add(getIdField(module));
         fields.add(getControllerIdField(module));
-        fields.add(getFieldDeviceId(module));
         fields.add(getField(AgentConstants.PATH, "PATH", module, FieldType.STRING));
         return fields;
     }
@@ -6990,7 +6988,6 @@ public class FieldFactory extends BaseFieldFactory {
         fields.addAll(getPointFields());
         fields.add(getIdField(module));
         fields.add(getControllerIdField(module));
-        fields.add(getFieldDeviceId(module));
         fields.add(getField(AgentConstants.PATH, "PATH", module, FieldType.STRING));
 
         return fields;
@@ -7002,7 +6999,6 @@ public class FieldFactory extends BaseFieldFactory {
         fields.addAll(getPointFields());
         fields.add(getIdField(module));
         fields.add(getControllerIdField(module));
-        fields.add(getFieldDeviceId(module));
         fields.add(getField(AgentConstants.PATH, "PATH", module, FieldType.STRING));
 
 
@@ -7015,7 +7011,6 @@ public class FieldFactory extends BaseFieldFactory {
         List<FacilioField> fields = new ArrayList<>();
         fields.addAll(getPointFields());
         fields.add(getIdField(module));
-        fields.add(getFieldDeviceId(module));
         fields.add(getControllerIdField(module));
         fields.add(getField(AgentConstants.NAMESPACE, "NAME_SPACE", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.UA_POINT_IDENTIFIER, "IDENTIFIER", module, FieldType.STRING));
@@ -7027,7 +7022,6 @@ public class FieldFactory extends BaseFieldFactory {
         List<FacilioField> fields = new ArrayList<>();
         fields.addAll(getPointFields());
         fields.add(getIdField(module));
-        fields.add(getFieldDeviceId(module));
         fields.add(getControllerIdField(module));
         fields.add(getField(AgentConstants.REGISTER_NUMBER, "REGISTER_NUMBER", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.REGISTER_TYPE, "REGISTER_TYPE", module, FieldType.NUMBER));
@@ -7041,7 +7035,6 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getIdField(module));
         fields.add(getControllerIdField(module));
         fields.add(getNameField(module));
-        fields.add(getFieldDeviceId(module));
         return fields;
     }
 
@@ -7064,7 +7057,6 @@ public class FieldFactory extends BaseFieldFactory {
         List<FacilioField> fields = new ArrayList<>();
         fields.addAll(getPointFields());
         fields.add(getIdField(module));
-        fields.add(getFieldDeviceId(module));
         fields.add(getControllerIdField(module));
         fields.add(getField(AgentConstants.REGISTER_NUMBER, "REGISTER_NUMBER", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.REGISTER_TYPE, "REGISTER_TYPE", module, FieldType.NUMBER));
@@ -7079,7 +7071,6 @@ public class FieldFactory extends BaseFieldFactory {
         fields.addAll(getPointFields());
         fields.add(getIdField(module));
         fields.add(getControllerIdField(module));
-        fields.add(getFieldDeviceId(module));
         fields.add(getField(AgentConstants.INSTANCE_NUMBER, "INSTANCE_NUMBER", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.INSTANCE_TYPE, "INSTANCE_TYPE", module, FieldType.NUMBER));
         return fields;

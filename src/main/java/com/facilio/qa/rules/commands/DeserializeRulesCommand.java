@@ -30,7 +30,7 @@ public class DeserializeRulesCommand extends FacilioCommand {
             Long templateId = Objects.requireNonNull((Long) context.get(FacilioConstants.QAndA.Command.TEMPLATE_ID), "Template cannot be null");
             Map<Long, QuestionContext> rulesSupportedQuestions = questions == null ? Collections.EMPTY_MAP :
                     questions.stream().filter(QuestionContext::isRuleSupported)
-                            .collect(Collectors.toMap(QuestionContext::_getId, Function.identity()));
+                            .collect(Collectors.toMap(QuestionContext::getId, Function.identity()));
             List<QAndARule> ruleList = new ArrayList<>();
             for (Map<String, Object> prop : rules) {
                 Long questionId = (Long) prop.get("questionId");

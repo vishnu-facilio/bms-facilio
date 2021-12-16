@@ -3073,11 +3073,11 @@ public class FormFactory {
 		FormField attachment = new FormField("announcementattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 6, 1);
 		attachment.addToConfig("fileTypes", "image/*,.pdf,.doc,.docx");
 		fields.add(attachment);
-		fields.add(new FormField("announcementsharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 6, 1));
-		/*FormField field = new FormField("audience", FieldDisplayType.LOOKUP_SIMPLE, "Audience", Required.REQUIRED, "audience",5, 1);
+		//fields.add(new FormField("announcementsharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 6, 1));
+		FormField field = new FormField("audience", FieldDisplayType.LOOKUP_SIMPLE, "Audience", Required.REQUIRED, "audience",5, 1);
 		field.setAllowCreateOptions(true);
 		field.addToConfig("canShowLookupWizard",true);
-		fields.add(field); */
+		fields.add(field);
 		return fields;
 	}
 
@@ -3110,8 +3110,12 @@ public class FormFactory {
 		attachment.addToConfig("fileTypes", "image/*,.pdf,.doc,.docx");
 		fields.add(attachment);
 
-		fields.add(new FormField("newsandinformationsharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 4, 1));
+		//fields.add(new FormField("newsandinformationsharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 4, 1));
 		fields.add(new FormField("commentsAllowed", FieldDisplayType.DECISION_BOX, "Comments Allowed", Required.OPTIONAL, 5, 1));
+		FormField field = new FormField("audience", FieldDisplayType.LOOKUP_SIMPLE, "Audience", Required.REQUIRED, "audience",6, 1);
+		field.setAllowCreateOptions(true);
+		field.addToConfig("canShowLookupWizard",true);
+		fields.add(field);
 		form.setFields(fields);
 
 
@@ -3143,7 +3147,11 @@ public class FormFactory {
 		attachment.addToConfig("fileTypes", "image/*,.pdf,.doc,.docx");
 		fields.add(attachment);
 
-		fields.add(new FormField("neighbourhoodsharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 6, 1));
+		//fields.add(new FormField("neighbourhoodsharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 6, 1));
+		FormField field = new FormField("audience", FieldDisplayType.LOOKUP_SIMPLE, "Audience", Required.REQUIRED, "audience",6, 1);
+		field.setAllowCreateOptions(true);
+		field.addToConfig("canShowLookupWizard",true);
+		fields.add(field);
 		form.setFields(fields);
 
 		return form;
@@ -3201,7 +3209,11 @@ public class FormFactory {
 		attachment.addToConfig("fileTypes", "image/*,.pdf,.doc,.docx");
 		fields.add(attachment);
 
-		fields.add(new FormField("dealsandofferssharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 7, 1));
+		//fields.add(new FormField("dealsandofferssharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 7, 1));
+		FormField field = new FormField("audience", FieldDisplayType.LOOKUP_SIMPLE, "Audience", Required.REQUIRED, "audience",7, 1);
+		field.setAllowCreateOptions(true);
+		field.addToConfig("canShowLookupWizard",true);
+		fields.add(field);
 		form.setFields(fields);
 
 		return form;
@@ -3252,7 +3264,11 @@ public class FormFactory {
 
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 5, 1));
 		fields.add(new FormField("category", FieldDisplayType.SELECTBOX, "Category", Required.OPTIONAL, 6, 1));
-		fields.add(new FormField("contactdirectorysharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 7, 1));
+		//fields.add(new FormField("contactdirectorysharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 7, 1));
+		FormField field = new FormField("audience", FieldDisplayType.LOOKUP_SIMPLE, "Audience", Required.REQUIRED, "audience",7, 1);
+		field.setAllowCreateOptions(true);
+		field.addToConfig("canShowLookupWizard",true);
+		fields.add(field);
 		form.setFields(fields);
 
 		return form;
@@ -3272,7 +3288,11 @@ public class FormFactory {
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("category", FieldDisplayType.SELECTBOX, "Category", Required.OPTIONAL, 3, 1));
 		fields.add(new FormField("file", FieldDisplayType.FILE, "File", Required.REQUIRED, 4, 1));
-		fields.add(new FormField("admindocumentsharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 5, 1));
+		//fields.add(new FormField("admindocumentsharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 5, 1));
+		FormField field = new FormField("audience", FieldDisplayType.LOOKUP_SIMPLE, "Audience", Required.REQUIRED, "audience",5, 1);
+		field.setAllowCreateOptions(true);
+		field.addToConfig("canShowLookupWizard",true);
+		fields.add(field);
 		form.setFields(fields);
 
 		return form;

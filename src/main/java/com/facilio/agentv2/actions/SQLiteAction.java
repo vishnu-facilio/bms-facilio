@@ -40,7 +40,7 @@ public class SQLiteAction extends FacilioAction {
     }
 
     public String validateDb() {
-        try {
+       /* try {
             LOGGER.info(getSqLiteFile().length());
             FacilioAgent agent = AgentApiV2.getAgent(getAgentId());
             SQLiteComparitor comparitor = new SQLiteComparitor(getSqLiteFile(), agent);
@@ -71,7 +71,7 @@ public class SQLiteAction extends FacilioAction {
 
         } catch (Exception ex) {
             LOGGER.info("Exception while validating ", ex);
-        }
+        }*/
         return SUCCESS;
     }
 }

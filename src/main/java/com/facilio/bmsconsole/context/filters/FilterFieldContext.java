@@ -62,7 +62,7 @@ public class FilterFieldContext {
             }
             options.add(new FieldOption<>("false", falseVal));
         }
-        else if (field instanceof BaseLookupField) {
+        else if (field instanceof BaseLookupField && !(field instanceof BaseSystemLookupField)) { // System lookup field shouldn't have these as that system lookup module is never exposed
             FacilioModule lookup = ((BaseLookupField) field).getLookupModule();
             lookupModule = new FilterFieldLookupModule(
                     lookup.getName(),

@@ -82,6 +82,15 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "sp-production-scheduler" ]; then
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
 fi
 
+if [ "$DEPLOYMENT_GROUP_NAME" = "sp-production-kafka" ]; then
+    echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+    cp $FACILIO_HOME/deployment-files/awsprops-sp-kafka.properties $CONF_DIR/awsprops.properties
+    cp $FACILIO_HOME/deployment-files/log4j-sp-scheduler.properties $CLASSES_DIR/log4j.properties
+    cp $FACILIO_HOME/setenv-sp.sh $APP_HOME/bin/setenv.sh
+    cp $FACILIO_HOME/deployment-files/service-sp.yml $CONF_DIR/service.yml
+    echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+fi
+
 if [ "$DEPLOYMENT_GROUP_NAME" = "sp-production-user" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
     cp $FACILIO_HOME/deployment-files/awsprops-sp-user.properties $CONF_DIR/awsprops.properties

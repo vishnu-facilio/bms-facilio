@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.sso.DomainSSO;
+import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.modules.FieldFactory;
 import lombok.var;
 import org.apache.commons.collections.CollectionUtils;
@@ -554,7 +555,20 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		DomainSSO sso = FieldUtil.getAsBeanFromMap(maps.get(0), DomainSSO.class);
 		return sso;
 	}
+	
+	public List<Map<String, Object>> getDomainSSODetails(long orgId, AppDomain.AppDomainType appDomainType, AppDomain.GroupType groupType) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getDomainSSOFields())
+				.table(IAMAccountConstants.getDomainSSOModule().getTableName())
+				.innerJoin("App_Domain")
+				.on("App_Domain.ID = Domain_SSO.APP_DOMAIN_ID");
 
+		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.APP_DOMAIN_TYPE", "appDomainType", appDomainType.getIndex()+"", StringOperators.IS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.APP_GROUP_TYPE", "appGroupType", groupType.getIndex()+"", StringOperators.IS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.ORGID", "orgId", orgId+"", NumberOperators.EQUALS));
+		return selectBuilder.get();
+	}
+	
 	private List<Map<String, Object>> getAccountSSODetails(List<Long> orgIds) throws Exception{
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(IAMAccountConstants.getAccountSSOFields())
@@ -667,4 +681,20 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
     	
     	changeMfaSettings(orgId,false,"totpEnabled", groupType);
     }
+
+	public List<AppDomain> getCustomAppDomain(AppDomain.AppDomainType type, long orgId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getAppDomainFields())
+				.table("App_Domain");
+
+		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.APP_DOMAIN_TYPE", "appDomainType", String.valueOf(type.getIndex()), EnumOperators.IS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.DOMAIN_TYPE", "domainType", String.valueOf(AppDomain.DomainType.CUSTOM.getIndex()), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (org.apache.commons.collections.CollectionUtils.isNotEmpty(props)) {
+			return FieldUtil.getAsBeanListFromMapList(props, AppDomain.class);
+		}
+		return Collections.EMPTY_LIST;
+	}
 }

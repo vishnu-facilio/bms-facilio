@@ -52,7 +52,7 @@ public class ApproverWorkflowRuleContext extends WorkflowRuleContext {
         }
     }
 
-    private Boolean allApprovalRequired = false;
+    private Boolean allApprovalRequired;
     public Boolean getAllApprovalRequired() {
         return allApprovalRequired;
     }
@@ -62,7 +62,7 @@ public class ApproverWorkflowRuleContext extends WorkflowRuleContext {
     public void setAllApprovalRequired(boolean allApprovalRequired) {
         this.allApprovalRequired = allApprovalRequired;
     }
-    public boolean isAllApprovalRequired() {
+    public Boolean isAllApprovalRequired() {
         if (allApprovalRequired != null) {
             return allApprovalRequired.booleanValue();
         }

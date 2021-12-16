@@ -10,7 +10,11 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.v3.context.Constants;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import software.amazon.awssdk.services.textract.model.Block;
 
 import java.io.InputStream;
@@ -18,6 +22,7 @@ import java.util.*;
 
 import static com.facilio.aws.util.AwsUtil.detectDocText;
 
+@Log4j
 public class DeliveryDataParserCommand extends FacilioCommand {
 
     @Override
@@ -25,7 +30,8 @@ public class DeliveryDataParserCommand extends FacilioCommand {
         Organization currentOrg = AccountUtil.getCurrentOrg();
         Objects.requireNonNull(currentOrg, "current org null");
         FileStore fileStore = FacilioFactory.getFileStoreFromOrg(currentOrg.getOrgId());
-        Map<String, Long> fileMap = Constants.getAttachmentNameVsId(context);
+        Map<String, Long> fileMap = new HashMap<>();
+        fileMap = Constants.getAttachmentNameVsId(context);
 
         List<V3DeliveriesContext> deliveriesContextList = new ArrayList<>();
         for (String key : fileMap.keySet()) {
@@ -35,7 +41,10 @@ public class DeliveryDataParserCommand extends FacilioCommand {
             if (file == null) {
                 continue;
             }
+            LOGGER.info("Before ocr parsing");
             List<Block> result = detectDocText(file);
+            LOGGER.info("result " + result);
+
             if (result != null) {
                 DeliveryPackageType deliveryPackageType = DeliveryPackageType.detectPackageType(result);
                 if (deliveryPackageType != null) {

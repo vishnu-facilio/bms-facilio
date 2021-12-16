@@ -34,9 +34,9 @@ public class FetchAnswersForQuestionsCommand extends FacilioCommand {
         List<PageContext> pages = Constants.getRecordList((FacilioContext) context);
         Long responseId = getResponseId((FacilioContext) context);
         if (CollectionUtils.isNotEmpty(pages) && responseId != null) {
-            Map<Long, QuestionContext> questions = pages.stream().flatMap(QAndAUtil::getQuestionStream).collect(Collectors.toMap(QuestionContext::_getId, Function.identity()));
-            QAndAUtil.populateAnswersForQuestions(questions, getResponseCriteria(pages.get(0).getParent()._getId(), responseId), true); // Assuming we will always fetch pages of single template
-            populateScores(pages.get(0).getParent()._getId(), pages, questions);
+            Map<Long, QuestionContext> questions = pages.stream().flatMap(QAndAUtil::getQuestionStream).collect(Collectors.toMap(QuestionContext::getId, Function.identity()));
+            QAndAUtil.populateAnswersForQuestions(questions, getResponseCriteria(pages.get(0).getParent().getId(), responseId), true); // Assuming we will always fetch pages of single template
+            populateScores(pages.get(0).getParent().getId(), pages, questions);
         }
         return false;
     }
@@ -65,7 +65,7 @@ public class FetchAnswersForQuestionsCommand extends FacilioCommand {
                 for (QuestionContext question : page.getQuestions()) {
                     ClientAnswerContext answer = question.getAnswer();
                     if (answer == null) {
-                        ScoringRule rule = questionVsRule.get(question._getId());
+                        ScoringRule rule = questionVsRule.get(question.getId());
                         if (rule != null) {
                             question.setScore(0d);
                             question.setScorePercent(0f);

@@ -8,7 +8,6 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.LookupFieldMeta;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
@@ -31,6 +30,9 @@ public class LoadTrSummaryLookupCommandV3 extends FacilioCommand {
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         List<LookupField> additionaLookups = new ArrayList<>();
         additionaLookups.add((LookupField) fieldsAsMap.get("transferredBy"));
+        additionaLookups.add((LookupField) fieldsAsMap.get("transferFromStore"));
+        additionaLookups.add((LookupField) fieldsAsMap.get("transferToStore"));
+        additionaLookups.add((LookupField) fieldsAsMap.get("sysCreatedBy"));
 
         for (FacilioField field : fields) {
             if (!field.isDefault() && field.getDataTypeEnum() == FieldType.LOOKUP) {

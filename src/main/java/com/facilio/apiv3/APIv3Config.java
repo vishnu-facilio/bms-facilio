@@ -19,6 +19,7 @@ import com.facilio.bmsconsoleV3.commands.client.UpdateAddressForClientLocationCo
 import com.facilio.bmsconsoleV3.commands.client.UpdateClientIdInSiteCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.LoadClientContactLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.FillAudienceSharingInfoCommandV3;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.LoadAudienceLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.admindocuments.FillAdminDocumentsSharingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.admindocuments.LoadAdminDocumentsLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.AnnouncementFillDetailsCommandV3;
@@ -78,6 +79,7 @@ import com.facilio.bmsconsoleV3.commands.tenant.FillTenantsLookupCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.ValidateTenantSpaceCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.LoadTenantcontactLookupsCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantunit.AddSpaceCommandV3;
+import com.facilio.bmsconsoleV3.commands.termsandconditions.CheckForPublishedCommand;
 import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.tooltypes.SetToolTypesUnitCommandV3;
 import com.facilio.bmsconsoleV3.commands.transferRequest.*;
@@ -437,7 +439,9 @@ public class APIv3Config {
     public static Supplier<V3Config> getTermsAndCondition() {
         return () -> new V3Config(V3TermsAndConditionContext.class, new ModuleCustomFieldCount30())
                                .create()
+                                   .beforeSave(TransactionChainFactoryV3.getTermsBeforeSaveChain())
                                .update()
+                                    .afterSave(new CheckForPublishedCommand())
                                .list()
                                .summary()
                                .delete()
@@ -950,6 +954,7 @@ public class APIv3Config {
                 .update()
                 .afterSave(new AddOrUpdateAudienceSharingInfoCommandV3())
                 .list()
+                  .beforeFetch(new LoadAudienceLookupCommandV3())
                   .afterFetch(new FillAudienceSharingInfoCommandV3())
                 .summary()
                     .afterFetch(new FillAudienceSharingInfoCommandV3())

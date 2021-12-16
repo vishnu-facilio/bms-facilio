@@ -253,6 +253,8 @@ public class FacilioConstants {
 		public static final String GLOBAL_VARIABLE_LIST = "globalVariableList";
 		public static final String GLOBAL_VARIABLE = "globalVariable";
 		public static final String USER_DELEGATION = "userDelegation";
+		public static final String TIMELINE_REQUEST = "timelineRequest";
+		public static final String TIMELINE_DATA = "timelineData";
 
         public static class Reservation {
 			public static final String RESERVATION = "reservation";
@@ -677,6 +679,7 @@ public class FacilioConstants {
 		public static final String REPORT_DATA = "reportData";
 		public static final String PIVOT_TABLE_DATA = "pivotTableData";
 		public static final String PIVOT_TEMPLATE_JSON = "pivotTemplateJSON";
+		public static final String IS_TIMELINE_FILTER_APPLIED = "isTimelineFilterApplied";
 		public static final String TABLE_ALIAS = "tableAlias";
 		public static final String ROW_HEADERS="rowHeaders";
 		public static final String DATA_HEADERS="dataHeaders";
@@ -1921,6 +1924,7 @@ public class FacilioConstants {
 		public static final String JOB_PLAN_TASK = "jobplantask";
 
 		public static final String AUDIENCE_SHARING = "audienceSharing";
+		public static final String AUDIENCE = "audience";
 		
 		public static final String DEPARTMENT = "department";
 		public static final String MOVES = "moves";
@@ -1941,6 +1945,7 @@ public class FacilioConstants {
 		public static final String TRANSFER_REQUEST_SHIPMENT = "transferrequestshipment";
 		public static final String TRANSFER_REQUEST_SHIPMENT_RECEIVABLES = "transferrequestshipmentreceivables";
 		public static final String INVITE_ACCEPT_STATUS = "inviteacceptstatus";
+		public static final String SEND_INVITE = "sendinvite";
 
 		public static class WorkPermit {
 			public static final String WORK_PERMIT_TYPE_CHECKLIST = "workpermittypechecklist";
@@ -2569,6 +2574,7 @@ public class FacilioConstants {
 			public static final String FILE_UPLOAD_QUESTION = "qandaFileUploadQuestion";
 			public static final String MULTI_FILE_UPLOAD_QUESTION = "qandaMultiFileUploadQuestion";
 			public static final String BOOLEAN_QUESTION = "qandaBooleanQuestion";
+			public static final String RATING_QUESTION ="qandaRatingQuestion";
 		}
 
 		public static class Answers {

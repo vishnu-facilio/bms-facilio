@@ -12,6 +12,10 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import org.apache.commons.collections.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DelegationUtil {
 
@@ -26,6 +30,15 @@ public class DelegationUtil {
         return builder;
     }
 
+    /** This method will return only one user. User {@link DelegationUtil#getUsers} instead
+     *
+     * @param delegatedUser
+     * @param timestamp
+     * @param delegationType
+     * @return
+     * @throws Exception
+     */
+    @Deprecated
     public static User getUser(User delegatedUser, long timestamp, DelegationType delegationType) throws Exception {
         if (delegatedUser == null) {
             throw new NullPointerException("deletegatedUser cannot be empty");
@@ -44,6 +57,29 @@ public class DelegationUtil {
         }
 
         return delegatedUser;
+    }
+
+    public static List<User> getUsers(User delegatedUser, long timestamp, DelegationType delegationType) throws Exception {
+        if (delegatedUser == null) {
+            throw new NullPointerException("deletegatedUser cannot be empty");
+        }
+        GenericSelectRecordBuilder builder = getBuilder(timestamp, delegationType);
+        builder.andCondition(CriteriaAPI.getCondition("DELEGATE_USER_ID", "delegateUserId", String.valueOf(delegatedUser.getId()), NumberOperators.EQUALS));
+
+        List<DelegationContext> delegationContexts = FieldUtil.getAsBeanListFromMapList(builder.get(), DelegationContext.class);
+        List<User> users = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(delegationContexts)) {
+            UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+            long appId = AccountUtil.getCurrentApp() != null ? AccountUtil.getCurrentApp().getId() : -1L;
+            for (DelegationContext delegationContext : delegationContexts) {
+                User user = userBean.getUser(appId, delegationContext.getUserId());
+                if (user != null) {
+                    users.add(user);
+                }
+            }
+        }
+
+        return users;
     }
 
     public static User getDelegatedUser(User user, long timestamp, DelegationType delegationType) throws Exception {

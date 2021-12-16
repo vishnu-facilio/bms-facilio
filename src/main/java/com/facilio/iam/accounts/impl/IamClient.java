@@ -60,6 +60,28 @@ public class IamClient {
         }
         return null;
     }
+
+    @SneakyThrows
+    public static void deleteDCLookup(String name, GroupType groupType) throws Exception {
+        var url = FacilioProperties.getIAMURL() + "/api/v3/internal/dc/deleteDCLookup";
+        Map<String, String> params = new HashMap<>();
+        params.put("userName", name);
+        if (groupType == null) {
+            groupType = GroupType.FACILIO;
+        }
+        params.put("groupType", groupType.getIndex().toString());
+
+        String response = ServiceHttpUtils.doHttpGet(FacilioProperties.getIamregion(), "iam", getUrl(url), null, params);
+        if (StringUtils.isNotEmpty(response)) {
+            JSONObject obj = FacilioUtil.parseJson(response);
+            if (obj.containsKey("code")) {
+                int code = FacilioUtil.parseInt(obj.get("code").toString());
+                if (code != 0) {
+                   throw new IllegalArgumentException((String) obj.get("message"));
+                }
+            }
+        }
+    }
     
     public static void addUserToDC(String name, GroupType groupType) throws Exception {
         var url = FacilioProperties.getIAMAddUserURL();

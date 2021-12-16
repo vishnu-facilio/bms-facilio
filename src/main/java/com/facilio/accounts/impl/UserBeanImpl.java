@@ -12,6 +12,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.*;
+import com.facilio.db.criteria.operators.EnumOperators;
+import com.facilio.iam.accounts.util.IAMAccountConstants;
+import com.facilio.delegate.context.DelegationType;
+import com.facilio.delegate.util.DelegationUtil;
 import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.util.FacilioUtil;
@@ -564,6 +568,7 @@ public class UserBeanImpl implements UserBean {
 				return user;
 			}
 		}
+		LOGGER.error("get user is returning null");
 		return null;
 	}
 
@@ -1185,6 +1190,17 @@ public class UserBeanImpl implements UserBean {
 		String inviteToken = IAMUserUtil.getEncodedToken(user);
 		String hostname = "";
 		if (appDomainObj != null && StringUtils.isNotEmpty(appDomainObj.getDomain())) {
+			long orgId = appDomainObj.getOrgId();  // using this when reset password link is called
+			if (AccountUtil.getCurrentOrg() != null) {
+				orgId = AccountUtil.getCurrentOrg().getOrgId();
+			}
+			List<AppDomain> appDomains = IAMOrgUtil.getCustomAppDomain(appDomainObj.getAppDomainTypeEnum(), orgId);
+			for (AppDomain appDomain: appDomains) {
+				if (appDomain.getDomainTypeEnum() == AppDomain.DomainType.CUSTOM) {
+					appDomainObj = appDomain;
+					break;
+				}
+			}
 			hostname = "https://" + appDomainObj.getDomain();
 //				if (appDomainObj.getAppDomainTypeEnum() != AppDomainType.FACILIO) {
 //					hostname = hostname + "/service";

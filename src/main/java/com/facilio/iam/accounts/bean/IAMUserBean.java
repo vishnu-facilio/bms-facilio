@@ -209,4 +209,6 @@ public interface IAMUserBean {
 
 	List<Map<String, Object>> getUserData(String username, long orgId, String identifier) throws Exception;
 
+	void deleteDCLookup(String username, GroupType groupType) throws Exception;
+
 }

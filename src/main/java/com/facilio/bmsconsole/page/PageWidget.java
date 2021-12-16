@@ -378,9 +378,16 @@ public class PageWidget {
 		TASKS_MONOLITH("taskMonolith"),
 		ITEMS_AND_LABOR("itemsAndLabor"),
 		QUOTATION("quotation"),
+		INVENTORY_ITEMS("inventoryItems"),
+		INVENTORY_SERVICES("inventoryServices"),
+		INVENTORY_LABOR("inventoryLabor"),
+		INVENTORY_TOOLS("inventoryTools"),
+		INVENTORY_OVERALL_COST("inventoryOverallCost"),
 		TENANT("tenant"),
 		TOTAL_COST("totalCost"),
 		TRANSFER_REQUEST_LINE_ITEMS("transferrequestlineitems"),
+		TRANSFER_REQUEST_CARD("transferrequestcard"),
+		DESCRIPTION_CARD("descriptioncard"),
 		SURVEY_TEMPLATE_surveyDetails("surveyDetails"),
 		SURVEY_TEMPLATE_surveyPageDetails("surveyPageDetails"),
 		SURVEY_TEMPLATE_surveyTriggers("surveyTriggers"),
@@ -389,7 +396,8 @@ public class PageWidget {
 		SURVEY_TEMPLATE_history("surveyHistory"),
 
 		SURVEY_RESPONSE_WIDGET("surveyResponseWidget"),
-		TRANSFER_REQUEST_SHIPMENT_RECEIVABLES("transferrequestshipmentreceivables");
+		TRANSFER_REQUEST_SHIPMENT_RECEIVABLES("transferrequestshipmentreceivables"),
+		STATE_TRANSITION_TIME_LOG("statetransitiontimelog");
 
 
 		private String name;

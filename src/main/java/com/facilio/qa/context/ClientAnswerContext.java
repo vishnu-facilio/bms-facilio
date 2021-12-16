@@ -20,7 +20,7 @@ public abstract class ClientAnswerContext<A> {
     private Float scorePercent;
 
     public void addQuestionId (QuestionContext question) {
-        this.question = question == null ? null : question._getId();
+        this.question = question == null ? null : question.getId();
     }
 
     public abstract A getAnswer();

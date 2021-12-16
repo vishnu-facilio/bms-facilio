@@ -8,12 +8,12 @@ import com.facilio.agentv2.opcua.OpcUaPointContext;
 import com.facilio.agentv2.opcxmlda.OpcXmlDaPointContext;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;
-import com.facilio.sqlUtils.contexts.bacnet.BACnetPoint;
-import com.facilio.sqlUtils.contexts.modbus.ModbusPoint;
-import com.facilio.sqlUtils.contexts.opc.ua.OpcUaPoint;
-import com.facilio.sqlUtils.contexts.opc.xmlda.OpcXmlDaPoint;
-import com.facilio.sqlUtils.sqllite.SQLiteUtil;
-import com.facilio.sqlUtils.utilities.FacilioJavaPoint;
+//import com.facilio.sqlUtils.contexts.bacnet.BACnetPoint;
+//import com.facilio.sqlUtils.contexts.modbus.ModbusPoint;
+//import com.facilio.sqlUtils.contexts.opc.ua.OpcUaPoint;
+//import com.facilio.sqlUtils.contexts.opc.xmlda.OpcXmlDaPoint;
+//import com.facilio.sqlUtils.sqllite.SQLiteUtil;
+//import com.facilio.sqlUtils.utilities.FacilioJavaPoint;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -21,10 +21,10 @@ import java.util.List;
 import java.util.Map;
 
 public class PointMigrator {
-    private static final Logger LOGGER = LogManager.getLogger(PointMigrator.class.getName());
+   /* private static final Logger LOGGER = LogManager.getLogger(PointMigrator.class.getName());
 
     public static boolean migratePoints(long agentId, Map<Long, FacilioControllerType> controllerIdsType) throws Exception {
-        /*try {*/
+        *//*try {*//*
         // List<Long> controllerIds = ControllerApiV2.getControllerIds(agentId,controllerType);
         LOGGER.info(" controller ids are " + controllerIdsType.keySet());
         for (Long controllerId : controllerIdsType.keySet()) {
@@ -184,5 +184,5 @@ public class PointMigrator {
         for (Point point : points) {
             point.setControllerId(controllerId);
         }
-    }
+    }*/
 }

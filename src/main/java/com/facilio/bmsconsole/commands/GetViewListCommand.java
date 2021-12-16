@@ -12,6 +12,7 @@ import java.util.stream.IntStream;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
@@ -28,6 +29,8 @@ import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.delegate.context.DelegationType;
+import com.facilio.delegate.util.DelegationUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleFactory;
@@ -92,7 +95,7 @@ public class GetViewListCommand extends FacilioCommand {
 			viewMap.entrySet().removeIf(enrty -> {
 				try {
 					return (enrty.getValue().isHidden() || 
-							(enrty.getValue().getViewSharing() != null && !enrty.getValue().getViewSharing().isAllowed() && !restrictPermissions));
+							(enrty.getValue().getViewSharing() != null && !enrty.getValue().getViewSharing().isAllowed(AccountUtil.getCurrentUser(),DelegationType.LIST_VIEWS) && !restrictPermissions));
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -113,7 +116,7 @@ public class GetViewListCommand extends FacilioCommand {
 					groupBasedViews.removeIf(view -> {
 						try {
 							return (view.isHidden() || 
-									(view.getViewSharing() != null && !view.getViewSharing().isAllowed() && !restrictPermissions));
+									(view.getViewSharing() != null && !view.getViewSharing().isAllowed(AccountUtil.getCurrentUser(),DelegationType.LIST_VIEWS) && !restrictPermissions));
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();

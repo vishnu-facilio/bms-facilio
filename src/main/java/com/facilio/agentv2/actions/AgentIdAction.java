@@ -1,7 +1,6 @@
 package com.facilio.agentv2.actions;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +15,6 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.AgentUtilV2;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.ControllerApiV2;
-import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.iotmessage.IotMessageApiV2;
 import com.facilio.agentv2.logs.LogsApi;
@@ -124,17 +122,15 @@ public class AgentIdAction extends AgentActionV2 {
 					if ((configured != null && configured == Boolean.TRUE)) {
 						count = ControllerApiV2.getControllersCount(context);
 					} else if (configured != null && configured == Boolean.FALSE) {
-						data = FieldDeviceApi.getDevices(context);
+						//data = FieldDeviceApi.getDevices(context);
 						if (CollectionUtils.isNotEmpty(data)) {
-							count = (long) data.get(0).get(AgentConstants.ID);
+							//count = (long) data.get(0).get(AgentConstants.ID);
 						}
 					}
 				setResult(AgentConstants.DATA, count);
 			} else {
 				if ((configured != null && configured == Boolean.TRUE)) {
 					data = ControllerApiV2.getControllerDataForAgent(context);
-				} else {
-					data = FieldDeviceApi.getDevices(context);
 				}
 				setResult(AgentConstants.DATA, data);
 			}
@@ -172,48 +168,7 @@ public class AgentIdAction extends AgentActionV2 {
 		}
 		return SUCCESS;
 	}
-	
-	public String devices() {
-        try {
-        	FacilioContext context = new FacilioContext();
-        	context.put(AgentConstants.AGENT_ID, getAgentId());
-        	context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
-        	context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
-        	List<Map<String, Object>> devices = FieldDeviceApi.getDevices(context);
-			setResult(AgentConstants.DATA, devices);
-        	 ok();
-        } catch (Exception e) {
-            LOGGER.info("Exception occurred while getting devices ", e);
-            setResult(AgentConstants.RESULT, ERROR);
-            setResult(AgentConstants.EXCEPTION, e.getMessage());
-            internalError();
-        }
-        return SUCCESS;
-    }
-	
-    public String devicesCount() {
-        try {
-        	FacilioContext context = new FacilioContext();
-            context.put(AgentConstants.AGENT_ID, getAgentId());
-            context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
-            context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
-            List<Map<String, Object>> devices = FieldDeviceApi.getDevices( context);
-            long count = 0;
-            if (CollectionUtils.isNotEmpty(devices)) {
-                count =(long) devices.get(0).get(AgentConstants.ID);
-            }
-            
-            setResult(AgentConstants.DATA, count);
-            ok();
-        } catch (Exception e) {
-            LOGGER.info("Exception occurred while getting devices ", e);
-            setResult(AgentConstants.RESULT, ERROR);
-            setResult(AgentConstants.EXCEPTION, e.getMessage());
-            internalError();
-        }
-        return SUCCESS;
-    }
-    
+
     public String getControllerCount() {
         try {
         	FacilioContext context = new FacilioContext();
@@ -323,17 +278,17 @@ public class AgentIdAction extends AgentActionV2 {
     }
 */
 
-    public String countAgentDevices() {
-        try {
-            setResult(AgentConstants.DATA, FieldDeviceApi.getAgentDeviceCount(Arrays.asList(getAgentId())));
-            setResult(AgentConstants.RESULT, SUCCESS);
-        } catch (Exception e) {
-            LOGGER.info("Exception occurred while getting agentDevices count", e);
-            setResult(AgentConstants.RESULT, ERROR);
-            setResult(AgentConstants.EXCEPTION, e.getMessage());
-        }
-        return SUCCESS;
-    }
+//    public String countAgentDevices() {
+//        try {
+//            setResult(AgentConstants.DATA, FieldDeviceApi.getAgentDeviceCount(Arrays.asList(getAgentId())));
+//            setResult(AgentConstants.RESULT, SUCCESS);
+//        } catch (Exception e) {
+//            LOGGER.info("Exception occurred while getting agentDevices count", e);
+//            setResult(AgentConstants.RESULT, ERROR);
+//            setResult(AgentConstants.EXCEPTION, e.getMessage());
+//        }
+//        return SUCCESS;
+//    }
 
     public String getjvmStatus() {
         try {
@@ -560,31 +515,31 @@ public class AgentIdAction extends AgentActionV2 {
         return SUCCESS;
     }
 
-    public String getDeviceFilter() {
-        try {
-            List<Map<String, Object>> deviceFilter = FieldDeviceApi.getDeviceFilterData(getAgentId());
-            setResult(AgentConstants.DATA, deviceFilter);
-            ok();
-        } catch (Exception e) {
-            internalError();
-            LOGGER.info("Exception occurred while getting device filter ", e);
-            internalError();
-        }
-        return SUCCESS;
-    }
+//    public String getDeviceFilter() {
+//        try {
+//            List<Map<String, Object>> deviceFilter = FieldDeviceApi.getDeviceFilterData(getAgentId());
+//            setResult(AgentConstants.DATA, deviceFilter);
+//            ok();
+//        } catch (Exception e) {
+//            internalError();
+//            LOGGER.info("Exception occurred while getting device filter ", e);
+//            internalError();
+//        }
+//        return SUCCESS;
+//    }
 
-    public String getModbusDevice(){
-        try{
-            List<Map<String, Object>> deviceFilter = FieldDeviceApi.getModbusDeviceFilter(getAgentId());
-            setResult(AgentConstants.DATA, deviceFilter);
-            ok();
-        }catch (Exception e){
-            internalError();
-            LOGGER.info("Exception occurred while getting device filter ", e);
-            internalError();
-        }
-        return SUCCESS;
-    }
+//    public String getModbusDevice(){
+//        try{
+//            List<Map<String, Object>> deviceFilter = FieldDeviceApi.getModbusDeviceFilter(getAgentId());
+//            setResult(AgentConstants.DATA, deviceFilter);
+//            ok();
+//        }catch (Exception e){
+//            internalError();
+//            LOGGER.info("Exception occurred while getting device filter ", e);
+//            internalError();
+//        }
+//        return SUCCESS;
+//    }
 
     public String getMetrics() {
         try {

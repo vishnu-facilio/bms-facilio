@@ -31,7 +31,7 @@ public class FetchAnswersOfAQuestionCommand extends FacilioCommand {
         QuestionContext question = QAndAUtil.fetchQuestionWithProps(questionId);
         V3Util.throwRestException(question == null, ErrorCode.VALIDATION_ERROR, "Invalid question id for fetching answers");
 
-        QAndAUtil.populateAnswersForQuestions(Collections.singletonMap(questionId, question), getCriteria(question.getParent()._getId(), range), false);
+        QAndAUtil.populateAnswersForQuestions(Collections.singletonMap(questionId, question), getCriteria(question.getParent().getId(), range), false);
         context.put(FacilioConstants.QAndA.Command.CLIENT_ANSWER_LIST, question.getAnswers());
 
         return false;

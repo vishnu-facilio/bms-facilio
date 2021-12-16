@@ -20,6 +20,7 @@ import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
 import com.google.common.base.Functions;
 
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
@@ -28,6 +29,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Log4j
 public class MCQSingleAnswerHandler extends AnswerHandler<MCQSingleAnswerContext> {
     public MCQSingleAnswerHandler(Class<MCQSingleAnswerContext> answerClass) {
         super(answerClass);
@@ -50,7 +52,8 @@ public class MCQSingleAnswerHandler extends AnswerHandler<MCQSingleAnswerContext
         MCQSingleContext mcqQuestion = (MCQSingleContext) question;
         Long selected = answer.getAnswer().getSelected();
         V3Util.throwRestException(selected == null, ErrorCode.VALIDATION_ERROR, "At least one option need to be selected for MCQ");
-        Optional<MCQOptionContext> option = mcqQuestion.getOptions().stream().filter(o -> o._getId() == selected).findFirst();
+        LOGGER.debug(MessageFormat.format("Question => {0} | Options => {1} | Selected => {2}", question.getId(), ((MCQSingleContext) question).getOptions(), selected));
+        Optional<MCQOptionContext> option = mcqQuestion.getOptions().stream().filter(o -> o.getId() == selected).findFirst();
         V3Util.throwRestException(!option.isPresent(), ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid select option ({0}) is specified while adding MCQ Answer", selected));
         AnswerContext answerContext = new AnswerContext();
         answerContext.setEnumAnswer(selected);
@@ -80,7 +83,7 @@ public class MCQSingleAnswerHandler extends AnswerHandler<MCQSingleAnswerContext
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
         FacilioField questionField = fieldMap.get("question");
         FacilioField enumAnswerField = fieldMap.get("enumAnswer");
-        Map<Long, QuestionContext> questionMap = questions.stream().collect(Collectors.toMap(QuestionContext::_getId, Function.identity()));
+        Map<Long, QuestionContext> questionMap = questions.stream().collect(Collectors.toMap(QuestionContext::getId, Function.identity()));
 
         FacilioField idField = FieldFactory.getIdField(module);
         List<Map<String, Object>> props = QAndAUtil.constructAnswerSelectWithQuestionAndResponseTimeRange(modBean, questionMap.keySet(), parentId, range)

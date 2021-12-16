@@ -74,7 +74,7 @@ public class AddOrUpdateDelegateCommand extends FacilioCommand {
         criteria.addAndCondition(CriteriaAPI.getCondition("DELEGATE_USER_ID", "delegateUserId", String.valueOf(delegationContext.getUserId()), NumberOperators.EQUALS));
         List<DelegationContext> delegatedUsersDelegations = getDelegationContext(delegationContext.getFromTime(), delegationContext.getToTime(), delegationContext.getId(), criteria);
         if (CollectionUtils.isNotEmpty(delegatedUsersDelegations)) {
-            throw new RESTException(ErrorCode.VALIDATION_ERROR, String.format("Delegation for this date range already found in %s", delegatedUsersDelegations.get(0).getName()));
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, String.format("Delegation for this date range is assigned to the user in %s", delegatedUsersDelegations.get(0).getName()));
         }
 
         // check whether user has delegated to other user for same delegate type

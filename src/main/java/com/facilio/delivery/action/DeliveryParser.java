@@ -8,6 +8,7 @@ import com.facilio.v3.V3Action;
 import com.facilio.v3.commands.AttachmentCommand;
 import com.facilio.v3.context.Constants;
 
+import java.util.List;
 import java.util.Map;
 
 public class DeliveryParser  extends V3Action {
@@ -25,8 +26,9 @@ public class DeliveryParser  extends V3Action {
         transactionChain.execute(context);
 
         Map<String, Long> attachmentNameVsId = Constants.getAttachmentNameVsId(context);
-        Map<String, Object> deliveries = (Map<String, Object>) context.get("deliveries");
-        this.setData("deliveries", FieldUtil.getAsJSON(deliveries));
+        List<Map<String, Object>> deliveries = (List<Map<String, Object>>) context.get("deliveries");
+        this.setData("deliveries", deliveries);
+        this.setData("attachmentNameVsId", attachmentNameVsId);
         return SUCCESS;
     }
 }

@@ -1,10 +1,12 @@
 package com.facilio.v3;
 
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.bmsconsole.util.AuditLogUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 
+import com.facilio.wmsv2.handler.AuditLogHandler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
@@ -319,5 +321,9 @@ public class V3Action extends ActionSupport implements ServletResponseAware {
 		LOGGER.error("Exception handling v3 api, moduleName: " + getModuleName(), exception);
 
 		return ERROR;
+	}
+
+	protected void sendAuditLogs(AuditLogHandler.AuditLogContext auditLog) {
+		AuditLogUtil.sendAuditLogs(auditLog);
 	}
 }

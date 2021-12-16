@@ -4,6 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.db.ResponseCacheUtil;
 import com.facilio.bmsconsole.interceptors.AuthInterceptor;
+import com.facilio.bmsconsole.util.AuditLogUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -371,19 +372,7 @@ public class FacilioAction extends ActionSupport {
 	private int loggerLevel = -1;
 
 	protected void sendAuditLogs(AuditLogHandler.AuditLogContext auditLog) {
-		if (auditLog == null) {
-			return;
-		}
-		long orgId = AccountUtil.getCurrentOrg() != null ? AccountUtil.getCurrentOrg().getOrgId() : -1;
-		if (FacilioProperties.isDevelopment() || orgId == 173L) {	// send audit logs for Thalir org alone.
-			SessionManager.getInstance().sendMessage(new Message()
-					.setTopic(Topics.System.auditLogs)
-					.setOrgId(orgId)
-					.setContent(auditLog
-							.toJSON()
-					)
-			);
-		}
+		AuditLogUtil.sendAuditLogs(auditLog);
 	}
 
 }

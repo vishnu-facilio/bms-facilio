@@ -439,6 +439,10 @@ public class IAMUserUtil {
 	public static Integer findDCForUser(String username, GroupType groupType) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().findDCForUser(username, groupType));
 	}
+
+	public static void deleteDCLookup(String username, GroupType groupType) throws Exception {
+		FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().deleteDCLookup(username, groupType));
+	}
 	
 	public static long addDCLookup(Map<String, Object> props) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getTransactionalUserBean().addDCLookup(props));

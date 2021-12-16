@@ -14,7 +14,6 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FileField;
 import com.facilio.timeline.context.TimelineRequest;
-import com.facilio.timeline.util.TimelineAPI;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.commands.AttachmentCommand;
 import com.facilio.v3.context.Constants;
@@ -22,11 +21,12 @@ import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.v3.util.V3Util;
+import com.facilio.wmsv2.handler.AuditLogHandler;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
-import org.apache.struts2.interceptor.ServletResponseAware;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -36,7 +36,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.logging.Level;
+import java.util.function.Function;
 import java.util.logging.Logger;
 
 //TODO remove static methods, instantiate as object, better when testing
@@ -378,7 +378,12 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
 
         ModuleBaseWithCustomFields updatedRecord = Constants.getRecord(context, moduleName, id);
         JSONObject result = new JSONObject();
-        result.put(moduleName, FieldUtil.getAsJSON(updatedRecord));
+        JSONObject prop = FieldUtil.getAsJSON(updatedRecord);
+        result.put(moduleName, prop);
+
+        addAuditLog(Collections.singletonList(prop), getModuleName(), "Record {%s} of module %s has been updated",
+                AuditLogHandler.ActionType.UPDATE,
+                this.getData(), true);
         this.setData(result);
     }
 
@@ -457,8 +462,13 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(Constants.RECORD_MAP);
         ModuleBaseWithCustomFields record = recordMap.get(moduleName).get(0);
         JSONObject result = new JSONObject();
-        result.put(moduleName, FieldUtil.getAsJSON(record));
+        JSONObject recordJSON = FieldUtil.getAsJSON(record);
+        result.put(moduleName, recordJSON);
         this.setData(result);
+
+        addAuditLog(Collections.singletonList(recordJSON), getModuleName(), "Record {%s} of module %s has been created",
+                AuditLogHandler.ActionType.ADD,
+                this.getData(), true);
 
         this.httpServletResponse.setStatus(HttpServletResponse.SC_CREATED);
         return SUCCESS;
@@ -481,6 +491,44 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         setData(result);
 
         return SUCCESS;
+    }
+
+    private void addAuditLog(List<Map<String, Object>> props, String moduleName, String message,
+                             AuditLogHandler.ActionType actionType, JSONObject inputData, boolean addLinkConfig) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(moduleName);
+        FacilioField primaryField = modBean.getPrimaryField(moduleName);
+        if (primaryField == null || module == null) {
+            return;
+        }
+        for (Map<String, Object> prop : props) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.putAll(prop);
+            Object primaryValue = prop.get(primaryField.getName());
+            if (primaryValue instanceof Map) {
+                primaryValue = ((Map<?, ?>) primaryValue).get("primaryValue");
+            }
+            if (primaryValue == null) {
+                continue;
+            }
+            Long recordId = (Long) prop.get("id");
+            AuditLogHandler.AuditLogContext auditLogContext = new AuditLogHandler.AuditLogContext(String.format(message, primaryValue, module.getDisplayName()),
+                    null, inputData.toJSONString(), AuditLogHandler.RecordType.MODULE, moduleName,
+                    recordId)
+                    .setActionType(actionType);
+            sendAuditLogs(auditLogContext);
+
+            if (addLinkConfig) {
+                auditLogContext.setLinkConfig(((Function<Void, String>) o -> {
+                    JSONArray array = new JSONArray();
+                    JSONObject json = new JSONObject();
+                    json.put("moduleName", moduleName);
+                    json.put("id", recordId);
+                    array.add(json);
+                    return array.toJSONString();
+                }).apply(null));
+            }
+        }
     }
 
     /**
@@ -513,14 +561,50 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
     }
 
     public String delete() throws Exception {
-    		FacilioContext context = V3Util.deleteRecords(getModuleName(), getData(), getParams());
+        FacilioContext context = V3Util.deleteRecords(getModuleName(), getData(), getParams());
         Map<String, Integer> countMap = Constants.getCountMap(context);
         if (MapUtils.isEmpty(countMap)) {
             throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND);
         }
 
         this.setData(FieldUtil.getAsJSON(countMap));
+
+        addDeleteAuditLog(context, countMap);
         return SUCCESS;
+    }
+
+    private void addDeleteAuditLog(FacilioContext context, Map<String, Integer> countMap) {
+        try {
+            List<ModuleBaseWithCustomFields> deletedRecords = Constants.getDeletedRecords(context);
+            ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule module = moduleBean.getModule(getModuleName());
+            if (CollectionUtils.isNotEmpty(deletedRecords) && module != null) {
+                JSONObject json = new JSONObject();
+                json.put("count", countMap.get(getModuleName()));
+                if (deletedRecords.size() > 1) {
+                    sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("Deleted %s records of module %s", deletedRecords.size(), module.getDisplayName()),
+                            null, json.toJSONString(), AuditLogHandler.RecordType.MODULE, module.getDisplayName(), 0)
+                            .setActionType(AuditLogHandler.ActionType.DELETE)
+                    );
+                } else {
+                    ModuleBaseWithCustomFields deletedRecord = deletedRecords.get(0);
+                    FacilioField primaryField = moduleBean.getPrimaryField(getModuleName());
+                    Object value = FieldUtil.getValue(deletedRecord, primaryField);
+                    String subject;
+                    if (value != null) {
+                        subject = String.format("Deleted <b>%s</b> of module %s", value, module.getDisplayName());
+                    } else {
+                        subject = String.format("Deleted 1 record of module %s", module.getDisplayName());
+                    }
+                    sendAuditLogs(new AuditLogHandler.AuditLogContext(subject,
+                            null, json.toJSONString(), AuditLogHandler.RecordType.MODULE, module.getDisplayName(), 0)
+                            .setActionType(AuditLogHandler.ActionType.DELETE)
+                    );
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     public String files() throws Exception {
@@ -598,9 +682,11 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
     }
 
     public String timeline() throws Exception {
-        Map<String, Object> timeLineData = TimelineAPI.getTimeLineData(timelineRequest);
+        FacilioChain chain = ChainUtil.getTimelineChain(timelineRequest);
+        chain.execute();
+        FacilioContext context = chain.getContext();
 
-        setData("timelineData", timeLineData);
+        setData(FacilioConstants.ContextNames.TIMELINE_DATA, context.get(FacilioConstants.ContextNames.TIMELINE_DATA));
         return SUCCESS;
     }
 

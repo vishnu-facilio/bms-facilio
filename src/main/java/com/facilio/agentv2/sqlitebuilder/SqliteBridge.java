@@ -13,8 +13,6 @@ import com.facilio.agentv2.bacnet.BacnetIpPointContext;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.GetControllerRequest;
-import com.facilio.agentv2.device.Device;
-import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.lonWorks.LonWorksControllerContext;
 import com.facilio.agentv2.lonWorks.LonWorksPointContext;
 import com.facilio.agentv2.misc.MiscController;
@@ -158,9 +156,9 @@ public class SqliteBridge {
                         newController.setAgentId(newAgent.getId());
                         newController.setSiteId(newAgent.getSiteId());
                         try {
-                            addFieldDevice(newController);
+                            //addFieldDevice(newController);
                             long newControllerId = ControllerApiV2.addController(newController, newAgent);
-                            controller.setLastModifiedTime(newController.getDeviceId());
+
                             LOGGER.info(" --- migrated controller " + controller.getId() + " to " + newControllerId);
                             if (newControllerId > 0) {
                                 controller.setAgentId(newControllerId); // SET NEW CONTROLLER ID TO CONTROLLER'S AGENT ID
@@ -194,21 +192,21 @@ public class SqliteBridge {
         return controllersToMigrate;
     }
 
-    private static void addFieldDevice(Controller newController) throws Exception {
-        Device fieldDevice = new Device();
-        fieldDevice.setControllerType(newController.getControllerType());
-        fieldDevice.setSiteId(newController.getSiteId());
-        fieldDevice.setAgentId(newController.getAgentId());
-        fieldDevice.setName(newController.getName());
-        fieldDevice.setIdentifier(newController.getIdentifier());
-        fieldDevice.setCreatedTime(newController.getCreatedTime());
-        JSONObject controllerProps = new JSONObject();
-        controllerProps.putAll(newController.toJSON());
-        controllerProps.put(AgentConstants.CONTROLLER,newController.getChildJSON());
-        fieldDevice.setControllerProps(controllerProps);
-        FieldDeviceApi.addFieldDevice(fieldDevice);
-        newController.setDeviceId(fieldDevice.getId());
-    }
+//    private static void addFieldDevice(Controller newController) throws Exception {
+//        Device fieldDevice = new Device();
+//        fieldDevice.setControllerType(newController.getControllerType());
+//        fieldDevice.setSiteId(newController.getSiteId());
+//        fieldDevice.setAgentId(newController.getAgentId());
+//        fieldDevice.setName(newController.getName());
+//        fieldDevice.setIdentifier(newController.getIdentifier());
+//        fieldDevice.setCreatedTime(newController.getCreatedTime());
+//        JSONObject controllerProps = new JSONObject();
+//        controllerProps.putAll(newController.toJSON());
+//        controllerProps.put(AgentConstants.CONTROLLER,newController.getChildJSON());
+//        fieldDevice.setControllerProps(controllerProps);
+//        //FieldDeviceApi.addFieldDevice(fieldDevice);
+//        //newController.setDeviceId(fieldDevice.getId());
+//    }
 
     private static void migratePoints(ControllerContext controller, long newControllerId) {
         if (controller != null) {
@@ -239,7 +237,7 @@ public class SqliteBridge {
                                 }
                                 if (newPoint != null) {
                                     newPoint.setControllerId(newControllerId);
-                                    newPoint.setDeviceId(controller.getLastModifiedTime());
+
                                     if (PointsAPI.addPoint(newPoint)) {
                                         if (point.containsKey(AgentConstants.ID)) {
                                             LOGGER.info(" -- migrated point " + point.get(AgentConstants.ID));

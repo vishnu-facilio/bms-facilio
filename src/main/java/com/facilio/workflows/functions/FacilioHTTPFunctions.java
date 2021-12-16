@@ -1,5 +1,9 @@
 package com.facilio.workflows.functions;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,13 +13,18 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 
 import com.amazonaws.HttpMethod;
+import com.amazonaws.util.IOUtils;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ConnectionContext;
 import com.facilio.bmsconsole.util.ConnectionUtil;
+import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.cb.context.ChatBotConfirmContext;
 import com.facilio.cb.context.ChatBotExecuteContext;
 import com.facilio.cb.context.ChatBotParamContext;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.services.FacilioHttpUtils;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 import com.facilio.workflows.exceptions.FunctionParamException;
 
 public enum FacilioHTTPFunctions implements FacilioWorkflowFunctionInterface {
@@ -73,6 +82,29 @@ public enum FacilioHTTPFunctions implements FacilioWorkflowFunctionInterface {
 			String res = FacilioHttpUtils.doHttpPost(url, headers, params, body);
 			
 			return res;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	GET_BLOB_AS_FILE(3,"getBlobFile") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			String url = (String) objects[0];
+			
+			Map<String,String> params = (Map<String, String>) objects[1];
+			Map<String,String> headers = (Map<String, String>) objects[2];
+			
+			String fileName = (String) objects[3];
+			String type = (String) objects[4];
+			
+			return FacilioHttpUtils.doHttpGetWithFileResponse(url, headers, params, fileName, type);
 		};
 		
 		public void checkParam(Object... objects) throws Exception {

@@ -26,6 +26,16 @@ public class AssetScopingConfig extends SignUpData {
             scoping.setFieldValueGenerator("com.facilio.modules.SiteValueGenerator");
             scoping.setModuleId(module.getModuleId());
             ApplicationApi.addScopingConfigForApp(Collections.singletonList(scoping));
+
+            //adding site scope in Maintenance App
+            long maintenanceScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+            ScopingConfigContext maintenanceScoping = new ScopingConfigContext();
+            maintenanceScoping.setFieldName("siteId");
+            maintenanceScoping.setScopingId(maintenanceScopingId);
+            maintenanceScoping.setOperatorId(36);
+            maintenanceScoping.setFieldValueGenerator("com.facilio.modules.SiteValueGenerator");
+            maintenanceScoping.setModuleId(module.getModuleId());
+            ApplicationApi.addScopingConfigForApp(Collections.singletonList(maintenanceScoping));
         }
         catch(Exception e){
             e.printStackTrace();

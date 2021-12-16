@@ -128,6 +128,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			Instant plus7Days = creationInstant.plus(7, ChronoUnit.DAYS);
 			Instant currentTime = Instant.ofEpochMilli(System.currentTimeMillis());
 			if (currentTime.isAfter(plus7Days)) {
+				LOGGER.error("user token expired " + userToken);
 				return null;
 			}
 			user = getFacilioUser(Long.parseLong(userObj[0]), Long.parseLong(userObj[1]), true);
@@ -842,6 +843,18 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 		throw new IllegalArgumentException("username not found");
 	}
+
+	@Override
+	public void deleteDCLookup(String username, GroupType groupType) throws Exception {
+		List<FacilioField> fields = IAMAccountConstants.getDCFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(IAMAccountConstants.getDCLookupModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("userName"), username, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("groupType"), groupType.getIndex()+"", NumberOperators.EQUALS));
+		deleteRecordBuilder.delete();
+	}
 	
 	@Override
 	public long addDCLookup(Map<String, Object> props) throws Exception {
@@ -857,6 +870,18 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 		if (!result.isEmpty()) {
 			throw new IllegalArgumentException("Duplicate entries for the user name.");
+		}
+
+		List<Map<String, Object>> res = new GenericSelectRecordBuilder().
+				table(IAMAccountConstants.getDCLookupModule().getTableName())
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("userName"), String.valueOf(props.get("userName")), StringOperators.IS))
+				.get();
+
+		if (CollectionUtils.isNotEmpty(res)) {
+			if (!res.get(0).get("dc").toString().equals(props.get("dc").toString())) {
+				throw new IllegalArgumentException("User cannot be of different DC.");
+			}
 		}
 
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -2192,6 +2217,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			IAMUser iamUser = createUserFromProps(mapList.get(0));
 			return iamUser;
 		}
+		LOGGER.error("getFacilioUser is null");
 		return null;
 	
 	}

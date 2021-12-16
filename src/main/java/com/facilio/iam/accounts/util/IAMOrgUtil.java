@@ -88,6 +88,10 @@ public class IAMOrgUtil {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getOrgBean().getDomainSSODetails(orgId, appDomainType, groupType, domainType));
 	}
 	
+	public static List<Map<String, Object>> getDomainSSODetails(long orgId, AppDomain.AppDomainType appDomainType, AppDomain.GroupType groupType) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getOrgBean().getDomainSSODetails(orgId, appDomainType, groupType));
+	}
+	
 	public static AccountSSO getAccountSSO(long orgId) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getOrgBean().getAccountSSO(orgId));
 	}
@@ -116,5 +120,9 @@ public class IAMOrgUtil {
 	public static void disableTotp(long orgId, AppDomain.GroupType groupType) throws Exception{
 		FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getOrgBean().disableTotp(orgId, groupType));
 		
+	}
+
+	public static List<AppDomain> getCustomAppDomain(AppDomain.AppDomainType type, long orgId) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getOrgBean().getCustomAppDomain(type, orgId));
 	}
 }

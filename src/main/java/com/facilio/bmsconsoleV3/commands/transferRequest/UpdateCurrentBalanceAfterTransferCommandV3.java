@@ -25,9 +25,8 @@ public class UpdateCurrentBalanceAfterTransferCommandV3 extends FacilioCommand {
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3TransferRequestContext> transferRequestContexts = recordMap.get(moduleName);
         if (CollectionUtils.isNotEmpty(transferRequestContexts)){
-            for (V3TransferRequestContext transferRequestContext : transferRequestContexts) {
-                if (transferRequestContext != null && transferRequestContext.getData().get("isCompleted").equals(true)) {
-                    Long storeroomId = transferRequestContext.getTransferToStore().getId();
+                if (transferRequestContexts.get(0).getData().get("isCompleted").equals(true)) {
+                    Long storeroomId = transferRequestContexts.get(0).getTransferToStore().getId();
                     StoreRoomContext storeRoom = StoreroomApi.getStoreRoom(storeroomId);
 
                     if(!Objects.isNull(context.get(FacilioConstants.ContextNames.ITEM_TYPES))){
@@ -40,7 +39,6 @@ public class UpdateCurrentBalanceAfterTransferCommandV3 extends FacilioCommand {
                             String itemModuleName = FacilioConstants.ContextNames.ITEM;
                             FacilioModule module = modBean.getModule(itemModuleName);
                             List<FacilioField> fields = modBean.getAllFields(itemModuleName);
-
                             SelectRecordsBuilder<ItemContext> selectRecordsBuilder = new SelectRecordsBuilder<ItemContext>()
                                     .module(module)
                                     .beanClass(ItemContext.class)
@@ -125,15 +123,11 @@ public class UpdateCurrentBalanceAfterTransferCommandV3 extends FacilioCommand {
                             InsertRecordBuilder<ToolContext> readingBuilder = new InsertRecordBuilder<ToolContext>()
                                     .module(module).fields(fields).addRecord(toolRecord);
                             readingBuilder.save();
-
                         }
                     }
-                    }
-                        }
-
                     }
                 }
-
+        }
         return false;
     }
 

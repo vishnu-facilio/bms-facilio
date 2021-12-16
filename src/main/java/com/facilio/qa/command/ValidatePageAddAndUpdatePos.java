@@ -27,7 +27,7 @@ public class ValidatePageAddAndUpdatePos extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(list)) {
             Map<Long, List<PageContext>> templateVsPages = new HashMap<>();
             for (PageContext page : list) {
-                Long templateId = page.getParent() == null ? null : page.getParent()._getId();
+                Long templateId = page.getParent() == null ? null : page.getParent().getId();
                 V3Util.throwRestException(templateId == null, ErrorCode.VALIDATION_ERROR, "Parent template of page cannot be null");
                 V3Util.throwRestException(page.getPosition() == null || page.getPosition() <= 0, ErrorCode.VALIDATION_ERROR, "Invalid position for page");
                 templateVsPages.computeIfAbsent(templateId, k -> new ArrayList<>()).add(page);

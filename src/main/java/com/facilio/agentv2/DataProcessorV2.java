@@ -9,9 +9,6 @@ import com.facilio.agent.fw.constants.PublishType;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.ControllerUtilV2;
-import com.facilio.agentv2.device.Device;
-import com.facilio.agentv2.device.DeviceUtil;
-import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.IotMessage;
 import com.facilio.agentv2.iotmessage.IotMessageApiV2;
 import com.facilio.agentv2.metrics.MetricsApi;
@@ -42,7 +39,6 @@ import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -135,7 +131,7 @@ public class DataProcessorV2
                     processStatus = processAgent(payload, agent);
                     break;
                 case CONTROLLERS:
-                    processStatus = processDevices(agent, payload);
+                    processStatus = processControllers(agent, payload);
                     break;
                 case DEVICE_POINTS:
                     processStatus = processDevicePoints(agent, payload);
@@ -321,6 +317,9 @@ public class DataProcessorV2
                 JSONObject controllerJSON = (JSONObject) payload.get(AgentConstants.CONTROLLER);
                 if (containsCheck(AgentConstants.CONTROLLER_TYPE, payload)) {
                     FacilioControllerType controllerType = FacilioControllerType.valueOf(((Number) payload.get(AgentConstants.CONTROLLER_TYPE)).intValue());
+                    if(controllerType==FacilioControllerType.NIAGARA && payload.containsKey(AgentConstants.PORT_NUMBER)){
+                        controllerJSON.put(AgentConstants.PORT_NUMBER,payload.get(AgentConstants.PORT_NUMBER));
+                    }
                     if (!controllerJSON.isEmpty()) {
                         Controller controller = controllerUtil.getCachedController(controllerJSON, controllerType);
                         //Controller controller = ControllerApiV2.getControllerFromDb(controllerJSON, agentId, controllerType);
@@ -332,7 +331,7 @@ public class DataProcessorV2
                                 MiscController miscController = new MiscController(agent.getId(), AccountUtil.getCurrentOrg().getOrgId());
                                 miscController.setName(((JSONObject) (payload.get(AgentConstants.CONTROLLER))).get(AgentConstants.NAME).toString());
                                 miscController.setDataInterval(agent.getInterval() * 60 * 1000);
-                                Device device = new Device();
+                                /*Device device = new Device();
                                 device.setIdentifier(miscController.getName());
                                 device.setName(miscController.getName());
                                 device.setAgentId(agent.getId());
@@ -341,7 +340,7 @@ public class DataProcessorV2
                                 device.setConfigure(true);
                                 device.setSiteId(agent.getSiteId());
                                 long deviceId = FieldDeviceApi.addFieldDevice(device);
-                                miscController.setDeviceId(deviceId);
+                                miscController.setDeviceId(deviceId);*/
                                 ControllerApiV2.addController(miscController);
                                 return miscController;
                             } else {
@@ -391,14 +390,15 @@ public class DataProcessorV2
     }
 
 
-    private boolean processDevices(FacilioAgent agent, JSONObject payload) {
+    private boolean processControllers(FacilioAgent agent, JSONObject payload) {
         try {
-            return DeviceUtil.processDevices(agent, payload);
+            return ControllerUtilV2.processControllers(agent, payload);
         } catch (Exception e) {
-            LOGGER.info("Exception occurred while processing device", e);
+            LOGGER.info("Exception occurred while processing controller", e);
         }
         return false;
     }
+
 
     private void processCOV(JSONObject payload, String agentName) {
 
@@ -418,11 +418,10 @@ public class DataProcessorV2
                 throw new Exception("payload missing controllerType ");
             }
             int type = ((Number)payload.get(AgentConstants.CONTROLLER_TYPE)).intValue();
-            Device device = FieldDeviceApi.getDevice(agent.getId(), DeviceUtil.getControllerIdentifier(agent, type, controllerJson));
-
-
-            if (device != null) {
-                return PointsUtil.processPoints(payload, device, agent);
+            Controller controller = getCachedControllerUsingPayload(payload, agent.getId());
+            //Device device = FieldDeviceApi.getDevice(agent.getId(), DeviceUtil.getControllerIdentifier(agent, type, controllerJson));
+            if (controller != null) {
+                return PointsUtil.processPoints(payload, controller, agent);
             } else {
                 throw new Exception("Exception occurred, Controller obtained in null");
             }

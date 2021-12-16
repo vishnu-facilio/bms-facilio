@@ -37,7 +37,7 @@ public class MCQMultiAnswerHandler extends AnswerHandler<MCQMultiAnswerContext> 
         MCQMultiAnswerContext mcqMultiAnswer = new MCQMultiAnswerContext();
         MCQMultiAnswerContext.MCQMultiAnswer multiAnswer = new MCQMultiAnswerContext.MCQMultiAnswer();
         multiAnswer.setSelected(answer.getMultiEnumAnswer().stream()
-                                    .map(MCQOptionContext::_getId)
+                                    .map(MCQOptionContext::getId)
                                     .collect(Collectors.toSet()));
         if ( StringUtils.isNotEmpty(answer.getEnumOtherAnswer()) )  { // Assumption is we'll validate option before adding and so not doing any check here
             multiAnswer.setOther(answer.getEnumOtherAnswer());
@@ -53,7 +53,7 @@ public class MCQMultiAnswerHandler extends AnswerHandler<MCQMultiAnswerContext> 
         Set<Long> selected = answer.getAnswer().getSelected();
         V3Util.throwRestException(CollectionUtils.isEmpty(selected), ErrorCode.VALIDATION_ERROR, "At least one option need to be selected for MCQ");
         AnswerContext answerContext = new AnswerContext();
-        Map<Long, MCQOptionContext> optionMap = mcqQuestion.getOptions().stream().collect(Collectors.toMap(MCQOptionContext::_getId, Function.identity()));
+        Map<Long, MCQOptionContext> optionMap = mcqQuestion.getOptions().stream().collect(Collectors.toMap(MCQOptionContext::getId, Function.identity()));
         if (CollectionUtils.isNotEmpty(selected)) { // Check is for handling answers only with 'other' option
             answerContext.setMultiEnumAnswer(selected.stream()
                     .map(id -> validateAndReturnMCQOption(id, optionMap, answer, answerContext))
@@ -98,7 +98,7 @@ public class MCQMultiAnswerHandler extends AnswerHandler<MCQMultiAnswerContext> 
 
         FacilioField questionField = fieldMap.get("question");
         FacilioField enumField = relFieldMap.get("right");
-        Map<Long, QuestionContext> questionMap = questions.stream().collect(Collectors.toMap(QuestionContext::_getId, Function.identity()));
+        Map<Long, QuestionContext> questionMap = questions.stream().collect(Collectors.toMap(QuestionContext::getId, Function.identity()));
 
         FacilioField idField = FieldFactory.getIdField(module);
         List<Map<String, Object>> props = QAndAUtil.constructAnswerSelectWithQuestionAndResponseTimeRange(modBean, questionMap.keySet(), parentId, range)
