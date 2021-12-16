@@ -109,12 +109,13 @@ public class ReportPivotTableDataContext {
 	}
 
 
-	private long assetModuleId = -1;
-	public long getAssetModuleId() {
-		return assetModuleId;
+	private long parentModuleId = -1;
+	public long getParentModuleId() {
+		return parentModuleId;
 	}
-	public void setAssetModuleId(long assetModuleId) {
-		this.assetModuleId = assetModuleId;
+
+	public void setParentModuleId(long parentModuleId) {
+		this.parentModuleId = parentModuleId;
 	}
 
 	@Override
