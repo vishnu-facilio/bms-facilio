@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.fields.FacilioField;
 
 public class TimelogContext {
@@ -83,19 +85,27 @@ public class TimelogContext {
         return isTimerEnabled;
     }
 
-    private long doneBy;
-    public void setDoneBy(long doneBy) {
-        this.doneBy = doneBy;
+    private long doneById;
+    public void setDoneById(long doneById) {
+        this.doneById = doneById;
     }
-    public long getDoneBy() {
-        return doneBy;
+    public long getDoneById() {
+        return doneById;
     }
 
-    private FacilioField fromStatusField;
-    public void setFromStatusField(FacilioField fromStatusField) {
-        this.fromStatusField = fromStatusField;
+    private FacilioField fromStatus;
+    public void setFromStatus(FacilioField fromStatus) {
+        this.fromStatus = fromStatus;
     }
-    public FacilioField getFromStatusField() {
-        return fromStatusField;
+    public FacilioField getFromStatus() {
+        return fromStatus;
+    }
+
+    private User doneBy;
+    public void setDoneBy(User doneBy) {
+        this.doneBy = doneBy;
+    }
+    public User getDoneBy() {
+        return doneBy;
     }
 }

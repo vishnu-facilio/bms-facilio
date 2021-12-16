@@ -1,6 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.bean.UserBean;
+import com.facilio.accounts.dto.User;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ContractsContext;
 import com.facilio.bmsconsole.context.TimelogContext;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.command.FacilioCommand;
@@ -13,9 +16,9 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import org.apache.commons.chain.Context;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class GetTimeLogCommand extends FacilioCommand {
 
@@ -51,21 +54,31 @@ public class GetTimeLogCommand extends FacilioCommand {
     }
 
     private void setObjectFields(List<TimelogContext> timeLogs, ModuleBean moduleBean,FacilioModule module) throws  Exception{
-        Set<Long> fromStatusIds = null;
-        //Set<Long> doneBy = null;
+        Set<Long> fromStatusIds = new HashSet<>();
+        Set<Long> doneBy = new HashSet<>();
 
         for(TimelogContext timelogContext : timeLogs){
-            fromStatusIds = Collections.singleton(timelogContext.getFromStatusId());
-            //doneBy = Collections.singleton(timeLogs.get(i).getDoneBy());
+            fromStatusIds.add(timelogContext.getFromStatusId());
+            doneBy.add(timelogContext.getDoneById());
         }
 
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getIdCondition(fromStatusIds,ModuleFactory.getTicketStatusModule()));
-        TicketAPI.getStatuses(module,criteria);
+         TicketAPI.getStatuses(module,criteria);
 
-        for(TimelogContext timelogContext : timeLogs){
-            timelogContext.setFromStatusField(moduleBean.getField(timelogContext.getFromStatusId()));
+        UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+        List<User> doneByUsers = userBean.getUsers(null,false,true,doneBy);
+
+        if(!(doneByUsers.isEmpty())){
+            Map<Long,User> doneByUserMap = doneByUsers.stream().collect(Collectors.toMap(User::getId,Function.identity()));
+            for(TimelogContext timelogContext : timeLogs){
+                timelogContext.setDoneBy(doneByUserMap.get(timelogContext.getDoneById()));
+            }
         }
+
+      for(TimelogContext timelogContext : timeLogs){
+            timelogContext.setFromStatus(moduleBean.getField(timelogContext.getFromStatusId()));
+       }
 
     }
 
