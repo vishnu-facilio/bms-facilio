@@ -57,7 +57,7 @@ public class WorkorderPageFactory extends PageFactory {
         // tenant widget
         if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS) &&
                 workorder.getTenant() != null) {
-            widgetHeight = 3;
+            widgetHeight = 4;
             PageWidget totalCost = new PageWidget(PageWidget.WidgetType.TENANT);
             totalCost.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
             section.addWidget(totalCost);
