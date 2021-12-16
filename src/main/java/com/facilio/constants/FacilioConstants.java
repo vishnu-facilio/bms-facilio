@@ -622,6 +622,7 @@ public class FacilioConstants {
 		public static final String KPI_LIST = "kpis";
 		public static final String KPI_CATEGORY = "kpiCategory";
 		public static final String FORK_POST_READING_PROCESSING = "forkPostReadingProcessing";
+		public static final String TIMELOGS = "Timelogs";
 		
 		public static final String DASHBOARD = "dashboard";
 		public static final String DASHBOARD_TAB = "dashboardTab";

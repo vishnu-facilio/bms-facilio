@@ -428,7 +428,7 @@ public class StateFlowAction extends FacilioAction {
 		constructListContext(context);
 
 		chain.execute();
-		setResult(FacilioConstants.ContextNames.WORK_ORDER, context.get(FacilioConstants.ContextNames.WORK_ORDER));
+		setResult(FacilioConstants.ContextNames.TIMELOGS, context.get(FacilioConstants.ContextNames.TIMELOGS));
 
 		return SUCCESS;
 	}

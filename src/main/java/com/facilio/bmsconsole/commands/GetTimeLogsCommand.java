@@ -20,7 +20,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class GetTimeLogCommand extends FacilioCommand {
+public class GetTimeLogsCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -49,7 +49,7 @@ public class GetTimeLogCommand extends FacilioCommand {
         List<TimelogContext> timeLogs = FieldUtil.getAsBeanListFromMapList(builder.get(),TimelogContext.class);
         setObjectFields(timeLogs,moduleBean,module);
 
-        context.put(FacilioConstants.ContextNames.WORK_ORDER, timeLogs);
+        context.put(FacilioConstants.ContextNames.TIMELOGS, timeLogs);
         return false;
     }
 
