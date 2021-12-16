@@ -1,7 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.util.StateFlowRulesAPI;
+import com.facilio.bmsconsole.context.TimelogContext;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -12,8 +13,9 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import org.apache.commons.chain.Context;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 public class GetTimeLogCommand extends FacilioCommand {
 
@@ -41,9 +43,30 @@ public class GetTimeLogCommand extends FacilioCommand {
             builder.andCriteria(filterCriteria);
         }
 
-        List<Map<String,Object>> timeLogs = builder.get();
+        List<TimelogContext> timeLogs = FieldUtil.getAsBeanListFromMapList(builder.get(),TimelogContext.class);
+        setObjectFields(timeLogs,moduleBean,module);
+
         context.put(FacilioConstants.ContextNames.WORK_ORDER, timeLogs);
         return false;
+    }
+
+    private void setObjectFields(List<TimelogContext> timeLogs, ModuleBean moduleBean,FacilioModule module) throws  Exception{
+        Set<Long> fromStatusIds = null;
+        //Set<Long> doneBy = null;
+
+        for(TimelogContext timelogContext : timeLogs){
+            fromStatusIds = Collections.singleton(timelogContext.getFromStatusId());
+            //doneBy = Collections.singleton(timeLogs.get(i).getDoneBy());
+        }
+
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getIdCondition(fromStatusIds,ModuleFactory.getTicketStatusModule()));
+        TicketAPI.getStatuses(module,criteria);
+
+        for(TimelogContext timelogContext : timeLogs){
+            timelogContext.setFromStatusField(moduleBean.getField(timelogContext.getFromStatusId()));
+        }
+
     }
 
 }
