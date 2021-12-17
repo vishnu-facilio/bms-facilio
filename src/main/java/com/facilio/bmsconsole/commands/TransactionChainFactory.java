@@ -16,6 +16,7 @@ import com.facilio.agentv2.point.AddPointCommand;
 import com.facilio.agentv2.point.ConfigurePointCommand;
 import com.facilio.agentv2.point.EditPointCommand;
 import com.facilio.agentv2.sqlitebuilder.AgentSqliteMakerCommand;
+import com.facilio.banner.commands.CloseBannerCommand;
 import com.facilio.bmsconsole.actions.GetModuleFromReportContextCommand;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
@@ -5217,6 +5218,12 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getCloseBannerChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new CloseBannerCommand());
+		return chain;
+	}
+
 	public static FacilioChain getAddOrUpdateScoringRuleChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddOrUpdateScoringRuleCommand());
@@ -6200,7 +6207,7 @@ public class TransactionChainFactory {
 		chain.addCommand(new GetAttachmentsListCommand());
 		return chain;
 	}
-	
+
 }
 
 

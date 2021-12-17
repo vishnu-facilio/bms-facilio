@@ -9370,7 +9370,24 @@ public class FieldFactory extends BaseFieldFactory {
 		fields.add(getField("h", "H", module, FieldType.NUMBER));
 		return fields;
 	}
-	
+
+	public static List<FacilioField> getBannerFields() {
+        FacilioModule module = ModuleFactory.getBannerModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        fields.add(getIdField(module));
+        fields.add(getNumberField("userId", "USER_ID", module));
+        fields.add(getStringField("subject", "SUBJECT", module));
+        fields.add(getNumberField("startDate", "START_DATE", module));
+        fields.add(getNumberField("endDate", "END_DATE", module));
+        fields.add(getNumberField("icon", "ICON", module));
+        fields.add(getNumberField("type", "TYPE", module));
+        fields.add(getNumberField("priority", "PRIORITY", module));
+        fields.add(getStringField("uniqueId", "UNIQUE_ID", module));
+        fields.add(getField("cancelled", "CANCELLED", module, FieldType.BOOLEAN));
+
+        return fields;
+    }
 	
 	public static List<FacilioField> getIndoorFloorPlanFields() {
 		FacilioModule module = ModuleFactory.getIndoorFloorPlanModule();
