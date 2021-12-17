@@ -239,7 +239,8 @@ public class PageFactory {
 				return TransferRequestShipmentPageFactory.getTransferRequestShipmentPage((V3TransferRequestShipmentContext) record, module);
 			case ContextNames.PEOPLE:
 				return PeopleModulesPageFactory.getPeopleModulePage((PeopleContext) record, module);
-
+			case ContextNames.STORE_ROOM:
+				return StoreRoomPageFactory.getStoreRoomPage((StoreRoomContext) record, module);
 		}
 		if (module.getExtendModule() == null) {	// temp
 			// etisalat changes will be changed to standard method
