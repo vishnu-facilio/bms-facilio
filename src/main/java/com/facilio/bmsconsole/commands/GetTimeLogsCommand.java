@@ -15,6 +15,8 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
+import org.owasp.esapi.util.CollectionsUtil;
 
 import java.util.*;
 import java.util.function.Function;
@@ -35,6 +37,8 @@ public class GetTimeLogsCommand extends FacilioCommand {
         }
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
+        String parentModueName = (String) context.get(FacilioConstants.ContextNames.PARENT_MODULE_NAME);
+        FacilioModule parentModule = moduleBean.getModule(parentModueName);
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                  .select(FieldFactory.getTimeLogFields(null))
@@ -47,13 +51,13 @@ public class GetTimeLogsCommand extends FacilioCommand {
         }
 
         List<TimelogContext> timeLogs = FieldUtil.getAsBeanListFromMapList(builder.get(),TimelogContext.class);
-        setObjectFields(timeLogs,moduleBean,module);
+        setObjectFields(timeLogs,parentModule);
 
         context.put(FacilioConstants.ContextNames.TIMELOGS, timeLogs);
         return false;
     }
 
-    private void setObjectFields(List<TimelogContext> timeLogs, ModuleBean moduleBean,FacilioModule module) throws  Exception{
+    private void setObjectFields(List<TimelogContext> timeLogs,FacilioModule module) throws  Exception{
         Set<Long> fromStatusIds = new HashSet<>();
         Set<Long> doneBy = new HashSet<>();
 
@@ -64,22 +68,19 @@ public class GetTimeLogsCommand extends FacilioCommand {
 
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getIdCondition(fromStatusIds,ModuleFactory.getTicketStatusModule()));
-         TicketAPI.getStatuses(module,criteria);
+        List<FacilioStatus> fromStatusList = TicketAPI.getStatuses(module,criteria);
 
         UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
         List<User> doneByUsers = userBean.getUsers(null,false,true,doneBy);
 
-        if(!(doneByUsers.isEmpty())){
+        if(CollectionUtils.isNotEmpty(doneByUsers) && CollectionUtils.isNotEmpty(fromStatusList)){
             Map<Long,User> doneByUserMap = doneByUsers.stream().collect(Collectors.toMap(User::getId,Function.identity()));
+            Map<Long,FacilioStatus> fromStatusMap = fromStatusList.stream().collect(Collectors.toMap(FacilioStatus::getId,Function.identity()));
             for(TimelogContext timelogContext : timeLogs){
                 timelogContext.setDoneBy(doneByUserMap.get(timelogContext.getDoneById()));
+                timelogContext.setFromStatus(fromStatusMap.get(timelogContext.getFromStatusId()));
             }
         }
-
-      for(TimelogContext timelogContext : timeLogs){
-            timelogContext.setFromStatus(moduleBean.getField(timelogContext.getFromStatusId()));
-       }
-
     }
 
 }

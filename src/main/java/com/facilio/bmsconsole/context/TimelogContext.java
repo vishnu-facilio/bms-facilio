@@ -93,11 +93,11 @@ public class TimelogContext {
         return doneById;
     }
 
-    private FacilioField fromStatus;
-    public void setFromStatus(FacilioField fromStatus) {
+    private FacilioStatus fromStatus;
+    public void setFromStatus(FacilioStatus fromStatus) {
         this.fromStatus = fromStatus;
     }
-    public FacilioField getFromStatus() {
+    public FacilioStatus getFromStatus() {
         return fromStatus;
     }
 

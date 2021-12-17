@@ -34,7 +34,15 @@ public class StateFlowAction extends FacilioAction {
 	public void setModuleName(String moduleName) {
 		this.moduleName = moduleName;
 	}
-	
+
+	private String parentModuleName;
+	public void setParentModuleName(String parentModuleName) {
+		this.parentModuleName = parentModuleName;
+	}
+	public String getParentModuleName() {
+		return parentModuleName;
+	}
+
 	private long id = -1;
 	public long getId() {
 		return id;
@@ -423,7 +431,7 @@ public class StateFlowAction extends FacilioAction {
 		FacilioChain chain = ReadOnlyChainFactory.getTimeLogChain();
 		FacilioContext context = chain.getContext();
 
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.PARENT_MODULE_NAME, parentModuleName);
 		context.put(FacilioConstants.ContextNames.ID, id);
 		constructListContext(context);
 
