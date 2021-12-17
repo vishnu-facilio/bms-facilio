@@ -36,8 +36,8 @@ public class AddAgentAction extends AgentActionV2
     private static final Logger LOGGER = LogManager.getLogger(AddAgentAction.class.getName());
 
 
-    @NotNull
-    @Size(min = 3,max = 100,message = "Agent name must have 3-100 characters")
+
+    @Size(min = 0,max = 100,message = "Agent name must have 3-100 characters")
     private String agentName;
 
     @Min(value = 10,message = "Data interval can't be less than 10")
@@ -61,7 +61,7 @@ public class AddAgentAction extends AgentActionV2
             FacilioContext context = addAgentChain.getContext();
             FacilioAgent agent = new FacilioAgent();
 
-            if(AgentType.valueOf(agentType) == AgentType.NIAGARA || getAgentName()!=null || !getAgentName().isEmpty()){
+            if(AgentType.valueOf(agentType) == AgentType.NIAGARA || !getAgentName().isEmpty()){
                 agent.setName(getAgentName());
             }
             else {
