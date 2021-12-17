@@ -18,7 +18,7 @@ public class WidgetCardContext extends DashboardWidgetContext {
 		this.cardLayout = cardLayout;
 	}
 	
-	private ScriptMode scriptMode = ScriptMode.DEFAULT_SCRIPT;
+	private ScriptMode scriptMode = ScriptMode.NONE;
 	
 	public void setScriptMode(ScriptMode scriptMode) {
 		this.scriptMode = scriptMode;
