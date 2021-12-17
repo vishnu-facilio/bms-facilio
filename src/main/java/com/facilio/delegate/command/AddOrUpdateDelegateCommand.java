@@ -21,6 +21,7 @@ import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
 
 import java.util.Collections;
 import java.util.List;
@@ -49,10 +50,14 @@ public class AddOrUpdateDelegateCommand extends FacilioCommand {
 
         DelegationUtil.fillDelegation(Collections.singletonList(delegationContext));
 
+        JSONObject linkConfig = new JSONObject();
+        linkConfig.put("id", delegationContext.getId());
+        linkConfig.put("navigateTo", "UserDelegation");
         BannerUtil.addBanner("userDelegation_" + delegationContext.getId(),
                 delegationContext.getDelegateUserId(), String.format("%s delegates the work to you from %s till %s",
                         delegationContext.getUser().getName(), DateTimeUtil.getFormattedTime(delegationContext.getFromTime(), "dd-MM-yyyy"), DateTimeUtil.getFormattedTime(delegationContext.getToTime(), "dd-MM-yyyy")),
-                delegationContext.getFromTime(), delegationContext.getToTime(), BannerContext.Type.COLLAPSE, BannerContext.Priority.HIGH);
+                delegationContext.getFromTime(), delegationContext.getToTime(), BannerContext.Type.COLLAPSE, BannerContext.Priority.HIGH,
+                linkConfig.toJSONString());
 
         return false;
     }

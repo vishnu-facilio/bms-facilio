@@ -18,10 +18,11 @@ public class BannerUtil {
     private static final Logger LOGGER = Logger.getLogger(BannerUtil.class.getName());
 
     public static void addBanner(String uniqueID, long userId, String subject, long startDate, long endDate) throws Exception {
-        addBanner(uniqueID, userId, subject, startDate, endDate, null, null);
+        addBanner(uniqueID, userId, subject, startDate, endDate, null, null, null);
     }
 
-    public static void addBanner(String uniqueID, long userId, String subject, long startDate, long endDate, BannerContext.Type type, BannerContext.Priority priority) throws Exception {
+    public static void addBanner(String uniqueID, long userId, String subject, long startDate, long endDate,
+                                 BannerContext.Type type, BannerContext.Priority priority, String linkConig) throws Exception {
         BannerContext banner = new BannerContext();
         banner.setUniqueId(uniqueID);
         banner.setUserId(userId);
@@ -30,6 +31,7 @@ public class BannerUtil {
         banner.setEndDate(endDate);
         banner.setType(type);
         banner.setPriority(priority);
+        banner.setLinkConfig(linkConig);
         addBanner(banner);
     }
 

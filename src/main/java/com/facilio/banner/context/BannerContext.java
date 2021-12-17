@@ -112,6 +112,14 @@ public class BannerContext implements Serializable {
         this.priority = priority;
     }
 
+    private String linkConfig;
+    public String getLinkConfig() {
+        return linkConfig;
+    }
+    public void setLinkConfig(String linkConfig) {
+        this.linkConfig = linkConfig;
+    }
+
     public enum Type implements FacilioIntEnum {
         CANCEL("Cancel"),
         COLLAPSE("Collapse");

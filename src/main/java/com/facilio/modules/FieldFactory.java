@@ -9385,6 +9385,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getNumberField("priority", "PRIORITY", module));
         fields.add(getStringField("uniqueId", "UNIQUE_ID", module));
         fields.add(getField("cancelled", "CANCELLED", module, FieldType.BOOLEAN));
+        fields.add(getStringField("linkConfig", "LINK_CONFIG", module));
 
         return fields;
     }
