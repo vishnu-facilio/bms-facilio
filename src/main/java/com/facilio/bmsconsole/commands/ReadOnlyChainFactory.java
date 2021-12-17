@@ -1208,7 +1208,7 @@ public class ReadOnlyChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new ConvertModuleToTimeLogModuleCommand());
 		c.addCommand(new GenerateCriteriaFromFilterForNonModulesCommand());
-		c.addCommand(new GetTimeLogCommand());
+		c.addCommand(new GetTimeLogsCommand());
 		return c;
 	}
 

@@ -8417,7 +8417,7 @@ public class FieldFactory extends BaseFieldFactory {
         list.add(getField("duration", "DURATION", module, FieldType.NUMBER));
 
         list.add(getField("isTimerEnabled", "IS_TIMER_ENABLED", module, FieldType.BOOLEAN));
-        list.add(getField("doneBy", "DONE_BY", module, FieldType.NUMBER));
+        list.add(getField("doneById", "DONE_BY", module, FieldType.NUMBER));
         return list;
     }
 
