@@ -12,6 +12,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.modules.fields.LookupField;
 
 public class LoadStoreRoomLookUpCommandV3 extends FacilioCommand {
@@ -30,6 +31,9 @@ public class LoadStoreRoomLookUpCommandV3 extends FacilioCommand {
         LookupField locationField = (LookupField) fieldsAsMap.get("location");
         LookupField ownerField = (LookupField) fieldsAsMap.get("owner");
         LookupField siteField = (LookupField) fieldsAsMap.get("site");
+        locationField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
+        ownerField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
+        siteField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
 
         additionaLookups.add(locationField);
         additionaLookups.add(ownerField);
