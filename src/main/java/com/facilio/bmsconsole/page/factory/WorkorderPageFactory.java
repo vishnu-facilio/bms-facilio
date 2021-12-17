@@ -194,6 +194,20 @@ public class WorkorderPageFactory extends PageFactory {
 
         addRelatedListWidgets(relatedRecordsSection, module.getModuleId());
     }
+    
+    private static void addMetricandTimelogTab(Page page) throws Exception {
+        Page.Tab metricandTimelogTab = page.new Tab("timelog");
+        page.addTab(metricandTimelogTab);
+
+        Page.Section metrictimelogSection = page.new Section();
+        metricandTimelogTab.addSection(metrictimelogSection);
+
+        // metric and timelog widget
+        PageWidget stateTransitionTimelogWidget = new PageWidget(PageWidget.WidgetType.STATE_TRANSITION_TIME_LOG);
+        stateTransitionTimelogWidget.addToLayoutParams(metrictimelogSection, 24, 8);
+		metrictimelogSection.addWidget(stateTransitionTimelogWidget);
+
+    }
 
     private static void addTasksTab(Page page) {
         Page.Tab tasksTab = page.new Tab("tasks");
@@ -277,6 +291,10 @@ public class WorkorderPageFactory extends PageFactory {
             addInventoryTab(page);
         }
         addRelatedRecordsTab(page, workorder.getModuleId());
+        if(AccountUtil.getCurrentOrg().getOrgId() == 173)
+        {
+        addMetricandTimelogTab(page);
+        }
         addHistoryTab(page);
         return page;
     }
