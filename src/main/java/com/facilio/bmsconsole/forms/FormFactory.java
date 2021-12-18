@@ -20,6 +20,9 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -1682,14 +1685,19 @@ public class FormFactory {
 	}
 	
 	
-	private static List<FormField> getStoreRoomFormField() {
+	private static List<FormField> getStoreRoomFormField(){
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("site", FieldDisplayType.LOOKUP_SIMPLE, "Located Site", Required.REQUIRED, "site", 3, 2));
 		fields.add(new FormField("location", FieldDisplayType.LOOKUP_SIMPLE, "Location", Required.OPTIONAL, "location", 3, 3).setAllowCreateOptions(true).setCreateFormName("location_form"));
 		fields.add(new FormField("owner", FieldDisplayType.LOOKUP_SIMPLE, "Owner", Required.OPTIONAL, 4, 1));
-		fields.add(new FormField("sites", FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Serving Sites", Required.OPTIONAL,"site", 5, 1));
+		FormField field = new FormField("sites", FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Serving Sites", Required.OPTIONAL,"site", 5, 1);
+		JSONObject filterObj = new JSONObject();
+		filterObj.put("skipSiteFilter", true);
+		field.setConfig(filterObj);
+		fields.add(field);
+		
 		fields.add(new FormField("isApprovalNeeded", FieldDisplayType.DECISION_BOX, "Approval Needed", Required.OPTIONAL, 6, 2));
 		fields.add(new FormField("isGatePassRequired", FieldDisplayType.DECISION_BOX, "Gate Pass Needed", Required.OPTIONAL, 6, 3));
 		return fields;
