@@ -42,7 +42,7 @@ public class FormFactory {
 		forms.put("tenant", getTenantForm());
 		forms.put("item_form", getItemForm());
 		forms.put("item_track_form", getItemWithIndTrackForm());
-		forms.put("store_room_form", getStoreRoomForm());
+		//forms.put("store_room_form", getStoreRoomForm());
 		forms.put("item_types_form", getItemTypesForm());
 		forms.put("tool_types_form", getTooltypesForm());
 		forms.put("vendors_form", getVendorsForm());
@@ -497,6 +497,7 @@ public class FormFactory {
 
 		List<FacilioForm> trForm = Arrays.asList(getTransferRequestForm());
 		List<FacilioForm> trShipmentForm = Arrays.asList(getTransferRequestShipmentForm());
+		List<FacilioForm> storeRoomForm = Arrays.asList(getStoreRoomForm());
 
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
@@ -568,6 +569,7 @@ public class FormFactory {
 				.put(ContextNames.WARRANTY_CONTRACTS, getFormMap(warrantyContractFormsList))
 				.put(ContextNames.TRANSFER_REQUEST, getFormMap(trForm))
 				.put(ContextNames.TRANSFER_REQUEST_SHIPMENT, getFormMap(trShipmentForm))
+				.put(ContextNames.STORE_ROOM, getFormMap(storeRoomForm))
 				.build();
 	}
 	
