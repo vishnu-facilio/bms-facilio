@@ -516,7 +516,6 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
                     null, inputData.toJSONString(), AuditLogHandler.RecordType.MODULE, moduleName,
                     recordId)
                     .setActionType(actionType);
-            sendAuditLogs(auditLogContext);
 
             if (addLinkConfig) {
                 auditLogContext.setLinkConfig(((Function<Void, String>) o -> {
@@ -528,6 +527,8 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
                     return array.toJSONString();
                 }).apply(null));
             }
+
+            sendAuditLogs(auditLogContext);
         }
     }
 
