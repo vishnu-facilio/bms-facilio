@@ -8,6 +8,8 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.MapUtils;
 
+import com.facilio.agent.AgentKeys;
+import com.facilio.agentv2.AgentConstants;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.util.LocationAPI;
@@ -15,8 +17,14 @@ import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 
 public class AddStoreRoomDetailsCommandV3 extends FacilioCommand{
@@ -44,16 +52,22 @@ public class AddStoreRoomDetailsCommandV3 extends FacilioCommand{
 	}
 	
 	public List<Long> getSitesList (long storeRoomId) throws Exception { 
+        
+		FacilioModule resourceModule = ModuleFactory.getResourceModule();
 		
-        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+		Criteria criteria = new Criteria();
+        criteria.addOrCondition(CriteriaAPI.getCondition(FieldFactory.getIsDeletedField(resourceModule), "NULL", CommonOperators.IS_EMPTY));
+        criteria.addOrCondition(CriteriaAPI.getCondition(FieldFactory.getIsDeletedField(resourceModule), "0", NumberOperators.EQUALS));
+        
+        List<FacilioField> fields = FieldFactory.getSitesForStoreRoomFields();
+                GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .select(FieldFactory.getSitesForStoreRoomFields())
                 .table(ModuleFactory.getSitesForStoreRoomModule().getTableName())
                 .innerJoin(ModuleFactory.getResourceModule().getTableName())
                 .on(ModuleFactory.getResourceModule().getTableName() + ".ID = " +  ModuleFactory.getSitesForStoreRoomModule().getTableName() + ".SITE_ID")
-                .andCustomWhere("(" + ModuleFactory.getResourceModule().getTableName() + ".SYS_DELETED IS NULL") 
-                .orCustomWhere(ModuleFactory.getResourceModule().getTableName() + ".SYS_DELETED = 0" + ")")
-                .andCustomWhere(ModuleFactory.getSitesForStoreRoomModule().getTableName() + ".STORE_ROOM_ID = ?", storeRoomId);
-        		
+                .andCriteria(criteria)
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(fields).get("storeRoomId"),String.valueOf(storeRoomId), NumberOperators.EQUALS));
+
 
         List<Map<String, Object>> props = selectBuilder.get();
         if (props != null && !props.isEmpty()) {

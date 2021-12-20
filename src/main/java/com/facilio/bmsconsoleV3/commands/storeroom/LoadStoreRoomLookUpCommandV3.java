@@ -27,14 +27,10 @@ public class LoadStoreRoomLookUpCommandV3 extends FacilioCommand {
             fields = modBean.getAllFields(moduleName);
         }
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-        List<LookupField> additionaLookups = new ArrayList<LookupField>();
-        LookupField locationField = (LookupField) fieldsAsMap.get("location");
-        LookupField ownerField = (LookupField) fieldsAsMap.get("owner");
-        LookupField siteField = (LookupField) fieldsAsMap.get("site");
-        locationField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
-        ownerField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
-        siteField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
-
+        List<FacilioField> additionaLookups = new ArrayList<FacilioField>();
+        FacilioField locationField = (FacilioField) fieldsAsMap.get("location");
+        FacilioField ownerField = (FacilioField) fieldsAsMap.get("owner");
+        FacilioField siteField = (FacilioField) fieldsAsMap.get("site");
         additionaLookups.add(locationField);
         additionaLookups.add(ownerField);
         additionaLookups.add(siteField);
