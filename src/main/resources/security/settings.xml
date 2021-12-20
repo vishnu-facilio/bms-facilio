@@ -15,4 +15,10 @@
     <request path="/api/v3/modules/data/create">
         <requestbody type="v3fields" />
     </request>
+    <request path="/api/v2/statetransition/timelog">
+        <requestbody type="object">
+            <property name="moduleName" type="string"/>
+            <property name="id" type="number"/>
+        </requestbody>
+    </request>
 </config>

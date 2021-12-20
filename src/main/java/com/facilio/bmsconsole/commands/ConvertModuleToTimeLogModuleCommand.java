@@ -12,7 +12,7 @@ public class ConvertModuleToTimeLogModuleCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+        String moduleName = (String) context.get(FacilioConstants.ContextNames.PARENT_MODULE_NAME);
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
         if (module == null){
