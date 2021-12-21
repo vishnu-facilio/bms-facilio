@@ -2120,11 +2120,11 @@ public class FacilioAuthAction extends FacilioAction {
 			
 			Boolean changePassword = IAMUserUtil.changePassword(getPassword(), getRawPassword(), user.getUid(), AccountUtil.getCurrentOrg().getOrgId(), userType);
 			if (changePassword != null && changePassword) {
-				setJsonresponse("message", "Password changed successfully");
+				setJsonresponse("messages", "Password changed successfully");
 				setJsonresponse("status", "success");
 				return SUCCESS;
 			}
-			setJsonresponse("message", "Current Password is incorrect");
+			setJsonresponse("messages", "Current Password is incorrect");
 			setJsonresponse("status", "failure");
 			return ERROR;
 		}
