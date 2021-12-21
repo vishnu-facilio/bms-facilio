@@ -3,31 +3,39 @@ package com.facilio.workflowv2.Visitor;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
-import lombok.extern.log4j.Log4j;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.RuleNode;
-import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.lang3.StringUtils;
 
-import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BusinessHoursContext;
 import com.facilio.bmsconsole.context.ConnectionContext;
 import com.facilio.bmsconsole.util.ConnectionUtil;
 import com.facilio.date.calenderandclock.CalenderAndClockContext;
-import com.facilio.date.calenderandclock.CalenderAndClockInterface;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
-import com.facilio.fw.BeanFactory;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.BuildingOperator;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.FieldOperator;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.Operator;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.scriptengine.autogens.WorkflowV2Parser;
+import com.facilio.scriptengine.autogens.WorkflowV2Parser.Function_paramContext;
+import com.facilio.scriptengine.autogens.WorkflowV2Parser.Recursive_expressionContext;
+import com.facilio.scriptengine.context.DBParamContext;
+import com.facilio.scriptengine.context.Value;
+import com.facilio.scriptengine.context.WorkflowReadingContext;
+import com.facilio.scriptengine.util.ScriptUtil;
+import com.facilio.scriptengine.visitor.FunctionVisitor;
 import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.time.DateRange;
-import com.facilio.util.ArithmeticUtil;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowFieldType;
@@ -35,43 +43,20 @@ import com.facilio.workflows.context.WorkflowFunctionContext;
 import com.facilio.workflows.context.WorkflowUserFunctionContext;
 import com.facilio.workflows.functions.FacilioSystemFunctionNameSpace;
 import com.facilio.workflows.util.WorkflowUtil;
-import com.facilio.workflowv2.autogens.WorkflowV2Parser;
-import com.facilio.workflowv2.autogens.WorkflowV2Parser.AtomContext;
-import com.facilio.workflowv2.autogens.WorkflowV2Parser.CalenderExprContext;
-import com.facilio.workflowv2.autogens.WorkflowV2Parser.Catch_statementContext;
-import com.facilio.workflowv2.autogens.WorkflowV2Parser.ClockExprContext;
-import com.facilio.workflowv2.autogens.WorkflowV2Parser.Function_paramContext;
-import com.facilio.workflowv2.autogens.WorkflowV2Parser.Recursive_expressionContext;
-import com.facilio.workflowv2.autogens.WorkflowV2Parser.Try_catchContext;
-import com.facilio.workflowv2.autogens.WorkflowV2Parser.Try_statementContext;
-import com.facilio.workflowv2.contexts.DBParamContext;
-import com.facilio.workflowv2.contexts.Value;
 import com.facilio.workflowv2.contexts.WorkflowCategoryReadingContext;
 import com.facilio.workflowv2.contexts.WorkflowDataParent;
 import com.facilio.workflowv2.contexts.WorkflowModuleDataContext;
 import com.facilio.workflowv2.contexts.WorkflowNamespaceContext;
-import com.facilio.workflowv2.contexts.WorkflowReadingContext;
 import com.facilio.workflowv2.scope.Workflow_Scope;
 import com.facilio.workflowv2.util.UserFunctionAPI;
-import com.facilio.workflowv2.util.WorkflowV2TypeUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 import com.facilio.xml.builder.XMLBuilder;
 
-@Log4j
-public class WorkflowFunctionVisitor extends CommonParser<Value> {
+import lombok.extern.log4j.Log4j;
 
-    private Map<String, Value> varMemoryMap = new HashMap<String, Value>();
-    
-    private Map<String, Object> globalVarMemoryMap = new HashMap<String, Object>();				// keeping this as <String, Object> since we have to move this to all sub functions;
-    
-    private static Map<String, Object> systemVarMemoryMap = new HashMap<String, Object>();
-    
-    static {
-    	
-    	systemVarMemoryMap.put(CalenderAndClockInterface.CALENDER, CalenderAndClockInterface.CALENDER_MAP);
-    	systemVarMemoryMap.put(CalenderAndClockInterface.CLOCK, CalenderAndClockInterface.CLOCK_MAP);
-    }
-    
+@Log4j
+public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
+
     Workflow_Scope scope = Workflow_Scope.DEFAULT;
     
     Workflow_Scope tempScope = null;
@@ -93,32 +78,6 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
 		return getScope();
 	}
 
-	private void putParamValue(String key,Value value) {
-    	if(key != null) {
-    		varMemoryMap.put(key, value);
-    	}
-    }
-    
-    private Value getParamValue(String key) {
-    	if(varMemoryMap.containsKey(key)) {
-    		return varMemoryMap.get(key);
-    	}
-    	else if (globalVarMemoryMap.containsKey(key)) {
-    		return new Value(globalVarMemoryMap.get(key));
-    	}
-    	else if (systemVarMemoryMap.containsKey(key)) {
-    		return new Value(systemVarMemoryMap.get(key));
-    	}
-    	return null;
-    }
-    
-    private Value removeParamValue(String key) {
-    	if(varMemoryMap.containsKey(key)) {
-    		return varMemoryMap.remove(key);
-    	}
-    	return null;
-    }
-    
     WorkflowContext workflowContext;
     
     public WorkflowContext getWorkflowContext() {
@@ -137,8 +96,6 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
 		return scope;
 	}
 
-	boolean breakCodeFlow;
-    boolean isFunctionHeaderVisitor;
     public void setParams(List<Object> parmasObjects) throws Exception {
     	if(parmasObjects != null && parmasObjects.size() > 0) {
         	
@@ -150,65 +107,6 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
     	}
     }
     
-    public void setGlobalParams(Map<String, Object> globalParameters) throws Exception {
-    	if(globalParameters != null) {
-    		globalVarMemoryMap = globalParameters;
-    	}
-    }
-    
-    public Map<String, Object> getGlobalParam() {
-    	return globalVarMemoryMap;
-    }
-    
-    public void visitFunctionHeader(ParseTree tree) {
-    	isFunctionHeaderVisitor = true;
-    	this.visit(tree);
-    	isFunctionHeaderVisitor = false;
-    	breakCodeFlow = false;
-    }
-    @Override 
-    public Value visitMapInitialisation(WorkflowV2Parser.MapInitialisationContext ctx) { 
-    	return new Value(new HashMap<>()); 
-    }
-    
-    @Override 
-    public Value visitListInitialisation(WorkflowV2Parser.ListInitialisationContext ctx) 
-    { 
-    	return new Value(new ArrayList<>()); 
-    }
-    
-    @Override
-    public Value visitListInitialisationWithElements(WorkflowV2Parser.ListInitialisationWithElementsContext ctx) {
-    	
-    	List<Object> objects = new ArrayList<>();
-    	
-    	for (AtomContext atom : ctx.atom()) {
-    		
-    		Value value = this.visit(atom);
-    		
-    		objects.add(value.asObject());
-    	}
-    	
-    	return new Value(objects);
-    }
-    
-    @Override
-    public Value visitCalenderExpr(CalenderExprContext ctx) {
-    	// TODO Auto-generated method stub
-    	CalenderAndClockContext calContext = new CalenderAndClockContext();
-    	calContext.setName(CalenderAndClockInterface.CALENDER);
-    	calContext.setValue(ctx.calender_var().getText());
-    	return new Value(calContext);
-    }
-    
-    @Override
-    public Value visitClockExpr(ClockExprContext ctx) {
-    	// TODO Auto-generated method stub
-    	CalenderAndClockContext calContext = new CalenderAndClockContext();
-    	calContext.setName(CalenderAndClockInterface.CLOCK);
-    	calContext.setValue(ctx.clock_var().getText());
-    	return new Value(calContext);
-    }
     @Override 
     public Value visitRecursive_expr(WorkflowV2Parser.Recursive_exprContext ctx) {
     	try {
@@ -227,7 +125,7 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
     	    	}
     		}
     		if(!ifScopeSetted) {
-    			WorkflowV2Util.checkForNullAndThrowException(value, ctx.atom().getText());
+    			ScriptUtil.checkForNullAndThrowException(value, ctx.atom().getText());
     		}
     		
     		for(int i=0;i<ctx.recursive_expression().size();i++) {
@@ -438,7 +336,7 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
 
     				if(value.asObject() instanceof List ) {
     		    		Value listValue = this.visit(functionCall.atom());
-    		    		WorkflowV2Util.checkForNullAndThrowException(listValue, functionCall.atom().getText());
+    		    		ScriptUtil.checkForNullAndThrowException(listValue, functionCall.atom().getText());
     		    		Integer index = listValue.asInt();
     		    		return new Value(value.asList().get(index));
     		    	}
@@ -472,113 +370,6 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
     }
     
     @Override 
-    public Value visitAssignSingleVar(WorkflowV2Parser.AssignSingleVarContext ctx) { 
-    	
-    	String varName = ctx.VAR().getText();
-    	
-    	Value value = assignmentValue;
-    	
-    	putParamValue(varName, value);
-    	
-    	assignmentValue = null;
-    	
-    	return Value.VOID; 
-    }
-    
-    @Override 
-    public Value visitAssignSingleBracketVar(WorkflowV2Parser.AssignSingleBracketVarContext ctx) {
-    	
-    	String varName = ctx.VAR().getText();
-    	
-    	Value value = assignmentValue;
-    	
-    	Value parentValue = getParamValue(varName);
-    	
-    	if(parentValue.asObject() instanceof List) {
-    		
-    		Value index = this.visit(ctx.expr());
-    		
-    		WorkflowV2Util.checkForNullAndThrowException(index, ctx.expr().getText());
-    		
-    		parentValue.asList().add(index.asInt(), value.asObject());
-    	}
-    	else if (parentValue.asObject() instanceof Map) {
-    		Value key = this.visit(ctx.expr());
-    		
-    		WorkflowV2Util.checkForNullAndThrowException(key, ctx.expr().getText());
-    		
-    		parentValue.asMap().put(key.asString(), value.asObject());
-    	}
-    	assignmentValue = null;
-    	return Value.VOID; 
-    }
-    
-    @Override 
-    public Value visitAssignMultiDotVar(WorkflowV2Parser.AssignMultiDotVarContext ctx) {
-    	
-    	boolean isFirst = true;
-    	
-    	Value value = assignmentValue;
-    	
-    	Map parentMap = null;
-    	int varSize = ctx.VAR().size();					// min value is 2
-    	int i = 0;
-    	for(TerminalNode var : ctx.VAR()) {
-    		
-    		i++;
-    		
-    		String varName = var.getText();
-    		
-    		if(isFirst) {
-    			Value parentValue = getParamValue(varName);
-    			if (parentValue == null) {
-    				parentValue = new Value(new HashMap<>());
-    				putParamValue(varName, parentValue);
-    			}
-    			
-    			if(parentValue.asObject() instanceof Map) {
-    				parentMap = parentValue.asMap();
-    			}
-    			isFirst = false;
-    			continue;
-    		}
-    		
-    		if(i == varSize) {
-    			parentMap.put(varName, value.asObject());
-    		}
-    		else {
-    			Object currentObject = parentMap.get(varName);
-    			
-    			Map currentMap = null;
-    			if(currentObject instanceof Map) {
-    				currentMap = (Map) currentObject;
-    			}
-    			else {
-    				currentMap = new HashMap<>();
-    				parentMap.put(varName, currentMap);
-    			}
-    			parentMap = currentMap;
-    		}
-    	}
-    	
-    	assignmentValue = null;
-    	
-    	return Value.VOID; 
-    }
-    
-    @Override
-    public Value visitAssignment(WorkflowV2Parser.AssignmentContext ctx) {
-    	
-    	
-    	Value value = this.visit(ctx.expr());
-    	
-    	this.assignmentValue = value;
-    	this.visit(ctx.assignment_var());
-    	
-        return Value.VOID;
-    }
-    
-    @Override 
     public Value visitFunction_block(WorkflowV2Parser.Function_blockContext ctx) {
     	
     	String functionName = ctx.function_name_declare().getText();
@@ -607,72 +398,6 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
     }
     
     
-    @Override
-    public Value visitTry_catch(Try_catchContext ctx) {
-    	
-    	List<Try_statementContext> tryStatements = ctx.try_statement();
-    	List<Catch_statementContext> catchStatements = ctx.catch_statement();
-    	
-    	try {
-    		if(tryStatements != null) {
-    			for(Try_statementContext tryStatement :tryStatements) {
-    				visit(tryStatement);
-        		}
-    		}
-    	}
-    	catch (Exception e) {
-    		if(catchStatements != null) {
-    			for(Catch_statementContext catchStatement :catchStatements) {
-    				visit(catchStatement);
-        		}
-    		}
-		}
-    	return Value.VOID;
-    }
-    @Override
-    public Value visitVarAtom(WorkflowV2Parser.VarAtomContext ctx) {
-        String varName = ctx.getText();
-        Value value = getParamValue(varName);
-        if(value == null) {
-            return Value.VOID;
-        }
-        return value;
-    }
-
-    @Override
-    public Value visitStringAtom(WorkflowV2Parser.StringAtomContext ctx) {
-        String str = ctx.getText();
-        // strip quotes
-        str = str.substring(1, str.length() - 1).replace("\"\"", "\"");
-        str = str.replace("\\\"","\"");
-        str = str.replace("\\n","\n");
-        str = str.replace("\\r","\r");
-        return new Value(str);
-    }
-
-    @Override
-    public Value visitNumberAtom(WorkflowV2Parser.NumberAtomContext ctx) {
-    	if(ctx.getText().contains(".")) {
-    		return new Value(Double.valueOf(ctx.getText()));
-    	}
-        return new Value(Long.valueOf(ctx.getText()));
-    }
-
-    @Override
-    public Value visitBooleanAtom(WorkflowV2Parser.BooleanAtomContext ctx) {
-        return new Value(Boolean.valueOf(ctx.getText()));
-    }
-
-    @Override
-    public Value visitNullAtom(WorkflowV2Parser.NullAtomContext ctx) {
-        return new Value(null);
-    }
-
-    @Override
-    public Value visitParanthesisExpr(WorkflowV2Parser.ParanthesisExprContext ctx) {
-        return this.visit(ctx.expr());
-    }
-    
     @Override 
     public Value visitModuleAndSystemNameSpaceInitialization(WorkflowV2Parser.ModuleAndSystemNameSpaceInitializationContext ctx) {
     	try {
@@ -693,39 +418,7 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
     		throw new RuntimeException(e.getMessage());
     	}
     }
-    
-    
-    @Override 
-    public Value visitReadingInitialization(WorkflowV2Parser.ReadingInitializationContext ctx) 
-    {
-    	Value fieldValue = this.visit(ctx.expr(0));
-    	WorkflowV2Util.checkForNullAndThrowException(fieldValue, ctx.expr(0).getText());
-    	Value parentValue = this.visit(ctx.expr(1));
-    	WorkflowV2Util.checkForNullAndThrowException(parentValue, ctx.expr(1).getText());
-    	return new Value(new WorkflowReadingContext(fieldValue.asLong(),parentValue.asLong())); 
-    }
-    
-    @Override 
-    public Value visitCustomModuleInitialization(WorkflowV2Parser.CustomModuleInitializationContext ctx) {
-    	try {
-    		Value moduleNameValue = this.visit(ctx.expr());
-    		
-    		WorkflowV2Util.checkForNullAndThrowException(moduleNameValue, ctx.expr().getText());
-    		
-    		String moduleName = moduleNameValue.asString();
-        	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        	FacilioModule module = modBean.getModule(moduleName);
-        	if(module == null) {
-        		throw new RuntimeException("Module "+moduleName+ " Does not exist");
-        	}
-        	return new Value(module); 
-    	}
-    	catch(Exception e) {
-    		throw new RuntimeException(e.getMessage());
-    	}
-    }
 
-    
     @Override
     public Value visitNewKeywordIntitialization(WorkflowV2Parser.NewKeywordIntitializationContext ctx) {
     	try {
@@ -735,7 +428,7 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
         		case WorkflowV2Util.NEW_NAMESPACE_INITIALIZATION :
         			Value nameSpaceName = this.visit(ctx.expr(0));
         			
-        			WorkflowV2Util.checkForNullAndThrowException(nameSpaceName, ctx.expr(0).getText());
+        			ScriptUtil.checkForNullAndThrowException(nameSpaceName, ctx.expr(0).getText());
         			
         			FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpaceName.asString());
                 	if(nameSpaceEnum == null) {
@@ -749,7 +442,7 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
         		case WorkflowV2Util.NEW_CONNECTION_INITIALIZATION :
 					Value connectionNameValue = this.visit(ctx.expr(0));
 		    		
-		    		WorkflowV2Util.checkForNullAndThrowException(connectionNameValue, ctx.expr(0).getText());
+		    		ScriptUtil.checkForNullAndThrowException(connectionNameValue, ctx.expr(0).getText());
 		    		
 		    		String connectionName = connectionNameValue.asString();
 		        	ConnectionContext connection = ConnectionUtil.getConnection(connectionName);
@@ -765,174 +458,7 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
     		throw new RuntimeException(e);
     	}
     }
-    
-
-    @Override
-    public Value visitUnaryMinusExpr(WorkflowV2Parser.UnaryMinusExprContext ctx) {
-        Value value = this.visit(ctx.expr());
-        return new Value(-value.asDouble());
-    }
-    
-    @Override
-    public Value visitNotExpr(WorkflowV2Parser.NotExprContext ctx) {
-        Value value = this.visit(ctx.expr());
-        return new Value(!value.asBoolean());
-    }
-    
-    @Override
-    public Value visitArithmeticFirstPrecedenceExpr(WorkflowV2Parser.ArithmeticFirstPrecedenceExprContext ctx) {
-
-        Value left = this.visit(ctx.expr(0));
-        Value right = this.visit(ctx.expr(1));
-        
-        if(left.asObject() == null || right.asObject() == null) {
-    		return Value.VOID;
-    	}
-
-        switch (ctx.op.getType()) {
-            case WorkflowV2Parser.MULT:
-                return new Value(ArithmeticUtil.multiply(left.asString(), right.asString()));
-            case WorkflowV2Parser.DIV:
-                return new Value(ArithmeticUtil.divide(left.asString(), right.asString()));
-            case WorkflowV2Parser.MOD:
-                return new Value(left.asDouble() % right.asDouble());
-            default:
-                throw new RuntimeException("unknown operator: " + WorkflowV2Parser.tokenNames[ctx.op.getType()]);
-        }
-    }
-    
-    @Override
-    public Value visitArithmeticSecondPrecedenceExpr(WorkflowV2Parser.ArithmeticSecondPrecedenceExprContext ctx) {
-
-        Value left = this.visit(ctx.expr(0));
-        Value right = this.visit(ctx.expr(1));
-        if(left.asObject() instanceof String || right.asObject() instanceof String) {
-        	return new Value(left.asString() + right.asString());
-        }
-        if(left.asObject() == null || right.asObject() == null) {
-    		return Value.VOID;
-    	}
-        switch (ctx.op.getType()) {
-            case WorkflowV2Parser.PLUS:
-                return left.isNumber() && right.isNumber() ?
-                        new Value(ArithmeticUtil.add(left.asString(), right.asString())) :
-                        new Value(left.asString() + right.asString());
-            case WorkflowV2Parser.MINUS:
-                return new Value(ArithmeticUtil.subtract(left.asString(), right.asString()));
-            default:
-                throw new RuntimeException("unknown operator: " + WorkflowV2Parser.tokenNames[ctx.op.getType()]);
-        }
-    }
-
-    @Override
-    public Value visitRelationalExpr(WorkflowV2Parser.RelationalExprContext ctx) {
-
-        Value left = this.visit(ctx.expr(0));
-        Value right = this.visit(ctx.expr(1));
-
-        Double numericalLeftValue = 0d, numericalRightValue = 0d;
-        
-        if((ctx.op.getType() == WorkflowV2Parser.LT || ctx.op.getType() == WorkflowV2Parser.LTEQ || ctx.op.getType() == WorkflowV2Parser.GT || ctx.op.getType() == WorkflowV2Parser.GTEQ)) 
-        {
-        	if(left.asObject() != null && right.asObject() != null && left.asObject() instanceof String && right.asObject() instanceof String) {
-				int result = left.asString().compareTo(right.asString());
-				if(result > 0) {
-					numericalLeftValue = 1d;
-				} else if (result < 0) {
-					numericalRightValue = 1d;
-				}
-        	}
-        	else {
-        		numericalLeftValue = WorkflowV2TypeUtil.assignNumericValuesForComparison(left);
-        		numericalRightValue = WorkflowV2TypeUtil.assignNumericValuesForComparison(right);	
-        	}
-        }
-        
-        boolean comparisonResult, equalityResult;
-        
-        switch (ctx.op.getType()) {
-            case WorkflowV2Parser.LT:
-            	return new Value((numericalLeftValue != null && numericalRightValue != null) ? (numericalLeftValue < numericalRightValue) : false);
-                
-            case WorkflowV2Parser.LTEQ:	            	
-            	comparisonResult = (numericalLeftValue != null && numericalRightValue != null) ? (numericalLeftValue < numericalRightValue) : false;
-            	equalityResult = (numericalLeftValue != null && numericalRightValue != null) ? (numericalLeftValue.equals(numericalRightValue)) : WorkflowV2TypeUtil.evaluateEquality(left, right);
-            	return new Value(comparisonResult || equalityResult);
-            	
-            case WorkflowV2Parser.GT:	
-            	return new Value((numericalLeftValue != null && numericalRightValue != null) ? (numericalLeftValue > numericalRightValue) : false);
-            	
-            case WorkflowV2Parser.GTEQ:    	
-            	comparisonResult = (numericalLeftValue != null && numericalRightValue != null) ? (numericalLeftValue > numericalRightValue) : false;
-            	equalityResult = (numericalLeftValue != null && numericalRightValue != null) ? (numericalLeftValue.equals(numericalRightValue)) : WorkflowV2TypeUtil.evaluateEquality(left, right);
-            	return new Value(comparisonResult || equalityResult);
-            	
-            case WorkflowV2Parser.EQ:           	
-            	return new Value(WorkflowV2TypeUtil.evaluateEquality(left, right));
-            case WorkflowV2Parser.NEQ:
-            	return new Value(!(WorkflowV2TypeUtil.evaluateEquality(left, right)));
-            	
-            default:
-                throw new RuntimeException("Unknown relational operator: " + WorkflowV2Parser.tokenNames[ctx.op.getType()]);
-        }
-    }
-    
-    @Override 
-    public Value visitBoolean_expr(WorkflowV2Parser.Boolean_exprContext ctx) 
-    { 
-    	return this.visit(ctx.boolean_expr_atom()); 
-    }
-    
-    @Override 
-    public Value visitExprForBoolean(WorkflowV2Parser.ExprForBooleanContext ctx) { 
-    	return this.visit(ctx.expr()); 
-    }
-    
-    @Override 
-    public Value visitBoolExprParanthesis(WorkflowV2Parser.BoolExprParanthesisContext ctx) 
-    { 
-    	return this.visit(ctx.boolean_expr_atom()); 
-    }
-    
-	@Override
-	public Value visitBooleanExprCalculation(WorkflowV2Parser.BooleanExprCalculationContext ctx) {
-		Value left = this.visit(ctx.boolean_expr_atom(0));
-		
-		switch (ctx.op.getType()) {
-		case WorkflowV2Parser.AND:
-			if(left.asBoolean()) {
-				Value right = this.visit(ctx.boolean_expr_atom(1));
-				return new Value(left.asBoolean() && right.asBoolean());
-			}
-			return new Value(left.asBoolean());
-		case WorkflowV2Parser.OR:
-			if(!left.asBoolean()) {
-				Value right = this.visit(ctx.boolean_expr_atom(1));
-				return new Value(left.asBoolean() || right.asBoolean());
-			}
-			return new Value(left.asBoolean());
-		default:
-			throw new RuntimeException("unknown operator: " + WorkflowV2Parser.tokenNames[ctx.op.getType()]);
-		}
-		
-	}
-	
-	
-	@Override
-	public Value visitBooleanExpr(WorkflowV2Parser.BooleanExprContext ctx) {
-		Value left = this.visit(ctx.expr(0));
-		Value right = this.visit(ctx.expr(1));
-		
-		switch (ctx.op.getType()) {
-		case WorkflowV2Parser.SINGLE_AND:
-				return new Value(left.asBoolean() && right.asBoolean());
-		case WorkflowV2Parser.SINGLE_OR:
-				return new Value(left.asBoolean() || right.asBoolean());
-		default:
-			throw new RuntimeException("unknown operator: " + WorkflowV2Parser.tokenNames[ctx.op.getType()]);
-		}
-	}
-    
+   
     @Override
     public Value visitLog(WorkflowV2Parser.LogContext ctx) {
         Value value = this.visit(ctx.expr());
@@ -941,70 +467,6 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
         
 //        System.out.println(workflowContext.getId()+" - "+value.asString());
         return value;
-    }
-    
-    Value assignmentValue = null;
-    
-	@Override
-    public Value visitIf_statement(WorkflowV2Parser.If_statementContext ctx) {
-
-        List<WorkflowV2Parser.Condition_blockContext> conditions =  ctx.condition_block();
-
-        boolean evaluatedBlock = false;
-
-        for(WorkflowV2Parser.Condition_blockContext condition : conditions) {
-
-            Value evaluated = this.visit(condition.boolean_expr());
-
-            if(evaluated.asBoolean()) {
-                evaluatedBlock = true;
-                this.visit(condition.statement_block());
-                break;
-            }
-        }
-
-        if(!evaluatedBlock && ctx.statement_block() != null) {
-            // evaluate the else-stat_block (if present == not null)
-            this.visit(ctx.statement_block());
-        }
-
-        return Value.VOID;
-    }
-
-    public Value visitFor_each_statement(WorkflowV2Parser.For_each_statementContext ctx) {
-    	
-    	Value exprValue = this.visit(ctx.expr());
-    	WorkflowV2Util.checkForNullAndThrowException(exprValue, ctx.expr().getText());
-    	String loopVariableIndexName = ctx.VAR(0).getText();
-    	String loopVariableValueName = ctx.VAR(1).getText();
-    	
-    	if(exprValue.asObject() instanceof Collection) {
-			
-			List iterateList = new ArrayList((Collection)exprValue.asObject());
-			
-			for(int i=0 ; i<iterateList.size() ;i++) {
-				putParamValue(loopVariableIndexName, new Value(i));
-				putParamValue(loopVariableValueName, new Value(iterateList.get(i)));
-				
-				this.visit(ctx.statement_block());
-			}
-			removeParamValue(loopVariableIndexName);
-			removeParamValue(loopVariableValueName);
-			
-		}
-		else if(exprValue.asObject() instanceof Map) {
-			Map iterateMap = (Map) exprValue.asObject();
-			for(Object key :iterateMap.keySet() ) {
-				putParamValue(loopVariableIndexName, new Value(key));						// index acts as key for Map Iteration
-				putParamValue(loopVariableValueName, new Value(iterateMap.get(key)));
-				
-				this.visit(ctx.statement_block());
-			}
-			removeParamValue(loopVariableIndexName);
-			removeParamValue(loopVariableValueName);
-		}
-    	
-    	return Value.VOID; 
     }
     
     @Override 
@@ -1044,12 +506,102 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
     	return Value.VOID; 
     }
     
-    @Override
-    protected boolean shouldVisitNextChild(RuleNode node, Value currentResult) {
-    	if(breakCodeFlow) {
-    		return false;
+    @Override 
+    public Value visitCondition_atom(WorkflowV2Parser.Condition_atomContext ctx) {
+    	
+		Criteria currentCriteria = criteria != null ? criteria : fieldCriteria;
+		
+    	Condition condition = new Condition();
+    	condition.setFieldName(ctx.VAR().getText());
+    	
+    	Operator operator = null;
+    	
+    	Value operatorValue = this.visit(ctx.expr());
+    	switch(ctx.op.getText()) {
+    	case "==" :
+    		if(operatorValue.asObject() == null) {
+    			operator = CommonOperators.IS_EMPTY;
+    		}
+    		else if(operatorValue.asObject() instanceof String) {
+    			operator = StringOperators.IS;
+    		}
+    		else if(operatorValue.asObject() instanceof Boolean) {
+    			operator = BooleanOperators.IS;
+    		}
+    		else if(operatorValue.asObject() instanceof DateRange) {
+    			operator = DateOperators.BETWEEN;
+    		}
+    		else if(operatorValue.asObject() instanceof CalenderAndClockContext) {
+    			operator = DateOperators.CALENDER_AND_CLOCK;
+    		}
+    		else if (operatorValue.asObject() instanceof List) {
+    			operator = StringOperators.IS;
+    		}
+    		else if (operatorValue.asObject() instanceof FacilioField) {
+    			operator = FieldOperator.EQUAL;
+    		}
+    		else if (operatorValue.asObject() instanceof BaseSpaceContext) {
+    			operator = BuildingOperator.BUILDING_IS;
+    		}
+    		else {
+    			operator = NumberOperators.EQUALS;
+    		}
+    		break;
+    	case "!=" :
+    		if(operatorValue.asObject() == null) {
+    			operator = CommonOperators.IS_NOT_EMPTY;
+    		}
+    		else if(operatorValue.asObject() instanceof String) {
+    			operator = StringOperators.ISN_T;
+    		}
+    		else if (operatorValue.asObject() instanceof List) {
+    			operator = StringOperators.ISN_T;
+    		}
+    		else if (operatorValue.asObject() instanceof FacilioField) {
+    			operator = FieldOperator.NOT_EQUAL;
+    		}
+    		else {
+    			operator = NumberOperators.NOT_EQUALS;
+    		}
+    		break;
+    	default:
+    		if (operatorValue.asObject() instanceof FacilioField) {
+    			operator = FieldOperator.getAllOperators().get(ctx.op.getText());
+    		}
+    		else {
+    			operator = NumberOperators.getAllOperators().get(ctx.op.getText());
+    		}
+    		break;
     	}
-    	return super.shouldVisitNextChild(node, currentResult);
+    	condition.setOperator(operator);
+    	
+    	String value = operatorValue.asString();
+    	
+    	if (operatorValue.asObject() instanceof List) {
+    		value = StringUtils.join(operatorValue.asList(), ",");
+		}
+    	else if (operatorValue.asObject() instanceof FacilioField) {
+    		FacilioField field = operatorValue.asField();
+    		value = field.getModule().getName()+"."+field.getName();
+		}
+    	else if (operatorValue.asObject() instanceof BaseSpaceContext) {
+    		BaseSpaceContext baseSpace = (BaseSpaceContext) operatorValue.asObject() ;
+    		value = ""+baseSpace.getId();
+		}
+    	else if (operatorValue.asObject() instanceof CalenderAndClockContext) {
+    		CalenderAndClockContext calenderAndClock = (CalenderAndClockContext) operatorValue.asObject();
+    		value = calenderAndClock.getName()+"."+calenderAndClock.getValue()+"."+getCurrentExecutionTime();
+    		//value = calenderAndClock.getFullName()+"."+getCurrentExecutionTime();
+		}
+    	
+    	condition.setValue(value);
+    	
+    	int seq = currentCriteria.addConditionMap(condition);
+    	
+    	currentCriteria.setPattern(currentCriteria.getPattern().replaceFirst(Pattern.quote(ctx.getText()), String.valueOf(seq)));
+    	
+    	return visitChildren(ctx); 
     }
+    
 
 }

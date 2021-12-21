@@ -1,16 +1,13 @@
 package com.facilio.workflowv2.util;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 
+import com.facilio.scriptengine.context.Value;
 import com.facilio.util.FacilioUtil;
-import com.facilio.workflowv2.contexts.Value;
 
 public class WorkflowV2TypeUtil {
 	
