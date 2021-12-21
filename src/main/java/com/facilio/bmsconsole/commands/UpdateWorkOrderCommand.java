@@ -45,6 +45,7 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateChangeSet;
@@ -91,8 +92,8 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 						.andCondition(CriteriaAPI.getIdCondition(recordIds, module))
 						.orderBy("ID");
 				
-				List<SupplementRecord> customMultiLookupFields = woFields.stream().filter(field -> !field.isDefault() && 
-						(field.getDataTypeEnum() == FieldType.MULTI_ENUM || field.getDataTypeEnum() == FieldType.MULTI_LOOKUP))
+				List<SupplementRecord> customMultiLookupFields = woFields.stream()
+						.filter(field -> !field.isDefault() && FieldUtil.isSupplementRecord(field))
 						.map(field -> (SupplementRecord) field)
 						.collect(Collectors.toList());
 				if (CollectionUtils.isNotEmpty(customMultiLookupFields)) {
