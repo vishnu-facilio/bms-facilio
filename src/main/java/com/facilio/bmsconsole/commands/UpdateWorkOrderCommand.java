@@ -83,12 +83,21 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 			
 			if(((List<EventType>) context.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST) != null && CollectionUtils.containsAny(TYPES, (List<EventType>) context.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST))) 
 					|| TYPES.contains(activityType) || workOrder.getPriority() != null) {
+				List<FacilioField> woFields = modBean.getAllFields(moduleName);
 				SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
 						.module(module)
 						.beanClass(WorkOrderContext.class)
-						.select(modBean.getAllFields(moduleName))
+						.select(woFields)
 						.andCondition(CriteriaAPI.getIdCondition(recordIds, module))
 						.orderBy("ID");
+				
+				List<SupplementRecord> customMultiLookupFields = woFields.stream().filter(field -> !field.isDefault() && 
+						(field.getDataTypeEnum() == FieldType.MULTI_ENUM || field.getDataTypeEnum() == FieldType.MULTI_LOOKUP))
+						.map(field -> (SupplementRecord) field)
+						.collect(Collectors.toList());
+				if (CollectionUtils.isNotEmpty(customMultiLookupFields)) {
+					builder.fetchSupplements(customMultiLookupFields);
+				}
 
 				List<WorkOrderContext> workOrders = builder.get();
 				if (workOrder.getOfflineModifiedTime() != -1) {
