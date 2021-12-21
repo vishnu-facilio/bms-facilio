@@ -139,6 +139,8 @@ public class GetViewListCommand extends FacilioCommand {
 		List<FacilioView> allViews = new ArrayList<>(viewMap.values());
 		Boolean fetchByGroup = (Boolean) context.get(FacilioConstants.ContextNames.GROUP_STATUS);
 		
+		boolean isMainApp = (app != null && app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) || 
+		(app == null && currentApp != null && currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
 		
 		
 		if (fetchByGroup != null && fetchByGroup) {
@@ -154,92 +156,91 @@ public class GetViewListCommand extends FacilioCommand {
 			
 			// groupViews from ViewFactory
 			List<Map<String, Object>> groupViews = new ArrayList<>();
-			if ((app != null && app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) || 
-					(app == null && currentApp != null && currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP))) {
+			if (isMainApp) {
 				 groupViews = new ArrayList<>(ViewFactory.getGroupVsViews(moduleName));
 			
-			if (!groupViews.isEmpty()) {
+				if (!groupViews.isEmpty()) {
+						
+					addChildModuleViews(moduleName, groupViews, customViews);
 					
-				addChildModuleViews(moduleName, groupViews, customViews);
-				
-				// Temp handling for qualityfm
-				if (moduleName.equals("workorder") && (AccountUtil.getCurrentOrg().getOrgId() == 320 || FacilioProperties.isDevelopment())) {
-					List cadViews = new ArrayList<>();
-					if (customViews != null) {
-						List<FacilioView> tempCustom = new ArrayList<>();
-						for(FacilioView cv: customViews) {
-							if (cv.getName().endsWith("cadview")) {
-								cadViews.add(cv);
+					// Temp handling for qualityfm
+					if (moduleName.equals("workorder") && (AccountUtil.getCurrentOrg().getOrgId() == 320 || FacilioProperties.isDevelopment())) {
+						List cadViews = new ArrayList<>();
+						if (customViews != null) {
+							List<FacilioView> tempCustom = new ArrayList<>();
+							for(FacilioView cv: customViews) {
+								if (cv.getName().endsWith("cadview")) {
+									cadViews.add(cv);
+								}
+								else {
+									tempCustom.add(cv);
+								}
 							}
-							else {
-								tempCustom.add(cv);
-							}
+							customViews = tempCustom;
 						}
-						customViews = tempCustom;
+						Map<String, Object> groupDetails1 = new HashMap<>();
+						groupDetails1.put("name", "cleaning");
+						groupDetails1.put("displayName", "Cleaning and Disinfection");
+						groupDetails1.put("views", cadViews);
+						groupViews.add(4, groupDetails1);
 					}
-					Map<String, Object> groupDetails1 = new HashMap<>();
-					groupDetails1.put("name", "cleaning");
-					groupDetails1.put("displayName", "Cleaning and Disinfection");
-					groupDetails1.put("views", cadViews);
-					groupViews.add(4, groupDetails1);
-				}
+						
+					int customGroupIdx = getCustomGroupIdx(groupViews);
+					if (customGroupIdx != -1) {
+						if (!customViews.isEmpty()) {
+							Map<String, Object> mutatedDetail = new HashMap<>(groupViews.get(customGroupIdx));
+							mutatedDetail.remove("type");
+							mutatedDetail.put("views", customViews);
+							groupViews.set(customGroupIdx, mutatedDetail);
+						}
+						else {
+							groupViews.remove(customGroupIdx);
+						}
+					}
 					
-				int customGroupIdx = getCustomGroupIdx(groupViews);
-				if (customGroupIdx != -1) {
-					if (!customViews.isEmpty()) {
-						Map<String, Object> mutatedDetail = new HashMap<>(groupViews.get(customGroupIdx));
-						mutatedDetail.remove("type");
-						mutatedDetail.put("views", customViews);
-						groupViews.set(customGroupIdx, mutatedDetail);
+					if (upcomingView.isPresent()) {
+						Map<String, Object> groupDetails1 = new HashMap<>();
+						groupDetails1.put("name", "upcoming");
+						groupDetails1.put("displayName", "Upcoming Work Orders");
+						groupDetails1.put("views", Arrays.asList(upcomingView.get()));
+						groupViews.add(groupDetails1);
 					}
-					else {
-						groupViews.remove(customGroupIdx);
+	
+					if (myupcomingView.isPresent()) {
+						Map<String, Object> groupDetails1 = new HashMap<>();
+						groupDetails1.put("name", "myupcoming");
+						groupDetails1.put("displayName", "My Upcoming Work Orders");
+						groupDetails1.put("views", Arrays.asList(myupcomingView.get()));
+						groupViews.add(groupDetails1);
 					}
+					
 				}
 				
-				if (upcomingView.isPresent()) {
-					Map<String, Object> groupDetails1 = new HashMap<>();
-					groupDetails1.put("name", "upcoming");
-					groupDetails1.put("displayName", "Upcoming Work Orders");
-					groupDetails1.put("views", Arrays.asList(upcomingView.get()));
-					groupViews.add(groupDetails1);
-				}
-
-				if (myupcomingView.isPresent()) {
-					Map<String, Object> groupDetails1 = new HashMap<>();
-					groupDetails1.put("name", "myupcoming");
-					groupDetails1.put("displayName", "My Upcoming Work Orders");
-					groupDetails1.put("views", Arrays.asList(myupcomingView.get()));
-					groupViews.add(groupDetails1);
-				}
 				
-			}
-			
-			
-			else {
-				groupViews = new ArrayList<>();
-				Map<String, Object> groupDetails = new HashMap<>();
-				if (moduleObj != null && moduleObj.isCustom()) {
-					groupDetails.put("name", "allViews");
-					groupDetails.put("displayName", "All Views");
-					groupDetails.put("views", allViews);
-					groupViews.add(groupDetails);
-				}
 				else {
-					groupDetails.put("name", "systemviews");
-					groupDetails.put("displayName", "System Views");
-					groupDetails.put("views", allViews.stream().filter(view -> view.getIsDefault() == null || view.getIsDefault()).collect(Collectors.toList()));
-					groupViews.add(groupDetails);
-					if (!customViews.isEmpty() ) {
-						groupDetails = new HashMap<>();
-						groupDetails.put("name", "customviews");
-						groupDetails.put("displayName", "Custom Views");
-						groupDetails.put("views", customViews);
+					groupViews = new ArrayList<>();
+					Map<String, Object> groupDetails = new HashMap<>();
+					if (moduleObj != null && moduleObj.isCustom()) {
+						groupDetails.put("name", "allViews");
+						groupDetails.put("displayName", "All Views");
+						groupDetails.put("views", allViews);
 						groupViews.add(groupDetails);
 					}
+					else {
+						groupDetails.put("name", "systemviews");
+						groupDetails.put("displayName", "System Views");
+						groupDetails.put("views", allViews.stream().filter(view -> view.getIsDefault() == null || view.getIsDefault()).collect(Collectors.toList()));
+						groupViews.add(groupDetails);
+						if (!customViews.isEmpty() ) {
+							groupDetails = new HashMap<>();
+							groupDetails.put("name", "customviews");
+							groupDetails.put("displayName", "Custom Views");
+							groupDetails.put("views", customViews);
+							groupViews.add(groupDetails);
+						}
+					}
 				}
 			}
-		}
 			
 			sortGroupViews(groupViews, viewMap, viewGroups);
 			// TODO remove 
@@ -254,13 +255,16 @@ public class GetViewListCommand extends FacilioCommand {
 		}
 		else {
 			if (moduleObj != null) { //moduleObj check is for approval module. Needs to handle in a better way
-				allViews = new ArrayList<>();
 				if (!viewGroups.isEmpty() && viewGroups != null) {
+					allViews = new ArrayList<>();
 					for(ViewGroups viewGroup : viewGroups) {
 						if (viewGroup.getViews() != null && !viewGroup.getViews().isEmpty()) {
 							allViews.addAll(viewGroup.getViews());
 						}
 					}
+				}
+				else if (!isMainApp) {
+					allViews = new ArrayList<>();
 				}
 			}
 			allViews.sort(Comparator.comparing(FacilioView::getSequenceNumber, (s1, s2) -> {
