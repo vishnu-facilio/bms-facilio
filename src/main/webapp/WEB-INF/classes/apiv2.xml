@@ -494,6 +494,13 @@
 				class="com.facilio.bmsconsole.actions.StateFlowAction" method="cloneStateFlow" />
 	</package>
 
+	<package name="facilioBanner" namespace="/api/v2/banner" extends="v2Api">
+		<action name="list"
+				class="com.facilio.banner.action.BannerAction" method="getBanners" />
+		<action name="close"
+				class="com.facilio.banner.action.BannerAction" method="closeBanner" />
+	</package>
+
 	<package name="stateTransition"
 		namespace="/api/v2/statetransition" extends="v2Api">
 		<action name="update"

@@ -14,8 +14,9 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import org.apache.commons.collections.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class DelegationUtil {
 
@@ -100,5 +101,28 @@ public class DelegationUtil {
             }
         }
         return user;
+    }
+
+    public static void fillDelegation(List<DelegationContext> delegationContexts) throws Exception {
+        if (CollectionUtils.isEmpty(delegationContexts)) {
+            return;
+        }
+
+        Set<Long> userIds = new HashSet<>();
+        for (DelegationContext delegationContext : delegationContexts) {
+            userIds.add(delegationContext.getUserId());
+            userIds.add(delegationContext.getDelegateUserId());
+        }
+
+        // fill user details here
+        UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+        List<User> users = userBean.getUsers(null, false, true, userIds);
+        if (CollectionUtils.isNotEmpty(users)) {
+            Map<Long, User> userMap = users.stream().collect(Collectors.toMap(User::getId, Function.identity()));
+            for (DelegationContext delegationContext : delegationContexts) {
+                delegationContext.setUser(userMap.get(delegationContext.getUserId()));
+                delegationContext.setDelegateUser(userMap.get(delegationContext.getDelegateUserId()));
+            }
+        }
     }
 }

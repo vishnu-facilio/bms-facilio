@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.banner.commands.GetBannersCommand;
 import com.facilio.bmsconsole.actions.GetToolTransactionsListCommand;
 import com.facilio.bmsconsole.commands.anomaly.FormatAnomalyMetricsCommand;
 import com.facilio.bmsconsole.commands.anomaly.GetAnomalyDeviationAndWastageCommand;
@@ -2870,6 +2871,12 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getAllWebTabTranlsationFields(){
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetAllTranslationFieldsCommand());
+		return chain;
+	}
+
+	public static FacilioChain getBannerChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetBannersCommand());
 		return chain;
 	}
 

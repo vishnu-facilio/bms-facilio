@@ -1,5 +1,6 @@
 package com.facilio.delegate.command;
 
+import com.facilio.banner.util.BannerUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -17,6 +18,8 @@ public class DeleteUserDelegationCommand extends FacilioCommand {
                 .table(ModuleFactory.getUserDelegationModule().getTableName())
                 .andCondition(CriteriaAPI.getIdCondition(delegationId, ModuleFactory.getUserDelegationModule()));
         builder.delete();
+
+        BannerUtil.deleteBanner("userDelegation_" + delegationId, false);
 
         return false;
     }

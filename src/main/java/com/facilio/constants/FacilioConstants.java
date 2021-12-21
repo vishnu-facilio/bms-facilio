@@ -255,6 +255,8 @@ public class FacilioConstants {
 		public static final String USER_DELEGATION = "userDelegation";
 		public static final String TIMELINE_REQUEST = "timelineRequest";
 		public static final String TIMELINE_DATA = "timelineData";
+		public static final String FACILIO_BANNER = "facilioBanner";
+		public static final String FACILIO_BANNERS = "facilioBanners";
 
         public static class Reservation {
 			public static final String RESERVATION = "reservation";
