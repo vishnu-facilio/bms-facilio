@@ -2095,6 +2095,10 @@
 			class="com.facilio.bmsconsole.actions.FormAction"
 			method="updateFormField">
 		</action>
+		<action name="modify"
+			class="com.facilio.bmsconsole.actions.FormAction"
+			method="updateFieldAndFormField">
+		</action>
 		<action name="init"
 			class="com.facilio.bmsconsole.actions.FormAction"
 			method="updateFormFields">

@@ -2787,6 +2787,13 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateFormFieldCommand());
 			return c;
 		}
+		
+		public static FacilioChain getUpdateFormFieldAndModuleFieldChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new UpdateFormFieldCommand());
+			c.addCommand(new UpdateFieldCommand());
+			return c;
+		}
 
 		public static FacilioChain getUpdateFormFieldsChain() {
 			FacilioChain c = getDefaultChain();
