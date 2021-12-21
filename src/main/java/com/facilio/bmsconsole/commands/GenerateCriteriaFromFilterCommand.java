@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import com.facilio.db.criteria.operators.*;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -18,13 +19,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.FieldOperator;
-import com.facilio.db.criteria.operators.LookupOperator;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.Operator;
-import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.db.criteria.operators.RelatedModuleOperator;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -181,10 +175,12 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 				else {
 					isFirst = false;
 				}
-				if (operator instanceof StringOperators) {
+				if (operator instanceof StringOperators || operator instanceof StringSystemEnumOperators || operator instanceof UrlOperators) {
 					obj = obj.replace(",", StringOperators.DELIMITED_COMMA);
+					values.append(obj.trim());
+				} else {
+					values.append(ESAPI.encoder().encodeForSQL(new MySQLCodec(MySQLCodec.Mode.STANDARD), obj.trim()));
 				}
-				values.append(ESAPI.encoder().encodeForSQL(new MySQLCodec(MySQLCodec.Mode.STANDARD), obj.trim()));
 			}
 			String valuesString = values.toString();
 			if (condition.getOperator() instanceof FieldOperator) {
