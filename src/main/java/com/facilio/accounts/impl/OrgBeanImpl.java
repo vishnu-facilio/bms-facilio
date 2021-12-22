@@ -130,10 +130,6 @@ public class OrgBeanImpl implements OrgBean {
 			return null;
 		}
 
-		if(appId <= 0) {
-			appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
-		}
-
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAppOrgUserFields());
 		fields.add(AccountConstants.getApplicationIdField());
@@ -154,13 +150,15 @@ public class OrgBeanImpl implements OrgBean {
 		if(ouId > 0) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.ORG_USERID", "orgUserId", String.valueOf(ouId), NumberOperators.EQUALS));
 		}
-		if (fetchNonAppUsers) {
-			List<Long> appUserIds = getAppUserIds(appId, selectBuilder, fieldMap);
-			if (appUserIds != null) {
-				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ouid"), appUserIds, NumberOperators.NOT_EQUALS));
+		if(appId > 0) {
+			if (fetchNonAppUsers) {
+				List<Long> appUserIds = getAppUserIds(appId, selectBuilder, fieldMap);
+				if (appUserIds != null) {
+					selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ouid"), appUserIds, NumberOperators.NOT_EQUALS));
+				}
+			} else {
+				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("applicationId"), String.valueOf(appId), NumberOperators.EQUALS));
 			}
-		} else {
-			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("applicationId"), String.valueOf(appId), NumberOperators.EQUALS));
 		}
 
 		if(checkAccessibleSites) {
@@ -217,10 +215,13 @@ public class OrgBeanImpl implements OrgBean {
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
 			IAMUserUtil.setIAMUserPropsv3(props, orgId, false);
-			AppDomain appDomain = ApplicationApi.getAppDomainForApplication((long) props.get(0).get("applicationId"));
+			AppDomain appDomain = null;
+			if(appId > 0) {
+				appDomain = ApplicationApi.getAppDomainForApplication((long) props.get(0).get("applicationId"));
+			}
 			RoleBean roleBean = (RoleBean) BeanFactory.lookup("RoleBean", orgId);
 
-			List<Role> roles = roleBean.getRolesForApps(Collections.singletonList(appId));
+			List<Role> roles = roleBean.getRolesForApps(appId > 0 ? Collections.singletonList(appId) : null);
 			Map<Long, Role> roleMap = new HashMap<>();
 			for(Role role : roles){
 				roleMap.put(role.getId(), role);
@@ -233,9 +234,11 @@ public class OrgBeanImpl implements OrgBean {
 				User user = FieldUtil.getAsBeanFromMap(prop, User.class);
 				user.setId((long)prop.get("ouid"));
 				if(prop.get("applicationId") != null){
-					user.setAppDomain(appDomain);
+					if(appDomain != null) {
+						user.setAppType(appDomain.getAppType());
+						user.setAppDomain(appDomain);
+					}
 					user.setApplicationId((long)prop.get("applicationId"));
-					user.setAppType(appDomain.getAppType());
 				}
 				if(user.getRoleId() > 0){
 					user.setRole(roleMap.get(user.getRoleId()));
@@ -273,10 +276,6 @@ public class OrgBeanImpl implements OrgBean {
 			return null;
 		}
 
-		if(appId <= 0) {
-			appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
-		}
-
 		List<FacilioField> fields = new ArrayList<>();
 
 		fields.addAll(AccountConstants.getAppOrgUserFields());
@@ -296,14 +295,15 @@ public class OrgBeanImpl implements OrgBean {
 				.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS))
 				;
 
-		if (fetchNonAppUsers) {
-			List<Long> appUserIds = getAppUserIds(appId, selectBuilder, fieldMap);
-			if (appUserIds != null) {
-				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ouid"), appUserIds, NumberOperators.NOT_EQUALS));
+		if(appId > 0) {
+			if (fetchNonAppUsers) {
+				List<Long> appUserIds = getAppUserIds(appId, selectBuilder, fieldMap);
+				if (appUserIds != null) {
+					selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ouid"), appUserIds, NumberOperators.NOT_EQUALS));
+				}
+			} else {
+				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("applicationId"), String.valueOf(appId), NumberOperators.EQUALS));
 			}
-		}
-		else {
-			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("applicationId"), String.valueOf(appId), NumberOperators.EQUALS));
 		}
 		if(!StringUtils.isEmpty(searchQuery))	
 		{            

@@ -24,13 +24,14 @@ java.sql.Timestamp,
        		AppDomain appDomain = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
        		try {
 
-       			usr = AccountUtil.getUserBean().getAppUserForUserName(email, ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP), -1);//for now only main app  users
+                   long appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+       			usr = AccountUtil.getUserBean().getAppUserForUserName(email, appId, -1);//for now only main app  users
           		sessions = AccountUtil.getUserBean().getUserSessions(usr.getUid(), null);
 
           		long orgId = usr.getOrgId();
           		long roleId = usr.getRoleId();
           		if (AccountUtil.getRoleBean(orgId).getRole(roleId).getName().equalsIgnoreCase("Super Administrator")) {
-          			userList = AccountUtil.getOrgBean(orgId).getAppUsers(orgId, -1, false);
+          			userList = AccountUtil.getOrgBean(orgId).getAppUsers(orgId, appId, false);
        			}
                 userDetails = AccountUtil.getUserBean(AccountUtil.getCurrentOrg().getOrgId()).getUserDetailsForUserManagement(email);
        		}

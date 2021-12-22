@@ -24,10 +24,6 @@ public class GetApplicationUsersCommand extends FacilioCommand {
 		int page, perPage = -1, offset = -1;
 		String searchQuery = (String) context.get(FacilioConstants.ContextNames.SEARCH);
 		
-		if(appId <= 0) {
-			throw new IllegalArgumentException("Invalid app id");
-		}
-
 		if (pagination != null) {
 			page = (int) pagination.get("page");
 			perPage = (int) pagination.get("perPage");
