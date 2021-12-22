@@ -20,6 +20,9 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -42,7 +45,7 @@ public class FormFactory {
 		forms.put("tenant", getTenantForm());
 		forms.put("item_form", getItemForm());
 		forms.put("item_track_form", getItemWithIndTrackForm());
-		forms.put("store_room_form", getStoreRoomForm());
+		//forms.put("store_room_form", getStoreRoomForm());
 		forms.put("item_types_form", getItemTypesForm());
 		forms.put("tool_types_form", getTooltypesForm());
 		forms.put("vendors_form", getVendorsForm());
@@ -497,6 +500,7 @@ public class FormFactory {
 
 		List<FacilioForm> trForm = Arrays.asList(getTransferRequestForm());
 		List<FacilioForm> trShipmentForm = Arrays.asList(getTransferRequestShipmentForm());
+		List<FacilioForm> storeRoomForm = Arrays.asList(getStoreRoomForm());
 
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
@@ -568,6 +572,7 @@ public class FormFactory {
 				.put(ContextNames.WARRANTY_CONTRACTS, getFormMap(warrantyContractFormsList))
 				.put(ContextNames.TRANSFER_REQUEST, getFormMap(trForm))
 				.put(ContextNames.TRANSFER_REQUEST_SHIPMENT, getFormMap(trShipmentForm))
+				.put(ContextNames.STORE_ROOM, getFormMap(storeRoomForm))
 				.build();
 	}
 	
@@ -1680,17 +1685,21 @@ public class FormFactory {
 	}
 	
 	
-	private static List<FormField> getStoreRoomFormField() {
+	private static List<FormField> getStoreRoomFormField(){
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("site", FieldDisplayType.LOOKUP_SIMPLE, "Located Site", Required.REQUIRED, "site", 3, 2));
 		fields.add(new FormField("location", FieldDisplayType.LOOKUP_SIMPLE, "Location", Required.OPTIONAL, "location", 3, 3).setAllowCreateOptions(true).setCreateFormName("location_form"));
-		fields.add(new FormField("owner", FieldDisplayType.USER, "Owner", Required.OPTIONAL, 4, 1));
-		fields.add(new FormField("sites", FieldDisplayType.SITEMULTICHOOSER, "Serving Sites", Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("owner", FieldDisplayType.LOOKUP_SIMPLE, "Owner", Required.OPTIONAL,"users", 4, 1));
+		FormField field = new FormField("sites", FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Serving Sites", Required.OPTIONAL,"site", 5, 1);
+		JSONObject filterObj = new JSONObject();
+		filterObj.put("skipSiteFilter", true);
+		field.setConfig(filterObj);
+		fields.add(field);
+		
 		fields.add(new FormField("isApprovalNeeded", FieldDisplayType.DECISION_BOX, "Approval Needed", Required.OPTIONAL, 6, 2));
 		fields.add(new FormField("isGatePassRequired", FieldDisplayType.DECISION_BOX, "Gate Pass Needed", Required.OPTIONAL, 6, 3));
-
 		return fields;
 	}
 	

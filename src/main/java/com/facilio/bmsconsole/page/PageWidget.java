@@ -397,8 +397,17 @@ public class PageWidget {
 
 		SURVEY_RESPONSE_WIDGET("surveyResponseWidget"),
 		TRANSFER_REQUEST_SHIPMENT_RECEIVABLES("transferrequestshipmentreceivables"),
-		STATE_TRANSITION_TIME_LOG("statetransitiontimelog");
+		STATE_TRANSITION_TIME_LOG("statetransitiontimelog"),
 
+		STORE_ROOM_CARD1("storeroomcard1"),
+		STORE_ROOM_CARD2("storeroomcard2"),
+		STORE_ROOM_CARD3("storeroomcard3"),
+
+		SERVING_SITES_WIDGET("servingsites"),
+		ITEMS_TOOLS_WIDGET("itemstools"),
+		STOREROOM_PHOTOS("storeroomphotos"),
+		INVENTORY_REQ_RELATED_LIST("inventoryreqrelatedlist"),
+		PO_RELATED_LIST("porelatedlist");
 
 		private String name;
 

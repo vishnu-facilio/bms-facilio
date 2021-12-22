@@ -458,6 +458,7 @@ public class APIv3Config {
                     .beforeFetch(new LoadStoreRoomLookUpCommandV3())
                 .summary()
                     .beforeFetch(new LoadStoreRoomLookUpCommandV3())
+                    .afterFetch(new AddStoreRoomDetailsCommandV3())
                 .build();
     }
     
