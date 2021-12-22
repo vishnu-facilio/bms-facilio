@@ -24,6 +24,12 @@ public class V3PIckListAction extends V3Action {
             if(AccountUtil.getCurrentOrg().getOrgId() == 396 && "custom_activities_1".equals(moduleName)) { // Temp fix for CIT org custom_activities_1 module Picklist limit
             	perPage = 150;
             }
+            // Temp fix for altayer org site module Picklist limit until its handled in mobile
+            if (AccountUtil.getCurrentAccount().isFromMobile()) {
+                if (AccountUtil.getCurrentOrg().getOrgId() == 418l && "site".equals(moduleName)) {
+                    perPage = 150;
+                }
+            }
             
             PickListAction.populatePicklistContext(pickListChain.getContext(), getModuleName(), getFilters(), getSearch(), getCriteria(), getClientCriteria(), getDefault(), getViewName(), getPage(), getPerPage());
             pickListChain.execute();
