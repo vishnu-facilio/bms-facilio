@@ -31,7 +31,7 @@
 
         boolean googleAuthEnable = "true".equalsIgnoreCase(com.facilio.aws.util.FacilioProperties.getConfig("google.auth"));
         String googleAuthClientId = com.facilio.aws.util.FacilioProperties.getConfig("google.auth.clientid");
-        String datadogClientID = com.facilio.aws.util.FacilioProperties.getConfig("dataDogClientId");
+        String datadogClientID = com.facilio.aws.util.FacilioProperties.getDatadogClientID();
 
         // set csrf token cookie
         FacilioCookie.setCSRFTokenCookie(request, response, false);
