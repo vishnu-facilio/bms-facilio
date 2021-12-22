@@ -13,6 +13,7 @@ public class QAndARuleTransactionChainFactory {
         c.addCommand(new FetchPageAndQuestionsCommand());
         c.addCommand(new DeserializeRulesCommand());
         c.addCommand(new SplitRulesToAddOrUpdateRules());
+        c.addCommand(new DeleteQandARuleActions());
         c.addCommand(new DeleteConditionsCommand());
         c.addCommand(new UpdateRulesCommand());
         c.addCommand(new AddRulesCommand());
