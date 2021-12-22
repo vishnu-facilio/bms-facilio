@@ -128,4 +128,8 @@ public class TranslationsUtil {
                 .andCondition(CriteriaAPI.getCondition("LANG_CODE","langCode",lang,StringOperators.IS));
         builder.update(prop);
     }
+
+    public static String getTranslationKey ( String prefix , String key ) {
+        return prefix + "." + key + "." + TranslationConstants.DISPLAY_NAME;
+    }
 }
