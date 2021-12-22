@@ -194,6 +194,24 @@ public class FacilioAgent implements Serializable {
         this.displayName = displayName;
     }
 
+    private long discoverControllersTimeOut;
+    private long discoverPointsTimeOut;
+    public long getDiscoverControllersTimeOut() {
+        return discoverControllersTimeOut;
+    }
+
+    public void setDiscoverControllersTimeOut(long discoverControllersTimeOut) {
+        this.discoverControllersTimeOut = discoverControllersTimeOut;
+    }
+
+    public long getDiscoverPointsTimeOut() {
+        return discoverPointsTimeOut;
+    }
+
+    public void setDiscoverPointsTimeOut(long discoverPointsTimeOut) {
+        this.discoverPointsTimeOut = discoverPointsTimeOut;
+    }
+
     /*public HashSet<ControllerContext> getControllers() {
         return controllers;
     }
@@ -234,6 +252,8 @@ public class FacilioAgent implements Serializable {
         payload.put(AgentKeys.DISPLAY_NAME,getDisplayName());
         payload.put(AgentKeys.WRITABLE, getWritable());
         payload.put("agentType",getAgentType());
+        payload.put("discoverControllersTimeOut",getDiscoverControllersTimeOut());
+        payload.put("discoverPointsTimeOut",getDiscoverPointsTimeOut());
         payload.put(AgentConstants.INBOUND_CONNECTION_ID,getInboundConnectionId());
         if(createdTime>0){
             payload.put(AgentKeys.CREATED_TIME,getCreatedTime());

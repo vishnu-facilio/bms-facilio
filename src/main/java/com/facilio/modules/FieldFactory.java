@@ -642,6 +642,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getNumberField(AgentConstants.AGENT_CONNECTION_REGAIN_WORKFLOW_ID,"CONNECTION_REGAIN_WORKFLOW_ID",module));
         fields.add(getNumberField(AgentConstants.PARTITION_ID, "PARTITION_ID", module));
         fields.add(getStringField(AgentConstants.MESSAGE_SOURCE, "MESSAGE_SOURCE", module));
+        fields.add(getField("discoverControllersTimeOut","DISCOVER_CONTROLLERS_TIMEOUT",module,FieldType.NUMBER));
+        fields.add(getField("discoverPointsTimeOut","DISCOVER_POINTS_TIMEOUT",module,FieldType.NUMBER));
         return fields;
     }
 
