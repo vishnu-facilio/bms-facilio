@@ -66,9 +66,9 @@ public abstract class EmailClient extends BaseEmailClient {
         User user = userBean.getUserFromEmail(email, null, AccountUtil.getCurrentOrg().getOrgId(), true);
         if (user == null) {
         	LOGGER.info("Sending email to user who is not in the org  - " + email);
-        	return false;	
+//        	return false;
         }
-        return user.getUserStatus();
+        return (user == null || user.getUserStatus());
     }
 
     public void sendEmailWithActiveUserCheck (JSONObject mailJson) throws Exception {
