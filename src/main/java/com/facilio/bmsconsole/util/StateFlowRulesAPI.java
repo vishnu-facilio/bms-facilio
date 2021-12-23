@@ -328,7 +328,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 					timeLogProp.put("endTime", currentTime);
 					long duration = (currentTime - startTime) / 1000;
 					timeLogProp.put("duration", duration);
-					timeLogProp.put("doneBy", AccountUtil.getCurrentUser().getId());
+					timeLogProp.put("doneById", AccountUtil.getCurrentUser().getId());
 					TimerLogUtil.addOrUpdate(timeLogModule, timeLogProp);
 					timeLogProp.clear();
 				}
