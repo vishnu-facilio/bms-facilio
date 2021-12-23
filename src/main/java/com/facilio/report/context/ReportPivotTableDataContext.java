@@ -108,6 +108,16 @@ public class ReportPivotTableDataContext {
 		this.subModuleFieldId = subModuleFieldId;
 	}
 
+
+	private long parentModuleId = -1;
+	public long getParentModuleId() {
+		return parentModuleId;
+	}
+
+	public void setParentModuleId(long parentModuleId) {
+		this.parentModuleId = parentModuleId;
+	}
+
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub

@@ -10,6 +10,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.delegate.context.DelegationContext;
+import com.facilio.delegate.util.DelegationUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -43,32 +44,9 @@ public class GetAllMyDelegationCommand extends FacilioCommand {
             builder.andCondition(CriteriaAPI.getCondition("USER_ID", "userId", String.valueOf(AccountUtil.getCurrentUser().getId()), NumberOperators.EQUALS));
         }
         List<DelegationContext> delegationContexts = FieldUtil.getAsBeanListFromMapList(builder.get(), DelegationContext.class);
-        fillDelegation(delegationContexts);
+        DelegationUtil.fillDelegation(delegationContexts);
         context.put(FacilioConstants.ContextNames.DELEGATION_LIST, delegationContexts);
 
         return false;
-    }
-
-    private void fillDelegation(List<DelegationContext> delegationContexts) throws Exception {
-        if (CollectionUtils.isEmpty(delegationContexts)) {
-            return;
-        }
-
-        Set<Long> userIds = new HashSet<>();
-        for (DelegationContext delegationContext : delegationContexts) {
-            userIds.add(delegationContext.getUserId());
-            userIds.add(delegationContext.getDelegateUserId());
-        }
-
-        // fill user details here
-        UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
-        List<User> users = userBean.getUsers(null, false, true, userIds);
-        if (CollectionUtils.isNotEmpty(users)) {
-            Map<Long, User> userMap = users.stream().collect(Collectors.toMap(User::getId, Function.identity()));
-            for (DelegationContext delegationContext : delegationContexts) {
-                delegationContext.setUser(userMap.get(delegationContext.getUserId()));
-                delegationContext.setDelegateUser(userMap.get(delegationContext.getDelegateUserId()));
-            }
-        }
     }
 }

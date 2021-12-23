@@ -255,6 +255,8 @@ public class FacilioConstants {
 		public static final String USER_DELEGATION = "userDelegation";
 		public static final String TIMELINE_REQUEST = "timelineRequest";
 		public static final String TIMELINE_DATA = "timelineData";
+		public static final String FACILIO_BANNER = "facilioBanner";
+		public static final String FACILIO_BANNERS = "facilioBanners";
 
         public static class Reservation {
 			public static final String RESERVATION = "reservation";
@@ -681,6 +683,7 @@ public class FacilioConstants {
 		public static final String PIVOT_TABLE_DATA = "pivotTableData";
 		public static final String PIVOT_TEMPLATE_JSON = "pivotTemplateJSON";
 		public static final String IS_TIMELINE_FILTER_APPLIED = "isTimelineFilterApplied";
+		public static final String IS_EXPORT_REPORT = "isExportReport";
 		public static final String TABLE_ALIAS = "tableAlias";
 		public static final String ROW_HEADERS="rowHeaders";
 		public static final String DATA_HEADERS="dataHeaders";

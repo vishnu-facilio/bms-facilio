@@ -273,14 +273,6 @@ public class ConstructTabularReportData extends FacilioCommand {
                     Condition newCond = CriteriaAPI.getCondition(dateField, range.toString(), DateOperators.BETWEEN);
                     otherCrit.addAndCondition(newCond);
                     dataPointContext.setOtherCriteria(otherCrit);
-                } else if (dateFieldId > 0 && data.getDatePeriod() > 0 && data.getDateFieldId() < 0 && !showTimelineFilter ^ !isTimeLineFilterApplied) {
-                    FacilioField dateField = modBean.getField(dateFieldId).clone();
-                    dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));
-                    Operator dateOperator = Operator.getOperator(data.getDatePeriod());
-                    Criteria otherCrit = new Criteria();
-                    Condition newCond = CriteriaAPI.getCondition(dateField, dateOperator);
-                    otherCrit.addAndCondition(newCond);
-                    dataPointContext.setOtherCriteria(otherCrit);
                 } else if (data.getDateFieldId() > 0 && data.getDatePeriod() > 0) {
                     FacilioField dateField = modBean.getField(data.getDateFieldId(), yAxisModule.getName()).clone();
                     dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));
@@ -397,6 +389,9 @@ public class ConstructTabularReportData extends FacilioCommand {
                 groupByField.setAlias(groupByRow.getAlias());
                 if (groupByRow.getModuleName() != null && !groupByRow.getModuleName().equalsIgnoreCase(module.getName())) {
                     groupByField.setModule(modBean.getModule(groupByRow.getModuleName()));
+                }
+                if(groupByRowField != null) {
+                    groupByField.setAggr(groupByRowField.getAggr());
                 }
                 groupByFields.add(groupByField);
             }

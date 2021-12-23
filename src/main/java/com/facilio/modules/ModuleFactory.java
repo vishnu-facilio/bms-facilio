@@ -4012,7 +4012,14 @@ public class ModuleFactory {
 		module.setTableName("Floorplan_Objects");
 		return module;
 	}
-	
+
+	public static FacilioModule getBannerModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(FacilioConstants.ContextNames.FACILIO_BANNER);
+		module.setDisplayName("Facilio Banner");
+		module.setTableName("Facilio_Banner");
+		return module;
+	}
 	
 	public static FacilioModule getIndoorFloorPlanModule() {
 		FacilioModule module = new FacilioModule();
