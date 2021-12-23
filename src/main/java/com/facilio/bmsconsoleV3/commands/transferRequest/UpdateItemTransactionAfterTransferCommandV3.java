@@ -34,7 +34,7 @@ public class UpdateItemTransactionAfterTransferCommandV3 extends FacilioCommand 
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3TransferRequestContext> transferRequestContexts = recordMap.get(moduleName);
         if (CollectionUtils.isNotEmpty(transferRequestContexts)) {
-                if (!Objects.isNull(context.get(FacilioConstants.ContextNames.ITEM_TYPES)) && transferRequestContexts.get(0).getIsStaged().equals(true)&& transferRequestContexts.get(0).getIsCompleted().equals(true)) {
+                if (!Objects.isNull(context.get(FacilioConstants.ContextNames.ITEM_TYPES)) && transferRequestContexts.get(0).getIsStaged() && transferRequestContexts.get(0).getIsCompleted()) {
                     Long storeRoomId = transferRequestContexts.get(0).getTransferToStore().getId();
                     List<V3TransferRequestLineItemContext> itemTypesList = (List<V3TransferRequestLineItemContext>) context.get(FacilioConstants.ContextNames.ITEM_TYPES);
                     for(V3TransferRequestLineItemContext itemTypeLineItem : itemTypesList){

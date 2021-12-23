@@ -28,8 +28,8 @@ public class UpdateNewLineItemsCommandV3 extends FacilioCommand {
 
         if (CollectionUtils.isNotEmpty(transferRequestContexts)) {
             for (V3TransferRequestContext transferRequestContext : transferRequestContexts) {
-                if (transferRequestContext != null && transferRequestContext.getIsStaged().equals(false)) {
-                    if (transferRequestContext.getTransferrequestlineitems() != null) {
+                if (transferRequestContext != null && !transferRequestContext.getIsStaged()) {
+                    if (CollectionUtils.isNotEmpty(transferRequestContext.getTransferrequestlineitems())) {
                             DeleteRecordBuilder<V3TransferRequestLineItemContext> deleteBuilder = new DeleteRecordBuilder<V3TransferRequestLineItemContext>()
                                     .module(trLineItems)
                                     .andCondition(CriteriaAPI.getCondition("TRANSFER_REQUEST_ID", "transferRequest", String.valueOf(transferRequestContext.getId()), NumberOperators.EQUALS));
