@@ -28,7 +28,7 @@ public class UpdateStatusOfShipmentCommandV3 extends FacilioCommand {
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3TransferRequestContext> transferRequestContexts = recordMap.get(moduleName);
         if (CollectionUtils.isNotEmpty(transferRequestContexts)){
-                if (transferRequestContexts != null && transferRequestContexts.get(0).getData().get("isCompleted").equals(true) && transferRequestContexts.get(0).getData().get("isShipped").equals(true)) {
+                if (transferRequestContexts != null && transferRequestContexts.get(0).getIsCompleted().equals(true) && transferRequestContexts.get(0).getIsShipped().equals(true)) {
                     long id =transferRequestContexts.get(0).getId();
                     ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                     String shipmentModuleName = FacilioConstants.ContextNames.TRANSFER_REQUEST_SHIPMENT;

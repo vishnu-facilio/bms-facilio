@@ -28,7 +28,7 @@ public class UpdateToolTransactionCommandV3 extends FacilioCommand {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3TransferRequestContext> transferRequests = recordMap.get(moduleName);
-        if (!Objects.isNull(context.get(FacilioConstants.ContextNames.TOOL_TYPES)) && transferRequests.get(0).getData().get("isStaged").equals(true) && transferRequests.get(0).getData().get("isCompleted").equals(false)&& transferRequests.get(0).getData().get("isShipped").equals(false)) {
+        if (!Objects.isNull(context.get(FacilioConstants.ContextNames.TOOL_TYPES)) && transferRequests.get(0).getIsStaged().equals(true) && transferRequests.get(0).getIsCompleted().equals(false)&& transferRequests.get(0).getIsShipped().equals(false)) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule toolTransactionsModule = modBean.getModule(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
             List<FacilioField> toolTransactionsFields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);

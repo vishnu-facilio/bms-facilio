@@ -45,7 +45,7 @@ public class SetPendingLineItemsAndReceivablesCommandV3 extends FacilioCommand {
                 .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("quantity"), lineItemModule.getName()+"."+quantityReceived.getName(), FieldOperator.GREATER_THAN))
                 .fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("itemType"), (LookupField) fieldsAsMap.get("toolType")));
         List<V3TransferRequestLineItemContext> list = builder.get();
-        transferRequestShipmentContext.getTransferRequest().setLineItems(list);
+        transferRequestShipmentContext.getTransferRequest().setTransferrequestlineitems(list);
 
         //set receivables
         String receivablesModuleName = FacilioConstants.ContextNames.TRANSFER_REQUEST_SHIPMENT_RECEIVABLES;

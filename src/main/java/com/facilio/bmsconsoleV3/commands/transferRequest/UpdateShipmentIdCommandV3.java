@@ -20,7 +20,7 @@ public class UpdateShipmentIdCommandV3 extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
                     Long trId = Constants.getRecordIds(context).get(0);
                     V3TransferRequestContext transferRequestContext = (V3TransferRequestContext) CommandUtil.getModuleData(context, FacilioConstants.ContextNames.TRANSFER_REQUEST, trId);
-                    if(transferRequestContext.getData().get("isShipped").equals(true)){
+                    if(transferRequestContext.getIsShipped().equals(true)){
                         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                         String shipmentModuleName = FacilioConstants.ContextNames.TRANSFER_REQUEST_SHIPMENT;
                         List<FacilioField> fields = modBean.getAllFields(shipmentModuleName);
