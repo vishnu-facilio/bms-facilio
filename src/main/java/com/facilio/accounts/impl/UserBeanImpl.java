@@ -1,6 +1,8 @@
 package com.facilio.accounts.impl;
 
 import java.lang.reflect.InvocationTargetException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,6 +20,7 @@ import com.facilio.delegate.context.DelegationType;
 import com.facilio.delegate.util.DelegationUtil;
 import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -69,7 +72,7 @@ import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
-;
+;import static com.facilio.constants.FacilioConstants.INVITATION_EXPIRY_DAYS;
 
 @Log4j
 public class UserBeanImpl implements UserBean {
@@ -337,6 +340,7 @@ public class UserBeanImpl implements UserBean {
 			placeholders.put("appType", ApplicationApi.getApplicationName(user.getApplicationId()));
 			
 			placeholders.put("invitelink", inviteLink);
+			placeholders.put("expiryDate", getExpiryDate());
 			addBrandPlaceHolders("brandName", placeholders);
 			addBrandPlaceHolders("supportemail", placeholders);
 			if(isInvitation) {
@@ -1069,6 +1073,9 @@ public class UserBeanImpl implements UserBean {
 		//CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
 		placeholders.put("toUser", user);
 		placeholders.put("invitelink", inviteLink);
+
+		String formattedTime = getExpiryDate();
+		placeholders.put("expiryDate", formattedTime);
 		addBrandPlaceHolders("supportemail", placeholders);
 		addBrandPlaceHolders("brandUrl", placeholders);
 		addBrandPlaceHolders("brandLogo", placeholders);
@@ -1077,8 +1084,16 @@ public class UserBeanImpl implements UserBean {
 		AccountEmailTemplate.RESET_PASSWORD.send(placeholders, true);
 		return true;
 	}
-	
-	
+
+	private String getExpiryDate() {
+		long creationTime = System.currentTimeMillis();
+		Instant creationInstant = Instant.ofEpochMilli(creationTime);
+		Instant plus7Days = creationInstant.plus(INVITATION_EXPIRY_DAYS, ChronoUnit.DAYS);
+		String formattedTime = DateTimeUtil.getFormattedTime(plus7Days.toEpochMilli());
+		return formattedTime;
+	}
+
+
 	@Override
 	public boolean acceptUser(User user) throws Exception {
 		// TODO Auto-generated method stub
