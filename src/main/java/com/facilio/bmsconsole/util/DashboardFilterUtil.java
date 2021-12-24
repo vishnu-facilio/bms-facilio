@@ -86,9 +86,21 @@ public class DashboardFilterUtil {
 	        JSONObject chartStateObject = (JSONObject) parser.parse(report.getChartState());
 
 	        JSONObject common = (JSONObject) chartStateObject.get("common");
+			JSONObject reportTemplate = (JSONObject) chartStateObject.get("reportTemplate");
+
+			
 
 	        if (common != null) {
-	            JSONObject filters = (JSONObject) common.get("filters");
+	        	Long mode = (Long) common.get("mode");
+	        		        	
+	            if (mode != null && mode == 1 && reportTemplate != null) {
+					// dashboard filter suppoprt for report template widgets
+					if (reportTemplate.get("categoryId") != null && filter.getModuleName().equals("asset")) {
+						return true;
+					}
+				}
+				else {
+					JSONObject filters = (JSONObject) common.get("filters");
 
 	            if (filters != null) {
 	                JSONObject filterState = (JSONObject) filters.get("filterState");
@@ -102,6 +114,7 @@ public class DashboardFilterUtil {
 	                }
 
 	            }
+				}
 
 	        }
 
