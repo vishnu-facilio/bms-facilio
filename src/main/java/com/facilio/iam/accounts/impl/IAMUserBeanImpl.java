@@ -73,6 +73,8 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 
+import static com.facilio.constants.FacilioConstants.INVITATION_EXPIRY_DAYS;
+
 
 public class IAMUserBeanImpl implements IAMUserBean {
 
@@ -125,7 +127,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			String creationTimeStr = userObj[3];
 			long creationTime = Long.parseLong(creationTimeStr);
 			Instant creationInstant = Instant.ofEpochMilli(creationTime);
-			Instant plus7Days = creationInstant.plus(7, ChronoUnit.DAYS);
+			Instant plus7Days = creationInstant.plus(INVITATION_EXPIRY_DAYS, ChronoUnit.DAYS);
 			Instant currentTime = Instant.ofEpochMilli(System.currentTimeMillis());
 			if (currentTime.isAfter(plus7Days)) {
 				LOGGER.error("user token expired " + userToken);
