@@ -23,6 +23,7 @@ public class Constants {
         public static final String RULES_TO_BE_ADDED = "qandaRulesToBeAdded";
         public static final String RULES_TO_BE_UPDATED = "qandaRulesToBeUpdated";
         public static final String CONDITIONS_TO_BE_DELETED = "qandaRuleConditionsToBeDeleted";
+        public static final String ACTIONS_TO_BE_ADDED = "actionsToBeAdded";
     }
 
     public static class ModuleFactory {
@@ -72,6 +73,7 @@ public class Constants {
 
             fields.add(getIdField(module));
             fields.add(getField("ruleId", "RULE_ID", module, FieldType.NUMBER));
+            fields.add(getField("conditionId","Q_AND_A_RULE_CONDITION_ID",module,FieldType.NUMBER));
             fields.add(getField("actionId", "ACTION_ID", module, FieldType.NUMBER));
             return fields;
         }

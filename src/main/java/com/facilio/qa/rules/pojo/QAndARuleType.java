@@ -26,7 +26,8 @@ public enum QAndARuleType implements FacilioStringEnum {
             Constants.ModuleFactory.scoringRuleConditionModule(),
             Constants.FieldFactory.scoringRuleConditionFields(),
             true,
-            "score"
+            "score",
+            false
     ),
     WORKFLOW(
             ActionRule.class,
@@ -38,7 +39,8 @@ public enum QAndARuleType implements FacilioStringEnum {
             Constants.ModuleFactory.ruleConditionModule(),
             Constants.FieldFactory.ruleConditionFields(),
             false,
-            null
+            null,
+            true
     )
     ;
 
@@ -78,4 +80,6 @@ public enum QAndARuleType implements FacilioStringEnum {
     @NonNull
     private boolean actionMandatory;
     private String emptyActionErrorValue;
+
+    private boolean conditionBasedActions;
 }

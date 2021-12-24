@@ -21,12 +21,12 @@ public class AddConditionsCommand extends FacilioCommand {
             for (QAndARule rule : rules) {
                 IntStream.range(0, rule.getRuleConditions().size()).forEach(i -> setDefaultPropsForCondition(i, rule));
                 getConditionsToBeAdded().addAll(rule.getRuleConditions());
-
                 rule.setRuleConditions(null); // To remove from client response
             }
 
             if (CollectionUtils.isNotEmpty(conditionsToBeAdded)) {
                 Constants.getRuleBean().addConditions(conditionsToBeAdded, type);
+                context.put(Constants.Command.ACTIONS_TO_BE_ADDED,conditionsToBeAdded);
             }
             // Handle other additions if needed
         }

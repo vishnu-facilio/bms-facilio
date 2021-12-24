@@ -339,6 +339,13 @@
                 method="fetchQandARules">
             <param name="pageId">{1}</param>
         </action>
+
+    </package>
+
+    <package name="qandaRuleActionEdit" namespace="/api/v3/qandarules/edit" extends="v3Api">
+        <action name="*" class="com.facilio.qa.rules.actions.QAndARuleAction" method="fetchQandARuleAction">
+            <param name="conditionId">{1}</param>
+        </action>
     </package>
 
     <package name="scoringRulesFetch" namespace="/api/v3/scoringrules/list" extends="v3Api">

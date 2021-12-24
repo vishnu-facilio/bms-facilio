@@ -7,10 +7,12 @@ import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -428,6 +430,14 @@ public class QAndAUtil {
             }
             question.setSummary(summaryList);
         }
+    }
+
+    public static List<Map<String, Object>> fetchEvalRuleActionRel(long conditionId) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .select(com.facilio.qa.rules.Constants.FieldFactory.evalRuleActionRelFields())
+                .table(com.facilio.qa.rules.Constants.ModuleFactory.evalRuleActionRelModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("Q_AND_A_RULE_CONDITION_ID","conditionId", String.valueOf(conditionId), NumberOperators.EQUALS));
+        return builder.get();
     }
 
 }

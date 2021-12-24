@@ -1,5 +1,6 @@
 package com.facilio.qa.rules.actions;
 
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -8,11 +9,13 @@ import com.facilio.qa.rules.commands.QAndARuleReadOnlyChainFactory;
 import com.facilio.qa.rules.commands.QAndARuleTransactionChainFactory;
 import com.facilio.qa.rules.pojo.QAndARule;
 import com.facilio.qa.rules.pojo.QAndARuleType;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.V3Action;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -75,5 +78,20 @@ public class QAndARuleAction extends V3Action {
     public String fetchQandARules() throws Exception {
         this.type = QAndARuleType.WORKFLOW;
         return fetchRules();
+    }
+
+    private Long conditionId;
+    public String fetchQandARuleActions() throws Exception {
+
+        this.type = QAndARuleType.WORKFLOW;
+        FacilioChain fetchRuleActions = QAndARuleReadOnlyChainFactory.fetchRuleActionsChain();
+        FacilioContext context = fetchRuleActions.getContext();
+        FacilioUtil.throwIllegalArgumentException((conditionId == null || conditionId == 0),"ConditionId should not be less than zero or null");
+        context.put("conditionId",conditionId);
+        fetchRuleActions.execute();
+
+        this.setData("actions",context.get("actions"));
+
+        return SUCCESS;
     }
 }
