@@ -2790,6 +2790,7 @@ public class TransactionChainFactory {
 		
 		public static FacilioChain getUpdateFormFieldAndModuleFieldChain() {
 			FacilioChain c = getDefaultChain();
+			c.addCommand(new ValidateFormFieldCommand());
 			c.addCommand(new UpdateFormFieldCommand());
 			c.addCommand(new UpdateFieldCommand());
 			return c;

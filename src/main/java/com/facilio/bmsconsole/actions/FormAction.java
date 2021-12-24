@@ -225,21 +225,11 @@ public class FormAction extends FacilioAction {
 	public String updateFieldAndFormField() throws Exception {
 		Context formFieldcontext = new FacilioContext();
 		
-		FacilioField baseField = getFormField().getField();
-		if(baseField != null)
-		{
-			formField.setFieldId(baseField.getFieldId());	
-			formField.setDisplayName(baseField.getDisplayName());	
-			formField.setName(baseField.getName());	
-		}
-		
 		formFieldcontext.put(FacilioConstants.ContextNames.FORM_FIELD, formField);
-		formFieldcontext.put(FacilioConstants.ContextNames.MODULE_FIELD, baseField);
 		formFieldcontext.put(FacilioConstants.ContextNames.CHECK_FIELD_DISPLAY_NAME_DUPLICATION, true);
 		
 		FacilioChain c = TransactionChainFactory.getUpdateFormFieldAndModuleFieldChain();
 		c.execute(formFieldcontext);
-		int i=0;
 		setResult("result", "success");
 		
 		return SUCCESS;

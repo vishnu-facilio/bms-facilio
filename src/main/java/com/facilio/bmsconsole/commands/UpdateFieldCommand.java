@@ -19,8 +19,8 @@ public class UpdateFieldCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		FacilioField field = (FacilioField) context.get(FacilioConstants.ContextNames.MODULE_FIELD);
-		Long fieldid = field.getFieldId();
-		if(fieldid != null && fieldid != -1)
+		long fieldid = field.getFieldId();
+		if(fieldid != -1)
 		{
 		boolean avoidFieldDisplayNameDuplication = (boolean) context.getOrDefault(ContextNames.CHECK_FIELD_DISPLAY_NAME_DUPLICATION, false);
 		if (avoidFieldDisplayNameDuplication) {
