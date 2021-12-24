@@ -8,14 +8,12 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.MapUtils;
 
-import com.facilio.agent.AgentKeys;
-import com.facilio.agentv2.AgentConstants;
 import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.StoreRoomContext;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.LocationAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.command.FacilioCommand;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -51,7 +49,7 @@ public class AddStoreRoomDetailsCommandV3 extends FacilioCommand{
 		return false;
 	}
 	
-	public List<Long> getSitesList (long storeRoomId) throws Exception { 
+	public List<SiteContext> getSitesList (long storeRoomId) throws Exception { 
         
 		FacilioModule resourceModule = ModuleFactory.getResourceModule();
 		
@@ -75,7 +73,7 @@ public class AddStoreRoomDetailsCommandV3 extends FacilioCommand{
             for(Map<String, Object> prop : props) {
                 bsids.add((Long) prop.get("siteId"));
             }
-            return bsids;
+            return SpaceAPI.getSites(bsids);
         }
         return null;
 

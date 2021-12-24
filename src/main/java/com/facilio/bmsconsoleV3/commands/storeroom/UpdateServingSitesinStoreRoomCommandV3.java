@@ -13,6 +13,7 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -36,7 +37,8 @@ public class UpdateServingSitesinStoreRoomCommandV3 extends FacilioCommand {
 				for(Object record:records) 
 				{		
 					if(record != null && record instanceof ModuleBaseWithCustomFields && (ModuleBaseWithCustomFields)record != null)
-					{					
+					{			
+						V3StoreRoomContext sr = (V3StoreRoomContext)record;
 						Long storeRoomId = ((ModuleBaseWithCustomFields)record).getId();
 						Map<String, Object> recordProps = FieldUtil.getAsProperties(record);	
 						if(storeRoomId != null && storeRoomId > 0) {
@@ -47,11 +49,13 @@ public class UpdateServingSitesinStoreRoomCommandV3 extends FacilioCommand {
 						}
 						if(storeRoomId != null && storeRoomId > 0 && recordProps != null) 
 						{			
-							List<Long> sites = (List<Long>) recordProps.get(FacilioConstants.ContextNames.SITE_LIST);
+							List<SiteContext> sites = (List<SiteContext>) sr.getSites();
 							if(CollectionUtils.isEmpty(sites)) {
 								Long locatedSiteId = ((ModuleBaseWithCustomFields)record).getSiteId();
 								if(locatedSiteId != null && locatedSiteId > 0) {
-									sites.add(locatedSiteId); //adding located site as one of the serving sites if no serving site is given
+									SiteContext locatedSite = new SiteContext();
+									locatedSite.setId(locatedSiteId);
+									sites.add(locatedSite); //adding located site as one of the serving sites if no serving site is given
 								}
 						     }
 							
@@ -62,10 +66,10 @@ public class UpdateServingSitesinStoreRoomCommandV3 extends FacilioCommand {
 										.fields(FieldFactory.getSitesForStoreRoomFields());
 
 								List<Map<String, Object>> propsList = new ArrayList<>();
-								for (Long siteId : sites) {
+								for (SiteContext site : sites) {
 									Map<String, Object> props = new HashMap<>();
 									props.put("storeRoomId", storeRoomId);
-									props.put("siteId", siteId);
+									props.put("siteId", site.getId());
 									propsList.add(props);
 								}
 								insertBuilder.addRecords(propsList);

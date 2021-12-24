@@ -13,6 +13,7 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
@@ -1696,8 +1697,16 @@ public class FormFactory {
 		JSONObject filterObj = new JSONObject();
 		filterObj.put("skipSiteFilter", true);
 		field.setConfig(filterObj);
-		fields.add(field);
 		
+		//multilookup site field object
+		FacilioField fieldObj = new FacilioField();
+		fieldObj.setDataType(FieldType.MULTI_LOOKUP);
+		fieldObj.setColumnName("SERVING_SITES");
+		fieldObj.setDisplayType(FieldDisplayType.MULTI_LOOKUP_SIMPLE);
+		fieldObj.setModule(ModuleFactory.getStoreRoomModule());
+		field.setField(fieldObj);
+		fields.add(field);
+
 		fields.add(new FormField("isApprovalNeeded", FieldDisplayType.DECISION_BOX, "Approval Needed", Required.OPTIONAL, 6, 2));
 		fields.add(new FormField("isGatePassRequired", FieldDisplayType.DECISION_BOX, "Gate Pass Needed", Required.OPTIONAL, 6, 3));
 		return fields;
