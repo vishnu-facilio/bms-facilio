@@ -131,6 +131,12 @@ public class TranslationAction extends FacilioAction {
                     for (WebTabGroupContext webtabGroup : prop.getWebTabGroupList()) {
                         for (WebTabContext webTab : webtabGroup.getWebTabs()) {
                             webTab.setTypeVsColumns(TranslationTypeEnum.CLIENT_TRANSLATION_TYPE_ENUM.get(webTab.getTypeEnum()));
+                            if (!webTab.getRoute().equals("workorder") ){
+                                webTab.getTypeVsColumns().removeIf(clientColumnTypeEnum -> clientColumnTypeEnum.getType().equals("WORKORDER_FIELDS"));
+                            }
+                            if (!webTab.getRoute().equals("asset")){
+                                webTab.getTypeVsColumns().removeIf(clientColumnTypeEnum -> clientColumnTypeEnum.getType().equals("ASSET_FIELDS"));
+                            }
                         }
                     }
                 }

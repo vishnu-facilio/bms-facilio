@@ -140,6 +140,7 @@ public class TranslationsUtil {
         return prefix + "." + key + "." + TranslationConstants.DISPLAY_NAME;
     }
 
+
     public static List<String> SPECIAL_HANDLING_MODULES = Collections.unmodifiableList(initModuleMap());
 
     private static List<String> initModuleMap() {
