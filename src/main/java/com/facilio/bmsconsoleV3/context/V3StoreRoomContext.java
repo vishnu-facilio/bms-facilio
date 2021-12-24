@@ -54,7 +54,7 @@ public class V3StoreRoomContext extends V3Context {
 	public void setLastPurchasedDate(Long lastPurchasedDate) {
 		this.lastPurchasedDate = lastPurchasedDate;
 	}
-	private List<Long> sites;
+	private List<SiteContext> sites;
 
 	public String getName() {
 		return name;
@@ -105,10 +105,10 @@ public class V3StoreRoomContext extends V3Context {
 	}
 	
 	
-	public List<Long> getSites() {
+	public List<SiteContext> getSites() {
 		return sites;
 	}
-	public void setSites(List<Long> sites) {
+	public void setSites(List<SiteContext> sites) {
 		this.sites = sites;
 	}
 	
