@@ -111,7 +111,7 @@ public class ScoringRuleContext extends WorkflowRuleContext {
                     Map<Long, BaseScoringContext> scoringMap = baseScoringContexts.stream().collect(Collectors.toMap(BaseScoringContext::getId, Function.identity()));
 
                     List<Long> triggerIds = triggersToBeExecuted.stream().map(map -> (long) map.get("triggerId")).collect(Collectors.toList());
-                    List<BaseTriggerContext> triggers = TriggerUtil.getTriggers(triggerIds);
+                    List<BaseTriggerContext> triggers = TriggerUtil.getTriggers(triggerIds, false);
                     Map<Long, BaseTriggerContext> triggerMap = triggers.stream().collect(Collectors.toMap(BaseTriggerContext::getId, Function.identity()));
 
                     for (Map<String, Object> triggerToBeExecuted : triggersToBeExecuted) {

@@ -1,73 +1,84 @@
 package com.facilio.agentv2.triggers;
 
-import com.facilio.bmsconsole.workflow.rule.EventType;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import com.facilio.agentv2.AgentApiV2;
+import com.facilio.agentv2.FacilioAgent;
+import com.facilio.beans.ModuleBean;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.trigger.context.BaseTriggerContext;
 import com.facilio.trigger.context.TriggerType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter @Setter
 public class PostTimeseriesTriggerContext extends BaseTriggerContext {
 
-    private long siteId;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	private FacilioAgent agent;
+	private long agentId = -1;
+	private Criteria criteria;
+	private long criteriaId;
 
-    public long getSiteId() {
-        return siteId;
-    }
+	@Override
+	public long getModuleId() {
+		return 0;
+	}
 
-    public void setSiteId(long siteId) {
-        this.siteId = siteId;
-    }
+	@Override
+	public int getType() {
+		return getTypeEnum().getValue();
+	}
 
-    @Override
-    public long getModuleId() {
-        return 0;
-    }
+	@Override
+	public TriggerType getTypeEnum() {
+		return TriggerType.AGENT_TRIGGER;
+	}
 
-    @Override
-    public int getType() {
-        return TriggerType.TIMESERIES_COMPLETED_TRIGGER.getValue();
-    }
+	@Override
+	public void validateTrigger() {
+		if (getId() < 0) {
+			if (agentId <= 0) {
+				throw new IllegalArgumentException("Agent cannot be empty");
+			}
+			if (criteria == null) {
+				throw new IllegalArgumentException("Criteria cannot be empty");
+			}
+		}
+		super.validateTrigger();
+	}
 
-    @Override
-    public TriggerType getTypeEnum() {
-        return TriggerType.TIMESERIES_COMPLETED_TRIGGER;
-    }
+	@Override
+	public List<Long> fetchRecordIds() throws Exception {
 
-    @Override
-    public long getEventType() {
-        return EventType.TIMESERIES_COMPLETE.getValue();
-    }
-
-    @Override
-    public void validateTrigger() {
-
-    }
-
-    public List<Long> getResourceIds() throws Exception {
-
-        FacilioModule module = ModuleFactory.getPostTimeseriesTriggerVsResourcesModule();
-        Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getPostTimeseriesTriggerVsResourcesFields());
-        List<Long> values = new ArrayList<>();
-        values.add(this.getId());
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(module.getTableName())
-                .andCondition(CriteriaAPI.getCondition(fields.get("triggerId"), values, NumberOperators.EQUALS));
-        List<FacilioField> toSelect = new ArrayList<>();
-        toSelect.add(fields.get("resourceId"));
-        List<Map<String, Object>> props = builder.select(toSelect).get();
-        List<Long> resourceIds = new ArrayList<>();
-        props.forEach(row -> {
-            resourceIds.add((Long) row.get("resourceId"));
-        });
-
-        return resourceIds;
-    }
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(ContextNames.ASSET);
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(module.getTableName())
+				.select(Collections.singletonList(FieldFactory.getIdField(module)))
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(module), String.valueOf(agent.getSiteId()), NumberOperators.EQUALS))
+				.andCriteria(criteria);
+				;
+		
+		List<Map<String, Object>> props = builder.get();
+		return props.stream().map(prop -> (long)prop.get("id")).collect(Collectors.toList());
+	}
+	
 }

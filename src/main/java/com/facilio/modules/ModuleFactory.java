@@ -4626,21 +4626,12 @@ public class ModuleFactory {
 		return facilioAuditModule;
 	}
 
-    public static FacilioModule getPostTimeseriesTriggerModule() {
+    public static FacilioModule getAgentTriggerModule() {
         FacilioModule module = new FacilioModule();
-        module.setName("postTimeseriesTrigger");
-        module.setDisplayName("Post Timeseries Trigger");
-		module.setTableName("Post_Timeseries_Trigger");
+        module.setName("agentTrigger");
+        module.setDisplayName("Agent Trigger");
+		module.setTableName("Agent_Trigger");
         module.setExtendModule(getTriggerModule());
-        return module;
-    }
-
-
-    public static FacilioModule getPostTimeseriesTriggerVsResourcesModule() {
-        FacilioModule module = new FacilioModule();
-        module.setName("postTimeseriesTrigger_Resources_Rel");
-        module.setDisplayName("Post Timeseries Trigger vs Resources Rel");
-		module.setTableName("Post_Timeseries_Trigger_Resources_Rel");
         return module;
     }
 

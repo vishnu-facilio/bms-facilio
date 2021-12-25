@@ -43,26 +43,11 @@ public enum TriggerActionType {
 			WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(workflowRule, moduleName, record, changeSets, placeHolders, context);
 		}
 	},
-	SCRIPT_EXECUTION(3) {
-
-		@Override
-		public void performAction(FacilioContext context, BaseTriggerContext trigger, String moduleName, ModuleBaseWithCustomFields record, List<UpdateChangeSet> changeSets, Long recordId) throws Exception {
-			WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext(recordId);
-			FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
-			FacilioContext newContext = chain.getContext();
-			newContext.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflowContext);
-			List<ResourceContext> resources = (List<ResourceContext>) context.get(FacilioConstants.ContextNames.WORK_FLOW_PARAMS);
-			List<Object> params = new ArrayList<>();
-			params.add(resources);
-            newContext.put(WorkflowV2Util.WORKFLOW_PARAMS, params);
-			chain.execute();
-		}
-	},
-	INSTANT_JOB(4) {
+	INSTANT_JOB(3) {
 		@Override
 		public void performAction(FacilioContext context, BaseTriggerContext trigger, String moduleName, ModuleBaseWithCustomFields record, List<UpdateChangeSet> changeSets, Long recordId) throws Exception {
 			String jobName = (String) context.get(FacilioConstants.ContextNames.INSTANT_JOB_NAME);
-			context.put(FacilioConstants.ContextNames.RECORD_ID, recordId);
+			context.put(FacilioConstants.ContextNames.TYPE_PRIMARY_ID, recordId);
 			FacilioTimer.scheduleInstantJob(jobName, context);
 		}
 	}
