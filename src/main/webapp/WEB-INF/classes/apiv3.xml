@@ -108,7 +108,7 @@
         <action name="list"
                 class="com.facilio.v3.RESTAPIHandler"
                 method="list">
-            <param name="translationImpl">StateFlowTranslationV3</param>
+            <param name="translationImpl">V3ListApiTranslationImpl</param>
         </action>
 
         <action name="summary"
@@ -236,6 +236,7 @@
                 class="com.facilio.bmsconsoleV3.actions.picklist.V3PIckListAction"
                 method="pickList">
             <param name="moduleName">{1}</param>
+            <param name="translationImpl">V3PickListTranslation</param>
         </action>
     </package>
     
