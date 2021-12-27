@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.purchaseorder;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ReceivableContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
 import com.facilio.bmsconsole.util.PurchaseOrderAPI;
@@ -43,7 +44,7 @@ public class POAfterCreateOrEditV3Command extends FacilioCommand {
                     if (purchaseOrderContext.getId() > 0) {
                         if (purchaseOrderContext.getLineItems() != null && purchaseOrderContext.getReceivableStatus() == V3PurchaseOrderContext.ReceivableStatus.YET_TO_RECEIVE.getIndex()) {
                             DeleteRecordBuilder<PurchaseOrderLineItemContext> deleteBuilder = new DeleteRecordBuilder<PurchaseOrderLineItemContext>()
-                              .module(lineItemsModule)
+                                    .module(lineItemsModule)
                                     .andCondition(CriteriaAPI.getCondition("PO_ID", "purchaseOrder", String.valueOf(purchaseOrderContext.getId()), NumberOperators.EQUALS));
                             deleteBuilder.delete();
                             V3PurchaseOrderContext poContext = new V3PurchaseOrderContext();
@@ -53,8 +54,8 @@ public class POAfterCreateOrEditV3Command extends FacilioCommand {
                             }
                             RecordAPI.addRecord(false, purchaseOrderContext.getLineItems(), lineItemsModule, modBean.getAllFields(lineItemsModule.getName()));
                         }
-                        if (purchaseOrderContext.getReceivableContext() == null || purchaseOrderContext.getReceivableContext().getId() <= 0) {
 
+                        if (receivablesNotCreated(purchaseOrderContext.getId())) {
                             FacilioModule receivableModule = modBean.getModule(FacilioConstants.ContextNames.RECEIVABLE);
                             V3ReceivableContext receivableContext = new V3ReceivableContext();
                             receivableContext.setPoId(purchaseOrderContext);
@@ -128,6 +129,22 @@ public class POAfterCreateOrEditV3Command extends FacilioCommand {
             return 0d;
         }
         return 0d;
+    }
+    private boolean receivablesNotCreated(long poId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String receivablesModuleName = FacilioConstants.ContextNames.RECEIVABLE;
+        FacilioModule receivablesModule = modBean.getModule(receivablesModuleName);
+        List<FacilioField> receivablesFields = modBean.getAllFields(receivablesModuleName);
+        SelectRecordsBuilder<ReceivableContext> selectRecordsBuilder = new SelectRecordsBuilder<ReceivableContext>()
+                .module(receivablesModule)
+                .beanClass(ReceivableContext.class)
+                .select(receivablesFields)
+                .andCondition(CriteriaAPI.getCondition("PO_ID", "poId", String.valueOf(poId), NumberOperators.EQUALS));
+        List<ReceivableContext> receivables = selectRecordsBuilder.get();
+        if(receivables.size() <= 0){
+            return true;
+        }
+        return false;
     }
 
 }
