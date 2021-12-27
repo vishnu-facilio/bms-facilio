@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 
 import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.ContactDirectoryContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestShipmentContext;
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
@@ -241,6 +242,9 @@ public class PageFactory {
 				return PeopleModulesPageFactory.getPeopleModulePage((PeopleContext) record, module);
 			case ContextNames.STORE_ROOM:
 				return StoreRoomPageFactory.getStoreRoomPage((StoreRoomContext) record, module);
+			case ContextNames.CONTACT_DIRECTORY:
+				return ContactDirectoryPage.getContactDirecoryPage((ContactDirectoryContext) record, module);
+		
 		}
 		if (module.getExtendModule() == null) {	// temp
 			// etisalat changes will be changed to standard method
