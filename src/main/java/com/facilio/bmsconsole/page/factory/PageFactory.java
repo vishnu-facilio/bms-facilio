@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+import com.facilio.bmsconsoleV3.context.communityfeatures.AdminDocumentsContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.ContactDirectoryContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestShipmentContext;
@@ -244,7 +244,9 @@ public class PageFactory {
 				return StoreRoomPageFactory.getStoreRoomPage((StoreRoomContext) record, module);
 			case ContextNames.CONTACT_DIRECTORY:
 				return CommunityFeaturesPageFactory.getContactDirecoryPage((ContactDirectoryContext) record, module);
-		
+			case ContextNames.ADMIN_DOCUMENTS:
+				return CommunityFeaturesPageFactory.getAdminDocumentsPage((AdminDocumentsContext) record, module);
+
 		}
 		if (module.getExtendModule() == null) {	// temp
 			// etisalat changes will be changed to standard method

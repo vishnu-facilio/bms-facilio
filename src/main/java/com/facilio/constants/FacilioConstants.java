@@ -1952,6 +1952,7 @@ public class FacilioConstants {
 		public static final String INVITE_ACCEPT_STATUS = "inviteacceptstatus";
 		public static final String SEND_INVITE = "sendinvite";
 		public static final String CONTACT_DIRECTORY = "contactdirectory";
+		public static final String ADMIN_DOCUMENTS = "admindocuments";
 
 		public static class WorkPermit {
 			public static final String WORK_PERMIT_TYPE_CHECKLIST = "workpermittypechecklist";
