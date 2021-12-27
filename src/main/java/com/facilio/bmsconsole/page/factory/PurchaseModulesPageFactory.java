@@ -1,12 +1,21 @@
 package com.facilio.bmsconsole.page.factory;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class PurchaseModulesPageFactory extends PageFactory {
 
@@ -48,7 +57,7 @@ public class PurchaseModulesPageFactory extends PageFactory {
         Page.Section tab3Sec1 = page.new Section();
         tab3.addSection(tab3Sec1);
         addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.PR_ASSOCIATED_TERMS, module.getModuleId());
-
+        addRelatedList(tab3Sec1, record.getModuleId());
 
         return page;
     }
@@ -95,10 +104,37 @@ public class PurchaseModulesPageFactory extends PageFactory {
         tab3.addSection(tab3Sec1);
         addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.PO_ASSOCIATED_TERMS, module.getModuleId());
         addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.PURCHASE_REQUEST, module.getModuleId());
-
+        addRelatedList(tab3Sec1, record.getModuleId());
 
         return page;
     }
+    private static void addRelatedList(Page.Section section, long moduleId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioModule> subModules =
+                modBean.getSubModules(moduleId, FacilioModule.ModuleType.BASE_ENTITY);
 
+
+        if (CollectionUtils.isNotEmpty(subModules)) {
+            for (FacilioModule subModule : subModules) {
+
+                if(subModule.getName().equals(FacilioConstants.ContextNames.PURCHASE_REQUEST) || subModule.getName().equals(FacilioConstants.ContextNames.PO_ASSOCIATED_TERMS) || subModule.getName().equals(FacilioConstants.ContextNames.PR_ASSOCIATED_TERMS)) {
+                    continue;
+                }
+                List<FacilioField> allFields = modBean.getAllFields(subModule.getName());
+                List<FacilioField> fields = allFields.stream().filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == moduleId)).collect(Collectors.toList());
+                if ((CollectionUtils.isNotEmpty(fields))) {
+                    for (FacilioField field : fields) {
+                        PageWidget relatedListWidget = new PageWidget(PageWidget.WidgetType.RELATED_LIST);
+                        JSONObject relatedList = new JSONObject();
+                        relatedList.put("module", subModule);
+                        relatedList.put("field", field);
+                        relatedListWidget.setRelatedList(relatedList);
+                        relatedListWidget.addToLayoutParams(section, 24, 8);
+                        section.addWidget(relatedListWidget);
+                    }
+                }
+            }
+        }
+    }
 
 }

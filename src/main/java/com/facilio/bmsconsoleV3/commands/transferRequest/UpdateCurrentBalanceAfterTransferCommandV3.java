@@ -25,7 +25,7 @@ public class UpdateCurrentBalanceAfterTransferCommandV3 extends FacilioCommand {
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3TransferRequestContext> transferRequestContexts = recordMap.get(moduleName);
         if (CollectionUtils.isNotEmpty(transferRequestContexts)){
-                if (transferRequestContexts.get(0).getData().get("isCompleted").equals(true)) {
+                if (transferRequestContexts.get(0).getIsCompleted()) {
                     Long storeroomId = transferRequestContexts.get(0).getTransferToStore().getId();
                     StoreRoomContext storeRoom = StoreroomApi.getStoreRoom(storeroomId);
 

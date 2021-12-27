@@ -37,7 +37,7 @@ public class SetLineItemsCommandV3 extends FacilioCommand {
                 .andCondition(CriteriaAPI.getCondition("TRANSFER_REQUEST_ID", "transferRequest", String.valueOf(id), NumberOperators.EQUALS))
                 .fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("itemType"), (LookupField) fieldsAsMap.get("toolType")));
         List<V3TransferRequestLineItemContext> list = builder.get();
-        transferRequestContext.setLineItems(list);
+        transferRequestContext.setTransferrequestlineitems(list);
         return false;
     }
 }

@@ -34,7 +34,7 @@ public class UpdateItemTransactionCommandV3 extends FacilioCommand {
        String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3TransferRequestContext> transferRequests = recordMap.get(moduleName);
-        if(!Objects.isNull(context.get(FacilioConstants.ContextNames.ITEM_TYPES)) && transferRequests.get(0).getData().get("isStaged").equals(true)&&transferRequests.get(0).getData().get("isCompleted").equals(false) && transferRequests.get(0).getData().get("isShipped").equals(false)){
+        if(!Objects.isNull(context.get(FacilioConstants.ContextNames.ITEM_TYPES)) && transferRequests.get(0).getIsStaged() && !transferRequests.get(0).getIsCompleted() && !transferRequests.get(0).getIsShipped()){
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule itemTransactionsModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
             List<FacilioField> itemTransactionsFields = modBean
