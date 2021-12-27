@@ -158,7 +158,9 @@ public class ControllerMessenger {
 	            		if (controller.getControllerType() == ControllerType.OPC_UA.getKey() ||
 	            		controller.getControllerType() == ControllerType.OPC_DA.getKey()) {
 	            			object.put(AgentConstants.TIMEOUT, DEFAULT_TIMEOUT);
-	            		}else if(agent.getDiscoverPointsTimeOut()>0){object.put(AgentConstants.TIMEOUT,agent.getDiscoverPointsTimeOut());}
+	            		}else if(agent.getDiscoverPointsTimeOut()>0){
+                            object.put(AgentConstants.TIMEOUT,agent.getDiscoverPointsTimeOut());
+                        }
 	            		break;
 	            	case EDIT_CONTROLLER:
 	            		break;

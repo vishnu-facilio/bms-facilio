@@ -67,8 +67,8 @@ public class AgentMessenger {
                      break;
                 case DISCOVER_POINTS:
                     if(agent.getDiscoverPointsTimeOut()>0) {
-                    messageBody.put(AgentConstants.TIMEOUT, agent.getDiscoverPointsTimeOut());
-                }
+                        messageBody.put(AgentConstants.TIMEOUT, agent.getDiscoverPointsTimeOut());
+                    }
                     break;
                 case SHUTDOWN:
                 case DISCOVER_ALARM_SOURCE:

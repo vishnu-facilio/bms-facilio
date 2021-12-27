@@ -252,8 +252,8 @@ public class FacilioAgent implements Serializable {
         payload.put(AgentKeys.DISPLAY_NAME,getDisplayName());
         payload.put(AgentKeys.WRITABLE, getWritable());
         payload.put("agentType",getAgentType());
-        payload.put("discoverControllersTimeOut",getDiscoverControllersTimeOut());
-        payload.put("discoverPointsTimeOut",getDiscoverPointsTimeOut());
+        payload.put(AgentKeys.DISCOVER_CONTROLLERS_TIMEOUT,getDiscoverControllersTimeOut());
+        payload.put(AgentKeys.DISCOVER_POINTS_TIMEOUT,getDiscoverPointsTimeOut());
         payload.put(AgentConstants.INBOUND_CONNECTION_ID,getInboundConnectionId());
         if(createdTime>0){
             payload.put(AgentKeys.CREATED_TIME,getCreatedTime());
