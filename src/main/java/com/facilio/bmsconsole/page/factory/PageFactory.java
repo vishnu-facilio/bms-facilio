@@ -243,7 +243,7 @@ public class PageFactory {
 			case ContextNames.STORE_ROOM:
 				return StoreRoomPageFactory.getStoreRoomPage((StoreRoomContext) record, module);
 			case ContextNames.CONTACT_DIRECTORY:
-				return ContactDirectoryPage.getContactDirecoryPage((ContactDirectoryContext) record, module);
+				return CommunityFeaturesPageFactory.getContactDirecoryPage((ContactDirectoryContext) record, module);
 		
 		}
 		if (module.getExtendModule() == null) {	// temp
