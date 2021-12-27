@@ -72,7 +72,7 @@ import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
-;import static com.facilio.constants.FacilioConstants.INVITATION_EXPIRY_DAYS;
+import static com.facilio.constants.FacilioConstants.INVITATION_EXPIRY_DAYS;
 
 @Log4j
 public class UserBeanImpl implements UserBean {
