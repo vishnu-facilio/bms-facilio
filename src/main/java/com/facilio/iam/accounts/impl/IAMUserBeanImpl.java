@@ -870,9 +870,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("groupType"), String.valueOf(props.get("groupType")), NumberOperators.EQUALS));
 		List<Map<String, Object>> result = selectRecordBuilder.get();
 
-		if (!result.isEmpty()) {
-			throw new IllegalArgumentException("Duplicate entries for the user name.");
-		}
+		boolean ignoreEntry = CollectionUtils.isNotEmpty(result);
 
 		List<Map<String, Object>> res = new GenericSelectRecordBuilder().
 				table(IAMAccountConstants.getDCLookupModule().getTableName())
@@ -886,11 +884,15 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			}
 		}
 
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.table(IAMAccountConstants.getDCLookupModule().getTableName())
-				.fields(fields);
-		
-		return insertBuilder.insert(props);
+		if (!ignoreEntry) {
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.table(IAMAccountConstants.getDCLookupModule().getTableName())
+					.fields(fields);
+
+			return insertBuilder.insert(props);
+		}
+
+		return 0;
 	}
 
 	@SneakyThrows
