@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public class GetWorkOrderOrAssetTranslationFields implements TranslationTypeInterface {
+public class GetWorkOrderTranslationFields implements TranslationTypeInterface {
 
     @Override
     public JSONArray constructTranslationObject(@NonNull WebTabContext context, Map<String, String> queryString, Properties properties) throws Exception {
@@ -41,15 +41,6 @@ public class GetWorkOrderOrAssetTranslationFields implements TranslationTypeInte
             case FacilioConstants.ContextNames.TICKET_TYPE:
                 fetchTicketType(properties, moduleName, listContext, jsonArray);
                 break;
-            case FacilioConstants.ContextNames.ASSET_CATEGORY:
-                fetchAssetCategory(properties, moduleName, listContext, jsonArray);
-                break;
-            case FacilioConstants.ContextNames.ASSET_DEPARTMENT:
-                fetchAssetDepartment(properties, moduleName, listContext, jsonArray);
-                break;
-            case FacilioConstants.ContextNames.ASSET_TYPE:
-                fetchAssetType(properties, moduleName, listContext, jsonArray);
-                break;
         }
 
         JSONObject fieldObject = new JSONObject();
@@ -59,36 +50,6 @@ public class GetWorkOrderOrAssetTranslationFields implements TranslationTypeInte
         sectionArray.add(fieldObject);
 
         return sectionArray;
-    }
-
-    private void fetchAssetType(Properties properties, String prefix, FacilioContext listContext, JSONArray workOrderArray) {
-        List<AssetTypeContext> moduleDataList = (List<AssetTypeContext>) listContext.get(FacilioConstants.ContextNames.RECORD_LIST);
-        if (CollectionUtils.isNotEmpty(moduleDataList)) {
-            for (AssetTypeContext moduleData : moduleDataList) {
-                String key = TranslationsUtil.getTranslationKey(prefix, String.valueOf(moduleData.getId()));
-                workOrderArray.add(TranslationsUtil.constructJSON(moduleData.getName(), prefix, TranslationConstants.DISPLAY_NAME, String.valueOf(moduleData.getId()), key, properties));
-            }
-        }
-    }
-
-    private void fetchAssetDepartment(Properties properties, String prefix, FacilioContext listContext, JSONArray workOrderArray) {
-        List<AssetDepartmentContext> moduleDataList = (List<AssetDepartmentContext>) listContext.get(FacilioConstants.ContextNames.RECORD_LIST);
-        if (CollectionUtils.isNotEmpty(moduleDataList)) {
-            for (AssetDepartmentContext moduleData : moduleDataList) {
-                String key = TranslationsUtil.getTranslationKey(prefix, String.valueOf(moduleData.getId()));
-                workOrderArray.add(TranslationsUtil.constructJSON(moduleData.getName(), prefix, TranslationConstants.DISPLAY_NAME, String.valueOf(moduleData.getId()), key, properties));
-            }
-        }
-    }
-
-    private void fetchAssetCategory(Properties properties, String prefix, FacilioContext listContext, JSONArray workOrderArray) {
-        List<AssetCategoryContext> moduleDataList = (List<AssetCategoryContext>) listContext.get(FacilioConstants.ContextNames.RECORD_LIST);
-        if (CollectionUtils.isNotEmpty(moduleDataList)) {
-            for (AssetCategoryContext moduleData : moduleDataList) {
-                String key = TranslationsUtil.getTranslationKey(prefix, String.valueOf(moduleData.getId()));
-                workOrderArray.add(TranslationsUtil.constructJSON(moduleData.getDisplayName(), prefix, TranslationConstants.DISPLAY_NAME, String.valueOf(moduleData.getId()), key, properties));
-            }
-        }
     }
 
     private void fetchTicketType(Properties properties, String prefix, FacilioContext listContext, JSONArray workOrderArray) {
