@@ -50,6 +50,8 @@ public class AddOrUpdateDelegateCommand extends FacilioCommand {
 
         DelegationUtil.fillDelegation(Collections.singletonList(delegationContext));
 
+        // remove any banner associate with this delegation
+        BannerUtil.deleteBanner("userDelegation_" + delegationContext.getId(), false);
         JSONObject linkConfig = new JSONObject();
         linkConfig.put("id", delegationContext.getId());
         linkConfig.put("navigateTo", "UserDelegation");
