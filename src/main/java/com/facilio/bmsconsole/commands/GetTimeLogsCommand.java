@@ -15,7 +15,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import org.apache.commons.chain.Context;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.CollectionUtils;import org.json.simple.JSONObject;
 import org.owasp.esapi.util.CollectionsUtil;
 
 import java.util.*;
@@ -49,6 +49,19 @@ public class GetTimeLogsCommand extends FacilioCommand {
         if (filterCriteria != null && !filterCriteria.isEmpty()) {
             builder.andCriteria(filterCriteria);
         }
+        JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+        if (pagination != null) {
+            int page = (int) pagination.get("page");
+            int perPage = (int) pagination.get("perPage");
+
+            int offset = ((page - 1) * perPage);
+            if (offset < 0) {
+                offset = 0;
+            }
+
+            builder.offset(offset);
+            builder.limit(perPage);
+        }
 
         List<TimelogContext> timeLogs = FieldUtil.getAsBeanListFromMapList(builder.get(),TimelogContext.class);
         setObjectFields(timeLogs,parentModule);
@@ -58,6 +71,11 @@ public class GetTimeLogsCommand extends FacilioCommand {
     }
 
     private void setObjectFields(List<TimelogContext> timeLogs,FacilioModule module) throws  Exception{
+
+        if(timeLogs.isEmpty()){
+            return;
+        }
+
         Set<Long> fromStatusIds = new HashSet<>();
         Set<Long> doneBy = new HashSet<>();
 
@@ -72,6 +90,9 @@ public class GetTimeLogsCommand extends FacilioCommand {
 
         UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
         List<User> doneByUsers = userBean.getUsers(null,false,true,doneBy);
+        if (CollectionUtils.isEmpty(doneByUsers)) {
+            doneByUsers = null;
+        }
 
         if(CollectionUtils.isNotEmpty(doneByUsers) && CollectionUtils.isNotEmpty(fromStatusList)){
             Map<Long,User> doneByUserMap = doneByUsers.stream().collect(Collectors.toMap(User::getId,Function.identity()));
