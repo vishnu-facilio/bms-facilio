@@ -151,4 +151,22 @@ public class TranslationsUtil {
                 FacilioConstants.ContextNames.ASSET_TYPE,
                 FacilioConstants.ContextNames.ASSET_DEPARTMENT);
     }
+
+    public static  Map<String,String> WORKORDER_FIELDS_MAP = Collections.unmodifiableMap(initWorkOrderFieldsMap());
+    private static Map<String,String> initWorkOrderFieldsMap() {
+        Map<String,String> workOrderMap = new HashMap<>();
+        workOrderMap.put("CATEGORY","ticketcategory");
+        workOrderMap.put("PRIORITY","ticketpriority");
+        workOrderMap.put("TYPE","tickettype");
+        return workOrderMap;
+    }
+
+    public static  Map<String,String> ASSET_FIELDS_MAP = Collections.unmodifiableMap(initAssetFieldsMap());
+    private static Map<String,String> initAssetFieldsMap() {
+        Map<String,String> assetFieldsMap = new HashMap<>();
+        assetFieldsMap.put("CATEGORY","assetcategory");
+        assetFieldsMap.put("DEPARTMENT","assetdepartment");
+        assetFieldsMap.put("TYPE","assettype");
+        return assetFieldsMap;
+    }
 }
