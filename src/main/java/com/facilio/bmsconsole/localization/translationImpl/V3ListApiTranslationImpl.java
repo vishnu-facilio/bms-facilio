@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.localization.translationImpl;
 
 import com.facilio.bmsconsole.localization.util.TranslationConstants;
 import com.facilio.bmsconsole.localization.util.TranslationsUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.translation.TranslationIfc;
 import lombok.NonNull;
 import org.json.simple.JSONObject;
@@ -17,9 +18,9 @@ public class V3ListApiTranslationImpl implements TranslationIfc {
             JSONObject supplements = (JSONObject) meta.get("supplements");
             if (supplements != null && !supplements.isEmpty()) {
                 if (supplements.containsKey("workorder")) {
-                    setDisplayName(translationFile, (JSONObject) supplements.get("workorder"), TranslationConstants.TranslationPrefixes.TICKET_CATEGORY, TranslationConstants.TranslationPrefixes.TICKET_PRIORITY, TranslationConstants.TranslationPrefixes.TICKET_TYPE, null);
+                    setDisplayName(translationFile, (JSONObject) supplements.get("workorder"), FacilioConstants.ContextNames.TICKET_CATEGORY, FacilioConstants.ContextNames.TICKET_PRIORITY, FacilioConstants.ContextNames.TICKET_TYPE, null);
                 } else if (supplements.containsKey("asset")) {
-                    setDisplayName(translationFile, (JSONObject) supplements.get("asset"), TranslationConstants.TranslationPrefixes.ASSET_CATEGORY, null, TranslationConstants.TranslationPrefixes.ASSET_TYPE, TranslationConstants.TranslationPrefixes.ASSET_DEPARTMENT);
+                    setDisplayName(translationFile, (JSONObject) supplements.get("asset"), FacilioConstants.ContextNames.ASSET_CATEGORY, null, FacilioConstants.ContextNames.ASSET_TYPE, FacilioConstants.ContextNames.ASSET_DEPARTMENT);
                 }
             }
         }

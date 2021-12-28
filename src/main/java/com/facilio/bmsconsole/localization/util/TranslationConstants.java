@@ -40,15 +40,4 @@ public class TranslationConstants {
         fields.add(FieldFactory.getField("status","STATUS",module,FieldType.BOOLEAN));
         return fields;
     }
-
-    public static class TranslationPrefixes {
-        public static final String TICKET_CATEGORY = "ticketcategory";
-        public static final String TICKET_PRIORITY = "ticketpriority";
-        public static final String TICKET_TYPE= "tickettype";
-
-        public static final String ASSET_CATEGORY ="assetcategory";
-        public static final String ASSET_DEPARTMENT ="assetdepartment";
-        public static final String ASSET_TYPE="assettype";
-    }
-
 }
