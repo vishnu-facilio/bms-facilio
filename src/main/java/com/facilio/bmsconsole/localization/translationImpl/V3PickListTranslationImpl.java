@@ -20,8 +20,7 @@ public class V3PickListTranslationImpl implements TranslationIfc {
         HttpParameters params = Objects.requireNonNull(ActionContext.getContext(), "Action context cannot be null here").getParameters();
         Parameter param = params == null ? null : params.get("moduleName");
 
-        if (param != null && StringUtils.isNotEmpty(param.getValue())) {
-            String moduleName = param.getValue();
+        if (param != null && StringUtils.isNotEmpty(param.getValue()) && TranslationsUtil.SPECIAL_HANDLING_MODULES.contains(param.getValue())) {
             JSONObject data = (JSONObject) json.get("data");
 
             if (data != null && !data.isEmpty()) {
@@ -32,7 +31,7 @@ public class V3PickListTranslationImpl implements TranslationIfc {
                         JSONObject jsonObject = (JSONObject) pickList.get(i);
 
                         if (jsonObject != null && !jsonObject.isEmpty()) {
-                            String key = TranslationsUtil.getTranslationKey(moduleName, String.valueOf(jsonObject.get("value")));
+                            String key = TranslationsUtil.getTranslationKey(param.getValue(), String.valueOf(jsonObject.get("value")));
                             jsonObject.put("label", getTranslation(translationFile, key, (String) jsonObject.get("label")));
                         }
 

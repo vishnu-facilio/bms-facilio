@@ -108,7 +108,7 @@
         <action name="list"
                 class="com.facilio.v3.RESTAPIHandler"
                 method="list">
-            <param name="translationImpl">V3ListApiTranslationImpl</param>
+            <param name="translationImpl">V3ListApiTranslation</param>
         </action>
 
         <action name="summary"
