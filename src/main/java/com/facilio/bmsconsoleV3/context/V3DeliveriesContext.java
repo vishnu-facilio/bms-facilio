@@ -165,7 +165,6 @@ public class V3DeliveriesContext extends V3Context{
 	public Integer getCarrier() {
         return carrier;
     }
-
     public void setCarrier(Integer carrier) {
         this.carrier = carrier;
     }

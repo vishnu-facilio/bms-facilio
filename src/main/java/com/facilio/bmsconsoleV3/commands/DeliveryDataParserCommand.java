@@ -38,13 +38,12 @@ public class DeliveryDataParserCommand extends FacilioCommand {
             V3DeliveriesContext delivery = new V3DeliveriesContext();
             InputStream file = fileStore.readFile(fileMap.get(key));
             delivery.setAvatarId(fileMap.get(key));
+            delivery.setAvatarFileName(key);
+
             if (file == null) {
                 continue;
             }
-            LOGGER.info("Before ocr parsing");
             List<Block> result = detectDocText(file);
-            LOGGER.info("result " + result);
-
             if (result != null) {
                 DeliveryPackageType deliveryPackageType = DeliveryPackageType.detectPackageType(result);
                 if (deliveryPackageType != null) {
@@ -61,11 +60,18 @@ public class DeliveryDataParserCommand extends FacilioCommand {
                         V3EmployeeContext v3EmployeeContext = new V3EmployeeContext();
                         v3EmployeeContext.setId(employee.getId());
                         delivery.setEmployee(v3EmployeeContext);
+                        context.put("parserResult",1);
                     } else {
                         delivery.setName("Unidentified");
+                        if(delivery.getCarrier() == 8) {
+                            context.put("parserResult",-1);
+                        } else {
+                            context.put("parserResult",2);
+                        }
                     }
                 }
             }
+
             deliveriesContextList.add(delivery);
             file.close();
         }

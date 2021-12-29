@@ -7,6 +7,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.v3.V3Action;
 import com.facilio.v3.commands.AttachmentCommand;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
 
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,15 @@ public class DeliveryParser  extends V3Action {
         Constants.setAttachmentFileList(context, this.getFiles());
 
         transactionChain.execute(context);
+        if(context.containsKey("parserResult")){
+            if(Long.parseLong(context.get("parserResult").toString()) == -1) {
+                this.setCode(ErrorCode.DELIVERY_PARSING_FAILED.getCode());
+            } else if(Long.parseLong(context.get("parserResult").toString()) == 1) {
+                this.setCode(ErrorCode.DELIVERY_PARSING_SUCCESS.getCode());
+            } else if(Long.parseLong(context.get("parserResult").toString()) == 2) {
+                this.setCode(ErrorCode.DELIVERY_PARSING_EMPLOYEE_NOT_FOUND.getCode());
+            }
+        }
 
         Map<String, Long> attachmentNameVsId = Constants.getAttachmentNameVsId(context);
         List<Map<String, Object>> deliveries = (List<Map<String, Object>>) context.get("deliveries");
