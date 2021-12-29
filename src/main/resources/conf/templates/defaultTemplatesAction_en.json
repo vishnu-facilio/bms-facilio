@@ -1021,6 +1021,7 @@
 	},
 	"120": {
 		"name": "DELEGATION_CREATION",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
 		"to": "${delegateUser.email}",
 		"subject": "${dUser.name} has delegated some activities to you! Please take a look!",
 		"message_ftl": "delegationNotification"
