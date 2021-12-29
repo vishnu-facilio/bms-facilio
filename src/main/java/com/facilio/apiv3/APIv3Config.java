@@ -794,10 +794,10 @@ public class APIv3Config {
                 .beforeSave(TransactionChainFactoryV3.getWorkorderBeforeUpdateChain())
                 .afterSave(TransactionChainFactoryV3.getWorkorderAfterUpdateChain(true))
                 .list()
-                .beforeFetch(new SkipModuleCriteriaForUpcomingViewCommand())
+                .beforeFetch(TransactionChainFactoryV3.getTicketBeforeFetchChain())
                 .afterFetch(new LoadWorkorderLookupsAfterFetchcommandV3())
                 .summary()
-                .beforeFetch(new SkipModuleCriteriaForSummaryCommand())
+                .beforeFetch(TransactionChainFactoryV3.getTicketBeforeFetchForSummaryChain())
                   .afterFetch(ReadOnlyChainFactoryV3.getWorkorderAfterFetchOnSummaryChain())
                 .build();
     }

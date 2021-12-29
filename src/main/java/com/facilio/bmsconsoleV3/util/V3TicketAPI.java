@@ -418,8 +418,8 @@ public class V3TicketAPI {
         loadWorkOrdersUsers(workOrders);
         loadTicketGroups(workOrders);
         loadTicketResources(workOrders);
-        loadTicketTenants(workOrders);
-        loadTicketVendors(workOrders);
+//        loadTicketTenants(workOrders);
+//        loadTicketVendors(workOrders);
         loadTicketDetails(workOrders);
     }
 
@@ -707,9 +707,6 @@ public class V3TicketAPI {
     }
 
     private static void loadTicketVendors(Collection<? extends V3TicketContext> tickets) throws Exception {
-        if (isInvesta()) {
-            LOGGER.info("loadTicketVendors called with " + tickets);
-        }
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VENDORS);
 
@@ -717,40 +714,20 @@ public class V3TicketAPI {
             SelectRecordsBuilder<V3VendorContext> builder = new SelectRecordsBuilder<V3VendorContext>()
                     .module(module)
                     .beanClass(V3VendorContext.class)
-                    .select(modBean.getAllFields(FacilioConstants.ContextNames.VENDORS));
+                    .select(modBean.getAllFields(FacilioConstants.ContextNames.VENDORS))
+                    ;
 
-            List<V3VendorContext> vendorList = builder.get();
-
-            LOGGER.info("vendorList Query -->" + builder.toString());
-
-            if (isInvesta()) {
-                LOGGER.info("fetched vendorList -->" + vendorList);
-                LOGGER.info("fetched vendorList size -->" + vendorList.size());
-            }
+             List<V3VendorContext> vendorList = builder.get();
 
             if (vendorList.size() > 0) {
                 Map<Long, V3VendorContext> vendors = FieldUtil.getAsMap(vendorList);
                 for (V3TicketContext ticket : tickets) {
 
-                    if (isInvesta()) {
-                        LOGGER.info("ticket -->" + ticket);
-                    }
-
                     if (ticket != null) {
-
-                        if (isInvesta()) {
-                            LOGGER.info("PRE: ticket id -->" + ticket.getId());
-                            LOGGER.info("PRE: ticket vendor -->" + ticket.getVendor());
-                        }
                         V3VendorContext vendor = ticket.getVendor();
                         if (vendor != null) {
                             V3VendorContext tenantDetail = vendors.get(vendor.getId());
                             ticket.setVendor(tenantDetail);
-                            
-                            if (isInvesta()) {
-                                LOGGER.info("POST: ticket id -->" + ticket.getId());
-                                LOGGER.info("POST: after setting vendor -->" + ticket.getVendor());
-                            }
                         }
                     }
                 }
