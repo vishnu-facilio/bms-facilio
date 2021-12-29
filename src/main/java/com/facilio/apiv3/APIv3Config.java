@@ -569,9 +569,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getItemTypes() {
         return () -> new V3Config(V3ItemTypesContext.class, new ModuleCustomFieldCount30())
                 .create()
-                	.afterSave(TransactionChainFactoryV3.getItemOrToolTypesAfterSaveChain())
                 .update()
-            		.afterSave(TransactionChainFactoryV3.getUpdateItemTypesAfterSaveChain())
                 .list()
                 	.beforeFetch(new LoadItemTypesLookUpCommandV3())
                     .afterFetch(new SetItemTypesUnitCommandV3())
@@ -606,9 +604,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getToolTypes() {
         return () -> new V3Config(V3ToolTypesContext.class, null)
                 .create()
-            		.afterSave(TransactionChainFactoryV3.getItemOrToolTypesAfterSaveChain())
                 .update()
-            		.afterSave(TransactionChainFactoryV3.getItemOrToolTypesAfterSaveChain())
                 .list()
                 	.beforeFetch(new LoadToolTypesLookUpCommandV3())
                     .afterFetch(new SetToolTypesUnitCommandV3())

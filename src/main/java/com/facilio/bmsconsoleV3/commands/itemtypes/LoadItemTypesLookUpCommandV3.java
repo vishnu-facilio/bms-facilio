@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.modules.FieldType;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -25,17 +26,19 @@ public class LoadItemTypesLookUpCommandV3 extends FacilioCommand {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
         if (fields == null) {
             fields = modBean.getAllFields(moduleName);
         }
+
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-        List<LookupField> additionaLookups = new ArrayList<LookupField>();
-        
-        LookupField statusField = (LookupField) fieldsAsMap.get("status");
-        LookupField categoryField = (LookupField) fieldsAsMap.get("category");
-        additionaLookups.add(statusField);
-        additionaLookups.add(categoryField);
+        List<LookupField> additionaLookups = new ArrayList<>();
+        additionaLookups.add((LookupField) fieldsAsMap.get("status"));
+        additionaLookups.add((LookupField) fieldsAsMap.get("category"));
+        for (FacilioField field : fields) {
+            if (!field.isDefault() && field.getDataTypeEnum() == FieldType.LOOKUP) {
+                additionaLookups.add((LookupField) field);
+            }
+        }
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,additionaLookups);
         return false;

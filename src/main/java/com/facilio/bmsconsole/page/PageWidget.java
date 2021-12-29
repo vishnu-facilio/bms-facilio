@@ -407,7 +407,12 @@ public class PageWidget {
 		ITEMS_TOOLS_WIDGET("itemstools"),
 		STOREROOM_PHOTOS("storeroomphotos"),
 		INVENTORY_REQ_RELATED_LIST("inventoryreqrelatedlist"),
-		PO_RELATED_LIST("porelatedlist");
+		PO_RELATED_LIST("porelatedlist"),
+		ITEM_TYPES_CARD("itemtypescard"),
+		STORE_ROOM("storeroom"),
+		TRANSACTIONS("transactions"),
+		PURCHASE_ORDER("purchaseorder");
+
 
 		private String name;
 
