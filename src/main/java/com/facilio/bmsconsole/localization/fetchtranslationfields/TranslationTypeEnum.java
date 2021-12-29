@@ -29,7 +29,7 @@ public enum TranslationTypeEnum {
     ;
 
     private static final Map<String, TranslationTypeEnum> TRANSLATION_TYPE_ENUM_MAP = initTranslationWiseType();
-    public static final Map<WebTabContext.Type, List<ClientColumnTypeEnum>> CLIENT_TRANSLATION_TYPE_ENUM= Collections.unmodifiableMap(init());
+    public static final Map<WebTabContext.Type, List<ClientColumnTypeEnum>> CLIENT_TRANSLATION_TYPE_ENUM= init();
 
     private String clientColumnName;
     private WebTabContext.Type type;
@@ -68,7 +68,7 @@ public enum TranslationTypeEnum {
         columnVsType.put(WebTabContext.Type.MODULE,moduleType);
         columnVsType.put(WebTabContext.Type.DASHBOARD,dashboardType);
         columnVsType.put(WebTabContext.Type.REPORT,reportType);
-        return columnVsType;
+        return Collections.unmodifiableMap(columnVsType);
     }
 
     @Getter

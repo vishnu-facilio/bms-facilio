@@ -128,14 +128,19 @@ public class TranslationAction extends FacilioAction {
             List<ApplicationLayoutContext> layout = props.getLayouts();
             if(CollectionUtils.isNotEmpty(layout)){
                 for (ApplicationLayoutContext prop : layout) {
-                    for (WebTabGroupContext webtabGroup : prop.getWebTabGroupList()) {
-                        for (WebTabContext webTab : webtabGroup.getWebTabs()) {
-                            webTab.setTypeVsColumns(TranslationTypeEnum.CLIENT_TRANSLATION_TYPE_ENUM.get(webTab.getTypeEnum()));
-                            if (!webTab.getRoute().equals("workorder") ){
-                                webTab.getTypeVsColumns().removeIf(clientColumnTypeEnum -> clientColumnTypeEnum.getType().equals("WORKORDER_FIELDS"));
-                            }
-                            if (!webTab.getRoute().equals("asset")){
-                                webTab.getTypeVsColumns().removeIf(clientColumnTypeEnum -> clientColumnTypeEnum.getType().equals("ASSET_FIELDS"));
+                    if (CollectionUtils.isNotEmpty(prop.getWebTabGroupList())) {
+                        for (WebTabGroupContext webtabGroup : prop.getWebTabGroupList()) {
+                            if (CollectionUtils.isNotEmpty( webtabGroup.getWebTabs())) {
+                                for (WebTabContext webTab : webtabGroup.getWebTabs()) {
+                                    List<TranslationTypeEnum.ClientColumnTypeEnum> columnTypeEnums = new ArrayList<>(TranslationTypeEnum.CLIENT_TRANSLATION_TYPE_ENUM.get(webTab.getTypeEnum()));
+                                    if (webTab.getTypeEnum().equals(WebTabContext.Type.MODULE) && !webTab.getRoute().equals("workorder") ){
+                                        columnTypeEnums.removeIf(clientColumnTypeEnum -> clientColumnTypeEnum.getType().equals("WORKORDER_FIELDS"));
+                                    }
+                                    if (webTab.getTypeEnum().equals(WebTabContext.Type.MODULE) && !webTab.getRoute().equals("asset")){
+                                        columnTypeEnums.removeIf(clientColumnTypeEnum -> clientColumnTypeEnum.getType().equals("ASSET_FIELDS"));
+                                    }
+                                    webTab.setTypeVsColumns(columnTypeEnums);
+                                }
                             }
                         }
                     }
