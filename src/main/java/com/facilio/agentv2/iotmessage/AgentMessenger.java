@@ -35,6 +35,7 @@ public class AgentMessenger {
 
     private static IotData constructNewIotAgentMessage(long agentId, FacilioCommand command, FacilioContext extraMsgContent, FacilioControllerType type) throws Exception {
         FacilioAgent agent = AgentApiV2.getAgent(agentId);
+
         Objects.requireNonNull(agent, "Agent can't be null");
         return constructNewIotAgentMessage(command, agent, extraMsgContent, type);
     }
@@ -58,6 +59,16 @@ public class AgentMessenger {
             switch (command) {
                 case PING:
                     messageBody.put(AgentConstants.PUBLISH_TYPE, PublishType.ACK.asInt());
+                    break;
+                case DISCOVER_CONTROLLERS:
+                    if(agent.getDiscoverControllersTimeOut()>0) {
+                        messageBody.put(AgentConstants.TIMEOUT, agent.getDiscoverControllersTimeOut());
+                    }
+                     break;
+                case DISCOVER_POINTS:
+                    if(agent.getDiscoverPointsTimeOut()>0) {
+                        messageBody.put(AgentConstants.TIMEOUT, agent.getDiscoverPointsTimeOut());
+                    }
                     break;
                 case SHUTDOWN:
                 case DISCOVER_ALARM_SOURCE:
