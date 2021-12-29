@@ -1157,5 +1157,18 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getTicketBeforeFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new LoadTicketLookupsCommand());
+        c.addCommand(new SkipModuleCriteriaForUpcomingViewCommand());
+        return c;
+    }
+
+    public static FacilioChain getTicketBeforeFetchForSummaryChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new LoadTicketLookupsCommand());
+        c.addCommand(new SkipModuleCriteriaForSummaryCommand());
+        return c;
+    }
 
 }
