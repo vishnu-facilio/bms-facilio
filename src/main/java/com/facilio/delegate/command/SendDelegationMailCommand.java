@@ -1,5 +1,6 @@
 package com.facilio.delegate.command;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.templates.DefaultTemplate;
 import com.facilio.bmsconsole.util.FreeMarkerAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
@@ -39,6 +40,7 @@ public class SendDelegationMailCommand extends FacilioCommand implements Seriali
             JSONObject json = defaultTemplate.getOriginalTemplate();
 
             Map<String, Object> placeHolders = new HashMap<>();
+            placeHolders.put("org", AccountUtil.getCurrentOrg());
             placeHolders.putAll(FieldUtil.getAsProperties(delegationContext));
             int delegationType = delegationContext.getDelegationType();
             List<String> responsibilities = new ArrayList<>();
