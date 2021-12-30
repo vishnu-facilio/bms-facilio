@@ -80,6 +80,7 @@ public class FormFactory {
 		//visitor type forms
 		
 		forms.put("visitorLogForm", getVisitorLogForm());
+		forms.put("visitResponseForm", getVisitResponseForm());
 		forms.put("watchListForm", getWatchListForm());
 		forms.put("workpermitForm", getWorkPermitForm());
 		forms.put("portalWorkpermitForm", getPortalWorkPermitForm());
@@ -496,6 +497,7 @@ public class FormFactory {
 		
 		List<FacilioForm> inspectionFormList = Arrays.asList(getInspectionForm());
 		List<FacilioForm> inductionFormList = Arrays.asList(getInductionForm());
+		List<FacilioForm> visitResponseLogForm = Arrays.asList(getVisitResponseForm());
 		
 		List<FacilioForm> warrantyContractFormsList = Arrays.asList(getWarrantyContractForm());
 
@@ -514,6 +516,7 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.INSURANCE, getFormMap(insuranceForm))
 				.put(FacilioConstants.ContextNames.VENDORS, getFormMap(vendorsForms))
 				.put(FacilioConstants.ContextNames.WATCHLIST, getFormMap(watchListForm))
+				.put(FacilioConstants.ContextNames.VISIT_CUSTOM_RESPONSE, getFormMap(visitResponseLogForm))
 				.put(FacilioConstants.ContextNames.OCCUPANT, getFormMap(occupantFormsList))
 				.put(FacilioConstants.ContextNames.SERVICE_REQUEST,getFormMap(serviceRequestFormsList))
 				.put(FacilioConstants.ContextNames.VENDOR_DOCUMENTS,getFormMap(vendorDocumentFormsList))
@@ -2680,6 +2683,25 @@ public class FormFactory {
 		fields.add(new FormField("isApprovalNeeded", FieldDisplayType.DECISION_BOX, "Is Host Approval Needed", Required.OPTIONAL, 5, 3));
 		return fields;
 	}
+	
+	public static FacilioForm getVisitResponseForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("VISIT RESPONSE");
+		form.setName("default_response");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VISIT_CUSTOM_RESPONSE));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getVisitResponseFormFields());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
+	private static List<FormField> getVisitResponseFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("responseName", FieldDisplayType.TEXTBOX, "Response Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("messageTitle", FieldDisplayType.TEXTBOX, "Title", Required.REQUIRED, 2, 1));
+		fields.add(new FormField("messageText", FieldDisplayType.TEXTAREA, "Message", Required.REQUIRED, 3, 1));
+		return fields;
+	}
+	
 
 	public static FacilioForm getWatchListForm() {
 		FacilioForm form = new FacilioForm();
