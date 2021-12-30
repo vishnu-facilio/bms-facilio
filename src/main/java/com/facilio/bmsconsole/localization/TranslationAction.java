@@ -131,6 +131,12 @@ public class TranslationAction extends FacilioAction {
                     for (WebTabGroupContext webtabGroup : prop.getWebTabGroupList()) {
                         for (WebTabContext webTab : webtabGroup.getWebTabs()) {
                             webTab.setTypeVsColumns(TranslationTypeEnum.CLIENT_TRANSLATION_TYPE_ENUM.get(webTab.getTypeEnum()));
+                            if (!webTab.getRoute().equals("workorder") ){
+                                webTab.getTypeVsColumns().removeIf(clientColumnTypeEnum -> clientColumnTypeEnum.getType().equals("WORKORDER_FIELDS"));
+                            }
+                            if (!webTab.getRoute().equals("asset")){
+                                webTab.getTypeVsColumns().removeIf(clientColumnTypeEnum -> clientColumnTypeEnum.getType().equals("ASSET_FIELDS"));
+                            }
                         }
                     }
                 }
@@ -177,6 +183,18 @@ public class TranslationAction extends FacilioAction {
 
     public String getWebTabGroupFields() throws Exception {
         setResult("sections",GetWebTabGroupTranslationFields.constructTranslationObject(getFilter()));
+        return SUCCESS;
+    }
+
+    private String moduleName;
+    public String getColumnFields() throws Exception {
+        if (StringUtils.isNotEmpty(moduleName)){
+            if (moduleName.equals("workorder")){
+                setResult("fields",TranslationsUtil.WORKORDER_FIELDS_MAP);
+            }else if (moduleName.equals("asset")){
+                setResult("fields",TranslationsUtil.ASSET_FIELDS_MAP);
+            }
+        }
         return SUCCESS;
     }
 }

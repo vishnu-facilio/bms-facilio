@@ -72,8 +72,14 @@ public abstract class EmailClient extends BaseEmailClient {
     }
 
     public void sendEmailWithActiveUserCheck (JSONObject mailJson) throws Exception {
+        sendEmailWithActiveUserCheck(mailJson, true);
+    }
+
+    public void sendEmailWithActiveUserCheck (JSONObject mailJson, boolean handleUserDelegation) throws Exception {
         if (removeInActiveUsers(mailJson)) {
-        	checkUserDelegation(mailJson);
+            if (handleUserDelegation) {
+                checkUserDelegation(mailJson);
+            }
             sendEmail(mailJson);
         }
     }

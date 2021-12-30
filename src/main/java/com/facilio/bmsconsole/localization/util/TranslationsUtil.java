@@ -1,7 +1,14 @@
 package com.facilio.bmsconsole.localization.util;
 
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.localization.translation.TranslationConfFile;
+import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.SLAWorkflowEscalationContext;
 import com.facilio.collections.UniqueMap;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -127,5 +134,40 @@ public class TranslationsUtil {
                 .fields(TranslationConstants.getTranslationFields())
                 .andCondition(CriteriaAPI.getCondition("LANG_CODE","langCode",lang,StringOperators.IS));
         builder.update(prop);
+    }
+
+    public static String getTranslationKey ( String prefix , String key ) {
+        return prefix + "." + key + "." + TranslationConstants.DISPLAY_NAME;
+    }
+
+
+    public static List<String> SPECIAL_HANDLING_MODULES = Collections.unmodifiableList(initModuleMap());
+
+    private static List<String> initModuleMap() {
+        return Arrays.asList(
+                FacilioConstants.ContextNames.TICKET_CATEGORY,
+                FacilioConstants.ContextNames.TICKET_PRIORITY,
+                FacilioConstants.ContextNames.TICKET_TYPE,
+                FacilioConstants.ContextNames.ASSET_CATEGORY,
+                FacilioConstants.ContextNames.ASSET_TYPE,
+                FacilioConstants.ContextNames.ASSET_DEPARTMENT);
+    }
+
+    public static  Map<String,String> WORKORDER_FIELDS_MAP = Collections.unmodifiableMap(initWorkOrderFieldsMap());
+    private static Map<String,String> initWorkOrderFieldsMap() {
+        Map<String,String> workOrderMap = new HashMap<>();
+        workOrderMap.put("CATEGORY","ticketcategory");
+        workOrderMap.put("PRIORITY","ticketpriority");
+        workOrderMap.put("TYPE","tickettype");
+        return workOrderMap;
+    }
+
+    public static  Map<String,String> ASSET_FIELDS_MAP = Collections.unmodifiableMap(initAssetFieldsMap());
+    private static Map<String,String> initAssetFieldsMap() {
+        Map<String,String> assetFieldsMap = new HashMap<>();
+        assetFieldsMap.put("CATEGORY","assetcategory");
+        assetFieldsMap.put("DEPARTMENT","assetdepartment");
+        assetFieldsMap.put("TYPE","assettype");
+        return assetFieldsMap;
     }
 }

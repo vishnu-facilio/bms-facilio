@@ -2709,6 +2709,7 @@
 		</action>
 		<action name="list" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="getModuleDataList">
+			<param name="translationImpl">V2ListApiTranslation</param>
 		</action>
 
 		<action name="*"
@@ -6687,5 +6688,8 @@
 		<action name="getStateTransitionForms"
 				class="com.facilio.bmsconsole.actions.StateFlowAction"
 				method="getStateTransitionFormList" />
+		<action name="*" class="com.facilio.bmsconsole.localization.TranslationAction" method="getColumnFields">
+			<param name="moduleName">{1}</param>
+		</action>
 	</package>
 </struts>

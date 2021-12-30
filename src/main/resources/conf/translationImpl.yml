@@ -47,8 +47,8 @@ translations:
   - name: StateFlowTranslationV2
     translationImplClass : com.facilio.bmsconsole.localization.translationImpl.StateFlowTranslationImplV2
 
-  - name: StateFlowTranslationV3
-    translationImplClass : com.facilio.bmsconsole.localization.translationImpl.StateFlowTranslationImplV3
+  - name: V3ListApiTranslation
+    translationImplClass : com.facilio.bmsconsole.localization.translationImpl.V3ListApiTranslationImpl
 
   - name: FieldTranslationV3
     translationImplClass : com.facilio.bmsconsole.localization.translationImpl.FieldTranslationImplV3
@@ -73,3 +73,9 @@ translations:
 
   - name: ReportFieldTranslation
     translationImplClass : com.facilio.bmsconsole.localization.translationImpl.ReportFieldTranslationImpl
+
+  - name: V3PickListTranslation
+    translationImplClass : com.facilio.bmsconsole.localization.translationImpl.V3PickListTranslationImpl
+
+  - name: V2ListApiTranslation
+    translationImplClass: com.facilio.bmsconsole.localization.translationImpl.V2ListApiTranslationIml
