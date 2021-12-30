@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -417,8 +418,8 @@ public class V3TicketAPI {
         loadWorkOrdersUsers(workOrders);
         loadTicketGroups(workOrders);
         loadTicketResources(workOrders);
-        loadTicketTenants(workOrders);
-        loadTicketVendors(workOrders);
+//        loadTicketTenants(workOrders);
+//        loadTicketVendors(workOrders);
         loadTicketDetails(workOrders);
     }
 
@@ -690,7 +691,7 @@ public class V3TicketAPI {
                 for(V3TicketContext ticket : tickets) {
                     if (ticket != null) {
                         V3TenantContext tenant = ticket.getTenant();
-                        if(tenant != null) {
+                        if (tenant != null) {
                             V3TenantContext tenantDetail = tenants.get(tenant.getId());
                             ticket.setTenant(tenantDetail);
                         }
@@ -699,42 +700,34 @@ public class V3TicketAPI {
             }
         }
     }
-    
+
+    private static boolean isInvesta() {
+        Organization org = AccountUtil.getCurrentOrg();
+        return org != null && org.getOrgId() == 17L;
+    }
+
     private static void loadTicketVendors(Collection<? extends V3TicketContext> tickets) throws Exception {
-    	if(AccountUtil.getCurrentOrg().getOrgId() == 418l) {
-    		LOGGER.info("Load Ticket Vendors Method Calling"+tickets);
-        }
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VENDORS);
 
-        if(tickets != null && !tickets.isEmpty()) {
+        if (tickets != null && !tickets.isEmpty()) {
             SelectRecordsBuilder<V3VendorContext> builder = new SelectRecordsBuilder<V3VendorContext>()
                     .module(module)
                     .beanClass(V3VendorContext.class)
                     .select(modBean.getAllFields(FacilioConstants.ContextNames.VENDORS))
                     ;
-            
-            List<V3VendorContext> vendorList = builder.get();
-            LOGGER.info("Vendor List Query -->"+builder.toString());
-            if(AccountUtil.getCurrentOrg().getOrgId() == 418l) {
-        		LOGGER.info("Vendor List size -->"+vendorList.size());
-            }
-            if(vendorList.size() > 0) {
+
+             List<V3VendorContext> vendorList = builder.get();
+
+            if (vendorList.size() > 0) {
                 Map<Long, V3VendorContext> vendors = FieldUtil.getAsMap(vendorList);
-                for(V3TicketContext ticket : tickets) {
-                	if(AccountUtil.getCurrentOrg().getOrgId() == 418l) {
-                		LOGGER.info("ticket id -->"+ticket.getId());
-                		LOGGER.info("ticket vendor -->"+ticket.getVendor());
-                    }
+                for (V3TicketContext ticket : tickets) {
+
                     if (ticket != null) {
-                    	V3VendorContext vendor = ticket.getVendor();
-                        if(vendor != null) {
-                        	V3VendorContext tenantDetail = vendors.get(vendor.getId());
+                        V3VendorContext vendor = ticket.getVendor();
+                        if (vendor != null) {
+                            V3VendorContext tenantDetail = vendors.get(vendor.getId());
                             ticket.setVendor(tenantDetail);
-                            if(AccountUtil.getCurrentOrg().getOrgId() == 418l) {
-                            	LOGGER.info("ticket id -->"+ticket.getId());
-                        		LOGGER.info("after setting vendor -->"+ticket.getVendor());
-                            }
                         }
                     }
                 }

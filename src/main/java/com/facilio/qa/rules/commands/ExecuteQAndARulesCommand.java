@@ -2,6 +2,7 @@ package com.facilio.qa.rules.commands;
 
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.command.PostTransactionCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.QuestionContext;
@@ -11,7 +12,7 @@ import com.facilio.qa.rules.pojo.QAndARule;
 import com.facilio.qa.rules.pojo.QAndARuleType;
 import com.facilio.qa.rules.pojo.RuleCondition;
 import com.facilio.util.FacilioUtil;
-import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -25,9 +26,13 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Log4j
-@AllArgsConstructor
-public class ExecuteQAndARulesCommand extends FacilioCommand {
+public class ExecuteQAndARulesCommand extends FacilioCommand implements PostTransactionCommand {
     private QAndARuleType type;
+    private FacilioContext context;
+
+    ExecuteQAndARulesCommand (@NonNull QAndARuleType type) {
+        this.type = type;
+    }
 
     protected <T extends QAndARule> List<T> fetchRules (QAndARuleType type, Long templateId, Collection<Long> questionIds, FacilioContext context) throws Exception {
         return Constants.getRuleBean().getRulesOfQuestionsOfType(templateId, questionIds, type);
@@ -35,6 +40,16 @@ public class ExecuteQAndARulesCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        if (type.isPostTransactionExecution()) {
+            this.context = (FacilioContext) context;
+        }
+        else {
+            executeRule((FacilioContext) context);
+        }
+        return false;
+    }
+
+    private void executeRule(FacilioContext context) throws Exception {
         Long templateId = (Long) context.get(FacilioConstants.QAndA.Command.TEMPLATE_ID);
         FacilioUtil.throwRunTimeException(templateId == null, "Template id cannot be null for Q And A rule evaluation");
         Map<Long, QuestionContext> questions = (Map<Long, QuestionContext>) context.get(FacilioConstants.QAndA.Command.QUESTION_MAP);
@@ -43,7 +58,7 @@ public class ExecuteQAndARulesCommand extends FacilioCommand {
         List<Long> questionIds = questions.values().stream().filter(QuestionContext::isRuleSupported).map(QuestionContext::getId).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(questionIds)) {
             LOGGER.debug("Rule evaluation is not done because no rule supported questions");
-            return false;
+            return;
         }
         Collection<QAndARule> rules = fetchRules(type, templateId, questionIds, (FacilioContext) context);
 
@@ -52,7 +67,7 @@ public class ExecuteQAndARulesCommand extends FacilioCommand {
         Collection<AnswerContext> answers = (Collection<AnswerContext>) context.get(FacilioConstants.QAndA.Command.ANSWER_LIST);
         if (CollectionUtils.isEmpty(answers)) {
             LOGGER.debug("Rule evaluation is not done because answer list is empty");
-            return false;
+            return;
         }
 
         if (CollectionUtils.isNotEmpty(rules)) {
@@ -64,7 +79,6 @@ public class ExecuteQAndARulesCommand extends FacilioCommand {
         else {
             LOGGER.debug("Rule evaluation is not done because no matching rules for the given answers");
         }
-        return false;
     }
 
     private void evaluateRule (AnswerContext answer, QuestionContext question, QAndARule rule) throws Exception {
@@ -95,5 +109,13 @@ public class ExecuteQAndARulesCommand extends FacilioCommand {
             condition.executeTrueAction(question, answer);
         }
         return result;
+    }
+
+    @Override
+    public boolean postExecute() throws Exception {
+        if (type.isPostTransactionExecution()) {
+            executeRule(context);
+        }
+        return false;
     }
 }

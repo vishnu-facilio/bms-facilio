@@ -50,8 +50,8 @@ public class GetModuleListCommand extends FacilioCommand {
 			FacilityBooking.FACILITY_BOOKING,
 			ContextNames.TOOL,
 			ContextNames.ITEM,
-			ContextNames.ASSET_CATEGORY
-			
+			ContextNames.ASSET_CATEGORY,
+			ContextNames.ROLE
 	});
 
 	@Override

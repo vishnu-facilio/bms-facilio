@@ -65,14 +65,21 @@ public abstract class EmailClient extends BaseEmailClient {
         UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
         User user = userBean.getUserFromEmail(email, null, AccountUtil.getCurrentOrg().getOrgId(), true);
         if (user == null) {
-        		LOGGER.info("Sending email to user who is not in the org  - " + email);
+        	LOGGER.info("Sending email to user who is not in the org  - " + email);
+//        	return false;
         }
         return (user == null || user.getUserStatus());
     }
 
     public void sendEmailWithActiveUserCheck (JSONObject mailJson) throws Exception {
+        sendEmailWithActiveUserCheck(mailJson, true);
+    }
+
+    public void sendEmailWithActiveUserCheck (JSONObject mailJson, boolean handleUserDelegation) throws Exception {
         if (removeInActiveUsers(mailJson)) {
-        	checkUserDelegation(mailJson);
+            if (handleUserDelegation) {
+                checkUserDelegation(mailJson);
+            }
             sendEmail(mailJson);
         }
     }

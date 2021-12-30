@@ -12,6 +12,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.scriptengine.visitor.FunctionVisitor;
 
 public class WorkflowAssetCategoryReadingContext extends WorkflowCategoryReadingContext {
 

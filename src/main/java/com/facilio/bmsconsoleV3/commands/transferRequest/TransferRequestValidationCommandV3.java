@@ -7,11 +7,9 @@ import com.facilio.bmsconsole.util.ToolsApi;
 import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestLineItemContext;
 import com.facilio.command.FacilioCommand;
-import com.facilio.modules.FieldUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
-import nl.basjes.shaded.org.springframework.util.ObjectUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -26,39 +24,26 @@ public class TransferRequestValidationCommandV3 extends FacilioCommand {
         List<V3TransferRequestContext> transferRequestContexts = recordMap.get(moduleName);
         if (CollectionUtils.isNotEmpty(transferRequestContexts)) {
             for (V3TransferRequestContext transferRequestContext : transferRequestContexts) {
-
-                if (transferRequestContext != null && CollectionUtils.isNotEmpty(transferRequestContext.getSubForm().get("transferrequestlineitems"))) {
-                    //Line Item Validation
-                    List<Map<String, Object>> lineItems = transferRequestContext.getSubForm().get("transferrequestlineitems");
-
-                    for (Map<String, Object> lineItem : lineItems) {
-                        V3TransferRequestLineItemContext lineItemContext = FieldUtil.getAsBeanFromMap(lineItem, V3TransferRequestLineItemContext.class);
-                        if (lineItemContext.getInventoryType().equals(V3TransferRequestLineItemContext.InventoryType.TOOL.getIndex())) {
-                            if (ObjectUtils.isEmpty(lineItemContext.getQuantity()) || ObjectUtils.isEmpty(lineItemContext.getToolType())) {
-                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Line items cannot be empty");
-                            }
-                        }
-                        if (lineItemContext.getInventoryType().equals(V3TransferRequestLineItemContext.InventoryType.ITEM.getIndex())) {
-                            if (ObjectUtils.isEmpty(lineItemContext.getQuantity()) || ObjectUtils.isEmpty(lineItemContext.getItemType())) {
-                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Line items cannot be empty");
-                            }
-                        }
-                    }
-                    // Storeroom Validation
-                    if (transferRequestContext.getTransferToStore().getId() == transferRequestContext.getTransferFromStore().getId()) {
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Storerooms cannot be same");
-                    }
-                    //rotating item validation
-                    for (Map<String, Object> lineItem : lineItems) {
-                        V3TransferRequestLineItemContext lineItemContext = FieldUtil.getAsBeanFromMap(lineItem, V3TransferRequestLineItemContext.class);
-                        if (lineItemContext.getInventoryType().equals(V3TransferRequestLineItemContext.InventoryType.TOOL.getIndex())) {
-                            Long id = lineItemContext.getToolType().getId();
+                // Storeroom Validation
+                if (transferRequestContext.getTransferToStore().getId() == transferRequestContext.getTransferFromStore().getId()) {
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Storerooms cannot be same");
+                }
+                // LineItems Validation
+                if(transferRequestContext.getId()<= 0 && CollectionUtils.isEmpty(transferRequestContext.getTransferrequestlineitems())){
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Line items cannot be empty");
+                }
+                //rotating item validation
+                if(CollectionUtils.isNotEmpty(transferRequestContext.getTransferrequestlineitems())){
+                    List<V3TransferRequestLineItemContext> lineItems = transferRequestContext.getTransferrequestlineitems();
+                    for (V3TransferRequestLineItemContext lineItem : lineItems) {
+                        if (lineItem.getInventoryType().equals(V3TransferRequestLineItemContext.InventoryType.TOOL.getIndex())) {
+                            Long id = lineItem.getToolType().getId();
                             if (isRotating(id, 2)) {
                                 throw new RESTException(ErrorCode.VALIDATION_ERROR, "Rotating tools cannot be transferred");
                             }
                         }
-                        if (lineItemContext.getInventoryType().equals(V3TransferRequestLineItemContext.InventoryType.ITEM.getIndex())) {
-                            Long id = lineItemContext.getItemType().getId();
+                        if (lineItem.getInventoryType().equals(V3TransferRequestLineItemContext.InventoryType.ITEM.getIndex())) {
+                            Long id = lineItem.getItemType().getId();
                             if (isRotating(id, 1)) {
                                 throw new RESTException(ErrorCode.VALIDATION_ERROR, "Rotating items cannot be transferred");
                             }

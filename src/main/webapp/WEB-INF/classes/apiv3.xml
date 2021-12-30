@@ -108,7 +108,7 @@
         <action name="list"
                 class="com.facilio.v3.RESTAPIHandler"
                 method="list">
-            <param name="translationImpl">StateFlowTranslationV3</param>
+            <param name="translationImpl">V3ListApiTranslation</param>
         </action>
 
         <action name="summary"
@@ -236,6 +236,7 @@
                 class="com.facilio.bmsconsoleV3.actions.picklist.V3PIckListAction"
                 method="pickList">
             <param name="moduleName">{1}</param>
+            <param name="translationImpl">V3PickListTranslation</param>
         </action>
     </package>
     
@@ -338,6 +339,13 @@
                 class="com.facilio.qa.rules.actions.QAndARuleAction"
                 method="fetchQandARules">
             <param name="pageId">{1}</param>
+        </action>
+
+    </package>
+
+    <package name="qandaRuleActionEdit" namespace="/api/v3/qandarules/edit" extends="v3Api">
+        <action name="*" class="com.facilio.qa.rules.actions.QAndARuleAction" method="fetchQandARuleActions">
+            <param name="conditionId">{1}</param>
         </action>
     </package>
 

@@ -393,12 +393,13 @@ public class IotMessageApiV2 {
 
     public static long getCount(Long agentId) throws Exception {
         FacilioModule iotMessageModule = ModuleFactory.getIotMessageModule();
-        List<Long> iotDataIds = getIotDataIds(agentId);
+        FacilioModule iotDataModule = ModuleFactory.getIotDataModule();
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(iotMessageModule.getTableName())
+                .innerJoin(iotDataModule.getTableName()).on(iotDataModule.getTableName() + ".ID=" + iotMessageModule.getTableName() + ".ID")
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(iotDataModule), String.valueOf(agentId), NumberOperators.EQUALS))
                 .select(new ArrayList<>())
-                .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(iotMessageModule))
-                .andCondition(CriteriaAPI.getCondition(FieldFactory.getPublishMessageParentIdField(iotMessageModule),iotDataIds,NumberOperators.EQUALS));
+                .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(iotMessageModule));
         List<Map<String, Object>> result = selectRecordBuilder.get();
         return (long) result.get(0).get(AgentConstants.ID);
     }

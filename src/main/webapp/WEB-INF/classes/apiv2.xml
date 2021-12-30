@@ -494,6 +494,13 @@
 				class="com.facilio.bmsconsole.actions.StateFlowAction" method="cloneStateFlow" />
 	</package>
 
+	<package name="facilioBanner" namespace="/api/v2/banner" extends="v2Api">
+		<action name="list"
+				class="com.facilio.banner.action.BannerAction" method="getBanners" />
+		<action name="close"
+				class="com.facilio.banner.action.BannerAction" method="closeBanner" />
+	</package>
+
 	<package name="stateTransition"
 		namespace="/api/v2/statetransition" extends="v2Api">
 		<action name="update"
@@ -2088,6 +2095,10 @@
 			class="com.facilio.bmsconsole.actions.FormAction"
 			method="updateFormField">
 		</action>
+		<action name="modify"
+			class="com.facilio.bmsconsole.actions.FormAction"
+			method="updateFieldAndFormField">
+		</action>
 		<action name="init"
 			class="com.facilio.bmsconsole.actions.FormAction"
 			method="updateFormFields">
@@ -2698,6 +2709,7 @@
 		</action>
 		<action name="list" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="getModuleDataList">
+			<param name="translationImpl">V2ListApiTranslation</param>
 		</action>
 
 		<action name="*"
@@ -6676,5 +6688,8 @@
 		<action name="getStateTransitionForms"
 				class="com.facilio.bmsconsole.actions.StateFlowAction"
 				method="getStateTransitionFormList" />
+		<action name="*" class="com.facilio.bmsconsole.localization.TranslationAction" method="getColumnFields">
+			<param name="moduleName">{1}</param>
+		</action>
 	</package>
 </struts>

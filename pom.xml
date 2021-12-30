@@ -29,6 +29,14 @@
             <url>s3://repo.facilio/facilio-agent-framework-java/snapshot/</url>
         </repository>
         <repository>
+            <id>facilio-script-s3-release-repo</id>
+            <url>s3://repo.facilio/facilio-script/release/</url>
+        </repository>
+        <repository>
+            <id>facilio-script-s3-snapshot-repo</id>
+            <url>s3://repo.facilio/facilio-script/snapshot/</url>
+        </repository>
+        <repository>
             <id>sqlite-utils-java-release</id>
             <url>s3://repo.facilio/sqlite-utils-java/release/</url>
         </repository>
@@ -114,9 +122,13 @@
         <dependency>
             <groupId>com.facilio.framework</groupId>
             <artifactId>facilio-framework</artifactId>
-            <version>1.0.440</version>
+            <version>1.0.441</version>
         </dependency>
-
+		<dependency>
+            <groupId>com.facilio.scriptengine</groupId>
+            <artifactId>script-engine</artifactId>
+            <version>0.0.6</version>
+        </dependency>
         <dependency>
             <groupId>com.facilio.taskengine</groupId>
             <artifactId>facilio-taskengine</artifactId>
@@ -550,12 +562,6 @@
             <groupId>com.googlecode.libphonenumber</groupId>
             <artifactId>libphonenumber</artifactId>
             <version>3.5</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.antlr/antlr4-runtime -->
-        <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr4-runtime</artifactId>
-            <version>4.7.2</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/javax.transaction/jta -->
         <dependency>

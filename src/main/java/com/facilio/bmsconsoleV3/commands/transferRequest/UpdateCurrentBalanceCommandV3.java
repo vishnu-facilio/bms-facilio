@@ -36,12 +36,12 @@ public class UpdateCurrentBalanceCommandV3 extends FacilioCommand {
         Long toolTypeId=null;
         double quantityTransferred=0;
         if (CollectionUtils.isNotEmpty(transferRequestContexts)){
-                if (transferRequestContexts.get(0).getData().get("isStaged").equals(true)) {
+                if (transferRequestContexts.get(0).getIsStaged()) {
                     List<V3TransferRequestLineItemContext> itemTypesList = new ArrayList<>();
                     List<V3TransferRequestLineItemContext> toolTypesList = new ArrayList<>();
                     Long storeroomId = transferRequestContexts.get(0).getTransferFromStore().getId();
                     context.put(FacilioConstants.ContextNames.STORE_ROOM_ID,storeroomId);
-                    List<V3TransferRequestLineItemContext> transferrequestlineitems = transferRequestContexts.get(0).getLineItems();
+                    List<V3TransferRequestLineItemContext> transferrequestlineitems = transferRequestContexts.get(0).getTransferrequestlineitems();
                    for(V3TransferRequestLineItemContext lineItem : transferrequestlineitems){
                            Integer inventoryType = lineItem.getInventoryType();
                            quantityTransferred = lineItem.getQuantity();
@@ -55,7 +55,7 @@ public class UpdateCurrentBalanceCommandV3 extends FacilioCommand {
                                    ItemContext item = ItemsApi.getItemsForTypeAndStore(storeroomId, itemTypeId);
                                    itemId = item.getId();
                                    currentQuantity = item.getQuantity();
-                                   if(transferRequestContexts.get(0).getData().get("isCompleted").equals(false) && transferRequestContexts.get(0).getData().get("isShipped").equals(false)){
+                                   if(!transferRequestContexts.get(0).getIsCompleted() && !transferRequestContexts.get(0).getIsShipped()){
                                       if(currentQuantity<quantityTransferred){
                                           throw new IllegalArgumentException("Quantity transferred is more than available quantity");
                                       }
@@ -92,7 +92,7 @@ public class UpdateCurrentBalanceCommandV3 extends FacilioCommand {
                                    ToolContext tool = ToolsApi.getToolsForTypeAndStore(storeroomId, toolTypeId);
                                    toolId = tool.getId();
                                    currentQuantity = tool.getCurrentQuantity();
-                                   if(transferRequestContexts.get(0).getData().get("isCompleted").equals(false) && transferRequestContexts.get(0).getData().get("isShipped").equals(false)) {
+                                   if(!transferRequestContexts.get(0).getIsCompleted() && !transferRequestContexts.get(0).getIsShipped()) {
                                        if (currentQuantity < quantityTransferred) {
                                            throw new IllegalArgumentException("Quantity transferred is more than available quantity");
                                        } else {

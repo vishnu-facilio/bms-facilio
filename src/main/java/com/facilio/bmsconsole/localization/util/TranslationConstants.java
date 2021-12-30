@@ -40,5 +40,4 @@ public class TranslationConstants {
         fields.add(FieldFactory.getField("status","STATUS",module,FieldType.BOOLEAN));
         return fields;
     }
-
 }

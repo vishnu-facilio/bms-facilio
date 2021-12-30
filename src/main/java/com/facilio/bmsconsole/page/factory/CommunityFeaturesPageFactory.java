@@ -5,6 +5,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsoleV3.context.communityfeatures.ContactDirectoryContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.AdminDocumentsContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.DealsAndOffersContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.NeighbourhoodContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.NewsAndInformationContext;
@@ -126,6 +128,67 @@ public class CommunityFeaturesPageFactory extends PageFactory {
         if(AccountUtil.getCurrentApp() != null && AccountUtil.getCurrentApp().getAppCategoryEnum() != ApplicationContext.AppCategory.PORTALS){
             tab1Sec1.addWidget(notesWidget);
         }
+
+        return page;
+    }
+    public static Page getContactDirecoryPage(ContactDirectoryContext record, FacilioModule module) throws Exception {
+
+        Page page = new Page();
+
+        Page.Tab tab1 = page.new Tab("summary");
+        page.addTab(tab1);
+
+        Page.Section tab1Sec1 = page.new Section();
+        tab1.addSection(tab1Sec1);
+        if (StringUtils.isNotEmpty(record.getDescription())) {
+            PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.RICH_TEXT_PREVIEW);
+            previewWidget.addToLayoutParams(tab1Sec1, 24, 6);
+            previewWidget.addToWidgetParams("fieldKey", "description");
+            tab1Sec1.addWidget(previewWidget);
+        }
+
+        PageWidget secDetailsWidget = new PageWidget(PageWidget.WidgetType.ANNOUNCEMENT_SECONDARY_DETAILS_WIDGET);
+        secDetailsWidget.addToLayoutParams(tab1Sec1, 24, 6);
+        secDetailsWidget.setTitle("Contact Details");
+
+        tab1Sec1.addWidget(secDetailsWidget);
+
+
+        PageWidget publishToWidget = new PageWidget(PageWidget.WidgetType.PUBLISH_TO_INFO);
+        publishToWidget.addToLayoutParams(tab1Sec1, 24, 6);
+        publishToWidget.setTitle("Published To");
+        publishToWidget.addToWidgetParams("sharingInfoModuleName", FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY_SHARING);
+
+        tab1Sec1.addWidget(publishToWidget);
+
+        return page;
+    }
+    public static Page getAdminDocumentsPage(AdminDocumentsContext record, FacilioModule module) throws Exception {
+        Page page = new Page();
+
+        Page.Tab tab1 = page.new Tab("summary");
+        page.addTab(tab1);
+
+        Page.Section tab1Sec1 = page.new Section();
+        tab1.addSection(tab1Sec1);
+        if (StringUtils.isNotEmpty(record.getDescription())) {
+            PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.RICH_TEXT_PREVIEW);
+            previewWidget.addToLayoutParams(tab1Sec1, 24, 6);
+            previewWidget.addToWidgetParams("fieldKey", "description");
+            tab1Sec1.addWidget(previewWidget);
+        }
+
+        PageWidget secDetailsWidget = new PageWidget(PageWidget.WidgetType.ANNOUNCEMENT_SECONDARY_DETAILS_WIDGET);
+        secDetailsWidget.addToLayoutParams(tab1Sec1, 24, 6);
+        secDetailsWidget.setTitle("Document Details");
+        tab1Sec1.addWidget(secDetailsWidget);
+
+
+        PageWidget publishToWidget = new PageWidget(PageWidget.WidgetType.PUBLISH_TO_INFO);
+        publishToWidget.addToLayoutParams(tab1Sec1, 24, 6);
+        publishToWidget.setTitle("Published To");
+        publishToWidget.addToWidgetParams("sharingInfoModuleName", FacilioConstants.ContextNames.Tenant.ADMIN_DOCUMENTS_SHARING);
+        tab1Sec1.addWidget(publishToWidget);
 
         return page;
     }

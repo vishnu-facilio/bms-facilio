@@ -21,7 +21,13 @@ public class QAndARuleReadOnlyChainFactory {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchPageAndQuestionsCommand());
         c.addCommand(new FetchAndSerializeRulesOfAPage());
+        c.addCommand(new SetActionTypeInCondition());
+        return c;
+    }
 
+    public static FacilioChain fetchRuleActionsChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchQandARuleActionsCommand());
         return c;
     }
 }

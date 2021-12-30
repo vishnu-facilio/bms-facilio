@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
@@ -16,19 +14,16 @@ import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.fields.FacilioField;
+import com.facilio.scriptengine.autogens.WorkflowV2Parser.ExprContext;
+import com.facilio.scriptengine.context.DBParamContext;
+import com.facilio.scriptengine.context.Value;
 import com.facilio.workflowv2.Visitor.WorkflowFunctionVisitor;
-import com.facilio.workflowv2.autogens.WorkflowV2Parser.ExprContext;
-import com.facilio.workflowv2.contexts.DBParamContext;
-import com.facilio.workflowv2.contexts.Value;
 import com.facilio.workflowv2.contexts.WorkflowAssetCategoryReadingContext;
 import com.facilio.workflowv2.contexts.WorkflowCategoryReadingContext;
 import com.facilio.workflowv2.contexts.WorkflowModuleDataContext;
 import com.facilio.workflowv2.contexts.WorkflowSpaceCategoryReadingContext;
-import com.facilio.workflowv2.modulefunctions.FacilioModuleFunctionImpl;
 
 public enum Workflow_Scope implements  ScopeInterface{
 

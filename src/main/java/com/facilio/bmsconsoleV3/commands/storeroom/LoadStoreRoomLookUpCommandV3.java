@@ -30,7 +30,7 @@ public class LoadStoreRoomLookUpCommandV3 extends FacilioCommand {
         LookupField locationField = (LookupField) fieldsAsMap.get("location");
         LookupField ownerField = (LookupField) fieldsAsMap.get("owner");
         LookupField siteField = (LookupField) fieldsAsMap.get("site");
-
+        
         additionaLookups.add(locationField);
         additionaLookups.add(ownerField);
         additionaLookups.add(siteField);

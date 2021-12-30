@@ -880,7 +880,7 @@ public class FieldUtil {
 			ContextNames.STATE_FLOW_ID, ContextNames.SLA_POLICY_ID, ContextNames.FORM_ID,  ContextNames.APPROVAL_STATUS, "approvalFlowId",
 	}));
 
-	public static final boolean isSupplementRecord (FacilioField field) {
-		return field instanceof SupplementRecord;
+	public static final boolean isSupplementRecord (FacilioField field) { // By default will exclude system rel record
+		return field instanceof SupplementRecord && !field.getDataTypeEnum().isSystemRelRecord();
 	}
 }

@@ -7,15 +7,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+import com.facilio.bmsconsoleV3.context.communityfeatures.AdminDocumentsContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceContext;
-import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestShipmentContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.ContactDirectoryContext;
+import com.facilio.bmsconsoleV3.context.inventory.*;
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.context.*;
-import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestContext;
-import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestContext;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -239,7 +238,14 @@ public class PageFactory {
 				return TransferRequestShipmentPageFactory.getTransferRequestShipmentPage((V3TransferRequestShipmentContext) record, module);
 			case ContextNames.PEOPLE:
 				return PeopleModulesPageFactory.getPeopleModulePage((PeopleContext) record, module);
-
+			case ContextNames.CONTACT_DIRECTORY:
+				return CommunityFeaturesPageFactory.getContactDirecoryPage((ContactDirectoryContext) record, module);
+			case ContextNames.ADMIN_DOCUMENTS:
+				return CommunityFeaturesPageFactory.getAdminDocumentsPage((AdminDocumentsContext) record, module);
+			case ContextNames.STORE_ROOM:
+				return StoreRoomPageFactory.getStoreRoomPage((StoreRoomContext) record, module);
+			case ContextNames.ITEM_TYPES:
+				return ItemTypesPageFactory.getItemTypesPage((ItemTypesContext) record, module);
 		}
 		if (module.getExtendModule() == null) {	// temp
 			// etisalat changes will be changed to standard method

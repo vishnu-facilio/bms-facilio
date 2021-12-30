@@ -77,6 +77,7 @@ public class FacilioConstants {
 	
 	public static final SimpleDateFormat HTML5_DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
 	public static final SimpleDateFormat HTML5_DATE_FORMAT_1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+	public static final int INVITATION_EXPIRY_DAYS = 7;
 	
 	public static class CognitoUserPool {
 		
@@ -255,6 +256,8 @@ public class FacilioConstants {
 		public static final String USER_DELEGATION = "userDelegation";
 		public static final String TIMELINE_REQUEST = "timelineRequest";
 		public static final String TIMELINE_DATA = "timelineData";
+		public static final String FACILIO_BANNER = "facilioBanner";
+		public static final String FACILIO_BANNERS = "facilioBanners";
 
         public static class Reservation {
 			public static final String RESERVATION = "reservation";
@@ -681,6 +684,7 @@ public class FacilioConstants {
 		public static final String PIVOT_TABLE_DATA = "pivotTableData";
 		public static final String PIVOT_TEMPLATE_JSON = "pivotTemplateJSON";
 		public static final String IS_TIMELINE_FILTER_APPLIED = "isTimelineFilterApplied";
+		public static final String IS_EXPORT_REPORT = "isExportReport";
 		public static final String TABLE_ALIAS = "tableAlias";
 		public static final String ROW_HEADERS="rowHeaders";
 		public static final String DATA_HEADERS="dataHeaders";
@@ -1947,6 +1951,8 @@ public class FacilioConstants {
 		public static final String TRANSFER_REQUEST_SHIPMENT_RECEIVABLES = "transferrequestshipmentreceivables";
 		public static final String INVITE_ACCEPT_STATUS = "inviteacceptstatus";
 		public static final String SEND_INVITE = "sendinvite";
+		public static final String CONTACT_DIRECTORY = "contactdirectory";
+		public static final String ADMIN_DOCUMENTS = "admindocuments";
 
 		public static class WorkPermit {
 			public static final String WORK_PERMIT_TYPE_CHECKLIST = "workpermittypechecklist";

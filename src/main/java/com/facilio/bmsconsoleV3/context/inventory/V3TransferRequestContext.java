@@ -13,7 +13,7 @@ public class V3TransferRequestContext extends V3Context {
     private V3StoreRoomContext transferFromStore;
     private V3StoreRoomContext transferToStore;
     private V3PeopleContext transferredBy;
-    private List<V3TransferRequestLineItemContext> lineItems;
+    private List<V3TransferRequestLineItemContext> transferrequestlineitems;
     private Long transferInitiatedOn;
     private Long expectedCompletionDate;
     private Boolean isStaged;
@@ -62,12 +62,12 @@ public class V3TransferRequestContext extends V3Context {
         this.transferredBy = transferredBy;
     }
 
-    public List<V3TransferRequestLineItemContext> getLineItems() {
-        return lineItems;
+    public List<V3TransferRequestLineItemContext> getTransferrequestlineitems() {
+        return transferrequestlineitems;
     }
 
-    public void setLineItems(List<V3TransferRequestLineItemContext> lineItems) {
-        this.lineItems = lineItems;
+    public void setTransferrequestlineitems(List<V3TransferRequestLineItemContext> transferrequestlineitems) {
+        this.transferrequestlineitems = transferrequestlineitems;
     }
 
     public Long getTransferInitiatedOn() {
@@ -86,47 +86,47 @@ public class V3TransferRequestContext extends V3Context {
         this.expectedCompletionDate = expectedCompletionDate;
     }
 
-    public Boolean getStaged() {
+    public Boolean getIsStaged() {
         if (isStaged != null) {
             return isStaged.booleanValue();
         }
         return false;
     }
 
-    public void setStaged(Boolean staged) {
+    public void setIsStaged(Boolean staged) {
         isStaged = staged;
     }
 
-    public Boolean getShipped() {
+    public Boolean getIsShipped() {
         if (isShipped != null) {
             return isShipped.booleanValue();
         }
         return false;
     }
 
-    public void setShipped(Boolean shipped) {
+    public void setIsShipped(Boolean shipped) {
         isShipped = shipped;
     }
 
-    public Boolean getCompleted() {
+    public Boolean getIsCompleted() {
         if (isCompleted != null) {
             return isCompleted.booleanValue();
         }
         return false;
     }
 
-    public void setCompleted(Boolean completed) {
+    public void setIsCompleted(Boolean completed) {
         isCompleted = completed;
     }
 
-    public Boolean getShipmentTrackingNeeded() {
+    public Boolean getIsShipmentTrackingNeeded() {
         if (isShipmentTrackingNeeded != null) {
             return isShipmentTrackingNeeded.booleanValue();
         }
         return false;
     }
 
-    public void setShipmentTrackingNeeded(Boolean shipmentTrackingNeeded) {
+    public void setIsShipmentTrackingNeeded(Boolean shipmentTrackingNeeded) {
         isShipmentTrackingNeeded = shipmentTrackingNeeded;
     }
 

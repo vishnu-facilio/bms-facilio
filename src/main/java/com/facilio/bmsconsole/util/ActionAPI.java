@@ -92,12 +92,26 @@ public class ActionAPI {
 														.table(module.getTableName())
 //														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(id, module));
-		
+
 		List<ActionContext> actions = getActionsFromPropList(actionBuilder.get());
 		if(actions != null && !actions.isEmpty()) {
 			return actions.get(0);
 		}
 		return null;
+	}
+
+	public static List<ActionContext> getActions(List<Long> ids) throws Exception {
+		FacilioModule module = ModuleFactory.getActionModule();
+		GenericSelectRecordBuilder actionBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getActionFields())
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(ids,module));
+
+		List<ActionContext> actions = getActionsFromPropList(actionBuilder.get());
+		if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(actions)) {
+			return actions;
+		}
+		return Collections.EMPTY_LIST;
 	}
 	
 	public static Map<Long,ActionContext> getActionsAsMap(List<Long> ids) throws Exception {

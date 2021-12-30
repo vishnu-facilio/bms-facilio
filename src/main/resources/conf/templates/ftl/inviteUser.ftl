@@ -56,6 +56,10 @@
                                 </div>
                                 <div
                                     style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;padding-bottom:20px;color:#282c36;font-size:13px;text-align:left;font-weight:300;letter-spacing: 0.6px;color: #19182e;padding-top: 20px;">
+                                    This link will expire on ${expiryDate}.
+                                </div>
+                                <div
+                                    style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;padding-bottom:20px;color:#282c36;font-size:13px;text-align:left;font-weight:300;letter-spacing: 0.6px;color: #19182e;padding-top: 20px;">
                                     Don't forget to check out our Mobile Apps!
                                 </div>
                                 <div

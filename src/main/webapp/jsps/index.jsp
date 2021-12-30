@@ -30,7 +30,8 @@
         String copyrightYear = com.facilio.aws.util.FacilioProperties.getConfig("rebrand.copyright.year");
 
         boolean googleAuthEnable = "true".equalsIgnoreCase(com.facilio.aws.util.FacilioProperties.getConfig("google.auth"));
-        String googleAuthClientId =com.facilio.aws.util.FacilioProperties.getConfig("google.auth.clientid");
+        String googleAuthClientId = com.facilio.aws.util.FacilioProperties.getConfig("google.auth.clientid");
+        String datadogClientID = com.facilio.aws.util.FacilioProperties.getDatadogClientID();
 
         // set csrf token cookie
         FacilioCookie.setCSRFTokenCookie(request, response, false);
@@ -127,6 +128,7 @@
         placeHolderParams.put("servicePortalDomain", String.valueOf(servicePortalDomain));
         placeHolderParams.put("googleAuthEnable", Boolean.toString(googleAuthEnable));
         placeHolderParams.put("googleAuthClientId", googleAuthClientId);
+        placeHolderParams.put("dataDogClientId", datadogClientID);
 
         /* Fetch index.html from s3 and replace placeholders. For index.html contents refer
            index.hbs in client repo

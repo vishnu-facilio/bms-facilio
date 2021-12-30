@@ -250,11 +250,15 @@ public class AddWidgetCommand extends FacilioCommand {
 			else if(context.get(FacilioConstants.ContextNames.WIDGET_TYPE).equals(WidgetType.CARD)) {
 				WidgetCardContext widgetCardContext = (WidgetCardContext) widget;
 				
-				if (widgetCardContext.getCustomScript() != null && !widgetCardContext.getCustomScript().trim().isEmpty()) {
+				if (widgetCardContext.getScriptModeInt() == 3) {
+					widgetCardContext.setCustomScriptId((long) -99);
+					widgetCardContext.setCustomScript(null);
+					widgetCardContext.setScriptModeInt(3);
+				}
+				else if (widgetCardContext.getCustomScript() != null && !widgetCardContext.getCustomScript().trim().isEmpty()) {
 					Long customScriptId = WorkflowUtil.addWorkflow(widgetCardContext.getCustomScript());
 					widgetCardContext.setCustomScriptId(customScriptId);
 				}
-				
 						insertBuilder = new GenericInsertRecordBuilder()
 						.table(ModuleFactory.getWidgetCardModule().getTableName())
 						.fields(FieldFactory.getWidgetCardFields());

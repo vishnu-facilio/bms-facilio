@@ -15,7 +15,7 @@ public class SetItemTypesUnitCommandV3 extends FacilioCommand{
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		
+		//usability to be checked
 		Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         String moduleName = Constants.getModuleName(context);
 		

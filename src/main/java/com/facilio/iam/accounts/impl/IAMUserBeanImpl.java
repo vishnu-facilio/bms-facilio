@@ -73,6 +73,8 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 
+import static com.facilio.constants.FacilioConstants.INVITATION_EXPIRY_DAYS;
+
 
 public class IAMUserBeanImpl implements IAMUserBean {
 
@@ -125,7 +127,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			String creationTimeStr = userObj[3];
 			long creationTime = Long.parseLong(creationTimeStr);
 			Instant creationInstant = Instant.ofEpochMilli(creationTime);
-			Instant plus7Days = creationInstant.plus(7, ChronoUnit.DAYS);
+			Instant plus7Days = creationInstant.plus(INVITATION_EXPIRY_DAYS, ChronoUnit.DAYS);
 			Instant currentTime = Instant.ofEpochMilli(System.currentTimeMillis());
 			if (currentTime.isAfter(plus7Days)) {
 				LOGGER.error("user token expired " + userToken);
@@ -868,9 +870,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("groupType"), String.valueOf(props.get("groupType")), NumberOperators.EQUALS));
 		List<Map<String, Object>> result = selectRecordBuilder.get();
 
-		if (!result.isEmpty()) {
-			throw new IllegalArgumentException("Duplicate entries for the user name.");
-		}
+		boolean ignoreEntry = CollectionUtils.isNotEmpty(result);
 
 		List<Map<String, Object>> res = new GenericSelectRecordBuilder().
 				table(IAMAccountConstants.getDCLookupModule().getTableName())
@@ -884,11 +884,15 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			}
 		}
 
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.table(IAMAccountConstants.getDCLookupModule().getTableName())
-				.fields(fields);
-		
-		return insertBuilder.insert(props);
+		if (!ignoreEntry) {
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.table(IAMAccountConstants.getDCLookupModule().getTableName())
+					.fields(fields);
+
+			return insertBuilder.insert(props);
+		}
+
+		return 0;
 	}
 
 	@SneakyThrows

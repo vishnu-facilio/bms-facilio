@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.constants.FacilioConstants.Criteria;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.util.FacilioUtil;
@@ -115,6 +116,20 @@ public class FormField implements Serializable {
 
 	public void setField(FacilioField field) {
 		this.field = field;
+	}
+
+	private JSONObject fieldData;
+	
+	public JSONObject getFieldData() {
+		return fieldData;
+	}
+
+	public void setFieldData(JSONObject fieldData) throws Exception {
+		this.fieldData = fieldData;
+		if(fieldData != null)
+		{
+			setField(FieldUtil.parseFieldJson(this.fieldData));
+		}
 	}
 
 	public FormField() {}

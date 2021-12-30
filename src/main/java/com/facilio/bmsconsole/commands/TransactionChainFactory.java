@@ -16,6 +16,7 @@ import com.facilio.agentv2.point.AddPointCommand;
 import com.facilio.agentv2.point.ConfigurePointCommand;
 import com.facilio.agentv2.point.EditPointCommand;
 import com.facilio.agentv2.sqlitebuilder.AgentSqliteMakerCommand;
+import com.facilio.banner.commands.CloseBannerCommand;
 import com.facilio.bmsconsole.actions.GetModuleFromReportContextCommand;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
@@ -44,6 +45,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.commands.*;
 import com.facilio.delegate.command.AddOrUpdateDelegateCommand;
 import com.facilio.delegate.command.DeleteUserDelegationCommand;
+import com.facilio.delegate.command.SendDelegationMailCommand;
 import com.facilio.elasticsearch.command.PushDataToESCommand;
 import com.facilio.energystar.command.*;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand;
@@ -2786,6 +2788,14 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateFormFieldCommand());
 			return c;
 		}
+		
+		public static FacilioChain getUpdateFormFieldAndModuleFieldChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new ValidateFormFieldCommand());
+			c.addCommand(new UpdateFormFieldCommand());
+			c.addCommand(new UpdateFieldCommand());
+			return c;
+		}
 
 		public static FacilioChain getUpdateFormFieldsChain() {
 			FacilioChain c = getDefaultChain();
@@ -5208,12 +5218,20 @@ public class TransactionChainFactory {
 	public static FacilioChain getAddOrUpdateUserDelegationChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddOrUpdateDelegateCommand());
+		chain.addCommand(new ForkChainToInstantJobCommand(false)
+				.addCommand(new SendDelegationMailCommand()));
 		return chain;
 	}
 
 	public static FacilioChain getDeleteUserDelegationChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new DeleteUserDelegationCommand());
+		return chain;
+	}
+
+	public static FacilioChain getCloseBannerChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new CloseBannerCommand());
 		return chain;
 	}
 
@@ -6200,7 +6218,7 @@ public class TransactionChainFactory {
 		chain.addCommand(new GetAttachmentsListCommand());
 		return chain;
 	}
-	
+
 }
 
 

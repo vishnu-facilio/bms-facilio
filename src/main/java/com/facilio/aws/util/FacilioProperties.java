@@ -522,6 +522,14 @@ public class FacilioProperties {
         return esIndex;
     }
 
+    public static String getDatadogClientID() throws Exception {
+        String secret = getConfig("dataDogClientId");
+        if (!FacilioUtil.isEmptyOrNull(secret)) {
+            return secret;
+        }
+        return "";
+    }
+
     public static HashMap<String, String> getPassword(String secretKey) {
 
         HashMap<String, String> secretMap = new HashMap<>();
