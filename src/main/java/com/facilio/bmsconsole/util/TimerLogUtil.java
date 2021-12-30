@@ -1,8 +1,10 @@
 package com.facilio.bmsconsole.util;
 
+import java.sql.Time;
 import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.TimelogContext;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -11,10 +13,11 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 
 public class TimerLogUtil {
 
-	public static Map<String, Object> getLastTimerActiveLog(FacilioModule module, long parentId, long fromStatusId) throws Exception {
+	public static TimelogContext getLastTimerActiveLog(FacilioModule module, long parentId, long fromStatusId) throws Exception {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
 				.select(FieldFactory.getTimeLogFields(module))
@@ -24,8 +27,8 @@ public class TimerLogUtil {
 				.andCondition(CriteriaAPI.getCondition("END_TIME", "endTime", null, CommonOperators.IS_EMPTY))
 				.orderBy("ID DESC")
 				.limit(1);
-		
-		return builder.fetchFirst();
+		TimelogContext timelog = FieldUtil.getAsBeanFromMap(builder.fetchFirst(),TimelogContext.class);
+		return timelog;
 	}
 	
 	public static Map<String, Object> getLastTimerLog(FacilioModule module, long parentId) throws Exception {
@@ -40,18 +43,20 @@ public class TimerLogUtil {
 		return builder.fetchFirst();
 	}
 
-	public static void addOrUpdate(FacilioModule m, Map<String, Object> timeLogProp) throws Exception {
-		if (timeLogProp.containsKey("id") && ((long) timeLogProp.get("id")) > 0) {
+	public static void addOrUpdate(FacilioModule m, TimelogContext timeLogProp) throws Exception {
+		if (timeLogProp.getId() > 0) {
 			GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
 					.table(m.getTableName())
 					.fields(FieldFactory.getTimeLogFields(m))
-					.andCondition(CriteriaAPI.getIdCondition((long) timeLogProp.get("id"), m));
-			builder.update(timeLogProp);
+					.andCondition(CriteriaAPI.getIdCondition((long) timeLogProp.getId(), m));
+			Map<String,Object> timelog = FieldUtil.getAsProperties(timeLogProp);
+			builder.update(timelog);
 		} else {
 			GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
 					.table(m.getTableName())
 					.fields(FieldFactory.getTimeLogFields(m));
-			builder.insert(timeLogProp);
+			Map<String,Object> timelog = FieldUtil.getAsProperties(timeLogProp);
+			builder.insert(timelog);
 		}
 	}
 }

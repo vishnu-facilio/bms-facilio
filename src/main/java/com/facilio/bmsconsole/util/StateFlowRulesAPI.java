@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.activity.CommonActivityType;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.TimelogContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.stateflow.TimerFieldUtil;
 import com.facilio.bmsconsole.stateflow.TimerFieldUtil.TimerField;
@@ -319,30 +320,27 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			long currentTime = record.getCurrentTime();
 			long parentId = record.getId();
 
-			Map<String, Object> timeLogProp = null;
+			TimelogContext timeLogProp = null;
 			if (fromStatus != null) {
 				timeLogProp = TimerLogUtil.getLastTimerActiveLog(timeLogModule, parentId, fromStatus.getId());
 				if (timeLogProp != null) {
-					long startTime = (long) timeLogProp.get("startTime");
-					timeLogProp.put("toStatusId", toStatus.getId());
-					timeLogProp.put("endTime", currentTime);
+					long startTime = timeLogProp.getStartTime();
+					timeLogProp.setToStatusId(toStatus.getId());
+					timeLogProp.setEndTime(currentTime);
 					long duration = (currentTime - startTime) / 1000;
-					timeLogProp.put("duration", duration);
-					timeLogProp.put("doneBy", AccountUtil.getCurrentUser().getId());
-					TimerLogUtil.addOrUpdate(timeLogModule, timeLogProp);
-					timeLogProp.clear();
+					timeLogProp.setDuration(duration);
+					timeLogProp.setDoneById(AccountUtil.getCurrentUser().getId());
+					TimerLogUtil.addOrUpdate(timeLogModule,timeLogProp);
 				}
 			}
 
-			if (timeLogProp == null) {
-				timeLogProp = new HashMap<>();
-			}
+			timeLogProp = new TimelogContext();
 
-			timeLogProp.put("moduleId", timeLogModule.getModuleId());
-			timeLogProp.put("parentId", parentId);
-			timeLogProp.put("fromStatusId", toStatus.getId());
-			timeLogProp.put("startTime", currentTime);
-			timeLogProp.put("isTimerEnabled", toStatus.isTimerEnabled());
+			timeLogProp.setModuleId(timeLogModule.getModuleId());
+			timeLogProp.setParentId(parentId);
+			timeLogProp.setFromStatusId(toStatus.getId());
+			timeLogProp.setStartTime(currentTime);
+			timeLogProp.setTimerEnabled(toStatus.isTimerEnabled());
 			TimerLogUtil.addOrUpdate(timeLogModule, timeLogProp);
 		}
 	}
