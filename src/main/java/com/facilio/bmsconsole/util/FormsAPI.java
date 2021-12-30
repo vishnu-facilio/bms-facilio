@@ -928,7 +928,7 @@ public class FormsAPI {
 			case ContextNames.VISITOR_LOG:
 				fields.add(new FormField("isVip", FieldDisplayType.DECISION_BOX, "VIP", Required.OPTIONAL, 1, 1));
 				fields.add(new FormField("isDenied", FieldDisplayType.DECISION_BOX, "Is Denied", Required.OPTIONAL, 1, 1));
-				fields.add(new FormField("visitResponseId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Custom Response", FormField.Required.OPTIONAL,"visitcustomresponse", 1, 1,false));
+				fields.add(new FormField("visitCustomResponse", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Custom Response", FormField.Required.OPTIONAL,"visitcustomresponse", 1, 1,false));
 				break;
 			case ContextNames.INSURANCE:
 				fields.add(new FormField("insuranceType", FieldDisplayType.SELECTBOX, "Insurance Type", FormField.Required.OPTIONAL, 1, 1));
