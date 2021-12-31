@@ -88,20 +88,22 @@ public class GetTimeLogsCommand extends FacilioCommand {
         criteria.addAndCondition(CriteriaAPI.getIdCondition(fromStatusIds,ModuleFactory.getTicketStatusModule()));
         List<FacilioStatus> fromStatusList = TicketAPI.getStatuses(module,criteria);
 
-        UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
-        List<User> doneByUsers = userBean.getUsers(null,false,true,doneBy);
-        if (CollectionUtils.isEmpty(doneByUsers)) {
-            doneByUsers = null;
+        List<User> doneByUsers = new ArrayList<>();
+
+        if(CollectionUtils.isNotEmpty(doneBy)) {
+            UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+            doneByUsers = userBean.getUsers(null, false, true, doneBy);
         }
 
-        if(CollectionUtils.isNotEmpty(doneByUsers) && CollectionUtils.isNotEmpty(fromStatusList)){
-            Map<Long,User> doneByUserMap = doneByUsers.stream().collect(Collectors.toMap(User::getId,Function.identity()));
-            Map<Long,FacilioStatus> fromStatusMap = fromStatusList.stream().collect(Collectors.toMap(FacilioStatus::getId,Function.identity()));
-            for(TimelogContext timelogContext : timeLogs){
-                timelogContext.setDoneBy(doneByUserMap.get(timelogContext.getDoneById()));
-                timelogContext.setFromStatus(fromStatusMap.get(timelogContext.getFromStatusId()));
-            }
+        if (CollectionUtils.isNotEmpty(fromStatusList)) {
+                Map<Long, User> doneByUserMap = doneByUsers.stream().collect(Collectors.toMap(User::getId, Function.identity()));
+                Map<Long, FacilioStatus> fromStatusMap = fromStatusList.stream().collect(Collectors.toMap(FacilioStatus::getId, Function.identity()));
+                for (TimelogContext timelogContext : timeLogs) {
+                    timelogContext.setDoneBy(doneByUserMap.get(timelogContext.getDoneById()));
+                    timelogContext.setFromStatus(fromStatusMap.get(timelogContext.getFromStatusId()));
+                }
         }
+
     }
 
 }
