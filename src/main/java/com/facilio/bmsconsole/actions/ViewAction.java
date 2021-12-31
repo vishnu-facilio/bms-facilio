@@ -1,27 +1,28 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.ReportsChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ReportInfo;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.context.ViewGroups;
 import com.facilio.bmsconsole.templates.EMailTemplate;
+import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.view.FacilioView.ViewType;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldUtil;
 import com.facilio.taskengine.ScheduleInfo;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import java.util.List;
+import java.util.Map;
 
 public class ViewAction extends FacilioAction {
 	
@@ -33,6 +34,7 @@ public class ViewAction extends FacilioAction {
 	{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.VIEW_TYPE,viewType);
 		FacilioChain getViewListChain = FacilioChainFactory.getViewListChain();
 		getViewListChain.execute(context);
 		
@@ -180,6 +182,23 @@ public class ViewAction extends FacilioAction {
 	public void setRestrictPermissions(Boolean restrictPermissions) {
 		this.restrictPermissions = restrictPermissions;
 	}
+
+	private int groupType = ViewGroups.ViewGroupType.TABLE_GROUP.getIntVal();
+	public void setGroupType(int groupType) {
+		this.groupType = groupType;
+	}
+	public int getGroupType() {
+		return groupType;
+	}
+
+	public int viewType = FacilioView.ViewType.TABLE_LIST.getIntVal();
+	public void setViewType(int viewType) {
+		this.viewType = viewType;
+	}
+	public int getViewType() {
+		return viewType;
+	}
+
 	public String v2viewlist() throws Exception{
 		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS) && moduleName.equals("alarm")) {
 			setModuleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
@@ -189,6 +208,8 @@ public class ViewAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.GROUP_STATUS, getGroupStatus());
 		context.put(FacilioConstants.ContextNames.APP_ID, appId);
 		context.put(FacilioConstants.ContextNames.RESTRICT_PERMISSIONS, getRestrictPermissions());
+		context.put(FacilioConstants.ContextNames.VIEW_TYPE, viewType);
+		context.put(FacilioConstants.ContextNames.VIEW_GROUP_TYPE, groupType);
 
 		FacilioChain getViewListsChain = FacilioChainFactory.getViewListChain();
 		getViewListsChain.execute(context);
@@ -203,7 +224,7 @@ public class ViewAction extends FacilioAction {
 	public String v2getViewDetail() throws Exception
 	{
 	getViewDetail();
-	setResult("viewDetail", view);
+	setResult("viewDetail", viewObj);
 	return SUCCESS;
 	}
 	public String getViewDetail() throws Exception
@@ -225,32 +246,34 @@ public class ViewAction extends FacilioAction {
 		
 		FacilioChain getViewChain = FacilioChainFactory.getViewDetailsChain();
 		getViewChain.execute(context);
-		
-		setView((FacilioView)context.get(FacilioConstants.ContextNames.CUSTOM_VIEW));
-		
+		viewObj = (FacilioView)context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
+		setView(FieldUtil.getAsProperties(viewObj));
 		return SUCCESS;
 	}
 	
 	public String addView() throws Exception {
-		
+		if(!view.containsKey("type")) {
+			view.put("type", ViewType.TABLE_LIST.getIntVal());
+		}
+		viewObj = FieldUtil.getAsBeanFromMap(view, FacilioView.class);
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-		context.put(FacilioConstants.ContextNames.FILTERS, view.getFilters());
-		context.put(FacilioConstants.ContextNames.VIEWCOLUMNS, view.getFields());
-		context.put(FacilioConstants.ContextNames.NEW_CV, view);
-		if (view.getIncludeParentCriteria()) {
+		context.put(FacilioConstants.ContextNames.FILTERS, viewObj.getFilters());
+		context.put(FacilioConstants.ContextNames.VIEWCOLUMNS, viewObj.getFields());
+		context.put(FacilioConstants.ContextNames.NEW_CV, viewObj);
+		if (viewObj.getIncludeParentCriteria()) {
 			context.put(FacilioConstants.ContextNames.CV_NAME, parentView);
 		}
-		if (view.getAppId() > 0) {
-			appId = view.getAppId();
+		if (viewObj.getAppId() > 0) {
+			appId = viewObj.getAppId();
 			context.put(FacilioConstants.ContextNames.APP_ID, appId);
 		}
 		FacilioChain addView = FacilioChainFactory.getAddViewChain();
 		addView.execute(context);
 		
-		this.viewId = view.getId();	
+		this.viewId = viewObj.getId();	
 		if (orderBy != null) {
-			viewName = view.getName();
+			viewName = viewObj.getName();
 			customizeSortColumns();
 		}
 		
@@ -328,29 +351,39 @@ public String v2customizeView() throws Exception {
 	
 	public String v2editView() throws Exception {
 		
+		if(!view.containsKey("type")) {
+			view.put("type", ViewType.TABLE_LIST.getIntVal());
+			if(view.containsKey("id"))
+			{
+				int viewType = ViewAPI.getViewTypeById((long)view.get("id"));
+				view.put("type", viewType);
+			}
+		}
+		viewObj = FieldUtil.getAsBeanFromMap(view, FacilioView.class);
+		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-		context.put(FacilioConstants.ContextNames.FILTERS, view.getFilters());
+		context.put(FacilioConstants.ContextNames.FILTERS, viewObj.getFilters());
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
-		context.put(FacilioConstants.ContextNames.VIEWCOLUMNS, view.getFields());
-		context.put(FacilioConstants.ContextNames.NEW_CV, view);
-		if (view.getIncludeParentCriteria()) {
+		context.put(FacilioConstants.ContextNames.VIEWCOLUMNS, viewObj.getFields());
+		context.put(FacilioConstants.ContextNames.NEW_CV, viewObj);
+		if (viewObj.getIncludeParentCriteria()) {
 			context.put(FacilioConstants.ContextNames.CV_NAME, parentView);
 		}
-		if (view.getAppId() > 0) {
-			appId = view.getAppId();
+		if (viewObj.getAppId() > 0) {
+			appId = viewObj.getAppId();
 			context.put(FacilioConstants.ContextNames.APP_ID, appId);
 		}
 		FacilioChain editView = TransactionChainFactory.editViewChain();
 		editView.execute(context);
 		
-		setViewName(view.getName());
+		setViewName(viewObj.getName());
 		if (orderBy != null) {
-			viewName = view.getName();
+			viewName = viewObj.getName();
 			customizeSortColumns();
 		}
 		getViewDetail();
-		setResult("view", view);
+		setResult("view", viewObj);
 		return SUCCESS;
 	}
 		
@@ -477,14 +510,23 @@ public String v2customizeView() throws Exception {
 	}
 
 
-	private FacilioView view;
-	public FacilioView getView() {
+	private Map<String, Object> view;
+    
+	public Map<String, Object> getView() {
 		return view;
 	}
-	public void setView(FacilioView view) {
+	public void setView(Map<String, Object> view) {
 		this.view = view;
 	}
 
+	private FacilioView viewObj;
+	public FacilioView getViewObj() {
+		return viewObj;
+	}
+	public void setViewObj(FacilioView viewObj) {
+		this.viewObj = viewObj;
+	}
+	
 	private String parentView;
 	public String getParentView() {
 		return parentView;

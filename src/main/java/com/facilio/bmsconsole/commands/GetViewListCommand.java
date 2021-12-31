@@ -1,18 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import org.apache.commons.chain.Context;
-
-import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
@@ -30,10 +17,14 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.delegate.context.DelegationType;
-import com.facilio.delegate.util.DelegationUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleFactory;
+import org.apache.commons.chain.Context;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class GetViewListCommand extends FacilioCommand {
 
@@ -42,6 +33,16 @@ public class GetViewListCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
         Long appId = (Long) context.getOrDefault(FacilioConstants.ContextNames.APP_ID, -1l);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		int groupTypeVal = ViewGroups.ViewGroupType.TABLE_GROUP.getIntVal();
+		if(context.containsKey(ContextNames.VIEW_GROUP_TYPE)) {
+			groupTypeVal = (int) context.get(ContextNames.VIEW_GROUP_TYPE);
+		}
+		int viewTypeVal = FacilioView.ViewType.TABLE_LIST.getIntVal();
+		if(context.containsKey(ContextNames.VIEW_TYPE)) {
+			viewTypeVal = (int) context.get(ContextNames.VIEW_TYPE);
+		}
+		FacilioView.ViewType viewType= FacilioView.ViewType.getViewType(viewTypeVal);
+		ViewGroups.ViewGroupType groupType = ViewGroups.ViewGroupType.getGroupType(groupTypeVal);
 		boolean restrictPermissions = (boolean) context.getOrDefault(FacilioConstants.ContextNames.RESTRICT_PERMISSIONS, false);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule moduleObj = modBean.getModule(moduleName);
@@ -55,29 +56,30 @@ public class GetViewListCommand extends FacilioCommand {
 		Map<String,FacilioView> viewMap = new HashMap();
 
 		// ViewFactory views
-		if ((app != null && app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) || 
-				(app == null && currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)))  {
+		if (((app != null && app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) ||
+				(app == null && currentApp.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP))) &&
+						(viewType == FacilioView.ViewType.TABLE_LIST))  {
 			 viewMap = ViewFactory.getModuleViews(moduleName, moduleObj);
 		}
 		
 		//db group views
 		List<ViewGroups> viewGroups = new ArrayList<>();
 		if (moduleObj != null) {
-			viewGroups = ViewAPI.getAllGroups(moduleObj.getModuleId(), appId, moduleName);
+			viewGroups = ViewAPI.getAllGroups(moduleObj.getModuleId(), appId, moduleName,groupType);
 		}
 		
 		//db views
 		List<FacilioView> dbViews = new ArrayList<>();	
 
 		if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
-			dbViews = ViewAPI.getAllViews(moduleName);
+			dbViews = ViewAPI.getAllViews(moduleName,viewType);
 		} else {
 			if (!moduleName.equals("approval")) {
-				dbViews = ViewAPI.getAllViews(moduleObj.getModuleId());
+				dbViews = ViewAPI.getAllViews(moduleObj.getModuleId(),viewType);
 			}
 			// Temp...till mobile alarm module is split
 			if (AccountUtil.getCurrentAccount().isFromMobile() && moduleName.equals(ContextNames.NEW_READING_ALARM)) {
-				addMobilelarmViews(modBean, dbViews, viewMap, viewGroups);
+				addMobilelarmViews(modBean, dbViews, viewMap, viewGroups,viewType,groupType);
 			}
 		}
 		
@@ -156,12 +158,12 @@ public class GetViewListCommand extends FacilioCommand {
 			
 			// groupViews from ViewFactory
 			List<Map<String, Object>> groupViews = new ArrayList<>();
-			if (isMainApp) {
-				 groupViews = new ArrayList<>(ViewFactory.getGroupVsViews(moduleName));
+			if (isMainApp && (groupType == ViewGroups.ViewGroupType.TABLE_GROUP)) {
+				groupViews = new ArrayList<>(ViewFactory.getGroupVsViews(moduleName));
 			
 				if (!groupViews.isEmpty()) {
 						
-					addChildModuleViews(moduleName, groupViews, customViews);
+					addChildModuleViews(moduleName, groupViews, customViews,viewType);
 					
 					// Temp handling for qualityfm
 					if (moduleName.equals("workorder") && (AccountUtil.getCurrentOrg().getOrgId() == 320 || FacilioProperties.isDevelopment())) {
@@ -336,7 +338,7 @@ public class GetViewListCommand extends FacilioCommand {
 		.orElse(-1);
 	}
 	
-	private void addChildModuleViews(String moduleName, List<Map<String, Object>> groupViews, List<FacilioView> customViews) throws Exception {
+	private void addChildModuleViews(String moduleName, List<Map<String, Object>> groupViews, List<FacilioView> customViews, FacilioView.ViewType viewType) throws Exception {
 		if (moduleName.equals("asset")) {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			List<FacilioModule> modules = bean.getChildModules(bean.getModule(moduleName));
@@ -351,7 +353,7 @@ public class GetViewListCommand extends FacilioCommand {
 				childViewMap = new HashMap<>();
 				childViewMap.put(childView.getName(), childView);
 
-				List<FacilioView> childDbViews = ViewAPI.getAllViews(childModule.getModuleId());
+				List<FacilioView> childDbViews = ViewAPI.getAllViews(childModule.getModuleId(),viewType);
 				if (childDbViews != null) {
 					for(FacilioView view: childDbViews) {
 						childViewMap.put(view.getName(), view);
@@ -389,15 +391,15 @@ public class GetViewListCommand extends FacilioCommand {
 		}
 	}
 	
-	private void addMobilelarmViews(ModuleBean modBean, List<FacilioView> dbViews, Map<String,FacilioView> viewMap, List<ViewGroups> viewGroups) throws Exception {
+	private void addMobilelarmViews(ModuleBean modBean, List<FacilioView> dbViews, Map<String,FacilioView> viewMap, List<ViewGroups> viewGroups, FacilioView.ViewType viewType, ViewGroups.ViewGroupType groupType) throws Exception {
 		List<String> alarmModules = Arrays.asList(new String[] {ContextNames.BMS_ALARM, ContextNames.AGENT_ALARM, ContextNames.SENSOR_ROLLUP_ALARM});
 		for(String moduleName: alarmModules) {
 			FacilioModule alarmModule = modBean.getModule(moduleName);
-			dbViews.addAll(ViewAPI.getAllViews(alarmModule.getModuleId()));
+			dbViews.addAll(ViewAPI.getAllViews(alarmModule.getModuleId(), viewType));
 			
 			viewMap.putAll(ViewFactory.getModuleViews(moduleName, alarmModule));
 			
-			viewGroups.addAll(ViewAPI.getAllGroups(alarmModule.getModuleId(), -1, moduleName));
+			viewGroups.addAll(ViewAPI.getAllGroups(alarmModule.getModuleId(), -1, moduleName, groupType));
 		}
 		
 	}

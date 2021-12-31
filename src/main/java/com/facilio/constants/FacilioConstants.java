@@ -565,7 +565,10 @@ public class FacilioConstants {
 		public static final String LOGO = "logo";
 
 		public static final String ACTION_FORM = "actionForm";
-		
+
+        public static final String VIEW_GROUP_TYPE = "viewGroupType";
+		public static final String VIEW_TYPE = "viewType";
+
 		public static final String MODULE_NAME = "moduleName";
 		public static final String MODULE_DESCRIPTION = "moduleDescription";
 		public static final String MODULE_DISPLAY_NAME = "moduleDisplayName";

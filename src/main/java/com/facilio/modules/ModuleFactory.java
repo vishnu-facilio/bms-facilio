@@ -1245,6 +1245,15 @@ public class ModuleFactory {
 		return ticketStatusModule;
 	}
 
+	public static FacilioModule getTimelineViewModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("timelineView");
+		module.setDisplayName("Timeline View");
+		module.setTableName("TimelineView");
+		module.setExtendModule(getViewsModule());
+		return module;
+	}
+
 	public static FacilioModule getWorkOrdersModule() {
 		FacilioModule workOrdersModule = new FacilioModule();
 		workOrdersModule.setName(FacilioConstants.ContextNames.WORK_ORDER);
