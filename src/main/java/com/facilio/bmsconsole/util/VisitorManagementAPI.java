@@ -2476,4 +2476,26 @@ public class VisitorManagementAPI {
 		updateBuilder.updateViaMap(updateMap);
 	}
 	
+	public static List<VisitorSettingsContext> getAllVisitorSettings() throws Exception {
+		FacilioModule visitorSettingsModule=ModuleFactory.getVisitorSettingsModule();
+		List<FacilioField> visitorSettingsFields=FieldFactory.getVisitorSettingsFields();
+		  GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+	                .table(visitorSettingsModule.getTableName())
+	                .select(visitorSettingsFields);
+	        List<VisitorSettingsContext> vsettings = FieldUtil.getAsBeanListFromMapList(builder.get(), VisitorSettingsContext.class);
+	        return vsettings;
+	}
+	public static boolean checkBeforeVisitResponseDelete(Long vrId) throws Exception
+	{
+		List<VisitorSettingsContext> visitorsettings = getAllVisitorSettings();
+		for(VisitorSettingsContext vsetting:visitorsettings)
+		{
+			if(vsetting.getSuccessId() == vrId || vsetting.getFailureId() == vrId)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
 }

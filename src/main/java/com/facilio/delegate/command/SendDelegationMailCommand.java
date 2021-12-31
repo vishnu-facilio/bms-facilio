@@ -1,6 +1,7 @@
 package com.facilio.delegate.command;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.templates.DefaultTemplate;
 import com.facilio.bmsconsole.util.FreeMarkerAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
@@ -51,10 +52,12 @@ public class SendDelegationMailCommand extends FacilioCommand implements Seriali
             }
             placeHolders.put("responsibilities", responsibilities);
             placeHolders.put("dUser", placeHolders.get("user"));
+            placeHolders.put("appDomain", FacilioProperties.getAppDomain());
             for (Object key : json.keySet()){
                 String s = FreeMarkerAPI.processTemplate(json.get(key).toString(), placeHolders);
                 json.put(key, s);
             }
+            json.put("mailType", "html");
             FacilioFactory.getEmailClient().sendEmailWithActiveUserCheck(json, false);
         } catch (Exception ex) {
             ex.printStackTrace();

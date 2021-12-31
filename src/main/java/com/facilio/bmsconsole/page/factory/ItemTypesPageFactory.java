@@ -56,18 +56,21 @@ public class ItemTypesPageFactory extends PageFactory{
         addNotesAttachmentsModule(tab2Sec1);
 
         Page.Tab tab3 = page.new Tab("Related Records");
-        page.addTab(tab3);
         Page.Section tab3Sec1 = page.new Section();
         tab3.addSection(tab3Sec1);
 
         addRelatedListWidgets(tab3Sec1, module.getModuleId());
+
+        if (tab3Sec1.getWidgets() != null && !tab3Sec1.getWidgets().isEmpty()) {
+            page.addTab(tab3);
+        }
 
         return page;
     }
     private static PageWidget addStoreroomWidget(Page.Section section) {
 
         PageWidget storeRoomWidget = new PageWidget();
-        storeRoomWidget.addToLayoutParams(section, 24, 7);
+        storeRoomWidget.addToLayoutParams(section, 24, 8);
         storeRoomWidget.setWidgetType(PageWidget.WidgetType.STORE_ROOM);
         section.addWidget(storeRoomWidget);
 
@@ -76,7 +79,7 @@ public class ItemTypesPageFactory extends PageFactory{
     private static PageWidget addTransactionsWidget(Page.Section section) {
 
         PageWidget transactionsWidget = new PageWidget();
-        transactionsWidget.addToLayoutParams(section, 24, 9);
+        transactionsWidget.addToLayoutParams(section, 24, 8);
         transactionsWidget.setWidgetType(PageWidget.WidgetType.TRANSACTIONS);
         section.addWidget(transactionsWidget);
 

@@ -743,6 +743,18 @@ public class APIv3Config {
                   .beforeFetch(new LoadVisitorLookUpCommandV3())
                 .build();
     }
+    
+    @Module("visitcustomresponse")
+    public static Supplier<V3Config> getVisitResponse() {
+        return () -> new V3Config(VisitResponseContextV3.class, null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .beforeDelete(new DeleteResponseCheckCommandV3())
+                .build();
+    }
 
     @Module("vendors")
     public static Supplier<V3Config> getVendor() {

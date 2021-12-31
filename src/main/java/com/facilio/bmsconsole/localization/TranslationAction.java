@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Log4j
 @Getter
@@ -133,11 +134,16 @@ public class TranslationAction extends FacilioAction {
                             if (CollectionUtils.isNotEmpty( webtabGroup.getWebTabs())) {
                                 for (WebTabContext webTab : webtabGroup.getWebTabs()) {
                                     List<TranslationTypeEnum.ClientColumnTypeEnum> columnTypeEnums = new ArrayList<>(TranslationTypeEnum.CLIENT_TRANSLATION_TYPE_ENUM.get(webTab.getTypeEnum()));
-                                    if (webTab.getTypeEnum().equals(WebTabContext.Type.MODULE) && !webTab.getRoute().equals("workorder") ){
-                                        columnTypeEnums.removeIf(clientColumnTypeEnum -> clientColumnTypeEnum.getType().equals("WORKORDER_FIELDS"));
-                                    }
-                                    if (webTab.getTypeEnum().equals(WebTabContext.Type.MODULE) && !webTab.getRoute().equals("asset")){
-                                        columnTypeEnums.removeIf(clientColumnTypeEnum -> clientColumnTypeEnum.getType().equals("ASSET_FIELDS"));
+                                    if (CollectionUtils.isNotEmpty(webTab.getModules())){
+                                        List<String> moduleNames = webTab.getModules().stream().map(p->p.getName()).collect(Collectors.toList());
+                                        if (webTab.getTypeEnum().equals(WebTabContext.Type.MODULE)){
+                                            if (!moduleNames.contains(FacilioConstants.ContextNames.WORK_ORDER) ){
+                                                columnTypeEnums.removeIf(clientColumnTypeEnum -> clientColumnTypeEnum.getType().equals(TranslationTypeEnum.WORKORDER_FIELDS.getClientColumnName()));
+                                            }
+                                            if (!moduleNames.contains(FacilioConstants.ContextNames.ASSET)){
+                                                columnTypeEnums.removeIf(clientColumnTypeEnum -> clientColumnTypeEnum.getType().equals(TranslationTypeEnum.ASSET_FIELDS.getClientColumnName()));
+                                            }
+                                        }
                                     }
                                     webTab.setTypeVsColumns(columnTypeEnums);
                                 }

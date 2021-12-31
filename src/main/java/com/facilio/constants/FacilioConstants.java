@@ -1727,6 +1727,7 @@ public class FacilioConstants {
 		public static final String INVITE_VISITOR_RECORDS = "visitorlogrecords";
 		public static final String BASE_VISIT = "basevisit";
 		public static final String VISITOR_LOG = "visitorlog";
+		public static final String VISIT_CUSTOM_RESPONSE = "visitcustomresponse";
 		public static final String VISITOR_LOG_NOTES = "visitorlognotes";
 		public static final String VISITOR_LOG_ATTACHMENTS = "visitorlogattachments";
 		public static final String INVITE_VISITOR = "invitevisitor";

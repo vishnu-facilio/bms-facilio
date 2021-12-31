@@ -18,9 +18,16 @@ public class VisitorSettingsContext implements Serializable {
 	long visitorTypeId=-1;
 	String ndaContent;
 	Boolean approvalRequiredForInvite;
+	private Boolean responseEnabled;
 	
 	private Boolean faceRecognitionEnabled;
-	
+	public Boolean getResponseEnabled() {
+		return responseEnabled;
+	}
+	public void setResponseEnabled(Boolean responseEnabled) {
+		this.responseEnabled = responseEnabled;
+	}
+
 	public Boolean getFaceRecognitionEnabled() {
 		return faceRecognitionEnabled;
 	}
@@ -132,8 +139,21 @@ public class VisitorSettingsContext implements Serializable {
 	
 	
 	
-	
-	
+	private Long successId;
+	private Long failureId;
+	public Long getSuccessId() {
+		return successId;
+	}
+	public void setSuccessId(Long successId) {
+		this.successId = successId;
+	}
+	public Long getFailureId() {
+		return failureId;
+	}
+	public void setFailureId(Long failureId) {
+		this.failureId = failureId;
+	}
+
 	public long getOrgId() {
 		return orgId;
 	}

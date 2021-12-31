@@ -8774,6 +8774,9 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("ndaContent", "NDA_CONTENT", FieldType.STRING));
         fields.add(getField("approvalRequiredForInvite", "IS_INVITE_APPROVAL_REQUIRED", FieldType.BOOLEAN));
         fields.add(getField("faceRecognitionEnabled", "FACE_RECOGNITION_ENABLED", FieldType.BOOLEAN));
+        fields.add(getField("successId", "SUCCESS_RESPONSE_ID", FieldType.NUMBER));
+        fields.add(getField("failureId", "FAILURE_RESPONSE_ID", FieldType.NUMBER));
+        fields.add(getField("responseEnabled", "IS_RESPONSE_ENABLED", FieldType.BOOLEAN));
 //		fields.add(getField("isSelfSignoutEnabled","IS_SELF_SIGNOUT_ENABLED",FieldType.BOOLEAN));
         return fields;
     }

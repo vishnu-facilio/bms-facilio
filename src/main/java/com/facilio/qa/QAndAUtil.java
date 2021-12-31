@@ -419,6 +419,16 @@ public class QAndAUtil {
         }
     }
 
+    public static void computeRatingScaleRange(RatingQuestionContext rq) {
+        int ratingScale = rq.getRatingScale();
+        int startIdx = Math.round(5 - (ratingScale/2));
+        int endInx = startIdx + ratingScale -1;
+        List<Integer> ratingScaleRange = new ArrayList<>();
+        ratingScaleRange.add(startIdx);
+        ratingScaleRange.add(endInx);
+        rq.setRatingScaleRange(ratingScaleRange);
+    }
+
     private static void populateIndividualRatingSummary (RatingQuestionContext question, Map<Long, Map<Long, RatingQuestionContext.OptionSummary>> summaryMap) {
         Map<Long, RatingQuestionContext.OptionSummary> questionSummary = summaryMap.get(question.getId());
         if (questionSummary != null) {

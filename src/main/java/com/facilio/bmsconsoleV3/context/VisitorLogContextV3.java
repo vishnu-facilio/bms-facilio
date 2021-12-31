@@ -12,6 +12,7 @@ public class VisitorLogContextV3 extends BaseVisitContextV3 {
 	private Long checkInTime;
 	private Long checkOutTime;
     private Long actualVisitDuration;
+    private Boolean isDenied;
     private Boolean isApprovalNeeded;
     private Boolean isOverStay;
     public Boolean isNdaSigned;
@@ -27,8 +28,20 @@ public class VisitorLogContextV3 extends BaseVisitContextV3 {
     private File signature;
     private String signatureFileName;
     private String signatureContentType;
-    
-    private InviteVisitorContextV3 invite;
+
+
+	public VisitResponseContextV3 getVisitCustomResponse() {
+		return visitCustomResponse;
+	}
+
+	public void setVisitCustomResponse(VisitResponseContextV3 visitCustomResponse) {
+		this.visitCustomResponse = visitCustomResponse;
+	}
+
+	private VisitResponseContextV3 visitCustomResponse;
+
+
+	private InviteVisitorContextV3 invite;
 
 	public Long getCheckInTime() {
 		return checkInTime;
@@ -67,6 +80,21 @@ public class VisitorLogContextV3 extends BaseVisitContextV3 {
 
 	public void setActualVisitDuration(Long actualVisitDuration) {
 		this.actualVisitDuration = actualVisitDuration;
+	}
+	
+	public Boolean getIsDenied() {
+		return isDenied;
+	}
+
+	public void setIsDenied(Boolean isDenied) {
+		this.isDenied = isDenied;
+	}
+
+	public Boolean isDenied() {
+		if (isDenied != null) {
+			return isDenied.booleanValue();
+		}
+		return false;
 	}
 
 	public Boolean getIsApprovalNeeded() {
@@ -189,7 +217,8 @@ public class VisitorLogContextV3 extends BaseVisitContextV3 {
 	
 	@Override
 	public String toString() {
-		return "VisitorLogContextV3 [checkInTime=" + checkInTime + ", isApprovalNeeded=" + isApprovalNeeded
+		return "VisitorLogContextV3 [checkInTime=" + checkInTime + ", isApprovalNeeded=" + isApprovalNeeded 
+				+ ", isDenied=" + isDenied
 				+ ", invite=" + invite + ", getVisitorType()=" + getVisitorType() + ", getHost()=" + getHost()
 				+ ", getVisitor()=" + getVisitor() + ", getVisitedSpace()=" + getVisitedSpace() + ", getPassCode()="
 				+ getPassCode() + ", getVisitorName()=" + getVisitorName() + ", getVisitorEmail()=" + getVisitorEmail()

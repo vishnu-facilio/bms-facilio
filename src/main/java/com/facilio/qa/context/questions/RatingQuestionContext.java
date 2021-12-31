@@ -20,6 +20,7 @@ public class RatingQuestionContext extends QuestionContext {
     public static final Integer MAX_RATING = 10;
     private Integer ratingScale;
     private String displayFormat;
+    private List<Integer> ratingScaleRange; // for client response only for Emoji_Rating
     private List<RatingQuestionContext.OptionSummary> summary;
 
     @Getter
