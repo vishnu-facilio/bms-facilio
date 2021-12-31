@@ -55,6 +55,7 @@ public class SendDelegationMailCommand extends FacilioCommand implements Seriali
                 String s = FreeMarkerAPI.processTemplate(json.get(key).toString(), placeHolders);
                 json.put(key, s);
             }
+            json.put("mailType", "html");
             FacilioFactory.getEmailClient().sendEmailWithActiveUserCheck(json, false);
         } catch (Exception ex) {
             ex.printStackTrace();
