@@ -45,8 +45,8 @@ public class ViewAPI {
 
 	private static Logger log = LogManager.getLogger(ViewAPI.class.getName());
 	
-	public static List<FacilioView> getAllViews(String moduleName,ViewType type) throws Exception {
-		return getAllViews(-1,type, moduleName);
+	public static List<FacilioView> getAllViews(String moduleName,ViewType type, boolean getOnlyBasicViewDetails) throws Exception {
+		return getAllViews(-1,type, getOnlyBasicViewDetails, moduleName);
 	}
 	
 	public static long addViewGroup(ViewGroups viewGroup, long orgId, String moduleName) throws Exception {
@@ -147,10 +147,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 	
 	}
 
-	public static List<FacilioView> getAllViews(long moduleId, String... moduleName) throws Exception {
-		return getAllViews(moduleId, ViewType.TABLE_LIST, moduleName);
-	}
-		public static List<FacilioView> getAllViews(long moduleId, ViewType type, String... moduleName) throws Exception {
+		public static List<FacilioView> getAllViews(long moduleId, ViewType type, boolean getOnlyBasicValues, String... moduleName) throws Exception {
 		//List<FacilioView> views = new ArrayList<>();
 		Map<Long, FacilioView> viewMap = new HashMap<>();
 		List<Long> viewIds = new ArrayList<>();
@@ -174,7 +171,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			}
 			
 			List<Map<String, Object>> viewProps = builder.get();
-			List<FacilioView> views = getAllViewDetails(viewProps, module.getOrgId());
+			List<FacilioView> views = getAllViewDetails(viewProps, module.getOrgId(), getOnlyBasicValues);
 
 			if(views != null)
 			{
@@ -270,10 +267,14 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 
 	public static FacilioView getViewDetails(List<Map<String, Object>> viewProps, long orgId) throws Exception{
 		List<FacilioView> allViewDetails = getAllViewDetails(viewProps, orgId);
-		return (allViewDetails != null && allViewDetails.size() > 0) ?allViewDetails.get(0) : null;
+		return (allViewDetails != null && allViewDetails.size() > 0) ? allViewDetails.get(0) : null;
 	}
 
 	public static List<FacilioView> getAllViewDetails(List<Map<String, Object>> viewPropList, long orgId) throws Exception
+	{
+		return getAllViewDetails(viewPropList, orgId, false);
+	}
+	public static List<FacilioView> getAllViewDetails(List<Map<String, Object>> viewPropList, long orgId, boolean getOnlyBasicValues) throws Exception
 	{
 		if(viewPropList != null && !viewPropList.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -294,30 +295,37 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 				viewTypeMap.put(viewType, viewIds);
 			}
 			List<FacilioView> views = new ArrayList<>();
-			Map<ViewType, Map<Long, Map<String, Object>>> typeBasedValues = getDependentTableValues(viewTypeMap);
+			Map<ViewType, Map<Long, Map<String, Object>>> typeBasedValues = (getOnlyBasicValues) ? null : getDependentTableValues(viewTypeMap);
 			for(Map viewDetail : viewPropList){
 				int viewTypeInt = (int) viewDetail.get("type");
 				Long viewId = (Long) viewDetail.get("id");
 
-				if(typeBasedValues.containsKey(getViewType(viewTypeInt)) && typeBasedValues.get(getViewType(viewTypeInt)).containsKey(viewId)){
-					viewDetail.putAll(typeBasedValues.get(getViewType(viewTypeInt)).get(viewId));
-				}
 				FacilioView view;
-				switch (getViewType(viewTypeInt)) {
-					case TIMELINE:
-						view = FieldUtil.getAsBeanFromMap(viewDetail, TimelineViewContext.class);
-						setTimelineFieldObjects((TimelineViewContext) view, modBean);
-						break;
-					default:
-						view = FieldUtil.getAsBeanFromMap(viewDetail, FacilioView.class);
-						//sortFields are available only for table list view
-						List<ViewField> columns = getViewColumns(view.getId());
-						view.setFields(columns);
-						if (StringUtils.isEmpty(view.getModuleName()) && view.getModuleId() > 0) {
-							view.setModuleName(modBean.getModule(view.getModuleId()).getName());
-						}
-						view.setSortFields(getSortFields(view.getId(), view.getModuleName()));
-						break;
+				if(getOnlyBasicValues)
+				{
+					view = FieldUtil.getAsBeanFromMap(viewDetail, FacilioView.class);
+				}
+				else
+				{
+					if(typeBasedValues.containsKey(getViewType(viewTypeInt)) && typeBasedValues.get(getViewType(viewTypeInt)).containsKey(viewId)){
+						viewDetail.putAll(typeBasedValues.get(getViewType(viewTypeInt)).get(viewId));
+					}
+					switch (getViewType(viewTypeInt)) {
+						case TIMELINE:
+							view = FieldUtil.getAsBeanFromMap(viewDetail, TimelineViewContext.class);
+							setTimelineFieldObjects((TimelineViewContext) view, modBean);
+							break;
+						default:
+							view = FieldUtil.getAsBeanFromMap(viewDetail, FacilioView.class);
+							//sortFields are available only for table list view
+							List<ViewField> columns = getViewColumns(view.getId());
+							view.setFields(columns);
+							if (StringUtils.isEmpty(view.getModuleName()) && view.getModuleId() > 0) {
+								view.setModuleName(modBean.getModule(view.getModuleId()).getName());
+							}
+							view.setSortFields(getSortFields(view.getId(), view.getModuleName()));
+							break;
+					}
 				}
 				if (view.getCriteriaId() != -1) {
 					Criteria criteria = CriteriaAPI.getCriteria(orgId, view.getCriteriaId());

@@ -210,7 +210,8 @@ public class ViewAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RESTRICT_PERMISSIONS, getRestrictPermissions());
 		context.put(FacilioConstants.ContextNames.VIEW_TYPE, viewType);
 		context.put(FacilioConstants.ContextNames.VIEW_GROUP_TYPE, groupType);
-
+		context.put(FacilioConstants.ContextNames.GET_ONLY_BASIC_VIEW_DETAILS, true);
+		
 		FacilioChain getViewListsChain = FacilioChainFactory.getViewListChain();
 		getViewListsChain.execute(context);
 
@@ -323,6 +324,7 @@ public class ViewAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.GROUP_VIEWS, viewGroupsList);
 		context.put(FacilioConstants.ContextNames.RESTRICT_PERMISSIONS, true);
+		context.put(FacilioConstants.ContextNames.GET_ONLY_BASIC_VIEW_DETAILS, true);
 		
 		FacilioChain addView = FacilioChainFactory.getViewGroupsCustomizeChain();
 		addView.execute(context);
