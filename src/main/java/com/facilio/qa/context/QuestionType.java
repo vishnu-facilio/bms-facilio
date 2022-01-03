@@ -118,7 +118,7 @@ public enum QuestionType implements FacilioStringEnum {
             FacilioConstants.QAndA.Questions.RATING_QUESTION,
             RatingQuestionContext.class,
             new RatingAnswerHandler(RatingAnswerContext.class),
-            new RatingQuestionHandler(),
+            new SmileyRatingQuestionHandler(),
             RatingRuleHandler.RATING
     );
 

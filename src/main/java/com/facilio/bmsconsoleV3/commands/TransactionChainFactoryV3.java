@@ -167,6 +167,7 @@ public class TransactionChainFactoryV3 {
                 .addCommand(new AddNdaForVisitorLogModuleCommandV3()) //check-in related
                 .addCommand(new GenerateQrInviteUrlForBaseVisitCommandV3())
                 .addCommand(new VisitorFaceRecognitionForBaseVisitCommandV3()));
+        c.addCommand(new VisitResponseCommandV3());
 
         return c;
     }
@@ -465,24 +466,6 @@ public class TransactionChainFactoryV3 {
         return c;
     }
     
-    public static FacilioChain getItemOrToolTypesAfterSaveChain() {
-		FacilioChain c = getDefaultChain();
-		c.addCommand(new ForkChainToInstantJobCommand()
-				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
-		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand()); 
-
-		return c;
-	}
-	
-	public static FacilioChain getUpdateItemTypesAfterSaveChain() {
-		FacilioChain c = getDefaultChain();
-		c.addCommand(new ForkChainToInstantJobCommand()
-				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
-		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
-		c.addCommand(new AddActivitiesCommand());
-		return c;
-	}
-	
 	public static FacilioChain getAddClientsAfterSaveChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new UpdateClientIdInSiteCommandV3());
