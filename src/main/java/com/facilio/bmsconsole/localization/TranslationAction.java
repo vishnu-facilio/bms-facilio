@@ -200,9 +200,9 @@ public class TranslationAction extends FacilioAction {
     private String moduleName;
     public String getColumnFields() throws Exception {
         if (StringUtils.isNotEmpty(moduleName)){
-            if (moduleName.equals("workorder")){
+            if (moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)){
                 setResult("fields",constructJson(TranslationsUtil.WORKORDER_FIELDS_MAP));
-            }else if (moduleName.equals("asset")){
+            }else if (moduleName.equals(FacilioConstants.ContextNames.ASSET)){
                 setResult("fields",constructJson(TranslationsUtil.ASSET_FIELDS_MAP));
             }
         }
