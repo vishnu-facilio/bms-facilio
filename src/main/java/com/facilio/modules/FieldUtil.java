@@ -444,8 +444,12 @@ public class FieldUtil {
 
 	private static final Set<String> SYSTEM_UPDATED_FIELDS = Collections.unmodifiableSet(
 			new HashSet<>(Arrays.asList("sysCreatedTime", "sysModifiedTime", "sysModifiedBy", "sysCreatedBy", "sysDeletedBy",
-					"sysDeletedTime", "localId", "moduleState", "stateFlowId", "approvalState", "approvalFlowId", "id", "orgId", "moduleId"
+					"sysDeletedTime", "localId", "moduleState", "stateFlowId", "approvalState", "approvalFlowId", "id", "orgId", "moduleId",
+					ContextNames.SLA_POLICY_ID, ContextNames.FORM_ID,  ContextNames.APPROVAL_STATUS
 												)));
+	
+	
+
 
 
 
