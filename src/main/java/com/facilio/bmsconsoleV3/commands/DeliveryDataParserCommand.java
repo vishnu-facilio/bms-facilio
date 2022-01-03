@@ -44,6 +44,8 @@ public class DeliveryDataParserCommand extends FacilioCommand {
                 continue;
             }
             List<Block> result = detectDocText(file);
+            LOGGER.debug("ocr parser result " + result);
+
             if (result != null) {
                 DeliveryPackageType deliveryPackageType = DeliveryPackageType.detectPackageType(result);
                 if (deliveryPackageType != null) {
