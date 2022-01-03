@@ -163,10 +163,12 @@ public class TranslationAction extends FacilioAction {
 
     private JSONArray constructJson ( Map<String, String> webTabs ) {
         JSONArray jsonArray = new JSONArray();
+        int i=0;
         for (Map.Entry<String, String> entry : webTabs.entrySet()) {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("type",entry.getKey());
-            jsonObject.put("label",entry.getValue());
+            jsonObject.put("label",entry.getKey());
+            jsonObject.put("value",entry.getValue());
+            jsonObject.put("id",++i);
             jsonArray.add(jsonObject);
         }
         return jsonArray;
