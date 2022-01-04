@@ -68,6 +68,8 @@ import com.facilio.pdf.PdfUtil;
 import com.facilio.scriptengine.exceptions.FunctionParamException;
 import com.facilio.scriptengine.systemfunctions.FacilioSystemFunctionNameSpace;
 import com.facilio.scriptengine.systemfunctions.FacilioWorkflowFunctionInterface;
+import com.facilio.service.FacilioHttpUtilsFW;
+import com.facilio.services.FacilioHttpUtils;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.time.DateTimeUtil;
@@ -1117,7 +1119,29 @@ ADD_INVITE_RECORD_VIA_V3CHAIN (29, "addInviteRecordViaV3Chain") {
 			return null;
 		}
 	},
-
+	GET_BLOB_AS_FILE(33,"getBlobFile") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			String url = (String) objects[0];
+			
+			Map<String,String> params = (Map<String, String>) objects[1];
+			Map<String,String> headers = (Map<String, String>) objects[2];
+			
+			String fileName = (String) objects[3];
+			String type = (String) objects[4];
+			
+			return FacilioHttpUtils.doHttpGetWithFileResponse(url, headers, params, fileName, type);
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
     
 
 	;
