@@ -58,6 +58,7 @@ import com.facilio.modules.fields.MultiEnumField;
 import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.scriptengine.context.DBParamContext;
+import com.facilio.scriptengine.util.ScriptUtil;
 import com.facilio.scriptengine.util.WorkflowGlobalParamUtil;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
@@ -276,7 +277,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			throw new RuntimeException("criteria cannot be null during update");
 		}
 		
-		WorkflowV2Util.fillCriteriaField(criteria, module.getName());
+		ScriptUtil.fillCriteriaField(criteria, module.getName());
 		
 		Map<String, Object> updateMap = (Map<String, Object>)objects.get(2);
 		
@@ -334,7 +335,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			throw new Exception("criteria cannot be null during delete");
 		}
 		
-		WorkflowV2Util.fillCriteriaField(criteria, module.getName());
+		ScriptUtil.fillCriteriaField(criteria, module.getName());
 		
 		delete.andCriteria(criteria);
 		
@@ -361,7 +362,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		WorkflowV2Util.fillCriteriaField(dbParamContext.getCriteria(), module.getName());
+		ScriptUtil.fillCriteriaField(dbParamContext.getCriteria(), module.getName());
 		
 		Map<String, List<Map<String, Object>>> cache = null;
 		Map<String, ReadingDataMeta> cachedRDM = null;
@@ -726,7 +727,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		if(FacilioProperties.isDevelopment()) {
 			isS3Value = false;
 		}
-		WorkflowV2Util.fillCriteriaField(criteria, module.getName());
+		ScriptUtil.fillCriteriaField(criteria, module.getName());
 		String fileUrl = ExportUtil.exportModule(FileInfo.FileFormat.XLS, module.getName(), viewName, null,criteria, isS3Value, false, 2000);
 		
 		return fileUrl;
@@ -743,7 +744,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		if(objects.size() == 3) {
 			criteria = (Criteria)objects.get(2);
 		}
-		WorkflowV2Util.fillCriteriaField(criteria, module.getName());
+		ScriptUtil.fillCriteriaField(criteria, module.getName());
 		long fileUrl = ExportUtil.exportModuleAsFileId(FileInfo.FileFormat.XLS, module.getName(), viewName, null,criteria, false, 2000);
 		
 		return fileUrl;

@@ -61,6 +61,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.scriptengine.context.ParameterContext;
+import com.facilio.scriptengine.context.WorkflowFunctionContext;
 import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.taskengine.ScheduleInfo.FrequencyType;
 import com.facilio.tasker.FacilioTimer;
@@ -72,7 +73,6 @@ import com.facilio.workflows.context.IteratorContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.context.WorkflowFieldContext;
-import com.facilio.workflows.context.WorkflowFunctionContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class FormulaFieldAPI {

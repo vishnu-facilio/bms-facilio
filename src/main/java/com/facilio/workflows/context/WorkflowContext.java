@@ -133,15 +133,6 @@ public class WorkflowContext extends ScriptContext implements Serializable {
 
 	List<WorkflowExpression> expressions;
 	
-	ErrorListener errorListener;
-	
-	public ErrorListener getErrorListener() {
-		return errorListener;
-	}
-	public void setErrorListener(ErrorListener errorListener) {
-		this.errorListener = errorListener;
-	}
-	
 	WorkflowType type;
 	
 	public int getType() {
@@ -594,8 +585,8 @@ public class WorkflowContext extends ScriptContext implements Serializable {
 	        
 			WorkflowV2Parser parser = new WorkflowV2Parser(new CommonTokenStream(lexer));
 			
-			if(this.errorListener == null) {
-				this.errorListener = new ErrorListener();
+			if(this.getErrorListener() == null) {
+				this.setErrorListener(new ErrorListener());
 			}
 			parser.addErrorListener(this.getErrorListener());
 			

@@ -28,14 +28,14 @@ import com.facilio.scriptengine.autogens.WorkflowV2Parser;
 import com.facilio.scriptengine.autogens.WorkflowV2Parser.Recursive_expressionContext;
 import com.facilio.scriptengine.context.DBParamContext;
 import com.facilio.scriptengine.context.Value;
+import com.facilio.scriptengine.context.WorkflowFunctionContext;
 import com.facilio.scriptengine.context.WorkflowReadingContext;
+import com.facilio.scriptengine.systemfunctions.FacilioSystemFunctionNameSpace;
 import com.facilio.scriptengine.util.ScriptUtil;
 import com.facilio.scriptengine.visitor.FunctionVisitor;
 import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.time.DateRange;
 import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflows.context.WorkflowFunctionContext;
-import com.facilio.workflows.functions.FacilioSystemFunctionNameSpace;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.contexts.WorkflowCategoryReadingContext;
 import com.facilio.workflowv2.contexts.WorkflowDataParent;
@@ -196,7 +196,7 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
         				Object moduleFunctionObject = WorkflowV2Util.getInstanceOf(module);
             			Method method = moduleFunctionObject.getClass().getMethod(functionName, Map.class,List.class);
             			
-            			List<Object> params = WorkflowV2Util.getParamList(functionCall,true,this,value);
+            			List<Object> params = ScriptUtil.getParamList(functionCall,true,this,value);
             			
             			Object result = method.invoke(moduleFunctionObject, getGlobalParam(),params);
             			value =  new Value(result);
@@ -206,7 +206,7 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
     					WorkflowModuleDataContext moduleDataContext = (WorkflowModuleDataContext) value.asObject();
     					DBParamContext dbParam = moduleDataContext.getDbParam();
     					
-    					List<Object> params = WorkflowV2Util.getParamList(functionCall,true,this,new Value(moduleDataContext.getModule()));
+    					List<Object> params = ScriptUtil.getParamList(functionCall,true,this,new Value(moduleDataContext.getModule()));
     					if(dbParam != null) {
     						params.add(1, dbParam);
     					}
@@ -228,7 +228,7 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
             		else if (value.asObject() instanceof WorkflowNamespaceContext) {					// user defined functions
             			
             			WorkflowNamespaceContext namespaceContext = (WorkflowNamespaceContext) value.asObject();
-            			List<Object> paramValues = WorkflowV2Util.getParamList(functionCall,false,this,null);
+            			List<Object> paramValues = ScriptUtil.getParamList(functionCall,false,this,null);
             			
             			WorkflowContext wfContext = UserFunctionAPI.getWorkflowFunction(namespaceContext.getId(), functionCall.VAR().getText());
             			wfContext.setParams(paramValues);
@@ -300,7 +300,7 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
                     		wfFunctionContext.setNameSpace(((FacilioSystemFunctionNameSpace)value.asObject()).getName());
                     	}
                     	
-                    	List<Object> paramValues = WorkflowV2Util.getParamList(functionCall,isDataTypeSpecificFunction,this,value);
+                    	List<Object> paramValues = ScriptUtil.getParamList(functionCall,isDataTypeSpecificFunction,this,value);
                     	
                     	Object result = WorkflowUtil.evalSystemFunctions(getGlobalParam(),wfFunctionContext, paramValues);
                     	value = new Value(result); 
