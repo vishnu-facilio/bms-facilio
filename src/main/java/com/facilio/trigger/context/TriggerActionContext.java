@@ -1,12 +1,23 @@
 package com.facilio.trigger.context;
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
 import com.facilio.chain.FacilioContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateChangeSet;
 
-import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
-public class TriggerActionContext {
+public class TriggerActionContext implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 
 	private long id = -1;
 	public long getId() {
@@ -56,6 +67,9 @@ public class TriggerActionContext {
 	public void setTypeRefPrimaryId(long typeRefPrimaryId) {
 		this.typeRefPrimaryId = typeRefPrimaryId;
 	}
+	
+	@Getter @Setter
+	private Map<String, Object> typeRefObj;
 
 	private long triggerId = -1;
 	public long getTriggerId() {

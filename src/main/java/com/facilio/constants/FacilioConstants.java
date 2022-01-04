@@ -247,6 +247,7 @@ public class FacilioConstants {
 		public static final String POSITION_TYPE = "positionType";
 		public static final String CUSTOM_BUTTONS = "customButtons";
 
+        public static final String TRIGGER = "trigger";
         public static final String TRIGGER_TYPE = "triggerType";
 		public static final String TYPE_PRIMARY_ID = "typePrimaryId";
 		public static final String GLOBAL_VARIABLE_GROUP_LIST = "globalVariableGroupList";

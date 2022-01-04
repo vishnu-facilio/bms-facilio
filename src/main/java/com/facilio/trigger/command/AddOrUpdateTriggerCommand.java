@@ -23,6 +23,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.trigger.context.BaseTriggerContext;
 import com.facilio.trigger.util.TriggerUtil;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class AddOrUpdateTriggerCommand extends FacilioCommand {
 
@@ -59,6 +60,8 @@ public class AddOrUpdateTriggerCommand extends FacilioCommand {
 			throw new IllegalArgumentException("Trigger should be validated. If you extended the BaseTriggerContext, make " +
 					"sure you call super.validateTrigger() method.");
 		}
+		
+		addChildLookups(trigger.getTypeEnum(), trigger);
 
 		FacilioModule triggerModule = getTriggerModule(trigger.getTypeEnum());
 		List<FacilioModule> moduleOrder = new ArrayList<>();
@@ -89,13 +92,21 @@ public class AddOrUpdateTriggerCommand extends FacilioCommand {
 				trigger.setId((long) props.get("id"));
 			}
 		} else {
+			
+			BaseTriggerContext oldTrigger = TriggerUtil.getTrigger(trigger.getId());
+			if (oldTrigger.getTypeEnum() != trigger.getTypeEnum()) {
+				throw new IllegalArgumentException("Trigger type cannot be changed");
+			}
+			
 			for (FacilioModule mod : moduleOrder) {
 				GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
 						.table(mod.getTableName())
 						.fields(triggerFieldMap.get(mod))
-						.andCondition(CriteriaAPI.getIdCondition(trigger.getId(), ModuleFactory.getTriggerModule()));
+						.andCondition(CriteriaAPI.getIdCondition(trigger.getId(), mod));
 				builder.update(props);
 			}
+			
+			TriggerUtil.deleteTriggerChildLookups(oldTrigger, trigger);
 		}
 		
 		return false;
@@ -107,8 +118,8 @@ public class AddOrUpdateTriggerCommand extends FacilioCommand {
 			case SLA_DUE_DATE_TRIGGER:
 			case SCORING_RULE_TRIGGER:
 				return ModuleFactory.getTriggerModule();
-            case TIMESERIES_COMPLETED_TRIGGER:
-                return ModuleFactory.getPostTimeseriesTriggerModule();
+            case AGENT_TRIGGER:
+                return ModuleFactory.getAgentTriggerModule();
 			default:
 				throw new IllegalArgumentException("Invalid trigger type");
 		}
@@ -120,7 +131,7 @@ public class AddOrUpdateTriggerCommand extends FacilioCommand {
 			case SLA_DUE_DATE_TRIGGER:
 			case SCORING_RULE_TRIGGER:
 				return BaseTriggerContext.class;
-            case TIMESERIES_COMPLETED_TRIGGER:
+            case AGENT_TRIGGER:
                 return PostTimeseriesTriggerContext.class;
 			default:
 				throw new IllegalArgumentException("Invalid trigger type");
@@ -133,10 +144,27 @@ public class AddOrUpdateTriggerCommand extends FacilioCommand {
 			case SLA_DUE_DATE_TRIGGER:
 			case SCORING_RULE_TRIGGER:
                 return FieldFactory.getTriggerFields();
-            case TIMESERIES_COMPLETED_TRIGGER:
-				return FieldFactory.getPostTimeseriesTriggerFields();
+            case AGENT_TRIGGER:
+				return FieldFactory.getAgentTriggerFields();
 			default:
 				throw new IllegalArgumentException("Invalid trigger type");
 		}
 	}
+	
+	
+	private void addChildLookups(TriggerType triggerType, BaseTriggerContext trigger) throws Exception {
+		switch(triggerType) {
+			case  AGENT_TRIGGER:
+				addAgentTriggerLookups((PostTimeseriesTriggerContext) trigger);
+				break;
+		}
+	}
+	private void addAgentTriggerLookups(PostTimeseriesTriggerContext trigger) throws Exception {
+		if (trigger.getCriteria() != null && !trigger.getCriteria().isEmpty()) {
+			long criteriaId = CriteriaAPI.addCriteria(trigger.getCriteria());
+			trigger.setCriteriaId(criteriaId);
+		}
+	}
+	
+	
 }

@@ -1,17 +1,27 @@
 package com.facilio.trigger.action;
 
+import java.util.List;
+import java.util.Map;
+
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.trigger.context.BaseTriggerContext;
 import com.facilio.trigger.context.TriggerActionContext;
+import com.facilio.trigger.context.TriggerType;
 import com.facilio.trigger.util.TriggerUtil;
 import com.facilio.v3.V3Action;
 
-import java.util.List;
-import java.util.Map;
+import lombok.Getter;
+import lombok.Setter;
 
 public class TriggerAction extends V3Action {
 	private static final long serialVersionUID = 1L;
@@ -35,13 +45,26 @@ public class TriggerAction extends V3Action {
 	}
 
 	public String listTriggers() throws Exception {
+		fetchTriggers(null);
+		return SUCCESS;
+	}
+	
+	private void fetchTriggers(FacilioContext contextParams) throws Exception {
 		FacilioChain chain = TransactionChainFactoryV3.getAllTriggers();
 		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+		if (contextParams != null) {
+			context.putAll(contextParams);
+		}
 		chain.execute();
 
 		setData(TriggerUtil.TRIGGERS_LIST, context.get(TriggerUtil.TRIGGERS_LIST));
-		return SUCCESS;
+	}
+	
+	public String triggerDetails() throws Exception {
+		BaseTriggerContext triggerContext = TriggerUtil.getTrigger(getId(), true);
+		setData(TriggerUtil.TRIGGER_CONTEXT, triggerContext);
+    	return SUCCESS;
 	}
 
 	public String deleteTrigger() throws Exception {
@@ -108,6 +131,24 @@ public class TriggerAction extends V3Action {
 		chain.execute();
 
 		setMessage("Trigger status changed successfully");
+		return SUCCESS;
+	}
+	
+	@Getter @Setter
+	private long agentId = -1;
+	
+	public String listAgentTriggers() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(ContextNames.TRIGGER_TYPE, TriggerType.AGENT_TRIGGER);
+		if (agentId > 0) {
+			Map<String, FacilioField> triggerFields = FieldFactory.getAsMap(FieldFactory.getAgentTriggerFields());
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(CriteriaAPI.getCondition(triggerFields.get("agentId"), String.valueOf(agentId), NumberOperators.EQUALS));
+			context.put(ContextNames.CRITERIA, criteria);
+		}
+		
+		fetchTriggers(context);
+		
 		return SUCCESS;
 	}
 }

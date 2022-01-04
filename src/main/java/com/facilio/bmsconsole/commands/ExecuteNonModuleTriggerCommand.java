@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -20,6 +21,7 @@ import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -32,24 +34,15 @@ public class ExecuteNonModuleTriggerCommand extends FacilioCommand {
         TriggerType triggerType = (TriggerType) context.get(FacilioConstants.ContextNames.TRIGGER_TYPE);
         List<EventType> activities = CommonCommandUtil.getEventTypes(context);
         if (activities != null && activities.size() > 0) {
-            Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getPostTimeseriesTriggerFields());
-            Long siteId = (Long) context.get(FacilioConstants.ContextNames.SITE_ID);
-            Collection<Long> values = new ArrayList<>();
-            values.add(siteId);
-            Criteria criteria = new Criteria();
-            criteria.addAndCondition(CriteriaAPI.getCondition(fields.get("siteId"), values, NumberOperators.EQUALS));
-            List<BaseTriggerContext> triggers = TriggerUtil.getTriggers(null, activities, null, true, false, criteria, triggerType);
-            for (BaseTriggerContext t : triggers) {
-                PostTimeseriesTriggerContext trigger = (PostTimeseriesTriggerContext) t;
-                List<Long> resourceIds = trigger.getResourceIds();
-                List<BaseTriggerContext> trigs = new ArrayList<>();
-                trigs.add(trigger);
-                for (Long resourceId : resourceIds) {
-                    List<Long> params = new ArrayList<>();
-                    params.add(resourceId);
-                    context.put(FacilioConstants.ContextNames.WORK_FLOW_PARAMS, params);
-                    TriggerUtil.executeTriggerActions(trigs, (FacilioContext) context, null, null, null);
-                }
+            Criteria extendedCriteria = (Criteria) context.get(ContextNames.CRITERIA);
+            List<? extends BaseTriggerContext> triggers = TriggerUtil.getTriggers(null, activities, null, true, false, extendedCriteria, true, triggerType);
+            for (BaseTriggerContext trigger : triggers) {
+            	List<Long> recordIds = trigger.fetchRecordIds();
+            	context.put(ContextNames.TRIGGER, trigger);
+        		for (Long recordId : recordIds) {
+                    context.put(FacilioConstants.ContextNames.RECORD_ID, recordId);
+        			TriggerUtil.executeTriggerActions(Collections.singletonList(trigger), (FacilioContext) context, null, null, null);
+        		}
             }
         }
         return false;

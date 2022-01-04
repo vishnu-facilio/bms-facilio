@@ -1,13 +1,24 @@
 package com.facilio.trigger.context;
 
 import com.facilio.agentv2.triggers.PostTimeseriesTriggerContext;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.trigger.util.TriggerUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -18,8 +29,13 @@ import java.util.Objects;
 		@JsonSubTypes.Type(value = BaseTriggerContext.class, name = "3"),
 		@JsonSubTypes.Type(value = PostTimeseriesTriggerContext.class, name = "4")
 })
-public class BaseTriggerContext {
+public class BaseTriggerContext implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private long id = -1;
 	public long getId() {
 		return id;
@@ -182,4 +198,8 @@ public class BaseTriggerContext {
 	}
 
 	public void handleGet() {}
+	
+	public List<Long> fetchRecordIds() throws Exception {
+		return null;
+	}
 }

@@ -1,5 +1,8 @@
 package com.facilio.trigger.util;
 
+import com.facilio.agentv2.AgentApiV2;
+import com.facilio.agentv2.FacilioAgent;
+import com.facilio.agentv2.triggers.PostTimeseriesTriggerContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
@@ -16,6 +19,9 @@ import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.trigger.command.AddOrUpdateTriggerCommand;
 import com.facilio.trigger.context.*;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
@@ -67,17 +73,20 @@ public class TriggerUtil {
 	}
 
 	public static BaseTriggerContext getTrigger(long triggerId) throws Exception {
-		List<BaseTriggerContext> triggers = getTriggers(Collections.singletonList(triggerId));
+		return getTrigger(triggerId, false);
+	}
+	public static BaseTriggerContext getTrigger(long triggerId, boolean fetchExtendedLookups) throws Exception {
+		List<BaseTriggerContext> triggers = getTriggers(Collections.singletonList(triggerId), fetchExtendedLookups);
 		if(CollectionUtils.isNotEmpty(triggers)) {
 			BaseTriggerContext trigger = triggers.get(0);
-			fillTriggerExtras(Collections.singletonList(trigger));
+			fillTriggerExtras(Collections.singletonList(trigger), fetchExtendedLookups, trigger.getTypeEnum());
 			trigger.handleGet();
 			return trigger;
 		}
 		return null;
 	}
 
-	public static List<BaseTriggerContext> getTriggers(List<Long> ids) throws Exception {
+	public static List<BaseTriggerContext> getTriggers(List<Long> ids, boolean fetchExtendedLookups) throws Exception {
 		List<FacilioField> fields = FieldFactory.getTriggerFields();
 		FacilioModule module = ModuleFactory.getTriggerModule();
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
@@ -85,10 +94,10 @@ public class TriggerUtil {
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		List<BaseTriggerContext> triggerList = FieldUtil.getAsBeanListFromMapList(select.get(), BaseTriggerContext.class);
-        return getExtendedTriggers(triggerList, null);
+        return getExtendedTriggers(triggerList, null, fetchExtendedLookups);
     }
 
-    private static List<BaseTriggerContext> getExtendedTriggers(List<BaseTriggerContext> triggerList, Criteria criteria) throws Exception {
+    private static List<BaseTriggerContext> getExtendedTriggers(List<BaseTriggerContext> triggerList, Criteria criteria, boolean fetchExtendedLookups) throws Exception {
 		List<BaseTriggerContext> triggers = new ArrayList<>();
 		if (CollectionUtils.isEmpty(triggerList)) {
 			return triggers;
@@ -113,11 +122,23 @@ public class TriggerUtil {
 				triggers.addAll(triggerValues);
 				continue;
 			}
+			
+			List<FacilioField> triggerFields = AddOrUpdateTriggerCommand.getTriggerFields(key);
+			Map<FacilioModule, List<FacilioField>> triggerFieldMap = new HashMap<>();
+			for (FacilioField field : triggerFields) {
+				FacilioModule fieldModule = field.getModule();
+				List<FacilioField> list = triggerFieldMap.get(fieldModule);
+				if (list == null) {
+					list = new ArrayList<>();
+					triggerFieldMap.put(fieldModule, list);
+				}
+				list.add(field);
+			}
 
 			Map<Long, BaseTriggerContext> triggerValueMap = triggerValues.stream().collect(Collectors.toMap(BaseTriggerContext::getId, Function.identity()));
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 					.table(triggerModule.getTableName())
-					.select(AddOrUpdateTriggerCommand.getTriggerFields(key))
+					.select(triggerFieldMap.get(triggerModule))
 					.andCondition(CriteriaAPI.getIdCondition(triggerValueMap.keySet(), triggerModule));
             if (criteria != null) {
                 builder.andCriteria(criteria);
@@ -129,17 +150,42 @@ public class TriggerUtil {
 			}
 			List resolvedTriggerList = FieldUtil.getAsBeanListFromMapList(maps, AddOrUpdateTriggerCommand.getTriggerClass(key));
 			triggers.addAll(resolvedTriggerList);
+			
+			if (!triggers.isEmpty() && fetchExtendedLookups) {
+				switch(key) {
+				case AGENT_TRIGGER:
+					fetchAgentTriggerLookups(resolvedTriggerList);
+					break;
+				}
+			}
 		}
 		return triggers;
 	}
+    
+    private static void fetchAgentTriggerLookups(List<PostTimeseriesTriggerContext> triggers) throws Exception {
+    	List<Long> criteriaIds = new ArrayList<>();
+    	List<Long> agentIds = new ArrayList<>();
+    	for (PostTimeseriesTriggerContext trigger: triggers) {
+    		criteriaIds.add(trigger.getCriteriaId());
+    		agentIds.add(trigger.getAgentId());
+    	}
+    	
+    	Map<Long, Criteria> criteriaMap = CriteriaAPI.getCriteriaAsMap(criteriaIds);
+    	Map<Long, FacilioAgent> agentMap = AgentApiV2.getAgentMap(agentIds);
+    	triggers.forEach(trigger -> {
+    		trigger.setCriteria(criteriaMap.get(trigger.getCriteriaId()));
+    		trigger.setAgent(agentMap.get(trigger.getAgentId()));
+    	});
+    	
+    }
 
-    public static List<BaseTriggerContext> getTriggers(FacilioModule module, List<EventType> activityTypes, Criteria criteria, boolean onlyActive, boolean excludeInternal, Criteria extendedCriteria, TriggerType... triggerTypes) throws Exception {
+    public static List<BaseTriggerContext> getTriggers(FacilioModule module, List<EventType> activityTypes, Criteria criteria, boolean onlyActive, boolean excludeInternal, Criteria extendedCriteria, boolean fetchExtendedLookups, TriggerType... triggerTypes) throws Exception {
 		FacilioModule triggerModule = ModuleFactory.getTriggerModule();
 		List<FacilioField> fields = FieldFactory.getTriggerFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
 		Criteria cri = new Criteria();
-		if (module != null) {
+		if (module != null && module.getModuleId() > 0) {
 			cri.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), module.getExtendedModuleIds(), NumberOperators.EQUALS));
 		}
 
@@ -184,13 +230,13 @@ public class TriggerUtil {
 		List<BaseTriggerContext> triggers = FieldUtil.getAsBeanListFromMapList(props, BaseTriggerContext.class);
 		
 		if(triggers != null && !triggers.isEmpty()) {
-			fillTriggerExtras(triggers);
+			fillTriggerExtras(triggers, fetchExtendedLookups, triggerTypes);
 		}
 
-        return getExtendedTriggers(triggers, extendedCriteria);
+        return getExtendedTriggers(triggers, extendedCriteria, fetchExtendedLookups);
 	}
 	
-	public static void fillTriggerExtras(List<BaseTriggerContext> triggers) throws Exception {
+	public static void fillTriggerExtras(List<BaseTriggerContext> triggers, boolean fetchLookups, TriggerType... triggerTypes) throws Exception {
 		
 		Map<Long, BaseTriggerContext> triggerIDmap = new HashedMap<Long, BaseTriggerContext>();
 		for(BaseTriggerContext trigger : triggers) {
@@ -206,11 +252,35 @@ public class TriggerUtil {
 
 		List<Map<String, Object>> props = select.get();
 		
+		List<Long> typeRefIds = new ArrayList<>();
 		for(Map<String, Object> prop :props) {
 			Long triggerid = (Long)prop.get("triggerId");
 			TriggerActionContext triggerAction = FieldUtil.getAsBeanFromMap(prop, TriggerActionContext.class);
-			
+			typeRefIds.add(triggerAction.getTypeRefPrimaryId());
 			triggerIDmap.get(triggerid).addTriggerAction(triggerAction);
+		}
+		if (fetchLookups) {
+			fetchTypeRefObjects(typeRefIds, triggers, triggerTypes);
+		}
+	}
+	
+	private static void fetchTypeRefObjects(List<Long> typeRefIds, List<BaseTriggerContext> triggers, TriggerType... triggerTypes) throws Exception {
+		if (triggerTypes.length != 1) {
+			return;
+		}
+		
+		switch(triggerTypes[0]) {
+			case AGENT_TRIGGER:
+				getAgentTriggerTypeRef(typeRefIds, triggers);
+				break;
+		}
+	}
+	private static void getAgentTriggerTypeRef(List<Long> typeRefIds, List<BaseTriggerContext> triggers) throws Exception {
+		Map<Long, WorkflowContext> workflowsMap = WorkflowUtil.getWorkflowsAsMap(typeRefIds);
+		for(BaseTriggerContext trigger: triggers){
+			for(TriggerActionContext action: trigger.getTriggerActions()) {
+				action.setTypeRefObj(FieldUtil.getAsProperties(workflowsMap.get(action.getTypeRefPrimaryId())));
+			}
 		}
 	}
 
@@ -272,7 +342,7 @@ public class TriggerUtil {
 		Map<Long, Set<BaseTriggerContext>> ruleVsTriggerMap = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(actionList)) {
 			List<Long> triggerList = actionList.stream().map(TriggerActionContext::getTriggerId).collect(Collectors.toList());
-			Map<Long, BaseTriggerContext> triggerContextMap = getTriggers(triggerList).stream().collect(Collectors.toMap(BaseTriggerContext::getId, Function.identity()));
+			Map<Long, BaseTriggerContext> triggerContextMap = getTriggers(triggerList, false).stream().collect(Collectors.toMap(BaseTriggerContext::getId, Function.identity()));
 			for (TriggerActionContext action : actionList) {
 				Set<BaseTriggerContext> list = ruleVsTriggerMap.get(action.getTypeRefPrimaryId());
 				if (list == null) {
@@ -388,5 +458,27 @@ public class TriggerUtil {
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getIdCondition(triggerSet, module));
 		builder.delete();
+	}
+	
+	public static void deleteTypeRefObj(List<TriggerActionContext> actions, TriggerType triggerType) throws Exception {
+		switch(triggerType) {
+			case AGENT_TRIGGER:
+				List<Long> workflowIds = actions.stream().map(TriggerActionContext::getTypeRefPrimaryId).collect(Collectors.toList());
+				WorkflowUtil.deleteWorkflows(workflowIds);
+				break;
+		}
+	}
+	
+	public static void deleteTriggerChildLookups(BaseTriggerContext oldTrigger, BaseTriggerContext trigger) throws Exception {
+		switch(oldTrigger.getTypeEnum()) {
+			case  AGENT_TRIGGER:
+				deleteAgentTriggerLookups((PostTimeseriesTriggerContext) oldTrigger, (PostTimeseriesTriggerContext) trigger);
+				break;
+		}
+	}
+	private static void deleteAgentTriggerLookups(PostTimeseriesTriggerContext oldTrigger, PostTimeseriesTriggerContext trigger) throws Exception {
+		if (oldTrigger.getCriteriaId() > 0 && (trigger == null || (trigger.getCriteria() != null && !trigger.getCriteria().isEmpty()) )) {
+			CriteriaAPI.deleteCriteria(oldTrigger.getCriteriaId());
+		}
 	}
 }
