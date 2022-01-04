@@ -806,7 +806,7 @@ public class APIv3Config {
                 .afterFetch(new LoadWorkorderLookupsAfterFetchcommandV3())
                 .summary()
                 .beforeFetch(TransactionChainFactoryV3.getTicketBeforeFetchForSummaryChain())
-                  .afterFetch(ReadOnlyChainFactoryV3.getWorkorderAfterFetchOnSummaryChain())
+                .afterFetch(ReadOnlyChainFactoryV3.getWorkorderAfterFetchOnSummaryChain())
                 .build();
     }
 
