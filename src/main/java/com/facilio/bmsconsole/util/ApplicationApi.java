@@ -399,6 +399,9 @@ public class ApplicationApi {
 
         ApplicationContext maintenanceApplication = new ApplicationContext(orgId, "Maintenance", false, facilioApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Maintenance App", ApplicationContext.AppCategory.WORK_CENTERS.getIndex());
 
+        AppDomain developerApp = IAMAppUtil.getAppDomain(FacilioProperties.getDeveloperAppDomain());
+        ApplicationContext developerApplication = new ApplicationContext(orgId, "Developer", false, developerApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.DEVELOPER_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Developer Apis",  ApplicationContext.AppCategory.WORK_CENTERS.getIndex());
+
         List<ApplicationContext> applicationsDefault = new ArrayList<ApplicationContext>();
         applicationsDefault.add(facilioApplication);
         applicationsDefault.add(servicePortalapplication);
@@ -407,6 +410,7 @@ public class ApplicationApi {
         applicationsDefault.add(clientPortalapplication);
         applicationsDefault.add(facilioAgentApplication);
         applicationsDefault.add(maintenanceApplication);
+        applicationsDefault.add(developerApplication);
 
         List<Map<String, Object>> props = FieldUtil.getAsMapList(applicationsDefault, ApplicationContext.class);
 
@@ -522,6 +526,15 @@ public class ApplicationApi {
             Role clientAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.DefaultRoleNames.CLIENT_USER);
             addAppRoleMapping(clientAdmin.getRoleId(), clientPortal.getId());
 
+        }
+
+        ApplicationContext devApp = getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.DEVELOPER_APP);
+        if (devApp.getId() > 0) {
+            ApplicationLayoutContext devLayout = new ApplicationLayoutContext(devApp.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.DEVELOPER_APP);
+            addApplicationLayout(devLayout);
+            addDevAppWebTabs(devLayout);
+            Role devAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.DefaultRoleNames.DEV_ADMIN);
+            addAppRoleMapping(devAdmin.getRoleId(), devApp.getId());
         }
     }
 
@@ -905,6 +918,56 @@ public class ApplicationApi {
             e.printStackTrace();
         }
 
+    }
+
+    public static void addDevAppWebTabs(ApplicationLayoutContext layout) {
+        try {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            int groupOrder = 1;
+
+            long appId = layout.getApplicationId();
+
+            List<WebTabGroupContext> webTabGroups = new ArrayList<>();
+            Map<String, List<WebTabContext>> groupNameVsWebTabsMap = new HashMap<>();
+            List<WebTabContext> webTabs;
+
+            webTabGroups.add(new WebTabGroupContext("Workorders", "workorder", layout.getId(), 201, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Workorders", "workorders", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("workorder").getModuleId()), appId, null));
+            groupNameVsWebTabsMap.put("workorder", webTabs);
+
+            for (WebTabGroupContext webTabGroupContext : webTabGroups) {
+                System.out.println("we: " + webTabGroupContext.getRoute());
+                FacilioChain chain = TransactionChainFactory.getAddOrUpdateTabGroup();
+                FacilioContext chainContext = chain.getContext();
+                chainContext.put(FacilioConstants.ContextNames.WEB_TAB_GROUP, webTabGroupContext);
+                chain.execute();
+                long webGroupId = (long) chainContext.get(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID);
+                webTabGroupContext.setId(webGroupId);
+                List<WebTabContext> tabs = groupNameVsWebTabsMap.get(webTabGroupContext.getRoute());
+                for (WebTabContext webTabContext : tabs) {
+                    chain = TransactionChainFactory.getAddOrUpdateTabChain();
+                    chainContext = chain.getContext();
+                    chainContext.put(FacilioConstants.ContextNames.WEB_TAB, webTabContext);
+                    chain.execute();
+                    long tabId = (long) chainContext.get(FacilioConstants.ContextNames.WEB_TAB_ID);
+                    webTabContext.setId(tabId);
+                }
+                if(CollectionUtils.isNotEmpty(tabs)){
+                    chain = TransactionChainFactory.getCreateAndAssociateTabGroupChain();
+                    chainContext = chain.getContext();
+                    chainContext.put(FacilioConstants.ContextNames.WEB_TABS, tabs);
+                    chainContext.put(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID, webGroupId);
+                    chain.execute();
+                }
+            }
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void addOccupantPortalWebTabs(ApplicationLayoutContext layout) {

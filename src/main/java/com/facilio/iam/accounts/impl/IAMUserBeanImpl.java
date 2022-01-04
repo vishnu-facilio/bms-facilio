@@ -1850,6 +1850,24 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return -1;
 	}
 
+	public IAMAccount fetchAccountByOauth2ClientId(String oauth2ClientId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder();
+		selectBuilder.select(IAMAccountConstants.getDevClientFields())
+				.table(IAMAccountConstants.getDevClientModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("OAUTH2_CLIENT_ID", "oauth2ClientId", oauth2ClientId, StringOperators.IS));
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (CollectionUtils.isEmpty(props)) {
+			LOGGER.error("No client found for " + oauth2ClientId);
+			return null;
+		}
+
+		long uid = (Long) props.get(0).get("uid");
+		long orgId = (Long) props.get(0).get("orgId");
+
+		IAMAccount accountv3 = getAccountv3(uid);
+		accountv3.setOrg(IAMOrgUtil.getOrg(orgId));
+		return accountv3;
+	}
 
 	@Override
 	public IAMAccount verifyFacilioTokenv3(String idToken, boolean overrideSessionCheck,

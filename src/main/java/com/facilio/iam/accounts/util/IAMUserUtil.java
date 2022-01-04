@@ -452,6 +452,10 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().getUserData(username, orgId, identifier));
 	}
 
+	public static IAMAccount fetchAccountByOauth2ClientId(String oauth2ClientId) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().fetchAccountByOauth2ClientId(oauth2ClientId));
+	}
+
 	public static boolean totpChecking(String code, long uid) throws Exception{
 		Map<String, Object> values = getUserMfaSettings(uid);
 		String totpKey = (String) values.get("totpSecret");
