@@ -454,7 +454,7 @@ public class FormFactory {
 		List<FacilioForm> departmentFormsList = Arrays.asList(getDepartmentForm());
 		List<FacilioForm> movesFormsList = Arrays.asList(getMovesForm());
 		List<FacilioForm> indoorFloorplanFormList = Arrays.asList(getFloorPlanAddForm(), getWorkPlaceFloorPlanAddForm());
-		List<FacilioForm> deliveriesFormsList = Arrays.asList(getDeliveriesForm(), getDeliveriesPortalForm());
+		List<FacilioForm> deliveriesFormsList = Arrays.asList(getDeliveriesForm(), getDeliveriesPortalForm(), getScanForDeliveriesForm());
 		List<FacilioForm> desksFormsList = Arrays.asList(getDesksForm(),getDesksPortalForm());
 		List<FacilioForm> deliveryAreaFormsList = Arrays.asList(getDeliveryAreaForm(),getDeliveryAreaPortalForm());
 		List<FacilioForm> lockersFormsList = Arrays.asList(getLockersForm(),getLockersPortalForm());
@@ -1388,6 +1388,17 @@ public class FormFactory {
 		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
+
+	public static FacilioForm getScanForDeliveriesForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("SCAN FOR DELIVERY");
+		form.setName("scan_for_delivery");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.DELIVERIES));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getScanForDeliveriesFormField());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
 	
 	public static FacilioForm getDeliveriesPortalForm() {
 		FacilioForm form = new FacilioForm();
@@ -1938,7 +1949,24 @@ public class FormFactory {
 		fields.add(new FormField("signature", FieldDisplayType.SIGNATURE, "Signature", Required.OPTIONAL, 8, 1));
 		return fields;
 	}
-	
+
+	private static List<FormField> getScanForDeliveriesFormField() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("employee", FieldDisplayType.LOOKUP_SIMPLE, "Recipient", Required.REQUIRED, "employee", 1, 1));
+		fields.add(new FormField("deliveryArea", FieldDisplayType.LOOKUP_SIMPLE, "Delivery Area", Required.REQUIRED, "deliveryArea", 2, 1));
+		fields.add(new FormField("deliveryNotes", FieldDisplayType.TEXTAREA, "Delivery Notes", Required.OPTIONAL, "deliveryNotes", 3, 1));
+		FormField receivedTimeField = new FormField("receivedTime", FieldDisplayType.DATETIME, "Received Time", Required.REQUIRED, 4, 1);
+		receivedTimeField.setHideField(true);
+		receivedTimeField.setValue("${CURRENT_TIME}");
+		fields.add(receivedTimeField);
+		FormField trackingNumberField = new FormField("trackingNumber", FieldDisplayType.TEXTBOX, "Tracking Number", Required.OPTIONAL, 5, 1);
+		trackingNumberField.setHideField(true);
+		fields.add(trackingNumberField);
+		FormField carrierField = new FormField("carrier", FieldDisplayType.SELECTBOX, "Carrier", Required.REQUIRED, 6, 1);
+		carrierField.setHideField(true);
+		fields.add(carrierField);
+		return fields;
+	}
 	private static List<FormField> getDesksFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
