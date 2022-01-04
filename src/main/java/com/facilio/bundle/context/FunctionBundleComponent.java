@@ -1,36 +1,16 @@
 package com.facilio.bundle.context;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bundle.enums.BundleComponentsEnum;
 import com.facilio.bundle.enums.BundleModeEnum;
 import com.facilio.bundle.utils.BundleConstants;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.Condition;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.workflows.context.WorkflowFieldType;
+import com.facilio.scriptengine.context.WorkflowFieldType;
 import com.facilio.workflows.context.WorkflowUserFunctionContext;
 import com.facilio.workflowv2.util.UserFunctionAPI;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 import com.facilio.xml.builder.XMLBuilder;
-
-import io.jsonwebtoken.lang.Collections;
 
 public class FunctionBundleComponent extends CommonBundleComponent {
 	

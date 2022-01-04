@@ -62,6 +62,8 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.util.DemoHelperUtil;
+import com.facilio.scriptengine.context.ParameterContext;
+import com.facilio.scriptengine.context.WorkflowFieldType;
 import com.facilio.scriptengine.util.WorkflowGlobalParamUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.conditions.context.ElseContext;
@@ -70,11 +72,9 @@ import com.facilio.workflows.conditions.context.IfContext;
 import com.facilio.workflows.context.ConditionContext;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.IteratorContext;
-import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.context.WorkflowFieldContext;
-import com.facilio.workflows.context.WorkflowFieldType;
 import com.facilio.workflows.context.WorkflowFunctionContext;
 import com.facilio.workflows.functions.FacilioAnalyticsFunctions;
 import com.facilio.workflows.functions.FacilioAssetFunctions;
@@ -973,7 +973,7 @@ public class WorkflowUtil {
 			}
 		}
 		else {
-			returnType = workflow.getReturnTypeString();
+			returnType = workflow.getReturnTypeEnum().getStringValue();
 		}
 		
 		String code = returnType+" test("+paramString+") {\n";

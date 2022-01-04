@@ -127,7 +127,7 @@
 		<dependency>
             <groupId>com.facilio.scriptengine</groupId>
             <artifactId>script-engine</artifactId>
-            <version>0.0.6</version>
+            <version>0.0.10</version>
         </dependency>
         <dependency>
             <groupId>com.facilio.taskengine</groupId>
