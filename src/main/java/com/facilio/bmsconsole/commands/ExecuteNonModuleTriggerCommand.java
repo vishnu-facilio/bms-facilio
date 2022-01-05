@@ -38,6 +38,8 @@ public class ExecuteNonModuleTriggerCommand extends FacilioCommand {
             List<? extends BaseTriggerContext> triggers = TriggerUtil.getTriggers(null, activities, null, true, false, extendedCriteria, true, triggerType);
             for (BaseTriggerContext trigger : triggers) {
             	List<Long> recordIds = trigger.fetchRecordIds();
+            	LOGGER.info("PT recordIds - " + recordIds);
+            	LOGGER.info("Trigger - " + trigger.getId());
             	context.put(ContextNames.TRIGGER, trigger);
         		for (Long recordId : recordIds) {
                     context.put(FacilioConstants.ContextNames.RECORD_ID, recordId);
