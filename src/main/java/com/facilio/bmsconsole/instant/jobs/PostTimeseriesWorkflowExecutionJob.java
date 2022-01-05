@@ -26,8 +26,6 @@ public class PostTimeseriesWorkflowExecutionJob extends InstantJob {
         Long recordId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
         PostTimeseriesTriggerContext trigger = (PostTimeseriesTriggerContext) context.get(FacilioConstants.ContextNames.TRIGGER);
         
-        LOGGER.info("PT resourceId - " + recordId);
-        
         List params = new ArrayList<>();
         params.add(recordId);
         params.add(FieldUtil.getAsProperties(trigger.getAgent()));
