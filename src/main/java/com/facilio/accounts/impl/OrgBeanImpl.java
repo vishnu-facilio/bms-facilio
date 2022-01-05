@@ -459,16 +459,27 @@ public class OrgBeanImpl implements OrgBean {
 
 
 	@Override
-	public long getFeatureLicense() throws Exception{
+	public Map<String,Long> getFeatureLicense() throws Exception{
     	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getFeatureLicenseFields())
 				.table(AccountConstants.getFeatureLicenseModule().getTableName());
 //				.andCondition(CriteriaAPI.getCondition(AccountConstants.getOrgIdField(AccountConstants.getFeatureLicenseModule()), orgidString, StringOperators.IS));
 
 		List<Map<String, Object>> props = selectBuilder.get();
+//		if (CollectionUtils.isNotEmpty(props)) {
+//			Map<String, Object> moduleMap = props.get(0);
+//			return ((long) moduleMap.get("module"));
+//		}
+//		else {
+//			throw new IllegalArgumentException("Invalid org id for geting feature license");
+//		}
 		if (CollectionUtils.isNotEmpty(props)) {
 			Map<String, Object> moduleMap = props.get(0);
-			return ((long) moduleMap.get("module"));
+			Map<String,Long> licenseMap= new HashMap<String, Long>();
+			licenseMap.put(FacilioConstants.LicenseKeys.GROUP_1_LICENSE,(long) moduleMap.get("license1") );
+			licenseMap.put(FacilioConstants.LicenseKeys.GROUP_2_LICENSE, moduleMap.containsKey("license2") ? (long) moduleMap.get("license2") : 0);
+			
+			return licenseMap;
 		}
 		else {
 			throw new IllegalArgumentException("Invalid org id for geting feature license");
@@ -477,10 +488,14 @@ public class OrgBeanImpl implements OrgBean {
 
 	@Override
 	public boolean isFeatureEnabled(FeatureLicense featureLicense) throws Exception {
-		return (getFeatureLicense() & featureLicense.getLicense()) == featureLicense.getLicense();
+		if(featureLicense.getGroup()==1) {
+			return (getFeatureLicense().get(FacilioConstants.LicenseKeys.GROUP_1_LICENSE) & featureLicense.getLicense()) == featureLicense.getLicense();
+		}
+		else {
+			return (getFeatureLicense().get(FacilioConstants.LicenseKeys.GROUP_2_LICENSE) & featureLicense.getLicense()) == featureLicense.getLicense();
+		}
 	}
-
-	public int addLicence(long summodule) throws Exception{
+	public int addLicence(Map<String,Long> summodule) throws Exception{
     	GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(AccountConstants.getFeatureLicenseModule().getTableName())
 				.fields(AccountConstants.getFeatureLicenseFields());
@@ -488,7 +503,8 @@ public class OrgBeanImpl implements OrgBean {
     	updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getId()), NumberOperators.EQUALS));
 
 		Map<String, Object> props = new HashMap<>();
-		props.put("module", summodule);
+		props.put(FacilioConstants.LicenseKeys.LICENSE1, summodule.get(FacilioConstants.LicenseKeys.LICENSE1));
+		props.put(FacilioConstants.LicenseKeys.LICENSE2, summodule.get(FacilioConstants.LicenseKeys.LICENSE2));
 	 	int value = updateBuilder.update(props);
 	 	return value;
 	}

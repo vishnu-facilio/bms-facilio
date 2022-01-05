@@ -2,6 +2,7 @@ package com.facilio.accounts.util;
 
 import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -964,11 +965,18 @@ public class AccountConstants {
 		 */
 
 		FacilioField license = new FacilioField();
-		license.setName("module");
+		license.setName(FacilioConstants.LicenseKeys.LICENSE1);
 		license.setDataType(FieldType.NUMBER);
 		license.setColumnName("MODULE");
 		license.setModule(module);
 		fields.add(license);
+		
+		FacilioField license2 = new FacilioField();
+		license2.setName(FacilioConstants.LicenseKeys.LICENSE2);
+		license2.setDataType(FieldType.NUMBER);
+		license2.setColumnName("MODULE2");
+		license2.setModule(module);
+		fields.add(license2);
 
 		return fields;
 	}

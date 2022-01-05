@@ -10,18 +10,19 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import java.util.Map;
 import java.util.Objects;
 
 public class OrgBeanCacheImpl extends OrgBeanImpl implements OrgBean {
     private static final Logger LOGGER = LogManager.getLogger(OrgBeanCacheImpl.class.getName());
 
     @Override
-    public long getFeatureLicense () throws Exception {
-        FacilioCache<String, Long> featureLicenseCache = LRUCache.getFeatureLicenseCache();
+    public Map<String,Long> getFeatureLicense () throws Exception {
+        FacilioCache<String, Map<String,Long>> featureLicenseCache = LRUCache.getFeatureLicenseCache();
         Objects.requireNonNull(AccountUtil.getCurrentOrg(),"Current Org cannot be null in AccountUtil while fetching Feature License");
         long orgId = AccountUtil.getCurrentOrg().getOrgId();
         String key = CacheUtil.ORG_KEY(orgId);
-        Long featureLicense = featureLicenseCache.get(key);
+        Map<String,Long> featureLicense = featureLicenseCache.get(key);
         if(featureLicense == null) {
             featureLicense = super.getFeatureLicense();
             featureLicenseCache.put(key,featureLicense);
@@ -34,7 +35,7 @@ public class OrgBeanCacheImpl extends OrgBeanImpl implements OrgBean {
     }
 
     @Override
-    public int addLicence ( long summodule ) throws Exception {
+    public int addLicence ( Map<String,Long> summodule ) throws Exception {
         Objects.requireNonNull(AccountUtil.getCurrentOrg(),"Current Org cannot be null in AccountUtil while adding Feature License");
         int rows = super.addLicence(summodule);
         if(rows > 0) {

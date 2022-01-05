@@ -49,7 +49,7 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
 	private static FacilioCache<String, Object> moduleCachePS = new PubSubLRUCache<>("moduleCache", 2000);
 	private static FacilioCache<String, Long> queryCachePS = new PubSubLRUCache<>("queryCache", 500);
 	private static FacilioCache<String, Object> responseCachePS = new PubSubLRUCache<>("responseCache", 5000);
-	private static FacilioCache<String, Long> featureLicenseCachePS = new PubSubLRUCache<>("featureLicense", 1000);
+	private static FacilioCache<String, Map<String,Long>> featureLicenseCachePS = new PubSubLRUCache<>("featureLicense", 1000);
 	private static FacilioCache<String, Object> orgUnitCachePs = new PubSubLRUCache<>("orgUnit",1000);
 	private static FacilioCache<String, Object> roleIdCachePs = new PubSubLRUCache<>("roleId",1000);
 	private static FacilioCache<String, Object> roleNameCachePs = new PubSubLRUCache<>("roleName",1000);
@@ -150,7 +150,7 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
 		return globalVariable;
 	}
 
-	public static FacilioCache<String, Long> getFeatureLicenseCache() {
+	public static FacilioCache<String, Map<String,Long>> getFeatureLicenseCache() {
 		return featureLicenseCachePS;
 	}
 

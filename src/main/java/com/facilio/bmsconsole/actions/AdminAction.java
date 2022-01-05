@@ -145,6 +145,21 @@ public class AdminAction extends ActionSupport {
 
 		return SUCCESS;
 	}
+	
+	public enum LicenseMapping {
+		GROUP1LICENSE(1),
+		GROUP2LICENSE(2);
+		
+		private int groupId;
+
+		LicenseMapping(int i) {
+			this.groupId=i;
+		}
+
+		public int getGroupId() {
+			return groupId;
+		}
+	}
 
 	@SuppressWarnings("unused")
 	public String addLicense() throws SQLException {
@@ -153,32 +168,42 @@ public class AdminAction extends ActionSupport {
 		Long orgId = Long.parseLong(request.getParameter("orgid"));
 
 		if (selectedFeatures != null) {
-			long sumOfLicenses = 0;
+			long sumOfLicenses1 = 0;
+			long sumOfLicenses2=0;
 
 			if (selectedFeatures != null) {
 				for (int i = 0; i < selectedFeatures.length; i++) {
 					AccountUtil.FeatureLicense license = AccountUtil.FeatureLicense.valueOf(selectedFeatures[i]);
-					sumOfLicenses += license.getLicense();
+					if(license.getGroup() == LicenseMapping.GROUP1LICENSE.getGroupId()) {
+						sumOfLicenses1 += license.getLicense();
+					}
+					else if(license.getGroup() == LicenseMapping.GROUP2LICENSE.getGroupId()) {
+						sumOfLicenses2 += license.getLicense();
+					}
+					
 				}
 			}
 
 			try {
+				Map<String,Long> licenseMap = new HashMap<String,Long>();
+				licenseMap.put(FacilioConstants.LicenseKeys.LICENSE1, sumOfLicenses1);
+				licenseMap.put(FacilioConstants.LicenseKeys.LICENSE2, sumOfLicenses2);
 				//temp handling for enabling people contacts license
-				if (	AccountUtil.FeatureLicense.INVENTORY.isEnabled(sumOfLicenses)
-						||	AccountUtil.FeatureLicense.CLIENT.isEnabled(sumOfLicenses)
-						||	AccountUtil.FeatureLicense.VENDOR.isEnabled(sumOfLicenses)
-						||  AccountUtil.FeatureLicense.TENANTS.isEnabled(sumOfLicenses)
-						||	AccountUtil.FeatureLicense.PEOPLE.isEnabled(sumOfLicenses)
+				if (	AccountUtil.FeatureLicense.INVENTORY.isEnabled(licenseMap)
+						||	AccountUtil.FeatureLicense.CLIENT.isEnabled(licenseMap)
+						||	AccountUtil.FeatureLicense.VENDOR.isEnabled(licenseMap)
+						||  AccountUtil.FeatureLicense.TENANTS.isEnabled(licenseMap)
+						||	AccountUtil.FeatureLicense.PEOPLE.isEnabled(licenseMap)
 				) {
-					if(!AccountUtil.FeatureLicense.PEOPLE_CONTACTS.isEnabled(sumOfLicenses)) {
-						sumOfLicenses += AccountUtil.FeatureLicense.PEOPLE_CONTACTS.getLicense();
+					if(!AccountUtil.FeatureLicense.PEOPLE_CONTACTS.isEnabled(licenseMap)) {
+						sumOfLicenses1 += AccountUtil.FeatureLicense.PEOPLE_CONTACTS.getLicense();
 					}
-					if(!AccountUtil.FeatureLicense.SCOPING.isEnabled(sumOfLicenses)) {
-						sumOfLicenses += AccountUtil.FeatureLicense.SCOPING.getLicense();
+					if(!AccountUtil.FeatureLicense.SCOPING.isEnabled(licenseMap)) {
+						sumOfLicenses1 += AccountUtil.FeatureLicense.SCOPING.getLicense();
 					}
 				}
 
-				long licence = AccountUtil.getTransactionalOrgBean(orgId).addLicence(sumOfLicenses);
+				long licence = AccountUtil.getTransactionalOrgBean(orgId).addLicence(licenseMap);
 				System.out.println("##########@@@@@@@@@@@@@" + licence);
 			} catch (Exception e) {
 				e.printStackTrace();

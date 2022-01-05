@@ -390,83 +390,100 @@ public class AccountUtil {
 	private static Map<String, Long> moduleVsLicense;
 	
     public enum FeatureLicense {
-		MAINTENANCE(1),
-		ALARMS(2),
-		ENERGY(4),
-		SPACE_ASSET(8),
-		WEATHER_INTEGRATION(16),
-		ANOMALY_DETECTOR(32),
-		NEW_LAYOUT(64),
-		SHIFT_HOURS(128),
-		CLOUD_AGENT_SERVICE(256),
-		PEOPLE(512),
-		APPROVAL(1024),
-		MOBILE_DASHBOARD(2048),
-		CONTROL_ACTIONS(4096),
-		INVENTORY(8192, new String[]{ContextNames.TOOL, ContextNames.ITEM}),
-		SCHEDULED_WO(16384),
-		TENANTS(32768, new String[]{ContextNames.TENANT, ContextNames.TENANT_UNIT_SPACE}),
-		HUDSON_YARDS(65536, new String[]{ContextNames.WorkPermit.WORKPERMIT}), // TEMP
-		CONNECTEDAPPS(131072),
-		M_AND_V(262144),
-		GRAPHICS(524288),
-		CONTRACT(1048576, new String[]{ContextNames.SERVICE, ContextNames.PURCHASE_CONTRACTS, ContextNames.LABOUR_CONTRACTS, ContextNames.RENTAL_LEASE_CONTRACTS, ContextNames.WARRANTY_CONTRACTS}),
-		NEW_ALARMS(2097152),
-		DEVELOPER_SPACE(4194304),
-		SKIP_TRIGGERS(8388608),
-		RESOURCE_BOOKING(16777216),
-		ANOMALY(33554432),
-		READING_FIELD_UNITS_VALIDATION(67108864),
-		DEVICES(134217728),
-		VISITOR(268435456, new String[]{ContextNames.VISITOR_LOG, ContextNames.INVITE_VISITOR, ContextNames.BASE_VISIT}),
-		KPI(536870912),
-		SERVICE_REQUEST(1073741824, new String[]{ContextNames.SERVICE_REQUEST}),
-		SAFETY_PLAN(2147483648L),
-		CLIENT(4294967296L, new String[]{ContextNames.CLIENT}),
-		WEB_TAB(8589934592L),
-		BIM(17179869184L),
-		PEOPLE_CONTACTS(34359738368L, new String[]{ContextNames.PEOPLE}),
-		NEW_APPROVALS(68719476736L),
-		CHATBOT(137438953472L),
-		SCOPING(274877906944L),
-		OPERATIONAL_ALARM(549755813888L),
-		FIELD_PERMISSIONS(1099511627776L),
-		QUOTATION(2199023255552L, new String[]{ContextNames.QUOTE}),
-		ENERGY_STAR_INTEG(4398046511104L),
-		ASSET_DEPRECIATION(8796093022208L), // 2^43
-		CUSTOM_MAIL(17592186044416L),
-		ETISALAT(35184372088832L),
-		COMMUNITY(70368744177664L),
-		TENANT_BILLING(140737488355328L), // 2^47
-		BUDGET_MONITORING(281474976710656L, new String[]{ContextNames.Budget.BUDGET, ContextNames.Budget.CHART_OF_ACCOUNT}),
-		MULTIVARIATE_ANOMALY_ALARM(562949953421312L), //2^49
-		CUSTOM_BUTTON(1125899906842624L),
-		MULTISITEPM(2251799813685248L), // 2 ^ 51
-		FACILITY_BOOKING(4503599627370496L, new String[]{ContextNames.FacilityBooking.FACILITY, ContextNames.FacilityBooking.FACILITY_BOOKING, ContextNames.FacilityBooking.AMENITY}),
-		INSPECTION(9007199254740992L, new String[]{FacilioConstants.Inspection.INSPECTION_TEMPLATE, FacilioConstants.Inspection.INSPECTION_RESPONSE}),
-		INDUCTION(18014398509481984L, new String[]{FacilioConstants.Induction.INDUCTION_TEMPLATE, FacilioConstants.Induction.INDUCTION_RESPONSE}),// 2 ^ 54
-		PURCHASE(36028797018963968L, new String[]{ContextNames.PURCHASE_REQUEST, ContextNames.PURCHASE_ORDER}),
-		VENDOR(72057594037927936L, new String[]{ContextNames.VENDORS, ContextNames.VENDOR_CONTACT, ContextNames.INSURANCE}),    // 2 ^ 56
-		SECURITY_POLICY(144115188075855872L), // 2 ^ 57
-		SMS(288230376151711744L), // 2 ^ 58
-		MULTI_LANGUAGE_TRANSLATION(576460752303423488L), // 2^59
-		WOV3_BETA(1152921504606846976L), // 2^60
-		PIVOT_TABLE(2305843009213693952L),// 2^61
-		TRANSFER_REQUEST(4611686018427387904L);//2^62
+		MAINTENANCE(1,1),
+		ALARMS(2,1),
+		ENERGY(4,1),
+		SPACE_ASSET(8,1),
+		WEATHER_INTEGRATION(16,1),
+		ANOMALY_DETECTOR(32,1),
+		NEW_LAYOUT(64,1),
+		SHIFT_HOURS(128,1),
+		CLOUD_AGENT_SERVICE(256,1),
+		PEOPLE(512,1),
+		APPROVAL(1024,1),
+		MOBILE_DASHBOARD(2048,1),
+		CONTROL_ACTIONS(4096,1),
+		INVENTORY(8192, new String[]{ContextNames.TOOL, ContextNames.ITEM},1),
+		SCHEDULED_WO(16384,1),
+		TENANTS(32768, new String[]{ContextNames.TENANT, ContextNames.TENANT_UNIT_SPACE},1),
+		HUDSON_YARDS(65536, new String[]{ContextNames.WorkPermit.WORKPERMIT},1), // TEMP
+		CONNECTEDAPPS(131072,1),
+		M_AND_V(262144,1),
+		GRAPHICS(524288,1),
+		CONTRACT(1048576, new String[]{ContextNames.SERVICE, ContextNames.PURCHASE_CONTRACTS, ContextNames.LABOUR_CONTRACTS, ContextNames.RENTAL_LEASE_CONTRACTS, ContextNames.WARRANTY_CONTRACTS},1),
+		NEW_ALARMS(2097152,1),
+		DEVELOPER_SPACE(4194304,1),
+		SKIP_TRIGGERS(8388608,1),
+		RESOURCE_BOOKING(16777216,1),
+		ANOMALY(33554432,1),
+		READING_FIELD_UNITS_VALIDATION(67108864,1),
+		DEVICES(134217728,1),
+		VISITOR(268435456, new String[]{ContextNames.VISITOR_LOG, ContextNames.INVITE_VISITOR, ContextNames.BASE_VISIT},1),
+		KPI(536870912,1),
+		SERVICE_REQUEST(1073741824, new String[]{ContextNames.SERVICE_REQUEST},1),
+		SAFETY_PLAN(2147483648L,1),
+		CLIENT(4294967296L, new String[]{ContextNames.CLIENT},1),
+		WEB_TAB(8589934592L,1),
+		BIM(17179869184L,1),
+		PEOPLE_CONTACTS(34359738368L, new String[]{ContextNames.PEOPLE},1),
+		NEW_APPROVALS(68719476736L,1),
+		CHATBOT(137438953472L,1),
+		SCOPING(274877906944L,1),
+		OPERATIONAL_ALARM(549755813888L,1),
+		FIELD_PERMISSIONS(1099511627776L,1),
+		QUOTATION(2199023255552L, new String[]{ContextNames.QUOTE},1),
+		ENERGY_STAR_INTEG(4398046511104L,1),
+		ASSET_DEPRECIATION(8796093022208L,1), // 2^43
+		CUSTOM_MAIL(17592186044416L,1),
+		ETISALAT(35184372088832L,1),
+		COMMUNITY(70368744177664L,1),
+		TENANT_BILLING(140737488355328L,1), // 2^47
+		BUDGET_MONITORING(281474976710656L, new String[]{ContextNames.Budget.BUDGET, ContextNames.Budget.CHART_OF_ACCOUNT},1),
+		MULTIVARIATE_ANOMALY_ALARM(562949953421312L,1), //2^49
+		CUSTOM_BUTTON(1125899906842624L,1),
+		MULTISITEPM(2251799813685248L,1), // 2 ^ 51
+		FACILITY_BOOKING(4503599627370496L, new String[]{ContextNames.FacilityBooking.FACILITY, ContextNames.FacilityBooking.FACILITY_BOOKING, ContextNames.FacilityBooking.AMENITY},1),
+		INSPECTION(9007199254740992L, new String[]{FacilioConstants.Inspection.INSPECTION_TEMPLATE, FacilioConstants.Inspection.INSPECTION_RESPONSE},1),
+		INDUCTION(18014398509481984L, new String[]{FacilioConstants.Induction.INDUCTION_TEMPLATE, FacilioConstants.Induction.INDUCTION_RESPONSE},1),// 2 ^ 54
+		PURCHASE(36028797018963968L, new String[]{ContextNames.PURCHASE_REQUEST, ContextNames.PURCHASE_ORDER},1),
+		VENDOR(72057594037927936L, new String[]{ContextNames.VENDORS, ContextNames.VENDOR_CONTACT, ContextNames.INSURANCE},1),    // 2 ^ 56
+		SECURITY_POLICY(144115188075855872L,1), // 2 ^ 57
+		SMS(288230376151711744L,1), // 2 ^ 58
+		MULTI_LANGUAGE_TRANSLATION(576460752303423488L,1), // 2^59
+		WOV3_BETA(1152921504606846976L,1), // 2^60
+		PIVOT_TABLE(2305843009213693952L,1),// 2^61
+		TRANSFER_REQUEST(4611686018427387904L,1),//2^62
 		// Last license - 2 ^ 62
 		// Add Module name if license is added for specific module
+    	NEW_FEATURE_TEST(1,2),
+    	ADD_ON_FEATURE(2,2);
 
 		private long license;
 		private String[] modules;
+		private int group;
 
-		FeatureLicense(long license) {
-			this(license, null);
+		// FeatureLicense(long license) {
+		// 	this(license, null);
+		// }
+
+		FeatureLicense(long license, int group) {
+			this.license = license;
+			this.group=group;
 		}
 
-		FeatureLicense(long license, String[] modules) {
+		FeatureLicense(long license, String[] modules, int group) {
 			this.license = license;
 			this.modules = modules;
+			this.group=group;
 		}
+
+		public int getGroup() {
+			return group;
+		}
+//
+//		public void setGroup(int group) {
+//			this.group = group;
+//		}
 
 		public long getLicense() {
 			return license;
@@ -498,8 +515,13 @@ public class AccountUtil {
 			return typeMap;
 		}
 
-		public boolean isEnabled (long totalLicense) {
-			return (totalLicense & this.license) == this.license;
+		public boolean isEnabled (Map<String,Long > totalLicense) {
+			if (this.group==1) {
+				return (totalLicense.get(FacilioConstants.LicenseKeys.GROUP_1_LICENSE) & this.license) == this.license;
+			}			
+			else{
+				return (totalLicense.get(FacilioConstants.LicenseKeys.GROUP_2_LICENSE)& this.license)== this.license;
+				}
 		}
 	}
     
@@ -514,16 +536,16 @@ public class AccountUtil {
     }*/
 
     
-    public static long getOrgFeatureLicense(long orgId) throws Exception
+    public static Map<String,Long> getOrgFeatureLicense(long orgId) throws Exception
     {
     	OrgBean bean = (OrgBean) BeanFactory.lookup("OrgBean", orgId);
-    	long licence =bean.getFeatureLicense();
+    	Map<String,Long> licence =bean.getFeatureLicense();
     	System.out.println("#########$$$$ Orgbean : orgid "+orgId+", license : "+licence);
     	return licence;
     	
     }
 
-    public static long getFeatureLicense() throws Exception {
+    public static Map<String,Long> getFeatureLicense() throws Exception {
     	return getOrgBean().getFeatureLicense();
 	}
 	
@@ -542,8 +564,13 @@ public class AccountUtil {
 
 		for (Long key : FeatureLicenses.keySet()) {
 			FeatureLicense license = FeatureLicenses.get(key);
-			boolean isEnabled = (getOrgFeatureLicense(orgId) & license.getLicense()) == license.getLicense();
-
+			boolean isEnabled;
+			if(license.getGroup()==1){
+			 	isEnabled = (getOrgFeatureLicense(orgId).get(FacilioConstants.LicenseKeys.GROUP_1_LICENSE) & license.getLicense()) == license.getLicense();
+			}
+			else {
+				isEnabled = (getOrgFeatureLicense(orgId).get(FacilioConstants.LicenseKeys.GROUP_2_LICENSE) & license.getLicense()) == license.getLicense();
+			}
 			Features.put(license.toString(), isEnabled);
 		}
 		return Features;
