@@ -9,98 +9,132 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 
 public class ReportPivotParamsContext {
-    private List<ReportPivotTableRowsContext> rows = new ArrayList<ReportPivotTableRowsContext>();
-	public List<ReportPivotTableRowsContext> getRows() {
+	private List<PivotRowColumnContext> rows = new ArrayList<PivotRowColumnContext>();
+
+	public List<PivotRowColumnContext> getRows() {
 		return rows;
 	}
-	public void setRows(List<ReportPivotTableRowsContext> rows) {
+
+	public void setRows(List<PivotRowColumnContext> rows) {
 		this.rows = rows;
 	}
-	
-	private List<ReportPivotTableDataContext> data = new ArrayList<ReportPivotTableDataContext>();
-	public List<ReportPivotTableDataContext> getData() {
+
+	private List<PivotDataColumnContext> data = new ArrayList<PivotDataColumnContext>();
+
+	public List<PivotDataColumnContext> getData() {
 		return data;
 	}
-	public void setData(List<ReportPivotTableDataContext> data) {
+
+	public void setData(List<PivotDataColumnContext> data) {
 		this.data = data;
 	}
-	
+
+	private List<PivotFormulaColumnContext> formula = new ArrayList<>();
+
+	public List<PivotFormulaColumnContext> getFormula() {
+		return formula;
+	}
+
+	public void setFormula(List<PivotFormulaColumnContext> formula) {
+		this.formula = formula;
+	}
+
 	private JSONObject sortBy;
+
 	public JSONObject getSortBy() {
 		return sortBy;
 	}
+
 	public void setSortBy(JSONObject sortBy) {
 		this.sortBy = sortBy;
 	}
 
 	private String moduleName;
+
 	public String getModuleName() {
 		return moduleName;
 	}
+
 	public void setModuleName(String moduleName) {
 		this.moduleName = moduleName;
 	}
 
-    private Criteria criteria;
+	private Criteria criteria;
+
 	public Criteria getCriteria() {
 		return criteria;
 	}
+
 	public void setCriteria(Criteria criteria) {
 		this.criteria = criteria;
 	}
-	
+
 	private JSONObject templateJSON;
 
 	public JSONObject getTemplateJSON() {
 		return templateJSON;
 	}
+
 	public void setTemplateJSON(JSONObject templateJSON) {
 		this.templateJSON = templateJSON;
 	}
+
 	private long dateFieldId = -1;
+
 	public long getDateFieldId() {
 		return dateFieldId;
 	}
+
 	public void setDateFieldId(long dateFieldId) {
 		this.dateFieldId = dateFieldId;
 	}
-	
+
 	Integer dateOperator;
+
 	public Integer getDateOperator() {
 		return dateOperator;
 	}
+
 	public void setDateOperator(Integer dateOperator) {
 		this.dateOperator = dateOperator;
 	}
-	
+
 	String dateValue;
+
 	public String getDateValue() {
 		return dateValue;
 	}
+
 	public void setDateValue(String dateValue) {
 		this.dateValue = dateValue;
 	}
-	
+
 	private Boolean showTimelineFilter;
+
 	public Boolean getShowTimelineFilter() {
 		return showTimelineFilter;
 	}
+
 	public void setShowTimelineFilter(boolean showTimelineFilter) {
 		this.showTimelineFilter = showTimelineFilter;
 	}
-	
+
 	private long startTime = -1;
+
 	public long getStartTime() {
 		return startTime;
 	}
+
 	public void setStartTime(long startTime) {
 		this.startTime = startTime;
 	}
-	
+
 	private long endTime = -1;
+
 	public long getEndTime() {
 		return endTime;
 	}
+
 	public void setEndTime(long endTime) {
 		this.endTime = endTime;
 	}

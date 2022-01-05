@@ -49,6 +49,7 @@ public abstract class Formatter {
 
     public abstract void deserialize(JSONObject formatJSON);
 
+
     public static Formatter getInstance(@NotNull FacilioField field) {
         switch (field.getDataTypeEnum()) {
             case NUMBER:
@@ -67,4 +68,6 @@ public abstract class Formatter {
                 return null;
         }
     }
+
+
 }

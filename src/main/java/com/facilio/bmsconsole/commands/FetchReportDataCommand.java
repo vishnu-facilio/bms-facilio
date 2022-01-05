@@ -1375,87 +1375,87 @@ public class FetchReportDataCommand extends FacilioCommand {
         }
     }
 
-    private List<Map<String, Object>> querySubmoduleRows(List<Map<String, Object>> props) throws Exception {
-        List<ReportPivotTableRowsContext> rows = (List<ReportPivotTableRowsContext>) globalContext.get(FacilioConstants.Reports.ROWS);
-        List<Map<String, Object>> fieldsList = new ArrayList<>();
-        if (isSubmoduleDataFetched) {
-            for (Map<String, Object> record : subModuleQueryResult) {
-                for (String key : record.keySet()) {
-                    for (Map<String, Object> prop : props) {
-                        if (!prop.containsKey(key)) {
-                            prop.put(key, record.get(key));
-                        }
-                    }
-                }
-            }
-            return props;
-        }
-//      List<FacilioField> submoduleFields = new ArrayList<>();
-        for (ReportPivotTableRowsContext row : rows) {
-            FacilioField field = null;
-            if (!baseModule.getName().equals(row.getModuleName())) {
-                field = modBean.getField(row.getField().getId());
-//                    submoduleFields.add(field);
-                Map<String, Object> fieldsMap = buildSubmoduleQueryFields(props, field, rows);
-                fieldsList.add(fieldsMap);
-            }
-        }
-
-        for (Map<String, Object> submoduleMap : fieldsList) {
-            List<FacilioField> fields = new ArrayList<>();
-            FacilioField subField = (FacilioField) submoduleMap.get("field");
-            FacilioField baseField = FieldFactory.getIdField(baseModule);
-            ReportPivotTableRowsContext row = (ReportPivotTableRowsContext) submoduleMap.get("row");
-            fields.add(subField);
-            fields.add(baseField);
-            GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder().select(fields).table(subField.getTableName());
-            if (row.getCriteria() != null) {
-                selectRecordBuilder.andCriteria(row.getCriteria());
-            }
-            List<Long> conditionList = (List<Long>) submoduleMap.get("condition");
-
-            selectRecordBuilder.andCondition(CriteriaAPI.getCondition(baseField, conditionList, NumberOperators.EQUALS));
-
-            getSubmoduleJoinOn(subField, selectRecordBuilder);
-            if (row.getSortField() != null) {
-                FacilioField orderByField = modBean.getField(row.getSortField().getId());
-                selectRecordBuilder.orderBy(subField.getTableName() + "." + orderByField.getColumnName());
-            }
-//                if(row.getSortOrder() > 0){
-//                    selectRecordBuilder.
+//    private List<Map<String, Object>> querySubmoduleRows(List<Map<String, Object>> props) throws Exception {
+//        List<PivotRowColumnContext> rows = (List<PivotRowColumnContext>) globalContext.get(FacilioConstants.Reports.ROWS);
+//        List<Map<String, Object>> fieldsList = new ArrayList<>();
+//        if (isSubmoduleDataFetched) {
+//            for (Map<String, Object> record : subModuleQueryResult) {
+//                for (String key : record.keySet()) {
+//                    for (Map<String, Object> prop : props) {
+//                        if (!prop.containsKey(key)) {
+//                            prop.put(key, record.get(key));
+//                        }
+//                    }
 //                }
-
-            List<Map<String, Object>> result = selectRecordBuilder.get();
-            for (Map<String, Object> record : props) {
-                if (result != null) {
-                    record.put(subField.getName(), result.get(0));
-                }
-            }
-
-            System.out.println("query -> " + selectRecordBuilder);
-        }
-
-        isSubmoduleDataFetched = true;
-        subModuleQueryResult = props;
-        return props;
-    }
-
-    private Map<String, Object> buildSubmoduleQueryFields(List<Map<String, Object>> conditions, FacilioField field, List<ReportPivotTableRowsContext> rows) throws Exception {
-        Map<String, Object> result = new HashMap<>();
-        List<Long> conditionList = new ArrayList<>();
-        result.put("field", field);
-        for (ReportPivotTableRowsContext row : rows) {
-            if (!row.getModuleName().equals(baseModule.getName())) {
-                result.put("row", row);
-            }
-        }
-        for (Map<String, Object> record : conditions) {
-            FacilioField baseModuleField = FieldFactory.getIdField(baseModule);
-            conditionList.add((Long) record.get(baseModuleField.getName()));
-        }
-        result.put("condition", conditionList);
-        return result;
-    }
+//            }
+//            return props;
+//        }
+////      List<FacilioField> submoduleFields = new ArrayList<>();
+//        for (PivotRowColumnContext row : rows) {
+//            FacilioField field = null;
+//            if (!baseModule.getName().equals(row.getModuleName())) {
+//                field = modBean.getField(row.getField().getId());
+////                    submoduleFields.add(field);
+//                Map<String, Object> fieldsMap = buildSubmoduleQueryFields(props, field, rows);
+//                fieldsList.add(fieldsMap);
+//            }
+//        }
+//
+//        for (Map<String, Object> submoduleMap : fieldsList) {
+//            List<FacilioField> fields = new ArrayList<>();
+//            FacilioField subField = (FacilioField) submoduleMap.get("field");
+//            FacilioField baseField = FieldFactory.getIdField(baseModule);
+//            PivotRowColumnContext row = (PivotRowColumnContext) submoduleMap.get("row");
+//            fields.add(subField);
+//            fields.add(baseField);
+//            GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder().select(fields).table(subField.getTableName());
+//            if (row.getCriteria() != null) {
+//                selectRecordBuilder.andCriteria(row.getCriteria());
+//            }
+//            List<Long> conditionList = (List<Long>) submoduleMap.get("condition");
+//
+//            selectRecordBuilder.andCondition(CriteriaAPI.getCondition(baseField, conditionList, NumberOperators.EQUALS));
+//
+//            getSubmoduleJoinOn(subField, selectRecordBuilder);
+//            if (row.getSortField() != null) {
+//                FacilioField orderByField = modBean.getField(row.getSortField().getId());
+//                selectRecordBuilder.orderBy(subField.getTableName() + "." + orderByField.getColumnName());
+//            }
+////                if(row.getSortOrder() > 0){
+////                    selectRecordBuilder.
+////                }
+//
+//            List<Map<String, Object>> result = selectRecordBuilder.get();
+//            for (Map<String, Object> record : props) {
+//                if (result != null) {
+//                    record.put(subField.getName(), result.get(0));
+//                }
+//            }
+//
+//            System.out.println("query -> " + selectRecordBuilder);
+//        }
+//
+//        isSubmoduleDataFetched = true;
+//        subModuleQueryResult = props;
+//        return props;
+//    }
+//
+//    private Map<String, Object> buildSubmoduleQueryFields(List<Map<String, Object>> conditions, FacilioField field, List<PivotRowColumnContext> rows) throws Exception {
+//        Map<String, Object> result = new HashMap<>();
+//        List<Long> conditionList = new ArrayList<>();
+//        result.put("field", field);
+//        for (PivotRowColumnContext row : rows) {
+//            if (!row.getModuleName().equals(baseModule.getName())) {
+//                result.put("row", row);
+//            }
+//        }
+//        for (Map<String, Object> record : conditions) {
+//            FacilioField baseModuleField = FieldFactory.getIdField(baseModule);
+//            conditionList.add((Long) record.get(baseModuleField.getName()));
+//        }
+//        result.put("condition", conditionList);
+//        return result;
+//    }
 
     private void getSubmoduleJoinOn(FacilioField submoduleField, GenericSelectRecordBuilder selectRecordBuilder) throws Exception {
         String moduleName = submoduleField.getModule().getName();
