@@ -291,7 +291,7 @@ public class WorkorderPageFactory extends PageFactory {
             addInventoryTab(page);
         }
         addRelatedRecordsTab(page, workorder.getModuleId());
-        if(AccountUtil.getCurrentOrg().getOrgId() == 173)
+        if(AccountUtil.getCurrentOrg().getOrgId() == 173 || AccountUtil.getCurrentOrg().getOrgId() == 559)
         {
         addMetricandTimelogTab(page);
         }
