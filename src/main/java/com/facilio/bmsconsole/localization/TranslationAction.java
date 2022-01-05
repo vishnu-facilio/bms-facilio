@@ -163,10 +163,12 @@ public class TranslationAction extends FacilioAction {
 
     private JSONArray constructJson ( Map<String, String> webTabs ) {
         JSONArray jsonArray = new JSONArray();
+        int i=0;
         for (Map.Entry<String, String> entry : webTabs.entrySet()) {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("type",entry.getKey());
-            jsonObject.put("label",entry.getValue());
+            jsonObject.put("label",entry.getKey());
+            jsonObject.put("value",entry.getValue());
+            jsonObject.put("id",++i);
             jsonArray.add(jsonObject);
         }
         return jsonArray;
@@ -200,10 +202,10 @@ public class TranslationAction extends FacilioAction {
     private String moduleName;
     public String getColumnFields() throws Exception {
         if (StringUtils.isNotEmpty(moduleName)){
-            if (moduleName.equals("workorder")){
-                setResult("fields",TranslationsUtil.WORKORDER_FIELDS_MAP);
-            }else if (moduleName.equals("asset")){
-                setResult("fields",TranslationsUtil.ASSET_FIELDS_MAP);
+            if (moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)){
+                setResult("fields",constructJson(TranslationsUtil.WORKORDER_FIELDS_MAP));
+            }else if (moduleName.equals(FacilioConstants.ContextNames.ASSET)){
+                setResult("fields",constructJson(TranslationsUtil.ASSET_FIELDS_MAP));
             }
         }
         return SUCCESS;

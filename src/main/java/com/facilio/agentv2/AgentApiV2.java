@@ -95,7 +95,7 @@ public class AgentApiV2 {
         FacilioContext context = new FacilioContext();
         agent.setCreatedTime(System.currentTimeMillis());
         agent.setLastDataReceivedTime(-1);
-        if (agent.getAgentType() == AgentType.CLOUD.getKey()) {
+        if (agent.getAgentType() == AgentType.CLOUD.getKey() || agent.getAgentType() == AgentType.AGENT_SERVICE.getKey()) {
             agent.setConnected(true);
         }
         agent.setLastModifiedTime(agent.getCreatedTime());
