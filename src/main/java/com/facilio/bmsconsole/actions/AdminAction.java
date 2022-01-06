@@ -37,6 +37,7 @@ import com.amazonaws.services.ec2.model.Instance;
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.LicenseMapping;
 import com.facilio.agent.agentcontrol.AgentControl;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.actions.AgentVersionAction;
@@ -146,20 +147,7 @@ public class AdminAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	public enum LicenseMapping {
-		GROUP1LICENSE(1),
-		GROUP2LICENSE(2);
-		
-		private int groupId;
 
-		LicenseMapping(int i) {
-			this.groupId=i;
-		}
-
-		public int getGroupId() {
-			return groupId;
-		}
-	}
 
 	@SuppressWarnings("unused")
 	public String addLicense() throws SQLException {
@@ -174,10 +162,10 @@ public class AdminAction extends ActionSupport {
 			if (selectedFeatures != null) {
 				for (int i = 0; i < selectedFeatures.length; i++) {
 					AccountUtil.FeatureLicense license = AccountUtil.FeatureLicense.valueOf(selectedFeatures[i]);
-					if(license.getGroup() == LicenseMapping.GROUP1LICENSE.getGroupId()) {
+					if(license.getGroup() == AccountUtil.LicenseMapping.GROUP1LICENSE) {
 						sumOfLicenses1 += license.getLicense();
 					}
-					else if(license.getGroup() == LicenseMapping.GROUP2LICENSE.getGroupId()) {
+					else if(license.getGroup() == AccountUtil.LicenseMapping.GROUP2LICENSE) {
 						sumOfLicenses2 += license.getLicense();
 					}
 					
@@ -185,9 +173,9 @@ public class AdminAction extends ActionSupport {
 			}
 
 			try {
-				Map<String,Long> licenseMap = new HashMap<String,Long>();
-				licenseMap.put(FacilioConstants.LicenseKeys.LICENSE1, sumOfLicenses1);
-				licenseMap.put(FacilioConstants.LicenseKeys.LICENSE2, sumOfLicenses2);
+				Map<LicenseMapping,Long> licenseMap = new HashMap<LicenseMapping,Long>();
+				licenseMap.put(LicenseMapping.GROUP1LICENSE, sumOfLicenses1);
+				licenseMap.put(LicenseMapping.GROUP2LICENSE, sumOfLicenses2);
 				//temp handling for enabling people contacts license
 				if (	AccountUtil.FeatureLicense.INVENTORY.isEnabled(licenseMap)
 						||	AccountUtil.FeatureLicense.CLIENT.isEnabled(licenseMap)

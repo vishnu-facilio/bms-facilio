@@ -2,6 +2,7 @@ package com.facilio.accounts.impl;
 
 import com.facilio.accounts.bean.OrgBean;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.LicenseMapping;
 import com.facilio.cache.CacheUtil;
 import com.facilio.fw.cache.LRUCache;
 import com.facilio.fw.cache.FacilioCache;
@@ -17,12 +18,12 @@ public class OrgBeanCacheImpl extends OrgBeanImpl implements OrgBean {
     private static final Logger LOGGER = LogManager.getLogger(OrgBeanCacheImpl.class.getName());
 
     @Override
-    public Map<String,Long> getFeatureLicense () throws Exception {
-        FacilioCache<String, Map<String,Long>> featureLicenseCache = LRUCache.getFeatureLicenseCache();
+    public Map<LicenseMapping,Long> getFeatureLicense () throws Exception {
+        FacilioCache<String, Map<LicenseMapping,Long>> featureLicenseCache = LRUCache.getFeatureLicenseCache();
         Objects.requireNonNull(AccountUtil.getCurrentOrg(),"Current Org cannot be null in AccountUtil while fetching Feature License");
         long orgId = AccountUtil.getCurrentOrg().getOrgId();
         String key = CacheUtil.ORG_KEY(orgId);
-        Map<String,Long> featureLicense = featureLicenseCache.get(key);
+        Map<LicenseMapping,Long> featureLicense = featureLicenseCache.get(key);
         if(featureLicense == null) {
             featureLicense = super.getFeatureLicense();
             featureLicenseCache.put(key,featureLicense);
@@ -35,7 +36,7 @@ public class OrgBeanCacheImpl extends OrgBeanImpl implements OrgBean {
     }
 
     @Override
-    public int addLicence ( Map<String,Long> summodule ) throws Exception {
+    public int addLicence ( Map<LicenseMapping,Long> summodule ) throws Exception {
         Objects.requireNonNull(AccountUtil.getCurrentOrg(),"Current Org cannot be null in AccountUtil while adding Feature License");
         int rows = super.addLicence(summodule);
         if(rows > 0) {
