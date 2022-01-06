@@ -339,7 +339,12 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		
 		delete.andCriteria(criteria);
 		
-		delete.delete();
+		if (module.isTrashEnabled()) {
+            delete.markAsDelete();
+        }
+		else {
+			delete.delete();
+		}
 	}
 	
 	@Override
