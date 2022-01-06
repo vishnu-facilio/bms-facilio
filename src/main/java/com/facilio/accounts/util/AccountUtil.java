@@ -551,8 +551,8 @@ public class AccountUtil {
 			return typeMap;
 		}
 
-		public boolean isEnabled (Map<LicenseMapping,Long > totalLicense) {
-			return (totalLicense.get(this.group) & this.license) == this.license;
+		public boolean isEnabled (Map<String,Long > totalLicense) {
+			return (totalLicense.get(this.group.getLicenseKey()) & this.license) == this.license;
 //				return (totalLicense.get(FacilioConstants.LicenseKeys.GROUP_1_LICENSE) & this.license) == this.license;
 //			}			
 //			else{
@@ -572,16 +572,16 @@ public class AccountUtil {
     }*/
 
     
-    public static Map<LicenseMapping,Long> getOrgFeatureLicense(long orgId) throws Exception
+    public static Map<String,Long> getOrgFeatureLicense(long orgId) throws Exception
     {
     	OrgBean bean = (OrgBean) BeanFactory.lookup("OrgBean", orgId);
-    	Map<LicenseMapping,Long> licence =bean.getFeatureLicense();
+    	Map<String,Long> licence =bean.getFeatureLicense();
     	System.out.println("#########$$$$ Orgbean : orgid "+orgId+", license : "+licence);
     	return licence;
     	
     }
 
-    public static Map<LicenseMapping,Long> getFeatureLicense() throws Exception {
+    public static Map<String,Long> getFeatureLicense() throws Exception {
     	return getOrgBean().getFeatureLicense();
 	}
 	
@@ -600,7 +600,7 @@ public class AccountUtil {
 
 		for (Long key : FeatureLicenses.keySet()) {
 			FeatureLicense license = FeatureLicenses.get(key);
-			boolean isEnabled = (getOrgFeatureLicense(orgId).get(license.getGroup()) & license.getLicense()) == license.getLicense();
+			boolean isEnabled = (getOrgFeatureLicense(orgId).get(license.getGroup().getLicenseKey()) & license.getLicense()) == license.getLicense();
 //			isEnabled = (getOrgFeatureLicense(orgId).get(FacilioConstants.LicenseKeys.GROUP_2_LICENSE) & license.getLicense()) == license.getLicense();
 			Features.put(license.toString(), isEnabled);
 		}

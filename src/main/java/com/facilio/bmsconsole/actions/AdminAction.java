@@ -173,9 +173,9 @@ public class AdminAction extends ActionSupport {
 			}
 
 			try {
-				Map<LicenseMapping,Long> licenseMap = new HashMap<LicenseMapping,Long>();
-				licenseMap.put(LicenseMapping.GROUP1LICENSE, sumOfLicenses1);
-				licenseMap.put(LicenseMapping.GROUP2LICENSE, sumOfLicenses2);
+				Map<String,Long> licenseMap = new HashMap<String,Long>();
+				licenseMap.put(LicenseMapping.GROUP1LICENSE.getLicenseKey(), sumOfLicenses1);
+				licenseMap.put(LicenseMapping.GROUP2LICENSE.getLicenseKey(), sumOfLicenses2);
 				//temp handling for enabling people contacts license
 				if (	AccountUtil.FeatureLicense.INVENTORY.isEnabled(licenseMap)
 						||	AccountUtil.FeatureLicense.CLIENT.isEnabled(licenseMap)

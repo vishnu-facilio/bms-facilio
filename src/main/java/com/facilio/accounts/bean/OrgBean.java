@@ -55,11 +55,11 @@ public interface OrgBean {
 
 	public User getSuperAdmin(long orgId) throws Exception;
 	
-	public Map<LicenseMapping, Long> getFeatureLicense() throws Exception;
+	public Map<String, Long> getFeatureLicense() throws Exception;
 	
 	public boolean isFeatureEnabled(FeatureLicense featureLicense) throws Exception;
 
-	public int addLicence(Map<LicenseMapping, Long> licenseMap) throws Exception;
+	public int addLicence(Map<String, Long> licenseMap) throws Exception;
 	
 	public JSONObject orgInfo() throws Exception;
 	
