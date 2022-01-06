@@ -5,6 +5,7 @@ import java.io.Serializable;
 import org.json.simple.JSONObject;
 
 import com.facilio.agent.AgentKeys;
+import com.facilio.agent.AgentType;
 import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -58,6 +59,14 @@ public class FacilioAgent implements Serializable {
 	}
 	public void setWorkflow(WorkflowContext workflow) {
 		this.workflow = workflow;
+	}
+	
+	private WorkflowContext transformWorkflow;
+    public WorkflowContext getTransformWorkflow() {
+		return transformWorkflow;
+	}
+	public void setTransformWorkflow(WorkflowContext transformWorkflow) {
+		this.transformWorkflow = transformWorkflow;
 	}
 
 	public Boolean getIsDisable() {
@@ -227,6 +236,9 @@ public class FacilioAgent implements Serializable {
 
     public int getAgentType() {
         return agentType;
+    }
+    public AgentType getAgentTypeEnum() {
+        return AgentType.valueOf(agentType);
     }
     public void setAgentType(int agentType) {
         this.agentType = agentType;

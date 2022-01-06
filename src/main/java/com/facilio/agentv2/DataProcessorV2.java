@@ -90,7 +90,10 @@ public class DataProcessorV2
                 FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
                 FacilioContext context = chain.getContext();
                 context.put(WorkflowV2Util.WORKFLOW_CONTEXT, transformWorkflow);
-                context.put(WorkflowV2Util.WORKFLOW_PARAMS, Collections.singletonList(payload));
+                List params = new ArrayList<>();
+                params.add(payload);
+                params.add(FieldUtil.getAsProperties(agent));
+                context.put(WorkflowV2Util.WORKFLOW_PARAMS, params);
                 chain.execute();
                 HashMap mapFromPreProcessor = (HashMap) transformWorkflow.getReturnValue();
                 payload = (JSONObject) new JSONParser().parse(JSONObject.toJSONString(mapFromPreProcessor));

@@ -150,7 +150,7 @@ public class PointsUtil
                             if (controller.getControllerType() == FacilioControllerType.MODBUS_IP.asInt() ||
                                     controller.getControllerType() == FacilioControllerType.MODBUS_RTU.asInt() ||
                                     controller.getControllerType() == FacilioControllerType.RDM.asInt()) {
-                                if (agentType == AgentType.FACILIO.getKey() || agentType == AgentType.AGENT_SERVICE.getKey()) {
+                                if (agentType == AgentType.FACILIO.getKey() || agent.getAgentTypeEnum().isAgentService()  ) {
                                     point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
                                 }
                             }
