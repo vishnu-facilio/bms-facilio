@@ -474,12 +474,13 @@ public class OrgBeanImpl implements OrgBean {
 //		else {
 //			throw new IllegalArgumentException("Invalid org id for geting feature license");
 //		}
-		
+
 		if (CollectionUtils.isNotEmpty(props)) {
 			Map<String, Object> moduleMap = props.get(0);
 			Map<String,Long> licenseMap= new HashMap<String, Long>();
-			licenseMap.put(LicenseMapping.GROUP1LICENSE.getLicenseKey(),(long) moduleMap.get("license1") );
-			licenseMap.put(LicenseMapping.GROUP2LICENSE.getLicenseKey(), moduleMap.containsKey("license2") ? (long) moduleMap.get("license2") : 0);
+			for (LicenseMapping val:LicenseMapping.values()) {
+				licenseMap.put(val.getLicenseKey(),moduleMap.containsKey(val.getLicenseKey()) ? (long) moduleMap.get(val.getLicenseKey()) : 0);
+			}
 			
 			return licenseMap;
 		}
