@@ -506,7 +506,6 @@ public class FormFactory {
 		List<FacilioForm> storeRoomForm = Arrays.asList(getStoreRoomForm());
 //		List<FacilioForm> itemCategoryForm = Arrays.asList(getItemCategoryForm());
 //		List<FacilioForm> toolCategoryForm = Arrays.asList(getToolCategoryForm());
-
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
 				.put(FacilioConstants.ContextNames.ASSET, getFormMap(assetForms))
@@ -1755,6 +1754,7 @@ public class FormFactory {
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 2, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
 		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "inventoryCategory", 4, 2).setAllowCreateOptions(true).setCreateFormName("item_category_form"));
+
 //		FormField field = new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "itemTypesCategory",4, 2);
 //		field.setAllowCreateOptions(true);
 //		field.addToConfig("canShowLookupWizard",true);
