@@ -156,26 +156,31 @@ public class AdminAction extends ActionSupport {
 		Long orgId = Long.parseLong(request.getParameter("orgid"));
 
 		if (selectedFeatures != null) {
-			long sumOfLicenses1 = 0;
-			long sumOfLicenses2=0;
+			Map<String,Long> licenseMap = new HashMap<String,Long>();
 
 			if (selectedFeatures != null) {
 				for (int i = 0; i < selectedFeatures.length; i++) {
 					AccountUtil.FeatureLicense license = AccountUtil.FeatureLicense.valueOf(selectedFeatures[i]);
-					if(license.getGroup() == AccountUtil.LicenseMapping.GROUP1LICENSE) {
-						sumOfLicenses1 += license.getLicense();
-					}
-					else if(license.getGroup() == AccountUtil.LicenseMapping.GROUP2LICENSE) {
-						sumOfLicenses2 += license.getLicense();
-					}
+					
+					Long sumOfLicense = licenseMap.getOrDefault(license.getGroup().getLicenseKey(), 0l);
+					
+					sumOfLicense += license.getLicense();
+					
+					licenseMap.put(license.getGroup().getLicenseKey(), sumOfLicense);
+//					if(license.getGroup() == AccountUtil.LicenseMapping.GROUP1LICENSE) {
+//						sumOfLicenses1 += license.getLicense();
+//					}
+//					else if(license.getGroup() == AccountUtil.LicenseMapping.GROUP2LICENSE) {
+//						sumOfLicenses2 += license.getLicense();
+//					}
 					
 				}
 			}
 
 			try {
-				Map<String,Long> licenseMap = new HashMap<String,Long>();
-				licenseMap.put(LicenseMapping.GROUP1LICENSE.getLicenseKey(), sumOfLicenses1);
-				licenseMap.put(LicenseMapping.GROUP2LICENSE.getLicenseKey(), sumOfLicenses2);
+				
+				//licenseMap.put(LicenseMapping.GROUP1LICENSE.getLicenseKey(), sumOfLicenses1);
+				//licenseMap.put(LicenseMapping.GROUP2LICENSE.getLicenseKey(), sumOfLicenses2);
 				//temp handling for enabling people contacts license
 				if (	AccountUtil.FeatureLicense.INVENTORY.isEnabled(licenseMap)
 						||	AccountUtil.FeatureLicense.CLIENT.isEnabled(licenseMap)
@@ -184,10 +189,19 @@ public class AdminAction extends ActionSupport {
 						||	AccountUtil.FeatureLicense.PEOPLE.isEnabled(licenseMap)
 				) {
 					if(!AccountUtil.FeatureLicense.PEOPLE_CONTACTS.isEnabled(licenseMap)) {
-						sumOfLicenses1 += AccountUtil.FeatureLicense.PEOPLE_CONTACTS.getLicense();
+						
+						Long sumOfLicense = licenseMap.getOrDefault(AccountUtil.FeatureLicense.PEOPLE_CONTACTS.getGroup().getLicenseKey(), 0l);
+						sumOfLicense += AccountUtil.FeatureLicense.PEOPLE_CONTACTS.getLicense();
+						
+						licenseMap.put(AccountUtil.FeatureLicense.PEOPLE_CONTACTS.getGroup().getLicenseKey(), sumOfLicense);
 					}
 					if(!AccountUtil.FeatureLicense.SCOPING.isEnabled(licenseMap)) {
-						sumOfLicenses1 += AccountUtil.FeatureLicense.SCOPING.getLicense();
+						
+						Long sumOfLicense = licenseMap.getOrDefault(AccountUtil.FeatureLicense.SCOPING.getGroup().getLicenseKey(), 0l);
+						
+						sumOfLicense += AccountUtil.FeatureLicense.SCOPING.getLicense();
+						
+						licenseMap.put(AccountUtil.FeatureLicense.SCOPING.getGroup().getLicenseKey(), sumOfLicense);
 					}
 				}
 
