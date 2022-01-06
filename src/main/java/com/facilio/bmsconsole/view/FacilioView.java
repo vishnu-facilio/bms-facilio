@@ -13,8 +13,16 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.context.ViewField;
+import com.facilio.bmsconsole.timelineview.context.TimelineViewContext;
 import com.facilio.db.criteria.Criteria;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, visible = true, property = "type")
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = FacilioView.class, name = "1"),
+    @JsonSubTypes.Type(value = TimelineViewContext.class, name = "2"),
+})
 public class FacilioView {
 	
 	public FacilioView() {}
@@ -302,8 +310,17 @@ public class FacilioView {
 		this.fieldDisplayNames = fieldDisplayNames;
 	}
 
+	private int viewType = ViewType.TABLE_LIST.getIntVal();
+	public void setViewType(int viewType) {
+		this.viewType = viewType;
+	}
+	public int getViewType() {
+		return viewType;
+	}
+
 	public static enum ViewType {
-		TABLE_LIST(1);
+		TABLE_LIST(1),
+		TIMELINE(2);
 		
 		private int intVal;
 		
@@ -311,7 +328,9 @@ public class FacilioView {
 			// TODO Auto-generated constructor stub
 			this.intVal = val;
 		}
-		
+		public static ViewType getViewType(int val){
+			return TYPE_MAP.get(val);
+		}
 		public int getIntVal() {
 			return intVal;
 		}

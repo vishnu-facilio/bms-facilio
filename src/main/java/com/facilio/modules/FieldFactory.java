@@ -3805,6 +3805,13 @@ public class FieldFactory extends BaseFieldFactory {
         groupOrder.setColumnName("SEQUENCE_NUMBER");
         groupOrder.setModule(module);
         fields.add(groupOrder);
+
+        FacilioField groupType = new FacilioField();
+        groupType.setName("groupType");
+        groupType.setDataType(FieldType.NUMBER);
+        groupType.setColumnName("TYPE");
+        groupType.setModule(module);
+        fields.add(groupType);
         
         return fields;
 
@@ -8420,6 +8427,17 @@ public class FieldFactory extends BaseFieldFactory {
 
         list.add(getField("timerEnabled", "IS_TIMER_ENABLED", module, FieldType.BOOLEAN));
         list.add(getField("doneById", "DONE_BY", module, FieldType.NUMBER));
+        return list;
+    }
+
+    public static List<FacilioField> getTimelineViewFields(FacilioModule module){
+        List<FacilioField> list = new ArrayList<>();
+
+        list.add(getIdField("id","ID",module));
+        list.add(getNumberField("startDateFieldId","START_DATE_FIELDID",module));
+        list.add(getNumberField("endDateFieldId","END_DATE_FIELDID",module));
+        list.add(getNumberField("groupByFieldId","GROUP_BY_FIELDID",module));
+
         return list;
     }
 

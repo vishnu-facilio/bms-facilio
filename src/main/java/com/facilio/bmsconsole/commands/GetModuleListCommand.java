@@ -51,7 +51,9 @@ public class GetModuleListCommand extends FacilioCommand {
 			ContextNames.TOOL,
 			ContextNames.ITEM,
 			ContextNames.ASSET_CATEGORY,
-			ContextNames.ROLE
+			ContextNames.ROLE,
+			ContextNames.PURCHASE_ORDER,
+			ContextNames.PURCHASE_REQUEST,
 	});
 
 	@Override
