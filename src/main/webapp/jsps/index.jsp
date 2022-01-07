@@ -75,7 +75,7 @@
 
         if (isMoro) {
             rebrandInfo.put("brandName", "Moro");
-            copyrightInfo.put("year", "2021");
+            copyrightInfo.put("year", "2022");
             rebrandInfo.put("name", "Moro");
             rebrandInfo.put("domain", "morohub.com");
             rebrandInfo.put("copyright", copyrightInfo);
@@ -83,7 +83,7 @@
 
         if (isBuildingstalk) {
             rebrandInfo.put("brandName", "BuildingsTalk");
-            copyrightInfo.put("year", "2021");
+            copyrightInfo.put("year", "2022");
             rebrandInfo.put("name", "Machinestalk Inc");
             rebrandInfo.put("domain", "buildingsoncloud.com");
             rebrandInfo.put("copyright", copyrightInfo);
