@@ -62,5 +62,30 @@ public class V3ListApiTranslationImpl implements TranslationIfc {
                 jsonObject.put("primaryValue", getTranslation(translationFile, key, (String) jsonObject.get("primaryValue")));
             }
         }
+
+        if (module.containsKey("department")) {
+            JSONObject departments = (JSONObject) module.get("department");
+
+            if (departments != null && !departments.isEmpty()) {
+                for (Object itr : departments.keySet()) {
+                    JSONObject jsonObject = (JSONObject) departments.get(itr);
+                    String key = TranslationsUtil.getTranslationKey(priority, String.valueOf(jsonObject.get("id")));
+                    jsonObject.put(TranslationConstants.NAME, getTranslation(translationFile, key, (String) jsonObject.get(TranslationConstants.NAME)));
+                    jsonObject.put("primaryValue", getTranslation(translationFile, key, (String) jsonObject.get("primaryValue")));
+                }
+            }
+
+
+            JSONObject types = (JSONObject) module.get("type");
+
+            if (types != null && !types.isEmpty()) {
+                for (Object itr : types.keySet()) {
+                    JSONObject jsonObject = (JSONObject) types.get(itr);
+                    String key = TranslationsUtil.getTranslationKey(priority, String.valueOf(jsonObject.get("id")));
+                    jsonObject.put(TranslationConstants.NAME, getTranslation(translationFile, key, (String) jsonObject.get(TranslationConstants.NAME)));
+                    jsonObject.put("primaryValue", getTranslation(translationFile, key, (String) jsonObject.get("primaryValue")));
+                }
+            }
+        }
     }
 }

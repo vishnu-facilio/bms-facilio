@@ -53,3 +53,21 @@ translation:
 
   - prefix: report
     suffix: [displayName]
+
+  - prefix: assetdepartment
+    suffix: [displayName]
+
+  - prefix: assetcategory
+    suffix: [displayName]
+
+  - prefix: assettype
+    suffix: [displayName]
+
+  - prefix: ticketcategory
+    suffix: [displayName]
+
+  - prefix: ticketpriority
+    suffix: [displayName]
+
+  - prefix: tickettype
+    suffix: [displayName]
