@@ -80,7 +80,52 @@
                 <property name="roleId" type="number" mandatory="true"/>
                 <property name="timezone" type="string" maxLength="100"/>
             </property>
-
+        </requestbody>
+    </request>
+    <request path="/api/v2/updateSecurityPolicy">
+        <requestbody type="object">
+            <property name="securityPolicy" type="object">
+                <property name="asMap" type="object">
+                    <property name="name" type="string"/>
+                    <property name="description" type="string"/>
+                    <property name="id" type="number"/>
+                    <property name="isDefault" type="boolean"/>
+                    <property name="isTOTPEnabled" type="boolean"/>
+                    <property name="isMOTPEnabled" type="boolean"/>
+                    <property name="isPwdPolicyEnabled" type="boolean"/>
+                    <property name="isWebSessManagementEnabled" type="boolean"/>
+                    <property name="orgId" type="number"/>
+                    <property name="pwdIsMixed" type="boolean"/>
+                    <property name="pwdMinAge" type="number"/>
+                    <property name="pwdMinNumDigits" type="number"/>
+                    <property name="pwdMinSplChars" type="number"/>
+                    <property name="pwdPrevPassRefusal" type="number"/>
+                    <property name="pwdMinLength" type="number"/>
+                    <property name="webSessLifeTime" type="number"/>
+                    <property name="idleSessionTimeOut" type="boolean"/>
+                    <property name="isMFAEnabled" type="boolean"/>
+                </property>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v2/createSecurityPolicy">
+        <requestbody type="object">
+          <property name="securityPolicy" type="object">
+              <property name="name" type="string" maxLength="255"/>
+              <property name="description" type="string" maxLength="500"/>
+              <property name="isDefault" type="boolean"/>
+              <property name="pwdIsMixed" type="boolean"/>
+              <property name="isWebSessManagementEnabled" type="boolean"/>
+              <property name="isTOTPEnabled" type="boolean"/>
+              <property name="isPwdPolicyEnabled" type="boolean"/>
+              <property name="isMOTPEnabled" type="boolean"/>
+              <property name="pwdMinAge" type="number"/>
+              <property name="pwdMinLength" type="number"/>
+              <property name="pwdMinNumDigits" type="number"/>
+              <property name="pwdMinSplChars" type="number"/>
+              <property name="pwdPrevPassRefusal" type="number"/>
+              <property name="webSessLifeTime" type="number"/>
+          </property>
         </requestbody>
     </request>
 </config>
