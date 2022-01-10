@@ -107,6 +107,11 @@ public class GetTimeLineDataCommand extends FacilioCommand {
         timeCriteria.addOrCondition(CriteriaAPI.getCondition(endTimeField, timelineRequest.getDateValue(), DateOperators.BETWEEN));
         mainCriteria.andCriteria(timeCriteria);
 
+        Criteria rollOverCriteria = new Criteria();
+        rollOverCriteria.addAndCondition(CriteriaAPI.getCondition(startTimeField, String.valueOf(timelineRequest.getStartTime()), NumberOperators.LESS_THAN));
+        rollOverCriteria.addAndCondition(CriteriaAPI.getCondition(endTimeField, String.valueOf(timelineRequest.getEndTime()), NumberOperators.GREATER_THAN));
+        mainCriteria.orCriteria(rollOverCriteria);
+        
         Criteria groupCriteria = new Criteria();
         if (CollectionUtils.isNotEmpty(timelineRequest.getGroupIds())) {
             groupCriteria.addAndCondition(CriteriaAPI.getCondition(timelineGroupField, StringUtils.join(timelineRequest.getGroupIds(), ","), NumberOperators.EQUALS));
