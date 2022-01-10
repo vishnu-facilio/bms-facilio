@@ -1,6 +1,8 @@
 package com.facilio.workflows.functions;
 
 import java.util.ArrayList;
+import com.facilio.scriptengine.systemfunctions.FacilioSystemFunctionNameSpace;
+import com.facilio.scriptengine.systemfunctions.FacilioWorkflowFunctionInterface;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +20,7 @@ import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.bmsconsoleV3.context.InviteVisitorContextV3;
 import com.facilio.bmsconsoleV3.context.VisitorLogContextV3;
 import com.facilio.bmsconsoleV3.util.V3VisitorManagementAPI;
-import com.facilio.workflows.exceptions.FunctionParamException;
+import com.facilio.scriptengine.exceptions.FunctionParamException;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public enum FacilioResourceFunction implements FacilioWorkflowFunctionInterface {

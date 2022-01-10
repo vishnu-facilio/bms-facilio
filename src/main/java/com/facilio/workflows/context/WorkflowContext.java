@@ -30,13 +30,15 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.scriptengine.autogens.WorkflowV2Lexer;
 import com.facilio.scriptengine.autogens.WorkflowV2Parser;
 import com.facilio.scriptengine.context.ErrorListener;
+import com.facilio.scriptengine.context.ParameterContext;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.util.WorkflowGlobalParamUtil;
 import com.facilio.workflows.context.WorkflowExpression.WorkflowExpressionType;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.Visitor.WorkflowFunctionVisitor;
 import com.facilio.workflowv2.parser.ScriptParser;
 
-public class WorkflowContext implements Serializable {
+public class WorkflowContext extends ScriptContext implements Serializable {
 	
 	/**
 	 * 
@@ -114,11 +116,9 @@ public class WorkflowContext implements Serializable {
 		cachedData.put(name, data);
 	}
 
-	long id = -1l;
 	Long orgId;
 	String workflowString;
 	String workflowV2String;
-	List<ParameterContext> parameters;
 	Map<String,Object> globalParameters;
 	List<Object> params;							// for v2 workflow
 	
@@ -133,39 +133,6 @@ public class WorkflowContext implements Serializable {
 
 	List<WorkflowExpression> expressions;
 	
-	WorkflowFieldType returnType;
-	
-	
-	ErrorListener errorListener;
-	
-	public ErrorListener getErrorListener() {
-		return errorListener;
-	}
-	public void setErrorListener(ErrorListener errorListener) {
-		this.errorListener = errorListener;
-	}
-	public WorkflowFieldType getReturnTypeEnum() {
-		return returnType;
-	}
-	
-	public int getReturnType() {
-		if(returnType != null) {
-			return returnType.getIntValue();
-		}
-		return -1;
-	}
-	public String getReturnTypeString() {
-		if(returnType != null) {
-			return returnType.getStringValue();
-		}
-		return null;
-	}
-	public void setReturnType(int returnType) {
-		this.returnType = WorkflowFieldType.getIntvaluemap().get(returnType);
-	}
-	
-	Object returnValue;
-	
 	WorkflowType type;
 	
 	public int getType() {
@@ -176,13 +143,6 @@ public class WorkflowContext implements Serializable {
 	}
 	public void setType(int type) {
 		this.type = WorkflowType.valueOf(type);
-	}
-	public Object getReturnValue() {
-		return returnValue;
-	}
-
-	public void setReturnValue(Object returnValue) {
-		this.returnValue = returnValue;
 	}
 	
 	public List<WorkflowExpression> getExpressions() {
@@ -296,14 +256,6 @@ public class WorkflowContext implements Serializable {
 		}
 		this.variableResultMap.put(key, value);
 	}
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
 	public Long getOrgId() {
 		return orgId;
 	}
@@ -320,19 +272,11 @@ public class WorkflowContext implements Serializable {
 		this.workflowString = workflowString;
 	}
 
-	public List<ParameterContext> getParameters() {
-		return parameters;
-	}
-
-	public void setParameters(List<ParameterContext> parameters) {
-		this.parameters = parameters;
-	}
-	
 	public void addParamater(ParameterContext parameter) {
-		if(this.parameters == null) {
-			this.parameters = new ArrayList<>();
+		if(getParameters() == null) {
+			setParameters(new ArrayList<>());
 		}
-		this.parameters.add(parameter);
+		getParameters().add(parameter);
 	}
 	
 	public Map<String,Object> getGlobalParameters() {
@@ -377,19 +321,7 @@ public class WorkflowContext implements Serializable {
 	public void setWorkflowUIMode(int workflowUIMode) {
 		this.workflowUIMode = WorkflowUIMode.valueOf(workflowUIMode);
 	}
-	StringBuilder logString = new StringBuilder();
-    
-	public StringBuilder getLogStringBuilder() {
-		return logString;
-	}
-	public String getLogString() {
-		return logString.toString();
-	}
-	public void setLogString(StringBuilder logString) {
-		this.logString = logString;
-	}
-	
-	
+
 	public void fillFunctionHeaderFromScript() throws Exception {
 		
 		try(InputStream stream = new ByteArrayInputStream(workflowV2String.getBytes(StandardCharsets.UTF_8));) {
@@ -399,7 +331,7 @@ public class WorkflowContext implements Serializable {
 	        ParseTree tree = parser.parse();
 	        
 	        WorkflowFunctionVisitor visitor = new WorkflowFunctionVisitor();
-	        visitor.setWorkflowContext(this);
+	        visitor.setScriptContext(this);
 	        visitor.visitFunctionHeader(tree);
 		}
 	}
@@ -435,7 +367,7 @@ public class WorkflowContext implements Serializable {
 		        		throw new Exception(getErrorListener().getErrorsAsString());
 		        	}
 		        	else {
-		        		LOGGER.log(Level.SEVERE, "Workflow - "+id+" has syntax errors - "+getErrorListener().getErrorsAsString());
+		        		LOGGER.log(Level.SEVERE, "Workflow - "+getId()+" has syntax errors - "+getErrorListener().getErrorsAsString());
 		        	}
 		        }
 		        this.setParsedV2Script(true);
@@ -477,7 +409,7 @@ public class WorkflowContext implements Serializable {
 			        
 			        if(!getErrorListener().hasErrors()) {
 			        	WorkflowFunctionVisitor visitor = new WorkflowFunctionVisitor();
-				        visitor.setWorkflowContext(this);
+			        	visitor.setScriptContext(this);
 				        visitor.visitFunctionHeader(tree);
 				        visitor.setParams(params);
 				        fillDefaultGlobalVariables(globalParameters);
@@ -489,7 +421,7 @@ public class WorkflowContext implements Serializable {
 			        		throw new Exception(getErrorListener().getErrorsAsString());
 			        	}
 			        	else {
-			        		LOGGER.log(Level.SEVERE, "Workflow - "+id+" has syntax errors - "+getErrorListener().getErrorsAsString());
+			        		LOGGER.log(Level.SEVERE, "Workflow - "+getId()+" has syntax errors - "+getErrorListener().getErrorsAsString());
 			        	}
 			        }
 			        
@@ -510,7 +442,7 @@ public class WorkflowContext implements Serializable {
 			}
 			
 			variableResultMap = new HashMap<String,Object>();
-			for(ParameterContext parameter:parameters) {
+			for(ParameterContext parameter:getParameters()) {
 				variableResultMap.put(parameter.getName(), parameter.getValue());
 			}
 			
@@ -653,8 +585,8 @@ public class WorkflowContext implements Serializable {
 	        
 			WorkflowV2Parser parser = new WorkflowV2Parser(new CommonTokenStream(lexer));
 			
-			if(this.errorListener == null) {
-				this.errorListener = new ErrorListener();
+			if(this.getErrorListener() == null) {
+				this.setErrorListener(new ErrorListener());
 			}
 			parser.addErrorListener(this.getErrorListener());
 			

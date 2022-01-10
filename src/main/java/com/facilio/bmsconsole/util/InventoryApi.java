@@ -56,9 +56,9 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
-import com.facilio.workflows.context.ParameterContext;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.scriptengine.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
 
 public class InventoryApi {

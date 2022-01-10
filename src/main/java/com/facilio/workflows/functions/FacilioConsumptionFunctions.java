@@ -1,6 +1,8 @@
 package com.facilio.workflows.functions;
 
 import java.util.ArrayList;
+import com.facilio.scriptengine.systemfunctions.FacilioSystemFunctionNameSpace;
+import com.facilio.scriptengine.systemfunctions.FacilioWorkflowFunctionInterface;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -8,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.util.ConsumptionAPI;
-import com.facilio.workflows.exceptions.FunctionParamException;
+import com.facilio.scriptengine.exceptions.FunctionParamException;
 
 public enum FacilioConsumptionFunctions implements FacilioWorkflowFunctionInterface {
 

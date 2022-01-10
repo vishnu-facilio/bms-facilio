@@ -8,6 +8,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
@@ -27,6 +28,9 @@ public class LoadTicketLookupsCommand extends FacilioCommand {
 
         LookupField vendor = (LookupField) fieldsAsMap.get("vendor");
         fetchLookupsList.add(vendor);
+
+        LookupField createdByField = (LookupField) fieldsAsMap.get("createdBy");
+        fetchLookupsList.add(createdByField);
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
         return false;

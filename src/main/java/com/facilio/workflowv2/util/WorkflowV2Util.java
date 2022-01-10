@@ -179,47 +179,6 @@ public class WorkflowV2Util {
         
 	}
 
-	public static void fillExtraInfo(Value paramValue, FacilioModule module) throws Exception {
-
-		if (paramValue.asObject() instanceof DBParamContext || paramValue.asObject() instanceof Criteria) {
-			
-			Criteria criteria = null;
-			if (paramValue.asObject() instanceof DBParamContext) {
-				criteria = paramValue.asDbParams().getCriteria();
-			}
-			else if (paramValue.asObject() instanceof Criteria) {
-				criteria = paramValue.asCriteria();
-			}
-				
-			fillCriteriaField(criteria, module.getName());
-		}
-	}
-	
-	public static void fillCriteriaField(Criteria criteria,String moduleName) throws Exception {
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		for (String key : criteria.getConditions().keySet()) {
-			Condition condition = criteria.getConditions().get(key);
-			FacilioField field = modBean.getField(condition.getFieldName(), moduleName);
-			condition.setField(field);
-		}
-	}
-
-	public static List<Object> getParamList(Recursive_expressionContext ctx, boolean isDataTypeSpecificFunction,WorkflowFunctionVisitor facilioWorkflowFunctionVisitor, Value value) throws Exception {
-		List<Object> paramValues = new ArrayList<>();
-		if (isDataTypeSpecificFunction) {
-			paramValues.add(value.asObject());
-		}
-		for (ExprContext expr : ctx.expr()) {
-			Value paramValue = facilioWorkflowFunctionVisitor.visit(expr);
-			if(value != null && value.asObject() instanceof FacilioModule) {
-				WorkflowV2Util.fillExtraInfo(paramValue, value.asModule());
-			}
-			paramValues.add(paramValue.asObject());
-		}
-		return paramValues;
-	}
-	
 	public static void checkForNullAndThrowException(Value value,String name) {
 		if(value == null || value.asObject() == null) {
 			throw new RuntimeException("Variable "+name+"'s value is null");

@@ -1,6 +1,8 @@
 package com.facilio.workflows.functions;
 
 import java.io.ByteArrayInputStream;
+import com.facilio.scriptengine.systemfunctions.FacilioSystemFunctionNameSpace;
+import com.facilio.scriptengine.systemfunctions.FacilioWorkflowFunctionInterface;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;

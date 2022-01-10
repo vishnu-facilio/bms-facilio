@@ -1,8 +1,6 @@
 package com.facilio.workflowv2.Visitor;
 
 import java.lang.reflect.Method;
-import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -27,21 +25,17 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.scriptengine.autogens.WorkflowV2Parser;
-import com.facilio.scriptengine.autogens.WorkflowV2Parser.Function_paramContext;
 import com.facilio.scriptengine.autogens.WorkflowV2Parser.Recursive_expressionContext;
 import com.facilio.scriptengine.context.DBParamContext;
 import com.facilio.scriptengine.context.Value;
+import com.facilio.scriptengine.context.WorkflowFunctionContext;
 import com.facilio.scriptengine.context.WorkflowReadingContext;
+import com.facilio.scriptengine.systemfunctions.FacilioSystemFunctionNameSpace;
 import com.facilio.scriptengine.util.ScriptUtil;
 import com.facilio.scriptengine.visitor.FunctionVisitor;
 import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.time.DateRange;
-import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflows.context.WorkflowFieldType;
-import com.facilio.workflows.context.WorkflowFunctionContext;
-import com.facilio.workflows.context.WorkflowUserFunctionContext;
-import com.facilio.workflows.functions.FacilioSystemFunctionNameSpace;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.contexts.WorkflowCategoryReadingContext;
 import com.facilio.workflowv2.contexts.WorkflowDataParent;
@@ -78,15 +72,6 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
 		return getScope();
 	}
 
-    WorkflowContext workflowContext;
-    
-    public WorkflowContext getWorkflowContext() {
-		return workflowContext;
-	}
-
-	public void setWorkflowContext(WorkflowContext workflowContext) {
-		this.workflowContext = workflowContext;
-	}
 	
 	public void setScope(Workflow_Scope scope) throws Exception {
 		this.scope = scope;
@@ -96,17 +81,6 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
 		return scope;
 	}
 
-    public void setParams(List<Object> parmasObjects) throws Exception {
-    	if(parmasObjects != null && parmasObjects.size() > 0) {
-        	
-        	for(int i = 0;i<parmasObjects.size(); i++) {
-        		ParameterContext param = workflowContext.getParameters().get(i);
-        		Object value = parmasObjects.get(i);
-        		putParamValue(param.getName(), new Value(value));
-        	}
-    	}
-    }
-    
     @Override 
     public Value visitRecursive_expr(WorkflowV2Parser.Recursive_exprContext ctx) {
     	try {
@@ -222,7 +196,7 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
         				Object moduleFunctionObject = WorkflowV2Util.getInstanceOf(module);
             			Method method = moduleFunctionObject.getClass().getMethod(functionName, Map.class,List.class);
             			
-            			List<Object> params = WorkflowV2Util.getParamList(functionCall,true,this,value);
+            			List<Object> params = ScriptUtil.getParamList(functionCall,true,this,value);
             			
             			Object result = method.invoke(moduleFunctionObject, getGlobalParam(),params);
             			value =  new Value(result);
@@ -232,7 +206,7 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
     					WorkflowModuleDataContext moduleDataContext = (WorkflowModuleDataContext) value.asObject();
     					DBParamContext dbParam = moduleDataContext.getDbParam();
     					
-    					List<Object> params = WorkflowV2Util.getParamList(functionCall,true,this,new Value(moduleDataContext.getModule()));
+    					List<Object> params = ScriptUtil.getParamList(functionCall,true,this,new Value(moduleDataContext.getModule()));
     					if(dbParam != null) {
     						params.add(1, dbParam);
     					}
@@ -254,7 +228,7 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
             		else if (value.asObject() instanceof WorkflowNamespaceContext) {					// user defined functions
             			
             			WorkflowNamespaceContext namespaceContext = (WorkflowNamespaceContext) value.asObject();
-            			List<Object> paramValues = WorkflowV2Util.getParamList(functionCall,false,this,null);
+            			List<Object> paramValues = ScriptUtil.getParamList(functionCall,false,this,null);
             			
             			WorkflowContext wfContext = UserFunctionAPI.getWorkflowFunction(namespaceContext.getId(), functionCall.VAR().getText());
             			wfContext.setParams(paramValues);
@@ -326,7 +300,7 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
                     		wfFunctionContext.setNameSpace(((FacilioSystemFunctionNameSpace)value.asObject()).getName());
                     	}
                     	
-                    	List<Object> paramValues = WorkflowV2Util.getParamList(functionCall,isDataTypeSpecificFunction,this,value);
+                    	List<Object> paramValues = ScriptUtil.getParamList(functionCall,isDataTypeSpecificFunction,this,value);
                     	
                     	Object result = WorkflowUtil.evalSystemFunctions(getGlobalParam(),wfFunctionContext, paramValues);
                     	value = new Value(result); 
@@ -367,34 +341,6 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
 //    		}
     		throw new RuntimeException(e);
     	}
-    }
-    
-    @Override 
-    public Value visitFunction_block(WorkflowV2Parser.Function_blockContext ctx) {
-    	
-    	String functionName = ctx.function_name_declare().getText();
-    	
-    	WorkflowFieldType returnType = WorkflowFieldType.getStringvaluemap().get(ctx.data_type().op.getText());
-    	
-    	workflowContext.setReturnType(returnType.getIntValue());
-    	
-    	if(workflowContext instanceof WorkflowUserFunctionContext) {
-    		((WorkflowUserFunctionContext)workflowContext).setName(functionName);
-    	}
-    	
-    	List<ParameterContext> params = new ArrayList<>();
-		for(Function_paramContext param :ctx.function_param()) {
-			ParameterContext parameterContext = new ParameterContext();
-			parameterContext.setTypeString(param.data_type().op.getText());
-			parameterContext.setName(param.VAR().getText());
-			params.add(parameterContext);
-    	}
-		
-		workflowContext.setParameters(params);
-		if(isFunctionHeaderVisitor) {
-			breakCodeFlow = true;
-		}
-    	return visitChildren(ctx); 
     }
     
     
@@ -459,52 +405,7 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
     	}
     }
    
-    @Override
-    public Value visitLog(WorkflowV2Parser.LogContext ctx) {
-        Value value = this.visit(ctx.expr());
-        workflowContext.getLogStringBuilder().append(value.asString()+"\n");
-        LOGGER.debug(MessageFormat.format("{0} - {1}", workflowContext.getId(), value.asString()));
-        
-//        System.out.println(workflowContext.getId()+" - "+value.asString());
-        return value;
-    }
-    
-    @Override 
-    public Value visitFunction_return(WorkflowV2Parser.Function_returnContext ctx)
-    {
-    	Value returnValue = Value.VOID;
-    	if(workflowContext.getReturnTypeEnum() != null) {
-    		switch(workflowContext.getReturnTypeEnum()) {
-    		case VOID:
-    			throw new RuntimeException("Method Return Type is Void But has a Return Statement");
-    		
-    		default:
-    			returnValue = this.visit(ctx.expr());
-    			
-    			boolean correctDataTypeSpecified = false;
-    			if(returnValue == null || returnValue.asObject() == null) {
-    				correctDataTypeSpecified = true;
-    			}
-    			else {
-    				Class[] ObjectClass = workflowContext.getReturnTypeEnum().getObjectClass();
-    				for(int i=0;i<ObjectClass.length;i++) {
-        				if(returnValue.asObject().getClass().equals(ObjectClass[i])) {
-        					correctDataTypeSpecified = true;
-        					break;
-        				}
-        			}
-    			}
-    			
-    			if(!correctDataTypeSpecified) {
-    				throw new RuntimeException("Method Return Type is "+workflowContext.getReturnTypeEnum().getStringValue()+" But has a Return Value of "+returnValue.asObject().getClass());
-    			}
-    		}
-    	}
-    	
-    	workflowContext.setReturnValue(returnValue.asObject());
-    	this.breakCodeFlow = true;
-    	return Value.VOID; 
-    }
+
     
     @Override 
     public Value visitCondition_atom(WorkflowV2Parser.Condition_atomContext ctx) {
