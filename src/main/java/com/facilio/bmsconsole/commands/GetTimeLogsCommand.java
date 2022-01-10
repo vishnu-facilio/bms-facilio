@@ -43,7 +43,8 @@ public class GetTimeLogsCommand extends FacilioCommand {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                  .select(FieldFactory.getTimeLogFields(null))
                  .table(module.getTableName())
-                 .andCondition(CriteriaAPI.getCondition("PARENT_ID","parentId", String.valueOf(id), NumberOperators.EQUALS));
+                 .andCondition(CriteriaAPI.getCondition("PARENT_ID","parentId", String.valueOf(id), NumberOperators.EQUALS))
+                 .orderBy("ID DESC");;
 
         Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
         if (filterCriteria != null && !filterCriteria.isEmpty()) {
@@ -77,24 +78,28 @@ public class GetTimeLogsCommand extends FacilioCommand {
         }
 
         Set<Long> fromStatusIds = new HashSet<>();
-        Set<Long> doneBy = new HashSet<>();
+        Set<Long> doneByIds = new HashSet<>();
 
         for(TimelogContext timelogContext : timeLogs){
             fromStatusIds.add(timelogContext.getFromStatusId());
-            doneBy.add(timelogContext.getDoneById());
+            if(timelogContext.getDoneById()>0) {
+              doneByIds.add(timelogContext.getDoneById());
+            }
         }
 
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getIdCondition(fromStatusIds,ModuleFactory.getTicketStatusModule()));
         List<FacilioStatus> fromStatusList = TicketAPI.getStatuses(module,criteria);
 
-        List<User> doneByUsers = new ArrayList<>();
+        List<User> doneByUsers = null;
 
-        if(CollectionUtils.isNotEmpty(doneBy)) {
+        if(CollectionUtils.isNotEmpty(doneByIds)) {
             UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
-            doneByUsers = userBean.getUsers(null, false, true, doneBy);
+            doneByUsers = userBean.getUsers(null, false, true, doneByIds);
         }
-
+        if(doneByUsers == null){
+            doneByUsers = new ArrayList<>();
+        }
         if (CollectionUtils.isNotEmpty(fromStatusList)) {
                 Map<Long, User> doneByUserMap = doneByUsers.stream().collect(Collectors.toMap(User::getId, Function.identity()));
                 Map<Long, FacilioStatus> fromStatusMap = fromStatusList.stream().collect(Collectors.toMap(FacilioStatus::getId, Function.identity()));

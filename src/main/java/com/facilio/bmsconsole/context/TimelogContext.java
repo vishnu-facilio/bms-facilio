@@ -5,7 +5,7 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.fields.FacilioField;
 
 public class TimelogContext {
-    private long id;
+    private long id = -1;
     public void setId(long id) {
         this.id = id;
     }
@@ -13,7 +13,7 @@ public class TimelogContext {
         return id;
     }
 
-    private long moduleId;
+    private long moduleId = -1;
     public void setModuleId(long moduleId) {
         this.moduleId = moduleId;
     }
@@ -29,7 +29,7 @@ public class TimelogContext {
         this.name = name;
     }
 
-    private long parentId;
+    private long parentId = -1;
     public long getParentId() {
         return parentId;
     }
@@ -37,7 +37,7 @@ public class TimelogContext {
         this.parentId = parentId;
     }
 
-    private long fromStatusId;
+    private long fromStatusId = -1;
     public void setFromStatusId(long fromStatusId) {
         this.fromStatusId = fromStatusId;
     }
@@ -45,7 +45,7 @@ public class TimelogContext {
         return fromStatusId;
     }
 
-    private long toStatusId;
+    private long toStatusId = -1;
     public void setToStatusId(long toStatusId) {
         this.toStatusId = toStatusId;
     }
@@ -53,7 +53,7 @@ public class TimelogContext {
         return toStatusId;
     }
 
-    private long startTime;
+    private long startTime = -1;
     public void setStartTime(long startTime) {
         this.startTime = startTime;
     }
@@ -61,7 +61,7 @@ public class TimelogContext {
         return startTime;
     }
 
-    private long endTime;
+    private long endTime = -1;
     public void setEndTime(long endTime) {
         this.endTime = endTime;
     }
@@ -69,7 +69,7 @@ public class TimelogContext {
         return endTime;
     }
 
-    private long duration;
+    private long duration = -1;
     public void setDuration(long duration) {
         this.duration = duration;
     }
@@ -85,7 +85,7 @@ public class TimelogContext {
         return timerEnabled;
     }
 
-    private long doneById;
+    private long doneById = -1;
     public void setDoneById(long doneById) {
         this.doneById = doneById;
     }
