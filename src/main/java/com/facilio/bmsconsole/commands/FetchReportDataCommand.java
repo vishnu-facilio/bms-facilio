@@ -6,6 +6,7 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.AggregationColumnMetaContext;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.AggregationAPI;
@@ -431,10 +432,13 @@ public class FetchReportDataCommand extends FacilioCommand {
                 }
 
             } else {
-                Criteria templateCriteria = report.getReportTemplate().getCriteria(report, dp);
-                if (templateCriteria != null) {
-                    parentId = report.getReportTemplate().getParentId();
-                    newSelectBuilder.andCriteria(templateCriteria);
+                Boolean isTemplateDp = isTemplateDatapoint(dp, report.getReportTemplate().getCategoryId()); // this check the same report template for same category assets.. // also need to remove the querry in future.
+                if (isTemplateDp) {
+                	  Criteria templateCriteria = report.getReportTemplate().getCriteria(report, dp);
+                      if (templateCriteria != null) {
+                          parentId = report.getReportTemplate().getParentId();
+                          newSelectBuilder.andCriteria(templateCriteria);
+                      }
                 }
 
             }
@@ -1224,6 +1228,16 @@ public class FetchReportDataCommand extends FacilioCommand {
         } else {
             return false;
         }
+    }
+
+     private boolean isTemplateDatapoint(ReportDataPointContext dataPoint, Long categoryId) throws Exception {
+    	 Long dpCategoryId = dataPoint.getAssetCategoryId();
+    	if (dpCategoryId != null && dpCategoryId > 0 && categoryId != null && categoryId > 0) {
+    		if (dpCategoryId == categoryId) {
+    			return true;
+    		}
+    	}
+    	return false;
     }
 
     private boolean isSortPointIncluded(ReportDataPointContext dataPoint, ReportType type) {
