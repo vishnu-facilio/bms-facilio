@@ -44,7 +44,7 @@ public class GetTimeLogsCommand extends FacilioCommand {
                  .select(FieldFactory.getTimeLogFields(null))
                  .table(module.getTableName())
                  .andCondition(CriteriaAPI.getCondition("PARENT_ID","parentId", String.valueOf(id), NumberOperators.EQUALS))
-                 .orderBy("ID DESC");;
+                 .orderBy("ID DESC");
 
         Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
         if (filterCriteria != null && !filterCriteria.isEmpty()) {
