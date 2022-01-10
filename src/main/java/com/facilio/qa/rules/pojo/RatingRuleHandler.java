@@ -24,11 +24,7 @@ public enum RatingRuleHandler implements RuleHandler {
 
     @Override
     public List<Map<String, Object>> emptyRuleConditions(QAndARuleType type, QuestionContext question) throws Exception {
-        RatingQuestionContext rq = (RatingQuestionContext) question;
-        int ratingScale = rq.getRatingScale() + 1;
-        List<Map<String, Object>> props = new ArrayList<>();
-        emptyCondition(ratingScale, props);
-        return props;
+        return Collections.EMPTY_LIST;
     }
 
     @Override
@@ -39,9 +35,7 @@ public enum RatingRuleHandler implements RuleHandler {
         List<Map<String, Object>> props = new ArrayList<>();
         for (int i = 1; i < ratingScale; i++) {
             RuleCondition condition = conditionMap.get(String.valueOf(i)); //ID cannot be null
-            if (condition == null) {
-                emptyCondition(ratingScale, props);
-            } else {
+            if (condition != null) {
                 Map<String, Object> prop = FieldUtil.getAsProperties(condition);
                 prop.remove("operator");
                 prop.remove("value");
@@ -71,13 +65,5 @@ public enum RatingRuleHandler implements RuleHandler {
     @Override
     public List<Map<String, Object>> constructAnswersForEval(QAndARuleType type, QuestionContext question, AnswerContext answer) throws Exception {
         return RuleHandler.constructSingletonAnswerProp(question, answer.getRatingAnswer());
-    }
-
-    private void emptyCondition(int ratingScale, List<Map<String, Object>> props) {
-        for (int i = 1; i < ratingScale; i++) {
-            Map<String, Object> prop = new HashMap<>();
-            prop.put("option", i);
-            props.add(prop);
-        }
     }
 }
