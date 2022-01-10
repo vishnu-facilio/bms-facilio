@@ -47,7 +47,12 @@ public class IamClient {
         }
         params.put("groupType", groupType.getIndex().toString());
 
-        String response = ServiceHttpUtils.doHttpGet(FacilioProperties.getIamregion(), "iam", getUrl(url), null, params);
+        Map<String, String> respMap = ServiceHttpUtils.doHttpGetWithStatusCode(FacilioProperties.getIamregion(), "iam", getUrl(url), null, params);
+        String statusCode = respMap.get("statusCode");
+        if (!(statusCode.equals("200") || statusCode.equals("201"))) {
+            throw new AccountException(AccountException.ErrorCode.DC_LOOKUP_FAILURE, "Error looking up user.");
+        }
+        String response = respMap.get("body");
         if (StringUtils.isNotEmpty(response)) {
         		JSONObject obj = FacilioUtil.parseJson(response);
         		if (obj.containsKey("code")) {
@@ -95,8 +100,15 @@ public class IamClient {
         
         JSONObject body = new JSONObject();
         body.put("user", params);
-        
-        String response = ServiceHttpUtils.doHttpPost(FacilioProperties.getIamregion(),"iam", getUrl(url), null, null, body);
+
+        Map<String, String> respMap = ServiceHttpUtils.doHttpPostWithStatusCode(FacilioProperties.getIamregion(), "iam", getUrl(url), null, null, body);
+        String statusCode = respMap.get("statusCode");
+        if (!(statusCode.equals("200") || statusCode.equals("201"))) {
+            LOGGER.error("error adding in DC_Lookup " + statusCode);
+            throw new AccountException(AccountException.ErrorCode.DC_LOOKUP_FAILURE, "Error creating user");
+        }
+
+        String response = respMap.get("body");
         if (StringUtils.isNotEmpty(response)) {
         		JSONObject obj = FacilioUtil.parseJson(response);
         		if (obj.containsKey("code")) {
