@@ -246,6 +246,8 @@ public class PageFactory {
 				return StoreRoomPageFactory.getStoreRoomPage((StoreRoomContext) record, module);
 			case ContextNames.ITEM_TYPES:
 				return ItemTypesPageFactory.getItemTypesPage((ItemTypesContext) record, module);
+			case ContextNames.TOOL_TYPES:
+				return ToolTypesPageFactory.getToolTypesPage((ToolTypesContext) record, module);
 		}
 		if (module.getExtendModule() == null) {	// temp
 			// etisalat changes will be changed to standard method

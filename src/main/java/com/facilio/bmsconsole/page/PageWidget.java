@@ -411,7 +411,8 @@ public class PageWidget {
 		ITEM_TYPES_CARD("itemtypescard"),
 		STORE_ROOM("storeroom"),
 		TRANSACTIONS("transactions"),
-		PURCHASE_ORDER("purchaseorder");
+		PURCHASE_ORDER("purchaseorder"),
+		TOOL_TYPES_CARD("tooltypescard");
 
 
 		private String name;
