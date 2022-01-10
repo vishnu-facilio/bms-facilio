@@ -23,7 +23,9 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.tasker.tasks.EventUtil;
@@ -32,6 +34,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.trigger.context.TriggerType;
 import com.facilio.util.AckUtil;
 import com.facilio.workflows.context.WorkflowContext;
@@ -87,7 +90,10 @@ public class DataProcessorV2
                 FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
                 FacilioContext context = chain.getContext();
                 context.put(WorkflowV2Util.WORKFLOW_CONTEXT, transformWorkflow);
-                context.put(WorkflowV2Util.WORKFLOW_PARAMS, Collections.singletonList(payload));
+                List params = new ArrayList<>();
+                params.add(payload);
+                params.add(FieldUtil.getAsProperties(agent));
+                context.put(WorkflowV2Util.WORKFLOW_PARAMS, params);
                 chain.execute();
                 HashMap mapFromPreProcessor = (HashMap) transformWorkflow.getReturnValue();
                 payload = (JSONObject) new JSONParser().parse(JSONObject.toJSONString(mapFromPreProcessor));
@@ -251,10 +257,15 @@ public class DataProcessorV2
     private boolean executeTriggers(FacilioAgent agent) throws Exception {
 
         FacilioContext context = new FacilioContext();
-        context.put(FacilioConstants.ContextNames.SITE_ID, agent.getSiteId());
         context.put(FacilioConstants.ContextNames.INSTANT_JOB_NAME, "PostTimeseriesWorkflowExecutionJob");
         context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.TIMESERIES_COMPLETE);
-        context.put(FacilioConstants.ContextNames.TRIGGER_TYPE, TriggerType.TIMESERIES_COMPLETED_TRIGGER);
+        context.put(FacilioConstants.ContextNames.TRIGGER_TYPE, TriggerType.AGENT_TRIGGER);
+        
+		Map<String, FacilioField> triggerFields = FieldFactory.getAsMap(FieldFactory.getAgentTriggerFields());
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition(triggerFields.get("agentId"), String.valueOf(agent.getId()), NumberOperators.EQUALS));
+        context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
+        
         FacilioChain facilioChain = ReadOnlyChainFactory.executeNonModuleTriggersChain();
         facilioChain.setContext(context);
         return !facilioChain.execute();

@@ -80,6 +80,7 @@ public class FormFactory {
 		//visitor type forms
 		
 		forms.put("visitorLogForm", getVisitorLogForm());
+		forms.put("visitResponseForm", getVisitResponseForm());
 		forms.put("watchListForm", getWatchListForm());
 		forms.put("workpermitForm", getWorkPermitForm());
 		forms.put("portalWorkpermitForm", getPortalWorkPermitForm());
@@ -453,7 +454,7 @@ public class FormFactory {
 		List<FacilioForm> departmentFormsList = Arrays.asList(getDepartmentForm());
 		List<FacilioForm> movesFormsList = Arrays.asList(getMovesForm());
 		List<FacilioForm> indoorFloorplanFormList = Arrays.asList(getFloorPlanAddForm(), getWorkPlaceFloorPlanAddForm());
-		List<FacilioForm> deliveriesFormsList = Arrays.asList(getDeliveriesForm(), getDeliveriesPortalForm());
+		List<FacilioForm> deliveriesFormsList = Arrays.asList(getDeliveriesForm(), getDeliveriesPortalForm(), getScanForDeliveriesForm());
 		List<FacilioForm> desksFormsList = Arrays.asList(getDesksForm(),getDesksPortalForm());
 		List<FacilioForm> deliveryAreaFormsList = Arrays.asList(getDeliveryAreaForm(),getDeliveryAreaPortalForm());
 		List<FacilioForm> lockersFormsList = Arrays.asList(getLockersForm(),getLockersPortalForm());
@@ -496,12 +497,15 @@ public class FormFactory {
 		
 		List<FacilioForm> inspectionFormList = Arrays.asList(getInspectionForm());
 		List<FacilioForm> inductionFormList = Arrays.asList(getInductionForm());
+		List<FacilioForm> visitResponseLogForm = Arrays.asList(getVisitResponseForm());
 		
 		List<FacilioForm> warrantyContractFormsList = Arrays.asList(getWarrantyContractForm());
 
 		List<FacilioForm> trForm = Arrays.asList(getTransferRequestForm());
 		List<FacilioForm> trShipmentForm = Arrays.asList(getTransferRequestShipmentForm());
 		List<FacilioForm> storeRoomForm = Arrays.asList(getStoreRoomForm());
+//		List<FacilioForm> itemCategoryForm = Arrays.asList(getItemCategoryForm());
+//		List<FacilioForm> toolCategoryForm = Arrays.asList(getToolCategoryForm());
 
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
@@ -514,6 +518,7 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.INSURANCE, getFormMap(insuranceForm))
 				.put(FacilioConstants.ContextNames.VENDORS, getFormMap(vendorsForms))
 				.put(FacilioConstants.ContextNames.WATCHLIST, getFormMap(watchListForm))
+				.put(FacilioConstants.ContextNames.VISIT_CUSTOM_RESPONSE, getFormMap(visitResponseLogForm))
 				.put(FacilioConstants.ContextNames.OCCUPANT, getFormMap(occupantFormsList))
 				.put(FacilioConstants.ContextNames.SERVICE_REQUEST,getFormMap(serviceRequestFormsList))
 				.put(FacilioConstants.ContextNames.VENDOR_DOCUMENTS,getFormMap(vendorDocumentFormsList))
@@ -574,6 +579,8 @@ public class FormFactory {
 				.put(ContextNames.TRANSFER_REQUEST, getFormMap(trForm))
 				.put(ContextNames.TRANSFER_REQUEST_SHIPMENT, getFormMap(trShipmentForm))
 				.put(ContextNames.STORE_ROOM, getFormMap(storeRoomForm))
+//				.put(ContextNames.ITEM_TYPES_CATEGORY, getFormMap(itemCategoryForm))
+//				.put(ContextNames.TOOLS_TYPES_CATEGORY, getFormMap(toolCategoryForm))
 				.build();
 	}
 	
@@ -1107,7 +1114,7 @@ public class FormFactory {
 		return form;
 	}
 	
-	public static FacilioForm getInventoryCategoryForm() {
+	public static FacilioForm getInventoryCategoryForm(){
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("NEW CATEGORY");
 		form.setName("web_default");
@@ -1118,7 +1125,26 @@ public class FormFactory {
 		return form;
 	}
 
-	
+//	public static FacilioForm getItemCategoryForm(){
+//		FacilioForm form = new FacilioForm();
+//		form.setDisplayName("NEW CATEGORY");
+//		form.setName("web_default");
+//		form.setModule(ModuleFactory.getModule(ContextNames.ITEM_TYPES_CATEGORY));
+//		form.setLabelPosition(LabelPosition.TOP);
+//		form.setFields(getInventoryCategoryFormField());
+//		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+//		return form;
+//	}
+//	public static FacilioForm getToolCategoryForm(){
+//		FacilioForm form = new FacilioForm();
+//		form.setDisplayName("NEW CATEGORY");
+//		form.setName("web_default");
+//		form.setModule(ModuleFactory.getModule(ContextNames.TOOLS_TYPES_CATEGORY));
+//		form.setLabelPosition(LabelPosition.TOP);
+//		form.setFields(getInventoryCategoryFormField());
+//		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+//		return form;
+//	}
 	public static FacilioForm getLocationForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("NEW LOCATION");
@@ -1382,6 +1408,17 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.DELIVERIES));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getDeliveriesFormField());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
+
+	public static FacilioForm getScanForDeliveriesForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("SCAN FOR DELIVERY");
+		form.setName("scan_for_delivery");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.DELIVERIES));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getScanForDeliveriesFormField());
 		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
@@ -1714,10 +1751,14 @@ public class FormFactory {
 	
 	private static List<FormField> getItemTypesFormField() {
 		List<FormField> fields = new ArrayList<>();
-		fields.add(new FormField("photoId", FieldDisplayType.IMAGE, "Photo", Required.OPTIONAL, 1, 1));
+		fields.add(new FormField("photo", FieldDisplayType.IMAGE, "Photo", Required.OPTIONAL, 1, 1));
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 2, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
 		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "inventoryCategory", 4, 2).setAllowCreateOptions(true).setCreateFormName("item_category_form"));
+//		FormField field = new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "itemTypesCategory",4, 2);
+//		field.setAllowCreateOptions(true);
+//		field.addToConfig("canShowLookupWizard",true);
+//		fields.add(field);
 		fields.add(new FormField("sellingPrice", FieldDisplayType.NUMBER, "Selling Price", Required.OPTIONAL,  5, 2));
 		fields.add(new FormField("minimumQuantity", FieldDisplayType.NUMBER, "Minimum Quantity", Required.OPTIONAL, 5, 3));
 		fields.add(new FormField("isRotating", FieldDisplayType.DECISION_BOX, "Is Rotating", Required.OPTIONAL, 6, 2));
@@ -1728,7 +1769,6 @@ public class FormFactory {
 
 	private static List<FormField> getInventoryCategoryFormField() {
 		List<FormField> fields = new ArrayList<>();
-//		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.OPTIONAL, 1, 1));
 		fields.add(new FormField("displayName", FieldDisplayType.TEXTBOX, "Display Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		return fields;
@@ -1749,14 +1789,18 @@ public class FormFactory {
 	
 	private static List<FormField> getToolTypesFormField() {
 		List<FormField> fields = new ArrayList<>();
-		
-		fields.add(new FormField("photoId", FieldDisplayType.IMAGE, "Photo", Required.OPTIONAL, 1, 1));
+		fields.add(new FormField("photo", FieldDisplayType.IMAGE, "Photo", Required.OPTIONAL, 1, 1));
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 2, 1));
-		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "inventoryCategory", 3, 1).setAllowCreateOptions(true).setCreateFormName("item_category_form"));
-		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "inventoryCategory", 4, 1).setAllowCreateOptions(true).setCreateFormName("item_category_form"));
+//		FormField field = new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "toolTypesCategory",4, 2);
+//		field.setAllowCreateOptions(true);
+//		field.addToConfig("canShowLookupWizard",true);
+//		fields.add(field);
+		fields.add(new FormField("sellingPrice", FieldDisplayType.NUMBER, "Selling Price Per Hour", Required.OPTIONAL,  5, 2));
+		fields.add(new FormField("minimumQuantity", FieldDisplayType.NUMBER, "Minimum Quantity", Required.OPTIONAL, 5, 3));
 		fields.add(new FormField("isRotating", FieldDisplayType.DECISION_BOX, "Is Rotating", Required.OPTIONAL, 6, 2));
-		fields.add(new FormField("isApprovalNeeded", FieldDisplayType.DECISION_BOX, "Approval Needed", Required.OPTIONAL, 7, 3));
-
+		fields.add(new FormField("isApprovalNeeded", FieldDisplayType.DECISION_BOX, "Approval Needed", Required.OPTIONAL, 6, 3));
 		return fields;
 	}
 	
@@ -1935,7 +1979,24 @@ public class FormFactory {
 		fields.add(new FormField("signature", FieldDisplayType.SIGNATURE, "Signature", Required.OPTIONAL, 8, 1));
 		return fields;
 	}
-	
+
+	private static List<FormField> getScanForDeliveriesFormField() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("employee", FieldDisplayType.LOOKUP_SIMPLE, "Recipient", Required.REQUIRED, "employee", 1, 1));
+		fields.add(new FormField("deliveryArea", FieldDisplayType.LOOKUP_SIMPLE, "Delivery Area", Required.REQUIRED, "deliveryArea", 2, 1));
+		fields.add(new FormField("deliveryNotes", FieldDisplayType.TEXTAREA, "Delivery Notes", Required.OPTIONAL, "deliveryNotes", 3, 1));
+		FormField receivedTimeField = new FormField("receivedTime", FieldDisplayType.DATETIME, "Received Time", Required.REQUIRED, 4, 1);
+		receivedTimeField.setHideField(true);
+		receivedTimeField.setValue("${CURRENT_TIME}");
+		fields.add(receivedTimeField);
+		FormField trackingNumberField = new FormField("trackingNumber", FieldDisplayType.TEXTBOX, "Tracking Number", Required.OPTIONAL, 5, 1);
+		trackingNumberField.setHideField(true);
+		fields.add(trackingNumberField);
+		FormField carrierField = new FormField("carrier", FieldDisplayType.SELECTBOX, "Carrier", Required.REQUIRED, 6, 1);
+		carrierField.setHideField(true);
+		fields.add(carrierField);
+		return fields;
+	}
 	private static List<FormField> getDesksFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
@@ -2248,7 +2309,7 @@ public class FormFactory {
 		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
-	
+
 	private static List<FormField> getInventoryRequestFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
@@ -2680,6 +2741,25 @@ public class FormFactory {
 		fields.add(new FormField("isApprovalNeeded", FieldDisplayType.DECISION_BOX, "Is Host Approval Needed", Required.OPTIONAL, 5, 3));
 		return fields;
 	}
+	
+	public static FacilioForm getVisitResponseForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("VISIT RESPONSE");
+		form.setName("default_response");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VISIT_CUSTOM_RESPONSE));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getVisitResponseFormFields());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
+	private static List<FormField> getVisitResponseFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("responseName", FieldDisplayType.TEXTBOX, "Response Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("messageTitle", FieldDisplayType.TEXTBOX, "Title", Required.REQUIRED, 2, 1));
+		fields.add(new FormField("messageText", FieldDisplayType.TEXTAREA, "Message", Required.REQUIRED, 3, 1));
+		return fields;
+	}
+	
 
 	public static FacilioForm getWatchListForm() {
 		FacilioForm form = new FacilioForm();

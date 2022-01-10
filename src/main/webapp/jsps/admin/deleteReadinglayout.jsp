@@ -26,6 +26,7 @@
 <%@page import="com.facilio.modules.FieldType" %>
 <%@page import=" com.facilio.modules.fields.NumberField" %>
 <%@page import=" com.facilio.fw.BeanFactory" %>
+<%@page import="com.facilio.aws.util.FacilioProperties" %>
 <%@page
         import="com.facilio.accounts.util.AccountUtil,com.facilio.accounts.dto.Account,java.util.ArrayList,java.util.Comparator,com.facilio.accounts.dto.User,com.facilio.accounts.dto.Role, java.util.*, java.util.Iterator ,org.json.simple.JSONObject,org.json.simple.JSONArray,java.util.List, com.facilio.accounts.dto.Organization ,org.json.simple.JSONObject,com.facilio.accounts.impl.OrgBeanImpl, com.facilio.bmsconsole.commands.util.CommonCommandUtil, com.facilio.accounts.util.AccountUtil.FeatureLicense" %>
 <%
@@ -147,11 +148,20 @@
                 name="orgid" id="orgid" onChange="changeOrgPage()">
             <option value="" disabled selected>Select</option>
             <%
+            	String region = FacilioProperties.getRegion();
                 for (Organization domain : orgs) {
-                    if (domain.getOrgId() == 321 || domain.getOrgId() == 1 || domain.getOrgId() == 75 || domain.getOrgId() == 155 || domain.getOrgId() == 210 || domain.getOrgId() == 349 || domain.getOrgId() == 78 || domain.getOrgId() == 343 || domain.getOrgId() == 473 ||  domain.getOrgId() == 393 || domain.getOrgId() == 352 || domain.getOrgId() == 418) {
+                    if (region.equals("us-west-2")  && (domain.getOrgId() == 321 || domain.getOrgId() == 1 || domain.getOrgId() == 75 || domain.getOrgId() == 155 || domain.getOrgId() == 210 || domain.getOrgId() == 349 || domain.getOrgId() == 78 || domain.getOrgId() == 343 || domain.getOrgId() == 473 ||  domain.getOrgId() == 393 || domain.getOrgId() == 352 || domain.getOrgId() == 418)) {
 
             %>
             <option value="<%= domain.getId()%>"<%=(request.getParameter("orgid") != null && request.getParameter("orgid").equals(domain.getId() + "")) ? "selected" : " "%>><%=domain.getId()%>
+                -
+                <%=domain.getDomain()%>
+            </option>
+            <%
+                    }
+                    else if(region.equals("ap-southeast-1") && (domain.getOrgId() == 10)){
+                   %>
+                    <option value="<%= domain.getId()%>"<%=(request.getParameter("orgid") != null && request.getParameter("orgid").equals(domain.getId() + "")) ? "selected" : " "%>><%=domain.getId()%>
                 -
                 <%=domain.getDomain()%>
             </option>

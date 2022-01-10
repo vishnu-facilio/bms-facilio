@@ -186,6 +186,18 @@
                 class="com.facilio.trigger.action.TriggerAction"
                 method="executeTrigger">
         </action>
+        
+        <action name="agent"
+                class="com.facilio.trigger.action.TriggerAction"
+                method="listAgentTriggers">
+               <param name="moduleName">agent</param>
+        </action>
+        
+        <action name="*"
+                class="com.facilio.trigger.action.TriggerAction"
+                method="triggerDetails">
+               <param name="id">{1}</param>
+        </action>
 
     </package>
     

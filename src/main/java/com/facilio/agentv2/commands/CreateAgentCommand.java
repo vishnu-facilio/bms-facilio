@@ -64,11 +64,12 @@ public class CreateAgentCommand extends AgentV2Command {
                     createMessageTopic(currentOrg);
                     AgentApiV2.scheduleRestJob(agent);
                     break;
-                case AGENT_SERVICE:
-                	CloudAgentUtil.addCloudServiceAgent(agent);
-                	createMessageTopic(currentOrg);
-                	break;
                 	
+            }
+            
+            if (agentType.isAgentService()) {
+            	CloudAgentUtil.addCloudServiceAgent(agent);
+            	createMessageTopic(currentOrg);
             }
             
             return false;

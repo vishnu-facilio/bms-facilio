@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.AuthUtils;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.constants.FacilioConstants.Services;
@@ -42,12 +43,17 @@ public class CloudAgentUtil {
 				}
 			}
 		}
+		else {
+			throw new FacilioException("Agent not added. Please check the details again");
+		}
 	}
 	
 	private static String doPost(String url, String key, Map<String, Object> props) throws Exception {
 		JSONObject body = new JSONObject();
 		body.put(key, props);
-		return ServiceHttpUtils.doHttpPost(FacilioProperties.getRegion(), Services.AGENT_SERVICE, getUrl(url), null, null, body);
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put("X-Org-Id", String.valueOf(AccountUtil.getCurrentOrg().getOrgId()));
+		return ServiceHttpUtils.doHttpPost(FacilioProperties.getRegion(), Services.AGENT_SERVICE, getUrl(url), headers, null, body);
 	}
 
 	private static String getUrl(String url) throws Exception {

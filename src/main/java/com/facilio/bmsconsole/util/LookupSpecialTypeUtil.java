@@ -78,7 +78,7 @@ public class LookupSpecialTypeUtil {
 				|| FacilioConstants.ContextNames.PM_TRIGGER.equals(specialType)
 				|| FacilioConstants.ContextNames.CONNECTED_APPS.equals(specialType)
 				|| FacilioConstants.ContextNames.READING_TEMPLATE_MODULE.equals(specialType)
-				|| ContextNames.AGENT_DATA.equals(specialType)
+				|| ContextNames.AGENT_DATA.equals(specialType) || ContextNames.AGENT.equals(specialType)
 				|| FacilioConstants.ContextNames.CONNECTED_APP_WIDGETS.equals(specialType)
 				|| ModuleFactory.getNewAgentModule().getName().equals(specialType)
 				|| ModuleFactory.getAgentDataModule().getName().equals(specialType)
@@ -299,7 +299,7 @@ public class LookupSpecialTypeUtil {
 		}
 		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
 			return WorkflowRuleAPI.getWorkflowRule(id, false, false);
-		}else if (ContextNames.AGENT_DATA.equals(specialType)){
+		}else if (ContextNames.AGENT_DATA.equals(specialType) || ContextNames.AGENT.equals(specialType)){
 			return AgentApiV2.getAgent(id);
 		}
 		else if (FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)) {
@@ -848,7 +848,7 @@ public class LookupSpecialTypeUtil {
 		else if(ContextNames.READING_TEMPLATE_MODULE.equals(specialType)) {
 			return ModuleFactory.getTemplateModule();
 		}
-		else if(ContextNames.AGENT_DATA.equals(specialType)){
+		else if(ContextNames.AGENT_DATA.equals(specialType) || ContextNames.AGENT.equals(specialType)){
 			return ModuleFactory.getNewAgentModule();
 		}
 		else if(ContextNames.KPI.equals(specialType)){
@@ -968,7 +968,7 @@ public class LookupSpecialTypeUtil {
 		else if(FacilioConstants.ContextNames.KPI.equals(specialType)) {
 			return FieldFactory.getKPIFields();
 		}
-		else if(ContextNames.AGENT_DATA.equals(specialType)) {
+		else if(ContextNames.AGENT_DATA.equals(specialType) || ContextNames.AGENT.equals(specialType)) {
 			return FieldFactory.getNewAgentFields();
 		}
 		else  if (FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)) {

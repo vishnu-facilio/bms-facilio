@@ -3805,6 +3805,13 @@ public class FieldFactory extends BaseFieldFactory {
         groupOrder.setColumnName("SEQUENCE_NUMBER");
         groupOrder.setModule(module);
         fields.add(groupOrder);
+
+        FacilioField groupType = new FacilioField();
+        groupType.setName("groupType");
+        groupType.setDataType(FieldType.NUMBER);
+        groupType.setColumnName("TYPE");
+        groupType.setModule(module);
+        fields.add(groupType);
         
         return fields;
 
@@ -8418,8 +8425,19 @@ public class FieldFactory extends BaseFieldFactory {
         list.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));
         list.add(getField("duration", "DURATION", module, FieldType.NUMBER));
 
-        list.add(getField("isTimerEnabled", "IS_TIMER_ENABLED", module, FieldType.BOOLEAN));
+        list.add(getField("timerEnabled", "IS_TIMER_ENABLED", module, FieldType.BOOLEAN));
         list.add(getField("doneById", "DONE_BY", module, FieldType.NUMBER));
+        return list;
+    }
+
+    public static List<FacilioField> getTimelineViewFields(FacilioModule module){
+        List<FacilioField> list = new ArrayList<>();
+
+        list.add(getIdField("id","ID",module));
+        list.add(getNumberField("startDateFieldId","START_DATE_FIELDID",module));
+        list.add(getNumberField("endDateFieldId","END_DATE_FIELDID",module));
+        list.add(getNumberField("groupByFieldId","GROUP_BY_FIELDID",module));
+
         return list;
     }
 
@@ -8774,6 +8792,9 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("ndaContent", "NDA_CONTENT", FieldType.STRING));
         fields.add(getField("approvalRequiredForInvite", "IS_INVITE_APPROVAL_REQUIRED", FieldType.BOOLEAN));
         fields.add(getField("faceRecognitionEnabled", "FACE_RECOGNITION_ENABLED", FieldType.BOOLEAN));
+        fields.add(getField("successId", "SUCCESS_RESPONSE_ID", FieldType.NUMBER));
+        fields.add(getField("failureId", "FAILURE_RESPONSE_ID", FieldType.NUMBER));
+        fields.add(getField("responseEnabled", "IS_RESPONSE_ENABLED", FieldType.BOOLEAN));
 //		fields.add(getField("isSelfSignoutEnabled","IS_SELF_SIGNOUT_ENABLED",FieldType.BOOLEAN));
         return fields;
     }
@@ -9780,11 +9801,13 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
-    public static List<FacilioField> getPostTimeseriesTriggerFields() {
-        FacilioModule module = ModuleFactory.getPostTimeseriesTriggerModule();
+    public static List<FacilioField> getAgentTriggerFields() {
+        FacilioModule module = ModuleFactory.getAgentTriggerModule();
         List<FacilioField> fields = new ArrayList<>();
         fields.add(getIdField(module));
-        fields.add(getField("siteId", "SITE_ID", module, FieldType.NUMBER));
+        fields.add(getField("agentId", "AGENT_ID", module, FieldType.NUMBER));
+        fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
+        fields.addAll(getTriggerFields());
         return fields;
 
     }
@@ -9798,15 +9821,6 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("typeRefPrimaryId", "TYPE_PRIMARY_ID", module, FieldType.NUMBER));
         fields.add(getField("triggerId", "TRIGGER_ID", module, FieldType.NUMBER));
         fields.add(getField("executionOrder", "EXECUTION_ORDER", module, FieldType.NUMBER));
-        return fields;
-    }
-
-    public static List<FacilioField> getPostTimeseriesTriggerVsResourcesFields() {
-        FacilioModule module = ModuleFactory.getPostTimeseriesTriggerVsResourcesModule();
-        List<FacilioField> fields = new ArrayList<>();
-        fields.add(getIdField(module));
-        fields.add(getField("triggerId", "TRIGGER_ID", module, FieldType.NUMBER));
-        fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
         return fields;
     }
 

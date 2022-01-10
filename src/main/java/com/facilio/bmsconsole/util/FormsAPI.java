@@ -894,96 +894,79 @@ public class FormsAPI {
 	
 	private static void addUnusedWebSystemFields(FacilioForm form, List<FormField> defaultFields) throws Exception {
 		List<FormField> fields = new ArrayList<>();
-		if (form.getModule().getName() != null) {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		if (form.getModule().isCustom()) {
+			FacilioField photoField = modBean.getField("photo", form.getModule().getName());
+			fields.add(getFormFieldFromFacilioField(photoField, 1));
+			FacilioField nameField = modBean.getField("name", form.getModule().getName());
+			fields.add(getFormFieldFromFacilioField(nameField, 1));
+			fields.add(FormFactory.getSiteField());
+			FormField attField = new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "cmdattachments", 1, 1);
+			fields.add(attField);
+		}
+		else if (form.getModule().getName() != null) {
 			switch (form.getModule().getName()) {
-				case ContextNames.WORK_ORDER:
-					fields.addAll(FormFactory.getRequesterFormFields(false, false));
-					fields.add(new FormField("dueDate", FieldDisplayType.DATETIME, "Due Date", Required.OPTIONAL, 1, 1));
-					fields.add(new FormField("isSignatureRequired", FieldDisplayType.DECISION_BOX, "Is Signature Required ", Required.OPTIONAL, 1, 1));
-					fields.add(new FormField("responseDueDate", FieldDisplayType.DATETIME, "Response Due Date", Required.OPTIONAL, 1, 1));
 
-					// scheduled duration specific
-					fields.add(new FormField("scheduledStart", FieldDisplayType.DATETIME, "Scheduled Start", Required.OPTIONAL, 1, 1));
-					fields.add(new FormField("estimatedEnd", FieldDisplayType.DATETIME, "Estimated End", Required.OPTIONAL, 1, 1));
-
-					if (AccountUtil.isFeatureEnabled(FeatureLicense.TENANTS)) {
-						fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL, "tenant", 1, 1));
-					}
-					if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLIENT)) {
-						fields.add(new FormField("client", FieldDisplayType.LOOKUP_SIMPLE, "Client", Required.OPTIONAL, "client", 1, 1));
-					}
-					break;
-				case ContextNames.WorkPermit.WORKPERMIT:
-					fields.add(new FormField("expectedStartTime", FieldDisplayType.DATETIME, "Valid From", Required.OPTIONAL, 1, 1));
-					fields.add(new FormField("expectedEndTime", FieldDisplayType.DATETIME, "Valid Till", Required.OPTIONAL, 1, 1));
-					break;
-				case ContextNames.ASSET:
-					fields.add(new FormField("salvageAmount", FieldDisplayType.NUMBER, "Salvage Amount", Required.OPTIONAL, 1, 1));
-					break;
-				case ContextNames.INVITE_VISITOR:
-					fields.add(new FormField("isVip", FieldDisplayType.DECISION_BOX, "VIP", Required.OPTIONAL, 1, 1));
-					break;
-				case ContextNames.SERVICE_REQUEST:
-					fields.add(new FormField("dueDate", FieldDisplayType.DATETIME, "Due Date", Required.OPTIONAL, 1, 1));
-					break;
-				case ContextNames.VISITOR_LOG:
-					fields.add(new FormField("isVip", FieldDisplayType.DECISION_BOX, "VIP", Required.OPTIONAL, 1, 1));
-					break;
-				case ContextNames.INSURANCE:
-					fields.add(new FormField("insuranceType", FieldDisplayType.SELECTBOX, "Insurance Type", FormField.Required.OPTIONAL, 1, 1));
-					break;
-				case ContextNames.SPACE:
-					fields.add(new FormField("building", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Building Associated", FormField.Required.REQUIRED, "building", 5, 1, true));
-					fields.add(new FormField("floor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Floor Associated", FormField.Required.REQUIRED, "floor", 5, 1, true));
-					fields.add(FormFactory.getSpaceAssociatedField());
-					break;
-
+			case ContextNames.WORK_ORDER:
+				fields.addAll(FormFactory.getRequesterFormFields(false, false));
+				fields.add(new FormField("dueDate", FieldDisplayType.DATETIME, "Due Date", Required.OPTIONAL, 1, 1));
+				fields.add(new FormField("isSignatureRequired", FieldDisplayType.DECISION_BOX, "Is Signature Required ", Required.OPTIONAL, 1, 1));
+				fields.add(new FormField("responseDueDate", FieldDisplayType.DATETIME, "Response Due Date", Required.OPTIONAL, 1, 1));
+				// scheduled duration specific
+				fields.add(new FormField("scheduledStart", FieldDisplayType.DATETIME, "Scheduled Start", Required.OPTIONAL, 1, 1));
+				fields.add(new FormField("estimatedEnd", FieldDisplayType.DATETIME, "Estimated End", Required.OPTIONAL, 1, 1));
+				if (AccountUtil.isFeatureEnabled(FeatureLicense.TENANTS)) {
+					fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL,"tenant", 1, 1));
+				}
+				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLIENT)) {
+					fields.add(new FormField("client", FieldDisplayType.LOOKUP_SIMPLE, "Client", Required.OPTIONAL, "client", 1, 1));
+				}
+				break;
+			case ContextNames.WorkPermit.WORKPERMIT:
+				fields.add(new FormField("expectedStartTime", FieldDisplayType.DATETIME, "Valid From", Required.OPTIONAL, 1, 1));
+				fields.add(new FormField("expectedEndTime", FieldDisplayType.DATETIME, "Valid Till", Required.OPTIONAL, 1, 1));
+				break;
+			case ContextNames.ASSET:
+				fields.add(new FormField("salvageAmount", FieldDisplayType.NUMBER, "Salvage Amount", Required.OPTIONAL, 1, 1));
+				break;
+			case ContextNames.INVITE_VISITOR:
+				fields.add(new FormField("isVip", FieldDisplayType.DECISION_BOX, "VIP", Required.OPTIONAL, 1, 1));
+				break;
+			case ContextNames.SERVICE_REQUEST:
+				fields.add(new FormField("dueDate", FieldDisplayType.DATETIME, "Due Date", Required.OPTIONAL, 1, 1));
+				break;
+			case ContextNames.VISITOR_LOG:
+				fields.add(new FormField("isVip", FieldDisplayType.DECISION_BOX, "VIP", Required.OPTIONAL, 1, 1));
+				fields.add(new FormField("isDenied", FieldDisplayType.DECISION_BOX, "Is Denied", Required.OPTIONAL, 1, 1));
+				fields.add(new FormField("visitCustomResponse", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Custom Response", FormField.Required.OPTIONAL,"visitcustomresponse", 1, 1,false));
+				break;
+			case ContextNames.INSURANCE:
+				fields.add(new FormField("insuranceType", FieldDisplayType.SELECTBOX, "Insurance Type", FormField.Required.OPTIONAL, 1, 1));
+				break;
+			case ContextNames.SPACE:
+				fields.add(new FormField("building", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Building Associated", FormField.Required.REQUIRED,"building", 5, 1,true));
+				fields.add(new FormField("floor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Floor Associated", FormField.Required.REQUIRED,"floor", 5, 1,true));
+				fields.add(FormFactory.getSpaceAssociatedField());
+				break;
+				
+			case ContextNames.SITE:
+			case ContextNames.BUILDING:
+			case ContextNames.FLOOR:
+				// Add modules here, if not all fields needs to be shown and only form factory fields are needed
+				break;
+				
 				// Add fields here if it has to be shown in unused list and not there in the default form
+				
+				default:
+					List<FacilioField> allFields = modBean.getAllFields(form.getModule().getName());
+					allFields = allFields.stream().filter(f -> f.isDefault() && !FieldUtil.isSystemUpdatedField(f.getName())).collect(Collectors.toList());
+					fields.addAll(getFormFieldsFromFacilioFields(allFields, 1));
 			}
 		}
 
 		addToDefaultFields(new ArrayList<>(form.getFields()), defaultFields, fields);
 
-		if (form.getModule().isCustom()) {
-
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			boolean hasPhoto = false;
-			FacilioField nameField = modBean.getField("name", form.getModule().getName());
-			boolean hasName = (nameField == null);	// if module doesn't have name, we should treat it as `true`
-			boolean hasSite = false;
-			boolean hasAttachments = false;
-			for (FormField field : form.getFields()) {
-				if (field.getName().equals("siteId")) {
-					hasSite = true;
-				}
-				else if (field.getDisplayTypeEnum() == FieldDisplayType.ATTACHMENT) {
-					hasAttachments = true;
-				}
-				else if (field.getField() != null) {
-					if (field.getField().getName().equals("photo")) {
-						hasPhoto = true;
-					}
-					if (!hasName && field.getField().getName().equals("name")) {
-						hasName = true;
-					}
-				}
-			}
-			if (!hasPhoto) {
-				FacilioField photoField = modBean.getField("photo", form.getModule().getName());
-				if (photoField != null) {
-					defaultFields.add(getFormFieldFromFacilioField(photoField, 1));					
-				}
-			}
-			if (!hasName) {
-				defaultFields.add(getFormFieldFromFacilioField(nameField, 1));
-			}
-			if (!hasSite) {
-				defaultFields.add(FormFactory.getSiteField());
-			}
-			if (!hasAttachments) {
-				defaultFields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "cmdattachments", 1, 1));
-			}
-		}
+		
 	}
 	
 	private static void addUnusedPortalSystemFields(FacilioForm form, List<FormField> defaultFields) {

@@ -62,6 +62,18 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.util.DemoHelperUtil;
+import com.facilio.scriptengine.context.ParameterContext;
+import com.facilio.scriptengine.context.WorkflowFieldType;
+import com.facilio.scriptengine.context.WorkflowFunctionContext;
+import com.facilio.scriptengine.systemfunctions.FacilioHTTPFunctions;
+import com.facilio.scriptengine.systemfunctions.FacilioListFunction;
+import com.facilio.scriptengine.systemfunctions.FacilioMapFunction;
+import com.facilio.scriptengine.systemfunctions.FacilioMathFunction;
+import com.facilio.scriptengine.systemfunctions.FacilioNumberFunctions;
+import com.facilio.scriptengine.systemfunctions.FacilioStringFunction;
+import com.facilio.scriptengine.systemfunctions.FacilioSystemFunctionNameSpace;
+import com.facilio.scriptengine.systemfunctions.FacilioWorkflowFunctionInterface;
+import com.facilio.scriptengine.systemfunctions.FacilioXMLBuilderFunctions;
 import com.facilio.scriptengine.util.WorkflowGlobalParamUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.conditions.context.ElseContext;
@@ -70,12 +82,9 @@ import com.facilio.workflows.conditions.context.IfContext;
 import com.facilio.workflows.context.ConditionContext;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.IteratorContext;
-import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.context.WorkflowFieldContext;
-import com.facilio.workflows.context.WorkflowFieldType;
-import com.facilio.workflows.context.WorkflowFunctionContext;
 import com.facilio.workflows.functions.FacilioAnalyticsFunctions;
 import com.facilio.workflows.functions.FacilioAssetFunctions;
 import com.facilio.workflows.functions.FacilioBusinessHourFunctions;
@@ -93,25 +102,16 @@ import com.facilio.workflows.functions.FacilioEnergyMeterFunction;
 import com.facilio.workflows.functions.FacilioFieldFunctions;
 import com.facilio.workflows.functions.FacilioFileFunction;
 import com.facilio.workflows.functions.FacilioFunctionsParamType;
-import com.facilio.workflows.functions.FacilioHTTPFunctions;
-import com.facilio.workflows.functions.FacilioListFunction;
 import com.facilio.workflows.functions.FacilioMLNameSpaceFunctions;
-import com.facilio.workflows.functions.FacilioMapFunction;
-import com.facilio.workflows.functions.FacilioMathFunction;
 import com.facilio.workflows.functions.FacilioModuleFunctions;
 import com.facilio.workflows.functions.FacilioNotificationFunctions;
-import com.facilio.workflows.functions.FacilioNumberFunctions;
 import com.facilio.workflows.functions.FacilioOrgSpecificFunctions;
 import com.facilio.workflows.functions.FacilioPsychrometricsFunction;
 import com.facilio.workflows.functions.FacilioReadingFunctions;
 import com.facilio.workflows.functions.FacilioResourceFunction;
 import com.facilio.workflows.functions.FacilioScheduleFunctions;
-import com.facilio.workflows.functions.FacilioStringFunction;
-import com.facilio.workflows.functions.FacilioSystemFunctionNameSpace;
 import com.facilio.workflows.functions.FacilioSystemFunctions;
 import com.facilio.workflows.functions.FacilioWorkOrderFunctions;
-import com.facilio.workflows.functions.FacilioWorkflowFunctionInterface;
-import com.facilio.workflows.functions.FacilioXMLBuilderFunctions;
 import com.facilio.workflows.functions.MLFunctions;
 import com.facilio.workflows.functions.ThermoPhysicalR134aFunctions;
 import com.facilio.workflowv2.util.UserFunctionAPI;
@@ -973,7 +973,7 @@ public class WorkflowUtil {
 			}
 		}
 		else {
-			returnType = workflow.getReturnTypeString();
+			returnType = workflow.getReturnTypeEnum().getStringValue();
 		}
 		
 		String code = returnType+" test("+paramString+") {\n";

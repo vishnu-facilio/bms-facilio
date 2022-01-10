@@ -270,17 +270,16 @@ public class IotMessageApiV2 {
     private static void publishIotMessage(FacilioAgent agent, String client, JSONObject object, MessageSource messageSource) throws Exception {
 
 
-        if (FacilioProperties.isOnpremise() && agent.getAgentType() != AgentType.AGENT_SERVICE.getKey()) {
+        if (FacilioProperties.isOnpremise() && agent.getAgentTypeEnum().isAgentService()) {
             publishToRabbitMQ(client, object);
-        } else if (agent.getAgentType() == AgentType.AGENT_SERVICE.getKey()) {
-        	// Assuming agent service is using kafka
-            publishToKafka(agent, client, object, (KafkaMessageSource)messageSource);
+        } else if (agent.getAgentTypeEnum().isAgentService()) {
+            publishToAgentService(agent, client, object, (KafkaMessageSource)messageSource);
         } else {
             publishToAwsIot(client, object);
         }
     }
 
-    private static void publishToKafka(FacilioAgent agent, String client, JSONObject payload, KafkaMessageSource messageSource) {
+    private static void publishToAgentService(FacilioAgent agent, String client, JSONObject payload, KafkaMessageSource messageSource) {
         String topic = client + "-cmds";
         AgentUtilV2.publishToQueue(topic, agent.getName(), payload, messageSource);
     }

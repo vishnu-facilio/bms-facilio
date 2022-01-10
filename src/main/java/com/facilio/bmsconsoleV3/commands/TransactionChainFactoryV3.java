@@ -167,6 +167,7 @@ public class TransactionChainFactoryV3 {
                 .addCommand(new AddNdaForVisitorLogModuleCommandV3()) //check-in related
                 .addCommand(new GenerateQrInviteUrlForBaseVisitCommandV3())
                 .addCommand(new VisitorFaceRecognitionForBaseVisitCommandV3()));
+        c.addCommand(new VisitResponseCommandV3());
 
         return c;
     }

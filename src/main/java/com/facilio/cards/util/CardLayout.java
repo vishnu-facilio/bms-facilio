@@ -62,6 +62,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.time.DateRange;
+import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
@@ -130,19 +131,25 @@ public enum CardLayout {
 			Long kpiId;
 			Long parentId;
 			String yAggr;
-			if (cardParams.get("kpi") instanceof JSONObject) {
-				JSONObject kpiConfig = (JSONObject) cardParams.get("kpi");
-				kpiId = (Long) kpiConfig.get("kpiId");
-				parentId = (Long) kpiConfig.get("parentId");
-				yAggr = (String) kpiConfig.get("yAggr");
-			} else if (cardParams.get("kpi") instanceof Map) {
-				Map<String, Object> kpiConfig = (Map<String, Object>) cardParams.get("kpi");
-				kpiId = (Long) kpiConfig.get("kpiId");
-				parentId = (Long) kpiConfig.get("parentId");
-				yAggr = (String) kpiConfig.get("yAggr");
-			} else {
-				throw new IllegalStateException();
-			}
+		
+				
+				if (cardParams.containsKey("kpi") && cardParams.get("kpi") instanceof JSONObject) {
+					JSONObject kpiConfig = (JSONObject) cardParams.get("kpi");
+					kpiId = (Long) kpiConfig.get("kpiId");
+					parentId = (Long) kpiConfig.get("parentId");
+					yAggr = (String) kpiConfig.get("yAggr");
+				} else if (cardParams.containsKey("kpi") && cardParams.get("kpi") instanceof Map) {
+					Map<String, Object> kpiConfig = (Map<String, Object>) cardParams.get("kpi");
+					kpiId = (Long) kpiConfig.get("kpiId");
+					parentId = (Long) kpiConfig.get("parentId");
+					yAggr = (String) kpiConfig.get("yAggr");
+				} else {
+					FacilioUtil.throwIllegalArgumentException(true,"KPI should not be empty");
+					throw new IllegalStateException();
+				}
+			
+		
+			
 
 			Object cardValue = null;
 			Object listData = null;
@@ -603,7 +610,8 @@ public enum CardLayout {
 			}
 
 			if (viewMode != null) {
-				int scriptModeInt = ((Long) cardParams.get("scriptModeInt")).intValue();
+				 int scriptModeInt = ((Long) cardParams.getOrDefault("scriptModeInt", 3)).intValue();
+
 				Map<Long, String> object = (Map<Long, String>) cardParams.get("viewParams");
 				JSONObject viewParams = (JSONObject) new JSONParser().parse(JSONObject.toJSONString(object));
 
@@ -704,7 +712,7 @@ public enum CardLayout {
 
 	private Object getCardResultWithVariables(WidgetCardContext cardContext, Object cardResult) {
 		try {
-			if (cardResult != null) {
+			if (cardResult != null && (cardResult instanceof Map) || (cardResult instanceof JSONObject)) {
 				JSONArray variables = new JSONArray();
 
 				Map cardResultMap = (Map) cardResult;
@@ -805,7 +813,9 @@ public enum CardLayout {
 		JSONObject variable = new JSONObject();
 		variable.put("name", name);
 		variable.put("displayName", displayName);
-		variable.putAll(value);
+		if (value != null) {
+			variable.putAll(value);
+		}
 		return variable;
 	}
 

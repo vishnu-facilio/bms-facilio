@@ -24,12 +24,15 @@ public class ChangeStatusOfTriggerCommand extends FacilioCommand {
             return false;
         }
 
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(trigger.getModuleId());
-
         trigger.setStatus(status);
         context.put(TriggerUtil.TRIGGER_CONTEXT, trigger);
-        context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+        
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(trigger.getModuleId());
+        if (module != null) {
+        	context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+        }
+        
         return false;
     }
 }

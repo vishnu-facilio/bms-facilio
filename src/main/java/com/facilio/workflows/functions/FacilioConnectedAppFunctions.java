@@ -6,8 +6,9 @@ import java.util.Map;
 
 import com.facilio.bmsconsole.context.VariableContext;
 import com.facilio.bmsconsole.util.ConnectedAppAPI;
-import com.facilio.workflows.exceptions.FunctionParamException;
-import com.facilio.workflows.util.FunctionUtil;
+import com.facilio.scriptengine.exceptions.FunctionParamException;
+import com.facilio.scriptengine.systemfunctions.FacilioSystemFunctionNameSpace;
+import com.facilio.scriptengine.systemfunctions.FacilioWorkflowFunctionInterface;
 
 public enum FacilioConnectedAppFunctions implements FacilioWorkflowFunctionInterface {
 

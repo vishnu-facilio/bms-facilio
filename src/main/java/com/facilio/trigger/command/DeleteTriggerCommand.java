@@ -1,6 +1,9 @@
 package com.facilio.trigger.command;
 
 import com.facilio.constants.FacilioConstants;
+
+import java.util.Collections;
+
 import org.apache.commons.chain.Context;
 
 import com.facilio.command.FacilioCommand;
@@ -18,11 +21,17 @@ public class DeleteTriggerCommand extends FacilioCommand{
 		
 		long triggerId = (long) context.get(FacilioConstants.ContextNames.ID);
 		
+		BaseTriggerContext oldTrigger = TriggerUtil.getTrigger(triggerId);
+		TriggerUtil.fillTriggerExtras(Collections.singletonList(oldTrigger), false);
+		
 		GenericDeleteRecordBuilder delete = new GenericDeleteRecordBuilder()
 				.table(ModuleFactory.getTriggerModule().getTableName())
 				.andCondition(CriteriaAPI.getIdCondition(triggerId, ModuleFactory.getTriggerModule()));
 		
 		delete.delete();
+		
+		TriggerUtil.deleteTriggerChildLookups(oldTrigger, null);
+		TriggerUtil.deleteTypeRefObj(oldTrigger.getTriggerActions(), oldTrigger.getTypeEnum());
 		
 		return false;
 	}

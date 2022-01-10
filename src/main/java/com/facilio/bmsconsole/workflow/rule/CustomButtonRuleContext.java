@@ -119,7 +119,6 @@ public class CustomButtonRuleContext extends ApproverWorkflowRuleContext impleme
 
     private JSONObject config;
 
-    @JsonIgnore
     public JSONObject getConfig() {
         return config;
     }

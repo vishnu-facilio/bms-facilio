@@ -27,6 +27,7 @@ import com.facilio.bmsconsoleV3.commands.AddSignupDataCommandV3;
 import com.facilio.client.app.beans.ClientAppBean;
 import com.facilio.client.app.pojo.ClientAppConfig;
 import com.facilio.client.app.util.ClientAppUtil;
+import com.facilio.fw.cache.LRUCache;
 import com.facilio.fw.validators.CustomFields;
 import com.facilio.fw.validators.Date;
 import com.facilio.fw.validators.DateTime;
@@ -118,6 +119,10 @@ public class FacilioContextListener implements ServletContextListener {
 			setVersion(event);
 
 			//All these init should be moved to config
+			if(RedisManager.getInstance() != null) {
+				RedisManager.getInstance().connect(); // creating redis connection pool
+			}
+			LRUCache.getRoleNameCachePs();
 			initDBConnectionPool();
 			Operator.getOperator(1);
 			registerMBeans();
@@ -138,9 +143,6 @@ public class FacilioContextListener implements ServletContextListener {
 			FacilioScheduler.initScheduler();
 			FacilioInstantJobScheduler.init();
 			ChainUtil.initRESTAPIHandler("com.facilio.apiv3");
-			if(RedisManager.getInstance() != null) {
-				RedisManager.getInstance().connect(); // creating redis connection pool
-			}
 
 			/*HashMap customDomains = getCustomDomains();
 			if(customDomains!=null) {

@@ -247,6 +247,7 @@ public class FacilioConstants {
 		public static final String POSITION_TYPE = "positionType";
 		public static final String CUSTOM_BUTTONS = "customButtons";
 
+        public static final String TRIGGER = "trigger";
         public static final String TRIGGER_TYPE = "triggerType";
 		public static final String TYPE_PRIMARY_ID = "typePrimaryId";
 		public static final String GLOBAL_VARIABLE_GROUP_LIST = "globalVariableGroupList";
@@ -564,7 +565,11 @@ public class FacilioConstants {
 		public static final String LOGO = "logo";
 
 		public static final String ACTION_FORM = "actionForm";
-		
+
+        public static final String VIEW_GROUP_TYPE = "viewGroupType";
+		public static final String VIEW_TYPE = "viewType";
+		public static final String GET_ONLY_BASIC_VIEW_DETAILS = "getOnlyBasicViewDetails";
+
 		public static final String MODULE_NAME = "moduleName";
 		public static final String MODULE_DESCRIPTION = "moduleDescription";
 		public static final String MODULE_DISPLAY_NAME = "moduleDisplayName";
@@ -1727,6 +1732,7 @@ public class FacilioConstants {
 		public static final String INVITE_VISITOR_RECORDS = "visitorlogrecords";
 		public static final String BASE_VISIT = "basevisit";
 		public static final String VISITOR_LOG = "visitorlog";
+		public static final String VISIT_CUSTOM_RESPONSE = "visitcustomresponse";
 		public static final String VISITOR_LOG_NOTES = "visitorlognotes";
 		public static final String VISITOR_LOG_ATTACHMENTS = "visitorlogattachments";
 		public static final String INVITE_VISITOR = "invitevisitor";

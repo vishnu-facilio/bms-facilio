@@ -39,7 +39,7 @@
                                           <a href="" style="border: 0;border-radius: 3px;background:#ff3989;font-size: 13px; font-weight: bold; font-style: normal; font-stretch: normal; line-height: normal; letter-spacing: 0.8px; text-align: center; color: #ffffff;text-decoration: none;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;margin-right: 15px;padding: 17px 24px;margin-top: 30px;">CONFIRM ACCOUNT</a>
                                           </div> -->
                                           <div style="padding-top: 10px;font-size: 14px; font-weight: 400; font-style: normal; font-stretch: normal; line-height: 1.53; letter-spacing: 0.4px; color: #324056;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;max-width: 550px;">
-                                           Log in to app.facilio.com <b> > My Profile > Delegates > Select “Delegated to me”</b>
+                                           Log in to ${appDomain} <b> > My Profile > Delegates > Select “Delegated to me”</b>
                                           </div>
                                           <div style="padding-top: 30px;font-size: 14px; font-style: normal; font-stretch: normal; line-height: 1.53; letter-spacing: 0.4px; color: #324056;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;max-width: 550px;">
                                           <div style="font-weight: bold;padding-bottom: 5px;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;">Regards</div>
@@ -56,7 +56,7 @@
             </div>
             <div style="text-align: center;margin-top: 20px;">
             
-            <div style="font-size: 11px; font-weight: normal; font-style: normal; font-stretch: normal; line-height: normal; letter-spacing: 0.28px; text-align: center; color: #8e8c97;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;">© 2021 <a href="" style="padding-left: 5px;font-size: 11px; font-weight: 500; font-style: normal; font-stretch: normal; line-height: 20px; letter-spacing: 0.5px; color: #396dc2;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;text-decoration: none;">https://facilio.com</a> | ALL RIGHTS RESERVED</div>
+            <div style="font-size: 11px; font-weight: normal; font-style: normal; font-stretch: normal; line-height: normal; letter-spacing: 0.28px; text-align: center; color: #8e8c97;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;">© 2022 <a href="" style="padding-left: 5px;font-size: 11px; font-weight: 500; font-style: normal; font-stretch: normal; line-height: 20px; letter-spacing: 0.5px; color: #396dc2;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;text-decoration: none;">https://facilio.com</a> | ALL RIGHTS RESERVED</div>
             </div>
       </div>
 </body>

@@ -493,7 +493,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         return SUCCESS;
     }
 
-    private void addAuditLog(List<Map<String, Object>> props, String moduleName, String message,
+    private void addAuditLog(List<JSONObject> props, String moduleName, String message,
                              AuditLogHandler.ActionType actionType, JSONObject inputData, boolean addLinkConfig) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);

@@ -11,7 +11,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.facilio.agentv2.controller.Controller;
@@ -95,7 +97,7 @@ public class AgentApiV2 {
         FacilioContext context = new FacilioContext();
         agent.setCreatedTime(System.currentTimeMillis());
         agent.setLastDataReceivedTime(-1);
-        if (agent.getAgentType() == AgentType.CLOUD.getKey()) {
+        if (agent.getAgentType() == AgentType.CLOUD.getKey() || agent.getAgentTypeEnum().isAgentService()) {
             agent.setConnected(true);
         }
         agent.setLastModifiedTime(agent.getCreatedTime());
@@ -160,33 +162,35 @@ public class AgentApiV2 {
             }
         }
         
-        long oldWorkflowId = -1;
-        if (containsValueCheck(AgentConstants.WORKFLOW, jsonObject)) {
-            WorkflowContext workflow = FieldUtil.getAsBeanFromMap((Map<String, Object>)jsonObject.get(AgentConstants.WORKFLOW), WorkflowContext.class);
-            oldWorkflowId = agent.getWorkflowId();
-            LOGGER.info("workflow : " + workflow.getWorkflowV2String());
-            LOGGER.info("old workflow Id:" + oldWorkflowId);
-            if(workflow.validateWorkflow()) {
-                LOGGER.info("Workflow validation succeeded");
-                long workflowId = WorkflowUtil.addWorkflow(workflow);
-                LOGGER.info("new Workflow ID :" + workflowId);
-                agent.setWorkflowId(workflowId);
-            }
-			else {
-                LOGGER.info("Workflow validation failed");
-				throw new IllegalArgumentException(agent.getWorkflow().getErrorListener().getErrorsAsString());
-			}
-            
-        }
+        
+        List<Long> oldWorkflowIds = new ArrayList<>(); 
+        addWorkflows(AgentConstants.WORKFLOW, jsonObject, agent.getWorkflowId(), oldWorkflowIds, agent::setWorkflowId);
+        addWorkflows(AgentConstants.TRANSFORM_WORKFLOW, jsonObject, agent.getTransformWorkflowId(), oldWorkflowIds,  agent::setTransformWorkflowId);
+        
         boolean status = updateAgent(agent);
-        LOGGER.info("Update status : " + status);
-        if (oldWorkflowId != -1) {
-        		WorkflowUtil.deleteWorkflow(oldWorkflowId);
+        LOGGER.debug("Update status : " + status);
+        if (!oldWorkflowIds.isEmpty()) {
+        		WorkflowUtil.deleteWorkflows(oldWorkflowIds);
         }
         
         return status;
     }
 
+    private static void addWorkflows(String property, JSONObject jsonObject, long oldWorkflowId, List<Long> oldWorkflowIds, Consumer<Long> setWorkflow) throws Exception {
+    	if (containsValueCheck(property, jsonObject)) {
+            WorkflowContext workflow = FieldUtil.getAsBeanFromMap((Map<String, Object>)jsonObject.get(property), WorkflowContext.class);
+            if(workflow.validateWorkflow()) {
+                long workflowId = WorkflowUtil.addWorkflow(workflow);
+                setWorkflow.accept(workflowId);
+            }
+			else {
+				throw new IllegalArgumentException(workflow.getErrorListener().getErrorsAsString());
+			}
+            if (oldWorkflowId > 0) {
+            	oldWorkflowIds.add(oldWorkflowId);
+            }
+        }
+    }
 
     public static boolean updateAgent(FacilioAgent agent) throws Exception {
         FacilioModule MODULE = ModuleFactory.getNewAgentModule();
@@ -321,9 +325,6 @@ public class AgentApiV2 {
             if(fieldMap.containsKey(AgentConstants.PROCESSOR_VERSION)){
                 fieldMap.remove(AgentConstants.PROCESSOR_VERSION);
             }
-            if(fieldMap.containsKey(AgentKeys.TRANSFORM_WORKFLOW_ID)){
-                fieldMap.remove(AgentKeys.TRANSFORM_WORKFLOW_ID);
-            }
         }
         fieldMap.put(AgentConstants.CONTROLLERS,FieldFactory.getCountOfDistinctField(FieldFactory.getIdField(controllerModule),AgentConstants.CONTROLLERS));
         GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
@@ -345,6 +346,9 @@ public class AgentApiV2 {
 	        		if (agent.get("workflowId") != null) {
 	        			workflowIds.add((long) agent.get("workflowId"));
 	        		}
+	        		if (agent.get("transformWorkflowId") != null) {
+	        			workflowIds.add((long) agent.get("transformWorkflowId"));
+	        		}
 	        	}
 	        	if (!workflowIds.isEmpty()) {
 	        		Map<Long, WorkflowContext> workflowMap = WorkflowUtil.getWorkflowsAsMap(workflowIds);
@@ -352,6 +356,10 @@ public class AgentApiV2 {
 		        		if (agent.get("workflowId") != null) {
 		        			WorkflowContext workflow = workflowMap.get(agent.get("workflowId"));
 		        			agent.put("workflow", workflow);
+		        		}
+		        		if (agent.get("transformWorkflowId") != null) {
+		        			WorkflowContext workflow = workflowMap.get(agent.get("transformWorkflowId"));
+		        			agent.put(AgentConstants.TRANSFORM_WORKFLOW, workflow);
 		        		}
 		        	}
 	        	}

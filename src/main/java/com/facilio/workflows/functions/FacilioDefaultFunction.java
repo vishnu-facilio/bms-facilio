@@ -1,5 +1,18 @@
 package com.facilio.workflows.functions;
 
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -7,8 +20,26 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.DashboardContext;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.FieldPermissionContext;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.context.TenantContactContext;
+import com.facilio.bmsconsole.context.VendorContactContext;
+import com.facilio.bmsconsole.context.VendorContext;
+import com.facilio.bmsconsole.context.VisitorTypeContext;
+import com.facilio.bmsconsole.util.BitlyUtil;
+import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bmsconsole.util.RecordAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.bmsconsole.util.StateFlowRulesAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.VendorsAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.context.InviteVisitorContextV3;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
@@ -34,6 +65,11 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.pdf.PdfUtil;
+import com.facilio.scriptengine.exceptions.FunctionParamException;
+import com.facilio.scriptengine.systemfunctions.FacilioSystemFunctionNameSpace;
+import com.facilio.scriptengine.systemfunctions.FacilioWorkflowFunctionInterface;
+import com.facilio.service.FacilioHttpUtilsFW;
+import com.facilio.services.FacilioHttpUtils;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.time.DateTimeUtil;
@@ -43,16 +79,8 @@ import com.facilio.util.FacilioUtil;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
-import com.facilio.workflows.exceptions.FunctionParamException;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
-
-import java.net.URLEncoder;
-import java.util.*;
-import java.util.logging.Level;
 
 ;
 
@@ -1091,7 +1119,29 @@ ADD_INVITE_RECORD_VIA_V3CHAIN (29, "addInviteRecordViaV3Chain") {
 			return null;
 		}
 	},
-
+	GET_BLOB_AS_FILE(33,"getBlobFile") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			String url = (String) objects[0];
+			
+			Map<String,String> params = (Map<String, String>) objects[1];
+			Map<String,String> headers = (Map<String, String>) objects[2];
+			
+			String fileName = (String) objects[3];
+			String type = (String) objects[4];
+			
+			return FacilioHttpUtils.doHttpGetWithFileResponse(url, headers, params, fileName, type);
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
     
 
 	;

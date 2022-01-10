@@ -1095,7 +1095,8 @@
 			method="addView">
 			<!-- <param name="permission">WORKORDER_CREATE</param> -->
 			<result name="success" type="json">
-				<param name="root">view</param>
+				 <param name="ignoreHierarchy">false</param>
+				<param name="root">viewObj</param>
 			</result>
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.ViewAction"

@@ -1,6 +1,9 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.facilio.bmsconsole.view.FacilioView;
 import lombok.Getter;
@@ -102,6 +105,40 @@ public class ViewGroups {
 		this.displayName = displayName;
 	}
 
+	private Integer groupType;
+	
+	public Integer getGroupType() {
+		return groupType;
+	}
 
+	public void setGroupType(Integer groupType) {
+		this.groupType = groupType;
+	}
+
+	public static enum ViewGroupType{
+		TABLE_GROUP(1),
+		TIMELINEVIEW_GROUP(2);
+
+		private int intVal;
+		private ViewGroupType(int val) {
+			this.intVal = val;
+		}
+		public int getIntVal() {
+			return intVal;
+		}
+
+		public static ViewGroupType getGroupType(int val){
+			return TYPE_MAP.get(val);
+		}
+		public static final Map<Integer, ViewGroupType> TYPE_MAP = Collections.unmodifiableMap(initTypeMap());
+
+		private static Map<Integer, ViewGroupType> initTypeMap() {
+			Map<Integer, ViewGroupType> typeMap = new HashMap<>();
+			for (ViewGroupType type : values()) {
+				typeMap.put(type.getIntVal(), type);
+			}
+			return typeMap;
+		}
+	}
 
 }

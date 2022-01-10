@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Log4j
 @Getter
@@ -133,11 +134,16 @@ public class TranslationAction extends FacilioAction {
                             if (CollectionUtils.isNotEmpty( webtabGroup.getWebTabs())) {
                                 for (WebTabContext webTab : webtabGroup.getWebTabs()) {
                                     List<TranslationTypeEnum.ClientColumnTypeEnum> columnTypeEnums = new ArrayList<>(TranslationTypeEnum.CLIENT_TRANSLATION_TYPE_ENUM.get(webTab.getTypeEnum()));
-                                    if (webTab.getTypeEnum().equals(WebTabContext.Type.MODULE) && !webTab.getRoute().equals("workorder") ){
-                                        columnTypeEnums.removeIf(clientColumnTypeEnum -> clientColumnTypeEnum.getType().equals("WORKORDER_FIELDS"));
-                                    }
-                                    if (webTab.getTypeEnum().equals(WebTabContext.Type.MODULE) && !webTab.getRoute().equals("asset")){
-                                        columnTypeEnums.removeIf(clientColumnTypeEnum -> clientColumnTypeEnum.getType().equals("ASSET_FIELDS"));
+                                    if (CollectionUtils.isNotEmpty(webTab.getModules())){
+                                        List<String> moduleNames = webTab.getModules().stream().map(p->p.getName()).collect(Collectors.toList());
+                                        if (webTab.getTypeEnum().equals(WebTabContext.Type.MODULE)){
+                                            if (!moduleNames.contains(FacilioConstants.ContextNames.WORK_ORDER) ){
+                                                columnTypeEnums.removeIf(clientColumnTypeEnum -> clientColumnTypeEnum.getType().equals(TranslationTypeEnum.WORKORDER_FIELDS.getClientColumnName()));
+                                            }
+                                            if (!moduleNames.contains(FacilioConstants.ContextNames.ASSET)){
+                                                columnTypeEnums.removeIf(clientColumnTypeEnum -> clientColumnTypeEnum.getType().equals(TranslationTypeEnum.ASSET_FIELDS.getClientColumnName()));
+                                            }
+                                        }
                                     }
                                     webTab.setTypeVsColumns(columnTypeEnums);
                                 }
@@ -157,10 +163,12 @@ public class TranslationAction extends FacilioAction {
 
     private JSONArray constructJson ( Map<String, String> webTabs ) {
         JSONArray jsonArray = new JSONArray();
+        int i=0;
         for (Map.Entry<String, String> entry : webTabs.entrySet()) {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("type",entry.getKey());
-            jsonObject.put("label",entry.getValue());
+            jsonObject.put("label",entry.getKey());
+            jsonObject.put("value",entry.getValue());
+            jsonObject.put("id",++i);
             jsonArray.add(jsonObject);
         }
         return jsonArray;
@@ -194,10 +202,10 @@ public class TranslationAction extends FacilioAction {
     private String moduleName;
     public String getColumnFields() throws Exception {
         if (StringUtils.isNotEmpty(moduleName)){
-            if (moduleName.equals("workorder")){
-                setResult("fields",TranslationsUtil.WORKORDER_FIELDS_MAP);
-            }else if (moduleName.equals("asset")){
-                setResult("fields",TranslationsUtil.ASSET_FIELDS_MAP);
+            if (moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)){
+                setResult("fields",constructJson(TranslationsUtil.WORKORDER_FIELDS_MAP));
+            }else if (moduleName.equals(FacilioConstants.ContextNames.ASSET)){
+                setResult("fields",constructJson(TranslationsUtil.ASSET_FIELDS_MAP));
             }
         }
         return SUCCESS;

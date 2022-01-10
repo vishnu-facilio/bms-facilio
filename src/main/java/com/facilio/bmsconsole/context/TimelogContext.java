@@ -77,12 +77,12 @@ public class TimelogContext {
         return duration;
     }
 
-    private boolean isTimerEnabled;
-    public void setTimerEnabled(boolean timerEnabled) {
-        isTimerEnabled = timerEnabled;
+    private Boolean timerEnabled;
+    public void setTimerEnabled(Boolean timerEnabled) {
+        this.timerEnabled = timerEnabled;
     }
-    public boolean isTimerEnabled() {
-        return isTimerEnabled;
+    public Boolean getTimerEnabled() {
+        return timerEnabled;
     }
 
     private long doneById;
