@@ -120,60 +120,70 @@ public class AgentApiV2 {
 
 
     public static boolean editAgent(FacilioAgent agent, JSONObject jsonObject, boolean updateLastDataReceivedTime) throws Exception {
-        Long currTime = System.currentTimeMillis() ;
-        if(jsonObject.containsKey(AgentConstants.TIMESTAMP)){
-            currTime = (Long) jsonObject.get(AgentConstants.TIMESTAMP);
-        }
-        if (updateLastDataReceivedTime) {
-            agent.setLastDataReceivedTime(currTime);
-        }
-        if (containsValueCheck(AgentConstants.DISPLAY_NAME, jsonObject)) {
-            if (!jsonObject.get(AgentConstants.DISPLAY_NAME).toString().equals(agent.getDisplayName())) {
-                agent.setDisplayName(jsonObject.get(AgentConstants.DISPLAY_NAME).toString());
-                agent.setLastModifiedTime(currTime);
+        if (agent.getAgentType() == AgentType.CLOUD_ON_SERVICE.getKey()) {
+            WorkflowContext workflow = FieldUtil.getAsBeanFromMap((Map<String, Object>) jsonObject.get(AgentConstants.WORKFLOW), WorkflowContext.class);
+            Map<String, Object> workflowProps = new HashMap<>();
+            workflowProps.put("agentName",agent.getName());
+            workflowProps.put("workflowV2String",workflow.getWorkflowV2String());
+            workflowProps.put("isV2Script",workflow.getIsV2Script());
+            boolean status = CloudAgentUtil.addWorkflowString(workflowProps);
+            return status;
+        } else {
+            Long currTime = System.currentTimeMillis();
+            if (jsonObject.containsKey(AgentConstants.TIMESTAMP)) {
+                currTime = (Long) jsonObject.get(AgentConstants.TIMESTAMP);
             }
-        }
-
-        if (containsValueCheck(AgentConstants.DATA_INTERVAL, jsonObject)) {
-            long currDataInterval = Long.parseLong(jsonObject.get(AgentConstants.DATA_INTERVAL).toString());
-            if (agent.getInterval() != currDataInterval) {
-                agent.setInterval(currDataInterval);
-                agent.setLastModifiedTime(currTime);
-                if(agent.getAgentType() == AgentType.CLOUD.getKey()) {
-                		FacilioTimer.deleteJob(agent.getId(), Job.CLOUD_AGENT_JOB_NAME);
-                		scheduleRestJob(agent);
+            if (updateLastDataReceivedTime) {
+                agent.setLastDataReceivedTime(currTime);
+            }
+            if (containsValueCheck(AgentConstants.DISPLAY_NAME, jsonObject)) {
+                if (!jsonObject.get(AgentConstants.DISPLAY_NAME).toString().equals(agent.getDisplayName())) {
+                    agent.setDisplayName(jsonObject.get(AgentConstants.DISPLAY_NAME).toString());
+                    agent.setLastModifiedTime(currTime);
                 }
             }
-        }
 
-        if (containsValueCheck(AgentConstants.WRITABLE, jsonObject)) {
-            boolean currWriteble = Boolean.parseBoolean(jsonObject.get(AgentConstants.WRITABLE).toString());
-            if (agent.getWritable() != currWriteble) {
-                agent.setWritable(currWriteble);
-                agent.setLastModifiedTime(currTime);
-                List<Controller> controllers = ControllerApiV2.getControllersUsingAgentId(agent.getId());
-                controllers.forEach(controller -> {
-            	   try {
-                       ControllerApiV2.editController(controller.getControllerId(), jsonObject);
-				} catch (Exception e) {
-					LOGGER.error("Exception occurred while Controller writable updating....");
-				}
-               });
+            if (containsValueCheck(AgentConstants.DATA_INTERVAL, jsonObject)) {
+                long currDataInterval = Long.parseLong(jsonObject.get(AgentConstants.DATA_INTERVAL).toString());
+                if (agent.getInterval() != currDataInterval) {
+                    agent.setInterval(currDataInterval);
+                    agent.setLastModifiedTime(currTime);
+                    if (agent.getAgentType() == AgentType.CLOUD.getKey()) {
+                        FacilioTimer.deleteJob(agent.getId(), Job.CLOUD_AGENT_JOB_NAME);
+                        scheduleRestJob(agent);
+                    }
+                }
             }
+
+            if (containsValueCheck(AgentConstants.WRITABLE, jsonObject)) {
+                boolean currWriteble = Boolean.parseBoolean(jsonObject.get(AgentConstants.WRITABLE).toString());
+                if (agent.getWritable() != currWriteble) {
+                    agent.setWritable(currWriteble);
+                    agent.setLastModifiedTime(currTime);
+                    List<Controller> controllers = ControllerApiV2.getControllersUsingAgentId(agent.getId());
+                    controllers.forEach(controller -> {
+                        try {
+                            ControllerApiV2.editController(controller.getControllerId(), jsonObject);
+                        } catch (Exception e) {
+                            LOGGER.error("Exception occurred while Controller writable updating....");
+                        }
+                    });
+                }
+            }
+
+
+            List<Long> oldWorkflowIds = new ArrayList<>();
+            addWorkflows(AgentConstants.WORKFLOW, jsonObject, agent.getWorkflowId(), oldWorkflowIds, agent::setWorkflowId);
+            addWorkflows(AgentConstants.TRANSFORM_WORKFLOW, jsonObject, agent.getTransformWorkflowId(), oldWorkflowIds, agent::setTransformWorkflowId);
+
+            boolean status = updateAgent(agent);
+            LOGGER.debug("Update status : " + status);
+            if (!oldWorkflowIds.isEmpty()) {
+                WorkflowUtil.deleteWorkflows(oldWorkflowIds);
+            }
+
+            return status;
         }
-        
-        
-        List<Long> oldWorkflowIds = new ArrayList<>(); 
-        addWorkflows(AgentConstants.WORKFLOW, jsonObject, agent.getWorkflowId(), oldWorkflowIds, agent::setWorkflowId);
-        addWorkflows(AgentConstants.TRANSFORM_WORKFLOW, jsonObject, agent.getTransformWorkflowId(), oldWorkflowIds,  agent::setTransformWorkflowId);
-        
-        boolean status = updateAgent(agent);
-        LOGGER.debug("Update status : " + status);
-        if (!oldWorkflowIds.isEmpty()) {
-        		WorkflowUtil.deleteWorkflows(oldWorkflowIds);
-        }
-        
-        return status;
     }
 
     private static void addWorkflows(String property, JSONObject jsonObject, long oldWorkflowId, List<Long> oldWorkflowIds, Consumer<Long> setWorkflow) throws Exception {

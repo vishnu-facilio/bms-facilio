@@ -2,14 +2,12 @@ package com.facilio.agentv2;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.auth.AuthUtils;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.constants.FacilioConstants.Services;
 import com.facilio.db.builder.DBUtil;
@@ -27,6 +25,7 @@ public class CloudAgentUtil {
 	
 	private static class Urls {
 		private static final String ADD_AGENT = "/api/v1/agent/add";
+		private static final String EDIT_AGENT = "/api/workflow/add";
 	}
 	
 	public static void addCloudServiceAgent(FacilioAgent agent) throws Exception {
@@ -45,6 +44,23 @@ public class CloudAgentUtil {
 		}
 		else {
 			throw new FacilioException("Agent not added. Please check the details again");
+		}
+	}
+	public static boolean addWorkflowString(Map<String,Object>workflowProps) throws Exception{
+
+		String response = doPost(Urls.EDIT_AGENT, "workflowContext", workflowProps);
+		if (StringUtils.isNotEmpty(response)) {
+			JSONObject obj = FacilioUtil.parseJson(response);
+			if (obj.containsKey("code")) {
+				int code = FacilioUtil.parseInt(obj.get("code").toString());
+				if (code != 0) {
+					throw new FacilioException(obj.get("message").toString());
+				}
+			}
+			return true;
+		}
+		else {
+			throw new FacilioException("Workflow string was not added");
 		}
 	}
 	
