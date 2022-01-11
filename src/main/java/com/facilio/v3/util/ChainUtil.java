@@ -489,6 +489,7 @@ public class ChainUtil {
     public static FacilioChain getTimelineChain(TimelineRequest timelineRequest) throws Exception {
         FacilioChain chain = FacilioChain.getNonTransactionChain();
         chain.addCommand(new GenerateCriteriaFromFilterCommand());
+        chain.addCommand(new LoadViewCommand());
         chain.addCommand(new GetTimeLineDataCommand());
 
         FacilioContext context = chain.getContext();
@@ -500,6 +501,7 @@ public class ChainUtil {
         }
 
         context.put(FacilioConstants.ContextNames.MODULE_NAME, timelineRequest.getModuleName());
+        context.put(FacilioConstants.ContextNames.CV_NAME, timelineRequest.getViewName());
         context.put(FacilioConstants.ContextNames.TIMELINE_REQUEST, timelineRequest);
         return chain;
     }
