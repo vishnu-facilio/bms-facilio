@@ -17,12 +17,16 @@ public class Oauth2Interceptor extends AbstractInterceptor {
     @Override
     public String intercept(ActionInvocation invocation) throws Exception {
         HttpServletRequest request = ServletActionContext.getRequest();
+        Boolean isOauth2 = (Boolean) request.getAttribute("isOauth2");
+        if (isOauth2 == null || !isOauth2) {
+            return invocation.invoke();
+        }
         String authorization = request.getHeader("Authorization");
         if (StringUtils.isEmpty(authorization)) {
             LOGGER.error("Authorization header missing");
             return Action.LOGIN;
         }
-        String bearerToken = authorization.replace("Bearer ", "");
+        String bearerToken = authorization.replace("Bearer oauth2", "");
         String clientIdForToken = new HydraClient().getClientIdForToken(bearerToken);
 
         if (StringUtils.isEmpty(clientIdForToken)) {

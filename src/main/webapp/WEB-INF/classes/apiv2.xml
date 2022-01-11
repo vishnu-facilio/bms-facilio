@@ -6670,6 +6670,12 @@
 		<action name="getWebTabGroupFields" class="com.facilio.bmsconsole.localization.TranslationAction" method="getWebTabGroupFields"/>
 	</package>
 
+	<package name="oauth2" namespace="/api/v2/dev" extends="v2Api">
+		<action name="enable"
+				class="com.facilio.bmsconsole.actions.Oauth2Action" method="enableOauth2">
+		</action>
+	</package>
+
 	<package name="translationsetup" namespace="/api/v2/translationsetup" extends="v2Api">
 		<action name="viewList"
 				class="com.facilio.bmsconsole.actions.ViewAction" method="v2viewlist">

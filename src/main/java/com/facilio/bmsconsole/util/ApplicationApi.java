@@ -399,9 +399,6 @@ public class ApplicationApi {
 
         ApplicationContext maintenanceApplication = new ApplicationContext(orgId, "Maintenance", false, facilioApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Maintenance App", ApplicationContext.AppCategory.WORK_CENTERS.getIndex());
 
-        AppDomain developerApp = IAMAppUtil.getAppDomain(FacilioProperties.getDeveloperAppDomain());
-        ApplicationContext developerApplication = new ApplicationContext(orgId, "Developer", false, developerApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.DEVELOPER_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Developer Apis",  ApplicationContext.AppCategory.WORK_CENTERS.getIndex());
-
         List<ApplicationContext> applicationsDefault = new ArrayList<ApplicationContext>();
         applicationsDefault.add(facilioApplication);
         applicationsDefault.add(servicePortalapplication);
@@ -410,7 +407,6 @@ public class ApplicationApi {
         applicationsDefault.add(clientPortalapplication);
         applicationsDefault.add(facilioAgentApplication);
         applicationsDefault.add(maintenanceApplication);
-        applicationsDefault.add(developerApplication);
 
         List<Map<String, Object>> props = FieldUtil.getAsMapList(applicationsDefault, ApplicationContext.class);
 
@@ -526,15 +522,6 @@ public class ApplicationApi {
             Role clientAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.DefaultRoleNames.CLIENT_USER);
             addAppRoleMapping(clientAdmin.getRoleId(), clientPortal.getId());
 
-        }
-
-        ApplicationContext devApp = getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.DEVELOPER_APP);
-        if (devApp.getId() > 0) {
-            ApplicationLayoutContext devLayout = new ApplicationLayoutContext(devApp.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.DEVELOPER_APP);
-            addApplicationLayout(devLayout);
-            addDevAppWebTabs(devLayout);
-            Role devAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.DefaultRoleNames.DEV_ADMIN);
-            addAppRoleMapping(devAdmin.getRoleId(), devApp.getId());
         }
     }
 
