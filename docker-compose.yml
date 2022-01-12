@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  bms-db:
+    image: mysql
+    ports:
+      - "3306:3306"
+    hostname: localhost
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=true
+      - MYSQL_DATABASE=bmslocal
+
+  bms-app:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - bms-db

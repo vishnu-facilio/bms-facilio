@@ -20,23 +20,23 @@
                                           <div style="font-size: 22px; font-weight: 600; font-style: normal; font-stretch: normal; line-height: 1.36; letter-spacing: 0.3px; color: #19191c;text-align: left;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;padding-top: 30px;padding-bottom: 30px;">
                                           <img src="https://facilio.com/images/facilio-blue-logo.svg" alt="" title="" width="80"/>
                                           </div>      
-                                        <div style="font-size: 16px; font-weight: 500; font-style: normal; font-stretch: normal; line-height: 1.53; letter-spacing: 0.4px; color: #324056;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;max-width: 530px;width: 530px;padding-bottom: 10px;">Hello ${delegatedUser}</div>
+                                        <div style="font-size: 16px; font-weight: 500; font-style: normal; font-stretch: normal; line-height: 1.53; letter-spacing: 0.4px; color: #324056;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;max-width: 530px;width: 530px;padding-bottom: 10px;">Hello ${delegateUser.name}</div>
                                         <div style="font-size: 14px; font-weight: 400; font-style: normal; font-stretch: normal; line-height: 1.53; letter-spacing: 0.4px; color: #324056;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;">
-                                          This is to remind you that you have been delegated with the below activities by <b>${user}</b> starting tomorrow i.e., <b>${delegatedFromDate?number_to_date?string["MM dd yyyy"]}</b> until <b>${delegatedToDate?number_to_date?string["MM dd yyyy"]}</b>. 
+                                          This is to remind you that you have been delegated with the below activities by <b>${dUser.name}</b> starting tomorrow i.e., <b>${fromTime?number_to_date?string["dd-MM-yyyy"]}</b> until <b>${toTime?number_to_date?string["dd-MM-yyyy"]}</b>.
                                         </div>
                                         <div style="padding-top: 16px;font-size: 14px; font-weight: 400; font-style: normal; font-stretch: normal; line-height: 20px; letter-spacing: 0.4px; color: #324056;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;max-width: 550px;">
                                           You will be able to
                                           </div>
                                           <ul>
-                                                <#list responsibilities as module>
-                                                <li style="padding-top: 16px;font-size: 14px; font-weight: 400; font-style: normal; font-stretch: normal; line-height: 20px; letter-spacing: 0.4px; color: #324056;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;max-width: 550px;">${module}</li>
-                                                </#list>
+                                            <#list responsibilities as module>
+                                              <li style="padding-top: 16px;font-size: 14px; font-weight: 400; font-style: normal; font-stretch: normal; line-height: 20px; letter-spacing: 0.4px; color: #324056;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;max-width: 550px;">${module}</li>
+                                            </#list>
                                           </ul>
                                           <div style="padding-top: 20px;font-size: 14px; font-weight: 400; font-style: normal; font-stretch: normal; line-height: 1.53; letter-spacing: 0.4px; color: #324056;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;max-width: 570px;">
                                           To view and accept the activities, follow the below steps.
                                           </div>
                                           <div style="padding-top: 10px;font-size: 14px; font-weight: 400; font-style: normal; font-stretch: normal; line-height: 1.53; letter-spacing: 0.4px; color: #324056;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;max-width: 550px;">
-                                           Log in to app.facilio.com <b> > My Profile > Delegates > Select “Delegated to me”</b>
+                                           Log in to ${appDomain} <b> > My Profile > Delegates > Select “Delegated to me”</b>
                                           </div>
                                           <div style="padding-top: 30px;font-size: 14px; font-style: normal; font-stretch: normal; line-height: 1.53; letter-spacing: 0.4px; color: #324056;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;max-width: 550px;">
                                           <div style="font-weight: bold;padding-bottom: 5px;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;">Regards</div>

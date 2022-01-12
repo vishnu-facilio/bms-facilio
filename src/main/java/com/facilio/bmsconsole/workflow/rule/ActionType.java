@@ -1498,7 +1498,7 @@ public enum ActionType {
 		@Override
 		public boolean isTemplateNeeded()
 		{
-			return false;
+			return true;
 		}
 
 	},

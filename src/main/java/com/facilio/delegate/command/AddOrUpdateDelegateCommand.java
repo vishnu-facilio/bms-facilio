@@ -15,6 +15,7 @@ import com.facilio.delegate.util.DelegationUtil;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -48,6 +49,11 @@ public class AddOrUpdateDelegateCommand extends FacilioCommand {
             delegationContext.setId(delegationId);
         }
 
+        FacilioTimer.deleteJob(delegationContext.getId(), DelegationUtil.SEND_DELEGATE_REMINDER_JOB_NAME);
+        long nextExecutionTime = (delegationContext.getFromTime() - (DateTimeUtil.ONE_HOUR_MILLIS_VALUE * 24));
+        if (nextExecutionTime > System.currentTimeMillis()) {
+            FacilioTimer.scheduleOneTimeJobWithTimestampInSec(delegationContext.getId(), DelegationUtil.SEND_DELEGATE_REMINDER_JOB_NAME, nextExecutionTime / 1000, "facilio");
+        }
         DelegationUtil.fillDelegation(Collections.singletonList(delegationContext));
 
         // remove any banner associate with this delegation

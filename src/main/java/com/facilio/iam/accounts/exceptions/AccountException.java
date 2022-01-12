@@ -44,7 +44,8 @@ public class AccountException extends FacilioException {
 		USER_ALREADY_EXISTS_IN_APP,
 		INVALID_DIGEST,
 		INVALID_ORG_DOMAIN,
-		DUPLICATE_USER
+		DUPLICATE_USER,
+		DC_LOOKUP_FAILURE
 		;
 	}
 }

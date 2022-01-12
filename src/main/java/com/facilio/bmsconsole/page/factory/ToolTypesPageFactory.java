@@ -25,17 +25,17 @@ public class ToolTypesPageFactory extends PageFactory{
         }
         Page.Section tab1Sec2 = page.new Section();
         tab1.addSection(tab1Sec2);
-        PageWidget card1= new PageWidget(PageWidget.WidgetType.TOOL_TYPES_CARD);
+        PageWidget card1= new PageWidget(PageWidget.WidgetType.INVENTORY_CARD);
         card1.addToLayoutParams(tab1Sec2, 8, 5);
         card1.addToWidgetParams("card","tooltypescard1");
         tab1Sec2.addWidget(card1);
 
-        PageWidget card2= new PageWidget(PageWidget.WidgetType.TOOL_TYPES_CARD);
+        PageWidget card2= new PageWidget(PageWidget.WidgetType.INVENTORY_CARD);
         card2.addToLayoutParams(tab1Sec2, 8, 5);
         card2.addToWidgetParams("card","tooltypescard2");
         tab1Sec2.addWidget(card2);
 
-        PageWidget card3= new PageWidget(PageWidget.WidgetType.TOOL_TYPES_CARD);
+        PageWidget card3= new PageWidget(PageWidget.WidgetType.INVENTORY_CARD);
         card3.addToLayoutParams(tab1Sec2, 8, 5);
         card3.addToWidgetParams("card","tooltypescard3");
         tab1Sec2.addWidget(card3);
