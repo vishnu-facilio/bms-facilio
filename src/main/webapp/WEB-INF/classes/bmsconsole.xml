@@ -1129,10 +1129,12 @@
 			<param name="viewName">{1}</param>
 			<param name="translationImpl">ViewColumnTranslationV1</param>
 			<result name="success" type="json">
-				<param name="root">view</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="root">viewObj</param>
 				<param name="excludeProperties">criteria.conditions.*\.computedWhereClause</param>
 			</result>
 		</action>
+
 		<action name="woScheduleView" class="com.facilio.bmsconsole.actions.ViewAction" method="addWoScheduleView">
 			<result name="success" type="json">
 				<param name="includeProperties">reportId</param>
