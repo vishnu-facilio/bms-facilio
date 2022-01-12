@@ -31,6 +31,7 @@
             </property>
         </requestbody>
     </request>
+
     <request path="/api/v2/feedbackKiosk/add">
         <requestbody type="object">
             <property name="feedbackKiosk" type="object">
@@ -44,6 +45,7 @@
             </property>
         </requestbody>
     </request>
+
     <request path="/api/setup/addgroup">
         <requestbody type="object">
             <property name="group" type="object">
@@ -57,6 +59,7 @@
             </property>
         </requestbody>
     </request>
+
     <request path="/api/setup/addRole">
         <requestbody type="object">
             <property name="role" type="object">
@@ -68,6 +71,7 @@
             </property>
         </requestbody>
     </request>
+
     <request path="/api/setup/adduser">
         <requestbody type="object">
             <property name="user" type="object">
@@ -82,6 +86,7 @@
             </property>
         </requestbody>
     </request>
+
     <request path="/api/v2/updateSecurityPolicy">
         <requestbody type="object">
             <property name="securityPolicy" type="object">
@@ -108,6 +113,7 @@
             </property>
         </requestbody>
     </request>
+
     <request path="/api/v2/createSecurityPolicy">
         <requestbody type="object">
           <property name="securityPolicy" type="object">
@@ -126,6 +132,160 @@
               <property name="pwdPrevPassRefusal" type="number"/>
               <property name="webSessLifeTime" type="number"/>
           </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/settings/updateCompanySettings">
+        <requestbody type="object">
+                <property name="org.businessHour" type="number"/>
+                <property name="org.city" type="string"/>
+                <property name="org.country" type="string"/>
+                <property name="org.createdTime" type="number"/>
+                <property name="org.currency" type="number"/>
+                <property name="org.dbName" type="string"/>
+                <property name="org.domain" type="string"/>
+                <property name="org.emailDomain" type="string"/>
+                <property name="org.fax" type="number"/>
+                <property name="org.id" type="number"/>
+                <property name="org.language" type="string"/>
+                <property name="org.loggerLevel" type="number"/>
+                <property name="org.mobile" type="number"/>
+                <property name="org.name" type="string"/>
+                <property name="org.orgId" type="number"/>
+                <property name="org.phone" type="number"/>
+                <property name="org.state" type="string"/>
+                <property name="org.street" type="string"/>
+                <property name="org.timeFormat" type="number"/>
+                <property name="org.timezone" type="string"/>
+                <property name="org.zip" type="number"/>
+                <property name="org.dateformat" type="string"/>
+                <property name="org.timestate" type="number"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/serviceportal/updateserviceportal">
+        <requestbody type="object">
+            <property name="portalInfoMap" type="object">
+                <property name="captcha_enabled" type="boolean"/>
+                <property name="gmailLogin_allowed" type="boolean"/>
+                <property name="is_anyDomain_allowed" type="boolean"/>
+                <property name="is_public_create_allowed" type="boolean"/>
+                <property name="orgId" type="number"/>
+                <property name="portalId" type="number"/>
+                <property name="portalType" type="number"/>
+                <property name="publicKey" type="number"/>
+                <property name="saml_enabled" type="boolean"/>
+                <property name="signup_allowed" type="boolean"/>
+                <property name="_anyDomain_allowed" type="boolean"/>
+                <property name="_public_create_allowed" type="boolean"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/people/add">
+        <requestbody type="object">
+            <property name="peopleList" type="array">
+                <property name="name" type="string" mandatory="true"/>
+                <property name="email" type="string" mandatory="true"/>
+                <property name="phone" type="number"/>
+                <property name="isOccupantPortalAccess" type="boolean"/>
+                <property name="language" type="string"/>
+                <property name="peopleType" type="number"/>
+                <property name="rolesMap" type="object">
+                    <property name="service" type="number"/>
+                </property>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/people/update">
+    <requestbody type="object">
+        <property name="peopleList" type="array">
+            <property name="name" type="string" mandatory="true"/>
+            <property name="email" type="string" mandatory="true"/>
+            <property name="phone" type="number"/>
+            <property name="isOccupantPortalAccess" type="boolean"/>
+            <property name="language" type="string"/>
+            <property name="peopleType" type="number"/>
+            <property name="id" type="number"/>
+            <property name="rolesMap" type="object">
+                <property name="service" type="number"/>
+            </property>
+        </property>
+    </requestbody>
+</request>
+
+    <request path="/api/v2/application/users/add">
+        <requestbody type="object">
+            <property name="appId" type="number"/>
+            <property name="user" type="object">
+                <property name="name" type="string"/>
+                <property name="email" type="string"/>
+                <property name="language" type="string"/>
+                <property name="phone" type="string"/>
+                <property name="roleId" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/setup/updateuser">
+        <requestbody type="object">
+            <property name="user" type="object">
+                <property name="name" type="string"/>
+                <property name="email" type="string"/>
+                <property name="language" type="string"/>
+                <property name="phone" type="string"/>
+                <property name="roleId" type="number"/>
+                <property name="applicationId" type="number"/>
+                <property name="id" type="number"/>
+            </property>
+            <property name="appId" type="number"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/application/addOrUpdate">
+        <requestbody type="object">
+            <property name="application" type="object">
+                <property name="description" type="string"/>
+                <property name="id" type="number"/>
+                <property name="isDefault" type="boolean"/>
+                <property name="linkName" type="string"/>
+                <property name="name" type="string"/>
+            </property>
+            <property name="addLayout" type="boolean"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/tabGroup/addOrUpdate">
+        <requestbody type="object">
+            <property name="tabGroup" type="object">
+                <property name="iconType" type="number"/>
+                <property name="layoutId" type="number"/>
+                <property name="name" type="string" mandatory="true"/>
+                <property name="route" type="string"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/tab/addOrUpdate">
+        <requestbody type="object">
+            <property name="tab" type="object">
+                <property name="applicationId" type="number"/>
+                <property name="moduleIds" type="array"/>
+                <property name="name" type="string"/>
+                <property name="route" type="array"/>
+                <property name="specialTypeModules" type="array"/>
+                <property name="type" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+    
+    <request path="/api/v2/servicecataloggroup/addOrUpdate">
+        <requestbody type="object">
+            <property name="serviceCatalogGroup" type="object">
+                <property name="name" type="string"/>
+                <property name="description" type="string"/>
+            </property>
         </requestbody>
     </request>
 </config>
