@@ -2447,4 +2447,10 @@ public class FacilioChainFactory {
 		c.addCommand(deleteTenantContactChain());
 		return c;
 	}
+
+	public static FacilioChain getEnableOauth2Chain() {
+		FacilioChain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(new EnableOauth2Command());
+		return c;
+	}
 }

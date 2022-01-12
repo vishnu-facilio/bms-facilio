@@ -2775,6 +2775,7 @@ public class FacilioConstants {
 		public static final String OPERATIONAL_VISIBILITY_APP = "operations";
 		public static final String MAINTENANCE_APP = "maintenance";
 		public static final String WORKPLACE_APP = "wokplace";
+		public static final String DEVELOPER_APP = "dev";
 	}
 
 	public static class DefaultRoleNames {
@@ -2787,7 +2788,7 @@ public class FacilioConstants {
 		public static final String SUPER_ADMIN = "Super Administrator";
 		public static final String ADMIN = "Administrator";
 		public static final String MAINTENANCE_ADMIN = "CAFM Admin";
-
+		public static final String DEV_ADMIN = "Dev Admin";
 	}
 
 
