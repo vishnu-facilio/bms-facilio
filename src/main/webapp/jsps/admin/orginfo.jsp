@@ -24,10 +24,11 @@
 	  OrgBean orgBean = AccountUtil.getOrgBean();
 	  org = orgBean.getOrg(Long.parseLong(orgid));
 	  result = AccountUtil.getOrgBean(orgId).orgInfo();
-	  long appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
-	  users = AccountUtil.getOrgBean(orgId).getAppUsers(orgId, appId, false);
-	  //considering main app for now here
-	  roles = AccountUtil.getRoleBean(orgId).getRolesForApps(Collections.singletonList(appId));
+	  long appId = AccountUtil.getOrgBean(orgId).getDefaultApplicationId();
+	  if(appId > 0) {
+		  users = AccountUtil.getOrgBean(orgId).getAppUsers(orgId, appId, false);
+		  roles = AccountUtil.getRoleBean(orgId).getRolesForApps(Collections.singletonList(appId));
+	  }
 	  features  = AccountUtil.getFeatureLicenseMap(orgId);
   }
 %>
