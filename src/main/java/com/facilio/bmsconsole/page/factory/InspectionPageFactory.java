@@ -51,7 +51,18 @@ public class InspectionPageFactory extends PageFactory {
         JSONObject widgetParams = getdetailsWidgetParam1(record,module);
         widgetParams.put("isConfigurationWidget", true);
         secondaryDetailsWidget.setWidgetParams(widgetParams);
-        SummarySec.addWidget(secondaryDetailsWidget);
+        
+        if(AccountUtil.getCurrentOrg().getOrgId() == 17l) {
+        	if(record.getData().get("picklist") != null) {
+        		long actionTypeValue = Long.parseLong(record.getData().get("picklist").toString());
+        		if(actionTypeValue == 1) {
+        			SummarySec.addWidget(secondaryDetailsWidget);
+        		}
+        	}
+        }
+        else {
+        	SummarySec.addWidget(secondaryDetailsWidget);
+        }
         
         PageWidget secondaryDetailsWidget1 = new PageWidget(PageWidget.WidgetType.Q_AND_A_SECONDARY_DETAILS_WIDGET);
         secondaryDetailsWidget1.addToLayoutParams(SummarySec, 24, 7);
