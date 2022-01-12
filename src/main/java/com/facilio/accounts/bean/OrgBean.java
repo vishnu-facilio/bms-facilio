@@ -89,4 +89,6 @@ public interface OrgBean {
 	List<Map<String, Object>> getApplication(long appId) throws Exception;
 
 	Map<String, Object> getOrgUser(long iamOrgUserId) throws Exception;
+
+	public Long getDefaultApplicationId() throws Exception;
 }

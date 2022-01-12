@@ -16,10 +16,7 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.copyAssetReadingCommand;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.context.OrgUnitsContext;
-import com.facilio.bmsconsole.context.PortalInfoContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.chain.FacilioChain;
@@ -732,5 +729,9 @@ public class OrgBeanImpl implements OrgBean {
         
         
         return criteria;
+	}
+
+	public Long getDefaultApplicationId() throws Exception {
+		return ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
 	}
 }
