@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.page.factory;
 
-import com.facilio.bmsconsole.context.ItemTypesContext;
+import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.WidgetGroup;
@@ -8,9 +8,9 @@ import com.facilio.modules.FacilioModule;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-public class ItemTypesPageFactory extends PageFactory{
-    private static final Logger LOGGER = LogManager.getLogger(ItemTypesPageFactory.class.getName());
-    public static Page getItemTypesPage(ItemTypesContext itemTypes, FacilioModule module) throws Exception {
+public class ToolTypesPageFactory extends PageFactory{
+    private static final Logger LOGGER = LogManager.getLogger(ToolTypesPageFactory.class.getName());
+    public static Page getToolTypesPage(ToolTypesContext toolTypes, FacilioModule module) throws Exception {
         Page page = new Page();
 
         Page.Tab tab1 = page.new Tab("summary");
@@ -18,26 +18,26 @@ public class ItemTypesPageFactory extends PageFactory{
         Page.Section tab1Sec1 = page.new Section();
         tab1.addSection(tab1Sec1);
 
-        if ((itemTypes.getDescription() != null && !itemTypes.getDescription().isEmpty())||(itemTypes.getCategory() != null) ) {
+        if ((toolTypes.getDescription() != null && !toolTypes.getDescription().isEmpty())||(toolTypes.getCategory() != null) ) {
             PageWidget descWidget = new PageWidget(PageWidget.WidgetType.DESCRIPTION_CARD);
             descWidget.addToLayoutParams(tab1Sec1,24, 4);
             tab1Sec1.addWidget(descWidget);
         }
         Page.Section tab1Sec2 = page.new Section();
         tab1.addSection(tab1Sec2);
-        PageWidget card1= new PageWidget(PageWidget.WidgetType.ITEM_TYPES_CARD);
+        PageWidget card1= new PageWidget(PageWidget.WidgetType.TOOL_TYPES_CARD);
         card1.addToLayoutParams(tab1Sec2, 8, 5);
-        card1.addToWidgetParams("card","itemtypescard1");
+        card1.addToWidgetParams("card","tooltypescard1");
         tab1Sec2.addWidget(card1);
 
-        PageWidget card2= new PageWidget(PageWidget.WidgetType.ITEM_TYPES_CARD);
+        PageWidget card2= new PageWidget(PageWidget.WidgetType.TOOL_TYPES_CARD);
         card2.addToLayoutParams(tab1Sec2, 8, 5);
-        card2.addToWidgetParams("card","itemtypescard2");
+        card2.addToWidgetParams("card","tooltypescard2");
         tab1Sec2.addWidget(card2);
 
-        PageWidget card3= new PageWidget(PageWidget.WidgetType.ITEM_TYPES_CARD);
+        PageWidget card3= new PageWidget(PageWidget.WidgetType.TOOL_TYPES_CARD);
         card3.addToLayoutParams(tab1Sec2, 8, 5);
-        card3.addToWidgetParams("card","itemtypescard3");
+        card3.addToWidgetParams("card","tooltypescard3");
         tab1Sec2.addWidget(card3);
 
         Page.Section tab1Sec3 = page.new Section();
@@ -72,7 +72,7 @@ public class ItemTypesPageFactory extends PageFactory{
         PageWidget storeRoomWidget = new PageWidget();
         storeRoomWidget.addToLayoutParams(section, 24, 8);
         storeRoomWidget.setWidgetType(PageWidget.WidgetType.STORE_ROOM);
-        storeRoomWidget.addToWidgetParams("storeroom","itemStoreroom");
+        storeRoomWidget.addToWidgetParams("storeroom","toolStoreroom");
         section.addWidget(storeRoomWidget);
 
         return storeRoomWidget;
@@ -82,7 +82,7 @@ public class ItemTypesPageFactory extends PageFactory{
         PageWidget transactionsWidget = new PageWidget();
         transactionsWidget.addToLayoutParams(section, 24, 8);
         transactionsWidget.setWidgetType(PageWidget.WidgetType.TRANSACTIONS);
-        transactionsWidget.addToWidgetParams("transactions","itemTransactions");
+        transactionsWidget.addToWidgetParams("transactions","toolTransactions");
         section.addWidget(transactionsWidget);
 
         return transactionsWidget;

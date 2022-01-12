@@ -3,6 +3,9 @@ package com.facilio.delegate.util;
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
+import com.facilio.bmsconsole.templates.DefaultTemplate;
+import com.facilio.bmsconsole.util.FreeMarkerAPI;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -12,13 +15,17 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.collections.CollectionUtils;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class DelegationUtil {
+
+    public static final String SEND_DELEGATE_REMINDER_JOB_NAME = "sendDelegateReminderJob";
 
     private static GenericSelectRecordBuilder getBuilder(long timestamp, DelegationType delegationType) {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
@@ -103,6 +110,18 @@ public class DelegationUtil {
         return user;
     }
 
+    public static DelegationContext getDelegationContext(long id) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getUserDelegationModule().getTableName())
+                .select(FieldFactory.getUserDelegationFields())
+                .andCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getUserDelegationModule()));
+        DelegationContext delegationContext = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), DelegationContext.class);
+        if (delegationContext != null) {
+            fillDelegation(Collections.singletonList(delegationContext));
+        }
+        return delegationContext;
+    }
+
     public static void fillDelegation(List<DelegationContext> delegationContexts) throws Exception {
         if (CollectionUtils.isEmpty(delegationContexts)) {
             return;
@@ -124,5 +143,34 @@ public class DelegationUtil {
                 delegationContext.setDelegateUser(userMap.get(delegationContext.getDelegateUserId()));
             }
         }
+    }
+
+    private static Map<String, Object> getPlaceHolderMap(DelegationContext delegationContext) throws Exception {
+        Map<String, Object> placeHolders = new HashMap<>();
+        placeHolders.put("org", AccountUtil.getCurrentOrg());
+        placeHolders.putAll(FieldUtil.getAsProperties(delegationContext));
+        int delegationType = delegationContext.getDelegationType();
+        List<String> responsibilities = new ArrayList<>();
+        for (DelegationType type : DelegationType.values()) {
+            if ((type.getDelegationValue() & delegationType) == type.getDelegationValue()) {
+                responsibilities.add(type.getValue());
+            }
+        }
+        placeHolders.put("responsibilities", responsibilities);
+        placeHolders.put("dUser", placeHolders.get("user"));
+        placeHolders.put("appDomain", FacilioProperties.getAppDomain());
+        return placeHolders;
+    }
+
+    public static void sendMail(DelegationContext delegationContext, DefaultTemplate defaultTemplate) throws Exception {
+        JSONObject json = defaultTemplate.getOriginalTemplate();
+
+        Map<String, Object> placeHolders = DelegationUtil.getPlaceHolderMap(delegationContext);
+        for (Object key : json.keySet()){
+            String s = FreeMarkerAPI.processTemplate(json.get(key).toString(), placeHolders);
+            json.put(key, s);
+        }
+        json.put("mailType", "html");
+        FacilioFactory.getEmailClient().sendEmailWithActiveUserCheck(json, false);
     }
 }

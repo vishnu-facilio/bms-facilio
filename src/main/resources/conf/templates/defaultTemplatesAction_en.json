@@ -1025,5 +1025,12 @@
 		"to": "${delegateUser.email}",
 		"subject": "${dUser.name} has delegated some activities to you! Please take a look!",
 		"message_ftl": "delegationNotification"
+	},
+	"121": {
+		"name": "DELEGATION_REMINDER",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
+		"to": "${delegateUser.email}",
+		"subject": "Reminder! Your access to activities delegated to you by ${dUser.name} starts tomorrow.",
+		"message_ftl": "delegationReminder"
 	}
 }
