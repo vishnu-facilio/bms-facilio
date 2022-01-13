@@ -409,6 +409,7 @@ public class AddInductionModules extends SignUpData {
         fields.add(siteApplyTo);
         
         MultiLookupField multiLookupSiteField = (MultiLookupField) FieldFactory.getDefaultField("sites", "Sites", null, FieldType.MULTI_LOOKUP);
+        multiLookupSiteField.setDisplayType(FieldDisplayType.MULTI_LOOKUP_SIMPLE);
         multiLookupSiteField.setParentFieldPositionEnum(MultiLookupField.ParentFieldPosition.LEFT);
         multiLookupSiteField.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.SITE));
 

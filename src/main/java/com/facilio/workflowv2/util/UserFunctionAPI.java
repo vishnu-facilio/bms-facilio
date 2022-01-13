@@ -16,9 +16,9 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.scriptengine.context.WorkflowNamespaceContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowUserFunctionContext;
-import com.facilio.workflowv2.contexts.WorkflowNamespaceContext;
 
 public class UserFunctionAPI {
 	

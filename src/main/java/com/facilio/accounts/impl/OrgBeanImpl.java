@@ -235,6 +235,7 @@ public class OrgBeanImpl implements OrgBean {
 					if(appDomain != null) {
 						user.setAppType(appDomain.getAppType());
 						user.setAppDomain(appDomain);
+						user.setAppType(appDomain.getAppType());
 					}
 					user.setApplicationId((long)prop.get("applicationId"));
 				}

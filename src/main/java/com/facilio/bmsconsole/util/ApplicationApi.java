@@ -469,7 +469,7 @@ public class ApplicationApi {
             addApplicationLayout(opLayoutMobile);
 
             addOccupantPortalWebTabs(spLayout);
-            addOccupantPortalWebGroupsForMobileLayout(spLayout);
+            addOccupantPortalWebGroupsForMobileLayout(opLayoutMobile);
 
             Role occupantAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.DefaultRoleNames.OCCUPANT_USER);
             addAppRoleMapping(occupantAdmin.getRoleId(), servicePortal.getId());

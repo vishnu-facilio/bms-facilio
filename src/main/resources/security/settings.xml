@@ -272,12 +272,12 @@
             <property name="tab" type="object">
                 <property name="applicationId" type="number"/>
                 <property name="moduleIds" type="array">
-                	<items type="number"/>
+                    <items type="number"/>
                 </property>
                 <property name="name" type="string"/>
                 <property name="route" type="string"/>
                 <property name="specialTypeModules" type="array">
-                	<items type="string"/>
+                    <items type="string"/>
                 </property>
                 <property name="type" type="number"/>
             </property>
@@ -494,5 +494,154 @@
 
         </requestbody>
 
+    </request>
+    <request path="/api/picklist/addAssetCategory">
+        <requestbody type="object">
+            <property name="assetCategory" type="object">
+                <property name="displayName" type="string"/>
+                <property name="parentCategoryId" type="number"/>
+                <property name="type" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/picklist/updateAssetCategory">
+        <requestbody type="object">
+            <property name="assetCategory" type="object">
+                <property name="displayName" type="string"/>
+                <property name="parentCategoryId" type="number"/>
+                <property name="type" type="number"/>
+                <property name="id" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/picklist/addAssetDepartment">
+        <requestbody type="object">
+            <property name="assetDepartment" type="object">
+                <property name="name" type="string"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/picklist/addAssetType">
+        <requestbody type="object">
+            <property name="assetType" type="object">
+                <property name="name" type="string"/>
+                <property name="movable" type="boolean"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/spacecategory/add">
+        <requestbody type="object">
+            <property name="spaceCategory" type="object">
+                <property name="commonArea" type="boolean"/>
+                <property name="description" type="string"/>
+                <property name="name" type="string"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/spacecategory/update">
+        <requestbody type="object">
+            <property name="spaceCategory" type="object">
+                <property name="approvalFlowId" type="number"/>
+                <property name="commonArea" type="boolean"/>
+                <property name="currentTime" type="number"/>
+                <property name="currentUserAuthorizedToApprove" type="boolean"/>
+                <property name="deleted" type="boolean"/>
+                <property name="description" type="string"/>
+                <property name="formId" type="number"/>
+                <property name="id" type="number"/>
+                <property name="localId" type="number"/>
+                <property name="moduleId" type="number"/>
+                <property name="name" type="string"/>
+                <property name="offlineModifiedTime" type="number"/>
+                <property name="orgId" type="number"/>
+                <property name="siteId" type="number"/>
+                <property name="slaPolicyId" type="number"/>
+                <property name="spaceModuleId" type="number"/>
+                <property name="stateFlowId" type="number"/>
+                <property name="sysCreatedTime" type="number"/>
+                <property name="sysDeletedTime" type="number"/>
+                <property name="sysModifiedTime" type="number"/>
+            </property>
+            <property name="spaceCategoryIds" type="array">
+                <items type="number"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v2/businesshours/add">
+        <requestbody type="object">
+            <property name="businessHour" type="object">
+                <property name="businessHourType" type="string"/>
+                <property name="customHourType" type="string"/>
+                <property name="name" type="string" mandatory="true"/>
+                <property name="singleDaybusinessHoursList" type="array">
+                    <property name="dayOfWeek" type="string"/>
+                    <property name="startTime" type="string"/>
+                    <property name="endTime" type="string"/>
+                </property>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v2/businesshours/edit">
+        <requestbody type="object">
+            <property name="businessHour" type="object">
+                <property name="businessHourType" type="string"/>
+                <property name="businessHourTypeVal" type="string"/>
+                <property name="customHourType" type="string"/>
+                <property name="customHourTypeVal" type="string"/>
+                <property name="name" type="string"/>
+                <property name="singleDaybusinessHoursList" type="array">
+                    <property name="dayOfWeek" type="string"/>
+                    <property name="startTime" type="string"/>
+                    <property name="endTime" type="string"/>
+                </property>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/energymeter/add">
+        <requestbody type="object">
+            <property name="energyMeter" type="object">
+                <property name="description" type="string"/>
+                <property name="isVirtual" type="boolean"/>
+                <property name="multiplicationFactor" type="string"/>
+                <property name="name" type="string"/>
+                <property name="purpose" type="object">
+                    <property name="id" type="number"/>
+                </property>
+                <property name="purposeSpace" type="object">
+                    <property name="id" type="number"/>
+                </property>
+                <property name="root" type="boolean"/>
+                <property name="serialNumber" type="string"/>
+                <property name="siteId" type="number"/>
+                <property name="space" type="object">
+                    <property name="id" type="number"/>
+                </property>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/energymeter/update">
+        <requestbody type="object">
+            <property name="energyMeter" type="object">
+                <property name="description" type="string"/>
+                <property name="id" type="number"/>
+                <property name="multiplicationFactor" type="string"/>
+                <property name="name" type="string"/>
+                <property name="purpose" type="object">
+                    <property name="id" type="number"/>
+                </property>
+                <property name="serialNumber" type="string"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/baseline/addBaseLine">
+        <requestbody type="object">
+            <property name="baseLine" type="object">
+                <property name="endTime" type="number"/>
+                <property name="name" type="string"/>
+                <property name="rangeType" type="string"/>
+                <property name="spaceId" type="number"/>
+                <property name="startTime" type="number"/>
+            </property>
+        </requestbody>
     </request>
 </config>

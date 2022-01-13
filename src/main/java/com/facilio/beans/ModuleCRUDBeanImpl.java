@@ -26,6 +26,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.facilio.accounts.util.AccountUtil;
@@ -40,6 +41,7 @@ import com.facilio.agentv2.iotmessage.IotMessageApiV2;
 import com.facilio.agentv2.metrics.AgentMetrics;
 import com.facilio.agentv2.metrics.MetricsApi;
 import com.facilio.agentv2.point.Point;
+import com.facilio.bmsconsole.actions.MLServiceAction;
 import com.facilio.bmsconsole.actions.ReadingAction;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -1546,6 +1548,37 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	@Override
 	public void addAuditLog(AuditLogHandler.AuditLogContext auditLog) throws Exception {
 		AuditLogUtil.insertAuditLog(auditLog);
+	}
+	@Override
+	public void initMLService(Map<String , String> sampleJson) throws Exception {
+		MLServiceContext context = new MLServiceContext();
+		String usecase = sampleJson.get("usecase");
+		context.setModelName(usecase);
+		context.setOrgId(Long.parseLong(sampleJson.get("orgId")));
+		if (sampleJson.get("workflowinfo").length() > 2) {
+			context.setWorkflowInfo((JSONObject) new JSONParser().parse((String)sampleJson.get("workflowinfo")));
+		}
+		context.setStartTimeString((String) sampleJson.get("startTime"));
+		context.setEndTimeString((String) sampleJson.get("endTime"));
+		context.setScenario(sampleJson.get("scenario"));		
+		context.setMlVariables((JSONObject) new JSONParser().parse((String)sampleJson.get("modelVariables")));
+		if(usecase.equalsIgnoreCase("multivariateanomaly")) {
+			if (sampleJson.get("groupingmethod").length() > 2) {
+				context.setGroupingMethod((JSONObject) new JSONParser().parse((String)sampleJson.get("groupingmethod")));
+			}
+			if (sampleJson.get("filtermethod").length() > 2) {
+				context.setFilteringMethod((org.json.simple.JSONArray) new JSONParser().parse((String) sampleJson.get("filtermethod")));
+			}
+			org.json.simple.JSONArray reading = (org.json.simple.JSONArray) new JSONParser().parse((String)sampleJson.get("readings"));
+
+			context.setModels(reading);
+
+		}
+		else {		
+			context.setAssetIds(sampleJson.get("assetIdList"));
+		}
+		//context.setServiceType(sampleJson.get("servicetype"));
+		MLServiceAction.initMLServiceFromAdmin(context);
 	}
 }
 

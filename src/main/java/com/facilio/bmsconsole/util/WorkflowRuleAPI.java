@@ -78,6 +78,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.scriptengine.context.ParameterContext;
+import com.facilio.scriptengine.context.ScriptContext.WorkflowUIMode;
 import com.facilio.scriptengine.context.WorkflowFieldType;
 import com.facilio.scriptengine.util.WorkflowGlobalParamUtil;
 import com.facilio.tasker.FacilioTimer;
@@ -85,7 +86,6 @@ import com.facilio.time.DateTimeUtil;
 import com.facilio.trigger.context.BaseTriggerContext;
 import com.facilio.trigger.util.TriggerUtil;
 import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflows.context.WorkflowContext.WorkflowUIMode;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class WorkflowRuleAPI {

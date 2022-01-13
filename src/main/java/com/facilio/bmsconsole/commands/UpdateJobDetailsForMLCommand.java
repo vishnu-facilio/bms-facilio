@@ -1,8 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Map;
+import java.util.List;
 
-import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
 
@@ -10,9 +9,8 @@ import com.facilio.bmsconsole.context.MLResponseContext;
 import com.facilio.bmsconsole.context.MLServiceContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflowv2.util.UserFunctionAPI;
 
 public class UpdateJobDetailsForMLCommand extends FacilioCommand {
 
@@ -26,14 +24,25 @@ public class UpdateJobDetailsForMLCommand extends FacilioCommand {
 
 			LOGGER.info("Start of UpdateJobDetailsForMLCommand for usecase id "+mlServiceContext.getUseCaseId());
 			//TODO : update ml api result in ml_models table
-			MLResponseContext mlResponse = mlServiceContext.getMlResponse();
-			if (mlResponse!=null && mlResponse.getStatus()) {
+			List<MLResponseContext> mlResponseList = mlServiceContext.getMlResponseList();
+			//MLResponseContext mlResponse = mlServiceContext.getMlResponse();
+			boolean activateMLJob = true; 
+			if (mlResponseList==null || mlResponseList.size() != mlServiceContext.getModels().size()) {
+				activateMLJob = false;
+			}
+			for(MLResponseContext mlResponse : mlResponseList) {
+				if(!mlResponse.getStatus()) {
+					activateMLJob = false;
+					break;
+				} 
+			}
+			if (activateMLJob) {
 				// initiate the ml jobs
 				FacilioChain chain = FacilioChainFactory.activateMLServiceChain();
 				FacilioContext chainContext = chain.getContext();
 				chainContext.put(FacilioConstants.ContextNames.ML_MODEL_INFO, mlServiceContext);
 				chain.execute();
-			}
+			} 
 
 		} catch (Exception e) {
 			LOGGER.error("Error while updating ml response in table");
@@ -42,20 +51,6 @@ public class UpdateJobDetailsForMLCommand extends FacilioCommand {
 		LOGGER.info("End of UpdateJobDetailsForMLCommand");
 		return false;
 
-	}
-
-	private Object getWorkFlowId(Map<String, Object> workflowInfo) {
-		String namespace = (String) workflowInfo.get("namespace");
-		String function = (String) workflowInfo.get("function");
-		try {
-			WorkflowContext workflowContext = UserFunctionAPI.getWorkflowFunction(namespace, function);
-			return workflowContext.getId();
-		} catch (Exception e) {
-			LOGGER.error("Error while getting flow id for given namespace <" + namespace + "> and function <" + function
-					+ ">");
-			e.printStackTrace();
-		}
-		return null;
 	}
 
 }

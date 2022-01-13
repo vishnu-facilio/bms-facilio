@@ -34,10 +34,15 @@ import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 
 public class V3PeopleAPI {
+
+    private static final Logger LOGGER = org.apache.log4j.Logger.getLogger(V3PeopleAPI.class);
+
 
     public static List<V3VendorContactContext> getVendorContacts(long vendorId, boolean fetchPrimaryContact) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

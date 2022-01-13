@@ -50,8 +50,6 @@ public class WorkflowContext extends ScriptContext implements Serializable {
 
 	private static final Logger LOGGER = Logger.getLogger(WorkflowContext.class.getName());
 	
-	boolean runAsAdmin;
-	
 	public WorkflowContext() {
 		this.setErrorListener(new ErrorListener());
 	}
@@ -116,9 +114,7 @@ public class WorkflowContext extends ScriptContext implements Serializable {
 		cachedData.put(name, data);
 	}
 
-	Long orgId;
 	String workflowString;
-	String workflowV2String;
 	Map<String,Object> globalParameters;
 	List<Object> params;							// for v2 workflow
 	
@@ -133,30 +129,9 @@ public class WorkflowContext extends ScriptContext implements Serializable {
 
 	List<WorkflowExpression> expressions;
 	
-	WorkflowType type;
-	
-	public int getType() {
-		if(type != null) {
-			return type.getValue();
-		}
-		return -1;
-	}
-	public void setType(int type) {
-		this.type = WorkflowType.valueOf(type);
-	}
-	
 	public List<WorkflowExpression> getExpressions() {
 		return expressions;
 	}
-	
-	public String getWorkflowV2String() {
-		return workflowV2String;
-	}
-	public void setWorkflowV2String(String workflowV2String) {
-		this.workflowV2String = workflowV2String;
-	}
-	
-	boolean isLogNeeded;
 	
 	public List<Object> getParams() {
 		return params;
@@ -165,19 +140,6 @@ public class WorkflowContext extends ScriptContext implements Serializable {
 		this.params = params;
 	}
 	
-	public boolean isLogNeeded() {
-		return isLogNeeded;
-	}
-	public boolean getIsLogNeeded() {
-		return isLogNeeded;
-	}
-	
-	public void setLogNeeded(boolean isLogNeeded) {
-		this.isLogNeeded = isLogNeeded;
-	}
-	public void setIsLogNeeded(boolean isLogNeeded) {
-		this.isLogNeeded = isLogNeeded;
-	}
 	public void setWorkflowExpressions(List<WorkflowExpression> workflowExpressions) throws Exception {
 		
 		this.expressions = workflowExpressions;
@@ -256,13 +218,6 @@ public class WorkflowContext extends ScriptContext implements Serializable {
 		}
 		this.variableResultMap.put(key, value);
 	}
-	public Long getOrgId() {
-		return orgId;
-	}
-
-	public void setOrgId(Long orgId) {
-		this.orgId = orgId;
-	}
 
 	public String getWorkflowString() {
 		return workflowString;
@@ -305,26 +260,13 @@ public class WorkflowContext extends ScriptContext implements Serializable {
 		this.resultEvaluator = resultEvaluator;
 	}
 	
-	private WorkflowUIMode workflowUIMode;
 	public WorkflowUIMode getFormulaFieldTypeEnum() {
-		return workflowUIMode;
-	}
-	public void setWorkflowUIMode(WorkflowUIMode workflowUIMode) {
-		this.workflowUIMode = workflowUIMode;
-	}
-	public int getWorkflowUIMode() {
-		if (workflowUIMode != null) {
-			return workflowUIMode.getValue();
-		}
-		return -1;
-	}
-	public void setWorkflowUIMode(int workflowUIMode) {
-		this.workflowUIMode = WorkflowUIMode.valueOf(workflowUIMode);
+		return WorkflowUIMode.valueOf(getWorkflowUIMode());
 	}
 
 	public void fillFunctionHeaderFromScript() throws Exception {
 		
-		try(InputStream stream = new ByteArrayInputStream(workflowV2String.getBytes(StandardCharsets.UTF_8));) {
+		try(InputStream stream = new ByteArrayInputStream(getWorkflowV2String().getBytes(StandardCharsets.UTF_8));) {
 			WorkflowV2Lexer lexer = new WorkflowV2Lexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
 	        
 			WorkflowV2Parser parser = new WorkflowV2Parser(new CommonTokenStream(lexer));
@@ -594,87 +536,7 @@ public class WorkflowContext extends ScriptContext implements Serializable {
 		}
 	}
 	
-	public enum WorkflowUIMode {
-		GUI,
-		XML,
-		COMPLEX,
-		;
-		
-		public int getValue() {
-			return ordinal() + 1;
-		}
-		
-		public static WorkflowUIMode valueOf (int value) {
-			if (value > 0 && value <= values().length) {
-				return values()[value - 1];
-			}
-			return null;
-		}
-	}
-	
-	public enum WorkflowType {
-		SYSTEM,
-		USER_DEFINED,
-		;
-		
-		public int getValue() {
-			return ordinal() + 1;
-		}
-		
-		public static WorkflowType valueOf (int value) {
-			if (value > 0 && value <= values().length) {
-				return values()[value - 1];
-			}
-			return null;
-		}
-	}
 
-	public boolean isRunAsAdmin() {
-		return runAsAdmin;
-	}
-	public boolean getRunAsAdmin() {
-		return runAsAdmin;
-	}
-	public void setRunAsAdmin(boolean runAsAdmin) {
-		this.runAsAdmin = runAsAdmin;
-	}
-	
-	private long sysCreatedTime = -1;
-	public long getSysCreatedTime() {
-		return sysCreatedTime;
-	}
-	public void setSysCreatedTime(long sysCreatedTime) {
-		this.sysCreatedTime = sysCreatedTime;
-	}
-	
-	private Boolean deleted;
-	private long deletedBy;
-	private long deletedTime;
-	
-	private long sysModifiedTime = -1;
-	public long getSysModifiedTime() {
-		return sysModifiedTime;
-	}
-	public void setSysModifiedTime(long sysModifiedTime) {
-		this.sysModifiedTime = sysModifiedTime;
-	}
-	
-	private long sysCreatedBy;
-	public long getSysCreatedBy() {
-		return sysCreatedBy;
-	}
-	public void setSysCreatedBy(long sysCreatedBy) {
-		this.sysCreatedBy = sysCreatedBy;
-	}
-
-	private long sysModifiedBy;
-	public long getSysModifiedBy() {
-		return sysModifiedBy;
-	}
-	public void setSysModifiedBy(long sysModifiedBy) {
-		this.sysModifiedBy = sysModifiedBy;
-	}
-	
 	private IAMUser sysCreatedByObj;
 	private IAMUser sysModifiedByObj;
 
@@ -689,23 +551,5 @@ public class WorkflowContext extends ScriptContext implements Serializable {
 	}
 	public void setSysModifiedByObj(IAMUser sysModifiedByObj) {
 		this.sysModifiedByObj = sysModifiedByObj;
-	}
-	public Boolean getDeleted() {
-		return deleted;
-	}
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
-	public long getDeletedBy() {
-		return deletedBy;
-	}
-	public void setDeletedBy(long deletedBy) {
-		this.deletedBy = deletedBy;
-	}
-	public long getDeletedTime() {
-		return deletedTime;
-	}
-	public void setDeletedTime(long deletedTime) {
-		this.deletedTime = deletedTime;
 	}
 }

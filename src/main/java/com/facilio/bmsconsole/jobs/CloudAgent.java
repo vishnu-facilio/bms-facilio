@@ -23,6 +23,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.fw.FacilioException;
+import com.facilio.modules.FieldUtil;
 import com.facilio.queue.source.KafkaMessageSource;
 import com.facilio.queue.source.MessageSource;
 import com.facilio.taskengine.job.FacilioJob;
@@ -115,6 +116,8 @@ public class CloudAgent extends FacilioJob {
 		List<Object> props = new ArrayList<>();
 		props.add(fromTime);
 		props.add(toTime);
+		props.add(FieldUtil.getAsProperties(agent));
+
 
 		newContext.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflowContext);
 		newContext.put(WorkflowV2Util.WORKFLOW_PARAMS, props);

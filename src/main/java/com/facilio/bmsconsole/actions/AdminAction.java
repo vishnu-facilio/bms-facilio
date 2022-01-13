@@ -426,6 +426,34 @@ public class AdminAction extends ActionSupport {
 		return SUCCESS;
 
 	}
+	public String mlService() throws Exception {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		//HttpServletResponse response = ServletActionContext.getResponse();
+		Map<String,String> sampleJson = new HashMap<String,String>();
+		Long orgId = Long.parseLong(request.getParameter("orgid"));
+		String fromdateTtime = request.getParameter("fromTtime");
+		String todateendTtime = request.getParameter("toTtime");
+
+		sampleJson.put("orgId",request.getParameter("orgid"));
+		sampleJson.put("usecase" ,request.getParameter("usecase"));
+		sampleJson.put("modelVariables" ,request.getParameter("modelvariables"));
+
+		sampleJson.put("workflowinfo" ,request.getParameter("workflowinfo"));
+		sampleJson.put("scenario" ,request.getParameter("scenario"));
+		sampleJson.put("startTime" ,fromdateTtime);
+		sampleJson.put("endTime" ,todateendTtime);
+		if(request.getParameter("usecase").equals("multivariateanomaly")) {
+			sampleJson.put("readings" ,request.getParameter("model"));
+			sampleJson.put("groupingmethod" ,request.getParameter("groupingmethod"));
+			sampleJson.put("filtermethod" ,request.getParameter("filtermethod"));
+		}else {
+			sampleJson.put("assetIdList" ,request.getParameter("assetIdList"));
+		}
+		ModuleCRUDBean bean = (ModuleCRUDBean) TransactionBeanFactory.lookup("ModuleCRUD", orgId);
+		bean.initMLService(sampleJson);
+		return SUCCESS;
+
+	}
 
 	public String moveReadings() throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();

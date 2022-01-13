@@ -44,7 +44,7 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 		LOGGER.info("inside getReadingsforML");
 		List<MLVariableContext> mlVariable = mlContext.getMLVariable();
 		long time;
-		if(mlContext.getModelPath().equals("ratioCheck") || mlContext.getModelPath().equals("checkGam1") || mlContext.getModelPath().equals("buildGamModel")){
+		if(mlContext.getModelPath().equals("ratioCheck") || mlContext.getModelPath().equals("checkGamv1") || mlContext.getModelPath().equals("buildGamModelv1")){
 			
 			Date date = new Date();
 			date.setTime(mlContext.getPredictionTime());
@@ -60,11 +60,12 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 		}
 		
 		long currentTime = mlContext.isHistoric() ? mlContext.getExecutionEndTime() : time;
-		if( FacilioProperties.isDevelopment() && !mlContext.isHistoric())
-		{
+		
+		//if( FacilioProperties.isDevelopment() && !mlContext.isHistoric())
+		//{
 			// for dev testing purpose time is moved back 
-			currentTime = 1536300000000L;
-		}
+		//	currentTime = 1536300000000L;
+		//}
 		
 		SortedMap<Long,Hashtable<String,Object>> criteriavariableData = new TreeMap<Long,Hashtable<String,Object>>();
 		
@@ -81,6 +82,7 @@ public class GetReadingsForMLCommand extends FacilioCommand {
             FacilioField variableField = modBean.getField(variables.getFieldID());
             FacilioField parentField = modBean.getField(variables.getParentFieldID());
             FacilioModule module = modBean.getModule(variableField.getModuleId());
+            
             FacilioField ttimeField = modBean.getField("ttime", module.getName());
             List<FacilioField> fieldList = new ArrayList<FacilioField>(2);
             fieldList.add(variableField);
@@ -93,6 +95,13 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 																	.andCondition(CriteriaAPI.getCondition(ttimeField, String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL))
 																	.andCondition(CriteriaAPI.getCondition(ttimeField, String.valueOf(currentTime), NumberOperators.LESS_THAN))
 																	.andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(variables.getParentID()), NumberOperators.EQUALS));
+			
+			if(variableField.getName().equals("totalEnergyConsumptionDelta")) {
+				FacilioField markedField = modBean.getField("marked", module.getName());
+				List<Long> markedValue = new ArrayList<>();
+				markedValue.add((long) 1);
+				selectBuilder = selectBuilder.andCondition(CriteriaAPI.getCondition(markedField, markedValue, NumberOperators.NOT_EQUALS));
+			}
 			
 			List<Map<String, Object>> props = selectBuilder.getAsProps();
 			for(Map<String,Object> prop : props)
@@ -164,7 +173,7 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 																		.andCondition(CriteriaAPI.getCondition(ttimeField, String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL))
 																		.andCondition(CriteriaAPI.getCondition(ttimeField, String.valueOf(currentTime), NumberOperators.LESS_THAN))
 																		.andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(variables.getParentID()), NumberOperators.EQUALS));
-																		
+				
 				List<Map<String, Object>> props = selectBuilder.getAsProps();
 				for(Map<String,Object> prop : props)
 				{
