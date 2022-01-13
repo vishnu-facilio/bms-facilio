@@ -320,12 +320,12 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 							//sortFields are available only for table list view
 							List<ViewField> columns = getViewColumns(view.getId());
 							view.setFields(columns);
-							if (StringUtils.isEmpty(view.getModuleName()) && view.getModuleId() > 0) {
-								view.setModuleName(modBean.getModule(view.getModuleId()).getName());
-							}
 							view.setSortFields(getSortFields(view.getId(), view.getModuleName()));
 							break;
 					}
+				}
+				if (StringUtils.isEmpty(view.getModuleName()) && view.getModuleId() > 0) {
+					view.setModuleName(modBean.getModule(view.getModuleId()).getName());
 				}
 				if (view.getCriteriaId() != -1) {
 					Criteria criteria = CriteriaAPI.getCriteria(orgId, view.getCriteriaId());
