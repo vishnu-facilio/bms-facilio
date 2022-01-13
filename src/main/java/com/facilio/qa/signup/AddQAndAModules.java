@@ -114,6 +114,7 @@ public class AddQAndAModules extends SignUpData {
         fields.add(FieldFactory.getDefaultField("totalPages", "Total Pages", "TOTAL_PAGES", FieldType.NUMBER));
         fields.add(FieldFactory.getDefaultField("totalQuestions", "Total Questions", "TOTAL_QUESTIONS", FieldType.NUMBER));
         fields.add(FieldFactory.getDefaultField("totalResponses", "Total Responses", "TOTAL_RESPONSES", FieldType.NUMBER));
+        fields.add(FieldFactory.getBaseModuleSystemField("formId",module));
 
         module.setFields(fields);
         return module;
@@ -187,6 +188,7 @@ public class AddQAndAModules extends SignUpData {
         fields.add(FieldFactory.getDefaultField("fullScore", "Full Score", "FULL_SCORE", FieldType.DECIMAL));
         fields.add(FieldFactory.getDefaultField("totalScore", "Total Score", "TOTAL_SCORE", FieldType.DECIMAL));
         fields.add(FieldFactory.getDefaultField("scorePercent", "Score percent", "SCORE_PERCENT", FieldType.DECIMAL));
+        fields.add(FieldFactory.getBaseModuleSystemField("formId",module));
 
         module.setFields(fields);
         return module;

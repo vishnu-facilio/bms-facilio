@@ -494,6 +494,10 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
     		value = calenderAndClock.getName()+"."+calenderAndClock.getValue()+"."+getCurrentExecutionTime();
     		//value = calenderAndClock.getFullName()+"."+getCurrentExecutionTime();
 		}
+    	else if (operatorValue.asObject() instanceof String) {
+    		value = operatorValue.asString();
+    		value = value.replace(",", StringOperators.DELIMITED_COMMA);
+		}
     	
     	condition.setValue(value);
     	

@@ -76,7 +76,7 @@ public class FilterUtil {
 		Object valueObj = conditionObj.get("value");
 		if(valueObj!=null && valueObj instanceof JSONArray) {
 			JSONArray valueArray = (JSONArray) valueObj;
-			if(operator.equals(DateOperators.DAY)) {
+			if(operator.equals(DateOperators.DAY_OF_WEEK)) {
 				valueArray = changeAsSQLDays(valueArray);
 			}
 			value = StringUtils.join(valueArray, ",");

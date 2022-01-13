@@ -356,7 +356,9 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 			updateBuilder.andCondition(CriteriaAPI.getCondition(facilioField,String.valueOf(enumField.getIndex(enumString)), NumberOperators.EQUALS));
 		}
 		else {
-			updateBuilder.andCondition(CriteriaAPI.getCondition(facilioField, String.valueOf(readingsList.get(j).getData().get(facilioField.getName())), StringOperators.IS));
+			String value = String.valueOf(readingsList.get(j).getData().get(facilioField.getName()));
+			value = value.replace(",", StringOperators.DELIMITED_COMMA);
+			updateBuilder.andCondition(CriteriaAPI.getCondition(facilioField, value , StringOperators.IS));
 		}
 		updateBuilder.withChangeSet(ReadingContext.class);
 		return updateBuilder;

@@ -386,7 +386,6 @@ public class PageWidget {
 		TENANT("tenant"),
 		TOTAL_COST("totalCost"),
 		TRANSFER_REQUEST_LINE_ITEMS("transferrequestlineitems"),
-		TRANSFER_REQUEST_CARD("transferrequestcard"),
 		DESCRIPTION_CARD("descriptioncard"),
 		SURVEY_TEMPLATE_surveyDetails("surveyDetails"),
 		SURVEY_TEMPLATE_surveyPageDetails("surveyPageDetails"),
@@ -408,11 +407,10 @@ public class PageWidget {
 		STOREROOM_PHOTOS("storeroomphotos"),
 		INVENTORY_REQ_RELATED_LIST("inventoryreqrelatedlist"),
 		PO_RELATED_LIST("porelatedlist"),
-		ITEM_TYPES_CARD("itemtypescard"),
 		STORE_ROOM("storeroom"),
 		TRANSACTIONS("transactions"),
 		PURCHASE_ORDER("purchaseorder"),
-		TOOL_TYPES_CARD("tooltypescard");
+		INVENTORY_CARD("inventorycard");
 
 
 		private String name;

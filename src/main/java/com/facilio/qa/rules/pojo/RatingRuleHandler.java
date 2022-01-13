@@ -1,13 +1,10 @@
 package com.facilio.qa.rules.pojo;
 
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.FieldUtil;
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.RuleHandler;
-import com.facilio.qa.context.questions.BaseMCQContext;
-import com.facilio.qa.context.questions.MCQOptionContext;
 import com.facilio.qa.context.questions.RatingQuestionContext;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
@@ -16,6 +13,7 @@ import lombok.AllArgsConstructor;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @AllArgsConstructor
 public enum RatingRuleHandler implements RuleHandler {
@@ -24,7 +22,10 @@ public enum RatingRuleHandler implements RuleHandler {
 
     @Override
     public List<Map<String, Object>> emptyRuleConditions(QAndARuleType type, QuestionContext question) throws Exception {
-        return Collections.EMPTY_LIST;
+        List<Map<String,Object>> props = new ArrayList<>();
+        RatingQuestionContext rq = (RatingQuestionContext) question;
+        emptyConditions(rq.getRatingScale(), props);
+        return props;
     }
 
     @Override
@@ -41,6 +42,10 @@ public enum RatingRuleHandler implements RuleHandler {
                 prop.remove("value");
                 prop.put("option", i);
                 props.add(prop);
+            }else {
+                Map<String, Object> emptyMap = new HashMap<>();
+                emptyMap.put("option",i);
+                props.add(emptyMap);
             }
         }
         return props;
@@ -65,5 +70,13 @@ public enum RatingRuleHandler implements RuleHandler {
     @Override
     public List<Map<String, Object>> constructAnswersForEval(QAndARuleType type, QuestionContext question, AnswerContext answer) throws Exception {
         return RuleHandler.constructSingletonAnswerProp(question, answer.getRatingAnswer());
+    }
+
+    private void emptyConditions(int ratingScale, List<Map<String,Object>> props){
+        IntStream.range(1, ratingScale + 1).forEach(i -> {
+            Map<String, Object> prop = new HashMap<>();
+            prop.put("option", i);
+            props.add(prop);
+        });
     }
 }
