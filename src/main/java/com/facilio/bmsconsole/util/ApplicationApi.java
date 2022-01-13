@@ -655,17 +655,17 @@ public class ApplicationApi {
 
             webTabGroups.add(new WebTabGroupContext("Visits", "visits", layout.getId(), 203, groupOrder++));
             webTabs = new ArrayList<>();
-            webTabs.add(new WebTabContext("Invites", "visitorinvites", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("invitevisitor").getModuleId()), appId, null,  AccountUtil.FeatureLicense.VISITOR.getLicense()));
-            webTabs.add(new WebTabContext("Visits", "visits", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("visitorlog").getModuleId()), appId, null, AccountUtil.FeatureLicense.VISITOR.getLicense()));
+            webTabs.add(new WebTabContext("Invites", "visitorinvites", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("invitevisitor").getModuleId()), appId, null,  AccountUtil.FeatureLicense.VISITOR.getFeatureId()));
+            webTabs.add(new WebTabContext("Visits", "visits", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("visitorlog").getModuleId()), appId, null, AccountUtil.FeatureLicense.VISITOR.getFeatureId()));
 
             groupNameVsWebTabsMap.put("visits", webTabs);
 
             webTabGroups.add(new WebTabGroupContext("Community", "community", layout.getId(), 204, groupOrder++));
             webTabs = new ArrayList<>();
-            webTabs.add(new WebTabContext("Announcements", "announcement", WebTabContext.Type.MODULE,  Arrays.asList(modBean.getModule("peopleannouncement").getModuleId()), appId, null, AccountUtil.FeatureLicense.COMMUNITY.getLicense()));
-            webTabs.add(new WebTabContext("Neighbourhood", "neighbourhood", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("neighbourhood").getModuleId()), appId, null, AccountUtil.FeatureLicense.COMMUNITY.getLicense()));
-            webTabs.add(new WebTabContext("Deals & Offers", "deals", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("dealsandoffers").getModuleId()), appId, null, AccountUtil.FeatureLicense.COMMUNITY.getLicense()));
-            webTabs.add(new WebTabContext("News & Information", "news", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("newsandinformation").getModuleId()), appId, null, AccountUtil.FeatureLicense.COMMUNITY.getLicense()));
+            webTabs.add(new WebTabContext("Announcements", "announcement", WebTabContext.Type.MODULE,  Arrays.asList(modBean.getModule("peopleannouncement").getModuleId()), appId, null, AccountUtil.FeatureLicense.COMMUNITY.getFeatureId()));
+            webTabs.add(new WebTabContext("Neighbourhood", "neighbourhood", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("neighbourhood").getModuleId()), appId, null, AccountUtil.FeatureLicense.COMMUNITY.getFeatureId()));
+            webTabs.add(new WebTabContext("Deals & Offers", "deals", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("dealsandoffers").getModuleId()), appId, null, AccountUtil.FeatureLicense.COMMUNITY.getFeatureId()));
+            webTabs.add(new WebTabContext("News & Information", "news", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("newsandinformation").getModuleId()), appId, null, AccountUtil.FeatureLicense.COMMUNITY.getFeatureId()));
 
             groupNameVsWebTabsMap.put("community", webTabs);
 
@@ -879,7 +879,7 @@ public class ApplicationApi {
 
             webTabGroups.add(new WebTabGroupContext("Invites", "visits", layout.getId(), 203, groupOrder++));
             webTabs = new ArrayList<>();
-            webTabs.add(new WebTabContext("Invites", "visitorinvites", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("invitevisitor").getModuleId()), appId, null,  AccountUtil.FeatureLicense.VISITOR.getLicense()));
+            webTabs.add(new WebTabContext("Invites", "visitorinvites", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("invitevisitor").getModuleId()), appId, null,  AccountUtil.FeatureLicense.VISITOR.getFeatureId()));
             groupNameVsWebTabsMap.put("visits", webTabs);
 
             webTabGroups.add(new WebTabGroupContext("Insurance", "insurance", layout.getId(), 205, groupOrder++));

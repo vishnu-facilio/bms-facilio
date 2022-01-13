@@ -389,7 +389,7 @@ public class AccountUtil {
 		}
     }
 
-	private static Map<String, Long> moduleVsLicense;
+	private static Map<String, FeatureLicense> moduleVsLicense;
 	
 	public enum LicenseMapping {
 		GROUP1LICENSE(1,FacilioConstants.LicenseKeys.LICENSE1),
@@ -421,99 +421,87 @@ public class AccountUtil {
 	}
 	
     public enum FeatureLicense {
-		MAINTENANCE(1,LicenseMapping.GROUP1LICENSE),
-		ALARMS(2,LicenseMapping.GROUP1LICENSE),
-		ENERGY(4,LicenseMapping.GROUP1LICENSE),
-		SPACE_ASSET(8,LicenseMapping.GROUP1LICENSE),
-		WEATHER_INTEGRATION(16,LicenseMapping.GROUP1LICENSE),
-		ANOMALY_DETECTOR(32,LicenseMapping.GROUP1LICENSE),
-		NEW_LAYOUT(64,LicenseMapping.GROUP1LICENSE),
-		SHIFT_HOURS(128,LicenseMapping.GROUP1LICENSE),
-		CLOUD_AGENT_SERVICE(256,LicenseMapping.GROUP1LICENSE),
-		PEOPLE(512,LicenseMapping.GROUP1LICENSE),
-		APPROVAL(1024,LicenseMapping.GROUP1LICENSE),
-		MOBILE_DASHBOARD(2048,LicenseMapping.GROUP1LICENSE),
-		CONTROL_ACTIONS(4096,LicenseMapping.GROUP1LICENSE),
-		INVENTORY(8192, new String[]{ContextNames.TOOL, ContextNames.ITEM},LicenseMapping.GROUP1LICENSE),
-		SCHEDULED_WO(16384,LicenseMapping.GROUP1LICENSE),
-		TENANTS(32768, new String[]{ContextNames.TENANT, ContextNames.TENANT_UNIT_SPACE},LicenseMapping.GROUP1LICENSE),
-		HUDSON_YARDS(65536, new String[]{ContextNames.WorkPermit.WORKPERMIT},LicenseMapping.GROUP1LICENSE), // TEMP
-		CONNECTEDAPPS(131072,LicenseMapping.GROUP1LICENSE),
-		M_AND_V(262144,LicenseMapping.GROUP1LICENSE),
-		GRAPHICS(524288,LicenseMapping.GROUP1LICENSE),
-		CONTRACT(1048576, new String[]{ContextNames.SERVICE, ContextNames.PURCHASE_CONTRACTS, ContextNames.LABOUR_CONTRACTS, ContextNames.RENTAL_LEASE_CONTRACTS, ContextNames.WARRANTY_CONTRACTS},LicenseMapping.GROUP1LICENSE),
-		NEW_ALARMS(2097152,LicenseMapping.GROUP1LICENSE),
-		DEVELOPER_SPACE(4194304,LicenseMapping.GROUP1LICENSE),
-		SKIP_TRIGGERS(8388608,LicenseMapping.GROUP1LICENSE),
-		RESOURCE_BOOKING(16777216,LicenseMapping.GROUP1LICENSE),
-		ANOMALY(33554432,LicenseMapping.GROUP1LICENSE),
-		READING_FIELD_UNITS_VALIDATION(67108864,LicenseMapping.GROUP1LICENSE),
-		DEVICES(134217728,LicenseMapping.GROUP1LICENSE),
-		VISITOR(268435456, new String[]{ContextNames.VISITOR_LOG, ContextNames.INVITE_VISITOR, ContextNames.BASE_VISIT},LicenseMapping.GROUP1LICENSE),
-		KPI(536870912,LicenseMapping.GROUP1LICENSE),
-		SERVICE_REQUEST(1073741824, new String[]{ContextNames.SERVICE_REQUEST},LicenseMapping.GROUP1LICENSE),
-		SAFETY_PLAN(2147483648L,LicenseMapping.GROUP1LICENSE),
-		CLIENT(4294967296L, new String[]{ContextNames.CLIENT},LicenseMapping.GROUP1LICENSE),
-		WEB_TAB(8589934592L,LicenseMapping.GROUP1LICENSE),
-		BIM(17179869184L,LicenseMapping.GROUP1LICENSE),
-		PEOPLE_CONTACTS(34359738368L, new String[]{ContextNames.PEOPLE},LicenseMapping.GROUP1LICENSE),
-		NEW_APPROVALS(68719476736L,LicenseMapping.GROUP1LICENSE),
-		CHATBOT(137438953472L,LicenseMapping.GROUP1LICENSE),
-		SCOPING(274877906944L,LicenseMapping.GROUP1LICENSE),
-		OPERATIONAL_ALARM(549755813888L,LicenseMapping.GROUP1LICENSE),
-		FIELD_PERMISSIONS(1099511627776L,LicenseMapping.GROUP1LICENSE),
-		QUOTATION(2199023255552L, new String[]{ContextNames.QUOTE},LicenseMapping.GROUP1LICENSE),
-		ENERGY_STAR_INTEG(4398046511104L,LicenseMapping.GROUP1LICENSE),
-		ASSET_DEPRECIATION(8796093022208L,LicenseMapping.GROUP1LICENSE), // 2^43
-		CUSTOM_MAIL(17592186044416L,LicenseMapping.GROUP1LICENSE),
-		ETISALAT(35184372088832L,LicenseMapping.GROUP1LICENSE),
-		COMMUNITY(70368744177664L,LicenseMapping.GROUP1LICENSE),
-		TENANT_BILLING(140737488355328L,LicenseMapping.GROUP1LICENSE), // 2^47
-		BUDGET_MONITORING(281474976710656L, new String[]{ContextNames.Budget.BUDGET, ContextNames.Budget.CHART_OF_ACCOUNT},LicenseMapping.GROUP1LICENSE),
-		MULTIVARIATE_ANOMALY_ALARM(562949953421312L,LicenseMapping.GROUP1LICENSE), //2^49
-		CUSTOM_BUTTON(1125899906842624L,LicenseMapping.GROUP1LICENSE),
-		MULTISITEPM(2251799813685248L,LicenseMapping.GROUP1LICENSE), // 2 ^ 51
-		FACILITY_BOOKING(4503599627370496L, new String[]{ContextNames.FacilityBooking.FACILITY, ContextNames.FacilityBooking.FACILITY_BOOKING, ContextNames.FacilityBooking.AMENITY},LicenseMapping.GROUP1LICENSE),
-		INSPECTION(9007199254740992L, new String[]{FacilioConstants.Inspection.INSPECTION_TEMPLATE, FacilioConstants.Inspection.INSPECTION_RESPONSE},LicenseMapping.GROUP1LICENSE),
-		INDUCTION(18014398509481984L, new String[]{FacilioConstants.Induction.INDUCTION_TEMPLATE, FacilioConstants.Induction.INDUCTION_RESPONSE},LicenseMapping.GROUP1LICENSE),// 2 ^ 54
-		PURCHASE(36028797018963968L, new String[]{ContextNames.PURCHASE_REQUEST, ContextNames.PURCHASE_ORDER},LicenseMapping.GROUP1LICENSE),
-		VENDOR(72057594037927936L, new String[]{ContextNames.VENDORS, ContextNames.VENDOR_CONTACT, ContextNames.INSURANCE},LicenseMapping.GROUP1LICENSE),    // 2 ^ 56
-		SECURITY_POLICY(144115188075855872L,LicenseMapping.GROUP1LICENSE), // 2 ^ 57
-		SMS(288230376151711744L,LicenseMapping.GROUP1LICENSE), // 2 ^ 58
-		MULTI_LANGUAGE_TRANSLATION(576460752303423488L,LicenseMapping.GROUP1LICENSE), // 2^59
-		WOV3_BETA(1152921504606846976L,LicenseMapping.GROUP1LICENSE), // 2^60
-		PIVOT_TABLE(2305843009213693952L,LicenseMapping.GROUP1LICENSE),// 2^61
-		TRANSFER_REQUEST(4611686018427387904L,LicenseMapping.GROUP1LICENSE),//2^62
-		// Last license - 2 ^ 62
+		MAINTENANCE(1,1,LicenseMapping.GROUP1LICENSE),
+		ALARMS(2,2,LicenseMapping.GROUP1LICENSE),
+		ENERGY(3,4,LicenseMapping.GROUP1LICENSE),
+		SPACE_ASSET(4,8,LicenseMapping.GROUP1LICENSE),
+		WEATHER_INTEGRATION(5,16,LicenseMapping.GROUP1LICENSE),
+		ANOMALY_DETECTOR(6,32,LicenseMapping.GROUP1LICENSE),
+		NEW_LAYOUT(7,64,LicenseMapping.GROUP1LICENSE),
+		SHIFT_HOURS(8,128,LicenseMapping.GROUP1LICENSE),
+		CLOUD_AGENT_SERVICE(9,256,LicenseMapping.GROUP1LICENSE),
+		PEOPLE(10,512,LicenseMapping.GROUP1LICENSE),
+		APPROVAL(11,1024,LicenseMapping.GROUP1LICENSE),
+		MOBILE_DASHBOARD(12,2048,LicenseMapping.GROUP1LICENSE),
+		CONTROL_ACTIONS(13,4096,LicenseMapping.GROUP1LICENSE),
+		INVENTORY(14,8192, new String[]{ContextNames.TOOL, ContextNames.ITEM},LicenseMapping.GROUP1LICENSE),
+		SCHEDULED_WO(15,16384,LicenseMapping.GROUP1LICENSE),
+		TENANTS(16,32768, new String[]{ContextNames.TENANT, ContextNames.TENANT_UNIT_SPACE},LicenseMapping.GROUP1LICENSE),
+		HUDSON_YARDS(17,65536, new String[]{ContextNames.WorkPermit.WORKPERMIT},LicenseMapping.GROUP1LICENSE), // TEMP
+		CONNECTEDAPPS(18,131072,LicenseMapping.GROUP1LICENSE),
+		M_AND_V(19,262144,LicenseMapping.GROUP1LICENSE),
+		GRAPHICS(20,524288,LicenseMapping.GROUP1LICENSE),
+		CONTRACT(21,1048576, new String[]{ContextNames.SERVICE, ContextNames.PURCHASE_CONTRACTS, ContextNames.LABOUR_CONTRACTS, ContextNames.RENTAL_LEASE_CONTRACTS, ContextNames.WARRANTY_CONTRACTS},LicenseMapping.GROUP1LICENSE),
+		NEW_ALARMS(22,2097152,LicenseMapping.GROUP1LICENSE),
+		DEVELOPER_SPACE(23,4194304,LicenseMapping.GROUP1LICENSE),
+		SKIP_TRIGGERS(24,8388608,LicenseMapping.GROUP1LICENSE),
+		RESOURCE_BOOKING(25,16777216,LicenseMapping.GROUP1LICENSE),
+		ANOMALY(26,33554432,LicenseMapping.GROUP1LICENSE),
+		READING_FIELD_UNITS_VALIDATION(27,67108864,LicenseMapping.GROUP1LICENSE),
+		DEVICES(28,134217728,LicenseMapping.GROUP1LICENSE),
+		VISITOR(29,268435456, new String[]{ContextNames.VISITOR_LOG, ContextNames.INVITE_VISITOR, ContextNames.BASE_VISIT},LicenseMapping.GROUP1LICENSE),
+		KPI(30,536870912,LicenseMapping.GROUP1LICENSE),
+		SERVICE_REQUEST(31,1073741824, new String[]{ContextNames.SERVICE_REQUEST},LicenseMapping.GROUP1LICENSE),
+		SAFETY_PLAN(32,2147483648L,LicenseMapping.GROUP1LICENSE),
+		CLIENT(33,4294967296L, new String[]{ContextNames.CLIENT},LicenseMapping.GROUP1LICENSE),
+		WEB_TAB(34,8589934592L,LicenseMapping.GROUP1LICENSE),
+		BIM(35,17179869184L,LicenseMapping.GROUP1LICENSE),
+		PEOPLE_CONTACTS(36,34359738368L, new String[]{ContextNames.PEOPLE},LicenseMapping.GROUP1LICENSE),
+		NEW_APPROVALS(37,68719476736L,LicenseMapping.GROUP1LICENSE),
+		CHATBOT(38,137438953472L,LicenseMapping.GROUP1LICENSE),
+		SCOPING(39,274877906944L,LicenseMapping.GROUP1LICENSE),
+		OPERATIONAL_ALARM(40,549755813888L,LicenseMapping.GROUP1LICENSE),
+		FIELD_PERMISSIONS(41,1099511627776L,LicenseMapping.GROUP1LICENSE),
+		QUOTATION(42,2199023255552L, new String[]{ContextNames.QUOTE},LicenseMapping.GROUP1LICENSE),
+		ENERGY_STAR_INTEG(43,4398046511104L,LicenseMapping.GROUP1LICENSE),
+		ASSET_DEPRECIATION(44,8796093022208L,LicenseMapping.GROUP1LICENSE), // 2^43
+		CUSTOM_MAIL(45,17592186044416L,LicenseMapping.GROUP1LICENSE),
+		ETISALAT(46,35184372088832L,LicenseMapping.GROUP1LICENSE),
+		COMMUNITY(47,70368744177664L,LicenseMapping.GROUP1LICENSE),
+		TENANT_BILLING(48,140737488355328L,LicenseMapping.GROUP1LICENSE), // 2^47
+		BUDGET_MONITORING(49,281474976710656L, new String[]{ContextNames.Budget.BUDGET, ContextNames.Budget.CHART_OF_ACCOUNT},LicenseMapping.GROUP1LICENSE),
+		MULTIVARIATE_ANOMALY_ALARM(50,562949953421312L,LicenseMapping.GROUP1LICENSE), //2^49
+		CUSTOM_BUTTON(51,1125899906842624L,LicenseMapping.GROUP1LICENSE),
+		MULTISITEPM(52,2251799813685248L,LicenseMapping.GROUP1LICENSE), // 2 ^ 51
+		FACILITY_BOOKING(53,4503599627370496L, new String[]{ContextNames.FacilityBooking.FACILITY, ContextNames.FacilityBooking.FACILITY_BOOKING, ContextNames.FacilityBooking.AMENITY},LicenseMapping.GROUP1LICENSE),
+		INSPECTION(54,9007199254740992L, new String[]{FacilioConstants.Inspection.INSPECTION_TEMPLATE, FacilioConstants.Inspection.INSPECTION_RESPONSE},LicenseMapping.GROUP1LICENSE),
+		INDUCTION(55,18014398509481984L, new String[]{FacilioConstants.Induction.INDUCTION_TEMPLATE, FacilioConstants.Induction.INDUCTION_RESPONSE},LicenseMapping.GROUP1LICENSE),// 2 ^ 54
+		PURCHASE(56,36028797018963968L, new String[]{ContextNames.PURCHASE_REQUEST, ContextNames.PURCHASE_ORDER},LicenseMapping.GROUP1LICENSE),
+		VENDOR(57,72057594037927936L, new String[]{ContextNames.VENDORS, ContextNames.VENDOR_CONTACT, ContextNames.INSURANCE},LicenseMapping.GROUP1LICENSE),    // 2 ^ 56
+		SECURITY_POLICY(58,144115188075855872L,LicenseMapping.GROUP1LICENSE), // 2 ^ 57
+		SMS(59,288230376151711744L,LicenseMapping.GROUP1LICENSE), // 2 ^ 58
+		MULTI_LANGUAGE_TRANSLATION(60,576460752303423488L,LicenseMapping.GROUP1LICENSE), // 2^59
+		WOV3_BETA(61,1152921504606846976L,LicenseMapping.GROUP1LICENSE), // 2^60
+		PIVOT_TABLE(62,2305843009213693952L,LicenseMapping.GROUP1LICENSE),// 2^61
+		TRANSFER_REQUEST(63,4611686018427387904L,LicenseMapping.GROUP1LICENSE),//2^62
 		// Add Module name if license is added for specific module
-//    	NEW_FEATURE_TEST(1,LicenseMapping.GROUP2LICENSE),
+    	SURVEY(64,1,LicenseMapping.GROUP2LICENSE),
 //    	ADD_ON_FEATURE(2,LicenseMapping.GROUP2LICENSE),
 		;
 
+    	public int featureId;
 		private long license;
 		private String[] modules;
 		private LicenseMapping group;
 
-		// FeatureLicense(long license) {
-		// 	this(license, null);
-		// }
-
-//		FeatureLicense(long license, int group) {
-//			this.license = license;
-//			this.group=group;
-//		}
-//
-//		FeatureLicense(long license, String[] modules, int group) {
-//			this.license = license;
-//			this.modules = modules;
-//			this.group=group;
-//		}
-		FeatureLicense(long license, LicenseMapping group) {
+		FeatureLicense(int featureId,long license, LicenseMapping group) {
+			this.featureId = featureId;
 			this.license = license;
 			this.group = group;
 		}
 		
-		FeatureLicense(long license, String[] modules, LicenseMapping group) {
+		FeatureLicense(int featureId,long license, String[] modules, LicenseMapping group) {
+			this.featureId = featureId;
 			this.license = license;
 			this.modules = modules;
 			this.group = group;
@@ -530,34 +518,77 @@ public class AccountUtil {
 			return group;
 		}
 
-		public static FeatureLicense getFeatureLicense (long value) {
-			return FEATURE_MAP.get(value);
+		public static FeatureLicense getFeatureLicense (String licenseGroup, long value) {
+			return FEATURE_MAP.get(licenseGroup).get(value);
 		}
 		
-		public static Map<Long, FeatureLicense> getAllFeatureLicense() {	
+		public static FeatureLicense getFeatureLicense (int featureLicenseId) {
+			return FEATURE_ID_MAP.get(featureLicenseId);
+		}
+		
+		public static Map<String,Map<Long, FeatureLicense>> getAllFeatureLicense() {	
 			return FEATURE_MAP;
 		}
+		
+		public static Map<Integer, FeatureLicense> getAllFeatureLicenseIdMap() {	
+			return FEATURE_ID_MAP;
+		}
 	
-		private static final Map<Long, FeatureLicense> FEATURE_MAP = Collections.unmodifiableMap(initFeatureMap());
-		private static Map<Long, FeatureLicense> initFeatureMap() {
-			Map<Long, FeatureLicense> typeMap = new HashMap<>();
-			Map<String, Long> moduleMap = new HashMap<>();
+		private static final Map<Integer, FeatureLicense> FEATURE_ID_MAP = Collections.unmodifiableMap(initFeatureIdMap());
+		
+		private static final Map<String,Map<Long, FeatureLicense>> FEATURE_MAP = Collections.unmodifiableMap(initFeatureMap());
+		private static Map<String,Map<Long, FeatureLicense>> initFeatureMap() {
+			Map<String,Map<Long, FeatureLicense>> typeMap = new HashMap<>();
+			
+			Map<String, FeatureLicense> moduleMap = new HashMap<>();
+			
 			for(FeatureLicense fLicense : values()) {
-				typeMap.put(fLicense.getLicense(), fLicense);
+				
+				Map<Long, FeatureLicense> groupedLicenseMap = typeMap.getOrDefault(fLicense.getGroup().getLicenseKey(), new HashMap<Long, AccountUtil.FeatureLicense>());
+				
+				groupedLicenseMap.put(fLicense.getLicense(), fLicense);
+				
+				typeMap.put(fLicense.getGroup().getLicenseKey(), groupedLicenseMap);
+				
 				if (fLicense.getModules() != null) {
 					for (String module : fLicense.getModules()){
-						moduleMap.put(module, fLicense.getLicense());
+						moduleMap.put(module, fLicense);
 					}
 				}
 			}
+			
 			moduleVsLicense = Collections.unmodifiableMap(moduleMap);
 			return typeMap;
+		}
+
+		private static Map<Integer, FeatureLicense> initFeatureIdMap() {
+			// TODO Auto-generated method stub
+			
+			Map<Integer, FeatureLicense> featureIdMap = new HashMap<Integer, AccountUtil.FeatureLicense>();
+			for(FeatureLicense fLicense : values()) {
+				featureIdMap.put(fLicense.getFeatureId(), fLicense);
+			}
+			return featureIdMap;
 		}
 
 		public boolean isEnabled (Map<String,Long > totalLicense) {
 			return (totalLicense.get(this.group.getLicenseKey()) & this.license) == this.license;
 		}
+
+		public int getFeatureId() {
+			return featureId;
+		}
     }
+    /*private static Map<String, FeatureLicense> moduleVsLicense = Collections.unmodifiableMap(initializeLicenseRelation());
+    private static  Map<String, FeatureLicense> initializeLicenseRelation() {
+	    	Map<String, FeatureLicense> licenseMap = new HashMap();
+	    	licenseMap.put(ContextNames.TENANT, FeatureLicense.TENANTS);
+	    	licenseMap.put(ContextNames.TENANT_UNIT_SPACE, FeatureLicense.TENANTS);
+	    	licenseMap.put(ContextNames.PEOPLE, FeatureLicense.PEOPLE_CONTACTS);
+	    	licenseMap.put(ContextNames.CLIENT, FeatureLicense.CLIENT);
+	    	return licenseMap;
+    }*/
+
     
     public static Map<String,Long> getOrgFeatureLicense(long orgId) throws Exception
     {
@@ -577,21 +608,21 @@ public class AccountUtil {
 	}
 	
 	public static boolean isModuleLicenseEnabled(String moduleName) throws Exception {
-		Long license = moduleVsLicense.get(moduleName);
-		return license == null || isFeatureEnabled(FeatureLicense.getFeatureLicense(license));
+		FeatureLicense license = moduleVsLicense.get(moduleName);
+		return license == null || isFeatureEnabled(license);
 	}
 
 	public static TreeMap<String, Boolean> getFeatureLicenseMap(long orgId) throws Exception {
-		Map<Long,FeatureLicense> FeatureLicenses  = FeatureLicense.getAllFeatureLicense();
-		TreeMap<String,Boolean> Features = new TreeMap<>();
+		Map<Integer, FeatureLicense> featureLicenses = FeatureLicense.getAllFeatureLicenseIdMap();
+		TreeMap<String,Boolean> features = new TreeMap<>();
 
-		for (Long key : FeatureLicenses.keySet()) {
-			FeatureLicense license = FeatureLicenses.get(key);
+		for(Integer featureId: featureLicenses.keySet()) {
+
+			FeatureLicense license = featureLicenses.get(featureId);
 			boolean isEnabled = (getOrgFeatureLicense(orgId).get(license.getGroup().getLicenseKey()) & license.getLicense()) == license.getLicense();
-//			isEnabled = (getOrgFeatureLicense(orgId).get(FacilioConstants.LicenseKeys.GROUP_2_LICENSE) & license.getLicense()) == license.getLicense();
-			Features.put(license.toString(), isEnabled);
+			features.put(license.toString(), isEnabled);
 		}
-		return Features;
+		return features;
 	}
 	
 	public static PortalInfoContext getPortalInfo() throws Exception {
