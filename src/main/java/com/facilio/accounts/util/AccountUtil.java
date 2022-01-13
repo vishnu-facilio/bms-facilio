@@ -484,8 +484,9 @@ public class AccountUtil {
 		TRANSFER_REQUEST(4611686018427387904L,LicenseMapping.GROUP1LICENSE),//2^62
 		// Last license - 2 ^ 62
 		// Add Module name if license is added for specific module
-    	NEW_FEATURE_TEST(1,LicenseMapping.GROUP2LICENSE),
-    	ADD_ON_FEATURE(2,LicenseMapping.GROUP2LICENSE);
+//    	NEW_FEATURE_TEST(1,LicenseMapping.GROUP2LICENSE),
+//    	ADD_ON_FEATURE(2,LicenseMapping.GROUP2LICENSE),
+		;
 
 		private long license;
 		private String[] modules;
@@ -553,24 +554,8 @@ public class AccountUtil {
 
 		public boolean isEnabled (Map<String,Long > totalLicense) {
 			return (totalLicense.get(this.group.getLicenseKey()) & this.license) == this.license;
-//				return (totalLicense.get(FacilioConstants.LicenseKeys.GROUP_1_LICENSE) & this.license) == this.license;
-//			}			
-//			else{
-//				return (totalLicense.get(FacilioConstants.LicenseKeys.GROUP_2_LICENSE)& this.license)== this.license;
-//		}
-//		}
-	}
+		}
     }
-    /*private static Map<String, FeatureLicense> moduleVsLicense = Collections.unmodifiableMap(initializeLicenseRelation());
-    private static  Map<String, FeatureLicense> initializeLicenseRelation() {
-	    	Map<String, FeatureLicense> licenseMap = new HashMap();
-	    	licenseMap.put(ContextNames.TENANT, FeatureLicense.TENANTS);
-	    	licenseMap.put(ContextNames.TENANT_UNIT_SPACE, FeatureLicense.TENANTS);
-	    	licenseMap.put(ContextNames.PEOPLE, FeatureLicense.PEOPLE_CONTACTS);
-	    	licenseMap.put(ContextNames.CLIENT, FeatureLicense.CLIENT);
-	    	return licenseMap;
-    }*/
-
     
     public static Map<String,Long> getOrgFeatureLicense(long orgId) throws Exception
     {
