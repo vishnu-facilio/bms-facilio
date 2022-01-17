@@ -271,10 +271,14 @@
         <requestbody type="object">
             <property name="tab" type="object">
                 <property name="applicationId" type="number"/>
-                <property name="moduleIds" type="array"/>
+                <property name="moduleIds" type="array">
+                	<items type="number"/>
+                </property>
                 <property name="name" type="string"/>
-                <property name="route" type="array"/>
-                <property name="specialTypeModules" type="array"/>
+                <property name="route" type="string"/>
+                <property name="specialTypeModules" type="array">
+                	<items type="number"/>
+                </property>
                 <property name="type" type="number"/>
             </property>
         </requestbody>
