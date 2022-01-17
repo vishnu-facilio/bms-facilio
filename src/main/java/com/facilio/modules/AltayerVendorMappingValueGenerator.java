@@ -3,6 +3,7 @@ package com.facilio.modules;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -75,6 +76,31 @@ public class AltayerVendorMappingValueGenerator extends ValueGenerator{
         }
 
         return null;
+    }
+
+    @Override
+    public Object getValueGeneratorName() {
+        return "Altayer Vendors MApping";
+    }
+
+    @Override
+    public Object getLinkName() {
+        return "com.facilio.modules.AltayerVendorMappingValueGenerator";
+    }
+
+    @Override
+    public Object getModuleName() {
+        return FacilioConstants.ContextNames.VENDORS;
+    }
+
+    @Override
+    public Object getIsHidden() {
+        return true;
+    }
+
+    @Override
+    public Object getOperatorId() {
+        return 36;
     }
 
 }

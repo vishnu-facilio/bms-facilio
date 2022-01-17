@@ -8,9 +8,15 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.modules.*;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.beans.ModuleBean;
@@ -24,9 +30,6 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
@@ -416,6 +419,7 @@ public class ApplicationApi {
         ApplicationContext agentApplication = getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP);
 
         if (agentApplication.getId() > 0) {
+            addDefaultScoping(agentApplication.getId());
             ApplicationLayoutContext layout = new ApplicationLayoutContext(agentApplication.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP);
             addApplicationLayout(layout);
             addAgentAppWebTabs(layout);
@@ -428,6 +432,7 @@ public class ApplicationApi {
         if (tenantPortal.getId() > 0) {
             ApplicationLayoutContext tpLayout = new ApplicationLayoutContext(tenantPortal.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
             addApplicationLayout(tpLayout);
+            addDefaultScoping(tenantPortal.getId());
 
             //mobile layout for tenant portal
             ApplicationLayoutContext tpLayoutMobile = new ApplicationLayoutContext(tenantPortal.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.MOBILE, FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
@@ -445,6 +450,8 @@ public class ApplicationApi {
         ApplicationContext maintenance = getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
 
         if (maintenance.getId() > 0) {
+            addDefaultScoping(maintenance.getId());
+
 
             //mobile layout for Maintenance App
             ApplicationLayoutContext maintenanceLayoutMobile = new ApplicationLayoutContext(maintenance.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.MOBILE, FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
@@ -461,6 +468,8 @@ public class ApplicationApi {
         ApplicationContext servicePortal = getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
 
         if (servicePortal.getId() > 0) {
+            addDefaultScoping(servicePortal.getId());
+
             ApplicationLayoutContext spLayout = new ApplicationLayoutContext(servicePortal.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
             addApplicationLayout(spLayout);
 
@@ -479,6 +488,8 @@ public class ApplicationApi {
         ApplicationContext mainApp = getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
 
         if (mainApp.getId() > 0) {
+            addDefaultScoping(mainApp.getId());
+
             ApplicationLayoutContext mainLayout = new ApplicationLayoutContext(mainApp.getId(), ApplicationLayoutContext.AppLayoutType.DUAL, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
             addApplicationLayout(mainLayout);
 
@@ -499,6 +510,8 @@ public class ApplicationApi {
         ApplicationContext vendorPortal = getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
 
         if (vendorPortal.getId() > 0) {
+            addDefaultScoping(vendorPortal.getId());
+
             ApplicationLayoutContext vpLayout = new ApplicationLayoutContext(vendorPortal.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
             addApplicationLayout(vpLayout);
 
@@ -516,6 +529,8 @@ public class ApplicationApi {
         ApplicationContext clientPortal = getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
 
         if (clientPortal.getId() > 0) {
+            addDefaultScoping(clientPortal.getId());
+
             ApplicationLayoutContext cpLayout = new ApplicationLayoutContext(clientPortal.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
             addApplicationLayout(cpLayout);
 
@@ -1145,7 +1160,7 @@ public class ApplicationApi {
         }
     }
 
-    public static Map<Long, Map<String, Object>> getScopingMapForApp(long scopingId, long orgId) throws Exception {
+    public static Map<Long, ScopingConfigContext> getScopingMapForApp(long scopingId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .select(FieldFactory.getScopingConfigFields())
@@ -1153,48 +1168,93 @@ public class ApplicationApi {
                 .andCondition(CriteriaAPI.getCondition("SCOPING_ID", "scopingId", String.valueOf(scopingId), NumberOperators.EQUALS));
 
         List<Map<String, Object>> props = selectBuilder.get();
-        Map<Long, Map<String, Object>> moduleScoping = new HashMap<Long, Map<String, Object>>();
+        Map<Long, ScopingConfigContext> moduleScoping = new HashMap<Long, ScopingConfigContext>();
         if (CollectionUtils.isNotEmpty(props)) {
             List<ScopingConfigContext> list = FieldUtil.getAsBeanListFromMapList(props, ScopingConfigContext.class);
-            Map<String, Object> computedValues = new HashMap<>();
             for (ScopingConfigContext scopingConfig : list) {
-                Map<String, Object> scopingfields = null;
-                computeValueForScopingField(scopingConfig, computedValues);
-                if (moduleScoping.containsKey(scopingConfig.getModuleId())) {
-                    scopingfields = moduleScoping.get(scopingConfig.getModuleId());
-                } else {
-                    scopingfields = new HashMap<String, Object>();
+                if(scopingConfig.getCriteriaId() > 0) {
+                    scopingConfig.setCriteria(CriteriaAPI.getCriteria(scopingConfig.getCriteriaId()));
                 }
-                scopingfields.put(scopingConfig.getFieldName(), scopingConfig);
-                moduleScoping.put(scopingConfig.getModuleId(), scopingfields);
+                moduleScoping.put(scopingConfig.getModuleId(), scopingConfig);
             }
             return moduleScoping;
         }
         return null;
     }
 
-    private static void computeValueForScopingField(ScopingConfigContext sc, Map<String, Object> computedValues) throws Exception {
-        if (sc != null) {
-            if (sc.getValue() != null) {
-                return;
+    public static Map<Long, List<ScopingConfigContext>> migrateScopingMapForApp(long scopingId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(FieldFactory.getScopingConfigFields())
+                .table("Scoping_Config")
+                .andCondition(CriteriaAPI.getCondition("SCOPING_ID", "scopingId", String.valueOf(scopingId), NumberOperators.EQUALS));
+
+        List<Map<String, Object>> props = selectBuilder.get();
+        Map<Long, List<ScopingConfigContext>> moduleScoping = new HashMap<Long, List<ScopingConfigContext>>();
+        if (CollectionUtils.isNotEmpty(props)) {
+            List<ScopingConfigContext> list = FieldUtil.getAsBeanListFromMapList(props, ScopingConfigContext.class);
+            for (ScopingConfigContext scopingConfig : list) {
+                List<ScopingConfigContext> ms = null;
+                if (moduleScoping.containsKey(scopingConfig.getModuleId())) {
+                    ms = moduleScoping.get(scopingConfig.getModuleId());
+                } else {
+                    ms = new ArrayList<>();
+                }
+                ms.add(scopingConfig);
+                moduleScoping.put(scopingConfig.getModuleId(), ms);
             }
-            if (StringUtils.isEmpty(sc.getFieldValueGenerator())) {
-                throw new IllegalArgumentException("Scoping field --> " + sc.getFieldName() + " must either have avlue or value generator associated");
+            return moduleScoping;
+        }
+        return null;
+    }
+
+    public static long updateCriteria(ScopingConfigContext sc, FacilioModule module) {
+        Criteria criteria = new Criteria();
+        Condition condition = CriteriaAPI.getCondition(sc.getFieldName(), StringUtils.isNotEmpty(sc.getValueGenerator()) ? sc.getValueGenerator() : sc.getValue(), StringUtils.isNotEmpty(sc.getValueGenerator()) ? ScopeOperator.SCOPING_IS : Operator.getOperator((int) sc.getOperatorId()));
+        condition.setModuleName(module.getName());
+        criteria.addAndCondition(condition);
+        try {
+            return CriteriaAPI.addCriteria(criteria);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    public static List<FacilioField> computeValueForScopingField(ScopingConfigContext sc, FacilioModule module) throws Exception {
+        if (sc != null) {
+            if (sc.getCriteriaId() <= 0) {
+                throw new IllegalArgumentException("Scoping Config --> must have criteria");
             }
             if (sc.getModuleId() <= 0) {
-                throw new IllegalArgumentException("Scoping field must have an associated module");
+                throw new IllegalArgumentException("Scoping Config must have an associated module");
             }
-            if (computedValues.containsKey(sc.getFieldValueGenerator())) {
-                sc.setValue(computedValues.get(sc.getFieldValueGenerator()));
-            } else {
-                Class<? extends ValueGenerator> classObject = (Class<? extends ValueGenerator>) Class.forName(sc.getFieldValueGenerator());
-                ValueGenerator valueGenerator = classObject.newInstance();
-                if (AccountUtil.getCurrentUser().getAppDomain() != null) {
-                    sc.setValue(valueGenerator.generateValueForCondition(AccountUtil.getCurrentUser().getAppDomain().getAppDomainType()));
-                    computedValues.put(sc.getFieldValueGenerator(), sc.getValue());
+            List<FacilioField> scopingFields = new ArrayList<>();
+            Map<String, Condition> conditionMap = sc.getCriteria().getConditions();
+            if (MapUtils.isNotEmpty(conditionMap)) {
+                Iterator<Map.Entry<String, Condition>> itr = conditionMap.entrySet().iterator();
+                while (itr.hasNext()) {
+                    Map.Entry<String, Condition> entry = itr.next();
+                    Condition condition = entry.getValue();
+                    String fieldName = condition.getFieldName();
+                    FacilioField field = RecordAPI.getField(fieldName, module.getName());;
+                    if(field != null){
+                        if(!field.getDataTypeEnum().isRelRecordField()) {
+                            scopingFields.add(field);
+                        }
+                        if (condition.getOperatorId() == ScopeOperator.SCOPING_IS.getOperatorId()) {
+                            Class<? extends ValueGenerator> classObject = (Class<? extends ValueGenerator>) Class.forName(condition.getValue());
+                            ValueGenerator valueGenerator = classObject.newInstance();
+                            condition.setOperatorId((Integer) valueGenerator.getOperatorId());
+                            condition.setColumnName(field.getCompleteColumnName());
+                            condition.setValue(ScopeOperator.SCOPING_IS.getEvaluatedValues(condition.getValue()));
+                        }
+                    }
                 }
+                return scopingFields;
             }
         }
+        return null;
     }
 
     public static long getApplicationIdForApp(AppDomain appDomain) throws Exception {
@@ -1268,20 +1328,35 @@ public class ApplicationApi {
         user.setApplicationId(app.getId());
         user.setAppType(domain.getAppType());
 
-        //need to remove assign default role when we start throwing error
+        //need to remove assign default role & scope when we start throwing error
         long roleId = -1;
+        long scopingId = -1;
+        ScopingContext scoping = null;
         if(!assignDefaultRole) {
-            roleId = getRoleForApp(app.getId(), user.getOuid());
+            Map<String, Object> map = getRoleAndScopeForApp(app.getId(), user.getOuid());
+            if(MapUtils.isNotEmpty(map)) {
+                roleId = (long)map.get("roleId");
+                scopingId = (long)map.get("scopingId");
+                scoping = getScoping(scopingId);
+            }
         }
         if(roleId <= 0) {
           roleId = getPrivelegedRoleForApp(app.getId());
         }
+        if(scopingId <= 0) {
+            scoping = getDefaultScopingForApp(app.getId());
+            scopingId = scoping.getId();
+        }
         user.setRoleId(roleId);
+        user.setScopingId(scopingId);
+        user.setScoping(scoping);
         Role role = AccountUtil.getRoleBean().getRole(user.getRoleId());
         user.setRole(role);
+
+
     }
 
-    private static long getRoleForApp(Long appId, Long ouId) throws Exception {
+    private static Map<String, Object> getRoleAndScopeForApp(Long appId, Long ouId) throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(AccountConstants.getOrgUserAppsModule().getTableName())
                 .select(AccountConstants.getOrgUserAppsFields())
@@ -1289,9 +1364,9 @@ public class ApplicationApi {
                 .andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "appId", String.valueOf(appId), NumberOperators.EQUALS));
         List<Map<String, Object>> map = builder.get();
         if(CollectionUtils.isNotEmpty(map)) {
-            return (Long)map.get(0).get("roleId");
+            return map.get(0);
         }
-        return -1;
+        return null;
 
     }
 
@@ -1301,27 +1376,27 @@ public class ApplicationApi {
 
     }
 
-    public static long addScoping(String appLinkName) throws Exception {
-        long appId = getApplicationIdForLinkName(appLinkName);
+    public static long addDefaultScoping(String linkName) throws Exception {
+
+        if (StringUtils.isNotEmpty(linkName)) {
+            long appId = getApplicationIdForLinkName(linkName);
+            return addDefaultScoping(appId);
+        }
+        throw new IllegalArgumentException("Invalid application");
+    }
+
+    public static long addDefaultScoping(long appId) throws Exception {
 
         if (appId > 0) {
-            ApplicationContext app = getApplicationForId(appId);
-            if (app.getScopingId() > 0) {
-                return app.getScopingId();
+            ScopingContext scoping = getDefaultScopingForApp(appId);
+            if(scoping != null) {
+                return scoping.getId();
             }
-            List<FacilioField> fields = FieldFactory.getScopingFields();
-            GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-                    .table(ModuleFactory.getScopingModule().getTableName())
-                    .fields(fields);
-
-            Map<String, Object> scoping = new HashMap<>();
-            scoping.put("scopeName", "default scoping for app - " + app.getId());
-
-            insertBuilder.addRecord(scoping);
-            insertBuilder.save();
-            long scopingId = (long) scoping.get("id");
-            app.setScopingId(scopingId);
-            updateScopingIdInApp(app);
+            scoping = new ScopingContext();
+            scoping.setScopeName("default scoping for app - " + appId);
+            scoping.setApplicationId(appId);
+            scoping.setIsDefault(true);
+            long scopingId = addScoping(scoping);
             return scopingId;
         }
 
@@ -1330,8 +1405,77 @@ public class ApplicationApi {
 
     }
 
+    public static ScopingContext getDefaultScopingForApp(long appId) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getScopingModule().getTableName())
+                .select(FieldFactory.getScopingFields())
+                .andCondition(CriteriaAPI.getCondition("IS_DEFAULT", "isDefault", "true", BooleanOperators.IS))
+                .andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", String.valueOf(appId), NumberOperators.EQUALS))
+
+                ;
+        List<Map<String, Object>> map = builder.get();
+        if(CollectionUtils.isNotEmpty(map)) {
+            return FieldUtil.getAsBeanFromMap(map.get(0), ScopingContext.class);
+        }
+
+        return null;
+    }
+
+    public static ScopingContext getScoping(long scopingId) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getScopingModule().getTableName())
+                .select(FieldFactory.getScopingFields())
+                .andCondition(CriteriaAPI.getIdCondition(scopingId, ModuleFactory.getScopingModule()))
+
+                ;
+        List<Map<String, Object>> map = builder.get();
+        if(CollectionUtils.isNotEmpty(map)) {
+            return FieldUtil.getAsBeanFromMap(map.get(0), ScopingContext.class);
+        }
+
+        return null;
+    }
+
+    public static List<ScopingContext> getScopingForApp(long appId) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getScopingModule().getTableName())
+                .select(FieldFactory.getScopingFields())
+                .andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", String.valueOf(appId), NumberOperators.EQUALS))
+
+                ;
+        List<Map<String, Object>> map = builder.get();
+        if(CollectionUtils.isNotEmpty(map)) {
+            return FieldUtil.getAsBeanListFromMapList(map, ScopingContext.class);
+        }
+
+        return null;
+    }
+
+    public static long addScoping(ScopingContext scoping) throws Exception {
+        List<FacilioField> fields = FieldFactory.getScopingFields();
+
+        GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+                .table(ModuleFactory.getScopingModule().getTableName())
+                .fields(fields);
+
+        Map<String, Object> map = FieldUtil.getAsProperties(scoping);
+        insertBuilder.addRecord(map);
+        insertBuilder.save();
+        long scopingId = (long) map.get("id");
+        scoping.setId(scopingId);
+        return scopingId;
+    }
+
     public static void addScopingConfigForApp(List<ScopingConfigContext> scoping) throws Exception {
+
         List<FacilioField> fields = FieldFactory.getScopingConfigFields();
+        for(ScopingConfigContext scopingConfig : scoping) {
+            if(scopingConfig.getCriteria() == null) {
+                throw new IllegalArgumentException("Criteria Object cannot be null");
+            }
+            long criteriaId = CriteriaAPI.addCriteria(scopingConfig.getCriteria());
+            scopingConfig.setCriteriaId(criteriaId);
+        }
         GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
                 .table(ModuleFactory.getScopingConfigModule().getTableName())
                 .fields(fields);
@@ -1341,6 +1485,15 @@ public class ApplicationApi {
         insertBuilder.addRecords(props);
         insertBuilder.save();
 
+    }
+
+    public static void deleteScopingConfig(long scopingId) throws Exception {
+        new GenericDeleteRecordBuilder()
+                .table(ModuleFactory.getScopingConfigModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("SCOPING_ID", "scopingId", String.valueOf(scopingId), NumberOperators.EQUALS))
+                .delete()
+
+        ;
     }
 
     public static void addApplicationLayout(ApplicationLayoutContext layout) throws Exception {
@@ -1354,13 +1507,6 @@ public class ApplicationApi {
        long id = insertBuilder.insert(props);
        layout.setId(id);
 
-    }
-
-    private static void updateScopingIdInApp(ApplicationContext app) throws Exception {
-        GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-                .table(ModuleFactory.getApplicationModule().getTableName()).fields(FieldFactory.getApplicationFields())
-                .andCondition(CriteriaAPI.getIdCondition(app.getId(), ModuleFactory.getApplicationModule()));
-        builder.update(FieldUtil.getAsProperties(app));
     }
 
     public static List<ApplicationContext> getApplicationsForModule(String moduleName) throws Exception {
@@ -1443,6 +1589,19 @@ public class ApplicationApi {
 
     }
 
+    public static void updateCriteria(long criteriaId, long scopingId, long moduleId) throws Exception {
+
+        GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+                .table(ModuleFactory.getScopingConfigModule().getTableName()).fields(FieldFactory.getScopingConfigFields())
+                .andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(scopingId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("MODULE_ID", "moduleId", String.valueOf(moduleId), NumberOperators.EQUALS))
+
+                ;
+        Map<String, Object> map = new HashMap<>();
+        map.put("criteriaId", criteriaId);
+        builder.update(map);
+    }
+
     public static void updateRoleForUserInApp(Long ouId, Long appId, Long roleId) throws Exception {
 
         GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
@@ -1477,4 +1636,48 @@ public class ApplicationApi {
             builder.update(map);
         }
     }
+
+     public static void migrateUserScoping() throws Exception {
+        try {
+            List<ApplicationContext> applications = ApplicationApi.getAllApplications();
+            if (CollectionUtils.isNotEmpty(applications)) {
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                for (ApplicationContext app : applications) {
+                    if (app.getScopingId() > 0) {
+                        Map<Long, List<ScopingConfigContext>> scopingConfigContexts = ApplicationApi.migrateScopingMapForApp(app.getScopingId());
+                        if (MapUtils.isNotEmpty(scopingConfigContexts)) {
+                            Iterator<Map.Entry<Long, List<ScopingConfigContext>>> itr = scopingConfigContexts.entrySet().iterator();
+                            while (itr.hasNext()) {
+                                Map.Entry<Long, List<ScopingConfigContext>> entry = itr.next();
+                                FacilioModule module = modBean.getModule(entry.getKey());
+
+                                long criteriaId = -1;
+                                List<ScopingConfigContext> list = entry.getValue();
+                                if (CollectionUtils.isNotEmpty(list)) {
+                                    for (ScopingConfigContext sc : list) {
+                                        if (sc.getCriteriaId() > 0) {
+                                            criteriaId = sc.getCriteriaId();
+                                            continue;
+                                        }
+                                        if (criteriaId == -1) {
+                                            criteriaId = ApplicationApi.updateCriteria(sc, module);
+                                            ApplicationApi.updateCriteria(criteriaId, sc.getId(), sc.getModuleId());
+                                        }
+
+                                    }
+                                }
+
+                            }
+
+                        }
+                    } else {
+                        ApplicationApi.addDefaultScoping(app.getId());
+                    }
+                }
+            }
+        }
+        catch(Exception e) {
+            LogManager.getLogger(ApplicationApi.class.getName()).error("Error occurred while running migration.", e);
+        }
+     }
 }

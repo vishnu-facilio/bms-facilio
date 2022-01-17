@@ -105,9 +105,29 @@ public class SiteValueGenerator extends ValueGenerator {
 		return null;
 		
 	}
-	
-	
-	 private List<BaseSpaceContext> getMySites() throws Exception {
+
+	@Override
+	public Object getValueGeneratorName() {
+		return FacilioConstants.ContextNames.ValueGenerators.SITE;
+	}
+
+	@Override
+	public Object getLinkName() {
+		return "com.facilio.modules.SiteValueGenerator";
+	}
+
+	@Override
+	public Object getModuleName() {
+		return FacilioConstants.ContextNames.SITE;
+	}
+
+	@Override
+	public Object getIsHidden() {
+		return false;
+	}
+
+
+	private List<BaseSpaceContext> getMySites() throws Exception {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
 			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
@@ -152,5 +172,10 @@ public class SiteValueGenerator extends ValueGenerator {
 			
 			return accessibleBaseSpace;
 		}
+
+	@Override
+	public Object getOperatorId() {
+		return 36;
+	}
 
 }

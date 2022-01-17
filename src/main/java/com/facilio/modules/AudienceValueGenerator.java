@@ -112,4 +112,29 @@ public class AudienceValueGenerator extends ValueGenerator{
         pplCriteria.addAndCondition(CriteriaAPI.getCondition("SHARED_TO_PEOPLE_ID", "sharedToPeopleId", StringUtils.join(AccountUtil.getCurrentUser().getPeopleId()), PickListOperators.IS));
         return pplCriteria;
     }
+
+    @Override
+    public Object getValueGeneratorName() {
+        return FacilioConstants.ContextNames.ValueGenerators.AUDIENCE;
+    }
+
+    @Override
+    public Object getLinkName() {
+        return "com.facilio.modules.AudienceValueGenerator";
+    }
+
+    @Override
+    public Object getModuleName() {
+        return FacilioConstants.ContextNames.AUDIENCE;
+    }
+
+    @Override
+    public Object getIsHidden() {
+        return false;
+    }
+
+    @Override
+    public Object getOperatorId() {
+        return 36;
+    }
 }

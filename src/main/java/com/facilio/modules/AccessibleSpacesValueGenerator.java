@@ -2,6 +2,7 @@ package com.facilio.modules;
 
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import org.apache.commons.lang3.StringUtils;
 
@@ -38,4 +39,30 @@ public class AccessibleSpacesValueGenerator extends ValueGenerator {
 
         return null;
     }
+
+    @Override
+    public Object getValueGeneratorName() {
+        return FacilioConstants.ContextNames.ValueGenerators.ACCESSIBLE_SPACES;
+    }
+
+    @Override
+    public Object getLinkName() {
+        return "com.facilio.modules.AccessibleSpacesValueGenerator";
+    }
+
+    @Override
+    public Object getModuleName() {
+        return FacilioConstants.ContextNames.BUILDING;
+    }
+
+    @Override
+    public Object getIsHidden() {
+        return true;
+    }
+
+    @Override
+    public Object getOperatorId() {
+        return 36;
+    }
+
 }

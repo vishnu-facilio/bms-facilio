@@ -1956,6 +1956,12 @@ public class FacilioConstants {
 		public static final String CONTACT_DIRECTORY = "contactdirectory";
 		public static final String ADMIN_DOCUMENTS = "admindocuments";
 
+		public static final String SCOPING_CONTEXT = "scopingContext";
+		public static final String SCOPING_CONTEXT_LIST = "scopingContextList";
+		public static final String SCOPING_ID = "scopingId";
+		public static final String VALUE_GENERATORS = "valueGenerators";
+
+
 		public static class WorkPermit {
 			public static final String WORK_PERMIT_TYPE_CHECKLIST = "workpermittypechecklist";
 			public static final String WORK_PERMIT_TYPE_CHECKLIST_CATEGORY = "workpermittypechecklistcategory";
@@ -1966,6 +1972,18 @@ public class FacilioConstants {
 			public static final String WORK_PERMIT_ATTACHMENTS = "workpermitattachments";
 			public static final String WORKPERMIT = "workpermit";
 		}
+
+		public static class ValueGenerators {
+			public static final String ACCESSIBLE_SPACES = "Current User Accessible Spaces";
+			public static final String AUDIENCE = "Audience Sharing";
+			public static final String BUILDING = "Buildings based on current user sites";
+			public static final String PEOPLE_LIST = "People List Based on Current User";
+			public static final String PEOPLE = "Current People";
+			public static final String SITE = "Current User Sites";
+			public static final String TENANT = "Current Tenant";
+			public static final String USER = "Current User";
+		}
+
 
 		public static class Budget {
 			public static final String ACCOUNT_TYPE = "accounttype";
