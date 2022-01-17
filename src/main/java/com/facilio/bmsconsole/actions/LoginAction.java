@@ -444,8 +444,6 @@ public class LoginAction extends FacilioAction {
 		
 		try {
 		data.put("inventoryCategory", InventoryApi.getInventoryCategoryList());
-		data.put("itemTypesStatus", InventoryApi.getItemTypesStatusList());
-		data.put("toolTypesStatus", InventoryApi.getToolTypesStatusList());
 		data.put("itemStatus", InventoryApi.getItemStatusList());
 		data.put("toolStatus", InventoryApi.getToolStatusList());
 		}catch (Exception e) {
@@ -522,10 +520,6 @@ public class LoginAction extends FacilioAction {
 //		data.put("inventoryCategory", InventoryApi.getInventoryCategoryList());
 
 		try {
-		data.put("itemTypesCategory", InventoryApi.getItemTypesCategoryList());
-		data.put("toolTypesCategory", InventoryApi.getToolTypesCategoryList());
-		data.put("itemTypesStatus", InventoryApi.getItemTypesStatusList());
-		data.put("toolTypesStatus", InventoryApi.getToolTypesStatusList());
 		data.put("itemStatus", InventoryApi.getItemStatusList());
 		data.put("toolStatus", InventoryApi.getToolStatusList());
 		}catch (Exception e) {

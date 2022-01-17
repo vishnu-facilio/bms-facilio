@@ -32,7 +32,7 @@ public class LoadItemTypesLookUpCommandV3 extends FacilioCommand {
 
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         List<LookupField> additionaLookups = new ArrayList<>();
-        additionaLookups.add((LookupField) fieldsAsMap.get("status"));
+
         additionaLookups.add((LookupField) fieldsAsMap.get("category"));
         for (FacilioField field : fields) {
             if (!field.isDefault() && field.getDataTypeEnum() == FieldType.LOOKUP) {

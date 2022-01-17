@@ -220,9 +220,16 @@ public class OrgBeanImpl implements OrgBean {
 			RoleBean roleBean = (RoleBean) BeanFactory.lookup("RoleBean", orgId);
 
 			List<Role> roles = roleBean.getRolesForApps(appId > 0 ? Collections.singletonList(appId) : null);
+			List<ScopingContext> scopingList = ApplicationApi.getScopingForApp(appId);
+
 			Map<Long, Role> roleMap = new HashMap<>();
 			for(Role role : roles){
 				roleMap.put(role.getId(), role);
+			}
+
+			Map<Long, ScopingContext> scopingMap = new HashMap<>();
+			for(ScopingContext scoping : scopingList){
+				scopingMap.put(scoping.getId(), scoping);
 			}
 
 			Map<Long, List<Long>> accessibleSpaceListMap = UserBeanImpl.getAllUsersAccessibleSpaceList();
@@ -237,6 +244,10 @@ public class OrgBeanImpl implements OrgBean {
 						user.setAppDomain(appDomain);
 					}
 					user.setApplicationId((long)prop.get("applicationId"));
+					user.setAppType(appDomain.getAppType());
+					if(user.getScopingId() > 0){
+						user.setScoping(scopingMap.get(user.getScopingId()));
+					}
 				}
 				if(user.getRoleId() > 0){
 					user.setRole(roleMap.get(user.getRoleId()));

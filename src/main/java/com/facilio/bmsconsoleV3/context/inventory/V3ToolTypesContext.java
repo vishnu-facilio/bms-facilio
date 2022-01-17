@@ -11,8 +11,7 @@ public class V3ToolTypesContext extends V3Context {
     private String name;
    	private String description;
    	private String serialNumber;
-   	private InventoryCategoryContext category;
-   	private V3ToolTypesStatusContext status;
+   	private V3InventoryCategoryContext category;
    	private Unit unit;
    	private Double minimumQuantity;
    	public Boolean isRotating;
@@ -104,20 +103,12 @@ public class V3ToolTypesContext extends V3Context {
    		this.serialNumber = serialNumber;
    	}
 
-   	public InventoryCategoryContext getCategory() {
+   	public V3InventoryCategoryContext getCategory() {
    		return category;
    	}
 
-   	public void setCategory(InventoryCategoryContext category) {
+   	public void setCategory(V3InventoryCategoryContext category) {
    		this.category = category;
-   	}
-
-   	public V3ToolTypesStatusContext getStatus() {
-   		return status;
-   	}
-
-   	public void setStatus(V3ToolTypesStatusContext status) {
-   		this.status = status;
    	}
 
    	public Unit getUnitEnum() {

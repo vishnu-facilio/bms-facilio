@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
+import com.facilio.constants.FacilioConstants;
 
 public class UserValueGenerator extends ValueGenerator{
 
@@ -49,6 +50,31 @@ public class UserValueGenerator extends ValueGenerator{
 		}
 		return null;
 		
+	}
+
+	@Override
+	public Object getValueGeneratorName() {
+		return FacilioConstants.ContextNames.ValueGenerators.USER;
+	}
+
+	@Override
+	public Object getLinkName() {
+		return "com.facilio.modules.UserValueGenerator";
+	}
+
+	@Override
+	public Object getModuleName() {
+		return FacilioConstants.ContextNames.USERS;
+	}
+
+	@Override
+	public Object getIsHidden() {
+		return false;
+	}
+
+	@Override
+	public Object getOperatorId() {
+		return 36;
 	}
 
 }

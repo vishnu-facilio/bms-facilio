@@ -577,29 +577,7 @@ public class APIv3Config {
             		.beforeFetch(new LoadItemTypesLookUpCommandV3())
                 .build();
     }
-    
-    @Module("itemTypesStatus")
-    public static Supplier<V3Config> getItemTypesStatus() {
-        return () -> new V3Config(V3ItemTypesStatusContext.class, null)
-                .create()
-        			.afterSave(new ExecuteAllWorkflowsCommand())
-                .update()
-                .list()
-                .summary()
-                .build();
-    }
-    
-    @Module("itemTypesCategory")
-    public static Supplier<V3Config> getItemTypesCategory() {
-        return () -> new V3Config(V3ItemTypesCategoryContext.class, null)
-                .create()
-        			.afterSave(new ExecuteAllWorkflowsCommand())
-                .update()
-                .list()
-                .summary()
-                .build();
-    }
-    
+
     @Module("toolTypes")
     public static Supplier<V3Config> getToolTypes() {
         return () -> new V3Config(V3ToolTypesContext.class, null)
@@ -612,29 +590,17 @@ public class APIv3Config {
             		.beforeFetch(new LoadToolTypesLookUpCommandV3())
                 .build();
     }
-    
-    @Module("toolTypesStatus")
-    public static Supplier<V3Config> getToolTypesStatus() {
-        return () -> new V3Config(V3ToolTypesStatusContext.class, null)
+
+    @Module("inventoryCategory")
+    public static Supplier<V3Config> getInventoryCategory() {
+        return () -> new V3Config(V3InventoryCategoryContext.class, null)
                 .create()
-                	.afterSave(new ExecuteAllWorkflowsCommand())
                 .update()
                 .list()
                 .summary()
                 .build();
     }
-    
-    @Module("toolTypesCategory")
-    public static Supplier<V3Config> getToolTypesCategory() {
-        return () -> new V3Config(V3ToolTypesCategoryContext.class, null)
-                .create()
-            		.afterSave(new ExecuteAllWorkflowsCommand())
-                .update()
-                .list()
-                .summary()
-                .build();
-    }
-    
+
     @Module("visitorlog")
     public static Supplier<V3Config> getVisitorLog() {
         return () -> new V3Config(VisitorLogContextV3.class, null)

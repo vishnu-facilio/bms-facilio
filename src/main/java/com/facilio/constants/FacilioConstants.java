@@ -1380,8 +1380,6 @@ public class FacilioConstants {
 		
 		public static final String ITEM_TYPES = "itemTypes";
 		public static final String ITEM_TYPES_LIST = "itemTypesList";
-		public static final String ITEM_TYPES_CATEGORY = "itemTypesCategory";
-		public static final String ITEM_TYPES_STATUS = "itemTypesStatus";
 		public static final String ITEM_TYPES_ID = "itemTypesId";
 		public static final String ITEM_TYPES_IDS = "itemTypesIds";
 
@@ -1389,8 +1387,6 @@ public class FacilioConstants {
 
 		public static final String TOOL_TYPES = "toolTypes";
 		public static final String TOOL_TYPES_LIST = "toolTypesList";
-		public static final String TOOL_TYPES_STATUS = "toolTypesStatus";
-		public static final String TOOLS_TYPES_CATEGORY = "toolTypesCategory";
 
 		public static final String TOOL_TYPES_ID = "toolTypesId";
 		public static final String TOOL_TYPES_IDS = "toolTypesIds";
@@ -1960,6 +1956,12 @@ public class FacilioConstants {
 		public static final String CONTACT_DIRECTORY = "contactdirectory";
 		public static final String ADMIN_DOCUMENTS = "admindocuments";
 
+		public static final String SCOPING_CONTEXT = "scopingContext";
+		public static final String SCOPING_CONTEXT_LIST = "scopingContextList";
+		public static final String SCOPING_ID = "scopingId";
+		public static final String VALUE_GENERATORS = "valueGenerators";
+
+
 		public static class WorkPermit {
 			public static final String WORK_PERMIT_TYPE_CHECKLIST = "workpermittypechecklist";
 			public static final String WORK_PERMIT_TYPE_CHECKLIST_CATEGORY = "workpermittypechecklistcategory";
@@ -1970,6 +1972,18 @@ public class FacilioConstants {
 			public static final String WORK_PERMIT_ATTACHMENTS = "workpermitattachments";
 			public static final String WORKPERMIT = "workpermit";
 		}
+
+		public static class ValueGenerators {
+			public static final String ACCESSIBLE_SPACES = "Current User Accessible Spaces";
+			public static final String AUDIENCE = "Audience Sharing";
+			public static final String BUILDING = "Buildings based on current user sites";
+			public static final String PEOPLE_LIST = "People List Based on Current User";
+			public static final String PEOPLE = "Current People";
+			public static final String SITE = "Current User Sites";
+			public static final String TENANT = "Current Tenant";
+			public static final String USER = "Current User";
+		}
+
 
 		public static class Budget {
 			public static final String ACCOUNT_TYPE = "accounttype";
@@ -2190,12 +2204,8 @@ public class FacilioConstants {
 			classMap.put(STORE_ROOM, StoreRoomContext.class);
 			classMap.put(STORE_ROOMS, StoreRoomContext.class);
 			classMap.put(ITEM_TYPES, ItemTypesContext.class);
-			classMap.put(ITEM_TYPES_CATEGORY,ItemTypesCategoryContext.class);
-			classMap.put(ITEM_TYPES_STATUS, ItemTypesStatusContext.class);
 			classMap.put(TOOL_TYPES, ToolTypesContext.class);
 			classMap.put(ITEM_ACTIVITY, ActivityContext.class);
-			classMap.put(TOOLS_TYPES_CATEGORY, ToolTypesCategoryContext.class);
-			classMap.put(TOOL_TYPES_STATUS, ToolTypesStatusContext.class);
 			classMap.put(VENDOR, VendorContext.class);
 			classMap.put(VENDORS, VendorContext.class);
 			classMap.put(ITEM, ItemContext.class);

@@ -5,6 +5,10 @@ import com.facilio.bmsconsole.context.ScopingConfigContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.ScopeOperator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 
@@ -18,13 +22,15 @@ public class ContactDirectoryScopingConfig extends SignUpData {
             FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY);
 
             //adding building scope in Tenant Portal
-            long applicationScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+            long applicationScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
             ScopingConfigContext scoping = new ScopingConfigContext();
-            scoping.setFieldName("audience");
+            Criteria criteria = new Criteria();
+            Condition condition = CriteriaAPI.getCondition("audience", "com.facilio.modules.AudienceValueGenerator", ScopeOperator.SCOPING_IS);
+            condition.setModuleName(module.getName());
+            criteria.addAndCondition(condition);
             scoping.setScopingId(applicationScopingId);
-            scoping.setOperatorId(36);
-            scoping.setFieldValueGenerator("com.facilio.modules.AudienceValueGenerator");
             scoping.setModuleId(module.getModuleId());
+            scoping.setCriteria(criteria);
             ApplicationApi.addScopingConfigForApp(Collections.singletonList(scoping));
         } catch (Exception e) {
             e.printStackTrace();

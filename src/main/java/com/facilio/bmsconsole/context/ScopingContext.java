@@ -39,5 +39,31 @@ public class ScopingContext implements Serializable {
 	public void setScopingConfigList(List<ScopingConfigContext> scopingConfigList) {
 		this.scopingConfigList = scopingConfigList;
 	}
-	
+
+	private Boolean isDefault;
+
+	public Boolean getIsDefault() {
+		return isDefault;
+	}
+
+	public void setIsDefault(Boolean isDefault) {
+		this.isDefault = isDefault;
+	}
+
+	public boolean isDefault() {
+		if (isDefault != null) {
+			return isDefault.booleanValue();
+		}
+		return false;
+	}
+
+	private long applicationId;
+
+	public long getApplicationId() {
+		return applicationId;
+	}
+
+	public void setApplicationId(long applicationId) {
+		this.applicationId = applicationId;
+	}
 }

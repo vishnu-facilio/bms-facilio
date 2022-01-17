@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.*;
+import com.facilio.bmsconsole.context.ScopingContext;
 import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.iam.accounts.util.IAMAccountConstants;
 import com.facilio.delegate.context.DelegationType;
@@ -275,6 +276,10 @@ public class UserBeanImpl implements UserBean {
 		props.put("applicationId", user.getApplicationId());
 		props.put("orgId", user.getOrgId());
 		props.put("roleId", user.getRoleId());
+		ScopingContext defaultScoping = ApplicationApi.getDefaultScopingForApp(user.getApplicationId());
+		if(defaultScoping != null) {
+			props.put("scopingId", defaultScoping.getId());
+		}
 
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
@@ -1031,6 +1036,12 @@ public class UserBeanImpl implements UserBean {
 			user.setAppDomain(appDomain);
 			user.setApplicationId((long)prop.get("applicationId"));
 			user.setAppType(appDomain.getAppType());
+			if(prop.get("scopingId") != null) {
+				user.setScopingId((long)prop.get("scopingId"));
+			}
+			if(user.getScopingId() > 0) {
+				user.setScoping(ApplicationApi.getScoping(user.getScopingId()));
+			}
 		}
 		
 		
@@ -1240,6 +1251,8 @@ public class UserBeanImpl implements UserBean {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		}
 		if(appId > 0) {
+			fields.addAll(AccountConstants.getOrgUserAppsFields());
+
 			fields.add(AccountConstants.getApplicationIdField());
 			fields.add(AccountConstants.getRoleIdField());
 			selectBuilder.innerJoin("ORG_User_Apps").on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID");

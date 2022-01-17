@@ -296,7 +296,12 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getAllStoreRooms().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.STORE_ROOM, views);
-		
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllInventoryCategory().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.INVENTORY_CATEGORY, views);
+
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllItemTypes().setOrder(order++));
@@ -3895,7 +3900,27 @@ public class ViewFactory {
 
 		return allView;
 	}
-	
+	private static FacilioView getAllInventoryCategory() {
+
+		FacilioModule inventoryCategoryModule = ModuleFactory.getInventoryCategoryModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("name");
+		createdTime.setDataType(FieldType.STRING);
+		createdTime.setColumnName("NAME");
+		createdTime.setModule(inventoryCategoryModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Inventory Category");
+		allView.setSortFields(sortFields);
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+
 	private static FacilioView getAllStoreRooms() {
 
 		FacilioModule storeRoomModule = ModuleFactory.getStoreRoomModule();
@@ -3938,65 +3963,7 @@ public class ViewFactory {
 
 		return allView;
 	}
-	
-	private static FacilioView getItemTypesForStatus(String viewName, String viewDisplayName, String status) {
 
-		FacilioModule itemsModule = ModuleFactory.getItemTypesModule();
-
-		FacilioField createdTime = new FacilioField();
-		createdTime.setName("name");
-		createdTime.setDataType(FieldType.STRING);
-		createdTime.setColumnName("NAME");
-		createdTime.setModule(itemsModule);
-
-		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
-
-		Criteria criteria = getItemTypeStatusCriteria(itemsModule, status);
-		
-		FacilioView allView = new FacilioView();
-		allView.setName(viewName);
-		allView.setDisplayName(viewDisplayName);
-		allView.setSortFields(sortFields);
-		allView.setCriteria(criteria);
-
-		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
-
-		return allView;
-	}
-	
-	private static Criteria getItemTypeStatusCriteria(FacilioModule module, String status) {
-		
-		FacilioField itemStatusField = new FacilioField();
-		itemStatusField.setName("name");
-		itemStatusField.setColumnName("NAME");
-		itemStatusField.setDataType(FieldType.STRING);
-		itemStatusField.setModule(ModuleFactory.getItemTypeStatusModule());
-
-		Condition statusCond = new Condition();
-		statusCond.setField(itemStatusField);
-		statusCond.setOperator(StringOperators.IS);
-		statusCond.setValue(status);
-
-		Criteria itemTypeStatusCriteria = new Criteria();
-		itemTypeStatusCriteria.addAndCondition(statusCond);
-		
-		LookupField itemStatus = new LookupField();
-		itemStatus.setName("status");
-		itemStatus.setColumnName("STATUS");
-		itemStatus.setDataType(FieldType.LOOKUP);
-		itemStatus.setModule(module);
-		itemStatus.setLookupModule(ModuleFactory.getItemTypeStatusModule());
-
-		Condition statusFilter = new Condition();
-		statusFilter.setField(itemStatus);
-		statusFilter.setOperator(LookupOperator.LOOKUP);
-		statusFilter.setCriteriaValue(itemTypeStatusCriteria);
-
-		Criteria criteria = new Criteria();
-		criteria.addAndCondition(statusFilter);
-		return criteria;
-	}
-	
 	private static FacilioView getAllToolTypes() {
 
 		FacilioModule itemsModule = ModuleFactory.getToolTypesModule();
