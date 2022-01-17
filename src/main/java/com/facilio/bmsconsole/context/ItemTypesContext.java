@@ -47,16 +47,6 @@ public class ItemTypesContext extends ModuleBaseWithCustomFields {
 		this.category = category;
 	}
 
-	private ItemTypesStatusContext status;
-
-	public ItemTypesStatusContext getStatus() {
-		return status;
-	}
-
-	public void setStatus(ItemTypesStatusContext status) {
-		this.status = status;
-	}
-
 	private Unit unit;
 
 	public Unit getUnitEnum() {

@@ -47,16 +47,6 @@ public class ToolTypesContext extends ModuleBaseWithCustomFields {
 		this.category = category;
 	}
 
-	private ToolTypesStatusContext status;
-
-	public ToolTypesStatusContext getStatus() {
-		return status;
-	}
-
-	public void setStatus(ToolTypesStatusContext status) {
-		this.status = status;
-	}
-
 	private Unit unit;
 
 	public Unit getUnitEnum() {

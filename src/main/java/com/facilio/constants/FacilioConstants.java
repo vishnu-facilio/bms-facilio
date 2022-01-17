@@ -1380,8 +1380,6 @@ public class FacilioConstants {
 		
 		public static final String ITEM_TYPES = "itemTypes";
 		public static final String ITEM_TYPES_LIST = "itemTypesList";
-		public static final String ITEM_TYPES_CATEGORY = "itemTypesCategory";
-		public static final String ITEM_TYPES_STATUS = "itemTypesStatus";
 		public static final String ITEM_TYPES_ID = "itemTypesId";
 		public static final String ITEM_TYPES_IDS = "itemTypesIds";
 
@@ -1389,8 +1387,6 @@ public class FacilioConstants {
 
 		public static final String TOOL_TYPES = "toolTypes";
 		public static final String TOOL_TYPES_LIST = "toolTypesList";
-		public static final String TOOL_TYPES_STATUS = "toolTypesStatus";
-		public static final String TOOLS_TYPES_CATEGORY = "toolTypesCategory";
 
 		public static final String TOOL_TYPES_ID = "toolTypesId";
 		public static final String TOOL_TYPES_IDS = "toolTypesIds";
@@ -2190,12 +2186,8 @@ public class FacilioConstants {
 			classMap.put(STORE_ROOM, StoreRoomContext.class);
 			classMap.put(STORE_ROOMS, StoreRoomContext.class);
 			classMap.put(ITEM_TYPES, ItemTypesContext.class);
-			classMap.put(ITEM_TYPES_CATEGORY,ItemTypesCategoryContext.class);
-			classMap.put(ITEM_TYPES_STATUS, ItemTypesStatusContext.class);
 			classMap.put(TOOL_TYPES, ToolTypesContext.class);
 			classMap.put(ITEM_ACTIVITY, ActivityContext.class);
-			classMap.put(TOOLS_TYPES_CATEGORY, ToolTypesCategoryContext.class);
-			classMap.put(TOOL_TYPES_STATUS, ToolTypesStatusContext.class);
 			classMap.put(VENDOR, VendorContext.class);
 			classMap.put(VENDORS, VendorContext.class);
 			classMap.put(ITEM, ItemContext.class);
