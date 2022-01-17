@@ -46,7 +46,9 @@ public class GetTimeLineDataCommand extends FacilioCommand {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(timelineRequest.getModuleName());
         List<FacilioField> allFields = modBean.getAllFields(module.getName());
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+
+        FacilioField idField = FieldFactory.getIdField(module);
+        String idFieldColumnName = idField.getCompleteColumnName();
 
         FacilioField timelineGroupField = viewObj.getGroupByField();
         FacilioField startTimeField = viewObj.getStartDateField();
@@ -64,7 +66,7 @@ public class GetTimeLineDataCommand extends FacilioCommand {
         aggregateFields.add(actualWorkStartAggrField);
         groupBy.add(actualWorkStartAggrField.getCompleteColumnName());
 
-        aggregateFields.add(BmsAggregateOperators.CommonAggregateOperator.COUNT.getSelectField(FieldFactory.getIdField(module)));
+        aggregateFields.add(BmsAggregateOperators.CommonAggregateOperator.COUNT.getSelectField(idField));
 
         FacilioField minValueField = BmsAggregateOperators.NumberAggregateOperator.MIN.getSelectField(startTimeField);
         minValueField.setName(MIN_START_DATE);
@@ -82,7 +84,7 @@ public class GetTimeLineDataCommand extends FacilioCommand {
 
         List<FacilioField> allModuleFields = new ArrayList<>(allFields);
         allModuleFields.add(FieldFactory.getStringField(DATE_FORMAT, "groupMax." + DATE_FORMAT, null));
-        String subQuery = getQueryContactQuery(module, timelineGroupField, startTimeField, timelineRequest.getDateAggregator(), buildMainCriteria(startTimeField, endTimeField, timelineRequest, timelineGroupField, viewCriteria, filterCriteria, false));
+        String subQuery = getQueryContactQuery(module, timelineGroupField, startTimeField, idFieldColumnName, timelineRequest.getDateAggregator(), buildMainCriteria(startTimeField, endTimeField, timelineRequest, timelineGroupField, viewCriteria, filterCriteria, false));
 
         SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<>()
                 .module(module)
@@ -92,7 +94,7 @@ public class GetTimeLineDataCommand extends FacilioCommand {
                 .beanClass(ChainUtil.getBeanClass(config, module))
                 .select(allModuleFields);
 
-        builder.andCustomWhere("FIND_IN_SET(" + startTimeField.getCompleteColumnName() + ", " + GROUP_CONCAT_FIELD_NAME + ") <= " + timelineRequest.getMaxResultPerCell());
+        builder.andCustomWhere("FIND_IN_SET(" + idFieldColumnName + ", " + GROUP_CONCAT_FIELD_NAME + ") <= " + timelineRequest.getMaxResultPerCell());
         builder.andCriteria(buildMainCriteria(startTimeField, endTimeField, timelineRequest, timelineGroupField, viewCriteria, filterCriteria, true));
 
         startTime = System.currentTimeMillis();
@@ -115,7 +117,7 @@ public class GetTimeLineDataCommand extends FacilioCommand {
         rollOverCriteria.addAndCondition(CriteriaAPI.getCondition(startTimeField, String.valueOf(timelineRequest.getStartTime()), NumberOperators.LESS_THAN));
         rollOverCriteria.addAndCondition(CriteriaAPI.getCondition(endTimeField, String.valueOf(timelineRequest.getEndTime()), NumberOperators.GREATER_THAN));
         mainCriteria.orCriteria(rollOverCriteria);
-        
+
         Criteria groupCriteria = new Criteria();
         if (CollectionUtils.isNotEmpty(timelineRequest.getGroupIds())) {
             groupCriteria.addAndCondition(CriteriaAPI.getCondition(timelineGroupField, StringUtils.join(timelineRequest.getGroupIds(), ","), NumberOperators.EQUALS));
@@ -225,7 +227,7 @@ public class GetTimeLineDataCommand extends FacilioCommand {
     }
 
     private String getQueryContactQuery(FacilioModule module, FacilioField timelineGroupField,
-                                               FacilioField startTimeField,
+                                               FacilioField startTimeField, String idFieldColumnName,
                                                BmsAggregateOperators.DateAggregateOperator dateAggregator, Criteria timeCriteria) throws Exception {
         SelectRecordsBuilder groupConcatQuery = new SelectRecordsBuilder()
                 .module(module)
@@ -243,7 +245,7 @@ public class GetTimeLineDataCommand extends FacilioCommand {
         fields.add(startTimeAggrField);
         groupByJoiner.add(startTimeAggrField.getCompleteColumnName());
 
-        FacilioField dateFieldClone = getGroupConcatField(startTimeField);
+        FacilioField dateFieldClone = getGroupConcatField(idFieldColumnName);
         fields.add(dateFieldClone);
 
         groupConcatQuery.select(fields);
@@ -251,11 +253,11 @@ public class GetTimeLineDataCommand extends FacilioCommand {
         return groupConcatQuery.constructQueryString();
     }
 
-    private FacilioField getGroupConcatField(FacilioField startDateField) {
+    private FacilioField getGroupConcatField(String idFieldColumnName) {
         FacilioField field = new FacilioField();
         field.setName(GROUP_CONCAT_FIELD_NAME);
         field.setDisplayName(field.getDisplayName());
-        field.setColumnName("GROUP_CONCAT(" + startDateField.getColumnName() + " order by " + startDateField.getColumnName() + ")");
+        field.setColumnName("GROUP_CONCAT(" + idFieldColumnName + " order by " + idFieldColumnName + ")");
         field.setFieldId(field.getFieldId());
         field.setDataType(FieldType.STRING);
         return field;
