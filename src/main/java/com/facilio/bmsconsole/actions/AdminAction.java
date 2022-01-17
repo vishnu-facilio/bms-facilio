@@ -37,6 +37,7 @@ import com.amazonaws.services.ec2.model.Instance;
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.LicenseMapping;
 import com.facilio.agent.agentcontrol.AgentControl;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.actions.AgentVersionAction;
@@ -145,6 +146,8 @@ public class AdminAction extends ActionSupport {
 
 		return SUCCESS;
 	}
+	
+
 
 	@SuppressWarnings("unused")
 	public String addLicense() throws SQLException {
@@ -153,32 +156,56 @@ public class AdminAction extends ActionSupport {
 		Long orgId = Long.parseLong(request.getParameter("orgid"));
 
 		if (selectedFeatures != null) {
-			long sumOfLicenses = 0;
+			Map<String,Long> licenseMap = new HashMap<String,Long>();
 
 			if (selectedFeatures != null) {
 				for (int i = 0; i < selectedFeatures.length; i++) {
 					AccountUtil.FeatureLicense license = AccountUtil.FeatureLicense.valueOf(selectedFeatures[i]);
-					sumOfLicenses += license.getLicense();
+					
+					Long sumOfLicense = licenseMap.getOrDefault(license.getGroup().getLicenseKey(), 0l);
+					
+					sumOfLicense += license.getLicense();
+					
+					licenseMap.put(license.getGroup().getLicenseKey(), sumOfLicense);
+//					if(license.getGroup() == AccountUtil.LicenseMapping.GROUP1LICENSE) {
+//						sumOfLicenses1 += license.getLicense();
+//					}
+//					else if(license.getGroup() == AccountUtil.LicenseMapping.GROUP2LICENSE) {
+//						sumOfLicenses2 += license.getLicense();
+//					}
+					
 				}
 			}
 
 			try {
+				
+				//licenseMap.put(LicenseMapping.GROUP1LICENSE.getLicenseKey(), sumOfLicenses1);
+				//licenseMap.put(LicenseMapping.GROUP2LICENSE.getLicenseKey(), sumOfLicenses2);
 				//temp handling for enabling people contacts license
-				if (	AccountUtil.FeatureLicense.INVENTORY.isEnabled(sumOfLicenses)
-						||	AccountUtil.FeatureLicense.CLIENT.isEnabled(sumOfLicenses)
-						||	AccountUtil.FeatureLicense.VENDOR.isEnabled(sumOfLicenses)
-						||  AccountUtil.FeatureLicense.TENANTS.isEnabled(sumOfLicenses)
-						||	AccountUtil.FeatureLicense.PEOPLE.isEnabled(sumOfLicenses)
+				if (	AccountUtil.FeatureLicense.INVENTORY.isEnabled(licenseMap)
+						||	AccountUtil.FeatureLicense.CLIENT.isEnabled(licenseMap)
+						||	AccountUtil.FeatureLicense.VENDOR.isEnabled(licenseMap)
+						||  AccountUtil.FeatureLicense.TENANTS.isEnabled(licenseMap)
+						||	AccountUtil.FeatureLicense.PEOPLE.isEnabled(licenseMap)
 				) {
-					if(!AccountUtil.FeatureLicense.PEOPLE_CONTACTS.isEnabled(sumOfLicenses)) {
-						sumOfLicenses += AccountUtil.FeatureLicense.PEOPLE_CONTACTS.getLicense();
+					if(!AccountUtil.FeatureLicense.PEOPLE_CONTACTS.isEnabled(licenseMap)) {
+						
+						Long sumOfLicense = licenseMap.getOrDefault(AccountUtil.FeatureLicense.PEOPLE_CONTACTS.getGroup().getLicenseKey(), 0l);
+						sumOfLicense += AccountUtil.FeatureLicense.PEOPLE_CONTACTS.getLicense();
+						
+						licenseMap.put(AccountUtil.FeatureLicense.PEOPLE_CONTACTS.getGroup().getLicenseKey(), sumOfLicense);
 					}
-					if(!AccountUtil.FeatureLicense.SCOPING.isEnabled(sumOfLicenses)) {
-						sumOfLicenses += AccountUtil.FeatureLicense.SCOPING.getLicense();
+					if(!AccountUtil.FeatureLicense.SCOPING.isEnabled(licenseMap)) {
+						
+						Long sumOfLicense = licenseMap.getOrDefault(AccountUtil.FeatureLicense.SCOPING.getGroup().getLicenseKey(), 0l);
+						
+						sumOfLicense += AccountUtil.FeatureLicense.SCOPING.getLicense();
+						
+						licenseMap.put(AccountUtil.FeatureLicense.SCOPING.getGroup().getLicenseKey(), sumOfLicense);
 					}
 				}
 
-				long licence = AccountUtil.getTransactionalOrgBean(orgId).addLicence(sumOfLicenses);
+				long licence = AccountUtil.getTransactionalOrgBean(orgId).addLicence(licenseMap);
 				System.out.println("##########@@@@@@@@@@@@@" + licence);
 			} catch (Exception e) {
 				e.printStackTrace();

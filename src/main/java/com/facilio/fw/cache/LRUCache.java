@@ -10,6 +10,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.LicenseMapping;
 import com.facilio.aws.util.FacilioProperties;
 
 import redis.clients.jedis.Jedis;
@@ -23,7 +24,7 @@ public class LRUCache {
 	private static FacilioCache<String, Object> moduleCachePS = new PubSubLRUCache<>("moduleCache", 2000);
 	private static FacilioCache<String, Long> queryCachePS = new PubSubLRUCache<>("queryCache", 500);
 	private static FacilioCache<String, Object> responseCachePS = new PubSubLRUCache<>("responseCache", 5000);
-	private static FacilioCache<String, Long> featureLicenseCachePS = new PubSubLRUCache<>("featureLicense", 1000);
+	private static FacilioCache<String, Map<String,Long>> featureLicenseCachePS = new PubSubLRUCache<>("featureLicense", 1000);
 	private static FacilioCache<String, Object> orgUnitCachePs = new PubSubLRUCache<>("orgUnit",1000);
 	private static FacilioCache<String, Object> roleIdCachePs = new PubSubLRUCache<>("roleId",1000);
 	private static FacilioCache<String, Object> roleNameCachePs = new PubSubLRUCache<>("roleName",1000);
@@ -63,7 +64,7 @@ public class LRUCache {
 		return globalVariable;
 	}
 
-	public static FacilioCache<String, Long> getFeatureLicenseCache() {
+	public static FacilioCache<String, Map<String,Long>> getFeatureLicenseCache() {
 		return featureLicenseCachePS;
 	}
 

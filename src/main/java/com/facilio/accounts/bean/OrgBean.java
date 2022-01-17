@@ -12,6 +12,7 @@ import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
+import com.facilio.accounts.util.AccountUtil.LicenseMapping;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
@@ -54,11 +55,11 @@ public interface OrgBean {
 
 	public User getSuperAdmin(long orgId) throws Exception;
 	
-	public long getFeatureLicense() throws Exception;
+	public Map<String, Long> getFeatureLicense() throws Exception;
 	
 	public boolean isFeatureEnabled(FeatureLicense featureLicense) throws Exception;
 
-	public int addLicence(long summodule) throws Exception;
+	public int addLicence(Map<String, Long> licenseMap) throws Exception;
 	
 	public JSONObject orgInfo() throws Exception;
 	

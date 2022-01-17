@@ -238,7 +238,10 @@ public class FacilioContextListener implements ServletContextListener {
 
 	private void initializeDB() {
 		if (FacilioProperties.isDevelopment()) {
-			createTables("conf/db/" + DBConf.getInstance().getDBName() + "/PublicDB.sql", Collections.singletonMap("appDomain", FacilioProperties.getMainAppDomain()));
+			Map<String, String> map = new HashMap<>();
+			map.put("appDomain",  FacilioProperties.getMainAppDomain());
+			map.put("devDomain", FacilioProperties.getDeveloperAppDomain());
+			createTables("conf/db/" + DBConf.getInstance().getDBName() + "/PublicDB.sql", map);
 			createTables("conf/db/" + DBConf.getInstance().getDBName() + "/AppDB.sql", Collections.singletonMap("defaultAppDB", FacilioProperties.getDefaultAppDB()));
 		}
 	}

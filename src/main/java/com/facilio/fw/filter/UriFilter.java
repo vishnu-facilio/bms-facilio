@@ -107,8 +107,14 @@ public class UriFilter implements Filter {
             }
             else if (isWhiteListedUri(reqUri)) {
                 req.getRequestDispatcher(reqUri).forward(request, response); //Doing this to restrict direct hitting of struts2 urls
-            } 
-            else {
+//            } else if (req.getServerName().equals(FacilioProperties.getDeveloperAppDomain())) {
+//                String prefix = "/api/v1";
+//                if (!reqUri.startsWith(prefix)) {
+//                    send404(response);
+//                }
+//                request.getRequestDispatcher("/api/v4"+StringUtils.removeStart(reqUri, prefix)).forward(request, response);
+//            }
+            } else {
                 int idx = reqUri.indexOf(URL_PATTERN);
                 if (idx == 0) { //Doing this to make APIs called without app name to go through the usual security/ validation filters since we have struts2 configured to handle index.jsp globally
                     req.getRequestDispatcher(reqUri).forward(request, response); //Doing this to restrict direct hitting of struts2 urls

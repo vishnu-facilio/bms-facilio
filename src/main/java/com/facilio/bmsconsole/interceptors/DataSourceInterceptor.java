@@ -38,6 +38,10 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 	public String intercept(ActionInvocation invocation) throws Exception {
 		long time = System.currentTimeMillis();
 		HttpServletRequest request = ServletActionContext.getRequest();
+		Boolean isOauth2 = (Boolean) request.getAttribute("isOauth2");
+		if (isOauth2 != null && isOauth2) {
+			return invocation.invoke();
+		}
 		IAMAccount iamAccount = (IAMAccount) request.getAttribute("iamAccount");
 		//remote screen handling
 		if(request.getAttribute("remoteScreen") != null && request.getAttribute("remoteScreen") instanceof RemoteScreenContext) {

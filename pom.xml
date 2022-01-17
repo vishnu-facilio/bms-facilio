@@ -13,6 +13,14 @@
             <url>https://repo1.maven.org/maven2</url>
         </repository>
         <repository>
+            <id>ossrh-snapshot</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+        <repository>
             <id>facilio-framework-s3-release-repo</id>
             <url>s3://repo.facilio/facilio-framework/release</url>
         </repository>
@@ -103,6 +111,12 @@
         </dependencies>
     </dependencyManagement>
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/sh.ory.hydra/hydra-client -->
+        <dependency>
+            <groupId>sh.ory.hydra</groupId>
+            <artifactId>hydra-client</artifactId>
+            <version>1.9.0</version>
+        </dependency>
         <dependency>
             <groupId>com.google.cloud</groupId>
             <artifactId>google-cloud-pubsub</artifactId>

@@ -2617,7 +2617,12 @@ public class FacilioConstants {
             public static final String OTHER_RESPONSES = "otherResponses";
         }
 	}
-	
+	public static class LicenseKeys{
+		public static final String GROUP_1_LICENSE = "group1";
+		public static final String GROUP_2_LICENSE = "group2";	
+		public static final String LICENSE1 = "license1";
+		public static final String LICENSE2 = "license2";	
+	}
 	public static class OrgInfoKeys {
 		public static final String USE_CONTROLLER_DATA_INTERVAL = "useControllerDataInterval";
 		public static final String DEFAULT_DATA_INTERVAL = "defaultDataInterval";
@@ -2636,7 +2641,7 @@ public class FacilioConstants {
 		public static final String IS_OLD_AGENT = "isOldAgent";
 		public static final String DATA_PROCESSING_LOGGER_LEVEL = "dataProcessingLoggerLevel";		
 		public static final String MAX_AGENT_PARTITION = "maxAgentPartition";		
-		public static final String MESSAGE_QUEUE_SOURCE = "messageQueueSource";		
+		public static final String MESSAGE_QUEUE_SOURCE = "messageQueueSource";	
 	}
 
 	public static class Services{
@@ -2770,6 +2775,7 @@ public class FacilioConstants {
 		public static final String OPERATIONAL_VISIBILITY_APP = "operations";
 		public static final String MAINTENANCE_APP = "maintenance";
 		public static final String WORKPLACE_APP = "wokplace";
+		public static final String DEVELOPER_APP = "dev";
 	}
 
 	public static class DefaultRoleNames {
@@ -2782,7 +2788,7 @@ public class FacilioConstants {
 		public static final String SUPER_ADMIN = "Super Administrator";
 		public static final String ADMIN = "Administrator";
 		public static final String MAINTENANCE_ADMIN = "CAFM Admin";
-
+		public static final String DEV_ADMIN = "Dev Admin";
 	}
 
 

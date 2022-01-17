@@ -372,8 +372,8 @@ public class LoginAction extends FacilioAction {
 		if (AccountUtil.getCurrentOrg().getOrgId() == 213l) {
 			data.put("buildingList", ReportsUtil.getBuildingMap());		
 		}
-		long license = AccountUtil.getFeatureLicense();
-		account.put("License", license);
+//		long license = AccountUtil.getFeatureLicense();
+//		account.put("License", license);
 		account.put("data", data);
 		return SUCCESS;
 	}
@@ -480,8 +480,8 @@ public class LoginAction extends FacilioAction {
 		account.put("config", config);
 		account.put("appProps", appProps);
 		
-		long license = AccountUtil.getFeatureLicense();
-		account.put("License", license);
+//		long license = AccountUtil.getFeatureLicense();
+//		account.put("License", license);
 		
 		return SUCCESS;
 	}
@@ -567,8 +567,8 @@ public class LoginAction extends FacilioAction {
 		account.put("config", config);
 		account.put("appProps", appProps);
 
-		long license = AccountUtil.getFeatureLicense();
-		account.put("License", license);
+//		long license = AccountUtil.getFeatureLicense();
+//		account.put("License", license);
 
 		return SUCCESS;
 	}
@@ -596,7 +596,7 @@ public class LoginAction extends FacilioAction {
 		account.put("org", AccountUtil.getCurrentOrg());
 		account.put("user", AccountUtil.getCurrentUser());
 		account.put("timezone",AccountUtil.getCurrentAccount().getTimeZone()); 
-		account.put("License", AccountUtil.getFeatureLicense());
+//		account.put("License", AccountUtil.getFeatureLicense());
 		
 		List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP), true);
 		Map<Long, Set<Long>> userSites = new HashMap<>();
@@ -898,7 +898,7 @@ public class LoginAction extends FacilioAction {
 		}
 
 		account.put("timezone",AccountUtil.getCurrentAccount().getTimeZone()); 
-		account.put("License", AccountUtil.getFeatureLicense());
+//		account.put("License", AccountUtil.getFeatureLicense());
 		
 		List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP), true);
 		Map<Long, Set<Long>> userSites = new HashMap<>();

@@ -88,6 +88,14 @@ public class IAMAccountConstants {
 
 			return userModule;
 		}
+
+		public static FacilioModule getDevClientModule() {
+			FacilioModule devClientModule = new FacilioModule();
+			devClientModule.setName("devclient");
+			devClientModule.setDisplayName("Dev Client");
+			devClientModule.setTableName("Dev_Client");
+			return devClientModule;
+		}
 		
 		public static FacilioModule getAppDomainModule() {
 			FacilioModule userModule = new FacilioModule();
@@ -508,6 +516,49 @@ public class IAMAccountConstants {
 			idleSessionTimeOut.setColumnName("IDLE_SESSION_TIME_OUT");
 			idleSessionTimeOut.setModule(module);
 			fields.add(idleSessionTimeOut);
+
+			return fields;
+		}
+
+		public static List<FacilioField> getDevClientFields() {
+			FacilioModule module = getDevClientModule();
+
+			List<FacilioField> fields = new ArrayList<>();
+
+			FacilioField id = new FacilioField();
+			id.setName("id");
+			id.setDataType(FieldType.ID);
+			id.setColumnName("ID");
+			id.setModule(module);
+			fields.add(id);
+
+			FacilioField uid = new FacilioField();
+			uid.setName("uid");
+			uid.setDataType(FieldType.ID);
+			uid.setColumnName("USERID");
+			uid.setModule(module);
+			fields.add(uid);
+
+			FacilioField orgId = new FacilioField();
+			orgId.setName("orgId");
+			orgId.setDataType(FieldType.NUMBER);
+			orgId.setColumnName("ORGID");
+			orgId.setModule(module);
+			fields.add(orgId);
+
+			FacilioField authType = new FacilioField();
+			authType.setName("authType");
+			authType.setDataType(FieldType.NUMBER);
+			authType.setColumnName("AUTH_TYPE");
+			authType.setModule(module);
+			fields.add(authType);
+
+			FacilioField oauth2ClientId = new FacilioField();
+			oauth2ClientId.setName("oauth2ClientId");
+			oauth2ClientId.setDataType(FieldType.STRING);
+			oauth2ClientId.setColumnName("OAUTH2_CLIENT_ID");
+			oauth2ClientId.setModule(module);
+			fields.add(oauth2ClientId);
 
 			return fields;
 		}

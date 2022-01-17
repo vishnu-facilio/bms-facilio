@@ -58,6 +58,14 @@ public class AuthInterceptor extends AbstractInterceptor {
 	public String intercept(ActionInvocation arg0) throws Exception {
 		long time = System.currentTimeMillis();
 		HttpServletRequest request = ServletActionContext.getRequest();
+		String authorization = request.getHeader("Authorization");
+		boolean isOauth2 = StringUtils.isNotEmpty(authorization) && StringUtils.startsWith(authorization, "Bearer oauth2");
+		if (isOauth2) {
+			request.setAttribute("isOauth2", true);
+			return arg0.invoke();
+		} else {
+			request.setAttribute("isOauth2", false);
+		}
 		try {
 
 			if (getPermalinkToken(request) != null) {

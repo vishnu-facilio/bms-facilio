@@ -15,6 +15,7 @@ import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 
+import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -140,6 +141,11 @@ public class FacilioProperties {
     
     private static String cloudAgentUrl;
     private static int maxProcessorThreads;
+    @Getter
+    private static String developerAppDomain;
+
+    @Getter
+    private static String hydraUrl;
 
     static {
         loadProperties();
@@ -258,6 +264,8 @@ public class FacilioProperties {
                 cloudAgentUrl = PROPERTIES.getProperty("agent.cloud.url", "facilioagent.com");
 
                 service = PROPERTIES.getProperty("service");
+                developerAppDomain = PROPERTIES.getProperty("facilioapisdomain", "facilioapis.com");
+                hydraUrl = PROPERTIES.getProperty("hydraUrl");
 
                 String cookieLifespanProp = PROPERTIES.getProperty("token.cookie.lifespan");
                 if (StringUtils.isNotEmpty(cookieLifespanProp)) {
