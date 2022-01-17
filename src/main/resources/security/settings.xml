@@ -277,7 +277,7 @@
                 <property name="name" type="string"/>
                 <property name="route" type="string"/>
                 <property name="specialTypeModules" type="array">
-                	<items type="number"/>
+                	<items type="string"/>
                 </property>
                 <property name="type" type="number"/>
             </property>
