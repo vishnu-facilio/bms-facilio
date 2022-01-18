@@ -154,7 +154,7 @@
       typeConfig : 3
    contextWorkflow :
        isV2Script : true
-       workflowV2String : 'ChatBotAction test(Map data){
+       workflowV2String : 'Object test(Map data){
                              
                              subjectQueryList = [["I will help you submit a service request.","Can you provide me with the details?"],
                                                  ["I''ll help you raise a service request. Please provide the details that I can include in it.","This will help the property team to gain some context."],
@@ -425,7 +425,7 @@
       typeConfig : 1
    contextWorkflow :
        isV2Script : true
-       workflowV2String : 'ChatBotAction test(Map data){
+       workflowV2String : 'Object test(Map data){
                              if(data.woId == null) {
                              
                                 module = Module("workorder").asMap();
@@ -531,7 +531,7 @@
       typeConfig : 1
    contextWorkflow :
        isV2Script : true
-       workflowV2String : 'ChatBotAction test(Map data){
+       workflowV2String : 'Object test(Map data){
                              if(data.woId == null) {
                              
                                 module = Module("workorder").asMap();
@@ -631,7 +631,7 @@
       typeConfig : 1
    contextWorkflow :
        isV2Script : true
-       workflowV2String : 'ChatBotAction test(Map data) {
+       workflowV2String : 'Object test(Map data) {
                              if(data.woId == null) {
                              
                                 module = Module("workorder").asMap();
@@ -893,7 +893,7 @@
       
    contextWorkflow :
        isV2Script : true
-       workflowV2String : 'ChatBotAction test(Map data){
+       workflowV2String : 'Object test(Map data){
                                 
                                 log "data --- "+data;
                                 if(data.slot == null) {
@@ -1414,7 +1414,7 @@
       
    contextWorkflow :
        isV2Script : true
-       workflowV2String : 'ChatBotAction test(Map data){
+       workflowV2String : 'Object test(Map data){
                                 
                                 log "data --- "+data;
                                 
@@ -1694,7 +1694,7 @@
       
    contextWorkflow :
        isV2Script : true
-       workflowV2String : 'ChatBotAction test(Map data){
+       workflowV2String : 'Object test(Map data){
                                 
                                 log "data 1--- "+data;
                                 

@@ -21,8 +21,8 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.scriptengine.context.WorkflowNamespaceContext;
 import com.facilio.workflows.context.WorkflowUserFunctionContext;
-import com.facilio.workflowv2.contexts.WorkflowNamespaceContext;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
 import io.jsonwebtoken.lang.Collections;
@@ -65,7 +65,12 @@ public class GetAllNameSpaceWithFunctionCommand extends FacilioCommand {
 		for(WorkflowNamespaceContext workflowNamespaceContext :workflowNamespaceContexts) {
 			
 			List<WorkflowUserFunctionContext> functions = functionMap.get(workflowNamespaceContext.getId());
-			workflowNamespaceContext.setFunctions(functions);
+			
+			if(functions != null) {
+				for(WorkflowUserFunctionContext function : functions) {
+					workflowNamespaceContext.addFunction(function);
+				}
+			}
 		}
 		
 		context.put(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT_LIST, workflowNamespaceContexts);
