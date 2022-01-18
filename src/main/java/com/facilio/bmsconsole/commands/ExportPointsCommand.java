@@ -4,7 +4,6 @@
 package com.facilio.bmsconsole.commands;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,9 +13,7 @@ import java.util.Set;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.zeroturnaround.zip.ZipUtil;
 
 import com.facilio.agent.AgentType;
 import com.facilio.agent.controller.FacilioControllerType;
@@ -39,8 +36,6 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.services.factory.FacilioFactory;
-import com.facilio.services.filestore.FileStore;
 import com.facilio.unitconversion.Unit;
 import com.facilio.util.FacilioUtil;
 
@@ -73,7 +68,7 @@ public class ExportPointsCommand extends FacilioCommand {
 				FacilioControllerType controllerType = FacilioControllerType.valueOf(FacilioUtil.parseInt(controller.get(AgentConstants.CONTROLLER_TYPE)));
 				Map<String, Object> table = getDetails(controller, controllerType);
 				if (table != null) {
-					ExportUtil.writeToFile(fileFormat, controllerName, table, false, rootPath);
+					ExportUtil.writeToFile(fileFormat, controllerName.replaceAll("/", "_"), table, false, rootPath);
 				}
 			}
 			fileUrl = ExportUtil.getZipFileUrl(rootFolder);
@@ -173,39 +168,37 @@ public class ExportPointsCommand extends FacilioCommand {
 		List<Map<String,Object>> records = new ArrayList<>();
 		
 		boolean isBacnet = controllerType == FacilioControllerType.BACNET_IP || controllerType == FacilioControllerType.BACNET_MSTP;
+		boolean isNiagara = controllerType == FacilioControllerType.NIAGARA;
 		
 		for (int i = 0; i < points.size(); i++) {
 			Map<String, Object> point = points.get(i);
 			Map<String,Object> record = new HashMap<>();
 			
-			String headerKey = "Name";
-			String name = point.get("displayName") != null ? (String) point.get("displayName") : (String) point.get("name");
-			addRecord(headerKey, name, i, headers, record);
+			//String name = point.get("displayName") != null ? (String) point.get("displayName") : (String) point.get("name");
+			addRecord("Name", point.get(AgentConstants.NAME), i, headers, record);
 			
 			if (isBacnet) {
-				headerKey = "Instance";
-				addRecord(headerKey, point.get(AgentConstants.INSTANCE_NUMBER), i, headers, record);
-				headerKey = "Instance Type";
-				addRecord(headerKey, point.get(AgentConstants.INSTANCE_TYPE), i, headers, record);
+				addRecord("Instance", point.get(AgentConstants.INSTANCE_NUMBER), i, headers, record);
+				addRecord("Instance Type", point.get(AgentConstants.INSTANCE_TYPE), i, headers, record);
+			}
+			else if (isNiagara) {
+				addRecord("Path", point.get(AgentConstants.DISPLAY_NAME), i, headers, record);
 			}
 			
-			headerKey = "Category";
 			String category = null;
 			if (point.get(AgentConstants.ASSET_CATEGORY_ID) != null) {
 				long categoryId = (long) point.get(AgentConstants.ASSET_CATEGORY_ID);
 				category = categories.get(categoryId);
 			}
-			addRecord(headerKey, category, i, headers, record);
+			addRecord("Category", category, i, headers, record);
 			
-			headerKey = "Asset";
 			String asset = null;
 			if (point.get(AgentConstants.RESOURCE_ID) != null) {
 				long resourceId = (long) point.get(AgentConstants.RESOURCE_ID);
 				asset = resources.get(resourceId);
 			}
-			addRecord(headerKey, asset, i, headers, record);
+			addRecord("Asset", asset, i, headers, record);
 			
-			headerKey = "Reading";
 			Map<String, Object> field =  null;
 			String reading = null;
 			if (point.get(AgentConstants.FIELD_ID) != null) {
@@ -213,15 +206,14 @@ public class ExportPointsCommand extends FacilioCommand {
 				field = fields.get(fieldId);
 				reading = (String) field.get("name");
 			}
-			addRecord(headerKey, reading, i, headers, record);
+			addRecord("Reading", reading, i, headers, record);
 			
-			headerKey = "Unit";
 			String unit = null;
 			if (point.get("unitId") != null) {
 				int unitId = (int) point.get("unitId");
 				unit = unitMap.get(unitId);
 			}
-			addRecord(headerKey, unit, i, headers, record);
+			addRecord("Unit", unit, i, headers, record);
 			
 			records.add(record);
 		}
