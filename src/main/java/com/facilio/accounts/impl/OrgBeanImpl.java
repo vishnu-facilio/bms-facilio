@@ -242,9 +242,9 @@ public class OrgBeanImpl implements OrgBean {
 					if(appDomain != null) {
 						user.setAppType(appDomain.getAppType());
 						user.setAppDomain(appDomain);
+						user.setAppType(appDomain.getAppType());
 					}
 					user.setApplicationId((long)prop.get("applicationId"));
-					user.setAppType(appDomain.getAppType());
 					if(user.getScopingId() > 0){
 						user.setScoping(scopingMap.get(user.getScopingId()));
 					}

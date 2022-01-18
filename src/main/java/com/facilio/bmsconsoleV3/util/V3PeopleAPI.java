@@ -27,10 +27,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -112,22 +109,6 @@ public class V3PeopleAPI {
                 .beanClass(V3PeopleContext.class)
                 .select(fields)
         ;
-        List<V3PeopleContext> records = builder.get();
-        return records;
-
-    }
-
-    public static List<V3PeopleContext> getPeopleByRoleId(long roleId) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
-        List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.PEOPLE);
-
-        SelectRecordsBuilder<V3PeopleContext> builder = new SelectRecordsBuilder<V3PeopleContext>()
-                .module(module)
-                .beanClass(V3PeopleContext.class)
-                .select(fields)
-                .andCondition(CriteriaAPI.getCondition("ROLE_ID", "roleId", String.valueOf(roleId), StringOperators.IS));
-                ;
         List<V3PeopleContext> records = builder.get();
         return records;
 
@@ -710,5 +691,33 @@ public class V3PeopleAPI {
         return false;
 
     }
+
+    public static List<Map<String, Object>> getPeopleForRoles(List<Long> roleIds) throws Exception {
+
+        if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(roleIds)) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule peopleModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+            List<FacilioField> fields = modBean.getAllFields(peopleModule.getName());
+            fields.add(FieldFactory.getIdField("id","ID", peopleModule));
+
+            GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                    .table(ModuleFactory.getPeopleModule().getTableName())
+                    .select(fields)
+                    .innerJoin("ORG_Users")
+                    .on("ORG_Users.PEOPLE_ID = People.ID")
+                    .innerJoin("ORG_User_Apps")
+                    .on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
+                    .andCondition(CriteriaAPI.getCondition("ORG_User_Apps.ROLE_ID", "roleId", String.valueOf(StringUtils.join(roleIds, ",")), NumberOperators.EQUALS));
+
+            List<Map<String, Object>> props = selectBuilder.get();
+            if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(props)) {
+                return props;
+            }
+        }
+        return null;
+
+
+    }
+
 
 }
