@@ -271,10 +271,14 @@
         <requestbody type="object">
             <property name="tab" type="object">
                 <property name="applicationId" type="number"/>
-                <property name="moduleIds" type="array"/>
+                <property name="moduleIds" type="array">
+                    <items type="number"/>
+                </property>
                 <property name="name" type="string"/>
-                <property name="route" type="array"/>
-                <property name="specialTypeModules" type="array"/>
+                <property name="route" type="string"/>
+                <property name="specialTypeModules" type="array">
+                    <items type="string"/>
+                </property>
                 <property name="type" type="number"/>
             </property>
         </requestbody>
@@ -517,237 +521,11 @@
             </property>
         </requestbody>
     </request>
-    <request path="/api/picklist/updateAssetDepartment">
-        <requestbody type="object">
-            <property name="assetDepartment" type="object"/>
-            <property name="approvalFlowId" type="number"/>
-            <property name="currentTime" type="number"/>
-            <property name="currentUserAuthorizedToApprove" type="boolean"/>
-            <property name="deleted" type="boolean"/>
-            <property name="formId" type="number"/>
-            <property name="id" type="number"/>
-            <property name="localId" type="number"/>
-            <property name="moduleId" type="number"/>
-            <property name="name" type="string"/>
-            <property name="offlineModifiedTime" type="number"/>
-            <property name="orgId" type="number"/>
-            <property name="siteId" type="number"/>
-            <property name="slaPolicyId" type="number"/>
-            <property name="stateFlowId" type="number"/>
-            <property name="sysCreatedBy" type="object">
-                <property name="active" type="boolean"/>
-                <property name="appDomain" type="object">
-                    <property name="appDomainType" type="number"/>
-                    <property name="appDomainTypeEnum" type="string"/>
-                    <property name="appType" type="number"/>
-                    <property name="domain" type="string"/>
-                    <property name="domainType" type="number"/>
-                    <property name="domainTypeEnum" type="string"/>
-                    <property name="groupType" type="number"/>
-                    <property name="groupTypeEnum" type="string"/>
-                    <property name="id" type="number"/>
-                    <property name="identifier" type="string"/>
-                    <property name="orgId" type="number"/>
-                    <property name="country" type="string"/>
-                    <property name="defaultOrg" type="boolean"/>
-                    <property name="email" type="string"/>
-                    <property name="iamOrgUserId" type="number"/>
-                    <property name="id" type="number"/>
-                    <property name="identifier" type="string"/>
-                    <property name="language" type="string"/>
-                    <property name="name" type="string"/>
-                    <property name="orgId" type="number"/>
-                    <property name="phone" type="string"/>
-                    <property name="portalUser" type="boolean"/>
-                    <property name="pwdLastUpdatedTime" type="number"/>
-                    <property name="securityPolicyId" type="number"/>
-                    <property name="timezone" type="string"/>
-                    <property name="uid" type="number"/>
-                    <property name="userName" type="string"/>
-                    <property name="userStatus" type="boolean"/>
-                    <property name="userVerified" type="boolean"/>
-                    <property name="sysCreatedTime" type="number"/>
-                    <property name="sysDeletedTime" type="number"/>
-                    <property name="sysModifiedBy" type="object">
-                        <property name="active" type="boolean"/>
-                    </property>
-                    <property name="appDomain" type="object">
-                            <property name="appDomainType" type="number"/>
-                            <property name="appDomainTypeEnum" type="string"/>
-                            <property name="appType" type="number"/>
-                            <property name="domain" type="string"/>
-                            <property name="domainType" type="number"/>
-                            <property name="domainTypeEnum" type="string"/>
-                            <property name="groupType" type="number"/>
-                            <property name="groupTypeEnum" type="string"/>
-                            <property name="id" type="number"/>
-                            <property name="identifier" type="string"/>
-                            <property name="orgId" type="number"/>
-                    </property>
-                        <property name="appType" type="number"/>
-                        <property name="applicationId" type="number"/>
-                        <property name="country" type="string"/>
-                        <property name="defaultOrg" type="boolean"/>
-                        <property name="email" type="string"/>
-                        <property name="facilioAuth" type="boolean"/>
-                        <property name="iamOrgUserId" type="number"/>
-                        <property name="id" type="number"/>
-                        <property name="identifier" type="string"/>
-                        <property name="inviteAcceptStatus" type="boolean"/>
-                        <property name="invitedTime" type="number"/>
-                        <property name="isDefaultOrg" type="boolean"/>
-                        <property name="language" type="string"/>
-                        <property name="license" type="number"/>
-                        <property name="name" type="string"/>
-                        <property name="orgId" type="number"/>
-                        <property name="ouid" type="number"/>
-                        <property name="peopleId" type="number"/>
-                        <property name="phone" type="string"/>
-                        <property name="photoId" type="number"/>
-                        <property name="portalUser" type="boolean"/>
-                        <property name="portal_verified" type="boolean"/>
-                        <property name="pwdLastUpdatedTime" type="number"/>
-                        <property name="role" type="object">
-                            <property name="createdTime" type="number"/>
-                            <property name="description" type="string"/>
-                            <property name="id" type="number"/>
-                            <property name="isPrevileged" type="boolean"/>
-                            <property name="name" type="string"/>
-                            <property name="orgId" type="number"/>
-                            <property name="permissions" type="array"/>
-                            <property name="roleId" type="number"/>
-                        </property>
-                        <property name="roleId" type="number"/>
-                        <property name="securityPolicyId" type="number"/>
-                        <property name="timezone" type="string"/>
-                        <property name="uid" type="number"/>
-                        <property name="userName" type="string"/>
-                        <property name="userStatus" type="boolean"/>
-                        <property name="userType" type="number"/>
-                        <property name="userVerified" type="boolean"/>
-                    </property>
-                <property name="sysModifiedTime" type="number"/>
-            </property>
-        </requestbody>
-    </request>
     <request path="/api/picklist/addAssetType">
         <requestbody type="object">
             <property name="assetType" type="object">
                 <property name="name" type="string"/>
                 <property name="movable" type="boolean"/>
-            </property>
-        </requestbody>
-    </request>
-    <request path="/api/picklist/updateAssetType">
-        <requestbody type="object">
-            <property name="assetType" type="object"/>
-            <property name="approvalFlowId" type="number"/>
-            <property name="currentTime" type="number"/>
-            <property name="currentUserAuthorizedToApprove" type="boolean"/>
-            <property name="deleted" type="boolean"/>
-            <property name="formId" type="number"/>
-            <property name="id" type="number"/>
-            <property name="localId" type="number"/>
-            <property name="moduleId" type="number"/>
-            <property name="name" type="string"/>
-            <property name="offlineModifiedTime" type="number"/>
-            <property name="orgId" type="number"/>
-            <property name="siteId" type="number"/>
-            <property name="slaPolicyId" type="number"/>
-            <property name="stateFlowId" type="number"/>
-            <property name="sysCreatedBy" type="object">
-                <property name="active" type="boolean"/>
-                <property name="appDomain" type="object">
-                    <property name="appDomainType" type="number"/>
-                    <property name="appDomainTypeEnum" type="string"/>
-                    <property name="appType" type="number"/>
-                    <property name="domain" type="string"/>
-                    <property name="domainType" type="number"/>
-                    <property name="domainTypeEnum" type="string"/>
-                    <property name="groupType" type="number"/>
-                    <property name="groupTypeEnum" type="string"/>
-                    <property name="id" type="number"/>
-                    <property name="identifier" type="string"/>
-                    <property name="orgId" type="number"/>
-                    <property name="country" type="string"/>
-                    <property name="defaultOrg" type="boolean"/>
-                    <property name="email" type="string"/>
-                    <property name="iamOrgUserId" type="number"/>
-                    <property name="id" type="number"/>
-                    <property name="identifier" type="string"/>
-                    <property name="language" type="string"/>
-                    <property name="name" type="string"/>
-                    <property name="orgId" type="number"/>
-                    <property name="phone" type="string"/>
-                    <property name="portalUser" type="boolean"/>
-                    <property name="pwdLastUpdatedTime" type="number"/>
-                    <property name="securityPolicyId" type="number"/>
-                    <property name="timezone" type="string"/>
-                    <property name="uid" type="number"/>
-                    <property name="userName" type="string"/>
-                    <property name="userStatus" type="boolean"/>
-                    <property name="userVerified" type="boolean"/>
-                    <property name="sysCreatedTime" type="number"/>
-                    <property name="sysDeletedTime" type="number"/>
-                    <property name="sysModifiedBy" type="object">
-                        <property name="active" type="boolean"/>
-                    </property>
-                    <property name="appDomain" type="object">
-                        <property name="appDomainType" type="number"/>
-                        <property name="appDomainTypeEnum" type="string"/>
-                        <property name="appType" type="number"/>
-                        <property name="domain" type="string"/>
-                        <property name="domainType" type="number"/>
-                        <property name="domainTypeEnum" type="string"/>
-                        <property name="groupType" type="number"/>
-                        <property name="groupTypeEnum" type="string"/>
-                        <property name="id" type="number"/>
-                        <property name="identifier" type="string"/>
-                        <property name="orgId" type="number"/>
-                    </property>
-                    <property name="appType" type="number"/>
-                    <property name="applicationId" type="number"/>
-                    <property name="country" type="string"/>
-                    <property name="defaultOrg" type="boolean"/>
-                    <property name="email" type="string"/>
-                    <property name="facilioAuth" type="boolean"/>
-                    <property name="iamOrgUserId" type="number"/>
-                    <property name="id" type="number"/>
-                    <property name="identifier" type="string"/>
-                    <property name="inviteAcceptStatus" type="boolean"/>
-                    <property name="invitedTime" type="number"/>
-                    <property name="isDefaultOrg" type="boolean"/>
-                    <property name="language" type="string"/>
-                    <property name="license" type="number"/>
-                    <property name="name" type="string"/>
-                    <property name="orgId" type="number"/>
-                    <property name="ouid" type="number"/>
-                    <property name="peopleId" type="number"/>
-                    <property name="phone" type="string"/>
-                    <property name="photoId" type="number"/>
-                    <property name="portalUser" type="boolean"/>
-                    <property name="portal_verified" type="boolean"/>
-                    <property name="pwdLastUpdatedTime" type="number"/>
-                    <property name="role" type="object">
-                        <property name="createdTime" type="number"/>
-                        <property name="description" type="string"/>
-                        <property name="id" type="number"/>
-                        <property name="isPrevileged" type="boolean"/>
-                        <property name="name" type="string"/>
-                        <property name="orgId" type="number"/>
-                        <property name="permissions" type="array"/>
-                        <property name="roleId" type="number"/>
-                    </property>
-                    <property name="roleId" type="number"/>
-                    <property name="securityPolicyId" type="number"/>
-                    <property name="timezone" type="string"/>
-                    <property name="uid" type="number"/>
-                    <property name="userName" type="string"/>
-                    <property name="userStatus" type="boolean"/>
-                    <property name="userType" type="number"/>
-                    <property name="userVerified" type="boolean"/>
-                </property>
-                <property name="sysModifiedTime" type="number"/>
             </property>
         </requestbody>
     </request>
@@ -784,7 +562,9 @@
                 <property name="sysDeletedTime" type="number"/>
                 <property name="sysModifiedTime" type="number"/>
             </property>
-            <property name="spaceCategoryIds" type="array"/>
+            <property name="spaceCategoryIds" type="array">
+                <items type="number"/>
+            </property>
         </requestbody>
     </request>
     <request path="/api/v2/businesshours/add">
