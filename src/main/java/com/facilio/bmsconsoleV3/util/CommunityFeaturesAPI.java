@@ -164,7 +164,10 @@ public class CommunityFeaturesAPI {
                 }
 
                 if(sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.ROLE) {
-                    ppl = V3PeopleAPI.getPeopleByRoleId(sharingInfo.getSharedToRole().getRoleId());
+                    List<Map<String, Object>> pplForRoleMap = V3PeopleAPI.getPeopleForRoles(Collections.singletonList(sharingInfo.getSharedToRole().getRoleId()));
+                    if(CollectionUtils.isNotEmpty(pplForRoleMap)) {
+                        ppl.addAll(FieldUtil.getAsBeanListFromMapList(pplForRoleMap, V3PeopleContext.class));
+                    }
                 }
 
                 if(sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.PEOPLE) {
