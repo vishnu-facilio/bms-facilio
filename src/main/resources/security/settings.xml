@@ -597,4 +597,51 @@
             </property>
         </requestbody>
     </request>
+    <request path="/api/energymeter/add">
+        <requestbody type="object">
+            <property name="energyMeter" type="object">
+                <property name="description" type="string"/>
+                <property name="isVirtual" type="boolean"/>
+                <property name="multiplicationFactor" type="string"/>
+                <property name="name" type="string"/>
+                <property name="purpose" type="object">
+                    <property name="id" type="number"/>
+                </property>
+                <property name="purposeSpace" type="object">
+                    <property name="id" type="number"/>
+                </property>
+                <property name="root" type="boolean"/>
+                <property name="serialNumber" type="string"/>
+                <property name="siteId" type="number"/>
+                <property name="space" type="object">
+                    <property name="id" type="number"/>
+                </property>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/energymeter/update">
+        <requestbody type="object">
+            <property name="energyMeter" type="object">
+                <property name="description" type="string"/>
+                <property name="id" type="number"/>
+                <property name="multiplicationFactor" type="string"/>
+                <property name="name" type="string"/>
+                <property name="purpose" type="object">
+                    <property name="id" type="number"/>
+                </property>
+                <property name="serialNumber" type="string"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/baseline/addBaseLine">
+        <requestbody type="object">
+            <property name="baseLine" type="object">
+                <property name="endTime" type="number"/>
+                <property name="name" type="string"/>
+                <property name="rangeType" type="string"/>
+                <property name="spaceId" type="number"/>
+                <property name="startTime" type="number"/>
+            </property>
+        </requestbody>
+    </request>
 </config>
