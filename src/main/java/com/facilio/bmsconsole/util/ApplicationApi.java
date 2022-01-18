@@ -1439,10 +1439,11 @@ public class ApplicationApi {
     public static List<ScopingContext> getScopingForApp(long appId) throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getScopingModule().getTableName())
-                .select(FieldFactory.getScopingFields())
-                .andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", String.valueOf(appId), NumberOperators.EQUALS))
+                .select(FieldFactory.getScopingFields());
 
-                ;
+        if(appId > 0) {
+            builder.andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", String.valueOf(appId), NumberOperators.EQUALS));
+        }
         List<Map<String, Object>> map = builder.get();
         if(CollectionUtils.isNotEmpty(map)) {
             return FieldUtil.getAsBeanListFromMapList(map, ScopingContext.class);
