@@ -189,7 +189,10 @@ public class ScopeHandlerImpl extends ScopeHandler {
 	    	if(moduleScoping != null) {
 				fields.addAll(ApplicationApi.computeValueForScopingField(moduleScoping, module));
 				if(!isInsert) {
-					criteria = moduleScoping.getCriteria();
+					if (criteria == null) {
+						criteria = new Criteria();
+					}
+					criteria.andCriteria(moduleScoping.getCriteria());
 				}
 			}
     	}

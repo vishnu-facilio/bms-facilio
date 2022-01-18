@@ -478,7 +478,7 @@ public class ApplicationApi {
             addApplicationLayout(opLayoutMobile);
 
             addOccupantPortalWebTabs(spLayout);
-            addOccupantPortalWebGroupsForMobileLayout(spLayout);
+            addOccupantPortalWebGroupsForMobileLayout(opLayoutMobile);
 
             Role occupantAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.DefaultRoleNames.OCCUPANT_USER);
             addAppRoleMapping(occupantAdmin.getRoleId(), servicePortal.getId());
@@ -1679,5 +1679,28 @@ public class ApplicationApi {
         catch(Exception e) {
             LogManager.getLogger(ApplicationApi.class.getName()).error("Error occurred while running migration.", e);
         }
+     }
+
+     public static Map<Long, List<ScopingConfigContext>> getDelegatedUsersScopingMap(List<User> users) {
+        Map<Long, List<ScopingConfigContext>> scopingMap = new HashMap<>();
+        try {
+            for (User user : users) {
+                Map<Long, ScopingConfigContext> scope = ApplicationApi.getScopingMapForApp(user.getScopingId());
+                if (MapUtils.isNotEmpty(scope)) {
+                    for (Long key : scope.keySet()) {
+                        if (scopingMap.containsKey(key)) {
+                            scopingMap.get(key).add(scope.get(key));
+                        } else {
+                            scopingMap.put(key, Collections.singletonList(scope.get(key)));
+                        }
+                    }
+                }
+            }
+            return scopingMap;
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+        return null;
      }
 }
