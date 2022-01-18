@@ -1160,7 +1160,7 @@ public enum ActionType {
 			Object newState = obj.get("new_state");
 			long newStateId = newState != null ? Long.parseLong(newState.toString()) : -1;
 
-			String moduleName = (String) obj.get("moduleName");
+			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			
