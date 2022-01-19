@@ -702,8 +702,7 @@ public class V3PeopleAPI {
         if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(roleIds)) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule peopleModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
-            List<FacilioField> fields = modBean.getAllFields(peopleModule.getName());
-            fields.add(FieldFactory.getIdField("id","ID", peopleModule));
+            List<FacilioField> fields = Collections.singletonList(FieldFactory.getIdField("id","ID", peopleModule));
 
             GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                     .table(ModuleFactory.getPeopleModule().getTableName())
@@ -715,8 +714,6 @@ public class V3PeopleAPI {
                     .andCondition(CriteriaAPI.getCondition("ORG_User_Apps.ROLE_ID", "roleId", String.valueOf(StringUtils.join(roleIds, ",")), NumberOperators.EQUALS));
 
             List<Map<String, Object>> props = selectBuilder.get();
-            LOGGER.log(Level.DEBUG, "Query ->" + selectBuilder.toString());
-
             if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(props)) {
                 return props;
             }

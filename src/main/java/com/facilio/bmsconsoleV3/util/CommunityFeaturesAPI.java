@@ -171,7 +171,6 @@ public class CommunityFeaturesAPI {
                 if(sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.ROLE) {
                     List<Map<String, Object>> pplForRoleMap = V3PeopleAPI.getPeopleForRoles(Collections.singletonList(sharingInfo.getSharedToRole().getRoleId()));
                     if(CollectionUtils.isNotEmpty(pplForRoleMap)) {
-                        LOGGER.log(Level.DEBUG, "ppl Count ->" + pplForRoleMap.size());
                         ppl.addAll(FieldUtil.getAsBeanListFromMapList(pplForRoleMap, V3PeopleContext.class));
                     }
                 }
