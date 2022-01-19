@@ -151,10 +151,6 @@ public abstract class Template implements Serializable {
 		JSONObject json = getOriginalTemplate();
 		if (json != null) {
 			
-			if (getIsAttachmentAdded()) {
-				this.attachments = TemplateAttachmentUtil.fetchAttachments(getId());
-			}
-			
 			if (workflow != null) {
 				JSONObject parsedJson = null;
 				Map<String, Object> params;
@@ -169,7 +165,7 @@ public abstract class Template implements Serializable {
 					if (userParams != null && !userParams.isEmpty()) {
 						// Replacing the old params via workflow
 						for (String param : userParams.keySet()){
-							params.put("cs."+param, userParams.get(param));
+							params.put(CUSTOM_SCRIPT_NAMESPACE + "." +param, userParams.get(param));
 						}
 
 					}
@@ -220,6 +216,18 @@ public abstract class Template implements Serializable {
 					JSONParser parser = new JSONParser();
 					parsedJson = (JSONObject) parser.parse(jsonStr);
 				}
+				
+				if (getIsAttachmentAdded()) {
+					this.attachments = TemplateAttachmentUtil.fetchAttachments(getId());
+					if (this.attachments != null) {
+						this.attachments.stream().filter(att -> att.getType() == TemplateAttachmentType.URL)
+							.forEach(att -> {
+								TemplateUrlContext urlContext = (TemplateUrlContext) att;
+								urlContext.setUrlString(StringSubstitutor.replace(urlContext.getUrlString(), params));
+							});
+					}
+				}
+				
 				return parsedJson;
 			}
 		}
