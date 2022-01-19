@@ -9,8 +9,8 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.scriptengine.context.WorkflowNamespaceContext;
 import com.facilio.time.DateTimeUtil;
-import com.facilio.workflowv2.contexts.WorkflowNamespaceContext;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
 public class DeleteNameSpaceCommand extends FacilioCommand {

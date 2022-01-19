@@ -34,10 +34,15 @@ import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 
 public class V3PeopleAPI {
+
+    private static final Logger LOGGER = org.apache.log4j.Logger.getLogger(V3PeopleAPI.class);
+
 
     public static List<V3VendorContactContext> getVendorContacts(long vendorId, boolean fetchPrimaryContact) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -697,8 +702,7 @@ public class V3PeopleAPI {
         if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(roleIds)) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule peopleModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
-            List<FacilioField> fields = modBean.getAllFields(peopleModule.getName());
-            fields.add(FieldFactory.getIdField("id","ID", peopleModule));
+            List<FacilioField> fields = Collections.singletonList(FieldFactory.getIdField("id","ID", peopleModule));
 
             GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                     .table(ModuleFactory.getPeopleModule().getTableName())

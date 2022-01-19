@@ -13,9 +13,9 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.scriptengine.context.WorkflowNamespaceContext;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.DisplayNameToLinkNameUtil;
-import com.facilio.workflowv2.contexts.WorkflowNamespaceContext;
 import com.facilio.workflowv2.util.UserFunctionAPI;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
@@ -40,7 +40,7 @@ public class AddNameSpaceCommand extends FacilioCommand {
 			workflowNamespaceContext.setLinkName(linkName);
 		}
 		
-		workflowNamespaceContext.setOrgid(AccountUtil.getCurrentOrg().getId());
+		workflowNamespaceContext.setOrgId(AccountUtil.getCurrentOrg().getId());
 		
 		addNameSpace(workflowNamespaceContext);
 		

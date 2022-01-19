@@ -19,10 +19,11 @@ public class MLCustomModuleContext extends ModuleBaseWithCustomFields {
 	private String modelPath;
 	private Boolean moduleNeeded;
 	private String moduleName;
-	private Map<String, List<String>> fields;
+	private Map<String, List<String>> moduleFields;
 	private String parentModule;
 	private List<String> parentFields;
 	private String type;
+	private String nature;
 	
 	/**
 	 * Internal usage variables
@@ -56,12 +57,12 @@ public class MLCustomModuleContext extends ModuleBaseWithCustomFields {
 		this.moduleName = moduleName;
 	}
 	
-	public Map<String, List<String>> getFields() {
-		return fields;
+	public Map<String, List<String>> getModuleFields() {
+		return moduleFields;
 	}
 	
-	public void setFields(Map<String, List<String>> fields) {
-		this.fields = fields;
+	public void setModuleFields(Map<String, List<String>> moduleFields) {
+		this.moduleFields = moduleFields;
 	}
 
 	public String getParentModule() {
@@ -103,6 +104,13 @@ public class MLCustomModuleContext extends ModuleBaseWithCustomFields {
 	public void setType(String type) {
 		this.type = type;
 	}
+public String getNature() {
+		return nature;
+	}
+	
+	public void setNature(String nature) {
+		this.nature= nature;
+	}
 
 	public List<String> getParentFields() {
 		return parentFields;
@@ -115,9 +123,9 @@ public class MLCustomModuleContext extends ModuleBaseWithCustomFields {
 	@Override
 	public String toString() {
 		return "MLCustomModuleContext [modelPath=" + modelPath + ", moduleNeeded=" + moduleNeeded + ", moduleName="
-				+ moduleName + ", fields=" + fields + ", parentModule=" + parentModule + ", parentFields="
+				+ moduleName + ", fields=" + moduleFields + ", parentModule=" + parentModule + ", parentFields="
 				+ parentFields + ", type=" + type + ", requestFields=" + requestFields + ", mlReadingModuleId="
 				+ mlReadingModuleId + ", mlId=" + mlId + "]";
 	}
-	
+
 }

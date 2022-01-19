@@ -5,17 +5,14 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bundle.enums.BundleComponentsEnum;
-import com.facilio.bundle.enums.BundleModeEnum;
-import com.facilio.bundle.utils.BundleUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.scriptengine.context.WorkflowNamespaceContext;
 import com.facilio.time.DateTimeUtil;
-import com.facilio.workflowv2.contexts.WorkflowNamespaceContext;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
 public class UpdateNameSpaceCommand extends FacilioCommand {
