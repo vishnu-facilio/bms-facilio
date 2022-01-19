@@ -896,10 +896,12 @@ public class AddInspectionModules extends SignUpData {
 		fields.add(approvalFlowIdField);
 		
 		MultiLookupField multiLookupSiteField = (MultiLookupField) FieldFactory.getDefaultField("sites", "Sites", null, FieldType.MULTI_LOOKUP);
+		multiLookupSiteField.setDisplayType(FieldDisplayType.MULTI_LOOKUP_SIMPLE);
         multiLookupSiteField.setParentFieldPositionEnum(MultiLookupField.ParentFieldPosition.LEFT);
         multiLookupSiteField.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.SITE));
         
         MultiLookupField multiLookupBuildingField = (MultiLookupField) FieldFactory.getDefaultField("buildings", "Buildings", null, FieldType.MULTI_LOOKUP);
+        multiLookupBuildingField.setDisplayType(FieldDisplayType.MULTI_LOOKUP_SIMPLE);
         multiLookupBuildingField.setParentFieldPositionEnum(MultiLookupField.ParentFieldPosition.LEFT);
         multiLookupBuildingField.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.BUILDING));
         
