@@ -192,15 +192,25 @@ public class WebTabContext implements Serializable {
 		this.permission = permission;
 	}
 
-    private long featureLicense;
-
-    public long getFeatureLicense() {
-        return featureLicense;
-    }
-
-    public void setFeatureLicense(long featureLicense) {
-        this.featureLicense = featureLicense;
-    }
+//    private long featureLicense;
+//
+//    public long getFeatureLicense() {
+//        return featureLicense;
+//    }
+//
+//    public void setFeatureLicense(long featureLicense) {
+//        this.featureLicense = featureLicense;
+//    }
+    
+    private int featureLicense;
+    
+    public int getFeatureLicense() {
+		return featureLicense;
+	}
+	public void setFeatureLicense(int featureLicense) {
+		this.featureLicense = featureLicense;
+	}
+    
 
     public WebTabContext(String name, String route, Type type, List<Long> moduleIds, long appId, JSONObject config) {
         this.name = name;
@@ -214,7 +224,7 @@ public class WebTabContext implements Serializable {
     public WebTabContext() {
     }
 
-    public WebTabContext(String name, String route, Type type, List<Long> moduleIds, long appId, JSONObject config, long featureLicense) {
+    public WebTabContext(String name, String route, Type type, List<Long> moduleIds, long appId, JSONObject config, int featureLicense) {
         this.name = name;
         this.route = route;
         this.type = type;
@@ -246,5 +256,4 @@ public class WebTabContext implements Serializable {
 
     @Setter @Getter
     private List<TranslationTypeEnum.ClientColumnTypeEnum> typeVsColumns;
-
 }

@@ -28,4 +28,29 @@ public class CommunityValueGenerator extends ValueGenerator{
 
         return null;
     }
+
+    @Override
+    public Object getValueGeneratorName() {
+        return "Community Modules";
+    }
+
+    @Override
+    public Object getLinkName() {
+        return "com.facilio.modules.CommunityValueGenerator";
+    }
+
+    @Override
+    public Object getModuleName() {
+        return "Community Modules";
+    }
+
+    @Override
+    public Object getIsHidden() {
+        return true;
+    }
+
+    @Override
+    public Object getOperatorId() {
+        return 36;
+    }
 }

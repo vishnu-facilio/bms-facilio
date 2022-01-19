@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.context.ScopingConfigContext;
 import com.facilio.logging.FacilioLogHandler;
 import lombok.Getter;
 import lombok.Setter;
@@ -75,7 +76,7 @@ public class Account implements AccountsInterface<User>, AccountStats, Serializa
 	private long jsonConversionTime = 0L;
 
 	private Deque<Boolean> publicAccess = new ArrayDeque<>();
-	private Map<Long, Map<String, Object>> scopingMap;
+	private Map<Long, ScopingConfigContext> scopingMap;
 	private Boolean shouldApplySwitchScope;
 
 	@Getter @Setter
@@ -655,7 +656,7 @@ public class Account implements AccountsInterface<User>, AccountStats, Serializa
 		publicAccess.pop();
 	}
 
-	public Map<Long, Map<String, Object>> getAppScopingMap() {
+	public Map<Long, ScopingConfigContext> getAppScopingMap() {
 		// TODO Auto-generated method stub
 		return this.scopingMap;
 	}
@@ -678,7 +679,7 @@ public class Account implements AccountsInterface<User>, AccountStats, Serializa
 		this.userSessionId = userSessionId;
 	}
 	
-	public void setAppScopingMap(Map<Long, Map<String, Object>> scoping) {
+	public void setAppScopingMap(Map<Long, ScopingConfigContext> scoping) {
 		this.scopingMap = scoping;
 	}
 

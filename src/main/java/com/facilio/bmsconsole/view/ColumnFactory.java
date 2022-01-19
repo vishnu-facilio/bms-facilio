@@ -276,7 +276,7 @@ public class ColumnFactory {
 
 		// Special types
 		columnMap.put("preventivemaintenance-default", getPreventiveMaintenanceColumns());
-
+		columnMap.put("inventoryCategory-default", getInventoryCategoryColumns());
 
 
 		return columnMap;
@@ -541,16 +541,25 @@ public class ColumnFactory {
 }// TODO needs to handle parent field
 	private static List<ViewField> getPreventiveMaintenanceColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
-		
+
 		columns.add(new ViewField("title", "Message"));
 		columns.add(new ViewField("status", "Status"));
 		columns.add(new ViewField("createdById", "createdById"));
 		columns.add(new ViewField("createdTime", "createdTime"));
 		columns.add(new ViewField("lastModifiedTime", "lastModifiedTime"));
-		
+
 		return columns;
 	}
-	
+	private static List<ViewField> getInventoryCategoryColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("displayName", "Display Name"));
+		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+
+		return columns;
+	}
 	private static List<ViewField> getDefaultStoreRoomColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		

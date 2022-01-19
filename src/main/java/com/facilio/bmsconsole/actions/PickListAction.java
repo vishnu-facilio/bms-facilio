@@ -1,20 +1,16 @@
 package com.facilio.bmsconsole.actions;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
-import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FieldOption;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -24,14 +20,10 @@ import com.facilio.bmsconsoleV3.context.AssetDepartmentContext;
 import com.facilio.bmsconsole.context.AssetTypeContext;
 import com.facilio.bmsconsole.context.InventoryCategoryContext;
 import com.facilio.bmsconsole.context.ItemStatusContext;
-import com.facilio.bmsconsole.context.ItemTypesCategoryContext;
-import com.facilio.bmsconsole.context.ItemTypesStatusContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketTypeContext;
 import com.facilio.bmsconsole.context.ToolStatusContext;
-import com.facilio.bmsconsole.context.ToolTypesCategoryContext;
-import com.facilio.bmsconsole.context.ToolTypesStatusContext;
 import com.facilio.bmsconsole.context.VisitorTypeContext;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.chain.FacilioChain;
@@ -609,213 +601,6 @@ public class PickListAction extends FacilioAction {
 		setResult("inventoryCategoryId", inventoryCategoryId);
 		return SUCCESS;
 	}
-	
-	private ItemTypesCategoryContext itemTypeCategory;
-	public ItemTypesCategoryContext getItemTypeCategory() {
-		return itemTypeCategory;
-	}
-	public void setItemTypeCategory(ItemTypesCategoryContext itemCategory) {
-		this.itemTypeCategory = itemCategory;
-	}
-	
-	private long itemTypeCategoryId;
-	public long getItemCategoryId() {
-		return itemTypeCategoryId;
-	}
-	public void setItemCategoryId(long itemCategoryId) {
-		this.itemTypeCategoryId = itemCategoryId;
-	}
-	
-	public String addItemTypeCategory() throws Exception {
-		if(itemTypeCategory.getDisplayName() != null && !itemTypeCategory.getDisplayName().isEmpty()) {
-			itemTypeCategory.setName(itemTypeCategory.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
-		}
-		itemTypeCategory.setTtime(System.currentTimeMillis());
-		itemTypeCategory.setModifiedTime(System.currentTimeMillis());
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD, getItemTypeCategory());
-		FacilioChain addItemCategoryChain = TransactionChainFactory.getAddItemTypeCategoryChain();
-		addItemCategoryChain.execute(context);
-		setResult(FacilioConstants.ContextNames.RECORD, getItemTypeCategory());
-		return SUCCESS;
-	}
-	
-	public String updateItemTypeCategory() throws Exception {
-		FacilioContext context = new FacilioContext();
-		itemTypeCategory.setModifiedTime(System.currentTimeMillis());
-		context.put(FacilioConstants.ContextNames.RECORD, getItemTypeCategory());
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(getItemTypeCategory().getId()));
-		FacilioChain updateItemCategoryChain = TransactionChainFactory.getUpdateItemTypeCategoryChain();
-		updateItemCategoryChain.execute(context);
-		setResult(FacilioConstants.ContextNames.RECORD, getItemTypeCategory());
-		return SUCCESS;
-	}
-	
-	public String deleteItemTypeCategory() throws Exception {
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD, this.itemTypeCategoryId);
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(this.itemTypeCategoryId));
-		FacilioChain deleteItemCategoryChain = TransactionChainFactory.getDeleteItemTypesCategoryChain();
-		deleteItemCategoryChain.execute(context);
-		setResult("itemTypeCategoryId", itemTypeCategoryId);
-		return SUCCESS;
-	}
-	
-	private ItemTypesStatusContext itemTypesStatus;
-	public ItemTypesStatusContext getItemTypesStatus() {
-		return itemTypesStatus;
-	}
-	public void setItemTypesStatus(ItemTypesStatusContext itemStatus) {
-		this.itemTypesStatus = itemStatus;
-	}
-	
-	private long itemTypesStatusId;
-	public long getItemTypesStatusId() {
-		return itemTypesStatusId;
-	}
-	public void setItemTypesStatusId(long itemStatusId) {
-		this.itemTypesStatusId = itemStatusId;
-	}
-	
-	public String addItemTypesStatus() throws Exception {
-		if(itemTypesStatus.getDisplayName() != null && !itemTypesStatus.getDisplayName().isEmpty()) {
-			itemTypesStatus.setName(itemTypesStatus.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
-		}
-		itemTypesStatus.setTtime(System.currentTimeMillis());
-		itemTypesStatus.setModifiedTime(System.currentTimeMillis());
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD, getItemTypesStatus());
-		FacilioChain addItemstatusChain = TransactionChainFactory.getAddItemTypesStatusChain();
-		addItemstatusChain.execute(context);
-		setResult(FacilioConstants.ContextNames.RECORD, getItemTypesStatus());
-		return SUCCESS;
-	}
-	
-	public String updateItemTypesStatus() throws Exception {
-		FacilioContext context = new FacilioContext();
-		itemTypesStatus.setModifiedTime(System.currentTimeMillis());
-		context.put(FacilioConstants.ContextNames.RECORD, getItemTypesStatus());
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(getItemTypesStatus().getId()));
-		FacilioChain updateItemstatusChain = TransactionChainFactory.getUpdateItemTypesStatusChain();
-		updateItemstatusChain.execute(context);
-		setResult(FacilioConstants.ContextNames.RECORD, getItemTypesStatus());
-		return SUCCESS;
-	}
-	
-	public String deleteItemTypesStatus() throws Exception {
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD, this.itemTypesStatusId);
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(this.itemTypesStatusId));
-		FacilioChain deleteItemStatusChain = TransactionChainFactory.getDeleteItemTypesStatusChain();
-		deleteItemStatusChain.execute(context);
-		setResult("itemTypesStatusId", itemTypesStatusId);
-		return SUCCESS;
-	}
-	
-	private ToolTypesCategoryContext toolTypesCategory;
-	public ToolTypesCategoryContext getToolTypesCategory() {
-		return toolTypesCategory;
-	}
-	public void setToolTypesCategory(ToolTypesCategoryContext toolsCategory) {
-		this.toolTypesCategory = toolsCategory;
-	}
-	
-	private long toolTypesCategoryId;
-	public long getToolTypesCategoryId() {
-		return toolTypesCategoryId;
-	}
-	public void setToolTypesCategoryId(long toolsCategoryId) {
-		this.toolTypesCategoryId = toolsCategoryId;
-	}
-	
-	public String addToolTypesCategory() throws Exception {
-		if(toolTypesCategory.getDisplayName() != null && !toolTypesCategory.getDisplayName().isEmpty()) {
-			toolTypesCategory.setName(toolTypesCategory.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
-		}
-		toolTypesCategory.setTtime(System.currentTimeMillis());
-		toolTypesCategory.setModifiedTime(System.currentTimeMillis());
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD, getToolTypesCategory());
-		FacilioChain addToolsCategoryChain = TransactionChainFactory.getAddToolTypesCategoryChain();
-		addToolsCategoryChain.execute(context);
-		setResult(FacilioConstants.ContextNames.RECORD, getToolTypesCategory());
-		return SUCCESS;
-	}
-	
-	public String updateToolTypesCategory() throws Exception {
-		FacilioContext context = new FacilioContext();
-		toolTypesCategory.setModifiedTime(System.currentTimeMillis());
-		context.put(FacilioConstants.ContextNames.RECORD, getToolTypesCategory());
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(getToolTypesCategory().getId()));
-		FacilioChain updateToolsCategoryChain = TransactionChainFactory.getUpdateToolTypesCategoryChain();
-		updateToolsCategoryChain.execute(context);
-		setResult(FacilioConstants.ContextNames.RECORD, getToolTypesCategory());
-		return SUCCESS;
-	}
-	
-	public String deleteToolTypesCategory() throws Exception {
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD, this.toolTypesCategoryId);
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(this.toolTypesCategoryId));
-		FacilioChain deleteToolsCategoryChain = TransactionChainFactory.getDeleteToolTypesCategoryChain();
-		deleteToolsCategoryChain.execute(context);
-		setResult("toolTypesCategoryId", toolTypesCategoryId);
-		return SUCCESS;
-	}
-	
-	private ToolTypesStatusContext toolTypesStatus;
-	public ToolTypesStatusContext getToolTypesStatus() {
-		return toolTypesStatus;
-	}
-
-	public void setToolTypesStatus(ToolTypesStatusContext toolsStatus) {
-		this.toolTypesStatus = toolsStatus;
-	}
-
-	private long toolTypesStatusId;
-	public long getToolTypesStatusId() {
-		return toolTypesStatusId;
-	}
-
-	public void setToolTypesStatusId(long toolsStatusId) {
-		this.toolTypesStatusId = toolsStatusId;
-	}
-	
-	public String addToolTypesStatus() throws Exception {
-		if(toolTypesStatus.getDisplayName() != null && !toolTypesStatus.getDisplayName().isEmpty()) {
-			toolTypesStatus.setName(toolTypesStatus.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
-		}
-		toolTypesStatus.setTtime(System.currentTimeMillis());
-		toolTypesStatus.setModifiedTime(System.currentTimeMillis());
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD, getToolTypesStatus());
-		FacilioChain addToolsStatusChain = TransactionChainFactory.getAddToolsStatusChain();
-		addToolsStatusChain.execute(context);
-		setResult(FacilioConstants.ContextNames.RECORD, getToolTypesStatus());
-		return SUCCESS;
-	}
-	
-	public String updateToolTypesStatus() throws Exception {
-		FacilioContext context = new FacilioContext();
-		toolTypesStatus.setModifiedTime(System.currentTimeMillis());
-		context.put(FacilioConstants.ContextNames.RECORD, getToolTypesStatus());
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(getToolTypesStatus().getId()));
-		FacilioChain updateToolsStatusChain = TransactionChainFactory.getUpdateToolsStatusChain();
-		updateToolsStatusChain.execute(context);
-		setResult(FacilioConstants.ContextNames.RECORD, getToolTypesStatus());
-		return SUCCESS;
-	}
-	
-	public String deleteToolTypesStatus() throws Exception {
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD, this.toolTypesStatusId);
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(this.toolTypesStatusId));
-		FacilioChain deleteToolsStatusChain = TransactionChainFactory.getDeleteToolsStatusChain();
-		deleteToolsStatusChain.execute(context);
-		setResult("toolsStatusId", toolTypesStatusId);
-		return SUCCESS;
-	}
-	
 	private ToolStatusContext toolStatus;
 	public ToolStatusContext getToolStatus() {
 		return toolStatus;

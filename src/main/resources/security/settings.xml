@@ -292,4 +292,207 @@
             </property>
         </requestbody>
     </request>
+    <request path="/api/v2/servicecatalog/addOrUpdate">
+
+        <requestbody type="object">
+
+            <property name="moduleName" type="string"/>
+
+            <property name="serviceCatalog" type="object">
+
+                <property name="appId" type="number"/>
+
+                <property name="description" type="string"/>
+
+                <property name="externalURL" type="string"/>
+
+                <property name="formId" type="number"/>
+
+                <property name="groupId" type="number"/>
+
+                <property name="moduleId" type="number"/>
+
+                <property name="name" type="string"/>
+
+                <property name="type" type="number"/>
+
+            </property>
+
+        </requestbody>
+
+    </request>
+
+    <request path="/api/setup/addemailsettings">
+
+        <requestbody type="object">
+
+            <property name="supportEmail" type="object">
+
+                <property name="actualEmail" type="string"/>
+
+                <property name="authentication" type="number"/>
+
+                <property name="emailSystem" type="string"/>
+
+                <property name="fwdEmail" type="string"/>
+
+                <property name="isCustomMail" type="boolean"/>
+
+                <property name="mailServer" type="string"/>
+
+                <property name="password" type="string"/>
+
+                <property name="port" type="string"/>
+
+                <property name="replyName" type="string"/>
+
+                <property name="siteId" type="number"/>
+
+                <property name="userName" type="string"/>
+
+            </property>
+
+        </requestbody>
+
+    </request>
+
+    <request path="/api/setup/updateemailsettings">
+
+        <requestbody type="object">
+
+            <property name="supportEmail" type="object">
+
+                <property name="actualEmail" type="string"/>
+
+                <property name="authentication" type="number"/>
+
+                <property name="autoAssignGroupId" type="number"/>
+
+                <property name="emailSystem" type="string"/>
+
+                <property name="fwdEmail" type="string"/>
+
+                <property name="id" type="number"/>
+
+                <property name="isCustomMail" type="string"/>
+
+                <property name="latestMessageUID" type="number"/>
+
+                <property name="mailServer" type="string"/>
+
+                <property name="orgId" type="number"/>
+
+                <property name="port" type="string"/>
+
+                <property name="primarySupportMail" type="boolean"/>
+
+                <property name="replyName" type="string"/>
+
+                <property name="siteId" type="number"/>
+
+                <property name="uidValidaity" type="number"/>
+
+                <property name="userName" type="string"/>
+
+                <property name="verified" type="boolean"/>
+
+            </property>
+
+        </requestbody>
+
+    </request>
+
+    <request path="/api/v3/modules/data/create">
+
+        <requestbody type="object">
+
+            <property name="data" type="object">
+
+                <property name="displayName" type="string"/>
+
+                <property name="email" type="string"/>
+
+                <property name="sourceType" type="number"/>
+
+                <property name="moduleName" type="string"/>
+
+            </property>
+
+        </requestbody>
+
+    </request>
+
+    <request path="/api/v3/modules/data/patch">
+
+        <requestbody type="object">
+
+            <property name="data" type="object">
+
+                <property name="displayName" type="string"/>
+
+                <property name="email" type="string"/>
+
+                <property name="id" type="number"/>
+
+                <property name="siteId" type="number"/>
+
+                <property name="sourceType" type="number"/>
+
+            </property>
+
+            <property name="id" type="number"/>
+
+            <property name="moduleName" type="string"/>
+
+        </requestbody>
+
+    </request>
+
+    <request path="/api/picklist/addTicketCategory">
+
+        <requestbody type="object">
+
+            <property name="ticketCategory" type="object">
+
+                <property name="description" type="string"/>
+
+                <property name="name" type="string"/>
+
+            </property>
+
+        </requestbody>
+
+    </request>
+
+    <request path="/api/picklist/updateTicketCategory">
+
+        <requestbody type="object">
+
+            <property name="ticketCategory" type="object">
+
+                <property name="description" type="string"/>
+
+                <property name="name" type="string"/>
+
+            </property>
+
+        </requestbody>
+
+    </request>
+
+    <request path="/api/picklist/addTicketType">
+
+        <requestbody type="object">
+
+            <property name="ticketType" type="object">
+
+                <property name="description" type="string"/>
+
+                <property name="name" type="string"/>
+
+            </property>
+
+        </requestbody>
+
+    </request>
 </config>

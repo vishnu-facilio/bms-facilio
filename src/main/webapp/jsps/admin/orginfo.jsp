@@ -271,15 +271,20 @@ function showLicense() {
 					<input type = "hidden" name = "orgid" value="<%= orgid %>" />
 					<table style=" width: 50%; margin-top:40px;"  class="table table-bordered">
 						<tr>
+							<td style="text-align:center;"><b>ID</b></td>
 							<td style="text-align:center;"><b>FEATURES</b></td>
 							<td style="text-align:center;"><b>STATUS</b></td>
 						</tr>
   
 						<%
+							int id = 0;
 							for(String key  :features.keySet())
 							{
   						%>
 								<tr>
+									<td>
+										<label><%=++id%></label>
+									</td>
 									<td>
 										<label><%=key%></label>
 									</td>

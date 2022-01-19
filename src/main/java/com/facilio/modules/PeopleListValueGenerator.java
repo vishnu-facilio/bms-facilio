@@ -4,6 +4,7 @@ import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
+import com.facilio.constants.FacilioConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -45,5 +46,30 @@ public class PeopleListValueGenerator extends ValueGenerator{
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public Object getValueGeneratorName() {
+        return FacilioConstants.ContextNames.ValueGenerators.PEOPLE_LIST;
+    }
+
+    @Override
+    public Object getLinkName() {
+        return "com.facilio.modules.PeopleListValueGenerator";
+    }
+
+    @Override
+    public Object getModuleName() {
+        return FacilioConstants.ContextNames.PEOPLE;
+    }
+
+    @Override
+    public Object getIsHidden() {
+        return false;
+    }
+
+    @Override
+    public Object getOperatorId() {
+        return 36;
     }
 }
