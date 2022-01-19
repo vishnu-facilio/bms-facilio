@@ -35,10 +35,15 @@ import com.facilio.v3.util.ChainUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 
 public class CommunityFeaturesAPI {
+
+    private static final Logger LOGGER = org.apache.log4j.Logger.getLogger(CommunityFeaturesAPI.class);
+
 
     public static List<Long> getBuildingTenants(Long buildingId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -166,6 +171,7 @@ public class CommunityFeaturesAPI {
                 if(sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.ROLE) {
                     List<Map<String, Object>> pplForRoleMap = V3PeopleAPI.getPeopleForRoles(Collections.singletonList(sharingInfo.getSharedToRole().getRoleId()));
                     if(CollectionUtils.isNotEmpty(pplForRoleMap)) {
+                        LOGGER.log(Level.DEBUG, "ppl Count ->" + pplForRoleMap.size());
                         ppl.addAll(FieldUtil.getAsBeanListFromMapList(pplForRoleMap, V3PeopleContext.class));
                     }
                 }
