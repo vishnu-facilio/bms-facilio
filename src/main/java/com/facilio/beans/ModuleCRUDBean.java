@@ -158,4 +158,7 @@ public interface ModuleCRUDBean {
 	public Object executeWorkflow(WorkflowContext workflowContext) throws Exception;
 
 	void addAuditLog(AuditLogHandler.AuditLogContext auditLog) throws Exception;
+	
+	public void initMLService(Map<String,String> requestJson) throws Exception;
+
 }

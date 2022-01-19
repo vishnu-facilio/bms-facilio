@@ -98,6 +98,12 @@
 		<action name="deleteReadingsAction" class="com.facilio.bmsconsole.actions.AdminAction" method = "deleteReadings">
 			<result   type="tiles">adminpage/deleteReadinglayout.jsp</result>
 		</action>
+		<action name="mlService" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result  type="tiles">adminpage/MLServiceLayout.jsp</result>
+		</action>
+		<action name="mlServiceAction" class="com.facilio.bmsconsole.actions.AdminAction" method = "mlService">
+			<result   type="tiles">adminpage/MLServiceLayout.jsp</result>
+		</action>
 		<action name="moveReadings" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result  type="tiles">adminpage/movereadinglayout.jsp</result>
 		</action>

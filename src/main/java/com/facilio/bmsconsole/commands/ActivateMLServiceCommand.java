@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -19,8 +18,11 @@ import com.facilio.bmsconsole.context.MLResponseContext;
 import com.facilio.bmsconsole.context.MLServiceContext;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
-import com.facilio.bmsconsole.util.MLServiceAPI;
 import com.facilio.bmsconsole.util.MLAPI;
+import com.facilio.bmsconsole.util.MLServiceAPI;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -34,103 +36,200 @@ import com.facilio.taskengine.ScheduleInfo;
 public class ActivateMLServiceCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = Logger.getLogger(ActivateMLServiceCommand.class.getName());
-	//	private static long maxSamplingPeriod = 7776000000l;
-	private static final Long TRAINING_SAMPLING_PERIOD = 90*(24*60*60*1000l); //90 days
-	private static final long PREDICTION_SAMPLING_PERIOD = 60*60*1000l; //1 hour
-	private static long futureSamplingPeriod = 0;
-
+	private MLServiceContext mlServiceContext;
+	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 
-		MLServiceContext mlServiceContext = (MLServiceContext) context.get(FacilioConstants.ContextNames.ML_MODEL_INFO);
+		this.mlServiceContext = (MLServiceContext) context.get(FacilioConstants.ContextNames.ML_MODEL_INFO);
 		try {
 			LOGGER.info("Start of ActivateMLServiceCommand");
-//			LOGGER.info(mlServiceContext.getMlResponse().getModuleInfo());
-			MLResponseContext mlResponseContext = mlServiceContext.getMlResponse();
-
-			long assetId = mlResponseContext.getAssetid();
-			String scenario = mlServiceContext.getScenario();
-
-			List<String> readingVariables = mlServiceContext.getReadingList();
-
-			Map<String, MLCustomModuleContext> mlCustomModuleMap = mlResponseContext.getModuleInfo()
-					.stream().collect(Collectors.toMap(MLCustomModuleContext::getModuleName, mlCustomModule -> mlCustomModule));
-
-			List<Map<String, Object>> readingFieldsDetails = MLServiceAPI.getReadingFields(assetId, readingVariables);
-			
-			for(MLCustomModuleContext moduleContext : mlResponseContext.getModuleInfo()) {
-//				LOGGER.info("MAPPPSSS:::"+mlCustomModuleMap);
-//				LOGGER.info("MODULEEEEEEEEEEE name :: "+moduleContext.getModelPath());
-//				LOGGER.info("Starting ::"+moduleContext);
-				long mlID = addMLModule(moduleContext, scenario, assetId);
-//				LOGGER.info("addMLModule ::"+moduleContext);
-				addMLVariables(mlID, assetId, moduleContext, readingFieldsDetails, mlCustomModuleMap);
-//				LOGGER.info("addMLVariables ::"+moduleContext);
-				addMLModelVariables(mlID, mlServiceContext, moduleContext, mlResponseContext.getAssetid());
-//				LOGGER.info("addMLModelVariables ::"+moduleContext);
-				try {
-					ScheduleInfo info = new ScheduleInfo();
-					String moduleType = moduleContext.getType();
-					if(moduleType.equals("training")) {
-						info = FormulaFieldAPI.getSchedule(FacilioFrequency.DAILY);					
-					} else if(moduleType.equals("prediction")) {
-						info = FormulaFieldAPI.getSchedule(FacilioFrequency.HOURLY);
-					} else {
-						continue;
-					}
-					MLAPI.addJobs(mlID,"DefaultMLJob",info,"ml");
-
-				} catch (InterruptedException e) {
-					Thread.sleep(1000);
-				}
+			if(mlServiceContext.getServiceType().contentEquals("default") ) {
+				return executeDefaultMLJob();
 			}
-
-		}catch(Exception e){
-			LOGGER.error("Error while activating ml service ");
-			throw e;
+			executeCustomMLJob();
+			LOGGER.info("End of ActivateMLServiceCommand");
+			
+		}catch(Exception e) {
+			mlServiceContext.updateStatus("Failed to activate mlservice");
+			return true;
 		}
 		LOGGER.info("End of ActivateMLServiceCommand");
 		return false;
 	}
-	
+
+	private boolean executeDefaultMLJob() throws Exception {
+
+		switch(mlServiceContext.getModelName()){
+		case "energyprediction":{
+			FacilioChain chain = FacilioChainFactory.addEnergyPredictionchain();
+			FacilioContext context = chain.getContext();
+			context.put("energyMeterID",mlServiceContext.getAssetList().get(0));
+			context.put("mlModelVariables", mlServiceContext.getMlVariables());
+			context.put("mlVariables", mlServiceContext.getSamplingJson());
+			context.put("modelPath", mlServiceContext.getMlResponseList().get(0).getModuleInfo().get(0).getModelPath());
+			context.put(FacilioConstants.ContextNames.ML_MODEL_INFO, mlServiceContext);
+			chain.execute();
+			break;
+		}
+		case "loadprediction":{
+			FacilioChain chain = FacilioChainFactory.addLoadPredictionchain();
+			FacilioContext context = chain.getContext();
+			context.put("energyMeterID",mlServiceContext.getAssetList().get(0));
+			context.put("mlModelVariables", mlServiceContext.getMlVariables());
+			context.put("mlVariables", mlServiceContext.getSamplingJson());
+			context.put("modelPath", mlServiceContext.getMlResponseList().get(0).getModuleInfo().get(0).getModelPath());
+			context.put(FacilioConstants.ContextNames.ML_MODEL_INFO, mlServiceContext);
+			chain.execute();
+			break;
+		}
+		case "energyanomaly":{
+			FacilioChain chain = FacilioChainFactory.enableAnomalyDetectionChain();
+			FacilioContext context = chain.getContext();
+			context.put("TreeHierarchy", mlServiceContext.getAssetIds());
+			context.put("mlModelVariables", mlServiceContext.getMlVariables());
+			context.put("mlVariables", mlServiceContext.getSamplingJson());
+			context.put("parentHierarchy", "true");
+			context.put(FacilioConstants.ContextNames.ML_MODEL_INFO, mlServiceContext);
+			chain.execute();
+			break;
+		}
+		default :{
+			String errMsg = "Given modelname is not available";
+			LOGGER.fatal(errMsg);
+			mlServiceContext.updateStatus(errMsg);
+			return true;
+		}
+		}
+		mlServiceContext.updateStatus("Successfully activated mlservice ");
+		return false;
+	}
+
+	private void executeCustomMLJob() throws Exception {
+		try {
+			//			LOGGER.info(mlServiceContext.getMlResponse().getModuleInfo());
+			List<MLResponseContext> mlResponseContextList = mlServiceContext.getMlResponseList();
+			List<Long> mlIDList  = new ArrayList<>();
+			List<Long> assetIdList  = mlServiceContext.getAssetList();
+
+			for(int index=1;index<=mlResponseContextList.size();index++) {
+				MLResponseContext mlResponseContext = mlResponseContextList.get(index-1);
+
+				long assetId = mlResponseContext.getAssetid();
+				String scenario = mlServiceContext.getScenario();
+				String serviceType = mlServiceContext.getServiceType();
+
+				Map<String, MLCustomModuleContext> mlCustomModuleMap = mlResponseContext.getModuleInfo()
+						.stream().collect(Collectors.toMap(MLCustomModuleContext::getModuleName, mlCustomModule -> mlCustomModule));
+
+				List<Map<String, Object>> readingFieldsDetails = mlServiceContext.getModels().get(index-1);
+
+				for(MLCustomModuleContext moduleContext : mlResponseContext.getModuleInfo()) {
+					//				LOGGER.info("MAPPPSSS:::"+mlCustomModuleMap);
+					//				LOGGER.info("MODULEEEEEEEEEEE name :: "+moduleContext.getModelPath());
+					//				LOGGER.info("Starting ::"+moduleContext);
+					long mlID = addMLModule(moduleContext, scenario, serviceType, assetId);
+					//				LOGGER.info("addMLModule ::"+moduleContext);
+					String moduleName = moduleContext.getModuleName();
+					if(moduleName!= null &&moduleName.equals("EnergyAnomalyRatio")) {
+						for(long eachId:assetIdList) {
+							addMLVariables(mlID, eachId, moduleContext, readingFieldsDetails, mlCustomModuleMap);
+						}	
+					}
+					else {
+						addMLVariables(mlID, assetId, moduleContext, readingFieldsDetails, mlCustomModuleMap);
+					}
+					//				LOGGER.info("addMLVariables ::"+moduleContext);
+					addMLModelVariables(mlID, moduleContext, mlResponseContext.getAssetid());
+					String moduleType = moduleContext.getType();
+					String moduleNature = moduleContext.getNature();
+					if(moduleType.equals("prediction") && moduleNature.equals("sequence"))
+						if (index < mlResponseContextList.size()) {
+							mlIDList.add(mlID);
+							break;
+						}
+						else {
+							mlIDList.add(mlID);
+							MLServiceAPI.updateMLSequence(mlIDList);
+						}
+					LOGGER.info("addMLModelVariables ::"+moduleContext);
+					try {
+						ScheduleInfo info = new ScheduleInfo();
+						//String moduleType = moduleContext.getType();
+						if(moduleType.equals("training")) {
+							info = FormulaFieldAPI.getSchedule(FacilioFrequency.DAILY);					
+						} else if(moduleType.equals("prediction")) {
+							info = FormulaFieldAPI.getSchedule(FacilioFrequency.HOURLY);
+						} else {
+							continue;
+						}
+						if(moduleType.equals("prediction") && moduleNature.equals("sequence") && (index == mlResponseContextList.size())) {
+							MLAPI.addJobs(mlIDList.get(0),"DefaultMLJob",info,"ml");
+						} else {
+							if( moduleContext.getParentModule() == null) {
+
+								MLAPI.addJobs(mlID,"DefaultMLJob",info,"ml");
+							}
+						}	
+
+					} catch (InterruptedException e) {
+						Thread.sleep(1000);
+					}
+					mlServiceContext.updateMlID(mlID);
+				}
+			}
+			mlServiceContext.updateStatus("Successfully activated mlservice ");
+		}catch(Exception e){
+			LOGGER.error("Error while activating ml service ");
+			mlServiceContext.updateStatus("Failed to activate mlservice");
+			throw e;
+		}
+	}
+
 	private void addMLModelVariables(long mlId, String key, JSONObject value) throws Exception {
 		if(value!=null) {
 			MLAPI.addMLModelVariables(mlId, key, value.toString());
 		}
 	}
-	
+
 	private void addMLModelVariables(long mlId, String key, JSONArray value) throws Exception {
 		if(value!=null) {
 			MLAPI.addMLModelVariables(mlId, key, value.toString());
 		}
 	}
 
-	private void addMLModelVariables(long mlID, MLServiceContext mlServiceContext, MLCustomModuleContext moduleContext, Long assetId) throws Exception {
+	private void addMLModelVariables(long mlID, MLCustomModuleContext moduleContext, Long assetId) throws Exception {
 		//Already available variables
-		MLAPI.addMLModelVariables(mlID,"assetID",String.valueOf(assetId));
+//		MLAPI.addMLModelVariables(mlID,"assetID",String.valueOf(assetId));
 		MLAPI.addMLModelVariables(mlID,"timezone",AccountUtil.getCurrentAccount().getTimeZone());
+		JSONObject mlvariables = mlServiceContext.getMlVariables();
+		for(Object key : mlvariables.keySet()) {
+			MLAPI.addMLModelVariables(mlID, (String)key, String.valueOf(mlvariables.get(key)));
+			
+		}
+		MLAPI.addMLModelVariables(mlID, "asset_id", assetId.toString());
 
 		//ML service variables
 		addMLModelVariables(mlID,"workflowInfo",mlServiceContext.getWorkflowInfo());
 		addMLModelVariables(mlID,"filteringMethod",mlServiceContext.getFilteringMethod());
-		addMLModelVariables(mlID,"groupingMethod",mlServiceContext.getGroupingMethod());
-		addMLModelVariables(mlID,"mlVariables",mlServiceContext.getMlVariables());
-		addMLModelVariables(mlID,"readingVariables",mlServiceContext.getReadingVariables());
+		addMLModelVariables(mlID,"groupingMethod",mlServiceContext.getGroupingMethod());		
+
+		
+		
+//		addMLModelVariables(mlID,"mlVariables",mlServiceContext.getMlVariables());
+//		addMLModelVariables(mlID,"readingVariables",mlServiceContext.getReadingVariables());
 
 		//extra variables (duplicates)
-		MLAPI.addMLModelVariables(mlID,"modelName",mlServiceContext.getModelName());
-		MLAPI.addMLModelVariables(mlID,"scenario",mlServiceContext.getScenario());
-		addMLModelVariables(mlID,"assetDetails",mlServiceContext.getAssetDetails());
-		addMLModelVariables(mlID,"orgDetails",mlServiceContext.getOrgDetails());
+//		MLAPI.addMLModelVariables(mlID,"modelName",mlServiceContext.getModelName());
+//		MLAPI.addMLModelVariables(mlID,"scenario",mlServiceContext.getScenario());
+//		addMLModelVariables(mlID,"assetDetails",mlServiceContext.getAssetDetails());
+//		addMLModelVariables(mlID,"orgDetails",mlServiceContext.getOrgDetails());
 
 		MLAPI.addMLModelVariables(mlID,"usecaseId",String.valueOf(mlServiceContext.getUseCaseId()));
 		if(moduleContext.getType().equals("prediction")) {
 			MLAPI.addMLModelVariables(mlID,"workflowId",String.valueOf(mlServiceContext.getWorkflowId()));
 		}
 
-		int sleepTime = 1;
-		LOGGER.info("I am sleeping for next "+sleepTime+" sec while MLModelVariables entry");
-		Thread.sleep(1000 * sleepTime);
 	}
 
 
@@ -138,9 +237,9 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
-		long maxSamplingPeriod = PREDICTION_SAMPLING_PERIOD;
+		long maxSamplingPeriod = MLServiceAPI.PREDICTION_SAMPLING_PERIOD;
 		if(moduleContext.getType().equals("training")) {
-			maxSamplingPeriod = TRAINING_SAMPLING_PERIOD;
+			maxSamplingPeriod = mlServiceContext.getTrainingSamplingPeriod();
 		}
 
 		String prevModuleName = moduleContext.getParentModule();
@@ -148,20 +247,18 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 			boolean first = true;
 			for(Map<String, Object> map : readingFieldsDetails) {
 
-				long moduleId = (long)map.get("moduleId");
 				long fieldId = (long)map.get("fieldId");
 
-				FacilioModule module = modBean.getModule(moduleId);
 				FacilioField variableField = modBean.getField(fieldId);
+				FacilioModule module = variableField.getModule();
 				FacilioField parentField = modBean.getField("parentId", module.getName());
 
-				MLAPI.addMLVariables(mlID,variableField.getModuleId(),variableField.getFieldId(),parentField.getFieldId(),assetId, maxSamplingPeriod, futureSamplingPeriod, first, "SUM");
+				MLAPI.addMLVariables(mlID,variableField.getModuleId(),variableField.getFieldId(),parentField.getFieldId(),assetId, maxSamplingPeriod, MLServiceAPI.FURUTRE_SAMPLING_PERIOD, first, "SUM");
 				first = false;
 			}
 		} else {
 			MLCustomModuleContext prevModuleContext = mlCustomModuleMap.get(prevModuleName);
 			FacilioModule prevModule = modBean.getModule(prevModuleContext.getMlReadingModuleId());
-			Map<String, List<String>> subFields = prevModuleContext.getFields();
 //			LOGGER.info("parentModuleSection");
 //			LOGGER.info("prevModule - facilio:: "+prevModule);
 //			LOGGER.info("prevModule Fields - facilio:: "+prevModule.getFields());
@@ -172,7 +269,7 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 			List<String> parentFields = moduleContext.getParentFields();
 //			LOGGER.info("parentFields :: "+parentFields);
 			List<FacilioField> finalFields = prevModuleContext.getRequestFields().stream()
-					.filter( field -> parentFields.contains(field.getName()) )
+					.filter( field -> parentFields.contains(field.getDisplayName()))
 					.collect(Collectors.toList());
 
 //			LOGGER.info("finalFields :: "+finalFields);
@@ -180,49 +277,63 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 			boolean first = true;
 			FacilioField parentField = modBean.getField("parentId", prevModule.getName());
 			for(FacilioField variableField : finalFields) {
-				MLAPI.addMLVariables(mlID,variableField.getModuleId(),variableField.getFieldId(),parentField.getFieldId(),assetId, maxSamplingPeriod, futureSamplingPeriod, first, "SUM");
+				MLAPI.addMLVariables(mlID,variableField.getModuleId(),variableField.getFieldId(),parentField.getFieldId(),assetId, maxSamplingPeriod, MLServiceAPI.FURUTRE_SAMPLING_PERIOD, first, "SUM");
 				first = false;
 			}
 			MLAPI.addMLModelVariables(prevModuleContext.getMlId(),"jobid",String.valueOf(mlID));
+
 		}
 
 	}
 
-	private long addMLModule(MLCustomModuleContext moduleContext, String scenario, Long assetId) throws Exception {
+	private long addMLModule(MLCustomModuleContext moduleContext, String scenario, String serviceType, Long assetId) throws Exception {
 		try {
 			if(!moduleContext.getModuleNeeded()) {
 				return MLAPI.addMLModel(moduleContext.getModelPath(), -1, -1);
 			}
 
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			String readingModuleName = (scenario + moduleContext.getModuleName());
-			FacilioModule readingModule = modBean.getModule(readingModuleName.toLowerCase());
+			String moduleName = moduleContext.getModuleName();
+			if(serviceType.equals("custom")) {
+				moduleName = scenario + moduleName;
+			}
+			String mlReadingName =  moduleName + "MLReadings";
+/*			Chiller + MultivariateAnomalyPrediction
+ *			Chiller + MultivariateAnomalyRatio
+ *			Energy + Prediction
+ * 			ChillerMultivariateAnomalyPredictionMLReadings
+ * 			EnergyPredictionMLReadings
+ */
+			FacilioModule mlReadingModule = modBean.getModule(mlReadingName.toLowerCase());
 
-//			LOGGER.info(" ---- readingModuleName ---"+readingModuleName);
-//			LOGGER.info(" ---- readingModuleName ---"+readingModuleName.toLowerCase());
-//			LOGGER.info(" ---- readingModuleName ---"+readingModule);
-
-			List<FacilioField> mlFields = readingModule == null ? getCustomFields(moduleContext.getFields(), false) : modBean.getAllFields(readingModule.getName());
+//			LOGGER.info(" ---- readingModuleName ---"+mlReadingName);
+//			LOGGER.info(" ---- readingModuleName ---"+mlReadingName.toLowerCase());
+//			LOGGER.info(" ---- readingModuleName ---"+mlReadingModule);
+			
+			LOGGER.info(mlReadingModule);
+			List<FacilioField> mlFields = mlReadingModule == null ? getCustomFields(moduleContext.getModuleFields(), false) : modBean.getAllFields(mlReadingModule.getName());
+			LOGGER.info(mlFields);
 			moduleContext.setRequestFields(mlFields);
 //			LOGGER.info(" -- mlFields -- "+mlFields);
-			MLAPI.addReading(Collections.singletonList(assetId),readingModuleName,mlFields,ModuleFactory.getMLReadingModule().getTableName(),readingModule);
+			MLAPI.addReading(Collections.singletonList(assetId),mlReadingName,mlFields,ModuleFactory.getMLReadingModule().getTableName(),mlReadingModule);
 
-			String logReadingModuleName = readingModuleName + "Log";  
-			FacilioModule logReadingModule = modBean.getModule(logReadingModuleName.toLowerCase());
+			String mlLogReadingName = moduleName + "MLLogReadings";  
+			
+			FacilioModule mlLogReadingModule = modBean.getModule(mlLogReadingName.toLowerCase());
 
-//			LOGGER.info(" ---- logReadingModuleName ---"+logReadingModuleName);
-//			LOGGER.info(" ---- logReadingModuleName ---"+logReadingModuleName.toLowerCase());
-//			LOGGER.info(" ---- logReadingModuleName ---"+logReadingModule);
+//			LOGGER.info(" ---- logReadingModuleName ---"+mlLogReadingName);
+//			LOGGER.info(" ---- logReadingModuleName ---"+mlLogReadingName.toLowerCase());
+//			LOGGER.info(" ---- logReadingModuleName ---"+mlLogReadingModule);
 
-			List<FacilioField> mlLogFields = logReadingModule == null ? getCustomFields(moduleContext.getFields(), true) : modBean.getAllFields(logReadingModule.getName());
+			List<FacilioField> mlLogFields = mlLogReadingModule == null ? getCustomFields(moduleContext.getModuleFields(), true) : modBean.getAllFields(mlLogReadingModule.getName());
 //			LOGGER.info(" --ml logField -- "+mlLogFields);
-			MLAPI.addReading(Collections.singletonList(assetId), logReadingModuleName, mlLogFields,ModuleFactory.getMLLogReadingModule().getTableName(),ModuleType.PREDICTED_READING, logReadingModule);
+			MLAPI.addReading(Collections.singletonList(assetId), mlLogReadingName, mlLogFields,ModuleFactory.getMLLogReadingModule().getTableName(),ModuleType.PREDICTED_READING, mlLogReadingModule);
 
-			readingModule = modBean.getModule(readingModuleName.toLowerCase());
-			logReadingModule = modBean.getModule(logReadingModuleName.toLowerCase());
+			mlReadingModule = modBean.getModule(mlReadingName.toLowerCase());
+			mlLogReadingModule = modBean.getModule(mlLogReadingName.toLowerCase());
 
-			moduleContext.setMlReadingModuleId(readingModule.getModuleId());
-			long mlId = MLAPI.addMLModel(moduleContext.getModelPath(), logReadingModule.getModuleId(), readingModule.getModuleId());
+			moduleContext.setMlReadingModuleId(mlReadingModule.getModuleId());
+			long mlId = MLAPI.addMLModel(moduleContext.getModelPath(), mlLogReadingModule.getModuleId(), mlReadingModule.getModuleId());
 			moduleContext.setMlId(mlId);
 			return mlId;
 		}
@@ -238,7 +349,7 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 
 		List<FacilioField> fields = new ArrayList<>();
 		List<String> booleanFields = map.get("boolean");
-		List<String> decimanFields = map.get("decimal");
+		List<String> decimalFields = map.get("decimal");
 		String dataType = "NUMBER_";
 		int count = 1;
 
@@ -248,22 +359,29 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 			LOGGER.info("I am in mllreading..");
 		}
 		if(booleanFields!=null) {
-			for(String field : booleanFields) {
-				String displayName = field.toUpperCase();
-				displayName = isLogModule ? displayName+"_LOG" : displayName;
-//				LOGGER.info(isLogModule+" :: "+field +" :: "+displayName);
+			for(String displayName : booleanFields) {
+
+				String dummyField = displayName.replaceAll(" ", "");
+				String field = Character.toLowerCase(dummyField.charAt(0)) + dummyField.substring(1);				
+				LOGGER.info(isLogModule+" :: "+field +" :: "+displayName);
+				displayName = isLogModule ? displayName+" Log" : displayName;
+
 				fields.add(FieldFactory.getField(field, displayName, dataType+"CF"+count, module, FieldType.BOOLEAN));
 				count += 1;
 			}
 		}
-
-		if(decimanFields!=null) {
+		
+		if(decimalFields!=null) {
 			dataType = "DECIMAL_";
 			count = 1;
-			for(String field : decimanFields) {
-				String displayName = field.toUpperCase();
-				displayName = isLogModule ? displayName+"_LOG" : displayName;
-//				LOGGER.info(isLogModule+" :: "+field +" :: "+displayName);
+			for(String displayName : decimalFields) {
+
+				String dummyField = displayName.replaceAll(" ", "");
+				String field = Character.toLowerCase(dummyField.charAt(0)) + dummyField.substring(1);
+				displayName = isLogModule ? displayName+" Log" : displayName;
+
+
+				LOGGER.info(isLogModule+" :: "+field +" :: "+displayName);
 				fields.add(FieldFactory.getField(field, displayName, dataType+"CF"+count, module, FieldType.DECIMAL));
 				count += 1;
 			}

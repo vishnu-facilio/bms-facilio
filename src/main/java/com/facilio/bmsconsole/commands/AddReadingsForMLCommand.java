@@ -82,7 +82,7 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 				if(mlArray.length()>0)
 				{
 					long workflowId = getWorkFlowId(mlContext);
-					List<FacilioField> fields = modBean.getAllFields(logModule.getName());
+					List<FacilioField> fields = modBean.getAllFields(predictModule.getName());
 					Set<String> fieldNames = fields.stream().map(FacilioField::getName).collect(Collectors.toSet());
 					for(int i=0; i<mlArray.length(); i++)
 					{

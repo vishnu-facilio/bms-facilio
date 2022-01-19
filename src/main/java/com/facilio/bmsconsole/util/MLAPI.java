@@ -181,6 +181,7 @@ public class MLAPI {
 					.andCondition(CriteriaAPI.getCondition(fieldIdField, fields.stream().map(FacilioField::getId).collect(Collectors.toList()), NumberOperators.EQUALS));
 			deleteRecordBuilder.delete();
 			
+			
 			//to remove if reading module added for the resource in ResourceReading
 			List<FacilioField> rrFields = FieldFactory.getResourceReadingsFields();
 		    FacilioField resField = rrFields.stream().filter(f->f.getName().equalsIgnoreCase("resourceId")).findFirst().get();

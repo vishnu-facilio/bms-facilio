@@ -2181,12 +2181,16 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static FacilioChain addMLServiceChain() {
+	public static FacilioChain addMLServiceChain(boolean isDefault) {
 		FacilioChain c = FacilioChain.getNonTransactionChain();
-		c.addCommand(new CheckDuplicateMLServiceCommand());
+		c.addCommand(new PreCheckForMLServiceCommand());
+		if(isDefault) {
+			c.addCommand(new ConstructModelDetails());
+		}
 		c.addCommand(new ConstructReadingForMLServiceCommand());
 		c.addCommand(new InitMLServiceCommand());
 		c.addCommand(new UpdateJobDetailsForMLCommand());
+		c.addCommand(new TriggerMLServiceJobCommand());
 		return c;
 	}
 	
