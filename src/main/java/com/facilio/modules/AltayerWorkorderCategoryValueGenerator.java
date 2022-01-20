@@ -4,7 +4,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
@@ -60,30 +59,5 @@ public class AltayerWorkorderCategoryValueGenerator extends ValueGenerator{
         }
 
         return null;
-    }
-
-    @Override
-    public Object getValueGeneratorName() {
-        return "Altayer Workorder category";
-    }
-
-    @Override
-    public Object getLinkName() {
-        return "com.facilio.modules.AltayerWorkorderCategoryValueGenerator";
-    }
-
-    @Override
-    public Object getModuleName() {
-        return FacilioConstants.ContextNames.TICKET_CATEGORY;
-    }
-
-    @Override
-    public Object getIsHidden() {
-        return true;
-    }
-
-    @Override
-    public Object getOperatorId() {
-        return 36;
     }
 }

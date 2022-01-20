@@ -2891,22 +2891,4 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetScatterGraph());
 		return chain;
 	}
-
-	public static FacilioChain getAllScopingConfigChain() {
-		FacilioChain chain = getDefaultChain();
-		chain.addCommand(new GetScopingConfigListCommand());
-		return chain;
-	}
-
-	public static FacilioChain getScopingListForAppChain() {
-		FacilioChain chain = getDefaultChain();
-		chain.addCommand(new GetScopingForAppCommand());
-		return chain;
-	}
-
-	public static FacilioChain getValueGeneratorsList() {
-		FacilioChain chain = getDefaultChain();
-		chain.addCommand(new GetValueGeneratorsCommand());
-		return chain;
-	}
 }

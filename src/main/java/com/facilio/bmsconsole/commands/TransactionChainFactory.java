@@ -36,6 +36,9 @@ import com.facilio.bmsconsoleV3.commands.jobplan.BulkAddJobPlanTasksCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.AssociateQuotationTermsCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.DisAssociateQuotationTermsCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.SendQuotationMailCommand;
+import com.facilio.bundle.enums.BundleComponentsEnum;
+import com.facilio.bundle.enums.BundleModeEnum;
+import com.facilio.bundle.utils.BundleConstants;
 import com.facilio.cb.command.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -6215,13 +6218,6 @@ public class TransactionChainFactory {
 		chain.addCommand(new GetAttachmentsListCommand());
 		return chain;
 	}
-
-	public static FacilioChain addOrUpdateScopingConfigChain() {
-		FacilioChain c = getDefaultChain();
-		c.addCommand(new AddOrUpdateScopingConfigCommand());
-		return c;
-	}
-
 
 }
 

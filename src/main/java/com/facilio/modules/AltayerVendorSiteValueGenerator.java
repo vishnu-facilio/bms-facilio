@@ -8,7 +8,6 @@ import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
@@ -76,30 +75,5 @@ public class AltayerVendorSiteValueGenerator extends ValueGenerator {
         }
 
         return null;
-    }
-
-    @Override
-    public Object getValueGeneratorName() {
-        return "Altayer Vendors Sites";
-    }
-
-    @Override
-    public Object getLinkName() {
-        return "com.facilio.modules.AltayerVendorSiteValueGenerator";
-    }
-
-    @Override
-    public Object getModuleName() {
-        return FacilioConstants.ContextNames.VENDORS;
-    }
-
-    @Override
-    public Object getIsHidden() {
-        return true;
-    }
-
-    @Override
-    public Object getOperatorId() {
-        return 36;
     }
 }
