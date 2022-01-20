@@ -32,50 +32,61 @@ public class FillActivityforServiceRequestCommand extends FacilioCommand {
 			
 			V3ServiceRequestContext oldServiceRequest = oldRecordMap.get(serviceRequest.getId());
 			
-			if( (serviceRequest.getAssignedTo() != null && serviceRequest.getAssignedTo().getId() != -1) || (serviceRequest.getAssignmentGroup() != null && serviceRequest.getAssignmentGroup().getId() != -1) ) {
-				
-				if(oldServiceRequest == null) {
-					addAssignmentActivity(serviceRequest, context);
-				}
-				else {
-					if(oldServiceRequest.getAssignedTo() == null || oldServiceRequest.getAssignedTo().getId() < 0) {
-						
-						if(serviceRequest.getAssignedTo() != null && serviceRequest.getAssignedTo().getId() != -1) {
-							addAssignmentActivity(serviceRequest, context);
-						}
-					}
-					else {
-						if(oldServiceRequest.getAssignedTo().getId() != serviceRequest.getAssignedTo().getId()) {
-							addAssignmentActivity(serviceRequest, context);
-						}
-					}
-					
-					if(oldServiceRequest.getAssignmentGroup() == null || oldServiceRequest.getAssignmentGroup().getId() < 0) {
-						
-						if(serviceRequest.getAssignmentGroup() != null && serviceRequest.getAssignmentGroup().getId() != -1) {
-							addAssignmentActivity(serviceRequest, context);
-						}
-					}
-					else {
-						if(oldServiceRequest.getAssignmentGroup().getId() != serviceRequest.getAssignmentGroup().getId()) {
-							addAssignmentActivity(serviceRequest, context);
-						}
-					}
+			if (serviceRequest.getAssignedTo() != null && serviceRequest.getAssignedTo().getId() != -1) {
+				if(oldServiceRequest == null || (oldServiceRequest.getAssignedTo() == null || oldServiceRequest.getAssignedTo().getId() < 0) || (oldServiceRequest.getAssignedTo().getId() != serviceRequest.getAssignedTo().getId())) {
+					addAssignmentActivity(serviceRequest, context,true);
 				}
 			}
+			if (serviceRequest.getAssignmentGroup() != null && serviceRequest.getAssignmentGroup().getId() != -1) {
+				if(oldServiceRequest == null || (oldServiceRequest.getAssignmentGroup() == null || oldServiceRequest.getAssignmentGroup().getId() < 0) || (oldServiceRequest.getAssignmentGroup().getId() != serviceRequest.getAssignmentGroup().getId())) {
+					addAssignmentActivity(serviceRequest, context,false);
+				}
+			}
+			
+//			if( (serviceRequest.getAssignedTo() != null && serviceRequest.getAssignedTo().getId() != -1) || (serviceRequest.getAssignmentGroup() != null && serviceRequest.getAssignmentGroup().getId() != -1) ) {
+//				
+//				if(oldServiceRequest == null) {
+//					addAssignmentActivity(serviceRequest, context);
+//				}
+//				else {
+//					if(oldServiceRequest.getAssignedTo() == null || oldServiceRequest.getAssignedTo().getId() < 0) {
+//						
+//						if(serviceRequest.getAssignedTo() != null && serviceRequest.getAssignedTo().getId() != -1) {
+//							addAssignmentActivity(serviceRequest, context);
+//						}
+//					}
+//					else {
+//						if(oldServiceRequest.getAssignedTo().getId() != serviceRequest.getAssignedTo().getId()) {
+//							addAssignmentActivity(serviceRequest, context);
+//						}
+//					}
+//					
+//					if(oldServiceRequest.getAssignmentGroup() == null || oldServiceRequest.getAssignmentGroup().getId() < 0) {
+//						
+//						if(serviceRequest.getAssignmentGroup() != null && serviceRequest.getAssignmentGroup().getId() != -1) {
+//							addAssignmentActivity(serviceRequest, context);
+//						}
+//					}
+//					else {
+//						if(oldServiceRequest.getAssignmentGroup().getId() != serviceRequest.getAssignmentGroup().getId()) {
+//							addAssignmentActivity(serviceRequest, context);
+//						}
+//					}
+//				}
+//			}
 		}
 		return false;
 	}
 	
 	
-	private void addAssignmentActivity(V3ServiceRequestContext serviceRequest, Context context) throws Exception {
+	private void addAssignmentActivity(V3ServiceRequestContext serviceRequest, Context context, boolean isFromAssignedTo) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         JSONObject info = new JSONObject();
         
         info.put("assignedBy", AccountUtil.getCurrentUser().getOuid());
         
-        if (serviceRequest.getAssignedTo() != null && serviceRequest.getAssignedTo().getId() != -1) {
+        if (isFromAssignedTo) {
         	 info.put("assignedTo", serviceRequest.getAssignedTo().getOuid());
         }
         else {
