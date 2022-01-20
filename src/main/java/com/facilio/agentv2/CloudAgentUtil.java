@@ -25,7 +25,7 @@ public class CloudAgentUtil {
 	
 	private static class Urls {
 		private static final String ADD_AGENT = "/api/v1/agent/add";
-		private static final String EDIT_AGENT = "/api/workflow/add";
+		private static final String EDIT_AGENT = "/api/v1/agent/edit";
 	}
 	
 	public static void addCloudServiceAgent(FacilioAgent agent) throws Exception {
@@ -46,9 +46,9 @@ public class CloudAgentUtil {
 			throw new FacilioException("Agent not added. Please check the details again");
 		}
 	}
-	public static boolean addWorkflowString(Map<String,Object>workflowProps) throws Exception{
-
-		String response = doPost(Urls.EDIT_AGENT, "workflowContext", workflowProps);
+	public static boolean addWorkflowString(FacilioAgent agent) throws Exception{
+		Map<String, Object> props = FieldUtil.getAsProperties(agent);
+		String response = doPost(Urls.EDIT_AGENT, "agent",props);
 		if (StringUtils.isNotEmpty(response)) {
 			JSONObject obj = FacilioUtil.parseJson(response);
 			if (obj.containsKey("code")) {

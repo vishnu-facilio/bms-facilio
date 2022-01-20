@@ -120,13 +120,10 @@ public class AgentApiV2 {
 
 
     public static boolean editAgent(FacilioAgent agent, JSONObject jsonObject, boolean updateLastDataReceivedTime) throws Exception {
-        if (agent.getAgentType() == AgentType.CLOUD_ON_SERVICE.getKey()) {
+        if (agent.getAgentType() == AgentType.CLOUD_ON_SERVICE.getKey() && jsonObject.containsKey(AgentConstants.WORKFLOW)) {
             WorkflowContext workflow = FieldUtil.getAsBeanFromMap((Map<String, Object>) jsonObject.get(AgentConstants.WORKFLOW), WorkflowContext.class);
-            Map<String, Object> workflowProps = new HashMap<>();
-            workflowProps.put("agentName",agent.getName());
-            workflowProps.put("workflowV2String",workflow.getWorkflowV2String());
-            workflowProps.put("isV2Script",workflow.getIsV2Script());
-            boolean status = CloudAgentUtil.addWorkflowString(workflowProps);
+            agent.setWorkflow(workflow);
+            boolean status = CloudAgentUtil.addWorkflowString(agent);
             return status;
         } else {
             Long currTime = System.currentTimeMillis();
