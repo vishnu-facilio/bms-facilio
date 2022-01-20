@@ -39,18 +39,11 @@ public class CreateAppSuperAdminCommand extends FacilioCommand {
 		user.setAppDomain(ApplicationApi.getAppDomainForApplication(appId));
 		AccountUtil.getUserBean().createUserEntry(orgId, user, true, false);
 
-		User clonedUser = FieldUtil.cloneBean(user, User.class);
 		//adding super admin to agent app
 		long agentAppId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP);
 		if(agentAppId > 0) {
+			User clonedUser = FieldUtil.cloneBean(user, User.class);
 			clonedUser.setApplicationId(agentAppId);
-			AccountUtil.getUserBean().addToORGUsersApps(clonedUser, false);
-		}
-
-		//adding super admin to maintenance app
-		long cafmAppId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
-		if(cafmAppId > 0) {
-			clonedUser.setApplicationId(cafmAppId);
 			AccountUtil.getUserBean().addToORGUsersApps(clonedUser, false);
 		}
 

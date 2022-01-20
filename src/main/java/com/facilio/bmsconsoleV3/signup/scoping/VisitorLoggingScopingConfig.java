@@ -5,10 +5,6 @@ import com.facilio.bmsconsole.context.ScopingConfigContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.Condition;
-import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.ScopeOperator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 
@@ -23,25 +19,21 @@ public class VisitorLoggingScopingConfig extends SignUpData {
             FacilioModule visitorLoggingModule = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
 
             //adding vendor scope in vendor portal
-            long vendorPortalScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
+            long vendorPortalScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
             ScopingConfigContext scoping = new ScopingConfigContext();
-            Criteria criteria = new Criteria();
-            Condition condition = CriteriaAPI.getCondition("vendor", "com.facilio.modules.UserValueGenerator", ScopeOperator.SCOPING_IS);
-            condition.setModuleName(visitorLoggingModule.getName());
-            criteria.addAndCondition(condition);
-            scoping.setCriteria(criteria);
+            scoping.setFieldName("vendor");
             scoping.setScopingId(vendorPortalScopingId);
+            scoping.setOperatorId(36);
+            scoping.setFieldValueGenerator("com.facilio.modules.UserValueGenerator");
             scoping.setModuleId(visitorLoggingModule.getModuleId());
 
             //adding tenant scope in tenant portal
-            long tenantPortalScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
-            Criteria criteria_tenant = new Criteria();
-            Condition tenant_condition = CriteriaAPI.getCondition("tenant", "com.facilio.modules.UserValueGenerator", ScopeOperator.SCOPING_IS);
-            tenant_condition.setModuleName(visitorLoggingModule.getName());
-            criteria_tenant.addAndCondition(tenant_condition);
-            scoping.setCriteria(criteria_tenant);
+            long tenantPortalScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
             ScopingConfigContext tenantScoping = new ScopingConfigContext();
+            tenantScoping.setFieldName("tenant");
             tenantScoping.setScopingId(tenantPortalScopingId);
+            tenantScoping.setOperatorId(36);
+            tenantScoping.setFieldValueGenerator("com.facilio.modules.UserValueGenerator");
             tenantScoping.setModuleId(visitorLoggingModule.getModuleId());
 
             List<ScopingConfigContext> scopingConfig = new ArrayList<>();

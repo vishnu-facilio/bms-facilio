@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import com.facilio.accounts.bean.*;
-import com.facilio.bmsconsole.context.ScopingConfigContext;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -88,11 +87,10 @@ public class AccountUtil {
 		if(account != null && account.getUser() != null && account.getOrg() != null) {
 			long appId = account.getUser().getApplicationId();
 			if(appId > 0) {
-				long scopingId = account.getUser().getScopingId();
 				ApplicationContext app = ApplicationApi.getApplicationForId(appId);
 				if(app != null) {
 					account.setApp(app);
-					account.setAppScopingMap(ApplicationApi.getScopingMapForApp(scopingId));
+					account.setAppScopingMap(ApplicationApi.getScopingMapForApp(app.getScopingId(), account.getOrg().getOrgId()));
 				}
 			}
 		}
@@ -192,16 +190,16 @@ public class AccountUtil {
 		return -1;
 	}
 
-	public static Map<Long, ScopingConfigContext> getCurrentAppScopingMap() {
+	public static Map<Long, Map<String, Object>> getCurrentAppScopingMap() {
 		if (currentAccount.get() != null) {
 			return currentAccount.get().getAppScopingMap();
 		}
 		return null;
 	}
 	
-	public static ScopingConfigContext getCurrentAppScopingMap(long modId) {
+	public static Map<String, Object> getCurrentAppScopingMap(long modId) {
 		if (currentAccount.get() != null) {
-			Map<Long, ScopingConfigContext> scopingMap = currentAccount.get().getAppScopingMap();
+			Map<Long, Map<String, Object>> scopingMap = currentAccount.get().getAppScopingMap();
 			if(MapUtils.isNotEmpty(scopingMap)){
 				return scopingMap.get(modId);
 			}

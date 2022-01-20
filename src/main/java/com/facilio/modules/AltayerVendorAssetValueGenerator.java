@@ -122,29 +122,4 @@ public class AltayerVendorAssetValueGenerator extends ValueGenerator{
 
         return null;
     }
-
-    @Override
-    public Object getValueGeneratorName() {
-        return "Altayer Vendor Assets";
-    }
-
-    @Override
-    public Object getLinkName() {
-        return "com.facilio.modules.AltayerVendorAssetValueGenerator";
-    }
-
-    @Override
-    public Object getModuleName() {
-        return FacilioConstants.ContextNames.ASSET;
-    }
-
-    @Override
-    public Object getIsHidden() {
-        return true;
-    }
-
-    @Override
-    public Object getOperatorId() {
-        return 36;
-    }
 }
