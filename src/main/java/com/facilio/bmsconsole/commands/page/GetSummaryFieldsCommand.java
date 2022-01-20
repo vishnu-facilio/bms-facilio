@@ -293,6 +293,17 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		} else {
 			value = record.getDatum(field.getName());
 		}
+		if (value == null) {
+			if (field.isDefault()) {
+				try {
+					value = PropertyUtils.getProperty(record, field.getName() + "Id");
+				} catch (Exception e) {
+					LOGGER.error("Exception while getting record data", e);
+				}
+			} else {
+				value = record.getDatum(field.getName() + "Id");
+			}
+		}
 		return value != null;
 	}
 
