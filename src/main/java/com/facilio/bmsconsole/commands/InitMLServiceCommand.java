@@ -68,7 +68,7 @@ public class InitMLServiceCommand extends FacilioCommand {
 					String error = "Error_ML "+ postURL + " usecase ID : "+mlServiceContext.getUseCaseId()+" ERROR MESSAGE : "+"Response is not valid. RESULT : "+result;
 					LOGGER.fatal(error);
 					mlServiceContext.updateStatus(result);
-					break;
+					return true;
 				} else {
 					//				LOGGER.info("\nmlresponse :: \n"+result);
 					JSONParser parser = new JSONParser();
@@ -80,7 +80,7 @@ public class InitMLServiceCommand extends FacilioCommand {
 						mlServiceContext.updateStatus(mlResponse.getMessage());
 						mlResponseContextList.add(mlResponse);
 						if(!mlResponse.getStatus()) {
-							break;
+							return true;
 						}
 					}
 				}

@@ -196,6 +196,9 @@ public class MLServiceAPI {
 	}
 
 	public static long getWorkFlowId(JSONObject workflowInfo) throws JSONException {
+		if(workflowInfo == null || workflowInfo.isEmpty()) {
+			return 0;
+		}
 		String namespace = (String) workflowInfo.get("namespace");
 		String function = (String) workflowInfo.get("function");
 		try {

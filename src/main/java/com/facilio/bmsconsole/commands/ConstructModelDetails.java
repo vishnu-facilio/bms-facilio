@@ -29,18 +29,28 @@ public class ConstructModelDetails extends FacilioCommand {
 
 		try {
 			List<Long> assetIds = mlServiceContext.getAssetList();
-			String modelName = mlServiceContext.getModelName();
 
 			List<List<Map<String, Object>>> models = new ArrayList<List<Map<String,Object>>>();
-			if(modelName.equals("energyprediction")) {
+			switch(mlServiceContext.getModelName()){
+			case "energyprediction":{
 				long energyMeterID = assetIds.get(0);
 				EnergyMeterContext assetContext = DeviceAPI.getEnergyMeter(energyMeterID);
 				List<Map<String, Object>> model = new ArrayList<Map<String,Object>>();
 				model.add(getEnergyReading(assetContext.getId()));
 				model.add(getTemperatureReading(assetContext.getSiteId()));
 				models.add(model);
+				break;
 			}
-			else if(modelName.equals("energyanomaly")) {
+			case "loadprediction":{
+				long energyMeterID = assetIds.get(0);
+				EnergyMeterContext assetContext = DeviceAPI.getEnergyMeter(energyMeterID);
+				List<Map<String, Object>> model = new ArrayList<Map<String,Object>>();
+				model.add(getPowerReading(assetContext.getId()));
+				model.add(getTemperatureReading(assetContext.getSiteId()));
+				models.add(model);
+				break;
+			}
+			case "energyanomaly":{
 				for(long energyMeterID : assetIds) {
 					EnergyMeterContext assetContext = DeviceAPI.getEnergyMeter(energyMeterID);
 					List<Map<String, Object>> model = new ArrayList<Map<String,Object>>();
@@ -48,6 +58,14 @@ public class ConstructModelDetails extends FacilioCommand {
 					model.add(getTemperatureReading(assetContext.getSiteId()));
 					models.add(model);
 				}
+				break;
+			}
+			default :{
+				String errMsg = "Given modelname is not available";
+				LOGGER.fatal(errMsg);
+				mlServiceContext.updateStatus(errMsg);
+				return true;
+			}
 			}
 			mlServiceContext.setModels(models);
 			mlServiceContext.updateReadingVariables();
@@ -56,6 +74,10 @@ public class ConstructModelDetails extends FacilioCommand {
 
 		}catch(Exception e) {
 			e.printStackTrace();
+			String errMsg = "Failed in predefined model constructions";
+			if(mlServiceContext!=null) {
+				mlServiceContext.updateStatus(errMsg);
+			}
 			LOGGER.info("Failed in ConstructModelDetails for usecase id "+mlServiceContext.getUseCaseId());
 			return true;
 		}
@@ -70,10 +92,19 @@ public class ConstructModelDetails extends FacilioCommand {
 	}
 
 	private Map<String, Object> getEnergyReading(long energyId) throws Exception {
-
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
 		FacilioField energyField = modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
+		Map<String, Object> energyReading = new HashMap<>();
+		energyReading.put("parentId", energyId);
+		energyReading.put("name", energyField.getName());
+		energyReading.put("fieldId", energyField.getFieldId());
+		return energyReading;
+
+	}
+	
+	private Map<String, Object> getPowerReading(long energyId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioField energyField = modBean.getField("totalDemand", FacilioConstants.ContextNames.ENERGY_DATA_READING);
 		Map<String, Object> energyReading = new HashMap<>();
 		energyReading.put("parentId", energyId);
 		energyReading.put("name", energyField.getName());
@@ -83,9 +114,7 @@ public class ConstructModelDetails extends FacilioCommand {
 	}
 
 	private Map<String, Object> getTemperatureReading(long siteId) throws Exception {
-
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
 		FacilioField temperatureField = modBean.getField("temperature", FacilioConstants.ContextNames.WEATHER_READING);
 		Map<String, Object> temperatureReading = new HashMap<>();
 		temperatureReading.put("parentId", siteId);
