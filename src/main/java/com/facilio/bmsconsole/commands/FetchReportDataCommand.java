@@ -432,15 +432,11 @@ public class FetchReportDataCommand extends FacilioCommand {
                 }
 
             } else {
-                Boolean isTemplateDp = isTemplateDatapoint(dp, report.getReportTemplate().getCategoryId()); // this check the same report template for same category assets.. // also need to remove the querry in future.
-                if (isTemplateDp) {
-                	  Criteria templateCriteria = report.getReportTemplate().getCriteria(report, dp);
-                      if (templateCriteria != null) {
-                          parentId = report.getReportTemplate().getParentId();
-                          newSelectBuilder.andCriteria(templateCriteria);
-                      }
-                }
-
+                  Criteria templateCriteria = report.getReportTemplate().getCriteria(report, dp);
+                  if (templateCriteria != null) {
+                      parentId = report.getReportTemplate().getParentId();
+                      newSelectBuilder.andCriteria(templateCriteria);
+                  }
             }
         } else {
             if (xValues == null || report.getTypeEnum() == ReportType.PIVOT_REPORT) {
