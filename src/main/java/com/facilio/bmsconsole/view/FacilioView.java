@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.fw.BeanFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -157,7 +160,12 @@ public class FacilioView {
 	}
 	
 	private String moduleName = "";
-	public String getModuleName() {
+	public String getModuleName() throws Exception{
+		if(StringUtils.isEmpty(moduleName) && moduleId > 0)
+		{
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			moduleName = modBean.getModule(this.getModuleId()).getName();
+		}
 		return moduleName;
 	}
 	
