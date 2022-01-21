@@ -324,9 +324,6 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 							break;
 					}
 				}
-				if (StringUtils.isEmpty(view.getModuleName()) && view.getModuleId() > 0) {
-					view.setModuleName(modBean.getModule(view.getModuleId()).getName());
-				}
 				if (view.getCriteriaId() != -1) {
 					Criteria criteria = CriteriaAPI.getCriteria(orgId, view.getCriteriaId());
 					setCriteriaValue(criteria);
