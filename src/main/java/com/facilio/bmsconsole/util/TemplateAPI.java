@@ -72,6 +72,7 @@ import com.facilio.bmsconsole.templates.WebNotificationTemplate;
 import com.facilio.bmsconsole.templates.WhatsappMessageTemplate;
 import com.facilio.bmsconsole.templates.WorkflowTemplate;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
+import com.facilio.bmsconsoleV3.context.EmailFromAddress;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -737,6 +738,11 @@ public class TemplateAPI {
 	public static long addEmailTemplate(long orgId, EMailTemplate template) throws Exception {
 		addDefaultProps(template);
 		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
+		
+		if(template.getFromID() == null || template.getFromID() <= 0) {
+			EmailFromAddress defaultNotificationFromAddress = MailMessageUtil.getDefaultEmailFromAddress(EmailFromAddress.SourceType.NOTIFICATION);
+			template.setFromID(defaultNotificationFromAddress.getId());
+		}
 		
 		template.setType(Type.EMAIL);
 		template.setBodyId(FacilioFactory.getFileStore(superAdmin.getId()).addFile("Email_Template_"+template.getName(), template.getMessage(), "text/plain"));
