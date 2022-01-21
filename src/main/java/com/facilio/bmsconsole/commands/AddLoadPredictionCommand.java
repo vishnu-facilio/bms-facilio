@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -13,8 +12,12 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.MLServiceContext;
 import com.facilio.bmsconsole.util.DeviceAPI;
+import com.facilio.bmsconsole.util.FacilioFrequency;
+import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.MLAPI;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -23,14 +26,17 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.taskengine.ScheduleInfo;
-import com.facilio.taskengine.ScheduleInfo.FrequencyType;
 
 public class AddLoadPredictionCommand extends FacilioCommand {
+	
 	
 	private static final Logger LOGGER = Logger.getLogger(AddLoadPredictionCommand.class.getName());
 	@Override
 	public boolean executeCommand(Context jc) throws Exception {
 		// TODO Auto-generated method stub
+		
+		MLServiceContext mlServiceContext = (MLServiceContext) jc.get(FacilioConstants.ContextNames.ML_MODEL_INFO);
+		
 		try
 		{
 			LOGGER.info("Inside Load Prediction Command");
@@ -48,21 +54,52 @@ public class AddLoadPredictionCommand extends FacilioCommand {
 				fields = module != null ? modBean.getAllFields(module.getName()) : FieldFactory.getMLLoadPredictFields();
 				MLAPI.addReading(Collections.singletonList(energyMeterID),"LoadPredictionMLReadings", fields,ModuleFactory.getMLReadingModule().getTableName(),module);
 				
-				checkGamModel(energyMeterID,assetContext, (JSONObject) jc.get("mlModelVariables"), (JSONObject) jc.get("mlVariables"),(String) jc.get("modelPath"));
-				LOGGER.info("After check Gam Model");
+				long mlID = updateLoadModel(assetContext, (JSONObject) jc.get("mlModelVariables"), (JSONObject) jc.get("mlVariables"),(String) jc.get("modelPath"));
+				if(mlServiceContext!=null) {
+					mlServiceContext.updateMlID(mlID);
+				}
+				scheduleJob(mlID, mlServiceContext);
+				LOGGER.info("After updating load model");
+				
 			}else{
-				LOGGER.info("Energy Meter context is Null");
+				String errMsg = energyMeterID+" energy meter is not available";
+				if(mlServiceContext!=null) {
+					mlServiceContext.updateStatus(errMsg);
+				}
+				LOGGER.info(errMsg);
 			}
 			return false;
 		}
 		catch(Exception e)
 		{
-			LOGGER.error("Error while adding Load Prediction Job", e);
+			String errMsg = "Error while adding Load Prediction Job";
+			if(mlServiceContext!=null) {
+				mlServiceContext.updateStatus(errMsg);
+			}
+			LOGGER.error(errMsg, e);
 			throw e;
 		}
 	}
 	
-	private void checkGamModel(long ratioCheckMLID, EnergyMeterContext context,JSONObject mlModelVariables,JSONObject mlVariables,String modelPath) throws Exception
+	private void scheduleJob(long mlID, MLServiceContext mlServiceContext) throws Exception {
+		boolean isPastData = false;
+		if(mlServiceContext!=null) {
+			isPastData = mlServiceContext.isPastData();
+		}
+		try {
+			if(!isPastData) {
+				ScheduleInfo info = new ScheduleInfo();
+				info = FormulaFieldAPI.getSchedule(FacilioFrequency.DAILY);
+				MLAPI.addJobs(mlID,"DefaultMLJob",info,"ml");
+//			} else {
+//				FacilioTimer.scheduleOneTimeJobWithTimestampInSec(mlID, "DefaultMLJob",(executionTime/1000), "ml");
+			}
+		} catch (InterruptedException e) {
+			Thread.sleep(1000);
+		}
+	}
+	
+	private long updateLoadModel(EnergyMeterContext context,JSONObject mlModelVariables,JSONObject mlVariables,String modelPath) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -105,19 +142,11 @@ public class AddLoadPredictionCommand extends FacilioCommand {
 		MLAPI.addMLModelVariables(mlID,"timezone",AccountUtil.getCurrentAccount().getTimeZone());
 		
 		for(Object entry:mlModelVariables.entrySet()){
-			Map.Entry<String, String> en = (Map.Entry) entry;
-			MLAPI.addMLModelVariables(mlID, en.getKey(), en.getValue());
+			Map.Entry<String, Object> en = (Map.Entry) entry;
+			MLAPI.addMLModelVariables(mlID, en.getKey(), String.valueOf(en.getValue()));
 		}
 		
-		ScheduleInfo info = new ScheduleInfo();
-		info.setFrequencyType(FrequencyType.DAILY);
-
-		try {
-			MLAPI.addJobs(mlID,"DefaultMLJob",info,"ml");
-		} catch (InterruptedException e) {
-			Thread.sleep(1000);
-		}
-		LOGGER.info("checkGamModel Completed");
+		return mlID;
 	}
 	
 }

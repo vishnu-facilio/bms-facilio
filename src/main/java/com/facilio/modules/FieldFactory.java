@@ -8128,7 +8128,7 @@ public class FieldFactory extends BaseFieldFactory {
     public static List<FacilioField> getMLLogLoadPredictFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getMLLogReadingModule();
-        fields.add(getField("daywiseload", "daywiseloadLog", "DECIMAL_CF3", module, FieldType.DECIMAL));
+        fields.add(getField("predictedLoad", "Prediction Load Log", "DECIMAL_CF3", module, FieldType.DECIMAL));
         fields.add(getField("predictedTime", "PREDICTED_TIME", module, FieldType.NUMBER));
         fields.add(getField("mlRunning", "ML_RUNNING", module, FieldType.BOOLEAN));
         fields.add(getField("errorCode", "ERROR_CODE", module, FieldType.NUMBER));
@@ -8138,7 +8138,7 @@ public class FieldFactory extends BaseFieldFactory {
     public static List<FacilioField> getMLLoadPredictFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getMLReadingModule();
-        fields.add(getField("daywiseload", "DECIMAL_CF3", module, FieldType.DECIMAL));
+        fields.add(getField("predictedLoad", "Predicted Load", "DECIMAL_CF3", module, FieldType.DECIMAL));
         fields.add(getField("mlRunning", "ML_RUNNING", module, FieldType.BOOLEAN));
         fields.add(getField("errorCode", "ERROR_CODE", module, FieldType.NUMBER));
         return fields;

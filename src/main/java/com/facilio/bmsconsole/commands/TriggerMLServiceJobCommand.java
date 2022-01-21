@@ -17,7 +17,7 @@ public class TriggerMLServiceJobCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		MLServiceContext mlServiceContext = (MLServiceContext) context.get(FacilioConstants.ContextNames.ML_MODEL_INFO);
-		if(!mlServiceContext.isPastData()) {
+		if(!mlServiceContext.isPastData() || mlServiceContext.getMlID() == 0) {
 			return false;
 		}
 		try {
@@ -35,7 +35,7 @@ public class TriggerMLServiceJobCommand extends FacilioCommand {
 				return true;
 			}
 			}
-			mlServiceContext.updateStatus("Successfully activated mlservice ");
+			mlServiceContext.updateStatus("Successfully activated mlservice for historic data");
 			LOGGER.info("Sucessfully triggered historic job for mlservice");
 			return false;
 

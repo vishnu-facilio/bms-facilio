@@ -91,9 +91,6 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 //		"mlVariables" : {"totalEnergyConsumptionDelta" : {"maxSamplingPeriod" : 777600000 }}}
 		this.samplingJson = new JSONObject();
 		for(String reading : this.readingVariables) {
-			if(reading.equals("temperature") ) {
-				continue;
-			}
 			JSONObject readingJson = new JSONObject();
 			readingJson.put("maxSamplingPeriod", this.trainingSamplingPeriod);
 			samplingJson.put(reading, readingJson);
