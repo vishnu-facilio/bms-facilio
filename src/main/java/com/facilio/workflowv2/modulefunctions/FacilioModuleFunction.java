@@ -17,4 +17,6 @@ public interface FacilioModuleFunction {
 	public Criteria getViewCriteria(Map<String,Object> globalParams,List<Object> objects) throws Exception;
 	public Long getId(Map<String,Object> globalParams,List<Object> objects) throws Exception;
 	public List<Map<String, Object>> getAllStates(Map<String,Object> globalParams,List<Object> objects) throws Exception;
+	public void addNote(Map<String, Object> globalParams, List<Object> objects) throws Exception;
+	public void addAttachments(Map<String, Object> globalParams, List<Object> objects) throws Exception;
 }
