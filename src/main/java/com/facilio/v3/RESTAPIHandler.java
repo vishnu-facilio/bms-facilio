@@ -348,7 +348,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         return fieldMap;
     }
 
-    private void patchHandler(String moduleName, long id, Map<String, Object> patchObj, Map<String, Object> bodyParams) throws Exception {
+    private void patchHandler(String moduleName, long id, Map<String, Object> patchObj, Map<String, Object> bodyParams, boolean isAuditLogRequired) throws Exception {
         Object record = getRecord(moduleName, id);
         FacilioModule module = ChainUtil.getModule(moduleName);
         V3Config v3Config = ChainUtil.getV3Config(moduleName);
@@ -381,16 +381,18 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         JSONObject prop = FieldUtil.getAsJSON(updatedRecord);
         result.put(moduleName, prop);
 
-        addAuditLog(Collections.singletonList(prop), getModuleName(), "Record {%s} of module %s has been updated",
-                AuditLogHandler.ActionType.UPDATE,
-                this.getData(), true);
+        if(isAuditLogRequired) {
+            addAuditLog(Collections.singletonList(prop), getModuleName(), "Record {%s} of module %s has been updated",
+                    AuditLogHandler.ActionType.UPDATE,
+                    this.getData(), true);
+        }
         this.setData(result);
     }
 
     /**
      * The support to update the entire object is not supported.
      *
-     * Refer to {@link RESTAPIHandler#patch()} and {@link RESTAPIHandler#patchHandler(String, long, Map, Map)}
+     * Refer to {@link RESTAPIHandler#patch()} and {@link RESTAPIHandler#patchHandler(String, long, Map, Map, boolean)}
      *
      * @return
      * @throws Exception
@@ -557,7 +559,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
             data = new HashMap<>();
         }
         removeRestrictedFields(data, this.getModuleName(), true);
-        patchHandler(this.getModuleName(), this.getId(), data, this.getParams());
+        patchHandler(this.getModuleName(), this.getId(), data, this.getParams(), true);
         return SUCCESS;
     }
 
@@ -682,13 +684,75 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         this.timelineRequest = timelineRequest;
     }
 
-    public String timeline() throws Exception {
-        FacilioChain chain = ChainUtil.getTimelineChain(timelineRequest);
+    public String timelineData() throws Exception {
+        invokeTimelineChain(false, false);
+        return SUCCESS;
+    }
+
+    public String timelineSelectiveList() throws Exception {
+        invokeTimelineChain(true, false);
+        return SUCCESS;
+    }
+
+    public String timelineUnScheduledList() throws Exception {
+        invokeTimelineChain(true, true);
+        return SUCCESS;
+    }
+
+    public String timelinePatch() throws Exception {
+        /* Validation to be added
+        timelineRequest = new TimelineRequest();
+        timelineRequest.setViewName(this.getViewName());
+        FacilioChain chain = ChainUtil.getTimelineValidationChain(timelineRequest);
         chain.execute();
         FacilioContext context = chain.getContext();
+        */
 
-        setData(FacilioConstants.ContextNames.TIMELINE_DATA, context.get(FacilioConstants.ContextNames.TIMELINE_DATA));
+        //removing permission restricted fields
+        Map<String, Object> data = this.getData();
+        if (data == null) {
+            data = new HashMap<>();
+        }
+        removeRestrictedFields(data, this.getModuleName(), true);
+        patchHandler(this.getModuleName(), this.getId(), data, this.getParams(), false);
+
+        addAuditLog(Collections.singletonList((JSONObject)this.getData().get(getModuleName())), getModuleName(), "Record {%s} of module %s has been updated through TimelineView",
+                AuditLogHandler.ActionType.UPDATE,
+                (JSONObject) data, true);
+
+        invokeTimelineChain(false, false);
+
         return SUCCESS;
+    }
+
+    private void invokeTimelineChain(boolean isListView, boolean getUnscheduledData) throws Exception
+    {
+        FacilioChain chain = ChainUtil.getTimelineChain(isListView);
+        FacilioContext context = chain.getContext();
+
+        if (org.apache.commons.collections.MapUtils.isNotEmpty(timelineRequest.getFilters())) {
+            JSONParser parser = new JSONParser();
+            JSONObject filterJSON = (JSONObject) parser.parse(timelineRequest.getFilters().toJSONString());
+            context.put(FacilioConstants.ContextNames.FILTERS, filterJSON);
+        }
+        if(isListView) {
+            JSONObject pagination = new JSONObject();
+            pagination.put("page", this.getPage());
+            pagination.put("perPage", this.getPerPage());
+            context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+        }
+        context.put(FacilioConstants.ContextNames.TIMELINE_GET_UNSCHEDULED_DATA, getUnscheduledData);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, timelineRequest.getModuleName());
+        context.put(FacilioConstants.ContextNames.CV_NAME, timelineRequest.getViewName());
+        context.put(FacilioConstants.ContextNames.TIMELINE_REQUEST, timelineRequest);
+
+        chain.execute();
+        if(isListView) {
+            setData(timelineRequest.getModuleName(), context.get(FacilioConstants.ContextNames.TIMELINE_V3_DATAMAP));
+        }
+        else {
+            setData(FacilioConstants.ContextNames.TIMELINE_DATA, context.get(FacilioConstants.ContextNames.TIMELINE_DATA));
+        }
     }
 
 }

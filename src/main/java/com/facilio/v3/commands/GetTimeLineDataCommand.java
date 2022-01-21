@@ -1,23 +1,18 @@
-package com.facilio.v3.util;
+package com.facilio.v3.commands;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.timelineview.context.TimelineViewContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.timeline.context.TimelineRequest;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.V3Context;
+import com.facilio.v3.util.ChainUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -41,13 +36,6 @@ public class GetTimeLineDataCommand extends FacilioCommand {
 
         V3Config config = ChainUtil.getV3Config(timelineRequest.getModuleName());
 
-        TimelineViewContext viewObj = (TimelineViewContext)context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
-
-        if(viewObj == null)
-        {
-            throw new IllegalArgumentException("Invalid View details passed");
-        }
-
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(timelineRequest.getModuleName());
         List<FacilioField> allFields = modBean.getAllFields(module.getName());
@@ -55,14 +43,10 @@ public class GetTimeLineDataCommand extends FacilioCommand {
         FacilioField idField = FieldFactory.getIdField(module);
         String idFieldColumnName = idField.getCompleteColumnName();
 
-        FacilioField timelineGroupField = viewObj.getGroupByField();
-        FacilioField startTimeField = viewObj.getStartDateField();
-        FacilioField endTimeField = viewObj.getEndDateField();
+        FacilioField timelineGroupField = (FacilioField) context.get(FacilioConstants.ContextNames.TIMELINE_GROUP_FIELD);
+        FacilioField startTimeField = (FacilioField) context.get(FacilioConstants.ContextNames.TIMELINE_STARTTIME_FIELD);
 
-        Criteria viewCriteria = viewObj.getCriteria();
-        Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
-
-        Criteria mainCriteria = buildMainCriteria(startTimeField, endTimeField, timelineRequest, timelineGroupField, viewCriteria, filterCriteria, true);
+        Criteria mainCriteria = (Criteria) context.get(FacilioConstants.ContextNames.TIMELINE_DATA_CRITERIA);
 
         StringJoiner groupBy = new StringJoiner(",");
         Collection<FacilioField> aggregateFields = new ArrayList<>();
@@ -111,90 +95,10 @@ public class GetTimeLineDataCommand extends FacilioCommand {
         List<Map<String, Object>> recordMapList = builder.getAsProps();
         LOGGER.error("query for actual record value: " + builder + "; time take is: " + (System.currentTimeMillis() - queryStartTime));
 
-        Map<String, Object> timelineResponse = aggregateResult(timelineGroupField, startTimeField, recordMapList, aggregateValue);
-        context.put(FacilioConstants.ContextNames.TIMELINE_DATA, timelineResponse);
+        context.put(FacilioConstants.ContextNames.TIMELINE_AGGREGATE_DATA, aggregateValue);
+        context.put(FacilioConstants.ContextNames.TIMELINE_V3_DATAMAP, recordMapList);
+
         return false;
-    }
-
-    private Criteria buildMainCriteria(FacilioField startTimeField, FacilioField endTimeField, TimelineRequest timelineRequest, FacilioField timelineGroupField, Criteria viewCriteria, Criteria filterCriteria, boolean applyFilter) {
-        Criteria mainCriteria = new Criteria();
-        Criteria timeCriteria = new Criteria();
-        timeCriteria.addAndCondition(CriteriaAPI.getCondition(startTimeField, timelineRequest.getDateValue(), DateOperators.BETWEEN));
-        timeCriteria.addOrCondition(CriteriaAPI.getCondition(endTimeField, timelineRequest.getDateValue(), DateOperators.BETWEEN));
-        mainCriteria.andCriteria(timeCriteria);
-
-        Criteria rollOverCriteria = new Criteria();
-        rollOverCriteria.addAndCondition(CriteriaAPI.getCondition(startTimeField, String.valueOf(timelineRequest.getStartTime()), NumberOperators.LESS_THAN));
-        rollOverCriteria.addAndCondition(CriteriaAPI.getCondition(endTimeField, String.valueOf(timelineRequest.getEndTime()), NumberOperators.GREATER_THAN));
-        mainCriteria.orCriteria(rollOverCriteria);
-
-        Criteria groupCriteria = new Criteria();
-        if (CollectionUtils.isNotEmpty(timelineRequest.getGroupIds())) {
-            groupCriteria.addAndCondition(CriteriaAPI.getCondition(timelineGroupField, StringUtils.join(timelineRequest.getGroupIds(), ","), NumberOperators.EQUALS));
-        }
-        if (timelineRequest.isGetUnGrouped()) {
-            groupCriteria.addOrCondition(CriteriaAPI.getCondition(timelineGroupField, CommonOperators.IS_EMPTY));
-        }
-        mainCriteria.andCriteria(groupCriteria);
-
-        if(viewCriteria != null)
-        {
-            mainCriteria.andCriteria(viewCriteria);
-        }
-        if (applyFilter && filterCriteria != null && !filterCriteria.isEmpty()) {
-            Criteria criteria = new Criteria();
-            criteria.andCriteria(filterCriteria);
-            mainCriteria.andCriteria(criteria);
-        }
-        return mainCriteria;
-    }
-
-    private Map<String, Object> aggregateResult(FacilioField timelineGroupField,
-                                                       FacilioField startTimeField, List<Map<String, Object>> v3Contexts,
-                                                       List<Map<String, Object>> aggregateValue) throws Exception {
-        Map<String, Object> timelineResult = new HashMap<>();
-
-        if (CollectionUtils.isEmpty(v3Contexts)) {
-            return timelineResult;
-        }
-
-        Map<String, Object> aggregateMap = getAggregateMap(aggregateValue, timelineGroupField, startTimeField);
-
-        for (Map<String, Object> recordMap : v3Contexts) {
-            Object o = recordMap.get(timelineGroupField.getName());
-
-            String value = getFieldValue(o, timelineGroupField);
-            if (value == null) {
-                continue;
-            }
-
-            Map<String, Object> groupJSON = (Map<String, Object>) timelineResult.get(value);
-            if (groupJSON == null) {
-                groupJSON = new HashMap<>();
-                timelineResult.put(value, groupJSON);
-            }
-
-            Map<String, Object> aggregateDateMap = (Map<String, Object>) aggregateMap.get(value);
-            Map<String, Object> aggregateValueMap = (Map<String, Object>) aggregateDateMap.get(recordMap.get(DATE_FORMAT));
-
-            String minStartDate = aggregateValueMap.get(MIN_START_DATE).toString();
-
-            Map<String, Object> dataMap = (Map<String, Object>) groupJSON.get(minStartDate);
-            List<Map<String, Object>> dataList;
-            if (dataMap == null) {
-                dataMap = new HashMap<>();
-                dataMap.put("count", aggregateValueMap.get("count"));
-                groupJSON.put(minStartDate, dataMap);
-                dataList = new ArrayList<>();
-                dataMap.put("data", dataList);
-            } else {
-                dataList = (List<Map<String, Object>>) dataMap.get("data");
-            }
-
-            dataList.add(recordMap);
-        }
-
-        return timelineResult;
     }
 
     private String getFieldValue(Object o, FacilioField timelineGroupField) {
@@ -209,31 +113,6 @@ public class GetTimeLineDataCommand extends FacilioCommand {
             value = String.valueOf(((Map<String, Object>) o).get("id"));
         }
         return value;
-    }
-
-    private Map<String, Object> getAggregateMap(List<Map<String, Object>> aggregateValue, FacilioField timelineGroupField, FacilioField startTimeField) {
-        if (CollectionUtils.isEmpty(aggregateValue)) {
-            return null;
-        }
-
-        Map<String, Object> aggregateMap = new HashMap<>();
-        for (Map<String, Object> map : aggregateValue) {
-            Object value = map.get(timelineGroupField.getName());
-            String fieldValue = getFieldValue(value, timelineGroupField);
-
-            Map<String, Object> dateMap = (Map<String, Object>) aggregateMap.get(fieldValue);
-            if (dateMap == null) {
-                dateMap = new HashMap<>();
-                aggregateMap.put(fieldValue, dateMap);
-            }
-
-            String dateFormatValue = (String) map.get(startTimeField.getName());
-            Map<String, Object> valueMap = new HashMap<>();
-            dateMap.put(dateFormatValue, valueMap);
-            valueMap.put(MIN_START_DATE, map.get(MIN_START_DATE));
-            valueMap.put("count", map.get("id"));
-        }
-        return aggregateMap;
     }
 
     private SelectRecordsBuilder getQueryContactQuery(FacilioModule module, FacilioField timelineGroupField,

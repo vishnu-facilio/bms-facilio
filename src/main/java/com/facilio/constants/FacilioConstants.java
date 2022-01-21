@@ -256,6 +256,13 @@ public class FacilioConstants {
 		public static final String GLOBAL_VARIABLE = "globalVariable";
 		public static final String USER_DELEGATION = "userDelegation";
 		public static final String TIMELINE_REQUEST = "timelineRequest";
+		public static final String TIMELINE_STARTTIME_FIELD = "timelineStartTimeField";
+		public static final String TIMELINE_ENDTIME_FIELD = "timelineEndTimeField";
+		public static final String TIMELINE_GROUP_FIELD = "timelineGroupField";
+		public static final String TIMELINE_DATA_CRITERIA = "timelineCriteria";
+		public static final String TIMELINE_AGGREGATE_DATA = "timelineAggregateData";
+		public static final String TIMELINE_V3_DATAMAP = "timelineV3Datamap";
+		public static final String TIMELINE_GET_UNSCHEDULED_DATA = "timelineGetUnscheduled";
 		public static final String TIMELINE_DATA = "timelineData";
 		public static final String FACILIO_BANNER = "facilioBanner";
 		public static final String FACILIO_BANNERS = "facilioBanners";

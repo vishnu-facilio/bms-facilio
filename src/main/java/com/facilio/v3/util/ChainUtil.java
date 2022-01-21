@@ -15,6 +15,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.timeline.context.TimelineRequest;
+import com.facilio.v3.RESTAPIHandler;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
@@ -486,23 +487,21 @@ public class ChainUtil {
         return beanClass;
     }
 
-    public static FacilioChain getTimelineChain(TimelineRequest timelineRequest) throws Exception {
+    public static FacilioChain getTimelineChain(Boolean isListView) throws Exception {
         FacilioChain chain = FacilioChain.getNonTransactionChain();
         chain.addCommand(new GenerateCriteriaFromFilterCommand());
         chain.addCommand(new LoadViewCommand());
-        chain.addCommand(new GetTimeLineDataCommand());
-
-        FacilioContext context = chain.getContext();
-
-        if (MapUtils.isNotEmpty(timelineRequest.getFilters())) {
-            JSONParser parser = new JSONParser();
-            JSONObject filterJSON = (JSONObject) parser.parse(timelineRequest.getFilters().toJSONString());
-            context.put(FacilioConstants.ContextNames.FILTERS, filterJSON);
+        chain.addCommand(new SetViewDataInContextCommand());
+        if(isListView)
+        {
+            chain.addCommand(new GetTimeLineListCommand());
+        }
+        else
+        {
+            chain.addCommand(new GetTimeLineDataCommand());
+            chain.addCommand(new constructTimelineResponseCommand());
         }
 
-        context.put(FacilioConstants.ContextNames.MODULE_NAME, timelineRequest.getModuleName());
-        context.put(FacilioConstants.ContextNames.CV_NAME, timelineRequest.getViewName());
-        context.put(FacilioConstants.ContextNames.TIMELINE_REQUEST, timelineRequest);
         return chain;
     }
 }
