@@ -580,7 +580,7 @@ public class APIv3Config {
 
     @Module("toolTypes")
     public static Supplier<V3Config> getToolTypes() {
-        return () -> new V3Config(V3ToolTypesContext.class, null)
+        return () -> new V3Config(V3ToolTypesContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .update()
                 .list()
