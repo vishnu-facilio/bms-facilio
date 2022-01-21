@@ -1913,6 +1913,7 @@ public class ReadOnlyChainFactory {
 
 	public static FacilioChain getAvailableButtons() {
 		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddFieldsAndLookupFieldsInContextCommand());
 		chain.addCommand(new GenericGetModuleDataDetailCommand());
 		chain.addCommand(new GetAvailableButtonsCommand());
 		return chain;
