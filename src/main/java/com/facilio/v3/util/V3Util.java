@@ -1,5 +1,8 @@
 package com.facilio.v3.util;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -7,6 +10,7 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.FileField;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -24,7 +28,10 @@ import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class V3Util {
     public static void throwRestException (boolean condition, ErrorCode errorCode, String msg) throws RESTException {
@@ -163,6 +170,91 @@ public class V3Util {
 
         patchChain.execute();
         return context;
+    }
+
+    public static JSONObject processAndUpdateSingleRecord(String moduleName, long id, Map<String, Object> patchObj, Map<String, Object> bodyParams, HttpServletRequest httpServletRequest,
+                        Long stateTransitionId, long customButtonId, long approvalTransitionId) throws Exception {
+        Object record = getRecord(moduleName, id, httpServletRequest);
+        FacilioModule module = ChainUtil.getModule(moduleName);
+        V3Config v3Config = ChainUtil.getV3Config(moduleName);
+
+        Class beanClass = ChainUtil.getBeanClass(v3Config, module);
+        List<Map<String, Object>> converted = FieldUtil.getAsMapList(Collections.singletonList(record), beanClass);
+
+        JSONObject summaryRecord = FieldUtil.getAsJSON(converted.get(0));
+
+        Map<String, FacilioField> fileFields = getFileFields(moduleName);
+
+        Set<String> keys = patchObj.keySet();
+        for (String key: keys) {
+            FacilioField fileField = fileFields.get(key);
+            if (fileField != null && !fileField.isDefault() && patchObj.get(key) == null) {
+                summaryRecord.put(fileField.getName(), patchObj.get(key));
+            }
+            summaryRecord.put(key, patchObj.get(key));
+        }
+
+        if(record != null) {
+            id = ((ModuleBaseWithCustomFields)record).getId();
+        }
+
+        FacilioContext context = V3Util.updateSingleRecord(module, v3Config, (ModuleBaseWithCustomFields) record, summaryRecord, id, bodyParams, getQueryParameters(httpServletRequest), stateTransitionId, customButtonId, approvalTransitionId);
+
+        ModuleBaseWithCustomFields updatedRecord = Constants.getRecord(context, moduleName, id);
+        JSONObject result = new JSONObject();
+        JSONObject prop = FieldUtil.getAsJSON(updatedRecord);
+        result.put(moduleName, prop);
+
+        return result;
+    }
+
+    public static Map<String, FacilioField> getFileFields(String moduleName) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> fields = modBean.getAllFields(moduleName);
+
+        Map<String, FacilioField> fieldMap = new HashMap<>();
+        List<FacilioField> fileFields = new ArrayList<>();
+        for (FacilioField f : fields) {
+            if (f instanceof FileField) {
+                fieldMap.put(f.getName()+"Id", f);
+            }
+        }
+        return fieldMap;
+    }
+
+    public static Map<String, List<Object>> getQueryParameters(HttpServletRequest httpServletRequest) throws UnsupportedEncodingException {
+        Map<String, List<Object>> queryParameters = new HashMap<>();
+        String queryString = httpServletRequest.getQueryString();
+
+        if (StringUtils.isEmpty(queryString)) {
+            return queryParameters;
+        }
+
+        String[] parameters = queryString.split("&");
+
+        for (String parameter : parameters) {
+            String[] keyValuePair = parameter.split("=");
+            List<Object> values = queryParameters.get(keyValuePair[0]);
+            if (values == null) {
+                values = new ArrayList<>();
+            }
+            values.add(keyValuePair.length == 1 ? "" : URLDecoder.decode(keyValuePair[1], StandardCharsets.UTF_8.toString()));
+            queryParameters.put(keyValuePair[0], values);
+        }
+        return queryParameters;
+    }
+
+    public static Object getRecord(String moduleName, long id, HttpServletRequest httpServletRequest) throws Exception {
+        FacilioContext context = V3Util.getSummary(moduleName, Collections.singletonList(id), getQueryParameters(httpServletRequest));
+
+        Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
+        List list = recordMap.get(moduleName);
+
+        if (org.apache.commons.collections4.CollectionUtils.isEmpty(list)) {
+            FacilioModule module = ChainUtil.getModule(moduleName);
+            throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND, module.getDisplayName() + " with id: " + id + " does not exist.");
+        }
+        return list.get(0);
     }
 
     public static FacilioContext updateSingleRecord(FacilioModule module, V3Config v3Config,

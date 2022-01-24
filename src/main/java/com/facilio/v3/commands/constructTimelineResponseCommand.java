@@ -1,5 +1,6 @@
 package com.facilio.v3.commands;
 
+import com.facilio.bmsconsole.timelineview.context.TimelineViewContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldType;
@@ -18,15 +19,16 @@ public class constructTimelineResponseCommand extends FacilioCommand {
 
     private static final Logger LOGGER = LogManager.getLogger(constructTimelineResponseCommand.class.getName());
 
-    private static final String GROUP_CONCAT_FIELD_NAME = "__groupConcat";
     private static final String MIN_START_DATE = "__minStartDate";
     private static final String DATE_FORMAT = "__date_format";
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
-        FacilioField timelineGroupField = (FacilioField) context.get(FacilioConstants.ContextNames.TIMELINE_GROUP_FIELD);
-        FacilioField startTimeField = (FacilioField) context.get(FacilioConstants.ContextNames.TIMELINE_STARTTIME_FIELD);
+        TimelineViewContext viewObj = (TimelineViewContext)context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
+        FacilioField startTimeField = viewObj.getStartDateField();
+        FacilioField timelineGroupField = viewObj.getGroupByField();
+
         List<Map<String, Object>> recordMapList = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TIMELINE_V3_DATAMAP);
         List<Map<String, Object>> aggregateValue = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TIMELINE_AGGREGATE_DATA);
 

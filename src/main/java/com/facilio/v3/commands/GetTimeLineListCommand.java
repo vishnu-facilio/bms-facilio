@@ -14,6 +14,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.timeline.context.TimelineRequest;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.util.ChainUtil;
+import com.facilio.v3.util.TimelineViewUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -51,9 +52,13 @@ public class GetTimeLineListCommand extends FacilioCommand {
         FacilioField idField = FieldFactory.getIdField(module);
         String idFieldColumnName = idField.getCompleteColumnName();
 
-        FacilioField startTimeField = (FacilioField) context.get(FacilioConstants.ContextNames.TIMELINE_STARTTIME_FIELD);
+        FacilioField startTimeField = viewObj.getStartDateField();
+        Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+        boolean getUnscheduledOnly = (boolean) context.get(FacilioConstants.ContextNames.TIMELINE_GET_UNSCHEDULED_DATA);
 
-        Criteria mainCriteria = (Criteria) context.get(FacilioConstants.ContextNames.TIMELINE_DATA_CRITERIA);
+        Criteria mainCriteria = TimelineViewUtil.buildMainCriteria(startTimeField, viewObj.getEndDateField(), timelineRequest,
+                                                                    viewObj.getGroupByField(), viewObj.getCriteria(),
+                                                                    filterCriteria, getUnscheduledOnly);
 
         JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
         int page;

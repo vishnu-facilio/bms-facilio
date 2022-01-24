@@ -1,6 +1,7 @@
 package com.facilio.v3.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.timelineview.context.TimelineViewContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
@@ -11,6 +12,7 @@ import com.facilio.timeline.context.TimelineRequest;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.ChainUtil;
+import com.facilio.v3.util.TimelineViewUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -43,10 +45,19 @@ public class GetTimeLineDataCommand extends FacilioCommand {
         FacilioField idField = FieldFactory.getIdField(module);
         String idFieldColumnName = idField.getCompleteColumnName();
 
-        FacilioField timelineGroupField = (FacilioField) context.get(FacilioConstants.ContextNames.TIMELINE_GROUP_FIELD);
-        FacilioField startTimeField = (FacilioField) context.get(FacilioConstants.ContextNames.TIMELINE_STARTTIME_FIELD);
+        TimelineViewContext viewObj = (TimelineViewContext)context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
+        if(viewObj == null)
+        {
+            throw new IllegalArgumentException("Invalid View details passed");
+        }
 
-        Criteria mainCriteria = (Criteria) context.get(FacilioConstants.ContextNames.TIMELINE_DATA_CRITERIA);
+        FacilioField startTimeField = viewObj.getStartDateField();
+        Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+        FacilioField timelineGroupField = viewObj.getGroupByField();
+
+        Criteria mainCriteria = TimelineViewUtil.buildMainCriteria(startTimeField, viewObj.getEndDateField(), timelineRequest,
+                                timelineGroupField, viewObj.getCriteria(),
+                                filterCriteria, false);
 
         StringJoiner groupBy = new StringJoiner(",");
         Collection<FacilioField> aggregateFields = new ArrayList<>();
@@ -76,6 +87,12 @@ public class GetTimeLineDataCommand extends FacilioCommand {
 
         List<FacilioField> allModuleFields = new ArrayList<>(allFields);
         allModuleFields.add(FieldFactory.getStringField(DATE_FORMAT, "groupMax." + DATE_FORMAT, null));
+
+        // Reconstructing criteria for 2nd select builder
+        mainCriteria = TimelineViewUtil.buildMainCriteria(startTimeField, viewObj.getEndDateField(), timelineRequest,
+                timelineGroupField, viewObj.getCriteria(),
+                filterCriteria, false);
+
         SelectRecordsBuilder subQuerybuilder = getQueryContactQuery(module, timelineGroupField, startTimeField, idFieldColumnName, timelineRequest.getDateAggregator(), mainCriteria);
         String subQuery = subQuerybuilder.constructQueryString();
 
@@ -88,6 +105,12 @@ public class GetTimeLineDataCommand extends FacilioCommand {
                 .select(allModuleFields);
 
         builder.andCustomWhere("FIND_IN_SET(" + idFieldColumnName + ", " + GROUP_CONCAT_FIELD_NAME + ") <= " + timelineRequest.getMaxResultPerCell());
+
+        // Reconstructing criteria for select builder
+        mainCriteria = TimelineViewUtil.buildMainCriteria(startTimeField, viewObj.getEndDateField(), timelineRequest,
+                timelineGroupField, viewObj.getCriteria(),
+                filterCriteria, false);
+
         builder.andCriteria(mainCriteria);
         builder.addWhereValue(Arrays.asList(subQuerybuilder.paramValues()), 0);
 

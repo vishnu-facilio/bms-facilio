@@ -2,20 +2,17 @@ package com.facilio.v3.util;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.CommonActivityType;
-import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.commands.LoadViewCommand;
+import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
 import com.facilio.bmsconsoleV3.commands.ExecutePostTransactionWorkFlowsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.VerifyApprovalCommandV3;
 import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.timeline.context.TimelineRequest;
-import com.facilio.v3.RESTAPIHandler;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
@@ -25,9 +22,6 @@ import com.facilio.v3.context.CustomModuleDataV3;
 import com.facilio.v3.context.V3Context;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
-import org.apache.commons.collections.MapUtils;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
@@ -487,21 +481,20 @@ public class ChainUtil {
         return beanClass;
     }
 
-    public static FacilioChain getTimelineChain(Boolean isListView) throws Exception {
+    public static FacilioChain getTimelineChain() throws Exception {
         FacilioChain chain = FacilioChain.getNonTransactionChain();
         chain.addCommand(new GenerateCriteriaFromFilterCommand());
         chain.addCommand(new LoadViewCommand());
-        chain.addCommand(new SetViewDataInContextCommand());
-        if(isListView)
-        {
-            chain.addCommand(new GetTimeLineListCommand());
-        }
-        else
-        {
-            chain.addCommand(new GetTimeLineDataCommand());
-            chain.addCommand(new constructTimelineResponseCommand());
-        }
+        chain.addCommand(new GetTimeLineDataCommand());
+        chain.addCommand(new constructTimelineResponseCommand());
+        return chain;
+    }
 
+    public static FacilioChain getTimelineListChain() throws Exception {
+        FacilioChain chain = FacilioChain.getNonTransactionChain();
+        chain.addCommand(new GenerateCriteriaFromFilterCommand());
+        chain.addCommand(new LoadViewCommand());
+        chain.addCommand(new GetTimeLineListCommand());
         return chain;
     }
 }
