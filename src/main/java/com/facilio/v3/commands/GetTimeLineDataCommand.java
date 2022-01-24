@@ -124,20 +124,6 @@ public class GetTimeLineDataCommand extends FacilioCommand {
         return false;
     }
 
-    private String getFieldValue(Object o, FacilioField timelineGroupField) {
-        String value = null;
-        if (o == null) {
-            return "-1";
-        }
-
-        if (timelineGroupField.getDataTypeEnum() == FieldType.ENUM) {
-            value = String.valueOf(o);
-        } else if (timelineGroupField.getDataTypeEnum() == FieldType.LOOKUP) {
-            value = String.valueOf(((Map<String, Object>) o).get("id"));
-        }
-        return value;
-    }
-
     private SelectRecordsBuilder getQueryContactQuery(FacilioModule module, FacilioField timelineGroupField,
                                                FacilioField startTimeField, String idFieldColumnName,
                                                BmsAggregateOperators.DateAggregateOperator dateAggregator, Criteria timeCriteria) throws Exception {

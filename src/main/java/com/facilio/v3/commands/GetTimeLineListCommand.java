@@ -32,8 +32,13 @@ public class GetTimeLineListCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         TimelineRequest timelineRequest = (TimelineRequest) context.get(FacilioConstants.ContextNames.TIMELINE_REQUEST);
 
-        if (!timelineRequest.isGetUnGrouped() && CollectionUtils.isEmpty(timelineRequest.getGroupIds())) {
-            throw new IllegalArgumentException("At least one group id should be passed");
+        if (!timelineRequest.isGetUnGrouped()) {
+            if(CollectionUtils.isEmpty(timelineRequest.getGroupIds())) {
+                throw new IllegalArgumentException("At least one group id should be passed");
+            }
+            else if(timelineRequest.getGroupIds().size() > 1){
+                throw new IllegalArgumentException("Only one group id is allowed");
+            }
         }
 
         V3Config config = ChainUtil.getV3Config(timelineRequest.getModuleName());
