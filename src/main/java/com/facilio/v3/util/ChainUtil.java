@@ -486,7 +486,7 @@ public class ChainUtil {
         chain.addCommand(new GenerateCriteriaFromFilterCommand());
         chain.addCommand(new LoadViewCommand());
         chain.addCommand(new GetTimeLineDataCommand());
-        chain.addCommand(new constructTimelineResponseCommand());
+        chain.addCommand(new ConstructTimelineResponseCommand());
         return chain;
     }
 

@@ -15,9 +15,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class constructTimelineResponseCommand extends FacilioCommand {
+public class ConstructTimelineResponseCommand extends FacilioCommand {
 
-    private static final Logger LOGGER = LogManager.getLogger(constructTimelineResponseCommand.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(ConstructTimelineResponseCommand.class.getName());
 
     private static final String MIN_START_DATE = "__minStartDate";
     private static final String DATE_FORMAT = "__date_format";
