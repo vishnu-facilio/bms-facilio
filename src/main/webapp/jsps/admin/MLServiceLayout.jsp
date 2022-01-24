@@ -56,6 +56,11 @@
         }
     </script>
     <script type="text/javascript">
+        function mlFormSubmitAlert(){
+            alert("Form has been submitted. Please refer analytics page after sometime.");
+        }
+	</script>
+    <script type="text/javascript">
         function changeUseCasePage() {
             var selectedOption = "mlService?orgid=" + $("#orgid").val()
                 + "&" + "usecase=" + $("#usecase").val();
@@ -268,7 +273,7 @@
         <br>
         <br>
         <br>
-        <input type="submit" style="margin-left: 100px" name="mlService" value="Submit"/>
+        <input type="submit" style="margin-left: 100px" onclick="mlFormSubmitAlert()" name="mlService" value="Submit"/>
         <br>
         <br>
         <br>
