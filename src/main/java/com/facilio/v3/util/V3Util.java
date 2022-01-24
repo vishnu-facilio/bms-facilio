@@ -173,7 +173,7 @@ public class V3Util {
     }
 
     public static JSONObject processAndUpdateSingleRecord(String moduleName, long id, Map<String, Object> patchObj, Map<String, Object> bodyParams, HttpServletRequest httpServletRequest,
-                        Long stateTransitionId, long customButtonId, long approvalTransitionId) throws Exception {
+                        Long stateTransitionId, Long customButtonId, Long approvalTransitionId) throws Exception {
         Object record = getRecord(moduleName, id, httpServletRequest);
         FacilioModule module = ChainUtil.getModule(moduleName);
         V3Config v3Config = ChainUtil.getV3Config(moduleName);
