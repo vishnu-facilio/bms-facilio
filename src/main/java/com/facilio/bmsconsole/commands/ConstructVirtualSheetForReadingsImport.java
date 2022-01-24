@@ -7,10 +7,12 @@ import com.facilio.bmsconsole.actions.ImportTemplateContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.ImportRowContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportTimeColumnParseException;
 import com.facilio.bmsconsole.util.ImportAPI;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldType;
@@ -20,6 +22,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
+import com.facilio.util.FacilioUtil;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
@@ -128,18 +131,23 @@ public class ConstructVirtualSheetForReadingsImport extends FacilioCommand {
 								if(cellValueString.contains(",")) {
 									cellValueString = cellValueString.replaceAll(",", "");	
 								}
-								if (unitFormats!=null) {
-										if(unitFormats.get(key) != null) {
-											String reading_unitTypeID = unitFormats.get(key).toString();
-											Double siunit_val = UnitsUtil.convertToSiUnit(cellValueString, Unit.valueOf(Integer.parseInt(reading_unitTypeID)));
-											props.put(field, siunit_val);
+								
+								if (unitFormats!=null && unitFormats.get(key).toString() !=null) {
+									ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(rowContext.getParentId(), facilioField);
+									Double convertedInputReading;
+									String reading_unitTypeID = unitFormats.get(key).toString();
+									if(rdm != null && rdm.getUnitEnum() != null) {
+										Unit rdmUnit = rdm.getUnitEnum();
+										convertedInputReading = UnitsUtil.convert(cellValueString, Unit.valueOf(Integer.parseInt(reading_unitTypeID)), rdmUnit);
+										props.put(field, convertedInputReading);
+									} else {
+										convertedInputReading = UnitsUtil.convertToSiUnit(cellValueString, Unit.valueOf(Integer.parseInt(reading_unitTypeID)));
+										props.put(field, convertedInputReading);
 									}
-								}
-								else {
+								}else {
 									Double cellDoubleValue = Double.parseDouble(cellValueString);
 									props.put(field, cellDoubleValue);
-								}
-								
+								}								
 								isfilled = true;
 								} else if (facilioField.getDataType() == FieldType.ENUM.getTypeAsInt()) {
 								EnumField enumField = (EnumField) facilioField;
