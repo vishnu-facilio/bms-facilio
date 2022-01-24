@@ -598,8 +598,10 @@ public class IoTMessageAPI {
  	
  	public static void setReadingValue(List<ControlActionCommandContext> commands) throws Exception {
  		Set<Pair<Long, Long>> pairs = new HashSet<>();
+ 		Map<String, ControlActionCommandContext> commandMap = new HashMap<>();
 		for (ControlActionCommandContext command: commands) {
 			pairs.add(Pair.of(command.getResource().getId(), command.getFieldId()));
+			commandMap.put(ReadingsAPI.getRDMKey(command.getResource().getId(), command.getRdm().getField()), command);
 		}
 		List<Point> pointData = PointsAPI.getPointData(pairs);
 		Map<Long, List<Point>> pointControllerMap = new HashMap<>();
@@ -609,6 +611,8 @@ public class IoTMessageAPI {
 				pointList = new ArrayList<>();
 				pointControllerMap.put(point.getControllerId(), pointList);
 			}
+			ControlActionCommandContext command = commandMap.get(ReadingsAPI.getRDMKey(point.getResourceId(), point.getFieldId()));
+			point.setValue(command.getValue());
 			pointList.add(point);
 		}
 		
