@@ -54,6 +54,7 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.fw.FacilioException;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
@@ -590,6 +591,9 @@ public class FormsAPI {
 		}
 		
 		if (!dbFieldIds.isEmpty()) {
+			
+//			checkFieldUsageInRule(dbFieldIds);
+			
 			deleteFormFields(dbFieldIds);
 		}
 		if (!fieldsToUpdate.isEmpty()) {
@@ -600,6 +604,16 @@ public class FormsAPI {
 		}
 	}
 	
+	private static void checkFieldUsageInRule(List<Long> dbFieldIds) throws Exception {
+		// TODO Auto-generated method stub
+		if(FormRuleAPI.isFieldExistAsRuleTriggerField(dbFieldIds)) {
+			throw new FacilioException("Field is used in one or more rule.");
+		}
+		if(FormRuleAPI.isFieldExistInRuleAction(dbFieldIds)) {
+			throw new FacilioException("Field is used in one or more rule.");
+		}
+	}
+
 	public static List<FacilioForm> getFormsFromDB(Collection<Long> ids) throws Exception {
 		Criteria formNameCriteria = new Criteria();
 		formNameCriteria.addAndCondition(CriteriaAPI.getIdCondition(ids, ModuleFactory.getFormModule()));

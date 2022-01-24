@@ -82,6 +82,36 @@ public class FormRuleAPI {
 		}
 	}
 	
+	public static boolean isFieldExistInRuleAction(List<Long> fieldIds) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormRuleActionFieldsFields());
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getFormRuleActionFieldsFields())
+				.table(ModuleFactory.getFormRuleActionFieldModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("formFieldId"), fieldIds, NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			return true;
+		}
+		return false;
+	}
+	
+	public static boolean isFieldExistAsRuleTriggerField(List<Long> fieldIds) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormRuleTriggerFieldFields());
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getFormRuleTriggerFieldFields())
+				.table(ModuleFactory.getFormRuleTriggerFieldModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), fieldIds, NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			return true;
+		}
+		return false;
+	}
+	
 	public static void addFormRuleTriggerFieldsContext(FormRuleContext formRuleContext, List<FormRuleTriggerFieldContext> triggerFields) throws Exception {
 		
 		for(FormRuleTriggerFieldContext triggerField : triggerFields) {
