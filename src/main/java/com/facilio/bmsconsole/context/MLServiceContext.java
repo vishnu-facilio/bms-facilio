@@ -255,6 +255,9 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 
 	public void setWorkflowId(long workflowId) {
 		this.workflowId = workflowId;
+		if(this.workflowId!=0) {
+			this.mlVariables.put("workflowId", String.valueOf(this.workflowId));
+		}
 	}
 
 	public long getStartTime() {

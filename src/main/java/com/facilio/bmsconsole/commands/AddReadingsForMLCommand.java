@@ -182,7 +182,7 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 			workflowMap.put("row", row);
 			Object resMap;
 			resMap = WorkflowUtil.getResult(workflowId, workflowMap);
-			LOGGER.info("after script row ::"+resMap);
+//			LOGGER.info("after script row ::"+resMap);
 		} catch (Exception e) {
 			LOGGER.error("Error while executing the workflow", e);
 		}
