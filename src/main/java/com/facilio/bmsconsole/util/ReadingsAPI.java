@@ -517,7 +517,10 @@ public class ReadingsAPI {
 	}
 	
 	public static String getRDMKey(long resourceId, FacilioField field) {
-		return resourceId + "_" + field.getFieldId();
+		return getRDMKey(resourceId, field.getFieldId());
+	}
+	public static String getRDMKey(long resourceId, long fieldId) {
+		return resourceId + "_" + fieldId;
 	}
 	
 	private static Map<String, ReadingDataMeta> getRDMMapFromProps (List<Map<String, Object>> props, Map<Long, FacilioField> fieldMap) throws Exception {
