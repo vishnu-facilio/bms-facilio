@@ -157,7 +157,7 @@ public class GetTimeLineDataCommand extends FacilioCommand {
         fields.add(startTimeAggrField);
         groupByJoiner.add(startTimeAggrField.getCompleteColumnName());
 
-        FacilioField dateFieldClone = getGroupConcatField(idFieldColumnName);
+        FacilioField dateFieldClone = getGroupConcatField(idFieldColumnName, startTimeField.getCompleteColumnName());
         fields.add(dateFieldClone);
 
         groupConcatQuery.select(fields);
@@ -165,11 +165,11 @@ public class GetTimeLineDataCommand extends FacilioCommand {
         return groupConcatQuery;
     }
 
-    private FacilioField getGroupConcatField(String idFieldColumnName) {
+    private FacilioField getGroupConcatField(String idFieldColumnName, String startFieldColumnName) {
         FacilioField field = new FacilioField();
         field.setName(GROUP_CONCAT_FIELD_NAME);
         field.setDisplayName(field.getDisplayName());
-        field.setColumnName("GROUP_CONCAT(" + idFieldColumnName + " order by " + idFieldColumnName + ")");
+        field.setColumnName("GROUP_CONCAT(" + idFieldColumnName + " order by " + startFieldColumnName + "," + idFieldColumnName + ")");
         field.setFieldId(field.getFieldId());
         field.setDataType(FieldType.STRING);
         return field;
