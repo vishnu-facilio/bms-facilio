@@ -601,8 +601,21 @@ public class IoTMessageAPI {
 		for (ControlActionCommandContext command: commands) {
 			pairs.add(Pair.of(command.getResource().getId(), command.getFieldId()));
 		}
-		List<Point> points = PointsAPI.getPointData(pairs);
-		ControllerMessenger.setValue(points);
+		List<Point> pointData = PointsAPI.getPointData(pairs);
+		Map<Long, List<Point>> pointControllerMap = new HashMap<>();
+		for (Point point: pointData) {
+			List<Point> pointList = pointControllerMap.get(point.getControllerId());
+			if (pointList == null) {
+				pointList = new ArrayList<>();
+				pointControllerMap.put(point.getControllerId(), pointList);
+			}
+			pointList.add(point);
+		}
+		
+		for(Map.Entry<Long, List<Point>> entry: pointControllerMap.entrySet()) {
+			ControllerMessenger.setValue(entry.getValue());
+		}
+		
  	}
  	
  	
