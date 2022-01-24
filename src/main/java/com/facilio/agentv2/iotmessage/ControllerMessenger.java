@@ -266,7 +266,11 @@ public static boolean discoverPoints(long controllerId) throws Exception {
     }
 
     public static void setValue(Point point) throws Exception {
-        IotData iotData = constructNewIotMessage(Collections.singletonList(point), FacilioCommand.SET);
+    	setValue(Collections.singletonList(point));
+    }
+    
+    public static void setValue(List<Point> points) throws Exception {
+        IotData iotData = constructNewIotMessage(points, FacilioCommand.SET);
         MessengerUtil.addAndPublishNewAgentData(iotData);
     }
 

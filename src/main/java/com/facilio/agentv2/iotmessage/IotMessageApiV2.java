@@ -223,7 +223,7 @@ public class IotMessageApiV2 {
         if( (result != null) && (! result.isEmpty()) && (result.size()==1) ){
             return result.get(0);
         }else {
-            throw new Exception(" unexpected result, cant have this many records ->"+result);
+            throw new Exception(" unexpected result, cant have this many records ->"+result + ", id: " + id);
         }
     }
         private static List<IotMessage> getIotMessages(List<Long> ids) throws Exception {

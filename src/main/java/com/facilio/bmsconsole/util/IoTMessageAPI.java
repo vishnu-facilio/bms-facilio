@@ -6,10 +6,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -31,12 +34,14 @@ import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointEnum;
+import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.PublishData;
 import com.facilio.bmsconsole.context.PublishMessage;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -591,6 +596,14 @@ public class IoTMessageAPI {
  		
  	}
  	
+ 	public static void setReadingValue(List<ControlActionCommandContext> commands) throws Exception {
+ 		Set<Pair<Long, Long>> pairs = new HashSet<>();
+		for (ControlActionCommandContext command: commands) {
+			pairs.add(Pair.of(command.getResource().getId(), command.getFieldId()));
+		}
+		List<Point> points = PointsAPI.getPointData(pairs);
+		ControllerMessenger.setValue(points);
+ 	}
  	
  	
  	public enum IotCommandType {

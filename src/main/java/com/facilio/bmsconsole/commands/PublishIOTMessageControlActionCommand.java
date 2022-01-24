@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
@@ -22,14 +24,12 @@ public class PublishIOTMessageControlActionCommand extends FacilioCommand {
 
 		List<ControlActionCommandContext> commands = (List<ControlActionCommandContext>)context.get(ControlActionUtil.CONTROL_ACTION_COMMANDS);
 		
-		for(ControlActionCommandContext command :commands) {
-			
-			if(command.getControlActionMode() == ReadingDataMeta.ControlActionMode.SANDBOX.getValue()) {
-				continue;
-			}
-			
-			IoTMessageAPI.setReadingValue(command.getResource().getId(), command.getFieldId(), command.getValue());
+		List<ControlActionCommandContext> liveCommands = commands.stream().filter(command -> command.getControlActionMode() == ReadingDataMeta.ControlActionMode.LIVE.getValue())
+				.collect(Collectors.toList());
+		if (!liveCommands.isEmpty()) {
+			IoTMessageAPI.setReadingValue(liveCommands);
 		}
+		
 		return false;
 	}
 
