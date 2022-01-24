@@ -101,27 +101,6 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 		return workorder.getId();
 	}
 	
-	public void addNote(Map<String,Object> globalParams,List<Object> objects) throws Exception {
-		
-		
-		Long woId = Long.parseLong(objects.get(1).toString());
-		String noteString = (String) objects.get(2);
-		
-		NoteContext note = new NoteContext();
-		
-		note.setBody(noteString);
-		note.setParentId(woId);
-		
-		FacilioChain addNote = TransactionChainFactory.getAddNotesChain();
-		
-		FacilioContext context = addNote.getContext();
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TICKET_NOTES);
-		context.put(FacilioConstants.ContextNames.PARENT_MODULE_NAME, FacilioConstants.ContextNames.WORK_ORDER);
-		context.put(FacilioConstants.ContextNames.NOTE, note);
-
-		addNote.execute();
-	}
-	
 	public void addTask(Map<String,Object> globalParams,List<Object> objects) throws Exception {
 		
 		Long woId = Long.parseLong(objects.get(1).toString());
@@ -148,28 +127,6 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 		
 		chain.execute();
 		
-	}
-	
-	public void addAttachements(Map<String,Object> globalParams,List<Object> objects) throws Exception {
-		
-		
-		Long woId = Long.parseLong(objects.get(1).toString());
-		List<Long> fileIds = null;
-		if(objects.get(2) instanceof List) {
-			fileIds = (List<Long>) objects.get(2);
-		}
-		else {
-			fileIds = Collections.singletonList(Long.parseLong(objects.get(2).toString()));
-		}
-		
-		FacilioChain addNote = FacilioChainFactory.getAddAttachmentFromFileIdsChain();
-		
-		FacilioContext context = addNote.getContext();
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
-		context.put(FacilioConstants.ContextNames.RECORD_ID, woId);
-		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, fileIds);
-
-		addNote.execute();
 	}
 	
 	@Override

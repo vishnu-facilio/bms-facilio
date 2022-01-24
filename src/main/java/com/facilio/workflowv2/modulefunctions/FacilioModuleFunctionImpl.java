@@ -3,6 +3,7 @@ package com.facilio.workflowv2.modulefunctions;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,8 +16,10 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
+import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.enums.SourceType;
@@ -798,6 +801,69 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		FacilioModule module = (FacilioModule) objects.get(0);
 		
 		return FieldUtil.getAsMapList(TicketAPI.getAllStatus(module, true), FacilioStatus.class);
+	}
+	
+	@Override
+	public void addNote(Map<String, Object> globalParams, List<Object> objects) throws Exception {
+		// TODO Auto-generated method stub
+		
+		FacilioModule module = (FacilioModule) objects.get(0);
+		
+		Long recordId = Long.parseLong(objects.get(1).toString());
+		String noteString = (String) objects.get(2);
+		
+		NoteContext note = new NoteContext();
+		
+		note.setBody(noteString);
+		note.setParentId(recordId);
+		note.setParent(new ModuleBaseWithCustomFields(recordId));
+		
+		FacilioChain addNote = TransactionChainFactory.getAddNotesChain();
+		
+		String notesModuleName = CommonCommandUtil.getModuleTypeModuleName(module.getName(), FacilioModule.ModuleType.NOTES);
+		
+		if(notesModuleName == null) {
+			throw new Exception("Adding note is not possible, because note module is not available");
+		}
+		
+		FacilioContext context = addNote.getContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, notesModuleName);
+		context.put(FacilioConstants.ContextNames.PARENT_MODULE_NAME,module.getName());
+		context.put(FacilioConstants.ContextNames.NOTE, note);
+
+		addNote.execute();
+	}
+	
+	@Override
+	public void addAttachments(Map<String, Object> globalParams, List<Object> objects) throws Exception {
+		// TODO Auto-generated method stub
+		
+		FacilioModule module = (FacilioModule) objects.get(0);
+		Long recordId = Long.parseLong(objects.get(1).toString());
+		
+		List<Long> fileIds = null;
+		if(objects.get(2) instanceof List) {
+			fileIds = (List<Long>) objects.get(2);
+		}
+		else {
+			fileIds = Collections.singletonList(Long.parseLong(objects.get(2).toString()));
+		}
+		
+		String customModuleAttachment = CommonCommandUtil.getModuleTypeModuleName(module.getName(), FacilioModule.ModuleType.ATTACHMENTS);
+		
+		if(customModuleAttachment == null) {
+			throw new Exception("Adding attachment is not possible, because attachment module is not available");
+		}
+		
+		FacilioChain addAttachmentChain = FacilioChainFactory.getAddAttachmentFromFileIdsChain();
+		
+		FacilioContext context = addAttachmentChain.getContext();
+		
+		context.put(FacilioConstants.ContextNames.RECORD_ID, recordId);
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME,customModuleAttachment);
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST,fileIds);
+		context.put(FacilioConstants.ContextNames.PARENT_MODULE_NAME,module.getName());
+		addAttachmentChain.execute();
 	}
 	
 }
