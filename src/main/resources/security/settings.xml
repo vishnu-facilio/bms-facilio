@@ -67,7 +67,9 @@
                 <property name="description" type="string" maxLength="500"/>
             </property>
             <property name="roleApp" type="array">
+                <items type="object">
                 <property name="applicationId" type="number"/>
+                </items>
             </property>
         </requestbody>
     </request>
@@ -185,6 +187,7 @@
     <request path="/api/v2/people/add">
         <requestbody type="object">
             <property name="peopleList" type="array">
+                <items type="object">
                 <property name="name" type="string" mandatory="true"/>
                 <property name="email" type="string" mandatory="true"/>
                 <property name="phone" type="number"/>
@@ -194,6 +197,7 @@
                 <property name="rolesMap" type="object">
                     <property name="service" type="number"/>
                 </property>
+                </items>
             </property>
         </requestbody>
     </request>
@@ -201,6 +205,7 @@
     <request path="/api/v2/people/update">
     <requestbody type="object">
         <property name="peopleList" type="array">
+            <items type="object">
             <property name="name" type="string" mandatory="true"/>
             <property name="email" type="string" mandatory="true"/>
             <property name="phone" type="number"/>
@@ -211,6 +216,7 @@
             <property name="rolesMap" type="object">
                 <property name="service" type="number"/>
             </property>
+            </items>
         </property>
     </requestbody>
 </request>
@@ -590,9 +596,11 @@
                 <property name="customHourTypeVal" type="string"/>
                 <property name="name" type="string"/>
                 <property name="singleDaybusinessHoursList" type="array">
+                    <items type="object">
                     <property name="dayOfWeek" type="string"/>
                     <property name="startTime" type="string"/>
                     <property name="endTime" type="string"/>
+                    </items>
                 </property>
             </property>
         </requestbody>
