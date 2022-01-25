@@ -40,7 +40,7 @@ public class DefaultInit extends FacilioCommand {
 
         boolean isV4 = Constants.isV4(context);
         String moduleName = Constants.getModuleName(context);
-        System.out.println(((JSONObject) data).toJSONString());
+//        System.out.println(((JSONObject) data).toJSONString());
         if (isV4) {
             Set<String> keySet = data.keySet();
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

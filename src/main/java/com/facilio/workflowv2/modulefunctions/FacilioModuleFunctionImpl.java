@@ -69,6 +69,7 @@ import com.facilio.util.QueryUtil;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
+import com.facilio.v3.util.V3Util;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
@@ -127,6 +128,33 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		addModuleDataChain.execute();
 		
 		return moduleData.getData();
+	}
+	
+	public void v3Add(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+		
+		FacilioModule module = (FacilioModule) objects.get(0);
+		
+		Object insertObject = objects.get(1);
+		
+		List<Map<String, Object>> dataList = new ArrayList<>();
+		
+		if(insertObject instanceof Map) {
+			dataList.add((Map<String, Object>) insertObject);
+		}
+		else if (insertObject instanceof Collection) {
+			
+			List<Object> insertList = (List<Object>)insertObject;
+			for(Object insert :insertList) {
+				dataList.add((Map<String, Object>) insert);
+			}
+		}
+		
+		for(Map<String, Object> rawData : dataList) {
+			
+			FacilioContext context = V3Util.createRecord(module, rawData);
+			ModuleBaseWithCustomFields record = Constants.getRecordMap(context).get(module.getName()).get(0);
+			rawData.put("id", record.getId());
+		}
 	}
 	@Override
 	public void add(Map<String,Object> globalParams,List<Object> objects) throws Exception {
