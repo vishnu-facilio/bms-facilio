@@ -132,7 +132,7 @@ public class ConstructVirtualSheetForReadingsImport extends FacilioCommand {
 									cellValueString = cellValueString.replaceAll(",", "");	
 								}
 								
-								if (unitFormats!=null && unitFormats.get(key).toString() !=null) {
+								if (unitFormats!=null && unitFormats.containsKey(key)) {
 									ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(rowContext.getParentId(), facilioField);
 									Double convertedInputReading;
 									String reading_unitTypeID = unitFormats.get(key).toString();
