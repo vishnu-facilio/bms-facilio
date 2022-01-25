@@ -1157,7 +1157,9 @@ public class FacilioConstants {
 		public static final String ONLY_MY_DELEGATION = "onlyMyDelegation";
 		public static final String DELEGATION_LIST = "delegationList";
 
-		
+		public static final String WEEKEND_LIST = "weekends";
+		public static final String WEEKEND = "weekend";
+
 		public static final String VIEWID = "viewId";
 		public static final String VIEW_LIST = "views";
 		public static final String VIEW_GROUP = "viewGroup";

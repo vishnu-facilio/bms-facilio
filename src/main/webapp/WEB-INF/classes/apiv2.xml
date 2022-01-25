@@ -1003,6 +1003,18 @@
 			<param name="permission">READ</param></action>
 	</package>
 
+	<package name="weekendApi" namespace="/api/v2/weekends" extends="v2Api">
+		<action name="list" class="com.facilio.weekends.WeekendAction" method="getWeekendList">
+		</action>
+		<action name="add" class="com.facilio.weekends.WeekendAction" method="addOrUpdateWeekend">
+		</action>
+		<action name="update" class="com.facilio.weekends.WeekendAction" method="addOrUpdateWeekend">
+		</action>
+		<action name="delete" class="com.facilio.weekends.WeekendAction" method="deleteWeekend">
+		</action>
+		<action name="get" class="com.facilio.weekends.WeekendAction" method="getWeekendData">
+		</action>
+	</package>
 	<package name="viewApiV2" namespace="/api/v2/views"
 		extends="v2Api">
 		<action name="viewList"
