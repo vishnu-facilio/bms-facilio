@@ -132,8 +132,7 @@ public class ConstructVirtualSheetForReadingsImport extends FacilioCommand {
 									cellValueString = cellValueString.replaceAll(",", "");	
 								}
 								
-								if (unitFormats!=null && unitFormats.containsKey(key)) {
-									if (unitFormats.get(key) != null) {
+								if (unitFormats!=null && unitFormats.containsKey(key) && unitFormats.get(key) != null) {
 										ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(rowContext.getParentId(), facilioField);
 										Double convertedInputReading;										
 										String reading_unitTypeID = unitFormats.get(key).toString();
@@ -145,7 +144,6 @@ public class ConstructVirtualSheetForReadingsImport extends FacilioCommand {
 											convertedInputReading = UnitsUtil.convertToSiUnit(cellValueString, Unit.valueOf(Integer.parseInt(reading_unitTypeID)));
 											props.put(field, convertedInputReading);
 										}
-									}
 								}else {
 									Double cellDoubleValue = Double.parseDouble(cellValueString);
 									props.put(field, cellDoubleValue);
