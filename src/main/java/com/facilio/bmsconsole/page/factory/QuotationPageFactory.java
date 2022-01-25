@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.page.factory;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.page.WidgetGroup;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -19,35 +20,28 @@ public class QuotationPageFactory extends PageFactory {
         Page.Tab tab1 = page.new Tab("summary");
         page.addTab(tab1);
 
-            Page.Section tab1Sec1 = page.new Section();
-            tab1.addSection(tab1Sec1);
-                PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.QUOTATION_PREVIEW);
-                previewWidget.addToLayoutParams(tab1Sec1, 24, 24);
-                tab1Sec1.addWidget(previewWidget);
+        Page.Section tab1Sec1 = page.new Section();
+        tab1.addSection(tab1Sec1);
+        PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.QUOTATION_PREVIEW);
+        previewWidget.addToLayoutParams(tab1Sec1, 24, 24);
+        tab1Sec1.addWidget(previewWidget);
 
 
-        Page.Tab tab2 = page.new Tab("Notes & Attachments");
+        Page.Tab tab2 = page.new Tab("Notes and Information");
         page.addTab(tab2);
-            Page.Section tab2Sec1 = page.new Section();
-            tab2.addSection(tab2Sec1);
-            PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT);
-            notesWidget.addToLayoutParams(tab2Sec1, 24, 8);
-            notesWidget.setTitle("Notes");
-            tab2Sec1.addWidget(notesWidget);
-
-            PageWidget attachmentWidget = new PageWidget(PageWidget.WidgetType.ATTACHMENT);
-            attachmentWidget.addToLayoutParams(tab2Sec1, 24, 6);
-            attachmentWidget.setTitle("Attachments");
-            tab2Sec1.addWidget(attachmentWidget);
+        Page.Section tab2Sec1 = page.new Section();
+        tab2.addSection(tab2Sec1);
+        addSecondaryDetailsWidget(tab2Sec1);
+        addNotesAttachmentsModule(tab2Sec1);
 
         Page.Tab tab3 = page.new Tab("Related Records");
         page.addTab(tab3);
-            Page.Section tab3Sec1 = page.new Section();
-            tab3.addSection(tab3Sec1);
-            addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.QUOTE_ASSOCIATED_TERMS, quotationModule.getModuleId());
+        Page.Section tab3Sec1 = page.new Section();
+        tab3.addSection(tab3Sec1);
+        addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.QUOTE_ASSOCIATED_TERMS, quotationModule.getModuleId());
 
 
-        Page.Tab tab4 = page.new Tab("History");;
+        Page.Tab tab4 = page.new Tab("History");
         page.addTab(tab4);
         Page.Section tab4Sec1 = page.new Section();
         tab4.addSection(tab4Sec1);
@@ -58,5 +52,28 @@ public class QuotationPageFactory extends PageFactory {
 
 
         return page;
+    }
+
+    private static void addSecondaryDetailsWidget(Page.Section section) {
+        PageWidget detailsWidget = new PageWidget(PageWidget.WidgetType.SECONDARY_DETAILS_WIDGET);
+        detailsWidget.addToLayoutParams(section, 24, 7);
+        section.addWidget(detailsWidget);
+    }
+    private static PageWidget addNotesAttachmentsModule(Page.Section section) {
+
+        PageWidget subModuleGroup = new PageWidget(PageWidget.WidgetType.GROUP);
+        subModuleGroup.addToLayoutParams(section, 24, 8);
+        subModuleGroup.addToWidgetParams("type", WidgetGroup.WidgetGroupType.TAB);
+        section.addWidget(subModuleGroup);
+
+        PageWidget notesWidget = new PageWidget();
+        notesWidget.setWidgetType(PageWidget.WidgetType.COMMENT);
+        subModuleGroup.addToWidget(notesWidget);
+
+        PageWidget attachmentWidget = new PageWidget();
+        attachmentWidget.setWidgetType(PageWidget.WidgetType.ATTACHMENT);
+        subModuleGroup.addToWidget(attachmentWidget);
+
+        return subModuleGroup;
     }
 }
