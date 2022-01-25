@@ -143,7 +143,25 @@
 
         <action name="timeline"
                 class="com.facilio.v3.RESTAPIHandler"
-                method="timeline" />
+                method="timelineData" />
+    </package>
+
+    <package name="timelineV3Api" namespace="/api/v3/modules/data/timeline" extends="v3Api">
+        <action name="get"
+                class="com.facilio.v3.RESTAPIHandler"
+                method="timelineData" />
+
+        <action name="list"
+                class="com.facilio.v3.RESTAPIHandler"
+                method="timelineSelectiveList" />
+
+        <action name="update"
+                class="com.facilio.v3.RESTAPIHandler"
+                method="timelinePatch" />
+
+        <action name="unscheduled"
+                class="com.facilio.v3.RESTAPIHandler"
+                method="timelineUnScheduledList" />
     </package>
 
 

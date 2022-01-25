@@ -852,7 +852,11 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		}
 		return null;
 	}
-	
+
+	public void addWhereValue(List<Object> values, int position) {
+		builder.addWhereValue(values, position);
+	}
+
 	//will be an interface method once i check in in framework
 	public void addJoinModules(Collection<FacilioModule> joinModules) {
 		if(this.joinModules == null) {
