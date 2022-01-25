@@ -291,6 +291,7 @@ public class WorkorderPageFactory extends PageFactory {
             addInventoryTab(page);
         }
         addRelatedRecordsTab(page, workorder.getModuleId());
+        addMetricandTimelogTab(page);
         addHistoryTab(page);
         return page;
     }
