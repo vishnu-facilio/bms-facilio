@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AddActivitiesCommand;
+import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.automation.command.AddOrUpdateGlobalVariableCommand;
 import com.facilio.bmsconsole.automation.command.AddOrUpdateGlobalVariableGroupCommand;
 import com.facilio.bmsconsole.automation.command.DeleteGlobalVariableCommand;
@@ -13,6 +14,7 @@ import com.facilio.bmsconsoleV3.commands.accessibleSpaces.FetchAccessibleSpacesC
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
+import com.facilio.bmsconsoleV3.commands.purchaseorder.CompletePoCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.termsandconditions.ReviseTandCCommand;
 import com.facilio.bmsconsoleV3.commands.transferRequest.*;
@@ -690,7 +692,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new POAfterCreateOrEditV3Command());
         return c;
     }
-    
+
     public static FacilioChain getCreateBookingBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetLocalIdCommandV3());
@@ -1171,5 +1173,62 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new SkipModuleCriteriaForSummaryCommand());
         return c;
     }
-
+    public static FacilioChain getUpdatePoAfterSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new POAfterCreateOrEditV3Command());
+        c.addCommand(new CompletePoCommandV3());
+        return c;
+    }
+    public static FacilioChain getPurchaseOrderCompleteChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new PurchaseOrderCompleteCommand());
+        c.addCommand(getAddOrUpdateItemTypeVendorChain());
+        c.addCommand(getAddOrUpdateToolTypeVendorChain());
+        c.addCommand(getBulkAddToolChain());
+        c.addCommand(getAddBulkItemChain());
+        c.addCommand(new UpdateServiceVendorPriceCommand());
+        return c;
+    }
+    public static FacilioChain getAddOrUpdateItemTypeVendorChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddOrUpdateItemTypeVendorCommand());
+        return c;
+    }
+    public static FacilioChain getAddOrUpdateToolTypeVendorChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddOrUpdateToolVendorCommand());
+        return c;
+    }
+    public static FacilioChain getAddBulkItemChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(SetTableNamesCommand.getForItem());
+        c.addCommand(new BulkItemAdditionCommand());
+        c.addCommand(new ExecuteAllWorkflowsCommand());
+        c.addCommand(getAddBulkPurchasedItemChain());
+        c.addCommand(getUpdateItemQuantityRollupChain());
+        c.addCommand(getSetItemAndToolTypeForStoreRoomChain());
+        return c;
+    }
+    public static FacilioChain getBulkAddToolChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(SetTableNamesCommand.getForTool());
+        c.addCommand(new BulkToolAdditionCommand());
+        c.addCommand(new ExecuteAllWorkflowsCommand());
+        c.addCommand(new AddBulkToolStockTransactionsCommand());
+        c.addCommand(getUpdatetoolQuantityRollupChain());
+        c.addCommand(getSetItemAndToolTypeForStoreRoomChain());
+        return c;
+    }
+    public static FacilioChain getAddBulkPurchasedItemChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(SetTableNamesCommand.getForPurchasedItem());
+        c.addCommand(new AddPurchasedItemsForBulkItemAddCommand());
+        c.addCommand(getAddOrUpdateItemStockTransactionChain());
+        return c;
+    }
+    public static FacilioChain getSetItemAndToolTypeForStoreRoomChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetItemAndToolTypeForStoreRoomCommand());
+        return c;
+    }
 }

@@ -514,7 +514,7 @@ public class APIv3Config {
                 .afterSave(TransactionChainFactoryV3.getPoAfterSaveChain())
                 .update()
                 .beforeSave(TransactionChainFactoryV3.getPoBeforeSaveChain())
-                .afterSave(new POAfterCreateOrEditV3Command())
+                .afterSave(TransactionChainFactoryV3.getUpdatePoAfterSaveChain())
                 .list()
                 .beforeFetch(new LoadPoPrListLookupCommandV3())
                 .summary()
