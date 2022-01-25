@@ -133,16 +133,18 @@ public class ConstructVirtualSheetForReadingsImport extends FacilioCommand {
 								}
 								
 								if (unitFormats!=null && unitFormats.containsKey(key)) {
-									ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(rowContext.getParentId(), facilioField);
-									Double convertedInputReading;
-									String reading_unitTypeID = unitFormats.get(key).toString();
-									if(rdm != null && rdm.getUnitEnum() != null) {
-										Unit rdmUnit = rdm.getUnitEnum();
-										convertedInputReading = UnitsUtil.convert(cellValueString, Unit.valueOf(Integer.parseInt(reading_unitTypeID)), rdmUnit);
-										props.put(field, convertedInputReading);
-									} else {
-										convertedInputReading = UnitsUtil.convertToSiUnit(cellValueString, Unit.valueOf(Integer.parseInt(reading_unitTypeID)));
-										props.put(field, convertedInputReading);
+									if (unitFormats.get(key) != null) {
+										ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(rowContext.getParentId(), facilioField);
+										Double convertedInputReading;										
+										String reading_unitTypeID = unitFormats.get(key).toString();
+										if(rdm != null && rdm.getUnitEnum() != null) {
+											Unit rdmUnit = rdm.getUnitEnum();
+											convertedInputReading = UnitsUtil.convert(cellValueString, Unit.valueOf(Integer.parseInt(reading_unitTypeID)), rdmUnit);
+											props.put(field, convertedInputReading);
+										} else {
+											convertedInputReading = UnitsUtil.convertToSiUnit(cellValueString, Unit.valueOf(Integer.parseInt(reading_unitTypeID)));
+											props.put(field, convertedInputReading);
+										}
 									}
 								}else {
 									Double cellDoubleValue = Double.parseDouble(cellValueString);
