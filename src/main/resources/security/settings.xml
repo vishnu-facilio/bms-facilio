@@ -190,7 +190,7 @@
                 <items type="object">
                 <property name="name" type="string" mandatory="true"/>
                 <property name="email" type="string" mandatory="true"/>
-                <property name="phone" type="number"/>
+                <property name="phone" type="string"/>
                 <property name="isOccupantPortalAccess" type="boolean"/>
                 <property name="language" type="string"/>
                 <property name="peopleType" type="number"/>
@@ -208,7 +208,7 @@
             <items type="object">
             <property name="name" type="string" mandatory="true"/>
             <property name="email" type="string" mandatory="true"/>
-            <property name="phone" type="number"/>
+            <property name="phone" type="string"/>
             <property name="isOccupantPortalAccess" type="boolean"/>
             <property name="language" type="string"/>
             <property name="peopleType" type="number"/>
