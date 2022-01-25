@@ -209,6 +209,13 @@
                 class="com.facilio.trigger.action.TriggerAction"
                 method="listAgentTriggers">
                <param name="moduleName">agent</param>
+               <result name="success" type="json">
+	                <param name="excludeNullProperties">true</param>
+	                <param name="ignoreHierarchy">false</param>
+	                <param name="includeProperties">^code.*,^data.*,^meta.*,message</param>
+	                <param name="excludeProperties">data.triggerList.*\.agent.((?!(id|name)).)*</param>
+	                
+           	 	</result>
         </action>
         
         <action name="*"

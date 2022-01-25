@@ -59,19 +59,29 @@ public class AgentApiV2 {
     private static final Logger LOGGER = LogManager.getLogger(AgentApiV2.class.getName());
 
     public static List<FacilioAgent> getAgents(Collection<Long> ids) throws Exception {
+        return getAgents(ids, false);
+    }
+    public static List<FacilioAgent> getAgents(Collection<Long> ids, boolean fetchOnlyName) throws Exception {
         FacilioModule newAgentModule = ModuleFactory.getNewAgentModule();
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getIdCondition(ids,newAgentModule));
         criteria.addAndCondition(getDeletedTimeNullCondition(newAgentModule));
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
-        return getAgents(context);
+        List<String> fields = null;
+        if (fetchOnlyName) {
+        	fields = Arrays.asList("id","name");        
+        }
+        return getAgents(context, fields);
     }
     
     public static Map<Long, FacilioAgent> getAgentMap(Collection<Long> ids) throws Exception {
-    		List<FacilioAgent> agents = getAgents(ids);
-		return agents.stream().collect(Collectors.toMap(FacilioAgent::getId, Function.identity()));
+		return getAgentMap(ids, false);
     }
+    public static Map<Long, FacilioAgent> getAgentMap(Collection<Long> ids, boolean fetchOnlyName) throws Exception {
+		List<FacilioAgent> agents = getAgents(ids, fetchOnlyName);
+		return agents.stream().collect(Collectors.toMap(FacilioAgent::getId, Function.identity()));
+	}
 
     public static FacilioAgent getAgent(Long agentId) throws Exception {
         if ((agentId != null) && (agentId > 0)) {
@@ -485,12 +495,20 @@ public class AgentApiV2 {
     }
 
     private static List<FacilioAgent> getAgents(FacilioContext context) throws Exception {
+        return getAgents(context, null);
+    }
+    
+    private static List<FacilioAgent> getAgents(FacilioContext context, List<String> fields) throws Exception {
         FacilioModule newAgentModule = ModuleFactory.getNewAgentModule();
-        List<FacilioField> newAgentFields = FieldFactory.getNewAgentFields();
+        List<FacilioField> newAgentfields = FieldFactory.getNewAgentFields();
+        if (fields != null) {
+        	newAgentfields = newAgentfields.stream().filter(field -> fields.contains(field.getName()))
+        			.collect(Collectors.toList());
+        }
 
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(newAgentModule.getTableName())
-                .select(newAgentFields);
+                .select(newAgentfields);
 
         if (context.containsKey(FacilioConstants.ContextNames.CRITERIA)) {
             Criteria criteria;
@@ -498,9 +516,6 @@ public class AgentApiV2 {
             selectRecordBuilder.andCriteria(criteria);
         }
         List<Map<String, Object>> maps = selectRecordBuilder.get();
-        if(FacilioProperties.isDevelopment()){
-            LOGGER.info("get agent query "+selectRecordBuilder.toString());
-        }
         return FieldUtil.getAsBeanListFromMapList(maps,FacilioAgent.class);
     }
 
