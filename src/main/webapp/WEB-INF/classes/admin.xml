@@ -102,7 +102,8 @@
 			<result  type="tiles">adminpage/MLServiceLayout.jsp</result>
 		</action>
 		<action name="mlServiceAction" class="com.facilio.bmsconsole.actions.AdminAction" method = "mlService">
-			<result   type="tiles">adminpage/MLServiceLayout.jsp</result>
+			<result name="success" type="redirect">
+				<param name="location">mlService</param></result>
 		</action>
 		<action name="moveReadings" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result  type="tiles">adminpage/movereadinglayout.jsp</result>
