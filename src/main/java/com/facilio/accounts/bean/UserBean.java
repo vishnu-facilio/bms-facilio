@@ -54,7 +54,9 @@ public interface UserBean {
 	public List<User> getUsersWithRole(long roleId) throws Exception;
 	
 	public List<User> getUsersWithRoleAndAccessibleSpace (long roleId, long spaceId) throws Exception;
-	
+
+	public Long getOrgUsersCountForRole(Collection<Long> roleIds) throws Exception;
+
 	public Map<Long, User> getUsersAsMap(Criteria criteria, Collection<Long>... ouids) throws Exception;
 
 	public List<Organization> getOrgs(long uid) throws Exception;
