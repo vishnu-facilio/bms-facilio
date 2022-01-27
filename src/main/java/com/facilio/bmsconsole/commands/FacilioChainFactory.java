@@ -2453,8 +2453,14 @@ public class FacilioChainFactory {
 	}
 
 	public static FacilioChain getEnableOauth2Chain() {
-		FacilioChain c = FacilioChain.getNonTransactionChain();
+		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new EnableOauth2Command());
+		return c;
+	}
+
+	public static FacilioChain getCreateApiKeyChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new CreateApiKeyCommand());
 		return c;
 	}
 }

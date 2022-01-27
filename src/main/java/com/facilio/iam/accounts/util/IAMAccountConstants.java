@@ -534,7 +534,7 @@ public class IAMAccountConstants {
 
 			FacilioField uid = new FacilioField();
 			uid.setName("uid");
-			uid.setDataType(FieldType.ID);
+			uid.setDataType(FieldType.NUMBER);
 			uid.setColumnName("USERID");
 			uid.setModule(module);
 			fields.add(uid);
@@ -559,6 +559,11 @@ public class IAMAccountConstants {
 			oauth2ClientId.setColumnName("OAUTH2_CLIENT_ID");
 			oauth2ClientId.setModule(module);
 			fields.add(oauth2ClientId);
+
+			fields.add(FieldFactory.getField("apiKey", "API_KEY", module, FieldType.STRING));
+
+			fields.add(FieldFactory.getField("createdTime", "CREATED_TIME", module, FieldType.DATE_TIME));
+
 
 			return fields;
 		}

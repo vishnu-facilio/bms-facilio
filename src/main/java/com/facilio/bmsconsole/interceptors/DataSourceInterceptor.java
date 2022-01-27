@@ -38,8 +38,8 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 	public String intercept(ActionInvocation invocation) throws Exception {
 		long time = System.currentTimeMillis();
 		HttpServletRequest request = ServletActionContext.getRequest();
-		Boolean isOauth2 = (Boolean) request.getAttribute("isOauth2");
-		if (isOauth2 != null && isOauth2) {
+		Object authMethod =  request.getAttribute("authMethod");
+		if (authMethod != null) {
 			return invocation.invoke();
 		}
 		IAMAccount iamAccount = (IAMAccount) request.getAttribute("iamAccount");

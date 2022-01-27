@@ -16,8 +16,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
+import javax.xml.bind.DatatypeConverter;
 
 import com.facilio.accounts.dto.*;
 import com.facilio.accounts.sso.AccountSSO;
@@ -1851,11 +1854,62 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return -1;
 	}
 
+	private static int OAUTH2  = 1;
+	private static int APIKEY  = 2;
+
+	public String createApiKey(long orgId, long userId) throws Exception {
+		GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder();
+		insertRecordBuilder.table(IAMAccountConstants.getDevClientModule().getTableName())
+				.fields(IAMAccountConstants.getDevClientFields());
+
+		Map<String, Object> prop = new HashMap<>();
+		prop.put("orgId", orgId);
+		prop.put("uid", userId);
+		prop.put("authType", APIKEY);
+		prop.put("createdTime", System.currentTimeMillis());
+
+		KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+		keyGen.init(256); // for example
+		SecretKey secretKey = keyGen.generateKey();
+		byte[] encoded = secretKey.getEncoded();
+
+		String apiKey = DatatypeConverter.printHexBinary(encoded).toLowerCase();
+
+		prop.put("apiKey", apiKey);
+		prop.put("uid", userId);
+
+		insertRecordBuilder.addRecord(prop);
+		insertRecordBuilder.save();
+
+		return apiKey;
+	}
+
+	public IAMAccount fetchAccountByAPIKey(String apiKey) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder();
+		selectBuilder.select(IAMAccountConstants.getDevClientFields())
+				.table(IAMAccountConstants.getDevClientModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("API_KEY", "apiKey", apiKey, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition("AUTH_TYPE", "authType", APIKEY+"", NumberOperators.EQUALS));
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (CollectionUtils.isEmpty(props)) {
+			LOGGER.error("No client found for " + apiKey);
+			return null;
+		}
+
+		long uid = (Long) props.get(0).get("uid");
+		long orgId = (Long) props.get(0).get("orgId");
+
+		IAMAccount accountv3 = getAccountv3(uid);
+		accountv3.setOrg(IAMOrgUtil.getOrg(orgId));
+		return accountv3;
+	}
+
 	public IAMAccount fetchAccountByOauth2ClientId(String oauth2ClientId) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder();
 		selectBuilder.select(IAMAccountConstants.getDevClientFields())
 				.table(IAMAccountConstants.getDevClientModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition("OAUTH2_CLIENT_ID", "oauth2ClientId", oauth2ClientId, StringOperators.IS));
+				.andCondition(CriteriaAPI.getCondition("OAUTH2_CLIENT_ID", "oauth2ClientId", oauth2ClientId, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition("AUTH_TYPE", "authType", OAUTH2+"", NumberOperators.EQUALS));
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (CollectionUtils.isEmpty(props)) {
 			LOGGER.error("No client found for " + oauth2ClientId);
