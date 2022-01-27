@@ -151,10 +151,10 @@ public class TriggerUtil {
 			List resolvedTriggerList = FieldUtil.getAsBeanListFromMapList(maps, AddOrUpdateTriggerCommand.getTriggerClass(key));
 			triggers.addAll(resolvedTriggerList);
 			
-			if (!triggers.isEmpty() && fetchExtendedLookups) {
+			if (!triggers.isEmpty()) {
 				switch(key) {
 				case AGENT_TRIGGER:
-					fetchAgentTriggerLookups(resolvedTriggerList);
+					fetchAgentTriggerLookups(resolvedTriggerList, fetchExtendedLookups);
 					break;
 				}
 			}
@@ -162,7 +162,7 @@ public class TriggerUtil {
 		return triggers;
 	}
     
-    private static void fetchAgentTriggerLookups(List<PostTimeseriesTriggerContext> triggers) throws Exception {
+    private static void fetchAgentTriggerLookups(List<PostTimeseriesTriggerContext> triggers, boolean fetchExtendedLookups) throws Exception {
     	List<Long> criteriaIds = new ArrayList<>();
     	List<Long> agentIds = new ArrayList<>();
     	for (PostTimeseriesTriggerContext trigger: triggers) {
@@ -170,12 +170,17 @@ public class TriggerUtil {
     		agentIds.add(trigger.getAgentId());
     	}
     	
-    	Map<Long, Criteria> criteriaMap = CriteriaAPI.getCriteriaAsMap(criteriaIds);
-    	Map<Long, FacilioAgent> agentMap = AgentApiV2.getAgentMap(agentIds);
-    	triggers.forEach(trigger -> {
-    		trigger.setCriteria(criteriaMap.get(trigger.getCriteriaId()));
+    	Map<Long, Criteria> criteriaMap = null;
+    	if (fetchExtendedLookups) {
+    		criteriaMap = CriteriaAPI.getCriteriaAsMap(criteriaIds);
+    	}
+    	Map<Long, FacilioAgent> agentMap = AgentApiV2.getAgentMap(agentIds, !fetchExtendedLookups);
+    	for(PostTimeseriesTriggerContext trigger : triggers) {
+    		if (criteriaMap != null) {
+    			trigger.setCriteria(criteriaMap.get(trigger.getCriteriaId()));
+    		}
     		trigger.setAgent(agentMap.get(trigger.getAgentId()));
-    	});
+    	}
     	
     }
 

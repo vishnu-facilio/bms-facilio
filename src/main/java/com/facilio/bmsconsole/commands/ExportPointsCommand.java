@@ -168,21 +168,20 @@ public class ExportPointsCommand extends FacilioCommand {
 		List<Map<String,Object>> records = new ArrayList<>();
 		
 		boolean isBacnet = controllerType == FacilioControllerType.BACNET_IP || controllerType == FacilioControllerType.BACNET_MSTP;
-		boolean isNiagara = controllerType == FacilioControllerType.NIAGARA;
 		
 		for (int i = 0; i < points.size(); i++) {
 			Map<String, Object> point = points.get(i);
 			Map<String,Object> record = new HashMap<>();
 			
-			//String name = point.get("displayName") != null ? (String) point.get("displayName") : (String) point.get("name");
-			addRecord("Name", point.get(AgentConstants.NAME), i, headers, record);
+			String name = isNiagara ? (String) point.get("displayName") : (String) point.get("name");
+			addRecord("Name", name, i, headers, record);
 			
 			if (isBacnet) {
 				addRecord("Instance", point.get(AgentConstants.INSTANCE_NUMBER), i, headers, record);
 				addRecord("Instance Type", point.get(AgentConstants.INSTANCE_TYPE), i, headers, record);
 			}
 			else if (isNiagara) {
-				addRecord("Path", point.get(AgentConstants.DISPLAY_NAME), i, headers, record);
+				addRecord("Handle", point.get(AgentConstants.NAME), i, headers, record);
 			}
 			
 			String category = null;

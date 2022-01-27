@@ -3,6 +3,11 @@ package com.facilio.bmsconsole.timelineview.context;
 
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.modules.fields.FacilioField;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public class TimelineViewContext extends FacilioView {
 
@@ -54,5 +59,54 @@ public class TimelineViewContext extends FacilioView {
         this.groupByField = groupByField;
     }
 
+    @JsonInclude
+    private boolean allowRescheduling;
+    public boolean isAllowRescheduling() { return allowRescheduling; }
+    public void setAllowRescheduling(boolean allowRescheduling) {
+        this.allowRescheduling = allowRescheduling;
+    }
+
+    @JsonInclude
+    private boolean allowGroupAssignment;
+    public boolean isAllowGroupAssignment() { return allowGroupAssignment; }
+    public void setAllowGroupAssignment(boolean allowGroupAssignment) { this.allowGroupAssignment = allowGroupAssignment; }
+
+    @JsonInclude
+    private boolean allowReAssignment;
+    public boolean isAllowReAssignment() {
+        return allowReAssignment;
+    }
+    public void setAllowReAssignment(boolean allowReAssignment) {
+        this.allowReAssignment = allowReAssignment;
+    }
+
+    @JsonInclude
+    private boolean allowPastAssignment;
+    public boolean isAllowPastAssignment() {
+        return allowPastAssignment;
+    }
+    public void setAllowPastAssignment(boolean allowPastAssignment) { this.allowPastAssignment = allowPastAssignment; }
+
+    @JsonInclude
+    private boolean allowCreate;
+    public boolean isAllowCreate() {
+        return allowCreate;
+    }
+    public void setAllowCreate(boolean allowCreate) {
+        this.allowCreate = allowCreate;
+    }
+
+    @JsonInclude
+    private boolean disableWeekends;
+    public boolean isDisableWeekends() {
+        return disableWeekends;
+    }
+    public void setDisableWeekends(boolean disableWeekends) {
+        this.disableWeekends = disableWeekends;
+    }
+
+    private long weekendId;
+    public long getWeekendId() { return weekendId; }
+    public void setWeekendId(long weekendId) { this.weekendId = weekendId; }
 
 }

@@ -143,7 +143,25 @@
 
         <action name="timeline"
                 class="com.facilio.v3.RESTAPIHandler"
-                method="timeline" />
+                method="timelineData" />
+    </package>
+
+    <package name="timelineV3Api" namespace="/api/v3/modules/data/timeline" extends="v3Api">
+        <action name="get"
+                class="com.facilio.v3.RESTAPIHandler"
+                method="timelineData" />
+
+        <action name="list"
+                class="com.facilio.v3.RESTAPIHandler"
+                method="timelineSelectiveList" />
+
+        <action name="update"
+                class="com.facilio.v3.RESTAPIHandler"
+                method="timelinePatch" />
+
+        <action name="unscheduled"
+                class="com.facilio.v3.RESTAPIHandler"
+                method="timelineUnScheduledList" />
     </package>
 
 
@@ -191,6 +209,13 @@
                 class="com.facilio.trigger.action.TriggerAction"
                 method="listAgentTriggers">
                <param name="moduleName">agent</param>
+               <result name="success" type="json">
+	                <param name="excludeNullProperties">true</param>
+	                <param name="ignoreHierarchy">false</param>
+	                <param name="includeProperties">^code.*,^data.*,^meta.*,message</param>
+	                <param name="excludeProperties">data.triggerList.*\.agent.((?!(id|name)).)*</param>
+	                
+           	 	</result>
         </action>
         
         <action name="*"

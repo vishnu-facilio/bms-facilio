@@ -54,6 +54,7 @@ import com.facilio.events.constants.EventConstants;
 import com.facilio.modules.fields.relations.CalculateDependencyCommand;
 import com.facilio.mv.command.*;
 import com.facilio.trigger.context.TriggerType;
+import com.facilio.weekends.*;
 import com.facilio.workflows.command.*;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
@@ -6206,7 +6207,32 @@ public class TransactionChainFactory {
 		chain.addCommand(new DeleteScatterGraph());
 		return chain;
 	}
-	
+
+	public static FacilioChain getWeekendListChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetWeekendListCommand());
+		return chain;
+	}
+
+	public static FacilioChain getWeekendChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetWeekendCommand());
+		return chain;
+	}
+
+	public static FacilioChain addOrUpdateWeekendChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new ValidateWeekendCommand());
+		chain.addCommand(new AddorUpdateWeekendCommand());
+		return chain;
+	}
+
+	public static FacilioChain deleteWeekendChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new DeleteWeekendCommand());
+		return chain;
+	}
+
 	public static FacilioChain getDeleteAttachmentsListChain(){
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new DeleteTemplateAttachmentCommand());

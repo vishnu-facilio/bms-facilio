@@ -829,6 +829,7 @@ public class ImportAPI {
 		public static final String NULL_UNIQUE_FIELDS = "nullUniqueFields";
 		public static final String NULL_RESOURCES = "nullResources";
 		public static final String DATE_FORMATS = "dateFormats";
+		public static final String UNIT_FORMATS = "unitFormats";
 		public static final String IMPORT_TEMPLATE_CONTEXT = "importTemplateContext";
 		public static final String TIME_STAMP_STRING = "TimeStamp";
 		public static final String IMPORT_WARNING= "warningMessage";

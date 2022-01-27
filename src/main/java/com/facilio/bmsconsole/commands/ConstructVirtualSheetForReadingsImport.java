@@ -7,9 +7,12 @@ import com.facilio.bmsconsole.actions.ImportTemplateContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.ImportRowContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
+import com.facilio.bmsconsole.exceptions.importExceptions.ImportTimeColumnParseException;
 import com.facilio.bmsconsole.util.ImportAPI;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldType;
@@ -17,6 +20,10 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.unitconversion.Unit;
+import com.facilio.unitconversion.UnitsUtil;
+import com.facilio.util.FacilioUtil;
+
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -52,6 +59,8 @@ public class ConstructVirtualSheetForReadingsImport extends FacilioCommand {
 	List<String> moduleNames = new ArrayList<>(groupedFields.keySet());
 	JSONObject templateMeta = importTemplateContext.getTemplateMetaJSON();
 	JSONObject dateFormats = (JSONObject) templateMeta.get(ImportAPI.ImportProcessConstants.DATE_FORMATS);
+	JSONObject unitFormats = (JSONObject) templateMeta.get(ImportAPI.ImportProcessConstants.UNIT_FORMATS);
+
 	ModuleBean bean = (ModuleBean)BeanFactory.lookup("ModuleBean");
 
 	LOGGER.severe("Starting virtual sheet reconstruction");
@@ -116,14 +125,29 @@ public class ConstructVirtualSheetForReadingsImport extends FacilioCommand {
 									isfilled = true;
 
 								} 
-								}
+								}	
 							else if(facilioField.getDataTypeEnum().equals(FieldType.NUMBER) || facilioField.getDataTypeEnum().equals(FieldType.DECIMAL)) {
 								String cellValueString = cellValue.toString();
 								if(cellValueString.contains(",")) {
-									cellValueString = cellValueString.replaceAll(",", "");
-									}
-								Double cellDoubleValue = Double.parseDouble(cellValueString);
-								props.put(field, cellDoubleValue);
+									cellValueString = cellValueString.replaceAll(",", "");	
+								}
+								
+								if (unitFormats!=null && unitFormats.containsKey(key) && unitFormats.get(key) != null) {
+										ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(rowContext.getParentId(), facilioField);
+										Double convertedInputReading;										
+										String reading_unitTypeID = unitFormats.get(key).toString();
+										if(rdm != null && rdm.getUnitEnum() != null) {
+											Unit rdmUnit = rdm.getUnitEnum();
+											convertedInputReading = UnitsUtil.convert(cellValueString, Unit.valueOf(Integer.parseInt(reading_unitTypeID)), rdmUnit);
+											props.put(field, convertedInputReading);
+										} else {
+											convertedInputReading = UnitsUtil.convertToSiUnit(cellValueString, Unit.valueOf(Integer.parseInt(reading_unitTypeID)));
+											props.put(field, convertedInputReading);
+										}
+								}else {
+									Double cellDoubleValue = Double.parseDouble(cellValueString);
+									props.put(field, cellDoubleValue);
+								}								
 								isfilled = true;
 								} else if (facilioField.getDataType() == FieldType.ENUM.getTypeAsInt()) {
 								EnumField enumField = (EnumField) facilioField;

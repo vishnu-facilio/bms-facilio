@@ -8439,6 +8439,23 @@ public class FieldFactory extends BaseFieldFactory {
         list.add(getNumberField("startDateFieldId","START_DATE_FIELDID",module));
         list.add(getNumberField("endDateFieldId","END_DATE_FIELDID",module));
         list.add(getNumberField("groupByFieldId","GROUP_BY_FIELDID",module));
+        list.add(getField("allowRescheduling", "ALLOW_RESCHEDULING", module, FieldType.BOOLEAN));
+        list.add(getField("allowGroupAssignment", "ALLOW_GROUPASSIGNMENT", module, FieldType.BOOLEAN));
+        list.add(getField("allowReAssignment", "ALLOW_REASSIGNMENT", module, FieldType.BOOLEAN));
+        list.add(getField("allowPastAssignment", "ALLOW_PAST_ASSIGNMENT", module, FieldType.BOOLEAN));
+        list.add(getField("allowCreate", "ALLOW_CREATE", module, FieldType.BOOLEAN));
+        list.add(getField("disableWeekends", "DISABLE_WEEKENDS", module, FieldType.BOOLEAN));
+        list.add(getNumberField("weekendId", "WEEKENDID", module));
+
+        return list;
+    }
+
+    public static List<FacilioField> getWeekendsFields(FacilioModule module){
+        List<FacilioField> list = new ArrayList<>();
+
+        list.add(getIdField("id","ID",module));
+        list.add(getField("name", "NAME", module, FieldType.STRING));
+        list.add(getField("value", "VALUE", module, FieldType.STRING));
 
         return list;
     }

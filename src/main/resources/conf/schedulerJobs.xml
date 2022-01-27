@@ -117,7 +117,7 @@
 	 
 	 <job name='AdminDuplicatesRemove' classname='com.facilio.bmsconsole.jobs.AdminDuplicatesRemoveJobs' transactionTimeout='36000000'/>
 	 <!-- scheduled Action jobs -->
-	 <job name='ScheduledWorkflow' classname='com.facilio.bmsconsole.jobs.ScheduledWorkflowJob' transactionTimeout='900000'/>
+	 <job name='ScheduledWorkflow' classname='com.facilio.bmsconsole.jobs.ScheduledWorkflowJob' transactionTimeout='7200000'/>
 	 
 	  <!-- Notifications jobs -->
 	 <job name='singleRecordRuleExecution' classname= 'com.facilio.bmsconsole.jobs.SingleRecordJob' transactionTimeout='300000'/>

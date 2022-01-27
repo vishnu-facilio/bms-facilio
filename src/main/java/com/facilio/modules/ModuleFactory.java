@@ -1253,6 +1253,14 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getWeekendsModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("weekends");
+		module.setDisplayName("Weekends");
+		module.setTableName("Weekends");
+		return module;
+	}
+
 	public static FacilioModule getWorkOrdersModule() {
 		FacilioModule workOrdersModule = new FacilioModule();
 		workOrdersModule.setName(FacilioConstants.ContextNames.WORK_ORDER);

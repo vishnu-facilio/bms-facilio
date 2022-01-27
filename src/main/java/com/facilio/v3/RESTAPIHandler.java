@@ -20,6 +20,7 @@ import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import com.facilio.v3.util.ChainUtil;
+import com.facilio.v3.util.TimelineViewUtil;
 import com.facilio.v3.util.V3Util;
 import com.facilio.wmsv2.handler.AuditLogHandler;
 import org.apache.commons.collections4.CollectionUtils;
@@ -47,7 +48,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         api currentApi = currentApi();
         Object record;
         if (currentApi == api.v3) {
-            record = getRecord(moduleName, id);
+            record = V3Util.getRecord(moduleName, id, this.httpServletRequest);
         } else {
             record = getV4TransformedRecord(moduleName, id);
         }
@@ -86,19 +87,6 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         return list.get(0);
     }
 
-
-    private Object getRecord(String moduleName, long id) throws Exception {
-        FacilioContext context = V3Util.getSummary(moduleName, Collections.singletonList(id), getQueryParameters());
-
-        Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
-        List list = recordMap.get(moduleName);
-
-        if (CollectionUtils.isEmpty(list)) {
-            FacilioModule module = ChainUtil.getModule(moduleName);
-            throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND, module.getDisplayName() + " with id: " + id + " does not exist.");
-        }
-        return list.get(0);
-    }
 
     private void countHandler(String moduleName) throws Exception {
         FacilioChain countChain = ChainUtil.getCountChain(moduleName);
@@ -334,63 +322,10 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         this.setData(FieldUtil.getAsJSON(fetchAfterSave));
     }
 
-    private Map<String, FacilioField> getFileFields(String moduleName) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        List<FacilioField> fields = modBean.getAllFields(moduleName);
-
-        Map<String, FacilioField> fieldMap = new HashMap<>();
-        List<FacilioField> fileFields = new ArrayList<>();
-        for (FacilioField f : fields) {
-            if (f instanceof FileField) {
-                fieldMap.put(f.getName()+"Id", f);
-            }
-        }
-        return fieldMap;
-    }
-
-    private void patchHandler(String moduleName, long id, Map<String, Object> patchObj, Map<String, Object> bodyParams) throws Exception {
-        Object record = getRecord(moduleName, id);
-        FacilioModule module = ChainUtil.getModule(moduleName);
-        V3Config v3Config = ChainUtil.getV3Config(moduleName);
-
-        Class beanClass = ChainUtil.getBeanClass(v3Config, module);
-        List<Map<String, Object>> converted = FieldUtil.getAsMapList(Collections.singletonList(record), beanClass);
-
-        JSONObject summaryRecord = FieldUtil.getAsJSON(converted.get(0));
-
-        Map<String, FacilioField> fileFields = getFileFields(moduleName);
-
-        Set<String> keys = patchObj.keySet();
-        for (String key: keys) {
-            FacilioField fileField = fileFields.get(key);
-            if (fileField != null && !fileField.isDefault() && patchObj.get(key) == null) {
-                summaryRecord.put(fileField.getName(), patchObj.get(key));
-            }
-            summaryRecord.put(key, patchObj.get(key));
-        }
-
-        if(record != null) {
-            id = ((ModuleBaseWithCustomFields)record).getId();
-        }
-
-        FacilioContext context = V3Util.updateSingleRecord(module, v3Config, (ModuleBaseWithCustomFields) record, summaryRecord, id, bodyParams, getQueryParameters(),
-                getStateTransitionId(), getCustomButtonId(), getApprovalTransitionId());
-
-        ModuleBaseWithCustomFields updatedRecord = Constants.getRecord(context, moduleName, id);
-        JSONObject result = new JSONObject();
-        JSONObject prop = FieldUtil.getAsJSON(updatedRecord);
-        result.put(moduleName, prop);
-
-        addAuditLog(Collections.singletonList(prop), getModuleName(), "Record {%s} of module %s has been updated",
-                AuditLogHandler.ActionType.UPDATE,
-                this.getData(), true);
-        this.setData(result);
-    }
-
     /**
      * The support to update the entire object is not supported.
      *
-     * Refer to {@link RESTAPIHandler#patch()} and {@link RESTAPIHandler#patchHandler(String, long, Map, Map)}
+     * Refer to {@link RESTAPIHandler#patch()}
      *
      * @return
      * @throws Exception
@@ -557,7 +492,14 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
             data = new HashMap<>();
         }
         removeRestrictedFields(data, this.getModuleName(), true);
-        patchHandler(this.getModuleName(), this.getId(), data, this.getParams());
+
+        JSONObject result = V3Util.processAndUpdateSingleRecord(this.getModuleName(), this.getId(), data, this.getParams(), this.httpServletRequest, this.getStateTransitionId(), this.getCustomButtonId(), this.getApprovalTransitionId());
+
+        addAuditLog(Collections.singletonList((JSONObject)result.get(getModuleName())), getModuleName(), "Record {%s} of module %s has been updated",
+                    AuditLogHandler.ActionType.UPDATE,
+                    this.getData(), true);
+        this.setData(result);
+
         return SUCCESS;
     }
 
@@ -682,13 +624,62 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         this.timelineRequest = timelineRequest;
     }
 
-    public String timeline() throws Exception {
-        FacilioChain chain = ChainUtil.getTimelineChain(timelineRequest);
+    public String timelineData() throws Exception {
+        FacilioChain chain = ChainUtil.getTimelineChain();
+        FacilioContext context = TimelineViewUtil.getTimelineContext(chain, this.getTimelineRequest());
         chain.execute();
-        FacilioContext context = chain.getContext();
-
         setData(FacilioConstants.ContextNames.TIMELINE_DATA, context.get(FacilioConstants.ContextNames.TIMELINE_DATA));
         return SUCCESS;
     }
 
+    public String timelinePatch() throws Exception {
+        /* Validation to be added
+        timelineRequest = new TimelineRequest();
+        timelineRequest.setViewName(this.getViewName());
+        FacilioChain chain = ChainUtil.getTimelineValidationChain(timelineRequest);
+        chain.execute();
+        FacilioContext context = chain.getContext();
+        */
+
+        //removing permission restricted fields
+        Map<String, Object> data = this.getData();
+        if (data == null) {
+            data = new HashMap<>();
+        }
+        removeRestrictedFields(data, this.getModuleName(), true);
+
+        JSONObject result = V3Util.processAndUpdateSingleRecord(this.getModuleName(), this.getId(), data, this.getParams(), this.httpServletRequest, this.getStateTransitionId(), this.getCustomButtonId(), this.getApprovalTransitionId());
+        this.setData(result);
+
+        addAuditLog(Collections.singletonList((JSONObject)this.getData().get(getModuleName())), getModuleName(), "Record {%s} of module %s has been updated through TimelineView",
+                AuditLogHandler.ActionType.UPDATE,
+                (JSONObject) data, true);
+
+        if(this.getTimelineRequest() != null) {
+            FacilioChain chain = ChainUtil.getTimelineChain();
+            FacilioContext context = TimelineViewUtil.getTimelineContext(chain, this.getTimelineRequest());
+            chain.execute();
+            setData(FacilioConstants.ContextNames.TIMELINE_DATA, context.get(FacilioConstants.ContextNames.TIMELINE_DATA));
+        }
+
+        return SUCCESS;
+    }
+
+    public String timelineSelectiveList() throws Exception {
+        FacilioChain chain = ChainUtil.getTimelineListChain();
+        FacilioContext context = TimelineViewUtil.getTimelineContext(chain, this.getTimelineRequest(), true,
+                this.getPage(), this.getPerPage(), false);
+        chain.execute();
+        setData(timelineRequest.getModuleName(), context.get(FacilioConstants.ContextNames.TIMELINE_V3_DATAMAP));
+        return SUCCESS;
+    }
+
+    public String timelineUnScheduledList() throws Exception {
+        FacilioChain chain = ChainUtil.getTimelineListChain();
+        FacilioContext context = TimelineViewUtil.getTimelineContext(chain, this.getTimelineRequest(), true,
+                this.getPage(), this.getPerPage(), true);
+        chain.execute();
+        setData(timelineRequest.getModuleName(), context.get(FacilioConstants.ContextNames.TIMELINE_V3_DATAMAP));
+        return SUCCESS;
+    }
 }

@@ -256,6 +256,9 @@ public class FacilioConstants {
 		public static final String GLOBAL_VARIABLE = "globalVariable";
 		public static final String USER_DELEGATION = "userDelegation";
 		public static final String TIMELINE_REQUEST = "timelineRequest";
+		public static final String TIMELINE_AGGREGATE_DATA = "timelineAggregateData";
+		public static final String TIMELINE_V3_DATAMAP = "timelineV3Datamap";
+		public static final String TIMELINE_GET_UNSCHEDULED_DATA = "timelineGetUnscheduled";
 		public static final String TIMELINE_DATA = "timelineData";
 		public static final String FACILIO_BANNER = "facilioBanner";
 		public static final String FACILIO_BANNERS = "facilioBanners";
@@ -1154,7 +1157,9 @@ public class FacilioConstants {
 		public static final String ONLY_MY_DELEGATION = "onlyMyDelegation";
 		public static final String DELEGATION_LIST = "delegationList";
 
-		
+		public static final String WEEKEND_LIST = "weekends";
+		public static final String WEEKEND = "weekend";
+
 		public static final String VIEWID = "viewId";
 		public static final String VIEW_LIST = "views";
 		public static final String VIEW_GROUP = "viewGroup";

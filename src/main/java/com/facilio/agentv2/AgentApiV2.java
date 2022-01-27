@@ -59,19 +59,29 @@ public class AgentApiV2 {
     private static final Logger LOGGER = LogManager.getLogger(AgentApiV2.class.getName());
 
     public static List<FacilioAgent> getAgents(Collection<Long> ids) throws Exception {
+        return getAgents(ids, false);
+    }
+    public static List<FacilioAgent> getAgents(Collection<Long> ids, boolean fetchOnlyName) throws Exception {
         FacilioModule newAgentModule = ModuleFactory.getNewAgentModule();
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getIdCondition(ids,newAgentModule));
         criteria.addAndCondition(getDeletedTimeNullCondition(newAgentModule));
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
-        return getAgents(context);
+        List<String> fields = null;
+        if (fetchOnlyName) {
+        	fields = Arrays.asList("id","name");        
+        }
+        return getAgents(context, fields);
     }
     
     public static Map<Long, FacilioAgent> getAgentMap(Collection<Long> ids) throws Exception {
-    		List<FacilioAgent> agents = getAgents(ids);
-		return agents.stream().collect(Collectors.toMap(FacilioAgent::getId, Function.identity()));
+		return getAgentMap(ids, false);
     }
+    public static Map<Long, FacilioAgent> getAgentMap(Collection<Long> ids, boolean fetchOnlyName) throws Exception {
+		List<FacilioAgent> agents = getAgents(ids, fetchOnlyName);
+		return agents.stream().collect(Collectors.toMap(FacilioAgent::getId, Function.identity()));
+	}
 
     public static FacilioAgent getAgent(Long agentId) throws Exception {
         if ((agentId != null) && (agentId > 0)) {
@@ -120,60 +130,67 @@ public class AgentApiV2 {
 
 
     public static boolean editAgent(FacilioAgent agent, JSONObject jsonObject, boolean updateLastDataReceivedTime) throws Exception {
-        Long currTime = System.currentTimeMillis() ;
-        if(jsonObject.containsKey(AgentConstants.TIMESTAMP)){
-            currTime = (Long) jsonObject.get(AgentConstants.TIMESTAMP);
-        }
-        if (updateLastDataReceivedTime) {
-            agent.setLastDataReceivedTime(currTime);
-        }
-        if (containsValueCheck(AgentConstants.DISPLAY_NAME, jsonObject)) {
-            if (!jsonObject.get(AgentConstants.DISPLAY_NAME).toString().equals(agent.getDisplayName())) {
-                agent.setDisplayName(jsonObject.get(AgentConstants.DISPLAY_NAME).toString());
-                agent.setLastModifiedTime(currTime);
+        if (agent.getAgentType() == AgentType.CLOUD_ON_SERVICE.getKey() && jsonObject.containsKey(AgentConstants.WORKFLOW)) {
+            WorkflowContext workflow = FieldUtil.getAsBeanFromMap((Map<String, Object>) jsonObject.get(AgentConstants.WORKFLOW), WorkflowContext.class);
+            agent.setWorkflow(workflow);
+            boolean status = CloudAgentUtil.addWorkflowString(agent);
+            return status;
+        } else {
+            Long currTime = System.currentTimeMillis();
+            if (jsonObject.containsKey(AgentConstants.TIMESTAMP)) {
+                currTime = (Long) jsonObject.get(AgentConstants.TIMESTAMP);
             }
-        }
-
-        if (containsValueCheck(AgentConstants.DATA_INTERVAL, jsonObject)) {
-            long currDataInterval = Long.parseLong(jsonObject.get(AgentConstants.DATA_INTERVAL).toString());
-            if (agent.getInterval() != currDataInterval) {
-                agent.setInterval(currDataInterval);
-                agent.setLastModifiedTime(currTime);
-                if(agent.getAgentType() == AgentType.CLOUD.getKey()) {
-                		FacilioTimer.deleteJob(agent.getId(), Job.CLOUD_AGENT_JOB_NAME);
-                		scheduleRestJob(agent);
+            if (updateLastDataReceivedTime) {
+                agent.setLastDataReceivedTime(currTime);
+            }
+            if (containsValueCheck(AgentConstants.DISPLAY_NAME, jsonObject)) {
+                if (!jsonObject.get(AgentConstants.DISPLAY_NAME).toString().equals(agent.getDisplayName())) {
+                    agent.setDisplayName(jsonObject.get(AgentConstants.DISPLAY_NAME).toString());
+                    agent.setLastModifiedTime(currTime);
                 }
             }
-        }
 
-        if (containsValueCheck(AgentConstants.WRITABLE, jsonObject)) {
-            boolean currWriteble = Boolean.parseBoolean(jsonObject.get(AgentConstants.WRITABLE).toString());
-            if (agent.getWritable() != currWriteble) {
-                agent.setWritable(currWriteble);
-                agent.setLastModifiedTime(currTime);
-                List<Controller> controllers = ControllerApiV2.getControllersUsingAgentId(agent.getId());
-                controllers.forEach(controller -> {
-            	   try {
-                       ControllerApiV2.editController(controller.getControllerId(), jsonObject);
-				} catch (Exception e) {
-					LOGGER.error("Exception occurred while Controller writable updating....");
-				}
-               });
+            if (containsValueCheck(AgentConstants.DATA_INTERVAL, jsonObject)) {
+                long currDataInterval = Long.parseLong(jsonObject.get(AgentConstants.DATA_INTERVAL).toString());
+                if (agent.getInterval() != currDataInterval) {
+                    agent.setInterval(currDataInterval);
+                    agent.setLastModifiedTime(currTime);
+                    if (agent.getAgentType() == AgentType.CLOUD.getKey()) {
+                        FacilioTimer.deleteJob(agent.getId(), Job.CLOUD_AGENT_JOB_NAME);
+                        scheduleRestJob(agent);
+                    }
+                }
             }
+
+            if (containsValueCheck(AgentConstants.WRITABLE, jsonObject)) {
+                boolean currWriteble = Boolean.parseBoolean(jsonObject.get(AgentConstants.WRITABLE).toString());
+                if (agent.getWritable() != currWriteble) {
+                    agent.setWritable(currWriteble);
+                    agent.setLastModifiedTime(currTime);
+                    List<Controller> controllers = ControllerApiV2.getControllersUsingAgentId(agent.getId());
+                    controllers.forEach(controller -> {
+                        try {
+                            ControllerApiV2.editController(controller.getControllerId(), jsonObject);
+                        } catch (Exception e) {
+                            LOGGER.error("Exception occurred while Controller writable updating....");
+                        }
+                    });
+                }
+            }
+
+
+            List<Long> oldWorkflowIds = new ArrayList<>();
+            addWorkflows(AgentConstants.WORKFLOW, jsonObject, agent.getWorkflowId(), oldWorkflowIds, agent::setWorkflowId);
+            addWorkflows(AgentConstants.TRANSFORM_WORKFLOW, jsonObject, agent.getTransformWorkflowId(), oldWorkflowIds, agent::setTransformWorkflowId);
+
+            boolean status = updateAgent(agent);
+            LOGGER.debug("Update status : " + status);
+            if (!oldWorkflowIds.isEmpty()) {
+                WorkflowUtil.deleteWorkflows(oldWorkflowIds);
+            }
+
+            return status;
         }
-        
-        
-        List<Long> oldWorkflowIds = new ArrayList<>(); 
-        addWorkflows(AgentConstants.WORKFLOW, jsonObject, agent.getWorkflowId(), oldWorkflowIds, agent::setWorkflowId);
-        addWorkflows(AgentConstants.TRANSFORM_WORKFLOW, jsonObject, agent.getTransformWorkflowId(), oldWorkflowIds,  agent::setTransformWorkflowId);
-        
-        boolean status = updateAgent(agent);
-        LOGGER.debug("Update status : " + status);
-        if (!oldWorkflowIds.isEmpty()) {
-        		WorkflowUtil.deleteWorkflows(oldWorkflowIds);
-        }
-        
-        return status;
     }
 
     private static void addWorkflows(String property, JSONObject jsonObject, long oldWorkflowId, List<Long> oldWorkflowIds, Consumer<Long> setWorkflow) throws Exception {
@@ -478,12 +495,20 @@ public class AgentApiV2 {
     }
 
     private static List<FacilioAgent> getAgents(FacilioContext context) throws Exception {
+        return getAgents(context, null);
+    }
+    
+    private static List<FacilioAgent> getAgents(FacilioContext context, List<String> fields) throws Exception {
         FacilioModule newAgentModule = ModuleFactory.getNewAgentModule();
-        List<FacilioField> newAgentFields = FieldFactory.getNewAgentFields();
+        List<FacilioField> newAgentfields = FieldFactory.getNewAgentFields();
+        if (fields != null) {
+        	newAgentfields = newAgentfields.stream().filter(field -> fields.contains(field.getName()))
+        			.collect(Collectors.toList());
+        }
 
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(newAgentModule.getTableName())
-                .select(newAgentFields);
+                .select(newAgentfields);
 
         if (context.containsKey(FacilioConstants.ContextNames.CRITERIA)) {
             Criteria criteria;
@@ -491,9 +516,6 @@ public class AgentApiV2 {
             selectRecordBuilder.andCriteria(criteria);
         }
         List<Map<String, Object>> maps = selectRecordBuilder.get();
-        if(FacilioProperties.isDevelopment()){
-            LOGGER.info("get agent query "+selectRecordBuilder.toString());
-        }
         return FieldUtil.getAsBeanListFromMapList(maps,FacilioAgent.class);
     }
 
