@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
+import com.facilio.db.criteria.operators.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -50,12 +51,6 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.BuildingOperator;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -259,25 +254,26 @@ public class AssetsAPI {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
 		FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
-		
+
 		List<FacilioField> selectFields = new ArrayList<>();
-		
-		
+
 		FacilioField spaceIdField = modBean.getField("space", assetModule.getName());
-		
+
+
 		FacilioField categoryField = modBean.getField("category", assetModule.getName());
 		FacilioField selectField = new FacilioField();
 		selectField.setName(categoryField.getName());
 		selectField.setDisplayName(categoryField.getDisplayName());
-		selectField.setColumnName("DISTINCT("+categoryField.getColumnName()+")");
-		
+		selectField.setColumnName("DISTINCT(" + categoryField.getColumnName() + ")");
+
 		selectFields.add(selectField);
-		
+
 		GenericSelectRecordBuilder newSelectBuilder = new GenericSelectRecordBuilder()
 				.table(assetModule.getTableName())
 				.innerJoin(resourceModule.getTableName())
-				.on(assetModule.getTableName()+".ID = "+resourceModule.getTableName()+".ID")
-				.andCondition(CriteriaAPI.getCondition(spaceIdField, baseSpaceIds, NumberOperators.EQUALS))	// change to buildingIs if nedded
+				.on(assetModule.getTableName() + ".ID = " + resourceModule.getTableName() + ".ID")
+				.andCondition(CriteriaAPI.getCondition(spaceIdField, baseSpaceIds, NumberOperators.EQUALS))    // change to buildingIs if nedded
+				.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "isDeleted", Boolean.FALSE.toString(), BooleanOperators.IS))
 				.select(selectFields);
 		
 		 List<Map<String, Object>> props = newSelectBuilder.get();

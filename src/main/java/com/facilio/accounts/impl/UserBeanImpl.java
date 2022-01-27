@@ -671,7 +671,18 @@ public class UserBeanImpl implements UserBean {
 		}
 		return null;
 	}
+	public Long getOrgUsersCountForRole(Collection<Long> roleIds) throws Exception {
 
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getCountField())
+				.table(AccountConstants.getOrgUserAppsModule().getTableName());
+		selectBuilder.andCondition(CriteriaAPI.getCondition("ROLE_ID", "roleId", StringUtils.join(roleIds, ","), NumberOperators.EQUALS));
+		List<Map<String, Object>> result = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(result)) {
+			return ((Number) result.get(0).get("count")).longValue();
+		}
+		return null;
+	}
 	private List<Long> getOrgUsersWithRole(Collection<Long> roleIds) throws Exception {
 
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
