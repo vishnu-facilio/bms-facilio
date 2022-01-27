@@ -467,7 +467,7 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 				}
 				readingContext.addReading(fieldName, reading.get("value"));
 				
-				long ttime = reading.containsKey("time") ? FacilioUtil.parseLong(reading.get("ttime")) : currentTime;
+				long ttime = reading.containsKey("time") ? FacilioUtil.parseLong(reading.get("time")) : currentTime;
 				readingContext.setTtime(ttime);
 				
 				List<ReadingContext> readingList = readingMap.get(field.getModule().getName());
