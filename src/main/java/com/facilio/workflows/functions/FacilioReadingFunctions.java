@@ -273,7 +273,6 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 			
 			FacilioField field = modBean.getField(workflowReadingContext.getFieldId());
 			
-			FacilioChain addCurrentReading = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 			
 			ReadingContext reading = new ReadingContext();
 			
@@ -285,12 +284,16 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 			
 			long ttime = -1;
 			boolean ajustTTime = false;
+			boolean historyReadings = false;
 			if(objects.length >2) {
 				if(objects[2] instanceof Long) {
 					ttime = (long) objects[2];
 				}
 				else if(objects[2] instanceof Boolean) {
 					ajustTTime = (boolean) objects[2];
+				}
+				if(objects.length > 3) {
+					historyReadings = (boolean) objects[3];
 				}
 			}
 			else {
@@ -299,17 +302,12 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 			
 			reading.setTtime(ttime);
 			
+			
 			List<ReadingContext> readingList = new ArrayList<ReadingContext>();
-			
 			readingList.add(reading);
+			Map<String, List<ReadingContext>> readings = Collections.singletonMap(field.getModule().getName(), readingList);
+			addReadingData(readings, ajustTTime, historyReadings);
 			
-			FacilioContext context = addCurrentReading.getContext();
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, field.getModule().getName());
-			context.put(FacilioConstants.ContextNames.READINGS, readingList);
-			context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.SCRIPT);
-			context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, ajustTTime);
-			
-			addCurrentReading.execute();
 			return null;
 		};
 		
@@ -430,16 +428,68 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 				readingList.add(reading);
 			}
 			
+			Map<String, List<ReadingContext>> readings = Collections.singletonMap(field.getModule().getName(), readingList);
+			addReadingData(readings, ajustTTime, historyReadings);
 			
-			FacilioChain addCurrentReading = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
-			FacilioContext context = addCurrentReading.getContext();
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, field.getModule().getName());
-			context.put(FacilioConstants.ContextNames.READINGS, readingList);
-			context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.SCRIPT);
-			context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, ajustTTime);
-			context.put(FacilioConstants.ContextNames.HISTORY_READINGS, historyReadings);
+			return null;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects == null || objects.length == 0) {
+				throw new FunctionParamException("Required Object is null or empty");
+			}
+		}
+	},
+	ADD_LIST (9,"addList") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+			List<Map<String, Object>> readings = (List<Map<String, Object>>) objects[0];
 			
-			addCurrentReading.execute();
+			Map<String, List<ReadingContext>> readingMap = new HashMap<>();
+			
+			long currentTime = DateTimeUtil.getCurrenTime();
+			
+			for(Map<String, Object> reading: readings) {
+				ReadingContext readingContext = new ReadingContext();
+				readingContext.setParentId((long) reading.get("parentId"));
+				String fieldName;
+				FacilioField field;
+				if (reading.containsKey("fieldName")) {
+					fieldName = (String) reading.get("fieldName");
+					String moduleName = (String) reading.get("moduleName");
+					field = modBean.getField(fieldName, moduleName);
+				}
+				else {
+					field = modBean.getField((long) reading.get("fieldId"));
+					fieldName = field.getName();
+				}
+				readingContext.addReading(fieldName, reading.get("value"));
+				
+				long ttime = reading.containsKey("time") ? FacilioUtil.parseLong(reading.get("ttime")) : currentTime;
+				readingContext.setTtime(ttime);
+				
+				List<ReadingContext> readingList = readingMap.get(field.getModule().getName());
+				if (readingList == null) {
+					readingList = new ArrayList<>();
+					readingMap.put(field.getModule().getName(), readingList);
+				}
+				readingList.add(readingContext);
+			}
+			
+			boolean ajustTTime = false;
+			boolean historyReadings = false;
+			if(objects.length >1) {
+				ajustTTime = (boolean) objects[1];
+			}
+			if(objects.length >2) {
+				historyReadings = (boolean) objects[2];
+			}
+			
+			addReadingData(readingMap, ajustTTime, historyReadings);
+			
+			
 			return null;
 		};
 		
@@ -499,5 +549,16 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 			typeMap.put(type.getFunctionName(), type);
 		}
 		return typeMap;
+	}
+	
+	private static void addReadingData(Map<String, List<ReadingContext>> readingMap, boolean ajustTTime, boolean historyReadings) throws Exception {
+		FacilioChain addCurrentReading = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+		FacilioContext context = addCurrentReading.getContext();
+		context.put(FacilioConstants.ContextNames.READINGS_MAP, readingMap);
+		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.SCRIPT);
+		context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, ajustTTime);
+		context.put(FacilioConstants.ContextNames.HISTORY_READINGS, historyReadings);
+		
+		addCurrentReading.execute();
 	}
 }
