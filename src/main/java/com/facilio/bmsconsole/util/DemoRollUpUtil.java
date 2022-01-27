@@ -38,7 +38,7 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("Item_Types_category" , Arrays.asList("CREATED_TIME","MODIFIED_TIME"));
 		tablesContainsDateField.put("Item_Type_Activity" , Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME"));
 		tablesContainsDateField.put("Inventory_category" , Arrays.asList("CREATED_TIME","MODIFIED_TIME"));
-		tablesContainsDateField.put("Item_Types_status" , Arrays.asList("CREATED_TIME","MODIFIED_TIME"));
+//		tablesContainsDateField.put("Item_Types_status" , Arrays.asList("CREATED_TIME","MODIFIED_TIME"));
 		tablesContainsDateField.put("Item_Types" , Arrays.asList("CREATED_TIME","MODIFIED_TIME","LAST_PURCHASED_DATE","LAST_ISSUED_DATE"));
 		tablesContainsDateField.put("Item_status" , Arrays.asList("CREATED_TIME","MODIFIED_TIME"));
 		tablesContainsDateField.put("Item" , Arrays.asList("CREATED_TIME","MODIFIED_TIME","LAST_PURCHASED_DATE"));
