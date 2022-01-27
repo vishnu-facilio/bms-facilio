@@ -110,7 +110,7 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("Purchased_Item" , Arrays.asList("CREATED_TIME","MODIFIED_TIME"));
 		tablesContainsDateField.put("Item_Transactions" , Arrays.asList("CREATED_TIME","MODIFIED_TIME"));
 		tablesContainsDateField.put("Item_Activity" , Arrays.asList("CREATED_TIME","MODIFIED_TIME"));
-		tablesContainsDateField.put("Tool_types_category" , Arrays.asList("CREATED_TIME","MODIFIED_TIME"));
+//		tablesContainsDateField.put("Tool_types_category" , Arrays.asList("CREATED_TIME","MODIFIED_TIME"));
 		tablesContainsDateField.put("Purchased_Tool" , Arrays.asList("CREATED_TIME","MODIFIED_TIME"));
 		tablesContainsDateField.put("Tool_types_Notes" , Arrays.asList("CREATED_TIME","MODIFIED_TIME"));
 		tablesContainsDateField.put("Tool_types_Attachments" , Arrays.asList("CREATED_TIME","MODIFIED_TIME"));
