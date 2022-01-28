@@ -1,7 +1,5 @@
 package com.facilio.bmsconsoleV3.context.inventory;
 
-import com.facilio.bmsconsole.context.InventoryCategoryContext;
-import com.facilio.unitconversion.Unit;
 import com.facilio.v3.context.V3Context;
 
 public class V3ItemTypesContext extends V3Context {
@@ -12,7 +10,6 @@ public class V3ItemTypesContext extends V3Context {
 	private String description;
 	private String serialNumber;
 	private V3InventoryCategoryContext category;
-	private Unit unit;
 	private Double minimumQuantity;
 	public Boolean isRotating;
 	private Long photoId;
@@ -110,26 +107,6 @@ public class V3ItemTypesContext extends V3Context {
 
 	public void setCategory(V3InventoryCategoryContext category) {
 		this.category = category;
-	}
-
-	public Unit getUnitEnum() {
-		return unit;
-	}
-
-	public void setUnit(Unit unit) {
-		this.unit = unit;
-	}
-
-	public int getUnit() {
-		if (unit != null) {
-			return unit.getUnitId();
-		}
-		return -1;
-	}
-
-	public void setUnit(int unit) {
-		this.unit = Unit.valueOf(unit);
-		;
 	}
 
 	public Boolean getIsRotating() {
