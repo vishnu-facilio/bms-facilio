@@ -130,12 +130,7 @@ public class AgentApiV2 {
 
 
     public static boolean editAgent(FacilioAgent agent, JSONObject jsonObject, boolean updateLastDataReceivedTime) throws Exception {
-        if (agent.getAgentType() == AgentType.CLOUD_ON_SERVICE.getKey() && jsonObject.containsKey(AgentConstants.WORKFLOW)) {
-            WorkflowContext workflow = FieldUtil.getAsBeanFromMap((Map<String, Object>) jsonObject.get(AgentConstants.WORKFLOW), WorkflowContext.class);
-            agent.setWorkflow(workflow);
-            boolean status = CloudAgentUtil.addWorkflowString(agent);
-            return status;
-        } else {
+            AgentType agentType = AgentType.valueOf(agent.getAgentType());
             Long currTime = System.currentTimeMillis();
             if (jsonObject.containsKey(AgentConstants.TIMESTAMP)) {
                 currTime = (Long) jsonObject.get(AgentConstants.TIMESTAMP);
@@ -182,6 +177,12 @@ public class AgentApiV2 {
             List<Long> oldWorkflowIds = new ArrayList<>();
             addWorkflows(AgentConstants.WORKFLOW, jsonObject, agent.getWorkflowId(), oldWorkflowIds, agent::setWorkflowId);
             addWorkflows(AgentConstants.TRANSFORM_WORKFLOW, jsonObject, agent.getTransformWorkflowId(), oldWorkflowIds, agent::setTransformWorkflowId);
+            if (agentType.isAgentService()) {
+                 WorkflowContext workflow = FieldUtil.getAsBeanFromMap((Map<String, Object>) jsonObject.get(AgentConstants.WORKFLOW), WorkflowContext.class);
+                 agent.setWorkflow(workflow);
+                 CloudAgentUtil.addWorkflowString(agent);
+
+            }
 
             boolean status = updateAgent(agent);
             LOGGER.debug("Update status : " + status);
@@ -190,7 +191,7 @@ public class AgentApiV2 {
             }
 
             return status;
-        }
+
     }
 
     private static void addWorkflows(String property, JSONObject jsonObject, long oldWorkflowId, List<Long> oldWorkflowIds, Consumer<Long> setWorkflow) throws Exception {
