@@ -45,60 +45,61 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 	private static final Logger LOGGER= Logger.getLogger(EnableAnomalyDetectionCommand.class.getName());
 
 	@Override
-	public boolean executeCommand(Context context) throws Exception 
+	public boolean executeCommand(Context context) throws Exception
 	{
 		LOGGER.info("Inside EnableAnomalyDetectionCommand");
-		
+
 		MLServiceContext mlServiceContext = (MLServiceContext) context.get(FacilioConstants.ContextNames.ML_MODEL_INFO);
 		try {
-		
-		LinkedList<AssetContext> assetContextList = new LinkedList<>();
-		String[] assetID = context.get("TreeHierarchy").toString().split(",");
-		
-		List<Long> assetIDList = Stream.of(assetID).map(Long::valueOf).collect(Collectors.toList());
-		assetContextList.addAll(AssetsAPI.getAssetInfo(assetIDList));
-		if(assetContextList!= null) {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioField energyField = modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
-		FacilioField energyParentField = modBean.getField("parentId", FacilioConstants.ContextNames.ENERGY_DATA_READING);
-		JSONObject buildGamMlVariable  = context.containsKey("mlVariables") ? ((JSONObject)context.get("mlVariables")).containsKey("buildGam") ?(JSONObject)((JSONObject)context.get("mlVariables")).get("buildGam") :null  : null; 
-		
-		Long mlID = buildGamModel(assetContextList,buildGamMlVariable,(JSONObject)context.get("mlModelVariables"),energyField,energyParentField);
-		
-		FacilioModule module = modBean.getModule("energyanomalydetectionmllogreadings");
-		List<FacilioField> fields = module != null ? modBean.getAllFields(module.getName()) : FieldFactory.getMLLogCheckGamFields();
-		MLAPI.addReading(assetIDList,"energyanomalydetectionmllogreadings",fields,ModuleFactory.getMLLogReadingModule().getTableName(),ModuleType.PREDICTED_READING,module);
-		
-		module = modBean.getModule("energyanomalydetectionmlreadings");
-		fields = module != null ? modBean.getAllFields(module.getName()) : FieldFactory.getMLCheckGamFields();
-		MLAPI.addReading(assetIDList,"energyanomalydetectionmlreadings",fields,ModuleFactory.getMLReadingModule().getTableName(),module);
 
-        Long ratioCheckMLid = null;
-        if(context.get("parentHierarchy").toString().equalsIgnoreCase("true")){
-	
-			JSONObject ratiocheckMlVariable  = context.containsKey("mlVariables") ? ((JSONObject)context.get("mlVariables")).containsKey("ratioCheck") ?(JSONObject)((JSONObject)context.get("mlVariables")).get("ratioCheck") :null  : null; 
-			
-			if(context.containsKey("ratioHierarchy"))
-			{
-				JSONArray ratioHierachy = new JSONArray((String)context.get("ratioHierarchy"));
-				ratioCheckMLid = addMultipleRatioCheckModel(assetIDList,ratioHierachy,ratiocheckMlVariable,energyField.getId());
+			LinkedList<AssetContext> assetContextList = new LinkedList<>();
+			String[] assetID = context.get("TreeHierarchy").toString().split(",");
+
+			List<Long> assetIDList = Stream.of(assetID).map(Long::valueOf).collect(Collectors.toList());
+			assetContextList.addAll(AssetsAPI.getAssetInfo(assetIDList));
+			if(assetContextList!= null) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioField energyField = modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
+				FacilioField energyParentField = modBean.getField("parentId", FacilioConstants.ContextNames.ENERGY_DATA_READING);
+				JSONObject buildGamMlVariable  = (JSONObject) context.get("mlVariables");
+
+				List<Long> parentMlIdList = buildGamModel(assetContextList,buildGamMlVariable,(JSONObject)context.get("mlModelVariables"),energyField,energyParentField,mlServiceContext.isPastData());
+
+				FacilioModule module = modBean.getModule("energyanomalydetectionmllogreadings");
+				List<FacilioField> fields = module != null ? modBean.getAllFields(module.getName()) : FieldFactory.getMLLogCheckGamFields();
+				MLAPI.addReading(assetIDList,"energyanomalydetectionmllogreadings",fields,ModuleFactory.getMLLogReadingModule().getTableName(),ModuleType.PREDICTED_READING,module);
+
+				module = modBean.getModule("energyanomalydetectionmlreadings");
+				fields = module != null ? modBean.getAllFields(module.getName()) : FieldFactory.getMLCheckGamFields();
+				MLAPI.addReading(assetIDList,"energyanomalydetectionmlreadings",fields,ModuleFactory.getMLReadingModule().getTableName(),module);
+
+				Long ratioCheckMLid = null;
+				if(context.get("parentHierarchy").toString().equalsIgnoreCase("true")){
+
+
+					if(context.containsKey("ratioHierarchy"))
+					{
+						JSONArray ratioHierachy = new JSONArray((String)context.get("ratioHierarchy"));
+						ratioCheckMLid = addMultipleRatioCheckModel(assetIDList,ratioHierachy,energyField.getId());
+					}
+					else
+					{
+						ratioCheckMLid = addRatioCheckModel(assetIDList,(String)context.get("TreeHierarchy"),energyField.getId());
+					}
+
+				}
+
+				List<Long> childMlIdList = new ArrayList<>();
+				childMlIdList.add(checkGamModel(ratioCheckMLid,assetContextList,(JSONObject)context.get("mlModelVariables"),energyField,energyParentField,mlServiceContext.isPastData()));
+				childMlIdList.add(ratioCheckMLid);
+				if(mlServiceContext!=null) {
+					mlServiceContext.updateMlID(parentMlIdList.get(0));
+					mlServiceContext.setChildMlIdList(childMlIdList);
+					mlServiceContext.setParentMlIdList(parentMlIdList);		}
 			}
-			else
-			{
-				ratioCheckMLid = addRatioCheckModel(assetIDList,(String)context.get("TreeHierarchy"),ratiocheckMlVariable,energyField.getId());
-			}
-		
-		}
-		JSONObject checkGamMlVariable  = context.containsKey("mlVariables") ? ((JSONObject)context.get("mlVariables")).containsKey("checkGam") ?(JSONObject)((JSONObject)context.get("mlVariables")).get("checkGam") :null  : null; 
-		
-		checkGamModel(ratioCheckMLid,assetContextList,checkGamMlVariable,(JSONObject)context.get("mlModelVariables"),energyField,energyParentField);
-		if(mlServiceContext!=null) {
-			mlServiceContext.updateMlID(mlID);
-		}
-		}
-		LOGGER.info("Finished EnableAnomalyDetectionCommand");
-		
-		return false;
+			LOGGER.info("Finished EnableAnomalyDetectionCommand");
+
+			return false;
 		}
 		catch(Exception e)
 		{
@@ -110,121 +111,111 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 			throw e;
 		}
 	}
-		
-	private void checkGamModel(Long ratioCheckMLID, LinkedList<AssetContext> assetContextList,JSONObject mlVariables,JSONObject mlModelVariables,FacilioField energyField,FacilioField energyParentField) throws Exception
+
+	private Long checkGamModel(Long ratioCheckMLID, LinkedList<AssetContext> assetContextList,JSONObject mlModelVariables,FacilioField energyField,FacilioField energyParentField,boolean isPastData) throws Exception
 	{
 		JSONArray mlIDList = new JSONArray();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
+
 		FacilioModule logReadingModule = modBean.getModule("energyanomalydetectionmllogreadings");
 		FacilioModule readingModule = modBean.getModule("energyanomalydetectionmlreadings");
-		
+
 		FacilioField temperatureField = modBean.getField("temperature", FacilioConstants.ContextNames.WEATHER_READING);
 		FacilioField temperatureParentField = modBean.getField("parentId", FacilioConstants.ContextNames.WEATHER_READING);
-		
+
 		Map<String,Long> maxSamplingPeriodMap = new HashMap<String, Long>();
 		Map<String,Long> futureSamplingPeriodMap = new HashMap<String, Long>();
 		Map<String,String> aggregationMap = new HashMap<String, String>();
-		
-		if (mlVariables != null) {
-			for(Object entry:mlVariables.entrySet()){
-				Map.Entry en = (Map.Entry) entry;
-				if(((JSONObject)en.getValue()).containsKey("maxSamplingPeriod")){
-					maxSamplingPeriodMap.put(en.getKey().toString(), Long.parseLong(((JSONObject)en.getValue()).get("maxSamplingPeriod").toString()));
-				}
-				if(((JSONObject)en.getValue()).containsKey("futureSamplingPeriod")){
-					futureSamplingPeriodMap.put(en.getKey().toString(), Long.parseLong(((JSONObject)en.getValue()).get("futureSamplingPeriod").toString()));
-				}
-				if(((JSONObject)en.getValue()).containsKey("aggregation")){
-					aggregationMap.put(en.getKey().toString(), ((JSONObject)en.getValue()).get("aggregation").toString());
-				}
-			}
-		}
-		
+
+
+
 		for(AssetContext context:assetContextList)
 		{
 			long mlID = MLAPI.addMLModel("checkGamv1",logReadingModule.getModuleId(),readingModule.getModuleId());
 			MLAPI.addMLVariables(mlID,energyField.getModuleId(),energyField.getFieldId(),energyParentField.getFieldId(),context.getId(),maxSamplingPeriodMap.containsKey(energyField.getName())? maxSamplingPeriodMap.get(energyField.getName()):1209600000l,futureSamplingPeriodMap.containsKey(energyField.getName())? futureSamplingPeriodMap.get(energyField.getName()):0,true,aggregationMap.containsKey(energyField.getName())? aggregationMap.get(energyField.getName()):"SUM");
-		
+
 			MLAPI.addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),temperatureParentField.getFieldId(),context.getSiteId(),maxSamplingPeriodMap.containsKey(temperatureField.getName())? maxSamplingPeriodMap.get(temperatureField.getName()):1209600000l,futureSamplingPeriodMap.containsKey(temperatureField.getName())? futureSamplingPeriodMap.get(temperatureField.getName()):0,false,aggregationMap.containsKey(temperatureField.getName())? aggregationMap.get(temperatureField.getName()):"SUM");
-			
+
 			MLAPI.addMLAssetVariables(mlID,context.getId(),"TYPE","Energy Meter");
 			MLAPI.addMLAssetVariables(mlID,context.getSiteId(),"TYPE","Site");
-			
+
 			MLAPI.addMLModelVariables(mlID,"timezone",AccountUtil.getCurrentAccount().getTimeZone());
-			
+
 			for(Object entry:mlModelVariables.entrySet()){
 				Map.Entry<String, String> en = (Map.Entry) entry;
 				MLAPI.addMLModelVariables(mlID, en.getKey(), en.getValue());
 			}
 			MLAPI.addMLModelVariables(mlID, "asset_id",String.valueOf(context.getId()));
 
-			
+
 			ScheduleInfo info = new ScheduleInfo();
 			info.setFrequencyType(FrequencyType.DAILY);
-			
+
 			mlIDList.put(mlID);
 		}
 		if(ratioCheckMLID != null){
 			MLAPI.addMLModelVariables((long) mlIDList.get(mlIDList.length()-1),"jobid",""+ratioCheckMLID);
 		}
 		updateSequenceForMLModel((long)mlIDList.get(0),mlIDList.toString());
-		ScheduleInfo info = new ScheduleInfo();
-		info.setFrequencyType(FrequencyType.DAILY);
-		
-		List<LocalTime> hourlyList = new ArrayList<LocalTime>();
-		hourlyList.add(LocalTime.MIDNIGHT.plusMinutes(15));
-		for(int i=1;i<24;i++)
-		{
-			hourlyList.add(LocalTime.MIDNIGHT.plusMinutes(15).plusHours(i));
-		}
-		info.setTimeObjects(hourlyList);
-		try {
-			MLAPI.addJobs((long) mlIDList.get(0), "DefaultMLJob", info, "ml");
-		} catch (InterruptedException e) {
-			Thread.sleep(1000);
+		if(!isPastData) {
+
+			ScheduleInfo info = new ScheduleInfo();
+			info.setFrequencyType(FrequencyType.DAILY);
+
+			List<LocalTime> hourlyList = new ArrayList<LocalTime>();
+			hourlyList.add(LocalTime.MIDNIGHT.plusMinutes(15));
+			for (int i = 1; i < 24; i++) {
+				hourlyList.add(LocalTime.MIDNIGHT.plusMinutes(15).plusHours(i));
+			}
+			info.setTimeObjects(hourlyList);
+			try {
+				MLAPI.addJobs((long) mlIDList.get(0), "DefaultMLJob", info, "ml");
+			} catch (InterruptedException e) {
+				Thread.sleep(1000);
+			}
 		}
 		LOGGER.info("Check Gam Module adding Completed");
+		return (Long) mlIDList.get(0);
 	}
-	
+
 	private void updateSequenceForMLModel(long mlID,String mlIDList) throws SQLException
 	{
 		FacilioModule module = ModuleFactory.getMLModule();
-        List< FacilioField> updateFields = FieldFactory.getMLFields();
-        
-        FacilioField idField = updateFields.stream().filter(f -> f.getName().equalsIgnoreCase("id")).findFirst().get();
-        Condition idCondition = CriteriaAPI.getCondition(idField, String.valueOf(mlID), NumberOperators.EQUALS);
-        
-        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder().table(module.getTableName()).andCondition(idCondition).fields(updateFields);
+		List< FacilioField> updateFields = FieldFactory.getMLFields();
 
-        Map<String,Object> prop = new HashMap<String,Object>(1);
-        prop.put("sequence", mlIDList);
-        updateBuilder.update(prop);
+		FacilioField idField = updateFields.stream().filter(f -> f.getName().equalsIgnoreCase("id")).findFirst().get();
+		Condition idCondition = CriteriaAPI.getCondition(idField, String.valueOf(mlID), NumberOperators.EQUALS);
+
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder().table(module.getTableName()).andCondition(idCondition).fields(updateFields);
+
+		Map<String,Object> prop = new HashMap<String,Object>(1);
+		prop.put("sequence", mlIDList);
+		updateBuilder.update(prop);
 	}
-	
-	private long addMultipleRatioCheckModel(List<Long> assetIDList, JSONArray ratioHierachyList,JSONObject mlVariables,long energyfieldid) throws Exception
+
+	private long addMultipleRatioCheckModel(List<Long> assetIDList, JSONArray ratioHierachyList,long energyfieldid) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
+
 		List<FacilioField> mLLogCheckRatioFields = FieldFactory.getMLLogCheckRatioFields();
 		int decimalColumnHigherValue = mLLogCheckRatioFields.stream().map(FacilioField::getColumnName).filter(f->f.startsWith("DECIMAL_CF")).map(c->c.replaceFirst("DECIMAL_CF", "")).map(Integer::parseInt).mapToInt(i -> i).max().orElse(0);
 		for(Long id:assetIDList)
 		{
 			mLLogCheckRatioFields.add(FieldFactory.getField(id+"_ratio","Ratio Log","DECIMAL_CF"+(++decimalColumnHigherValue),ModuleFactory.getMLLogReadingModule(),FieldType.NUMBER));
 			mLLogCheckRatioFields.add(FieldFactory.getField(id+"_upperAnomaly","Upper Anomaly Log","DECIMAL_CF"+(++decimalColumnHigherValue),ModuleFactory.getMLLogReadingModule(),FieldType.NUMBER));
-			mLLogCheckRatioFields.add(FieldFactory.getField(id+"_lowerAnomaly","Uower Anomaly Log","DECIMAL_CF"+(++decimalColumnHigherValue),ModuleFactory.getMLLogReadingModule(),FieldType.NUMBER));				
+			mLLogCheckRatioFields.add(FieldFactory.getField(id+"_lowerAnomaly","Uower Anomaly Log","DECIMAL_CF"+(++decimalColumnHigherValue),ModuleFactory.getMLLogReadingModule(),FieldType.NUMBER));
 		}
-		
+
 		Long checkRatioLogReadingNewModuleId = MLAPI.addReading(assetIDList,"checkRatioMLLogReadings",mLLogCheckRatioFields,ModuleFactory.getMLLogReadingModule().getTableName(),ModuleType.PREDICTED_READING,null);
 		FacilioModule module = modBean.getModule("checkratiomlreadings");
 		List<FacilioField> fields = module != null ? modBean.getAllFields(module.getName()) : FieldFactory.getMLCheckRatioFields();
 		MLAPI.addReading(assetIDList,"checkRatioMLReadings",fields,ModuleFactory.getMLReadingModule().getTableName(),ModuleType.PREDICTED_READING,module);
-		
+
 		FacilioModule readingModule = modBean.getModule("checkratiomlreadings");
-		
+
 		FacilioModule checkGamReadingModule = modBean.getModule("anomalydetectionmllogreadings");
 		FacilioField parentField = modBean.getField("parentId", checkGamReadingModule.getName());
-		
+
 		FacilioField actualValueField = modBean.getField("actualValue", checkGamReadingModule.getName());
 		FacilioField adjustedLowerBoundField = modBean.getField("adjustedLowerBound", checkGamReadingModule.getName());
 		FacilioField adjustedUpperBoundField = modBean.getField("adjustedUpperBound", checkGamReadingModule.getName());
@@ -241,37 +232,22 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		FacilioField upperAnomalyField = modBean.getField("upperAnomaly",checkGamReadingModule.getName());
 		FacilioField upperBoundField = modBean.getField("upperBound", checkGamReadingModule.getName());
 		FacilioField upperGAMField = modBean.getField("upperGAM", checkGamReadingModule.getName());
-		
+
 		long mlID = MLAPI.addMLModel("ratioCheck",checkRatioLogReadingNewModuleId,readingModule.getModuleId());
 		List<Long> mlIDList = new ArrayList<Long>(10);
 		mlIDList.add(mlID);
-		
-		long ratioHierachySize = ratioHierachyList.length(); 
+
+		long ratioHierachySize = ratioHierachyList.length();
 		for(long i=1;i<ratioHierachySize;i++)
 		{
 			LOGGER.info("Adding ML Model for "+i);
 			mlIDList.add(MLAPI.addMLModel("ratioCheck",checkRatioLogReadingNewModuleId,readingModule.getModuleId()));
 		}
-		
+
 		Map<String,Long> maxSamplingPeriodMap = new HashMap<String, Long>();
 		Map<String,Long> futureSamplingPeriodMap = new HashMap<String, Long>();
 		Map<String,String> aggregationMap = new HashMap<String, String>();
-		
-		if (mlVariables != null) {
-			for(Object entry:mlVariables.entrySet()){
-				Map.Entry en = (Map.Entry) entry;
-				if(((JSONObject)en.getValue()).containsKey("maxSamplingPeriod")){
-					maxSamplingPeriodMap.put(en.getKey().toString(), Long.parseLong(((JSONObject)en.getValue()).get("maxSamplingPeriod").toString()));
-				}
-				if(((JSONObject)en.getValue()).containsKey("futureSamplingPeriod")){
-					futureSamplingPeriodMap.put(en.getKey().toString(), Long.parseLong(((JSONObject)en.getValue()).get("futureSamplingPeriod").toString()));
-				}
-				if(((JSONObject)en.getValue()).containsKey("aggregation")){
-					aggregationMap.put(en.getKey().toString(), ((JSONObject)en.getValue()).get("aggregation").toString());
-				}
-			}
-		}
-		
+
 		for(int i=0;i<ratioHierachyList.length();i++)
 		{
 			JSONArray emObject =(JSONArray) ratioHierachyList.get(i);
@@ -280,7 +256,7 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 			for(int j=0;j<emObject.length();j++)
 			{
 				Integer id =  (Integer) emObject.get(j);
-				
+
 				MLAPI.addMLVariables(ml_id,actualValueField.getModuleId(),actualValueField.getFieldId(),parentField.getFieldId(),id.longValue(),maxSamplingPeriodMap.containsKey(actualValueField.getName())? maxSamplingPeriodMap.get(actualValueField.getName()): 4200000,futureSamplingPeriodMap.containsKey(actualValueField.getName())? futureSamplingPeriodMap.get(actualValueField.getName()):0,j==0,aggregationMap.containsKey(actualValueField.getName())? aggregationMap.get(actualValueField.getName()):"SUM");
 				MLAPI.addMLVariables(ml_id,adjustedLowerBoundField.getModuleId(),adjustedLowerBoundField.getFieldId(),parentField.getFieldId(),id.longValue(),maxSamplingPeriodMap.containsKey(adjustedLowerBoundField.getName())? maxSamplingPeriodMap.get(adjustedLowerBoundField.getName()): 4200000,futureSamplingPeriodMap.containsKey(adjustedLowerBoundField.getName())? futureSamplingPeriodMap.get(adjustedLowerBoundField.getName()):0,false,aggregationMap.containsKey(adjustedLowerBoundField.getName())? aggregationMap.get(adjustedLowerBoundField.getName()):"SUM");
 				MLAPI.addMLVariables(ml_id,adjustedUpperBoundField.getModuleId(),adjustedUpperBoundField.getFieldId(),parentField.getFieldId(),id.longValue(),maxSamplingPeriodMap.containsKey(adjustedUpperBoundField.getName())? maxSamplingPeriodMap.get(adjustedUpperBoundField.getName()): 4200000,futureSamplingPeriodMap.containsKey(adjustedUpperBoundField.getName())? futureSamplingPeriodMap.get(adjustedUpperBoundField.getName()):0,false,aggregationMap.containsKey(adjustedUpperBoundField.getName())? aggregationMap.get(adjustedUpperBoundField.getName()):"SUM");
@@ -300,16 +276,16 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 			}
 			MLAPI.addMLModelVariables(ml_id,"TreeHierarchy",emObject.toString());
 			MLAPI.addMLModelVariables(ml_id,"energyfieldid",""+energyfieldid);
-			MLAPI.addMLModelVariables(ml_id,"adjustedupperboundfieldid",""+adjustedUpperBoundField.getId());	
+			MLAPI.addMLModelVariables(ml_id,"adjustedupperboundfieldid",""+adjustedUpperBoundField.getId());
 		}
 		updateSequenceForMLModel(mlID,mlIDList.toString());
 		return mlID;
 	}
-	
-	private long addRatioCheckModel(List<Long> assetIDList, String TreeHierarchy,JSONObject mlVariables,long energyfieldid) throws Exception
+
+	private long addRatioCheckModel(List<Long> assetIDList, String TreeHierarchy,long energyfieldid) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
+
 		List<FacilioField> mLLogCheckRatioFields = FieldFactory.getMLLogCheckRatioFields();
 		List<FacilioField> mlCheckRatioFields = FieldFactory.getMLCheckRatioFields();
 		int decimalColumnHigherValue = mLLogCheckRatioFields.stream().map(FacilioField::getColumnName).filter(f->f.startsWith("DECIMAL_CF")).map(c->c.replaceFirst("DECIMAL_CF", "")).map(Integer::parseInt).mapToInt(i -> i).max().orElse(0);
@@ -321,21 +297,21 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 			mlCheckRatioFields.add(FieldFactory.getField(id+"_ratio",id+"_Ratio","DECIMAL_CF"+(decimalColumnHigherValue),	 ModuleFactory.getMLReadingModule(),FieldType.DECIMAL));
 			mLLogCheckRatioFields.add(FieldFactory.getField(id+"_upperAnomalylog",id+"_Upper Anomaly Log","DECIMAL_CF"+(++decimalColumnHigherValue),ModuleFactory.getMLLogReadingModule(),FieldType.DECIMAL));
 			mlCheckRatioFields.add(FieldFactory.getField(id+"_upperAnomaly",id+"_Upper Anomaly","DECIMAL_CF"+(decimalColumnHigherValue),ModuleFactory.getMLReadingModule(),FieldType.DECIMAL));
-			mLLogCheckRatioFields.add(FieldFactory.getField(id+"_lowerAnomalylog",id+"_Lower Anomaly Log","DECIMAL_CF"+(++decimalColumnHigherValue),ModuleFactory.getMLLogReadingModule(),FieldType.DECIMAL));				
-			mlCheckRatioFields.add(FieldFactory.getField(id+"_lowerAnomaly",id+"_Lower Anomaly","DECIMAL_CF"+(decimalColumnHigherValue),ModuleFactory.getMLReadingModule(),FieldType.DECIMAL));				
-	
+			mLLogCheckRatioFields.add(FieldFactory.getField(id+"_lowerAnomalylog",id+"_Lower Anomaly Log","DECIMAL_CF"+(++decimalColumnHigherValue),ModuleFactory.getMLLogReadingModule(),FieldType.DECIMAL));
+			mlCheckRatioFields.add(FieldFactory.getField(id+"_lowerAnomaly",id+"_Lower Anomaly","DECIMAL_CF"+(decimalColumnHigherValue),ModuleFactory.getMLReadingModule(),FieldType.DECIMAL));
+
 		}
 		Long checkRatioLogReadingNewModuleId = MLAPI.addReading(parentList,"energyanomalyratiomllogreadings",mLLogCheckRatioFields,ModuleFactory.getMLLogReadingModule().getTableName(),ModuleType.PREDICTED_READING,null);
 		FacilioModule module = modBean.getModule("energyanomalyratiomlreadings");
 		mlCheckRatioFields = module != null ? modBean.getAllFields(module.getName()) : mlCheckRatioFields;
 		MLAPI.addReading(parentList,"energyanomalyratiomlreadings",mlCheckRatioFields,ModuleFactory.getMLReadingModule().getTableName(),module);
-		
+
 		FacilioModule readingModule = modBean.getModule("energyanomalyratiomlreadings");
 		long mlID = MLAPI.addMLModel("ratioCheck",checkRatioLogReadingNewModuleId,readingModule.getModuleId());
 
 		FacilioModule checkGamReadingModule = modBean.getModule("energyanomalydetectionmlreadings");
-		
-		FacilioField parentField = modBean.getField("parentId", checkGamReadingModule.getName());		
+
+		FacilioField parentField = modBean.getField("parentId", checkGamReadingModule.getName());
 		FacilioField actualValueField = modBean.getField("actualValue", checkGamReadingModule.getName());
 		FacilioField adjustedLowerBoundField = modBean.getField("adjustedLowerBound", checkGamReadingModule.getName());
 		FacilioField adjustedUpperBoundField = modBean.getField("adjustedUpperBound", checkGamReadingModule.getName());
@@ -352,27 +328,14 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		FacilioField upperAnomalyField = modBean.getField("upperAnomaly",checkGamReadingModule.getName());
 		FacilioField upperBoundField = modBean.getField("upperBound", checkGamReadingModule.getName());
 		FacilioField upperGAMField = modBean.getField("upperGAM", checkGamReadingModule.getName());
-		
+
 		Map<String,Long> maxSamplingPeriodMap = new HashMap<String, Long>();
 		Map<String,Long> futureSamplingPeriodMap = new HashMap<String, Long>();
 		Map<String,String> aggregationMap = new HashMap<String, String>();
-		
-		if (mlVariables != null) {
-			for(Object entry:mlVariables.entrySet()){
-				Map.Entry en = (Map.Entry) entry;
-				if(((JSONObject)en.getValue()).containsKey("maxSamplingPeriod")){
-					maxSamplingPeriodMap.put(en.getKey().toString(), Long.parseLong(((JSONObject)en.getValue()).get("maxSamplingPeriod").toString()));
-				}
-				if(((JSONObject)en.getValue()).containsKey("futureSamplingPeriod")){
-					futureSamplingPeriodMap.put(en.getKey().toString(), Long.parseLong(((JSONObject)en.getValue()).get("futureSamplingPeriod").toString()));
-				}
-				if(((JSONObject)en.getValue()).containsKey("aggregation")){
-					aggregationMap.put(en.getKey().toString(), ((JSONObject)en.getValue()).get("aggregation").toString());
-				}
-			}
-		}
-		
-		
+
+
+
+
 		for(Long id : assetIDList)
 		{
 			MLAPI.addMLVariables(mlID,actualValueField.getModuleId(),actualValueField.getFieldId(),parentField.getFieldId(),id,maxSamplingPeriodMap.containsKey(actualValueField.getName())? maxSamplingPeriodMap.get(actualValueField.getName()): 4200000,futureSamplingPeriodMap.containsKey(actualValueField.getName())? futureSamplingPeriodMap.get(actualValueField.getName()):0,(id==Long.parseLong(TreeHierarchy.split(",")[0])),aggregationMap.containsKey(actualValueField.getName())? aggregationMap.get(actualValueField.getName()):"SUM");
@@ -392,15 +355,15 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 			MLAPI.addMLVariables(mlID,upperBoundField.getModuleId(),upperBoundField.getFieldId(),parentField.getFieldId(),id,maxSamplingPeriodMap.containsKey(upperBoundField.getName())? maxSamplingPeriodMap.get(upperBoundField.getName()): 4200000,futureSamplingPeriodMap.containsKey(upperBoundField.getName())? futureSamplingPeriodMap.get(upperBoundField.getName()):0,false,aggregationMap.containsKey(upperBoundField.getName())? aggregationMap.get(upperBoundField.getName()):"SUM");
 			MLAPI.addMLVariables(mlID,upperGAMField.getModuleId(),upperGAMField.getFieldId(),parentField.getFieldId(),id,maxSamplingPeriodMap.containsKey(upperGAMField.getName())? maxSamplingPeriodMap.get(upperGAMField.getName()): 4200000,futureSamplingPeriodMap.containsKey(upperGAMField.getName())? futureSamplingPeriodMap.get(upperGAMField.getName()):0,false,aggregationMap.containsKey(upperGAMField.getName())? aggregationMap.get(upperGAMField.getName()):"SUM");
 		}
-		
+
 		MLAPI.addMLModelVariables(mlID,"TreeHierarchy",TreeHierarchy);
 		MLAPI.addMLModelVariables(mlID,"energyfieldid",""+energyfieldid);
 		MLAPI.addMLModelVariables(mlID,"adjustedupperboundfieldid",""+adjustedUpperBoundField.getId());
-		
+
 		return mlID;
 	}
-	
-	private Long buildGamModel(List<AssetContext> assetContextList,JSONObject mlVariables,JSONObject mlModelVariables,FacilioField energyField,FacilioField energyParentField) throws Exception
+
+	private List<Long> buildGamModel(List<AssetContext> assetContextList,JSONObject mlVariables,JSONObject mlModelVariables,FacilioField energyField,FacilioField energyParentField,boolean isPastData) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField temperatureField = modBean.getField("temperature", FacilioConstants.ContextNames.WEATHER_READING);
@@ -422,12 +385,14 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 				}
 			}
 		}
-		Long parentMlId =null;
+		List<Long> parentMlIdList = new ArrayList<Long>();
 		for(AssetContext emContext : assetContextList)
 		{
 			long mlID = MLAPI.addMLModel("buildGamModelv1",-1,-1);
+			parentMlIdList.add(mlID);
+
 			MLAPI.addMLVariables(mlID,energyField.getModuleId(),energyField.getFieldId(),energyParentField.getFieldId(),emContext.getId(),maxSamplingPeriodMap.containsKey(energyField.getName())? maxSamplingPeriodMap.get(energyField.getName()):7776000000L,futureSamplingPeriodMap.containsKey(energyField.getName())? futureSamplingPeriodMap.get(energyField.getName()):0,true,aggregationMap.containsKey(energyField.getName())? aggregationMap.get(energyField.getName()):"SUM");
-		
+
 			MLAPI.addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),temperatureParentField.getFieldId(),emContext.getSiteId(),maxSamplingPeriodMap.containsKey(temperatureField.getName())? maxSamplingPeriodMap.get(temperatureField.getName()):7776000000L,futureSamplingPeriodMap.containsKey(temperatureField.getName())? futureSamplingPeriodMap.get(temperatureField.getName()):0,false,aggregationMap.containsKey(temperatureField.getName())? aggregationMap.get(temperatureField.getName()):"SUM");
 			MLAPI.addMLAssetVariables(mlID,emContext.getId(),"TYPE","Energy Meter");
 			MLAPI.addMLAssetVariables(mlID,emContext.getSiteId(),"TYPE","Site");
@@ -437,14 +402,13 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 				MLAPI.addMLModelVariables(mlID, en.getKey(), en.getValue());
 			}
 			MLAPI.addMLModelVariables(mlID, "asset_id",String.valueOf(emContext.getId()));
+			if(!isPastData) {
 
-			ScheduleInfo info = new ScheduleInfo();
-			info = FormulaFieldAPI.getSchedule(FacilioFrequency.DAILY);					
-			MLAPI.addJobs(mlID,"DefaultMLJob",info,"ml");
-			if(parentMlId == null) { 
-				parentMlId = mlID; 
-				}  
+				ScheduleInfo info = new ScheduleInfo();
+				info = FormulaFieldAPI.getSchedule(FacilioFrequency.DAILY);
+				MLAPI.addJobs(mlID, "DefaultMLJob", info, "ml");
+			}
 		}
-		return parentMlId;
+		return parentMlIdList;
 	}
 }

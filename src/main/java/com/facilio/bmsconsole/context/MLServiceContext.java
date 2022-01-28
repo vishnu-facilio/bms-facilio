@@ -23,7 +23,7 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 	private String scenario;
 	private String serviceType = "default" ;
 	private String assetIds;
-	private List<Long> assetList; 
+	private List<Long> assetList;
 	private List<String> readingVariables;
 	private List<List<Map<String, Object>>> models;
 	private JSONObject mlVariables;
@@ -57,8 +57,8 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 	private String status;
 	private List<MLResponseContext> mlResponseList;
 	private List<Long> parentMlIdList;
-	private Long childMlId;
-	
+	private List<Long> childMlIdList;
+
 	public JSONObject getWorkflowInfo() {
 		return workflowInfo;
 	}
@@ -82,11 +82,11 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 	public void setMlVariables(JSONObject mlVariables) {
 		this.mlVariables = mlVariables;
 	}
-	
+
 	public JSONObject getSamplingJson() {
 		return samplingJson;
 	}
-	
+
 	public void updateSamplingJson() {
 //		"mlVariables" : {"totalEnergyConsumptionDelta" : {"maxSamplingPeriod" : 777600000 }}}
 		this.samplingJson = new JSONObject();
@@ -120,7 +120,7 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 	public void setReadingVariables(List<String> readingVariables) {
 		this.readingVariables = readingVariables;
 	}
-	
+
 	public void updateReadingVariables() throws Exception {
 		this.readingVariables = MLServiceAPI.getModelReadings(this.models).get(0);
 	}
@@ -138,7 +138,7 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 		requestJson.putAll(getRequestMetaMap());
 		return requestJson;
 	}
-	
+
 	public Map<String, Object> getRequestMetaMap() {
 		Map<String, Object> requestMap = new LinkedHashMap<>();
 		addParams(requestMap, "modelName", this.modelName);
@@ -156,17 +156,17 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 		addParams(requestMap, "executeTime", this.executeTime);
 		addParams(requestMap, "isPastData", this.isPastData);
 		addParams(requestMap, "parentMlIdList", this.parentMlIdList);
-		addParams(requestMap, "childMlId", this.childMlId);
+		addParams(requestMap, "childMlId", this.childMlIdList);
 		addParams(requestMap, "trainingSamplingPeriod", this.trainingSamplingPeriod);
 		return requestMap;
 	}
-	
+
 	private void addParams(Map<String, Object> map, String key, Object value) {
 		if(value!=null) {
 			map.put(key, value);
 		}
 	}
-	
+
 	private void addParams(Map<String, Object> map, String key, long value) {
 		if(value!=0) {
 			map.put(key, value);
@@ -210,15 +210,8 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 		this.status = status;
 	}
 
-	//	public String getAssetType() {
-	//		return assetType;
-	//	}
-	//	
-	//	public void setAssetType(String assetType) {
-	//		this.assetType = assetType;
-	//	}
 
-	public String getAssetIds() { 
+	public String getAssetIds() {
 		return assetIds;
 	}
 
@@ -266,7 +259,7 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 	public void setStartTime(long startTime) {
 		this.startTime = startTime;
 	}
-	
+
 	public long getEndTime() {
 		return endTime;
 	}
@@ -274,7 +267,7 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 	public void setEndTime(long endTime) {
 		this.endTime = endTime;
 	}
-	
+
 	public long getExecuteTime() {
 		return executeTime;
 	}
@@ -306,7 +299,7 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 	public void setMlID(long mlID) {
 		this.mlID = mlID;
 	}
-	
+
 	public void updateMlID(long mlID) throws Exception {
 		this.setMlID(mlID);
 		MLServiceAPI.updateMLID(this.getUseCaseId(), mlID);
@@ -320,14 +313,12 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 		this.parentMlIdList = parentMlIdList;
 	}
 
-	public Long getChildMlId() {
-		return childMlId;
+	public List<Long> getChildMlIdList() {
+		return childMlIdList;
 	}
-
-	public void setChildMlId(Long childMlId) {
-		this.childMlId = childMlId;
+	public void setChildMlIdList(List<Long> childMlIdList) {
+		this.childMlIdList = childMlIdList;
 	}
-
 	public void setStartTimeString(String startTimeString) {
 		this.startTimeString = startTimeString;
 		this.startTime = MLServiceAPI.convertDatetoTTimeZone(startTimeString);
@@ -336,17 +327,17 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 	public String getStartTimeString() {
 		return startTimeString;
 	}
-	
+
 	public void setEndTimeString(String endTimeString) {
 		this.endTimeString = endTimeString;
 		this.endTime = MLServiceAPI.convertDatetoTTimeZone(endTimeString);
 
 	}
-	
+
 	public String getEndTimeString() {
 		return endTimeString;
 	}
-	
+
 	public long getTrainingSamplingPeriod() {
 		return trainingSamplingPeriod;
 	}
@@ -362,7 +353,7 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 	public void setPastData(boolean isPastData) {
 		this.isPastData = isPastData;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "MLServiceContext [modelName=" + modelName + ", scenario=" + scenario + ", serviceType=" + serviceType
@@ -374,7 +365,7 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 				+ trainingSamplingPeriod + ", samplingJson=" + samplingJson + ", isPastData=" + isPastData
 				+ ", orgDetails=" + orgDetails + ", useCaseId=" + useCaseId
 				+ ", workflowId=" + workflowId + ", status=" + status
-				+ ", parentMlIdList=" + parentMlIdList + ", childMlId=" + childMlId + "]"; //excluding dataObjectList, mlResponseList
+				+ ", parentMlIdList=" + parentMlIdList + ", childMlId=" + childMlIdList + "]"; //excluding dataObjectList, mlResponseList
 	}
 
 }
