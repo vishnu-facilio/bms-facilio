@@ -35,14 +35,14 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("Floor" , Arrays.asList("DATETIME_CF1","DATETIME_CF2","DATETIME_CF3","DATETIME_CF4","DATETIME_CF5"));
 		tablesContainsDateField.put("Space" , Arrays.asList("DATETIME_CF1","DATETIME_CF2","DATETIME_CF3","DATETIME_CF4","DATETIME_CF5"));
 		tablesContainsDateField.put("Store_room" , Arrays.asList("CREATED_TIME","MODIFIED_TIME","LAST_PURCHASED_DATE"));
-		tablesContainsDateField.put("Item_Types_category" , Arrays.asList("CREATED_TIME","MODIFIED_TIME"));
+//		tablesContainsDateField.put("Item_Types_category" , Arrays.asList("CREATED_TIME","MODIFIED_TIME"));
 		tablesContainsDateField.put("Item_Type_Activity" , Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME"));
 		tablesContainsDateField.put("Inventory_category" , Arrays.asList("CREATED_TIME","MODIFIED_TIME"));
 //		tablesContainsDateField.put("Item_Types_status" , Arrays.asList("CREATED_TIME","MODIFIED_TIME"));
 		tablesContainsDateField.put("Item_Types" , Arrays.asList("CREATED_TIME","MODIFIED_TIME","LAST_PURCHASED_DATE","LAST_ISSUED_DATE"));
 		tablesContainsDateField.put("Item_status" , Arrays.asList("CREATED_TIME","MODIFIED_TIME"));
 		tablesContainsDateField.put("Item" , Arrays.asList("CREATED_TIME","MODIFIED_TIME","LAST_PURCHASED_DATE"));
-		tablesContainsDateField.put("Tool_types_status" , Arrays.asList("CREATED_TIME","MODIFIED_TIME"));
+//		tablesContainsDateField.put("Tool_types_status" , Arrays.asList("CREATED_TIME","MODIFIED_TIME"));
 		tablesContainsDateField.put("Tool_types" , Arrays.asList("CREATED_TIME","MODIFIED_TIME","LAST_PURCHASED_DATE","LAST_ISSUED_DATE"));
 		tablesContainsDateField.put("Tool_status" , Arrays.asList("CREATED_TIME","MODIFIED_TIME"));
 		tablesContainsDateField.put("Tool" , Arrays.asList("CREATED_TIME","MODIFIED_TIME","LAST_PURCHASED_DATE"));
