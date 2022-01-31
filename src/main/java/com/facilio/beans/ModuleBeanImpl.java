@@ -1100,6 +1100,9 @@ public class ModuleBeanImpl implements ModuleBean {
 						throw new IllegalArgumentException("Invalid Field instance for the URL_FIELD data type");
 					}
 					break;
+				case DATE:
+					addExtendedProps(ModuleFactory.getDateFieldModule(), FieldFactory.getDateFieldFields(), fieldProps);
+					break;
 				default:
 					break;
 			}

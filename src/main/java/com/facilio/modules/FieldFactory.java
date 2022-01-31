@@ -1183,6 +1183,17 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getDateFieldFields() {
+
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getDateFieldModule();
+
+        fields.add(getField("fieldId", "FIELDID", module, FieldType.ID));
+        fields.add(getStringField("allowedDate","ALLOWED_DATE",module));
+
+        return fields;
+    }
+
     public static List<FacilioField> getBooleanFieldFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getBooleanFieldsModule();
