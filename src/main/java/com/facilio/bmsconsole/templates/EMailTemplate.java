@@ -10,6 +10,15 @@ public class EMailTemplate extends Template {
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
+
+	private long moduleId = -1;
+	public long getModuleId() {
+		return moduleId;
+	}
+	public void setModuleId(long moduleId) {
+		this.moduleId = moduleId;
+	}
+
 	private String from;
 
 	public String getFrom() {

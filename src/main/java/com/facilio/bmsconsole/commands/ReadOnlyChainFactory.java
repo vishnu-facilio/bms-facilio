@@ -2268,6 +2268,12 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetAllMyDelegationCommand());
 		return chain;
 	}
+
+	public static FacilioChain getEmailTemplateChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetAllEmailTemplatesCommand());
+		return chain;
+	}
 	
 	public static FacilioChain getSafetyPlanListChain() {
 		FacilioChain chain = getDefaultChain();

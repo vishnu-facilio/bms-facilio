@@ -501,6 +501,11 @@
 				class="com.facilio.banner.action.BannerAction" method="closeBanner" />
 	</package>
 
+	<package name="emailTemplate" namespace="/api/v2/template/email" extends="v2Api">
+		<action name="list"
+				class="com.facilio.emailtemplate.action.EMailTemplateAction" method="list" />
+	</package>
+
 	<package name="stateTransition"
 		namespace="/api/v2/statetransition" extends="v2Api">
 		<action name="update"

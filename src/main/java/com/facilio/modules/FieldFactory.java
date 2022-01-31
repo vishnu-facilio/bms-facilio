@@ -3141,6 +3141,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("sendAsSeparateMail", "SEND_AS_SEPARATE_MAIL", module, FieldType.BOOLEAN));
         fields.add(getField("html", "IS_HTML", module, FieldType.BOOLEAN));
 
+        fields.add(getNumberField("moduleId", "MODULE_ID", module));
+
         FacilioField emailSubject = new FacilioField();
         emailSubject.setName("subject");
         emailSubject.setDataType(FieldType.STRING);

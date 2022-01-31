@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <request path="/api/v2/template/email">
+        <requestbody type="object">
+            <property name="moduleName" type="string" />
+        </requestbody>
+    </request>
+</config>

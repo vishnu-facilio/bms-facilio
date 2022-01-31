@@ -267,6 +267,7 @@ public class FacilioConstants {
 		public static final String TIMELINE_PATCHTYPE_GROUPASSIGN = "assigned a group";
 		public static final String FACILIO_BANNER = "facilioBanner";
 		public static final String FACILIO_BANNERS = "facilioBanners";
+		public static final String EMAIL_TEMPLATES = "emailTemplates";
 
         public static class Reservation {
 			public static final String RESERVATION = "reservation";

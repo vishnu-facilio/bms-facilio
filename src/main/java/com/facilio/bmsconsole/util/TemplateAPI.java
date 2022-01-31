@@ -6,22 +6,19 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsoleV3.context.EmailFromAddress;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -83,11 +80,6 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.scriptengine.context.ParameterContext;
 import com.facilio.services.email.EmailClient;
@@ -1901,5 +1893,30 @@ public class TemplateAPI {
 		}
 		return null;
 	}
-	
+
+	public static void fillEmailTemplate(List<EMailTemplate> emailTemplates) throws Exception {
+		if (CollectionUtils.isEmpty(emailTemplates)) {
+			return;
+		}
+
+		Set<Long> fromIds = new HashSet<>();
+		for (EMailTemplate template : emailTemplates) {
+			fromIds.add(template.getFromID());
+		}
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<EmailFromAddress> select = new SelectRecordsBuilder<EmailFromAddress>()
+				.moduleName(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME)
+				.beanClass(EmailFromAddress.class)
+				.select(modBean.getAllFields(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME))
+				.andCondition(CriteriaAPI.getIdCondition(fromIds, modBean.getModule(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME)));
+		List<EmailFromAddress> emailFromAddresses = select.get();
+		if (CollectionUtils.isNotEmpty(emailFromAddresses)) {
+			Map<Long, String> emailFromMap = emailFromAddresses.stream().collect(Collectors.toMap(EmailFromAddress::getId,
+					e -> MailMessageUtil.getWholeEmailFromNameAndEmail.apply(e.getDisplayName(), e.getEmail())));
+			for (EMailTemplate template : emailTemplates) {
+				template.setFrom(emailFromMap.get(template.getFromID()));
+			}
+		}
+	}
 }
