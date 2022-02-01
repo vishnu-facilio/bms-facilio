@@ -112,12 +112,12 @@ public class WorkorderPageFactory extends PageFactory {
 
         // comments widget
         PageWidget commentsWidget = new PageWidget(PageWidget.WidgetType.WORKORDER_COMMENTS);
-        commentsWidget.addToLayoutParams(0, 6 + yOffset, 17, 8);
+        commentsWidget.addToLayoutParams(0, 6 + yOffset, 17, 9);
         summarySection.addWidget(commentsWidget);
 
         // attachments widget
         PageWidget attachmentsWidget = new PageWidget(PageWidget.WidgetType.WORKORDER_ATTACHMENTS);
-        attachmentsWidget.addToLayoutParams(0, 14 + yOffset, 17, 8);
+        attachmentsWidget.addToLayoutParams(0, 15 + yOffset, 17, 8);
         summarySection.addWidget(attachmentsWidget);
 
         composeRightPanel(summarySection, workorder);
