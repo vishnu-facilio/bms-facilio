@@ -5,6 +5,10 @@ import com.facilio.bmsconsole.context.ScopingConfigContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.ScopeOperator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 
@@ -19,31 +23,38 @@ public class TicketScopingConfig extends SignUpData {
             FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TICKET);
 
             //adding scope in Facilio
-            long applicationScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+            long applicationScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
             ScopingConfigContext scoping = new ScopingConfigContext();
-            scoping.setFieldName("siteId");
+            Criteria criteria = new Criteria();
+            Condition condition = CriteriaAPI.getCondition("siteId", "com.facilio.modules.SiteValueGenerator", ScopeOperator.SCOPING_IS);
+            condition.setModuleName(module.getName());
+            criteria.addAndCondition(condition);
             scoping.setScopingId(applicationScopingId);
-            scoping.setOperatorId(36);
-            scoping.setFieldValueGenerator("com.facilio.modules.SiteValueGenerator");
+            scoping.setModuleId(module.getModuleId());
+            scoping.setCriteria(criteria);
             scoping.setModuleId(module.getModuleId());
 
             //adding scope in Tenant Portal
-            long tenantPortalScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+            long tenantPortalScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
             ScopingConfigContext tenantScoping = new ScopingConfigContext();
-            tenantScoping.setFieldName("tenant");
+            Criteria criteria_tenant = new Criteria();
+            Condition tenantCondition = CriteriaAPI.getCondition("tenant", "com.facilio.modules.UserValueGenerator", ScopeOperator.SCOPING_IS);
+            tenantCondition.setModuleName(module.getName());
+            criteria_tenant.addAndCondition(tenantCondition);
             tenantScoping.setScopingId(tenantPortalScopingId);
-            tenantScoping.setOperatorId(36);
-            tenantScoping.setFieldValueGenerator("com.facilio.modules.UserValueGenerator");
             tenantScoping.setModuleId(module.getModuleId());
+            tenantScoping.setCriteria(criteria_tenant);
 
             //adding scope in Vendor Portal
-            long vendorPortalScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
+            long vendorPortalScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
             ScopingConfigContext vendorScoping = new ScopingConfigContext();
-            vendorScoping.setFieldName("vendor");
+            Criteria criteria_vendor = new Criteria();
+            Condition vendorCondition = CriteriaAPI.getCondition("vendor", "com.facilio.modules.UserValueGenerator", ScopeOperator.SCOPING_IS);
+            vendorCondition.setModuleName(module.getName());
+            criteria_vendor.addAndCondition(vendorCondition);
             vendorScoping.setScopingId(vendorPortalScopingId);
-            vendorScoping.setOperatorId(36);
-            vendorScoping.setFieldValueGenerator("com.facilio.modules.UserValueGenerator");
             vendorScoping.setModuleId(module.getModuleId());
+            vendorScoping.setCriteria(criteria_vendor);
 
             List<ScopingConfigContext> scopingList = new ArrayList<>();
             scopingList.add(scoping);

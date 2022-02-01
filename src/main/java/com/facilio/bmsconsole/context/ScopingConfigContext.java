@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import java.io.Serializable;
 
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.Operator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -15,7 +16,6 @@ public class ScopingConfigContext implements Serializable{
 	private long orgId;
 	private long scopingId;
 	private long moduleId;
-	private String fieldName;
 	public long getId() {
 		return id;
 	}
@@ -40,51 +40,59 @@ public class ScopingConfigContext implements Serializable{
 	public void setModuleId(long moduleId) {
 		this.moduleId = moduleId;
 	}
+	private long criteriaId;
+	private Criteria criteria;
+
+	public long getCriteriaId() {
+		return criteriaId;
+	}
+
+	public void setCriteriaId(long criteriaId) {
+		this.criteriaId = criteriaId;
+	}
+
+	public Criteria getCriteria() {
+		return criteria;
+	}
+
+	public void setCriteria(Criteria criteria) {
+		this.criteria = criteria;
+	}
+
+	private String fieldName;
+	private String value;
+	private long operatorId;
+	private String valueGenerator;
+
 	public String getFieldName() {
 		return fieldName;
 	}
+
 	public void setFieldName(String fieldName) {
 		this.fieldName = fieldName;
 	}
-	
-	
-	private Object value;
-	public Object getValue() {
+
+	public String getValue() {
 		return value;
 	}
-	public void setValue(Object value) {
+
+	public void setValue(String value) {
 		this.value = value;
 	}
-	
-	private Operator operator;
-	
-	@JsonIgnore
-	public Operator getOperator() {
-		return operator;
-	}
-	public void setOperator(Operator operator) {
-		this.operatorId = operator.getOperatorId();
-		this.operator = operator;
-	}
-	
-	private int operatorId;
-	public int getOperatorId() {
-		if(operator != null) {
-			return operator.getOperatorId();
-		}
+
+	public long getOperatorId() {
 		return operatorId;
 	}
-	public void setOperatorId(int operatorId) {
+
+	public void setOperatorId(long operatorId) {
 		this.operatorId = operatorId;
-		this.setOperator(Operator.getOperator(operatorId));
 	}
-	
-	private String fieldValueGenerator;
-	public String getFieldValueGenerator() {
-		return fieldValueGenerator;
+
+	public String getValueGenerator() {
+		return valueGenerator;
 	}
-	public void setFieldValueGenerator(String fieldValueGenerator) {
-		this.fieldValueGenerator = fieldValueGenerator;
+
+	public void setValueGenerator(String valueGenerator) {
+		this.valueGenerator = valueGenerator;
 	}
-	
 }

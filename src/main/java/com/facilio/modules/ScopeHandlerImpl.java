@@ -3,11 +3,11 @@ package com.facilio.modules;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -38,7 +38,7 @@ public class ScopeHandlerImpl extends ScopeHandler {
     @Override
     public Collection<FacilioField> updateValuesForInsertAndGetFields(FacilioModule module, List<Map<String, Object>> props) {
         try {
-			if (AccountUtil.shouldApplyDBScoping(module)){
+			if (AccountUtil.applyDBScoping(module)){
 				ScopeFieldsAndCriteria scopeFields = constructScopingFieldsAndCriteria(module, null, true);
 				if(scopeFields != null) {
 					Collection<FacilioField> fields = scopeFields.getFields();
@@ -68,11 +68,11 @@ public class ScopeHandlerImpl extends ScopeHandler {
     @Override
     public ScopeFieldsAndCriteria updateValuesForUpdateAndGetFieldsAndCriteria (FacilioModule module, Collection<FacilioModule> joinModules, Map<String, Object> prop) {
         try {
-			if (AccountUtil.shouldApplyDBScoping(module)){
-				Map<Long, Map<String, Object>> scopingMap = AccountUtil.getCurrentAppScopingMap();
+			if (AccountUtil.applyDBScoping(module)){
+				Map<Long, ScopingConfigContext> scopingMap = AccountUtil.getCurrentAppScopingMap();
 				if(MapUtils.isNotEmpty(scopingMap)) {
-					Map<String, Object> moduleScoping = scopingMap.get(module.getModuleId());
-					if(MapUtils.isNotEmpty(moduleScoping)) {
+					ScopingConfigContext moduleScoping = scopingMap.get(module.getModuleId());
+					if(moduleScoping != null) {
 						ScopeFieldsAndCriteria scopeFieldCriteria = constructScopingFieldsAndCriteria(module, joinModules, false);
 						Map<String, Object> globalScopingValues = AccountUtil.getSwitchScopingFieldMap();
 						if(MapUtils.isNotEmpty(globalScopingValues)) {
@@ -118,19 +118,19 @@ public class ScopeHandlerImpl extends ScopeHandler {
     @Override
     public ScopeFieldsAndCriteria getFieldsAndCriteriaForSelect(FacilioModule module, Collection<FacilioModule> joinModules) {
         try {
-			if (AccountUtil.shouldApplyDBScoping(module)){
+			if (AccountUtil.applyDBScoping(module)) {
 				return constructScopingFieldsAndCriteria(module, joinModules, false);
-			}
-			else {
+			} else {
 				//special handling for altayer - tenants module inorder to temporarily support multi site scoping. can be removed once multi select lookup is handled
-				if(AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() == 407l || AccountUtil.getCurrentOrg().getOrgId() == 418l) && StringUtils.isNotEmpty(module.getName()) && module.getName().equals(FacilioConstants.ContextNames.TENANT)) {
+				if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() == 407l || AccountUtil.getCurrentOrg().getOrgId() == 418l) && StringUtils.isNotEmpty(module.getName()) && module.getName().equals(FacilioConstants.ContextNames.TENANT)) {
 					return null;
 				}
 
 				if (FieldUtil.isSiteIdFieldPresent(module)) {
-			        return constructSiteFieldsAndCriteria(module, false);
-			    }
+					return constructSiteFieldsAndCriteria(module, false);
+				}
 			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -182,53 +182,17 @@ public class ScopeHandlerImpl extends ScopeHandler {
 		}
     	List<FacilioField> fields = new ArrayList<FacilioField>();
 		Criteria criteria = null;
-	    
-    	for(FacilioModule module : joinModules) {
-    		Map<String, Object> moduleScoping = AccountUtil.getCurrentAppScopingMap(module.getModuleId());
-	    	if(MapUtils.isNotEmpty(moduleScoping)) {
-				Iterator<Map.Entry<String, Object>> itr = moduleScoping.entrySet().iterator(); 
-				
-				while(itr.hasNext()) 
-		        { 
-					 Map.Entry<String, Object> entry = itr.next(); 
-		             String fieldName = entry.getKey();
-		             ScopingConfigContext obj = (ScopingConfigContext) entry.getValue();
-		             if(StringUtils.isNotEmpty(fieldName)) {
-		             	FacilioField field = null;
-					 	if(fieldName.contains(".")) {
-							String[] moduleField = fieldName.split("\\.");
-							if (moduleField.length > 1) {
-								field = RecordAPI.getField(moduleField[1], moduleField[0]);
-							}
-						}
-		             	else {
-		             		field = RecordAPI.getField(fieldName, module.getName());
-		             		if(field != null && !field.getDataTypeEnum().isRelRecordField()) {
-								fields.add(field);
-							}
-						}
-						 if (field != null) {
-							 if (!isInsert) {
-								 if (criteria == null) {
-									 criteria = new Criteria();
-								 }
-								 Object value = obj.getValue();
-								 Condition condition = null;
-								 if (value != null) {
-								 	if(value instanceof  String) {
-								 	  condition = CriteriaAPI.getCondition(field, String.valueOf(value) , obj.getOperator());
-									}
-								 	else {
-								 		condition = CriteriaAPI.getCondition(field, (Criteria)value , obj.getOperator());
-									}
-								 	if(condition != null) {
-										criteria.addAndCondition(condition);
-									}
-								 }
-							 }
-						 }
-					 }
-		        }
+
+		for(FacilioModule module : joinModules) {
+    		ScopingConfigContext moduleScoping = AccountUtil.getCurrentAppScopingMap(module.getModuleId());
+	    	if(moduleScoping != null) {
+				fields.addAll(ApplicationApi.computeValueForScopingField(moduleScoping, module));
+				if(!isInsert) {
+					if (criteria == null) {
+						criteria = new Criteria();
+					}
+					criteria.andCriteria(moduleScoping.getCriteria());
+				}
 			}
     	}
 		return ScopeFieldsAndCriteria.of(fields, criteria);

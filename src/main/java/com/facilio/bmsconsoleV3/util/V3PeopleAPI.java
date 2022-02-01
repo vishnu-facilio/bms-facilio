@@ -303,19 +303,23 @@ public class V3PeopleAPI {
         return -1;
     }
 
-    public static V3TenantContext getTenantForUser(long ouId) throws Exception {
+    public static V3TenantContext getTenantForUser(long ouId, boolean skipScoping) throws Exception {
         long pplId = V3PeopleAPI.getPeopleIdForUser(ouId);
         if(pplId <= 0) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid People Id mapped with ORG_User");
         }
-        V3TenantContactContext tc = (V3TenantContactContext)V3RecordAPI.getRecord(FacilioConstants.ContextNames.TENANT_CONTACT, pplId, V3TenantContactContext.class);
+        V3TenantContactContext tc = (V3TenantContactContext)V3RecordAPI.getRecord(FacilioConstants.ContextNames.TENANT_CONTACT, pplId, V3TenantContactContext.class, skipScoping);
         if (tc != null && tc.getTenant() != null && tc.getTenant().getId() > 0) {
-            return (V3TenantContext)V3RecordAPI.getRecord(FacilioConstants.ContextNames.TENANT, tc.getTenant().getId(), V3TenantContext.class);
+            return (V3TenantContext)V3RecordAPI.getRecord(FacilioConstants.ContextNames.TENANT, tc.getTenant().getId(), V3TenantContext.class, skipScoping);
         }
         return null;
     }
 
-    public static boolean checkForDuplicatePeople(V3PeopleContext people) throws Exception {
+    public static V3TenantContext getTenantForUser(long ouId) throws Exception {
+        return getTenantForUser(ouId, false);
+    }
+
+        public static boolean checkForDuplicatePeople(V3PeopleContext people) throws Exception {
         V3PeopleContext peopleExisiting = getPeople(people.getEmail());
         if(peopleExisiting != null && people.getId() != peopleExisiting.getId()) {
             return true;
@@ -630,21 +634,25 @@ public class V3PeopleAPI {
     }
 
 
-    public static V3VendorContext getVendorForUser(long ouId) throws Exception {
+    public static V3VendorContext getVendorForUser(long ouId, boolean skipScoping) throws Exception {
         long pplId = PeopleAPI.getPeopleIdForUser(ouId);
         if(pplId <= 0) {
             throw new IllegalArgumentException("Invalid People Id mapped with ORG_User");
         }
-        V3VendorContactContext vc = (V3VendorContactContext)V3RecordAPI.getRecord(FacilioConstants.ContextNames.VENDOR_CONTACT, pplId, V3VendorContactContext.class);
+        V3VendorContactContext vc = (V3VendorContactContext)V3RecordAPI.getRecord(FacilioConstants.ContextNames.VENDOR_CONTACT, pplId, V3VendorContactContext.class, skipScoping);
         if (vc != null && vc.getVendor() != null && vc.getVendor().getId() > 0) {
-            return (V3VendorContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.VENDORS, vc.getVendor().getId(), V3VendorContext.class);
+            return (V3VendorContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.VENDORS, vc.getVendor().getId(), V3VendorContext.class, skipScoping);
         }
 
         return null;
 
     }
 
-    public static List<Long> getTenantContactsIdsForLoggedInTenantUser(long ouid) throws Exception {
+    public static V3VendorContext getVendorForUser(long ouId) throws Exception {
+        return getVendorForUser(ouId, false);
+    }
+
+        public static List<Long> getTenantContactsIdsForLoggedInTenantUser(long ouid) throws Exception {
         V3TenantContext tenant = V3PeopleAPI.getTenantForUser(ouid);
         if(tenant != null) {
             List<V3TenantContactContext> tenantContacts = V3PeopleAPI.getTenantContacts(tenant.getId(), false, false);
