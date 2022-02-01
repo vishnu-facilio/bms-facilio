@@ -462,12 +462,12 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		switch (type){
 			case TIMELINE:
 				validateTimeLineView((TimelineViewContext)view);
+				long oldCustomizationId = TimelineViewUtil.getCustomizationIdFromViewId(view.getId());
+				if(oldCustomizationId > 0)
+				{
+					RecordCustomizationAPI.deleteCustomization(oldCustomizationId);
+				}
 				if(((TimelineViewContext) view).getRecordCustomization() != null) {
-					long oldCustomizationId = TimelineViewUtil.getCustomizationIdFromViewId(view.getId());
-					if(oldCustomizationId > 0)
-					{
-						RecordCustomizationAPI.deleteCustomization(oldCustomizationId);
-					}
 					long recordCustomizationId = RecordCustomizationAPI.addOrUpdateRecordCustomizationValues(((TimelineViewContext) view).getRecordCustomization());
 					viewProp.put("recordCustomizationId", recordCustomizationId);
 				}

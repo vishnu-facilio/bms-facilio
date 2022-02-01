@@ -98,7 +98,7 @@ public class TimelineViewUtil {
                 .table(timelineModule.getTableName())
                 .andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(viewId), NumberOperators.EQUALS));
         Map<String, Object> props = selectBuilder.fetchFirst();
-        if(props != null && !props.isEmpty())
+        if(props != null && props.containsKey("recordCustomizationId"))
         {
             return (long)props.get("recordCustomizationId");
         }
