@@ -8,6 +8,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.fields.FacilioField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.chain.Context;
 import org.apache.struts2.json.annotations.JSON;
@@ -17,6 +18,21 @@ import java.util.Map;
 public class StateflowTransitionContext extends AbstractStateTransitionRuleContext {
 
 	private static final long serialVersionUID = 1L;
+	public long qrFieldId = -1;
+	public long getQrFieldId() {
+		return qrFieldId;
+	}
+	public void setQrFieldId(long qrFieldId) {
+		this.qrFieldId = qrFieldId;
+	}
+
+	public FacilioField qrField;
+	public void setQrField(FacilioField qrField) {
+		this.qrField = qrField;
+	}
+	public FacilioField getQrField() {
+		return qrField;
+	}
 
 	@Override
 	public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders,
