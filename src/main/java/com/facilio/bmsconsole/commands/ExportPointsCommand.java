@@ -108,7 +108,6 @@ public class ExportPointsCommand extends FacilioCommand {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
 		FacilioField orderBy = isNiagara ? fieldMap.get(AgentConstants.DISPLAY_NAME) : fieldMap.get(AgentConstants.NAME);
 		GetPointRequest getPointRequest = new GetPointRequest()
-				.filterPointsForCommissioning()
 				.ofType(controllerType)
 				.orderBy(orderBy.getCompleteColumnName())
 				.limit(-1)
@@ -145,9 +144,6 @@ public class ExportPointsCommand extends FacilioCommand {
 						unitMap.put(unitId, unit.getSymbol());
 					}
 				}
-				if(isNiagara && StringUtils.isNotEmpty((String)point.get("displayName"))) { // Temp
-					point.put("name", point.get("displayName"));
-				}
 			}
 			
 			if (!resourceIds.isEmpty()) {
@@ -173,7 +169,7 @@ public class ExportPointsCommand extends FacilioCommand {
 			Map<String, Object> point = points.get(i);
 			Map<String,Object> record = new HashMap<>();
 			
-			String name = isNiagara ? (String) point.get("displayName") : (String) point.get("name");
+			String name = isNiagara ? (String) point.get(AgentConstants.DISPLAY_NAME) : (String) point.get(AgentConstants.NAME);
 			addRecord("Name", name, i, headers, record);
 			
 			if (isBacnet) {

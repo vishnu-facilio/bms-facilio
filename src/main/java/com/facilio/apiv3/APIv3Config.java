@@ -4,7 +4,6 @@ import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsole.util.MailMessageUtil;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.asset.*;
@@ -49,7 +48,6 @@ import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
-import com.facilio.bmsconsoleV3.commands.itemtypes.SetItemTypesUnitCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.FillJobPlanDetailsCommand;
 import com.facilio.bmsconsoleV3.commands.moves.UpdateEmployeeInDesksCommandV3;
@@ -58,7 +56,6 @@ import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommand
 import com.facilio.bmsconsoleV3.commands.purchaseorder.DeleteReceivableByPOIdV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.FetchPODetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.LoadPOSummaryLookupCommandV3;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.POAfterCreateOrEditV3Command;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.FetchPurchaseRequestDetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestSummaryLookupCommandV3;
@@ -81,7 +78,6 @@ import com.facilio.bmsconsoleV3.commands.tenantcontact.LoadTenantcontactLookupsC
 import com.facilio.bmsconsoleV3.commands.tenantunit.AddSpaceCommandV3;
 import com.facilio.bmsconsoleV3.commands.termsandconditions.CheckForPublishedCommand;
 import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesLookUpCommandV3;
-import com.facilio.bmsconsoleV3.commands.tooltypes.SetToolTypesUnitCommandV3;
 import com.facilio.bmsconsoleV3.commands.transferRequest.*;
 import com.facilio.bmsconsoleV3.commands.vendor.AddOrUpdateLocationForVendorCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.LoadVendorLookupCommandV3;
@@ -96,8 +92,6 @@ import com.facilio.bmsconsoleV3.commands.visitorlogging.LoadVisitorLoggingLookup
 import com.facilio.bmsconsoleV3.commands.watchlist.CheckForExisitingWatchlistRecordsCommandV3;
 import com.facilio.bmsconsoleV3.commands.watchlist.GetLogsForWatchListCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.LoadWorkorderLookupsAfterFetchcommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.SkipModuleCriteriaForSummaryCommand;
-import com.facilio.bmsconsoleV3.commands.workorder.SkipModuleCriteriaForUpcomingViewCommand;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
@@ -572,7 +566,6 @@ public class APIv3Config {
                 .update()
                 .list()
                 	.beforeFetch(new LoadItemTypesLookUpCommandV3())
-                    .afterFetch(new SetItemTypesUnitCommandV3())
                 .summary()
             		.beforeFetch(new LoadItemTypesLookUpCommandV3())
                 .build();
@@ -585,7 +578,6 @@ public class APIv3Config {
                 .update()
                 .list()
                 	.beforeFetch(new LoadToolTypesLookUpCommandV3())
-                    .afterFetch(new SetToolTypesUnitCommandV3())
                 .summary()
             		.beforeFetch(new LoadToolTypesLookUpCommandV3())
                 .build();

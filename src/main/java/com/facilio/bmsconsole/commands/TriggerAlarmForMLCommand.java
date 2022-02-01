@@ -66,8 +66,11 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 			LOGGER.fatal("Error_JAVA "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" FILE : TriggerAlarmForMLCommand "+" ERROR MESSAGE : ");
 			throw e;
 		}
-         
-		return false;
+		if(mlContext.isHistoric()) {
+			return true;
+		}
+
+			return false;
 	}
 	
 	private void generateEvent(MLContext mlContext,long assetID,MLAnomalyEvent parentEvent) throws Exception
@@ -232,20 +235,14 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 	}
 	
 	private void addEvent(MLContext mlContext,BaseEventContext event) throws Exception
-	{
-        if(mlContext.isHistoric())
-        {
-        	mlContext.addToEventList(event);
-        }
-        else
-        {
-        	List<BaseEventContext> eventList = new ArrayList<BaseEventContext>();
-            eventList.add(event);
-	        FacilioContext context = new FacilioContext();
-			context.put(EventConstants.EventContextNames.EVENT_LIST,eventList);
-			FacilioChain chain = TransactionChainFactory.getV2AddEventChain(false);
-			chain.execute(context);
-        }
+{
+		List<BaseEventContext> eventList = new ArrayList<BaseEventContext>();
+		eventList.add(event);
+		FacilioContext context = new FacilioContext();
+		context.put(EventConstants.EventContextNames.EVENT_LIST,eventList);
+		Boolean isHistoric  = mlContext.isHistoric();
+		FacilioChain chain = TransactionChainFactory.getV2AddEventChain(isHistoric);
+		chain.execute(context);
 	}
 	
 	public static void main(String arg[])
