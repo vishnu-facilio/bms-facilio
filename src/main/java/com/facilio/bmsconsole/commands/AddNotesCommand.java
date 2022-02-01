@@ -115,7 +115,9 @@ public class AddNotesCommand extends FacilioCommand implements PostTransactionCo
 					CommonCommandUtil.addActivityToContext(note.getParentId(), -1, CommonActivityType.ADD_NOTES, info, (FacilioContext) context);
 	     		} else if(Arrays.asList(FacilioConstants.ContextNames.VENDOR_NOTES,FacilioConstants.ContextNames.TENANT_NOTES,FacilioConstants.ContextNames.DELIVERY_NOTES).contains(moduleName)) {
 	     			CommonCommandUtil.addActivityToContext(note.getParentId(), -1, CommonActivityType.ADD_NOTES, info, (FacilioContext) context);
-				}
+				} else if(moduleName.equals(FacilioConstants.ContextNames.SERVICE_REQUEST_NOTES)) {
+					CommonCommandUtil.addActivityToContext(note.getParentId(), -1, CommonActivityType.ADD_NOTES, info, (FacilioContext) context);
+	     		}
 				else  {
 					FacilioModule parentModule = modBean.getModule(parentModuleName);
 					if (parentModule.isCustom()) {

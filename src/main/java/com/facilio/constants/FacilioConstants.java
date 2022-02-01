@@ -913,6 +913,7 @@ public class FacilioConstants {
 		
 		
 		public static final String TICKET_NOTES = "ticketnotes";
+		public static final String SERVICE_REQUEST_NOTES = "servicerequestsnotes";
 		public static final String BASE_SPACE_NOTES = "basespacenotes";
 		public static final String ASSET_NOTES = "assetnotes";
 		public static final String DELIVERY_NOTES = "deliverynotes";
@@ -930,6 +931,7 @@ public class FacilioConstants {
 		public static final String STORE_ROOM_NOTES = "storeRoomNotes";
 
 		public static final String TICKET_ATTACHMENTS = "ticketattachments";
+		public static final String SERVICE_REQUEST_ATTACHMENTS = "servicerequestsattachments";
 		public static final String BASE_SPACE_ATTACHMENTS = "basespaceattachments";
 		public static final String ASSET_ATTACHMENTS = "assetattachments";
 		public static final String DELIVERY_ATTACHMENTS = "deliveryattachments";
