@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.timelineview.context;
 
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.recordcustomization.RecordCustomizationContext;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -109,4 +110,32 @@ public class TimelineViewContext extends FacilioView {
     public long getWeekendId() { return weekendId; }
     public void setWeekendId(long weekendId) { this.weekendId = weekendId; }
 
+    private JSONObject configJson;
+    public String getConfigJson() {
+        return (configJson != null) ? configJson.toJSONString() : null;
+    }
+    public void setConfigJson(JSONObject configJson) {
+        this.configJson = configJson;
+    }
+    public void setConfigJson(String data) throws ParseException{
+        if (StringUtils.isNotEmpty(data)) {
+            this.configJson = (JSONObject) new JSONParser().parse(data);
+        }
+    }
+
+    private long recordCustomizationId;
+    public long getRecordCustomizationId() {
+        return recordCustomizationId;
+    }
+    public void setRecordCustomizationId(long recordCustomizationId) {
+        this.recordCustomizationId = recordCustomizationId;
+    }
+
+    private RecordCustomizationContext recordCustomization;
+    public RecordCustomizationContext getRecordCustomization() {
+        return recordCustomization;
+    }
+    public void setRecordCustomization(RecordCustomizationContext recordCustomization) {
+        this.recordCustomization = recordCustomization;
+    }
 }

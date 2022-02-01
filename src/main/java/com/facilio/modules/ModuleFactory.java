@@ -1261,6 +1261,22 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getRecordCustomizationModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("recordCustomization");
+		module.setDisplayName("Record Customization");
+		module.setTableName("RecordCustomization");
+		return module;
+	}
+
+	public static FacilioModule getRecordCustomizationValuesModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("recordCustomizationValues");
+		module.setDisplayName("Record Customization Values");
+		module.setTableName("RecordCustomizationValues");
+		return module;
+	}
+
 	public static FacilioModule getWorkOrdersModule() {
 		FacilioModule workOrdersModule = new FacilioModule();
 		workOrdersModule.setName(FacilioConstants.ContextNames.WORK_ORDER);

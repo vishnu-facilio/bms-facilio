@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.FacilioView.ViewType;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.view.ViewFactory;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -31,6 +32,9 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.recordcustomization.RecordCustomizationAPI;
+import com.facilio.recordcustomization.RecordCustomizationContext;
+import com.facilio.v3.util.TimelineViewUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -340,6 +344,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		record.setStartDateField(moduleBean.getField(record.getStartDateFieldId()));
 		record.setEndDateField(moduleBean.getField(record.getEndDateFieldId()));
 		record.setGroupByField(moduleBean.getField(record.getGroupByFieldId()));
+		record.setRecordCustomization(RecordCustomizationAPI.getRecordCustomization(record.getRecordCustomizationId()));
 	}
 
 	public static Map<ViewType, Map<Long, Map<String, Object>>> getDependentTableValues(Map<ViewType, List<Long>> extendedIdList) throws Exception {
@@ -457,6 +462,16 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		switch (type){
 			case TIMELINE:
 				validateTimeLineView((TimelineViewContext)view);
+				if(((TimelineViewContext) view).getRecordCustomization() != null) {
+					long oldCustomizationId = TimelineViewUtil.getCustomizationIdFromViewId(view.getId());
+					if(oldCustomizationId > 0)
+					{
+						RecordCustomizationAPI.deleteCustomization(oldCustomizationId);
+					}
+					long recordCustomizationId = RecordCustomizationAPI.addOrUpdateRecordCustomizationValues(((TimelineViewContext) view).getRecordCustomization());
+					viewProp.put("recordCustomizationId", recordCustomizationId);
+				}
+
 				if(isNew)
 				{
 					addDependentTables(ModuleFactory.getTimelineViewModule(), FieldFactory.getTimelineViewFields(ModuleFactory.getTimelineViewModule()), viewProp);
@@ -505,7 +520,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
                 .table(module.getTableName())
                 .fields(fields)
-                .andCondition(CriteriaAPI.getIdCondition((long)viewProperties.get("id"),ModuleFactory.getTimelineViewModule()));
+                .andCondition(CriteriaAPI.getIdCondition((long)viewProperties.get("id"), module));
 		updateRecordBuilder.update(viewProperties);
 	}
 	
@@ -680,6 +695,19 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 	}
 	
 	public static int deleteView(long id) throws Exception {
+		FacilioView viewDetail = getView(id);
+		//Deleting dependencies
+		switch (getViewType(viewDetail.getType())) {
+			case TIMELINE:
+				if(((TimelineViewContext)viewDetail).getRecordCustomizationId() > 0)
+				{
+					RecordCustomizationAPI.deleteCustomization(((TimelineViewContext)viewDetail).getRecordCustomizationId());
+				}
+				break;
+			default:
+				break;
+		}
+
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 				.table(ModuleFactory.getViewsModule().getTableName())
 				.andCustomWhere("Views.ID = ?", id);

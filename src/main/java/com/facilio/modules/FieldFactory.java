@@ -8447,6 +8447,8 @@ public class FieldFactory extends BaseFieldFactory {
         list.add(getField("allowCreate", "ALLOW_CREATE", module, FieldType.BOOLEAN));
         list.add(getField("disableWeekends", "DISABLE_WEEKENDS", module, FieldType.BOOLEAN));
         list.add(getNumberField("weekendId", "WEEKENDID", module));
+        list.add(getStringField("configJson", "CONFIG_JSON", module));
+        list.add(getNumberField("recordCustomizationId","RECORD_CUSTOMIZATION_ID",module));
 
         return list;
     }
@@ -8457,6 +8459,29 @@ public class FieldFactory extends BaseFieldFactory {
         list.add(getIdField("id","ID",module));
         list.add(getField("name", "NAME", module, FieldType.STRING));
         list.add(getField("value", "VALUE", module, FieldType.STRING));
+
+        return list;
+    }
+
+    public static List<FacilioField> getRecordCustomizationFields(FacilioModule module){
+        List<FacilioField> list = new ArrayList<>();
+
+        list.add(getIdField("id","ID",module));
+        list.add(getNumberField("customizationType", "TYPE", module));
+        list.add(getNumberField("customizationFieldId", "FIELDID", module));
+        list.add(getStringField("defaultCustomization", "DEFAULT_CUSTOMIZATION", module));
+
+        return list;
+    }
+
+    public static List<FacilioField> getRecordCustomizationValueFields(FacilioModule module){
+        List<FacilioField> list = new ArrayList<>();
+
+        list.add(getIdField("id","ID",module));
+        list.add(getNumberField("parentId", "PARENTID", module));
+        list.add(getNumberField("namedCriteriaId", "NAMED_CRITERIA_ID", module));
+        list.add(getStringField("fieldValue", "FIELDVALUE", module));
+        list.add(getStringField("customization", "CUSTOMIZATION", module));
 
         return list;
     }
