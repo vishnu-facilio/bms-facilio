@@ -3,11 +3,10 @@ package com.facilio.modules;
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.util.PeopleAPI;
-import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
@@ -27,7 +26,7 @@ public class AltayerVendorSiteValueGenerator extends ValueGenerator {
     public Object generateValueForCondition(int appType) {
         if(appType == AppDomain.AppDomainType.VENDOR_PORTAL.getIndex()) {
             try {
-                V3VendorContext vendor = V3PeopleAPI.getVendorForUser(AccountUtil.getCurrentUser().getId());
+                V3VendorContext vendor = V3PeopleAPI.getVendorForUser(AccountUtil.getCurrentUser().getId(), true);
                 if (vendor != null) {
                     long pplId = PeopleAPI.getPeopleIdForUser(AccountUtil.getCurrentUser().getId());
                     List<Long> siteIds = getSiteIdsFromVendorMappingData(vendor.getId() , pplId);
@@ -58,6 +57,7 @@ public class AltayerVendorSiteValueGenerator extends ValueGenerator {
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("contacts"), String.valueOf(pplId), PickListOperators.IS))
 
                 ;
+        builder.skipScopeCriteria();
         List<Map<String, Object>> props = builder.getAsProps();
         if(CollectionUtils.isNotEmpty(props)) {
             for(Map<String, Object> prop : props) {
@@ -75,5 +75,30 @@ public class AltayerVendorSiteValueGenerator extends ValueGenerator {
         }
 
         return null;
+    }
+
+    @Override
+    public String getValueGeneratorName() {
+        return "Altayer Vendors Sites";
+    }
+
+    @Override
+    public String getLinkName() {
+        return "com.facilio.modules.AltayerVendorSiteValueGenerator";
+    }
+
+    @Override
+    public String getModuleName() {
+        return FacilioConstants.ContextNames.VENDORS;
+    }
+
+    @Override
+    public Boolean getIsHidden() {
+        return true;
+    }
+
+    @Override
+    public Integer getOperatorId() {
+        return 36;
     }
 }

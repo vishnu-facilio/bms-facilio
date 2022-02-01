@@ -159,16 +159,6 @@ public class ApplicationContext implements Serializable{
 		}
 	}
 	
-	private long scopingId;
-
-	public long getScopingId() {
-		return scopingId;
-	}
-
-	public void setScopingId(long scopingId) {
-		this.scopingId = scopingId;
-	}
-	
 	private int domainType;
 
 	public int getDomainType() {
@@ -271,5 +261,14 @@ public class ApplicationContext implements Serializable{
 			this.config = new JSONObject();
 		}
 		this.config.put(key, value);
+	}
+	private long scopingId;
+
+	public long getScopingId() {
+		return scopingId;
+	}
+
+	public void setScopingId(long scopingId) {
+		this.scopingId = scopingId;
 	}
 }
