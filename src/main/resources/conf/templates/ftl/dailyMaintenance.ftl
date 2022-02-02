@@ -275,7 +275,7 @@
 
                   </div>
                   <div style="text-align: center;margin-top: 40px;">
-                        <img src="https://facilio.com/images/facilio-blue-logo.svg" alt="" title="" style="width: 70px;height: 16x;max-width: 100%;">
+                        <img src="https://facilio.com/assets/images/logo.png" alt="" title="" style="width: 70px;height: 16x;max-width: 100%;">
                         <p style="font-size: 11px; font-weight: normal; font-style: normal; font-stretch: normal; line-height: normal; letter-spacing: 0.3px; text-align: center; color: #8e8c97;font-family:Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;">©
                               2018 FACILIO.COM | ALL RIGHTS RESERVED</p>
                   </div>

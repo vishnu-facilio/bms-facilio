@@ -305,7 +305,7 @@
             </table>
         </div>
         <div style="text-align:center;margin-top:20px">
-            <img src="https://facilio.com/images/facilio-blue-logo.svg" alt="" title="" style="width:70px;height:16x;padding-bottom:10px;max-width:100%" class="CToWUd">
+            <img src="https://ci3.googleusercontent.com/proxy/im9Pl_7N6Um7UuuyeoNM092dUqZgGoFY9_mfQaguaOXoTsTWC0tuw-lbVwU_nI1YQatw77LJP29N_f8plw=s0-d-e1-ft#https://facilio.com/assets/images/logo.png" alt="" title="" style="width:70px;height:16x;padding-bottom:10px;max-width:100%" class="CToWUd">
             <div style="font-family:Ubuntu,Helvetica,Arial,sans-serif,Times New Roman,Times,serif;font-size:11px;letter-spacing:0.3px;text-align:center;color:#8e8c97">© 2018 <a href="http://FACILIO.COM" target="_blank" data-saferedirecturl="https://www.google.com/url?q=http://FACILIO.COM&amp;source=gmail&amp;ust=1549953854229000&amp;usg=AFQjCNHEaKFMCTC2w9BJGfkyKb1W1vtmmg" style="font-size: 10px; font-weight: normal; font-style: normal; font-stretch: normal; line-height: normal; letter-spacing: 0.4px; color: #4a90e2;">FACILIO.COM</a> | ALL RIGHTS RESERVED</div>
         </div>
     </div>
