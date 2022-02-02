@@ -48,10 +48,10 @@ validators:
       - com.facilio.field.validation.string.StringValidator
   - type: NUMBER
     validatorClasses:
-      - com.facilio.field.validation.number.NumberValidation
+      - com.facilio.field.validation.number.NumberValidator
   - type: DECIMAL
     validatorClasses:
-      - com.facilio.field.validation.number.NumberValidation
+      - com.facilio.field.validation.number.NumberValidator
   - type: DATE
     validatorClasses:
       - com.facilio.field.validation.date.DateValidator
