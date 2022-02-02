@@ -6683,9 +6683,10 @@
 	</package>
 
 	<package name="oauth2" namespace="/api/v2/dev" extends="v2Api">
-		<action name="enable"
+		<action name="enableOauth2"
 				class="com.facilio.bmsconsole.actions.Oauth2Action" method="enableOauth2">
 		</action>
+		<action name="createApiKey" class="com.facilio.bmsconsole.actions.Oauth2Action" method="createApiKey"></action>
 	</package>
 
 	<package name="translationsetup" namespace="/api/v2/translationsetup" extends="v2Api">

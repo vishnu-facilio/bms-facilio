@@ -60,11 +60,14 @@ public class AuthInterceptor extends AbstractInterceptor {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		String authorization = request.getHeader("Authorization");
 		boolean isOauth2 = StringUtils.isNotEmpty(authorization) && StringUtils.startsWith(authorization, "Bearer oauth2");
+		String apiKey = request.getHeader("x-api-key");
+		boolean isApiKey = StringUtils.isNotEmpty(apiKey);
 		if (isOauth2) {
-			request.setAttribute("isOauth2", true);
+			request.setAttribute("authMethod", "OAUTH2");
 			return arg0.invoke();
-		} else {
-			request.setAttribute("isOauth2", false);
+		} else if (isApiKey) {
+			request.setAttribute("authMethod", "APIKEY");
+			return arg0.invoke();
 		}
 		try {
 

@@ -87,6 +87,7 @@ public class AddQAndAModules extends SignUpData {
         attachmentParentId.setDefault(true);
         attachmentParentId.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
         attachmentParentId.setLookupModule(answer);
+        attachmentParentId.setMainField(Boolean.TRUE);
         fields.add(attachmentParentId);
         module.setFields(fields);
 
