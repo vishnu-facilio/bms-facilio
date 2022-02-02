@@ -18,6 +18,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AssetContext;
@@ -54,6 +55,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.delegate.context.DelegationContext;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMAppUtil;
@@ -1134,6 +1136,35 @@ ADD_INVITE_RECORD_VIA_V3CHAIN (29, "addInviteRecordViaV3Chain") {
 			String type = (String) objects[4];
 			
 			return FacilioHttpUtils.doHttpGetWithFileResponse(url, headers, params, fileName, type);
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	
+	GET_DELEGATIONS(34,"getDelegations") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			
+			 FacilioChain chain = ReadOnlyChainFactory.getAllMyDelegationChain();
+		        FacilioContext context = chain.getContext();
+		        context.put(FacilioConstants.ContextNames.ONLY_MY_DELEGATION, false);
+//		        context.put(FacilioConstants.ContextNames.APP_ID, appId);
+		        context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.USER_DELEGATION);
+		        
+		        if(objects.length > 0) {
+					Map<String,Object> filterJSON = (Map<String, Object>) objects[0];
+					context.put(FacilioConstants.ContextNames.FILTERS, filterJSON);
+				}
+
+		        chain.execute();
+
+		        return FieldUtil.getAsMapList((List<DelegationContext>) context.get(FacilioConstants.ContextNames.DELEGATION_LIST) ,DelegationContext.class);
+
 		};
 		
 		public void checkParam(Object... objects) throws Exception {
