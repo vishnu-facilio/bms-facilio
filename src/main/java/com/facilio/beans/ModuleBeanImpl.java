@@ -13,6 +13,7 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.db.util.DBConf;
+import com.facilio.field.validation.string.StringValidator;
 import com.facilio.modules.*;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.*;
@@ -28,6 +29,7 @@ import org.json.simple.parser.JSONParser;
 
 import java.sql.*;
 import java.text.MessageFormat;
+import java.time.DayOfWeek;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -999,7 +1001,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			switch(field.getDataTypeEnum()) {
 				case NUMBER:
 				case DECIMAL:
-					addExtendedProps(ModuleFactory.getNumberFieldModule(), FieldFactory.getNumberFieldFields(), fieldProps);
+					addNumberField((NumberField) field,fieldProps);
 					break;
 				case BOOLEAN:
 					if (field instanceof BooleanField) {
@@ -1101,7 +1103,11 @@ public class ModuleBeanImpl implements ModuleBean {
 					}
 					break;
 				case DATE:
-					addExtendedProps(ModuleFactory.getDateFieldModule(), FieldFactory.getDateFieldFields(), fieldProps);
+					addDateField((DateField) field, fieldProps);
+					break;
+				case STRING:
+				case BIG_STRING:
+					addStringField((StringField)field,fieldProps);
 					break;
 				default:
 					break;
@@ -1517,6 +1523,12 @@ public class ModuleBeanImpl implements ModuleBean {
 			else if (field instanceof UrlField) {
 				extendendPropsCount = updateExtendedProps(ModuleFactory.getUrlFieldsModule(), FieldFactory.getUrlFieldFields(), field);
 			}
+			else if (field instanceof StringField) {
+				extendendPropsCount = updateExtendedProps(ModuleFactory.getStringFieldModule(), FieldFactory.getStringFieldFields(), field);
+			}
+			else if (field instanceof DateField) {
+				extendendPropsCount = updateDateField((DateField) field);
+			}
 //			else if (field instanceof ScoreField) {
 //				extendendPropsCount = updateExtendedProps(ModuleFactory.getScoreFieldModule(), FieldFactory.getScoreFieldFields(), field);
 //			}
@@ -1889,5 +1901,109 @@ public class ModuleBeanImpl implements ModuleBean {
 		return relatedList;
 	}
 
+	private void addDateField(DateField field, Map<String, Object> props) throws Exception {
 
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getDateFieldModule().getTableName())
+				.fields(FieldFactory.getDateFieldFields());
+
+		props.put("allowedDate",field.getAllowedDate());
+
+		long id = insertBuilder.insert(props);
+
+		if (id > 0L) {
+			addDateChildField(field, id);
+		}
+	}
+
+	private void addDateChildField(DateField field, long id) throws SQLException {
+		List<DayOfWeek> allowedDays = field.getAllowedDays();
+		List<Map<String, Object>> insertProps = new ArrayList<>();
+
+		if (CollectionUtils.isNotEmpty(allowedDays)) {
+			allowedDays.forEach(allowedDay -> {
+				Map<String, Object> fieldProps = new HashMap<>();
+				fieldProps.put("dateFieldId", id);
+				fieldProps.put("allowedDays", allowedDay);
+				insertProps.add(fieldProps);
+			});
+		}
+
+		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getDateFieldChildModule().getTableName())
+				.fields(FieldFactory.getDateFieldChildFields())
+				.addRecords(insertProps);
+		builder.save();
+	}
+
+	private void validateString(StringField field) {
+
+		int maxLen = field.getMaxLength();
+
+		if (field.getDataTypeEnum() == FieldType.BIG_STRING) {
+			FacilioUtil.throwIllegalArgumentException((maxLen != -1 && maxLen > StringValidator.BIG_STRING_MAX_LENGTH),"String length exceeded max value");
+		}else {
+			FacilioUtil.throwIllegalArgumentException((maxLen != -1 && maxLen > StringValidator.SHORT_STRING_MAX_LENGTH),"String length exceeded max value");
+		}
+	}
+
+	private void addStringField(StringField field,Map<String,Object> props) throws SQLException {
+
+		validateString(field);
+
+		props.put("maxLength",field.getMaxLength());
+		props.put("regex",field.getRegex());
+
+		addExtendedProps(ModuleFactory.getStringFieldModule(),FieldFactory.getStringFieldFields(),props);
+	}
+
+	private void addNumberField(NumberField field,Map<String,Object> props) throws SQLException {
+
+		validateNumberField(field ,props);
+
+		props.put("minVal",field.getMinValue());
+		props.put("maxVal",field.getMaxValue());
+
+		addExtendedProps(ModuleFactory.getNumberFieldModule(),FieldFactory.getNumberFieldFields(),props);
+	}
+
+	private void validateNumberField(NumberField field, Map<String, Object> props) {
+
+		Number minVal = field.getMinValue();
+		Number maxVal = field.getMaxValue();
+
+		FacilioUtil.throwIllegalArgumentException(minVal != null && maxVal != null && minVal.doubleValue() > maxVal.doubleValue(), "Max value "+ maxVal+ " cannot be less than Min value "+minVal);
+	}
+
+	private int updateDateField(DateField field) throws Exception {
+
+		long fieldId = field.getFieldId();
+		field.setFieldId(-1);
+
+		Map<String, Object> props = new HashMap<>();
+		props.put("allowedDate",field.getAllowedDate());
+
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getDateFieldModule().getTableName())
+				.fields(FieldFactory.getDateFieldFields())
+				.andCondition(CriteriaAPI.getCondition("FIELDID","fieldId", String.valueOf(fieldId),NumberOperators.EQUALS));
+
+		int count = updateBuilder.update(props);
+
+		if (count > 0) {
+
+			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+					.table(ModuleFactory.getDateFieldChildModule().getTableName())
+					.andCondition(CriteriaAPI.getCondition("DATE_FIELD_ID","dateFieldId", String.valueOf(fieldId),NumberOperators.EQUALS));
+
+			int deleteCount = deleteBuilder.delete();
+
+			if (deleteCount > 0) {
+				addDateChildField(field,fieldId);
+			}
+		}
+		field.setFieldId(fieldId);
+		
+		return count;
+	}
 }

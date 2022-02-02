@@ -1189,7 +1189,31 @@ public class FieldFactory extends BaseFieldFactory {
         FacilioModule module = ModuleFactory.getDateFieldModule();
 
         fields.add(getField("fieldId", "FIELDID", module, FieldType.ID));
-        fields.add(getStringField("allowedDate","ALLOWED_DATE",module));
+        fields.add(getNumberField("allowedDate","ALLOWED_DATE",module));
+
+        return fields;
+    }
+
+    public static List<FacilioField> getDateFieldChildFields() {
+
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getDateFieldChildModule();
+
+        fields.add(getIdField(module));
+        fields.add(getNumberField("dateFieldId", "DATE_FIELD_ID", module));
+        fields.add(getStringField("allowedDays","ALLOWED_DAYS",module));
+
+        return fields;
+    }
+
+    public static List<FacilioField> getStringFieldFields() {
+
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getStringFieldModule();
+
+        fields.add(getField("fieldId", "FIELDID", module, FieldType.ID));
+        fields.add(getNumberField("maxLength","MAX_LENGTH",module));
+        fields.add(getStringField("regex","REGEX",module));
 
         return fields;
     }
