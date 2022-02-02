@@ -1333,7 +1333,7 @@ public class UserBeanImpl implements UserBean {
 				String domain = FacilioProperties.getDomain();
 				boolean isFacilioDomain = true;
 				if (domain.equals("facilio")) {
-					brandVal = "https://facilio.com/assets/images/logo.png";
+					brandVal = "https://facilio.com/images/facilio-blue-logo.svg";
 				}
 				else {
 					isFacilioDomain = false;

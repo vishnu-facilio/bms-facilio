@@ -237,7 +237,7 @@
                 </table>
             </div>
             <div style="text-align: center;margin-top: 20px;">
-                <img src="https://facilio.com/assets/images/logo.png" alt="" title="" style="width: 70px;height: 16x;padding-bottom: 10px;max-width: 100%;">
+                <img src="https://facilio.com/images/facilio-blue-logo.svg" alt="" title="" style="width: 70px;height: 16x;padding-bottom: 10px;max-width: 100%;">
                 <div style="font-family:Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;font-size: 11px;  letter-spacing: 0.3px; text-align: center; color: #8e8c97;">© 2018 FACILIO.COM | ALL RIGHTS RESERVED</div>
             </div>
         </div>
