@@ -109,7 +109,7 @@
                     <property name="pwdPrevPassRefusal" type="number"/>
                     <property name="pwdMinLength" type="number"/>
                     <property name="webSessLifeTime" type="number"/>
-                    <property name="idleSessionTimeOut" type="boolean"/>
+                    <property name="idleSessionTimeOut" type="number"/>
                     <property name="isMFAEnabled" type="boolean"/>
                 </property>
             </property>

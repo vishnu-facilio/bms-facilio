@@ -111,6 +111,7 @@ public class FacilioProperties {
     private static String esIndex;
 
     private static String mobileMainAppScheme;
+    private static String workQAppScheme;
     private static String mobileServiceportalAppScheme;
     private static String mobileTenantportalAppScheme;
     private static String mobileVendorportalAppScheme;
@@ -244,6 +245,7 @@ public class FacilioProperties {
                 mobileTenantportalAppScheme = PROPERTIES.getProperty("mobile.tenantportal.scheme");
                 mobileVendorportalAppScheme = PROPERTIES.getProperty("mobile.vendorportal.scheme");
                 mobileClientportalAppScheme = PROPERTIES.getProperty("mobile.clientportal.scheme");
+                workQAppScheme = PROPERTIES.getProperty("mobile.workQ.scheme");
 
                 senderEmail = PROPERTIES.getProperty("sender.email");
                 senderName = PROPERTIES.getProperty("sender.name");
@@ -688,6 +690,10 @@ public class FacilioProperties {
 
     public static String getMobileMainAppScheme() {
         return mobileMainAppScheme;
+    }
+
+    public static String getWorkQAppScheme() {
+        return workQAppScheme;
     }
 
     public static String getMobileServiceportalAppScheme() {
