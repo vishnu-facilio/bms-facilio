@@ -3,9 +3,10 @@ package com.facilio.modules;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -58,7 +59,6 @@ public class AltayerVendorValueGenerator extends ValueGenerator{
                 .select(modBean.getAllFields(module.getName()))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("building"), StringUtils.join(bsIds, ","), PickListOperators.IS))
                 ;
-        builder.skipScopeCriteria();
         List<Map<String, Object>> props = builder.getAsProps();
         if(CollectionUtils.isNotEmpty(props)) {
             for(Map<String, Object> prop : props) {
@@ -74,30 +74,5 @@ public class AltayerVendorValueGenerator extends ValueGenerator{
         }
 
         return null;
-    }
-
-    @Override
-    public String getValueGeneratorName() {
-        return "Altayer Vendors";
-    }
-
-    @Override
-    public String getLinkName() {
-        return "com.facilio.modules.AltayerVendorValueGenerator";
-    }
-
-    @Override
-    public String getModuleName() {
-        return FacilioConstants.ContextNames.VENDORS;
-    }
-
-    @Override
-    public Boolean getIsHidden() {
-        return true;
-    }
-
-    @Override
-    public Integer getOperatorId() {
-        return 36;
     }
 }

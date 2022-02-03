@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.List;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.ScopingContext;
 import com.facilio.license.LicenseContext.FacilioLicense;
 
 public class User extends IAMUser {
@@ -236,23 +235,5 @@ public class User extends IAMUser {
 		}
 		return false;
 	}
-	private long scopingId;
-
-	public long getScopingId() {
-		return scopingId;
-	}
-
-	public void setScopingId(long scopingId) {
-		this.scopingId = scopingId;
-	}
-
-	private ScopingContext scoping;
-
-	public ScopingContext getScoping() {
-		return scoping;
-	}
-
-	public void setScoping(ScopingContext scoping) {
-		this.scoping = scoping;
-	}
+	
 }

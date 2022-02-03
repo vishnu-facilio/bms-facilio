@@ -4,7 +4,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
@@ -20,7 +19,7 @@ public class AltayerWorkorderCategoryValueGenerator extends ValueGenerator{
     @Override
     public Object generateValueForCondition(int appType) {
         try {
-            V3VendorContext vendor = V3PeopleAPI.getVendorForUser(AccountUtil.getCurrentUser().getId(), true);
+            V3VendorContext vendor = V3PeopleAPI.getVendorForUser(AccountUtil.getCurrentUser().getId());
             if (vendor != null) {
                 List<Long> woCategoryIds = getWorkorderCategoryData(vendor.getId());
                 if (CollectionUtils.isNotEmpty(woCategoryIds)) {
@@ -45,7 +44,6 @@ public class AltayerWorkorderCategoryValueGenerator extends ValueGenerator{
                 .select(modBean.getAllFields(module.getName()))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("vendor"), String.valueOf(vendorId), PickListOperators.IS))
                 ;
-        builder.skipScopeCriteria();
         List<Map<String, Object>> props = builder.getAsProps();
         if(CollectionUtils.isNotEmpty(props)) {
             for(Map<String, Object> prop : props) {
@@ -61,30 +59,5 @@ public class AltayerWorkorderCategoryValueGenerator extends ValueGenerator{
         }
 
         return null;
-    }
-
-    @Override
-    public String getValueGeneratorName() {
-        return "Altayer Workorder category";
-    }
-
-    @Override
-    public String getLinkName() {
-        return "com.facilio.modules.AltayerWorkorderCategoryValueGenerator";
-    }
-
-    @Override
-    public String getModuleName() {
-        return FacilioConstants.ContextNames.TICKET_CATEGORY;
-    }
-
-    @Override
-    public Boolean getIsHidden() {
-        return true;
-    }
-
-    @Override
-    public Integer getOperatorId() {
-        return 36;
     }
 }

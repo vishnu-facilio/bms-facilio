@@ -16,6 +16,8 @@ import com.facilio.modules.fields.MultiLookupMeta;
 import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 
@@ -24,7 +26,7 @@ public class AltayerVendorAssetValueGenerator extends ValueGenerator{
     @Override
     public Object generateValueForCondition(int appType) {
         try {
-            V3VendorContext vendor = V3PeopleAPI.getVendorForUser(AccountUtil.getCurrentUser().getId(), true);
+            V3VendorContext vendor = V3PeopleAPI.getVendorForUser(AccountUtil.getCurrentUser().getId());
             if (vendor != null) {
                 long pplId = PeopleAPI.getPeopleIdForUser(AccountUtil.getCurrentUser().getId());
                 List<Long> assetCategoryIds = getAssetCategoryData(vendor.getId(), pplId);
@@ -58,7 +60,6 @@ public class AltayerVendorAssetValueGenerator extends ValueGenerator{
         MultiLookupMeta categories = new MultiLookupMeta((MultiLookupField) fieldMap.get("category"));
         fetchCatLookupsList.add(categories);
         builder.fetchSupplements(fetchCatLookupsList);
-        builder.skipScopeCriteria();
 
         List<Map<String, Object>> props = builder.getAsProps();
         if(CollectionUtils.isNotEmpty(props)) {
@@ -91,7 +92,7 @@ public class AltayerVendorAssetValueGenerator extends ValueGenerator{
                 MultiLookupMeta assetCategories = new MultiLookupMeta((MultiLookupField) catFieldMap.get("assetcategorynew"));
                 fetchLookupsList.add(assetCategories);
                 builderCategory.fetchSupplements(fetchLookupsList);
-                builder.skipScopeCriteria();
+
 
                 List<ModuleBaseWithCustomFields> catProps = builderCategory.get();
                 if(CollectionUtils.isNotEmpty(catProps)) {
@@ -120,30 +121,5 @@ public class AltayerVendorAssetValueGenerator extends ValueGenerator{
         }
 
         return null;
-    }
-
-    @Override
-    public String getValueGeneratorName() {
-        return "Altayer Vendor Assets";
-    }
-
-    @Override
-    public String getLinkName() {
-        return "com.facilio.modules.AltayerVendorAssetValueGenerator";
-    }
-
-    @Override
-    public String getModuleName() {
-        return FacilioConstants.ContextNames.ASSET;
-    }
-
-    @Override
-    public Boolean getIsHidden() {
-        return true;
-    }
-
-    @Override
-    public Integer getOperatorId() {
-        return 36;
     }
 }

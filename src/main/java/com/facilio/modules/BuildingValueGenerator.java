@@ -4,7 +4,6 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -53,30 +52,5 @@ public class BuildingValueGenerator extends ValueGenerator {
         }
 
         return null;
-    }
-
-    @Override
-    public String getValueGeneratorName() {
-        return FacilioConstants.ContextNames.ValueGenerators.BUILDING;
-    }
-
-    @Override
-    public String getLinkName() {
-        return "com.facilio.modules.BuildingValueGenerator";
-    }
-
-    @Override
-    public String getModuleName() {
-        return FacilioConstants.ContextNames.BUILDING;
-    }
-
-    @Override
-    public Boolean getIsHidden() {
-        return false;
-    }
-
-    @Override
-    public Integer getOperatorId() {
-        return 36;
     }
 }

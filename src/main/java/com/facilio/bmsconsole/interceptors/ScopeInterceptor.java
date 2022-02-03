@@ -152,7 +152,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
                         if (user == null) {
                             return logAndReturn("unauthorized", null, startTime, request);
                         }
-                        //fetching permissible  apps for this user corresponding to this domain
+                        //fetching permissible apps for this user corresponding to this domain
                         //setting the first permissible application(corresponding to this domain) if exists to this user
                         List<ApplicationContext> permissibleAppsForThisDomain = ApplicationApi.getApplicationsForOrgUser(user.getOuid(), request.getServerName());
                         if (CollectionUtils.isNotEmpty(permissibleAppsForThisDomain)) {
