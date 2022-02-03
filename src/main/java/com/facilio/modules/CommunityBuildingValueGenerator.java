@@ -2,6 +2,7 @@ package com.facilio.modules;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.PeopleAPI;
@@ -10,11 +11,15 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class CommunityBuildingValueGenerator extends ValueGenerator{
     @Override
@@ -59,31 +64,6 @@ public class CommunityBuildingValueGenerator extends ValueGenerator{
             e.printStackTrace();
         }
         return null;
-    }
-
-    @Override
-    public String getValueGeneratorName() {
-        return "Community Modules";
-    }
-
-    @Override
-    public String getLinkName() {
-        return "com.facilio.modules.CommunityBuildingValueGenerator";
-    }
-
-    @Override
-    public String getModuleName() {
-        return "Community Modules";
-    }
-
-    @Override
-    public Boolean getIsHidden() {
-        return true;
-    }
-
-    @Override
-    public Integer getOperatorId() {
-        return 36;
     }
 
 }

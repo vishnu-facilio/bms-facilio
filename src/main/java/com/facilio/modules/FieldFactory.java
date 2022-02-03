@@ -8971,10 +8971,10 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("isDefault", "IS_DEFAULT", module, FieldType.BOOLEAN));
         fields.add(getField("domainType", "DOMAIN_TYPE", module, FieldType.NUMBER));
         fields.add(getField("linkName", "LINK_NAME", module, FieldType.STRING));
+        fields.add(getField("scopingId", "SCOPING_ID", module, FieldType.NUMBER));
         fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
         fields.add(getField("appCategory", "APP_CATEGORY", module, FieldType.NUMBER));
         fields.add(getField("config", "CONFIG", module, FieldType.STRING));
-        fields.add(getField("scopingId", "SCOPING_ID", module, FieldType.NUMBER));
 
         return fields;
     }
@@ -9636,12 +9636,11 @@ public class FieldFactory extends BaseFieldFactory {
 	        fields.add(getIdField(module));
 	        fields.add(getField("scopingId", "SCOPING_ID", module, FieldType.NUMBER));
 	        fields.add(getField("moduleId", "MODULE_ID", module, FieldType.NUMBER));
-	        fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
-            fields.add(getField("fieldName", "FIELD_NAME", module, FieldType.STRING));
-            fields.add(getField("operatorId", "OPERATOR_ID", module, FieldType.NUMBER));
-            fields.add(getField("value", "FIELD_VALUE", module, FieldType.STRING));
-            fields.add(getField("valueGenerator", "FIELD_VALUE_GENERATOR", module, FieldType.STRING));
-
+	        fields.add(getField("fieldName", "FIELD_NAME", module, FieldType.STRING));
+	        fields.add(getField("operatorId", "OPERATOR_ID", module, FieldType.NUMBER));
+	        fields.add(getField("value", "FIELD_VALUE", module, FieldType.STRING));
+	        fields.add(getField("fieldValueGenerator", "FIELD_VALUE_GENERATOR", module, FieldType.STRING));
+	         	      
 	        return fields;
 	 }
 	 
@@ -9651,10 +9650,8 @@ public class FieldFactory extends BaseFieldFactory {
 
 	        fields.add(getIdField(module));
 	        fields.add(getField("scopeName", "SCOPE_NAME", module, FieldType.STRING));
-            fields.add(getField("isDefault", "IS_DEFAULT", module, FieldType.BOOLEAN));
-            fields.add(getField("applicationId", "APPLICATION_ID", module, FieldType.NUMBER));
-
-         return fields;
+		     	      
+	        return fields;
 	 }
 	 
 	 public static List<FacilioField> getFieldModulePermissionFields() {

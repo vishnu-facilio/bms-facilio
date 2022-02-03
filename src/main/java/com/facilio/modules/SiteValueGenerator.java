@@ -9,8 +9,6 @@ import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TenantsAPI;
-import com.facilio.bmsconsoleV3.context.V3TenantContext;
-import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -18,6 +16,7 @@ import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.tenant.TenantContext;
@@ -50,7 +49,7 @@ public class SiteValueGenerator extends ValueGenerator {
 				}
 			}
 			else if(appType == AppDomainType.TENANT_PORTAL.getIndex()) {
-				V3TenantContext tenant = V3PeopleAPI.getTenantForUser(AccountUtil.getCurrentUser().getId(), true);
+				TenantContext tenant = PeopleAPI.getTenantForUser(AccountUtil.getCurrentUser().getId());
 				if(tenant != null) {
 					if(tenant.getSiteId() > 0) {
 						return String.valueOf(tenant.getSiteId());
@@ -72,7 +71,7 @@ public class SiteValueGenerator extends ValueGenerator {
 				
 			}
 			else if(appType == AppDomainType.SERVICE_PORTAL.getIndex()) {
-				V3TenantContext tenant = V3PeopleAPI.getTenantForUser(AccountUtil.getCurrentUser().getId(), true);
+				TenantContext tenant = PeopleAPI.getTenantForUser(AccountUtil.getCurrentUser().getId());
 				if(tenant != null){
 					if(tenant.getSiteId() > 0) {
 						return String.valueOf(tenant.getSiteId());
@@ -106,29 +105,9 @@ public class SiteValueGenerator extends ValueGenerator {
 		return null;
 		
 	}
-
-	@Override
-	public String getValueGeneratorName() {
-		return FacilioConstants.ContextNames.ValueGenerators.SITE;
-	}
-
-	@Override
-	public String getLinkName() {
-		return "com.facilio.modules.SiteValueGenerator";
-	}
-
-	@Override
-	public String getModuleName() {
-		return FacilioConstants.ContextNames.SITE;
-	}
-
-	@Override
-	public Boolean getIsHidden() {
-		return false;
-	}
-
-
-	private List<BaseSpaceContext> getMySites() throws Exception {
+	
+	
+	 private List<BaseSpaceContext> getMySites() throws Exception {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
 			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
@@ -173,10 +152,5 @@ public class SiteValueGenerator extends ValueGenerator {
 			
 			return accessibleBaseSpace;
 		}
-
-	@Override
-	public Integer getOperatorId() {
-		return 36;
-	}
 
 }

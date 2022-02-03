@@ -13,8 +13,6 @@ public class OrgUserApp implements Serializable {
 	private long ouid;
 	private long applicationId;
 	private long roleId;
-	private long scopingId;
-
 	
 	public long getId() {
 		return id;
@@ -41,13 +39,5 @@ public class OrgUserApp implements Serializable {
 
 	public void setRoleId(long roleId) {
 		this.roleId = roleId;
-	}
-
-	public long getScopingId() {
-		return scopingId;
-	}
-
-	public void setScopingId(long scopingId) {
-		this.scopingId = scopingId;
 	}
 }

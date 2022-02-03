@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import com.facilio.accounts.bean.*;
-import com.facilio.bmsconsole.context.ScopingConfigContext;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -88,11 +87,10 @@ public class AccountUtil {
 		if(account != null && account.getUser() != null && account.getOrg() != null) {
 			long appId = account.getUser().getApplicationId();
 			if(appId > 0) {
-				long scopingId = account.getUser().getScopingId();
 				ApplicationContext app = ApplicationApi.getApplicationForId(appId);
 				if(app != null) {
 					account.setApp(app);
-					account.setAppScopingMap(ApplicationApi.getScopingMapForApp(scopingId));
+					account.setAppScopingMap(ApplicationApi.getScopingMapForApp(app.getScopingId(), account.getOrg().getOrgId()));
 				}
 			}
 		}
@@ -192,16 +190,16 @@ public class AccountUtil {
 		return -1;
 	}
 
-	public static Map<Long, ScopingConfigContext> getCurrentAppScopingMap() {
+	public static Map<Long, Map<String, Object>> getCurrentAppScopingMap() {
 		if (currentAccount.get() != null) {
 			return currentAccount.get().getAppScopingMap();
 		}
 		return null;
 	}
-
-	public static ScopingConfigContext getCurrentAppScopingMap(long modId) {
+	
+	public static Map<String, Object> getCurrentAppScopingMap(long modId) {
 		if (currentAccount.get() != null) {
-			Map<Long, ScopingConfigContext> scopingMap = currentAccount.get().getAppScopingMap();
+			Map<Long, Map<String, Object>> scopingMap = currentAccount.get().getAppScopingMap();
 			if(MapUtils.isNotEmpty(scopingMap)){
 				return scopingMap.get(modId);
 			}
@@ -649,14 +647,6 @@ public class AccountUtil {
 		return FacilioProperties.getMainAppDomain();
 	}
 
-	public static void setValueGenerator(Map<String, String> valueGenerators) {
-		getCurrentAccount().setValueGenerators(valueGenerators);
-	}
-
-	public static Map<String, String> getValueGenerator() {
-		return getCurrentAccount().getValueGenerators();
-	}
-
 	public static void setShouldApplySwitchScope(Boolean shouldApplySwitchScope) throws Exception {
 		if(shouldApplySwitchScope == null){
 			shouldApplySwitchScope = true;
@@ -672,7 +662,7 @@ public class AccountUtil {
 		return true;
 	}
 
-	public static Boolean applyDBScoping(FacilioModule module) {
+	public static Boolean shouldApplyDBScoping(FacilioModule module) {
     	try {
 			if (AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) && AccountUtil.getCurrentApp() != null && (!AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP) || (AccountUtil.getCurrentOrg().getOrgId() == 183l && module.getName().equals("storeRoom"))|| (AccountUtil.getCurrentOrg().getOrgId() == 274l && (module.getName().equals(FacilioConstants.ContextNames.PURCHASE_ORDER) || module.getName().equals(FacilioConstants.ContextNames.PURCHASE_REQUEST)|| module.getName().equals(ContextNames.RECEIVABLE))) ||
 					(AccountUtil.getCurrentOrg().getOrgId() == 418l && (module.getName().equals(ContextNames.VENDORS) || module.getName().equals(ContextNames.VISITOR_LOG) || module.getName().equals(ContextNames.INVITE_VISITOR) || module.getName().equals(ContextNames.BASE_VISIT)  || module.getName().equals("custom_vendormapping") || module.getName().equals("custom_utilityaccounts") || module.getName().equals("custom_utilityconnections") || module.getName().equals("custom_utilitybill") || module.getName().equals("custom_utilitybilllineitems") || module.getName().equals("custom_incidentmanagement_1") || module.getName().equals("custom_quoteselectionform")  || module.getName().equals("custom_supplierquotation") || module.getName().equals("custom_supplierquote") || module.getName().equals(ContextNames.VENDOR_CONTACT))))) {

@@ -5,10 +5,6 @@ import com.facilio.bmsconsole.context.ScopingConfigContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.Condition;
-import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.ScopeOperator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 
@@ -23,38 +19,31 @@ public class WorkorderScopingConfig extends SignUpData {
             FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 
             //adding site scope in Facilio
-            long applicationScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+            long applicationScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
             ScopingConfigContext scoping = new ScopingConfigContext();
-            Criteria criteria = new Criteria();
-            Condition condition = CriteriaAPI.getCondition("siteId", "com.facilio.modules.SiteValueGenerator", ScopeOperator.SCOPING_IS);
-            condition.setModuleName(module.getName());
-            criteria.addAndCondition(condition);
+            scoping.setFieldName("siteId");
             scoping.setScopingId(applicationScopingId);
-            scoping.setModuleId(module.getModuleId());
-            scoping.setCriteria(criteria);
+            scoping.setOperatorId(36);
+            scoping.setFieldValueGenerator("com.facilio.modules.SiteValueGenerator");
             scoping.setModuleId(module.getModuleId());
 
             //adding wo scope in Occupant Portal
-            long occupantScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+            long occupantScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
             ScopingConfigContext occupantScoping = new ScopingConfigContext();
-            Criteria criteria_occupant = new Criteria();
-            Condition occCondition = CriteriaAPI.getCondition("requester", "com.facilio.modules.UserValueGenerator", ScopeOperator.SCOPING_IS);
-            occCondition.setModuleName(module.getName());
-            criteria_occupant.addAndCondition(occCondition);
+            occupantScoping.setFieldName("requester");
             occupantScoping.setScopingId(occupantScopingId);
+            occupantScoping.setOperatorId(36);
+            occupantScoping.setFieldValueGenerator("com.facilio.modules.UserValueGenerator");
             occupantScoping.setModuleId(module.getModuleId());
-            occupantScoping.setCriteria(criteria_occupant);
 
             //adding site scope in Maintenance App
-            long maintenanceScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+            long maintenanceScopingId = ApplicationApi.addScoping(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
             ScopingConfigContext maintenanceScoping = new ScopingConfigContext();
-            Criteria criteria_maintenance = new Criteria();
-            Condition maintenance_condition = CriteriaAPI.getCondition("siteId", "com.facilio.modules.SiteValueGenerator", ScopeOperator.SCOPING_IS);
-            maintenance_condition.setModuleName(module.getName());
-            criteria_maintenance.addAndCondition(maintenance_condition);
+            maintenanceScoping.setFieldName("siteId");
             maintenanceScoping.setScopingId(maintenanceScopingId);
+            maintenanceScoping.setOperatorId(36);
+            maintenanceScoping.setFieldValueGenerator("com.facilio.modules.SiteValueGenerator");
             maintenanceScoping.setModuleId(module.getModuleId());
-            maintenanceScoping.setCriteria(criteria_maintenance);
 
 
             List<ScopingConfigContext> scopingList = new ArrayList<>();

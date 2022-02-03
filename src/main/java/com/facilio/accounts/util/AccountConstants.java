@@ -1411,12 +1411,7 @@ public class AccountConstants {
 		roleId.setModule(module);
 		fields.add(roleId);
 
-		FacilioField scopingId = new FacilioField();
-		scopingId.setName("scopingId");
-		scopingId.setDataType(FieldType.NUMBER);
-		scopingId.setColumnName("SCOPING_ID");
-		scopingId.setModule(module);
-		fields.add(scopingId);
+
 
 		return fields;
 	}
