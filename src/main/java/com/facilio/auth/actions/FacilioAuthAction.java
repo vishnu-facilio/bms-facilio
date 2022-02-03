@@ -1759,6 +1759,9 @@ public class FacilioAuthAction extends FacilioAction {
 			} else if (getLookUpType().equalsIgnoreCase("vendor")) {
 				List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.VENDOR_PORTAL, org.getOrgId());
 				baseUrl.append(appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain());
+			} else if (getLookUpType().equalsIgnoreCase("workq")) {
+				List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.FACILIO, org.getOrgId());
+				baseUrl.append(appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain());
 			}
 		}
 		else {
