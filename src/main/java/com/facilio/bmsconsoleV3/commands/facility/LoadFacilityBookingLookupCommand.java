@@ -11,7 +11,6 @@ import com.facilio.modules.fields.*;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +27,7 @@ public class LoadFacilityBookingLookupCommand extends FacilioCommand {
         List<SupplementRecord> fetchLookupsList = new ArrayList<>();
         LookupFieldMeta facilityField = new LookupFieldMeta((LookupField) fieldsAsMap.get("facility"));
         LookupField facilityLocationField = (LookupField) modBean.getField("location", FacilioConstants.ContextNames.FacilityBooking.FACILITY);
-        facilityField.addChildLookupField(facilityLocationField);
+        facilityField.addChildSupplement(facilityLocationField);
 
         LookupFieldMeta tenantField = new LookupFieldMeta((LookupField) fieldsAsMap.get("tenant"));
 

@@ -47,7 +47,7 @@ public class FillWorkPermitChecklistCommand extends FacilioCommand {
 
         LookupFieldMeta checklistField = new LookupFieldMeta((LookupField) fieldsAsMap.get("checklist"));
         LookupField categoryField = (LookupField) modBean.getField("category", FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_TYPE_CHECKLIST);
-        checklistField.addChildLookupField(categoryField);
+        checklistField.addChildSupplement(categoryField);
 
         SelectRecordsBuilder<WorkPermitChecklistContext> builder = new SelectRecordsBuilder<WorkPermitChecklistContext>()
                 .module(module)

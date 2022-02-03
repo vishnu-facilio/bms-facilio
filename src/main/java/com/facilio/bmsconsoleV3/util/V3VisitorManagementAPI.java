@@ -22,8 +22,6 @@ import com.facilio.bmsconsoleV3.context.V3VisitorLoggingContext;
 import com.facilio.bmsconsoleV3.context.V3WatchListContext;
 import com.facilio.bmsconsoleV3.context.VisitorLogContextV3;
 import com.facilio.tasker.FacilioTimer;
-import com.facilio.v3.exception.ErrorCode;
-import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -66,7 +64,6 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldFactory;
@@ -582,8 +579,8 @@ public class V3VisitorManagementAPI {
 
         LookupFieldMeta visitorField = new LookupFieldMeta((LookupField) fieldsAsMap.get("visitorId"));
         LookupField visitorLocation = (LookupField) modBean.getField("location", FacilioConstants.ContextNames.VISITOR);
-        inviteField.addChildLookupField(inviteHost);
-        visitorField.addChildLookupField(visitorLocation);
+        inviteField.addChildSupplement(inviteHost);
+        visitorField.addChildSupplement(visitorLocation);
 
         List<LookupField> additionaLookups = new ArrayList<LookupField>();
         additionaLookups.add(inviteField);
@@ -611,8 +608,8 @@ public class V3VisitorManagementAPI {
 
         LookupFieldMeta visitorField = new LookupFieldMeta((LookupField) fieldsAsMap.get("visitorId"));
         LookupField visitorLocation = (LookupField) modBean.getField("location", FacilioConstants.ContextNames.VISITOR);
-        inviteField.addChildLookupField(inviteHost);
-        visitorField.addChildLookupField(visitorLocation);
+        inviteField.addChildSupplement(inviteHost);
+        visitorField.addChildSupplement(visitorLocation);
 
         List<LookupField> additionaLookups = new ArrayList<LookupField>();
         additionaLookups.add(inviteField);

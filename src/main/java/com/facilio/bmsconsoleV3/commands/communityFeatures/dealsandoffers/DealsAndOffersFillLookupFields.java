@@ -5,7 +5,6 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.LookupFieldMeta;
@@ -27,7 +26,7 @@ public class DealsAndOffersFillLookupFields extends FacilioCommand {
         List<LookupField> fetchLookupsList = new ArrayList<>();
         LookupFieldMeta neighbourhoodField = new LookupFieldMeta((LookupField) fieldsAsMap.get("neighbourhood"));
         LookupField location = (LookupField) modBean.getField("location", FacilioConstants.ContextNames.Tenant.NEIGHBOURHOOD);
-        neighbourhoodField.addChildLookupField(location);
+        neighbourhoodField.addChildSupplement(location);
         fetchLookupsList.add(neighbourhoodField);
         LookupField sysCreatedBy = (LookupField) FieldFactory.getSystemField("sysCreatedBy", modBean.getModule(moduleName));
         fetchLookupsList.add(sysCreatedBy);

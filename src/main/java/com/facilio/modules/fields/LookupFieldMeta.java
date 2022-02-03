@@ -15,11 +15,11 @@ public class LookupFieldMeta extends LookupField {
 		super(field);
 	}
 
-	public LookupFieldMeta(LookupField field, List<FacilioField> selectFields, Collection<LookupField> childLookupFields) {
+	public LookupFieldMeta(LookupField field, List<FacilioField> selectFields, Collection<SupplementRecord> chileSupplements) {
 		// TODO Auto-generated constructor stub
 		this(field);
 		this.selectFields = selectFields;
-		this.childLookupFields = childLookupFields;
+		this.childSupplements = chileSupplements;
 	}
 
 	private List<FacilioField> selectFields;
@@ -30,17 +30,17 @@ public class LookupFieldMeta extends LookupField {
 		this.selectFields = selectFields;
 	}
 
-	private Collection<LookupField> childLookupFields;
-	public Collection<LookupField> getChildLookupFields() {
-		return childLookupFields;
+	private Collection<SupplementRecord> childSupplements;
+	public Collection<SupplementRecord> getChildSupplements() {
+		return childSupplements;
 	}
-	public void setChildLookupFields(Collection<LookupField> childLookupFields) {
-		this.childLookupFields = childLookupFields;
+	public void setChildSupplements(Collection<SupplementRecord> childSupplements) {
+		this.childSupplements = childSupplements;
 	}
-	public void addChildLookupField(LookupField childLookupField) {
-		if (this.childLookupFields == null) {
-			childLookupFields = new ArrayList<>();
+	public void addChildSupplement(LookupField childSupplement) {
+		if (this.childSupplements == null) {
+			childSupplements = new ArrayList<>();
 		}
-		childLookupFields.add(childLookupField);
+		childSupplements.add(childSupplement);
 	}
 }

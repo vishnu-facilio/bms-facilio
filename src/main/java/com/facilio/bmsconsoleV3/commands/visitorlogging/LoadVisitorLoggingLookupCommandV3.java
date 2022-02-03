@@ -3,7 +3,6 @@ package com.facilio.bmsconsoleV3.commands.visitorlogging;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
-import com.facilio.bmsconsole.commands.LoadVisitorLoggingLookUpCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
@@ -31,7 +30,7 @@ public class LoadVisitorLoggingLookupCommandV3 extends FacilioCommand {
 		List<LookupField> additionaLookups = new ArrayList<LookupField>();
 		LookupFieldMeta visitorField = new LookupFieldMeta((LookupField) fieldsAsMap.get("visitor"));
 		LookupField visitorLastVisitedLocationField = (LookupField) modBean.getField("lastVisitedSpace",FacilioConstants.ContextNames.VISITOR);
-		visitorField.addChildLookupField(visitorLastVisitedLocationField);
+		visitorField.addChildSupplement(visitorLastVisitedLocationField);
 		LookupField hostField = (LookupField) fieldsAsMap.get("host");
 
 		LookupField moduleStateField = (LookupField) fieldsAsMap.get("moduleState");

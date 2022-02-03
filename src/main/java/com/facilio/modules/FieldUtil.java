@@ -237,8 +237,8 @@ public class FieldUtil {
 					List<FacilioField> lookupBeanFields = null;
 					if (field instanceof LookupFieldMeta) {
 						LookupFieldMeta lfm = (LookupFieldMeta) field;
-						if (CollectionUtils.isNotEmpty(lfm.getChildLookupFields())) {
-							lookupBeanBuilder.fetchSupplements(lfm.getChildLookupFields());
+						if (CollectionUtils.isNotEmpty(lfm.getChildSupplements())) {
+							lookupBeanBuilder.fetchSupplements(lfm.getChildSupplements());
 						}
 						if (CollectionUtils.isNotEmpty(lfm.getSelectFields())) {
 							lookupBeanFields = lfm.getSelectFields();

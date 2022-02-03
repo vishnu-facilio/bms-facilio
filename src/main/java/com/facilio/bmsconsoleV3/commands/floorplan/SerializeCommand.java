@@ -64,7 +64,7 @@ public class SerializeCommand extends FacilioCommand {
 				List<LookupField> supplements = new ArrayList<>();
 				LookupFieldMeta spaceField = new LookupFieldMeta((LookupField) zonesFieldMap.get(FacilioConstants.ContextNames.SPACE));
 		        LookupField spaceCategoryField = (LookupField) modBean.getField("spaceCategory", FacilioConstants.ContextNames.SPACE);
-		        spaceField.addChildLookupField(spaceCategoryField);
+		        spaceField.addChildSupplement(spaceCategoryField);
 		        supplements.add(spaceField);
 
 				SelectRecordsBuilder zonesBuilder = new SelectRecordsBuilder()
