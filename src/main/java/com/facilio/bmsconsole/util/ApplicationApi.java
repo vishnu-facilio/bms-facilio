@@ -549,6 +549,9 @@ public class ApplicationApi {
             configJSON = new JSONObject();
             configJSON.put("type", "commissioning");
             webTabs.add(new WebTabContext("Commissioning", "commissioning", WebTabContext.Type.CUSTOM, null, layout.getApplicationId(), configJSON));
+            configJSON = new JSONObject();
+            configJSON.put("type", "trigger");
+            webTabs.add(new WebTabContext("Triggers", "trigger", WebTabContext.Type.CUSTOM, null, layout.getApplicationId(),configJSON));
             webTabs.add(new WebTabContext("Alarms", "alarm", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("agentAlarm").getModuleId()),  layout.getApplicationId(), null));
             configJSON = new JSONObject();
             configJSON.put("type", "alarmrule");
