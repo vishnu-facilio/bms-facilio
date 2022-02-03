@@ -486,7 +486,7 @@ public class AccountUtil {
 		TRANSFER_REQUEST(63,4611686018427387904L,LicenseMapping.GROUP1LICENSE),//2^62
 		// Add Module name if license is added for specific module
     	SURVEY(64,1,LicenseMapping.GROUP2LICENSE),
-//    	ADD_ON_FEATURE(2,LicenseMapping.GROUP2LICENSE),
+    	GOOGLE_TRANSLATION(65,2,LicenseMapping.GROUP2LICENSE),
 		;
 
     	public int featureId;
