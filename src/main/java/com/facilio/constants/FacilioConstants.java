@@ -913,6 +913,7 @@ public class FacilioConstants {
 		
 		
 		public static final String TICKET_NOTES = "ticketnotes";
+		public static final String SERVICE_REQUEST_NOTES = "servicerequestsnotes";
 		public static final String BASE_SPACE_NOTES = "basespacenotes";
 		public static final String ASSET_NOTES = "assetnotes";
 		public static final String DELIVERY_NOTES = "deliverynotes";
@@ -930,6 +931,7 @@ public class FacilioConstants {
 		public static final String STORE_ROOM_NOTES = "storeRoomNotes";
 
 		public static final String TICKET_ATTACHMENTS = "ticketattachments";
+		public static final String SERVICE_REQUEST_ATTACHMENTS = "servicerequestsattachments";
 		public static final String BASE_SPACE_ATTACHMENTS = "basespaceattachments";
 		public static final String ASSET_ATTACHMENTS = "assetattachments";
 		public static final String DELIVERY_ATTACHMENTS = "deliveryattachments";
@@ -1961,6 +1963,12 @@ public class FacilioConstants {
 		public static final String CONTACT_DIRECTORY = "contactdirectory";
 		public static final String ADMIN_DOCUMENTS = "admindocuments";
 
+		public static final String SCOPING_CONTEXT = "scopingContext";
+		public static final String SCOPING_CONTEXT_LIST = "scopingContextList";
+		public static final String SCOPING_ID = "scopingId";
+		public static final String VALUE_GENERATORS = "valueGenerators";
+
+
 		public static class WorkPermit {
 			public static final String WORK_PERMIT_TYPE_CHECKLIST = "workpermittypechecklist";
 			public static final String WORK_PERMIT_TYPE_CHECKLIST_CATEGORY = "workpermittypechecklistcategory";
@@ -1971,6 +1979,20 @@ public class FacilioConstants {
 			public static final String WORK_PERMIT_ATTACHMENTS = "workpermitattachments";
 			public static final String WORKPERMIT = "workpermit";
 		}
+
+		public static class ValueGenerators {
+			public static final String ACCESSIBLE_SPACES = "In Current User Accessible Spaces";
+			public static final String AUDIENCE = "Audience Sharing";
+			public static final String BUILDING = "In Buildings based on current user sites";
+			public static final String PEOPLE_LIST = "In People List Based on Current User";
+			public static final String PEOPLE = "Is Current People";
+			public static final String SITE = "In Current User Sites";
+			public static final String TENANT = "Is Current Tenant";
+			public static final String USER = "Is Current User";
+			public static final String CONTANS_USER = "Contains Current User";
+
+		}
+
 
 		public static class Budget {
 			public static final String ACCOUNT_TYPE = "accounttype";

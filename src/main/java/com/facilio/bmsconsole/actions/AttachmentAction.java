@@ -148,6 +148,8 @@ public class AttachmentAction  extends FacilioAction {
 			} else if (parentModuleName.equals(FacilioConstants.ContextNames.SPACE)) {
 				context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.SPACE_ACTIVITY);
 			}
+		}else if (module.equals(FacilioConstants.ContextNames.SERVICE_REQUEST_ATTACHMENTS)) {
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.SERVICE_REQUEST_ACTIVITY);
 		}
 		else {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

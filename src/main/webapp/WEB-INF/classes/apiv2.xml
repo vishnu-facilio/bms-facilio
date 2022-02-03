@@ -6710,4 +6710,23 @@
 			<param name="moduleName">{1}</param>
 		</action>
 	</package>
+
+	<package name="scoping" namespace="/api/v2/scoping" extends="v2Api">
+		<action name="addOrUpdateConfig"
+				class="com.facilio.bmsconsole.actions.ScopingAction" method="addOrUpdateScopingConfig">
+		</action>
+		<action name="scopingConfigList"
+				class="com.facilio.bmsconsole.actions.ScopingAction"
+				method="list" >
+		</action>
+		<action name="scopingList"
+				class="com.facilio.bmsconsole.actions.ScopingAction"
+				method="listAppScoping" >
+		</action>
+		<action name="valueGenerators"
+				class="com.facilio.bmsconsole.actions.ScopingAction"
+				method="listValueGenerators" >
+		</action>
+
+	</package>
 </struts>

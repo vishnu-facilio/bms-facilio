@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -47,7 +49,7 @@ public class AddOrUpdateStateFlowCommand extends FacilioCommand {
 			stateFlow.setActivityType(EventType.CREATE);
 			stateFlow.setModuleId(facilioModule.getModuleId());
 			stateFlow.setRuleType(RuleType.STATE_FLOW);
-			
+
 			boolean add = false;
 			if (stateFlow.getId() < 0) {
 				add = true;

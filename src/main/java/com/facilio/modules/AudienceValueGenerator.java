@@ -7,7 +7,9 @@ import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.TenantsAPI;
+import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceSharingInfoContext;
+import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -15,13 +17,11 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class AudienceValueGenerator extends ValueGenerator{
     @Override
@@ -32,7 +32,7 @@ public class AudienceValueGenerator extends ValueGenerator{
         try {
             Criteria criteria = new Criteria();
             if (appType == AppDomain.AppDomainType.TENANT_PORTAL.getIndex() || appType == AppDomain.AppDomainType.SERVICE_PORTAL.getIndex()) {
-                TenantContext tenant = PeopleAPI.getTenantForUser(AccountUtil.getCurrentUser().getId());
+                V3TenantContext tenant = V3PeopleAPI.getTenantForUser(AccountUtil.getCurrentUser().getId(), true);
                 if (tenant != null) {
                     List<TenantUnitSpaceContext> tenantUnits = TenantsAPI.getTenantUnitsForTenant(tenant.getId());
                     if (CollectionUtils.isNotEmpty(tenantUnits)) {
@@ -111,5 +111,30 @@ public class AudienceValueGenerator extends ValueGenerator{
         pplCriteria.addAndCondition(CriteriaAPI.getCondition("SHARING_TYPE", "sharingType", "5", StringOperators.IS));
         pplCriteria.addAndCondition(CriteriaAPI.getCondition("SHARED_TO_PEOPLE_ID", "sharedToPeopleId", StringUtils.join(AccountUtil.getCurrentUser().getPeopleId()), PickListOperators.IS));
         return pplCriteria;
+    }
+
+    @Override
+    public String getValueGeneratorName() {
+        return FacilioConstants.ContextNames.ValueGenerators.AUDIENCE;
+    }
+
+    @Override
+    public String getLinkName() {
+        return "com.facilio.modules.AudienceValueGenerator";
+    }
+
+    @Override
+    public String getModuleName() {
+        return FacilioConstants.ContextNames.AUDIENCE;
+    }
+
+    @Override
+    public Boolean getIsHidden() {
+        return false;
+    }
+
+    @Override
+    public Integer getOperatorId() {
+        return 36;
     }
 }

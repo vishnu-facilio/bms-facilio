@@ -3,17 +3,23 @@ package com.facilio.v3.util;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.timeline.context.TimelineRequest;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+
+import java.util.Map;
 
 public class TimelineViewUtil {
 
@@ -82,6 +88,21 @@ public class TimelineViewUtil {
         context.put(FacilioConstants.ContextNames.CV_NAME, timelineRequest.getViewName());
         context.put(FacilioConstants.ContextNames.TIMELINE_REQUEST, timelineRequest);
         return context;
+    }
+
+    public static long getCustomizationIdFromViewId(long viewId) throws Exception
+    {
+        FacilioModule timelineModule = ModuleFactory.getTimelineViewModule();
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(FieldFactory.getTimelineViewFields(timelineModule))
+                .table(timelineModule.getTableName())
+                .andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(viewId), NumberOperators.EQUALS));
+        Map<String, Object> props = selectBuilder.fetchFirst();
+        if(props != null && props.containsKey("recordCustomizationId"))
+        {
+            return (long)props.get("recordCustomizationId");
+        }
+        return -1;
     }
 
 }

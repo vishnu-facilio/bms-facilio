@@ -14,6 +14,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -70,6 +71,7 @@ public class StateFlowRuleContext extends AbstractStateFlowRuleContext {
 	public void setShouldCheckOnlyFormBased(boolean shouldCheckOnlyFormBased) {
 		this.shouldCheckOnlyFormBased = shouldCheckOnlyFormBased;
 	}
+
 
 	@Override
 	public boolean evaluateCriteria(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {

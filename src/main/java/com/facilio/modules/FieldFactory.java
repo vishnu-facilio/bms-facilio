@@ -8361,6 +8361,7 @@ public class FieldFactory extends BaseFieldFactory {
         list.add(getField("showInTenantPortal", "SHOW_IN_TENANT_PORTAL", stageRuleModule, FieldType.BOOLEAN));
         list.add(getField("showInVendorPortal", "SHOW_IN_VENDOR_PORTAL", stageRuleModule, FieldType.BOOLEAN));
         list.add(getField("showInOccupantPortal", "SHOW_IN_OCCUPANT_PORTAL", stageRuleModule, FieldType.BOOLEAN));
+        list.add(getNumberField("qrFieldId","QRFIELD_ID",stageRuleModule));
         return list;
     }
 
@@ -8446,6 +8447,8 @@ public class FieldFactory extends BaseFieldFactory {
         list.add(getField("allowCreate", "ALLOW_CREATE", module, FieldType.BOOLEAN));
         list.add(getField("disableWeekends", "DISABLE_WEEKENDS", module, FieldType.BOOLEAN));
         list.add(getNumberField("weekendId", "WEEKENDID", module));
+        list.add(getStringField("configJson", "CONFIG_JSON", module));
+        list.add(getNumberField("recordCustomizationId","RECORD_CUSTOMIZATION_ID",module));
 
         return list;
     }
@@ -8456,6 +8459,29 @@ public class FieldFactory extends BaseFieldFactory {
         list.add(getIdField("id","ID",module));
         list.add(getField("name", "NAME", module, FieldType.STRING));
         list.add(getField("value", "VALUE", module, FieldType.STRING));
+
+        return list;
+    }
+
+    public static List<FacilioField> getRecordCustomizationFields(FacilioModule module){
+        List<FacilioField> list = new ArrayList<>();
+
+        list.add(getIdField("id","ID",module));
+        list.add(getNumberField("customizationType", "TYPE", module));
+        list.add(getNumberField("customizationFieldId", "FIELDID", module));
+        list.add(getStringField("defaultCustomization", "DEFAULT_CUSTOMIZATION", module));
+
+        return list;
+    }
+
+    public static List<FacilioField> getRecordCustomizationValueFields(FacilioModule module){
+        List<FacilioField> list = new ArrayList<>();
+
+        list.add(getIdField("id","ID",module));
+        list.add(getNumberField("parentId", "PARENTID", module));
+        list.add(getNumberField("namedCriteriaId", "NAMED_CRITERIA_ID", module));
+        list.add(getStringField("fieldValue", "FIELDVALUE", module));
+        list.add(getStringField("customization", "CUSTOMIZATION", module));
 
         return list;
     }
@@ -8945,10 +8971,10 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("isDefault", "IS_DEFAULT", module, FieldType.BOOLEAN));
         fields.add(getField("domainType", "DOMAIN_TYPE", module, FieldType.NUMBER));
         fields.add(getField("linkName", "LINK_NAME", module, FieldType.STRING));
-        fields.add(getField("scopingId", "SCOPING_ID", module, FieldType.NUMBER));
         fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
         fields.add(getField("appCategory", "APP_CATEGORY", module, FieldType.NUMBER));
         fields.add(getField("config", "CONFIG", module, FieldType.STRING));
+        fields.add(getField("scopingId", "SCOPING_ID", module, FieldType.NUMBER));
 
         return fields;
     }
@@ -9610,11 +9636,12 @@ public class FieldFactory extends BaseFieldFactory {
 	        fields.add(getIdField(module));
 	        fields.add(getField("scopingId", "SCOPING_ID", module, FieldType.NUMBER));
 	        fields.add(getField("moduleId", "MODULE_ID", module, FieldType.NUMBER));
-	        fields.add(getField("fieldName", "FIELD_NAME", module, FieldType.STRING));
-	        fields.add(getField("operatorId", "OPERATOR_ID", module, FieldType.NUMBER));
-	        fields.add(getField("value", "FIELD_VALUE", module, FieldType.STRING));
-	        fields.add(getField("fieldValueGenerator", "FIELD_VALUE_GENERATOR", module, FieldType.STRING));
-	         	      
+	        fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
+            fields.add(getField("fieldName", "FIELD_NAME", module, FieldType.STRING));
+            fields.add(getField("operatorId", "OPERATOR_ID", module, FieldType.NUMBER));
+            fields.add(getField("value", "FIELD_VALUE", module, FieldType.STRING));
+            fields.add(getField("valueGenerator", "FIELD_VALUE_GENERATOR", module, FieldType.STRING));
+
 	        return fields;
 	 }
 	 
@@ -9624,8 +9651,10 @@ public class FieldFactory extends BaseFieldFactory {
 
 	        fields.add(getIdField(module));
 	        fields.add(getField("scopeName", "SCOPE_NAME", module, FieldType.STRING));
-		     	      
-	        return fields;
+            fields.add(getField("isDefault", "IS_DEFAULT", module, FieldType.BOOLEAN));
+            fields.add(getField("applicationId", "APPLICATION_ID", module, FieldType.NUMBER));
+
+         return fields;
 	 }
 	 
 	 public static List<FacilioField> getFieldModulePermissionFields() {

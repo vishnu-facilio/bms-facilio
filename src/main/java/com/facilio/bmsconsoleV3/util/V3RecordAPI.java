@@ -114,8 +114,8 @@ public class V3RecordAPI {
         return getRecord(modBean.getModule(moduleId).getName(), recId, null);
     }
 
-    public static <T extends ModuleBaseWithCustomFields> T getRecord (String modName, long recId, Class<T> beanClass) throws Exception {
-        List<T> records = constructBuilder(modName, Collections.singletonList(recId), beanClass).get();
+    public static <T extends ModuleBaseWithCustomFields> T getRecord (String modName, long recId, Class<T> beanClass, boolean skipScoping) throws Exception {
+        List<T> records = constructBuilder(modName, Collections.singletonList(recId), beanClass, skipScoping).get();
         if(CollectionUtils.isNotEmpty(records)) {
             return records.get(0);
         }
@@ -124,11 +124,15 @@ public class V3RecordAPI {
         }
     }
 
-    private static <T extends ModuleBaseWithCustomFields> SelectRecordsBuilder<T> constructBuilder(String modName, Collection<Long> recordIds, Class<T> beanClass) throws Exception {
-        return constructBuilder(modName, recordIds, beanClass, null, null);
+    public static <T extends ModuleBaseWithCustomFields> T getRecord (String modName, long recId, Class<T> beanClass) throws Exception {
+       return getRecord(modName, recId, beanClass, false);
     }
 
-    private static <T extends ModuleBaseWithCustomFields> SelectRecordsBuilder<T> constructBuilder(String modName, Collection<Long> recordIds, Class<T> beanClass, Criteria criteria, Collection<SupplementRecord> supplements) throws Exception {
+    private static <T extends ModuleBaseWithCustomFields> SelectRecordsBuilder<T> constructBuilder(String modName, Collection<Long> recordIds, Class<T> beanClass, boolean skipScoping) throws Exception {
+        return constructBuilder(modName, recordIds, beanClass, null, null, skipScoping);
+    }
+
+    private static <T extends ModuleBaseWithCustomFields> SelectRecordsBuilder<T> constructBuilder(String modName, Collection<Long> recordIds, Class<T> beanClass, Criteria criteria, Collection<SupplementRecord> supplements, boolean skipScoping) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(modName);
         List<FacilioField> fields = modBean.getAllFields(modName);
@@ -154,6 +158,10 @@ public class V3RecordAPI {
             builder.fetchSupplements(supplements);
         }
 
+        if(skipScoping) {
+            builder.skipScopeCriteria();
+        }
+
         return builder;
     }
 
@@ -162,7 +170,7 @@ public class V3RecordAPI {
     }
 
     public static <T extends ModuleBaseWithCustomFields> List<T> getRecordsList (String modName, Collection<Long> recordIds, Class<T> beanClass) throws Exception{
-        List<T> records = constructBuilder(modName, recordIds, beanClass).get();
+        List<T> records = constructBuilder(modName, recordIds, beanClass, false).get();
         if(CollectionUtils.isNotEmpty(records)) {
             return records;
         }
@@ -173,7 +181,7 @@ public class V3RecordAPI {
    
     
     public static <T extends ModuleBaseWithCustomFields> List<T> getRecordsListWithSupplements (String modName, Collection<Long> recordIds, Class<T> beanClass, Collection<SupplementRecord> supplements) throws Exception{
-        List<T> records = constructBuilder(modName, recordIds, beanClass, null, supplements).get();
+        List<T> records = constructBuilder(modName, recordIds, beanClass, null, supplements, false).get();
         if(CollectionUtils.isNotEmpty(records)) {
             return records;
         }
@@ -184,7 +192,7 @@ public class V3RecordAPI {
     
     
     public static <T extends ModuleBaseWithCustomFields> List<T> getRecordsListWithSupplements (String modName, Collection<Long> recordIds, Class<T> beanClass, Criteria criteria, Collection<SupplementRecord> supplements) throws Exception{
-        List<T> records = constructBuilder(modName, recordIds, beanClass, criteria, supplements).get();
+        List<T> records = constructBuilder(modName, recordIds, beanClass, criteria, supplements, false).get();
         if(CollectionUtils.isNotEmpty(records)) {
             return records;
         }
@@ -214,7 +222,7 @@ public class V3RecordAPI {
     }
 
     public static <T extends ModuleBaseWithCustomFields> Map<Long, T> getRecordsMap (String modName, Collection<Long> recordIds, Class<T> beanClass, Criteria criteria, Collection<SupplementRecord> supplements) throws Exception{
-        Map<Long, T> recordMap = constructBuilder(modName, recordIds, beanClass, criteria, supplements).getAsMap();
+        Map<Long, T> recordMap = constructBuilder(modName, recordIds, beanClass, criteria, supplements, false).getAsMap();
         return recordMap;
     }
 

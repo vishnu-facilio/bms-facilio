@@ -89,6 +89,14 @@ public class V3Action extends ActionSupport implements ServletResponseAware {
 		this.search = search;
 	}
 
+	private String qrValue;
+	public void setQrValue(String qrValue) {
+		this.qrValue = qrValue;
+	}
+	public String getQrValue() {
+		return qrValue;
+	}
+
 	private String filters;
 
 	public String getFilters() {
