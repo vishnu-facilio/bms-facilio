@@ -33,7 +33,7 @@ public class PurchaseRequestPurchaseOrderLookUpsCommand extends FacilioCommand {
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 		LookupFieldMeta vendorField = new LookupFieldMeta((LookupField) fieldsAsMap.get("vendor"));
 		LookupField vendorLocationField = (LookupField) modBean.getField("address", FacilioConstants.ContextNames.VENDORS);
-		vendorField.addChildLookupField(vendorLocationField);
+		vendorField.addChildSupplement(vendorLocationField);
 		
 		List<LookupField> additionaLookups = new ArrayList<LookupField>();
 		additionaLookups.add(vendorField);

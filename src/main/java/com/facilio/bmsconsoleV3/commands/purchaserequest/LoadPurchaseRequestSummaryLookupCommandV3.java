@@ -33,7 +33,7 @@ public class LoadPurchaseRequestSummaryLookupCommandV3 extends FacilioCommand {
 		
 		LookupFieldMeta vendorField = new LookupFieldMeta((LookupField) fieldsAsMap.get("vendor"));
 		LookupField vendorLocationField = (LookupField) modBean.getField("address", FacilioConstants.ContextNames.VENDORS);
-		vendorField.addChildLookupField(vendorLocationField);
+		vendorField.addChildSupplement(vendorLocationField);
 		
 		additionaLookups.add(vendorField);
 		additionaLookups.add((LookupField) fieldsAsMap.get("storeRoom"));

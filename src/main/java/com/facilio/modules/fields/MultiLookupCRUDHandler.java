@@ -51,8 +51,8 @@ public class MultiLookupCRUDHandler extends BaseMultiValueCRUDHandler<Object> {
             LookupFieldMeta valueFieldMeta = null;
             if (field instanceof MultiLookupMeta) {
                 MultiLookupMeta mlm = (MultiLookupMeta) field;
-                if (CollectionUtils.isNotEmpty(mlm.getChildLookupFields()) || CollectionUtils.isNotEmpty(mlm.getSelectFields())) {
-                    valueFieldMeta = new LookupFieldMeta(valueField, mlm.getSelectFields(), mlm.getChildLookupFields());
+                if (CollectionUtils.isNotEmpty(mlm.getChildLookupSupplements()) || CollectionUtils.isNotEmpty(mlm.getSelectFields())) {
+                    valueFieldMeta = new LookupFieldMeta(valueField, mlm.getSelectFields(), mlm.getChildLookupSupplements());
                 }
             }
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -83,12 +83,13 @@ public class MultiLookupCRUDHandler extends BaseMultiValueCRUDHandler<Object> {
     @Override
     protected void fetchSupplements(boolean isMap, SelectRecordsBuilder relBuilder, FacilioField valueField) throws Exception {
         // Handling child multi lookups
-        if (field instanceof MultiLookupMeta) {
-            MultiLookupMeta mlm = (MultiLookupMeta) field;
-            if (CollectionUtils.isNotEmpty(mlm.getChildMultiLookupFields())) {
-                relBuilder.fetchSupplements(mlm.getChildMultiLookupFields());
-            }
-        }
+        // Commenting it out since I don't see any need for this
+//        if (field instanceof MultiLookupMeta) {
+//            MultiLookupMeta mlm = (MultiLookupMeta) field;
+//            if (CollectionUtils.isNotEmpty(mlm.getChildMultiLookupFields())) {
+//                relBuilder.fetchSupplements(mlm.getChildMultiLookupFields());
+//            }
+//        }
 
         relBuilder.fetchSupplement(constructValueSupplementRecord((LookupField) valueField));
 

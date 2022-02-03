@@ -349,8 +349,8 @@ public class VisitorManagementAPI {
 		
 		LookupFieldMeta visitorField = new LookupFieldMeta((LookupField) fieldsAsMap.get("visitorId"));
 		LookupField visitorLocation = (LookupField) modBean.getField("location", FacilioConstants.ContextNames.VISITOR);
-		inviteField.addChildLookupField(inviteHost);
-		visitorField.addChildLookupField(visitorLocation);
+		inviteField.addChildSupplement(inviteHost);
+		visitorField.addChildSupplement(visitorLocation);
 		
 		List<LookupField> additionaLookups = new ArrayList<LookupField>();
 		additionaLookups.add(inviteField);
@@ -378,8 +378,8 @@ public class VisitorManagementAPI {
 		
 		LookupFieldMeta visitorField = new LookupFieldMeta((LookupField) fieldsAsMap.get("visitorId"));
 		LookupField visitorLocation = (LookupField) modBean.getField("location", FacilioConstants.ContextNames.VISITOR);
-		inviteField.addChildLookupField(inviteHost);
-		visitorField.addChildLookupField(visitorLocation);
+		inviteField.addChildSupplement(inviteHost);
+		visitorField.addChildSupplement(visitorLocation);
 		
 		List<LookupField> additionaLookups = new ArrayList<LookupField>();
 		additionaLookups.add(inviteField);

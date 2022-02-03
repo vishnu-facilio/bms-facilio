@@ -762,7 +762,7 @@ public class ExportUtil {
 					}
 					if (vf.getField() instanceof LookupField) {
 						LookupField field = (LookupField) vf.getField();
-						spaceLookupField.addChildLookupField(field);
+						spaceLookupField.addChildSupplement(field);
 					}
 
 				}

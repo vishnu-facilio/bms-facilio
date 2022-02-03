@@ -21,19 +21,20 @@ public class MultiLookupMeta extends MultiLookupField {
         this.selectFields = selectFields;
     }
 
-    private Collection<LookupField> childLookupFields;
-    public Collection<LookupField> getChildLookupFields() {
-        return childLookupFields;
+    private Collection<SupplementRecord> childLookupSupplements;
+    public Collection<SupplementRecord> getChildLookupSupplements() {
+        return childLookupSupplements;
     }
-    public void setChildLookupFields(Collection<LookupField> childLookupFields) {
-        this.childLookupFields = childLookupFields;
+    public void setChildLookupSupplements(Collection<SupplementRecord> childLookupSupplements) {
+        this.childLookupSupplements = childLookupSupplements;
     }
 
-    private Collection<MultiLookupField> childMultiLookupFields;
-    public Collection<MultiLookupField> getChildMultiLookupFields() {
-        return childMultiLookupFields;
-    }
-    public void setChildMultiLookupFields(Collection<MultiLookupField> childMultiLookupFields) {
-        this.childMultiLookupFields = childMultiLookupFields;
-    }
+    // Commenting it out since I don't find any need for this
+//    private Collection<MultiLookupField> childMultiLookupFields;
+//    public Collection<MultiLookupField> getChildMultiLookupFields() {
+//        return childMultiLookupFields;
+//    }
+//    public void setChildMultiLookupFields(Collection<MultiLookupField> childMultiLookupFields) {
+//        this.childMultiLookupFields = childMultiLookupFields;
+//    }
 }
