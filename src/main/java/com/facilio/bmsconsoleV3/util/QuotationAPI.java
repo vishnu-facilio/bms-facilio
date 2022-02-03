@@ -28,7 +28,9 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LargeTextField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.LookupFieldMeta;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections4.CollectionUtils;
@@ -195,12 +197,16 @@ public class QuotationAPI {
         List<FacilioField> fields = modBean.getAllFields(module.getName());
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 
+        LookupFieldMeta termsField = new LookupFieldMeta((LookupField) fieldsAsMap.get("terms"));
+        LargeTextField termsLongDescField = (LargeTextField) modBean.getField("longDesc", FacilioConstants.ContextNames.TERMS_AND_CONDITIONS);
+        termsField.addChildSupplement(termsLongDescField);
+
         SelectRecordsBuilder<QuotationAssociatedTermsContext> builder = new SelectRecordsBuilder<QuotationAssociatedTermsContext>()
                 .module(module)
                 .beanClass(QuotationAssociatedTermsContext.class)
                 .select(fields)
                 .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("quote"), String.valueOf(quotation.getId()), NumberOperators.EQUALS))
-                .fetchSupplement((LookupField) fieldsAsMap.get("terms"));
+                .fetchSupplement(termsField);
         List<QuotationAssociatedTermsContext> list = builder.get();
         if (CollectionUtils.isNotEmpty(list)) {
             quotation.setTermsAssociated(list);
