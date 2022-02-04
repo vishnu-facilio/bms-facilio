@@ -523,6 +523,36 @@
                 class="com.facilio.bmsconsoleV3.actions.AccessibleSpacesAction"
                 method="delete"></action>
     </package>
+    <package name="moduleReportApi" namespace="/api/v3/report" extends="v3Api">
+        <action name="create"
+                class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
+                method="create">
+        </action>
+        <action name="update"
+                class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
+                method="update">
+        </action>
+    </package>
+    <package name="pivotReportApi" namespace="/api/v3/report/pivot" extends="v3Api">
+        <action name="create"
+                class="com.facilio.bmsconsoleV3.actions.report.V3PivotReportAction"
+                method="create">
+        </action>
+        <action name="update"
+                class="com.facilio.bmsconsoleV3.actions.report.V3PivotReportAction"
+                method="update">
+        </action>
+    </package>
+    <package name="analyticsReportApi" namespace="/api/v3/report/analytics" extends="v3Api">
+        <action name="create"
+                class="com.facilio.bmsconsoleV3.actions.report.V3AnalyticsReportAction"
+                method="create">
+        </action>
+        <action name="update"
+                class="com.facilio.bmsconsoleV3.actions.report.V3AnalyticsReportAction"
+                method="update">
+        </action>
+    </package>
 
 
 </struts>

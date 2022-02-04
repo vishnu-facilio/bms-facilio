@@ -1231,4 +1231,26 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new SetItemAndToolTypeForStoreRoomCommand());
         return c;
     }
+
+    public static FacilioChain getCreateOrUpdateReportChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ConstructReportData());
+        c.addCommand(new AddOrUpdateReportCommand());
+        return c;
+    }
+
+    public static FacilioChain getCreateOrUpdateAnalyticsReportChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CreateReadingAnalyticsReportCommand());
+        c.addCommand(new AddOrUpdateReportCommand());
+        return c;
+    }
+
+    public static FacilioChain getCreateOrUpdatePivotReportChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ConstructTabularReportData());
+        c.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
+        c.addCommand(new AddOrUpdateReportCommand());
+        return c;
+    }
 }
