@@ -56,7 +56,7 @@ public class PurchaseModulesPageFactory extends PageFactory {
         page.addTab(tab3);
         Page.Section tab3Sec1 = page.new Section();
         tab3.addSection(tab3Sec1);
-        addAssociatedTermsWidget(tab3Sec1,FacilioConstants.ContextNames.PR_ASSOCIATED_TERMS);
+        addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.PR_ASSOCIATED_TERMS, module.getModuleId());
         addRelatedList(tab3Sec1, record.getModuleId());
 
         return page;
@@ -102,26 +102,11 @@ public class PurchaseModulesPageFactory extends PageFactory {
         page.addTab(tab3);
         Page.Section tab3Sec1 = page.new Section();
         tab3.addSection(tab3Sec1);
-        addAssociatedTermsWidget(tab3Sec1,FacilioConstants.ContextNames.PO_ASSOCIATED_TERMS);
+        addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.PO_ASSOCIATED_TERMS, module.getModuleId());
         addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.PURCHASE_REQUEST, module.getModuleId());
         addRelatedList(tab3Sec1, record.getModuleId());
 
         return page;
-    }
-    private static PageWidget addAssociatedTermsWidget(Page.Section section,String moduleName) {
-
-        PageWidget associatedTermsWidget = new PageWidget();
-        associatedTermsWidget.addToLayoutParams(section, 24, 7);
-        associatedTermsWidget.setWidgetType(PageWidget.WidgetType.ASSOCIATED_TERMS);
-        if(moduleName.equals(FacilioConstants.ContextNames.PO_ASSOCIATED_TERMS)){
-            associatedTermsWidget.addToWidgetParams("moduleName",FacilioConstants.ContextNames.PO_ASSOCIATED_TERMS);
-        }
-        else{
-            associatedTermsWidget.addToWidgetParams("moduleName",FacilioConstants.ContextNames.PR_ASSOCIATED_TERMS);
-        }
-        section.addWidget(associatedTermsWidget);
-
-        return associatedTermsWidget;
     }
     private static void addRelatedList(Page.Section section, long moduleId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
