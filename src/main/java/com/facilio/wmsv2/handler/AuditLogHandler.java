@@ -54,6 +54,9 @@ public class AuditLogHandler extends BaseHandler {
             return subject;
         }
         public AuditLogContext setSubject(String subject) {
+            if (StringUtils.length(subject) > 255) {
+                subject = subject.substring(0, 255);
+            }
             this.subject = subject;
             return this;
         }
@@ -63,17 +66,20 @@ public class AuditLogHandler extends BaseHandler {
             return description;
         }
         public AuditLogContext setDescription(String description) {
+            if (StringUtils.length(description) > 2000) {
+                description = description.substring(0, 2000);
+            }
             this.description = description;
             return this;
         }
 
-        private String descriptionJSON;
-        public String getDescriptionJSON() {
-            return descriptionJSON;
-        }
-        public void setDescriptionJSON(String descriptionJSON) {
-            this.descriptionJSON = descriptionJSON;
-        }
+//        private String descriptionJSON;
+//        public String getDescriptionJSON() {
+//            return descriptionJSON;
+//        }
+//        public void setDescriptionJSON(String descriptionJSON) {
+//            this.descriptionJSON = descriptionJSON;
+//        }
 
         private RecordType recordType;
         public int getRecordType() {
@@ -196,9 +202,9 @@ public class AuditLogHandler extends BaseHandler {
         }
 
         public AuditLogContext(String subject, String description, String descriptionJSON, RecordType recordType, String typeName, long recordId) {
-            this.subject = subject;
-            this.description = description;
-            this.descriptionJSON = descriptionJSON;
+            setSubject(subject);
+            setDescription(description);
+//            this.descriptionJSON = descriptionJSON;
             this.recordType = recordType;
             this.typeName = typeName;
             this.recordId = recordId;
