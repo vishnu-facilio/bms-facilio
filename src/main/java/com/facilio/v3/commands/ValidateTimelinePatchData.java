@@ -55,16 +55,29 @@ public class ValidateTimelinePatchData extends FacilioCommand {
             throw new IllegalArgumentException("Invalid time passed");
         }
         ZonedDateTime zonedStartDateTime = DateTimeUtil.getZonedDateTime(Long.valueOf(startFieldVal));
+        String patchType = null;
 
-        if(!isAllowRescheduling && ((startFieldVal != null && !startFieldVal.equals(oldStartFieldVal))
+        if(((startFieldVal != null && !startFieldVal.equals(oldStartFieldVal))
                                     || (endFieldVal != null && !endFieldVal.equals(oldEndFieldVal)))) {
-            throw new IllegalArgumentException("Rescheduling not allowed");
+            if(isAllowRescheduling) {
+                patchType = FacilioConstants.ContextNames.TIMELINE_PATCHTYPE_RESCHEDULE;
+            } else {
+                throw new IllegalArgumentException("Rescheduling not allowed");
+            }
         }
-        if(!isAllowGroupAssignment && (oldGroupFieldVal != null && oldGroupFieldVal.equals("-1")) && (groupFieldVal != null && !groupFieldVal.equals("-1"))) {
-            throw new IllegalArgumentException("Group Assignment not allowed");
+        if(oldGroupFieldVal != null && oldGroupFieldVal.equals("-1") && (groupFieldVal != null && !groupFieldVal.equals("-1"))) {
+            if(isAllowGroupAssignment) {
+                patchType = FacilioConstants.ContextNames.TIMELINE_PATCHTYPE_GROUPASSIGN;
+            } else {
+                throw new IllegalArgumentException("Group Assignment not allowed");
+            }
         }
-        if(!isAllowReAssignment && (oldGroupFieldVal != null && !oldGroupFieldVal.equals("-1") && !oldGroupFieldVal.equals(groupFieldVal))) {
-            throw new IllegalArgumentException("Group change not allowed");
+        if(oldGroupFieldVal != null && !oldGroupFieldVal.equals("-1") && groupFieldVal != null && !oldGroupFieldVal.equals(groupFieldVal)) {
+            if(isAllowReAssignment) {
+                patchType = FacilioConstants.ContextNames.TIMELINE_PATCHTYPE_REASSIGN;
+            } else {
+                throw new IllegalArgumentException("Group change not allowed");
+            }
         }
         if(!isAllowPastAssignment && (startFieldVal != null && !startFieldVal.equals(oldStartFieldVal))) {
             ZonedDateTime currentTime = DateTimeUtil.getZonedDateTime(DateTimeUtil.getDayStartTime());
@@ -77,6 +90,12 @@ public class ValidateTimelinePatchData extends FacilioCommand {
                                                                 || (endFieldVal != null && WeekendUtil.isWeekendDate(DateTimeUtil.getZonedDateTime(Long.valueOf(endFieldVal)), viewObj.getWeekend())))) {
             throw new IllegalArgumentException("Cannot reschedule to weekend");
         }
+
+        if(patchType != null)
+        {
+            context.put(FacilioConstants.ContextNames.TIMELINE_PATCHTYPE, patchType);
+        }
+
         return false;
     }
 }

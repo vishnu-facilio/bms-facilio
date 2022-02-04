@@ -653,7 +653,10 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         JSONObject result = V3Util.processAndUpdateSingleRecord(this.getModuleName(), this.getId(), data, this.getParams(), this.httpServletRequest, this.getStateTransitionId(), this.getCustomButtonId(), this.getApprovalTransitionId(),this.getQrValue());
         this.setData(result);
 
-        addAuditLog(Collections.singletonList((JSONObject)this.getData().get(getModuleName())), getModuleName(), "Record {%s} of module %s has been updated through TimelineView",
+        String message = "Record {%s} of module %s has been "
+                        + (validationContext.containsKey(FacilioConstants.ContextNames.TIMELINE_PATCHTYPE) ? validationContext.get(FacilioConstants.ContextNames.TIMELINE_PATCHTYPE): "updated")
+                        +" through TimelineView";
+        addAuditLog(Collections.singletonList((JSONObject)this.getData().get(getModuleName())), getModuleName(), message,
                 AuditLogHandler.ActionType.UPDATE,
                 (JSONObject) data, true);
 
