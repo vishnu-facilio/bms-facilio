@@ -258,6 +258,7 @@ public class FacilioConstants {
 		public static final String TIMELINE_REQUEST = "timelineRequest";
 		public static final String TIMELINE_AGGREGATE_DATA = "timelineAggregateData";
 		public static final String TIMELINE_V3_DATAMAP = "timelineV3Datamap";
+		public static final String TIMELINE_CUSTOMIZATONDATA_MAP = "timelineCustomizationDataMap";
 		public static final String TIMELINE_GET_UNSCHEDULED_DATA = "timelineGetUnscheduled";
 		public static final String TIMELINE_DATA = "timelineData";
 		public static final String TIMELINE_PATCHTYPE = "patchType";

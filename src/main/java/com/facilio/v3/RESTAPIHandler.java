@@ -675,7 +675,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         FacilioContext context = TimelineViewUtil.getTimelineContext(chain, this.getTimelineRequest(), true,
                 this.getPage(), this.getPerPage(), false);
         chain.execute();
-        setData(timelineRequest.getModuleName(), context.get(FacilioConstants.ContextNames.TIMELINE_V3_DATAMAP));
+        setData(timelineRequest.getModuleName(), context.get(FacilioConstants.ContextNames.TIMELINE_CUSTOMIZATONDATA_MAP));
         return SUCCESS;
     }
 
@@ -684,7 +684,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         FacilioContext context = TimelineViewUtil.getTimelineContext(chain, this.getTimelineRequest(), true,
                 this.getPage(), this.getPerPage(), true);
         chain.execute();
-        setData(timelineRequest.getModuleName(), context.get(FacilioConstants.ContextNames.TIMELINE_V3_DATAMAP));
+        setData(timelineRequest.getModuleName(), context.get(FacilioConstants.ContextNames.TIMELINE_CUSTOMIZATONDATA_MAP));
         return SUCCESS;
     }
 }

@@ -2,7 +2,7 @@ package com.facilio.timeline.context;
 
 import java.util.Map;
 
-public class TimelineRecordContext {
+public class CustomizationDataContext {
 
     private Map<String,Object> data;
     public Map<String, Object> getData() {

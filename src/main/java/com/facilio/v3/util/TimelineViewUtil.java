@@ -18,13 +18,16 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.recordcustomization.RecordCustomizationContext;
 import com.facilio.recordcustomization.RecordCustomizationValuesContext;
+import com.facilio.timeline.context.CustomizationDataContext;
 import com.facilio.timeline.context.TimelineRequest;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TimelineViewUtil {
@@ -125,43 +128,43 @@ public class TimelineViewUtil {
         return value;
     }
 
-    public static Map<String, String> getFieldValueVsCustomizationData(RecordCustomizationContext customizationData) {
+    public static List<CustomizationDataContext> getCustomizationDataMap(List<Map<String, Object>> recordMapList, RecordCustomizationContext customizationData) throws Exception{
+        List<CustomizationDataContext> timelineList = new ArrayList<>();
+
+        FacilioField customizationField = null;
         Map<String, String> fieldValueVsCustomization = null;
         if(customizationData != null && customizationData.getCustomizationType() == RecordCustomizationContext.CustomizationType.FIELD.getIntVal()) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            customizationField = modBean.getField(customizationData.getCustomizationFieldId());
             fieldValueVsCustomization = new HashMap<>();
             for(RecordCustomizationValuesContext value : customizationData.getValues()){
                 fieldValueVsCustomization.put(value.getFieldValue(), value.getCustomization());
             }
         }
-        return fieldValueVsCustomization;
-    }
-
-    public static FacilioField getCustomizationField(RecordCustomizationContext customizationData) throws Exception{
-       FacilioField customizationField = null;
-        if(customizationData != null && customizationData.getCustomizationType() == RecordCustomizationContext.CustomizationType.FIELD.getIntVal()) {
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            customizationField = modBean.getField(customizationData.getCustomizationFieldId());
-        }
-        return customizationField;
-    }
-
-    public static String getRecordBasedCustomizationDetails(RecordCustomizationContext customizationData, FacilioField customizationField,
-                                                          Map<String, String> fieldValueVsCustomization, Map<String, Object> recordMap) throws Exception{
-        String customization = (customizationData != null) ? customizationData.getDefaultCustomization() : null;
-        if(customizationData != null && customizationData.getCustomizationType() == RecordCustomizationContext.CustomizationType.NAMED_CRITERIA.getIntVal()) {
-            for(RecordCustomizationValuesContext customizationValue : customizationData.getValues()){
-                if(customizationValue.getNamedCriteria().evaluate(recordMap, null, null)) {
-                    customization = customizationValue.getCustomization();
-                    break;
+        for(Map<String,Object> record : recordMapList) {
+            CustomizationDataContext recordContext = new CustomizationDataContext();
+            recordContext.setData(record);
+            //Adding customization
+            String customization = (customizationData != null) ? customizationData.getDefaultCustomization() : null;
+            if(customizationData != null && customizationData.getCustomizationType() == RecordCustomizationContext.CustomizationType.NAMED_CRITERIA.getIntVal()) {
+                for(RecordCustomizationValuesContext customizationValue : customizationData.getValues()){
+                    if(customizationValue.getNamedCriteria().evaluate(record, null, null)) {
+                        customization = customizationValue.getCustomization();
+                        break;
+                    }
                 }
             }
-        }
-        else if(customizationField != null && recordMap.get(customizationField.getName()) != null) {
-            String fieldValue = TimelineViewUtil.getTimelineSupportedFieldValue(recordMap.get(customizationField.getName()), customizationField);
-            if (fieldValueVsCustomization.containsKey(fieldValue)) {
-                customization = fieldValueVsCustomization.get(fieldValue);
+            else if(customizationField != null && record.get(customizationField.getName()) != null) {
+                String fieldValue = TimelineViewUtil.getTimelineSupportedFieldValue(record.get(customizationField.getName()), customizationField);
+                if (fieldValueVsCustomization.containsKey(fieldValue)) {
+                    customization = fieldValueVsCustomization.get(fieldValue);
+                }
             }
+            if(customization != null) {
+                recordContext.setCustomization(customization);
+            }
+            timelineList.add(recordContext);
         }
-        return customization;
+        return timelineList;
     }
 }

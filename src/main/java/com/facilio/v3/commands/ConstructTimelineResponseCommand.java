@@ -5,7 +5,7 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.recordcustomization.RecordCustomizationContext;
-import com.facilio.timeline.context.TimelineRecordContext;
+import com.facilio.timeline.context.CustomizationDataContext;
 import com.facilio.v3.util.TimelineViewUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -32,16 +32,16 @@ public class ConstructTimelineResponseCommand extends FacilioCommand {
         FacilioField timelineGroupField = viewObj.getGroupByField();
         RecordCustomizationContext customizationData = viewObj.getRecordCustomization();
 
-        List<Map<String, Object>> recordMapList = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TIMELINE_V3_DATAMAP);
+        List<CustomizationDataContext> customizedDataList = (List<CustomizationDataContext>) context.get(FacilioConstants.ContextNames.TIMELINE_CUSTOMIZATONDATA_MAP);
         List<Map<String, Object>> aggregateValue = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TIMELINE_AGGREGATE_DATA);
 
-        Map<String, Object> timelineResponse = aggregateResult(timelineGroupField, startTimeField, recordMapList, aggregateValue, customizationData);
+        Map<String, Object> timelineResponse = aggregateResult(timelineGroupField, startTimeField, customizedDataList, aggregateValue, customizationData);
         context.put(FacilioConstants.ContextNames.TIMELINE_DATA, timelineResponse);
         return false;
     }
 
     private Map<String, Object> aggregateResult(FacilioField timelineGroupField,
-                                                       FacilioField startTimeField, List<Map<String, Object>> v3Contexts,
+                                                       FacilioField startTimeField, List<CustomizationDataContext> v3Contexts,
                                                        List<Map<String, Object>> aggregateValue, RecordCustomizationContext customizationData) throws Exception {
         Map<String, Object> timelineResult = new HashMap<>();
 
@@ -49,12 +49,10 @@ public class ConstructTimelineResponseCommand extends FacilioCommand {
             return timelineResult;
         }
 
-        FacilioField customizationField = TimelineViewUtil.getCustomizationField(customizationData);
-        Map<String, String> fieldValueVsCustomization = TimelineViewUtil.getFieldValueVsCustomizationData(customizationData);
-
         Map<String, Object> aggregateMap = getAggregateMap(aggregateValue, timelineGroupField, startTimeField);
 
-        for (Map<String, Object> recordMap : v3Contexts) {
+        for (CustomizationDataContext record : v3Contexts) {
+            Map<String, Object> recordMap = record.getData();
             Object o = recordMap.get(timelineGroupField.getName());
 
             String value = TimelineViewUtil.getTimelineSupportedFieldValue(o, timelineGroupField);
@@ -74,7 +72,7 @@ public class ConstructTimelineResponseCommand extends FacilioCommand {
             String minStartDate = aggregateValueMap.get(MIN_START_DATE).toString();
 
             Map<String, Object> dataMap = (Map<String, Object>) groupJSON.get(minStartDate);
-            List<TimelineRecordContext> dataList;
+            List<CustomizationDataContext> dataList;
             if (dataMap == null) {
                 dataMap = new HashMap<>();
                 dataMap.put("count", aggregateValueMap.get("count"));
@@ -82,18 +80,9 @@ public class ConstructTimelineResponseCommand extends FacilioCommand {
                 dataList = new ArrayList<>();
                 dataMap.put("list", dataList);
             } else {
-                dataList = (List<TimelineRecordContext>) dataMap.get("list");
+                dataList = (List<CustomizationDataContext>) dataMap.get("list");
             }
-
-            //Adding customization
-            TimelineRecordContext recordDetail = new TimelineRecordContext();
-            recordDetail.setData(recordMap);
-            String customization = TimelineViewUtil.getRecordBasedCustomizationDetails(customizationData, customizationField, fieldValueVsCustomization, recordMap);
-            if(customization != null) {
-                recordDetail.setCustomization(customization);
-            }
-
-            dataList.add(recordDetail);
+            dataList.add(record);
         }
 
         return timelineResult;
