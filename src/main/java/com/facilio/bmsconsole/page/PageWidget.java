@@ -410,7 +410,8 @@ public class PageWidget {
 		STORE_ROOM("storeroom"),
 		TRANSACTIONS("transactions"),
 		PURCHASE_ORDER("purchaseorder"),
-		INVENTORY_CARD("inventorycard");
+		INVENTORY_CARD("inventorycard"),
+		ASSOCIATED_TERMS("associatedterms");
 
 
 		private String name;
