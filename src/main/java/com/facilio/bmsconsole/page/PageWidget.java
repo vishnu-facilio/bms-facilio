@@ -415,6 +415,8 @@ public class PageWidget {
 		TENANT_WORKORDERS("tenantworkorders"),
 		TENANT_BOOKINGS("tenantbookings"),
 		TENANT_DETAIL("tenantdetail");
+		ASSOCIATED_TERMS("associatedterms");
+
 
 		private String name;
 

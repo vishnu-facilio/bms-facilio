@@ -55,6 +55,7 @@ import com.facilio.bmsconsoleV3.commands.moves.ValidateMovesCommand;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.DeleteReceivableByPOIdV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.FetchPODetailsCommandV3;
+import com.facilio.bmsconsoleV3.commands.purchaseorder.LoadAssociatedTermsLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.LoadPOSummaryLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.FetchPurchaseRequestDetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
@@ -106,8 +107,11 @@ import com.facilio.bmsconsoleV3.context.facilitybooking.*;
 import com.facilio.bmsconsoleV3.context.floorplan.*;
 import com.facilio.bmsconsoleV3.context.inventory.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
+import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
+import com.facilio.bmsconsoleV3.context.purchaserequest.PrAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
+import com.facilio.bmsconsoleV3.context.quotation.QuotationAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
 import com.facilio.bmsconsoleV3.context.workpermit.V3WorkPermitContext;
@@ -515,6 +519,39 @@ public class APIv3Config {
                 .afterFetch(new FetchPODetailsCommandV3())
                 .delete()
                 .afterDelete(new DeleteReceivableByPOIdV3())
+                .build();
+    }
+    @Module("poterms")
+    public static Supplier<V3Config> getPoTerms() {
+        return () -> new V3Config(V3PoAssociatedTermsContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .update()
+                .list()
+                .beforeFetch(new LoadAssociatedTermsLookupCommandV3())
+                .summary()
+                .delete()
+                .build();
+    }
+    @Module("prterms")
+    public static Supplier<V3Config> getPrTerms() {
+        return () -> new V3Config(PrAssociatedTermsContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .update()
+                .list()
+                .beforeFetch(new LoadAssociatedTermsLookupCommandV3())
+                .summary()
+                .delete()
+                .build();
+    }
+    @Module("quoteterms")
+    public static Supplier<V3Config> getQuoteTerms() {
+        return () -> new V3Config(QuotationAssociatedTermsContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .update()
+                .list()
+                .beforeFetch(new LoadAssociatedTermsLookupCommandV3())
+                .summary()
+                .delete()
                 .build();
     }
     @Module("transferrequest")

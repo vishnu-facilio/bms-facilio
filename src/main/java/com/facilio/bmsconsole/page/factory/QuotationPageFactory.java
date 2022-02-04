@@ -38,8 +38,7 @@ public class QuotationPageFactory extends PageFactory {
         page.addTab(tab3);
         Page.Section tab3Sec1 = page.new Section();
         tab3.addSection(tab3Sec1);
-        addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.QUOTE_ASSOCIATED_TERMS, quotationModule.getModuleId());
-
+        addAssociatedTermsWidget(tab3Sec1);
 
         Page.Tab tab4 = page.new Tab("History");
         page.addTab(tab4);
@@ -52,6 +51,16 @@ public class QuotationPageFactory extends PageFactory {
 
 
         return page;
+    }
+    private static PageWidget addAssociatedTermsWidget(Page.Section section) {
+
+        PageWidget associatedTermsWidget = new PageWidget();
+        associatedTermsWidget.addToLayoutParams(section, 24, 7);
+        associatedTermsWidget.setWidgetType(PageWidget.WidgetType.ASSOCIATED_TERMS);
+        associatedTermsWidget.addToWidgetParams("moduleName",FacilioConstants.ContextNames.QUOTE_ASSOCIATED_TERMS);
+        section.addWidget(associatedTermsWidget);
+
+        return associatedTermsWidget;
     }
 
     private static void addSecondaryDetailsWidget(Page.Section section) {
