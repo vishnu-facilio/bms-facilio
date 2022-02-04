@@ -758,7 +758,7 @@ public class FacilioAuthAction extends FacilioAction {
 	private void setWebViewCookies(AppDomain appDomainObj) throws Exception {
 		HttpServletResponse response = ServletActionContext.getResponse();
 		String scheme = "";
-		if (getLookUpType().equalsIgnoreCase("workQ")) {
+		if ("workQ".equalsIgnoreCase(getLookUpType())) {
 			Cookie schemeCookie = new Cookie("fc.mobile.scheme", FacilioProperties.getWorkQAppScheme());
 			setTempCookieProperties(schemeCookie, false);
 			response.addCookie(schemeCookie);
