@@ -1,5 +1,6 @@
 package com.facilio.v3.util;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -9,17 +10,21 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.recordcustomization.RecordCustomizationContext;
+import com.facilio.recordcustomization.RecordCustomizationValuesContext;
 import com.facilio.timeline.context.TimelineRequest;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class TimelineViewUtil {
@@ -120,4 +125,43 @@ public class TimelineViewUtil {
         return value;
     }
 
+    public static Map<String, String> getFieldValueVsCustomizationData(RecordCustomizationContext customizationData) {
+        Map<String, String> fieldValueVsCustomization = null;
+        if(customizationData != null && customizationData.getCustomizationType() == RecordCustomizationContext.CustomizationType.FIELD.getIntVal()) {
+            fieldValueVsCustomization = new HashMap<>();
+            for(RecordCustomizationValuesContext value : customizationData.getValues()){
+                fieldValueVsCustomization.put(value.getFieldValue(), value.getCustomization());
+            }
+        }
+        return fieldValueVsCustomization;
+    }
+
+    public static FacilioField getCustomizationField(RecordCustomizationContext customizationData) throws Exception{
+       FacilioField customizationField = null;
+        if(customizationData != null && customizationData.getCustomizationType() == RecordCustomizationContext.CustomizationType.FIELD.getIntVal()) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            customizationField = modBean.getField(customizationData.getCustomizationFieldId());
+        }
+        return customizationField;
+    }
+
+    public static String getRecordBasedCustomizationDetails(RecordCustomizationContext customizationData, FacilioField customizationField,
+                                                          Map<String, String> fieldValueVsCustomization, Map<String, Object> recordMap) throws Exception{
+        String customization = (customizationData != null) ? customizationData.getDefaultCustomization() : null;
+        if(customizationData != null && customizationData.getCustomizationType() == RecordCustomizationContext.CustomizationType.NAMED_CRITERIA.getIntVal()) {
+            for(RecordCustomizationValuesContext customizationValue : customizationData.getValues()){
+                if(customizationValue.getNamedCriteria().evaluate(recordMap, null, null)) {
+                    customization = customizationValue.getCustomization();
+                    break;
+                }
+            }
+        }
+        else if(customizationField != null && recordMap.get(customizationField.getName()) != null) {
+            String fieldValue = TimelineViewUtil.getTimelineSupportedFieldValue(recordMap.get(customizationField.getName()), customizationField);
+            if (fieldValueVsCustomization.containsKey(fieldValue)) {
+                customization = fieldValueVsCustomization.get(fieldValue);
+            }
+        }
+        return customization;
+    }
 }

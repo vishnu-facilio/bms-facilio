@@ -1,21 +1,21 @@
 package com.facilio.v3.commands;
 
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.timelineview.context.TimelineViewContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.recordcustomization.RecordCustomizationContext;
-import com.facilio.recordcustomization.RecordCustomizationValuesContext;
+import com.facilio.timeline.context.TimelineRecordContext;
 import com.facilio.v3.util.TimelineViewUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ConstructTimelineResponseCommand extends FacilioCommand {
 
@@ -49,18 +49,8 @@ public class ConstructTimelineResponseCommand extends FacilioCommand {
             return timelineResult;
         }
 
-        FacilioField customizationField = null;
-        Map<String, String> fieldValueVsCustomization = new HashMap<>();
-        if(customizationData != null)
-        {
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            if(customizationData.getCustomizationType() == RecordCustomizationContext.CustomizationType.FIELD.getIntVal()) {
-                customizationField = modBean.getField(customizationData.getCustomizationFieldId());
-                for(RecordCustomizationValuesContext value : customizationData.getValues()){
-                    fieldValueVsCustomization.put(value.getFieldValue(), value.getCustomization());
-                }
-            }
-        }
+        FacilioField customizationField = TimelineViewUtil.getCustomizationField(customizationData);
+        Map<String, String> fieldValueVsCustomization = TimelineViewUtil.getFieldValueVsCustomizationData(customizationData);
 
         Map<String, Object> aggregateMap = getAggregateMap(aggregateValue, timelineGroupField, startTimeField);
 
@@ -84,7 +74,7 @@ public class ConstructTimelineResponseCommand extends FacilioCommand {
             String minStartDate = aggregateValueMap.get(MIN_START_DATE).toString();
 
             Map<String, Object> dataMap = (Map<String, Object>) groupJSON.get(minStartDate);
-            List<Map<String, Object>> dataList;
+            List<TimelineRecordContext> dataList;
             if (dataMap == null) {
                 dataMap = new HashMap<>();
                 dataMap.put("count", aggregateValueMap.get("count"));
@@ -92,30 +82,15 @@ public class ConstructTimelineResponseCommand extends FacilioCommand {
                 dataList = new ArrayList<>();
                 dataMap.put("list", dataList);
             } else {
-                dataList = (List<Map<String, Object>>) dataMap.get("list");
+                dataList = (List<TimelineRecordContext>) dataMap.get("list");
             }
 
             //Adding customization
-            Map<String, Object> recordDetail = new HashMap<String, Object>();
-            recordDetail.put("data", recordMap);
-            String customization = (customizationData != null) ? customizationData.getDefaultCustomization() : null;
-
-            if(customizationData != null && customizationData.getCustomizationType() == RecordCustomizationContext.CustomizationType.NAMED_CRITERIA.getIntVal()) {
-                for(RecordCustomizationValuesContext customizationValue : customizationData.getValues()){
-                    if(customizationValue.getNamedCriteria().evaluate(recordMap, null, null)) {
-                        customization = customizationValue.getCustomization();
-                        break;
-                    }
-                }
-            }
-            else if(customizationField != null && recordMap.get(customizationField.getName()) != null) {
-                String fieldValue = TimelineViewUtil.getTimelineSupportedFieldValue(recordMap.get(customizationField.getName()), customizationField);
-                if (fieldValueVsCustomization.containsKey(fieldValue)) {
-                    customization = fieldValueVsCustomization.get(fieldValue);
-                }
-            }
+            TimelineRecordContext recordDetail = new TimelineRecordContext();
+            recordDetail.setData(recordMap);
+            String customization = TimelineViewUtil.getRecordBasedCustomizationDetails(customizationData, customizationField, fieldValueVsCustomization, recordMap);
             if(customization != null) {
-                recordDetail.put("customization", customization);
+                recordDetail.setCustomization(customization);
             }
 
             dataList.add(recordDetail);

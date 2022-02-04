@@ -11,6 +11,8 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.recordcustomization.RecordCustomizationContext;
+import com.facilio.timeline.context.TimelineRecordContext;
 import com.facilio.timeline.context.TimelineRequest;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.util.ChainUtil;
@@ -21,6 +23,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -90,8 +93,24 @@ public class GetTimeLineListCommand extends FacilioCommand {
         }
         builder.orderBy(startTimeField.getCompleteColumnName() + "," + idFieldColumnName);
         List<Map<String, Object>> recordMapList = builder.getAsProps();
-        context.put(FacilioConstants.ContextNames.TIMELINE_V3_DATAMAP, recordMapList);
 
+        RecordCustomizationContext customizationData = viewObj.getRecordCustomization();
+        FacilioField customizationField = TimelineViewUtil.getCustomizationField(customizationData);
+        Map<String, String> fieldValueVsCustomization = TimelineViewUtil.getFieldValueVsCustomizationData(customizationData);
+
+        List<TimelineRecordContext> timelineList = new ArrayList<>();
+        for(Map<String,Object> record : recordMapList) {
+            TimelineRecordContext recordContext = new TimelineRecordContext();
+            recordContext.setData(record);
+            //Adding customization
+            String customization = (customizationData != null) ? TimelineViewUtil.getRecordBasedCustomizationDetails(customizationData, customizationField, fieldValueVsCustomization, record) : null;
+            if(customization != null) {
+                recordContext.setCustomization(customization);
+            }
+            timelineList.add(recordContext);
+        }
+
+        context.put(FacilioConstants.ContextNames.TIMELINE_V3_DATAMAP, timelineList);
         return false;
     }
 
