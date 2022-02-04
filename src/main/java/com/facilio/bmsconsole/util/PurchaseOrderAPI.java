@@ -19,9 +19,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LargeTextField;
 import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.LookupFieldMeta;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -239,16 +237,13 @@ public class PurchaseOrderAPI {
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PO_ASSOCIATED_TERMS);
 		List<FacilioField> fields = modBean.getAllFields(module.getName());
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-		LookupFieldMeta termsField = new LookupFieldMeta((LookupField) fieldsAsMap.get("terms"));
-		LargeTextField termsLongDescField = (LargeTextField) modBean.getField("longDesc", FacilioConstants.ContextNames.TERMS_AND_CONDITIONS);
-		termsField.addChildSupplement(termsLongDescField);
 		
 		SelectRecordsBuilder<PoAssociatedTermsContext> builder = new SelectRecordsBuilder<PoAssociatedTermsContext>()
 				.module(module)
 				.beanClass(PoAssociatedTermsContext.class)
 				.select(fields)
 			    .andCondition(CriteriaAPI.getCondition("PURCHASE_ORDER_ID", "poId", String.valueOf(poId),NumberOperators.EQUALS))
-				.fetchSupplement(termsField)
+				.fetchSupplement((LookupField) fieldsAsMap.get("terms"))
 		;
 		List<PoAssociatedTermsContext> list = builder.get();
 		return list;
@@ -261,16 +256,12 @@ public class PurchaseOrderAPI {
 		List<FacilioField> fields = modBean.getAllFields(module.getName());
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 
-		LookupFieldMeta termsField = new LookupFieldMeta((LookupField) fieldsAsMap.get("terms"));
-		LargeTextField termsLongDescField = (LargeTextField) modBean.getField("longDesc", FacilioConstants.ContextNames.TERMS_AND_CONDITIONS);
-		termsField.addChildSupplement(termsLongDescField);
-
 		SelectRecordsBuilder<V3PoAssociatedTermsContext> builder = new SelectRecordsBuilder<V3PoAssociatedTermsContext>()
 				.module(module)
 				.beanClass(V3PoAssociatedTermsContext.class)
 				.select(fields)
 				.andCondition(CriteriaAPI.getCondition("PURCHASE_ORDER_ID", "poId", String.valueOf(poId),NumberOperators.EQUALS))
-				.fetchSupplement(termsField)
+				.fetchSupplement((LookupField) fieldsAsMap.get("terms"))
 				;
 		List<V3PoAssociatedTermsContext> list = builder.get();
 		return list;
@@ -281,16 +272,13 @@ public class PurchaseOrderAPI {
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PR_ASSOCIATED_TERMS);
 		List<FacilioField> fields = modBean.getAllFields(module.getName());
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-		LookupFieldMeta termsField = new LookupFieldMeta((LookupField) fieldsAsMap.get("terms"));
-		LargeTextField termsLongDescField = (LargeTextField) modBean.getField("longDesc", FacilioConstants.ContextNames.TERMS_AND_CONDITIONS);
-		termsField.addChildSupplement(termsLongDescField);
 
 		SelectRecordsBuilder<PrAssociatedTermsContext> builder = new SelectRecordsBuilder<PrAssociatedTermsContext>()
 				.module(module)
 				.beanClass(PrAssociatedTermsContext.class)
 				.select(fields)
 				.andCondition(CriteriaAPI.getCondition("PURCHASE_REQUEST_ID", "purchaseRequest", String.valueOf(id),NumberOperators.EQUALS))
-				.fetchSupplement(termsField)
+				.fetchSupplement((LookupField) fieldsAsMap.get("terms"))
 				;
 		List<PrAssociatedTermsContext> list = builder.get();
 		return list;
@@ -300,11 +288,6 @@ public class PurchaseOrderAPI {
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PR_ASSOCIATED_TERMS);
 		List<FacilioField> fields = modBean.getAllFields(module.getName());
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-
-		LookupFieldMeta termsField = new LookupFieldMeta((LookupField) fieldsAsMap.get("terms"));
-		LargeTextField termsLongDescField = (LargeTextField) modBean.getField("longDesc", FacilioConstants.ContextNames.TERMS_AND_CONDITIONS);
-		termsField.addChildSupplement(termsLongDescField);
-
 		List<FacilioField> termsFields = modBean.getAllFields(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS);
 		Map<String, FacilioField> termsFieldsAsMap = FieldFactory.getAsMap(termsFields);
 		Criteria lookupCriteria = new Criteria();
@@ -315,7 +298,7 @@ public class PurchaseOrderAPI {
 				.select(fields)
 				.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("terms"), lookupCriteria, LookupOperator.LOOKUP))
 				.andCondition(CriteriaAPI.getCondition("PURCHASE_REQUEST_ID", "purchaseRequest", StringUtils.join(idList, ","),NumberOperators.EQUALS))
-				.fetchSupplement(termsField)
+				.fetchSupplement((LookupField) fieldsAsMap.get("terms"))
 				;
 		List<PrAssociatedTermsContext> list = builder.get();
 		return list;

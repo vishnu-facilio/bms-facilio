@@ -37,7 +37,7 @@ public class LookupFieldMeta extends LookupField {
 	public void setChildSupplements(Collection<SupplementRecord> childSupplements) {
 		this.childSupplements = childSupplements;
 	}
-	public void addChildSupplement(SupplementRecord childSupplement) {
+	public void addChildSupplement(LookupField childSupplement) {
 		if (this.childSupplements == null) {
 			childSupplements = new ArrayList<>();
 		}
