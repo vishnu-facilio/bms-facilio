@@ -633,13 +633,15 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
     }
 
     public String timelinePatch() throws Exception {
-        /* Validation to be added
-        timelineRequest = new TimelineRequest();
-        timelineRequest.setViewName(this.getViewName());
-        FacilioChain chain = ChainUtil.getTimelineValidationChain(timelineRequest);
-        chain.execute();
-        FacilioContext context = chain.getContext();
-        */
+
+        FacilioChain validationChain = ChainUtil.getTimelinePatchValidationChain();
+        FacilioContext validationContext = validationChain.getContext();
+        validationContext.put(FacilioConstants.ContextNames.CV_NAME, this.getViewName());
+        validationContext.put(FacilioConstants.ContextNames.MODULE_NAME, this.getModuleName());
+        validationContext.put(FacilioConstants.ContextNames.DATA, this.getData());
+        Object oldRecord = V3Util.getRecord(this.getModuleName(), this.getId(), httpServletRequest);
+        validationContext.put(FacilioConstants.ContextNames.OLD_RECORD_MAP, oldRecord);
+        validationChain.execute();
 
         //removing permission restricted fields
         Map<String, Object> data = this.getData();

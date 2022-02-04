@@ -480,6 +480,12 @@ public class ChainUtil {
         }
         return beanClass;
     }
+    public static FacilioChain getTimelinePatchValidationChain() throws Exception {
+        FacilioChain chain = FacilioChain.getNonTransactionChain();
+        chain.addCommand(new LoadViewCommand());
+        chain.addCommand(new ValidateTimelinePatchData());
+        return chain;
+    }
 
     public static FacilioChain getTimelineChain() throws Exception {
         FacilioChain chain = FacilioChain.getNonTransactionChain();

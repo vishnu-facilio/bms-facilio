@@ -4,6 +4,7 @@ package com.facilio.bmsconsole.timelineview.context;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.recordcustomization.RecordCustomizationContext;
+import com.facilio.weekends.WeekendContext;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -110,6 +111,14 @@ public class TimelineViewContext extends FacilioView {
     public long getWeekendId() { return weekendId; }
     public void setWeekendId(long weekendId) { this.weekendId = weekendId; }
 
+    private WeekendContext weekend;
+    public WeekendContext getWeekend() {
+        return weekend;
+    }
+    public void setWeekend(WeekendContext weekend) {
+        this.weekend = weekend;
+    }
+
     private JSONObject configJson;
     public String getConfigJson() {
         return (configJson != null) ? configJson.toJSONString() : null;
@@ -138,4 +147,5 @@ public class TimelineViewContext extends FacilioView {
     public void setRecordCustomization(RecordCustomizationContext recordCustomization) {
         this.recordCustomization = recordCustomization;
     }
+
 }

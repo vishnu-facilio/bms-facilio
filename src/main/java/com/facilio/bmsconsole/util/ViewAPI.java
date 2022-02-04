@@ -11,7 +11,6 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.FacilioView.ViewType;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.view.ViewFactory;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -33,8 +32,8 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.recordcustomization.RecordCustomizationAPI;
-import com.facilio.recordcustomization.RecordCustomizationContext;
 import com.facilio.v3.util.TimelineViewUtil;
+import com.facilio.weekends.WeekendUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -344,7 +343,12 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		record.setStartDateField(moduleBean.getField(record.getStartDateFieldId()));
 		record.setEndDateField(moduleBean.getField(record.getEndDateFieldId()));
 		record.setGroupByField(moduleBean.getField(record.getGroupByFieldId()));
-		record.setRecordCustomization(RecordCustomizationAPI.getRecordCustomization(record.getRecordCustomizationId()));
+		if(record.getRecordCustomizationId() > 0) {
+			record.setRecordCustomization(RecordCustomizationAPI.getRecordCustomization(record.getRecordCustomizationId()));
+		}
+		if(record.getWeekendId() > 0) {
+			record.setWeekend(WeekendUtil.getWeekend(record.getWeekendId()));
+		}
 	}
 
 	public static Map<ViewType, Map<Long, Map<String, Object>>> getDependentTableValues(Map<ViewType, List<Long>> extendedIdList) throws Exception {

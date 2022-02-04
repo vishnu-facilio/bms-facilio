@@ -9,6 +9,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.recordcustomization.RecordCustomizationContext;
 import com.facilio.recordcustomization.RecordCustomizationValuesContext;
+import com.facilio.v3.util.TimelineViewUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -66,7 +67,7 @@ public class ConstructTimelineResponseCommand extends FacilioCommand {
         for (Map<String, Object> recordMap : v3Contexts) {
             Object o = recordMap.get(timelineGroupField.getName());
 
-            String value = getFieldValue(o, timelineGroupField);
+            String value = TimelineViewUtil.getTimelineSupportedFieldValue(o, timelineGroupField);
             if (value == null) {
                 continue;
             }
@@ -108,7 +109,7 @@ public class ConstructTimelineResponseCommand extends FacilioCommand {
                 }
             }
             else if(customizationField != null && recordMap.get(customizationField.getName()) != null) {
-                String fieldValue = getFieldValue(recordMap.get(customizationField.getName()), customizationField);
+                String fieldValue = TimelineViewUtil.getTimelineSupportedFieldValue(recordMap.get(customizationField.getName()), customizationField);
                 if (fieldValueVsCustomization.containsKey(fieldValue)) {
                     customization = fieldValueVsCustomization.get(fieldValue);
                 }
@@ -123,20 +124,6 @@ public class ConstructTimelineResponseCommand extends FacilioCommand {
         return timelineResult;
     }
 
-    private String getFieldValue(Object o, FacilioField field) {
-        String value = null;
-        if (o == null) {
-            return "-1";
-        }
-
-        if (field.getDataTypeEnum() == FieldType.ENUM || field.getDataTypeEnum() == FieldType.BOOLEAN) {
-            value = String.valueOf(o);
-        } else if (field.getDataTypeEnum() == FieldType.LOOKUP) {
-            value = String.valueOf(((Map<String, Object>) o).get("id"));
-        }
-        return value;
-    }
-
     private Map<String, Object> getAggregateMap(List<Map<String, Object>> aggregateValue, FacilioField timelineGroupField, FacilioField startTimeField) {
         if (CollectionUtils.isEmpty(aggregateValue)) {
             return null;
@@ -145,7 +132,7 @@ public class ConstructTimelineResponseCommand extends FacilioCommand {
         Map<String, Object> aggregateMap = new HashMap<>();
         for (Map<String, Object> map : aggregateValue) {
             Object value = map.get(timelineGroupField.getName());
-            String fieldValue = getFieldValue(value, timelineGroupField);
+            String fieldValue = TimelineViewUtil.getTimelineSupportedFieldValue(value, timelineGroupField);
 
             Map<String, Object> dateMap = (Map<String, Object>) aggregateMap.get(fieldValue);
             if (dateMap == null) {

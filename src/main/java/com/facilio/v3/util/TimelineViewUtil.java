@@ -11,6 +11,7 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.timeline.context.TimelineRequest;
@@ -103,6 +104,20 @@ public class TimelineViewUtil {
             return (long)props.get("recordCustomizationId");
         }
         return -1;
+    }
+
+    public static String getTimelineSupportedFieldValue(Object o, FacilioField field) {
+        String value = null;
+        if (o == null) {
+            return "-1";
+        }
+
+        if (field.getDataTypeEnum() == FieldType.ENUM || field.getDataTypeEnum() == FieldType.BOOLEAN) {
+            value = String.valueOf(o);
+        } else if (field.getDataTypeEnum() == FieldType.LOOKUP) {
+            value = String.valueOf(((Map<String, Object>) o).get("id"));
+        }
+        return value;
     }
 
 }

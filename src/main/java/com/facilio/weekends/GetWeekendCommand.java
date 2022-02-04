@@ -21,14 +21,7 @@ public class GetWeekendCommand extends FacilioCommand {
         if(id <=0 ) {
             throw new IllegalArgumentException("Invalid ID passed");
         }
-        FacilioModule weekendModule = ModuleFactory.getWeekendsModule();
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(weekendModule.getTableName())
-                .select(FieldFactory.getWeekendsFields(weekendModule))
-                .andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(weekend.getId()), NumberOperators.EQUALS));
-
-        Map<String, Object> weekendProps = builder.fetchFirst();
-        context.put(FacilioConstants.ContextNames.WEEKEND, (weekendProps != null) ? FieldUtil.getAsBeanFromMap(weekendProps, WeekendContext.class) : null);
+        context.put(FacilioConstants.ContextNames.WEEKEND, WeekendUtil.getWeekend(id));
         return false;
     }
 }
