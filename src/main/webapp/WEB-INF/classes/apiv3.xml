@@ -114,6 +114,7 @@
         <action name="summary"
                 class="com.facilio.v3.RESTAPIHandler"
                 method="summary">
+            <param name="translationImpl">V3SummaryApiTranslation</param>
         </action>
 
         <action name="patch"
