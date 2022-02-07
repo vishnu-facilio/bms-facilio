@@ -228,8 +228,9 @@ public class V3AnalyticsReportAction extends V3Action {
         setAnalyticsReportContext(context);
         setAnalyticsChartInfo(context);
         addReadingReport.execute();
-        AuditLogHandler.AuditLogContext auditLog = new AuditLogHandler.AuditLogContext(String.format("Analytics Report {%s} has been successfully created.", reportContext.getName()), reportContext.getDescription(), "", AuditLogHandler.RecordType.MODULE, moduleName, reportContext.getId());
-        sendAuditLogs(auditLog);
+        String log_message= "Analytics Report {%s} has been created.";
+        V3ReportAction reportAction = new V3ReportAction();
+        reportAction.setReportAuditLogs((String) reportContext.getModule().getDisplayName(), reportContext, log_message, AuditLogHandler.ActionType.ADD);
         return setReportResult(context);
     }
     public String update() throws Exception{
@@ -240,8 +241,10 @@ public class V3AnalyticsReportAction extends V3Action {
         setAnalyticsReportContext(context);
         setAnalyticsChartInfo(context);
         addReadingReport.execute();
-        AuditLogHandler.AuditLogContext auditLog = new AuditLogHandler.AuditLogContext(String.format("Analytics Report {%s} has been successfully updated.", reportContext.getName()), reportContext.getDescription(), "", AuditLogHandler.RecordType.MODULE, moduleName, reportContext.getId());
-        sendAuditLogs(auditLog);
+        String log_message= "Analytics Report {%s} has been updated.";
+        V3ReportAction reportAction = new V3ReportAction();
+        reportAction.setReportAuditLogs((String) reportContext.getModule().getDisplayName(), reportContext, log_message, AuditLogHandler.ActionType.UPDATE);
+
         return setReportResult(context);
     }
 
