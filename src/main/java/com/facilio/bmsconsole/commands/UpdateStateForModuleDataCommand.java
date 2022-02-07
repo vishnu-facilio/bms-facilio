@@ -66,12 +66,13 @@ public class UpdateStateForModuleDataCommand extends FacilioCommand {
 					String qrValue = null;
 					FacilioField qrField = moduleBean.getField(stateflowTransition.getQrFieldId());
 					if(!(stateflowTransition.getModule().getExtendedModuleIds().contains(qrField.getModuleId()))) {
-						Map<String,Object> lookupFieldValue = new HashMap<>();
+						Map<String,? extends Object> lookupFieldValue = null;
 						List<FacilioField> fields = moduleBean.getAllFields(moduleName);
 						for(FacilioField field:fields){
 							if(field.getDataTypeEnum() == FieldType.LOOKUP){
 								if(((LookupField) field).getLookupModule().getExtendedModuleIds().contains(qrField.getModuleId())) {
-									lookupFieldValue = (Map<String, Object>) FieldUtil.getValue(wo,field);
+									Object lookupObj = FieldUtil.getValue(wo, field);
+									lookupFieldValue = lookupObj != null ? FieldUtil.getAsProperties(lookupObj) : null;
 									break;
 								}
 							}
