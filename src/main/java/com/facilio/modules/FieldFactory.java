@@ -1179,6 +1179,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("metric", "METRIC", module, FieldType.NUMBER));
         fields.add(getField("unitId", "UNIT_ID", module, FieldType.NUMBER));
         fields.add(getField("counterField", "IS_COUNTER_FIELD", module, FieldType.BOOLEAN));
+        fields.add(getField("minValue","MIN_VAL",module,FieldType.DECIMAL));
+        fields.add(getField("maxValue","MAX_VAL",module,FieldType.DECIMAL));
 
         return fields;
     }
@@ -1300,77 +1302,22 @@ public class FieldFactory extends BaseFieldFactory {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getFieldsModule();
 
-        /*fields.add(getOrgIdField(module));*/
-        fields.add(getModuleIdField(module));
+        fields.add(getStringField("name","NAME",module));
+        fields.add(getStringField("displayName","DISPLAY_NAME",module));
+        fields.add(getStringField("columnName","COLUMN_NAME",module));
 
-        fields.add(getNameField(module));
+        fields.add(getBooleanField("required","REQUIRED",module));
+        fields.add(getBooleanField("mainField","IS_MAIN_FIELD",module));
+        fields.add(getBooleanField("default","IS_DEFAULT",module));
+        fields.add(getBooleanField("isSystemUpdated","IS_SYSTEM_UPDATED",module));
 
-        FacilioField displayName = new FacilioField();
-        displayName.setName("displayName");
-        displayName.setDataType(FieldType.STRING);
-        displayName.setColumnName("DISPLAY_NAME");
-        displayName.setModule(module);
-        fields.add(displayName);
-
-        FacilioField columnName = new FacilioField();
-        columnName.setName("columnName");
-        columnName.setDataType(FieldType.STRING);
-        columnName.setColumnName("COLUMN_NAME");
-        columnName.setModule(module);
-        fields.add(columnName);
-
-        FacilioField sequenceNumber = new FacilioField();
-        sequenceNumber.setName("sequenceNumber");
-        sequenceNumber.setDataType(FieldType.NUMBER);
-        sequenceNumber.setColumnName("SEQUENCE_NUMBER");
-        sequenceNumber.setModule(module);
-        fields.add(sequenceNumber);
-
-        FacilioField dataType = new FacilioField();
-        dataType.setName("dataType");
-        dataType.setDataType(FieldType.NUMBER);
-        dataType.setColumnName("DATA_TYPE");
-        dataType.setModule(module);
-        fields.add(dataType);
-
-        FacilioField displayType = new FacilioField();
-        displayType.setName("displayTypeInt");
-        displayType.setDataType(FieldType.NUMBER);
-        displayType.setColumnName("DISPLAY_TYPE");
-        displayType.setModule(module);
-        fields.add(displayType);
-
-        FacilioField required = new FacilioField();
-        required.setName("required");
-        required.setDataType(FieldType.BOOLEAN);
-        required.setColumnName("REQUIRED");
-        required.setModule(module);
-        fields.add(required);
-
-        FacilioField mainField = new FacilioField();
-        mainField.setName("mainField");
-        mainField.setDataType(FieldType.BOOLEAN);
-        mainField.setColumnName("IS_MAIN_FIELD");
-        mainField.setModule(module);
-        fields.add(mainField);
-
-        FacilioField defaultField = new FacilioField();
-        defaultField.setName("default");
-        defaultField.setDataType(FieldType.BOOLEAN);
-        defaultField.setColumnName("IS_DEFAULT");
-        defaultField.setModule(module);
-        fields.add(defaultField);
-
-        FacilioField isSystemUpdatedField = new FacilioField();
-        isSystemUpdatedField.setName("isSystemUpdated");
-        isSystemUpdatedField.setDataType(FieldType.BOOLEAN);
-        isSystemUpdatedField.setColumnName("IS_SYSTEM_UPDATED");
-        isSystemUpdatedField.setModule(module);
-        fields.add(isSystemUpdatedField);
-        
-        fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
-        fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.NUMBER));
-        fields.add(getField("sourceBundle", "SOURCE_BUNDLE", module, FieldType.NUMBER));
+        fields.add(getNumberField("moduleId", "MODULEID", module));
+        fields.add(getNumberField("sequenceNumber","SEQUENCE_NUMBER",module));
+        fields.add(getNumberField("dataType","DATA_TYPE",module));
+        fields.add(getNumberField("displayTypeInt","DISPLAY_TYPE",module));
+        fields.add(getNumberField("createdTime", "CREATED_TIME", module));
+        fields.add(getNumberField("modifiedTime", "MODIFIED_TIME", module));
+        fields.add(getNumberField("sourceBundle", "SOURCE_BUNDLE", module));
 
 
         return fields;
@@ -1391,73 +1338,16 @@ public class FieldFactory extends BaseFieldFactory {
 
         FacilioModule module = ModuleFactory.getFieldsModule();
 
-        FacilioField fieldId = new FacilioField();
-        fieldId.setName("fieldId");
-        fieldId.setDataType(FieldType.NUMBER);
-        fieldId.setColumnName("FIELDID");
-        fieldId.setModule(module);
-        fields.add(fieldId);
-
-//        FacilioField defaultField = new FacilioField();
-//        defaultField.setName("default");
-//        defaultField.setDataType(FieldType.BOOLEAN);
-//        defaultField.setColumnName("IS_DEFAULT");
-//        defaultField.setModule(module);
-//        fields.add(defaultField);
-
-//        FacilioField mainField = new FacilioField();
-//        mainField.setName("mainField");
-//        mainField.setDataType(FieldType.BOOLEAN);
-//        mainField.setColumnName("IS_MAIN_FIELD");
-//        mainField.setModule(module);
-//        fields.add(mainField);
-
-        FacilioField disabled = new FacilioField();
-        disabled.setName("disabled");
-        disabled.setDataType(FieldType.BOOLEAN);
-        disabled.setColumnName("DISABLED");
-        disabled.setModule(module);
-        fields.add(disabled);
-
-        FacilioField styleClass = new FacilioField();
-        styleClass.setName("styleClass");
-        styleClass.setDataType(FieldType.STRING);
-        styleClass.setColumnName("STYLE_CLASS");
-        styleClass.setModule(module);
-        fields.add(styleClass);
-
-        FacilioField icon = new FacilioField();
-        icon.setName("icon");
-        icon.setDataType(FieldType.STRING);
-        icon.setColumnName("ICON");
-        icon.setModule(module);
-        fields.add(icon);
-
-        FacilioField placeHolder = new FacilioField();
-        placeHolder.setName("placeHolder");
-        placeHolder.setDataType(FieldType.STRING);
-        placeHolder.setColumnName("PLACE_HOLDER");
-        placeHolder.setModule(module);
-        fields.add(placeHolder);
-
-        FacilioField accessType = new FacilioField();
-        accessType.setName("accessType");
-        accessType.setDataType(FieldType.NUMBER);
-        accessType.setColumnName("ACCESS_TYPE");
-        accessType.setModule(module);
-        fields.add(accessType);
-        
+        fields.add(getField("fieldId","FIELDID",module,FieldType.NUMBER));
+        fields.add(getField("disabled","DISABLED",module,FieldType.BOOLEAN));
+        fields.add(getField("styleClass","STYLE_CLASS",module,FieldType.STRING));
+        fields.add(getField("icon","ICON",module,FieldType.STRING));
+        fields.add(getField("placeHolder","PLACE_HOLDER",module,FieldType.STRING));
+        fields.add(getField("accessType","ACCESS_TYPE",module,FieldType.NUMBER));
         fields.add(getField("deleted", "IS_DELETED", module, FieldType.BOOLEAN));
         fields.add(getField("deletedBy", "DELETED_BY", module, FieldType.NUMBER));
         fields.add(getField("deletedTime", "DELETED_TIME", module, FieldType.NUMBER));
 
-//        FacilioField isSystemUpdatedField = new FacilioField();
-//        isSystemUpdatedField.setName("isSystemUpdated");
-//        isSystemUpdatedField.setDataType(FieldType.BOOLEAN);
-//        isSystemUpdatedField.setColumnName("IS_SYSTEM_UPDATED");
-//        isSystemUpdatedField.setModule(module);
-//        fields.add(isSystemUpdatedField);
-        
         return fields;
     }
 
@@ -1467,68 +1357,22 @@ public class FieldFactory extends BaseFieldFactory {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getFieldsModule();
 
-        FacilioField displayName = new FacilioField();
-        displayName.setName("displayName");
-        displayName.setDataType(FieldType.STRING);
-        displayName.setColumnName("DISPLAY_NAME");
-        displayName.setModule(module);
-        fields.add(displayName);
+        fields.add(getStringField("displayName","DISPLAY_NAME",module));
+        fields.add(getNumberField("displayTypeInt","DISPLAY_TYPE",module));
+        fields.add(getNumberField("sequenceNumber","SEQUENCE_NUMBER",module));
+        fields.add(getBooleanField("required","REQUIRED",module));
 
-        FacilioField displayType = new FacilioField();
-        displayType.setName("displayTypeInt");
-        displayType.setDataType(FieldType.NUMBER);
-        displayType.setColumnName("DISPLAY_TYPE");
-        displayType.setModule(module);
-        fields.add(displayType);
+        fields.add(getBooleanField("disabled","DISABLED",module));
+        fields.add(getStringField("styleClass","STYLE_CLASS",module));
+        fields.add(getStringField("icon","ICON",module));
+        fields.add(getStringField("placeHolder","PLACE_HOLDER",module));
 
-        FacilioField sequenceNumber = new FacilioField();
-        sequenceNumber.setName("sequenceNumber");
-        sequenceNumber.setDataType(FieldType.NUMBER);
-        sequenceNumber.setColumnName("SEQUENCE_NUMBER");
-        sequenceNumber.setModule(module);
-        fields.add(sequenceNumber);
 
-        FacilioField required = new FacilioField();
-        required.setName("required");
-        required.setDataType(FieldType.BOOLEAN);
-        required.setColumnName("REQUIRED");
-        required.setModule(module);
-        fields.add(required);
-
-        FacilioField disabled = new FacilioField();
-        disabled.setName("disabled");
-        disabled.setDataType(FieldType.BOOLEAN);
-        disabled.setColumnName("DISABLED");
-        disabled.setModule(module);
-        fields.add(disabled);
-
-        FacilioField styleClass = new FacilioField();
-        styleClass.setName("styleClass");
-        styleClass.setDataType(FieldType.STRING);
-        styleClass.setColumnName("STYLE_CLASS");
-        styleClass.setModule(module);
-        fields.add(styleClass);
-
-        FacilioField icon = new FacilioField();
-        icon.setName("icon");
-        icon.setDataType(FieldType.STRING);
-        icon.setColumnName("ICON");
-        icon.setModule(module);
-        fields.add(icon);
-
-        FacilioField placeHolder = new FacilioField();
-        placeHolder.setName("placeHolder");
-        placeHolder.setDataType(FieldType.STRING);
-        placeHolder.setColumnName("PLACE_HOLDER");
-        placeHolder.setModule(module);
-        fields.add(placeHolder);
-        
-        fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.NUMBER));
-        fields.add(getField("sourceBundle", "SOURCE_BUNDLE", module, FieldType.NUMBER));
-        
-        fields.add(getField("deleted", "IS_DELETED", module, FieldType.BOOLEAN));
-        fields.add(getField("deletedBy", "DELETED_BY", module, FieldType.NUMBER));
-        fields.add(getField("deletedTime", "DELETED_TIME", module, FieldType.NUMBER));
+        fields.add(getNumberField("modifiedTime", "MODIFIED_TIME", module));
+        fields.add(getNumberField("sourceBundle", "SOURCE_BUNDLE", module));
+        fields.add(getBooleanField("deleted", "IS_DELETED", module));
+        fields.add(getNumberField("deletedBy", "DELETED_BY", module));
+        fields.add(getNumberField("deletedTime", "DELETED_TIME", module));
 
         return fields;
     }
@@ -8304,6 +8148,10 @@ public class FieldFactory extends BaseFieldFactory {
 
     public static FacilioField getNumberField(String name, String colName, FacilioModule module) {
         return getField(name, colName, module, FieldType.NUMBER);
+    }
+
+    public static FacilioField getBooleanField(String name, String colName, FacilioModule module) {
+        return getField(name, colName, module, FieldType.BOOLEAN);
     }
 
     private static FacilioField getSystemField(String name, String displayName, String colName, FacilioModule module,
