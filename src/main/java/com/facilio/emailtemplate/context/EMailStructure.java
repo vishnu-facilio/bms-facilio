@@ -41,7 +41,10 @@ public class EMailStructure extends Template {
 
     @Override
     public JSONObject getOriginalTemplate() throws Exception {
-        return null;
+        JSONObject obj = new JSONObject();
+        obj.put("subject", getSubject());
+        obj.put("message", getMessage());
+        return obj;
     }
 
     @Override

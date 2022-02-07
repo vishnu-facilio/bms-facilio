@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
+    <!--    Email Template - start -->
     <request path="/api/v2/template/email/list">
         <requestbody type="object">
             <property name="moduleName" type="string" />
@@ -15,4 +16,15 @@
             </property>
         </requestbody>
     </request>
+    <request path="/api/v2/template/email/view">
+        <requestbody type="object">
+            <requestbody type="number" />
+        </requestbody>
+    </request>
+    <request path="/api/v2/template/email/delete">
+        <requestbody type="object">
+            <requestbody type="number" />
+        </requestbody>
+    </request>
+    <!--    Email Template - end -->
 </config>
