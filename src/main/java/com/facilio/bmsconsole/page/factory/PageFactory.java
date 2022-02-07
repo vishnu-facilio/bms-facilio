@@ -113,7 +113,7 @@ public class PageFactory {
 			case ContextNames.ASSET:
 				return AssetPageFactory.getAssetPage((AssetContext) record);
 			case ContextNames.TENANT:
-				return TenantPageFactory.getTenantPage((ModuleBaseWithCustomFields) record, module);
+				return TenantPageFactory.getTenantPage((V3TenantContext) record, module);
 			case ContextNames.READING_RULE_MODULE:
 				return RulePageFactory.getRulePage((AlarmRuleContext) record);
 			case ContextNames.MV_PROJECT_MODULE:

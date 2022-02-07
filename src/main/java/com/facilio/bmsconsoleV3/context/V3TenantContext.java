@@ -319,13 +319,13 @@ public class V3TenantContext extends V3Context {
 
     private LocationContext address;
 
-    private List<TenantSpaceContext> tenantSpaces;
+    private List<V3TenantSpaceContext> tenantSpaces;
 
-    public List<TenantSpaceContext> getTenantSpaces() {
+    public List<V3TenantSpaceContext> getTenantSpaces() {
         return tenantSpaces;
     }
 
-    public void setTenantSpaces(List<TenantSpaceContext> tenantSpaces) {
+    public void setTenantSpaces(List<V3TenantSpaceContext> tenantSpaces) {
         this.tenantSpaces = tenantSpaces;
     }
 

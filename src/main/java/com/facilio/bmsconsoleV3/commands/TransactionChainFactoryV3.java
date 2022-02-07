@@ -324,6 +324,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddTenantUserCommandV3());
         c.addCommand(new AddTenantSpaceRelationCommandV3());
+        c.addCommand(new AddTenantToTenantUnitCommandV3());
         c.addCommand(new ConstructUpdateCustomActivityCommandV3());
         c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.TENANT_ACTIVITY));
         return c;
@@ -490,13 +491,6 @@ public class TransactionChainFactoryV3 {
 		c.addCommand(new UpdateHelperFieldsCommandV3());
 		c.addCommand(getSpaceReadingsChain());
 		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
-		c.addCommand(new SetSpaceRecordForRollUpFieldCommandV3());
-		c.addCommand(new ExecuteRollUpFieldCommand());
-		return c;
-	}
-	
-	public static FacilioChain getTenantUnitAfterUpdateChain() {
-		FacilioChain c = getDefaultChain();
 		c.addCommand(new SetSpaceRecordForRollUpFieldCommandV3());
 		c.addCommand(new ExecuteRollUpFieldCommand());
 		return c;
