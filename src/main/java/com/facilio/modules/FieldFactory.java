@@ -3141,8 +3141,6 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("sendAsSeparateMail", "SEND_AS_SEPARATE_MAIL", module, FieldType.BOOLEAN));
         fields.add(getField("html", "IS_HTML", module, FieldType.BOOLEAN));
 
-        fields.add(getNumberField("moduleId", "MODULE_ID", module));
-
         FacilioField emailSubject = new FacilioField();
         emailSubject.setName("subject");
         emailSubject.setDataType(FieldType.STRING);
@@ -3156,6 +3154,18 @@ public class FieldFactory extends BaseFieldFactory {
         emailBody.setColumnName("BODY_ID");
         emailBody.setModule(module);
         fields.add(emailBody);
+
+        return fields;
+    }
+
+    public static List<FacilioField> getEMailStructureFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getEMailStructureModule();
+
+        fields.add(getIdField(module));
+        fields.add(getNumberField("moduleId", "MODULE_ID", module));
+        fields.add(getStringField("subject", "SUBJECT", module));
+        fields.add(getNumberField("bodyId", "BODY_ID", module));
 
         return fields;
     }

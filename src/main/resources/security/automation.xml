@@ -1,8 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
-    <request path="/api/v2/template/email">
+    <request path="/api/v2/template/email/list">
         <requestbody type="object">
             <property name="moduleName" type="string" />
+        </requestbody>
+    </request>
+    <request path="/api/v2/template/email/addOrUpdate">
+        <requestbody type="object">
+            <property name="moduleName" type="string" />
+            <property name="emailStructure" type="object">
+                <property name="name" type="string" />
+                <property name="subject" type="string" />
+                <property name="message" type="string" />
+            </property>
         </requestbody>
     </request>
 </config>

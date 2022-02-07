@@ -265,6 +265,7 @@ public abstract class Template implements Serializable {
 		FORM(25),
 		WHATSAPP(26),
 		CALL(27),
+		EMAIL_STRUCTURE(28),
 		;
 
 		

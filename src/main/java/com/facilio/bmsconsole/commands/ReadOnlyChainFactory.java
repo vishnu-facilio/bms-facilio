@@ -28,6 +28,8 @@ import com.facilio.controlaction.commands.GetControllableCategoryFromSpaceComman
 import com.facilio.controlaction.commands.GetControllableCategoryFromSpaceListCommand;
 import com.facilio.controlaction.commands.GetIncludedSpaceListCommand;
 import com.facilio.delegate.command.GetAllMyDelegationCommand;
+import com.facilio.emailtemplate.command.GetAllEmailTemplatesCommand;
+import com.facilio.emailtemplate.command.GetEmailStructureCommand;
 import com.facilio.energystar.command.*;
 import com.facilio.mv.command.FetchMVWidgetResultCommand;
 import com.facilio.trigger.context.TriggerType;
@@ -2269,9 +2271,15 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 
-	public static FacilioChain getEmailTemplateChain() {
+	public static FacilioChain getAllEmailStructureChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetAllEmailTemplatesCommand());
+		return chain;
+	}
+
+	public static FacilioChain getEmailStructureChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetEmailStructureCommand());
 		return chain;
 	}
 	
