@@ -114,6 +114,10 @@ public class V3RecordAPI {
         return getRecord(modBean.getModule(moduleId).getName(), recId, null);
     }
 
+    public static <T extends ModuleBaseWithCustomFields> T getRecord (String modName, long recId, Class<T> beanClass) throws Exception {
+       return getRecord(modName, recId, beanClass, false);
+    }
+
     public static <T extends ModuleBaseWithCustomFields> T getRecord (String modName, long recId, Class<T> beanClass, boolean skipScoping) throws Exception {
         List<T> records = constructBuilder(modName, Collections.singletonList(recId), beanClass, skipScoping).get();
         if(CollectionUtils.isNotEmpty(records)) {
@@ -125,7 +129,11 @@ public class V3RecordAPI {
     }
 
     private static <T extends ModuleBaseWithCustomFields> SelectRecordsBuilder<T> constructBuilder(String modName, Collection<Long> recordIds, Class<T> beanClass) throws Exception {
-        return constructBuilder(modName, recordIds, beanClass, null, null, false);
+        return constructBuilder(modName, recordIds, beanClass, null, null);
+    }
+
+    private static <T extends ModuleBaseWithCustomFields> SelectRecordsBuilder<T> constructBuilder(String modName, Collection<Long> recordIds, Class<T> beanClass, boolean skipScoping) throws Exception {
+        return constructBuilder(modName, recordIds, beanClass, null, null, null, null, null, null, null, skipScoping);
     }
 
     private static <T extends ModuleBaseWithCustomFields> SelectRecordsBuilder<T> constructBuilder(String modName, Collection<Long> recordIds, Class<T> beanClass, Criteria criteria, Collection<SupplementRecord> supplements) throws Exception {
@@ -232,7 +240,7 @@ public class V3RecordAPI {
 
     public static <T extends ModuleBaseWithCustomFields> List<Map<String, Object>> getRecordsAggregateValue (String modName, Collection<Long> recordIds, Class<T> beanClass, Criteria criteria, AggregateOperator aggregateoperator, FacilioField aggregateField, String groupBy) throws Exception{
 
-        List<Map<String, Object>> props = constructBuilder(modName, recordIds, beanClass, criteria, null,  null,  null,  aggregateoperator,  aggregateField, groupBy).getAsProps();
+        List<Map<String, Object>> props = constructBuilder(modName, recordIds, beanClass, criteria, null,  null,  null,  aggregateoperator,  aggregateField, groupBy, false).getAsProps();
         if (CollectionUtils.isNotEmpty(props)) {
 	        return props;
         }
