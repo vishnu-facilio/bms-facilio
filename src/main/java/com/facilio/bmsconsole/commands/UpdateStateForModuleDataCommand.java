@@ -71,8 +71,7 @@ public class UpdateStateForModuleDataCommand extends FacilioCommand {
 						for(FacilioField field:fields){
 							if(field.getDataTypeEnum() == FieldType.LOOKUP){
 								if(((LookupField) field).getLookupModule().getExtendedModuleIds().contains(qrField.getModuleId())) {
-									Object lookupObj = FieldUtil.getValue(wo, field);
-									lookupFieldValue = lookupObj != null ? FieldUtil.getAsProperties(lookupObj) : null;
+									lookupFieldValue = FieldUtil.getAsProperties(FieldUtil.getValue(wo, field));
 									break;
 								}
 							}
