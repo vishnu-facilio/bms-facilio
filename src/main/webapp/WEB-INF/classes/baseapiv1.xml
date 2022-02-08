@@ -61,9 +61,11 @@
 						 class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
 			<interceptor name="validationinterceptor"
 						 class="com.facilio.bmsconsole.interceptors.ValidationInterceptor" />
+			<interceptor name="apiKeyInterceptor" class="com.facilio.bmsconsole.interceptors.APIKeyInterceptor" />
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="defaultStack" />
 				<interceptor-ref name="authinterceptor" />
+				<interceptor-ref name="apiKeyInterceptor" />
 				<interceptor-ref name="datasourceinterceptor" />
 				<interceptor-ref name="scopeinterceptor" />
 				<interceptor-ref name="cacheinterceptor" />
