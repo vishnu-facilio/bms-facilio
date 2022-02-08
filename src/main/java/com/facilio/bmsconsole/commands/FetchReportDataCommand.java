@@ -61,7 +61,6 @@ public class FetchReportDataCommand extends FacilioCommand {
     private List<FacilioField> globalFields = new ArrayList<>();
     private Boolean isBaseModuleJoined = false;
     private List<Map<String, Object>> pivotFieldsList = new ArrayList<>();
-    private Map<String, FacilioField> lookupJoinMap = new HashMap<>();
 
     @Override
     public boolean executeCommand(Context context) throws Exception {

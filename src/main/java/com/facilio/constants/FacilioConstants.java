@@ -696,6 +696,8 @@ public class FacilioConstants {
 		public static final String REPORT_DATA = "reportData";
 		public static final String PIVOT_TABLE_DATA = "pivotTableData";
 		public static final String PIVOT_TEMPLATE_JSON = "pivotTemplateJSON";
+		public static final String PIVOT_RECONSTRUCTED_DATA = "pivotReconstructedData";
+		public static final String PIVOT_ALIAS_VS_FIELD = "pivotAliasVsField";
 		public static final String IS_TIMELINE_FILTER_APPLIED = "isTimelineFilterApplied";
 		public static final String IS_EXPORT_REPORT = "isExportReport";
 		public static final String TABLE_ALIAS = "tableAlias";

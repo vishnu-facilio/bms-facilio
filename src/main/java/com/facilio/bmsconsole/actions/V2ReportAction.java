@@ -2583,12 +2583,14 @@ public class V2ReportAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.TIME_FILTER, showTimelineFilter);
         c.addCommand(new ConstructTabularReportData());
         c.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
+        c.addCommand(new PivotColumnFormatCommand());
         c.execute();
         setResult(FacilioConstants.ContextNames.ROW_HEADERS, context.get(FacilioConstants.ContextNames.ROW_HEADERS));
         setResult(FacilioConstants.ContextNames.DATA_HEADERS, context.get(FacilioConstants.ContextNames.DATA_HEADERS));
         setResult(FacilioConstants.ContextNames.ROW_ALIAS, context.get(FacilioConstants.ContextNames.ROW_ALIAS));
         setResult(FacilioConstants.ContextNames.DATA_ALIAS, context.get(FacilioConstants.ContextNames.DATA_ALIAS));
         setResult(FacilioConstants.ContextNames.PIVOT_TABLE_DATA, context.get(FacilioConstants.ContextNames.PIVOT_TABLE_DATA));
+        setResult(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD, context.get(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD));
         setResult(FacilioConstants.Reports.ROWS, rows);
         return SUCCESS;
     }
@@ -2640,6 +2642,7 @@ public class V2ReportAction extends FacilioAction {
 
         chain.addCommand(new ConstructTabularReportData());
         chain.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
+        chain.addCommand(new PivotColumnFormatCommand());
         chain.addCommand(new AddOrUpdateReportCommand());
         chain.execute(context);
 
@@ -2749,6 +2752,7 @@ public class V2ReportAction extends FacilioAction {
 
         chain.addCommand(new ConstructTabularReportData());
         chain.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
+        chain.addCommand(new PivotColumnFormatCommand());
         chain.execute(context);
         setResult("report", reportContext);
         setResult(FacilioConstants.ContextNames.ROW_HEADERS, context.get(FacilioConstants.ContextNames.ROW_HEADERS));
@@ -2769,7 +2773,7 @@ public class V2ReportAction extends FacilioAction {
         setResult(FacilioConstants.ContextNames.END_TIME, pivotparams.getEndTime());
         setResult((String) FacilioConstants.ContextNames.TIME_FILTER, pivotparams.getShowTimelineFilter());
         setResult(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, pivotparams.getDateValue());
-
+        setResult(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD, context.get(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD));
         return SUCCESS;
     }
 

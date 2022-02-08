@@ -108,7 +108,6 @@ public class ReportPivotTableDataContext {
 		this.subModuleFieldId = subModuleFieldId;
 	}
 
-
 	private long parentModuleId = -1;
 	public long getParentModuleId() {
 		return parentModuleId;
