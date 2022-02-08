@@ -96,7 +96,8 @@ public class InspectionAPI {
 				.module(modBean.getModule(FacilioConstants.Inspection.INSPECTION_RESPONSE))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), InspectionResponseContext.Status.PRE_OPEN.getIndex()+"", EnumOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), inspectionIds, NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), DateTimeUtil.getCurrenTime()+"", DateOperators.IS_AFTER));
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), DateTimeUtil.getCurrenTime()+"", DateOperators.IS_AFTER))
+				.skipModuleCriteria();
 		
 		deleteBuilder1.delete();
 		
