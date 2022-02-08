@@ -16,6 +16,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import org.json.simple.JSONObject;
 
 public class GetCustomModuleWorkflowRulesCommand extends FacilioCommand {
 
@@ -23,6 +24,7 @@ public class GetCustomModuleWorkflowRulesCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         Integer ruleType = (Integer) context.get(FacilioConstants.ContextNames.RULE_TYPE);
+        JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
 
         WorkflowRuleContext.RuleType type = null;
         if (ruleType != null) {
@@ -42,7 +44,7 @@ public class GetCustomModuleWorkflowRulesCommand extends FacilioCommand {
             if (type == null) {
                 type = WorkflowRuleContext.RuleType.MODULE_RULE;
             }
-            List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getWorkflowRules(type, true, criteria, null, null, "EXECUTION_ORDER");
+            List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getWorkflowRules(type, true, criteria, null, pagination, "EXECUTION_ORDER");
             if (workflowRules == null) {
                 workflowRules = new ArrayList<>();
             }
