@@ -1,13 +1,18 @@
 package com.facilio.modules;
 
 import java.sql.Connection;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.facilio.modules.fields.DeleteSupplementHandler;
-import com.facilio.modules.fields.SupplementRecord;
-import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -21,9 +26,14 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.fields.DeleteSupplementHandler;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.util.FacilioUtil;
 
 public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implements DeleteBuilderIfc<E> {
+	
+	private static final Logger LOGGER = LogManager.getLogger(DeleteRecordBuilder.class.getName());
 	private GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder();
 	private SelectRecordsBuilder<E> selectBuilder = new SelectRecordsBuilder<E>();
 	private UpdateRecordBuilder<E> updateBuilder = new UpdateRecordBuilder<E>();
@@ -167,6 +177,9 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		// TODO Auto-generated method stub
 		checkForNullAndSanitize();
 		List<Long> ids = getIds();
+		if(AccountUtil.getCurrentOrg().getId() == 267l) {
+			LOGGER.error("Module --  "+this.module != null ? module.getName() : moduleName +"ids to be deleted -- "+ids);
+		}
 		return commonDeleteByIds(ids);
 	}
 
@@ -254,6 +267,11 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 						.orderBy(idField.getCompleteColumnName())
 						;
 		List<Map<String, Object>> ids = selectBuilder.getAsProps();
+		
+		if(AccountUtil.getCurrentOrg().getId() == 267l) {
+			LOGGER.error("selectBuilder --  "+selectBuilder);
+		}
+		
 		if (ids != null && !ids.isEmpty()) {
 			return ids.stream().map(id -> (Long)id.get("id")).collect(Collectors.toList());
 		}
