@@ -3,6 +3,8 @@ package com.facilio.modules;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -29,18 +31,29 @@ public class AltayerVendorContactValueGenerator extends ValueGenerator{
             props = selectAccessibleBuilder.get();
             List<Long> baseSpaceIds = new ArrayList<Long>();
             if (props != null && !props.isEmpty()) {
-                for(Map<String, Object> prop : props) {
+                for (Map<String, Object> prop : props) {
                     Long bsId = (Long) prop.get("bsid");
                     if (bsId != null) {
                         baseSpaceIds.add(bsId);
                     }
                 }
-
-                if(CollectionUtils.isNotEmpty(baseSpaceIds)) {
-                    List<Long> ids = getVendorMappingData(baseSpaceIds);
-                    if (CollectionUtils.isNotEmpty(ids)) {
-                        return StringUtils.join(ids, ",");
+            }
+            else {
+                List<BuildingContext> allBuildings = SpaceAPI.getAllBuildings();
+                if(CollectionUtils.isNotEmpty(allBuildings)) {
+                    for (BuildingContext prop : allBuildings) {
+                        Long bsId = prop.getBuildingId();
+                        if (bsId != null) {
+                            baseSpaceIds.add(bsId);
+                        }
                     }
+                }
+            }
+
+            if(CollectionUtils.isNotEmpty(baseSpaceIds)) {
+                List<Long> ids = getVendorMappingData(baseSpaceIds);
+                if (CollectionUtils.isNotEmpty(ids)) {
+                    return StringUtils.join(ids, ",");
                 }
             }
         } catch (Exception e) {

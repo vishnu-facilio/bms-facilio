@@ -2,8 +2,12 @@ package com.facilio.modules;
 
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -30,6 +34,19 @@ public class AccessibleSpacesValueGenerator extends ValueGenerator {
                         baseSpaceIds.add(bsId);
                     }
                 }
+            }
+            else {
+                List<SiteContext> allSites = SpaceAPI.getAllSites();
+                if(CollectionUtils.isNotEmpty(allSites)) {
+                    for (SiteContext prop : allSites) {
+                        Long bsId = prop.getSiteId();
+                        if (bsId != null) {
+                            baseSpaceIds.add(bsId);
+                        }
+                    }
+                }
+            }
+            if(CollectionUtils.isNotEmpty(baseSpaceIds)) {
                 return StringUtils.join(baseSpaceIds, ",");
             }
         }
