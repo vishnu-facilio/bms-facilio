@@ -144,13 +144,13 @@ public class PointsUtil
                             point.setAgentId(controller.getAgentId());
                             point.setDeviceName(controller.getName());
                             int agentType = agent.getAgentType();
-                            if (agentType == AgentType.CUSTOM.getKey() || agentType == AgentType.REST.getKey() || agentType == AgentType.CLOUD.getKey()) {
+                            if (agentType == AgentType.CUSTOM.getKey() || agentType == AgentType.REST.getKey() || agentType == AgentType.CLOUD.getKey() || agentType == AgentType.MQTT.getKey()) {
                                 point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
                             }
                             if (controller.getControllerType() == FacilioControllerType.MODBUS_IP.asInt() ||
                                     controller.getControllerType() == FacilioControllerType.MODBUS_RTU.asInt() ||
                                     controller.getControllerType() == FacilioControllerType.RDM.asInt()) {
-                                if (agentType == AgentType.FACILIO.getKey() || agent.getAgentTypeEnum().isAgentService()  ) {
+                                if (agentType == AgentType.FACILIO.getKey() || agent.getAgentTypeEnum().isAgentService()) {
                                     point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
                                 }
                             }
