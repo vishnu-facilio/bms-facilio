@@ -19,6 +19,8 @@ import com.facilio.bmsconsoleV3.commands.purchaseorder.CompletePoCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.reports.ConstructReportDeleteCommand;
 import com.facilio.bmsconsoleV3.commands.reports.ConstructReportDetailsCommand;
+import com.facilio.bmsconsoleV3.commands.reports.GetDataPointFromAlarmCommand;
+import com.facilio.bmsconsoleV3.commands.reports.GetReportFoldersCommand;
 import com.facilio.bmsconsoleV3.commands.termsandconditions.ReviseTandCCommand;
 import com.facilio.bmsconsoleV3.commands.transferRequest.*;
 import com.facilio.command.FacilioCommand;
@@ -651,7 +653,6 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddOrUpdateTriggerActionAndRelCommand());
         return c;
     }
-
     public static FacilioChain getAllTriggers() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new GetAllTriggersCommand());
@@ -1262,6 +1263,11 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ConstructReportDetailsCommand());
         return c;
     }
+    public static FacilioChain getDashboardDateFilterChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ConstructReportDetailsCommand());
+        return c;
+    }
     public static FacilioChain getExecuteReportChain( String filters, boolean needCriteriaData){
         FacilioChain c = getDefaultChain();
         if(filters != null)
@@ -1284,6 +1290,49 @@ public class TransactionChainFactoryV3 {
         }
         c.addCommand(new ConstructTabularReportData());
         c.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
+        return c;
+    }
+
+    public static FacilioChain getReadingDataChain(long alarmId , String fields , boolean newFormat, boolean isOnlyReportDataChain){
+        FacilioChain c = getDefaultChain();
+        if(alarmId > 0 && fields == null) {
+            c.addCommand(new GetDataPointFromAlarmCommand());
+        }
+        if(newFormat){
+            if(!isOnlyReportDataChain){
+                c.addCommand(new CreateReadingAnalyticsReportCommand());
+            }
+            c.addCommand(ReadOnlyChainFactory.newFetchReportDataChain());
+        }
+        else{
+            if(!isOnlyReportDataChain) {
+                c.addCommand(new CreateReadingAnalyticsReportCommand());
+            }
+            c.addCommand(ReadOnlyChainFactory.fetchReportDataChain());
+            if(!isOnlyReportDataChain) {
+                c.addCommand(new FetchCustomBaselineData());
+            }
+        }
+        return c;
+    }
+
+    public static FacilioChain getReadingAlarmDataChain(boolean newFormat) {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetDataPointFromAlarmCommand());
+        if(newFormat){
+            c.addCommand(new CreateReadingAnalyticsReportCommand());
+            c.addCommand(ReadOnlyChainFactory.newFetchReportDataChain());
+        }
+        else{
+            c.addCommand(new CreateReadingAnalyticsReportCommand());
+            c.addCommand(ReadOnlyChainFactory.fetchReportDataChain());
+            c.addCommand(new FetchCustomBaselineData());
+        }
+        return c;
+    }
+    public static FacilioChain getFoldersListChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetReportFoldersCommand());
         return c;
     }
 }

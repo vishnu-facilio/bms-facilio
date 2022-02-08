@@ -543,6 +543,10 @@
                 class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
                 method="execute">
         </action>
+        <action name="folders"
+                class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
+                method="folders">
+        </action>
     </package>
     <package name="pivotReportApi" namespace="/api/v3/report/pivot" extends="v3Api">
         <action name="create"
@@ -568,6 +572,28 @@
                 method="update">
         </action>
     </package>
+    <package name="readingReportApi" namespace="/api/v3/report/reading" extends="v3Api">
+        <action name="create"
+                class="com.facilio.bmsconsoleV3.actions.report.V3AnalyticsReportAction"
+                method="create">
+        </action>
+        <action name="update"
+                class="com.facilio.bmsconsoleV3.actions.report.V3AnalyticsReportAction"
+                method="update">
+        </action>
+        <action name="data"
+                class="com.facilio.bmsconsoleV3.actions.report.V3AnalyticsReportAction"
+                method="readingData">
+        </action>
+        <action name="alarmData"
+                class="com.facilio.bmsconsoleV3.actions.report.V3AnalyticsReportAction"
+                method="readingAlarmData">
+        </action>
+        <action name="view"
+                class="com.facilio.bmsconsoleV3.actions.report.V3AnalyticsReportAction"
+                method="viewData">
+        </action>
 
+    </package>
 
 </struts>

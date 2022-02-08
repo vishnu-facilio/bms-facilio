@@ -1,16 +1,15 @@
 package com.facilio.bmsconsoleV3.actions.report;
 
-import com.facilio.bmsconsole.context.RegressionContext;
-import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.modules.AggregateOperator;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldUtil;
+import com.facilio.modules.*;
 import com.facilio.report.context.*;
+import com.facilio.report.context.ReportContext;
+import com.facilio.time.DateRange;
 import com.facilio.v3.V3Action;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -23,9 +22,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Getter @Setter
 @Log4j
@@ -63,6 +60,12 @@ public class V3AnalyticsReportAction extends V3Action {
     private int moduleType = -1;
     FacilioContext resultContext;
     String moduleName;
+    private Boolean shouldIncludeMarked;
+    private boolean isWithPrerequsite;
+    long readingRuleId = -1;
+    private Integer alarmType;
+    private long reportId = -1;
+    private long dashboardId;
 
 
     private AggregateOperator xAggr;
@@ -154,6 +157,7 @@ public class V3AnalyticsReportAction extends V3Action {
         context.put(FacilioConstants.ContextNames.DATA_FILTER, dataFilter);
 
     }
+
     private void setAnalyticsReportContext(FacilioContext context) throws Exception {
         if (reportContext.getTemplate() != null) {
             setTemplate(reportContext.getReportTemplate());
@@ -284,15 +288,125 @@ public class V3AnalyticsReportAction extends V3Action {
         resultContext = context;
         return SUCCESS;
     }
-    private void validateData(Integer action_type) throws Exception
-    {
-        if((action_type == 1 && reportContext.getId() > 0 ) && (action_type == 2 && reportContext.getId() <= 0))
-        {
+
+    private void validateData(Integer action_type) throws Exception {
+        if ((action_type == 1 && reportContext.getId() > 0) && (action_type == 2 && reportContext.getId() <= 0)) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid ReportId.");
         }
-        if(reportContext == null)
-        {
+        if (reportContext == null) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "ReportContext is mandatory.");
         }
+    }
+
+    private void setAlarmsContextDetails(FacilioContext context) throws Exception {
+        context.put("alarmId", alarmId);
+        context.put("fields", fields);
+        context.put("isWithPrerequsite", isWithPrerequsite);
+        context.put("readingRuleId", readingRuleId);
+        context.put("alarmResource", alarmResource);
+        context.put("alarmType", alarmType);
+        context.put("newFormat", newFormat);
+        context.put("startTime", startTime);
+        context.put("endTime", endTime);
+        context.put("xAggr", xAggr);
+
+    }
+
+    public String readingData() throws Exception
+    {
+        FacilioChain chain = TransactionChainFactoryV3.getReadingDataChain(alarmId, fields, newFormat, false);
+        FacilioContext context = chain.getContext();
+        setReadingsDataContext(context);
+        context.put(FacilioConstants.ContextNames.SHOULD_INCLUDE_MARKED, shouldIncludeMarked);
+        if (template != null) {
+            context.put(FacilioConstants.ContextNames.REPORT_TEMPLATE, template);
+        }
+        chain.execute();
+        return setReportResult(context);
+    }
+
+    public String readingAlarmData() throws Exception {
+
+        FacilioChain chain = TransactionChainFactoryV3.getReadingAlarmDataChain(newFormat);
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.SHOULD_INCLUDE_MARKED, shouldIncludeMarked);
+        context.put(FacilioConstants.ContextNames.REPORT_FROM_ALARM, true);
+        context.put(FacilioConstants.ContextNames.ALARM_RESOURCE, alarmResource);
+        context.put(FacilioConstants.ContextNames.ALARM_TYPE, alarmType);
+        if (readingRuleId > 0) {
+            context.put(FacilioConstants.ContextNames.FETCH_EVENT_BAR, true);
+            context.put(FacilioConstants.ContextNames.READING_RULE_ID, readingRuleId);
+        }
+        setReadingsDataContext(context);
+        chain.execute();
+
+        return setReportResult(context);
+    }
+
+    private void setReportWithDataContext(FacilioContext context) throws Exception {
+
+        FacilioChain chain = TransactionChainFactoryV3.getReportContextChain();
+        FacilioContext reportDetailContext = chain.getContext();
+        reportDetailContext.put("reportId", reportId);
+        chain.execute();
+        ReportContext reportContext = (ReportContext) reportDetailContext.get("reportContext");
+        if (reportContext != null && reportContext.getReportState() != null && !reportContext.getReportState().isEmpty() && reportContext.getReportState().containsKey(FacilioConstants.ContextNames.REPORT_GROUP_BY_TIME_AGGR))
+        {
+            AggregateOperator groupByAggr = AggregateOperator.getAggregateOperator(((Long) reportContext.getReportState().get(FacilioConstants.ContextNames.REPORT_GROUP_BY_TIME_AGGR)).intValue());
+            reportContext.setgroupByTimeAggr(groupByAggr);
+        }
+
+        if (startTime > 0 && endTime > 0) {
+            reportContext.setDateRange(new DateRange(startTime, endTime));
+            reportContext.setDateValue(new DateRange(startTime, endTime).toString());
+        }
+        if (dashboardId > 0)
+        {
+            FacilioChain dateFilterChain = TransactionChainFactoryV3.getReportContextChain();
+            FacilioContext dateFilterContext = dateFilterChain.getContext();
+            dateFilterContext.put("dashboardId", dashboardId);
+            dateFilterChain.execute();
+            DateRange range = (DateRange) dateFilterContext.get("range");
+            if (range != null) {
+                reportContext.setDateRange(range);
+                reportContext.setDateValue(range.toString());
+            }
+        }
+        if (showAlarms != null) {
+            reportContext.addToReportState(FacilioConstants.ContextNames.REPORT_SHOW_ALARMS, showAlarms);
+        }
+        if (showSafeLimit != null) {
+            reportContext.addToReportState(FacilioConstants.ContextNames.REPORT_SHOW_SAFE_LIMIT, showSafeLimit);
+        }
+        if (hmAggr != null) {
+            reportContext.addToReportState(FacilioConstants.ContextNames.HEATMAP_AGGR, hmAggr);
+        }
+        if (groupByTimeAggr != null) {
+            reportContext.addToReportState(FacilioConstants.ContextNames.REPORT_GROUP_BY_TIME_AGGR, groupByTimeAggr.getValue());
+            reportContext.setgroupByTimeAggr(groupByTimeAggr);
+        }
+        if (scatterConfig != null) {
+            reportContext.addToReportState(FacilioConstants.ContextNames.REPORT_SCATTER_CONFIG, scatterConfig);
+        }
+        if (xAggr != null) {
+            reportContext.setxAggr(xAggr);
+        }
+        if (template != null) {
+            reportContext.setReportTemplate(template);
+        }
+        if (analyticsType != -1) {
+            reportContext.addToReportState(FacilioConstants.ContextNames.ANALYTICS_TYPE, analyticsType);
+        }
+        context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+        context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
+    }
+
+    public String viewData() throws Exception
+    {
+        FacilioChain chain = TransactionChainFactoryV3.getReadingDataChain(-1, null, newFormat, true);
+        FacilioContext context = chain.getContext();
+        setReportWithDataContext(context); //This could be moved to a command
+        chain.execute();
+        return setReportResult(context);
     }
 }
