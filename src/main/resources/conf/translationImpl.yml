@@ -79,3 +79,6 @@ translations:
 
   - name: V2ListApiTranslation
     translationImplClass: com.facilio.bmsconsole.localization.translationImpl.V2ListApiTranslationIml
+
+  - name: V3SummaryApiTranslation
+    translationImplClass : com.facilio.bmsconsole.localization.translationImpl.V3SummaryApiTranslationImpl

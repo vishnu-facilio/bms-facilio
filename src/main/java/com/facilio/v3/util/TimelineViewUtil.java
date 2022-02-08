@@ -1,5 +1,6 @@
 package com.facilio.v3.util;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -9,16 +10,24 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.recordcustomization.RecordCustomizationContext;
+import com.facilio.recordcustomization.RecordCustomizationValuesContext;
+import com.facilio.timeline.context.CustomizationDataContext;
 import com.facilio.timeline.context.TimelineRequest;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TimelineViewUtil {
@@ -105,4 +114,57 @@ public class TimelineViewUtil {
         return -1;
     }
 
+    public static String getTimelineSupportedFieldValue(Object o, FacilioField field) {
+        String value = null;
+        if (o == null) {
+            return "-1";
+        }
+
+        if (field.getDataTypeEnum() == FieldType.ENUM || field.getDataTypeEnum() == FieldType.BOOLEAN) {
+            value = String.valueOf(o);
+        } else if (field.getDataTypeEnum() == FieldType.LOOKUP) {
+            value = String.valueOf(((Map<String, Object>) o).get("id"));
+        }
+        return value;
+    }
+
+    public static List<CustomizationDataContext> getCustomizationDataMap(List<Map<String, Object>> recordMapList, RecordCustomizationContext customizationData) throws Exception{
+        List<CustomizationDataContext> timelineList = new ArrayList<>();
+
+        FacilioField customizationField = null;
+        Map<String, String> fieldValueVsCustomization = null;
+        if(customizationData != null && customizationData.getCustomizationType() == RecordCustomizationContext.CustomizationType.FIELD.getIntVal()) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            customizationField = modBean.getField(customizationData.getCustomizationFieldId());
+            fieldValueVsCustomization = new HashMap<>();
+            for(RecordCustomizationValuesContext value : customizationData.getValues()){
+                fieldValueVsCustomization.put(value.getFieldValue(), value.getCustomization());
+            }
+        }
+        for(Map<String,Object> record : recordMapList) {
+            CustomizationDataContext recordContext = new CustomizationDataContext();
+            recordContext.setData(record);
+            //Adding customization
+            String customization = (customizationData != null) ? customizationData.getDefaultCustomization() : null;
+            if(customizationData != null && customizationData.getCustomizationType() == RecordCustomizationContext.CustomizationType.NAMED_CRITERIA.getIntVal()) {
+                for(RecordCustomizationValuesContext customizationValue : customizationData.getValues()){
+                    if(customizationValue.getNamedCriteria().evaluate(record, null, null)) {
+                        customization = customizationValue.getCustomization();
+                        break;
+                    }
+                }
+            }
+            else if(customizationField != null && record.get(customizationField.getName()) != null) {
+                String fieldValue = TimelineViewUtil.getTimelineSupportedFieldValue(record.get(customizationField.getName()), customizationField);
+                if (fieldValueVsCustomization.containsKey(fieldValue)) {
+                    customization = fieldValueVsCustomization.get(fieldValue);
+                }
+            }
+            if(customization != null) {
+                recordContext.setCustomization(customization);
+            }
+            timelineList.add(recordContext);
+        }
+        return timelineList;
+    }
 }

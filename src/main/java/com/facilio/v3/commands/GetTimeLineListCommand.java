@@ -90,8 +90,8 @@ public class GetTimeLineListCommand extends FacilioCommand {
         }
         builder.orderBy(startTimeField.getCompleteColumnName() + "," + idFieldColumnName);
         List<Map<String, Object>> recordMapList = builder.getAsProps();
-        context.put(FacilioConstants.ContextNames.TIMELINE_V3_DATAMAP, recordMapList);
 
+        context.put(FacilioConstants.ContextNames.TIMELINE_V3_DATAMAP, recordMapList);
         return false;
     }
 

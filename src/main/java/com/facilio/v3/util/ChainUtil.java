@@ -480,12 +480,19 @@ public class ChainUtil {
         }
         return beanClass;
     }
+    public static FacilioChain getTimelinePatchValidationChain() throws Exception {
+        FacilioChain chain = FacilioChain.getNonTransactionChain();
+        chain.addCommand(new LoadViewCommand());
+        chain.addCommand(new ValidateTimelinePatchData());
+        return chain;
+    }
 
     public static FacilioChain getTimelineChain() throws Exception {
         FacilioChain chain = FacilioChain.getNonTransactionChain();
         chain.addCommand(new GenerateCriteriaFromFilterCommand());
         chain.addCommand(new LoadViewCommand());
         chain.addCommand(new GetTimeLineDataCommand());
+        chain.addCommand(new AddCustomizationToRecordMap());
         chain.addCommand(new ConstructTimelineResponseCommand());
         return chain;
     }
@@ -495,6 +502,7 @@ public class ChainUtil {
         chain.addCommand(new GenerateCriteriaFromFilterCommand());
         chain.addCommand(new LoadViewCommand());
         chain.addCommand(new GetTimeLineListCommand());
+        chain.addCommand(new AddCustomizationToRecordMap());
         return chain;
     }
 }

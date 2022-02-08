@@ -633,13 +633,15 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
     }
 
     public String timelinePatch() throws Exception {
-        /* Validation to be added
-        timelineRequest = new TimelineRequest();
-        timelineRequest.setViewName(this.getViewName());
-        FacilioChain chain = ChainUtil.getTimelineValidationChain(timelineRequest);
-        chain.execute();
-        FacilioContext context = chain.getContext();
-        */
+
+        FacilioChain validationChain = ChainUtil.getTimelinePatchValidationChain();
+        FacilioContext validationContext = validationChain.getContext();
+        validationContext.put(FacilioConstants.ContextNames.CV_NAME, this.getViewName());
+        validationContext.put(FacilioConstants.ContextNames.MODULE_NAME, this.getModuleName());
+        validationContext.put(FacilioConstants.ContextNames.DATA, this.getData());
+        Object oldRecord = V3Util.getRecord(this.getModuleName(), this.getId(), httpServletRequest);
+        validationContext.put(FacilioConstants.ContextNames.OLD_RECORD_MAP, oldRecord);
+        validationChain.execute();
 
         //removing permission restricted fields
         Map<String, Object> data = this.getData();
@@ -651,7 +653,10 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         JSONObject result = V3Util.processAndUpdateSingleRecord(this.getModuleName(), this.getId(), data, this.getParams(), this.httpServletRequest, this.getStateTransitionId(), this.getCustomButtonId(), this.getApprovalTransitionId(),this.getQrValue());
         this.setData(result);
 
-        addAuditLog(Collections.singletonList((JSONObject)this.getData().get(getModuleName())), getModuleName(), "Record {%s} of module %s has been updated through TimelineView",
+        String message = "Record {%s} of module %s has been "
+                        + (validationContext.containsKey(FacilioConstants.ContextNames.TIMELINE_PATCHTYPE) ? validationContext.get(FacilioConstants.ContextNames.TIMELINE_PATCHTYPE): "updated")
+                        +" through TimelineView";
+        addAuditLog(Collections.singletonList((JSONObject)this.getData().get(getModuleName())), getModuleName(), message,
                 AuditLogHandler.ActionType.UPDATE,
                 (JSONObject) data, true);
 
@@ -670,7 +675,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         FacilioContext context = TimelineViewUtil.getTimelineContext(chain, this.getTimelineRequest(), true,
                 this.getPage(), this.getPerPage(), false);
         chain.execute();
-        setData(timelineRequest.getModuleName(), context.get(FacilioConstants.ContextNames.TIMELINE_V3_DATAMAP));
+        setData(timelineRequest.getModuleName(), context.get(FacilioConstants.ContextNames.TIMELINE_CUSTOMIZATONDATA_MAP));
         return SUCCESS;
     }
 
@@ -679,7 +684,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         FacilioContext context = TimelineViewUtil.getTimelineContext(chain, this.getTimelineRequest(), true,
                 this.getPage(), this.getPerPage(), true);
         chain.execute();
-        setData(timelineRequest.getModuleName(), context.get(FacilioConstants.ContextNames.TIMELINE_V3_DATAMAP));
+        setData(timelineRequest.getModuleName(), context.get(FacilioConstants.ContextNames.TIMELINE_CUSTOMIZATONDATA_MAP));
         return SUCCESS;
     }
 }

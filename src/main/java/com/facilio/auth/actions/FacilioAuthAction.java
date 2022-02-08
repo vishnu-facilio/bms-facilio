@@ -758,7 +758,11 @@ public class FacilioAuthAction extends FacilioAction {
 	private void setWebViewCookies(AppDomain appDomainObj) throws Exception {
 		HttpServletResponse response = ServletActionContext.getResponse();
 		String scheme = "";
-		if (appDomainObj.getAppDomainTypeEnum() == AppDomainType.FACILIO) {
+		if ("workQ".equalsIgnoreCase(getLookUpType())) {
+			Cookie schemeCookie = new Cookie("fc.mobile.scheme", FacilioProperties.getWorkQAppScheme());
+			setTempCookieProperties(schemeCookie, false);
+			response.addCookie(schemeCookie);
+		} else if (appDomainObj.getAppDomainTypeEnum() == AppDomainType.FACILIO) {
 			String mainAppscheme = FacilioProperties.getMobileMainAppScheme();
 			if (appDomainObj.getDomainType() == AppDomain.DomainType.DEFAULT.getIndex()) {
 				scheme = mainAppscheme;
@@ -770,7 +774,6 @@ public class FacilioAuthAction extends FacilioAction {
 			setTempCookieProperties(schemeCookie, false);
 			response.addCookie(schemeCookie);
 		}
-
 	}
 
 	public  String validateLoginPortal() throws Exception {
@@ -1115,6 +1118,7 @@ public class FacilioAuthAction extends FacilioAction {
 		if(IAMUserUtil.totpChecking(totp, (long) userMfaSettings.get("userId"))){
 			IAMUserUtil.updateUserMfaSettingsStatus((long) userMfaSettings.get("userId"),true);
 			Organization org = IAMUserUtil.getDefaultOrg((long) userMfaSettings.get("userId"));
+			setDomain(org.getDomain());
 			var securityPolicy = IAMUserUtil.getUserSecurityPolicy(emailFromDigest, AppDomain.GroupType.FACILIO);
 			var resetRequired = false;
 			if (securityPolicy != null && securityPolicy.getIsPwdPolicyEnabled() != null && securityPolicy.getIsPwdPolicyEnabled() && securityPolicy.getPwdMinAge() != null) {
@@ -1754,6 +1758,9 @@ public class FacilioAuthAction extends FacilioAction {
 				baseUrl.append(appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain());
 			} else if (getLookUpType().equalsIgnoreCase("vendor")) {
 				List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.VENDOR_PORTAL, org.getOrgId());
+				baseUrl.append(appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain());
+			} else if (getLookUpType().equalsIgnoreCase("workq")) {
+				List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.FACILIO, org.getOrgId());
 				baseUrl.append(appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain());
 			}
 		}

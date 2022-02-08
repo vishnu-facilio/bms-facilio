@@ -22,6 +22,9 @@ public class WeekendContext {
     public String getValue() {
         return (value != null) ? value.toJSONString() : null;
     }
+    public JSONObject getValueJSON() {
+        return value;
+    }
     public void setValue(JSONObject value) {
         this.value = value;
     }
