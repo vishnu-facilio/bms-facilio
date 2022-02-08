@@ -60,9 +60,10 @@ public class ModeledDataCommand extends AgentV2Command {
 
 				else{
 					controllerId = (Long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
-					LOGGER.debug("DataPointRecords : "+ dataPointRecords);
-					processKnownController(controllerId,iModuleVsReading,dataPointRecords,deviceName,timeStamp,data);
-
+					LOGGER.debug("DataPointRecords : " + dataPointRecords);
+					if (dataPointRecords != null) {
+						processKnownController(controllerId, iModuleVsReading, dataPointRecords, deviceName, timeStamp, data);
+					}
 				}
 
 			}

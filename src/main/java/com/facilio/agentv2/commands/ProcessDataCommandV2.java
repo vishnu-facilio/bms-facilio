@@ -42,9 +42,6 @@ public class ProcessDataCommandV2 extends AgentV2Command {
 
                 Controller controller = (Controller) context.get(AgentConstants.CONTROLLER);
                 FacilioAgent agent = controller.getAgent();
-                if (agent.getName().equalsIgnoreCase("bishopbriggs") && controller.getName().startsWith("HTC")){
-                    LOGGER.info("Payload : " + payload);
-                }
                 if( containsCheck(AgentConstants.DATA,payload)){
                     JSONArray pointData = (JSONArray) payload.get(AgentConstants.DATA);
                     List<String> pointNames = new ArrayList<>();
@@ -74,13 +71,12 @@ public class ProcessDataCommandV2 extends AgentV2Command {
 
                     if( ! pointNames.isEmpty()){
                         List<Map<String, Object>> pointsFromDb = getPointsFromDb(pointNames,controller);
-                        if (agent.getName().equalsIgnoreCase("bishopbriggs") && controller.getName().startsWith("HTC")) {
-                            LOGGER.info("pointsFromDb : "+pointsFromDb +" : Size : "+ pointsFromDb.size());
-                        }
+
                             if (pointsFromDb.size() < pointNames.size() && controller != null &&
-                                (controller.getAgent().getAgentType() == AgentType.CLOUD.getKey()
-                                        || controller.getAgent().getAgentType() == AgentType.REST.getKey()
-                                        || controller.getAgent().getAgentType() == AgentType.FACILIO.getKey())) {
+                                    (controller.getAgent().getAgentType() == AgentType.CLOUD.getKey()
+                                            || controller.getAgent().getAgentType() == AgentType.REST.getKey()
+                                            || controller.getAgent().getAgentType() == AgentType.FACILIO.getKey()
+                                            || controller.getAgent().getAgentType() == AgentType.MQTT.getKey())) {
                                 Set<String> pointsFromDbSet = new HashSet<>();
                                 pointsFromDb.forEach(row -> pointsFromDbSet.add(row.get("name").toString()));
                                 Set<String> pointNamesSet = new HashSet<>(pointNames);
@@ -123,7 +119,7 @@ public class ProcessDataCommandV2 extends AgentV2Command {
                         }
 
                     }else {
-                        throw new Exception(" points name can't be empty");
+                        LOGGER.info("points empty");
                     }
                 }
 

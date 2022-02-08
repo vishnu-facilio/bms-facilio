@@ -338,20 +338,10 @@ public class DataProcessorV2
                             return controller;
                         } else {
                             FacilioAgent agent = AgentApiV2.getAgent(agentId);
-                            if (agent.getAgentType() == AgentType.CLOUD.getKey()) {
+                            if (agent.getAgentType() == AgentType.CLOUD.getKey() || agent.getAgentType() == AgentType.MQTT.getKey()) {
                                 MiscController miscController = new MiscController(agent.getId(), AccountUtil.getCurrentOrg().getOrgId());
                                 miscController.setName(((JSONObject) (payload.get(AgentConstants.CONTROLLER))).get(AgentConstants.NAME).toString());
                                 miscController.setDataInterval(agent.getInterval() * 60 * 1000);
-                                /*Device device = new Device();
-                                device.setIdentifier(miscController.getName());
-                                device.setName(miscController.getName());
-                                device.setAgentId(agent.getId());
-                                device.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-                                device.setControllerType(FacilioControllerType.MISC.asInt());
-                                device.setConfigure(true);
-                                device.setSiteId(agent.getSiteId());
-                                long deviceId = FieldDeviceApi.addFieldDevice(device);
-                                miscController.setDeviceId(deviceId);*/
                                 ControllerApiV2.addController(miscController);
                                 return miscController;
                             } else {
