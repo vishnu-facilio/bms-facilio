@@ -38,7 +38,7 @@ import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.Visitor.WorkflowFunctionVisitor;
 import com.facilio.workflowv2.parser.ScriptParser;
 
-public class WorkflowContext extends ScriptContext implements Serializable {
+public class WorkflowContext extends ScriptContext{
 	
 	/**
 	 * 
