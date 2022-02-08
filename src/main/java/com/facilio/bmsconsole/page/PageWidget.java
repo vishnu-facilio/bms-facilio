@@ -414,7 +414,7 @@ public class PageWidget {
 		TENANT_PRIMARY_CONTACT("tenantprimarycontact"),
 		TENANT_WORKORDERS("tenantworkorders"),
 		TENANT_BOOKINGS("tenantbookings"),
-		TENANT_DETAIL("tenantdetail");
+		TENANT_DETAIL("tenantdetail"),
 		ASSOCIATED_TERMS("associatedterms");
 
 
