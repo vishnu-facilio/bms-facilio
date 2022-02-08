@@ -612,47 +612,55 @@ public class FieldUtil {
 				Map fieldJson = (Map) iterator.next();
 				FieldType fieldType = FieldType.getCFType(Integer.parseInt(fieldJson.get("dataType").toString()));
 				FacilioField facilioField;
-				switch(fieldType) {
-				case NUMBER:
-				case DECIMAL:
-					facilioField = (NumberField) FieldUtil.getAsBeanFromMap(fieldJson, NumberField.class);
-					break;
-				case BOOLEAN:
-					facilioField = (BooleanField) FieldUtil.getAsBeanFromMap(fieldJson, BooleanField.class);
-					break;
-				case ENUM:
-					facilioField = (EnumField) FieldUtil.getAsBeanFromMap(fieldJson, EnumField.class);
-					break;
-				case LOOKUP:
-					facilioField = (LookupField) FieldUtil.getAsBeanFromMap(fieldJson, LookupField.class);
-					break;
-				case FILE:
-					facilioField = (FileField) FieldUtil.getAsBeanFromMap(fieldJson, FileField.class);
-					break;
-				case MULTI_ENUM:
-					facilioField = (MultiEnumField) FieldUtil.getAsBeanFromMap(fieldJson, MultiEnumField.class);
-					break;
-				case MULTI_LOOKUP:
-					facilioField = (MultiLookupField) FieldUtil.getAsBeanFromMap(fieldJson, MultiLookupField.class);
-					break;
-				case LARGE_TEXT:
-					facilioField = (LargeTextField) FieldUtil.getAsBeanFromMap(fieldJson, LargeTextField.class);
-					break;
-				case SYSTEM_ENUM:
-					facilioField = (SystemEnumField) FieldUtil.getAsBeanFromMap(fieldJson, SystemEnumField.class);
-					break;
-				case STRING_SYSTEM_ENUM:
-					facilioField = (StringSystemEnumField) FieldUtil.getAsBeanFromMap(fieldJson, StringSystemEnumField.class);
-					break;
-				case LINE_ITEM:
-					facilioField = (LineItemField) FieldUtil.getAsBeanFromMap(fieldJson, LineItemField.class);
-					break;
-				case URL_FIELD:
-					facilioField = FieldUtil.getAsBeanFromMap(fieldJson, UrlField.class);
-					break;
-				default:
-					facilioField = (FacilioField) FieldUtil.getAsBeanFromMap(fieldJson, FacilioField.class);
-					break;
+				switch (fieldType) {
+					case NUMBER:
+					case DECIMAL:
+						facilioField = (NumberField) FieldUtil.getAsBeanFromMap(fieldJson, NumberField.class);
+						break;
+					case BOOLEAN:
+						facilioField = (BooleanField) FieldUtil.getAsBeanFromMap(fieldJson, BooleanField.class);
+						break;
+					case ENUM:
+						facilioField = (EnumField) FieldUtil.getAsBeanFromMap(fieldJson, EnumField.class);
+						break;
+					case LOOKUP:
+						facilioField = (LookupField) FieldUtil.getAsBeanFromMap(fieldJson, LookupField.class);
+						break;
+					case FILE:
+						facilioField = (FileField) FieldUtil.getAsBeanFromMap(fieldJson, FileField.class);
+						break;
+					case MULTI_ENUM:
+						facilioField = (MultiEnumField) FieldUtil.getAsBeanFromMap(fieldJson, MultiEnumField.class);
+						break;
+					case MULTI_LOOKUP:
+						facilioField = (MultiLookupField) FieldUtil.getAsBeanFromMap(fieldJson, MultiLookupField.class);
+						break;
+					case LARGE_TEXT:
+						facilioField = (LargeTextField) FieldUtil.getAsBeanFromMap(fieldJson, LargeTextField.class);
+						break;
+					case SYSTEM_ENUM:
+						facilioField = (SystemEnumField) FieldUtil.getAsBeanFromMap(fieldJson, SystemEnumField.class);
+						break;
+					case STRING_SYSTEM_ENUM:
+						facilioField = (StringSystemEnumField) FieldUtil.getAsBeanFromMap(fieldJson, StringSystemEnumField.class);
+						break;
+					case LINE_ITEM:
+						facilioField = (LineItemField) FieldUtil.getAsBeanFromMap(fieldJson, LineItemField.class);
+						break;
+					case URL_FIELD:
+						facilioField = FieldUtil.getAsBeanFromMap(fieldJson, UrlField.class);
+						break;
+					case STRING:
+					case BIG_STRING:
+						facilioField = FieldUtil.getAsBeanFromMap(fieldJson,StringField.class);
+						break;
+					case DATE:
+					case DATE_TIME:
+						facilioField = FieldUtil.getAsBeanFromMap(fieldJson,DateField.class);
+						break;
+					default:
+						facilioField = (FacilioField) FieldUtil.getAsBeanFromMap(fieldJson, FacilioField.class);
+						break;
 				}
 				fields.add(facilioField);
 			}

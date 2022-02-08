@@ -31,7 +31,10 @@ import java.sql.*;
 import java.text.MessageFormat;
 import java.time.DayOfWeek;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 
 public class ModuleBeanImpl implements ModuleBean {
@@ -777,23 +780,27 @@ public class ModuleBeanImpl implements ModuleBean {
 				.andCondition(CriteriaAPI.getCondition("FIELDID", "fieldId", StringUtils.join(fieldIds, ","), NumberOperators.EQUALS))
 				;
 		List<Map<String, Object>> props = selectBuilder.get();
-
+		Map<Long, List<Map<String, Object>>> map = new HashMap<>();
+		Map<Long,Map<String,Object>> dateProps = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(props)) {
-			Map<Long, Map<String, Object>> propsMap = new HashMap<>();
-			for (Map<String, Object> prop : props) {
-				Long fieldId = (Long) prop.get("fieldId");
-				Map<String, Object> fieldProp = propsMap.get(fieldId);
-				if (fieldProp == null) {
-					List<DateField> values = new ArrayList<>();
-					values.add(FieldUtil.getAsBeanFromMap(prop,DateField.class));
-					fieldProp = Collections.singletonMap("allowedDays", values);
-					propsMap.put(fieldId, fieldProp);
-				}
-				else {
-					((List<DateField>) fieldProp.get("allowedDays")).add(FieldUtil.getAsBeanFromMap(prop, DateField.class));
+			GenericSelectRecordBuilder childRecord = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getDateFieldChildFields())
+					.table(ModuleFactory.getDateFieldChildModule().getTableName())
+					.andCondition(CriteriaAPI.getCondition("DATE_FIELD_ID", "dateFieldId", StringUtils.join(fieldIds, ","), NumberOperators.EQUALS));
+			List<Map<String, Object>> childProps = childRecord.get();
+			if (CollectionUtils.isNotEmpty(childProps)) {
+				 map = childProps.stream().
+						collect(Collectors.groupingBy(m->(Long)m.get("dateFieldId"),Collectors.mapping(m1 -> m1,Collectors.toList())));
+
+				for (Map<String,Object> prop : props) {
+					long fieldId = (long) prop.get("fieldId");
+					List<Map<String, Object>> childList = map.get(fieldId);
+					List<DayOfWeek> dayOfWeeks = childList.stream().map(p -> DayOfWeek.valueOf((String) p.get("allowedDays"))).collect(toList());
+					prop.put("allowedDays",dayOfWeeks);
+					dateProps.put(fieldId,prop);
 				}
 			}
-			return propsMap;
+			return dateProps;
 		}
 
 		return Collections.EMPTY_MAP;
@@ -1050,7 +1057,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			switch(field.getDataTypeEnum()) {
 				case NUMBER:
 				case DECIMAL:
-					FacilioUtil.throwIllegalArgumentException(!(field instanceof NumberField),"Invalid Field instance for the Number/Decimal data type");
+					FacilioUtil.throwIllegalArgumentException(!(field instanceof NumberField),"Invalid Field instance for the "+field.getDataTypeEnum()+" data type");
 					addNumberField((NumberField) field,fieldProps);
 					break;
 				case BOOLEAN:
@@ -1154,11 +1161,13 @@ public class ModuleBeanImpl implements ModuleBean {
 					break;
 				case DATE:
 				case DATE_TIME:
+					FacilioUtil.throwIllegalArgumentException(!(field instanceof DateField), "Invalid Field instance for the " + field.getDataTypeEnum() + " data type : " + field.getClass().getSimpleName());
 					addDateField((DateField) field, fieldProps);
 					break;
 				case STRING:
 				case BIG_STRING:
-					addStringField((StringField)field,fieldProps);
+					FacilioUtil.throwIllegalArgumentException(!(field instanceof StringField), "Invalid Field instance for the " + field.getDataTypeEnum() + " data type : " + field.getClass().getSimpleName());
+					addStringField((StringField) field, fieldProps);
 					break;
 				default:
 					break;
@@ -1970,7 +1979,6 @@ public class ModuleBeanImpl implements ModuleBean {
 	private void addDateChildField(DateField field, long id) throws SQLException {
 		List<DayOfWeek> allowedDays = field.getAllowedDays();
 		List<Map<String, Object>> insertProps = new ArrayList<>();
-
 		if (CollectionUtils.isNotEmpty(allowedDays)) {
 			allowedDays.forEach(allowedDay -> {
 				Map<String, Object> fieldProps = new HashMap<>();
@@ -1978,13 +1986,13 @@ public class ModuleBeanImpl implements ModuleBean {
 				fieldProps.put("allowedDays", allowedDay);
 				insertProps.add(fieldProps);
 			});
-		}
 
-		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-				.table(ModuleFactory.getDateFieldChildModule().getTableName())
-				.fields(FieldFactory.getDateFieldChildFields())
-				.addRecords(insertProps);
-		builder.save();
+			GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+					.table(ModuleFactory.getDateFieldChildModule().getTableName())
+					.fields(FieldFactory.getDateFieldChildFields())
+					.addRecords(insertProps);
+			builder.save();
+		}
 	}
 
 	private void validateString(StringField field) {
@@ -2001,9 +2009,6 @@ public class ModuleBeanImpl implements ModuleBean {
 	private void addStringField(StringField field,Map<String,Object> props) throws SQLException {
 
 		validateString(field);
-
-		props.put("maxLength",field.getMaxLength());
-		props.put("regex",field.getRegex());
 
 		addExtendedProps(ModuleFactory.getStringFieldModule(),FieldFactory.getStringFieldFields(),props);
 	}
