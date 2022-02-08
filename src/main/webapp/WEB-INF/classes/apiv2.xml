@@ -501,6 +501,17 @@
 				class="com.facilio.banner.action.BannerAction" method="closeBanner" />
 	</package>
 
+	<package name="emailTemplate" namespace="/api/v2/template/email" extends="v2Api">
+		<action name="list"
+				class="com.facilio.emailtemplate.action.EMailTemplateAction" method="list" />
+		<action name="addOrUpdate"
+				class="com.facilio.emailtemplate.action.EMailTemplateAction" method="addOrUpdate" />
+		<action name="view"
+				class="com.facilio.emailtemplate.action.EMailTemplateAction" method="viewEmailStructure" />
+		<action name="delete"
+				class="com.facilio.emailtemplate.action.EMailTemplateAction" method="deleteEmailStructure" />
+	</package>
+
 	<package name="stateTransition"
 		namespace="/api/v2/statetransition" extends="v2Api">
 		<action name="update"

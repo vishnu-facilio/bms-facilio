@@ -3158,6 +3158,18 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getEMailStructureFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getEMailStructureModule();
+
+        fields.add(getIdField(module));
+        fields.add(getNumberField("moduleId", "MODULE_ID", module));
+        fields.add(getStringField("subject", "SUBJECT", module));
+        fields.add(getNumberField("bodyId", "BODY_ID", module));
+
+        return fields;
+    }
+
     public static List<FacilioField> getWorkflowTemplateFields() {
         FacilioModule module = ModuleFactory.getWorkflowTemplatesModule();
 
