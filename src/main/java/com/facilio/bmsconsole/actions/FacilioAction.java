@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.actions;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.db.ResponseCacheUtil;
+import com.facilio.bmsconsole.exception.DependencyException;
 import com.facilio.bmsconsole.interceptors.AuthInterceptor;
 import com.facilio.bmsconsole.util.AuditLogUtil;
 import com.facilio.chain.FacilioContext;
@@ -56,7 +57,15 @@ public class FacilioAction extends ActionSupport {
 	private void setMessage(String message) {
 		this.message = message;
 	}
-	
+
+	private JSONObject errorData;
+	public String getErrorData() {
+		return (errorData != null) ? errorData.toJSONString() : null;
+	}
+	public void setErrorData(JSONObject errorData) {
+		this.errorData = errorData;
+	}
+
 	private List<String> selectFields;
 	
 	
@@ -79,6 +88,10 @@ public class FacilioAction extends ActionSupport {
 		try {
 			this.responseCode = 1;
 			this.message = FacilioUtil.constructMessageFromException(exception);
+			if(exception instanceof DependencyException) {
+				this.responseCode = ((DependencyException) exception).getErrorCode().getCode();
+				this.errorData = ((DependencyException) exception).getData();
+			}
 			setStackTrace(exception);
 		} catch (Exception e) {
 			LogManager.getLogger(this.getClass().getName()).error("Exception occurred inside handle Exception: - ", e);

@@ -28,7 +28,7 @@
 			</result>
 			<result name="error" type="json">
 				<param name="ignoreHierarchy">false</param>
-				<param name="includeProperties">responseCode, message, stackTrace</param>
+				<param name="includeProperties">responseCode, message, errorData, stackTrace</param>
 				<param name="excludeNullProperties">true</param>
 			</result>
 			<result name="exception" type="chain">

@@ -44,6 +44,7 @@ public class WeekendAction extends FacilioAction {
         Context context = chain.getContext();
         context.put(FacilioConstants.ContextNames.WEEKEND, weekend);
         chain.execute();
+        setResult(FacilioConstants.ContextNames.RESULT, "success");
         return SUCCESS;
     }
 }

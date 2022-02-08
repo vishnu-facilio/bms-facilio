@@ -6229,6 +6229,7 @@ public class TransactionChainFactory {
 
 	public static FacilioChain deleteWeekendChain(){
 		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new ValidateWeekendDeletion());
 		chain.addCommand(new DeleteWeekendCommand());
 		return chain;
 	}
