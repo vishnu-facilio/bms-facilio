@@ -12,8 +12,12 @@ import com.facilio.agent.controller.FacilioDataType;
 import com.facilio.agent.controller.FacilioPoint;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.JsonUtil;
+import com.facilio.util.FacilioUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+
+import lombok.Getter;
+import lombok.Setter;
 
 public abstract class Point extends FacilioPoint{
 
@@ -57,6 +61,8 @@ public abstract class Point extends FacilioPoint{
     private long mappedTime;
     @JsonInclude
     private boolean agentWritable;
+    @Getter @Setter
+    private int interval;
     
     public boolean isAgentWritable() {
     	return agentWritable;
@@ -113,6 +119,9 @@ public abstract class Point extends FacilioPoint{
             pointJSON.put(AgentConstants.SUBSCRIBE_STATUS,getSubscribeStatus());
         }else {
             setConfigureStatus(PointEnum.SubscribeStatus.UNSUBSCRIBED.getIndex());
+        }
+        if (getInterval() > 0) {
+        	 pointJSON.put(AgentConstants.DATA_INTERVAL,getInterval());
         }
         return pointJSON;
     }
@@ -240,6 +249,9 @@ public abstract class Point extends FacilioPoint{
         }
         if(row.containsKey(AgentConstants.AGENT_ID)){
             setAgentId((Long) row.get(AgentConstants.AGENT_ID));
+        }
+        if(row.containsKey(AgentConstants.DATA_INTERVAL)){
+            setInterval(FacilioUtil.parseInt(row.get(AgentConstants.DATA_INTERVAL)));
         }
         return this;
     }

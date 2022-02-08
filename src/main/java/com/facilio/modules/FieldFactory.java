@@ -6939,6 +6939,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField(AgentConstants.MAPPED_TIME, "MAPPED_TIME", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.UNIT, "UNIT", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.AGENT_ID, "AGENT_ID", module, FieldType.NUMBER));
+        fields.add(getField(AgentConstants.DATA_INTERVAL, "DATA_INTERVAL", module, FieldType.NUMBER));
         //fields.add(getNewDeletedTimeField(module));
         SystemEnumField configureStatusfield = (SystemEnumField) getField(AgentConstants.CONFIGURE_STATUS, "CONFIGURE_STATUS", module, FieldType.SYSTEM_ENUM);
         configureStatusfield.setEnumName("ConfigureStatus");
