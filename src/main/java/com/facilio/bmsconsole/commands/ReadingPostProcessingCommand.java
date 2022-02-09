@@ -37,9 +37,10 @@ public class ReadingPostProcessingCommand extends FacilioCommand {
 //            }
             executeFormulae(context);
         }
-        if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getId() == 146 || AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 343 || AccountUtil.getCurrentOrg().getId() == 324) ){
-            publishReadingChangeMessage(context);
-        }
+
+        // sending websocket event for live data update
+        publishReadingChangeMessage(context);
+
         LOGGER.debug("Post processing completed");
         return false;
     }
@@ -102,12 +103,13 @@ public class ReadingPostProcessingCommand extends FacilioCommand {
 
     private void publishReadingChangeMessage (Context context) {
         try {
-//            if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 343) {
+            if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.READING_LIVE_UPDATE)) {
                 LOGGER.debug("Executing PubSub");
-//            }
-            FacilioChain publishChain = ReadOnlyChainFactory.getPubSubPublishMessageChain();
-            publishChain.setContext((FacilioContext) context);
-            publishChain.execute();
+
+                FacilioChain publishChain = ReadOnlyChainFactory.getPubSubPublishMessageChain();
+                publishChain.setContext((FacilioContext) context);
+                publishChain.execute();
+            }
         }
         catch (Exception e) {
             LOGGER.error("Error occurred during publish reading change message. \n", e);

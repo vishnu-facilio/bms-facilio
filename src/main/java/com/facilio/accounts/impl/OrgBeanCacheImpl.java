@@ -36,6 +36,11 @@ public class OrgBeanCacheImpl extends OrgBeanImpl implements OrgBean {
     }
 
     @Override
+    public boolean isFeatureEnabled(AccountUtil.FeatureLicense featureLicense) throws Exception {
+        return (getFeatureLicense().containsKey(featureLicense.getGroup().getLicenseKey()) && (getFeatureLicense().get(featureLicense.getGroup().getLicenseKey()) & featureLicense.getLicense()) == featureLicense.getLicense());
+    }
+
+    @Override
     public int addLicence ( Map<String,Long> summodule ) throws Exception {
         Objects.requireNonNull(AccountUtil.getCurrentOrg(),"Current Org cannot be null in AccountUtil while adding Feature License");
         int rows = super.addLicence(summodule);
