@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 public class AltayerBuildingValueGenerator extends ValueGenerator{
-    private static final Logger LOGGER = org.apache.log4j.Logger.getLogger(AltayerBuildingValueGenerator.class);
 
     @Override
     public Object generateValueForCondition(int appType) {
@@ -30,7 +29,6 @@ public class AltayerBuildingValueGenerator extends ValueGenerator{
             try {
                 V3VendorContext vendor = V3PeopleAPI.getVendorForUser(AccountUtil.getCurrentUser().getId(), true);
                 if (vendor != null) {
-                    LOGGER.debug("Entry Log id---" + vendor.getId());
 
                     long pplId = PeopleAPI.getPeopleIdForUser(AccountUtil.getCurrentUser().getId());
                     List<Long> buildingIds = getBuildingIdsFromVendorMappingData(vendor.getId() , pplId);
@@ -87,8 +85,6 @@ public class AltayerBuildingValueGenerator extends ValueGenerator{
                 ;
         builder.skipScopeCriteria();
         List<Map<String, Object>> props = builder.getAsProps();
-        LOGGER.debug("_____query---" + builder.toString());
-
         if(CollectionUtils.isNotEmpty(props)) {
             for(Map<String, Object> prop : props) {
                 Map<String, Object> building = (Map<String, Object>) prop.get("building");
@@ -100,8 +96,6 @@ public class AltayerBuildingValueGenerator extends ValueGenerator{
                 }
             }
             if(CollectionUtils.isNotEmpty(buildingIds)){
-                LOGGER.debug("_____building id---" + buildingIds.size());
-
                 return buildingIds;
             }
         }
