@@ -2480,7 +2480,6 @@ public class FacilioConstants {
 			classMap.put(TRANSFER_REQUEST_PURCHASED_ITEMS, V3TransferRequestPurchasedItems.class);
 			classMap.put(TRANSFER_REQUEST_SHIPMENT, V3TransferRequestShipmentContext.class);
 			classMap.put(TRANSFER_REQUEST_SHIPMENT_RECEIVABLES, V3TransferRequestShipmentReceivablesContext.class);
-			classMap.put(TENANT, V3TenantContext.class);
 
 			for (QuestionType type : QuestionType.values()) {
 				classMap.put(type.getSubModuleName(), type.getSubClass());
