@@ -80,7 +80,7 @@ public class ValidateTimelinePatchData extends FacilioCommand {
             }
         }
         if(!isAllowPastAssignment && (startFieldVal != null && !startFieldVal.equals(oldStartFieldVal))) {
-            ZonedDateTime currentTime = DateTimeUtil.getZonedDateTime(System.currentTimeMillis());
+            ZonedDateTime currentTime = DateTimeUtil.getZonedDateTime(DateTimeUtil.getDayStartTime());
             if(zonedStartDateTime.isBefore(currentTime)) {
                 throw new IllegalArgumentException("Start time cannot be a past time");
             }
