@@ -10091,6 +10091,16 @@ public class FieldFactory extends BaseFieldFactory {
 
         return fields;
     }
+    
+    public static List<FacilioField> getTenantUnitFields() {
+    List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getTenantUnitSpaceModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("tenant", "TENANT_ID", module, FieldType.LOOKUP));
+        fields.add(getField("isOccupied", "IS_OCCUPIED", module, FieldType.BOOLEAN));
+        return fields;
+    }
 
     protected static <F extends FacilioField> F  getNewFieldObject(FieldType type) {
         switch (type) {

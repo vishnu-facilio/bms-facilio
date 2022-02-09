@@ -10,6 +10,7 @@ import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportPivotParamsContext;
 import com.facilio.report.context.ReportPivotTableDataContext;
 import com.facilio.report.context.ReportPivotTableRowsContext;
+import com.facilio.time.DateRange;
 import com.facilio.v3.V3Action;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -18,6 +19,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,8 +104,9 @@ public class V3PivotReportAction extends V3Action {
         setPivotParamsContext(pivotparams);
         createOrUpdatePivotReport(chain, context, pivotparams);
         setMessage("Report Created Successfully");
-        AuditLogHandler.AuditLogContext auditLog = new AuditLogHandler.AuditLogContext(String.format("Report {%s} has been successfully created for {%s} Module.", reportContext.getName(), moduleName), reportContext.getDescription(), "", AuditLogHandler.RecordType.MODULE, moduleName, reportContext.getId());
-        sendAuditLogs(auditLog);
+        String log_message= "Report {%s} has been created for {%s} Module.";
+        V3ReportAction reportAction = new V3ReportAction();
+        reportAction.setReportAuditLogs(reportContext.getModule().getDisplayName(), reportContext, log_message, AuditLogHandler.ActionType.ADD);
         return SUCCESS;
     }
 
@@ -118,12 +121,93 @@ public class V3PivotReportAction extends V3Action {
         context.put(FacilioConstants.ContextNames.REPORT_ID, reportId);
         reportContext.setId(reportId);
         createOrUpdatePivotReport(chain, context, pivotparams);
-        AuditLogHandler.AuditLogContext auditLog = new AuditLogHandler.AuditLogContext(String.format("Report {%s} has been successfully created for {%s} Module.", reportContext.getName(), moduleName), reportContext.getDescription(), "", AuditLogHandler.RecordType.MODULE, moduleName, reportId);
-        sendAuditLogs(auditLog);
+        String log_message= "Report {%s} has been created for {%s} Module.";
+        V3ReportAction reportAction = new V3ReportAction();
+        reportAction.setReportAuditLogs(reportContext.getModule().getDisplayName(), reportContext, log_message, AuditLogHandler.ActionType.UPDATE);
         setMessage("Report Updated Successfully");
         return SUCCESS;
     }
+    private void setContextForExecute(FacilioContext context, ReportPivotParamsContext pivotparams)throws Exception
+    {
+        context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, reportContext.getModule().getName());
+        context.put(FacilioConstants.Reports.ROWS, pivotparams.getRows());
+        context.put(FacilioConstants.Reports.DATA, pivotparams.getData());
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, pivotparams.getModuleName());
+        context.put(FacilioConstants.ContextNames.CRITERIA, pivotparams.getCriteria());
+        context.put(FacilioConstants.ContextNames.SORTING, sortBy != null ? sortBy : pivotparams.getSortBy());
+        context.put(FacilioConstants.ContextNames.TEMPLATE_JSON, pivotparams.getTemplateJSON());
+        context.put(FacilioConstants.ContextNames.DATE_FIELD, pivotparams.getDateFieldId());
+        context.put(FacilioConstants.ContextNames.DATE_OPERATOR, pivotparams.getDateOperator());
+        if (getStartTime() > 0 && getEndTime() > 0) {
+            context.put(FacilioConstants.ContextNames.IS_TIMELINE_FILTER_APPLIED, true);
+            context.put(FacilioConstants.ContextNames.START_TIME, getStartTime());
+            context.put(FacilioConstants.ContextNames.END_TIME, getEndTime());
+        } else {
+            context.put(FacilioConstants.ContextNames.IS_TIMELINE_FILTER_APPLIED, false);
+            context.put(FacilioConstants.ContextNames.START_TIME, pivotparams.getStartTime());
+            context.put(FacilioConstants.ContextNames.END_TIME, pivotparams.getEndTime());
+        }
+        context.put(FacilioConstants.ContextNames.TIME_FILTER, pivotparams.getShowTimelineFilter());
+        context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, pivotparams.getDateValue());
+        if (getFilters() != null) {
+            JSONParser parser = new JSONParser();
+            JSONObject filter = (JSONObject) parser.parse(getFilters());
+            context.put(FacilioConstants.ContextNames.FILTERS, filter);
+        }
 
+    }
+    private void setReportContextForExecute() throws Exception{
+
+        FacilioChain c = TransactionChainFactoryV3.getReportContextChain();
+        FacilioContext context = c.getContext();
+        context.put("reportId", reportId);
+        c.execute();
+        reportContext = (ReportContext) context.get("reportContext");
+        if (reportContext == null) {
+            throw new Exception("Report not found");
+        }
+        if (startTime != -1 && endTime != -1) {
+            reportContext.setDateRange(new DateRange(startTime, endTime));
+        }
+    }
+    public String execute() throws Exception
+    {
+        if(reportId <=0){
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid ReportId.");
+        }
+        FacilioChain chain = TransactionChainFactoryV3.getExecutePivotReportChain(getFilters());
+        FacilioContext context = chain.getContext();
+        setReportContextForExecute();
+        JSONParser parser = new JSONParser();
+        ReportPivotParamsContext pivotparams = FieldUtil.getAsBeanFromJson((JSONObject) parser.parse(reportContext.getTabularState()), ReportPivotParamsContext.class);
+        setContextForExecute(context, pivotparams);
+        chain.execute();
+        setPivotReportResponse(context, pivotparams);
+
+        return SUCCESS;
+    }
+    private void setPivotReportResponse(FacilioContext context, ReportPivotParamsContext pivotparams)throws Exception
+    {
+        setData("report", reportContext);
+        setData(FacilioConstants.ContextNames.ROW_HEADERS, context.get(FacilioConstants.ContextNames.ROW_HEADERS));
+        setData(FacilioConstants.ContextNames.DATA_HEADERS, context.get(FacilioConstants.ContextNames.DATA_HEADERS));
+        setData(FacilioConstants.ContextNames.ROW_ALIAS, context.get(FacilioConstants.ContextNames.ROW_ALIAS));
+        setData(FacilioConstants.ContextNames.DATA_ALIAS, context.get(FacilioConstants.ContextNames.DATA_ALIAS));
+        setData(FacilioConstants.ContextNames.PIVOT_TABLE_DATA, context.get(FacilioConstants.ContextNames.PIVOT_TABLE_DATA));
+        setData(FacilioConstants.ContextNames.SORTING, pivotparams.getSortBy());
+        setData(FacilioConstants.ContextNames.CRITERIA, pivotparams.getCriteria());
+        setData(FacilioConstants.ContextNames.PIVOT_TEMPLATE_JSON, pivotparams.getTemplateJSON());
+        setData(FacilioConstants.Reports.ROWS, pivotparams.getRows());
+        setData(FacilioConstants.Reports.DATA, pivotparams.getData());
+        setData(FacilioConstants.ContextNames.MODULE_NAME, pivotparams.getModuleName());
+        setData(FacilioConstants.ContextNames.DATE_FIELD, pivotparams.getDateFieldId());
+        setData(FacilioConstants.ContextNames.DATE_OPERATOR, pivotparams.getDateOperator());
+        setData(FacilioConstants.ContextNames.START_TIME, pivotparams.getStartTime());
+        setData(FacilioConstants.ContextNames.END_TIME, pivotparams.getEndTime());
+        setData((String) FacilioConstants.ContextNames.TIME_FILTER, pivotparams.getShowTimelineFilter());
+        setData(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, pivotparams.getDateValue());
+    }
     private void createOrUpdatePivotReport(FacilioChain chain, FacilioContext context, ReportPivotParamsContext pivotparams)throws Exception
     {
         reportContext.setTabularState(FieldUtil.getAsJSON(pivotparams).toJSONString());

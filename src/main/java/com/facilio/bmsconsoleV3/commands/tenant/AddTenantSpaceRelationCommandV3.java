@@ -5,6 +5,8 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.context.V3TenantSpaceContext;
+import com.facilio.bmsconsoleV3.context.floorplan.V3DeskContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -36,7 +38,7 @@ public class AddTenantSpaceRelationCommandV3 extends FacilioCommand {
 
         if (CollectionUtils.isNotEmpty(tenants)) {
             for(V3TenantContext tenant : tenants) {
-                if ((spacesUpdate != null && spacesUpdate) || (tenant.getSpaces() != null && tenant.getSpaces().size() > 0)) {
+                if (spacesUpdate != null && spacesUpdate) {
                     ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                     FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT_SPACES);
                     List<FacilioField> fields = modBean.getAllFields(module.getName());
@@ -45,12 +47,15 @@ public class AddTenantSpaceRelationCommandV3 extends FacilioCommand {
                         V3TenantSpaceContext tenantSpace = new V3TenantSpaceContext();
                         tenantSpace.setTenant(tenant);
                         tenantSpace.setSpace(space);
+                        tenantSpace.setCurrentlyOccupied(true);
+                        tenantSpace.setAssociatedTime(System.currentTimeMillis());
                         tenantSpaces.add(tenantSpace);
+
+                        
                     }
-                    InsertRecordBuilder<V3TenantSpaceContext> insertBuilder = new InsertRecordBuilder<V3TenantSpaceContext>()
-                            .table(module.getTableName()).module(module).fields(fields)
-                            .addRecords(tenantSpaces);
-                    insertBuilder.save();
+                    
+                    V3RecordAPI.addRecord(false, tenantSpaces, module,
+                    		fields);
                 }
             }
         }

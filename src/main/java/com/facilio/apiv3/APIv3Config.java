@@ -411,10 +411,7 @@ public class APIv3Config {
                     .beforeSave(new AddSpaceCommandV3())
                     .afterSave(TransactionChainFactoryV3.getTenantUnitAfterSaveChain())
                 .update()
-                	.afterSave(TransactionChainFactoryV3.getTenantUnitAfterUpdateChain())
-                .delete()
-                	.beforeDelete(new SetDeleteBaseSpaceRecordForRollUpFieldCommandV3())
-                	.afterDelete(new ExecuteRollUpFieldCommand())
+                	.beforeSave(new MarkTenantunitAsVacantCommandV3())
                 .list()
                 .summary()
                 .build();
@@ -786,6 +783,8 @@ public class APIv3Config {
                 .summary()
                     .beforeFetch(new FillTenantsLookupCommand())
                   .afterFetch(ReadOnlyChainFactoryV3.getTenantsAfterFetchOnSummaryChain())
+                  .delete()
+                  	.beforeDelete(new CheckOccupyingTenantUnitsForTenantCommandV3())
                 .build();
     }
 

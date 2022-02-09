@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AddActivitiesCommand;
+import com.facilio.bmsconsole.actions.GetModuleFromReportContextCommand;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.automation.command.AddOrUpdateGlobalVariableCommand;
 import com.facilio.bmsconsole.automation.command.AddOrUpdateGlobalVariableGroupCommand;
@@ -16,6 +17,8 @@ import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.CompletePoCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
+import com.facilio.bmsconsoleV3.commands.reports.ConstructReportDeleteCommand;
+import com.facilio.bmsconsoleV3.commands.reports.ConstructReportDetailsCommand;
 import com.facilio.bmsconsoleV3.commands.termsandconditions.ReviseTandCCommand;
 import com.facilio.bmsconsoleV3.commands.transferRequest.*;
 import com.facilio.command.FacilioCommand;
@@ -321,6 +324,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddTenantUserCommandV3());
         c.addCommand(new AddTenantSpaceRelationCommandV3());
+        c.addCommand(new AddTenantToTenantUnitCommandV3());
         c.addCommand(new ConstructUpdateCustomActivityCommandV3());
         c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.TENANT_ACTIVITY));
         return c;
@@ -487,13 +491,6 @@ public class TransactionChainFactoryV3 {
 		c.addCommand(new UpdateHelperFieldsCommandV3());
 		c.addCommand(getSpaceReadingsChain());
 		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
-		c.addCommand(new SetSpaceRecordForRollUpFieldCommandV3());
-		c.addCommand(new ExecuteRollUpFieldCommand());
-		return c;
-	}
-	
-	public static FacilioChain getTenantUnitAfterUpdateChain() {
-		FacilioChain c = getDefaultChain();
 		c.addCommand(new SetSpaceRecordForRollUpFieldCommandV3());
 		c.addCommand(new ExecuteRollUpFieldCommand());
 		return c;
@@ -1251,6 +1248,42 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ConstructTabularReportData());
         c.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
         c.addCommand(new AddOrUpdateReportCommand());
+        return c;
+    }
+
+    public static FacilioChain getDeleteReportChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ConstructReportDeleteCommand());
+        return c;
+    }
+
+    public static FacilioChain getReportContextChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ConstructReportDetailsCommand());
+        return c;
+    }
+    public static FacilioChain getExecuteReportChain( String filters, boolean needCriteriaData){
+        FacilioChain c = getDefaultChain();
+        if(filters != null)
+        {
+            c.addCommand(new GenerateCriteriaFromFilterCommand());
+        }
+        c.addCommand(ReadOnlyChainFactory.constructAndFetchReportDataChain());
+        c.addCommand(new GetModuleFromReportContextCommand());
+        if(needCriteriaData)
+        {
+            c.addCommand(new GetCriteriaDataCommand());
+        }
+        return c;
+    }
+    public static FacilioChain getExecutePivotReportChain(String filters) {
+        FacilioChain c = getDefaultChain();
+        if(filters != null)
+        {
+            c.addCommand(new GenerateCriteriaFromFilterCommand());
+        }
+        c.addCommand(new ConstructTabularReportData());
+        c.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
         return c;
     }
 }

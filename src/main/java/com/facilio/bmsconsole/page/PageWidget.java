@@ -411,8 +411,12 @@ public class PageWidget {
 		TRANSACTIONS("transactions"),
 		PURCHASE_ORDER("purchaseorder"),
 		INVENTORY_CARD("inventorycard"),
-		ASSOCIATED_TERMS("associatedterms");
+		ASSOCIATED_TERMS("associatedterms"),
 
+		TENANT_PRIMARY_CONTACT("tenantprimarycontact"),
+		TENANT_WORKORDERS("tenantworkorders"),
+		TENANT_BOOKINGS("tenantbookings"),
+		TENANT_DETAIL("tenantdetail");
 
 		private String name;
 

@@ -535,6 +535,14 @@
                 class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
                 method="update">
         </action>
+        <action name="delete"
+                class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
+                method="delete">
+        </action>
+        <action name="execute"
+                class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
+                method="execute">
+        </action>
     </package>
     <package name="pivotReportApi" namespace="/api/v3/report/pivot" extends="v3Api">
         <action name="create"
@@ -544,6 +552,10 @@
         <action name="update"
                 class="com.facilio.bmsconsoleV3.actions.report.V3PivotReportAction"
                 method="update">
+        </action>
+        <action name="execute"
+                class="com.facilio.bmsconsoleV3.actions.report.V3PivotReportAction"
+                method="execute">
         </action>
     </package>
     <package name="analyticsReportApi" namespace="/api/v3/report/analytics" extends="v3Api">

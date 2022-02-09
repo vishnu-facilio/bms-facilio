@@ -42,6 +42,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 
@@ -68,7 +69,27 @@ public class V3TenantsAPI {
         }
         return null;
     }
+    public static List<V3TenantSpaceContext> fetchTenantSpacesAssociation(long tenantId, boolean fetchSpaceDetails, String orderType) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT_SPACES);
+        List<FacilioField> fields = modBean.getAllFields(module.getName());
+        Map<String, FacilioField> tenantSpaceFieldMap = FieldFactory.getAsMap(fields);
+        
+        Collection<SupplementRecord> supplements = null;
+        if (fetchSpaceDetails) {
+        	supplements = Collections.singletonList((LookupField)tenantSpaceFieldMap.get("space"));
+        }
+        
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition(tenantSpaceFieldMap.get("tenant"), String.valueOf(tenantId), NumberOperators.EQUALS));
+        
+        List<V3TenantSpaceContext> tenantUnits = V3RecordAPI.getRecordsListWithSupplements(module.getName(), null, V3TenantSpaceContext.class, criteria, supplements, tenantSpaceFieldMap.get("disassociatedTime").getColumnName(), orderType);
 
+        if (CollectionUtils.isNotEmpty(tenantUnits)) {
+            return tenantUnits;
+        }
+        return null;
+    }
     public static void loadTenantLookups(Collection<? extends V3TenantContext> tenants) throws Exception {
         loadTenantZones(tenants);
         loadTenantProps(tenants);

@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.page.WidgetGroup;
+import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.modules.FieldFactory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
@@ -25,47 +27,105 @@ import com.facilio.modules.fields.LookupField;
 
 public class TenantPageFactory extends PageFactory{
 	
-	public static Page getTenantPage(ModuleBaseWithCustomFields record, FacilioModule module) throws Exception {
+	public static Page getTenantPage(V3TenantContext record, FacilioModule module) throws Exception {
 		Page page = new Page();
 		
 		
 		Tab tab1 = page.new Tab("summary");
 		page.addTab(tab1);
-		
-		Section tab1Sec1 = page.new Section();
-		tab1.addSection(tab1Sec1);
-		
-		addSecondaryDetailsWidget(tab1Sec1);
-		addTenantSpecialWidget(tab1Sec1);
-		addCommonSubModuleWidget(tab1Sec1, module, record);
 
+		Section tab1Sec1 = page.new Section();
+
+		tab1.addSection(tab1Sec1);
+
+		PageWidget detailsWidget = new PageWidget();
+		detailsWidget.addToLayoutParams(tab1Sec1, 24, 7);
+		detailsWidget.setWidgetType(PageWidget.WidgetType.TENANT_DETAIL);
+		tab1Sec1.addWidget(detailsWidget);
+
+		Page.Section tab1Sec2 = page.new Section();
+		tab1.addSection(tab1Sec2);
+		PageWidget card1= new PageWidget(WidgetType.TENANT_PRIMARY_CONTACT);
+		card1.addToLayoutParams(tab1Sec2, 8, 8);
+		card1.addToWidgetParams("card","tenantprimarycontact");
+		tab1Sec2.addWidget(card1);
+
+		PageWidget card2= new PageWidget(PageWidget.WidgetType.TENANT_WORKORDERS);
+		card2.addToLayoutParams(tab1Sec2, 8, 8);
+		card2.addToWidgetParams("card","tenantworkorders");
+		tab1Sec2.addWidget(card2);
+
+		PageWidget card3= new PageWidget(PageWidget.WidgetType.TENANT_BOOKINGS);
+		card3.addToLayoutParams(tab1Sec2, 8, 8);
+		card3.addToWidgetParams("card","tenantbookings");
+		tab1Sec2.addWidget(card3);
+
+		Section tab1Sec3 = page.new Section();
+
+		tab1.addSection(tab1Sec3);
+
+		addTenantSpecialWidget(tab1Sec3);
+		
+		Section tab1Sec4 = page.new Section();
+		tab1.addSection(tab1Sec4);
+
+		addSubModuleRelatedListWidget(tab1Sec4, FacilioConstants.ContextNames.TENANT_CONTACT, module.getModuleId());
 		if (record == null) {
 			return page;
 		}
 
-		Tab tab2 = page.new Tab("related records");
+		Page.Tab tab2 = page.new Tab("Notes and Information");
 		page.addTab(tab2);
-
-		Section tab2Sec1 = page.new Section();
+		Page.Section tab2Sec1 = page.new Section();
 		tab2.addSection(tab2Sec1);
+		addSecondaryDetailsWidget(tab2Sec1);
+		addNotesAttachmentsModule(tab2Sec1);
+
+		Tab tab3 = page.new Tab("related records");
+		page.addTab(tab3);
+
+		Section tab3Sec1 = page.new Section();
+		tab3.addSection(tab3Sec1);
 
 		if(AccountUtil.getCurrentOrg().getOrgId() == 321l) {
-			addSpecialRelatedListWidgetForDemoOrg(tab2Sec1, record.getModuleId());
+			addSpecialRelatedListWidgetForDemoOrg(tab3Sec1, record.getModuleId());
 		}
-		addRelatedList(tab2Sec1, record.getModuleId());
-		
-		Page.Tab tab3 = page.new Tab("History");;
-	    page.addTab(tab3);
-	    Page.Section tab3Sec1 = page.new Section();
-		tab3.addSection(tab3Sec1);
+		addRelatedList(tab3Sec1, record.getModuleId());
+		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
+			addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.QUOTE, module.getModuleId());
+		}
+		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.FACILITY_BOOKING)) {
+			addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.FACILITY_BOOKING, module.getModuleId());
+		}
+
+		Page.Tab tab4 = page.new Tab("History");;
+	    page.addTab(tab4);
+	    Page.Section tab4Sec1 = page.new Section();
+		tab4.addSection(tab4Sec1);
 		PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
-		activityWidget.addToLayoutParams(tab3Sec1, 24, 3);
+		activityWidget.addToLayoutParams(tab4Sec1, 24, 3);
 		activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.TENANT_ACTIVITY);
-		tab3Sec1.addWidget(activityWidget);
+		tab4Sec1.addWidget(activityWidget);
 
 		return page;
 	}
+	private static PageWidget addNotesAttachmentsModule(Page.Section section) {
 
+		PageWidget subModuleGroup = new PageWidget(PageWidget.WidgetType.GROUP);
+		subModuleGroup.addToLayoutParams(section, 24, 8);
+		subModuleGroup.addToWidgetParams("type", WidgetGroup.WidgetGroupType.TAB);
+		section.addWidget(subModuleGroup);
+
+		PageWidget notesWidget = new PageWidget();
+		notesWidget.setWidgetType(PageWidget.WidgetType.COMMENT);
+		subModuleGroup.addToWidget(notesWidget);
+
+		PageWidget attachmentWidget = new PageWidget();
+		attachmentWidget.setWidgetType(PageWidget.WidgetType.ATTACHMENT);
+		subModuleGroup.addToWidget(attachmentWidget);
+
+		return subModuleGroup;
+	}
 	private static void addSpecialRelatedListWidgetForDemoOrg(Section section, long moduleId) throws Exception {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -109,8 +169,8 @@ public class TenantPageFactory extends PageFactory{
 				if(AccountUtil.getCurrentOrg().getOrgId() == 321l && (subModule.getName().equals("custom_tenantutility") || subModule.getName().equals("custom_tenantbilling"))) {
 					continue;
 				}
-				
-				if(subModule.getName().equals(FacilioConstants.ContextNames.TENANT_CONTACT) && !AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS)) {
+
+				if(subModule.getName().equals(FacilioConstants.ContextNames.TENANT_CONTACT)) {
 					continue;
 				}
 				List<FacilioField> allFields = modBean.getAllFields(subModule.getName());
@@ -132,7 +192,7 @@ public class TenantPageFactory extends PageFactory{
 
 	private static void addTenantSpecialWidget(Section section) {
 		PageWidget specialWidget = new PageWidget(WidgetType.TENANT_SPECIAL_WIDGET);
-		specialWidget.addToLayoutParams(section, 24, 8);
+		specialWidget.addToLayoutParams(section, 24, 9);
 		section.addWidget(specialWidget);
 	}
 	private static void addSecondaryDetailsWidget(Section section) {
