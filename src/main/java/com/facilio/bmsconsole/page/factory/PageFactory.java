@@ -56,6 +56,7 @@ import com.facilio.bmsconsole.page.PageWidget.CardType;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 import com.facilio.bmsconsole.page.WidgetGroup.WidgetGroupType;
 import com.facilio.bmsconsole.templates.DefaultTemplate;
+import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.ConnectedAppAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
@@ -113,7 +114,7 @@ public class PageFactory {
 			case ContextNames.ASSET:
 				return AssetPageFactory.getAssetPage((AssetContext) record);
 			case ContextNames.TENANT:
-				return TenantPageFactory.getTenantPage((V3TenantContext) record, module);
+				return TenantPageFactory.getTenantPage((TenantContext) record, module);
 			case ContextNames.READING_RULE_MODULE:
 				return RulePageFactory.getRulePage((AlarmRuleContext) record);
 			case ContextNames.MV_PROJECT_MODULE:

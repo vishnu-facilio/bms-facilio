@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.page.WidgetGroup;
+import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.modules.FieldFactory;
 import org.apache.commons.collections4.CollectionUtils;
@@ -27,7 +28,7 @@ import com.facilio.modules.fields.LookupField;
 
 public class TenantPageFactory extends PageFactory{
 	
-	public static Page getTenantPage(V3TenantContext record, FacilioModule module) throws Exception {
+	public static Page getTenantPage(TenantContext record, FacilioModule module) throws Exception {
 		Page page = new Page();
 		
 		
