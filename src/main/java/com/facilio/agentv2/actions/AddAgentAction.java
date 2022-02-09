@@ -17,6 +17,8 @@ import com.facilio.workflows.context.WorkflowContext;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -61,7 +63,7 @@ public class AddAgentAction extends AgentActionV2
             FacilioContext context = addAgentChain.getContext();
             FacilioAgent agent = new FacilioAgent();
 
-            if(AgentType.valueOf(agentType) == AgentType.NIAGARA || !getAgentName().isEmpty()){
+            if(AgentType.valueOf(agentType) == AgentType.NIAGARA || StringUtils.isNotEmpty(getAgentName())){
                 agent.setName(getAgentName());
             }
             else {
