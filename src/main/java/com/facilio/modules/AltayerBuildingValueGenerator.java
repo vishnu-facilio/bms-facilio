@@ -30,6 +30,8 @@ public class AltayerBuildingValueGenerator extends ValueGenerator{
             try {
                 V3VendorContext vendor = V3PeopleAPI.getVendorForUser(AccountUtil.getCurrentUser().getId(), true);
                 if (vendor != null) {
+                    LOGGER.debug("Entry Log id---" + vendor.getId());
+
                     long pplId = PeopleAPI.getPeopleIdForUser(AccountUtil.getCurrentUser().getId());
                     List<Long> buildingIds = getBuildingIdsFromVendorMappingData(vendor.getId() , pplId);
                     if(CollectionUtils.isNotEmpty(buildingIds)) {
