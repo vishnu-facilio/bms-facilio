@@ -38,38 +38,39 @@ public class TenantPageFactory extends PageFactory{
 
 		tab1.addSection(tab1Sec1);
 
-		PageWidget detailsWidget = new PageWidget();
-		detailsWidget.addToLayoutParams(tab1Sec1, 24, 7);
-		detailsWidget.setWidgetType(PageWidget.WidgetType.TENANT_DETAIL);
-		tab1Sec1.addWidget(detailsWidget);
+		
+		PageWidget detailsWidgetPrimaryContact= new PageWidget(WidgetType.TENANT_DETAIL_CONTACT);
+		detailsWidgetPrimaryContact.addToLayoutParams(tab1Sec1, 12, 3);
+		detailsWidgetPrimaryContact.addToWidgetParams("card","tenantdetailcontact");
+		tab1Sec1.addWidget(detailsWidgetPrimaryContact);
+		
+		PageWidget detailsWidgetOverview= new PageWidget(WidgetType.TENANT_DETAIL_OVERVIEW);
+		detailsWidgetOverview.addToLayoutParams(tab1Sec1, 12, 3);
+		detailsWidgetOverview.addToWidgetParams("card","tenantdetailoverview");
+		tab1Sec1.addWidget(detailsWidgetOverview);
 
-		Page.Section tab1Sec2 = page.new Section();
-		tab1.addSection(tab1Sec2);
-		PageWidget card1= new PageWidget(WidgetType.TENANT_PRIMARY_CONTACT);
-		card1.addToLayoutParams(tab1Sec2, 8, 8);
-		card1.addToWidgetParams("card","tenantprimarycontact");
-		tab1Sec2.addWidget(card1);
+		if (record.getDescription() != null && !record.getDescription().isEmpty()) {
+            PageWidget descWidget = new PageWidget(PageWidget.WidgetType.TENANT_DESCRIPTION);
+            descWidget.addToLayoutParams(tab1Sec1,24, 2);
+            tab1Sec1.addWidget(descWidget);
+        }
 
 		PageWidget card2= new PageWidget(PageWidget.WidgetType.TENANT_WORKORDERS);
-		card2.addToLayoutParams(tab1Sec2, 8, 8);
+		card2.addToLayoutParams(tab1Sec1, 12, 7);
 		card2.addToWidgetParams("card","tenantworkorders");
-		tab1Sec2.addWidget(card2);
+		tab1Sec1.addWidget(card2);
 
 		PageWidget card3= new PageWidget(PageWidget.WidgetType.TENANT_BOOKINGS);
-		card3.addToLayoutParams(tab1Sec2, 8, 8);
+		card3.addToLayoutParams(tab1Sec1, 12, 7);
 		card3.addToWidgetParams("card","tenantbookings");
-		tab1Sec2.addWidget(card3);
+		tab1Sec1.addWidget(card3);
 
-		Section tab1Sec3 = page.new Section();
 
-		tab1.addSection(tab1Sec3);
 
-		addTenantSpecialWidget(tab1Sec3);
+		addTenantSpecialWidget(tab1Sec1);
 		
-		Section tab1Sec4 = page.new Section();
-		tab1.addSection(tab1Sec4);
 
-		addSubModuleRelatedListWidget(tab1Sec4, FacilioConstants.ContextNames.TENANT_CONTACT, module.getModuleId());
+		addSubModuleRelatedListWidget(tab1Sec1, FacilioConstants.ContextNames.TENANT_CONTACT, module.getModuleId());
 		if (record == null) {
 			return page;
 		}
