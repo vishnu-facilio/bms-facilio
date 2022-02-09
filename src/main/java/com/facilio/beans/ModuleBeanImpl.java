@@ -773,32 +773,41 @@ public class ModuleBeanImpl implements ModuleBean {
 
 	private Map<Long, Map<String, Object>> getDateExtendedProps(List<Long> fieldIds) throws Exception {
 
-		FacilioModule module = ModuleFactory.getDateFieldModule();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getDateFieldFields())
-				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCondition("FIELDID", "fieldId", StringUtils.join(fieldIds, ","), NumberOperators.EQUALS))
-				;
+				.table(ModuleFactory.getDateFieldModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("FIELDID", "fieldId", StringUtils.join(fieldIds, ","), NumberOperators.EQUALS));
+
 		List<Map<String, Object>> props = selectBuilder.get();
+
 		Map<Long, List<Map<String, Object>>> map = new HashMap<>();
-		Map<Long,Map<String,Object>> dateProps = new HashMap<>();
+		Map<Long, Map<String, Object>> dateProps = new HashMap<>();
+
 		if (CollectionUtils.isNotEmpty(props)) {
+
 			GenericSelectRecordBuilder childRecord = new GenericSelectRecordBuilder()
 					.select(FieldFactory.getDateFieldChildFields())
 					.table(ModuleFactory.getDateFieldChildModule().getTableName())
 					.andCondition(CriteriaAPI.getCondition("DATE_FIELD_ID", "dateFieldId", StringUtils.join(fieldIds, ","), NumberOperators.EQUALS));
-			List<Map<String, Object>> childProps = childRecord.get();
-			if (CollectionUtils.isNotEmpty(childProps)) {
-				 map = childProps.stream().
-						collect(Collectors.groupingBy(m->(Long)m.get("dateFieldId"),Collectors.mapping(m1 -> m1,Collectors.toList())));
 
-				for (Map<String,Object> prop : props) {
-					long fieldId = (long) prop.get("fieldId");
-					List<Map<String, Object>> childList = map.get(fieldId);
-					List<DayOfWeek> dayOfWeeks = childList.stream().map(p -> DayOfWeek.valueOf((String) p.get("allowedDays"))).collect(toList());
-					prop.put("allowedDays",dayOfWeeks);
-					dateProps.put(fieldId,prop);
+			List<Map<String, Object>> childProps = childRecord.get();
+
+			if (CollectionUtils.isNotEmpty(childProps)) {
+				map = childProps.stream().
+						collect(Collectors.groupingBy(m -> (Long) m.get("dateFieldId"), Collectors.mapping(m1 -> m1, Collectors.toList())));
+			}
+
+			for (Map<String, Object> prop : props) {
+
+				long fieldId = (long) prop.get("fieldId");
+				List<Map<String, Object>> childList = map.get(fieldId);
+
+				if (CollectionUtils.isNotEmpty(childList)) {
+					List<DayOfWeek> dayOfWeeks = childList.stream().map(p -> (p.get("allowedDays") != null) ? DayOfWeek.valueOf((String) p.get("allowedDays")) : null).collect(toList());
+					prop.put("allowedDays", dayOfWeeks);
 				}
+
+				dateProps.put(fieldId, prop);
 			}
 			return dateProps;
 		}
