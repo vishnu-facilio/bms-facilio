@@ -485,6 +485,7 @@ public class AccountUtil {
 		// Add Module name if license is added for specific module
     	SURVEY(64,1,LicenseMapping.GROUP2LICENSE),
     	GOOGLE_TRANSLATION(65,2,LicenseMapping.GROUP2LICENSE),
+		READING_LIVE_UPDATE(66,4,LicenseMapping.GROUP2LICENSE),
 		;
 
     	public int featureId;
