@@ -43,7 +43,7 @@ public class AltayerBuildingValueGenerator extends ValueGenerator{
 
     @Override
     public String getValueGeneratorName() {
-        return "Altayer Vendors Buildingx";
+        return "Altayer Vendors Buildings";
     }
 
     @Override
@@ -75,7 +75,6 @@ public class AltayerBuildingValueGenerator extends ValueGenerator{
                 .module(module)
                 .beanClass(ModuleBaseWithCustomFields.class)
                 .select(modBean.getAllFields(module.getName()))
-                .fetchSupplement((LookupField) fieldMap.get("building"))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("vendor"), String.valueOf(vendorID), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleState"), "26327", NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("contacts"), String.valueOf(pplId), PickListOperators.IS))
