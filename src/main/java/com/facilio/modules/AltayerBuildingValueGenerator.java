@@ -15,12 +15,15 @@ import com.facilio.modules.fields.LookupField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class AltayerBuildingValueGenerator extends ValueGenerator{
+    private static final Logger LOGGER = org.apache.log4j.Logger.getLogger(AltayerBuildingValueGenerator.class);
+
     @Override
     public Object generateValueForCondition(int appType) {
         if(appType == AppDomain.AppDomainType.VENDOR_PORTAL.getIndex()) {
@@ -82,6 +85,8 @@ public class AltayerBuildingValueGenerator extends ValueGenerator{
                 ;
         builder.skipScopeCriteria();
         List<Map<String, Object>> props = builder.getAsProps();
+        LOGGER.debug("_____query---" + builder.toString());
+
         if(CollectionUtils.isNotEmpty(props)) {
             for(Map<String, Object> prop : props) {
                 Map<String, Object> building = (Map<String, Object>) prop.get("building");
@@ -93,6 +98,8 @@ public class AltayerBuildingValueGenerator extends ValueGenerator{
                 }
             }
             if(CollectionUtils.isNotEmpty(buildingIds)){
+                LOGGER.debug("_____building id---" + buildingIds.size());
+
                 return buildingIds;
             }
         }
