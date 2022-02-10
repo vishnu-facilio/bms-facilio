@@ -1040,6 +1040,15 @@ public class ModuleFactory {
 		return eMailTemplatesModule;
 	}
 
+	public static FacilioModule getEMailStructureModule() {
+		FacilioModule eMailTemplatesModule = new FacilioModule();
+		eMailTemplatesModule.setName("emailstructure");
+		eMailTemplatesModule.setDisplayName("EMail Structure");
+		eMailTemplatesModule.setTableName("EMail_Structure");
+		eMailTemplatesModule.setExtendModule(getTemplatesModule());
+		return eMailTemplatesModule;
+	}
+
 	public static FacilioModule getWorkflowTemplatesModule() {
 		FacilioModule eMailTemplatesModule = new FacilioModule();
 		eMailTemplatesModule.setName("workflowtemplates");

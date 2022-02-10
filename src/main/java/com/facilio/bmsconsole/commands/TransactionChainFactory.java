@@ -47,6 +47,8 @@ import com.facilio.delegate.command.AddOrUpdateDelegateCommand;
 import com.facilio.delegate.command.DeleteUserDelegationCommand;
 import com.facilio.delegate.command.SendDelegationMailCommand;
 import com.facilio.elasticsearch.command.PushDataToESCommand;
+import com.facilio.emailtemplate.command.AddOrUpdateEmailStructureCommand;
+import com.facilio.emailtemplate.command.DeleteEmailStructureCommand;
 import com.facilio.energystar.command.*;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand;
 import com.facilio.events.commands.NewExecuteEventRulesCommand;
@@ -5636,6 +5638,18 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getAddOrUpdateEmailStructureChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddOrUpdateEmailStructureCommand());
+		return chain;
+	}
+
+	public static FacilioChain getDeleteEmailStructureChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new DeleteEmailStructureCommand());
+		return chain;
+	}
+
 	public static FacilioChain updateControllableTypeForSpace() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new UpdateControllableTypeForSpace());
@@ -6229,6 +6243,7 @@ public class TransactionChainFactory {
 
 	public static FacilioChain deleteWeekendChain(){
 		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new ValidateWeekendDeletion());
 		chain.addCommand(new DeleteWeekendCommand());
 		return chain;
 	}

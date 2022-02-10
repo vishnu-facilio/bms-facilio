@@ -267,6 +267,8 @@ public class FacilioConstants {
 		public static final String TIMELINE_PATCHTYPE_GROUPASSIGN = "assigned a group";
 		public static final String FACILIO_BANNER = "facilioBanner";
 		public static final String FACILIO_BANNERS = "facilioBanners";
+		public static final String EMAIL_STRUCTURES = "emailStructures";
+		public static final String EMAIL_STRUCTURE = "emailStructure";
 
         public static class Reservation {
 			public static final String RESERVATION = "reservation";
@@ -696,6 +698,8 @@ public class FacilioConstants {
 		public static final String REPORT_DATA = "reportData";
 		public static final String PIVOT_TABLE_DATA = "pivotTableData";
 		public static final String PIVOT_TEMPLATE_JSON = "pivotTemplateJSON";
+		public static final String PIVOT_RECONSTRUCTED_DATA = "pivotReconstructedData";
+		public static final String PIVOT_ALIAS_VS_FIELD = "pivotAliasVsField";
 		public static final String IS_TIMELINE_FILTER_APPLIED = "isTimelineFilterApplied";
 		public static final String IS_EXPORT_REPORT = "isExportReport";
 		public static final String TABLE_ALIAS = "tableAlias";
@@ -1166,6 +1170,8 @@ public class FacilioConstants {
 
 		public static final String WEEKEND_LIST = "weekends";
 		public static final String WEEKEND = "weekend";
+
+		public static final String DEPENDENT_FEATURES = "dependentFeatures";
 
 		public static final String VIEWID = "viewId";
 		public static final String VIEW_LIST = "views";

@@ -166,9 +166,7 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 			data.put("data", datas);
 		}
 	}
-	
-	
-	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
+
 	private Object formatVal(ReportFieldContext reportFieldContext, AggregateOperator aggr, Object val, Object actualxVal, boolean handleEnum, HashMap<ReportFieldContext, List<Long>> dpLookUpMap , Map<String, Object> labelMap ) throws Exception {
 		FacilioField field = reportFieldContext.getField();
 		if (val == null) {
@@ -179,9 +177,6 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 			isExportReport = (boolean) globalContext.get(FacilioConstants.ContextNames.IS_EXPORT_REPORT);
 		}
 		switch (field.getDataTypeEnum()) {
-			case DECIMAL:
-				val = DECIMAL_FORMAT.format(val);
-				break;
 			case BOOLEAN:
 				if (val.toString().equals("true")) {
 					val = val.toString();
@@ -194,21 +189,21 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 				}
 				break;
 			case ENUM:
-				EnumField enumField = (EnumField) field;
-				List<EnumFieldValue<Integer>> enumFieldValues = enumField.getValues();
-				if(val instanceof Integer) {
-					for(EnumFieldValue<Integer> field1: enumFieldValues){
-						if(Objects.equals(field1.getIndex(), val)){
-							val = field1.getValue();
-						}
-					}
-				} else if(val instanceof Long){
-					val = enumFieldValues.get(Math.toIntExact((Long) val)).getValue();
-				}
+//				EnumField enumField = (EnumField) field;
+//				List<EnumFieldValue<Integer>> enumFieldValues = enumField.getValues();
+//				if(val instanceof Integer) {
+//					for(EnumFieldValue<Integer> field1: enumFieldValues){
+//						if(Objects.equals(field1.getIndex(), val)){
+//							val = field1.getValue();
+//						}
+//					}
+//				} else if(val instanceof Long){
+//					val = enumFieldValues.get(Math.toIntExact((Long) val)).getValue();
+//				}
 				break;
 			case SYSTEM_ENUM:
-				Map<Integer,Object> enumMap = reportFieldContext.getEnumMap();
-				val = enumMap.get(val);
+//				Map<Integer,Object> enumMap = reportFieldContext.getEnumMap();
+//				val = enumMap.get(val);
 				break;
 			case DATE:
 				if(isExportReport) {

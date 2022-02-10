@@ -6,22 +6,21 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsoleV3.context.EmailFromAddress;
+import com.facilio.emailtemplate.context.EMailStructure;
+import com.facilio.emailtemplate.util.EmailStructureUtil;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -83,11 +82,6 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.scriptengine.context.ParameterContext;
 import com.facilio.services.email.EmailClient;
@@ -215,6 +209,9 @@ public class TemplateAPI {
 		if(template instanceof EMailTemplate) {
 			id = TemplateAPI.addEmailTemplate(AccountUtil.getCurrentOrg().getOrgId(), (EMailTemplate) template);
 			template.setId(id);
+		}
+		else if (template instanceof EMailStructure) {
+			id = TemplateAPI.addEmailStructure((EMailStructure) template);
 		}
 		else if(template instanceof SMSTemplate) {
 			id = TemplateAPI.addSMSTemplate(AccountUtil.getCurrentOrg().getOrgId(), (SMSTemplate) template);
@@ -453,6 +450,14 @@ public class TemplateAPI {
 					template = getEMailTemplateFromMap(templateMap);
 				}
 			}break;
+			case EMAIL_STRUCTURE: {
+				List<Map<String, Object>> extendedProps = getExtendedProps(ModuleFactory.getEMailStructureModule(), FieldFactory.getEMailStructureFields(), id);
+				if (CollectionUtils.isNotEmpty(extendedProps)) {
+					templateMap.putAll(extendedProps.get(0));
+					template = EmailStructureUtil.getEmailStructureFromMap(templateMap);
+				}
+				break;
+			}
 			case SMS: {
 				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getSMSTemplatesModule(), FieldFactory.getSMSTemplateFields(), id);
 				if(templates != null && !templates.isEmpty()) {
@@ -689,6 +694,9 @@ public class TemplateAPI {
 			case EMAIL:
 				deleteTemplateFile(((EMailTemplate)template).getBodyId());
 				break;
+			case EMAIL_STRUCTURE:
+				deleteTemplateFile(((EMailStructure)template).getBodyId());
+				break;
 			default: break;
 		}
 	}
@@ -715,7 +723,7 @@ public class TemplateAPI {
 		deleteTemplateFile(template.getContentId());
 	}
 	
-	private static void deleteTemplateFile(Long contentId) throws Exception {
+	public static void deleteTemplateFile(Long contentId) throws Exception {
 		FileStore fs = FacilioFactory.getFileStore();
 		fs.deleteFile(contentId);
 	}
@@ -733,6 +741,34 @@ public class TemplateAPI {
 			return getExtendedTemplate(templateMap);
 		}
 		return null;
+	}
+
+	public static long addEmailStructure(EMailStructure template) throws Exception {
+		addDefaultProps(template);
+		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
+
+		template.setBodyId(FacilioFactory.getFileStore(superAdmin.getId()).addFile("Email_Template_"+template.getName(), template.getMessage(), "text/plain"));
+
+		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
+		addBaseTemplate(templateProps);
+
+		GenericInsertRecordBuilder emailTemplateBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getEMailStructureModule().getTableName())
+				.fields(FieldFactory.getEMailStructureFields())
+				.addRecord(templateProps);
+		emailTemplateBuilder.save();
+
+		long id = (long) templateProps.get("id");
+		template.setId(id);
+		return id;
+	}
+
+	private static void addBaseTemplate(Map<String, Object> templateProps) throws Exception {
+		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
+				.table("Templates")
+				.fields(FieldFactory.getTemplateFields())
+				.addRecord(templateProps);
+		userTemplateBuilder.save();
 	}
 	
 	public static long addEmailTemplate(long orgId, EMailTemplate template) throws Exception {
@@ -1757,7 +1793,7 @@ public class TemplateAPI {
 		workorderTemplateBuilder.save();
 	}
 	
-	private static int updateTemplatesWithExtendedProps(long id, FacilioModule extendedModule, List<FacilioField> fields, Map<String, Object> templateProps) throws SQLException, RuntimeException {
+	public static int updateTemplatesWithExtendedProps(long id, FacilioModule extendedModule, List<FacilioField> fields, Map<String, Object> templateProps) throws SQLException, RuntimeException {
 		FacilioModule templateMpdule = ModuleFactory.getTemplatesModule();
 		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
 				.table(templateMpdule.getTableName())
@@ -1901,5 +1937,4 @@ public class TemplateAPI {
 		}
 		return null;
 	}
-	
 }
