@@ -79,7 +79,6 @@ public class StateFlowAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.TRANSITION, stateTransition);
 		sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("State transition {%s} has been %s.", stateTransition.getName(), (add ? "added" : "updated")),
 				stateTransition.getAuditLogDescription(add),
-				stateTransition.getAuditLogDescriptionJSON(),
 				AuditLogHandler.RecordType.SETTING,
 				"StateTransition", stateTransition.getId())
 				.setActionType(add ? AuditLogHandler.ActionType.ADD : AuditLogHandler.ActionType.UPDATE)
@@ -87,6 +86,7 @@ public class StateFlowAction extends FacilioAction {
 					JSONArray array = new JSONArray();
 					JSONObject json = new JSONObject();
 					json.put("id", stateTransition.getId());
+					json.put("moduleName", moduleName);
 					json.put("stateFlowId", stateTransition.getStateFlowId());
 					json.put("navigateTo", "StateTransition");
 

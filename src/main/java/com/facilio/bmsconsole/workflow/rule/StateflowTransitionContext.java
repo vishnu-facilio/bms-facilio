@@ -67,14 +67,4 @@ public class StateflowTransitionContext extends AbstractStateTransitionRuleConte
 		builder.append(String.format("State Transition '%s' has been %s with", getName(), (add ? "added" : "edited")));
 		return builder.toString();
 	}
-
-	@JsonIgnore
-	@JSON(serialize = false)
-	public String getAuditLogDescriptionJSON() {
-		try {
-			return FieldUtil.getAsJSON(this).toJSONString();
-		} catch (Exception e) {
-			return null;
-		}
-	}
 }

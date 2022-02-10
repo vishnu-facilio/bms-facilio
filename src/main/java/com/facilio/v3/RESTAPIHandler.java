@@ -402,8 +402,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         this.setData(result);
 
         addAuditLog(Collections.singletonList(recordJSON), getModuleName(), "Record {%s} of module %s has been created",
-                AuditLogHandler.ActionType.ADD,
-                this.getData(), true);
+                AuditLogHandler.ActionType.ADD, true);
 
         this.httpServletResponse.setStatus(HttpServletResponse.SC_CREATED);
         return SUCCESS;
@@ -429,7 +428,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
     }
 
     private void addAuditLog(List<JSONObject> props, String moduleName, String message,
-                             AuditLogHandler.ActionType actionType, JSONObject inputData, boolean addLinkConfig) throws Exception {
+                             AuditLogHandler.ActionType actionType, boolean addLinkConfig) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
         FacilioField primaryField = modBean.getPrimaryField(moduleName);
@@ -437,8 +436,6 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
             return;
         }
         for (Map<String, Object> prop : props) {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.putAll(prop);
             Object primaryValue = prop.get(primaryField.getName());
             if (primaryValue instanceof Map) {
                 primaryValue = ((Map<?, ?>) primaryValue).get("primaryValue");
@@ -448,7 +445,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
             }
             Long recordId = (Long) prop.get("id");
             AuditLogHandler.AuditLogContext auditLogContext = new AuditLogHandler.AuditLogContext(String.format(message, primaryValue, module.getDisplayName()),
-                    null, inputData.toJSONString(), AuditLogHandler.RecordType.MODULE, moduleName,
+                    null, AuditLogHandler.RecordType.MODULE, moduleName,
                     recordId)
                     .setActionType(actionType);
 
@@ -496,8 +493,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         JSONObject result = V3Util.processAndUpdateSingleRecord(this.getModuleName(), this.getId(), data, this.getParams(), this.httpServletRequest, this.getStateTransitionId(), this.getCustomButtonId(), this.getApprovalTransitionId(),this.getQrValue());
 
         addAuditLog(Collections.singletonList((JSONObject)result.get(getModuleName())), getModuleName(), "Record {%s} of module %s has been updated",
-                    AuditLogHandler.ActionType.UPDATE,
-                    this.getData(), true);
+                    AuditLogHandler.ActionType.UPDATE, true);
         this.setData(result);
 
         return SUCCESS;
@@ -522,11 +518,9 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
             ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule module = moduleBean.getModule(getModuleName());
             if (CollectionUtils.isNotEmpty(deletedRecords) && module != null) {
-                JSONObject json = new JSONObject();
-                json.put("count", countMap.get(getModuleName()));
                 if (deletedRecords.size() > 1) {
                     sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("Deleted %s records of module %s", deletedRecords.size(), module.getDisplayName()),
-                            null, json.toJSONString(), AuditLogHandler.RecordType.MODULE, module.getDisplayName(), 0)
+                            null, AuditLogHandler.RecordType.MODULE, module.getDisplayName(), 0)
                             .setActionType(AuditLogHandler.ActionType.DELETE)
                     );
                 } else {
@@ -540,7 +534,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
                         subject = String.format("Deleted 1 record of module %s", module.getDisplayName());
                     }
                     sendAuditLogs(new AuditLogHandler.AuditLogContext(subject,
-                            null, json.toJSONString(), AuditLogHandler.RecordType.MODULE, module.getDisplayName(), 0)
+                            null, AuditLogHandler.RecordType.MODULE, module.getDisplayName(), 0)
                             .setActionType(AuditLogHandler.ActionType.DELETE)
                     );
                 }
@@ -656,8 +650,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
                         + (validationContext.containsKey(FacilioConstants.ContextNames.TIMELINE_PATCHTYPE) ? validationContext.get(FacilioConstants.ContextNames.TIMELINE_PATCHTYPE): "updated")
                         +" through TimelineView";
         addAuditLog(Collections.singletonList((JSONObject)this.getData().get(getModuleName())), getModuleName(), message,
-                AuditLogHandler.ActionType.UPDATE,
-                (JSONObject) data, true);
+                AuditLogHandler.ActionType.UPDATE, true);
 
         if(this.getTimelineRequest() != null) {
             FacilioChain chain = ChainUtil.getTimelineChain();
