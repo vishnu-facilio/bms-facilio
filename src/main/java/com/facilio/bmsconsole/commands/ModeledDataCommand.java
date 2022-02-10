@@ -6,6 +6,7 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.commands.AgentV2Command;
 import com.facilio.agentv2.misc.MiscPoint;
 import com.facilio.agentv2.point.PointsAPI;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.util.ReadingsAPI;
@@ -28,6 +29,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import java.text.MessageFormat;
 import java.util.*;
 
 public class ModeledDataCommand extends AgentV2Command {
@@ -268,8 +270,12 @@ public class ModeledDataCommand extends AgentV2Command {
                         reading.addReading(field.getName(), value);
                         reading.setParentId(resourceId);
                         reading.setTtime(timeStamp);
+                        if (FacilioProperties.isOnpremise() && (moduleName.contains("liftmode") || moduleName.contains("movingdirection"))) {
+                        	LOGGER.info(MessageFormat.format("Lift readings Field: {0}, Parent: {1}, Value: {2}, TimeStamp: {3}, Castvalue: {4}", field, resourceId, pointValue, timeStamp, value));
+                        }
+                        
                     } catch (NumberFormatException ex) {
-                        LOGGER.info("Error while converting to reading ", ex);
+                        LOGGER.info(MessageFormat.format("Error while converting to reading. Field: {0}, Parent: {1}, Value: {2}", field, resourceId, pointValue), ex);
                     }
 					//removing here to avoid going into unmodeled instance..
 					// remove deviceData is important
