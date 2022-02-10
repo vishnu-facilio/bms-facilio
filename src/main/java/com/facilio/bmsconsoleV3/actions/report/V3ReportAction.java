@@ -57,6 +57,10 @@ public class V3ReportAction extends V3Action {
     long alarmId = -1;
     FacilioContext resultContext;
 
+    public JSONArray getyField(JSONArray yField) { return yField; }
+    public void setyField(JSONArray yField) {
+        this.yField = yField;
+    }
     public JSONObject getxField() { return xField; }
     public void setxField(JSONObject xField) {
         this.xField = xField;
