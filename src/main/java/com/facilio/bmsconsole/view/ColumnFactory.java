@@ -30,11 +30,13 @@ public class ColumnFactory {
 	private static Map<String, List<ViewField>> initColumns() {
 		Map<String, List<ViewField>> columnMap = new HashMap<>();
 		columnMap.put("workorder-myopen", getMyWorkorderColumns());
-		
+
 //		columnMap.put("alarm-active", getDefaultAlarmColumns());
-		
+
 //		columnMap.put("asset-energy", getDefaultAssetsColumns());
-		
+
+		columnMap.put("ticketcategory-default", getTicketCategoryApprovalDefaultViewColumns());
+
 		// For getting default columns for a module
 		columnMap.put("approval-default", getWoApprovalDefaultViewColumns());
 		columnMap.put("workorder-default", getWorkorderDefaultViewColumns());
@@ -393,9 +395,17 @@ public class ColumnFactory {
 		return columns;
 	}
 
+	private static List<ViewField> getTicketCategoryApprovalDefaultViewColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("displayName", "Display Name"));
+		columns.add(new ViewField("description", "Description"));
+		return columns;
+	}
+
 	private static List<ViewField> getWoApprovalDefaultViewColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
-		
+
 		columns.add(new ViewField("serialNumber", "ID"));
 		columns.add(new ViewField("subject", "Subject"));
 		columns.add(new ViewField("requester", "Requester"));
