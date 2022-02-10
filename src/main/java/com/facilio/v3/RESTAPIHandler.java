@@ -644,18 +644,19 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         }
         removeRestrictedFields(data, this.getModuleName(), true);
 
-        V3Util.processAndUpdateSingleRecord(this.getModuleName(), this.getId(), data, this.getParams(), this.httpServletRequest, this.getStateTransitionId(), this.getCustomButtonId(), this.getApprovalTransitionId(),this.getQrValue());
+        JSONObject result = V3Util.processAndUpdateSingleRecord(this.getModuleName(), this.getId(), data, this.getParams(), this.httpServletRequest, this.getStateTransitionId(), this.getCustomButtonId(), this.getApprovalTransitionId(), this.getQrValue());
 
         String message = "Record {%s} of module %s has been "
                         + (validationContext.containsKey(FacilioConstants.ContextNames.TIMELINE_PATCHTYPE) ? validationContext.get(FacilioConstants.ContextNames.TIMELINE_PATCHTYPE): "updated")
                         +" through TimelineView";
-        addAuditLog(Collections.singletonList((JSONObject)this.getData().get(getModuleName())), getModuleName(), message,
+        addAuditLog(Collections.singletonList((JSONObject)result.get(getModuleName())), getModuleName(), message,
                 AuditLogHandler.ActionType.UPDATE, true);
 
         if(this.getTimelineRequest() != null) {
             FacilioChain chain = ChainUtil.getTimelineChain();
             FacilioContext context = TimelineViewUtil.getTimelineContext(chain, this.getTimelineRequest());
             chain.execute();
+            setData(new JSONObject());
             setData(FacilioConstants.ContextNames.TIMELINE_DATA, context.get(FacilioConstants.ContextNames.TIMELINE_DATA));
         }
 
