@@ -153,6 +153,11 @@ public class ViewFactory {
 
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("all", getAllTicketCategory().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.TICKET_CATEGORY, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
 		views.put("open", getAllOpenWorkOrders().setOrder(order++));
 		views.put("overdue", getAllOverdueWorkOrders().setOrder(order++));
 		views.put("duetoday", getAllDueTodayWorkOrders().setOrder(order++));
@@ -3252,6 +3257,44 @@ public class ViewFactory {
 		allView.setSortFields(Arrays.asList(new SortField(modifiedTime, false)));
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
+
+		return allView;
+	}
+
+	private static FacilioView getAllTicketCategory() {
+
+		FacilioModule ticketCategoryMod = ModuleFactory.getTicketCategoryModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(ticketCategoryMod);
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		FacilioField nameField = new FacilioField();
+		nameField.setName("name");
+		nameField.setDataType(FieldType.STRING);
+		nameField.setColumnName("NAME");
+		nameField.setModule(ticketCategoryMod);
+		ViewField nameViewFiled = new ViewField();
+		nameViewFiled.setField(nameField);
+
+		FacilioField descField = new FacilioField();
+		descField.setName("description");
+		descField.setDataType(FieldType.STRING);
+		descField.setColumnName("DESCRIPTION");
+		descField.setModule(ticketCategoryMod);
+		ViewField descViewFiled = new ViewField();
+		descViewFiled.setField(nameField);
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All");
+		allView.setSortFields(sortFields);
+		allView.setFields(Arrays.asList(nameViewFiled, descViewFiled));
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return allView;
 	}
