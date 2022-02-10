@@ -40,6 +40,15 @@ public class ReadingUnitAndInputConversionCommand extends FacilioCommand {
 			
 			Map<Long,Map<String, Integer>> valuesMap = getInputValuesMap(metaMap);
 			
+			if (FacilioProperties.isOnpremise()) {
+				if (readingMap.keySet().contains("liftmode")) {
+					LOGGER.info("Lift mode readings before - " + readingMap.get("liftmode"));
+				}
+				if (readingMap.keySet().contains("movingdirection")) {
+					LOGGER.info("Moving state readings before - " + readingMap.get("movingdirection"));
+				}
+			}
+			
 			for (Map.Entry<String, List<ReadingContext>> entry : readingMap.entrySet()) {
 				String moduleName = entry.getKey();
 				List<ReadingContext> readings = entry.getValue();
@@ -87,8 +96,13 @@ public class ReadingUnitAndInputConversionCommand extends FacilioCommand {
 					}
 				}
 			}
-			if (FacilioProperties.isOnpremise() && readingMap.keySet().contains("liftmode")) {
-				LOGGER.info("Lift mode readings" + readingMap.get("liftmode"));
+			if (FacilioProperties.isOnpremise()) {
+				if (readingMap.keySet().contains("liftmode")) {
+					LOGGER.info("Lift mode readings" + readingMap.get("liftmode"));
+				}
+				if (readingMap.keySet().contains("movingdirection")) {
+					LOGGER.info("Moving state readings" + readingMap.get("movingdirection"));
+				}
 			}
 					
 			LOGGER.info("Time taken for Unit conversion for modules : "+readingMap.keySet()+" is "+(System.currentTimeMillis() - startTime));
