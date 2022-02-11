@@ -51,6 +51,23 @@ services:
     networks:
       - bms
 
+  akhq:
+    image: tchiotludo/akhq:latest
+    container_name: akhq
+    environment:
+      AKHQ_CONFIGURATION: |
+        akhq:
+          connections:
+            docker-kafka-server:
+              properties:
+                bootstrap.servers: "kafka1:9092"
+    ports:
+      - "8000:8080"
+    depends_on:
+      - kafka1
+    networks:
+      - bms
+
   bms-app-1:
     environment:
       - CATALINA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005
@@ -63,3 +80,17 @@ services:
       - bms-db
     networks:
       - bms
+
+  bms-app-2:
+    environment:
+      - CATALINA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005
+    build: .
+    ports:
+      - "8081:8080"
+      - "5006:5005"
+    depends_on:
+      - kafka1
+      - bms-db
+    networks:
+      - bms
+
