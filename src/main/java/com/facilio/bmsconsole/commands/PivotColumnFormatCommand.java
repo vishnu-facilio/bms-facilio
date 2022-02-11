@@ -39,7 +39,7 @@ public class PivotColumnFormatCommand extends FacilioCommand {
         JsonTable = (HashMap<String, Object>) templateJson.get("columnFormatting");
         pivotRecords = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.PIVOT_TABLE_DATA);
         table = reconstruct();
-        context.put(FacilioConstants.ContextNames.PIVOT_TABLE_DATA, table);
+        context.put(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA, table);
         context.put(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD, aliasVsFieldMap);
         return false;
     }

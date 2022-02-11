@@ -138,11 +138,15 @@ public class NumberFormatter extends Formatter {
 
     @Override
     public void deserialize(JSONObject format) {
-        this.displayUnit = Integer.parseInt(format.getOrDefault("displayUnit", this.displayUnit).toString());
+        if (format.containsKey("displayUnit") && format.get("displayUnit") != null ) {
+            this.displayUnit = Integer.parseInt(format.getOrDefault("displayUnit", this.displayUnit).toString());
+        }
+        if (format.containsKey("thousandSeparator") && format.get("thousandSeparator") != null ) {
+            this.thousandSeparator = (Character) format.getOrDefault("thousandSeparator", this.thousandSeparator).toString().charAt(0);
+        }
         this.customUnit = (String) format.getOrDefault("customUnit", this.customUnit);
         this.appendUnit = (Boolean) format.getOrDefault("appendUnit", this.appendUnit);
         this.prefix = (Boolean) format.getOrDefault("prefix", this.prefix);
         this.applyLocaleSeparator = (Boolean) format.getOrDefault("applyLocaleSeparator", this.applyLocaleSeparator);
-        this.thousandSeparator = (Character) format.getOrDefault("thousandSeparator", this.thousandSeparator).toString().charAt(0);
     }
 }

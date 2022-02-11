@@ -166,13 +166,21 @@ public class DecimalFormatter extends Formatter {
 
     @Override
     public void deserialize(JSONObject formatJSON) {
-        this.displayUnit =  Integer.parseInt(formatJSON.getOrDefault("displayUnit", this.displayUnit).toString());
+        if (formatJSON.containsKey("displayUnit") && formatJSON.get("displayUnit") != null ) {
+            this.displayUnit = Integer.parseInt(formatJSON.getOrDefault("displayUnit", this.displayUnit).toString());
+        }
+        if (formatJSON.containsKey("decimalPoints") && formatJSON.get("decimalPoints") != null ) {
+            this.displayUnit = Integer.parseInt(formatJSON.getOrDefault("decimalPoints", this.displayUnit).toString());
+        }
+        if (formatJSON.containsKey("thousandSeparator") && formatJSON.get("thousandSeparator") != null ) {
+            this.thousandSeparator = (Character) formatJSON.getOrDefault("thousandSeparator", this.thousandSeparator).toString().charAt(0);
+        }
+        if (formatJSON.containsKey("decimalSeparator") && formatJSON.get("decimalSeparator") != null ) {
+            this.thousandSeparator = (Character) formatJSON.getOrDefault("decimalSeparator", this.thousandSeparator).toString().charAt(0);
+        }
         this.customUnit = (String) formatJSON.getOrDefault("customUnit", this.customUnit);
         this.appendUnit = (Boolean) formatJSON.getOrDefault("appendUnit", this.appendUnit);
         this.prefix = (Boolean) formatJSON.getOrDefault("prefix", this.prefix);
-        this.decimalPoints = Integer.parseInt(formatJSON.getOrDefault("decimalPoints", this.decimalPoints).toString());
         this.applyLocaleSeparator = (Boolean) formatJSON.getOrDefault("applyLocaleSeparator", this.applyLocaleSeparator);
-        this.thousandSeparator = (Character) formatJSON.getOrDefault("thousandSeparator", this.thousandSeparator).toString().charAt(0);
-        this.decimalSeparator = (Character) formatJSON.getOrDefault("decimalSeparator", this.decimalSeparator).toString().charAt(0);
     }
 }
