@@ -2591,6 +2591,7 @@ public class V2ReportAction extends FacilioAction {
         setResult(FacilioConstants.ContextNames.DATA_ALIAS, context.get(FacilioConstants.ContextNames.DATA_ALIAS));
         setResult(FacilioConstants.ContextNames.PIVOT_TABLE_DATA, context.get(FacilioConstants.ContextNames.PIVOT_TABLE_DATA));
         setResult(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD, context.get(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD));
+        setResult(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA, context.get(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA));
         setResult(FacilioConstants.Reports.ROWS, rows);
         return SUCCESS;
     }
@@ -2653,6 +2654,8 @@ public class V2ReportAction extends FacilioAction {
         setResult(FacilioConstants.ContextNames.ROW_ALIAS, context.get(FacilioConstants.ContextNames.ROW_ALIAS));
         setResult(FacilioConstants.ContextNames.DATA_ALIAS, context.get(FacilioConstants.ContextNames.DATA_ALIAS));
         setResult(FacilioConstants.ContextNames.PIVOT_TABLE_DATA, context.get(FacilioConstants.ContextNames.PIVOT_TABLE_DATA));
+        setResult(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA, context.get(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA));
+
         return SUCCESS;
     }
 
@@ -2774,6 +2777,8 @@ public class V2ReportAction extends FacilioAction {
         setResult((String) FacilioConstants.ContextNames.TIME_FILTER, pivotparams.getShowTimelineFilter());
         setResult(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, pivotparams.getDateValue());
         setResult(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD, context.get(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD));
+        setResult(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA, context.get(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA));
+
         return SUCCESS;
     }
 
