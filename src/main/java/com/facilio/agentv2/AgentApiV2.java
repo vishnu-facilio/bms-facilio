@@ -70,7 +70,7 @@ public class AgentApiV2 {
         context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
         List<String> fields = null;
         if (fetchOnlyName) {
-        	fields = Arrays.asList("id","name");        
+        	fields = Arrays.asList("id", AgentConstants.NAME, AgentConstants.DISPLAY_NAME);        
         }
         return getAgents(context, fields);
     }
