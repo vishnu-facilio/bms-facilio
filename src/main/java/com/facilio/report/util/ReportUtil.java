@@ -8,8 +8,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.report.context.*;
+import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportFieldContext;
+import com.facilio.report.context.ReportFolderContext;
+import com.facilio.report.context.ReportUserFilterContext;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -23,11 +29,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.CommonReportUtil;
 import com.facilio.bmsconsole.commands.GetAllFieldsCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
-import com.facilio.bmsconsole.context.DashboardWidgetContext;
-import com.facilio.bmsconsole.context.SharingContext;
-import com.facilio.bmsconsole.context.SingleSharingContext;
-import com.facilio.bmsconsole.context.WidgetChartContext;
-import com.facilio.bmsconsole.context.WidgetStaticContext;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.SharingAPI;
@@ -257,13 +258,13 @@ public class ReportUtil {
 		FacilioModule reportFoldermodule = ModuleFactory.getReportFolderModule();
 		List<FacilioField> fields = FieldFactory.getReport1FolderFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		
+
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 													.select(fields)
 													.table(reportFoldermodule.getTableName())
 //													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reportFoldermodule))
 													.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
-		
+
 		if(isPivot) {
 			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("folderType"),
 					String.valueOf(FolderType.PIVOT.getValue()), PickListOperators.IS));
@@ -271,11 +272,11 @@ public class ReportUtil {
 			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("folderType"),
 					String.valueOf(FolderType.PIVOT.getValue()), PickListOperators.ISN_T));
 		}
-		
+
 		if (searchText != null) {
 			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), searchText, StringOperators.CONTAINS));
 		}
-		
+
 		FacilioModule reportModule = ModuleFactory.getReportModule();
         List<FacilioField> reportSelectFields = new ArrayList<>();
 
@@ -286,13 +287,13 @@ public class ReportUtil {
         reportSelectFields.add(FieldFactory.getField("description", "DESCRIPTION", reportModule, FieldType.STRING));
         reportSelectFields.add(FieldFactory.getField("type", "REPORT_TYPE", reportModule, FieldType.NUMBER));
         reportSelectFields.add(FieldFactory.getField("analyticsType", "ANALYTICS_TYPE", reportModule, FieldType.NUMBER));
-		
+
 		List<Map<String, Object>> props = select.get();
 		List<ReportFolderContext> reportFolders = new ArrayList<>();
 		if(props != null && !props.isEmpty()) {
-			
+
 			for(Map<String, Object> prop :props) {
-				
+
 				ReportFolderContext folder = FieldUtil.getAsBeanFromMap(prop, ReportFolderContext.class);
 				if(isWithReports) {
 					List<ReportContext> reports = getReportsFromFolderId(folder.getId(), reportSelectFields);
@@ -300,16 +301,103 @@ public class ReportUtil {
 				}
 				reportFolders.add(folder);
 			}
-			
+
 		}
 		Map<Long, SharingContext<SingleSharingContext>> map = SharingAPI.getSharingMap(ModuleFactory.getReportSharingModule(), SingleSharingContext.class);
 		for (int i = 0; i < reportFolders.size(); i++) {
-			
+
 			if (map.containsKey(reportFolders.get(i).getId())) {
-				
-				reportFolders.get(i).setReportSharing(map.get(reportFolders.get(i).getId()));;	
+
+				reportFolders.get(i).setReportSharing(map.get(reportFolders.get(i).getId()));
 			}
 		}
+
+		List<Long> moduleIds = new ArrayList<>();
+		long appId = (long) AccountUtil.getCurrentUser().getApplicationId();
+		if( appId != 0)
+		{
+			ApplicationContext application = ApplicationApi.getApplicationForId(appId);
+			if (application != null) {
+				List<ApplicationLayoutContext> appLayouts = ApplicationApi.getLayoutsForAppId(application.getId());
+				if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(appLayouts)) {
+					for (ApplicationLayoutContext layout : appLayouts) {
+						List<WebTabGroupContext> webTabGroups = ApplicationApi.getWebTabGroupForLayoutID(layout);
+						if (webTabGroups != null && !webTabGroups.isEmpty()) {
+							for (WebTabGroupContext webTabGroup : webTabGroups) {
+								List<WebTabContext> webTabs = ApplicationApi.getWebTabsForWebGroup(webTabGroup.getId());
+								if (webTabs != null && !webTabs.isEmpty()) {
+									for (WebTabContext webtab : webTabs) {
+										if (webtab.getConfigJSON() != null && webtab.getConfigJSON().containsKey("type") && webtab.getConfigJSON().get("type").equals("module_reports")) {
+											List<TabIdAppIdMappingContext> tabIdAppIdMappingContextList = ApplicationApi.getTabIdModules(webtab.getId());
+											if (tabIdAppIdMappingContextList != null && !tabIdAppIdMappingContextList.isEmpty()) {
+												for (TabIdAppIdMappingContext tabIdAppIdMappingContext : tabIdAppIdMappingContextList) {
+													if (tabIdAppIdMappingContext.getModuleId() > 0) {
+														moduleIds.add(tabIdAppIdMappingContext.getModuleId());
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		if(!moduleIds.isEmpty())
+		{
+			reportFolders = new ArrayList<>();
+			for(long moduleId : moduleIds) {
+				FacilioModule othermodule = modBean.getModule(moduleId);
+
+				FacilioModule otherReportFoldermodule = ModuleFactory.getReportFolderModule();
+				List<FacilioField> otherfields = FieldFactory.getReport1FolderFields();
+				Map<String, FacilioField> otherfieldMap = FieldFactory.getAsMap(otherfields);
+
+				select = new GenericSelectRecordBuilder()
+						.select(otherfields)
+						.table(otherReportFoldermodule.getTableName())
+						.andCondition(CriteriaAPI.getCondition(otherfieldMap.get("moduleId"), String.valueOf(othermodule.getModuleId()), NumberOperators.EQUALS));
+					select.andCondition(CriteriaAPI.getCondition(fieldMap.get("folderType"),
+							String.valueOf(FolderType.PIVOT.getValue()), PickListOperators.ISN_T));
+
+				if (searchText != null) {
+					select.andCondition(CriteriaAPI.getCondition(otherfieldMap.get("name"), searchText, StringOperators.CONTAINS));
+				}
+
+				FacilioModule otherreportModule = ModuleFactory.getReportModule();
+				List<FacilioField> otherreportSelectFields = new ArrayList<>();
+
+				otherreportSelectFields.add(FieldFactory.getIdField(otherreportModule));
+				otherreportSelectFields.add(FieldFactory.getSiteIdField(otherreportModule));
+				otherreportSelectFields.add(FieldFactory.getField("reportFolderId", "REPORT_FOLDER_ID", otherreportModule, FieldType.LOOKUP));
+				otherreportSelectFields.add(FieldFactory.getField("name", "NAME", otherreportModule, FieldType.STRING));
+				otherreportSelectFields.add(FieldFactory.getField("description", "DESCRIPTION", otherreportModule, FieldType.STRING));
+				otherreportSelectFields.add(FieldFactory.getField("type", "REPORT_TYPE", otherreportModule, FieldType.NUMBER));
+				otherreportSelectFields.add(FieldFactory.getField("analyticsType", "ANALYTICS_TYPE", otherreportModule, FieldType.NUMBER));
+
+				List<Map<String, Object>> otherprops = select.get();
+				if (otherprops != null && !otherprops.isEmpty()) {
+
+					for (Map<String, Object> prop : otherprops) {
+						ReportFolderContext folder = FieldUtil.getAsBeanFromMap(prop, ReportFolderContext.class);
+						List<ReportContext> reports = getReportsFromFolderId(folder.getId(), otherreportSelectFields);
+						folder.setReports(reports);
+						reportFolders.add(folder);
+					}
+				}
+				Map<Long, SharingContext<SingleSharingContext>> othermap = SharingAPI.getSharingMap(ModuleFactory.getReportSharingModule(), SingleSharingContext.class);
+				for (int i = 0; i < reportFolders.size(); i++) {
+
+					if (othermap.containsKey(reportFolders.get(i).getId())) {
+						reportFolders.get(i).setReportSharing(map.get(reportFolders.get(i).getId()));
+					}
+				}
+			}
+		}
+
+
 		return getFilteredReport(reportFolders);
 	}
 	@SuppressWarnings("unlikely-arg-type")
