@@ -262,7 +262,10 @@ public class ModeledDataCommand extends AgentV2Command {
 					String readingKey = moduleName + "|" + resourceId;
 					ReadingContext reading = iModuleVsReading.get(readingKey);
                     try {
-                        Object value = FacilioUtil.castOrParseValueAsPerType(field, pointValue);
+                        Object value = pointValue;
+                        if (type == FieldType.DECIMAL || type == FieldType.NUMBER) {	
+                        	value = FacilioUtil.castOrParseValueAsPerType(field, pointValue);
+                        }
                         if (reading == null) {
                             reading = new ReadingContext();
                             iModuleVsReading.put(readingKey, reading);
