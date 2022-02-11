@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsoleV3.context.facilitybooking.BookingSlotsContext;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
@@ -159,9 +160,10 @@ public class V3FloorPlanAPI {
 
 	 	   
 	 	  public static V3IndoorFloorPlanPropertiesContext getZoneProperties(ModuleBaseWithCustomFields record, V3MarkerdZonesContext zone, Context context, String viewMode,Long markerModuleId) throws Exception {
-	 		    
-	 			
-	 	        V3IndoorFloorPlanPropertiesContext properties = new V3IndoorFloorPlanPropertiesContext();
+
+			  Map<Long, List<BookingSlotsContext>> facilityBookingsMap = (Map<Long, List<BookingSlotsContext>>) context.get(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
+
+			  V3IndoorFloorPlanPropertiesContext properties = new V3IndoorFloorPlanPropertiesContext();
 	 	         	 		   
 	 			   properties.setObjectId(zone.getId());
 	 			   properties.setRecordId(zone.getRecordId());
@@ -227,6 +229,16 @@ public class V3FloorPlanAPI {
 	 				    	if (zone.isIsReservable()) {
 		 						properties.setZoneBackgroundColor("#0D5BE1");
 		 					}
+
+							if (!CollectionUtils.sizeIsEmpty(facilityBookingsMap) && zone.getSpace().getId() > 0) {
+								List<BookingSlotsContext> facilityBooking = (List<BookingSlotsContext>) facilityBookingsMap.get(zone.getSpace().getId());
+
+								if (facilityBooking != null && facilityBooking.size() > 0) {
+									properties.setZoneBackgroundColor("#dc4a4c");
+									properties.setIsBooked(true);
+								}
+
+							}
 	 				   }
 	 					
 	 					
