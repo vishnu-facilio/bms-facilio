@@ -6,6 +6,7 @@ import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.report.context.*;
+import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
 import com.facilio.v3.V3Action;
 import com.facilio.v3.exception.ErrorCode;
@@ -56,6 +57,7 @@ public class V3ReportAction extends V3Action {
     private ReportDrilldownParamsContext drilldownParams;
     long alarmId = -1;
     FacilioContext resultContext;
+    private Boolean isPivot = false;
 
     public JSONArray getyField(JSONArray yField) { return yField; }
     public void setyField(JSONArray yField) {
@@ -68,6 +70,7 @@ public class V3ReportAction extends V3Action {
     private List<ReportUserFilterContext> userFilters;
     private List<ReportDrilldownPathContext> reportDrilldownPath;
     private ReportSettings reportSettings;
+    private Boolean isWithReport;
 
     @JSON(serialize = false)
     public ReportSettings getReportSettings() {
@@ -84,6 +87,12 @@ public class V3ReportAction extends V3Action {
 
     public void setReportDrilldownPath(List<ReportDrilldownPathContext> reportDrilldownPath) {
         this.reportDrilldownPath = reportDrilldownPath;
+    }
+    public Boolean getIsWithReport() {
+        return isWithReport == null? true: isWithReport;
+    }
+    public void setIsWithReport(Boolean isWithReport) {
+        this.isWithReport = isWithReport;
     }
 
     private void updateChainContext(FacilioContext context) throws Exception {
@@ -269,6 +278,27 @@ public class V3ReportAction extends V3Action {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "ModuleName is mandatory.");
         }
 
+    }
+
+    public String folders() throws Exception
+    {
+        FacilioChain chain = TransactionChainFactoryV3.getFoldersListChain();
+        FacilioContext context = chain.getContext();
+        context.put("isWithReport", getIsWithReport());
+        context.put("isCustomModule", false);
+        if(moduleName != null && moduleName.equals("custommodule")){
+            context.put("isCustomModule", true);
+        }else{
+            context.put("moduleName", moduleName);
+            context.put("isPivot", isPivot);
+        }
+        chain.execute();
+        List<ReportFolderContext> reportFolders = (List<ReportFolderContext>)context.get("folders");
+        setData("reportFolders", reportFolders);
+        if(moduleName != null && !moduleName.equals("custommodule")){
+            setData("moduleName", moduleName);
+        }
+        return SUCCESS;
     }
 
     public void setReportAuditLogs(String moduleDisplayName, ReportContext reportContext, String log_message, AuditLogHandler.ActionType actionType) throws Exception

@@ -50,6 +50,9 @@ public class ConfigurePointCommand extends FacilioCommand {
             int interval = -1;
             if (context.containsKey(AgentConstants.DATA_INTERVAL)) {
                 interval = Integer.parseInt((context.get(AgentConstants.DATA_INTERVAL).toString()));
+                if (interval <= 0) {
+                	interval = -99;
+                }
             }
             if (containsAndNotNull(context, AgentConstants.POINTS)) {
                 List<Point> points = (List<Point>) context.get(AgentConstants.POINTS);

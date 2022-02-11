@@ -39,6 +39,7 @@ public class UpdatePointsConfiguredCommand extends AgentV2Command {
             Map<String, Object> toUpdate = new HashMap<>();
             toUpdate.put(AgentConstants.CONFIGURE_STATUS, PointEnum.ConfigureStatus.IN_PROGRESS.getIndex());
             toUpdate.put(AgentConstants.CONTROLLER_ID, context.get(AgentConstants.CONTROLLER_ID));
+            toUpdate.put(AgentConstants.DATA_INTERVAL, context.get(AgentConstants.DATA_INTERVAL));
             GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
                     .table(ModuleFactory.getPointModule().getTableName())
                     .fields(FieldFactory.getPointFields())

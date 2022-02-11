@@ -1,6 +1,10 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public class ViewField{
 	private long id = -1;
@@ -97,5 +101,18 @@ public class ViewField{
 
 	public void setParentFieldName(String parentFieldName) {
 		this.parentFieldName = parentFieldName;
+	}
+
+	private JSONObject customization;
+	public String getCustomization() {
+		return (customization != null) ? customization.toJSONString() : null;
+	}
+	public void setCustomization(JSONObject customization) {
+		this.customization = customization;
+	}
+	public void setCustomization(String data) throws ParseException {
+		if (StringUtils.isNotEmpty(data)) {
+			this.customization = (JSONObject) new JSONParser().parse(data);
+		}
 	}
 }

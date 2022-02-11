@@ -1258,24 +1258,30 @@ public class ReadingsAPI {
 	
 	private static void setNewAgentDataInterval(List<Point> points, List<ReadingContext> readings) throws Exception {
 		int defaultInterval = getDefaultInterval();
-		Map<Long, Long> assetVsControllerIdMap = new HashMap<>();
-		Set<Long> controllerIds = new HashSet<>();
-		points.forEach(point -> {
-			long controllerId = point.getControllerId();
-			assetVsControllerIdMap.put(point.getResourceId(), controllerId);
-			controllerIds.add(controllerId);
-		});
-		Map<Long, Map<String, Object>> controllers = ControllerApiV2.getControllerMap(controllerIds);
-		List<Long> agentIds = controllers.values().stream().map(controller -> (long)controller.get("agentId")).collect(Collectors.toList());
-		Map<Long, com.facilio.agentv2.FacilioAgent> agentMap = AgentApiV2.getAgentMap(agentIds);
-		
-		
+		Map<Long, Long> assetVsAgentMap = new HashMap<>();
+		Set<Long> agentIds = new HashSet<>();
+		int pointInterval = 0; // Assuming points of same interval only will come together
+		for(Point point: points) {
+			if (point.getInterval() > 0) {
+				pointInterval = point.getInterval();
+				break;
+			}
+			assetVsAgentMap.put(point.getResourceId(), point.getAgentId());
+			agentIds.add(point.getAgentId());
+		}
+		Map<Long, com.facilio.agentv2.FacilioAgent> agentMap = null;
+		if (!agentIds.isEmpty()) {
+			agentMap = AgentApiV2.getAgentMap(agentIds);
+		}
 		for (ReadingContext reading : readings) {
+			if (pointInterval > 0) {
+				setInterval(reading, pointInterval);
+				continue;
+			}
 			int interval = defaultInterval;
-			Long controllerId = assetVsControllerIdMap.get(reading.getParentId());
-			if (controllerId != null) {
-				Map<String, Object> controller = controllers.get(controllerId);
-				com.facilio.agentv2.FacilioAgent agent = agentMap.get((long)controller.get("agentId"));
+			Long agentId = assetVsAgentMap.get(reading.getParentId());
+			if (agentId != null) {
+				com.facilio.agentv2.FacilioAgent agent = agentMap.get(agentId);
 				if (agent.getInterval() > 0l) {
 					interval =  (int)agent.getInterval();
 				}
