@@ -43,9 +43,6 @@ validators:
   - type: BIG_STRING
     validatorClasses:
       - com.facilio.field.validation.string.StringValidator
-  - type: STRING_SYSTEM_ENUM
-    validatorClasses:
-      - com.facilio.field.validation.string.StringValidator
   - type: NUMBER
     validatorClasses:
       - com.facilio.field.validation.number.NumberValidator
@@ -53,5 +50,8 @@ validators:
     validatorClasses:
       - com.facilio.field.validation.number.NumberValidator
   - type: DATE
+    validatorClasses:
+      - com.facilio.field.validation.date.DateValidator
+  - type: DATE_TIME
     validatorClasses:
       - com.facilio.field.validation.date.DateValidator
