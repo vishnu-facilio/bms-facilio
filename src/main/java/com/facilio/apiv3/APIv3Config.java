@@ -621,7 +621,7 @@ public class APIv3Config {
 
     @Module("inventoryCategory")
     public static Supplier<V3Config> getInventoryCategory() {
-        return () -> new V3Config(V3InventoryCategoryContext.class, null)
+        return () -> new V3Config(V3InventoryCategoryContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .update()
                 .list()
