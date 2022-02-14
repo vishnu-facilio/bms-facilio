@@ -8,6 +8,7 @@ import java.util.Map;
 import com.facilio.bmsconsoleV3.context.facilitybooking.BookingSlotsContext;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
@@ -230,10 +231,10 @@ public class V3FloorPlanAPI {
 		 						properties.setZoneBackgroundColor("#0D5BE1");
 		 					}
 
-							if (!CollectionUtils.sizeIsEmpty(facilityBookingsMap) && zone.getSpace().getId() > 0) {
+							if (MapUtils.isNotEmpty(facilityBookingsMap) && zone.getSpace().getId() > 0) {
 								List<BookingSlotsContext> facilityBooking = (List<BookingSlotsContext>) facilityBookingsMap.get(zone.getSpace().getId());
 
-								if (facilityBooking != null && facilityBooking.size() > 0) {
+								if (CollectionUtils.isNotEmpty(facilityBooking)) {
 									properties.setZoneBackgroundColor("#dc4a4c");
 									properties.setIsBooked(true);
 								}
