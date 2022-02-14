@@ -82,16 +82,16 @@ public enum FacilioWMSFunctions implements FacilioWorkflowFunctionInterface {
 		this.value = value;
 		this.functionName = functionName;
 	}
-	public static Map<String, FacilioCostFunctions> getAllFunctions() {
+	public static Map<String, FacilioWMSFunctions> getAllFunctions() {
 		return DEFAULT_FUNCTIONS;
 	}
-	public static FacilioCostFunctions getFacilioWMSFunction(String functionName) {
+	public static FacilioWMSFunctions getFacilioWMSFunction(String functionName) {
 		return DEFAULT_FUNCTIONS.get(functionName);
 	}
-	static final Map<String, FacilioCostFunctions> DEFAULT_FUNCTIONS = Collections.unmodifiableMap(initTypeMap());
-	static Map<String, FacilioCostFunctions> initTypeMap() {
-		Map<String, FacilioCostFunctions> typeMap = new HashMap<>();
-		for(FacilioCostFunctions type : FacilioCostFunctions.values()) {
+	static final Map<String, FacilioWMSFunctions> DEFAULT_FUNCTIONS = Collections.unmodifiableMap(initTypeMap());
+	static Map<String, FacilioWMSFunctions> initTypeMap() {
+		Map<String, FacilioWMSFunctions> typeMap = new HashMap<>();
+		for(FacilioWMSFunctions type : FacilioWMSFunctions.values()) {
 			typeMap.put(type.getFunctionName(), type);
 		}
 		return typeMap;
