@@ -111,6 +111,7 @@ import com.facilio.workflows.functions.FacilioReadingFunctions;
 import com.facilio.workflows.functions.FacilioResourceFunction;
 import com.facilio.workflows.functions.FacilioScheduleFunctions;
 import com.facilio.workflows.functions.FacilioSystemFunctions;
+import com.facilio.workflows.functions.FacilioWMSFunctions;
 import com.facilio.workflows.functions.FacilioWorkOrderFunctions;
 import com.facilio.workflows.functions.MLFunctions;
 import com.facilio.workflows.functions.ThermoPhysicalR134aFunctions;
@@ -2152,6 +2153,9 @@ public class WorkflowUtil {
 				case FILE:
 					facilioWorkflowFunction = FacilioFileFunction.getFacilioFileFunction(functionName);
 					break;
+				case WMS:
+					facilioWorkflowFunction = FacilioWMSFunctions.getFacilioWMSFunction(functionName);
+					break;
 			}
 		}
 		return facilioWorkflowFunction;
@@ -2267,6 +2271,8 @@ public class WorkflowUtil {
 					break;
 				case FILE:
 					facilioWorkflowFunction = new ArrayList<>( FacilioFileFunction.getAllFunctions().values());
+				case WMS:
+					facilioWorkflowFunction = new ArrayList<>( FacilioWMSFunctions.getAllFunctions().values());
 					break;
 			}
 		}
