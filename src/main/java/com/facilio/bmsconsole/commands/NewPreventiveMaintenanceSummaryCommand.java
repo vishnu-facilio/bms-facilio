@@ -12,10 +12,14 @@ import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
+import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -33,8 +37,6 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fs.FileInfo;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
@@ -101,22 +103,21 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
 		
 		WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate(pm.getTemplateId());
 		List<TaskContext> listOfTasks = null;
-		if ( template.getTaskTemplates() != null) {
+		if (template.getTaskTemplates() != null) {
 			listOfTasks = template.getTaskTemplates().stream().map(taskTemplate -> taskTemplate.getTask()).collect(Collectors.toList());
 			fillReadingFields(listOfTasks);
 		}
 		List<TaskContext> listOfPreRequests = null;
-		if ( template.getPreRequestTemplates() != null) {
+		if (template.getPreRequestTemplates() != null) {
 			listOfPreRequests = template.getPreRequestTemplates().stream().map(taskTemplate -> taskTemplate.getTask()).collect(Collectors.toList());
 			fillReadingFields(listOfPreRequests);
 		}
 		WorkOrderContext workorder = template.getWorkorder();
-		
-		if(workorder.getAttachments() != null && !workorder.getAttachments().isEmpty()) {
+		if (workorder.getAttachments() != null && !workorder.getAttachments().isEmpty()) {
 			List<Long> fileIds = workorder.getAttachments().stream().map(file -> file.getFileId()).collect(Collectors.toList());
 			FileStore fs = FacilioFactory.getFileStore();
 			Map<Long, FileInfo> fileMap = fs.getFileInfoAsMap(fileIds, null);
-			for(AttachmentContext attachment: workorder.getAttachments()) {
+			for (AttachmentContext attachment : workorder.getAttachments()) {
 				FileInfo file = fileMap.get(attachment.getFileId());
 				attachment.setFileName(file.getFileName());
 				attachment.setFileSize(file.getFileSize());
@@ -136,38 +137,63 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
 	        List<ReadingRuleContext> readingRules = ReadingRuleAPI.getReadingRules(criteria);
 	        
 	        if (readingRules != null && !readingRules.isEmpty()) {
-	        	List<Long> workFlowIds = readingRules.stream().map(ReadingRuleContext::getWorkflowId).collect(Collectors.toList());
-	            Map<Long, WorkflowContext> workflowMap = WorkflowUtil.getWorkflowsAsMap(workFlowIds, true);
-	            Map<Long, List<ReadingRuleContext>> fieldVsRules = new HashMap<>();
-	            
-	        	for (ReadingRuleContext r:  readingRules) {
-	        		if (r.getReadingFieldId() != -1) { 
-	        			List<ReadingRuleContext> rules = fieldVsRules.get(r.getReadingFieldId());
-	        			if (rules == null) {
-	        				rules = new ArrayList<>();
-	        				fieldVsRules.put(r.getReadingFieldId(), rules);
-	        			}
-	        			rules.add(r);
-	        		}
-	        		long workflowId = r.getWorkflowId();
-	        		if (workflowId != -1) {
-	        			r.setWorkflow(workflowMap.get(workflowId));
-	        		}
-	        	}
-	        	taskMap.entrySet().stream().map(Entry::getValue).flatMap(List::stream).forEach(t -> t.setReadingRules(fieldVsRules.get(t.getReadingFieldId())));
-	        }
+				List<Long> workFlowIds = readingRules.stream().map(ReadingRuleContext::getWorkflowId).collect(Collectors.toList());
+				Map<Long, WorkflowContext> workflowMap = WorkflowUtil.getWorkflowsAsMap(workFlowIds, true);
+				Map<Long, List<ReadingRuleContext>> fieldVsRules = new HashMap<>();
+
+				for (ReadingRuleContext r : readingRules) {
+					if (r.getReadingFieldId() != -1) {
+						List<ReadingRuleContext> rules = fieldVsRules.get(r.getReadingFieldId());
+						if (rules == null) {
+							rules = new ArrayList<>();
+							fieldVsRules.put(r.getReadingFieldId(), rules);
+						}
+						rules.add(r);
+					}
+					long workflowId = r.getWorkflowId();
+					if (workflowId != -1) {
+						r.setWorkflow(workflowMap.get(workflowId));
+					}
+				}
+				taskMap.entrySet().stream().map(Entry::getValue).flatMap(List::stream).forEach(t -> t.setReadingRules(fieldVsRules.get(t.getReadingFieldId())));
+			}
 		}
 
 		fillTriggerExtras(pm);
 		TicketAPI.loadTicketLookups(Arrays.asList(workorder));
-		if(AccountUtil.isFeatureEnabled(FeatureLicense.SAFETY_PLAN)) {
-			if(workorder != null && workorder.getSafetyPlan() != null && workorder.getSafetyPlan().getId() > 0) {
+		if (AccountUtil.isFeatureEnabled(FeatureLicense.SAFETY_PLAN)) {
+			if (workorder != null && workorder.getSafetyPlan() != null && workorder.getSafetyPlan().getId() > 0) {
 				workorder.setSafetyPlan(HazardsAPI.fetchSafetyPlan(workorder.getSafetyPlan().getId()));
 			}
 		}
 		if (workorder != null && workorder.getVendor() != null && workorder.getVendor().getId() > 0) {
-			workorder.setVendor((VendorContext)RecordAPI.getRecord("vendors", workorder.getVendor().getId()));
+			workorder.setVendor((VendorContext) RecordAPI.getRecord("vendors", workorder.getVendor().getId()));
 		}
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule workorderModule = modBean.getModule("workorder");
+
+		FacilioForm pmForm = FormsAPI.getFormFromDB("multi_web_pm", workorderModule);
+		if (pmForm != null && pmForm.getFields() != null) {
+			for (FormField formField : pmForm.getFields()) {
+				if (formField.getField() != null &&
+						!formField.getField().isDefault() &&
+						formField.getField().getDataTypeEnum() == FieldType.LOOKUP) {
+
+					LookupField lookup = (LookupField) formField.getField();
+					String lookupModuleName = lookup.getLookupModule() != null ? lookup.getLookupModule().getName() : "";
+
+					ModuleBaseWithCustomFields record = RecordAPI.getRecord(lookupModuleName,
+							(Long) ((HashMap<String, Object>) workorder.getData().get(lookup.getName())).get("id"));
+
+					Map<String, Object> mapping = FieldUtil.getAsProperties(record);
+					FacilioField primaryField = modBean.getPrimaryField(lookupModuleName);
+					mapping.put("primaryValue", mapping.get(primaryField.getName()));
+					workorder.getData().put(lookup.getName(), mapping);
+				}
+			}
+		}
+
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);
