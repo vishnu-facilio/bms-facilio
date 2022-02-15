@@ -2339,7 +2339,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.USERNAME", "username", username, StringOperators.IS));
 
 		Criteria cr = new Criteria();
-		cr.addAndCondition(CriteriaAPI.getCondition("Account_Users.IDENTIFIER", "identifier", ""+groupType.getIndex()+"_", StringOperators.CONTAINS));
+		cr.addAndCondition(CriteriaAPI.getCondition("Account_Users.IDENTIFIER", "identifier", ""+groupType.getIndex()+"\\_", StringOperators.STARTS_WITH));
 		cr.addOrCondition(CriteriaAPI.getCondition("Account_Users.IDENTIFIER", "identifier", groupType.getIndex()+"", StringOperators.IS));
 		selectBuilder.andCriteria(cr);
 		return selectBuilder.get();
