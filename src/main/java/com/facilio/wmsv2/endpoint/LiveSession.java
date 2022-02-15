@@ -2,6 +2,7 @@ package com.facilio.wmsv2.endpoint;
 
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.User;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.wmsv2.constants.Topics;
 import com.facilio.wmsv2.util.TopicUtil;
 
@@ -50,7 +51,7 @@ public class LiveSession {
 
 	public long getOuid() {
 		if (user != null) {
-			user.getId();
+			return user.getId();
 		}
 		return -1;
 	}
@@ -145,13 +146,20 @@ public class LiveSession {
 		return this;
 	}
 	
-	public static enum LiveSessionType {
+	public static enum LiveSessionType implements FacilioIntEnum {
 		APP,
 		DEVICE,
 		REMOTE_SCREEN,
 		SERVICE_PORTAL,
 		TENANT_PORTAL,
 		VENDOR_PORTAL;
+
+		public static LiveSessionType valueOf(int sessionType) {
+			if (sessionType > 0 && sessionType <= values().length) {
+				return values()[sessionType - 1];
+			}
+			return null;
+		}
 	}
 	
 	public static enum LiveSessionSource {
