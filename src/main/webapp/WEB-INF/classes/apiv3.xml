@@ -216,7 +216,7 @@
 	                <param name="excludeNullProperties">true</param>
 	                <param name="ignoreHierarchy">false</param>
 	                <param name="includeProperties">^code.*,^data.*,^meta.*,message</param>
-	                <param name="excludeProperties">data.triggerList.*\.agent.((?!(id|name)).)*</param>
+	                <param name="excludeProperties">data.triggerList.*\.agent.((?!(id|name|displayName)).)*</param>
 	                
            	 	</result>
         </action>

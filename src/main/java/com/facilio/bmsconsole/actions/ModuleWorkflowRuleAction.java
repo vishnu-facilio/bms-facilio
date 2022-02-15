@@ -36,6 +36,7 @@ public class ModuleWorkflowRuleAction extends FacilioAction {
         FacilioContext context = c.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
         context.put(FacilioConstants.ContextNames.RULE_TYPE, ruleType);
+        constructListContext(context);
         c.execute();
 
         setResult(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST));

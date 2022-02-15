@@ -80,6 +80,8 @@ import com.facilio.tasker.FacilioTimer;
 import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.taskengine.ScheduleInfo.FrequencyType;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.unitconversion.Metric;
+import com.facilio.unitconversion.Unit;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 
@@ -992,7 +994,9 @@ public class AddInspectionModules extends SignUpData {
         FacilioField resumedWorkStart = (FacilioField) FieldFactory.getDefaultField("resumedWorkStart", "Resumed Work Start", "RESUMED_WORK_START", FieldType.DATE_TIME);
         fields.add(resumedWorkStart);
         
-        FacilioField  actualWorkDuration = (FacilioField) FieldFactory.getDefaultField("actualWorkDuration", "Actual Duration", "ACTUAL_WORK_DURATION", FieldType.NUMBER);
+        NumberField  actualWorkDuration = (NumberField) FieldFactory.getDefaultField("actualWorkDuration", "Actual Duration", "ACTUAL_WORK_DURATION", FieldType.NUMBER);
+        actualWorkDuration.setMetric(Metric.DURATION.getMetricId());
+        actualWorkDuration.setUnitId(Unit.SEC.getUnitId());
         fields.add(actualWorkDuration);
         
         LookupField moduleStateField = (LookupField) FieldFactory.getField("moduleState", "Status", "MODULE_STATE", module, FieldType.LOOKUP);

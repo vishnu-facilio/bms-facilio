@@ -177,9 +177,6 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		// TODO Auto-generated method stub
 		checkForNullAndSanitize();
 		List<Long> ids = getIds();
-		if(AccountUtil.getCurrentOrg().getId() == 267l) {
-			LOGGER.error("Module --  "+this.module != null ? module.getName() : moduleName +"ids to be deleted -- "+ids);
-		}
 		return commonDeleteByIds(ids);
 	}
 
@@ -267,10 +264,6 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 						.orderBy(idField.getCompleteColumnName())
 						;
 		List<Map<String, Object>> ids = selectBuilder.getAsProps();
-		
-		if(AccountUtil.getCurrentOrg().getId() == 267l) {
-			LOGGER.error("selectBuilder --  "+selectBuilder);
-		}
 		
 		if (ids != null && !ids.isEmpty()) {
 			return ids.stream().map(id -> (Long)id.get("id")).collect(Collectors.toList());

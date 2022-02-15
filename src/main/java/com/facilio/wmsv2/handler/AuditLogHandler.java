@@ -201,10 +201,9 @@ public class AuditLogHandler extends BaseHandler {
         public AuditLogContext() {
         }
 
-        public AuditLogContext(String subject, String description, String descriptionJSON, RecordType recordType, String typeName, long recordId) {
+        public AuditLogContext(String subject, String description, RecordType recordType, String typeName, long recordId) {
             setSubject(subject);
             setDescription(description);
-//            this.descriptionJSON = descriptionJSON;
             this.recordType = recordType;
             this.typeName = typeName;
             this.recordId = recordId;

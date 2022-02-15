@@ -41,12 +41,12 @@ public class TenantPageFactory extends PageFactory{
 
 		
 		PageWidget detailsWidgetPrimaryContact= new PageWidget(WidgetType.TENANT_DETAIL_CONTACT);
-		detailsWidgetPrimaryContact.addToLayoutParams(tab1Sec1, 12, 3);
+		detailsWidgetPrimaryContact.addToLayoutParams(tab1Sec1, 12, 4);
 		detailsWidgetPrimaryContact.addToWidgetParams("card","tenantdetailcontact");
 		tab1Sec1.addWidget(detailsWidgetPrimaryContact);
 		
 		PageWidget detailsWidgetOverview= new PageWidget(WidgetType.TENANT_DETAIL_OVERVIEW);
-		detailsWidgetOverview.addToLayoutParams(tab1Sec1, 12, 3);
+		detailsWidgetOverview.addToLayoutParams(tab1Sec1, 12, 4);
 		detailsWidgetOverview.addToWidgetParams("card","tenantdetailoverview");
 		tab1Sec1.addWidget(detailsWidgetOverview);
 

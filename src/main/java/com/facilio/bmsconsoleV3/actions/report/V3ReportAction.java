@@ -174,9 +174,9 @@ public class V3ReportAction extends V3Action {
             String log_message="Report {%s} has been deleted for {%s} Module.";
             if(context.get("moduleName") == null || context.get("moduleName").equals("energydata")){
                 log_message="Analytics Report {%s} has been deleted.";
-                AuditLogHandler.AuditLogContext auditLog = new AuditLogHandler.AuditLogContext(String.format(log_message, (String)context.get("reportName")), "", "", AuditLogHandler.RecordType.MODULE, (String) context.get("moduleName"), reportId);
+                AuditLogHandler.AuditLogContext auditLog = new AuditLogHandler.AuditLogContext(String.format(log_message, (String)context.get("reportName")), "", AuditLogHandler.RecordType.MODULE, (String) context.get("moduleName"), reportId);
             }
-            AuditLogHandler.AuditLogContext auditLog = new AuditLogHandler.AuditLogContext(String.format(log_message, (String)context.get("reportName"), (String) context.get("moduleName")), "", "", AuditLogHandler.RecordType.MODULE, (String) context.get("moduleName"), reportId);
+            AuditLogHandler.AuditLogContext auditLog = new AuditLogHandler.AuditLogContext(String.format(log_message, (String)context.get("reportName"), (String) context.get("moduleName")), "", AuditLogHandler.RecordType.MODULE, (String) context.get("moduleName"), reportId);
             sendAuditLogs(auditLog);
             setData("success","deleted successfully");
         }
@@ -306,7 +306,7 @@ public class V3ReportAction extends V3Action {
         Boolean isCustomModule= reportContext.getModule().getCustom();
         long moduleId = reportContext.getModule().getModuleId();
         String moduleName = reportContext.getModule().getName();
-        AuditLogHandler.AuditLogContext auditLog = new AuditLogHandler.AuditLogContext(String.format(log_message, reportContext.getName(), moduleDisplayName), reportContext.getDescription(), "", AuditLogHandler.RecordType.MODULE, moduleName, reportContext.getId())
+        AuditLogHandler.AuditLogContext auditLog = new AuditLogHandler.AuditLogContext(String.format(log_message, reportContext.getName(), moduleDisplayName), reportContext.getDescription(), AuditLogHandler.RecordType.MODULE, moduleName, reportContext.getId())
                 .setActionType(actionType)
                 .setLinkConfig(((Function<Void, String>) o -> {
                     JSONArray array = new JSONArray();
