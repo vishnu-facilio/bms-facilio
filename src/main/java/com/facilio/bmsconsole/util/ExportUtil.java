@@ -827,7 +827,9 @@ public class ExportUtil {
 			id.setField(idField);
 			viewFields.add(id);
 		}
-		viewFields.addAll(view.getFields());
+		if(!moduleName.equals("asset")) {
+			viewFields.addAll(view.getFields());
+		}
 		if (moduleName.equals("alarm")) {
 			Iterator<ViewField> it = viewFields.iterator();	
 			while (it.hasNext()) {
