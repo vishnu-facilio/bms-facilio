@@ -16,7 +16,73 @@ import com.facilio.wmsv2.message.TopicHandler;
 
 public enum FacilioWMSFunctions implements FacilioWorkflowFunctionInterface {
 
-	SEND_MESSAGE(1,"sendMessage") {
+	SEND_MESSAGE_TO_USER(1,"sendMessageToUser") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			Map<String,Object> msgMap = (Map<String,Object>) objects[0];
+			
+			Message msg = FieldUtil.getAsBeanFromMap(msgMap, Message.class);
+			
+			msg.setTopic("__custom__/user/"+msg.getTopic());
+			
+			BaseHandler handler = Processor.getInstance().getHandler(msg.getTopic());
+			
+			if( handler.getDeliverTo() == TopicHandler.DELIVER_TO.ORG && (msg.getOrgId() == null || msg.getOrgId() < 0)) {
+				throw new FunctionParamException("Orgid cannot be null for delivery type ORG");
+			}
+			
+			if( handler.getDeliverTo() == TopicHandler.DELIVER_TO.USER && (msg.getTo() == null || msg.getTo() < 0)) {
+				throw new FunctionParamException("To cannot be null here for delivery type USER");
+			}
+
+			SessionManager.getInstance().sendMessage(msg);
+			
+			return null;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	SEND_MESSAGE_TO_ORG(2,"sendMessageToOrg") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			Map<String,Object> msgMap = (Map<String,Object>) objects[0];
+			
+			Message msg = FieldUtil.getAsBeanFromMap(msgMap, Message.class);
+			
+			msg.setTopic("__custom__/org/"+msg.getTopic());
+			
+			BaseHandler handler = Processor.getInstance().getHandler(msg.getTopic());
+			
+			if( handler.getDeliverTo() == TopicHandler.DELIVER_TO.ORG && (msg.getOrgId() == null || msg.getOrgId() < 0)) {
+				throw new FunctionParamException("Orgid cannot be null for delivery type ORG");
+			}
+			
+			if( handler.getDeliverTo() == TopicHandler.DELIVER_TO.USER && (msg.getTo() == null || msg.getTo() < 0)) {
+				throw new FunctionParamException("To cannot be null here for delivery type USER");
+			}
+
+			SessionManager.getInstance().sendMessage(msg);
+			
+			return null;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	SEND_MESSAGE(3,"sendMessage") {
 		@Override
 		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
