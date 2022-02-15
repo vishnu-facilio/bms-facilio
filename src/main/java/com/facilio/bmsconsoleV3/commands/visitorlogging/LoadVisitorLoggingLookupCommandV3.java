@@ -39,6 +39,10 @@ public class LoadVisitorLoggingLookupCommandV3 extends FacilioCommand {
 			LookupField tenant = (LookupField) fieldsAsMap.get("tenant");
 			additionaLookups.add(tenant);
 		}
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.VENDOR)) {
+			LookupField vendor = (LookupField) fieldsAsMap.get("vendor");
+			additionaLookups.add(vendor);
+		}
 		LookupField requestedBy = (LookupField) fieldsAsMap.get("requestedBy");
 
 		additionaLookups.add(visitorField);
