@@ -240,7 +240,7 @@ public class ModeledDataCommand extends AgentV2Command {
 		while (pointsList.hasNext()) {
 			String pointName = pointsList.next();
 			String pointValue = pointsMap.get(pointName);
-			if (deviceName == null || pointName == null) {
+			if (deviceName == null || pointName == null || pointValue == null) {
 				continue;
 			}
 			dataPoints = getValueContainsPointsData(deviceName, pointName, controllerId, dataPointsValue);
