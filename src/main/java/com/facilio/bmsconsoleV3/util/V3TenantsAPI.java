@@ -241,7 +241,6 @@ public class V3TenantsAPI {
                 .module(module)
                 .beanClass(V3TenantSpaceContext.class)
                 .select(fields)
-                .fetchSupplement((LookupField)tenantSpaceFieldMap.get("tenant"))
                 ;
         
         Set<Long> baseSpaceParentIds = SpaceAPI.getBaseSpaceParentIds(spaceIds);

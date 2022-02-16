@@ -115,7 +115,11 @@ public class V3RecordAPI {
     }
 
     public static <T extends ModuleBaseWithCustomFields> T getRecord (String modName, long recId, Class<T> beanClass) throws Exception {
-        List<T> records = constructBuilder(modName, Collections.singletonList(recId), beanClass).get();
+       return getRecord(modName, recId, beanClass, false);
+    }
+
+    public static <T extends ModuleBaseWithCustomFields> T getRecord (String modName, long recId, Class<T> beanClass, boolean skipScoping) throws Exception {
+        List<T> records = constructBuilder(modName, Collections.singletonList(recId), beanClass, skipScoping).get();
         if(CollectionUtils.isNotEmpty(records)) {
             return records.get(0);
         }
@@ -127,11 +131,15 @@ public class V3RecordAPI {
     private static <T extends ModuleBaseWithCustomFields> SelectRecordsBuilder<T> constructBuilder(String modName, Collection<Long> recordIds, Class<T> beanClass) throws Exception {
         return constructBuilder(modName, recordIds, beanClass, null, null);
     }
-    
-    private static <T extends ModuleBaseWithCustomFields> SelectRecordsBuilder<T> constructBuilder(String modName, Collection<Long> recordIds, Class<T> beanClass, Criteria criteria, Collection<SupplementRecord> supplements) throws Exception {
-        return constructBuilder(modName, recordIds, beanClass, criteria, supplements, null, null, null, null, null);
+
+    private static <T extends ModuleBaseWithCustomFields> SelectRecordsBuilder<T> constructBuilder(String modName, Collection<Long> recordIds, Class<T> beanClass, boolean skipScoping) throws Exception {
+        return constructBuilder(modName, recordIds, beanClass, null, null, null, null, null, null, null, skipScoping);
     }
-    private static <T extends ModuleBaseWithCustomFields> SelectRecordsBuilder<T> constructBuilder(String modName, Collection<Long> recordIds, Class<T> beanClass, Criteria criteria, Collection<SupplementRecord> supplements,String orderBy,String orderType,AggregateOperator aggregateOperator,FacilioField aggregateField,String groupBy) throws Exception {
+
+    private static <T extends ModuleBaseWithCustomFields> SelectRecordsBuilder<T> constructBuilder(String modName, Collection<Long> recordIds, Class<T> beanClass, Criteria criteria, Collection<SupplementRecord> supplements) throws Exception {
+        return constructBuilder(modName, recordIds, beanClass, criteria, supplements, null, null, null, null, null, false);
+    }
+    private static <T extends ModuleBaseWithCustomFields> SelectRecordsBuilder<T> constructBuilder(String modName, Collection<Long> recordIds, Class<T> beanClass, Criteria criteria, Collection<SupplementRecord> supplements,String orderBy,String orderType,AggregateOperator aggregateOperator,FacilioField aggregateField,String groupBy, boolean skipScoping) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(modName);
         List<FacilioField> fields = modBean.getAllFields(modName);
@@ -159,16 +167,16 @@ public class V3RecordAPI {
             FacilioUtil.throwRunTimeException((StringUtils.isEmpty(orderType) || (!StringUtils.lowerCase(orderType).equalsIgnoreCase("desc") && !StringUtils.lowerCase(orderType).equalsIgnoreCase("asc"))), "Order Type Cannot be null");
             builder.orderBy(orderBy + StringUtils.SPACE + orderType);
         }
-        
+
         if(aggregateOperator != null) {
             FacilioUtil.throwRunTimeException(aggregateField == null, "Aggregate field cannot be empty or null");
             builder.aggregate(aggregateOperator, aggregateField);
         }
-       
+
 	    if(groupBy != null) {
              builder.groupBy(groupBy);
         }
-	    
+
 	    //Cannot group by all fields without an aggregate operator
 	    if(groupBy == null && aggregateOperator != null) {
             builder.select(new HashSet<>());
@@ -176,7 +184,12 @@ public class V3RecordAPI {
 	    else {
             builder.select(fields);
 	    }
-        
+
+
+        if(skipScoping) {
+            builder.skipScopeCriteria();
+        }
+
         return builder;
     }
 
@@ -185,7 +198,7 @@ public class V3RecordAPI {
     }
 
     public static <T extends ModuleBaseWithCustomFields> List<T> getRecordsList (String modName, Collection<Long> recordIds, Class<T> beanClass) throws Exception{
-        List<T> records = constructBuilder(modName, recordIds, beanClass).get();
+        List<T> records = constructBuilder(modName, recordIds, beanClass, false).get();
         if(CollectionUtils.isNotEmpty(records)) {
             return records;
         }
@@ -207,7 +220,7 @@ public class V3RecordAPI {
     
     
     public static <T extends ModuleBaseWithCustomFields> List<T> getRecordsListWithSupplements (String modName, Collection<Long> recordIds, Class<T> beanClass, Criteria criteria, Collection<SupplementRecord> supplements) throws Exception{
-    	List<T> records = constructBuilder(modName, recordIds, beanClass, criteria, supplements).get();
+        List<T> records = constructBuilder(modName, recordIds, beanClass, criteria, supplements).get();
         if(CollectionUtils.isNotEmpty(records)) {
             return records;
         }
@@ -216,7 +229,7 @@ public class V3RecordAPI {
         }
     }
     public static <T extends ModuleBaseWithCustomFields> List<T> getRecordsListWithSupplements (String modName, Collection<Long> recordIds, Class<T> beanClass, Criteria criteria, Collection<SupplementRecord> supplements, String orderBy, String orderType) throws Exception{
-        List<T> records = constructBuilder(modName, recordIds, beanClass, criteria, supplements, orderBy, orderType, null, null, null).get();
+        List<T> records = constructBuilder(modName, recordIds, beanClass, criteria, supplements, orderBy, orderType, null, null, null, false).get();
         if(CollectionUtils.isNotEmpty(records)) {
             return records;
         }
@@ -226,14 +239,14 @@ public class V3RecordAPI {
     }
 
     public static <T extends ModuleBaseWithCustomFields> List<Map<String, Object>> getRecordsAggregateValue (String modName, Collection<Long> recordIds, Class<T> beanClass, Criteria criteria, AggregateOperator aggregateoperator, FacilioField aggregateField, String groupBy) throws Exception{
-    	
-        List<Map<String, Object>> props = constructBuilder(modName, recordIds, beanClass, criteria, null,  null,  null,  aggregateoperator,  aggregateField, groupBy).getAsProps();
+
+        List<Map<String, Object>> props = constructBuilder(modName, recordIds, beanClass, criteria, null,  null,  null,  aggregateoperator,  aggregateField, groupBy, false).getAsProps();
         if (CollectionUtils.isNotEmpty(props)) {
 	        return props;
         }
 		return null;
     }
-    
+
     public static <T extends ModuleBaseWithCustomFields> Map<Long, T> getRecordsMap (String modName, Collection<Long> recordIds) throws Exception{
         return getRecordsMap(modName, recordIds, null, null);
     }
@@ -253,12 +266,12 @@ public class V3RecordAPI {
     public static <T extends ModuleBaseWithCustomFields> Map<Long, T> getRecordsMap (String modName, Collection<Long> recordIds, Class<T> beanClass, Criteria criteria) throws Exception{
         return getRecordsMap(modName, recordIds, beanClass, criteria, null);
     }
-    
+
     public static <T extends ModuleBaseWithCustomFields> Map<Long, T> getRecordsMap (String modName, Collection<Long> recordIds, Class<T> beanClass, Criteria criteria, Collection<SupplementRecord> supplements) throws Exception{
         Map<Long, T> recordMap = constructBuilder(modName, recordIds, beanClass, criteria, supplements).getAsMap();
         return recordMap;
     }
-    
+
     public static List<? extends V3Context> getTransactionRecordsList (String modName, String sourceModName, Long sourceId) throws Exception{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(modName);

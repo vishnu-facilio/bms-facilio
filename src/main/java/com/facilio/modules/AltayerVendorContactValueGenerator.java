@@ -3,10 +3,11 @@ package com.facilio.modules;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -30,18 +31,29 @@ public class AltayerVendorContactValueGenerator extends ValueGenerator{
             props = selectAccessibleBuilder.get();
             List<Long> baseSpaceIds = new ArrayList<Long>();
             if (props != null && !props.isEmpty()) {
-                for(Map<String, Object> prop : props) {
+                for (Map<String, Object> prop : props) {
                     Long bsId = (Long) prop.get("bsid");
                     if (bsId != null) {
                         baseSpaceIds.add(bsId);
                     }
                 }
-
-                if(CollectionUtils.isNotEmpty(baseSpaceIds)) {
-                    List<Long> ids = getVendorMappingData(baseSpaceIds);
-                    if (CollectionUtils.isNotEmpty(ids)) {
-                        return StringUtils.join(ids, ",");
+            }
+            else {
+                List<BuildingContext> allBuildings = SpaceAPI.getAllBuildings();
+                if(CollectionUtils.isNotEmpty(allBuildings)) {
+                    for (BuildingContext prop : allBuildings) {
+                        Long bsId = prop.getBuildingId();
+                        if (bsId != null) {
+                            baseSpaceIds.add(bsId);
+                        }
                     }
+                }
+            }
+
+            if(CollectionUtils.isNotEmpty(baseSpaceIds)) {
+                List<Long> ids = getVendorMappingData(baseSpaceIds);
+                if (CollectionUtils.isNotEmpty(ids)) {
+                    return StringUtils.join(ids, ",");
                 }
             }
         } catch (Exception e) {
@@ -61,6 +73,7 @@ public class AltayerVendorContactValueGenerator extends ValueGenerator{
                 .select(modBean.getAllFields(module.getName()))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("building"), StringUtils.join(bsIds, ","), PickListOperators.IS))
                 ;
+        builder.skipScopeCriteria();
         List<Map<String, Object>> props = builder.getAsProps();
         if(CollectionUtils.isNotEmpty(props)) {
             for(Map<String, Object> prop : props) {
@@ -76,5 +89,30 @@ public class AltayerVendorContactValueGenerator extends ValueGenerator{
         }
 
         return null;
+    }
+
+    @Override
+    public String getValueGeneratorName() {
+        return "Altayer Vendor Contacts";
+    }
+
+    @Override
+    public String getLinkName() {
+        return "com.facilio.modules.AltayerVendorContactValueGenerator";
+    }
+
+    @Override
+    public String getModuleName() {
+        return FacilioConstants.ContextNames.VENDOR_CONTACT;
+    }
+
+    @Override
+    public Boolean getIsHidden() {
+        return true;
+    }
+
+    @Override
+    public Integer getOperatorId() {
+        return 36;
     }
 }

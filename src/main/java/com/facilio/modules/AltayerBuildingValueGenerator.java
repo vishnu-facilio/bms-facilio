@@ -6,7 +6,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
@@ -16,22 +15,25 @@ import com.facilio.modules.fields.LookupField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class AltayerVendorSiteValueGenerator extends ValueGenerator {
+public class AltayerBuildingValueGenerator extends ValueGenerator{
+
     @Override
     public Object generateValueForCondition(int appType) {
         if(appType == AppDomain.AppDomainType.VENDOR_PORTAL.getIndex()) {
             try {
                 V3VendorContext vendor = V3PeopleAPI.getVendorForUser(AccountUtil.getCurrentUser().getId(), true);
                 if (vendor != null) {
+
                     long pplId = PeopleAPI.getPeopleIdForUser(AccountUtil.getCurrentUser().getId());
-                    List<Long> siteIds = getSiteIdsFromVendorMappingData(vendor.getId() , pplId);
-                    if(CollectionUtils.isNotEmpty(siteIds)) {
-                        return StringUtils.join(siteIds, ",");
+                    List<Long> buildingIds = getBuildingIdsFromVendorMappingData(vendor.getId() , pplId);
+                    if(CollectionUtils.isNotEmpty(buildingIds)) {
+                        return StringUtils.join(buildingIds, ",");
                     }
                 }
             }
@@ -42,8 +44,33 @@ public class AltayerVendorSiteValueGenerator extends ValueGenerator {
         return null;
     }
 
-    public List<Long> getSiteIdsFromVendorMappingData(long vendorID, long pplId) throws Exception {
-        List<Long> siteIds = new ArrayList<>();
+    @Override
+    public String getValueGeneratorName() {
+        return "Altayer Vendors Buildings";
+    }
+
+    @Override
+    public String getLinkName() {
+        return "com.facilio.modules.AltayerBuildingValueGenerator";
+    }
+
+    @Override
+    public String getModuleName() {
+        return "building";
+    }
+
+    @Override
+    public Boolean getIsHidden() {
+        return true;
+    }
+
+    @Override
+    public Integer getOperatorId() {
+        return 9;
+    }
+
+    public List<Long> getBuildingIdsFromVendorMappingData(long vendorID, long pplId) throws Exception {
+        List<Long> buildingIds = new ArrayList<>();
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule("custom_vendormapping");
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
@@ -51,7 +78,6 @@ public class AltayerVendorSiteValueGenerator extends ValueGenerator {
                 .module(module)
                 .beanClass(ModuleBaseWithCustomFields.class)
                 .select(modBean.getAllFields(module.getName()))
-                .fetchSupplement((LookupField) fieldMap.get("building"))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("vendor"), String.valueOf(vendorID), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleState"), "26327", NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("contacts"), String.valueOf(pplId), PickListOperators.IS))
@@ -63,42 +89,18 @@ public class AltayerVendorSiteValueGenerator extends ValueGenerator {
             for(Map<String, Object> prop : props) {
                 Map<String, Object> building = (Map<String, Object>) prop.get("building");
                 if(MapUtils.isNotEmpty(building)) {
-                    Long siteId = (Long) building.get("siteId");
-                    if (!siteIds.contains(siteId)) {
-                        siteIds.add(siteId);
+                    Long id = (Long) building.get("id");
+                    if (!buildingIds.contains(id)) {
+                        buildingIds.add(id);
                     }
                 }
             }
-            if(CollectionUtils.isNotEmpty(siteIds)){
-                return siteIds;
+            if(CollectionUtils.isNotEmpty(buildingIds)){
+                return buildingIds;
             }
         }
 
         return null;
     }
 
-    @Override
-    public String getValueGeneratorName() {
-        return "Altayer Vendors Sites";
-    }
-
-    @Override
-    public String getLinkName() {
-        return "com.facilio.modules.AltayerVendorSiteValueGenerator";
-    }
-
-    @Override
-    public String getModuleName() {
-        return FacilioConstants.ContextNames.VENDORS;
-    }
-
-    @Override
-    public Boolean getIsHidden() {
-        return true;
-    }
-
-    @Override
-    public Integer getOperatorId() {
-        return 36;
-    }
 }
