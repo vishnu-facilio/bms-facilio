@@ -804,7 +804,7 @@ public class ModuleBeanImpl implements ModuleBean {
 				if (CollectionUtils.isNotEmpty(childProps)) {
 					map = childProps.stream().collect(Collectors.groupingBy(m -> (Long) m.get("dateFieldId"), Collectors.mapping(m1 -> m1, Collectors.toList())));
 					List<Map<String, Object>> childList = map.get(fieldId);
-					List<DayOfWeek> dayOfWeeks = new ArrayList<> ();
+					List<DayOfWeek> dayOfWeeks = null;
 					if (CollectionUtils.isNotEmpty (childList)){
 						dayOfWeeks = childList.stream().map(p -> (p.get("allowedDays") != null) ? DayOfWeek.valueOf((String) p.get("allowedDays")) : null).collect(toList());
 					}
