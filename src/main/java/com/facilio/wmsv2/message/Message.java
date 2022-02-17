@@ -47,9 +47,12 @@ public class Message
 	public LiveSessionType getSessionType() {
 		return this.sessionType;
 	}
-
 	public Message setSessionType(LiveSessionType sessionType) {
 		this.sessionType = sessionType;
+		return this;
+	}
+	public Message setSessionType(int sessionType) {
+		this.sessionType = LiveSessionType.valueOf(sessionType);
 		return this;
 	}
 	
