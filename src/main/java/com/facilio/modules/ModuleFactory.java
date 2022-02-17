@@ -416,33 +416,6 @@ public class ModuleFactory {
 		return numberModule;
 	}
 
-	public static FacilioModule getDateFieldModule() {
-		FacilioModule dateModule = new FacilioModule();
-		dateModule.setName("dateField");
-		dateModule.setDisplayName("Date Fields");
-		dateModule.setTableName("DateFields");
-		dateModule.setExtendModule(getFieldsModule());
-		return dateModule;
-	}
-
-	public static FacilioModule getStringFieldModule() {
-		FacilioModule stringModule = new FacilioModule();
-		stringModule.setName("stringField");
-		stringModule.setDisplayName("String Fields");
-		stringModule.setTableName("StringFields");
-		stringModule.setExtendModule(getFieldsModule());
-		return stringModule;
-	}
-
-	public static FacilioModule getDateFieldChildModule() {
-		FacilioModule dateModule = new FacilioModule();
-		dateModule.setName("dateFieldChild");
-		dateModule.setDisplayName("Date Field Child");
-		dateModule.setTableName("DateFieldChild");
-		dateModule.setExtendModule(getDateFieldModule());
-		return dateModule;
-	}
-
 	public static FacilioModule getBooleanFieldsModule() {
 		FacilioModule booleanModule = new FacilioModule();
 		booleanModule.setName("booleanField");

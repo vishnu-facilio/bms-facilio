@@ -964,8 +964,19 @@ public class AccountConstants {
 		 * orgId.setModule(module); fields.add(orgId);
 		 */
 
-		fields.add(FieldFactory.getNumberField(FacilioConstants.LicenseKeys.LICENSE1,"MODULE",module));
-		fields.add(FieldFactory.getNumberField(FacilioConstants.LicenseKeys.LICENSE2,"MODULE2",module));
+		FacilioField license = new FacilioField();
+		license.setName(FacilioConstants.LicenseKeys.LICENSE1);
+		license.setDataType(FieldType.NUMBER);
+		license.setColumnName("MODULE");
+		license.setModule(module);
+		fields.add(license);
+		
+		FacilioField license2 = new FacilioField();
+		license2.setName(FacilioConstants.LicenseKeys.LICENSE2);
+		license2.setDataType(FieldType.NUMBER);
+		license2.setColumnName("MODULE2");
+		license2.setModule(module);
+		fields.add(license2);
 
 		return fields;
 	}
