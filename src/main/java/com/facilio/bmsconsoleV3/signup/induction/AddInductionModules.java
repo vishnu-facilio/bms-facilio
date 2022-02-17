@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.facilio.modules.fields.*;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -60,7 +59,13 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.BooleanField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.MultiLookupField;
+import com.facilio.modules.fields.NumberField;
+import com.facilio.modules.fields.SystemEnumField;
 import com.facilio.qa.context.ResponseContext;
 import com.facilio.qa.signup.AddQAndAModules;
 import com.facilio.util.FacilioUtil;
@@ -465,8 +470,8 @@ public class AddInductionModules extends SignUpData {
         );
 
         List<FacilioField> fields = new ArrayList<>();
-
-        StringField nameField = (StringField) FieldFactory.getField("name","NAME",module,FieldType.STRING);
+        
+        FacilioField nameField = FieldFactory.getNameField(module);
         fields.add(nameField);
         
         LookupField parentField = (LookupField) FieldFactory.getDefaultField("parent", "Parent", "PARENT_ID", FieldType.LOOKUP);
