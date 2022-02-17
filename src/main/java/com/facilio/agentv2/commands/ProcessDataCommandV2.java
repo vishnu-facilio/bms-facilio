@@ -57,8 +57,8 @@ public class ProcessDataCommandV2 extends AgentV2Command {
 
                     for (Object key : pointsJSON.keySet()) {
                         String pointName = (String) key;
-                        if (containsCheck(pointName, pointsJSON)) {
-                        	pointName = pointName.trim();
+                        if (pointsJSON.containsKey(pointName)) {
+                            pointName = pointName.trim();
                             pointNames.add(pointName);
                             if (controller != null) {
                                 deviceData.get(controller.getName()).put(pointName, String.valueOf(pointsJSON.get(key)));
