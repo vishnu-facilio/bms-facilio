@@ -41,6 +41,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -960,27 +961,56 @@ public class FetchReportDataCommand extends FacilioCommand {
         }
     }
 
-    private Map<String, LookupField> getLookupFields(List<FacilioField> fields) {
-        Map<String, LookupField> lookupFields = new HashMap<>();
+    private Map<String, ArrayList<LookupField>> getLookupFields(List<FacilioField> fields) {
+        Map<String, ArrayList<LookupField>> lookupFields = new HashMap<>();
+        ArrayList<LookupField> lookupFieldList = null;
         for (FacilioField field : fields) {
             if (field.getDataTypeEnum() == FieldType.LOOKUP) {
                 LookupField lookupField = (LookupField) field;
                 if (LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
-                    lookupFields.put(lookupField.getSpecialType(), lookupField);
+                    if(lookupFields.containsKey(lookupField.getSpecialType()))
+                    {
+                        lookupFieldList = lookupFields.get(lookupField.getSpecialType());
+                        lookupFieldList.add(lookupField);
+                        lookupFields.put(lookupField.getSpecialType(), lookupFieldList);
+                    }
+                    else {
+                        lookupFieldList = new ArrayList<LookupField>();
+                        lookupFieldList.add(lookupField);
+                        lookupFields.put(lookupField.getSpecialType(), lookupFieldList);
+                    }
                 } else {
-                    lookupFields.put(lookupField.getLookupModule().getName(), lookupField);
+                    if(lookupFields.containsKey(lookupField.getLookupModule().getName())){
+                        lookupFieldList = lookupFields.get(lookupField.getLookupModule().getName());
+                        lookupFieldList.add(lookupField);
+                        lookupFields.put(lookupField.getLookupModule().getName(), lookupFieldList);
+                    }
+                    else {
+                        lookupFieldList = new ArrayList<LookupField>();
+                        lookupFieldList.add(lookupField);
+                        lookupFields.put(lookupField.getLookupModule().getName(), lookupFieldList);
+                    }
                 }
             }
         }
         return lookupFields;
     }
 
-    private void handleLookupJoin(Map<String, LookupField> lookupFields, FacilioModule module, SelectRecordsBuilder builder, Set<FacilioModule> addedModules, Long lookupfieldId) throws Exception {
+    private void handleLookupJoin(Map<String, ArrayList<LookupField>> lookupFields, FacilioModule module, SelectRecordsBuilder builder, Set<FacilioModule> addedModules, Long lookupfieldId) throws Exception {
         Stack<FacilioModule> stack = null;
         FacilioModule prevModule = null;
         while (module != null) {
             if (lookupFields.containsKey(module.getName())) {
-                LookupField lookupFieldClone = lookupFields.get(module.getName()).clone();
+                LookupField lookupFieldClone = null;
+                ArrayList<LookupField> lookupFieldsList = lookupFields.get(module.getName());
+                for(LookupField lookupField : lookupFieldsList)
+                {
+                    if (lookupfieldId != null && lookupfieldId != -1 && lookupField.getFieldId() == lookupfieldId) {
+                        lookupFieldClone = lookupField.clone();
+                        break;
+                    }
+                    lookupFieldClone = lookupField.clone();
+                }
                 if (lookupfieldId != null && lookupfieldId != -1) {
                     if (lookupFieldClone.getFieldId() == lookupfieldId) {
                         String joinOn = getJoinOn(lookupFieldClone);
@@ -1110,7 +1140,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 
         if (!reportField.getModule().equals(baseModule) && !isAlreadyAdded(addedModules, reportField.getModule()) && reportType != ReportType.PIVOT_REPORT) {        // inter-module support
             List<FacilioField> allFields = modBean.getAllFields(baseModule.getName()); // for now base module is enough
-            Map<String, LookupField> lookupFields = getLookupFields(allFields);
+            Map<String, ArrayList<LookupField>> lookupFields = getLookupFields(allFields);
             handleLookupJoin(lookupFields, reportField.getModule(), selectBuilder, addedModules, reportField.getLookupFieldId());
         } else {
             joinModuleIfRequred(reportField, selectBuilder, addedModules);
