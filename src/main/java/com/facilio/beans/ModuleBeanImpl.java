@@ -804,7 +804,10 @@ public class ModuleBeanImpl implements ModuleBean {
 				if (CollectionUtils.isNotEmpty(childProps)) {
 					map = childProps.stream().collect(Collectors.groupingBy(m -> (Long) m.get("dateFieldId"), Collectors.mapping(m1 -> m1, Collectors.toList())));
 					List<Map<String, Object>> childList = map.get(fieldId);
-					List<DayOfWeek> dayOfWeeks = childList.stream().map(p -> (p.get("allowedDays") != null) ? DayOfWeek.valueOf((String) p.get("allowedDays")) : null).collect(toList());
+					List<DayOfWeek> dayOfWeeks = new ArrayList<> ();
+					if (CollectionUtils.isNotEmpty (childList)){
+						dayOfWeeks = childList.stream().map(p -> (p.get("allowedDays") != null) ? DayOfWeek.valueOf((String) p.get("allowedDays")) : null).collect(toList());
+					}
 					prop.put("allowedDays", CollectionUtils.isEmpty(dayOfWeeks) ? FacilioDateUtil.DAY_OF_WEEKS : dayOfWeeks);
 				}else  {
 					prop.put("allowedDays", FacilioDateUtil.DAY_OF_WEEKS);
@@ -1068,8 +1071,13 @@ public class ModuleBeanImpl implements ModuleBean {
 			switch(field.getDataTypeEnum()) {
 				case NUMBER:
 				case DECIMAL:
-					FacilioUtil.throwIllegalArgumentException(!(field instanceof NumberField),"Invalid Field instance for the "+field.getDataTypeEnum()+" data type");
-					addNumberField((NumberField) field,fieldProps);
+//					FacilioUtil.throwIllegalArgumentException(!(field instanceof NumberField),"Invalid Field instance for the "+field.getDataTypeEnum()+" data type");
+					if (!(field instanceof NumberField)) {
+						LOGGER.info ("Invalid Field instance for the "+field.getDataTypeEnum()+" data type");
+						addExtendedProps (ModuleFactory.getNumberFieldModule (), FieldFactory.getNumberFieldFields (), fieldProps);
+					}else {
+						addNumberField((NumberField) field,fieldProps);
+					}
 					break;
 				case BOOLEAN:
 					if (field instanceof BooleanField) {
@@ -1172,13 +1180,21 @@ public class ModuleBeanImpl implements ModuleBean {
 					break;
 				case DATE:
 				case DATE_TIME:
-					FacilioUtil.throwIllegalArgumentException(!(field instanceof DateField), "Invalid Field instance for the " + field.getDataTypeEnum() + " data type : " + field.getClass().getSimpleName());
-					addDateField((DateField) field, fieldProps);
+//					FacilioUtil.throwIllegalArgumentException(!(field instanceof DateField), "Invalid Field instance for the " + field.getDataTypeEnum() + " data type : " + field.getClass().getSimpleName());
+					if (!(field instanceof DateField)) {
+						addExtendedProps(ModuleFactory.getDateFieldModule (), FieldFactory.getDateFieldFields (), fieldProps);
+					}else {
+						addDateField((DateField) field, fieldProps);
+					}
 					break;
 				case STRING:
 				case BIG_STRING:
-					FacilioUtil.throwIllegalArgumentException(!(field instanceof StringField), "Invalid Field instance for the " + field.getDataTypeEnum() + " data type : " + field.getClass().getSimpleName());
-					addStringField((StringField) field, fieldProps);
+//					FacilioUtil.throwIllegalArgumentException(!(field instanceof StringField), "Invalid Field instance for the " + field.getDataTypeEnum() + " data type : " + field.getClass().getSimpleName());
+					if (!(field instanceof StringField)){
+						addExtendedProps(ModuleFactory.getStringFieldModule (), FieldFactory.getStringFieldFields (), fieldProps);
+					}else {
+						addStringField((StringField) field, fieldProps);
+					}
 					break;
 				default:
 					break;
