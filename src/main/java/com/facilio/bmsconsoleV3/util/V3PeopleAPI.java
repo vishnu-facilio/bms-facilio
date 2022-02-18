@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -29,8 +30,10 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -315,7 +318,20 @@ public class V3PeopleAPI {
         return null;
     }
 
-    public static V3TenantContext getTenantForUser(long ouId) throws Exception {
+    public static V3TenantContactContext getTenantContactForUser(long ouId, boolean skipScoping) throws Exception {
+        long pplId = V3PeopleAPI.getPeopleIdForUser(ouId);
+        if (pplId <= 0) {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid People Id mapped with ORG_User");
+        }
+        FacilioContext context = V3Util.getSummary(FacilioConstants.ContextNames.TENANT_CONTACT, Collections.singletonList(pplId), null);
+        List<ModuleBaseWithCustomFields> tcList = Constants.getRecordListFromContext(context, FacilioConstants.ContextNames.TENANT_CONTACT);
+        if(CollectionUtils.isNotEmpty(tcList)) {
+            return (V3TenantContactContext) tcList.get(0);
+        }
+        return null;
+    }
+
+        public static V3TenantContext getTenantForUser(long ouId) throws Exception {
         return getTenantForUser(ouId, false);
     }
 
@@ -652,7 +668,7 @@ public class V3PeopleAPI {
         return getVendorForUser(ouId, false);
     }
 
-        public static List<Long> getTenantContactsIdsForLoggedInTenantUser(long ouid) throws Exception {
+    public static List<Long> getTenantContactsIdsForLoggedInTenantUser(long ouid) throws Exception {
         V3TenantContext tenant = V3PeopleAPI.getTenantForUser(ouid);
         if(tenant != null) {
             List<V3TenantContactContext> tenantContacts = V3PeopleAPI.getTenantContacts(tenant.getId(), false, false);
