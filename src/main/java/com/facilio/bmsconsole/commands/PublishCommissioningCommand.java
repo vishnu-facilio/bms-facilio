@@ -284,6 +284,9 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 		
 		if(!remainingRdmPairs.isEmpty()) {
 			List<ReadingDataMeta> rdmList = ReadingsAPI.getReadingDataMetaList(remainingRdmPairs);
+			if (rdmMap == null) {
+				rdmMap = new HashMap<>();
+			}
 			rdmMap.putAll(rdmList.stream().collect(Collectors.toMap(rdm -> ReadingsAPI.getRDMKey(rdm), Function.identity())));
 		}
 
