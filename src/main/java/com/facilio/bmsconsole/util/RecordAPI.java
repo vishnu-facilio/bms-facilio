@@ -211,6 +211,10 @@ public class RecordAPI {
 
 	public static FacilioField getField(String fieldName, String modName) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		String[] fieldNames = fieldName.split("\\.");
+		if(fieldNames.length > 1) {
+			fieldName = fieldNames[1];
+		}
 		return modBean.getField(fieldName, modName);
 		
 	}
