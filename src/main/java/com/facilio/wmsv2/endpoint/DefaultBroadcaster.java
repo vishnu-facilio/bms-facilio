@@ -53,7 +53,7 @@ public class DefaultBroadcaster {
 
             case USER: {
                 Long to = message.getTo();
-                Collection<LiveSession> liveSessions = SessionManager.getInstance().getLiveSessions(message.getSessionType(), to);
+                Collection<LiveSession> liveSessions = SessionManager.getInstance().getLiveSessions(message.getSessionTypeEnum(), to);
                 sendObject(liveSessions, message);
                 break;
             }
