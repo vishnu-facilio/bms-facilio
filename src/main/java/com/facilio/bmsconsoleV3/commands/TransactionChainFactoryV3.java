@@ -1335,4 +1335,25 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new GetReportFoldersCommand());
         return c;
     }
+
+    public static FacilioChain addMLServiceChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ForkChainToInstantJobCommand()
+                .addCommand(new ValidateMLServiceCommand())
+                .addCommand(new ConstructModelDetails())
+                .addCommand(new ConstructReadingForMLServiceCommand())
+                .addCommand(new InitMLServiceCommand())
+                .addCommand(new ActivateMLServiceCommand())
+                .addCommand(new TriggerMLServiceJobCommand()));
+        return c;
+    }
+
+    public static FacilioChain updateMLServiceChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ForkChainToInstantJobCommand()
+                .addCommand(new InitMLServiceCommand())
+                .addCommand(new TriggerMLServiceJobCommand()));
+        return c;
+    }
+
 }

@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsoleV3.context.V3MLServiceContext;
+import com.facilio.v3.exception.ErrorCode;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -12,11 +15,6 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.context.MLServiceContext;
-import com.facilio.bmsconsole.util.DeviceAPI;
-import com.facilio.bmsconsole.util.FacilioFrequency;
-import com.facilio.bmsconsole.util.FormulaFieldAPI;
-import com.facilio.bmsconsole.util.MLAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -35,8 +33,12 @@ public class AddLoadPredictionCommand extends FacilioCommand {
 	public boolean executeCommand(Context jc) throws Exception {
 		// TODO Auto-generated method stub
 		
-		MLServiceContext mlServiceContext = (MLServiceContext) jc.get(FacilioConstants.ContextNames.ML_MODEL_INFO);
-		
+		V3MLServiceContext mlServiceContext = (V3MLServiceContext) jc.get(FacilioConstants.ContextNames.ML_SERVICE_DATA);
+		long mlServiceId = -1;
+		if(mlServiceContext!=null) {
+			mlServiceId = mlServiceContext.getId();
+		}
+
 		try
 		{
 			LOGGER.info("Inside Load Prediction Command");
@@ -54,9 +56,9 @@ public class AddLoadPredictionCommand extends FacilioCommand {
 				fields = module != null ? modBean.getAllFields(module.getName()) : FieldFactory.getMLLoadPredictFields();
 				MLAPI.addReading(Collections.singletonList(energyMeterID),"LoadPredictionMLReadings", fields,ModuleFactory.getMLReadingModule().getTableName(),module);
 				
-				long mlID = updateLoadModel(assetContext, (JSONObject) jc.get("mlModelVariables"), (JSONObject) jc.get("mlVariables"),(String) jc.get("modelPath"));
+				long mlID = updateLoadModel(assetContext, (JSONObject) jc.get("mlModelVariables"), (JSONObject) jc.get("mlVariables"),(String) jc.get("modelPath"), mlServiceId);
 				if(mlServiceContext!=null) {
-					mlServiceContext.updateMlID(mlID);
+					mlServiceContext.setMlID(mlID);
 				}
 				scheduleJob(mlID, mlServiceContext);
 				LOGGER.info("After updating load model");
@@ -64,7 +66,7 @@ public class AddLoadPredictionCommand extends FacilioCommand {
 			}else{
 				String errMsg = energyMeterID+" energy meter is not available";
 				if(mlServiceContext!=null) {
-					mlServiceContext.updateStatus(errMsg);
+					throw MLServiceUtil.throwError(mlServiceContext, ErrorCode.VALIDATION_ERROR, errMsg);
 				}
 				LOGGER.info(errMsg);
 			}
@@ -72,22 +74,23 @@ public class AddLoadPredictionCommand extends FacilioCommand {
 		}
 		catch(Exception e)
 		{
+			e.printStackTrace();
 			String errMsg = "Error while adding Load Prediction Job";
 			if(mlServiceContext!=null) {
-				mlServiceContext.updateStatus(errMsg);
+				throw MLServiceUtil.throwError(mlServiceContext, ErrorCode.UNHANDLED_EXCEPTION, errMsg);
 			}
 			LOGGER.error(errMsg, e);
 			throw e;
 		}
 	}
 	
-	private void scheduleJob(long mlID, MLServiceContext mlServiceContext) throws Exception {
-		boolean isPastData = false;
+	private void scheduleJob(long mlID, V3MLServiceContext mlServiceContext) throws Exception {
+		boolean isHistoric = false;
 		if(mlServiceContext!=null) {
-			isPastData = mlServiceContext.isPastData();
+			isHistoric = mlServiceContext.isHistoric();
 		}
 		try {
-			if(!isPastData) {
+			if(!isHistoric) {
 				ScheduleInfo info = new ScheduleInfo();
 				info = FormulaFieldAPI.getSchedule(FacilioFrequency.DAILY);
 				MLAPI.addJobs(mlID,"DefaultMLJob",info,"ml");
@@ -95,11 +98,12 @@ public class AddLoadPredictionCommand extends FacilioCommand {
 //				FacilioTimer.scheduleOneTimeJobWithTimestampInSec(mlID, "DefaultMLJob",(executionTime/1000), "ml");
 			}
 		} catch (InterruptedException e) {
-			Thread.sleep(1000);
+			e.printStackTrace();
+			throw MLServiceUtil.throwError(mlServiceContext, ErrorCode.UNHANDLED_EXCEPTION, "Load prediction default job creation failed");
 		}
 	}
 	
-	private long updateLoadModel(EnergyMeterContext context,JSONObject mlModelVariables,JSONObject mlVariables,String modelPath) throws Exception
+	private long updateLoadModel(EnergyMeterContext context,JSONObject mlModelVariables,JSONObject mlVariables,String modelPath, long mlServiceId) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -112,7 +116,7 @@ public class AddLoadPredictionCommand extends FacilioCommand {
 		FacilioField temperatureField = modBean.getField("temperature", FacilioConstants.ContextNames.WEATHER_READING);
 		FacilioField temperatureParentField = modBean.getField("parentId", FacilioConstants.ContextNames.WEATHER_READING);
 		
-		long mlID = MLAPI.addMLModel(modelPath,logReadingModule.getModuleId(),readingModule.getModuleId());
+		long mlID = MLAPI.addMLModel(modelPath,logReadingModule.getModuleId(),readingModule.getModuleId(), mlServiceId);
 		
 		Map<String,Long> maxSamplingPeriodMap = new HashMap<String, Long>();
 		Map<String,Long> futureSamplingPeriodMap = new HashMap<String, Long>();

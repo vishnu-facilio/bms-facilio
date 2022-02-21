@@ -2183,7 +2183,7 @@ public class FacilioChainFactory {
 	
 	public static FacilioChain addMLServiceChain(boolean isDefault) {
 		FacilioChain c = FacilioChain.getNonTransactionChain();
-		c.addCommand(new PreCheckForMLServiceCommand());
+		c.addCommand(new ValidateMLServiceCommand());
 		if(isDefault) {
 			c.addCommand(new ConstructModelDetails());
 		}

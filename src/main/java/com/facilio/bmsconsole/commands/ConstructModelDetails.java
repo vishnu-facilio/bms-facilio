@@ -1,94 +1,89 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.util.DeviceAPI;
+import com.facilio.bmsconsole.util.MLServiceUtil;
+import com.facilio.bmsconsoleV3.context.V3MLServiceContext;
+import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.exception.ErrorCode;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.Logger;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Context;
-import org.apache.log4j.Logger;
+public class ConstructModelDetails extends FacilioCommand implements Serializable {
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.context.MLServiceContext;
-import com.facilio.bmsconsole.util.DeviceAPI;
-import com.facilio.bmsconsole.util.MLServiceAPI;
-import com.facilio.command.FacilioCommand;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.fields.FacilioField;
-
-public class ConstructModelDetails extends FacilioCommand {
-
-	private static final Logger LOGGER = Logger.getLogger(InitMLServiceCommand.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(ConstructModelDetails.class.getName());
+	private V3MLServiceContext mlServiceContext;
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
+		mlServiceContext = (V3MLServiceContext) context.get(MLServiceUtil.MLSERVICE_CONTEXT);
 
-		MLServiceContext mlServiceContext = (MLServiceContext) context.get(FacilioConstants.ContextNames.ML_MODEL_INFO);
-
+		if (!mlServiceContext.getServiceType().equals("default")) {
+			return false;
+		}
 		try {
-			List<Long> assetIds = mlServiceContext.getAssetList();
-
-			List<List<Map<String, Object>>> models = new ArrayList<List<Map<String,Object>>>();
-			switch(mlServiceContext.getModelName()){
-			case "energyprediction":{
-				long energyMeterID = assetIds.get(0);
-				EnergyMeterContext assetContext = DeviceAPI.getEnergyMeter(energyMeterID);
-				List<Map<String, Object>> model = new ArrayList<Map<String,Object>>();
-				model.add(getEnergyReading(assetContext.getId()));
-				model.add(getTemperatureReading(assetContext.getSiteId()));
-				models.add(model);
-				break;
-			}
-			case "loadprediction":{
-				long energyMeterID = assetIds.get(0);
-				EnergyMeterContext assetContext = DeviceAPI.getEnergyMeter(energyMeterID);
-				List<Map<String, Object>> model = new ArrayList<Map<String,Object>>();
-				model.add(getPowerReading(assetContext.getId()));
-				model.add(getTemperatureReading(assetContext.getSiteId()));
-				models.add(model);
-				break;
-			}
-			case "energyanomaly":{
-				for(long energyMeterID : assetIds) {
-					EnergyMeterContext assetContext = DeviceAPI.getEnergyMeter(energyMeterID);
-					List<Map<String, Object>> model = new ArrayList<Map<String,Object>>();
+			List<List<Map<String, Object>>> models = new ArrayList<>();
+			switch (mlServiceContext.getModelName()) {
+				case "energyprediction": {
+					long energyMeterID = mlServiceContext.getParentAssetId();
+					EnergyMeterContext assetContext = getEnergyMeter(energyMeterID);
+					List<Map<String, Object>> model = new ArrayList<>();
 					model.add(getEnergyReading(assetContext.getId()));
 					model.add(getTemperatureReading(assetContext.getSiteId()));
 					models.add(model);
+					break;
 				}
-				break;
+				case "loadprediction": {
+					long energyMeterID = mlServiceContext.getParentAssetId();
+					EnergyMeterContext assetContext = getEnergyMeter(energyMeterID);
+					List<Map<String, Object>> model = new ArrayList<>();
+					model.add(getPowerReading(assetContext.getId()));
+					model.add(getTemperatureReading(assetContext.getSiteId()));
+					models.add(model);
+					break;
+				}
+				case "energyanomaly": {
+					List<Long> assetIds = MLServiceUtil.getAllAssetIds(mlServiceContext);
+					for (long energyMeterID : assetIds) {
+						EnergyMeterContext assetContext = getEnergyMeter(energyMeterID);
+						List<Map<String, Object>> model = new ArrayList<>();
+						model.add(getEnergyReading(assetContext.getId()));
+						model.add(getTemperatureReading(assetContext.getSiteId()));
+						models.add(model);
+					}
+					break;
+				}
+				default: {
+					String errMsg = "Given modelname is not available";
+					throw MLServiceUtil.throwError(mlServiceContext, ErrorCode.VALIDATION_ERROR, errMsg);
+				}
 			}
-			default :{
-				String errMsg = "Given modelname is not available";
-				LOGGER.fatal(errMsg);
-				mlServiceContext.updateStatus(errMsg);
-				return true;
-			}
-			}
-			mlServiceContext.setModels(models);
-			mlServiceContext.updateReadingVariables();
-			updateModels(mlServiceContext);
-			LOGGER.info("Constructed Models successfully for usecase id "+mlServiceContext.getUseCaseId());
-
-		}catch(Exception e) {
+			mlServiceContext.setModelReadings(models);
+			MLServiceUtil.updateMLStatus(mlServiceContext, "Default models construction completed successfully");
+			LOGGER.info("Constructed Models successfully for id " + mlServiceContext.getId());
+		} catch (Exception e) {
 			e.printStackTrace();
-			String errMsg = "Failed in predefined model constructions";
-			if(mlServiceContext!=null) {
-				mlServiceContext.updateStatus(errMsg);
-			}
-			LOGGER.info("Failed in ConstructModelDetails for usecase id "+mlServiceContext.getUseCaseId());
-			return true;
+			throw MLServiceUtil.throwError(mlServiceContext, ErrorCode.UNHANDLED_EXCEPTION, "ConstructModel failed");
 		}
 		return false;
-
 	}
 
-	private void updateModels(MLServiceContext mlServiceContext) throws Exception {
-		Map<String, Object> row = new HashMap<>();
-		row.put("mlModelMeta", mlServiceContext.getRequestMeta().toString());
-		MLServiceAPI.updateMLService(mlServiceContext.getUseCaseId(), row);
+	private EnergyMeterContext getEnergyMeter(long energyMeterID) throws Exception {
+		EnergyMeterContext energyMeterContext = DeviceAPI.getEnergyMeter(energyMeterID);
+		if(energyMeterContext == null) {
+			throw MLServiceUtil.throwError(mlServiceContext, ErrorCode.VALIDATION_ERROR, "Given asset id not found");
+		}
+		return energyMeterContext;
 	}
 
 	private Map<String, Object> getEnergyReading(long energyId) throws Exception {
@@ -101,7 +96,7 @@ public class ConstructModelDetails extends FacilioCommand {
 		return energyReading;
 
 	}
-	
+
 	private Map<String, Object> getPowerReading(long energyId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField energyField = modBean.getField("totalDemand", FacilioConstants.ContextNames.ENERGY_DATA_READING);

@@ -197,10 +197,10 @@
                	 <br>
                	 <br>
       <div class="useinput">
-        <label for="scenario"><h5>Prediction name</h5></label>
-            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+        <label for="projectname"><h5>Project name</h5></label>
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
         
-        <textarea id="scenario" name="scenario" placeholder="Enter Prediction name" rows=100 cols=1000/></textarea>
+        <textarea id="projectname" name="projectname" placeholder="Enter Project name" rows=100 cols=1000/></textarea>
       </div><br><br><br>
       
 

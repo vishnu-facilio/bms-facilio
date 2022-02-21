@@ -10,7 +10,9 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.StringJoiner;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 
@@ -33,8 +35,6 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.taskengine.job.JobContext;
-
-;
 
 public class MLUtil 
 {
@@ -305,7 +305,46 @@ public class MLUtil
 		return mlContextList;	
 		
 	}
-	
+
+	public static boolean deleteML(long mlId) {
+
+		try {
+			Condition mlIDCondition = CriteriaAPI.getCondition("ML_ID", "mlID", String.valueOf(mlId), NumberOperators.EQUALS);
+
+			GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder()
+					.table(ModuleFactory.getMLModelVariablesModule().getTableName())
+					.andCondition(mlIDCondition);
+			deleteRecordBuilder.delete();
+
+			deleteRecordBuilder = new GenericDeleteRecordBuilder()
+					.table(ModuleFactory.getMLVariablesModule().getTableName())
+					.andCondition(mlIDCondition);
+			deleteRecordBuilder.delete();
+
+			deleteRecordBuilder = new GenericDeleteRecordBuilder()
+					.table(ModuleFactory.getMLAssetVariablesModule().getTableName())
+					.andCondition(mlIDCondition);
+			deleteRecordBuilder.delete();
+
+			deleteRecordBuilder = new GenericDeleteRecordBuilder()
+					.table(ModuleFactory.getMLCriteriaVariablesModule().getTableName())
+					.andCondition(mlIDCondition);
+			deleteRecordBuilder.delete();
+
+//			FacilioModule mlModule = ModuleFactory.getMLModule();
+//			deleteRecordBuilder = new GenericDeleteRecordBuilder()
+//					.table(mlModule.getTableName())
+//					.andCondition(CriteriaAPI.getIdCondition(mlId, mlModule));
+//			deleteRecordBuilder.delete();
+
+		} catch (Exception e) {
+			LOGGER.info("Failed to delete ml :"+mlId, e);
+			return false;
+		}
+
+		return true;
+	}
+
 	private static List<Map<String,Object>> get(FacilioModule module,List<FacilioField> fieldList,MLContext mlContext) throws Exception
 	{
 		Condition mlIDCondition=CriteriaAPI.getCondition("ML_ID",String.valueOf(mlContext.getId()), String.valueOf(mlContext.getId()),NumberOperators.EQUALS);

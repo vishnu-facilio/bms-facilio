@@ -507,7 +507,7 @@ public class FacilioConstants {
 		public static final String MULTIVARIATE_ANOMALY_EVENT ="multivariateanomalyevent";
 		
 //		public static final String ML_USECASE_ID = "mlUsecaseId";
-		public static final String ML_MODEL_INFO = "modelInfo";
+		public static final String ML_SERVICE_DATA = "mlServiceData";
 //		public static final String ML_MODEL_NAME = "modelName";
 //		public static final String ML_FILTER = "filteringMethod";
 //		public static final String ML_GROUP = "groupingMethod";

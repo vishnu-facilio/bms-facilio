@@ -1,11 +1,10 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.modules.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
@@ -31,13 +30,7 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.taskengine.ScheduleInfo;
@@ -146,10 +139,13 @@ public class MLAPI {
 		
 	}
 	
-	public static long addMLModel(String modelPath,long logReadingModuleID,long readingModuleID) throws Exception
+	public static long addMLModel(String modelPath, long logReadingModuleID, long readingModuleID, long mlServiceId) throws Exception
 	{
 		MLContext mlContext = new MLContext();
 		mlContext.setModelPath(modelPath);
+		if(mlServiceId!=-1) {
+			mlContext.setMlServiceID(mlServiceId);
+		}
 		if(logReadingModuleID!=-1)
 		{
 			mlContext.setPredictionLogModuleID(logReadingModuleID);
@@ -221,7 +217,28 @@ public class MLAPI {
 
 		builder.insert(FieldUtil.getAsProperties(context));
 	}
-	
+
+	public static void updateMLModelVariables(MLModelVariableContext mlModelVariableContext) throws Exception
+	{
+		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getMLModelVariablesModule().getTableName())
+				.fields(FieldFactory.getMLModelVariablesFields())
+				.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(mlModelVariableContext.getId()), NumberOperators.EQUALS));
+
+		builder.update(FieldUtil.getAsProperties(mlModelVariableContext));
+	}
+
+	public static void updateMLVariables(MLVariableContext mlVariableContext) throws Exception
+	{
+		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getMLVariablesModule().getTableName())
+				.fields(FieldFactory.getMLVariablesFields())
+				.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(mlVariableContext.getId()), NumberOperators.EQUALS));
+
+		builder.update(FieldUtil.getAsProperties(mlVariableContext));
+	}
+
+
 	public static void addMLVariables(long mlID,long moduleid,long fieldid,long parentFieldid,long parentid,long maxSamplingPeriod,long futureSamplingPeriod,boolean isSource,String aggregation) throws Exception
 	{
 		MLVariableContext variableContext = new MLVariableContext();
@@ -245,7 +262,7 @@ public class MLAPI {
 	public static void addMLAssetVariables(long mlId,long parentid,String key,String value) throws Exception
 	{
 		MLAssetVariableContext context = new MLAssetVariableContext();
-		context.setMlId(mlId);
+		context.setMlID(mlId);
 		context.setAssetID(parentid);
 		context.setVariableKey(key);
 		context.setVariableValue(value);

@@ -1,33 +1,33 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-
-import org.apache.commons.chain.Context;
-import org.apache.log4j.Logger;
-
 import com.facilio.bmsconsole.context.MLResponseContext;
-import com.facilio.bmsconsole.context.MLServiceContext;
+import com.facilio.bmsconsole.util.MLServiceUtil;
+import com.facilio.bmsconsoleV3.context.V3MLServiceContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.Logger;
 
-public class UpdateJobDetailsForMLCommand extends FacilioCommand {
+import java.io.Serializable;
+import java.util.List;
+
+public class UpdateJobDetailsForMLCommand extends FacilioCommand implements Serializable {
 
 	private static final Logger LOGGER = Logger.getLogger(UpdateJobDetailsForMLCommand.class.getName());
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-
-		MLServiceContext mlServiceContext = (MLServiceContext) context.get(FacilioConstants.ContextNames.ML_MODEL_INFO);
+		V3MLServiceContext mlServiceContext = (V3MLServiceContext) context.get(MLServiceUtil.MLSERVICE_CONTEXT);
 		try {
 
-			LOGGER.info("Start of UpdateJobDetailsForMLCommand for usecase id "+mlServiceContext.getUseCaseId());
+			LOGGER.info("Start of UpdateJobDetailsForMLCommand for usecase id "+mlServiceContext.getId());
 			//TODO : update ml api result in ml_models table
 			List<MLResponseContext> mlResponseList = mlServiceContext.getMlResponseList();
 			//MLResponseContext mlResponse = mlServiceContext.getMlResponse();
 			boolean activateMLJob = true; 
-			if (mlResponseList==null || mlResponseList.size() != mlServiceContext.getModels().size()) {
+			if (mlResponseList==null || mlResponseList.size() != mlServiceContext.getModelReadings().size()) {
 				activateMLJob = false;
 			}
 			for(MLResponseContext mlResponse : mlResponseList) {
@@ -40,7 +40,7 @@ public class UpdateJobDetailsForMLCommand extends FacilioCommand {
 				// initiate the ml jobs
 				FacilioChain chain = FacilioChainFactory.activateMLServiceChain();
 				FacilioContext chainContext = chain.getContext();
-				chainContext.put(FacilioConstants.ContextNames.ML_MODEL_INFO, mlServiceContext);
+				chainContext.put(FacilioConstants.ContextNames.ML_SERVICE_DATA, mlServiceContext);
 				chain.execute();
 			} 
 
