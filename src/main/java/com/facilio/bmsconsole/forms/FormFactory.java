@@ -2942,6 +2942,7 @@ public class FormFactory {
 		fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.OPTIONAL, 6, 1));
 		fields.add(new FormField("urgency", FieldDisplayType.LOOKUP_SIMPLE, "Urgency", Required.OPTIONAL, "servicerequestpriority", 7, 1));
 		fields.add(new FormField("classification", FieldDisplayType.SELECTBOX, "Classification", Required.OPTIONAL, "classification" , 8, 1));
+		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "attachment", 8, 1));
 		return fields;
 	}
 

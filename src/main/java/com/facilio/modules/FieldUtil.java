@@ -882,7 +882,7 @@ public class FieldUtil {
 	}
 	
 	private static final List<String> RECORD_ID_AS_ID_MODULES = Collections.unmodifiableList(Arrays.asList(new String[] {
-			ContextNames.ASSET
+			ContextNames.ASSET, ContextNames.SERVICE_REQUEST
 	}));
 	public static String getRecordIdFieldName (@NonNull FacilioModule module) {
 		return RECORD_ID_AS_ID_MODULES.contains(module.getName()) ? "ID" : "Record ID";
