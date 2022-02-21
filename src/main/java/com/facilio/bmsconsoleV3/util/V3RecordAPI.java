@@ -228,8 +228,13 @@ public class V3RecordAPI {
             return null;
         }
     }
+
     public static <T extends ModuleBaseWithCustomFields> List<T> getRecordsListWithSupplements (String modName, Collection<Long> recordIds, Class<T> beanClass, Criteria criteria, Collection<SupplementRecord> supplements, String orderBy, String orderType) throws Exception{
-        List<T> records = constructBuilder(modName, recordIds, beanClass, criteria, supplements, orderBy, orderType, null, null, null, false).get();
+        return getRecordsListWithSupplements(modName, recordIds, beanClass, criteria, supplements, orderBy, orderType, false);
+    }
+
+    public static <T extends ModuleBaseWithCustomFields> List<T> getRecordsListWithSupplements (String modName, Collection<Long> recordIds, Class<T> beanClass, Criteria criteria, Collection<SupplementRecord> supplements, String orderBy, String orderType, boolean skipScoping) throws Exception{
+        List<T> records = constructBuilder(modName, recordIds, beanClass, criteria, supplements, orderBy, orderType, null, null, null, skipScoping).get();
         if(CollectionUtils.isNotEmpty(records)) {
             return records;
         }

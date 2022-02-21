@@ -26,7 +26,7 @@ public class AltayerAudienceValueGenerator extends ValueGenerator{
             Criteria criteria = new Criteria();
 
             if (appType == AppDomain.AppDomainType.TENANT_PORTAL.getIndex()) {
-                V3TenantContactContext tenantContact = V3PeopleAPI.getTenantContactForUser(AccountUtil.getCurrentUser().getId(), true);
+                V3TenantContactContext tenantContact = AltayerTenantSiteValueGenerator.getTenantContactForUser(AccountUtil.getCurrentUser().getId());
                 List<Long> ids = new ArrayList<>();
 
                 if (tenantContact != null) {

@@ -21,7 +21,7 @@ public class AltayerTenantUserValueGenerator extends ValueGenerator {
     public Object generateValueForCondition(int appType) {
         if(appType == AppDomain.AppDomainType.TENANT_PORTAL.getIndex()) {
             try {
-                V3TenantContactContext tenantContact = V3PeopleAPI.getTenantContactForUser(AccountUtil.getCurrentUser().getId(), true);
+                V3TenantContactContext tenantContact = AltayerTenantSiteValueGenerator.getTenantContactForUser(AccountUtil.getCurrentUser().getId());
                 if(tenantContact != null) {
                     List<Long> ids = new ArrayList<>();
                     Map<String, Object> map = FieldUtil.getAsProperties(tenantContact);

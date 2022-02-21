@@ -30,6 +30,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.MultiLookupField;
+import com.facilio.modules.fields.MultiLookupMeta;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -318,20 +320,7 @@ public class V3PeopleAPI {
         return null;
     }
 
-    public static V3TenantContactContext getTenantContactForUser(long ouId, boolean skipScoping) throws Exception {
-        long pplId = V3PeopleAPI.getPeopleIdForUser(ouId);
-        if (pplId <= 0) {
-            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid People Id mapped with ORG_User");
-        }
-        FacilioContext context = V3Util.getSummary(FacilioConstants.ContextNames.TENANT_CONTACT, Collections.singletonList(pplId), null);
-        List<ModuleBaseWithCustomFields> tcList = Constants.getRecordListFromContext(context, FacilioConstants.ContextNames.TENANT_CONTACT);
-        if(CollectionUtils.isNotEmpty(tcList)) {
-            return (V3TenantContactContext) tcList.get(0);
-        }
-        return null;
-    }
-
-        public static V3TenantContext getTenantForUser(long ouId) throws Exception {
+    public static V3TenantContext getTenantForUser(long ouId) throws Exception {
         return getTenantForUser(ouId, false);
     }
 
