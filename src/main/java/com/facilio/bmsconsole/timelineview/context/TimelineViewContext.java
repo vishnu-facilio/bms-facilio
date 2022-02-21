@@ -11,6 +11,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 public class TimelineViewContext extends FacilioView {
 
     private long startDateFieldId;
@@ -107,6 +111,15 @@ public class TimelineViewContext extends FacilioView {
         this.disableWeekends = disableWeekends;
     }
 
+    @JsonInclude
+    private boolean disablePastEvents;
+    public boolean isDisablePastEvents() {
+        return disablePastEvents;
+    }
+    public void setDisablePastEvents(boolean disablePastEvents) {
+        this.disablePastEvents = disablePastEvents;
+    }
+
     private long weekendId;
     public long getWeekendId() { return weekendId; }
     public void setWeekendId(long weekendId) { this.weekendId = weekendId; }
@@ -148,4 +161,45 @@ public class TimelineViewContext extends FacilioView {
         this.recordCustomization = recordCustomization;
     }
 
+    private CalendarViewType defaultCalendarView;
+    public int getDefaultCalendarView() {
+        if(defaultCalendarView != null) {
+            return defaultCalendarView.getIntVal();
+        }
+        return CalendarViewType.DAY.getIntVal();
+    }
+    public void setDefaultCalendarView(int defaultCalendarView) {
+        this.defaultCalendarView = CalendarViewType.TYPE_MAP.get(defaultCalendarView);
+    }
+    public void setDefaultCalendarView(CalendarViewType defaultCalendarView) {
+        this.defaultCalendarView = defaultCalendarView;
+    }
+
+    public static enum CalendarViewType {
+        DAY(1),
+        WEEK(2),
+        MONTH(3);
+
+        private int intVal;
+
+        private CalendarViewType(int val) {
+            // TODO Auto-generated constructor stub
+            this.intVal = val;
+        }
+        public static CalendarViewType getCalendarViewType(int val){
+            return TYPE_MAP.get(val);
+        }
+        public int getIntVal() {
+            return intVal;
+        }
+
+        private static final Map<Integer, CalendarViewType> TYPE_MAP = Collections.unmodifiableMap(initTypeMap());
+        private static Map<Integer, CalendarViewType> initTypeMap() {
+            Map<Integer, CalendarViewType> typeMap = new HashMap<>();
+            for(CalendarViewType type : values()) {
+                typeMap.put(type.getIntVal(), type);
+            }
+            return typeMap;
+        }
+    }
 }

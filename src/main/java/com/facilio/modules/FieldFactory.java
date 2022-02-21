@@ -8343,6 +8343,8 @@ public class FieldFactory extends BaseFieldFactory {
         list.add(getField("allowReAssignment", "ALLOW_REASSIGNMENT", module, FieldType.BOOLEAN));
         list.add(getField("allowPastAssignment", "ALLOW_PAST_ASSIGNMENT", module, FieldType.BOOLEAN));
         list.add(getField("allowCreate", "ALLOW_CREATE", module, FieldType.BOOLEAN));
+        list.add(getField("disablePastEvents", "DISABLE_PAST_EVENTS", module, FieldType.BOOLEAN));
+        list.add(getNumberField("defaultCalendarView", "DEFAULT_CALENDAR_VIEW", module));
         list.add(getField("disableWeekends", "DISABLE_WEEKENDS", module, FieldType.BOOLEAN));
         list.add(getNumberField("weekendId", "WEEKENDID", module));
         list.add(getStringField("configJson", "CONFIG_JSON", module));
