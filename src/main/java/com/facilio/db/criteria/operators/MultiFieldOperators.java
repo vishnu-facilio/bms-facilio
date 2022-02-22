@@ -68,7 +68,30 @@ public enum MultiFieldOperators implements Operator<String> {
 			}
 			return null;
 		}
-	};
+	},
+	IS_EMPTY (104, "is empty") {
+		@Override
+		public String getWhereClause(String fieldName, String value) {
+			return isEmptyQuery(fieldName, true);
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			return null;
+		}
+	},
+	IS_NOT_EMPTY (105, "is not empty") {
+		@Override
+		public String getWhereClause(String fieldName, String value) {
+			return isEmptyQuery(fieldName, false);
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			return null;
+		}
+	},
+	;
 
 	private static final Logger LOGGER = LogManager.getLogger(MultiFieldOperators.class.getName());
 
@@ -107,7 +130,7 @@ public enum MultiFieldOperators implements Operator<String> {
 
 	@Override
 	public List<Object> computeValues(String value) {
-		if (isPlaceholder(value)) {
+		if (value != null && isPlaceholder(value)) {
 			Object val = getResolvedVal(value);
 			if (val != null) {
 				return Collections.singletonList(val); 
@@ -124,6 +147,62 @@ public enum MultiFieldOperators implements Operator<String> {
 	@Override
 	public boolean useFieldName() {
 		return true;
+	}
+	
+	private static String isEmptyQuery(String fieldName, boolean isEmpty) {
+		try {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				String[] module = fieldName.split("\\.");
+				if(module.length > 1) {
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					FacilioField field = modBean.getField(module[1], module[0]);
+					
+					FacilioModule relModule = null;
+					String parentName = null;
+					String childName = null;
+					if (field instanceof MultiLookupField) {
+						MultiLookupField multiField = (MultiLookupField)field;
+						relModule = multiField.getRelModule();
+						parentName = multiField.parentColumnName();
+						childName = multiField.childColumnName();
+					}
+					else if (field instanceof MultiEnumField) {
+						MultiEnumField multiField = (MultiEnumField)field;
+						relModule = multiField.getRelModule();
+						parentName = multiField.parentColumnName();
+						childName = multiField.valueColumnName();
+					}
+
+					if(module != null) {
+						StringBuilder builder = new StringBuilder();
+
+						builder.append(field.getTableName()).append(".ID");
+						if (isEmpty) {
+							builder.append(" NOT IN");
+						}
+						else {
+							builder.append(" IN");
+						}
+						builder.append(" (SELECT ")
+						.append(parentName).append(" FROM ")
+						.append(relModule.getTableName())
+						.append(" WHERE")
+						.append(" ORGID = ").append(AccountUtil.getCurrentOrg().getOrgId()).append(" AND")
+						.append(" MODULEID = ").append(relModule.getModuleId())
+						.append(" GROUP BY ").append(parentName)
+						;
+
+						builder.append(")");
+						
+						return builder.toString();
+					}
+				}
+				
+			}
+		} catch (Exception e) {
+			LOGGER.info("Exception occurred ", e);
+		}
+		return null;
 	}
 
 	private static String containValues(String fieldName, String value, boolean contains) {
