@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import javax.xml.bind.JAXBContext;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.templates.*;
 import com.facilio.bmsconsoleV3.context.EmailFromAddress;
 import com.facilio.emailtemplate.context.EMailStructure;
 import com.facilio.emailtemplate.util.EmailStructureUtil;
@@ -48,29 +49,10 @@ import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.templates.AssignmentTemplate;
-import com.facilio.bmsconsole.templates.CallTemplate;
-import com.facilio.bmsconsole.templates.ControlActionTemplate;
-import com.facilio.bmsconsole.templates.DefaultTemplate;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
-import com.facilio.bmsconsole.templates.DefaultTemplateWorkflowsConf;
 import com.facilio.bmsconsole.templates.DefaultTemplateWorkflowsConf.TemplateWorkflowConf;
-import com.facilio.bmsconsole.templates.EMailTemplate;
-import com.facilio.bmsconsole.templates.FormTemplate;
-import com.facilio.bmsconsole.templates.JSONTemplate;
-import com.facilio.bmsconsole.templates.PrerequisiteApproversTemplate;
 import com.facilio.bmsconsole.templates.PrerequisiteApproversTemplate.SharingType;
-import com.facilio.bmsconsole.templates.PushNotificationTemplate;
-import com.facilio.bmsconsole.templates.SLATemplate;
-import com.facilio.bmsconsole.templates.SMSTemplate;
-import com.facilio.bmsconsole.templates.TaskSectionTemplate;
-import com.facilio.bmsconsole.templates.TaskTemplate;
-import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.Template.Type;
-import com.facilio.bmsconsole.templates.WebNotificationTemplate;
-import com.facilio.bmsconsole.templates.WhatsappMessageTemplate;
-import com.facilio.bmsconsole.templates.WorkflowTemplate;
-import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsoleV3.context.EmailFromAddress;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -264,6 +246,21 @@ public class TemplateAPI {
 		}
 		
 		return id;
+	}
+
+	public static void setAttachments(List<Map<String, Object>> attachmentsJson, Template emailTemplate) {
+		if (CollectionUtils.isNotEmpty(attachmentsJson)) {
+			for (Map<String, Object> attachmentMap: attachmentsJson) {
+				int typeInt = (int)(long)attachmentMap.get("type");
+				TemplateAttachmentType type = TemplateAttachmentType.valueOf(typeInt);
+				TemplateAttachment attachment = FieldUtil.getAsBeanFromMap(attachmentMap, type.getAttachmentClass());
+				emailTemplate.addAttachment(attachment);
+			}
+			emailTemplate.setIsAttachmentAdded(true);
+		}
+		else {
+			emailTemplate.setIsAttachmentAdded(false);
+		}
 	}
 	
 	public static List<Template> getTemplatesOfType(Type type) throws Exception {
@@ -963,6 +960,12 @@ public class TemplateAPI {
 
 		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
 
+		if (template.getEmailStructureId() > 0) {
+			Template emailStructure = TemplateAPI.getTemplate(template.getEmailStructureId());
+			if (emailStructure instanceof EMailStructure) {
+				template.setEmailStructure((EMailStructure) emailStructure);
+			}
+		}
 		try (InputStream body = FacilioFactory.getFileStore(superAdmin.getId()).readFile(template.getBodyId())) {
 			template.setMessage(IOUtils.toString(body));
 		} catch (Exception e) {
@@ -1863,7 +1866,7 @@ public class TemplateAPI {
 		return (long) templateProps.get("id");
 	}
 	
-	private static void addDefaultProps(Template template) throws Exception {
+	public static void addDefaultProps(Template template) throws Exception {
 		template.setOrgId(AccountUtil.getCurrentOrg().getId());
 		JSONArray placeholders = getPlaceholders(template);
 		template.setPlaceholder(placeholders);
@@ -1876,6 +1879,16 @@ public class TemplateAPI {
 				template.setUserWorkflowId(WorkflowUtil.addWorkflow(template.getUserWorkflow()));
 			}
 			template.setWorkflowId(WorkflowUtil.addWorkflow(template.getWorkflow()));
+		}
+	}
+
+	public static void deleteDefaultProps(Template template) throws Exception {
+		template.setPlaceholder(null);
+		if (template.getWorkflowId() > 0) {
+			WorkflowUtil.deleteWorkflow(template.getWorkflowId());
+		}
+		if (template.getUserWorkflowId() > 0) {
+			WorkflowUtil.deleteWorkflow(template.getUserWorkflowId());
 		}
 	}
 	

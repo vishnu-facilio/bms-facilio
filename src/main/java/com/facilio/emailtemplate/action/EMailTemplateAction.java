@@ -8,6 +8,9 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.emailtemplate.context.EMailStructure;
 
+import java.util.List;
+import java.util.Map;
+
 public class EMailTemplateAction extends FacilioAction {
 
     private String moduleName;
@@ -36,11 +39,20 @@ public class EMailTemplateAction extends FacilioAction {
         this.emailStructure = emailStructure;
     }
 
+    private List<Map<String, Object>> attachmentList;
+    public List<Map<String, Object>> getAttachmentList() {
+        return attachmentList;
+    }
+    public void setAttachmentList(List<Map<String, Object>> attachmentList) {
+        this.attachmentList = attachmentList;
+    }
+
     public String addOrUpdate() throws Exception {
         FacilioChain chain = TransactionChainFactory.getAddOrUpdateEmailStructureChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
         context.put(FacilioConstants.ContextNames.EMAIL_STRUCTURE, emailStructure);
+        context.put(FacilioConstants.ContextNames.ATTACHMENT_LIST, attachmentList);
 
         chain.execute();
         setResult(FacilioConstants.ContextNames.EMAIL_STRUCTURE, context.get(FacilioConstants.ContextNames.EMAIL_STRUCTURE));

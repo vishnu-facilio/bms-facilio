@@ -6,7 +6,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
@@ -564,6 +563,10 @@ public class ActionAPI {
 		emailTemplate.setSubject((String) action.getTemplateJson().get("subject"));
 		emailTemplate.setMessage((String) action.getTemplateJson().get("message"));
 		emailTemplate.setType(Type.EMAIL);
+
+		if (action.getTemplateJson().containsKey("emailStructureId")) {
+			emailTemplate.setEmailStructureId((Long) action.getTemplateJson().get("emailStructureId"));
+		}
 				
 		if (action.getTemplateJson().containsKey("sendAsSeparateMail")) {
 			emailTemplate.setSendAsSeparateMail((Boolean) action.getTemplateJson().get("sendAsSeparateMail"));
@@ -575,26 +578,14 @@ public class ActionAPI {
 			emailTemplate.setHtml((Boolean) action.getTemplateJson().get("html"));
 		}
 		
-		List<Map<String, Object>> attachmentsJson = (List<Map<String, Object>>) action.getTemplateJson().get("attachmentList");
-		if (CollectionUtils.isNotEmpty(attachmentsJson)) {
-			for (Map<String, Object> attachmentMap: attachmentsJson) {
-				int typeInt = (int)(long)attachmentMap.get("type");
-				TemplateAttachmentType type = TemplateAttachmentType.valueOf(typeInt);
-				TemplateAttachment attachment = FieldUtil.getAsBeanFromMap(attachmentMap, type.getAttachmentClass());
-				emailTemplate.addAttachment(attachment);
-			}
-			emailTemplate.setIsAttachmentAdded(true);
-		}
-		else {
-			emailTemplate.setIsAttachmentAdded(false);
-		}
+		TemplateAPI.setAttachments((List<Map<String, Object>>) action.getTemplateJson().get("attachmentList"), emailTemplate);
 		
 		action.setTemplate(emailTemplate);
 		
 		checkAndSetWorkflow(action.getTemplateJson(), emailTemplate);
 		checkAndSetUserWorkflow(action.getTemplateJson(), emailTemplate);
 	}
-	
+
 	private static void setSMSTemplate(ActionContext action) {
 		SMSTemplate smsTemplate = new SMSTemplate();
 		String toPhones = action.getTemplateJson().get("to").toString();

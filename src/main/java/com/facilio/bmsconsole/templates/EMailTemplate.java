@@ -6,6 +6,9 @@ import org.json.simple.JSONObject;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import java.util.List;
+import java.util.Map;
+
 public class EMailTemplate extends Template {
 	/**
 	 *
@@ -68,6 +71,9 @@ public class EMailTemplate extends Template {
 
 	private String subject;
 	public String getSubject() {
+		if (emailStructure != null) {
+			return emailStructure.getSubject();
+		}
 		return subject;
 	}
 	public void setSubject(String subject) {
@@ -84,6 +90,9 @@ public class EMailTemplate extends Template {
 	
 	private String message;
 	public String getMessage() {
+		if (emailStructure != null) {
+			return emailStructure.getMessage();
+		}
 		return message;
 	}
 	public void setMessage(String message) {
@@ -104,6 +113,47 @@ public class EMailTemplate extends Template {
 	}
 	public void setEmailStructure(EMailStructure emailStructure) {
 		this.emailStructure = emailStructure;
+	}
+
+	@Override
+	public List<TemplateAttachment> getAttachments() {
+		if (emailStructure != null) {
+			return emailStructure.getAttachments();
+		}
+		return super.getAttachments();
+	}
+
+	@Override
+	protected void executeWorkflow(Map<String, Object> params, Map<String, Object> parameters) throws Exception {
+		if (emailStructure != null) {
+			emailStructure.executeWorkflow(params, parameters);
+		}
+		super.executeWorkflow(params, parameters);
+	}
+
+	@Override
+	protected void executeUserWorkflow(Map<String, Object> params, Map<String, Object> parameters) throws Exception {
+		if (emailStructure != null) {
+			emailStructure.executeUserWorkflow(params, parameters);
+		}
+		super.executeUserWorkflow(params, parameters);
+	}
+
+	@Override
+	public Boolean getIsAttachmentAdded() {
+		if (emailStructure != null) {
+			return emailStructure.getIsAttachmentAdded();
+		}
+		return super.getIsAttachmentAdded();
+	}
+
+	@Override
+	protected void fetchAttachments() throws Exception {
+		if (emailStructure != null) {
+			emailStructure.fetchAttachments();
+			return;
+		}
+		super.fetchAttachments();
 	}
 
 	@Override

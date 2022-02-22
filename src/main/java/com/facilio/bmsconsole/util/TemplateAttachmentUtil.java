@@ -1,13 +1,8 @@
 package com.facilio.bmsconsole.util;
 
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import com.facilio.bmsconsole.templates.TemplateAttachment;
 import com.facilio.bmsconsole.templates.TemplateAttachmentType;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -18,6 +13,12 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.services.filestore.FileStore.NamespaceConfig;
+
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class TemplateAttachmentUtil {
 	
@@ -81,5 +82,14 @@ public class TemplateAttachmentUtil {
 			insertBuilder.save();
 		}
 
+	}
+
+	public static void deleteAttachments(long templateId) throws Exception {
+		for (TemplateAttachmentType type : TemplateAttachmentType.values()) {
+			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+					.table(type.getModule().getTableName())
+					.andCondition(CriteriaAPI.getCondition("TEMPLATE_ID", "templateId", String.valueOf(templateId), NumberOperators.EQUALS));
+			builder.delete();
+		}
 	}
 }
