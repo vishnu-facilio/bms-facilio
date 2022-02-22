@@ -44,8 +44,14 @@ public class Message
 		return this;
 	}
 
-	public LiveSessionType getSessionType() {
-		return this.sessionType;
+	public int getSessionType() {
+		if (sessionType != null) {
+			return sessionType.getIndex();
+		}
+		return -1;
+	}
+	public LiveSessionType getSessionTypeEnum() {
+		return sessionType;
 	}
 	public Message setSessionType(LiveSessionType sessionType) {
 		this.sessionType = sessionType;
