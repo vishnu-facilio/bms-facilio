@@ -1179,10 +1179,47 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("metric", "METRIC", module, FieldType.NUMBER));
         fields.add(getField("unitId", "UNIT_ID", module, FieldType.NUMBER));
         fields.add(getField("counterField", "IS_COUNTER_FIELD", module, FieldType.BOOLEAN));
+		fields.add(getField("minValue","MIN_VAL",module,FieldType.DECIMAL));
+		fields.add(getField("maxValue","MAX_VAL",module,FieldType.DECIMAL));
 
         return fields;
     }
 
+	public static List< FacilioField > getDateFieldFields () {
+
+		List< FacilioField > fields = new ArrayList<> ();
+		FacilioModule module = ModuleFactory.getDateFieldModule ();
+
+		fields.add (getField ("fieldId", "FIELDID", module, FieldType.ID));
+		fields.add (getNumberField ("allowedDate", "ALLOWED_DATE", module));
+
+		return fields;
+	}
+
+	public static List< FacilioField > getDateFieldChildFields () {
+
+		List< FacilioField > fields = new ArrayList<> ();
+		FacilioModule module = ModuleFactory.getDateFieldChildModule ();
+
+		fields.add (getIdField (module));
+		fields.add (getNumberField ("dateFieldId", "DATE_FIELD_ID", module));
+		fields.add (getStringField ("allowedDays", "ALLOWED_DAYS", module));
+
+		return fields;
+	}
+
+	public static List< FacilioField > getStringFieldFields () {
+
+		List< FacilioField > fields = new ArrayList<> ();
+		FacilioModule module = ModuleFactory.getStringFieldModule ();
+
+		fields.add (getField ("fieldId", "FIELDID", module, FieldType.ID));
+		fields.add (getNumberField ("maxLength", "MAX_LENGTH", module));
+		fields.add (getStringField ("regex", "REGEX", module));
+
+		return fields;
+	}
+	
     public static List<FacilioField> getBooleanFieldFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getBooleanFieldsModule();
