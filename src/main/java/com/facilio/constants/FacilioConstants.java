@@ -1094,6 +1094,7 @@ public class FacilioConstants {
 		public static final String EVENT_TYPES = "eventTypes";
 		public static final String RULE_TYPES = "ruleTypes";
 		public static final String READING_RULE_MODULE = "readingrule";
+		public static final String NEW_READING_RULE = "newReadingRule";
 		public static final String READING_ALARM_RULES = "readingalarmrules";
 		public static final String READING_ALARM_RULE = "readingalarmrule";
 		public static final String ALARM_RULE_META = "alarmRuleMeta";
@@ -2673,7 +2674,8 @@ public class FacilioConstants {
 		public static final String IS_OLD_AGENT = "isOldAgent";
 		public static final String DATA_PROCESSING_LOGGER_LEVEL = "dataProcessingLoggerLevel";		
 		public static final String MAX_AGENT_PARTITION = "maxAgentPartition";		
-		public static final String MESSAGE_QUEUE_SOURCE = "messageQueueSource";	
+		public static final String MESSAGE_QUEUE_SOURCE = "messageQueueSource";
+		public static final String CAN_EXECUTE_FROM_STORM = "canExecuteStorm";
 	}
 
 	public static class Services{

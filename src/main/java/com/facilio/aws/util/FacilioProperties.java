@@ -165,7 +165,7 @@ public class FacilioProperties {
     }
 
     private static void loadProperties() {
-        URL resource = AwsUtil.class.getClassLoader().getResource(AWS_PROPERTY_FILE);
+        URL resource = FacilioProperties.class.getClassLoader().getResource(AWS_PROPERTY_FILE);
         if (resource != null) {
             try (InputStream stream = resource.openStream()) {
                 PROPERTIES.load(stream);

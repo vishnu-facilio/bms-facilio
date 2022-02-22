@@ -32,6 +32,8 @@ import com.facilio.emailtemplate.command.GetAllEmailTemplatesCommand;
 import com.facilio.emailtemplate.command.GetEmailStructureCommand;
 import com.facilio.energystar.command.*;
 import com.facilio.mv.command.FetchMVWidgetResultCommand;
+import com.facilio.readingrule.command.GetReadingRulesCommand;
+import com.facilio.storm.command.StormReadingPostProcessingCommand;
 import com.facilio.trigger.context.TriggerType;
 import com.facilio.v3.commands.AddCustomLookupInSupplementCommand;
 import com.facilio.workflows.command.GetAllNameSpaceWithFunctionCommand;
@@ -359,6 +361,17 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetWorkFlowOfRuleTypeCommand());
 		return c;
 	}
+
+	public static FacilioChain fetchReadingRules () {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GetReadingRulesCommand());
+		return c;
+	}
 	
 	
 	public static FacilioChain fetchWorkflowRuleWithActionsChain() {
@@ -501,6 +514,12 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain readingPostProcessingChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new ReadingPostProcessingCommand());
+		return c;
+	}
+
+	public static FacilioChain stormReadingPostProcessingChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new StormReadingPostProcessingCommand());
 		return c;
 	}
 	

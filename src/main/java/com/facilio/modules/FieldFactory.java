@@ -176,18 +176,40 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getRuleBuilderConfigFields() {
+        FacilioModule module = ModuleFactory.getRuleBuilderConfigModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getNumberField("ruleId", "RULE_ID", module));
+        fields.add(getStringField("script", "SCRIPT", module));
+        return fields;
+    }
+
+    public static List<FacilioField> getRuleAlarmDetailsFields() {
+        FacilioModule module = ModuleFactory.getRuleAlarmDetailsModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getNumberField("ruleId", "RULE_ID", module));
+        fields.add(getStringField("message", "MESSAGE", module));
+        fields.add(getNumberField("faultType", "FAULT_TYPE", module));
+        fields.add(getStringField("severityId", "ALARM_SEVERITY_ID", module));
+        fields.add(getStringField("problem", "PROBLEM", module));
+        fields.add(getStringField("possibleCauses", "POSSIBLE_CAUSES", module));
+        fields.add(getStringField("recommendations", "RECOMMENDATIONS", module));
+        return fields;
+    }
+
 
     public static class Fields {
         public static enum FilterType {
-            INCLUDE (true),
-            EXCLUDE (false)
-            ;
+            INCLUDE(true),
+            EXCLUDE(false);
 
             private FilterType(boolean filterBool) {
                 this.filterBool = filterBool;
             }
 
             private boolean filterBool;
+
             public boolean getFilterBool() {
                 return filterBool;
             }
@@ -1967,6 +1989,22 @@ public class FieldFactory extends BaseFieldFactory {
         SystemEnumField faultTypeField = (SystemEnumField) (getField("faultType", "FAULT_TYPE", module, FieldType.SYSTEM_ENUM));
         faultTypeField.setEnumName("FaultType");
         fields.add(faultTypeField);
+        return fields;
+    }
+
+    public static List<FacilioField> getNewReadingRuleFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getNewReadingRuleModule();
+        fields.add(getIdField(module));
+        fields.add(getModuleIdField(module));
+        fields.add(getField("fieldId", "READING_FIELD_ID", module, FieldType.NUMBER));
+        fields.add(getField("name", "NAME", module, FieldType.STRING));
+        fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
+        fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("createdBy", "CREATED_BY", module, FieldType.NUMBER));
+        fields.add(getField("alarmType", "ALARM_APPLIED_TO", module, FieldType.NUMBER));
+        fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));
+        fields.add(getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.NUMBER));
         return fields;
     }
 
@@ -9537,11 +9575,11 @@ public class FieldFactory extends BaseFieldFactory {
 	        fields.add(getField("scopingId", "SCOPING_ID", module, FieldType.NUMBER));
 	        fields.add(getField("moduleId", "MODULE_ID", module, FieldType.NUMBER));
 	        fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
-            fields.add(getField("fieldName", "FIELD_NAME", module, FieldType.STRING));
-            fields.add(getField("operatorId", "OPERATOR_ID", module, FieldType.NUMBER));
-            fields.add(getField("value", "FIELD_VALUE", module, FieldType.STRING));
+	        fields.add(getField("fieldName", "FIELD_NAME", module, FieldType.STRING));
+	        fields.add(getField("operatorId", "OPERATOR_ID", module, FieldType.NUMBER));
+	        fields.add(getField("value", "FIELD_VALUE", module, FieldType.STRING));
             fields.add(getField("valueGenerator", "FIELD_VALUE_GENERATOR", module, FieldType.STRING));
-
+	         	      
 	        return fields;
 	 }
 	 
@@ -9554,7 +9592,7 @@ public class FieldFactory extends BaseFieldFactory {
             fields.add(getField("isDefault", "IS_DEFAULT", module, FieldType.BOOLEAN));
             fields.add(getField("applicationId", "APPLICATION_ID", module, FieldType.NUMBER));
 
-         return fields;
+	        return fields;
 	 }
 	 
 	 public static List<FacilioField> getFieldModulePermissionFields() {
@@ -9994,7 +10032,7 @@ public class FieldFactory extends BaseFieldFactory {
 
         return fields;
     }
-    
+
     public static List<FacilioField> getTenantUnitFields() {
     List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getTenantUnitSpaceModule();

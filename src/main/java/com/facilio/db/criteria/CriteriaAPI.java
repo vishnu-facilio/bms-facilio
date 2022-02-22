@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import com.facilio.db.util.DBConf;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -145,7 +146,7 @@ public class CriteriaAPI extends BaseCriteriaAPI {
 	}
 	
 	public static Criteria getCriteria(long id) throws Exception {
-		return getCriteria(AccountUtil.getCurrentOrg().getId(), id);
+		return getCriteria(DBConf.getInstance().getCurrentOrg().getId(), id);
 	}
 	
 	public static Criteria getCriteria(long orgId, long id) throws Exception {

@@ -52,6 +52,9 @@ import com.facilio.events.commands.NewExecuteEventRulesCommand;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.modules.fields.relations.CalculateDependencyCommand;
 import com.facilio.mv.command.*;
+import com.facilio.ns.command.AddNamespaceAndFieldsCommand;
+import com.facilio.readingrule.command.AddNewReadingRuleCommand;
+import com.facilio.readingrule.command.ReadingRuleDependenciesCommand;
 import com.facilio.trigger.context.TriggerType;
 import com.facilio.weekends.*;
 import com.facilio.workflows.command.*;
@@ -764,6 +767,17 @@ public class TransactionChainFactory {
 			c.addCommand(new AddReadingAlarmRuleCommand());
 			return c;
 		}
+
+		public static FacilioChain addReadingRule() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new ReadingRuleDependenciesCommand());
+			c.addCommand(new GetCategoryResourcesCommand());
+			c.addCommand(addResourceReadingChain());
+			c.addCommand(new AddNewReadingRuleCommand());
+			//inclusion exclusion
+			c.addCommand(new AddNamespaceAndFieldsCommand());
+			return c;
+		}
 		
 		public static FacilioChain addReadingAlarmRuleChain() {
 			FacilioChain c = getDefaultChain();
@@ -1193,11 +1207,7 @@ public class TransactionChainFactory {
 		}
 		
 		public static FacilioChain addResourceReadingChain() {
-			FacilioChain c = getDefaultChain();
-			c.addCommand(getAddReadingsChain());
-			c.addCommand(new AddResourceReadingRelCommand());
-			c.addCommand(new InsertReadingDataMetaForNewReadingCommand());
-			return c;
+			return addResourceReadingChain(false);
 		}
 		
 		public static FacilioChain addResourceReadingChain(boolean isModuleAlreadyCreated) {
