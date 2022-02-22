@@ -1,10 +1,18 @@
 package com.facilio.bmsconsoleV3.actions.report;
 
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
+
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.report.context.*;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
@@ -301,6 +309,36 @@ public class V3ReportAction extends V3Action {
         return SUCCESS;
     }
 
+    public String getFields() throws Exception
+    {
+        if(moduleName == null){
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "ModuleName is mandatory.");
+        }
+        FacilioChain chain = TransactionChainFactoryV3.getReportFieldsChain();
+        FacilioContext context = chain.getContext();
+        context.put("moduleName", moduleName);
+        chain.execute();
+        JSONObject reportFields = (JSONObject) context.get("reportFields");
+        setData("meta", reportFields);
+        return SUCCESS;
+    }
+
+    public String subModulesList() throws Exception {
+        if(moduleName == null)
+        {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "ModuleName is mandatory.");
+        }
+        FacilioChain chain = TransactionChainFactoryV3.getSubModulesListChain();
+        FacilioContext context = chain.getContext();
+        context.put("moduleName", moduleName);
+        chain.execute();
+        Set<FacilioModule> subModulesList = (Set<FacilioModule>) context.get("subModulesList");
+        if(subModulesList == null){
+            subModulesList = new HashSet<>();
+        }
+        setData("modules", subModulesList);
+        return SUCCESS;
+    }
     public void setReportAuditLogs(String moduleDisplayName, ReportContext reportContext, String log_message, AuditLogHandler.ActionType actionType) throws Exception
     {
         Boolean isCustomModule= reportContext.getModule().getCustom();

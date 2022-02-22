@@ -969,7 +969,12 @@ public class ReportUtil {
 			}
 			
 		}
-		
+		List<ReportFolderContext> reportFolders = new ArrayList<>();
+		if(CriteriaAPI.getCondition(fieldMap.get("moduleId"), moduleIds,NumberOperators.EQUALS) == null)
+		{
+			return reportFolders;
+		}
+
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 													.select(fields)
 													.table(reportFoldermodule.getTableName())
@@ -983,7 +988,6 @@ public class ReportUtil {
 		}
 		
 		List<Map<String, Object>> props = select.get();
-		List<ReportFolderContext> reportFolders = new ArrayList<>();
 		if(props != null && !props.isEmpty()) {
 			
 			for(Map<String, Object> prop :props) {
