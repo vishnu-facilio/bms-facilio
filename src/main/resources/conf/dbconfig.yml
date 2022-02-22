@@ -35,3 +35,23 @@ operators: #Names of enum class that implements Operator Ifc with field types
     enumClassName: com.facilio.db.criteria.operators.StringSystemEnumOperators
   - types: [URL_FIELD]
     enumClassName: com.facilio.db.criteria.operators.UrlOperators
+
+validators:
+  - type: STRING
+    validatorClasses:
+      - com.facilio.field.validation.string.StringValidator
+  - type: BIG_STRING
+    validatorClasses:
+      - com.facilio.field.validation.string.StringValidator
+  - type: NUMBER
+    validatorClasses:
+      - com.facilio.field.validation.number.NumberValidator
+  - type: DECIMAL
+    validatorClasses:
+      - com.facilio.field.validation.number.NumberValidator
+  - type: DATE
+    validatorClasses:
+      - com.facilio.field.validation.date.DateValidator
+  - type: DATE_TIME
+    validatorClasses:
+      - com.facilio.field.validation.date.DateValidator
