@@ -6,8 +6,11 @@ import java.util.Map;
 import java.util.Set;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.operators.StringOperators;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
@@ -125,7 +128,25 @@ public class GetItemListCommand extends FacilioCommand {
 		if (scopeCriteria != null) {
 			builder.andCriteria(scopeCriteria);
 		}
+		String searchQuery = (String) context.get(FacilioConstants.ContextNames.SEARCH_QUERY);
+		if(StringUtils.isNotEmpty(searchQuery)){
+			Criteria searchQueryCriteria = new Criteria();
+			Condition condition_name = new Condition();
+			condition_name.setColumnName("NAME");
+			condition_name.setFieldName("name");
+			condition_name.setOperator(StringOperators.CONTAINS);
+			condition_name.setValue(searchQuery);
+			searchQueryCriteria.addOrCondition(condition_name);
 
+			Condition condition_description = new Condition();
+			condition_description.setColumnName("DESCRIPTION");
+			condition_description.setFieldName("description");
+			condition_description.setOperator(StringOperators.CONTAINS);
+			condition_description.setValue(searchQuery);
+			searchQueryCriteria.addOrCondition(condition_description);
+
+			builder.andCriteria(searchQueryCriteria);
+		}
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
 		if (pagination != null) {
 			int page = (int) pagination.get("page");
