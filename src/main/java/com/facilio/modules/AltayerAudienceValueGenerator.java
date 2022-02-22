@@ -4,9 +4,7 @@ import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
 import com.facilio.bmsconsole.util.TenantsAPI;
-import com.facilio.bmsconsoleV3.context.V3TenantContactContext;
-import com.facilio.bmsconsoleV3.context.V3TenantContext;
-import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
@@ -17,42 +15,37 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class AltayerAudienceValueGenerator extends ValueGenerator{
     @Override
     public Object generateValueForCondition(int appType) {
         try {
+            List<Object> buildingIds = new ArrayList<Object>();
+            List<Long> siteIds = new ArrayList<Long>();
+
             Criteria criteria = new Criteria();
 
             if (appType == AppDomain.AppDomainType.TENANT_PORTAL.getIndex()) {
-                V3TenantContactContext tenantContact = AltayerTenantSiteValueGenerator.getTenantContactForUser(AccountUtil.getCurrentUser().getId());
-                List<Long> ids = new ArrayList<>();
-
-                if (tenantContact != null) {
-                    Map<String, Object> map = FieldUtil.getAsProperties(tenantContact);
-                    if (map.containsKey("tenantmulti")) {
-                        List<V3TenantContext> tenantsServing = (List<V3TenantContext>) map.get("tenantmulti");
-                        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(tenantsServing)) {
-                            for (V3TenantContext t : tenantsServing) {
-                                ids.add(t.getId());
-                            }
-                        }
-                    } else if (tenantContact.getTenant() != null) {
-                        ids.add(tenantContact.getTenant().getId());
-                    }
+                List<Long> ids = AltayerTenantSiteValueGenerator.getTenantContactForUser(AccountUtil.getCurrentUser().getId());
                     if (CollectionUtils.isNotEmpty(ids)) {
                         List<TenantUnitSpaceContext> tenantUnits = TenantsAPI.getTenantUnitsForTenantList(ids);
                         if (CollectionUtils.isNotEmpty(tenantUnits)) {
-                            List<Long> tenantUnitIds = new ArrayList<>();
-                            for (TenantUnitSpaceContext tu : tenantUnits) {
-                                tenantUnitIds.add(tu.getId());
+                            for (TenantUnitSpaceContext ts : tenantUnits) {
+                                if(!siteIds.contains(ts.getSiteId())) {
+                                    siteIds.add(ts.getSiteId());
+                                }
+                                if (ts.getBuilding() != null) {
+                                    if(!buildingIds.contains(ts.getBuilding().getId())) {
+                                        buildingIds.add(ts.getBuilding().getId());
+                                    }
+                                }
                             }
 
                             Criteria spaceCriteria = new Criteria();
-                            spaceCriteria.addAndCondition(CriteriaAPI.getCondition("SHARING_TYPE", "sharingType", "1", StringOperators.IS));
+                            spaceCriteria.addAndCondition(CriteriaAPI.getCondition("SHARING_TYPE", "sharingType", "1,2,3", StringOperators.IS));
                             Criteria spaceSubCriteria = new Criteria();
-                            spaceSubCriteria.addAndCondition(CriteriaAPI.getCondition("SHARED_TO_SPACE_ID", "sharedToSpace", StringUtils.join(tenantUnitIds, ","), PickListOperators.IS));
+                            spaceSubCriteria.addAndCondition(CriteriaAPI.getCondition("SHARED_TO_SPACE_ID", "sharedToSpace", StringUtils.join(buildingIds, ","), PickListOperators.IS));
+                            spaceSubCriteria.addOrCondition(CriteriaAPI.getCondition("SHARED_TO_SPACE_ID", "sharedToSpace", StringUtils.join(siteIds, ","), PickListOperators.IS));
                             spaceSubCriteria.addOrCondition(CriteriaAPI.getCondition("SHARED_TO_SPACE_ID", "sharedToSpace", "1", CommonOperators.IS_EMPTY));
 
                             spaceCriteria.andCriteria(spaceSubCriteria);
@@ -64,7 +57,7 @@ public class AltayerAudienceValueGenerator extends ValueGenerator{
                         }
                     }
                 }
-              }
+
             }
             catch(Exception e) {
                 e.printStackTrace();
@@ -89,26 +82,26 @@ public class AltayerAudienceValueGenerator extends ValueGenerator{
 
     @Override
     public String getValueGeneratorName() {
-        return null;
+        return FacilioConstants.ContextNames.ValueGenerators.AUDIENCE;
     }
 
     @Override
     public String getLinkName() {
-        return null;
+        return "com.facilio.modules.AltayerAudienceValueGenerator";
     }
 
     @Override
     public String getModuleName() {
-        return null;
+        return FacilioConstants.ContextNames.AUDIENCE;
     }
 
     @Override
     public Boolean getIsHidden() {
-        return null;
+        return true;
     }
 
     @Override
     public Integer getOperatorId() {
-        return null;
+        return 36;
     }
 }
