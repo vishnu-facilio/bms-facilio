@@ -2,14 +2,17 @@ package com.facilio.modules;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
 import com.facilio.bmsconsole.util.TenantsAPI;
+import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceSharingInfoContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fw.BeanFactory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -55,6 +58,25 @@ public class AltayerAudienceValueGenerator extends ValueGenerator{
                             criteria.orCriteria(getPeopleCriteria());
 
                         }
+                    }
+                }
+                if(!criteria.isEmpty()) {
+                    ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+                    FacilioModule subModule = modBean.getModule(FacilioConstants.ContextNames.Tenant.AUDIENCE_SHARING);
+                    SelectRecordsBuilder<AudienceSharingInfoContext> builderCategory = new SelectRecordsBuilder<AudienceSharingInfoContext>()
+                            .module(subModule)
+                            .beanClass(AudienceSharingInfoContext.class)
+                            .select(modBean.getAllFields(subModule.getName()))
+                            .andCriteria(criteria)
+                            ;
+                    List<AudienceSharingInfoContext> list = builderCategory.get();
+                    if(CollectionUtils.isNotEmpty(list)){
+                        List<Long> ids = new ArrayList<>();
+                        for(AudienceSharingInfoContext sh : list) {
+                            ids.add(sh.getAudienceId().getId());
+                        }
+                        return StringUtils.join(ids, ",");
                     }
                 }
 
