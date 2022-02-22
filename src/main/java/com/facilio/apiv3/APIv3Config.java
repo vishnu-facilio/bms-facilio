@@ -967,7 +967,6 @@ public class APIv3Config {
     public static Supplier<V3Config> getAudience() {
         return () -> new V3Config(AudienceContext.class, null)
                 .create()
-                .beforeSave(new ValidateAudienceSharingCommandV3())
                 .afterSave(new AddOrUpdateAudienceSharingInfoCommandV3())
                 .update()
                 .afterSave(new AddOrUpdateAudienceSharingInfoCommandV3())

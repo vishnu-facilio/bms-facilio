@@ -22,11 +22,8 @@ public class ValidateAudienceSharingCommandV3   extends FacilioCommand {
             for (AudienceContext audience : audienceList) {
                 if(CollectionUtils.isNotEmpty(audience.getAudienceSharing())) {
                     for(CommunitySharingInfoContext sharing : audience.getAudienceSharing()){
-
-                        if(sharing.getSharingType().intValue() == (CommunitySharingInfoContext.SharingType.SITE).getIndex() && sharing.getSharedToSpace() == null){
-                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Select Atleast One Site");
-                        }else if(sharing.getSharingType().intValue() == (CommunitySharingInfoContext.SharingType.BUILDING).getIndex() && sharing.getSharedToSpace() == null){
-                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Select Atleast One Building");
+                        if(sharing.getSharingType().intValue() == (CommunitySharingInfoContext.SharingType.TENANT_UNIT).getIndex() && sharing.getSharedToSpace() == null){
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Select Atleast One Tenant Unit");
                         }else if(sharing.getSharingType().intValue() == (CommunitySharingInfoContext.SharingType.ROLE).getIndex() && sharing.getSharedToRole() == null) {
                             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Select Atleast One Role");
                         }else if(sharing.getSharingType().intValue() == (CommunitySharingInfoContext.SharingType.PEOPLE).getIndex() && sharing.getSharedToPeople() == null) {
