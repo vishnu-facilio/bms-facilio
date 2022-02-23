@@ -521,6 +521,9 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new PreFillAddPurchaseRequestCommand());
+        c.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
+                .addCommand(new ExecuteAllWorkflowsCommand(RuleType.TRANSACTION_RULE))
+        );
         return c;
     }
 
@@ -678,6 +681,9 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new POBeforeCreateOrEditV3Command());
+        c.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
+                .addCommand(new ExecuteAllWorkflowsCommand(RuleType.TRANSACTION_RULE))
+        );
         return c;
     }
 
