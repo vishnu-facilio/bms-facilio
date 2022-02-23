@@ -10,6 +10,7 @@ import com.facilio.qa.rules.Constants;
 import com.facilio.qa.rules.pojo.ActionRuleCondition;
 import com.facilio.qa.rules.pojo.QAndARule;
 import com.facilio.qa.rules.pojo.QAndARuleType;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -17,7 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+@Log4j
 public class DeleteQandARuleActions extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -53,7 +54,9 @@ public class DeleteQandARuleActions extends FacilioCommand {
 			QAndARule rule = rules.get (0);
 			if (CollectionUtils.isNotEmpty (rule.getRuleConditions ())){
 				ActionRuleCondition con = ( ActionRuleCondition ) rule.getRuleConditions ().get (0);
-				return con.getId ();
+				if (con != null){
+					return con.getId ();
+				}
 			}
 		}
 		return -1L;
