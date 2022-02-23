@@ -51,7 +51,7 @@ public class AddEnergyPredictionCommand extends FacilioCommand {
 					mlServiceContext.setMlID(mlID);
 				}
 
-				MLAPI.addReading(Collections.singletonList(mlID),"EnergyPrediction", fields, module.getTableName(), module);
+				MLAPI.addReading(Collections.singletonList(energyMeterID),"EnergyPrediction", fields, module.getTableName(), module);
 
 				scheduleJob(mlID, mlServiceContext);
 				LOGGER.info("After updating energy model");

@@ -30,6 +30,7 @@ public class InitMLServiceCommand extends FacilioCommand implements Serializable
 		V3MLServiceContext mlServiceContext = (V3MLServiceContext) context.get(MLServiceUtil.MLSERVICE_CONTEXT);
 		boolean updateApi = context.get(MLServiceUtil.IS_UPDATE) != null;
 		Long predictedTime = mlServiceContext.getEndTime();
+		String postURL= FacilioProperties.getAnomalyPredictAPIURL() + "/trainingModel";
 		try {
 
 			LOGGER.info("Start of InitMLModelCommand for usecase id "+mlServiceContext.getId());
@@ -60,7 +61,6 @@ public class InitMLServiceCommand extends FacilioCommand implements Serializable
 					postObj.put("data", mlServiceContext.getDataObjectList().get(index));
 				}
 				//			String postURL= FacilioProperties.getMlModelBuildingApi();
-				String postURL= FacilioProperties.getAnomalyPredictAPIURL() + "/trainingModel";
 				Map<String, String> headers = new HashMap<>();
 
 				headers.put("Content-Type", "application/json");
@@ -96,7 +96,7 @@ public class InitMLServiceCommand extends FacilioCommand implements Serializable
 		catch(Exception e){
 			e.printStackTrace();
 			String errMsg = "ML Server api failed";
-			LOGGER.error("Error_ML "+ FacilioProperties.getMlModelBuildingApi() + " usecase ID : "+mlServiceContext.getId()+" FILE : InitMLServiceCommand "+" ERROR MESSAGE : "+errMsg);
+			LOGGER.error("Error_ML "+ postURL + " usecase ID : "+mlServiceContext.getId()+" FILE : InitMLServiceCommand "+" ERROR MESSAGE : "+errMsg);
 			throw MLServiceUtil.throwError(mlServiceContext, ErrorCode.UNHANDLED_EXCEPTION, errMsg);
 		}
 		LOGGER.info("End of InitMLModelCommand for usecase id "+mlServiceContext.getId());

@@ -52,7 +52,7 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 				LOGGER.info("Error_JAVA "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" FILE : AddReadingsForMLCommand "+" ERROR MESSAGE : Error parentID is not present : "+ parentID);
 			}
 
-			parentID = mlContext.getId();
+//			parentID = mlContext.getId();
 
 			List<ReadingContext> logReadingList = new ArrayList<>();
 			List<ReadingContext> predictReadingList = new ArrayList<>(); 
