@@ -8098,6 +8098,7 @@ public class FieldFactory extends BaseFieldFactory {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getMLModule();
         fields.add(getField("id", "ID", module, FieldType.NUMBER));
+        fields.add(getField("name", "NAME", module, FieldType.STRING));
         fields.add(getField("modelPath", "MODEL_PATH", module, FieldType.STRING));
         fields.add(getField("sequence", "SEQUENCE", module, FieldType.STRING));
         fields.add(getField("mlServiceID", "MLSERVICE_ID", module, FieldType.NUMBER));

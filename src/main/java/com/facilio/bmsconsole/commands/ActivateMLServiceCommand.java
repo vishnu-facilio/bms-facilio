@@ -290,7 +290,7 @@ public class ActivateMLServiceCommand extends FacilioCommand implements Serializ
 	private long addMLModule(MLCustomModuleContext moduleContext, String scenario, String serviceType, Long assetId, long mlServiceId) throws Exception {
 		try {
 			if(!moduleContext.getModuleNeeded()) {
-				return MLAPI.addMLModel(moduleContext.getModelPath(), -1, -1, mlServiceId);
+				return MLAPI.addMLModel(moduleContext.getModelPath(), null, -1, -1, mlServiceId);
 			}
 
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -334,7 +334,7 @@ public class ActivateMLServiceCommand extends FacilioCommand implements Serializ
 			mlLogReadingModule = modBean.getModule(mlLogReadingName.toLowerCase());
 
 			moduleContext.setMlReadingModuleId(mlReadingModule.getModuleId());
-			long mlId = MLAPI.addMLModel(moduleContext.getModelPath(), mlLogReadingModule.getModuleId(), mlReadingModule.getModuleId(), mlServiceId);
+			long mlId = MLAPI.addMLModel(moduleContext.getModelPath(), null, mlLogReadingModule.getModuleId(), mlReadingModule.getModuleId(), mlServiceId);
 			moduleContext.setMlId(mlId);
 			return mlId;
 		}

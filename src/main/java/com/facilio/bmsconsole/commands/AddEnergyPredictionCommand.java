@@ -102,7 +102,7 @@ public class AddEnergyPredictionCommand extends FacilioCommand {
 //		FacilioModule logReadingModule = modBean.getModule("energypredictionmllogreadings");
 		FacilioModule energyPredictionModule = modBean.getModule("energyprediction");
 
-		long mlID = MLAPI.addMLModel(modelPath,-1,energyPredictionModule.getModuleId(), mlServiceId);
+		long mlID = MLAPI.addMLModel(modelPath,context.getName(), -1,energyPredictionModule.getModuleId(), mlServiceId);
 
 		Map<String,Long> maxSamplingPeriodMap = new HashMap<>();
 		Map<String,Long> futureSamplingPeriodMap = new HashMap<>();
