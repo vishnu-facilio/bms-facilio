@@ -55,8 +55,11 @@ public class WmsApi
 		if(!FacilioProperties.isDevelopment() && isWmsEnabled()) {
 			String socketUrl = FacilioProperties.getConfig("wms.domain");
 			if (socketUrl != null) {
-				WEBSOCKET_URL = "wss://"+socketUrl+"/websocket";
-				NEW_WEBSOCKET_URL = "wss://"+socketUrl+"/websocket/connect";
+				if (!socketUrl.startsWith("ws://") && !socketUrl.startsWith("wss://")) {
+					socketUrl = "wss://" + socketUrl; // by default secure websocket connection
+				}
+				WEBSOCKET_URL = socketUrl+"/websocket";
+				NEW_WEBSOCKET_URL = socketUrl+"/websocket/connect";
 			}
 			if(FacilioProperties.isProduction()) {
 				kinesisNotificationTopic = "production-"+ kinesisNotificationTopic;
