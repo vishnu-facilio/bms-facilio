@@ -1,8 +1,8 @@
 package com.facilio.v3;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.util.AuditLogUtil;
-import com.facilio.util.FacilioUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 
@@ -14,6 +14,7 @@ import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.ServletResponseAware;
 import org.json.simple.JSONObject;
@@ -334,4 +335,17 @@ public class V3Action extends ActionSupport implements ServletResponseAware {
 	protected void sendAuditLogs(AuditLogHandler.AuditLogContext auditLog) {
 		AuditLogUtil.sendAuditLogs(auditLog);
 	}
+
+	public int getLoggerLevel() {
+		return loggerLevel;
+	}
+
+	public void setLoggerLevel(int loggerLevel) {
+		Logger.getLogger(V3Action.class.getName()).info(loggerLevel);
+		this.loggerLevel = loggerLevel;
+		if (AccountUtil.getCurrentAccount() != null) {
+			AccountUtil.getCurrentAccount().setLoggerLevel(loggerLevel);
+		}
+	}
+	private int loggerLevel = -1;
 }

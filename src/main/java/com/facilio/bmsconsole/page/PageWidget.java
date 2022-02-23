@@ -417,7 +417,9 @@ public class PageWidget {
 		TENANT_DETAIL_CONTACT("tenantdetailcontact"),
 		TENANT_DESCRIPTION("tenantdescription"),
 		ASSOCIATED_TERMS("associatedterms"),
-		TENANT_DETAIL_OVERVIEW("tenantdetailoverview");
+		TENANT_DETAIL_OVERVIEW("tenantdetailoverview"),
+		PURCHASED_ITEMS("purchaseditems"),
+		ITEM_TRANSACTIONS("transactionsitem");
 
 		private String name;
 

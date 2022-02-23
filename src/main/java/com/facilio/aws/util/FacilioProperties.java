@@ -245,7 +245,7 @@ public class FacilioProperties {
                 mobileTenantportalAppScheme = PROPERTIES.getProperty("mobile.tenantportal.scheme");
                 mobileVendorportalAppScheme = PROPERTIES.getProperty("mobile.vendorportal.scheme");
                 mobileClientportalAppScheme = PROPERTIES.getProperty("mobile.clientportal.scheme");
-                workQAppScheme = PROPERTIES.getProperty("mobile.workQ.scheme");
+                workQAppScheme = PROPERTIES.getProperty("mobile.workQ.scheme", "workq");
 
                 senderEmail = PROPERTIES.getProperty("sender.email");
                 senderName = PROPERTIES.getProperty("sender.name");

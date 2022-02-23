@@ -2001,7 +2001,8 @@ public class FacilioConstants {
 			public static final String SITE = "In Current User Sites";
 			public static final String TENANT = "Is Current Tenant";
 			public static final String USER = "Is Current User";
-			public static final String CONTANS_USER = "Contains Current User";
+			public static final String CONTAINS_USER = "Contains Current User";
+			public static final String CONTAINS_SITE = "Contains Current User Sites";
 
 		}
 

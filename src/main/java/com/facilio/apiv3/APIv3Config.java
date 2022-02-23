@@ -47,6 +47,7 @@ import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
+import com.facilio.bmsconsoleV3.commands.item.LoadItemLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.FillJobPlanDetailsCommand;
@@ -604,6 +605,17 @@ public class APIv3Config {
                 	.beforeFetch(new LoadItemTypesLookUpCommandV3())
                 .summary()
             		.beforeFetch(new LoadItemTypesLookUpCommandV3())
+                .build();
+    }
+    @Module("item")
+    public static Supplier<V3Config> getItem() {
+        return () -> new V3Config(V3ItemContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .update()
+                .list()
+                .beforeFetch(new LoadItemLookUpCommandV3())
+                .summary()
+                .beforeFetch(new LoadItemLookUpCommandV3())
                 .build();
     }
 

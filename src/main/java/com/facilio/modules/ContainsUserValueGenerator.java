@@ -2,8 +2,6 @@ package com.facilio.modules;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.ClientContext;
-import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
@@ -47,7 +45,7 @@ public class ContainsUserValueGenerator extends ValueGenerator{
 
     @Override
     public String getValueGeneratorName() {
-        return FacilioConstants.ContextNames.ValueGenerators.CONTANS_USER;
+        return FacilioConstants.ContextNames.ValueGenerators.CONTAINS_USER;
     }
 
     @Override

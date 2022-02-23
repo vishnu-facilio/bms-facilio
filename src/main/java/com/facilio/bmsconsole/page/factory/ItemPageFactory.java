@@ -1,16 +1,31 @@
 package com.facilio.bmsconsole.page.factory;
 
-import com.facilio.bmsconsole.context.ItemTypesContext;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ItemContext;
+import com.facilio.bmsconsole.context.PurchaseOrderContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.WidgetGroup;
+import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestLineItemContext;
+import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-public class ItemTypesPageFactory extends PageFactory{
-    private static final Logger LOGGER = LogManager.getLogger(ItemTypesPageFactory.class.getName());
-    public static Page getItemTypesPage(ItemTypesContext itemTypes, FacilioModule module) throws Exception {
+import java.util.List;
+import java.util.Map;
+
+public class ItemPageFactory extends PageFactory{
+    private static final Logger LOGGER = LogManager.getLogger(ItemPageFactory.class.getName());
+    public static Page getItemPage(ItemContext item, FacilioModule module) throws Exception {
         Page page = new Page();
 
         Page.Tab tab1 = page.new Tab("summary");
@@ -18,28 +33,31 @@ public class ItemTypesPageFactory extends PageFactory{
         Page.Section tab1Sec1 = page.new Section();
         tab1.addSection(tab1Sec1);
 
-        if ((itemTypes.getDescription() != null && !itemTypes.getDescription().isEmpty())||(itemTypes.getCategory() != null) ) {
-            PageWidget descWidget = new PageWidget(PageWidget.WidgetType.DESCRIPTION_CARD);
-            descWidget.addToLayoutParams(tab1Sec1,24, 4);
-            tab1Sec1.addWidget(descWidget);
-        }
+        PageWidget descWidget = new PageWidget(PageWidget.WidgetType.DESCRIPTION_CARD);
+        descWidget.addToLayoutParams(tab1Sec1,24, 3);
+        tab1Sec1.addWidget(descWidget);
 
         PageWidget card1= new PageWidget(PageWidget.WidgetType.INVENTORY_CARD);
         card1.addToLayoutParams(tab1Sec1, 8, 5);
-        card1.addToWidgetParams("card","itemtypescard1");
+        card1.addToWidgetParams("card","itemcard1");
         tab1Sec1.addWidget(card1);
 
         PageWidget card2= new PageWidget(PageWidget.WidgetType.INVENTORY_CARD);
         card2.addToLayoutParams(tab1Sec1, 8, 5);
-        card2.addToWidgetParams("card","itemtypescard2");
+        card2.addToWidgetParams("card","itemcard2");
         tab1Sec1.addWidget(card2);
 
         PageWidget card3= new PageWidget(PageWidget.WidgetType.INVENTORY_CARD);
         card3.addToLayoutParams(tab1Sec1, 8, 5);
-        card3.addToWidgetParams("card","itemtypescard3");
+        card3.addToWidgetParams("card","itemcard3");
         tab1Sec1.addWidget(card3);
 
-        addStoreroomWidget(tab1Sec1);
+        if(isRotating(item)){
+            addSubModuleRelatedListWidget(tab1Sec1, FacilioConstants.ContextNames.ASSET, module.getModuleId());
+        }
+        else{
+            addPurchasedItemsWidget(tab1Sec1);
+        }
 
         addTransactionsWidget(tab1Sec1);
 
@@ -62,22 +80,20 @@ public class ItemTypesPageFactory extends PageFactory{
 
         return page;
     }
-    private static PageWidget addStoreroomWidget(Page.Section section) {
+    private static PageWidget addPurchasedItemsWidget(Page.Section section) {
 
-        PageWidget storeRoomWidget = new PageWidget();
-        storeRoomWidget.addToLayoutParams(section, 24, 8);
-        storeRoomWidget.setWidgetType(PageWidget.WidgetType.STORE_ROOM);
-        storeRoomWidget.addToWidgetParams("storeroom","itemStoreroom");
-        section.addWidget(storeRoomWidget);
+        PageWidget purchasedItemsWidget = new PageWidget();
+        purchasedItemsWidget.addToLayoutParams(section, 24, 8);
+        purchasedItemsWidget.setWidgetType(PageWidget.WidgetType.PURCHASED_ITEMS);
+        section.addWidget(purchasedItemsWidget);
 
-        return storeRoomWidget;
+        return purchasedItemsWidget;
     }
     private static PageWidget addTransactionsWidget(Page.Section section) {
 
         PageWidget transactionsWidget = new PageWidget();
         transactionsWidget.addToLayoutParams(section, 24, 8);
-        transactionsWidget.setWidgetType(PageWidget.WidgetType.TRANSACTIONS);
-        transactionsWidget.addToWidgetParams("transactions","itemTransactions");
+        transactionsWidget.setWidgetType(PageWidget.WidgetType.ITEM_TRANSACTIONS);
         section.addWidget(transactionsWidget);
 
         return transactionsWidget;
@@ -103,5 +119,19 @@ public class ItemTypesPageFactory extends PageFactory{
         PageWidget detailsWidget = new PageWidget(PageWidget.WidgetType.SECONDARY_DETAILS_WIDGET);
         detailsWidget.addToLayoutParams(section, 24, 7);
         section.addWidget(detailsWidget);
+    }
+    private static boolean isRotating(ItemContext item) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String moduleName = FacilioConstants.ContextNames.ITEM_TYPES;
+        FacilioModule module = modBean.getModule(moduleName);
+        List<FacilioField> fields = modBean.getAllFields(moduleName);
+
+        SelectRecordsBuilder<V3ItemTypesContext> builder = new SelectRecordsBuilder<V3ItemTypesContext>()
+                .module(module)
+                .beanClass(V3ItemTypesContext.class)
+                .select(fields)
+                .andCondition(CriteriaAPI.getIdCondition(item.getItemType().getId(), module));
+        List<V3ItemTypesContext> records = builder.get();
+        return records.get(0).isRotating();
     }
 }
