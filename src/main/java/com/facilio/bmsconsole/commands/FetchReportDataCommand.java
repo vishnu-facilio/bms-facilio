@@ -6,7 +6,6 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.AggregationColumnMetaContext;
-import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.AggregationAPI;
@@ -41,7 +40,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -1306,6 +1304,17 @@ public class FetchReportDataCommand extends FacilioCommand {
         isBaseModuleJoined = true;
     }
 
+    public FacilioField getSubModuleField(String moduleName) throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> allFields = modBean.getAllFields(moduleName);
+        List<FacilioField> fields = allFields.stream().filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == baseModule.getModuleId())).collect(Collectors.toList());
+        if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(fields)) {
+            return fields.get(0);
+        }
+        return null;
+    }
+
     private void handlePivotJoin(Map<String, Object> pivotField, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) throws Exception {
         handleExtendedModuleJoin(selectBuilder);
         FacilioModule module = (FacilioModule) pivotField.get("module");
@@ -1338,7 +1347,6 @@ public class FetchReportDataCommand extends FacilioCommand {
                 prevModule = poll;
             }
         } else if((Boolean) pivotField.get("isDataField") && !this.baseModule.getExtendedModuleIds().contains(module.getModuleId()) && module.getTypeEnum() != ModuleType.READING) {
-            System.out.println("submodule data field join");
             FacilioField dataField = FieldFactory.getIdField(module).clone();
 
             dataField.setTableAlias(getAndSetModuleAlias(dataField.getModule().getName()));
@@ -1363,8 +1371,9 @@ public class FetchReportDataCommand extends FacilioCommand {
 
             while (prevModule != null && CollectionUtils.isNotEmpty(stack)) {
                 FacilioModule pop = stack.pop();
+                FacilioField subModuleField = getSubModuleField(pop.getName());
                 selectBuilder.innerJoin(pop.getTableName() + " " + getAndSetModuleAlias(pop.getName()))
-                        .on(getAndSetModuleAlias(prevModule.getName()) + ".ID = " + getAndSetModuleAlias(pop.getName()) + ".ID");
+                        .on(getAndSetModuleAlias(prevModule.getName()) + "."+ subModuleField.getColumnName() +" = " + getAndSetModuleAlias(pop.getName()) + ".ID");
                 prevModule = pop;
             }
         }

@@ -13,12 +13,9 @@ import com.facilio.report.context.PivotRowColumnContext;
 import com.facilio.report.formatter.DecimalFormatter;
 import com.facilio.report.formatter.Formatter;
 import com.facilio.report.formatter.NumberFormatter;
-import com.facilio.unitconversion.UnitsUtil;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.*;
 
 public class PivotColumnFormatCommand extends FacilioCommand {
