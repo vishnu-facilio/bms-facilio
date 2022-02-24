@@ -125,10 +125,6 @@ public class ScopeHandlerImpl extends ScopeHandler {
 				if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getOrgId() == 407l || AccountUtil.getCurrentOrg().getOrgId() == 418l) && StringUtils.isNotEmpty(module.getName()) && module.getName().equals(FacilioConstants.ContextNames.TENANT)) {
 					return null;
 				}
-				// remove this after moving scope criteria to DB driven
-				if(module.getName().equals(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME)) {
-					return null;
-				}
 
 				if (FieldUtil.isSiteIdFieldPresent(module)) {
 					return constructSiteFieldsAndCriteria(module, false);

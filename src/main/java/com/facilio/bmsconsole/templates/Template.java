@@ -1,12 +1,13 @@
 package com.facilio.bmsconsole.templates;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.facilio.bmsconsole.context.TemplateUrlContext;
+import com.facilio.bmsconsole.util.FreeMarkerAPI;
+import com.facilio.bmsconsole.util.TemplateAttachmentUtil;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
+import lombok.Getter;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.log4j.LogManager;
@@ -16,14 +17,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.facilio.bmsconsole.context.TemplateFileContext;
-import com.facilio.bmsconsole.context.TemplateUrlContext;
-import com.facilio.bmsconsole.util.FreeMarkerAPI;
-import com.facilio.bmsconsole.util.TemplateAttachmentUtil;
-import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflows.util.WorkflowUtil;
-
-import lombok.Getter;
+import java.io.Serializable;
+import java.util.*;
 
 
 public abstract class Template implements Serializable {
@@ -150,47 +145,30 @@ public abstract class Template implements Serializable {
 	public final JSONObject getTemplate(Map<String, Object> parameters) throws Exception {
 		JSONObject json = getOriginalTemplate();
 		if (json != null) {
-			
-			if (workflow != null) {
-				JSONObject parsedJson = null;
-				Map<String, Object> params;
-				if (workflow.isV2Script()) {
-					params = (Map<String, Object>) WorkflowUtil.getWorkflowExpressionResult(workflow, parameters);
-				}
-				else {
-					params = WorkflowUtil.getExpressionResultMap(workflow, parameters);
-				}
-				if (userWorkflow  != null) {
-					Map<String, Object> userParams = (Map<String, Object>) WorkflowUtil.getWorkflowExpressionResult(userWorkflow, parameters);
-					if (userParams != null && !userParams.isEmpty()) {
-						// Replacing the old params via workflow
-						for (String param : userParams.keySet()){
-							params.put(CUSTOM_SCRIPT_NAMESPACE + "." +param, userParams.get(param));
-						}
 
-					}
-				}
+			Map<String, Object> params = new HashMap<>();
+			JSONObject parsedJson = new JSONObject();
+			executeWorkflow(params, parameters);
+			executeUserWorkflow(params, parameters);
+			if (MapUtils.isNotEmpty(params)) {
 				if (isFtl()) {
 					// StrSubstitutor.replace(jsonStr, params);
-					parsedJson = new JSONObject();
 					for (Object key : json.keySet()) {
 						Object value = json.get(key);
 						if (value != null) {
 							if (value instanceof JSONArray) {
 								JSONArray newArray = new JSONArray();
-								for(Object arrayVal: (JSONArray)value) {
+								for (Object arrayVal : (JSONArray) value) {
 									newArray.add(FreeMarkerAPI.processTemplate(arrayVal.toString(), params));
 								}
 								parsedJson.put(key, newArray);
-							}
-							else {
+							} else {
 								parsedJson.put(key, FreeMarkerAPI.processTemplate(value.toString(), params));
 							}
 						}
 					}
 					parameters.put("mailType", "html");
-				}
-				else {
+				} else {
 					String jsonStr = json.toJSONString();
 					try {
 						for (String key : params.keySet()) {
@@ -201,8 +179,7 @@ public abstract class Template implements Serializable {
 							}
 						}
 						jsonStr = StringSubstitutor.replace(jsonStr, params);// StrSubstitutor.replace(jsonStr, params);
-					}
-					catch (Exception e) {
+					} catch (Exception e) {
 						LOGGER.error(new StringBuilder("Error occurred during replacing of place holders \n")
 								.append("JSON : ")
 								.append(jsonStr)
@@ -216,24 +193,53 @@ public abstract class Template implements Serializable {
 					JSONParser parser = new JSONParser();
 					parsedJson = (JSONObject) parser.parse(jsonStr);
 				}
-				
-				if (getIsAttachmentAdded()) {
-					this.attachments = TemplateAttachmentUtil.fetchAttachments(getId());
-					if (this.attachments != null) {
-						this.attachments.stream().filter(att -> att.getType() == TemplateAttachmentType.URL)
+			} else {
+				parsedJson.putAll(json);
+			}
+
+			if (getIsAttachmentAdded()) {
+				fetchAttachments();
+				if (CollectionUtils.isNotEmpty(getAttachments())) {
+					this.getAttachments().stream().filter(att -> att.getType() == TemplateAttachmentType.URL)
 							.forEach(att -> {
 								TemplateUrlContext urlContext = (TemplateUrlContext) att;
 								urlContext.setUrlString(StringSubstitutor.replace(urlContext.getUrlString(), params));
 							});
-					}
 				}
-				
-				return parsedJson;
 			}
+			return parsedJson;
 		}
 		return json;
 	}
-	
+
+	protected void executeWorkflow(Map<String, Object> params, Map<String, Object> parameters) throws Exception {
+		WorkflowContext workflow = getWorkflow();
+		if (workflow != null) {
+			if (workflow.isV2Script()) {
+				params.putAll((Map<String, Object>) WorkflowUtil.getWorkflowExpressionResult(workflow, parameters));
+			} else {
+				params.putAll(WorkflowUtil.getExpressionResultMap(workflow, parameters));
+			}
+		}
+	}
+
+	protected void executeUserWorkflow(Map<String, Object> params, Map<String, Object> parameters) throws Exception {
+		if (userWorkflow  != null) {
+			Map<String, Object> userParams = (Map<String, Object>) WorkflowUtil.getWorkflowExpressionResult(userWorkflow, parameters);
+			if (userParams != null && !userParams.isEmpty()) {
+				// Replacing the old params via workflow
+				for (String param : userParams.keySet()){
+					params.put(CUSTOM_SCRIPT_NAMESPACE + "." +param, userParams.get(param));
+				}
+
+			}
+		}
+	}
+
+	protected void fetchAttachments() throws Exception {
+		attachments = TemplateAttachmentUtil.fetchAttachments(getId());
+	}
+
 	public abstract JSONObject getOriginalTemplate() throws Exception;
 	
 	public static enum Type {

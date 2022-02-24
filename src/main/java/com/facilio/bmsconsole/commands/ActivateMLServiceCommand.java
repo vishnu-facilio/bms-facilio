@@ -1,25 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.apache.commons.chain.Context;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.MLCustomModuleContext;
 import com.facilio.bmsconsole.context.MLResponseContext;
-import com.facilio.bmsconsole.context.MLServiceContext;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.MLAPI;
-import com.facilio.bmsconsole.util.MLServiceAPI;
+import com.facilio.bmsconsole.util.MLServiceUtil;
+import com.facilio.bmsconsoleV3.context.V3MLServiceContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
@@ -32,109 +21,119 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.taskengine.ScheduleInfo;
+import com.facilio.v3.exception.ErrorCode;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
-public class ActivateMLServiceCommand extends FacilioCommand {
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+public class ActivateMLServiceCommand extends FacilioCommand implements Serializable {
 
 	private static final Logger LOGGER = Logger.getLogger(ActivateMLServiceCommand.class.getName());
-	private MLServiceContext mlServiceContext;
-	
+	private V3MLServiceContext mlServiceContext;
+
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-
-		this.mlServiceContext = (MLServiceContext) context.get(FacilioConstants.ContextNames.ML_MODEL_INFO);
-		try {
-			LOGGER.info("Start of ActivateMLServiceCommand");
-			if(mlServiceContext.getServiceType().contentEquals("default") ) {
-				return executeDefaultMLJob();
-			}
-			executeCustomMLJob();
-			LOGGER.info("End of ActivateMLServiceCommand");
-			
-		}catch(Exception e) {
-			mlServiceContext.updateStatus("Failed to activate mlservice");
-			return true;
+		mlServiceContext = (V3MLServiceContext) context.get(MLServiceUtil.MLSERVICE_CONTEXT);
+		if(mlServiceContext.getServiceType().equals("default")) {
+			return executeDefaultMLJob();
 		}
-		LOGGER.info("End of ActivateMLServiceCommand");
-		return false;
+		return executeCustomMLJob();
 	}
 
 	private boolean executeDefaultMLJob() throws Exception {
+		try {
+			LOGGER.info("Start of ActivateMLServiceCommand Default Model");
+			switch (mlServiceContext.getModelName()) {
+				case "energyprediction": {
+					FacilioChain chain = FacilioChainFactory.addEnergyPredictionchain();
+					FacilioContext context = chain.getContext();
+					context.put("energyMeterID", mlServiceContext.getParentAssetId());
+					context.put("mlModelVariables", mlServiceContext.getMlModelVariables());
+					context.put("mlVariables", mlServiceContext.getTrainingSamplingJson());
+					context.put("modelPath", mlServiceContext.getMlResponseList().get(0).getModuleInfo().get(0).getModelPath());
+					context.put(FacilioConstants.ContextNames.ML_SERVICE_DATA, mlServiceContext);
+					chain.execute();
+					break;
+				}
+				case "loadprediction": {
+					FacilioChain chain = FacilioChainFactory.addLoadPredictionchain();
+					FacilioContext context = chain.getContext();
+					context.put("energyMeterID", mlServiceContext.getParentAssetId());
+					context.put("mlModelVariables", mlServiceContext.getMlModelVariables());
+					context.put("mlVariables", mlServiceContext.getTrainingSamplingJson());
+					context.put("modelPath", mlServiceContext.getMlResponseList().get(0).getModuleInfo().get(0).getModelPath());
+					context.put(FacilioConstants.ContextNames.ML_SERVICE_DATA, mlServiceContext);
+					chain.execute();
+					break;
+				}
+				case "energyanomaly": {
+					FacilioChain chain = FacilioChainFactory.enableAnomalyDetectionChain();
+					FacilioContext context = chain.getContext();
 
-		switch(mlServiceContext.getModelName()){
-		case "energyprediction":{
-			FacilioChain chain = FacilioChainFactory.addEnergyPredictionchain();
-			FacilioContext context = chain.getContext();
-			context.put("energyMeterID",mlServiceContext.getAssetList().get(0));
-			context.put("mlModelVariables", mlServiceContext.getMlVariables());
-			context.put("mlVariables", mlServiceContext.getSamplingJson());
-			context.put("modelPath", mlServiceContext.getMlResponseList().get(0).getModuleInfo().get(0).getModelPath());
-			context.put(FacilioConstants.ContextNames.ML_MODEL_INFO, mlServiceContext);
-			chain.execute();
-			break;
+					List<Long> assetIds = MLServiceUtil.getAllAssetIds(mlServiceContext);
+					assetIds.add(0, mlServiceContext.getParentAssetId());
+					context.put("TreeHierarchy", assetIds);
+
+					context.put("mlModelVariables", mlServiceContext.getMlModelVariables());
+					context.put("mlVariables", mlServiceContext.getTrainingSamplingJson());
+					context.put("parentHierarchy", "true");
+					context.put(FacilioConstants.ContextNames.ML_SERVICE_DATA, mlServiceContext);
+					chain.execute();
+					break;
+				}
+				default: {
+					String errMsg = "Given modelname is not available";
+					throw MLServiceUtil.throwError(mlServiceContext, ErrorCode.VALIDATION_ERROR, errMsg);
+				}
+			}
+			LOGGER.info("Successfully activated mlservice for Default Model");
+			MLServiceUtil.updateMLStatus(mlServiceContext, "Successfully activated mlservice ");
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw MLServiceUtil.throwError(mlServiceContext, ErrorCode.UNHANDLED_EXCEPTION, "Failed to activate Default ML Model");
 		}
-		case "loadprediction":{
-			FacilioChain chain = FacilioChainFactory.addLoadPredictionchain();
-			FacilioContext context = chain.getContext();
-			context.put("energyMeterID",mlServiceContext.getAssetList().get(0));
-			context.put("mlModelVariables", mlServiceContext.getMlVariables());
-			context.put("mlVariables", mlServiceContext.getSamplingJson());
-			context.put("modelPath", mlServiceContext.getMlResponseList().get(0).getModuleInfo().get(0).getModelPath());
-			context.put(FacilioConstants.ContextNames.ML_MODEL_INFO, mlServiceContext);
-			chain.execute();
-			break;
-		}
-		case "energyanomaly":{
-			FacilioChain chain = FacilioChainFactory.enableAnomalyDetectionChain();
-			FacilioContext context = chain.getContext();
-			context.put("TreeHierarchy", mlServiceContext.getAssetIds());
-			context.put("mlModelVariables", mlServiceContext.getMlVariables());
-			context.put("mlVariables", mlServiceContext.getSamplingJson());
-			context.put("parentHierarchy", "true");
-			context.put(FacilioConstants.ContextNames.ML_MODEL_INFO, mlServiceContext);
-			chain.execute();
-			break;
-		}
-		default :{
-			String errMsg = "Given modelname is not available";
-			LOGGER.fatal(errMsg);
-			mlServiceContext.updateStatus(errMsg);
-			return true;
-		}
-		}
-		mlServiceContext.updateStatus("Successfully activated mlservice ");
 		return false;
 	}
 
-	private void executeCustomMLJob() throws Exception {
+	private boolean executeCustomMLJob() throws Exception {
 		try {
+			LOGGER.info("Start of ActivateMLServiceCommand Custom Model");
 			//			LOGGER.info(mlServiceContext.getMlResponse().getModuleInfo());
 			List<MLResponseContext> mlResponseContextList = mlServiceContext.getMlResponseList();
 			List<Long> mlIDList  = new ArrayList<>();
-			List<Long> assetIdList  = mlServiceContext.getAssetList();
+			List<Long> assetIdList = MLServiceUtil.getAllAssetIds(mlServiceContext);
 
 			for(int index=1;index<=mlResponseContextList.size();index++) {
 				MLResponseContext mlResponseContext = mlResponseContextList.get(index-1);
 
 				long assetId = mlResponseContext.getAssetid();
-				String scenario = mlServiceContext.getScenario();
+				String projectName = mlServiceContext.getProjectName();
 				String serviceType = mlServiceContext.getServiceType();
 
 				Map<String, MLCustomModuleContext> mlCustomModuleMap = mlResponseContext.getModuleInfo()
 						.stream().collect(Collectors.toMap(MLCustomModuleContext::getModuleName, mlCustomModule -> mlCustomModule));
 
-				List<Map<String, Object>> readingFieldsDetails = mlServiceContext.getModels().get(index-1);
+				List<Map<String, Object>> readingFieldsDetails = mlServiceContext.getModelReadings().get(index-1);
 
 				for(MLCustomModuleContext moduleContext : mlResponseContext.getModuleInfo()) {
 					//				LOGGER.info("MAPPPSSS:::"+mlCustomModuleMap);
 					//				LOGGER.info("MODULEEEEEEEEEEE name :: "+moduleContext.getModelPath());
 					//				LOGGER.info("Starting ::"+moduleContext);
-					long mlID = addMLModule(moduleContext, scenario, serviceType, assetId);
+					long mlID = addMLModule(moduleContext, projectName, serviceType, assetId, mlServiceContext.getId());
 					//				LOGGER.info("addMLModule ::"+moduleContext);
 					String moduleName = moduleContext.getModuleName();
 					if(moduleName!= null &&moduleName.equals("EnergyAnomalyRatio")) {
 						for(long eachId:assetIdList) {
 							addMLVariables(mlID, eachId, moduleContext, readingFieldsDetails, mlCustomModuleMap);
-						}	
+						}
 					}
 					else {
 						addMLVariables(mlID, assetId, moduleContext, readingFieldsDetails, mlCustomModuleMap);
@@ -150,14 +149,14 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 						}
 						else {
 							mlIDList.add(mlID);
-							MLServiceAPI.updateMLSequence(mlIDList);
+							MLServiceUtil.updateMLSequence(mlIDList);
 						}
 					LOGGER.info("addMLModelVariables ::"+moduleContext);
 					try {
 						ScheduleInfo info = new ScheduleInfo();
 						//String moduleType = moduleContext.getType();
 						if(moduleType.equals("training")) {
-							info = FormulaFieldAPI.getSchedule(FacilioFrequency.DAILY);					
+							info = FormulaFieldAPI.getSchedule(FacilioFrequency.DAILY);
 						} else if(moduleType.equals("prediction")) {
 							info = FormulaFieldAPI.getSchedule(FacilioFrequency.HOURLY);
 						} else {
@@ -170,20 +169,22 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 
 								MLAPI.addJobs(mlID,"DefaultMLJob",info,"ml");
 							}
-						}	
+						}
 
 					} catch (InterruptedException e) {
+						e.printStackTrace();
 						Thread.sleep(1000);
 					}
-					mlServiceContext.updateMlID(mlID);
+					mlServiceContext.setMlID(mlID);
 				}
 			}
-			mlServiceContext.updateStatus("Successfully activated mlservice ");
+			MLServiceUtil.updateMLStatus(mlServiceContext, "Successfully activated mlservice ");
+			LOGGER.info("Successfully activated mlservice for custom Model");
 		}catch(Exception e){
-			LOGGER.error("Error while activating ml service ");
-			mlServiceContext.updateStatus("Failed to activate mlservice");
-			throw e;
+			e.printStackTrace();
+			throw MLServiceUtil.throwError(mlServiceContext, ErrorCode.UNHANDLED_EXCEPTION, "Failed to activate Custom ML Model");
 		}
+		return false;
 	}
 
 	private void addMLModelVariables(long mlId, String key, JSONObject value) throws Exception {
@@ -202,20 +203,20 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 		//Already available variables
 //		MLAPI.addMLModelVariables(mlID,"assetID",String.valueOf(assetId));
 		MLAPI.addMLModelVariables(mlID,"timezone",AccountUtil.getCurrentAccount().getTimeZone());
-		JSONObject mlvariables = mlServiceContext.getMlVariables();
-		for(Object key : mlvariables.keySet()) {
-			MLAPI.addMLModelVariables(mlID, (String)key, String.valueOf(mlvariables.get(key)));
-			
+		JSONObject mlModelVariables = mlServiceContext.getMlModelVariables();
+		for(Object key : mlModelVariables.keySet()) {
+			MLAPI.addMLModelVariables(mlID, (String)key, String.valueOf(mlModelVariables.get(key)));
+
 		}
 		MLAPI.addMLModelVariables(mlID, "asset_id", assetId.toString());
 
 		//ML service variables
 		addMLModelVariables(mlID,"workflowInfo",mlServiceContext.getWorkflowInfo());
 		addMLModelVariables(mlID,"filteringMethod",mlServiceContext.getFilteringMethod());
-		addMLModelVariables(mlID,"groupingMethod",mlServiceContext.getGroupingMethod());		
+		addMLModelVariables(mlID,"groupingMethod",mlServiceContext.getGroupingMethod());
 
-		
-		
+
+
 //		addMLModelVariables(mlID,"mlVariables",mlServiceContext.getMlVariables());
 //		addMLModelVariables(mlID,"readingVariables",mlServiceContext.getReadingVariables());
 
@@ -225,7 +226,7 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 //		addMLModelVariables(mlID,"assetDetails",mlServiceContext.getAssetDetails());
 //		addMLModelVariables(mlID,"orgDetails",mlServiceContext.getOrgDetails());
 
-		MLAPI.addMLModelVariables(mlID,"usecaseId",String.valueOf(mlServiceContext.getUseCaseId()));
+		MLAPI.addMLModelVariables(mlID,"usecaseId",String.valueOf(mlServiceContext.getId()));
 		if(moduleContext.getType().equals("prediction")) {
 			MLAPI.addMLModelVariables(mlID,"workflowId",String.valueOf(mlServiceContext.getWorkflowId()));
 		}
@@ -237,7 +238,7 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
-		long maxSamplingPeriod = MLServiceAPI.PREDICTION_SAMPLING_PERIOD;
+		long maxSamplingPeriod = MLServiceUtil.PREDICTION_SAMPLING_PERIOD;
 		if(moduleContext.getType().equals("training")) {
 			maxSamplingPeriod = mlServiceContext.getTrainingSamplingPeriod();
 		}
@@ -253,7 +254,7 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 				FacilioModule module = variableField.getModule();
 				FacilioField parentField = modBean.getField("parentId", module.getName());
 
-				MLAPI.addMLVariables(mlID,variableField.getModuleId(),variableField.getFieldId(),parentField.getFieldId(),assetId, maxSamplingPeriod, MLServiceAPI.FURUTRE_SAMPLING_PERIOD, first, "SUM");
+				MLAPI.addMLVariables(mlID,variableField.getModuleId(),variableField.getFieldId(),parentField.getFieldId(),assetId, maxSamplingPeriod, MLServiceUtil.FURUTRE_SAMPLING_PERIOD, first, "SUM");
 				first = false;
 			}
 		} else {
@@ -277,7 +278,7 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 			boolean first = true;
 			FacilioField parentField = modBean.getField("parentId", prevModule.getName());
 			for(FacilioField variableField : finalFields) {
-				MLAPI.addMLVariables(mlID,variableField.getModuleId(),variableField.getFieldId(),parentField.getFieldId(),assetId, maxSamplingPeriod, MLServiceAPI.FURUTRE_SAMPLING_PERIOD, first, "SUM");
+				MLAPI.addMLVariables(mlID,variableField.getModuleId(),variableField.getFieldId(),parentField.getFieldId(),assetId, maxSamplingPeriod, MLServiceUtil.FURUTRE_SAMPLING_PERIOD, first, "SUM");
 				first = false;
 			}
 			MLAPI.addMLModelVariables(prevModuleContext.getMlId(),"jobid",String.valueOf(mlID));
@@ -286,10 +287,10 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 
 	}
 
-	private long addMLModule(MLCustomModuleContext moduleContext, String scenario, String serviceType, Long assetId) throws Exception {
+	private long addMLModule(MLCustomModuleContext moduleContext, String scenario, String serviceType, Long assetId, long mlServiceId) throws Exception {
 		try {
 			if(!moduleContext.getModuleNeeded()) {
-				return MLAPI.addMLModel(moduleContext.getModelPath(), -1, -1);
+				return MLAPI.addMLModel(moduleContext.getModelPath(), -1, -1, mlServiceId);
 			}
 
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -298,18 +299,18 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 				moduleName = scenario + moduleName;
 			}
 			String mlReadingName =  moduleName + "MLReadings";
-/*			Chiller + MultivariateAnomalyPrediction
- *			Chiller + MultivariateAnomalyRatio
- *			Energy + Prediction
- * 			ChillerMultivariateAnomalyPredictionMLReadings
- * 			EnergyPredictionMLReadings
- */
+			/*			Chiller + MultivariateAnomalyPrediction
+			 *			Chiller + MultivariateAnomalyRatio
+			 *			Energy + Prediction
+			 * 			ChillerMultivariateAnomalyPredictionMLReadings
+			 * 			EnergyPredictionMLReadings
+			 */
 			FacilioModule mlReadingModule = modBean.getModule(mlReadingName.toLowerCase());
 
 //			LOGGER.info(" ---- readingModuleName ---"+mlReadingName);
 //			LOGGER.info(" ---- readingModuleName ---"+mlReadingName.toLowerCase());
 //			LOGGER.info(" ---- readingModuleName ---"+mlReadingModule);
-			
+
 			LOGGER.info(mlReadingModule);
 			List<FacilioField> mlFields = mlReadingModule == null ? getCustomFields(moduleContext.getModuleFields(), false) : modBean.getAllFields(mlReadingModule.getName());
 			LOGGER.info(mlFields);
@@ -317,8 +318,8 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 //			LOGGER.info(" -- mlFields -- "+mlFields);
 			MLAPI.addReading(Collections.singletonList(assetId),mlReadingName,mlFields,ModuleFactory.getMLReadingModule().getTableName(),mlReadingModule);
 
-			String mlLogReadingName = moduleName + "MLLogReadings";  
-			
+			String mlLogReadingName = moduleName + "MLLogReadings";
+
 			FacilioModule mlLogReadingModule = modBean.getModule(mlLogReadingName.toLowerCase());
 
 //			LOGGER.info(" ---- logReadingModuleName ---"+mlLogReadingName);
@@ -333,13 +334,14 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 			mlLogReadingModule = modBean.getModule(mlLogReadingName.toLowerCase());
 
 			moduleContext.setMlReadingModuleId(mlReadingModule.getModuleId());
-			long mlId = MLAPI.addMLModel(moduleContext.getModelPath(), mlLogReadingModule.getModuleId(), mlReadingModule.getModuleId());
+			long mlId = MLAPI.addMLModel(moduleContext.getModelPath(), mlLogReadingModule.getModuleId(), mlReadingModule.getModuleId(), mlServiceId);
 			moduleContext.setMlId(mlId);
 			return mlId;
 		}
 		catch(Exception e) {
-			LOGGER.error("Error while adding ml service model Job", e);
-			throw e;
+			e.printStackTrace();
+			String errMsg = "Error while adding ml service model Job";
+			throw MLServiceUtil.throwError(mlServiceContext, ErrorCode.VALIDATION_ERROR, errMsg);
 		}
 	}
 
@@ -362,7 +364,7 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 			for(String displayName : booleanFields) {
 
 				String dummyField = displayName.replaceAll(" ", "");
-				String field = Character.toLowerCase(dummyField.charAt(0)) + dummyField.substring(1);				
+				String field = Character.toLowerCase(dummyField.charAt(0)) + dummyField.substring(1);
 				LOGGER.info(isLogModule+" :: "+field +" :: "+displayName);
 				displayName = isLogModule ? displayName+" Log" : displayName;
 
@@ -370,7 +372,7 @@ public class ActivateMLServiceCommand extends FacilioCommand {
 				count += 1;
 			}
 		}
-		
+
 		if(decimalFields!=null) {
 			dataType = "DECIMAL_";
 			count = 1;

@@ -507,7 +507,7 @@ public class FacilioConstants {
 		public static final String MULTIVARIATE_ANOMALY_EVENT ="multivariateanomalyevent";
 		
 //		public static final String ML_USECASE_ID = "mlUsecaseId";
-		public static final String ML_MODEL_INFO = "modelInfo";
+		public static final String ML_SERVICE_DATA = "mlServiceData";
 //		public static final String ML_MODEL_NAME = "modelName";
 //		public static final String ML_FILTER = "filteringMethod";
 //		public static final String ML_GROUP = "groupingMethod";
@@ -1094,6 +1094,7 @@ public class FacilioConstants {
 		public static final String EVENT_TYPES = "eventTypes";
 		public static final String RULE_TYPES = "ruleTypes";
 		public static final String READING_RULE_MODULE = "readingrule";
+		public static final String NEW_READING_RULE = "newReadingRule";
 		public static final String READING_ALARM_RULES = "readingalarmrules";
 		public static final String READING_ALARM_RULE = "readingalarmrule";
 		public static final String ALARM_RULE_META = "alarmRuleMeta";
@@ -1721,6 +1722,7 @@ public class FacilioConstants {
 		public static final String IMPORT_PROCESS_CONTEXT = "importProcessContext";
 
 		public static final String INCLUDE_SERVING_SITE = "includeServingSite";
+		public static final String SEARCH_QUERY = "searchQuery";
 
 		public static final Object DEFAULT_DATE = "defaultDate";
 		public static final Object READING_RULE_ALARM_OCCURANCE = "readingRuleAlarmOccurance";
@@ -2673,7 +2675,8 @@ public class FacilioConstants {
 		public static final String IS_OLD_AGENT = "isOldAgent";
 		public static final String DATA_PROCESSING_LOGGER_LEVEL = "dataProcessingLoggerLevel";		
 		public static final String MAX_AGENT_PARTITION = "maxAgentPartition";		
-		public static final String MESSAGE_QUEUE_SOURCE = "messageQueueSource";	
+		public static final String MESSAGE_QUEUE_SOURCE = "messageQueueSource";
+		public static final String CAN_EXECUTE_FROM_STORM = "canExecuteStorm";
 	}
 
 	public static class Services{

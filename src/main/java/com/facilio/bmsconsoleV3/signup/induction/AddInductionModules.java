@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.RollUpField;
+import com.facilio.bmsconsole.context.ScopingConfigContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormActionType;
 import com.facilio.bmsconsole.forms.FormField;
@@ -26,6 +27,7 @@ import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.util.ActionAPI;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.RollUpFieldUtil;
@@ -45,6 +47,7 @@ import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
@@ -53,6 +56,7 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.ScopeOperator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
@@ -85,10 +89,12 @@ public class AddInductionModules extends SignUpData {
         FacilioModule InductionResponseModule = constructInductionResponse(modBean, induction);
         modules.add(InductionResponseModule);
         
-        
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         addModuleChain.execute();
+        
+        addScoping(induction);
+        
         addInductionResponseRollUpToTemplate(Constants.getModBean(), InductionResponseModule);
         
         
@@ -122,6 +128,31 @@ public class AddInductionModules extends SignUpData {
         
 //        addDefaultScheduleJobs();
     }
+	
+	public void addScoping(FacilioModule module) throws Exception {
+		
+		long applicationScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        
+        ScopingConfigContext scoping = new ScopingConfigContext();
+        Criteria criteria = new Criteria();
+        
+        Condition condition = CriteriaAPI.getCondition(module.getName()+".sites", "com.facilio.modules.ContainsSiteValueGenerator", ScopeOperator.SCOPING_IS);
+        condition.setColumnName("sites");  			// setting dummy column Name
+        condition.setModuleName(module.getName());
+        
+        Condition condition1 = CriteriaAPI.getCondition(module.getName()+".siteApplyTo", Boolean.TRUE.toString(), BooleanOperators.IS);
+        condition1.setColumnName("SITE_APPLY_TO"); 
+        condition1.setModuleName(module.getName());
+        
+        criteria.addAndCondition(condition);
+        criteria.addOrCondition(condition1);
+        
+        scoping.setScopingId(applicationScopingId);
+        scoping.setModuleId(module.getModuleId());
+        scoping.setCriteria(criteria);
+        
+        ApplicationApi.addScopingConfigForApp(Collections.singletonList(scoping));
+	}
 
 	public void addActivityModuleForInductionResponse(FacilioModule inductionResponseModule) throws Exception {
 		// TODO Auto-generated method stub

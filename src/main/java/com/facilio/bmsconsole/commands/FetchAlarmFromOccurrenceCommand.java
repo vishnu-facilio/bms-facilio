@@ -1,19 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.util.NewAlarmAPI;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleInterface;
+import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
-import com.facilio.bmsconsole.util.NewAlarmAPI;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FieldUtil;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class FetchAlarmFromOccurrenceCommand extends FacilioCommand {
 
@@ -89,7 +88,7 @@ public class FetchAlarmFromOccurrenceCommand extends FacilioCommand {
                         category.setId(readingAlarmCategory.getId());
                         alarmContext.setCategory(category);
                     }
-                    ReadingRuleContext rule = ((ReadingAlarm) baseAlarm).getRule();
+                    ReadingRuleInterface rule = ((ReadingAlarm) baseAlarm).getRule();
                     if (rule != null) {
                         alarmContext.setCondition(rule.getName());
                     }

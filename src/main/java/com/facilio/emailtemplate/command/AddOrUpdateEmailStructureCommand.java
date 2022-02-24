@@ -5,6 +5,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.bmsconsole.util.TemplateAttachmentUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.emailtemplate.context.EMailStructure;
@@ -15,7 +16,11 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.List;
+import java.util.Map;
 
 public class AddOrUpdateEmailStructureCommand extends FacilioCommand {
 
@@ -31,30 +36,54 @@ public class AddOrUpdateEmailStructureCommand extends FacilioCommand {
         EMailStructure emailStructure = (EMailStructure) context.get(FacilioConstants.ContextNames.EMAIL_STRUCTURE);
         emailStructure.setModuleId(module.getModuleId());
 
+        List<Map<String, Object>> attachmentList = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.ATTACHMENT_LIST);
+        setAttachments(emailStructure, attachmentList);
+
         validateEmailStructure(emailStructure);
 
         if (emailStructure.getId() > 0) {
             // delete old message file
-            Template template = TemplateAPI.getTemplate(emailStructure.getId());
-            if (!(template instanceof EMailStructure)) {
-                throw new IllegalArgumentException("Invalid Email Template");
-            }
-            EMailStructure oldEmailStructure = (EMailStructure) template;
-            if (oldEmailStructure == null) {
-                throw new IllegalArgumentException("Invalid Email Structure");
-            }
 
+            EMailStructure oldEmailStructure = fetchOldEmailStructure(emailStructure.getId());
             TemplateAPI.deleteTemplateFile(oldEmailStructure.getBodyId());
+
+            // delete all attachments
+            TemplateAttachmentUtil.deleteAttachments(emailStructure.getId());
+            TemplateAPI.deleteDefaultProps(oldEmailStructure);
+
+            // add Default Props
+            TemplateAPI.addDefaultProps(emailStructure);
 
             // add new file
             User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
             emailStructure.setBodyId(FacilioFactory.getFileStore(superAdmin.getId()).addFile("Email_Template_"+emailStructure.getName(), emailStructure.getMessage(), "text/plain"));
             TemplateAPI.updateTemplatesWithExtendedProps(emailStructure.getId(), ModuleFactory.getEMailStructureModule(), FieldFactory.getEMailStructureFields(), FieldUtil.getAsProperties(emailStructure));
+
+            // add the attachments again
+            if (CollectionUtils.isNotEmpty(emailStructure.getAttachments())) {
+                TemplateAttachmentUtil.addAttachments(oldEmailStructure.getId(), emailStructure.getAttachments());
+            }
         } else {
             TemplateAPI.addTemplate(emailStructure);
         }
 
         return false;
+    }
+
+    private EMailStructure fetchOldEmailStructure(long id) throws Exception {
+        Template oldTemplate = TemplateAPI.getTemplate(id);
+        if (!(oldTemplate instanceof EMailStructure)) {
+            throw new IllegalArgumentException("Invalid Email Template");
+        }
+        EMailStructure oldEmailStructure = (EMailStructure) oldTemplate;
+        if (oldEmailStructure == null) {
+            throw new IllegalArgumentException("Invalid Email Structure");
+        }
+        return oldEmailStructure;
+    }
+
+    private void setAttachments(EMailStructure emailStructure, List<Map<String, Object>> attachmentList) {
+        TemplateAPI.setAttachments(attachmentList, emailStructure);
     }
 
     private void validateEmailStructure(EMailStructure emailStructure) {

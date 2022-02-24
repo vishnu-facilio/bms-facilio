@@ -9,7 +9,7 @@ import org.json.JSONException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.util.MLServiceAPI;
+import com.facilio.bmsconsole.util.MLServiceUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class MLServiceContext extends ModuleBaseWithCustomFields {
@@ -44,7 +44,7 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 	/**
 	 * Internal usage variables 
 	 */
-	private long trainingSamplingPeriod = MLServiceAPI.TRAINING_SAMPLING_PERIOD;
+	private long trainingSamplingPeriod = MLServiceUtil.TRAINING_SAMPLING_PERIOD;
 	private JSONObject samplingJson;
 	private boolean isPastData;
 
@@ -119,10 +119,6 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 
 	public void setReadingVariables(List<String> readingVariables) {
 		this.readingVariables = readingVariables;
-	}
-
-	public void updateReadingVariables() throws Exception {
-		this.readingVariables = MLServiceAPI.getModelReadings(this.models).get(0);
 	}
 
 	public List<Long> getAssetList() {
@@ -201,15 +197,9 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 		return status;
 	}
 
-	public void updateStatus(String status) throws Exception {
-		this.setStatus(status);
-		MLServiceAPI.updateMLServiceStatus(this.getUseCaseId(), status);
-	}
-
 	public void setStatus(String status) {
 		this.status = status;
 	}
-
 
 	public String getAssetIds() {
 		return assetIds;
@@ -300,11 +290,6 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 		this.mlID = mlID;
 	}
 
-	public void updateMlID(long mlID) throws Exception {
-		this.setMlID(mlID);
-		MLServiceAPI.updateMLID(this.getUseCaseId(), mlID);
-	}
-
 	public List<Long> getParentMlIdList() {
 		return parentMlIdList;
 	}
@@ -321,7 +306,7 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 	}
 	public void setStartTimeString(String startTimeString) {
 		this.startTimeString = startTimeString;
-		this.startTime = MLServiceAPI.convertDatetoTTimeZone(startTimeString);
+		this.startTime = MLServiceUtil.convertDatetoTTimeZone(startTimeString);
 	}
 
 	public String getStartTimeString() {
@@ -330,7 +315,7 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 
 	public void setEndTimeString(String endTimeString) {
 		this.endTimeString = endTimeString;
-		this.endTime = MLServiceAPI.convertDatetoTTimeZone(endTimeString);
+		this.endTime = MLServiceUtil.convertDatetoTTimeZone(endTimeString);
 
 	}
 

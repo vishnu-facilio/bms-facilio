@@ -23,7 +23,7 @@ public class MLServiceAction extends FacilioAction {
 
 		FacilioChain chain = FacilioChainFactory.addMLServiceChain(is_default);
 		FacilioContext context = chain.getContext();
-		context.put(FacilioConstants.ContextNames.ML_MODEL_INFO, this.modelInfo);
+		context.put(FacilioConstants.ContextNames.ML_SERVICE_DATA, this.modelInfo);
 		chain.execute();
 
 		setResult(FacilioConstants.ContextNames.MESSAGE, modelInfo.getStatus());

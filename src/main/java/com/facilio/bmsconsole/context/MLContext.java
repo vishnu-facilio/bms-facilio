@@ -24,8 +24,9 @@ public class MLContext extends ModuleBaseWithCustomFields
 	
 	private Hashtable<Long,Hashtable<String,SortedMap<Long,Object>>> mlVariablesDataMap; // AssetID => Attribute Name => ttime,Attribute Value
 	private SortedMap<Long,Hashtable<String,Object>> mlCriteriaVariablesDataMap;
-	
+
 	private String modelPath;
+	private long mlServiceID;
 	private long predictionLogModuleID;
 	private long predictionModuleID;
 	private long criteriaId;
@@ -71,11 +72,21 @@ public class MLContext extends ModuleBaseWithCustomFields
 		return result;
 	}
 
+	public void setMlServiceID(long mlServiceID)
+	{
+		this.mlServiceID = mlServiceID;
+	}
+
+	public long getMlServiceID()
+	{
+		return mlServiceID;
+	}
 	
 	public void setPredictionLogModuleID(long predictionLogModuleID)
 	{
 		this.predictionLogModuleID = predictionLogModuleID;
 	}
+
 	public long getPredictionLogModuleID()
 	{
 		return predictionLogModuleID;

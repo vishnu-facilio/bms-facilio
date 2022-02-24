@@ -13,11 +13,9 @@ public class CommunitySharingInfoContext extends V3Context {
 
 
     public enum SharingType implements FacilioIntEnum {
-        BUILDING("Building"),
-        SITE("Site"),
-        ALL_SITES("All Sites"),
+        TENANT_UNIT("Tenantunit"),
         ROLE("Role"),
-        PEOPLE("People")
+        PEOPLE("People"),
         ;
 
         private String name;
@@ -43,7 +41,7 @@ public class CommunitySharingInfoContext extends V3Context {
             return name;
         }
     }
-
+    
     private BaseSpaceContext sharedToSpace;
 
     public BaseSpaceContext getSharedToSpace() {

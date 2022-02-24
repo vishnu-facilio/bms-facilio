@@ -6,18 +6,18 @@ public class MLAssetVariableContext extends ModuleBaseWithCustomFields
 {
 	private static final long serialVersionUID = 1L;
 
-	private long mlId;
+	private long mlID;
 	private long assetID;
 	private String variableKey;
 	private String variableValue;
 	
-	public void setMlId(long mlId)
+	public void setMlID(long mlID)
 	{
-		this.mlId = mlId;
+		this.mlID = mlID;
 	}
-	public long getMlId()
+	public long getMlID()
 	{
-		return mlId;
+		return mlID;
 	}
 	public void setAssetID(long assetID)
  	{

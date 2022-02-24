@@ -3,6 +3,7 @@ package com.facilio.apiv3;
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
+import com.facilio.bmsconsole.util.MLServiceUtil;
 import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.*;
@@ -966,7 +967,6 @@ public class APIv3Config {
     public static Supplier<V3Config> getAudience() {
         return () -> new V3Config(AudienceContext.class, null)
                 .create()
-                .beforeSave(new ValidateAudienceSharingCommandV3())
                 .afterSave(new AddOrUpdateAudienceSharingInfoCommandV3())
                 .update()
                 .afterSave(new AddOrUpdateAudienceSharingInfoCommandV3())
@@ -1492,6 +1492,22 @@ public class APIv3Config {
                 .beforeFetch(new LoadIRLookupCommandV3())
                 .afterFetch(new FetchInventoryRequestDetailsCommandV3())
                 .delete()
+                .build();
+    }
+
+    @Module(MLServiceUtil.ML_SERVICE_MODULE)
+    public static Supplier<V3Config> getMLService() {
+        return () -> new V3Config(V3MLServiceContext.class, new ModuleCustomFieldCount10())
+                .create()
+                .beforeSave(new MLServiceBeforeCreateValidationCommand())
+                .afterSave(TransactionChainFactoryV3.addMLServiceChain())
+                .update()
+                .beforeSave(new MLServiceBeforeUpdateCommand(), new MLServiceBeforeCreateValidationCommand())
+                .afterSave(new MLServiceAfterUpdateCommand())
+                .list()
+                .summary()
+                .delete()
+                .beforeDelete(new MLServiceBeforeDeleteCommand())
                 .build();
     }
 

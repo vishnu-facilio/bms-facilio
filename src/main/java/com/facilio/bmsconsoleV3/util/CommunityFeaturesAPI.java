@@ -1,10 +1,13 @@
 package com.facilio.bmsconsoleV3.util;
 
+import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
+import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.bmsconsoleV3.context.CommunitySharingInfoContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
@@ -16,6 +19,7 @@ import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.Announcem
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.interfaces.BuildingTenantContacts;
 import com.facilio.bmsconsoleV3.interfaces.SiteTenantContacts;
+import com.facilio.bmsconsoleV3.interfaces.TenantUnitTenantContacts;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -39,6 +43,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class CommunityFeaturesAPI {
 
@@ -83,7 +88,7 @@ public class CommunityFeaturesAPI {
 
         return builder.get();
     }
-
+    
     public static List<CommunitySharingInfoContext> getSharingInfo(Long id) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENTS_SHARING_INFO);
@@ -161,13 +166,10 @@ public class CommunityFeaturesAPI {
             for(CommunitySharingInfoContext sharingInfo : announcement.getAnnouncementsharing()){
                 List<V3PeopleContext> ppl = new ArrayList<>();
                 //handling only for building sharing type for now.. can be supported for others as well
-                if(sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.BUILDING) {
-                     ppl = new BuildingTenantContacts().getPeople(sharingInfo.getSharedToSpace() != null ? sharingInfo.getSharedToSpace().getId() : null);
+                if(sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.TENANT_UNIT) {
+                     ppl = new TenantUnitTenantContacts().getPeople(sharingInfo.getSharedToSpace() != null ? sharingInfo.getSharedToSpace().getId() : null);
                 }
-                if(sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.ALL_SITES || sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.SITE) {
-                    ppl = new SiteTenantContacts().getPeople(sharingInfo.getSharedToSpace() != null ? sharingInfo.getSharedToSpace().getId() : null);
-                }
-
+                
                 if(sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.ROLE) {
                     List<Map<String, Object>> pplForRoleMap = V3PeopleAPI.getPeopleForRoles(Collections.singletonList(sharingInfo.getSharedToRole().getRoleId()));
                     if(CollectionUtils.isNotEmpty(pplForRoleMap)) {

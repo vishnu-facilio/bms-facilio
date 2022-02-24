@@ -159,6 +159,6 @@ public interface ModuleCRUDBean {
 
 	void addAuditLog(AuditLogHandler.AuditLogContext auditLog) throws Exception;
 	
-	public void initMLService(Map<String,String> requestJson) throws Exception;
+	public void initMLService(Map<String,Object> requestJson) throws Exception;
 
 }

@@ -8,13 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -197,6 +191,39 @@ public class WorkflowUtil {
 		}
 		return resultMap;
 	}
+
+	/**
+	 * {
+	 *     A: [4, 595],
+	 *     B: [-1, 596]
+	 *     C: [4, 599]
+	 * }
+	 */
+	public static SortedMap<String, Object[]> getAllVariableAndParentAndfieldIdfromWorkflow(WorkflowContext workflow) throws Exception {
+
+		SortedMap<String, Object[]> varMap = new TreeMap();
+		WorkflowContext workflowContext = getWorkflowContextFromString(workflow.getWorkflowString());
+		parseExpression(workflowContext);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+		for(WorkflowExpression workflowExpression : workflowContext.getExpressions()) {
+
+			if(workflowExpression instanceof ExpressionContext) {
+
+				ExpressionContext exp = (ExpressionContext) workflowExpression;
+				if(exp.getCriteria() == null) {
+					continue;
+				}
+				String parentIdStr = WorkflowUtil.getParentIdFromCriteria(exp.getCriteria());
+
+				Long parentId = parentIdStr != null ? NumberUtils.toLong(parentIdStr, -1) : -1;
+				FacilioField field = modBean.getField(exp.getFieldName(), exp.getModuleName());
+				varMap.put(exp.getName(), new Object[]{parentId, field});
+			}
+		}
+		return varMap;
+	}
+
 	public static String getParentIdFromCriteria (Criteria criteria) {
 		
 		Map<String, Condition> conditions = criteria.getConditions();

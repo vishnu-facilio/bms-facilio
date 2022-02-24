@@ -1,22 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
-import org.apache.commons.chain.Context;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.MLServiceContext;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.util.MLServiceAPI;
+import com.facilio.bmsconsole.util.MLServiceUtil;
+import com.facilio.bmsconsoleV3.context.V3MLServiceContext;
 import com.facilio.command.FacilioCommand;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
@@ -25,35 +13,38 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
+import com.facilio.v3.exception.ErrorCode;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
-public class ConstructReadingForMLServiceCommand extends FacilioCommand {
+import java.io.Serializable;
+import java.util.*;
+
+public class ConstructReadingForMLServiceCommand extends FacilioCommand implements Serializable {
 
 	private static final Logger LOGGER = Logger.getLogger(ConstructReadingForMLServiceCommand.class.getName());
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
+		V3MLServiceContext mlServiceContext = (V3MLServiceContext) context.get(MLServiceUtil.MLSERVICE_CONTEXT);
 
-		MLServiceContext mlServiceContext = (MLServiceContext) context.get(FacilioConstants.ContextNames.ML_MODEL_INFO);
 		long startTime = mlServiceContext.getStartTime();
 		long endTime = mlServiceContext.getEndTime();
-		mlServiceContext.setExecuteTime(endTime);
-		
+
 		try {
 			
-			long trainingSamplingPeriod = endTime - startTime;
-			mlServiceContext.setTrainingSamplingPeriod(trainingSamplingPeriod);
-			mlServiceContext.updateSamplingJson();
-			
-			
+			constructTrainingSamplingJson(mlServiceContext);
+
 			LOGGER.info("MLService startTime = " + startTime+", endTime = "+endTime);
-			mlServiceContext.setOrgDetails(MLServiceAPI.getOrgInfo());
-			LOGGER.info("ML dry hit data construction started for usecase id "+mlServiceContext.getUseCaseId());
+			LOGGER.info("ML dry hit data construction started for usecase id "+mlServiceContext.getId());
 
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
-			List<JSONArray> dataObjectList = new ArrayList<JSONArray>();
+			List<JSONArray> dataObjectList = new ArrayList<>();
 
-			List<List<Map<String, Object>>> models = mlServiceContext.getModels();
+			List<List<Map<String, Object>>> models = mlServiceContext.getModelReadings();
 			LOGGER.info("No of models in given api : "+models.size());
 
 			for(List<Map<String, Object>> eachModel : models) {
@@ -144,17 +135,33 @@ public class ConstructReadingForMLServiceCommand extends FacilioCommand {
 				}
 				dataObjectList.add(dataObject);
 			}
-
-
 			mlServiceContext.setDataObjectList(dataObjectList);
-			LOGGER.info("ML dry hit data construction done");
-			return false;
+			MLServiceUtil.updateMLStatus(mlServiceContext, "ML dry hit data construction done");
 		}
 		catch(Exception e) {
-			LOGGER.error("Error while constructing data to dry hit ML api", e);
-			return true;
+			e.printStackTrace();
+			String errMsg = "Error while constructing data to dry hit ML api";
+			throw MLServiceUtil.throwError(mlServiceContext, ErrorCode.RESOURCE_NOT_FOUND, errMsg);
 		}
+		return false;
 	}
 
+	private void constructTrainingSamplingJson(V3MLServiceContext mlServiceContext) throws Exception {
+		//	"mlVariables" : {"totalEnergyConsumptionDelta" : {"maxSamplingPeriod" : 777600000 }}}
+		if(mlServiceContext.getTrainingSamplingJson() == null) {
+			JSONObject samplingJson = new JSONObject();
+			List<String> readingVariables = mlServiceContext.getReadingVariables();
+			if(org.apache.commons.collections4.CollectionUtils.isEmpty(readingVariables)) {
+				MLServiceUtil.extractAndValidateAssetFields(mlServiceContext);
+			}
+			for(String reading : mlServiceContext.getReadingVariables()) {
+				JSONObject readingJson = new JSONObject();
+				readingJson.put("maxSamplingPeriod", mlServiceContext.getTrainingSamplingPeriod());
+				samplingJson.put(reading, readingJson);
+			}
+			mlServiceContext.setTrainingSamplingJson(samplingJson);
+		}
+
+	}
 
 }

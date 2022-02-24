@@ -614,6 +614,15 @@ public class ModuleFactory {
 
 		return readingRuleModule;
 	}
+
+	public static FacilioModule getNewReadingRuleModule() {
+		FacilioModule readingRuleModule = new FacilioModule();
+		readingRuleModule.setName("newreadingrule");
+		readingRuleModule.setDisplayName("New Reading Rule");
+		readingRuleModule.setTableName("New_Reading_Rule");
+		return readingRuleModule;
+	}
+
 	public static FacilioModule getReadingRuleMetricModule() {
 		FacilioModule readingRuleModule = new FacilioModule();
 		readingRuleModule.setName("readingruleMetrics");
@@ -4704,7 +4713,23 @@ public class ModuleFactory {
 		module.setTableName("Bundle_Change_Set");
         return module;
     }
-    
-    
+
+    public static FacilioModule getRuleBuilderConfigModule() {
+		FacilioModule module = new FacilioModule();
+        module.setName("ruleBuilderConfig");
+        module.setDisplayName("Rule Builder Configuration");
+		module.setTableName("Rule_Builder_Config");
+        return module;
+    }
+
+	public static FacilioModule getRuleAlarmDetailsModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("alarm_details");
+		module.setDisplayName("New Reading Rule Alarm Details");
+		module.setTableName("New_Reading_Rule_AlarmDetails");
+		return module;
+	}
+
+
     //Bundle Related Modules ends
 }

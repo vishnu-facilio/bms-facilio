@@ -75,7 +75,7 @@ public class SessionManager {
 		while (itr.hasNext()) {
 			String key = itr.next();
 			LiveSession liveSession = liveSessions.get(key);
-			if (liveSession != null && liveSession.getLiveSessionType().equals(liveSessionType) && liveSession.getOuid() == id) {
+			if (liveSession != null && (liveSessionType == null || liveSession.getLiveSessionType().equals(liveSessionType)) && liveSession.getOuid() == id) {
 				sessionList.add(liveSession);
 			}
 		}

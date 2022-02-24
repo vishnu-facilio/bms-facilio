@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -73,6 +74,16 @@ public class ItemAction extends FacilioAction{
 		}
 		return false;
 	}
+
+	public String searchQuery;
+
+	public String getSearchQuery() {
+		return searchQuery;
+	}
+
+	public void setSearchQuery(String searchQuery) {
+		this.searchQuery = searchQuery;
+	}
 	public String addItem() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, item);
@@ -137,7 +148,9 @@ public class ItemAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_SITE_ID, siteId);
 		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Item.LOCAL_ID desc");
 		context.put(FacilioConstants.ContextNames.INCLUDE_SERVING_SITE, includeServingSite);
-		
+		if(StringUtils.isNotEmpty(getSearchQuery())){
+			context.put(FacilioConstants.ContextNames.SEARCH_QUERY,searchQuery);
+		}
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(getFilters());
@@ -191,7 +204,6 @@ public class ItemAction extends FacilioAction{
 		setResult(FacilioConstants.ContextNames.ITEM_COUNT, itemCount);
 		return SUCCESS;
 	}
-	
 	private boolean includeParentFilter;
 
 	public boolean getIncludeParentFilter() {

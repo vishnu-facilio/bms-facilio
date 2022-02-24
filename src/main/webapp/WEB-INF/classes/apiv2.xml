@@ -122,6 +122,8 @@
 			method="getMySiteList">
 				<param name="shouldApplySwitchScope">false</param>
 		</action>
+		<action name="submitTopology" class="com.facilio.storm.action.StormAdminAction" method="submitTopology">
+		</action>
 		<action name="getSites" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getAllSites">
 		</action>
@@ -1601,6 +1603,12 @@
 				method="categoryRules"></action>
 	</package>
 
+	<package name="newAlarmRules" namespace="/api/v2/alarm/new_rules" extends="v2Api">
+		<action name="addNew"  class="com.facilio.readingrule.action.ReadingRuleAction" method="addNewReadingRule">
+			<param name="permission">CREATE</param>
+		</action>
+	</package>
+
 	<package name="alarmImpact" namespace="/api/v2/alarm/impacts" extends="v2Api">
 		<action name="addOrUpdate"
 				class="com.facilio.bmsconsole.actions.ImpactAction"
@@ -1642,6 +1650,20 @@
 			method="v2rulesCount">
 			<param name="moduleName">alarmrules</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+		</action>
+	</package>
+
+	<package name="newRulesListApiv2" namespace="/api/v2/new_rules" extends="v2Api">
+		<action name="*" class="com.facilio.readingrule.action.ReadingRuleAction" method="v2RulesList">
+			<param name="permission">READ,READ_OWN,READ_TEAM</param>
+			<param name="moduleName">alarmrules</param>
+			<param name="viewName">{1}</param>
+			<param name="ruleType">1</param>
+			<result name="success" type="json">
+				<param name="excludeNullProperties">true</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
 		</action>
 	</package>
 

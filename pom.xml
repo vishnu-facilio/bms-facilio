@@ -136,7 +136,7 @@
         <dependency>
             <groupId>com.facilio.framework</groupId>
             <artifactId>facilio-framework</artifactId>
-            <version>1.0.461</version>
+            <version>1.0.462</version>
         </dependency>
 		<dependency>
             <groupId>com.facilio.scriptengine</groupId>
@@ -736,6 +736,14 @@
          <artifactId>commonmark-ext-ins</artifactId>
          <version>0.18.0</version>
       </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.storm/storm-client -->
+        <dependency>
+            <groupId>org.apache.storm</groupId>
+            <artifactId>storm-client</artifactId>
+            <version>2.2.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
     <build>
         <extensions>

@@ -17,10 +17,7 @@ import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.CompletePoCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
-import com.facilio.bmsconsoleV3.commands.reports.ConstructReportDeleteCommand;
-import com.facilio.bmsconsoleV3.commands.reports.ConstructReportDetailsCommand;
-import com.facilio.bmsconsoleV3.commands.reports.GetDataPointFromAlarmCommand;
-import com.facilio.bmsconsoleV3.commands.reports.GetReportFoldersCommand;
+import com.facilio.bmsconsoleV3.commands.reports.*;
 import com.facilio.bmsconsoleV3.commands.termsandconditions.ReviseTandCCommand;
 import com.facilio.bmsconsoleV3.commands.transferRequest.*;
 import com.facilio.command.FacilioCommand;
@@ -1335,4 +1332,40 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new GetReportFoldersCommand());
         return c;
     }
+
+    public static FacilioChain addMLServiceChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ForkChainToInstantJobCommand()
+                .addCommand(new ValidateMLServiceCommand())
+                .addCommand(new ConstructModelDetails())
+                .addCommand(new ConstructReadingForMLServiceCommand())
+                .addCommand(new InitMLServiceCommand())
+                .addCommand(new ActivateMLServiceCommand())
+                .addCommand(new TriggerMLServiceJobCommand()));
+        return c;
+    }
+
+    public static FacilioChain updateMLServiceChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ForkChainToInstantJobCommand()
+                .addCommand(new InitMLServiceCommand())
+                .addCommand(new TriggerMLServiceJobCommand()));
+        return c;
+    }
+    public static FacilioChain getAllReportsChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetAllReportsCommand());
+        return c;
+    }
+    public static FacilioChain getReportFieldsChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetReportFieldsCommand());
+        return c;
+    }
+    public static FacilioChain getSubModulesListChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetSubModulesListCommand());
+        return c;
+    }
+
 }

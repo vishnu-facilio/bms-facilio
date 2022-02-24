@@ -547,6 +547,14 @@
                 class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
                 method="folders">
         </action>
+        <action name="fields"
+                class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
+                method="getFields">
+        </action>
+        <action name="sub_modules/list"
+                class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
+                method="subModulesList">
+        </action>
     </package>
     <package name="pivotReportApi" namespace="/api/v3/report/pivot" extends="v3Api">
         <action name="create"
@@ -593,7 +601,14 @@
                 class="com.facilio.bmsconsoleV3.actions.report.V3AnalyticsReportAction"
                 method="viewData">
         </action>
-
+        <action name="regression"
+                class="com.facilio.bmsconsoleV3.actions.report.V3AnalyticsReportAction"
+                method="regressionData">
+        </action>
+        <action name="all"
+                class="com.facilio.bmsconsoleV3.actions.report.V3AnalyticsReportAction"
+                method="getAllReportsByType">
+        </action>
     </package>
 
 </struts>

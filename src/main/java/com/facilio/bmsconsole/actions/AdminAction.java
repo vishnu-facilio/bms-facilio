@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.websocket.EncodeException;
 
 import com.facilio.auth.actions.PasswordHashUtil;
+import com.facilio.bmsconsole.util.MLServiceUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Level;
@@ -426,31 +427,56 @@ public class AdminAction extends ActionSupport {
 		return SUCCESS;
 
 	}
+	
 	public String mlService() throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();
-		//HttpServletResponse response = ServletActionContext.getResponse();
-		Map<String,String> sampleJson = new HashMap<String,String>();
-		Long orgId = Long.parseLong(request.getParameter("orgid"));
-		String fromdateTtime = request.getParameter("fromTtime");
-		String todateendTtime = request.getParameter("toTtime");
 
-		sampleJson.put("orgId",request.getParameter("orgid"));
-		sampleJson.put("usecase" ,request.getParameter("usecase"));
-		sampleJson.put("modelVariables" ,request.getParameter("modelvariables"));
+		Map<String,Object> mlServiceData = new HashMap<>();
+		mlServiceData.put("projectName" ,request.getParameter("projectname"));
+		mlServiceData.put("modelName" ,request.getParameter("usecase"));
+		mlServiceData.put("serviceType", "default");
 
-		sampleJson.put("workflowinfo" ,request.getParameter("workflowinfo"));
-		sampleJson.put("scenario" ,request.getParameter("scenario"));
-		sampleJson.put("startTime" ,fromdateTtime);
-		sampleJson.put("endTime" ,todateendTtime);
-		if(request.getParameter("usecase").equals("multivariateanomaly")) {
-			sampleJson.put("readings" ,request.getParameter("model"));
-			sampleJson.put("groupingmethod" ,request.getParameter("groupingmethod"));
-			sampleJson.put("filtermethod" ,request.getParameter("filtermethod"));
-		}else {
-			sampleJson.put("assetIdList" ,request.getParameter("assetIdList"));
+		Long fromdateTtime = MLServiceUtil.convertDatetoTTimeZone(request.getParameter("fromTtime"));
+		Long todateendTtime = MLServiceUtil.convertDatetoTTimeZone(request.getParameter("toTtime"));
+
+		mlServiceData.put("startTime",fromdateTtime);
+		mlServiceData.put("endTime",todateendTtime);
+
+		if(request.getParameter("modelvariables").length() > 2) {
+			mlServiceData.put("mlModelVariables", new JSONParser().parse(request.getParameter("modelvariables")));
 		}
+		if(request.getParameter("workflowinfo").length() > 2) {
+			mlServiceData.put("workflowInfo", new JSONParser().parse(request.getParameter("workflowinfo")));
+		}
+
+		if(request.getParameter("usecase").equals("multivariateanomaly")) {
+			mlServiceData.put("serviceType", "custom");
+			if(request.getParameter("model").length() > 2) {
+				mlServiceData.put("modelReadings", new JSONParser().parse(request.getParameter("model")));
+			}
+			if(request.getParameter("groupingmethod").length() > 2) {
+				mlServiceData.put("groupingMethod", new JSONParser().parse(request.getParameter("groupingmethod")));
+			}
+			if(request.getParameter("filtermethod").length() > 2) {
+				mlServiceData.put("filteringMethod", new JSONParser().parse(request.getParameter("filtermethod")));
+			}
+		}else {
+			String assetIds = request.getParameter("assetIdList");
+			if(assetIds!=null) {
+				String []assetArr = assetIds.split(",");
+				mlServiceData.put("parentAssetId", Long.valueOf(assetArr[0]));
+				if(assetArr.length > 1) {
+					JSONArray childAssetIds = new JSONArray();
+					for (int i = 1; i < assetArr.length; i++) {
+						childAssetIds.add(Long.valueOf(assetArr[i]));
+					}
+					mlServiceData.put("childAssetIds", Long.valueOf(assetArr[0]));
+				}
+			}
+		}
+		Long orgId = Long.parseLong(request.getParameter("orgid"));
 		ModuleCRUDBean bean = (ModuleCRUDBean) TransactionBeanFactory.lookup("ModuleCRUD", orgId);
-		bean.initMLService(sampleJson);
+		bean.initMLService(mlServiceData);
 		return SUCCESS;
 
 	}

@@ -1,15 +1,24 @@
 package com.facilio.bmsconsoleV3.signup;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ScopingConfigContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsoleV3.context.EmailFromAddress;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.ScopeOperator;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.services.email.EmailClient;
 import com.facilio.tasker.FacilioTimer;
@@ -56,5 +65,30 @@ public class AddEmailConversationModules extends SignUpData {
 				.addRecords(defaultFromEmails);
 		
 		insert.save();
+		
+		addScoping(modBean.getModule(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME));
+	}
+
+	public void addScoping(FacilioModule module) throws Exception {
+		
+		long applicationScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        
+        ScopingConfigContext scoping = new ScopingConfigContext();
+        Criteria criteria = new Criteria();
+        
+        Condition condition = CriteriaAPI.getCondition("siteId", "com.facilio.modules.SiteValueGenerator", ScopeOperator.SCOPING_IS);
+        condition.setModuleName(module.getName());
+        
+        Condition condition1 = CriteriaAPI.getCondition("siteId", null, CommonOperators.IS_EMPTY);
+        condition1.setModuleName(module.getName());
+        
+        criteria.addAndCondition(condition);
+        criteria.addOrCondition(condition1);
+        
+        scoping.setScopingId(applicationScopingId);
+        scoping.setModuleId(module.getModuleId());
+        scoping.setCriteria(criteria);
+        
+        ApplicationApi.addScopingConfigForApp(Collections.singletonList(scoping));
 	}
 }

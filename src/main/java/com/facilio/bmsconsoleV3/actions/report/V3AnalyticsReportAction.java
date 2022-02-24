@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.actions.report;
 
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.chain.FacilioChain;
@@ -9,6 +10,7 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.modules.*;
 import com.facilio.report.context.*;
 import com.facilio.report.context.ReportContext;
+import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
 import com.facilio.v3.V3Action;
 import com.facilio.v3.exception.ErrorCode;
@@ -66,6 +68,7 @@ public class V3AnalyticsReportAction extends V3Action {
     private Integer alarmType;
     private long reportId = -1;
     private long dashboardId;
+    private Integer reportType;
 
 
     private AggregateOperator xAggr;
@@ -408,5 +411,34 @@ public class V3AnalyticsReportAction extends V3Action {
         setReportWithDataContext(context); //This could be moved to a command
         chain.execute();
         return setReportResult(context);
+    }
+
+    public String regressionData() throws Exception {
+        FacilioContext context = new FacilioContext();
+        setReadingsDataContext(context);
+
+        if (regressionConfig == null || regressionConfig.isEmpty()) {
+            setData("error", "Regression Config cannot be empty.");
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Regression Config cannot be empty.");
+        } else {
+            FacilioChain c = ReadOnlyChainFactory.fetchRegressionReportChain();
+            c.execute(context);
+            return setReportResult(context);
+        }
+    }
+
+    public String getAllReportsByType() throws Exception
+    {
+        if(reportType == null){
+            setData("error", "Invalid Report Type.");
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid Report Type.");
+        }
+        FacilioChain chain = TransactionChainFactoryV3.getAllReportsChain();
+        FacilioContext context = chain.getContext();
+        context.put("reportType", reportType);
+        chain.execute();
+        List<ReportContext> reports = null;//(List<ReportContext>) context.get("reports");
+        setData(FacilioConstants.ContextNames.REGRESSION_REPORT, reports);
+        return SUCCESS;
     }
 }

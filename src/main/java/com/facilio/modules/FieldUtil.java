@@ -435,9 +435,13 @@ public class FieldUtil {
 					FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME,
 					FacilioConstants.ContextNames.Floorplan.DESKS,
 					FacilioConstants.ContextNames.PARKING_STALL,
-					FacilioConstants.ContextNames.LOCKERS
-//					FacilioConstants.Inspection.INSPECTION_TEMPLATE,
-//					FacilioConstants.Inspection.INSPECTION_RESPONSE
+					FacilioConstants.ContextNames.LOCKERS,
+					FacilioConstants.Inspection.INSPECTION_TEMPLATE,
+					FacilioConstants.Inspection.INSPECTION_RESPONSE,
+					FacilioConstants.Induction.INDUCTION_TEMPLATE,
+					FacilioConstants.Induction.INDUCTION_RESPONSE,
+					FacilioConstants.Survey.SURVEY_TEMPLATE,
+					FacilioConstants.Survey.SURVEY_RESPONSE
 					)));
 
 

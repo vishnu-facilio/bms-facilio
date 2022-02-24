@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.enums.FaultType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleInterface;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 public class ReadingAlarmOccurrenceContext extends AlarmOccurrenceContext {
 
@@ -17,19 +19,21 @@ public class ReadingAlarmOccurrenceContext extends AlarmOccurrenceContext {
         this.readingAlarmCategory = readingAlarmCategory;
     }
 
-    private ReadingRuleContext rule;
-    public ReadingRuleContext getRule() {
+    @JsonDeserialize(as = ReadingRuleContext.class)
+    private ReadingRuleInterface rule;
+    public ReadingRuleInterface getRule() {
         return rule;
     }
-    public void setRule(ReadingRuleContext rule) {
+    public void setRule(ReadingRuleInterface rule) {
         this.rule = rule;
     }
 
-    private ReadingRuleContext subRule;
-    public ReadingRuleContext getSubRule() {
+    @JsonDeserialize(as = ReadingRuleContext.class)
+    private ReadingRuleInterface subRule;
+    public ReadingRuleInterface getSubRule() {
         return subRule;
     }
-    public void setSubRule(ReadingRuleContext subRule) {
+    public void setSubRule(ReadingRuleInterface subRule) {
         this.subRule = subRule;
     }
 

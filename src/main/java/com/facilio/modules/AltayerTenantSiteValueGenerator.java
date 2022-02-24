@@ -31,22 +31,7 @@ public class AltayerTenantSiteValueGenerator extends ValueGenerator {
     public Object generateValueForCondition(int appType) {
         try {
             if (appType == AppDomain.AppDomainType.TENANT_PORTAL.getIndex()) {
-                V3TenantContactContext tenantContact = getTenantContactForUser(AccountUtil.getCurrentUser().getId());
-                List<Long> ids = new ArrayList<>();
-
-                if (tenantContact != null) {
-                    Map<String, Object> map = FieldUtil.getAsProperties(tenantContact);
-                    if (map.containsKey("tenantmulti")) {
-                        List<V3TenantContext> tenantsServing = (List<V3TenantContext>) map.get("tenantmulti");
-                        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(tenantsServing)) {
-                            for (V3TenantContext t : tenantsServing) {
-                                ids.add(t.getId());
-                            }
-                        }
-                    } else if (tenantContact.getTenant() != null) {
-                        ids.add(tenantContact.getTenant().getId());
-                    }
-                }
+                List<Long> ids = getTenantContactForUser(AccountUtil.getCurrentUser().getId());
                 if(CollectionUtils.isNotEmpty(ids)) {
                     List<TenantUnitSpaceContext> tenantUnits = TenantsAPI.getTenantUnitsForTenantList(ids);
                     if (CollectionUtils.isNotEmpty(tenantUnits)) {
@@ -90,7 +75,7 @@ public class AltayerTenantSiteValueGenerator extends ValueGenerator {
         return 36;
     }
 
-    public static V3TenantContactContext getTenantContactForUser(long ouId) throws Exception {
+    public static List<Long> getTenantContactForUser(long ouId) throws Exception {
         long pplId = V3PeopleAPI.getPeopleIdForUser(ouId);
         if (pplId <= 0) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid People Id mapped with ORG_User");
@@ -104,7 +89,21 @@ public class AltayerTenantSiteValueGenerator extends ValueGenerator {
         fetchLookupsList.add(servingTenants);
         List<V3TenantContactContext> tenantcontacts = V3RecordAPI.getRecordsListWithSupplements(tenantContactModule.getName(), Collections.singletonList(pplId), V3TenantContactContext.class, null, fetchLookupsList, null, null, true );
         if(CollectionUtils.isNotEmpty(tenantcontacts)) {
-            return tenantcontacts.get(0);
+            V3TenantContactContext tc = tenantcontacts.get(0);
+            List<Long> tenantIds = new ArrayList<>();
+            Map<String, Object> map = FieldUtil.getAsProperties(tc);
+            if (map.containsKey("tenantmulti")) {
+
+                List<V3TenantContext> tenantsServing = FieldUtil.getAsBeanListFromMapList((List<Map<String, Object>>) map.get("tenantmulti"), V3TenantContext.class);
+                if (org.apache.commons.collections.CollectionUtils.isNotEmpty(tenantsServing)) {
+                    for (V3TenantContext t : tenantsServing) {
+                        tenantIds.add(t.getId());
+                    }
+                }
+            } else if (tc.getTenant() != null) {
+                tenantIds.add(tc.getTenant().getId());
+            }
+            return tenantIds;
         }
         return null;
     }

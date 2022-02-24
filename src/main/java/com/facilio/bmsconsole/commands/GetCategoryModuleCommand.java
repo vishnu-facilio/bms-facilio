@@ -24,8 +24,6 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-;
-
 public class GetCategoryModuleCommand extends FacilioCommand {
 	private static final int MAX_FIELDS_PER_TYPE_PER_MODULE = 5;
 	private static final Logger LOGGER = LogManager.getLogger(CreateReadingModulesCommand.class.getName());
