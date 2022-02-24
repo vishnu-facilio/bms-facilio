@@ -27,6 +27,7 @@ public class MLContext extends ModuleBaseWithCustomFields
 
 	private String modelPath;
 	private long mlServiceID;
+	private String name;
 	private long predictionLogModuleID;
 	private long predictionModuleID;
 	private long criteriaId;
@@ -40,7 +41,7 @@ public class MLContext extends ModuleBaseWithCustomFields
 	
 	
 	private String result;
-		
+
 	public void setSequence(String sequence)
 	{
 		this.sequence = sequence;
@@ -109,7 +110,15 @@ public class MLContext extends ModuleBaseWithCustomFields
 	{
 		return modelPath;
 	}
-	
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
+	}
+
 	@JSON(serialize=false)
 	public void setAssetDetails(String key,Object value)
 	{

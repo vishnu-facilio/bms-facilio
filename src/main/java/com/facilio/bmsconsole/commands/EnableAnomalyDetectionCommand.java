@@ -135,7 +135,7 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 
 		for(AssetContext context:assetContextList)
 		{
-			long mlID = MLAPI.addMLModel("checkGamv1",logReadingModule.getModuleId(),readingModule.getModuleId(), mlServiceId);
+			long mlID = MLAPI.addMLModel("checkGamv1",context.getName(),logReadingModule.getModuleId(),readingModule.getModuleId(), mlServiceId);
 			MLAPI.addMLVariables(mlID,energyField.getModuleId(),energyField.getFieldId(),energyParentField.getFieldId(),context.getId(),maxSamplingPeriodMap.containsKey(energyField.getName())? maxSamplingPeriodMap.get(energyField.getName()):1209600000l,futureSamplingPeriodMap.containsKey(energyField.getName())? futureSamplingPeriodMap.get(energyField.getName()):0,true,aggregationMap.containsKey(energyField.getName())? aggregationMap.get(energyField.getName()):"SUM");
 
 			MLAPI.addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),temperatureParentField.getFieldId(),context.getSiteId(),maxSamplingPeriodMap.containsKey(temperatureField.getName())? maxSamplingPeriodMap.get(temperatureField.getName()):1209600000l,futureSamplingPeriodMap.containsKey(temperatureField.getName())? futureSamplingPeriodMap.get(temperatureField.getName()):0,false,aggregationMap.containsKey(temperatureField.getName())? aggregationMap.get(temperatureField.getName()):"SUM");
@@ -237,7 +237,7 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		FacilioField upperBoundField = modBean.getField("upperBound", checkGamReadingModule.getName());
 		FacilioField upperGAMField = modBean.getField("upperGAM", checkGamReadingModule.getName());
 
-		long mlID = MLAPI.addMLModel("ratioCheck",checkRatioLogReadingNewModuleId,readingModule.getModuleId(), mlServiceId);
+		long mlID = MLAPI.addMLModel("ratioCheck",null,checkRatioLogReadingNewModuleId,readingModule.getModuleId(), mlServiceId);
 		List<Long> mlIDList = new ArrayList<Long>(10);
 		mlIDList.add(mlID);
 
@@ -245,7 +245,7 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		for(long i=1;i<ratioHierachySize;i++)
 		{
 			LOGGER.info("Adding ML Model for "+i);
-			mlIDList.add(MLAPI.addMLModel("ratioCheck",checkRatioLogReadingNewModuleId,readingModule.getModuleId(), mlServiceId));
+			mlIDList.add(MLAPI.addMLModel("ratioCheck",null,checkRatioLogReadingNewModuleId,readingModule.getModuleId(), mlServiceId));
 		}
 
 		Map<String,Long> maxSamplingPeriodMap = new HashMap<String, Long>();
@@ -311,7 +311,7 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		MLAPI.addReading(parentList,"energyanomalyratiomlreadings",mlCheckRatioFields,ModuleFactory.getMLReadingModule().getTableName(),module);
 
 		FacilioModule readingModule = modBean.getModule("energyanomalyratiomlreadings");
-		long mlID = MLAPI.addMLModel("ratioCheck",checkRatioLogReadingNewModuleId,readingModule.getModuleId(), mlServiceId);
+		long mlID = MLAPI.addMLModel("ratioCheck",null,checkRatioLogReadingNewModuleId,readingModule.getModuleId(), mlServiceId);
 
 		FacilioModule checkGamReadingModule = modBean.getModule("energyanomalydetectionmlreadings");
 
@@ -392,7 +392,7 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		List<Long> parentMlIdList = new ArrayList<Long>();
 		for(AssetContext emContext : assetContextList)
 		{
-			long mlID = MLAPI.addMLModel("buildGamModelv1",-1,-1, mlServiceId);
+			long mlID = MLAPI.addMLModel("buildGamModelv1",emContext.getName(),-1,-1, mlServiceId);
 			parentMlIdList.add(mlID);
 
 			MLAPI.addMLVariables(mlID,energyField.getModuleId(),energyField.getFieldId(),energyParentField.getFieldId(),emContext.getId(),maxSamplingPeriodMap.containsKey(energyField.getName())? maxSamplingPeriodMap.get(energyField.getName()):7776000000L,futureSamplingPeriodMap.containsKey(energyField.getName())? futureSamplingPeriodMap.get(energyField.getName()):0,true,aggregationMap.containsKey(energyField.getName())? aggregationMap.get(energyField.getName()):"SUM");

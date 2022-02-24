@@ -1343,7 +1343,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ForkChainToInstantJobCommand()
                 .addCommand(new ValidateMLServiceCommand())
-                .addCommand(new ConstructModelDetails())
+                .addCommand(new ConstructMLModelDetails())
                 .addCommand(new ConstructReadingForMLServiceCommand())
                 .addCommand(new InitMLServiceCommand())
                 .addCommand(new ActivateMLServiceCommand())

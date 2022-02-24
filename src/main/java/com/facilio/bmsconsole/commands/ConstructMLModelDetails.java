@@ -19,9 +19,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ConstructModelDetails extends FacilioCommand implements Serializable {
+public class ConstructMLModelDetails extends FacilioCommand implements Serializable {
 
-	private static final Logger LOGGER = Logger.getLogger(ConstructModelDetails.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(ConstructMLModelDetails.class.getName());
 	private V3MLServiceContext mlServiceContext;
 
 	@Override

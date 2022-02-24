@@ -116,7 +116,7 @@ public class AddLoadPredictionCommand extends FacilioCommand {
 		FacilioField temperatureField = modBean.getField("temperature", FacilioConstants.ContextNames.WEATHER_READING);
 		FacilioField temperatureParentField = modBean.getField("parentId", FacilioConstants.ContextNames.WEATHER_READING);
 		
-		long mlID = MLAPI.addMLModel(modelPath,logReadingModule.getModuleId(),readingModule.getModuleId(), mlServiceId);
+		long mlID = MLAPI.addMLModel(modelPath,context.getName(), logReadingModule.getModuleId(),readingModule.getModuleId(), mlServiceId);
 		
 		Map<String,Long> maxSamplingPeriodMap = new HashMap<String, Long>();
 		Map<String,Long> futureSamplingPeriodMap = new HashMap<String, Long>();

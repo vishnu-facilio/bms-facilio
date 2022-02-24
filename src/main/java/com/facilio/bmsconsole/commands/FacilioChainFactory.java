@@ -2185,7 +2185,7 @@ public class FacilioChainFactory {
 		FacilioChain c = FacilioChain.getNonTransactionChain();
 		c.addCommand(new ValidateMLServiceCommand());
 		if(isDefault) {
-			c.addCommand(new ConstructModelDetails());
+			c.addCommand(new ConstructMLModelDetails());
 		}
 		c.addCommand(new ConstructReadingForMLServiceCommand());
 		c.addCommand(new InitMLServiceCommand());
