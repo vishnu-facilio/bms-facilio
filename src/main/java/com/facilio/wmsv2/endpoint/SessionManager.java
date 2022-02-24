@@ -1,5 +1,6 @@
 package com.facilio.wmsv2.endpoint;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.wmsv2.endpoint.LiveSession.LiveSessionType;
 import com.facilio.wmsv2.handler.BaseHandler;
 import com.facilio.wmsv2.handler.Processor;
@@ -80,23 +81,23 @@ public class SessionManager {
 		}
 		return sessionList;
 	}
-	
+
 	public Collection<LiveSession> getLiveSessions(LiveSessionType liveSessionType, Long id, Long orgId, Long appId) {
-		
+
 		List<LiveSession> sessionList = new ArrayList<>();
 		if (id == null) {
 			return sessionList;
 		}
-		
+
 		Iterator<String> itr = liveSessions.keySet().iterator();
 		while (itr.hasNext()) {
 			String key = itr.next();
 			LiveSession liveSession = liveSessions.get(key);
 			if (liveSession != null && (liveSessionType == null || liveSession.getLiveSessionType().equals(liveSessionType)) && liveSession.getOuid() == id) {
-				if (orgId != null && !orgId.equals(liveSession.getOrgId())) {
+				if (orgId != null && orgId > 0 && !orgId.equals(liveSession.getOrgId())) {
 					continue;
 				}
-				if (appId != null && !appId.equals(liveSession.getAppId())) {
+				if (appId != null && appId > 0 && !appId.equals(liveSession.getAppId())) {
 					continue;
 				}
 				sessionList.add(liveSession);
@@ -117,6 +118,10 @@ public class SessionManager {
 	
 	public void sendMessage(Message message) {
 		try {
+			if (AccountUtil.getCurrentOrg() != null) {
+				message.setOrgId(AccountUtil.getCurrentOrg().getId());
+			}
+
 			BaseHandler handler = Processor.getInstance().getHandler(message.getTopic());
 			boolean sendToAllWorkers = true;
 			if (handler != null) {

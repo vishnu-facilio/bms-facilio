@@ -29,12 +29,11 @@ public enum FacilioWMSFunctions implements FacilioWorkflowFunctionInterface {
 			msg.setTopic("__custom__/user/"+msg.getTopic());
 			
 			BaseHandler handler = Processor.getInstance().getHandler(msg.getTopic());
-			
-			if( handler.getDeliverTo() == TopicHandler.DELIVER_TO.ORG && (msg.getOrgId() == null || msg.getOrgId() < 0)) {
-				throw new FunctionParamException("Orgid cannot be null for delivery type ORG");
+
+			if (handler.getDeliverTo() != TopicHandler.DELIVER_TO.USER) {
+				throw new FunctionParamException("Topic handler will not send to user");
 			}
-			
-			if( handler.getDeliverTo() == TopicHandler.DELIVER_TO.USER && (msg.getTo() == null || msg.getTo() < 0)) {
+			if ((msg.getTo() == null || msg.getTo() < 0)) {
 				throw new FunctionParamException("To cannot be null here for delivery type USER");
 			}
 
@@ -62,14 +61,13 @@ public enum FacilioWMSFunctions implements FacilioWorkflowFunctionInterface {
 			msg.setTopic("__custom__/org/"+msg.getTopic());
 			
 			BaseHandler handler = Processor.getInstance().getHandler(msg.getTopic());
-			
-			if( handler.getDeliverTo() == TopicHandler.DELIVER_TO.ORG && (msg.getOrgId() == null || msg.getOrgId() < 0)) {
-				throw new FunctionParamException("Orgid cannot be null for delivery type ORG");
+			if (handler.getDeliverTo() != TopicHandler.DELIVER_TO.ORG) {
+				throw new FunctionParamException("Topic handler will not send to org");
 			}
-			
-			if( handler.getDeliverTo() == TopicHandler.DELIVER_TO.USER && (msg.getTo() == null || msg.getTo() < 0)) {
-				throw new FunctionParamException("To cannot be null here for delivery type USER");
-			}
+			// no need to check orgId.. we replace the orgId in sendMessage
+//			if( handler.getDeliverTo() == TopicHandler.DELIVER_TO.ORG && (msg.getOrgId() == null || msg.getOrgId() < 0)) {
+//				throw new FunctionParamException("Orgid cannot be null for delivery type ORG");
+//			}
 
 			SessionManager.getInstance().sendMessage(msg);
 			
