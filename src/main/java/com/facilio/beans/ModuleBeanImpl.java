@@ -28,6 +28,7 @@ import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.mockito.internal.stubbing.answers.DoesNothing;
 
 import java.sql.*;
 import java.text.MessageFormat;
@@ -1613,11 +1614,10 @@ public class ModuleBeanImpl implements ModuleBean {
 			else if (field instanceof UrlField) {
 				extendendPropsCount = updateExtendedProps(ModuleFactory.getUrlFieldsModule(), FieldFactory.getUrlFieldFields(), field);
 			}
-			else if (field instanceof StringField) {
-				validateString((StringField) field);
-				extendendPropsCount = updateExtendedProps(ModuleFactory.getStringFieldModule(), FieldFactory.getStringFieldFields(), field);
+			else if (field instanceof StringField){
+				extendendPropsCount = updateExtendedProps (ModuleFactory.getStringFieldModule (),FieldFactory.getStringFieldFields (),field);
 			}
-			else if (field instanceof DateField) {
+			else if (field instanceof DateField){
 				extendendPropsCount = updateDateField((DateField) field);
 			}
 //			else if (field instanceof ScoreField) {
