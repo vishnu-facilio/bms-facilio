@@ -1071,6 +1071,8 @@ public class IAMAccountConstants {
 
 			fields.add(FieldFactory.getField("fromPortal", "IS_FROM_PORTAL", module, FieldType.BOOLEAN));
 
+			fields.add(FieldFactory.getStringField("appLinkName","APP_LINK_NAME",module));
+
 			return fields;
 		}
 

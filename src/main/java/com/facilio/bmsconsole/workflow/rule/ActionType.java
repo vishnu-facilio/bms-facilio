@@ -480,26 +480,6 @@ public enum ActionType {
 				LOGGER.error("Exception occurred ", e);
 			}
 		}
-
-		private List<Pair<String, Boolean>> getMobileInstanceIDs(String idList) throws Exception {
-			List<Pair<String, Boolean>> mobileInstanceIds = new ArrayList<>();
-			List<Long> idLongList = Stream.of(idList.split(",")).map(Long::valueOf).collect(Collectors.toList());
-			List<User> userList = AccountUtil.getUserBean().getUsers(null, true, false, idLongList);
-			List<Long> userIdList = new ArrayList<Long>();
-			if (CollectionUtils.isNotEmpty(userList)) {
-				userIdList = userList.stream().map(User::getUid).collect(Collectors.toList());
-				List<Map<String, Object>> instanceIdList = IAMUserUtil.getUserMobileSettingInstanceIds(userIdList);
-				for (Map<String, Object> instance : instanceIdList) {
-					Boolean fromPortal = (Boolean)instance.get("fromPortal");
-					if (fromPortal == null) {
-						fromPortal = false;
-					}
-					mobileInstanceIds.add(Pair.of((String) instance.get("mobileInstanceId"), fromPortal));
-				}
-			}
-			
-			return mobileInstanceIds;
-		}
 	},
 	EXECUTE_PM(8) {
 		@Override
