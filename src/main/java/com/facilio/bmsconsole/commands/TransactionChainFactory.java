@@ -2785,6 +2785,14 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static FacilioChain getAddSubformChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new ValidateSubFormRequestCommand());
+			c.addCommand(new GenerateSubformLinkNameCommand());
+			c.addCommand(getAddFormCommand());
+			return c;
+		}
+
 		public static FacilioChain getUpdateFormChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new EditFormCommand());

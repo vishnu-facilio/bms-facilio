@@ -115,6 +115,7 @@ public class FormAction extends FacilioAction {
 	}
 
 	private long formId = -1;
+	private long parentFormId = -1;
 	private long appId = -1;
 	private String appLinkName;
     public String getAppLinkName() {
@@ -126,7 +127,14 @@ public class FormAction extends FacilioAction {
 	}
 
 	private long formFieldId;
-    
+
+	public long getParentFormId() {
+		return parentFormId;
+	}
+
+	public void setParentFormId(long parentFormId) {
+		this.parentFormId = parentFormId;
+	}
 	
 	public long getAppId() {
 		return appId;
@@ -424,7 +432,18 @@ public String getServicePortalForms() throws Exception{
 
 		form.setHideInList(true);
 		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
-		addForm();
+
+		FacilioChain chain = TransactionChainFactory.getAddSubformChain();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.FORM, form);
+		context.put(ContextNames.PARENT_FORM_ID, parentFormId);
+		chain.execute();
+
+		setFormName(form.getName());
+		formSourceType = FormSourceType.FROM_BUILDER;
+		formDetails();
+
 		return SUCCESS;
 	}
 }
