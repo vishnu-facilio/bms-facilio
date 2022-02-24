@@ -2458,9 +2458,21 @@ public class FacilioChainFactory {
 		return c;
 	}
 
-	public static FacilioChain getCreateApiKeyChain() {
+	public static FacilioChain getCreateAPIClient() {
 		FacilioChain c = FacilioChain.getTransactionChain();
-		c.addCommand(new CreateApiKeyCommand());
+		c.addCommand(new CreateAPIClient());
+		return c;
+	}
+
+	public static FacilioChain getListAPIClient() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new ListAPIClients());
+		return c;
+	}
+
+	public static FacilioChain getDeleteClient() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new DeleteClient());
 		return c;
 	}
 }

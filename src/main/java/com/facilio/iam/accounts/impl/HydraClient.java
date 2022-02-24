@@ -4,7 +4,10 @@ import com.facilio.aws.util.FacilioProperties;
 import sh.ory.hydra.ApiClient;
 import sh.ory.hydra.Configuration;
 import sh.ory.hydra.api.AdminApi;
+import sh.ory.hydra.model.OAuth2Client;
 import sh.ory.hydra.model.OAuth2TokenIntrospection;
+
+import java.util.Arrays;
 
 public class HydraClient {
     private AdminApi adminApi;
@@ -23,6 +26,15 @@ public class HydraClient {
         }
 
         return oAuth2TokenIntrospection.getClientId();
+    }
+
+    public OAuth2Client createClient(String name) throws Exception {
+        OAuth2Client oAuth2Client = new OAuth2Client();
+        oAuth2Client.setClientName(name);
+        oAuth2Client.tokenEndpointAuthMethod("none");
+        oAuth2Client.setGrantTypes(Arrays.asList("client_credentials"));
+        oAuth2Client.setTokenEndpointAuthMethod("client_secret_post");
+        return adminApi.createOAuth2Client(oAuth2Client);
     }
 
 

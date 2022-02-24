@@ -391,7 +391,8 @@ public class AccountUtil {
 
 	private static Map<String, FeatureLicense> moduleVsLicense;
 	
-	public enum LicenseMapping {
+	public enum LicenseMapping
+	{
 		GROUP1LICENSE(1,FacilioConstants.LicenseKeys.LICENSE1),
 		GROUP2LICENSE(2,FacilioConstants.LicenseKeys.LICENSE2);
 		

@@ -3,6 +3,7 @@
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.APIClient;
 import com.facilio.db.criteria.Criteria;
 import org.json.simple.JSONObject;
 
@@ -102,7 +103,13 @@ public interface IAMUserBean {
 
     IAMAccount fetchAccountByAPIKey(String apiKey) throws Exception;
 
-    String createApiKey(long orgId, long userId) throws Exception;
+    String createApiKey(long orgId, long userId, String name) throws Exception;
+
+	Map<String, String> createOauth2Client(long orgId, long userId, String name) throws Exception;
+
+	List<APIClient> getApiClientList(long orgId, long userId) throws Exception;
+
+	void deleteApiClient(long orgId, long userId, long id) throws Exception;
 
     IAMAccount fetchAccountByOauth2ClientId(String token) throws Exception;
 

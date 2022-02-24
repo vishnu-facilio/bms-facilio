@@ -6722,7 +6722,9 @@
 		<action name="enableOauth2"
 				class="com.facilio.bmsconsole.actions.Oauth2Action" method="enableOauth2">
 		</action>
-		<action name="createApiKey" class="com.facilio.bmsconsole.actions.Oauth2Action" method="createApiKey"></action>
+		<action name="createAPIClient" class="com.facilio.bmsconsole.actions.Oauth2Action" method="createAPIClient"></action>
+		<action name="listApiClients" class="com.facilio.bmsconsole.actions.Oauth2Action" method="listApiClients"></action>
+		<action name="deleteClient" class="com.facilio.bmsconsole.actions.Oauth2Action" method="deleteClient"></action>
 	</package>
 
 	<package name="translationsetup" namespace="/api/v2/translationsetup" extends="v2Api">
