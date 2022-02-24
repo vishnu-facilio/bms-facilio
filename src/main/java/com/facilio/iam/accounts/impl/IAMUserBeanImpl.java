@@ -1486,15 +1486,16 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	@Override
 	public boolean removeUserMobileSetting(String mobileInstanceId, boolean isPortal) throws Exception {
 		// TODO Auto-generated method stub
-		
+
+		String appLinkName = AccountUtil.getCurrentApp().getLinkName() == null ? FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP : AccountUtil.getCurrentApp().getLinkName();
+
 		List<FacilioField> fields = IAMAccountConstants.getUserMobileSettingFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 				.table(IAMAccountConstants.getUserMobileSettingModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("mobileInstanceId"), mobileInstanceId,
 						StringOperators.IS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fromPortal"), String.valueOf(isPortal),
-						BooleanOperators.IS));
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("appLinkName"),appLinkName,StringOperators.IS));
 
 		if(builder.delete() > 0) {
 			return true;
