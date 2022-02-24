@@ -28,8 +28,8 @@ public class DeleteQandARuleActions extends FacilioCommand {
 			return false;
 		}
 		long conditionId = getConditionId (context);
+		List<ActionRuleCondition> actionRuleConditions = (List<ActionRuleCondition>) context.get(Constants.Command.CONDITIONS_TO_BE_DELETED);
 		if (conditionId > 0L) {
-			List<ActionRuleCondition> actionRuleConditions = (List<ActionRuleCondition>) context.get(Constants.Command.CONDITIONS_TO_BE_DELETED);
 			if (CollectionUtils.isNotEmpty(actionRuleConditions)) {
 				ActionRuleCondition con = actionRuleConditions.stream ().filter (p -> conditionId == p.getId ()).findFirst ().orElse (null);
 				if (con != null) {
@@ -44,6 +44,7 @@ public class DeleteQandARuleActions extends FacilioCommand {
 				}
 			}
 		}
+		actionRuleConditions.removeIf (actionRuleCondition -> conditionId != actionRuleCondition.getId ());
 		return false;
 	}
 
