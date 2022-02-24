@@ -1,12 +1,15 @@
 package com.facilio.bmsconsoleV3.actions.report;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.fs.FileInfo;
 import com.facilio.modules.*;
 import com.facilio.report.context.*;
 import com.facilio.report.context.ReportContext;
@@ -17,6 +20,7 @@ import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import com.facilio.wmsv2.handler.AuditLogHandler;
 import com.facilio.workflows.context.WorkflowContext;
+import com.google.zxing.client.result.VEventResultParser;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
@@ -69,6 +73,15 @@ public class V3AnalyticsReportAction extends V3Action {
     private long reportId = -1;
     private long dashboardId;
     private Integer reportType;
+    private String scatterGraphAction;
+    private int scatterGraphId;
+    private String scatterGraphLabel;
+    private String scatterGraphValue;
+    private FileInfo.FileFormat fileFormat;
+    private String chartType;
+    private Map<String, Object> exportParams;
+    private Map<String, Object> renderParams;
+    private EMailTemplate emailTemplate;
 
 
     private AggregateOperator xAggr;
@@ -107,6 +120,18 @@ public class V3AnalyticsReportAction extends V3Action {
     }
     public int getxCriteriaMode() {
         return xCriteriaMode != null ? xCriteriaMode.getValue() : -1;
+    }
+    public int getFileFormat() {
+       return  fileFormat != null ? fileFormat.getIntVal() : -1;
+    }
+    public void setFileFormat(int fileFormat) {
+        this.fileFormat = FileInfo.FileFormat.getFileFormat(fileFormat);
+    }
+    public EMailTemplate getEmailTemplate() {
+        return emailTemplate;
+    }
+    public void setEmailTemplate(EMailTemplate emailTemplate) {
+        this.emailTemplate = emailTemplate;
     }
 
     private void setReadingsDataContext(FacilioContext context) throws Exception {
@@ -237,7 +262,9 @@ public class V3AnalyticsReportAction extends V3Action {
         addReadingReport.execute();
         String log_message= "Analytics Report {%s} has been created.";
         V3ReportAction reportAction = new V3ReportAction();
-        reportAction.setReportAuditLogs((String) reportContext.getModule().getDisplayName(), reportContext, log_message, AuditLogHandler.ActionType.ADD);
+        if(reportContext.getModule() != null) {
+            reportAction.setReportAuditLogs((String) reportContext.getModule().getDisplayName(), reportContext, log_message, AuditLogHandler.ActionType.ADD);
+        }
         return setReportResult(context);
     }
     public String update() throws Exception{
@@ -250,8 +277,9 @@ public class V3AnalyticsReportAction extends V3Action {
         addReadingReport.execute();
         String log_message= "Analytics Report {%s} has been updated.";
         V3ReportAction reportAction = new V3ReportAction();
-        reportAction.setReportAuditLogs((String) reportContext.getModule().getDisplayName(), reportContext, log_message, AuditLogHandler.ActionType.UPDATE);
-
+        if(reportContext.getModule() != null) {
+            reportAction.setReportAuditLogs((String) reportContext.getModule().getDisplayName(), reportContext, log_message, AuditLogHandler.ActionType.UPDATE);
+        }
         return setReportResult(context);
     }
 
@@ -352,7 +380,7 @@ public class V3AnalyticsReportAction extends V3Action {
         FacilioContext reportDetailContext = chain.getContext();
         reportDetailContext.put("reportId", reportId);
         chain.execute();
-        ReportContext reportContext = (ReportContext) reportDetailContext.get("reportContext");
+        reportContext = (ReportContext) reportDetailContext.get("reportContext");
         if (reportContext != null && reportContext.getReportState() != null && !reportContext.getReportState().isEmpty() && reportContext.getReportState().containsKey(FacilioConstants.ContextNames.REPORT_GROUP_BY_TIME_AGGR))
         {
             AggregateOperator groupByAggr = AggregateOperator.getAggregateOperator(((Long) reportContext.getReportState().get(FacilioConstants.ContextNames.REPORT_GROUP_BY_TIME_AGGR)).intValue());
@@ -439,6 +467,106 @@ public class V3AnalyticsReportAction extends V3Action {
         chain.execute();
         List<ReportContext> reports = null;//(List<ReportContext>) context.get("reports");
         setData(FacilioConstants.ContextNames.REGRESSION_REPORT, reports);
+        return SUCCESS;
+    }
+
+    public String scatterGraph() throws Exception
+    {
+        FacilioModule module = ModuleFactory.getScatterGraphLineModule();
+        FacilioContext context = new FacilioContext();
+        if (getScatterGraphAction() != null && (getScatterGraphAction().equals("ADD") || getScatterGraphAction().equals("MODIFY"))) {
+            if (getScatterGraphValue() != null && getScatterGraphLabel() != null) {
+                FacilioChain chain = TransactionChainFactory.addOrUpdateScatterGraph();
+                context.put(FacilioConstants.ContextNames.SCATTER_GRAPH_ID, getScatterGraphId());
+                context.put(FacilioConstants.ContextNames.SCATTER_GRAPH_LABEL, getScatterGraphLabel());
+                context.put(FacilioConstants.ContextNames.SCATTER_GRAPH_VALUE, getScatterGraphValue());
+                context.put("GRAPH_ACTION", getScatterGraphAction());
+                chain.execute(context);
+                if(context.get("Duplicate_BaseLine_Label") != null)
+                {
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, new StringBuilder().append("Point Name ").append(context.get("Duplicate_BaseLine_Label")).append(" already exists.").toString());
+                }
+                else {
+                    setData("id", context.get(FacilioConstants.ContextNames.SCATTER_GRAPH_RESULT));
+                }
+            }
+        } else if (getScatterGraphAction() != null && getScatterGraphAction().equals("DELETE")) {
+            FacilioChain chain = TransactionChainFactory.deleteScatterGraph();
+            context.put(FacilioConstants.ContextNames.SCATTER_GRAPH_ID, getScatterGraphId());
+            chain.execute(context);
+            setData("result", "Success");
+        } else if (getScatterGraphAction() != null && getScatterGraphAction().equals("GET_BY_ID")) {
+            context.put(FacilioConstants.ContextNames.SCATTER_GRAPH_ID, getScatterGraphId());
+            FacilioChain chain = ReadOnlyChainFactory.getScatterGraphById();
+            chain.execute(context);
+            setData("result", context.get(FacilioConstants.ContextNames.SCATTER_GRAPH_RESULT));
+        } else {
+            FacilioChain chain = ReadOnlyChainFactory.getScatterGraph();
+            chain.execute(context);
+            setData("result", context.get(FacilioConstants.ContextNames.SCATTER_GRAPH_RESULT));
+        }
+        return SUCCESS;
+    }
+
+    public void setExportParamsInContext(FacilioContext context)
+    {
+        context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
+        context.put("chartType", chartType);    // Temp
+        context.put("exportParams", exportParams);
+        context.put("renderParams", renderParams);
+    }
+
+    public String exportReport() throws Exception
+    {
+        FacilioContext context = null;
+        FacilioChain exportChain = null;
+        if(reportId != -1)
+        {
+            exportChain = TransactionChainFactoryV3.getExportReportFileChain(false);
+            context = exportChain.getContext();
+            setReportWithDataContext(context);
+            reportContext.setDateOperator(dateOperator);
+            reportContext.setDateValue(dateOperatorValue);
+        }
+        else
+        {
+            exportChain = TransactionChainFactoryV3.getExportReportFileChain(true);
+            context = exportChain.getContext();
+            setReadingsDataContext(context);
+            if (template != null) {
+                context.put(FacilioConstants.ContextNames.REPORT_TEMPLATE, template);
+            }
+            context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
+        }
+        setExportParamsInContext(context);
+        exportChain.execute();
+        setData("fileUrl", context.get(FacilioConstants.ContextNames.FILE_URL));
+        return SUCCESS;
+    }
+
+    public String sendMail() throws Exception
+    {
+        FacilioContext context = new FacilioContext();
+        FacilioChain mailReportChain;
+        if (reportId != -1)
+        {
+            mailReportChain = TransactionChainFactory.sendReportMailChain();
+            setReportWithDataContext(context);
+            reportContext.setDateOperator(dateOperator);
+            reportContext.setDateValue(dateOperatorValue);
+        } else {
+            mailReportChain = TransactionChainFactory.sendAnalyticsMailChain();
+            setReadingsDataContext(context);
+            if (template != null) {
+                context.put(FacilioConstants.ContextNames.REPORT_TEMPLATE, template);
+            }
+            context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
+        }
+        context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
+        context.put("isS3Url", true);
+        setExportParamsInContext(context);
+        mailReportChain.execute(context);
+        setData("fileUrl", context.get(FacilioConstants.ContextNames.FILE_URL));
         return SUCCESS;
     }
 }

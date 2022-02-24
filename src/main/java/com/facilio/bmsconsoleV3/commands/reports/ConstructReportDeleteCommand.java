@@ -27,8 +27,10 @@ public class ConstructReportDeleteCommand extends FacilioCommand {
         } else {
             context.put("success", "failure");
         }
-        context.put("moduleName", reportContext.getModule().getDisplayName());
-        context.put("reportName", reportContext.getName());
+        if(reportContext.getModule() != null) {
+            context.put("moduleName", reportContext.getModule().getDisplayName());
+            context.put("reportName", reportContext.getName());
+        }
         return false;
     }
 }

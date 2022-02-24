@@ -207,6 +207,8 @@ public class V3PivotReportAction extends V3Action {
         setData(FacilioConstants.ContextNames.END_TIME, pivotparams.getEndTime());
         setData((String) FacilioConstants.ContextNames.TIME_FILTER, pivotparams.getShowTimelineFilter());
         setData(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, pivotparams.getDateValue());
+        setData(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD, context.get(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD));
+        setData(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA, context.get(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA));
     }
     private void createOrUpdatePivotReport(FacilioChain chain, FacilioContext context, ReportPivotParamsContext pivotparams)throws Exception
     {
@@ -225,6 +227,27 @@ public class V3PivotReportAction extends V3Action {
         setData(FacilioConstants.ContextNames.PIVOT_TABLE_DATA, context.get(FacilioConstants.ContextNames.PIVOT_TABLE_DATA));
     }
 
+    public String exportReport()throws Exception
+    {
+        FacilioChain chain = TransactionChainFactoryV3.getReportContextChain();
+        FacilioContext reportDetailContext = chain.getContext();
+        reportDetailContext.put("reportId", reportId);
+        chain.execute();
+        reportContext = (ReportContext) reportDetailContext.get("reportContext");
+        if(reportContext == null)
+        {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Report does not exists.");
+        }
+        JSONParser parser = new JSONParser();
+        ReportPivotParamsContext pivotparams = FieldUtil.getAsBeanFromJson((JSONObject) parser.parse(reportContext.getTabularState()), ReportPivotParamsContext.class);
+        chain = TransactionChainFactoryV3.getExportPivotReportChain();
+        FacilioContext context = chain.getContext();
+        setContextForExecute(context, pivotparams);
+        chain.execute();
+        setData("fileUrl", context.get(FacilioConstants.ContextNames.FILE_URL));
+
+        return SUCCESS;
+    }
     private void validateData(Integer action_type) throws Exception
     {
         if ((action_type == 1 && reportId > 0) || (action_type == 2 && reportId <=0)) {

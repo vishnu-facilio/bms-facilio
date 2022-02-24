@@ -1293,6 +1293,7 @@ public class TransactionChainFactoryV3 {
         }
         c.addCommand(new ConstructTabularReportData());
         c.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
+        c.addCommand(new PivotColumnFormatCommand());
         return c;
     }
 
@@ -1371,6 +1372,38 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getSubModulesListChain(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new GetSubModulesListCommand());
+        return c;
+    }
+    public static FacilioChain getCreateReportFolderChain()
+    {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetCreateFolderCommand());
+        return c;
+    }
+    public static FacilioChain getMoveReportChain()
+    {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetMoveReportCommand());
+        return c;
+    }
+    public static FacilioChain getFolderPermissionUpdateChain()
+    {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetFolderPermissionUpdateCommand());
+        return c;
+    }
+    public static FacilioChain getExportReportFileChain(boolean isAnalyticsReport) {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(isAnalyticsReport ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.newFetchReportDataChain());
+        c.addCommand(new GetExportReportFileCommand());
+        return c;
+    }
+    public static FacilioChain getExportPivotReportChain()
+    {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ConstructTabularReportData());
+        c.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
+        c.addCommand(new ExportPivotReport());
         return c;
     }
 
