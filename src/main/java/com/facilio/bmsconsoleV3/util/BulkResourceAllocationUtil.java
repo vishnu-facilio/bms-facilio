@@ -189,6 +189,16 @@ public class BulkResourceAllocationUtil {
 				}
 				returnObject.put(FacilioConstants.ContextNames.CRITERIA, criteria);
 				break;
+			case CURRENT_ASSET:
+				returnObject.put(FacilioConstants.ContextNames.MODULE, FacilioConstants.ContextNames.BASE_SPACE);
+				if(!CollectionUtils.isEmpty(baseSpaceIds)) {
+					criteria.addAndCondition(CriteriaAPI.getCondition("ID", "id", StringUtils.join(baseSpaceIds, ","), PickListOperators.IS));
+				}
+				else if(!CollectionUtils.isEmpty(siteIds)) {
+					criteria.addAndCondition(CriteriaAPI.getCondition("ID", "id", StringUtils.join(siteIds, ","), PickListOperators.IS));
+				}
+				returnObject.put(FacilioConstants.ContextNames.CRITERIA, criteria);
+				break;
 			default:
 				break;
 		}
