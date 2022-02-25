@@ -4,6 +4,7 @@ import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsole.context.TimelogContext;
+import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.util.MLServiceUtil;
 import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
@@ -126,17 +127,26 @@ import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount10
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30_BS2;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount50;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.control.*;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.controlaction.context.ControlActionCommandContext;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.elasticsearch.command.PushDataToESCommand;
+import com.facilio.modules.FacilioModule;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
+import com.facilio.v3.annotation.ModuleType;
 import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
 import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
 import com.facilio.v3.commands.FetchChangeSetForCustomActivityCommand;
+import com.facilio.v3.context.Constants;
+import org.apache.commons.chain.Context;
 
 import java.util.function.Supplier;
 
@@ -181,6 +191,22 @@ public class APIv3Config {
                     .afterSave(TransactionChainFactoryV3.getEmailFromAddressAfterSaveChain())
                    .update()
                    .beforeSave(new EmailFromAddressValidateCommand())
+                .build();
+    }
+
+    @ModuleType(type = FacilioModule.ModuleType.NOTES)
+    public static Supplier<V3Config> getNotesHandler() {
+	    return () -> new V3Config(NoteContext.class, null)
+                .list()
+                .beforeFetch(new FacilioCommand() {
+                    @Override
+                    public boolean executeCommand(Context context) throws Exception {
+                        long parentId = FacilioUtil.parseLong(Constants.getQueryParamOrThrow(context, "parentId"));
+                        Condition condition = CriteriaAPI.getCondition("PARENT_ID", "parentId", String.valueOf(parentId), NumberOperators.EQUALS);
+                        context.put(FacilioConstants.ContextNames.FILTER_SERVER_CRITERIA, condition);
+                        return false;
+                    }
+                })
                 .build();
     }
 

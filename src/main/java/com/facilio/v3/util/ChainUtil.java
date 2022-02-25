@@ -16,6 +16,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
+import com.facilio.v3.annotation.ModuleType;
 import com.facilio.v3.commands.*;
 import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.context.CustomModuleDataV3;
@@ -33,10 +34,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class ChainUtil {
     private static final Map<String, Supplier<V3Config>> MODULE_HANDLER_MAP = new HashMap<>();
+    private static final Map<FacilioModule.ModuleType, Supplier<V3Config>> MODULE_TYPE_HANDLER_MAP = new HashMap<>();
 
     public static FacilioChain getFetchRecordChain(String moduleName) throws Exception {
         FacilioModule module = getModule(moduleName);
@@ -378,15 +381,10 @@ public class ChainUtil {
 
     public static V3Config getV3Config (FacilioModule module, boolean checkParent) {
         Objects.requireNonNull(module, "Invalid module for v3 config fetch");
-        FacilioModule currentModule = module;
-        Supplier<V3Config> v3Config = MODULE_HANDLER_MAP.get(currentModule.getName());
-
-        if (v3Config == null && checkParent) {
-            currentModule = currentModule.getExtendModule();
-            while (currentModule != null && v3Config == null) {
-                v3Config = MODULE_HANDLER_MAP.get(currentModule.getName());
-                currentModule = currentModule.getExtendModule();
-            }
+//        FacilioModule currentModule = module;
+        Supplier<V3Config> v3Config = findV3Config(MODULE_HANDLER_MAP, (m) -> m.getName(), checkParent, module);
+        if (v3Config == null) {
+            v3Config = findV3Config(MODULE_TYPE_HANDLER_MAP, (m) -> m.getTypeEnum(), checkParent, module);
         }
 
         if (v3Config == null) {
@@ -395,10 +393,48 @@ public class ChainUtil {
         return v3Config.get();
     }
 
+    private static <T> Supplier<V3Config> findV3Config(Map<T, Supplier<V3Config>> moduleHandlerMap, Function<FacilioModule, T> function, boolean checkParent, FacilioModule currentModule) {
+        Supplier<V3Config> v3Config = moduleHandlerMap.get(function.apply(currentModule));
+
+        if (v3Config == null && checkParent) {
+            currentModule = currentModule.getExtendModule();
+            while (currentModule != null && v3Config == null) {
+                v3Config = moduleHandlerMap.get(function.apply(currentModule));
+                currentModule = currentModule.getExtendModule();
+            }
+        }
+        return v3Config;
+    }
+
     public static void initRESTAPIHandler(String packageName) throws InvocationTargetException, IllegalAccessException {
         Reflections reflections = new Reflections(ClasspathHelper.forPackage(packageName), new MethodAnnotationsScanner());
-        Set<Method> methodsAnnotatedWithModule = reflections.getMethodsAnnotatedWith(Module.class);
+        fillModuleNameMap(reflections);
+        fillModuleTypeMap(reflections);
+    }
 
+    private static void fillModuleTypeMap(Reflections reflections) throws InvocationTargetException, IllegalAccessException {
+        Set<Method> methodsAnnotatedWithModuleType = reflections.getMethodsAnnotatedWith(ModuleType.class);
+        for (Method method: methodsAnnotatedWithModuleType) {
+            validateHandlerMethod(method);
+
+            ModuleType annotation = method.getAnnotation(ModuleType.class);
+            FacilioModule.ModuleType moduleType = annotation.type();
+            if (moduleType == null) {
+                throw new IllegalStateException("Module type cannot be empty.");
+            }
+
+            Supplier<V3Config> config = (Supplier<V3Config>) method.invoke(null, null);
+
+            if (MODULE_TYPE_HANDLER_MAP.containsKey(moduleType)) {
+                throw new IllegalStateException("Module config already present.");
+            }
+
+            MODULE_TYPE_HANDLER_MAP.put(moduleType, config);
+        }
+    }
+
+    private static void fillModuleNameMap(Reflections reflections) throws InvocationTargetException, IllegalAccessException {
+        Set<Method> methodsAnnotatedWithModule = reflections.getMethodsAnnotatedWith(Module.class);
         for (Method method: methodsAnnotatedWithModule) {
             validateHandlerMethod(method);
 
