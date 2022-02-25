@@ -16,6 +16,7 @@ public class CommunitySharingInfoContext extends V3Context {
         TENANT_UNIT("Tenantunit"),
         ROLE("Role"),
         PEOPLE("People"),
+        BUILDING("Building"),
         ;
 
         private String name;
