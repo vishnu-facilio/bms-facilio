@@ -120,7 +120,7 @@ public class FacilioContextListener implements ServletContextListener {
 
 			//All these init should be moved to config
 			if(RedisManager.getInstance() != null) {
-				RedisManager.getInstance().connect(); // creating redis connection pool
+				RedisManager.getInstance().connect(true); // creating redis connection pool
 			}
 			LRUCache.getRoleNameCachePs();
 			initDBConnectionPool();
