@@ -1,12 +1,14 @@
 package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.bmsconsoleV3.context.CommunitySharingInfoContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
@@ -32,6 +34,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.LookupFieldMeta;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
@@ -41,6 +44,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.logging.log4j.util.Strings;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -49,8 +53,7 @@ public class CommunityFeaturesAPI {
 
     private static final Logger LOGGER = org.apache.log4j.Logger.getLogger(CommunityFeaturesAPI.class);
 
-
-    public static List<Long> getBuildingTenants(Long buildingId) throws Exception {
+    public static List<Long> getBuildingTenants(List<Long> buildingId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT_UNIT_SPACE);
         Map<String, FacilioField> tenantUnitFieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
@@ -58,7 +61,7 @@ public class CommunityFeaturesAPI {
                 .module(module)
                 .beanClass(TenantUnitSpaceContext.class)
                 .select(modBean.getAllFields(module.getName()))
-                .andCondition(CriteriaAPI.getCondition(tenantUnitFieldMap.get("building"), String.valueOf(buildingId), PickListOperators.IS))
+                .andCondition(CriteriaAPI.getCondition(tenantUnitFieldMap.get("building"), Strings.join(buildingId, ','), PickListOperators.IS))
                 .andCondition(CriteriaAPI.getCondition(tenantUnitFieldMap.get("isOccupied"), "true", BooleanOperators.IS))
                 ;
 
@@ -73,6 +76,10 @@ public class CommunityFeaturesAPI {
             return tenantIds;
         }
         return null;
+    }
+
+    public static List<Long> getBuildingTenants(Long buildingId) throws Exception {
+       return getBuildingTenants(Collections.singletonList(buildingId));
     }
 
     public static List<V3TenantContext> getSiteTenants(Long siteId) throws Exception {
@@ -166,19 +173,49 @@ public class CommunityFeaturesAPI {
             for(CommunitySharingInfoContext sharingInfo : announcement.getAnnouncementsharing()){
                 List<V3PeopleContext> ppl = new ArrayList<>();
                 //handling only for building sharing type for now.. can be supported for others as well
+                
+                //Tenant Unit
                 if(sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.TENANT_UNIT) {
-                     ppl = new TenantUnitTenantContacts().getPeople(sharingInfo.getSharedToSpace() != null ? sharingInfo.getSharedToSpace().getId() : null);
+                     ppl.addAll(new TenantUnitTenantContacts().getPeople(sharingInfo.getSharedToSpace() != null ? sharingInfo.getSharedToSpace().getId() : null));
                 }
                 
+                //Building
+                if(sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.BUILDING) {
+                    ppl.addAll(new BuildingTenantContacts().getPeople(sharingInfo.getSharedToSpace() != null ? sharingInfo.getSharedToSpace().getId() : null));
+                }
+                
+                //Role
                 if(sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.ROLE) {
-                    List<Map<String, Object>> pplForRoleMap = V3PeopleAPI.getPeopleForRoles(Collections.singletonList(sharingInfo.getSharedToRole().getRoleId()));
+                	List<Map<String, Object>> pplForRoleMap = new ArrayList<>();
+                	if(sharingInfo.getSharedToRole() != null) {
+                        pplForRoleMap = V3PeopleAPI.getPeopleForRoles(Collections.singletonList(sharingInfo.getSharedToRole().getRoleId()));
+                	}
+                	else {
+                		List<Long> portalAppIds = new ArrayList<Long>();
+                    	portalAppIds.add(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP));
+                    	portalAppIds.add(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP));
+                    	portalAppIds.add(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP));
+                        List<Role> roles = AccountUtil.getRoleBean().getRolesForApps(portalAppIds);
+                        if(CollectionUtils.isNotEmpty(roles)) {
+                        	pplForRoleMap = V3PeopleAPI.getPeopleForRoles(roles.stream().map(role -> role.getId()).collect(Collectors.toList()));
+                        }
+                	}
                     if(CollectionUtils.isNotEmpty(pplForRoleMap)) {
                         ppl.addAll(FieldUtil.getAsBeanListFromMapList(pplForRoleMap, V3PeopleContext.class));
                     }
                 }
-
+                
+                //People
                 if(sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.PEOPLE) {
-                    ppl.add(V3PeopleAPI.getPeopleById(sharingInfo.getSharedToPeople().getId()));
+                	if(sharingInfo.getSharedToPeople() != null) {
+                        ppl.add(V3PeopleAPI.getPeopleById(sharingInfo.getSharedToPeople().getId()));
+                	}
+                	else {
+                		List<V3PeopleContext.PeopleType> peopleTypeIds = new ArrayList<V3PeopleContext.PeopleType>();
+                		peopleTypeIds.add(V3PeopleContext.PeopleType.TENANT_CONTACT);
+                		peopleTypeIds.add(V3PeopleContext.PeopleType.VENDOR_CONTACT);
+                    	ppl.addAll(V3PeopleAPI.getPeopleByPeopleTypes(peopleTypeIds));
+                	}
                 }
 
                 if(CollectionUtils.isNotEmpty(ppl)){
@@ -232,7 +269,18 @@ public class CommunityFeaturesAPI {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.Tenant.AUDIENCE_SHARING);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-        List<LookupField> fetchSupplementsList = Arrays.asList((LookupField) fieldsAsMap.get("sharedToSpace"),(LookupField) fieldsAsMap.get("sharedToPeople"));
+        
+		LookupFieldMeta sharedToSpaceField = new LookupFieldMeta((LookupField) fieldsAsMap.get("sharedToSpace"));
+
+		LookupField siteField = (LookupField) modBean.getField("site", FacilioConstants.ContextNames.SITE);
+		LookupField buildingField = (LookupField) modBean.getField("building", FacilioConstants.ContextNames.BUILDING);
+		LookupField floorField = (LookupField) modBean.getField("floor", FacilioConstants.ContextNames.FLOOR);
+
+        sharedToSpaceField.addChildSupplement(siteField);
+        sharedToSpaceField.addChildSupplement(buildingField);
+        sharedToSpaceField.addChildSupplement(floorField);
+
+        List<LookupField> fetchSupplementsList = Arrays.asList(sharedToSpaceField,(LookupField) fieldsAsMap.get("sharedToPeople"));
 
         SelectRecordsBuilder<CommunitySharingInfoContext> builder = new SelectRecordsBuilder<CommunitySharingInfoContext>()
                 .moduleName(FacilioConstants.ContextNames.Tenant.AUDIENCE_SHARING)

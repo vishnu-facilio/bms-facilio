@@ -27,6 +27,7 @@ public class AudienceValueGenerator extends ValueGenerator{
     @Override
     public Object generateValueForCondition(int appType) {
         List<Long> tuIds = new ArrayList<Long>();
+        List<Long> buildingIds = new ArrayList<Long>();
 
         try {
             Criteria criteria = new Criteria();
@@ -36,15 +37,21 @@ public class AudienceValueGenerator extends ValueGenerator{
                     List<TenantUnitSpaceContext> tenantUnits = TenantsAPI.getTenantUnitsForTenant(tenant.getId());
                     if (CollectionUtils.isNotEmpty(tenantUnits)) {
                         for (TenantUnitSpaceContext ts : tenantUnits) {
+                            if(ts.getBuilding() != null){
+                                if(!buildingIds.contains(ts.getBuilding().getId())) {
+                                    buildingIds.add(ts.getBuilding().getId());
+                                }
+                             }
                             if(!tuIds.contains(ts.getId())) {
                                 tuIds.add(ts.getId());
                             }
                         }
 
                         Criteria spaceCriteria = new Criteria();
-                        spaceCriteria.addAndCondition(CriteriaAPI.getCondition("SHARING_TYPE", "sharingType", "1", StringOperators.IS));
+                        spaceCriteria.addAndCondition(CriteriaAPI.getCondition("SHARING_TYPE", "sharingType", "1,4", StringOperators.IS));
                         Criteria spaceSubCriteria = new Criteria();
                         spaceSubCriteria.addOrCondition(CriteriaAPI.getCondition("SHARED_TO_SPACE_ID", "sharedToSpace", StringUtils.join(tuIds, ","), PickListOperators.IS));
+                        spaceSubCriteria.addOrCondition(CriteriaAPI.getCondition("SHARED_TO_SPACE_ID", "sharedToSpace", StringUtils.join(buildingIds, ","), PickListOperators.IS));
                         spaceSubCriteria.addOrCondition(CriteriaAPI.getCondition("SHARED_TO_SPACE_ID", "sharedToSpace", "1", CommonOperators.IS_EMPTY));
 
                         spaceCriteria.andCriteria(spaceSubCriteria);

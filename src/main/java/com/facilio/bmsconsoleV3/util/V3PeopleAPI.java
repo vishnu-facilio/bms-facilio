@@ -43,6 +43,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class V3PeopleAPI {
 
@@ -219,6 +220,26 @@ public class V3PeopleAPI {
 
         V3PeopleContext records = builder.fetchFirst();
         return records;
+    }
+    
+    public static List<V3PeopleContext> getPeopleByPeopleTypes(List<V3PeopleContext.PeopleType> peopleTypes) throws Exception {
+    	if(CollectionUtils.isNotEmpty(peopleTypes)) {        	
+        	String peopletypeids = peopleTypes.stream().map(type -> type.getIndex().toString()).collect(Collectors.joining(","));
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+            List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.PEOPLE);
+            SelectRecordsBuilder<V3PeopleContext> builder = new SelectRecordsBuilder<V3PeopleContext>()
+                    .module(module)
+                    .beanClass(V3PeopleContext.class)
+                    .select(fields)
+                    .andCondition(CriteriaAPI.getCondition("PEOPLE_TYPE", "peopleType", peopletypeids, NumberOperators.EQUALS));
+        	List<V3PeopleContext> record = builder.get();
+
+            if(CollectionUtils.isNotEmpty(record)) {
+                return record;
+            }
+    	}
+        return null;
     }
     
     public static V3PeopleContext getPeopleById(Long id) throws Exception {
