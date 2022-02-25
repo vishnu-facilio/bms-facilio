@@ -8,6 +8,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.ScopeOperator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -28,6 +29,7 @@ public class TenantContactScopingConfig extends SignUpData {
             Condition condition = CriteriaAPI.getCondition("siteId", "com.facilio.modules.SiteValueGenerator", ScopeOperator.SCOPING_IS);
             condition.setModuleName(module.getName());
             criteria.addAndCondition(condition);
+
             scoping.setScopingId(applicationScopingId);
             scoping.setModuleId(module.getModuleId());
             scoping.setCriteria(criteria);

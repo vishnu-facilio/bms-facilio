@@ -5,6 +5,38 @@ classes:
   # Adding system fields/ modules
   - com.facilio.modules.signup.AddSystemLookupModules
 
+    # Adding default jobs
+  - com.facilio.bmsconsoleV3.signup.jobs.DefaultJobsOnSignUp
+
+    # adding site module
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.SiteModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.FloorModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.BuildingModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.SpaceModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.WorkOrderModule
+
+  # security policy
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.SecurityPolicy
+
+    #Add DeleteJobRecords entry
+  - com.facilio.bmsconsoleV3.signup.scoping.DeleteJobConfig
+
+    #adding default marker types for floorplan
+  - com.facilio.bmsconsoleV3.signup.scoping.FloorPlanScopingConfig
+
+    # Adding Q And A
+  - com.facilio.qa.signup.AddQAndAModules
+  - com.facilio.bmsconsoleV3.signup.inspection.AddInspectionModules
+  - com.facilio.bmsconsoleV3.signup.induction.AddInductionModules
+  - com.facilio.bmsconsoleV3.signup.survey.AddSurveyModules
+
+    # Adding AWS verify email Data fetch
+  - com.facilio.bmsconsoleV3.signup.AddEmailConversationModules
+
+    # Adding default system fields
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.AddDefaultSystemFields
+
+    #Adding default scoping config
   - com.facilio.bmsconsoleV3.signup.scoping.DealsAndOffersScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.ReservationScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.WorkPermitScopingConfig
@@ -54,34 +86,22 @@ classes:
   - com.facilio.bmsconsoleV3.signup.scoping.PeopleAnnouncementScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.VisitorLoggingScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.SafetyPlanScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.BaseEmailMessageScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.DeskScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.FacilityBookingScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.FacilityScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.InductionResponseScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.InspectionResponseScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.LockerScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.MultiVariateAnamolyAlarmOccuranceScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.MultiVariateAnamolyAlarmScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.MultiVariateAnamolyEventScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.ParkingStallScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.SensorAlarmOccuranceScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.SensorAlarmRollUpAlarmOccuranceScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.SensorAlarmScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.SensorEventScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.SensorRollUpAlarmScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.SensorRollUpEventScopingConfig
+  - com.facilio.bmsconsoleV3.signup.scoping.SurveyResponseScopingConfig
 
-  # Adding default jobs
-  - com.facilio.bmsconsoleV3.signup.jobs.DefaultJobsOnSignUp
-
-    # adding site module
-  - com.facilio.bmsconsoleV3.signup.moduleconfig.SiteModule
-  - com.facilio.bmsconsoleV3.signup.moduleconfig.FloorModule
-  - com.facilio.bmsconsoleV3.signup.moduleconfig.BuildingModule
-  - com.facilio.bmsconsoleV3.signup.moduleconfig.SpaceModule
-  - com.facilio.bmsconsoleV3.signup.moduleconfig.WorkOrderModule
-
-  # security policy
-  - com.facilio.bmsconsoleV3.signup.moduleconfig.SecurityPolicy
-
-    #Add DeleteJobRecords entry
-  - com.facilio.bmsconsoleV3.signup.scoping.DeleteJobConfig
-
-    #adding default marker types for floorplan
-  - com.facilio.bmsconsoleV3.signup.scoping.FloorPlanScopingConfig
-
-    # Adding Q And A
-  - com.facilio.qa.signup.AddQAndAModules
-  - com.facilio.bmsconsoleV3.signup.inspection.AddInspectionModules
-  - com.facilio.bmsconsoleV3.signup.induction.AddInductionModules
-  - com.facilio.bmsconsoleV3.signup.survey.AddSurveyModules
-
-    # Adding AWS verify email Data fetch
-  - com.facilio.bmsconsoleV3.signup.AddEmailConversationModules
-
-    # Adding default system fields
-  - com.facilio.bmsconsoleV3.signup.moduleconfig.AddDefaultSystemFields

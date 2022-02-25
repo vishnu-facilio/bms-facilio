@@ -8,34 +8,28 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.ScopeOperator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 
 import java.util.Collections;
 
-public class LabourScopingConfig extends SignUpData {
+public class MultiVariateAnamolyAlarmScopingConfig extends SignUpData {
     @Override
-    public void addData() {
+    public void addData() throws Exception {
         try {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.LABOUR);
+            FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.MULTIVARIATE_ANOMALY_ALARM);
 
             //adding site scope in Facilio
             long applicationScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
             ScopingConfigContext scoping = new ScopingConfigContext();
             Criteria criteria = new Criteria();
             Condition condition = CriteriaAPI.getCondition("siteId", "com.facilio.modules.SiteValueGenerator", ScopeOperator.SCOPING_IS);
-            condition.setModuleName(module.getName());
+            condition.setModuleName(resourceModule.getName());
             criteria.addAndCondition(condition);
-
-            Condition condition2 = CriteriaAPI.getCondition("siteId", "1", CommonOperators.IS_EMPTY);
-            condition2.setModuleName(module.getName());
-            criteria.addOrCondition(condition2);
-
             scoping.setScopingId(applicationScopingId);
-            scoping.setModuleId(module.getModuleId());
+            scoping.setModuleId(resourceModule.getModuleId());
             scoping.setCriteria(criteria);
             ApplicationApi.addScopingConfigForApp(Collections.singletonList(scoping));
         }
