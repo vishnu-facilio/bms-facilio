@@ -83,7 +83,12 @@ public class NoteAction extends FacilioAction {
 		
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, module);
 		context.put(FacilioConstants.ContextNames.NOTE_ID, noteId);
-
+        if (this.module.equals("cmdnotes")) {
+			String customModuleNotes = CommonCommandUtil.getModuleTypeModuleName(parentModuleName, FacilioModule.ModuleType.NOTES);
+			if (customModuleNotes != null) {
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, customModuleNotes);
+			}
+		}
 		updateCurrentActivity(context, module);
 
 		FacilioChain deleteNote = FacilioChainFactory.deleteNotesChain();
