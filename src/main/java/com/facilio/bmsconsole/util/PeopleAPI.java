@@ -899,18 +899,19 @@ public class PeopleAPI {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule peopleModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
 
-			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-					.table(ModuleFactory.getPeopleModule().getTableName())
-					.select(modBean.getAllFields(peopleModule.getName()))
+			List<FacilioField> fields = modBean.getAllFields(peopleModule.getName());
+			SelectRecordsBuilder<PeopleContext> selectBuilder = new SelectRecordsBuilder<PeopleContext>()
+					.beanClass(PeopleContext.class)
+					.module(peopleModule)
+					.select(fields)
 					.innerJoin("ORG_Users")
 					.on("ORG_Users.PEOPLE_ID = People.ID")
 					.innerJoin("ORG_User_Apps")
 					.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
 					.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.ROLE_ID", "roleId", String.valueOf(StringUtils.join(roleIds, ",")), NumberOperators.EQUALS));
-
-			List<Map<String, Object>> props = selectBuilder.get();
-			if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(props)) {
-				return props;
+			List<PeopleContext> pplList = selectBuilder.get();
+			if(CollectionUtils.isNotEmpty(pplList)) {
+				return FieldUtil.getAsMapList(pplList, PeopleContext.class);
 			}
 		}
 		return null;
