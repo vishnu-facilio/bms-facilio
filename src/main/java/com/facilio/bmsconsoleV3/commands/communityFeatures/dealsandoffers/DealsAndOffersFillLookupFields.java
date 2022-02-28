@@ -30,6 +30,7 @@ public class DealsAndOffersFillLookupFields extends FacilioCommand {
         fetchLookupsList.add(neighbourhoodField);
         LookupField sysCreatedBy = (LookupField) FieldFactory.getSystemField("sysCreatedBy", modBean.getModule(moduleName));
         fetchLookupsList.add(sysCreatedBy);
+        fetchLookupsList.add((LookupField) fieldsAsMap.get("audience"));
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
 

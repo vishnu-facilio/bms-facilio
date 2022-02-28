@@ -26,6 +26,7 @@ public class NeighbourhoodFillLookupFieldsCommand extends FacilioCommand {
         fetchLookupsList.add((LookupField) fieldsAsMap.get("location"));
         LookupField sysCreatedBy = (LookupField) FieldFactory.getSystemField("sysCreatedBy", modBean.getModule(moduleName));
         fetchLookupsList.add(sysCreatedBy);
+        fetchLookupsList.add((LookupField) fieldsAsMap.get("audience"));
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
 
