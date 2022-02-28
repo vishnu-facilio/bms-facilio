@@ -182,12 +182,16 @@ public class FormRuleAPI {
 				FormRuleContext formRuleContext = FieldUtil.getAsBeanFromMap(prop, FormRuleContext.class);
 				formRuleContext.setActions(getFormRuleActionContext(formRuleContext.getId()));
 				FormRuleActionFieldsContext formRuleActionFieldContext = formRuleContext.getActions().get(0).getFormRuleActionFieldsContext().get(0);
+				
 				if (formRuleActionFieldContext.getCriteriaId() > 0) {
 					formRuleActionFieldContext.setCriteria(CriteriaAPI.getCriteria(formRuleActionFieldContext.getCriteriaId()));
 				}
 				
 				if(formRuleContext.getCriteriaId() > 0) {
 					formRuleContext.setCriteria(CriteriaAPI.getCriteria(formRuleContext.getCriteriaId()));
+				}
+				if(formRuleContext.getSubFormCriteriaId() > 0) {
+					formRuleContext.setSubFormCriteria(CriteriaAPI.getCriteria(formRuleContext.getSubFormCriteriaId()));
 				}
 				returnMap.put(formRuleActionFieldContext.getFormFieldId(), formRuleContext);
 
@@ -284,6 +288,10 @@ public class FormRuleAPI {
 				
 				formRuleContext.setCriteria(CriteriaAPI.getCriteria(formRuleContext.getCriteriaId()));
 				
+			}
+			if(formRuleContext.getSubFormCriteriaId() > 0) {
+				
+				formRuleContext.setSubFormCriteria(CriteriaAPI.getCriteria(formRuleContext.getSubFormCriteriaId()));
 			}
 			return formRuleContext;
 		}
