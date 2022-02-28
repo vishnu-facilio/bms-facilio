@@ -27,6 +27,8 @@ files:
     destination: /home/facilio
   - source: /oom.sh
     destination: /home/facilio
+  - source: /monitor_server.sh
+    destination: /home/facilio    
   - source: /awsprops-scheduler.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-scheduler-app.properties
