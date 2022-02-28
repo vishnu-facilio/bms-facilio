@@ -116,10 +116,10 @@ public class DecimalFormatter extends Formatter {
             unit = getCustomUnit();
         }
 
-        String pattern = "###,###.###";
+        String pattern = "###,###.#";
         if (!isNullOrEmpty(unit) && isAppendUnit()) {
             if (isPrefix()) {
-                pattern = unit + pattern;
+                pattern = unit + " " + pattern;
             }
             else {
                 pattern = pattern + " " + unit;
@@ -127,6 +127,7 @@ public class DecimalFormatter extends Formatter {
         }
 
         DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(DateTimeUtil.getLocale());
+        formatter.applyPattern(pattern);
         formatter.setMaximumFractionDigits(getDecimalPoints());
         if (!getApplyLocaleSeparator()) {
             DecimalFormatSymbols symbols = formatter.getDecimalFormatSymbols();
@@ -138,7 +139,6 @@ public class DecimalFormatter extends Formatter {
             }
             formatter.setDecimalFormatSymbols(symbols);
         }
-        formatter.applyPattern(pattern);
         return formatter.format(result);
     }
 
@@ -170,7 +170,7 @@ public class DecimalFormatter extends Formatter {
             this.displayUnit = Integer.parseInt(formatJSON.getOrDefault("displayUnit", this.displayUnit).toString());
         }
         if (formatJSON.containsKey("decimalPoints") && formatJSON.get("decimalPoints") != null ) {
-            this.displayUnit = Integer.parseInt(formatJSON.getOrDefault("decimalPoints", this.displayUnit).toString());
+            this.decimalPoints = Integer.parseInt(formatJSON.getOrDefault("decimalPoints", this.decimalPoints).toString());
         }
         if (formatJSON.containsKey("thousandSeparator") && formatJSON.get("thousandSeparator") != null ) {
             this.thousandSeparator = (Character) formatJSON.getOrDefault("thousandSeparator", this.thousandSeparator).toString().charAt(0);
