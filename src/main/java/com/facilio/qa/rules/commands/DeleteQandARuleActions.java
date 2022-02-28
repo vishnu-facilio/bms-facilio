@@ -47,7 +47,7 @@ public class DeleteQandARuleActions extends FacilioCommand {
 		if (CollectionUtils.isNotEmpty (actionRuleConditions)){
 			actionRuleConditions.removeIf (actionRuleCondition -> conditionId != actionRuleCondition.getId ());
 		}
-		LOGGER.info ("## Q and A rule action need to be delete list size : "+actionRuleConditions.size ());
+		
 		return false;
 	}
 
