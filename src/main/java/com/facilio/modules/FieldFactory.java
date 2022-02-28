@@ -1616,21 +1616,6 @@ public class FieldFactory extends BaseFieldFactory {
 
     public static List<FacilioField> getSystemPointFields(FacilioModule module, boolean includeModified) { // Why is it point fields?
         List<FacilioField> fields = new ArrayList<>();
-        ModuleBean bean;
-        try{
-            bean = (ModuleBean)BeanFactory.lookup("ModuleBean");
-            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(bean.getAllFields(module.getName()));
-            fields.add(fieldMap.get("sysCreatedTime"));
-            fields.add(fieldMap.get("sysCreatedBy"));
-            if (includeModified && (module.getTypeEnum() != FacilioModule.ModuleType.LOOKUP_REL_MODULE && module.getTypeEnum() != FacilioModule.ModuleType.ENUM_REL_MODULE)) {
-                fields.add(fieldMap.get("sysModifiedTime"));
-                fields.add(fieldMap.get("sysModifiedBy"));
-            }
-
-            return fields;
-        } catch (Exception e){
-            fields.clear();
-        }
 
         fields.add(getSystemField("sysCreatedTime", module));
         fields.add(getSystemField("sysCreatedBy", module));
