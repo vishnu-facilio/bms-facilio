@@ -20,6 +20,7 @@ artifacts:
     - scripts/move_hprof.sh
     - scripts/oom.sh
     - scripts/threaddump.sh
+    - scripts/monitor_server.sh
     - deployment-files/*
   discard-paths: yes
 
