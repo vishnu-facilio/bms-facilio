@@ -833,9 +833,11 @@ public class V3VisitorManagementAPI {
 //                    isOverStay = false;
 //                }      
                 
-                //FacilioField actualVisitdurationField = modBean.getField("actualVisitDuration", module.getName());
-                //	updatedfields.add(actualVisitdurationField);
-                //	vLog.setActualVisitDuration(actualVisitDuration);
+                  FacilioField actualVisitdurationField = modBean.getField("actualVisitDuration", module.getName());
+                  long actualVisitDuration = (time - vLog.getCheckInTime())/1000;
+                  updateMap.put("actualVisitDuration",actualVisitDuration);
+                  updatedfields.add(actualVisitdurationField);
+                  vLog.setActualVisitDuration(actualVisitDuration);
 
                 vLog.setCheckOutTime(time);
                 vLog.setIsOverStay(isOverStay);
