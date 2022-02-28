@@ -9,6 +9,12 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.SharingAPI;
+import com.facilio.bmsconsole.commands.ConstructReportData;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.ReportInfo;
+import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.operators.DateOperators;
@@ -88,6 +94,8 @@ public class V3ReportAction extends V3Action {
     private AggregateOperator xAggr;
     private AggregateOperator groupByTimeAggr;
     private ReportTemplateContext template;
+    private List<Long> ids;
+    ReportInfo reportInfo;
 
     public JSONArray getyField(JSONArray yField) { return yField; }
     public void setyField(JSONArray yField) {
@@ -593,6 +601,79 @@ public class V3ReportAction extends V3Action {
         mailReportChain.execute(context);
         setData("fileUrl", context.get(FacilioConstants.ContextNames.FILE_URL));
         return SUCCESS;
+    }
+    public String getReport() throws Exception
+    {
+        if(reportId <= 0)
+        {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid ReportId.");
+        }
+        FacilioChain chain = TransactionChainFactoryV3.getReportContextChain();
+        FacilioContext reportDetailContext = chain.getContext();
+        reportDetailContext.put("reportId", reportId);
+        chain.execute();
+        ReportContext reportContext = (ReportContext) reportDetailContext.get("reportContext");
+        if(reportContext == null){
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Report does not exists.");
+        }
+        setData("report", reportContext);
+        return SUCCESS;
+    }
+
+    public String createOrUpdateScheduledReport() throws Exception
+    {
+        FacilioChain chain = TransactionChainFactoryV3.getScheduledReportChain(false);
+        FacilioContext context = chain.getContext();
+        if(ids != null && ids.size()>0)
+        {
+            chain = TransactionChainFactoryV3.getScheduledReportChain(true);
+            context = chain.getContext();
+            context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
+            context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
+        }
+        context.put(FacilioConstants.Workflow.TEMPLATE, reportInfo.getEmailTemplate());
+        context.put(FacilioConstants.ContextNames.SCHEDULE_INFO, reportInfo);
+        chain.execute();
+        setModuleName(reportInfo.getModuleName());
+        setData("id", context.get(FacilioConstants.ContextNames.RECORD_ID));
+        if(ids != null && ids.size()>0) {
+            scheduledList();
+        }
+        return SUCCESS;
+    }
+    public String deleteScheduledReport() throws Exception
+    {
+        if(ids == null || ids.size()<=0)
+        {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Scheduled Report Ids can not be null.");
+        }
+        FacilioContext context = new FacilioContext();
+        context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
+        FacilioChain delteScheduleChain = TransactionChainFactory.deleteScheduledReportsChain();
+        delteScheduleChain.execute(context);
+        setData(FacilioConstants.ContextNames.ROWS_UPDATED, context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
+        return SUCCESS;
+    }
+
+    public String scheduledList() throws Exception
+    {
+        FacilioContext context = new FacilioContext();
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
+        FacilioChain scheduleReportListChain = ReadOnlyChainFactory.fetchScheduledReportsChain();
+        scheduleReportListChain.execute(context);
+        setData("scheduledReports", context.get(FacilioConstants.ContextNames.REPORT_LIST));
+        return SUCCESS;
+    }
+
+    public String fetchData() throws Exception {
+        FacilioChain c = FacilioChain.getNonTransactionChain();
+        FacilioContext context = c.getContext();
+        updateChainContext(context);
+        c.addCommand(new ConstructReportData());
+        c.addCommand(ReadOnlyChainFactory.constructAndFetchReportDataChain());
+        c.execute();
+        return setReportResult(context);
     }
 
     public void setReportAuditLogs(String moduleDisplayName, ReportContext reportContext, String log_message, AuditLogHandler.ActionType actionType) throws Exception
