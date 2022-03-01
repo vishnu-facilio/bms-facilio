@@ -555,6 +555,34 @@
                 class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
                 method="subModulesList">
         </action>
+        <action name="folder/create"
+                class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
+                method="createFolder">
+        </action>
+        <action name="folder/delete"
+                class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
+                method="deleteFolder">
+        </action>
+        <action name="moveto"
+                class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
+                method="moveToFolder">
+        </action>
+        <action name="folder/update"
+                class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
+                method="updateFolder">
+        </action>
+        <action name="folder/permission/update"
+                class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
+                method="updateFolderPermission">
+        </action>
+        <action name="export"
+                class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
+                method="exportReport">
+        </action>
+        <action name="send"
+                class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
+                method="sendMail">
+        </action>
     </package>
     <package name="pivotReportApi" namespace="/api/v3/report/pivot" extends="v3Api">
         <action name="create"
@@ -568,6 +596,10 @@
         <action name="execute"
                 class="com.facilio.bmsconsoleV3.actions.report.V3PivotReportAction"
                 method="execute">
+        </action>
+        <action name="export"
+                class="com.facilio.bmsconsoleV3.actions.report.V3PivotReportAction"
+                method="exportReport">
         </action>
     </package>
     <package name="analyticsReportApi" namespace="/api/v3/report/analytics" extends="v3Api">
@@ -608,6 +640,18 @@
         <action name="all"
                 class="com.facilio.bmsconsoleV3.actions.report.V3AnalyticsReportAction"
                 method="getAllReportsByType">
+        </action>
+        <action name="scatter_line_graph"
+                class="com.facilio.bmsconsoleV3.actions.report.V3AnalyticsReportAction"
+                method="scatterGraph">
+        </action>
+        <action name="export"
+                class="com.facilio.bmsconsoleV3.actions.report.V3AnalyticsReportAction"
+                method="exportReport">
+        </action>
+        <action name="send"
+                class="com.facilio.bmsconsoleV3.actions.report.V3AnalyticsReportAction"
+                method="sendMail">
         </action>
     </package>
 

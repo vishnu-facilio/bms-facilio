@@ -416,14 +416,6 @@ public class ModuleFactory {
 		return numberModule;
 	}
 
-	public static FacilioModule getStringFieldModule() {
-		FacilioModule stringModule = new FacilioModule();
-		stringModule.setName("stringField");
-		stringModule.setDisplayName("String Fields");
-		stringModule.setTableName("StringFields");
-		stringModule.setExtendModule(getFieldsModule());
-		return stringModule;
-	}
 
 	public static FacilioModule getDateFieldModule() {
 		FacilioModule dateModule = new FacilioModule();
@@ -433,6 +425,17 @@ public class ModuleFactory {
 		dateModule.setExtendModule(getFieldsModule());
 		return dateModule;
 	}
+	
+	public static FacilioModule getStringFieldModule() {
+		FacilioModule stringModule = new FacilioModule();
+		stringModule.setName("stringField");
+		stringModule.setDisplayName("String Fields");
+		stringModule.setTableName("StringFields");
+		stringModule.setExtendModule(getFieldsModule());
+		return stringModule;
+	}
+
+
 
 	public static FacilioModule getDateFieldChildModule () {
 

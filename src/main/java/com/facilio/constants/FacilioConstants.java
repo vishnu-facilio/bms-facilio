@@ -1347,6 +1347,7 @@ public class FacilioConstants {
 		public static final String CUSTOM_OBJECT = "customObject";
 		public static final String FORM_NAME = "formName";
 		public static final String FORM_ID = "formId";
+		public static final String PARENT_FORM_ID = "parentFormId";
 		public static final String FORM = "form";
 		public static final String FORMS_LIST = "formsList";
 		public static final String FORMS_RESPONSE_LIST = "formsResponseList";
@@ -2836,6 +2837,10 @@ public class FacilioConstants {
 		public static final String WORK_ORDER_REQUEST = "WorkOrderRequests";
 		public static final String SPACE = "Space";
 	}
+	public static class LinkNamePrefix {
+		public static final String SUB_FORM_PREFIX = "subform__";
+	}
+
 	public static class Reports 
 
 	{

@@ -5,14 +5,16 @@ import java.util.function.Function;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.bmsconsole.util.SharingAPI;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.report.context.*;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
@@ -33,7 +35,6 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
-import com.facilio.modules.FieldUtil;
 import com.facilio.report.context.ReportContext.ReportType;
 
 @Setter @Getter
@@ -66,6 +67,27 @@ public class V3ReportAction extends V3Action {
     long alarmId = -1;
     FacilioContext resultContext;
     private Boolean isPivot = false;
+    private ReportFolderContext reportFolder;
+    private long folderId = -1;
+    private FileInfo.FileFormat fileFormat;
+    private Boolean showAlarms;
+    private int analyticsType = -1;
+    private Boolean showSafeLimit;
+    private String scatterConfig;
+    private long dashboardId;
+    private String hmAggr = null;
+    private boolean newFormat = false;
+    private EMailTemplate emailTemplate;
+    private List<ReportUserFilterContext> userFilters;
+    private List<ReportDrilldownPathContext> reportDrilldownPath;
+    private ReportSettings reportSettings;
+    private Boolean isWithReport;
+    private String chartType;
+    private Map<String, Object> exportParams;
+    private Map<String, Object> renderParams;
+    private AggregateOperator xAggr;
+    private AggregateOperator groupByTimeAggr;
+    private ReportTemplateContext template;
 
     public JSONArray getyField(JSONArray yField) { return yField; }
     public void setyField(JSONArray yField) {
@@ -75,10 +97,19 @@ public class V3ReportAction extends V3Action {
     public void setxField(JSONObject xField) {
         this.xField = xField;
     }
-    private List<ReportUserFilterContext> userFilters;
-    private List<ReportDrilldownPathContext> reportDrilldownPath;
-    private ReportSettings reportSettings;
-    private Boolean isWithReport;
+
+    public int getgroupByTimeAggr() {
+        return groupByTimeAggr != null ? groupByTimeAggr.getValue() : -1;
+    }
+    public void setgroupByTimeAggr(int groupByTimeAggr) {
+        this.groupByTimeAggr = AggregateOperator.getAggregateOperator(groupByTimeAggr);
+    }
+    public int getxAggr() {
+        return xAggr != null ? xAggr.getValue() : -1;
+    }
+    public void setxAggr(int xAggr) {
+        this.xAggr = AggregateOperator.getAggregateOperator(xAggr);
+    }
 
     @JSON(serialize = false)
     public ReportSettings getReportSettings() {
@@ -102,8 +133,20 @@ public class V3ReportAction extends V3Action {
     public void setIsWithReport(Boolean isWithReport) {
         this.isWithReport = isWithReport;
     }
+    public int getFileFormat() {
+        return  fileFormat != null ? fileFormat.getIntVal() : -1;
+    }
+    public void setFileFormat(int fileFormat) {
+        this.fileFormat = FileInfo.FileFormat.getFileFormat(fileFormat);
+    }
+    public EMailTemplate getEmailTemplate() {
+        return emailTemplate;
+    }
+    public void setEmailTemplate(EMailTemplate emailTemplate) {
+        this.emailTemplate = emailTemplate;
+    }
 
-    private void updateChainContext(FacilioContext context) throws Exception {
+    public void updateChainContext(FacilioContext context) throws Exception {
         JSONParser parser = new JSONParser();
         JSONArray baseLineList = null;
         if (baseLines != null && !baseLines.isEmpty()) {
@@ -184,8 +227,10 @@ public class V3ReportAction extends V3Action {
                 log_message="Analytics Report {%s} has been deleted.";
                 AuditLogHandler.AuditLogContext auditLog = new AuditLogHandler.AuditLogContext(String.format(log_message, (String)context.get("reportName")), "", AuditLogHandler.RecordType.MODULE, (String) context.get("moduleName"), reportId);
             }
-            AuditLogHandler.AuditLogContext auditLog = new AuditLogHandler.AuditLogContext(String.format(log_message, (String)context.get("reportName"), (String) context.get("moduleName")), "", AuditLogHandler.RecordType.MODULE, (String) context.get("moduleName"), reportId);
-            sendAuditLogs(auditLog);
+            if(context.get("moduleName") != null) {
+                AuditLogHandler.AuditLogContext auditLog = new AuditLogHandler.AuditLogContext(String.format(log_message, (String) context.get("reportName"), (String) context.get("moduleName")), "", AuditLogHandler.RecordType.MODULE, (String) context.get("moduleName"), reportId);
+                sendAuditLogs(auditLog);
+            }
             setData("success","deleted successfully");
         }
         setMessage("Report Deleted Successfully");
@@ -339,6 +384,217 @@ public class V3ReportAction extends V3Action {
         setData("modules", subModulesList);
         return SUCCESS;
     }
+
+    public String createFolder() throws Exception
+    {
+        FacilioChain chain = TransactionChainFactoryV3.getCreateReportFolderChain();
+        FacilioContext context = chain.getContext();
+        context.put("actionType", "ADD");
+        context.put("reportFolder", reportFolder);
+        context.put("moduleName", moduleName);
+        chain.execute();
+        if(context.get("reportFolder") !=  null) {
+            setData("reportFolder", reportFolder);
+        }else{
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Error while creating report folder.");
+        }
+        return SUCCESS;
+    }
+
+    public String updateFolder() throws Exception {
+
+        FacilioChain chain = TransactionChainFactoryV3.getCreateReportFolderChain();
+        FacilioContext context = chain.getContext();
+        context.put("actionType", "UPDATE");
+        context.put("reportFolder", reportFolder);
+        chain.execute();
+        if(context.get("reportFolder") !=  null) {
+            setData("reportFolder", reportFolder);
+        }else{
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Error while updating report folder.");
+        }
+        return SUCCESS;
+    }
+
+    public String moveToFolder() throws Exception
+    {
+        if (reportId <= 0)
+        {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Error while moving Report to folder.");
+        }
+        FacilioChain chain = TransactionChainFactoryV3.getReportContextChain();
+        FacilioContext reportDetailContext = chain.getContext();
+        reportDetailContext.put("reportId", reportId);
+        chain.execute();
+        ReportContext reportContext = (ReportContext) reportDetailContext.get("reportContext");
+        if(reportContext != null)
+        {
+            reportContext.setReportFolderId(folderId);
+            FacilioChain moveToFolderChain = TransactionChainFactoryV3.getMoveReportChain();
+            FacilioContext moveToContext = moveToFolderChain.getContext();
+            moveToContext.put("report", reportContext);
+            moveToFolderChain.execute();
+            String result = (String) moveToContext.get("result");
+            if(result == null)
+            {
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Error while moving Report to folder.");
+            }
+        }
+        else{
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Error while getting Report details.");
+        }
+        return SUCCESS;
+    }
+
+
+    public String deleteFolder() throws Exception {
+        if (reportFolder != null)
+        {
+            FacilioChain chain = TransactionChainFactoryV3.getCreateReportFolderChain();
+            FacilioContext context = chain.getContext();
+            context.put("reportFolder", reportFolder);
+            context.put("actionType", "DELETE");
+            chain.execute();
+            if(context.get("isReportExists") != null) {
+                setData("errorString", "Report present in Folder");
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Reports are present in Folder.");
+            }
+        }
+        return SUCCESS;
+    }
+
+    public String updateFolderPermission() throws Exception
+    {
+        if (folderId <= 0)
+        {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Error while moving Report to folder.");
+        }
+        FacilioChain chain = TransactionChainFactoryV3.getFolderPermissionUpdateChain();
+        FacilioContext context = chain.getContext();
+        context.put("reportFolder",reportFolder);
+        context.put("folderId",folderId);
+        chain.execute();
+        String result = (String) context.get("result");
+        if(result == null)
+        {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Error while updating report folder permission.");
+        }
+        setData("result", SUCCESS);
+        return SUCCESS;
+    }
+
+    public void setExportParamsInContext(FacilioContext context)
+    {
+        context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
+        context.put("chartType", chartType);    // Temp
+        context.put("exportParams", exportParams);
+        context.put("renderParams", renderParams);
+    }
+
+    private void setReportWithDataContext(FacilioContext context) throws Exception {
+
+        FacilioChain chain = TransactionChainFactoryV3.getReportContextChain();
+        FacilioContext reportDetailContext = chain.getContext();
+        reportDetailContext.put("reportId", reportId);
+        chain.execute();
+        reportContext = (ReportContext) reportDetailContext.get("reportContext");
+        if (reportContext != null && reportContext.getReportState() != null && !reportContext.getReportState().isEmpty() && reportContext.getReportState().containsKey(FacilioConstants.ContextNames.REPORT_GROUP_BY_TIME_AGGR))
+        {
+            AggregateOperator groupByAggr = AggregateOperator.getAggregateOperator(((Long) reportContext.getReportState().get(FacilioConstants.ContextNames.REPORT_GROUP_BY_TIME_AGGR)).intValue());
+            reportContext.setgroupByTimeAggr(groupByAggr);
+        }
+
+        if (startTime > 0 && endTime > 0) {
+            reportContext.setDateRange(new DateRange(startTime, endTime));
+            reportContext.setDateValue(new DateRange(startTime, endTime).toString());
+        }
+        if (dashboardId > 0)
+        {
+            FacilioChain dateFilterChain = TransactionChainFactoryV3.getReportContextChain();
+            FacilioContext dateFilterContext = dateFilterChain.getContext();
+            dateFilterContext.put("dashboardId", dashboardId);
+            dateFilterChain.execute();
+            DateRange range = (DateRange) dateFilterContext.get("range");
+            if (range != null) {
+                reportContext.setDateRange(range);
+                reportContext.setDateValue(range.toString());
+            }
+        }
+        if (showAlarms != null) {
+            reportContext.addToReportState(FacilioConstants.ContextNames.REPORT_SHOW_ALARMS, showAlarms);
+        }
+        if (showSafeLimit != null) {
+            reportContext.addToReportState(FacilioConstants.ContextNames.REPORT_SHOW_SAFE_LIMIT, showSafeLimit);
+        }
+        if (hmAggr != null) {
+            reportContext.addToReportState(FacilioConstants.ContextNames.HEATMAP_AGGR, hmAggr);
+        }
+        if (groupByTimeAggr != null) {
+            reportContext.addToReportState(FacilioConstants.ContextNames.REPORT_GROUP_BY_TIME_AGGR, groupByTimeAggr.getValue());
+            reportContext.setgroupByTimeAggr(groupByTimeAggr);
+        }
+        if (scatterConfig != null) {
+            reportContext.addToReportState(FacilioConstants.ContextNames.REPORT_SCATTER_CONFIG, scatterConfig);
+        }
+        if (xAggr != null) {
+            reportContext.setxAggr(xAggr);
+        }
+        if (template != null) {
+            reportContext.setReportTemplate(template);
+        }
+        if (analyticsType != -1) {
+            reportContext.addToReportState(FacilioConstants.ContextNames.ANALYTICS_TYPE, analyticsType);
+        }
+        context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+        context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
+    }
+
+    public String exportReport() throws Exception
+    {
+        FacilioContext context = null;
+        FacilioChain exportChain = null;
+        if(reportId != -1)
+        {
+            boolean fetchData = fileFormat != FileInfo.FileFormat.IMAGE && fileFormat != FileInfo.FileFormat.PDF;
+            exportChain = TransactionChainFactory.getExportModuleReportFileChain(fetchData);
+            context = exportChain.getContext();
+            context.put(FacilioConstants.ContextNames.FILTERS, getFilters());
+            setReportWithDataContext(context);
+        }
+        else
+        {
+            exportChain = TransactionChainFactory.getExportModuleAnalyticsFileChain();
+            context = exportChain.getContext();
+            V3ReportAction v3actionObj = new V3ReportAction();
+            v3actionObj.updateChainContext(context);
+        }
+        setExportParamsInContext(context);
+
+        exportChain.execute();
+        setData("fileUrl", context.get(FacilioConstants.ContextNames.FILE_URL));
+        return SUCCESS;
+    }
+    public String sendMail() throws Exception
+    {
+        FacilioChain mailReportChain = FacilioChain.getNonTransactionChain();
+        FacilioContext context = new FacilioContext();
+        if (reportId != -1)
+        {
+            setExecuteReportContextData(context);
+            boolean fetchData = fileFormat != FileInfo.FileFormat.IMAGE && fileFormat != FileInfo.FileFormat.PDF;
+            mailReportChain = TransactionChainFactory.sendModuleReportMailChain(fetchData);
+        } else {
+            updateChainContext(context);
+            mailReportChain = TransactionChainFactory.sendModuleAnalyticsMailChain();
+        }
+        context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
+        context.put("isS3Url", true);
+        setExportParamsInContext(context);
+        mailReportChain.execute(context);
+        setData("fileUrl", context.get(FacilioConstants.ContextNames.FILE_URL));
+        return SUCCESS;
+    }
+
     public void setReportAuditLogs(String moduleDisplayName, ReportContext reportContext, String log_message, AuditLogHandler.ActionType actionType) throws Exception
     {
         Boolean isCustomModule= reportContext.getModule().getCustom();

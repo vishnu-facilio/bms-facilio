@@ -82,9 +82,9 @@ public interface IAMUserBean {
 	public boolean addUserMobileSetting(UserMobileSetting userMobileSetting) throws Exception;
 	
 	public boolean removeUserMobileSetting(String mobileInstanceId, boolean isPortal) throws Exception;
-	
-	public List<Map<String, Object>> getMobileInstanceIds(List<Long> uIds) throws Exception;
-	
+
+	public List<UserMobileSetting> getMobileInstanceIds(List<Long> uIds, String appLinkName) throws Exception;
+
 	public Object getPermalinkDetails(String token) throws Exception;
 	
     public String validateAndGenerateTokenV3(String emailaddress, String password, String appDomainName, String userAgent, String userType,

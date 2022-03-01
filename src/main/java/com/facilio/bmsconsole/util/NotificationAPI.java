@@ -1,22 +1,18 @@
 package com.facilio.bmsconsole.util;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+import com.facilio.accounts.dto.UserMobileSetting;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.tiles.request.collection.CollectionUtil;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.User;
@@ -49,7 +45,7 @@ public class NotificationAPI {
 	private static final Logger LOGGER = LogManager.getLogger(NotificationAPI.class.getName());
 	
 	
-	private static List<Pair<String, Boolean>> getMobileInstanceIDs(List<Long> userIds) throws Exception {
+/*	private static List<Pair<String, Boolean>> getMobileInstanceIDs(List<Long> userIds) throws Exception {
 		List<Pair<String, Boolean>> mobileInstanceIds = new ArrayList<>();
 		List<User> userList = AccountUtil.getUserBean().getUsers(null, true, false, userIds);
 		List<Long> userIdList = new ArrayList<Long>();
@@ -66,7 +62,7 @@ public class NotificationAPI {
 		}
 		
 		return mobileInstanceIds;
-	}
+	}*/
 	
 	public static List<Long> checkUserDelegation(List<Long> userIds) throws Exception {
 		
@@ -98,19 +94,21 @@ public class NotificationAPI {
 		
 		userIds = checkUserDelegation(userIds);
 
-		List<Pair<String, Boolean>> mobileInstanceSettings = getMobileInstanceIDs(userIds);
+		ApplicationContext applicationContext = ApplicationApi.getApplicationForId((Long) message.get("application"));
+		String appLinkName = applicationContext.getLinkName();
+		List<UserMobileSetting> mobileInstanceSettings = getMobileInstanceIDs(userIds,appLinkName);
 		LOGGER.info("Sending push notifications for ids : "+userIds);
 		if (mobileInstanceSettings != null && !mobileInstanceSettings.isEmpty()) {
-			LOGGER.info("Sending push notifications for mobileIds : "+mobileInstanceSettings.stream().map(pair -> pair.getLeft()).collect(Collectors.toList()));
-			for (Pair<String, Boolean> mobileInstanceSetting : mobileInstanceSettings) {
+			LOGGER.info("Sending push notifications for mobileIds : "+mobileInstanceSettings.stream().map(pair -> pair.getMobileInstanceId()).collect(Collectors.toList()));
+			for (UserMobileSetting mobileInstanceSetting : mobileInstanceSettings) {
 				if (mobileInstanceSetting != null) {
 					
 //					message.put("to","fHD-LqsgPBA:APA91bEuVMMnWqC_LaxYg1w1K9fF4bL9Exunbh7W4syfBBCkEIhQC0lYP2CT-EKAbdvS7Hl3iayAdKojXUgQ_OwAlMANO7Rtl8DbQ1-Zettsae6hXRG9bzh6ob9IjGXQBwNTBOu-qbmF");
-					message.put("to", mobileInstanceSetting.getLeft());
+					message.put("to", mobileInstanceSetting.getMobileInstanceId());
 
 					Map<String, String> headers = new HashMap<>();
 					headers.put("Content-Type", "application/json");
-					headers.put("Authorization", "key="+ (mobileInstanceSetting.getRight() ? FacilioProperties.getPortalPushNotificationKey() : FacilioProperties.getPushNotificationKey()));
+					headers.put("Authorization", "key="+ (mobileInstanceSetting.isFromPortal() ? FacilioProperties.getPortalPushNotificationKey() : FacilioProperties.getPushNotificationKey()));
 
 					String url = "https://fcm.googleapis.com/fcm/send";
 
@@ -287,23 +285,21 @@ public class NotificationAPI {
 		return null;
 	}
 
-	public static List<Pair<String, Boolean>> getMobileInstanceIDs(String idList) throws Exception {
-		List<Pair<String, Boolean>> mobileInstanceIds = new ArrayList<>();
-		List<Long> idLongList = Stream.of(idList.split(",")).map(Long::valueOf).collect(Collectors.toList());
-		List<User> userList = AccountUtil.getUserBean().getUsers(null, true, false, idLongList);
+	public static List<UserMobileSetting> getMobileInstanceIDs(List<Long> idList, String appLinkName) throws Exception {
+		List<User> userList = AccountUtil.getUserBean().getUsers(null, true, false, idList);
 		List<Long> userIdList = new ArrayList<Long>();
 		if (CollectionUtils.isNotEmpty(userList)) {
 			userIdList = userList.stream().map(User::getUid).collect(Collectors.toList());
-			List<Map<String, Object>> instanceIdList = IAMUserUtil.getUserMobileSettingInstanceIds(userIdList);
-			for (Map<String, Object> instance : instanceIdList) {
-				Boolean fromPortal = (Boolean)instance.get("fromPortal");
+			List<UserMobileSetting> instanceIdList = IAMUserUtil.getUserMobileSettingInstanceIds(userIdList,appLinkName);
+			for (UserMobileSetting instance : instanceIdList) {
+				Boolean fromPortal = instance.isFromPortal();
 				if (fromPortal == null) {
-					fromPortal = false;
+					instance.setFromPortal(false);
 				}
-				mobileInstanceIds.add(Pair.of((String) instance.get("mobileInstanceId"), fromPortal));
 			}
+			return  instanceIdList;
 		}
 
-		return mobileInstanceIds;
+		return null;
 	}
 }

@@ -5,8 +5,6 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAmount;
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,9 +24,8 @@ import com.facilio.accounts.dto.*;
 import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.accounts.sso.SSOUtil;
-import com.facilio.accounts.util.AccountConstants;
 import com.facilio.auth.actions.PasswordHashUtil;
-import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.db.util.DBConf;
 import com.facilio.iam.accounts.context.SecurityPolicy;
@@ -1420,10 +1417,11 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		// Fetching and adding only if it's not present already
 		FacilioModule module = IAMAccountConstants.getUserMobileSettingModule();
 		List<FacilioField> fields = IAMAccountConstants.getUserMobileSettingFields();
-
+		String appLinkName = AccountUtil.getCurrentApp().getLinkName() == null ? FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP : AccountUtil.getCurrentApp().getLinkName();
 		UserMobileSetting currentSetting = getUserMobileSetting(userMobileSetting.getUserId(),
-				userMobileSetting.getMobileInstanceId(), module, fields, userMobileSetting.getFromPortal());
+				userMobileSetting.getMobileInstanceId(), module, fields,appLinkName);
 		if (currentSetting == null) {
+			userMobileSetting.setAppLinkName(appLinkName);
 			long id = addUserMobileSetting(userMobileSetting, module, fields);
 			if(id > 0) {
 				return true;
@@ -1432,6 +1430,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			userMobileSetting.setUserMobileSettingId(currentSetting.getUserMobileSettingId());
 			userMobileSetting.setUserId(-1);
 			userMobileSetting.setMobileInstanceId(null);
+			userMobileSetting.setAppLinkName(null);
 			if(updateUserMobileSetting(userMobileSetting, module, fields) > 0) {
 				return true;
 			}
@@ -1460,17 +1459,22 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 	
 	private UserMobileSetting getUserMobileSetting(long userId, String instance, FacilioModule module,
-			List<FacilioField> fields, boolean isPortal) throws Exception {
+			List<FacilioField> fields,String appLinkName) throws Exception {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField userIdField = fieldMap.get("userId");
 		FacilioField instanceField = fieldMap.get("mobileInstanceId");
-		
+		FacilioField appLinkNameField = fieldMap.get("appLinkName");
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition(userIdField, String.valueOf(userId), PickListOperators.IS));
+		if (instance!=null){
+			criteria.addAndCondition(CriteriaAPI.getCondition(instanceField, instance, StringOperators.IS));
+		}
+		if (appLinkName != null){
+			criteria.addAndCondition(CriteriaAPI.getCondition(appLinkNameField,appLinkName,StringOperators.IS));
+		}
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().table(module.getTableName())
 				.select(fields)
-				.andCondition(CriteriaAPI.getCondition(userIdField, String.valueOf(userId), PickListOperators.IS))
-				.andCondition(CriteriaAPI.getCondition(instanceField, instance, StringOperators.IS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fromPortal"), String.valueOf(isPortal),
-						BooleanOperators.IS));
+				.andCriteria(criteria);
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			return FieldUtil.getAsBeanFromMap(props.get(0), UserMobileSetting.class);
@@ -1482,15 +1486,16 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	@Override
 	public boolean removeUserMobileSetting(String mobileInstanceId, boolean isPortal) throws Exception {
 		// TODO Auto-generated method stub
-		
+
+		String appLinkName = AccountUtil.getCurrentApp().getLinkName() == null ? FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP : AccountUtil.getCurrentApp().getLinkName();
+
 		List<FacilioField> fields = IAMAccountConstants.getUserMobileSettingFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 				.table(IAMAccountConstants.getUserMobileSettingModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("mobileInstanceId"), mobileInstanceId,
 						StringOperators.IS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fromPortal"), String.valueOf(isPortal),
-						BooleanOperators.IS));
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("appLinkName"),appLinkName,StringOperators.IS));
 
 		if(builder.delete() > 0) {
 			return true;
@@ -1498,24 +1503,23 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return false;
 	}
 
-
 	@Override
-	public List<Map<String, Object>> getMobileInstanceIds(List<Long> uIds) throws Exception {
+	public List<UserMobileSetting> getMobileInstanceIds(List<Long> uIds,String appLinkName) throws Exception {
 		// TODO Auto-generated method stub
 		List<FacilioField> fields = new ArrayList<>();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(IAMAccountConstants.getUserMobileSettingFields());
-		
+
 		fields.add(fieldMap.get("mobileInstanceId"));
 		fields.add(fieldMap.get("fromPortal"));
-		
+
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields).table("User_Mobile_Setting")
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("userId"), uIds, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("appLinkName"),appLinkName,StringOperators.IS))
 				.orderBy("USER_MOBILE_SETTING_ID");
 
-		List<Map<String, Object>> props = selectBuilder.get();
+		List<UserMobileSetting> props = FieldUtil.getAsBeanListFromMapList(selectBuilder.get(),UserMobileSetting.class);
 		return props;
 	}
-
 
 	@Override
 	public Organization getOrgv2(String currentOrgDomain, long uid) throws Exception {

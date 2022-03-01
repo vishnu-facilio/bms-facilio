@@ -10,6 +10,7 @@ import com.facilio.qa.rules.Constants;
 import com.facilio.qa.rules.pojo.ActionRuleCondition;
 import com.facilio.qa.rules.pojo.QAndARule;
 import com.facilio.qa.rules.pojo.QAndARuleType;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -17,7 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+@Log4j
 public class DeleteQandARuleActions extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -27,8 +28,8 @@ public class DeleteQandARuleActions extends FacilioCommand {
 			return false;
 		}
 		long conditionId = getConditionId (context);
+		List<ActionRuleCondition> actionRuleConditions = (List<ActionRuleCondition>) context.get(Constants.Command.CONDITIONS_TO_BE_DELETED);
 		if (conditionId > 0L) {
-			List<ActionRuleCondition> actionRuleConditions = (List<ActionRuleCondition>) context.get(Constants.Command.CONDITIONS_TO_BE_DELETED);
 			if (CollectionUtils.isNotEmpty(actionRuleConditions)) {
 				ActionRuleCondition con = actionRuleConditions.stream ().filter (p -> conditionId == p.getId ()).findFirst ().orElse (null);
 				if (con != null) {
@@ -43,6 +44,10 @@ public class DeleteQandARuleActions extends FacilioCommand {
 				}
 			}
 		}
+		if (CollectionUtils.isNotEmpty (actionRuleConditions)){
+			actionRuleConditions.removeIf (actionRuleCondition -> conditionId != actionRuleCondition.getId ());
+		}
+		
 		return false;
 	}
 
@@ -53,7 +58,9 @@ public class DeleteQandARuleActions extends FacilioCommand {
 			QAndARule rule = rules.get (0);
 			if (CollectionUtils.isNotEmpty (rule.getRuleConditions ())){
 				ActionRuleCondition con = ( ActionRuleCondition ) rule.getRuleConditions ().get (0);
-				return con.getId ();
+				if (con != null){
+					return con.getId ();
+				}
 			}
 		}
 		return -1L;

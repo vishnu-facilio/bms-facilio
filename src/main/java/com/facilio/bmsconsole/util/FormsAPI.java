@@ -18,6 +18,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.db.criteria.operators.CommonOperators;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -477,12 +479,33 @@ public class FormsAPI {
 	}
 	
 	private static int deleteFormSections(List<Long> sectionIds) throws Exception {
+		deleteSubforms(sectionIds);
 		FacilioModule module = ModuleFactory.getFormSectionModule();
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 														.table(module.getTableName())
 														.andCondition(CriteriaAPI.getIdCondition(sectionIds, module))
 														;
 		return deleteBuilder.delete();
+	}
+
+	private static void deleteSubforms(List<Long> sectionIds) throws Exception{
+		FacilioModule module = ModuleFactory.getFormSectionModule();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.table(module.getTableName())
+				.select(FieldFactory.getFormSectionFields())
+				.andCondition(CriteriaAPI.getIdCondition(sectionIds, module))
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getField("subFormId", "SUB_FORM_ID", module, FieldType.NUMBER), CommonOperators.IS_NOT_EMPTY));
+		List<Map<String, Object>> props = selectBuilder.get();
+
+		if(!CollectionUtils.isEmpty(props)) {
+			for(Map<String,Object> prop : props) {
+				long subformId = (long) prop.get("subFormId");
+				FacilioChain deleteSubFormChain = TransactionChainFactory.getDeleteFormChain();
+				Context context = deleteSubFormChain.getContext();
+				context.put(FacilioConstants.ContextNames.FORM_ID, subformId);
+				deleteSubFormChain.execute();
+			}
+		}
 	}
 	
 	// To update fields based on formfieldid...if fieldNamesToUpdate is not given, then the all the values for the record should be set
@@ -1306,5 +1329,15 @@ public class FormsAPI {
 		Map<String, Object> map = new HashMap<>();
 		map.put("name", formName);
 		builder.update(map);
+	}
+
+	public static String generateSubFormLinkName(FacilioForm form) {
+		String generatedName = null;
+		if (form.getName() == null) {
+			generatedName = form.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+","");
+		} else {
+			generatedName = form.getName().toLowerCase().replaceAll("[^a-zA-Z0-9_]+", "");
+		}
+		return ((!generatedName.startsWith(FacilioConstants.LinkNamePrefix.SUB_FORM_PREFIX)) ? (FacilioConstants.LinkNamePrefix.SUB_FORM_PREFIX + generatedName) : generatedName);
 	}
 }

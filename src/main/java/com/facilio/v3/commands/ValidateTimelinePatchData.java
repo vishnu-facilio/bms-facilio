@@ -47,8 +47,8 @@ public class ValidateTimelinePatchData extends FacilioCommand {
         String startFieldVal = updateData.containsKey(startTimeField.getName()) ? String.valueOf(updateData.get(startTimeField.getName())) : null;
         String oldStartFieldVal = oldData.containsKey(startTimeField.getName()) ? String.valueOf(oldData.get(startTimeField.getName())) : null;
 
-        String endFieldVal = updateData.containsKey(endTimeField.getName()) ? String.valueOf(updateData.get(endTimeField.getName())) : null;
-        String oldEndFieldVal = oldData.containsKey(endTimeField.getName()) ? String.valueOf(oldData.get(endTimeField.getName())) : null;
+        String endFieldVal = (updateData.containsKey(endTimeField.getName()) && updateData.get(endTimeField.getName()) != null) ? String.valueOf(updateData.get(endTimeField.getName())) : null;
+        String oldEndFieldVal = (oldData.containsKey(endTimeField.getName()) && oldData.get(endTimeField.getName()) != null) ? String.valueOf(oldData.get(endTimeField.getName())) : null;
 
         if(startFieldVal == null)
         {
