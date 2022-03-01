@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,8 @@ import com.facilio.bmsconsole.forms.FormRuleContext.TriggerType;
 import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.util.V3Util;
 
 public class ExecuteFormActionRulesCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(ExecuteFormActionRulesCommand.class.getName());
@@ -54,7 +57,11 @@ public class ExecuteFormActionRulesCommand extends FacilioCommand {
 				
 				Boolean isSubFormTriggerField = (Boolean) context.getOrDefault(FormRuleAPI.IS_SUB_FORM_TRIGGER_FIELD, Boolean.FALSE);
 				
+				V3Util.throwRestException(allSubFormDatas == null, ErrorCode.VALIDATION_ERROR, "Subform data cannot be null here");
+				
 				List<Map<String,Object>> subFormDatas = (List<Map<String, Object>>) (((Map<String, Object>) allSubFormDatas.get(formRuleContext.getSubFormContext().getName())).get("data"));
+				
+				V3Util.throwRestException(subFormDatas == null, ErrorCode.VALIDATION_ERROR, "Subform data cannot be null here");
 				
 				fillEmptyActionObjectsForAllSubFormData(subFormDatas,(FacilioContext)context);
 				
