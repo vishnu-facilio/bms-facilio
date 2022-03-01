@@ -10,6 +10,8 @@ import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.v3.context.Constants;
+
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -21,14 +23,11 @@ import java.util.Map;
 public class FetchRolesForPeopleCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        List<V3PeopleContext> pplList = (List<V3PeopleContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
-        if(CollectionUtils.isEmpty(pplList)) {
-            pplList = new ArrayList<>();
-            V3PeopleContext people = (V3PeopleContext) context.get(FacilioConstants.ContextNames.RECORD);
-            if(people != null) {
-                pplList.add(people);
-            }
-        }
+
+        String moduleName = Constants.getModuleName(context);
+        Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
+        List<V3PeopleContext> pplList = recordMap.get(moduleName);
+
         if(CollectionUtils.isNotEmpty(pplList)) {
             List<ApplicationContext> apps = ApplicationApi.getAllApplications();
             Map<Long, String> appLinkNames= new HashMap<>();
