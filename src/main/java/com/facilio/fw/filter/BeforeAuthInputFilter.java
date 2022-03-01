@@ -69,10 +69,12 @@ public class BeforeAuthInputFilter implements Filter {
             securityRequestWrapper.setAttribute("executor", executor);
         } catch (Exception ex) {
             log(securityRequestWrapper, ex.getMessage());
-            Map<String, String> errorMap = new HashMap<>();
-            errorMap.put("message", "Error validating");
-            write(errorMap, 500, servletResponse);
-            return;
+            if (!(FacilioProperties.isProduction() || FacilioProperties.isOnpremise())) {
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put("message", "Error validating");
+                write(errorMap, 500, servletResponse);
+                return;
+            }
         }
         securityRequestWrapper.reset();
         filterChain.doFilter(securityRequestWrapper, servletResponse);
