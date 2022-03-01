@@ -27,8 +27,11 @@ public class V3AssetCategoryContext extends V3Context {
         this.name = name;
     }
 
-    public AssetCategoryType getType() {
-        return type;
+    public int getType() {
+        if (type != null) {
+            return type.getIntVal();
+        }
+        return -1;
     }
 
     public String getTypeVal() {
@@ -40,6 +43,14 @@ public class V3AssetCategoryContext extends V3Context {
 
     public void setType(AssetCategoryType type) {
         this.type = type;
+    }
+
+    public void setType(int type) {
+        this.type = AssetCategoryType.STATE_MAP.get(type);
+    }
+
+    public AssetCategoryType getTypeEnum() {
+        return type;
     }
 
 
@@ -68,7 +79,11 @@ public class V3AssetCategoryContext extends V3Context {
     }
 
     public String getDisplayName() {
-        return displayName;
+        if (displayName != null && !displayName.isEmpty()) {
+            return displayName;
+        } else {
+            return name;
+        }
     }
 
     public void setDisplayName(String displayName) {
