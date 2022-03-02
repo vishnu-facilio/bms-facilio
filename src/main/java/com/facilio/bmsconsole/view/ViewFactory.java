@@ -772,6 +772,11 @@ public class ViewFactory {
 
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("all", getAllBasespaces().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.BASE_SPACE, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
 		views.put("all", getAllFloors().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.FLOOR, views);
 		
@@ -7820,6 +7825,20 @@ public class ViewFactory {
 
 		return allView;
 	}
+
+	private static FacilioView getAllBasespaces() {
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("name","NAME",FieldType.STRING), true));
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Basespaces");
+		allView.setSortFields(sortFields);
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+
 	private static FacilioView getAllFloors() {
 
 		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("name","NAME",FieldType.STRING), true));
