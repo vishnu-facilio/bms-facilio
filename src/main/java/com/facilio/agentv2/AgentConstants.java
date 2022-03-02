@@ -50,6 +50,7 @@ public class AgentConstants
     // BACNET constants
     public static final String INSTANCE_NUMBER = "instanceNumber";
     public static final String NETWORK_NUMBER = "networkNumber";
+    public static final String VENDOR_ID = "vendorId";
     public static final String URL = "url";
     public static final String INSTANCE_TYPE = "instanceType";
 
