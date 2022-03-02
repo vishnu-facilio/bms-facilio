@@ -108,7 +108,9 @@ public class V3ServiceContext extends V3Context {
     }
 
     public void setPaymentType(Integer paymentType) {
-        this.paymentType = V3ServiceContext.PaymentType.valueOf(paymentType);
+        if (paymentType != null) {
+            this.paymentType = V3ServiceContext.PaymentType.valueOf(paymentType);
+        }
     }
 
     public V3ServiceContext.PaymentType getPaymentTypeEnum() {
