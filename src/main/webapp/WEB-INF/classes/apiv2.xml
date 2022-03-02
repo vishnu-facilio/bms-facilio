@@ -122,8 +122,6 @@
 			method="getMySiteList">
 				<param name="shouldApplySwitchScope">false</param>
 		</action>
-		<action name="submitTopology" class="com.facilio.storm.action.StormAdminAction" method="submitTopology">
-		</action>
 		<action name="getSites" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getAllSites">
 		</action>
