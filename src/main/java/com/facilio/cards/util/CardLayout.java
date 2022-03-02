@@ -329,15 +329,21 @@ public enum CardLayout {
 						kpiContext.setDateValue((String) timeLineFilters.get("dateValueString"));
 						period = (String) timeLineFilters.get("dateLabel");
 
+						if (baselineRange != null) {
+							baselineRange = "Previous Period";
+							cardBaseValue = KPIUtil.getKPIBaseValueValue(kpiContext, baselineRange);
+						}
+
 					} else if (dateRange != null) {
 						kpiContext.setDateOperator((DateOperators) DateOperators.getAllOperators().get(dateRange));
 						period = dateRange;
+						if (baselineRange != null) {
+							cardBaseValue = KPIUtil.getKPIBaseValueValue(kpiContext, baselineRange);
+						}
 					}
 
 					cardValue = KPIUtil.getKPIValue(kpiContext);
-					if (baselineRange != null) {
-						cardBaseValue = KPIUtil.getKPIBaseValueValue(kpiContext, baselineRange);
-					}
+
 					kpi = KPIUtil.getKPI(kpiId);
 					fields = KPIUtil.getKPIModuleFIelds(kpiContext);
 

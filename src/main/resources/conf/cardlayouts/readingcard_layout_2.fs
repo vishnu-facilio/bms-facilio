@@ -1,27 +1,41 @@
 Map cardLayout(Map params) {
     result = {};
     fieldObj = new NameSpace("module").getField(params.reading.fieldName, params.reading.moduleName);
+    baseLineLabel = params.baseline;
+
     if (fieldObj != null) {
         fieldid = fieldObj.id();
         fieldMapInfo = fieldObj.asMap();
         date = new NameSpace("date");
-        
-        if(params.cardFilters!=null)
-        {
-            cardFilters=params.cardFilters;
+
+
+        if (params.cardFilters != null) {
+            cardFilters = params.cardFilters;
             startTime = cardFilters.startTime;
             endTime = cardFilters.endTime;
-            period=cardFilters.dateLabel;
+            period = cardFilters.dateLabel;
             dateRangeObj = new NameSpace("dateRange").create(startTime, endTime);
-        }
-        else
-        {        
-        dateRangeObj = date.getDateRange(params.dateRange);
-        period = params.dateRange;
+        } else {
+            dateRangeObj = date.getDateRange(params.dateRange);
+            period = params.dateRange;
         }
 
-        baselineDateRangeObj = date.getDateRange(params.dateRange, params.baseline);
-        
+
+        if (params.cardFilters != null) {
+            cardFilters = params.cardFilters;
+            operatorId = cardFilters.operatorId;
+            dateLabel = cardFilters.dateLabel;
+            baseLineLabel = "Previous Period";
+            if (operatorId == 20) {
+                // omitting custom range
+                dateLabel = params.dateRange;
+            }
+            baselineDateRangeObj = date.getDateRange(dateLabel, params.baseline);
+        } else {
+            baselineDateRangeObj = date.getDateRange(params.dateRange, params.baseline);
+        }
+
+
 
 
         db = {
@@ -46,18 +60,15 @@ Map cardLayout(Map params) {
         if (fieldMapInfo.dataTypeEnum == "BOOLEAN") {
             if (cardValue == true && fieldMapInfo.trueVal != null) {
                 valueMap["value"] = fieldMapInfo.trueVal;
-            }
-            else if (cardValue == false && fieldMapInfo.falseVal != null) {
+            } else if (cardValue == false && fieldMapInfo.falseVal != null) {
                 valueMap["value"] = fieldMapInfo.falseVal;
             }
             if (baselineCardValue == true && fieldMapInfo.trueVal != null) {
                 baselineValueMap["value"] = fieldMapInfo.trueVal;
-            }
-            else if (baselineCardValue == false && fieldMapInfo.falseVal != null) {
+            } else if (baselineCardValue == false && fieldMapInfo.falseVal != null) {
                 baselineValueMap["value"] = fieldMapInfo.falseVal;
             }
-        }
-        else if (enumMap != null) {
+        } else if (enumMap != null) {
             if (cardValue != null && enumMap.get(cardValue) != null) {
                 valueMap["value"] = enumMap.get(cardValue);
             }
@@ -84,6 +95,6 @@ Map cardLayout(Map params) {
     result["title"] = params.title;
     result["image"] = params.imageId;
     result["period"] = period;
-    result["baselinePeriod"] = params.baseline;
+    result["baselinePeriod"] = baseLineLabel;
     return result;
 }

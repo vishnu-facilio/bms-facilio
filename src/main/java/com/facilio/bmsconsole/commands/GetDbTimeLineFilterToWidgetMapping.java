@@ -155,7 +155,7 @@ public class GetDbTimeLineFilterToWidgetMapping extends FacilioCommand {
 
 					}
 
-					else if (cardLayout.equals(CardLayout.KPICARD_LAYOUT_1.getName())) {
+					else if (cardLayout.equals(CardLayout.KPICARD_LAYOUT_1.getName()) || cardLayout.equals(CardLayout.KPICARD_LAYOUT_2.getName())) {
 
 						JSONObject cardParams = newCardWidget.getCardParams();//
 						String kpiType = (String) cardParams.get("kpiType");
