@@ -24,6 +24,8 @@ public class LoadNewsAndInformationLookupCommandV3 extends FacilioCommand {
         List<LookupField> fetchLookupsList = new ArrayList<LookupField>();
         LookupField sysCreatedBy = (LookupField) FieldFactory.getSystemField("sysCreatedBy", modBean.getModule(moduleName));
         fetchLookupsList.add(sysCreatedBy);
+        LookupField sysModifiedBy = (LookupField) FieldFactory.getSystemField("sysModifiedBy", modBean.getModule(moduleName));
+        fetchLookupsList.add(sysModifiedBy);
         fetchLookupsList.add((LookupField) fieldsAsMap.get("audience"));
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
