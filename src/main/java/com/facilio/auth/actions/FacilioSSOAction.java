@@ -19,6 +19,8 @@ import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.util.IAMUtil;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
@@ -157,6 +159,16 @@ public class FacilioSSOAction extends FacilioAction {
 		this.downloadStream = downloadStream;
 	}
 
+	@Getter
+	@Setter
+	private String appDomainType;
+
+	public String downloadDomainMetaData() throws Exception {
+		DomainSSO domainSSO = SSOUtil.generateDummyDomainSSOEntry(appDomainType);
+		setSsoToken(SSOUtil.base64EncodeUrlSafe(AccountUtil.getCurrentOrg().getOrgId()+"_"+domainSSO.getId()));
+		return domainMetaData();
+	}
+
 	public String domainMetaData() throws Exception {
 		if (getSsoToken() == null || !isValidSSOToken(getSsoToken())) {
 			setResponseCode(1);
@@ -171,7 +183,7 @@ public class FacilioSSOAction extends FacilioAction {
 
 		DomainSSO domainSSODetails = IAMOrgUtil.getDomainSSODetails(dSsoId);
 
-		if (domainSSODetails == null || domainSSODetails.getIsActive() == null || !domainSSODetails.getIsActive()) {
+		if (domainSSODetails == null) {
 			setResponseCode(1);
 			String message = "Invalid SSO Access.";
 			resultStream = new ByteArrayInputStream(message.getBytes());
@@ -184,6 +196,12 @@ public class FacilioSSOAction extends FacilioAction {
 		this.downloadStream = new ByteArrayInputStream(xmlString.getBytes());
 
 		return SUCCESS;
+	}
+
+	public String downloadMetadata() throws Exception {
+		AccountSSO accountSSO = SSOUtil.generateDummyAccountSSOEntry();
+		setSsoToken(SSOUtil.base64EncodeUrlSafe(accountSSO.getOrgId()+"_"+accountSSO.getId()));
+		return metadata();
 	}
 	
 	public String metadata() throws Exception {
@@ -202,7 +220,7 @@ public class FacilioSSOAction extends FacilioAction {
 		AccountSSO sso = IAMOrgUtil.getAccountSSO(orgId);
 		
 		
-		if (sso == null || sso.getIsActive() == null || !sso.getIsActive()) {
+		if (sso == null) {
 			setResponseCode(1);
 			String message = "Invalid SSO Access.";
 			resultStream = new ByteArrayInputStream(message.getBytes());

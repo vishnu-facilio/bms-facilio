@@ -17,6 +17,8 @@ import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.xml.builder.XMLBuilder;
 
+import java.util.List;
+
 public class SSOUtil {
 	public static void main(String[] args) {
 		SSOUtil.getDomainSSOEndpoint("bm1kcC5mYXppbGlvLmNvbQ");
@@ -66,10 +68,45 @@ public class SSOUtil {
 		return FacilioProperties.getClientAppUrl();
 	}
 
+
 	public static String getSPMetadataURL(DomainSSO domainSSO) throws Exception {
 		var domainSSOKey = base64EncodeUrlSafe(domainSSO.getAppDomainId()+"_"+ domainSSO.getId());
 		AppDomain appDomain = IAMAppUtil.getAppDomain(domainSSO.getAppDomainId());
 		return getProtocol() + "://" + appDomain.getDomain() + "/dsso/metadata/" + domainSSOKey;
+	}
+
+	public static DomainSSO generateDummyDomainSSOEntry(String appDomainTypeStr) throws Exception {
+		var appDomainType = AppDomain.AppDomainType.getByServiceName(appDomainTypeStr);
+		List<AppDomain> appDomain = IAMAppUtil.getAppDomain(appDomainType, AccountUtil.getCurrentOrg().getOrgId());
+		DomainSSO domainSSO = IAMOrgUtil.getDomainSSODetails(appDomain.get(0).getDomain());
+		if (domainSSO == null) {
+			domainSSO = new DomainSSO();
+			domainSSO.setIsActive(false);
+			domainSSO.setName("SAML");
+			domainSSO.setAppDomainId(appDomain.get(0).getId());
+			domainSSO.setCreatedTime(System.currentTimeMillis());
+			domainSSO.setModifiedTime(System.currentTimeMillis());
+			domainSSO.setCreatedBy(AccountUtil.getCurrentUser().getId());
+			domainSSO.setModifiedBy(AccountUtil.getCurrentUser().getId());
+			IAMOrgUtil.addOrUpdateDomainSSO(domainSSO);
+		}
+		return domainSSO;
+	}
+
+	public static AccountSSO generateDummyAccountSSOEntry() throws Exception {
+		AccountSSO sso = IAMOrgUtil.getAccountSSO(AccountUtil.getCurrentOrg().getOrgId());
+		if (sso == null) {
+			sso = new AccountSSO();
+			sso.setIsActive(false);
+			sso.setName("SAML");
+			sso.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+			sso.setCreatedTime(System.currentTimeMillis());
+			sso.setModifiedTime(System.currentTimeMillis());
+			sso.setModifiedBy(AccountUtil.getCurrentUser().getId());
+			sso.setCreatedBy(AccountUtil.getCurrentUser().getId());
+			IAMOrgUtil.addOrUpdateAccountSSO(AccountUtil.getCurrentOrg().getOrgId(), sso);
+		}
+		return sso;
 	}
 	
 	public static String getSPMetadataURL(AccountSSO sso) {
