@@ -4973,6 +4973,8 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
+
+
 	public static FacilioChain getAddOrUpdateTabGroup() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddOrUpdateTabGroupCommand());
@@ -6280,6 +6282,19 @@ public class TransactionChainFactory {
 		c.addCommand(new AddOrUpdateScopingConfigCommand());
 		return c;
 	}
+
+	public static FacilioChain getDeleteScopingChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new DeleteScopingCommand());
+		return chain;
+	}
+
+	public static FacilioChain getCloneScopingChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new CloneScopingCommand());
+		return chain;
+	}
+
 
 
 }

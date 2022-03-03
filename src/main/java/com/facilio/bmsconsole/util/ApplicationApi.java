@@ -1514,12 +1514,20 @@ public class ApplicationApi {
     }
 
     public static void deleteScopingConfig(long scopingId) throws Exception {
-        new GenericDeleteRecordBuilder()
+        GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
                 .table(ModuleFactory.getScopingConfigModule().getTableName())
-                .andCondition(CriteriaAPI.getCondition("SCOPING_ID", "scopingId", String.valueOf(scopingId), NumberOperators.EQUALS))
-                .delete()
-
+                .andCondition(CriteriaAPI.getCondition("SCOPING_ID", "scopingId", String.valueOf(scopingId), NumberOperators.EQUALS));
+        int rows = builder.delete()
         ;
+    }
+
+    public static void deleteScoping(long scopingId) throws Exception {
+       GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+                .table(ModuleFactory.getScopingModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(scopingId), NumberOperators.EQUALS))
+                ;
+       int rows = builder.delete();
+
     }
 
     public static void addApplicationLayout(ApplicationLayoutContext layout) throws Exception {
