@@ -1,6 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -15,6 +18,9 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.workflows.util.WorkflowUtil;
+
+import java.util.List;
+import java.util.Map;
 
 public class DeleteFormulaCommand extends FacilioCommand {
 
@@ -35,7 +41,12 @@ public class DeleteFormulaCommand extends FacilioCommand {
 															.andCondition(CriteriaAPI.getIdCondition(id, module));
 			
 			deleteBuilder.delete();
-			
+			List<FacilioField> fieldList= FieldFactory.getReadingDataMetaFields();
+			Map<String,FacilioField> fieldMap= FieldFactory.getAsMap(fieldList);
+			deleteBuilder = new GenericDeleteRecordBuilder().table(ModuleFactory.getReadingDataMetaModule().getTableName())
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"),""+oldFormula.getReadingFieldId(),NumberOperators.EQUALS));
+			deleteBuilder.delete();
+
 			WorkflowUtil.deleteWorkflow(oldFormula.getWorkflowId());
 			if (oldFormula.getViolationRuleId() > 0) {
 				WorkflowRuleAPI.deleteWorkflowRule(oldFormula.getViolationRuleId());
