@@ -46,12 +46,20 @@ public class V3ItemContext extends V3Context {
         this.status = status;
     }
 
-    public CostType getCostType() {
-        return costType;
+    public Integer getCostType() {
+        if (costType != null) {
+            return costType.getIndex();
+        }
+        return -1;
     }
 
-    public void setCostType(CostType costType) {
-        this.costType = costType;
+    public void setCostType(Integer costType) {
+        if (costType != null) {
+            this.costType = CostType.valueOf(costType);
+        }
+    }
+    public CostType getCostTypeEnum() {
+        return costType;
     }
 
     public Unit getIssuingUnitEnum() {
