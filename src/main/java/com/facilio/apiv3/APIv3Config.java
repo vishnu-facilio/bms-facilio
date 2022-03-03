@@ -976,6 +976,7 @@ public class APIv3Config {
                   .beforeFetch(new LoadAudienceLookupCommandV3())
                   .afterFetch(new FillAudienceSharingInfoCommandV3())
                 .summary()
+                .beforeFetch(new LoadAudienceLookupCommandV3())
                 .afterFetch(new FillAudienceSharingInfoCommandV3())
                 .delete()
                 .build();
