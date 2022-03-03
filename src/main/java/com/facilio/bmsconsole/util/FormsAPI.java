@@ -933,13 +933,7 @@ public class FormsAPI {
 		List<FormField> fields = new ArrayList<>();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		if (form.getModule().isCustom()) {
-			FacilioField photoField = modBean.getField("photo", form.getModule().getName());
-			fields.add(getFormFieldFromFacilioField(photoField, 1));
-			FacilioField nameField = modBean.getField("name", form.getModule().getName());
-			fields.add(getFormFieldFromFacilioField(nameField, 1));
-			fields.add(FormFactory.getSiteField());
-			FormField attField = new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "cmdattachments", 1, 1);
-			fields.add(attField);
+			addUnusedCustomModuleSystemFields(form, fields);
 		}
 		else if (form.getModule().getName() != null) {
 			switch (form.getModule().getName()) {
@@ -1006,19 +1000,34 @@ public class FormsAPI {
 		
 	}
 	
-	private static void addUnusedPortalSystemFields(FacilioForm form, List<FormField> defaultFields) {
+	private static void addUnusedPortalSystemFields(FacilioForm form, List<FormField> defaultFields) throws Exception{
 		List<FormField> fields = new ArrayList<>();
-		switch (form.getModule().getName()) {
-			case ContextNames.WORK_ORDER:
-				fields.addAll(FormFactory.getWoClassifierFields());
-				fields.add(FormFactory.getWoResourceField());
-				fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL, 10, 1));
-				break;
-			// DO NOT add any more modules here
+		if (form.getModule().isCustom()) {
+			addUnusedCustomModuleSystemFields(form, fields);
+		}
+		else if (form.getModule().getName() != null) {
+			switch (form.getModule().getName()) {
+				case ContextNames.WORK_ORDER:
+					fields.addAll(FormFactory.getWoClassifierFields());
+					fields.add(FormFactory.getWoResourceField());
+					fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL, 10, 1));
+					break;
+				// DO NOT add any more modules here
+			}
 		}
 		
-		
 		addToDefaultFields(form.getFields(), defaultFields, fields);
+	}
+
+	private static void addUnusedCustomModuleSystemFields(FacilioForm form, List<FormField> fields) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioField photoField = modBean.getField("photo", form.getModule().getName());
+		fields.add(getFormFieldFromFacilioField(photoField, 1));
+		FacilioField nameField = modBean.getField("name", form.getModule().getName());
+		fields.add(getFormFieldFromFacilioField(nameField, 1));
+		fields.add(FormFactory.getSiteField());
+		FormField attField = new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "cmdattachments", 1, 1);
+		fields.add(attField);
 	}
 	
 	private static void addToDefaultFields(List<FormField> existingFields, List<FormField> defaultFields, List<FormField> newFields) {
