@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.asset.*;
+import com.facilio.bmsconsoleV3.commands.assetCategory.AssetCategoryChainV3;
 import com.facilio.bmsconsoleV3.commands.budget.*;
 import com.facilio.bmsconsoleV3.commands.building.AddOrUpdateBuildingLocation;
 import com.facilio.bmsconsoleV3.commands.building.BuildingFillLookupFieldsCommand;
@@ -98,6 +99,7 @@ import com.facilio.bmsconsoleV3.commands.watchlist.GetLogsForWatchListCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.LoadWorkorderLookupsAfterFetchcommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.*;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.budget.AccountTypeContext;
 import com.facilio.bmsconsoleV3.context.budget.BudgetContext;
@@ -300,7 +302,7 @@ public class APIv3Config {
                 .afterSave(TransactionChainFactoryV3.getUpdateControlGroupRoutineChain())
                 .build();
     }
-    
+
     @Module(ControlScheduleUtil.CONTROL_GROUP_MODULE_NAME)
     public static Supplier<V3Config> getGroupCRUD() {
         return () -> new V3Config(ControlGroupContext.class, null)
@@ -334,7 +336,7 @@ public class APIv3Config {
                 .afterFetch(new ControlScheduleAfterFetchCommand())
                 .build();
     }
-    
+
     @Module(ControlScheduleUtil.CONTROL_SCHEDULE_UNPLANNED_SLOTS_MODULE_NAME)
     public static Supplier<V3Config> getControlSlotCRUD() {
         return () -> new V3Config(ControlScheduleSlot.class, null)
@@ -345,7 +347,7 @@ public class APIv3Config {
         		.afterDelete(TransactionChainFactoryV3.getUpdateOrDeleteControlGroupSlotAfterSaveChain())
                 .build();
     }
-    
+
     @Module(FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE)
     public static Supplier<V3Config> getControlCommandCRUD() {
         return () -> new V3Config(ControlActionCommandContext.class, null)
@@ -385,7 +387,7 @@ public class APIv3Config {
                                         groups will be added with new tax id
          */
     }
-    
+
     @Module("serviceRequest")
     public static Supplier<V3Config> getServiceRequest() {
         return () -> new V3Config(V3ServiceRequestContext.class, new ModuleCustomFieldCount50())
@@ -460,7 +462,7 @@ public class APIv3Config {
                     .afterFetch(new AddStoreRoomDetailsCommandV3())
                 .build();
     }
-    
+
     @Module("watchlist")
     public static Supplier<V3Config> getWatchList() {
         return () -> new V3Config(V3WatchListContext.class, null)
@@ -472,7 +474,7 @@ public class APIv3Config {
                     .afterFetch(new GetLogsForWatchListCommandV3())
                 .build();
     }
-    
+
     @Module("client")
     public static Supplier<V3Config> getClient() {
         return () -> new V3Config(V3ClientContext.class, new ModuleCustomFieldCount30())
@@ -488,7 +490,7 @@ public class APIv3Config {
                     .beforeFetch(new LoadClientLookupCommandV3())
                 .build();
     }
-    
+
     @Module("purchaserequest")
     public static Supplier<V3Config> getPurchaseRequest() {
         return () -> new V3Config(V3PurchaseRequestContext.class, new ModuleCustomFieldCount30())
@@ -658,7 +660,7 @@ public class APIv3Config {
                     .beforeFetch(ReadOnlyChainFactoryV3.getVisitorLogBeforeFetchOnSummaryChain())
                 .build();
     }
-    
+
     @Module("invitevisitor")
     public static Supplier<V3Config> getInviteVisitor() {
         return () -> new V3Config(InviteVisitorContextV3.class, null)
@@ -677,7 +679,7 @@ public class APIv3Config {
                 	.afterFetch(new ValidateBaseVisitDetailAndLogCommand())
                 .build();
     }
-    
+
     @Module("recurringinvitevisitor")
     public static Supplier<V3Config> getRecurringInviteVisitor() {
         return () -> new V3Config(RecurringInviteVisitorContextV3.class, null)
@@ -695,7 +697,7 @@ public class APIv3Config {
                     .afterFetch(new GetScheduleTriggerForRecurringInviteCommandV3())
                 .build();
     }
-    
+
     @Module("groupinvite")
     public static Supplier<V3Config> getGroupInviteVisitor() {
         return () -> new V3Config(GroupInviteContextV3.class, null)
@@ -708,7 +710,7 @@ public class APIv3Config {
                 	.afterFetch(new GetChildInvitesForGroupInviteCommand())
                 .build();
     }
-    
+
     @Module("basevisit")
     public static Supplier<V3Config> getBaseVisit() {
         return () -> new V3Config(BaseVisitContextV3.class, new ModuleCustomFieldCount30())
@@ -750,7 +752,7 @@ public class APIv3Config {
                   .beforeFetch(new LoadVisitorLookUpCommandV3())
                 .build();
     }
-    
+
     @Module("visitcustomresponse")
     public static Supplier<V3Config> getVisitResponse() {
         return () -> new V3Config(VisitResponseContextV3.class, null)
@@ -974,7 +976,7 @@ public class APIv3Config {
                   .beforeFetch(new LoadAudienceLookupCommandV3())
                   .afterFetch(new FillAudienceSharingInfoCommandV3())
                 .summary()
-                    .afterFetch(new FillAudienceSharingInfoCommandV3())
+                .afterFetch(new FillAudienceSharingInfoCommandV3())
                 .delete()
                 .build();
     }
@@ -1242,7 +1244,7 @@ public class APIv3Config {
 
                 .build();
     }
-    
+
     @Module("indoorfloorplan")
     public static Supplier<V3Config> getIndoorFloorPlan() {
         return () -> new V3Config(V3IndoorFloorPlanContext.class, new ModuleCustomFieldCount30())
@@ -1274,7 +1276,7 @@ public class APIv3Config {
                 .summary()
                 .build();
     }
-    
+
     @Module("desks")
     public static Supplier<V3Config> getDesk() {
         return () -> new V3Config(V3DeskContext.class, new ModuleCustomFieldCount30())
@@ -1297,7 +1299,7 @@ public class APIv3Config {
                 .summary()
                 .build();
     }
-    
+
     @Module("department")
     public static Supplier<V3Config> getDepartment() {
         return () -> new V3Config(V3DepartmentContext.class, new ModuleCustomFieldCount30())
@@ -1511,5 +1513,15 @@ public class APIv3Config {
                 .build();
     }
 
+    @Module("assetcategory")
+    public static Supplier<V3Config> getAssetCategory() {
+        return () -> new V3Config(V3AssetCategoryContext.class, null)
+                .create()
+                    .beforeSave(AssetCategoryChainV3.getAssetCategoryChain())
+                .list()
+                .update()
+                .delete()
+                .build();
+    }
 }
 

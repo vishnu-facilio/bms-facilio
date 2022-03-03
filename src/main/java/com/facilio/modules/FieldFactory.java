@@ -449,7 +449,9 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("ruleType", "RULE_TYPE", module, FieldType.NUMBER));
         fields.add(getField("triggerType", "TRIGGER_TYPE", module, FieldType.NUMBER));
         fields.add(getField("formId", "FORM_ID", module, FieldType.LOOKUP));
+        fields.add(getField("subFormId", "SUB_FORM_ID", module, FieldType.LOOKUP));
         fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.LOOKUP));
+        fields.add(getField("subFormCriteriaId", "SUB_FORM_CRITERIA_ID", module, FieldType.LOOKUP));
         fields.add(getField("type", "FORM_RULE_TYPE", module, FieldType.NUMBER));
         fields.add(getField("formOnLoadRuleType", "FORM_ON_LOAD_RULE_TYPE", module, FieldType.NUMBER));
         fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));

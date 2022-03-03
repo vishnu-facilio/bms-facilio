@@ -8,16 +8,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormActionType;
+import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormRuleActionContext;
 import com.facilio.bmsconsole.forms.FormRuleActionFieldsContext;
 import com.facilio.bmsconsole.forms.FormRuleContext;
 import com.facilio.bmsconsole.forms.FormRuleContext.TriggerType;
 import com.facilio.bmsconsole.forms.FormRuleTriggerFieldContext;
+import com.facilio.chain.FacilioContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -38,17 +42,25 @@ public class FormRuleAPI {
 	
 	
 	public static final String FORM_RULE_RESULT_JSON = "formRuleResultJSON";
+	public static final String SUB_FORM_RULE_RESULT_JSON = "subFormRuleResultJSON";
 	public static final String FORM_RULE_CONTEXT = "formRuleContext";
 	public static final String FORM_RULE_CONTEXTS = "formRuleContexts";
 	public static final String FORM_RULE_ACTION_CONTEXT = "formRuleActionContext";
 	
+	public static final String IS_SUB_FORM_TRIGGER_FIELD = "isSubFormTriggerField";
+	
 	public static final String FORM_RULE_TRIGGER_TYPE = "formRuleTriggerType";
 	
+	public static final String SUB_FORM_DATA_KEY = "relations";
+	public static final String SUB_FORM_DATA_ACTIONS_KEY = "actions";
+	
 	public static final String FORM_DATA = "formRuleFormData";
+	public static final String SUB_FORM_DATA = "formRuleSubFormData";
+	public static final String SUB_FORM_DATA_INDEX = "formRuleSubFormDataIndex";
 	
-	public static final String VALUE_FILLED_FIELD_IDS = "valueFiledFields";
+//	public static final String VALUE_FILLED_FIELD_IDS = "valueFiledFields";
 	
-	public static final String FORM_DATA_FOR_NEXT_ROUND = "formDataForNextRound";
+//	public static final String FORM_DATA_FOR_NEXT_ROUND = "formDataForNextRound";
 	
 	public static final String JSON_RESULT_FIELDID_STRING = "fieldId";
 	public static final String JSON_RESULT_SECTIONID_STRING = "sectionId";
@@ -170,12 +182,16 @@ public class FormRuleAPI {
 				FormRuleContext formRuleContext = FieldUtil.getAsBeanFromMap(prop, FormRuleContext.class);
 				formRuleContext.setActions(getFormRuleActionContext(formRuleContext.getId()));
 				FormRuleActionFieldsContext formRuleActionFieldContext = formRuleContext.getActions().get(0).getFormRuleActionFieldsContext().get(0);
+				
 				if (formRuleActionFieldContext.getCriteriaId() > 0) {
 					formRuleActionFieldContext.setCriteria(CriteriaAPI.getCriteria(formRuleActionFieldContext.getCriteriaId()));
 				}
 				
 				if(formRuleContext.getCriteriaId() > 0) {
 					formRuleContext.setCriteria(CriteriaAPI.getCriteria(formRuleContext.getCriteriaId()));
+				}
+				if(formRuleContext.getSubFormCriteriaId() > 0) {
+					formRuleContext.setSubFormCriteria(CriteriaAPI.getCriteria(formRuleContext.getSubFormCriteriaId()));
 				}
 				returnMap.put(formRuleActionFieldContext.getFormFieldId(), formRuleContext);
 
@@ -273,6 +289,10 @@ public class FormRuleAPI {
 				formRuleContext.setCriteria(CriteriaAPI.getCriteria(formRuleContext.getCriteriaId()));
 				
 			}
+			if(formRuleContext.getSubFormCriteriaId() > 0) {
+				
+				formRuleContext.setSubFormCriteria(CriteriaAPI.getCriteria(formRuleContext.getSubFormCriteriaId()));
+			}
 			return formRuleContext;
 		}
 		return null;
@@ -324,6 +344,36 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 		return formRuleContexts;
 	}
 	
+	public static List<FormRuleContext> getSubFormRuleContext(Long formId,Long subformId,TriggerType triggerType) throws Exception {
+		if(formId == null || formId <=0) {
+			throw new IllegalArgumentException("Form Cannot Be Null");
+		}
+		
+		List<Long> triggerValues = new ArrayList<>();
+		triggerValues.add((long) triggerType.getIntVal());
+
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormRuleFields());
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getFormRuleFields())
+				.table(ModuleFactory.getFormRuleModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("formId"), ""+formId, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("subFormId"), ""+subformId, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("triggerType"), StringUtils.join(triggerValues, ","), NumberOperators.EQUALS));
+		
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		List<FormRuleContext> formRuleContexts = new ArrayList<>();
+		if (props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop : props) {
+				FormRuleContext formRuleContext = FieldUtil.getAsBeanFromMap(prop, FormRuleContext.class);
+				formRuleContext.setActions(getFormRuleActionContext(formRuleContext.getId()));
+				formRuleContext.setSubFormContext(FormsAPI.getFormFromDB(formRuleContext.getSubFormId()));
+				formRuleContexts.add(formRuleContext);
+			}
+		}
+		return formRuleContexts;
+	}
+	
 	public static List<FormRuleContext> getFormRuleContext(Long formId,List<Long> formFieldId,TriggerType triggerType) throws Exception {
 		if(triggerType == TriggerType.FIELD_UPDATE && (formFieldId == null || formFieldId.isEmpty())) {
 			throw new IllegalArgumentException("Field Cannot Be Null for Action Type Field Update");
@@ -353,6 +403,9 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 			for(Map<String, Object> prop : props) {
 				FormRuleContext formRuleContext = FieldUtil.getAsBeanFromMap(prop, FormRuleContext.class);
 				formRuleContext.setFormContext(FormsAPI.getFormFromDB(formRuleContext.getFormId()));
+				if(formRuleContext.getSubFormId() > 0 ) {
+					formRuleContext.setSubFormContext(FormsAPI.getFormFromDB(formRuleContext.getSubFormId()));
+				}
 				formRuleContext.setActions(getFormRuleActionContext(formRuleContext.getId()));
 				formRuleContexts.add(formRuleContext);
 			}
@@ -487,5 +540,76 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 		Pattern pattern = Pattern.compile(FIELD_NAME_PLACE_HOLDER);
 		Matcher matcher = pattern.matcher(value);
 		return matcher.find();
+	}
+	
+//	public static void setDataForNextRoundInSubFormData(FacilioContext facilioContext,FormField field,Object value) {
+//		
+//		int index = (int) facilioContext.get(FormRuleAPI.SUB_FORM_DATA_INDEX);
+//		
+//		FormRuleActionContext formRuleActionContext = (FormRuleActionContext) facilioContext.get(FormRuleAPI.FORM_RULE_ACTION_CONTEXT);
+//		
+//		FacilioForm subForm = formRuleActionContext.getRuleContext().getSubFormContext();
+//		
+//		Map<String, Object> formDataToBeAddedforNextRound = (Map<String, Object>) facilioContext.get(FormRuleAPI.FORM_DATA_FOR_NEXT_ROUND);
+//		
+//		Map<String,Object> allSubformData = (Map<String, Object>) formDataToBeAddedforNextRound.getOrDefault(FormRuleAPI.SUB_FORM_DATA_KEY, new HashMap<String,Object>());
+//		
+//		List<Map<String,Object>> subFromDataList = (List<Map<String, Object>>) allSubformData.getOrDefault(subForm.getName(), new ArrayList<HashMap<String,Object>>());
+//		
+//		
+//		Map<String, Object> subFromData = null;
+//		if(subFromDataList.size()-1 >= index) {
+//			subFromDataList.get(index);
+//		}
+//		
+//		if(subFromData == null) {
+//			subFromData = new HashMap<String,Object>();
+//			subFromDataList.add(index, subFromData);
+//		}
+//			
+//		subFromData.put(field.getName(), value);
+//		
+//		subFromDataList.set(index, subFromData);
+//		allSubformData.put(subForm.getName(), subFromDataList);
+//		formDataToBeAddedforNextRound.put(FormRuleAPI.SUB_FORM_DATA_KEY, allSubformData);
+//		
+//	}
+
+	public static void AddResultJSONToRespectiveResultSet(FacilioContext facilioContext, JSONObject json) {
+		// TODO Auto-generated method stub
+		
+		FormRuleContext formRuleContext = (FormRuleContext) facilioContext.get(FormRuleAPI.FORM_RULE_CONTEXT);
+		
+		if(formRuleContext.getSubFormId() > 0) {
+			
+			JSONObject subFormRuleResultJSON = (JSONObject) facilioContext.get(FormRuleAPI.SUB_FORM_RULE_RESULT_JSON);
+			
+			if(!subFormRuleResultJSON.containsKey(formRuleContext.getSubFormContext().getName())) {
+				subFormRuleResultJSON.put(formRuleContext.getSubFormContext().getName(), new JSONArray());
+			}
+			
+			JSONArray subFromRecordObjectList = (JSONArray) subFormRuleResultJSON.get(formRuleContext.getSubFormContext().getName());
+			
+			int index = (int) facilioContext.get(FormRuleAPI.SUB_FORM_DATA_INDEX);
+			
+			if(subFromRecordObjectList.size()-1 < index) {
+				subFromRecordObjectList.add(new JSONObject());
+			}
+			
+			JSONObject subFormRecordObject = (JSONObject) subFromRecordObjectList.get(index);
+			
+			JSONArray actions = (JSONArray) subFormRecordObject.getOrDefault(SUB_FORM_DATA_ACTIONS_KEY, new JSONArray());
+			
+			if(json != null) {
+				actions.add(json);
+			}
+			
+			subFormRecordObject.put(SUB_FORM_DATA_ACTIONS_KEY, actions);
+		}
+		else {
+			JSONArray resultJson = (JSONArray) facilioContext.get(FormRuleAPI.FORM_RULE_RESULT_JSON);
+			resultJson.add(json);
+		}
+		
 	}
 }

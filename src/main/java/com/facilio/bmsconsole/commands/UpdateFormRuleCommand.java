@@ -19,7 +19,19 @@ public class UpdateFormRuleCommand extends FacilioCommand {
 		long oldCriteriaId = formRule.getCriteriaId();
 		long id = CriteriaAPI.addCriteria(formRule.getCriteria(), AccountUtil.getCurrentOrg().getId());
 		formRule.setCriteriaId(id);
+		
+		if(formRule.getSubFormCriteria() == null) {
+			if(formRule.getSubFormCriteriaId() > 0) {
+				formRule.setSubFormCriteriaId(-1l);
+			}
+		}
+		else {
+			long subFormCriteriaId = CriteriaAPI.addCriteria(formRule.getSubFormCriteria(), AccountUtil.getCurrentOrg().getId());
+			formRule.setSubFormCriteriaId(subFormCriteriaId);
+		}
+		
 		FormRuleAPI.updateFormRuleContext(formRule);
+		
 		CriteriaAPI.deleteCriteria(oldCriteriaId);
 		
 		if(formRule.getTriggerTypeEnum() == TriggerType.FIELD_UPDATE) {
