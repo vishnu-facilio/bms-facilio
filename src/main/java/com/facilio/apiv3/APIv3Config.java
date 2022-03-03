@@ -450,7 +450,7 @@ public class APIv3Config {
         }
     @Module("storeRoom")
     public static Supplier<V3Config> getStoreRoom() {
-        return () -> new V3Config(V3StoreRoomContext.class, null)
+        return () -> new V3Config(V3StoreRoomContext.class, new ModuleCustomFieldCount30())
                 .create()
                     .afterSave(new UpdateServingSitesinStoreRoomCommandV3())
                 .update()
