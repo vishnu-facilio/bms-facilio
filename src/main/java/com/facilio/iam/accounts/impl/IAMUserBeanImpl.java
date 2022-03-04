@@ -960,7 +960,19 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 
 		List<AccountSSO> accountSSODetails = IAMOrgUtil.getAccountSSO(orgIds);
+
+		boolean samlEnabled = false;
 		if (CollectionUtils.isNotEmpty(accountSSODetails)) {
+			for (AccountSSO ss: accountSSODetails) {
+				if (ss.getIsActive() != null && ss.getIsActive()) {
+					samlEnabled = true;
+					break;
+				}
+			}
+		}
+
+
+		if (samlEnabled) {
 			loginModes.add("SAML");
 			AccountSSO accountSSO = accountSSODetails.get(0);
 			orgId = accountSSO.getOrgId();

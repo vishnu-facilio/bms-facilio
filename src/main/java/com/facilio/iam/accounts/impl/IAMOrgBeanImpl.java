@@ -636,9 +636,7 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 
 	@Override
 	public boolean deleteDomainSSO(String domain) throws Exception {
-		var appDomainType = AppDomain.AppDomainType.getByServiceName(domain);
-		var appDomain = IAMAppUtil.getAppDomainForType(appDomainType.getIndex(), AccountUtil.getCurrentOrg().getOrgId()).get(0);
-		var domainSSODetails = IAMOrgUtil.getDomainSSODetails(appDomain.getDomain());
+		var domainSSODetails = IAMOrgUtil.getDomainSSODetails(domain);
 
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 				.table(IAMAccountConstants.getDomainSSOModule().getTableName());
