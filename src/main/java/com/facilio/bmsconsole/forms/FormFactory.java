@@ -1084,7 +1084,7 @@ public class FormFactory {
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		form.setFields(getMultiSiteWebPMFormFields());
-		form.setHideInList(true);
+		form.setHideInList(false);
 		return form;
 	}
 	
