@@ -22,4 +22,16 @@ public class QAndARuleTransactionChainFactory {
 
         return c;
     }
+
+	public static FacilioChain deleteQandARuleConditions() {
+
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new FetchPageAndQuestionsCommand());
+		c.addCommand(new DeserializeRulesCommand());
+		c.addCommand(new SplitRulesToAddOrUpdateRules());
+		c.addCommand(new DeleteQandARuleActions());
+		c.addCommand(new DeleteConditionsCommand());
+		
+		return c;
+	}
 }

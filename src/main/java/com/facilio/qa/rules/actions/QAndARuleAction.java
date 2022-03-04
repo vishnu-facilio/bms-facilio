@@ -94,4 +94,18 @@ public class QAndARuleAction extends V3Action {
 
         return SUCCESS;
     }
+	
+	public String deleteQandARuleConditions () throws Exception{
+		
+		this.type = QAndARuleType.WORKFLOW;
+		FacilioChain chain = QAndARuleTransactionChainFactory.deleteQandARuleConditions ();
+		FacilioContext context = chain.getContext();
+		context.put(Constants.Command.RULE_TYPE, type);
+		context.put(FacilioConstants.QAndA.Command.PAGE_ID, pageId);
+		context.put(Constants.Command.RULES, rules);
+
+		chain.execute();
+		
+		return SUCCESS;
+	}
 }
