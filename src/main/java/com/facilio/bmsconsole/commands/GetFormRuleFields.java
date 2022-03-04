@@ -23,10 +23,9 @@ public class GetFormRuleFields extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		Long formId = (Long) context.getOrDefault(FacilioConstants.ContextNames.FORM_ID, -1l);
 		FacilioForm form = (FacilioForm) context.get(FacilioConstants.ContextNames.FORM);
 		Boolean fetchFormRuleFields = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_FORM_RULE_FIELDS);
-		if (fetchFormRuleFields != null && fetchFormRuleFields && formId > 0) {
+		if (fetchFormRuleFields != null && fetchFormRuleFields && form != null && form.getId() > 0) {
 			List<FacilioField> fields = FieldFactory.getFormRuleFields();
 			
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -36,7 +35,7 @@ public class GetFormRuleFields extends FacilioCommand {
 					.table(ModuleFactory.getFormRuleModule().getTableName())
 					.innerJoin(ModuleFactory.getFormRuleTriggerFieldModule().getTableName())
 					.on(ModuleFactory.getFormRuleModule().getTableName()+".ID = "+ModuleFactory.getFormRuleTriggerFieldModule().getTableName()+".RULE_ID")
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("formId"), formId+"", NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("formId"), form.getId()+"", NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("triggerType"), TriggerType.FIELD_UPDATE.getIntVal()+"", NumberOperators.EQUALS))
 					;
 			
