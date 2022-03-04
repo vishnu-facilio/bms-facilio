@@ -374,7 +374,7 @@
         </action>
     </package>
 
-    <package name="qandaRulesAdd" namespace="/api/v3/qandarules/delete" extends="v3Api">
+    <package name="qandaRulesdelete" namespace="/api/v3/qandarules/delete" extends="v3Api">
         <action name="*" class="com.facilio.qa.rules.actions.QAndARuleAction"
                 method="deleteQandARuleConditions">
             <param name="pageId">{1}</param>
