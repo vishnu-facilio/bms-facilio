@@ -404,7 +404,6 @@ public class WorkflowUtil {
 			}
 			workflowContext.setParams(params);
 		}
-		
 		Map<String, Object> globalParameters = validateAndGetGlobalParameters(workflowContext,paramMap);
 		workflowContext.setGlobalParameters(globalParameters);
 		workflowContext.setCachedRDM(rdmCache);

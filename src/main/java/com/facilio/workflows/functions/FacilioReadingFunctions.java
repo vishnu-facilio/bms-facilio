@@ -12,13 +12,17 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.enums.SourceType;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DataUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
@@ -36,6 +40,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
@@ -498,8 +503,75 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 				throw new FunctionParamException("Required Object is null or empty");
 			}
 		}
-	}
-	
+	},
+	GET_READING_FIELD_FOR_ASSET_CATEGORY(10,"getAllReadingFieldsForAssetCategory") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			long categoryId;
+			if(objects[0] instanceof String) {
+				AssetCategoryContext category = AssetsAPI.getCategory(objects[0].toString());
+				categoryId = category.getId();
+			}
+			else {
+				categoryId = (long) Double.parseDouble(objects[0].toString());
+			}
+			
+			FacilioChain getCategoryReadingChain = FacilioChainFactory.getCategoryReadingsChain();
+			FacilioContext context = getCategoryReadingChain.getContext();
+			context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
+			context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
+			
+			getCategoryReadingChain.execute();
+			
+			List<FacilioModule> readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+			
+			Map<String,Long> fieldMap = new HashMap<>();
+			if (readings != null) {
+				for(FacilioModule reading :readings) {
+					for(FacilioField readingFields :reading.getFields()) {
+						fieldMap.put(readingFields.getName(), readingFields.getFieldId());
+					}
+				}
+			}
+			return fieldMap;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects == null || objects.length == 0) {
+				throw new FunctionParamException("Required Object is null or empty");
+			}
+		}
+	},
+	GET_READING_FIELD_FOR_SPACE_CATEGORY(11,"getAllReadingFieldsForSpaceCategory") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			SpaceType spaceType = BaseSpaceContext.SpaceType.getModuleMap().get(objects[0].toString());
+			
+			FacilioChain getSpaceTypeReading = FacilioChainFactory.getReadingsForSpaceTypeChain();
+			FacilioContext context = getSpaceTypeReading.getContext();
+			context.put(FacilioConstants.ContextNames.SPACE_TYPE_ENUM,spaceType);
+			getSpaceTypeReading.execute();
+			List<FacilioModule> readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+			
+			Map<String,Long> fieldMap = new HashMap<>();
+			if (readings != null) {
+				for(FacilioModule reading :readings) {
+					for(FacilioField readingField :reading.getFields()) {
+						fieldMap.put(readingField.getName(), readingField.getFieldId());
+					}
+				}
+			}
+			return fieldMap;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects == null || objects.length == 0) {
+				throw new FunctionParamException("Required Object is null or empty");
+			}
+		}
+	},
 	;
 	
 	private Integer value;

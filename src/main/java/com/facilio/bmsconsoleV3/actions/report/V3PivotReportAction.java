@@ -8,8 +8,8 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FieldUtil;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportPivotParamsContext;
-import com.facilio.report.context.ReportPivotTableDataContext;
-import com.facilio.report.context.ReportPivotTableRowsContext;
+import com.facilio.report.context.PivotDataColumnContext;
+import com.facilio.report.context.PivotRowColumnContext;
 import com.facilio.time.DateRange;
 import com.facilio.v3.V3Action;
 import com.facilio.v3.exception.ErrorCode;
@@ -24,7 +24,8 @@ import org.json.simple.parser.JSONParser;
 import java.util.ArrayList;
 import java.util.List;
 
-@Setter @Getter
+@Setter
+@Getter
 public class V3PivotReportAction extends V3Action {
 
     private long reportId = -1;
@@ -40,26 +41,26 @@ public class V3PivotReportAction extends V3Action {
     private long endTime = -1;
     private Boolean showTimelineFilter;
 
+    private List<PivotRowColumnContext> rows = new ArrayList<PivotRowColumnContext>();
+    private List<PivotDataColumnContext> pivotData = new ArrayList<PivotDataColumnContext>();
 
-
-    private List<ReportPivotTableRowsContext> rows = new ArrayList<ReportPivotTableRowsContext>();
-    private List<ReportPivotTableDataContext> pivotData = new ArrayList<ReportPivotTableDataContext>();
-
-    public void setRows(List<ReportPivotTableRowsContext> rows) {
+    public void setRows(List<PivotRowColumnContext> rows) {
         this.rows = rows;
     }
-    public List<ReportPivotTableRowsContext> getRows() {
+
+    public List<PivotRowColumnContext> getRows() {
         return rows;
     }
-    public List<ReportPivotTableDataContext> getPivotData() {
+
+    public List<PivotDataColumnContext> getPivotData() {
         return pivotData;
     }
-    public void setPivotData(List<ReportPivotTableDataContext> data) {
+
+    public void setPivotData(List<PivotDataColumnContext> data) {
         this.pivotData = data;
     }
 
-    private void setPivotReportContext(FacilioContext context)throws Exception
-    {
+    private void setPivotReportContext(FacilioContext context) throws Exception {
         context.put(FacilioConstants.Reports.ROWS, rows);
         context.put(FacilioConstants.Reports.DATA, pivotData);
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
@@ -73,8 +74,8 @@ public class V3PivotReportAction extends V3Action {
         context.put(FacilioConstants.ContextNames.END_TIME, endTime);
         context.put(FacilioConstants.ContextNames.TIME_FILTER, showTimelineFilter);
     }
-    private void setPivotParamsContext(ReportPivotParamsContext pivotparams) throws Exception
-    {
+
+    private void setPivotParamsContext(ReportPivotParamsContext pivotparams) throws Exception {
         pivotparams.setRows(rows);
         pivotparams.setData(pivotData);
         pivotparams.setModuleName(moduleName);
@@ -91,8 +92,7 @@ public class V3PivotReportAction extends V3Action {
         }
     }
 
-    public String create() throws Exception
-    {
+    public String create() throws Exception {
         validateData(1);
         if (reportContext == null) {
             reportContext = new ReportContext();
@@ -104,14 +104,14 @@ public class V3PivotReportAction extends V3Action {
         setPivotParamsContext(pivotparams);
         createOrUpdatePivotReport(chain, context, pivotparams);
         setMessage("Report Created Successfully");
-        String log_message= "Report {%s} has been created for {%s} Module.";
+        String log_message = "Report {%s} has been created for {%s} Module.";
         V3ReportAction reportAction = new V3ReportAction();
-        reportAction.setReportAuditLogs(reportContext.getModule().getDisplayName(), reportContext, log_message, AuditLogHandler.ActionType.ADD);
+        reportAction.setReportAuditLogs(reportContext.getModule().getDisplayName(), reportContext, log_message,
+                AuditLogHandler.ActionType.ADD);
         return SUCCESS;
     }
 
-    public String update() throws Exception
-    {
+    public String update() throws Exception {
         validateData(2);
         FacilioChain chain = TransactionChainFactoryV3.getCreateOrUpdatePivotReportChain();
         FacilioContext context = chain.getContext();
@@ -121,14 +121,15 @@ public class V3PivotReportAction extends V3Action {
         context.put(FacilioConstants.ContextNames.REPORT_ID, reportId);
         reportContext.setId(reportId);
         createOrUpdatePivotReport(chain, context, pivotparams);
-        String log_message= "Report {%s} has been created for {%s} Module.";
+        String log_message = "Report {%s} has been created for {%s} Module.";
         V3ReportAction reportAction = new V3ReportAction();
-        reportAction.setReportAuditLogs(reportContext.getModule().getDisplayName(), reportContext, log_message, AuditLogHandler.ActionType.UPDATE);
+        reportAction.setReportAuditLogs(reportContext.getModule().getDisplayName(), reportContext, log_message,
+                AuditLogHandler.ActionType.UPDATE);
         setMessage("Report Updated Successfully");
         return SUCCESS;
     }
-    private void setContextForExecute(FacilioContext context, ReportPivotParamsContext pivotparams)throws Exception
-    {
+
+    private void setContextForExecute(FacilioContext context, ReportPivotParamsContext pivotparams) throws Exception {
         context.put(FacilioConstants.ContextNames.REPORT, reportContext);
         context.put(FacilioConstants.ContextNames.MODULE_NAME, reportContext.getModule().getName());
         context.put(FacilioConstants.Reports.ROWS, pivotparams.getRows());
@@ -157,7 +158,8 @@ public class V3PivotReportAction extends V3Action {
         }
 
     }
-    private void setReportContextForExecute() throws Exception{
+
+    private void setReportContextForExecute() throws Exception {
 
         FacilioChain c = TransactionChainFactoryV3.getReportContextChain();
         FacilioContext context = c.getContext();
@@ -171,30 +173,32 @@ public class V3PivotReportAction extends V3Action {
             reportContext.setDateRange(new DateRange(startTime, endTime));
         }
     }
-    public String execute() throws Exception
-    {
-        if(reportId <=0){
+
+    public String execute() throws Exception {
+        if (reportId <= 0) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid ReportId.");
         }
         FacilioChain chain = TransactionChainFactoryV3.getExecutePivotReportChain(getFilters());
         FacilioContext context = chain.getContext();
         setReportContextForExecute();
         JSONParser parser = new JSONParser();
-        ReportPivotParamsContext pivotparams = FieldUtil.getAsBeanFromJson((JSONObject) parser.parse(reportContext.getTabularState()), ReportPivotParamsContext.class);
+        ReportPivotParamsContext pivotparams = FieldUtil.getAsBeanFromJson(
+                (JSONObject) parser.parse(reportContext.getTabularState()), ReportPivotParamsContext.class);
         setContextForExecute(context, pivotparams);
         chain.execute();
         setPivotReportResponse(context, pivotparams);
 
         return SUCCESS;
     }
-    private void setPivotReportResponse(FacilioContext context, ReportPivotParamsContext pivotparams)throws Exception
-    {
+
+    private void setPivotReportResponse(FacilioContext context, ReportPivotParamsContext pivotparams) throws Exception {
         setData("report", reportContext);
         setData(FacilioConstants.ContextNames.ROW_HEADERS, context.get(FacilioConstants.ContextNames.ROW_HEADERS));
         setData(FacilioConstants.ContextNames.DATA_HEADERS, context.get(FacilioConstants.ContextNames.DATA_HEADERS));
         setData(FacilioConstants.ContextNames.ROW_ALIAS, context.get(FacilioConstants.ContextNames.ROW_ALIAS));
         setData(FacilioConstants.ContextNames.DATA_ALIAS, context.get(FacilioConstants.ContextNames.DATA_ALIAS));
-        setData(FacilioConstants.ContextNames.PIVOT_TABLE_DATA, context.get(FacilioConstants.ContextNames.PIVOT_TABLE_DATA));
+        setData(FacilioConstants.ContextNames.PIVOT_TABLE_DATA,
+                context.get(FacilioConstants.ContextNames.PIVOT_TABLE_DATA));
         setData(FacilioConstants.ContextNames.SORTING, pivotparams.getSortBy());
         setData(FacilioConstants.ContextNames.CRITERIA, pivotparams.getCriteria());
         setData(FacilioConstants.ContextNames.PIVOT_TEMPLATE_JSON, pivotparams.getTemplateJSON());
@@ -210,21 +214,23 @@ public class V3PivotReportAction extends V3Action {
         setData(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD, context.get(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD));
         setData(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA, context.get(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA));
     }
-    private void createOrUpdatePivotReport(FacilioChain chain, FacilioContext context, ReportPivotParamsContext pivotparams)throws Exception
-    {
+
+    private void createOrUpdatePivotReport(FacilioChain chain, FacilioContext context,
+            ReportPivotParamsContext pivotparams) throws Exception {
         reportContext.setTabularState(FieldUtil.getAsJSON(pivotparams).toJSONString());
         reportContext.setType(ReportContext.ReportType.PIVOT_REPORT);
         context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 
         chain.execute();
 
-        setData("message",  "Report saved");
+        setData("message", "Report saved");
         setData("report", reportContext);
         setData(FacilioConstants.ContextNames.ROW_HEADERS, context.get(FacilioConstants.ContextNames.ROW_HEADERS));
         setData(FacilioConstants.ContextNames.DATA_HEADERS, context.get(FacilioConstants.ContextNames.DATA_HEADERS));
         setData(FacilioConstants.ContextNames.ROW_ALIAS, context.get(FacilioConstants.ContextNames.ROW_ALIAS));
         setData(FacilioConstants.ContextNames.DATA_ALIAS, context.get(FacilioConstants.ContextNames.DATA_ALIAS));
-        setData(FacilioConstants.ContextNames.PIVOT_TABLE_DATA, context.get(FacilioConstants.ContextNames.PIVOT_TABLE_DATA));
+        setData(FacilioConstants.ContextNames.PIVOT_TABLE_DATA,
+                context.get(FacilioConstants.ContextNames.PIVOT_TABLE_DATA));
     }
 
     public String exportReport()throws Exception
@@ -256,7 +262,7 @@ public class V3PivotReportAction extends V3Action {
         if (action_type == 2 && reportContext == null) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "ReportContext Data is mandatory.");
         }
-        if(StringUtils.isEmpty(moduleName)){
+        if (StringUtils.isEmpty(moduleName)) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "ModuleName is mandatory.");
         }
     }

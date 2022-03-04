@@ -5,8 +5,6 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;
 import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportPivotTableDataContext;
-import com.facilio.report.context.ReportPivotTableRowsContext;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
@@ -23,7 +21,8 @@ public class ExportPivotReport extends FacilioCommand {
             isS3Url = false;
         }
 
-        ReportContext report = (com.facilio.report.context.ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
+        ReportContext report = (com.facilio.report.context.ReportContext) context
+                .get(FacilioConstants.ContextNames.REPORT);
         FileInfo.FileFormat fileFormat = (FileInfo.FileFormat) context.get(FacilioConstants.ContextNames.FILE_FORMAT);
         String fileUrl = null;
         String fileName = "Report Data";
@@ -32,35 +31,39 @@ public class ExportPivotReport extends FacilioCommand {
         }
         fileName += " - " + DateTimeUtil.getFormattedTime(System.currentTimeMillis(), "dd-MM-yyyy HH-mm");
 
-        List<String> rowHeaders= (List<String>) context.get(FacilioConstants.ContextNames.ROW_HEADERS);
-        List<String>  columnHeaders = (List<String>) context.get(FacilioConstants.ContextNames.DATA_HEADERS);
+        List<String> rowHeaders = (List<String>) context.get(FacilioConstants.ContextNames.ROW_HEADERS);
+        List<String> columnHeaders = (List<String>) context.get(FacilioConstants.ContextNames.DATA_HEADERS);
+        List<String> formulaHeaders = (List<String>) context.get(FacilioConstants.ContextNames.FORMULA_HEADERS);
         JSONObject templateJson = (JSONObject) context.get(FacilioConstants.ContextNames.TEMPLATE_JSON);
-        LinkedHashMap<String,Object> JsonTable = (LinkedHashMap<String, Object>) templateJson.get("columnFormatting");
-        LinkedHashMap<String,String> aliasVsDisplayName = new LinkedHashMap<>();
+        LinkedHashMap<String, Object> JsonTable = (LinkedHashMap<String, Object>) templateJson.get("columnFormatting");
+        LinkedHashMap<String, String> aliasVsDisplayName = new LinkedHashMap<>();
 
         List<String> headers = new ArrayList<>();
-        Map<String, Object> pivotTable = (Map<String, Object>) context.get(FacilioConstants.ContextNames.PIVOT_TABLE_DATA);
-        List<Map<String,Object>> pivotRecords = (List<Map<String, Object>>) pivotTable.get("records");
+        Map<String, Object> pivotTable = (Map<String, Object>) context.get(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA);
+        List<Map<String, Object>> pivotRecords = (List<Map<String, Object>>) pivotTable.get("records");
         List<Map<String, Object>> records = new ArrayList<>();
 
-
-        for(String key : rowHeaders)
-        {
-            Map<String,Object> data = (Map<String, Object>) JsonTable.get(key);
+        for (String key : rowHeaders) {
+            Map<String, Object> data = (Map<String, Object>) JsonTable.get(key);
             headers.add((String) data.get("label"));
-            aliasVsDisplayName.put(key,(String) data.get("label"));
+            aliasVsDisplayName.put(key, (String) data.get("label"));
         }
-        for(String key : columnHeaders)
-        {
-            Map<String,Object> data = (Map<String, Object>) JsonTable.get(key);
+        for (String key : columnHeaders) {
+            Map<String, Object> data = (Map<String, Object>) JsonTable.get(key);
             headers.add((String) data.get("label"));
-            aliasVsDisplayName.put(key,(String) data.get("label"));
+            aliasVsDisplayName.put(key, (String) data.get("label"));
         }
 
-        for(Map<String,Object> record: pivotRecords){
+        for (String key : formulaHeaders) {
+            Map<String, Object> data = (Map<String, Object>) JsonTable.get(key);
+            headers.add((String) data.get("label"));
+            aliasVsDisplayName.put(key, (String) data.get("label"));
+        }
+
+        for (Map<String, Object> record : pivotRecords) {
             LinkedHashMap<String, Object> tempRecord = new LinkedHashMap<>();
-            for(String alias: aliasVsDisplayName.keySet()){
-                Map<String,Object> data = (Map<String, Object>) record.get(alias);
+            for (String alias : aliasVsDisplayName.keySet()) {
+                Map<String, Object> data = (Map<String, Object>) record.get(alias);
                 tempRecord.put(aliasVsDisplayName.get(alias), data.get("formattedValue"));
             }
             records.add(tempRecord);

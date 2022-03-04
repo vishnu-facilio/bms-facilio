@@ -93,7 +93,7 @@ public class AltayerVendorMappingValueGenerator extends ValueGenerator{
 
     @Override
     public String getValueGeneratorName() {
-        return "Altayer Vendors MApping";
+        return "Altayer Vendors Mapping";
     }
 
     @Override

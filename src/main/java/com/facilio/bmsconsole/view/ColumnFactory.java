@@ -216,6 +216,7 @@ public class ColumnFactory {
 		columnMap.put("site-default", getDefaultSiteViewColumns());
 		columnMap.put("building-default", getDefaultBuildingViewColumns());
 		columnMap.put("space-default", getDefaultSpaceViewColumns());
+		columnMap.put("basespace-default", getDefaultBaseSpaceViewColumns());
 		columnMap.put("floor-default", getDefaultFloorViewColumns());
 		columnMap.put("tenantunit-default",getDefaultTenantUnitSpaceColumns());
 		columnMap.put("tenantunit-details",getTenantUnitSpaceDetailsColumns());
@@ -1667,6 +1668,19 @@ public class ColumnFactory {
 		columns.add(new ViewField("name", "Space Name"));
 		columns.add(new ViewField("spaceCategory", "Category"));
 		columns.add(new ViewField("area", "Total Area"));
+
+		return columns;
+	}
+
+	private static List<ViewField> getDefaultBaseSpaceViewColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("spaceType", "Space Type"));
+		columns.add(new ViewField("area", "Area"));
+		columns.add(new ViewField("site", "Site"));
+		columns.add(new ViewField("building", "Building"));
+		columns.add(new ViewField("floor", "Floor"));
 
 		return columns;
 	}

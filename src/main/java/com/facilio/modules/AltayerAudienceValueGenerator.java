@@ -114,7 +114,7 @@ public class AltayerAudienceValueGenerator extends ValueGenerator{
 
     @Override
     public String getValueGeneratorName() {
-        return FacilioConstants.ContextNames.ValueGenerators.AUDIENCE;
+        return "Altayer Audience";
     }
 
     @Override

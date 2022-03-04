@@ -15,6 +15,10 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.sensor.SensorAlarmContext;
 import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
 
+import com.facilio.report.context.*;
+import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportFolderContext;
+import com.facilio.report.context.ReportUserFilterContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -66,25 +70,10 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.report.context.ReadingAnalysisContext;
 import com.facilio.report.context.ReadingAnalysisContext.AnalyticsType;
 import com.facilio.report.context.ReadingAnalysisContext.ReportFilterMode;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
-import com.facilio.report.context.ReportBaseLineContext;
-import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportContext.ReportType;
-import com.facilio.report.context.ReportDrilldownParamsContext;
-import com.facilio.report.context.ReportDrilldownPathContext;
-import com.facilio.report.context.ReportFactoryFields;
-import com.facilio.report.context.ReportFolderContext;
-import com.facilio.report.context.ReportPivotParamsContext;
-import com.facilio.report.context.ReportSettings;
-import com.facilio.report.context.ReportTemplateContext;
-import com.facilio.report.context.ReportUserFilterContext;
-import com.facilio.report.context.ReportYAxisContext;
-import com.facilio.report.context.WorkorderAnalysisContext;
-import com.facilio.report.context.ReportPivotTableRowsContext;
-import com.facilio.report.context.ReportPivotTableDataContext;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
@@ -94,7 +83,6 @@ import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.util.WorkflowUtil;
-
 
 public class V2ReportAction extends FacilioAction {
 
@@ -175,7 +163,8 @@ public class V2ReportAction extends FacilioAction {
 
     public String fetchReportFolders() throws Exception {
 
-        List<ReportFolderContext> reportFolders = ReportUtil.getAllReportFolder(moduleName, getIsWithReport(), null, isPivot);
+        List<ReportFolderContext> reportFolders = ReportUtil.getAllReportFolder(moduleName, getIsWithReport(), null,
+                isPivot);
         setResult("reportFolders", reportFolders);
         setResult("moduleName", moduleName);
         return SUCCESS;
@@ -196,7 +185,6 @@ public class V2ReportAction extends FacilioAction {
     }
 
     private String filters;
-
 
     public String getFilters() {
         return filters;
@@ -248,9 +236,10 @@ public class V2ReportAction extends FacilioAction {
     public String fetchReportWithData() throws Exception {
 
         FacilioContext context = new FacilioContext();
-        setReportWithDataContext(context); //This could be moved to a command
+        setReportWithDataContext(context); // This could be moved to a command
 
-        FacilioChain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReportDataChain() : ReadOnlyChainFactory.fetchReportDataChain();
+        FacilioChain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReportDataChain()
+                : ReadOnlyChainFactory.fetchReportDataChain();
         fetchReadingDataChain.execute(context);
 
         return setReportResult(context);
@@ -271,8 +260,10 @@ public class V2ReportAction extends FacilioAction {
 
         if (reportContext != null) {
             if (reportContext.getReportState() != null && !reportContext.getReportState().isEmpty()) {
-                if (reportContext.getReportState().containsKey(FacilioConstants.ContextNames.REPORT_GROUP_BY_TIME_AGGR)) {
-                    AggregateOperator groupByAggr = AggregateOperator.getAggregateOperator(((Long) reportContext.getReportState().get(FacilioConstants.ContextNames.REPORT_GROUP_BY_TIME_AGGR)).intValue());
+                if (reportContext.getReportState()
+                        .containsKey(FacilioConstants.ContextNames.REPORT_GROUP_BY_TIME_AGGR)) {
+                    AggregateOperator groupByAggr = AggregateOperator.getAggregateOperator(((Long) reportContext
+                            .getReportState().get(FacilioConstants.ContextNames.REPORT_GROUP_BY_TIME_AGGR)).intValue());
                     reportContext.setgroupByTimeAggr(groupByAggr);
                 }
             }
@@ -300,7 +291,8 @@ public class V2ReportAction extends FacilioAction {
             reportContext.addToReportState(FacilioConstants.ContextNames.HEATMAP_AGGR, hmAggr);
         }
         if (groupByTimeAggr != null) {
-            reportContext.addToReportState(FacilioConstants.ContextNames.REPORT_GROUP_BY_TIME_AGGR, groupByTimeAggr.getValue());
+            reportContext.addToReportState(FacilioConstants.ContextNames.REPORT_GROUP_BY_TIME_AGGR,
+                    groupByTimeAggr.getValue());
             reportContext.setgroupByTimeAggr(groupByTimeAggr);
         }
         if (scatterConfig != null) {
@@ -353,7 +345,6 @@ public class V2ReportAction extends FacilioAction {
         }
         return SUCCESS;
 
-
     }
 
     public String updateReportFolder() throws Exception {
@@ -395,9 +386,11 @@ public class V2ReportAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.START_TIME, startTime);
         context.put(FacilioConstants.ContextNames.END_TIME, endTime);
         context.put(FacilioConstants.ContextNames.REPORT_X_AGGR, xAggr);
-        context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, FieldUtil.getAsBeanListFromJsonArray(fieldArray, ReadingAnalysisContext.class));
+        context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS,
+                FieldUtil.getAsBeanListFromJsonArray(fieldArray, ReadingAnalysisContext.class));
         context.put(FacilioConstants.ContextNames.REPORT_MODE, mode);
-        context.put(FacilioConstants.ContextNames.BASE_LINE_LIST, FieldUtil.getAsBeanListFromJsonArray(baseLineList, ReportBaseLineContext.class));
+        context.put(FacilioConstants.ContextNames.BASE_LINE_LIST,
+                FieldUtil.getAsBeanListFromJsonArray(baseLineList, ReportBaseLineContext.class));
         context.put(FacilioConstants.ContextNames.REPORT_FILTER_MODE, filterMode);
         context.put(FacilioConstants.ContextNames.ASSET_CATEGORY, assetCategory);
         context.put(FacilioConstants.ContextNames.BASE_SPACE_LIST, spaceId);
@@ -447,7 +440,8 @@ public class V2ReportAction extends FacilioAction {
             setTemplate(reportContext.getReportTemplate());
         }
 
-        if (reportContext != null && regressionConfig != null && regressionConfig.size() != 0 && regressionType != null) {
+        if (reportContext != null && regressionConfig != null && regressionConfig.size() != 0
+                && regressionType != null) {
             JSONObject reportState;
             if (reportContext.getReportState() != null && !reportContext.getReportState().isEmpty()) {
                 reportState = reportContext.getReportState();
@@ -559,7 +553,6 @@ public class V2ReportAction extends FacilioAction {
 
     boolean isWithPrerequsite;
 
-
     public boolean isWithPrerequsite() {
         return isWithPrerequsite;
     }
@@ -624,7 +617,8 @@ public class V2ReportAction extends FacilioAction {
             int xAggrInt = params.get("xAggr") != null ? Integer.parseInt(params.get("xAggr").toString()) : 0;
             setxAggr(xAggrInt);
 
-            DateOperators dateOperator = (DateOperators) Operator.getOperator(Integer.parseInt(params.get("dateOperator").toString()));
+            DateOperators dateOperator = (DateOperators) Operator
+                    .getOperator(Integer.parseInt(params.get("dateOperator").toString()));
 
             ReportYAxisContext reportaxisContext = new ReportYAxisContext();
             reportaxisContext.setFieldId((Long) params.get("fieldId"));
@@ -659,7 +653,8 @@ public class V2ReportAction extends FacilioAction {
             context.put(FacilioConstants.ContextNames.ANALYTICS_TYPE, AnalyticsType.READINGS.getIntVal());
 
             newFormat = true;
-            FacilioChain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReadingReportChain();
+            FacilioChain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain()
+                    : ReadOnlyChainFactory.fetchReadingReportChain();
             fetchReadingDataChain.execute(context);
 
             return setReportResult(context);
@@ -682,9 +677,11 @@ public class V2ReportAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
         context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperator);
         context.put(FacilioConstants.ContextNames.REPORT_X_AGGR, xAggr);
-        context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, FieldUtil.getAsBeanListFromJsonArray(fieldArray, ReadingAnalysisContext.class));
+        context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS,
+                FieldUtil.getAsBeanListFromJsonArray(fieldArray, ReadingAnalysisContext.class));
         context.put(FacilioConstants.ContextNames.REPORT_MODE, mode);
-        context.put(FacilioConstants.ContextNames.BASE_LINE_LIST, FieldUtil.getAsBeanListFromJsonArray(baseLineList, ReportBaseLineContext.class));
+        context.put(FacilioConstants.ContextNames.BASE_LINE_LIST,
+                FieldUtil.getAsBeanListFromJsonArray(baseLineList, ReportBaseLineContext.class));
         context.put(FacilioConstants.ContextNames.CHART_STATE, chartState);
         context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
         context.put(FacilioConstants.ContextNames.REPORT, reportContext);
@@ -734,7 +731,8 @@ public class V2ReportAction extends FacilioAction {
         }
         setReadingsDataContext(context);
 
-        FacilioChain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReadingReportChain();
+        FacilioChain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain()
+                : ReadOnlyChainFactory.fetchReadingReportChain();
         fetchReadingDataChain.execute(context);
 
         return setReportResult(context);
@@ -758,7 +756,8 @@ public class V2ReportAction extends FacilioAction {
             context.put(FacilioConstants.ContextNames.REPORT_TEMPLATE, template);
         }
 
-        FacilioChain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReadingReportChain();
+        FacilioChain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain()
+                : ReadOnlyChainFactory.fetchReadingReportChain();
         fetchReadingDataChain.execute(context);
 
         return setReportResult(context);
@@ -959,19 +958,19 @@ public class V2ReportAction extends FacilioAction {
         this.scatterConfig = scatterConfig;
     }
 
-//	public String fetchReportDataFromPm() throws Exception{
-//		FacilioContext context = new FacilioContext();
-//		FacilioChain c = FacilioChain.getNonTransactionChain();
-//		if(pmId != -1) {
-//			context.put("pmId", pmId);
-//			context.put("resourceId", resourceId);
-//			c.addCommand(new ConstructReportDataForPM());
-//			c.addCommand(ReadOnlyChainFactory.constructAndFetchReportDataChain());
-//			c.execute(context);
-//		}
-//		return setReportResult(context);
-//		
-//	}
+    // public String fetchReportDataFromPm() throws Exception{
+    // FacilioContext context = new FacilioContext();
+    // FacilioChain c = FacilioChain.getNonTransactionChain();
+    // if(pmId != -1) {
+    // context.put("pmId", pmId);
+    // context.put("resourceId", resourceId);
+    // c.addCommand(new ConstructReportDataForPM());
+    // c.addCommand(ReadOnlyChainFactory.constructAndFetchReportDataChain());
+    // c.execute(context);
+    // }
+    // return setReportResult(context);
+    //
+    // }
 
     public String fetchReportData() throws Exception {
         FacilioChain c = FacilioChain.getNonTransactionChain();
@@ -1015,7 +1014,8 @@ public class V2ReportAction extends FacilioAction {
         context.put("user-filters", userFilters);
         context.put("chartState", chartState);
         context.put("having", having);
-        context.put(FacilioConstants.ContextNames.BASE_LINE_LIST, FieldUtil.getAsBeanListFromJsonArray(baseLineList, ReportBaseLineContext.class));
+        context.put(FacilioConstants.ContextNames.BASE_LINE_LIST,
+                FieldUtil.getAsBeanListFromJsonArray(baseLineList, ReportBaseLineContext.class));
 
         context.put(FacilioConstants.Reports.MODULE_TYPE, moduleType);
 
@@ -1050,7 +1050,8 @@ public class V2ReportAction extends FacilioAction {
             } else {
                 reportState = new JSONObject();
             }
-            reportState.put(FacilioConstants.ContextNames.ALLOW_FUTURE_DATA, (Boolean) dateField.get(FacilioConstants.ContextNames.ALLOW_FUTURE_DATA));
+            reportState.put(FacilioConstants.ContextNames.ALLOW_FUTURE_DATA,
+                    (Boolean) dateField.get(FacilioConstants.ContextNames.ALLOW_FUTURE_DATA));
             reportContext.setReportState(reportState);
         }
         context.put(FacilioConstants.ContextNames.REPORT, reportContext);
@@ -1292,23 +1293,24 @@ public class V2ReportAction extends FacilioAction {
         AlarmOccurrenceContext alarmOccurrence = NewAlarmAPI.getAlarmOccurrence(alarmId);
 
         List<ReadingRuleContext> readingRules = new ArrayList<>();
-        if (isWithPrerequsite) {                            // new 1st
+        if (isWithPrerequsite) { // new 1st
             ReadingAlarm readingAlarmContext = (ReadingAlarm) alarmOccurrence.getAlarm();
-            AlarmRuleContext alarmRuleContext = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(readingAlarmContext.getRule().getId()));
+            AlarmRuleContext alarmRuleContext = new AlarmRuleContext(
+                    ReadingRuleAPI.getReadingRulesList(readingAlarmContext.getRule().getId()));
             readingRules.add(alarmRuleContext.getAlarmTriggerRule());
             readingRules.add(alarmRuleContext.getPreRequsite());
-        } else if (readingRuleId > 0) {                    // new 2nd
+        } else if (readingRuleId > 0) { // new 2nd
             ReadingRuleContext readingruleContext = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(readingRuleId);
             readingRules.add(readingruleContext);
-        } else {                                            // old
+        } else { // old
             long ruleId = -1;
 
             if (alarmOccurrence.getAlarm() instanceof ReadingAlarm) {
                 ruleId = ((ReadingAlarm) alarmOccurrence.getAlarm()).getRule().getId();
             }
-//			else if (alarm instanceof MLAlarmContext) {
-//			ruleId = ((MLAlarmContext)alarm).getRuleId();
-//		}
+            // else if (alarm instanceof MLAlarmContext) {
+            // ruleId = ((MLAlarmContext)alarm).getRuleId();
+            // }
             else if (alarmOccurrence.getAlarm() instanceof MLAnomalyAlarm) {
                 MLAnomalyAlarm mlAnomalyAlarm = (MLAnomalyAlarm) alarmOccurrence.getAlarm();
             } else if (alarmOccurrence.getAlarm() instanceof OperationAlarmContext) {
@@ -1320,7 +1322,7 @@ public class V2ReportAction extends FacilioAction {
                 ReadingRuleContext readingruleContext = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId);
                 readingRules.add(readingruleContext);
             } else {
-//				isAnomalyAlarm = true;
+                // isAnomalyAlarm = true;
             }
         }
 
@@ -1330,7 +1332,6 @@ public class V2ReportAction extends FacilioAction {
         alarmType = alarmOccurrence.getAlarm().getType();
         JSONArray dataPoints = new JSONArray();
         if (readingRules != null && !readingRules.isEmpty() && readingRules.get(0) != null) {
-
 
             Set readingMap = new HashSet();
             for (ReadingRuleContext readingRule : readingRules) {
@@ -1368,7 +1369,6 @@ public class V2ReportAction extends FacilioAction {
             }
             ReportUtil.setAliasForDataPoints(dataPoints, baselineId);
         }
-
 
         if (this.startTime <= 0 && this.endTime <= 0) {
             long modifiedTime = alarmOccurrence.getCreatedTime();
@@ -1416,18 +1416,19 @@ public class V2ReportAction extends FacilioAction {
 
         List<ReadingRuleContext> readingRules = new ArrayList<>();
         boolean isAnomalyAlarm = false;
-        if (isWithPrerequsite) {                            // new 1st
+        if (isWithPrerequsite) { // new 1st
 
             ReadingAlarmContext readingAlarmContext = (ReadingAlarmContext) alarmContext;
-            AlarmRuleContext alarmRuleContext = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(readingAlarmContext.getRuleId()));
+            AlarmRuleContext alarmRuleContext = new AlarmRuleContext(
+                    ReadingRuleAPI.getReadingRulesList(readingAlarmContext.getRuleId()));
             readingRules.add(alarmRuleContext.getAlarmTriggerRule());
             readingRules.add(alarmRuleContext.getPreRequsite());
 
-        } else if (readingRuleId > 0) {                    // new 2nd
+        } else if (readingRuleId > 0) { // new 2nd
 
             ReadingRuleContext readingruleContext = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(readingRuleId);
             readingRules.add(readingruleContext);
-        } else {                                            // old
+        } else { // old
             long ruleId = -1;
 
             if (alarmContext instanceof ReadingAlarmContext) {
@@ -1484,12 +1485,14 @@ public class V2ReportAction extends FacilioAction {
 
         }
         String additionalDataPointString = "anomalyreadings";
-        if (alarmContext != null && alarmContext.getAdditionInfo() != null && alarmContext.getAdditionInfo().containsKey(additionalDataPointString)) {
+        if (alarmContext != null && alarmContext.getAdditionInfo() != null
+                && alarmContext.getAdditionInfo().containsKey(additionalDataPointString)) {
 
-            this.startTime = DateTimeUtil.getDayStartTimeOf(alarmContext.getCreatedTime());        // specific handling for
-            dataPoints = new JSONArray();                                                        // anomaly alarms
+            this.startTime = DateTimeUtil.getDayStartTimeOf(alarmContext.getCreatedTime()); // specific handling for
+            dataPoints = new JSONArray(); // anomaly alarms
 
-            JSONArray points = FacilioUtil.parseJsonArray(alarmContext.getAdditionInfo().get(additionalDataPointString).toString());
+            JSONArray points = FacilioUtil
+                    .parseJsonArray(alarmContext.getAdditionInfo().get(additionalDataPointString).toString());
 
             for (int i = 0; i < points.size(); i++) {
                 long fieldId = Long.parseLong(points.get(i).toString());
@@ -1521,7 +1524,6 @@ public class V2ReportAction extends FacilioAction {
             ReportUtil.setAliasForDataPoints(dataPoints, baselineId);
         }
 
-
         if (this.startTime <= 0 && this.endTime <= 0) {
             long modifiedTime = alarmContext.getCreatedTime();
             if (alarmContext.getModifiedTime() > 0) {
@@ -1538,7 +1540,8 @@ public class V2ReportAction extends FacilioAction {
         fields = dataPoints.toJSONString();
     }
 
-    private JSONArray getDataPointsJSONFromRule(ReadingRuleContext readingruleContext, ResourceContext resource, AlarmOccurrenceContext alarm, Set readingMap) throws Exception {
+    private JSONArray getDataPointsJSONFromRule(ReadingRuleContext readingruleContext, ResourceContext resource,
+            AlarmOccurrenceContext alarm, Set readingMap) throws Exception {
         JSONArray dataPoints = new JSONArray();
         ResourceContext currentResource = resource;
 
@@ -1567,7 +1570,6 @@ public class V2ReportAction extends FacilioAction {
 
         if (readingruleContext.getThresholdType() == ReadingRuleContext.ThresholdType.ADVANCED.getValue()) {
 
-
             if (readingruleContext.getWorkflowId() > 0) {
 
                 WorkflowContext workflow = new WorkflowContext();
@@ -1587,11 +1589,13 @@ public class V2ReportAction extends FacilioAction {
                     workflowContext = FieldUtil.getAsBeanFromMap(prop, WorkflowContext.class);
                     if (workflowContext.isV2Script()) {
                         if (workflowContext.getWorkflowUIMode() == WorkflowContext.WorkflowUIMode.XML.getValue()) {
-                            workflowContext = WorkflowUtil.getWorkflowContextFromString(workflowContext.getWorkflowString(), workflowContext);
+                            workflowContext = WorkflowUtil
+                                    .getWorkflowContextFromString(workflowContext.getWorkflowString(), workflowContext);
                             if (isWithExpParsed) {
                                 WorkflowUtil.parseExpression(workflowContext);
                             }
-                        } else if (workflowContext.getWorkflowUIMode() == WorkflowContext.WorkflowUIMode.GUI.getValue()) {
+                        } else if (workflowContext.getWorkflowUIMode() == WorkflowContext.WorkflowUIMode.GUI
+                                .getValue()) {
                             workflowContext.parseScript();
                         }
                         workflow = workflowContext;
@@ -1631,7 +1635,8 @@ public class V2ReportAction extends FacilioAction {
                                 Condition condition = conditions.get(key);
 
                                 if (condition.getFieldName().equals("parentId")) {
-                                    resource = condition.getValue().equals("${resourceId}") ? currentResource : ResourceAPI.getResource(Long.parseLong(condition.getValue()));
+                                    resource = condition.getValue().equals("${resourceId}") ? currentResource
+                                            : ResourceAPI.getResource(Long.parseLong(condition.getValue()));
 
                                     dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
 
@@ -1647,7 +1652,8 @@ public class V2ReportAction extends FacilioAction {
                     }
                 }
             }
-        } else if (readingruleContext.getReadingFieldId() > 0 && (readingruleContext.getWorkflow() != null || readingruleContext.getCriteria() != null)) {
+        } else if (readingruleContext.getReadingFieldId() > 0
+                && (readingruleContext.getWorkflow() != null || readingruleContext.getCriteria() != null)) {
             JSONObject dataPoint = new JSONObject();
 
             dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
@@ -1665,7 +1671,8 @@ public class V2ReportAction extends FacilioAction {
         return dataPoints;
     }
 
-    private JSONArray getDataPointsJSONForMLAnomalyAlarm(MLAnomalyAlarm mlAlarm, ResourceContext resource) throws Exception {
+    private JSONArray getDataPointsJSONForMLAnomalyAlarm(MLAnomalyAlarm mlAlarm, ResourceContext resource)
+            throws Exception {
         JSONArray dataPoints = new JSONArray();
         JSONObject dataPoint = new JSONObject();
 
@@ -1698,7 +1705,8 @@ public class V2ReportAction extends FacilioAction {
 
     }
 
-    private JSONArray getDataPointsJSONForOpAlarm(OperationAlarmContext opAlarm, ResourceContext resource) throws Exception {
+    private JSONArray getDataPointsJSONForOpAlarm(OperationAlarmContext opAlarm, ResourceContext resource)
+            throws Exception {
         JSONArray dataPoints = new JSONArray();
         JSONObject dataPoint = new JSONObject();
 
@@ -1717,7 +1725,8 @@ public class V2ReportAction extends FacilioAction {
 
     }
 
-    private Collection getDataPointsJSONForSensorAlarm(SensorRollUpAlarmContext sensorAlarm, ResourceContext resource) throws Exception {
+    private Collection getDataPointsJSONForSensorAlarm(SensorRollUpAlarmContext sensorAlarm, ResourceContext resource)
+            throws Exception {
         JSONArray dataPoints = new JSONArray();
 
         List<SensorAlarmContext> sensorAlarms = AlarmAPI.getSensorChildAlarms(sensorAlarm, startTime, endTime);
@@ -1766,7 +1775,8 @@ public class V2ReportAction extends FacilioAction {
         return dataPoints;
     }
 
-    private JSONArray getDataPointsJSONFromRule(ReadingRuleContext readingruleContext, ResourceContext resource, AlarmContext alarmContext) throws Exception {
+    private JSONArray getDataPointsJSONFromRule(ReadingRuleContext readingruleContext, ResourceContext resource,
+            AlarmContext alarmContext) throws Exception {
 
         JSONArray dataPoints = new JSONArray();
         if (readingruleContext.getReadingRuleTypeEnum() == ReadingRuleType.ML_RULE) {
@@ -1964,13 +1974,11 @@ public class V2ReportAction extends FacilioAction {
             zdt = zdt.truncatedTo(new SecondsChronoUnit(24 * 60 * 60));
             this.endTime = DateTimeUtil.getMillis(zdt, true);
 
-
             LOGGER.error("dataPoints -- " + dataPoints);
             LOGGER.error("startTime -- " + startTime);
             LOGGER.error("startTime -- " + this.endTime);
             return dataPoints;
         }
-
 
         ResourceContext currentResource = resource;
         if (readingruleContext.getThresholdType() == ReadingRuleContext.ThresholdType.ADVANCED.getValue()) {
@@ -2010,7 +2018,8 @@ public class V2ReportAction extends FacilioAction {
                                 Condition condition = conditions.get(key);
 
                                 if (condition.getFieldName().equals("parentId")) {
-                                    resource = condition.getValue().equals("${resourceId}") ? currentResource : ResourceAPI.getResource(Long.parseLong(condition.getValue()));
+                                    resource = condition.getValue().equals("${resourceId}") ? currentResource
+                                            : ResourceAPI.getResource(Long.parseLong(condition.getValue()));
 
                                     dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
 
@@ -2026,7 +2035,8 @@ public class V2ReportAction extends FacilioAction {
                     }
                 }
             }
-        } else if (readingruleContext.getReadingFieldId() > 0 && (readingruleContext.getWorkflow() != null || readingruleContext.getCriteria() != null)) {
+        } else if (readingruleContext.getReadingFieldId() > 0
+                && (readingruleContext.getWorkflow() != null || readingruleContext.getCriteria() != null)) {
             JSONObject dataPoint = new JSONObject();
 
             dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
@@ -2088,8 +2098,10 @@ public class V2ReportAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.START_TIME, startTime);
         context.put(FacilioConstants.ContextNames.END_TIME, endTime);
         context.put(FacilioConstants.ContextNames.REPORT_X_AGGR, xAggr);
-        context.put(FacilioConstants.ContextNames.REPORT_FIELDS, FieldUtil.getAsBeanListFromJsonArray(fieldArray, WorkorderAnalysisContext.class));
-        context.put(FacilioConstants.ContextNames.BASE_LINE_LIST, FieldUtil.getAsBeanListFromJsonArray(baseLineList, ReportBaseLineContext.class));
+        context.put(FacilioConstants.ContextNames.REPORT_FIELDS,
+                FieldUtil.getAsBeanListFromJsonArray(fieldArray, WorkorderAnalysisContext.class));
+        context.put(FacilioConstants.ContextNames.BASE_LINE_LIST,
+                FieldUtil.getAsBeanListFromJsonArray(baseLineList, ReportBaseLineContext.class));
 
         FacilioChain fetchReadingDataChain = ReadOnlyChainFactory.fetchWorkorderReportChain();
         fetchReadingDataChain.execute(context);
@@ -2107,12 +2119,15 @@ public class V2ReportAction extends FacilioAction {
             }
             setResult("report", reportContext);
         }
-        setResult("reportXValues", context.get(FacilioConstants.ContextNames.REPORT_X_VALUES)); //This can be removed from new format
+        setResult("reportXValues", context.get(FacilioConstants.ContextNames.REPORT_X_VALUES)); // This can be removed
+                                                                                                // from new format
         setResult("reportData", context.get(FacilioConstants.ContextNames.REPORT_DATA));
         setResult("reportVarianceData", context.get(FacilioConstants.ContextNames.REPORT_VARIANCE_DATA));
-//		setResult("reportAlarms", context.get(FacilioConstants.ContextNames.REPORT_ALARMS));
+        // setResult("reportAlarms",
+        // context.get(FacilioConstants.ContextNames.REPORT_ALARMS));
         setResult("safeLimits", context.get(FacilioConstants.ContextNames.REPORT_SAFE_LIMIT));
-        setResult(FacilioConstants.ContextNames.REPORT_ALARM_CONTEXT, context.get(FacilioConstants.ContextNames.REPORT_ALARM_CONTEXT));
+        setResult(FacilioConstants.ContextNames.REPORT_ALARM_CONTEXT,
+                context.get(FacilioConstants.ContextNames.REPORT_ALARM_CONTEXT));
 
         FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
         if (module != null) {
@@ -2258,7 +2273,6 @@ public class V2ReportAction extends FacilioAction {
         this.dateOperatorValue = dateOperatorValue;
     }
 
-
     private FileFormat fileFormat;
 
     public int getFileFormat() {
@@ -2272,7 +2286,7 @@ public class V2ReportAction extends FacilioAction {
         this.fileFormat = FileFormat.getFileFormat(fileFormat);
     }
 
-    private String chartType;    // Temp
+    private String chartType; // Temp
 
     public String getChartType() {
         return chartType;
@@ -2344,25 +2358,22 @@ public class V2ReportAction extends FacilioAction {
         return SUCCESS;
     }
 
-
     public String exportModuleReport() throws Exception {
         FacilioChain exportChain = null;
         FacilioContext context;
-
 
         if (reportId != -1) {
             boolean fetchData = fileFormat != FileFormat.IMAGE && fileFormat != FileFormat.PDF;
             exportChain = TransactionChainFactory.getExportModuleReportFileChain(fetchData);
             context = exportChain.getContext();
             context.put(FacilioConstants.ContextNames.FILTERS, getFilters());
-            //pass filterJsonString as is, will be set in summary url in export command
+            // pass filterJsonString as is, will be set in summary url in export command
             getReport(context);
         } else {
             exportChain = TransactionChainFactory.getExportModuleAnalyticsFileChain();
             context = exportChain.getContext();
             updateContext(context);
         }
-
 
         setExportParamsInContext(context);
 
@@ -2437,7 +2448,7 @@ public class V2ReportAction extends FacilioAction {
 
     private void setExportParamsInContext(FacilioContext context) {
         context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
-        context.put("chartType", chartType);    // Temp
+        context.put("chartType", chartType); // Temp
         context.put("exportParams", exportParams);
         context.put("renderParams", renderParams);
     }
@@ -2509,7 +2520,8 @@ public class V2ReportAction extends FacilioAction {
 
     public String searchReportAndFolders() throws Exception {
 
-        List<ReportFolderContext> reportFolders = ReportUtil.getAllReportFolder(moduleName, false, getSearch(), isPivot);
+        List<ReportFolderContext> reportFolders = ReportUtil.getAllReportFolder(moduleName, false, getSearch(),
+                isPivot);
         List<ReportContext> reports = ReportUtil.getReports(moduleName, getSearch());
         setResult("reportFolders", reportFolders);
         setResult("reports", reports);
@@ -2526,24 +2538,34 @@ public class V2ReportAction extends FacilioAction {
         this.ids = ids;
     }
 
-    private List<ReportPivotTableRowsContext> rows = new ArrayList<ReportPivotTableRowsContext>();
+    private List<PivotRowColumnContext> rows = new ArrayList<PivotRowColumnContext>();
 
-    public List<ReportPivotTableRowsContext> getRows() {
+    public List<PivotRowColumnContext> getRows() {
         return rows;
     }
 
-    public void setRows(List<ReportPivotTableRowsContext> rows) {
+    public void setRows(List<PivotRowColumnContext> rows) {
         this.rows = rows;
     }
 
-    private List<ReportPivotTableDataContext> data = new ArrayList<ReportPivotTableDataContext>();
+    private List<PivotDataColumnContext> data = new ArrayList<PivotDataColumnContext>();
 
-    public List<ReportPivotTableDataContext> getData() {
+    public List<PivotDataColumnContext> getData() {
         return data;
     }
 
-    public void setData(List<ReportPivotTableDataContext> data) {
+    public void setData(List<PivotDataColumnContext> data) {
         this.data = data;
+    }
+
+    public List<PivotFormulaColumnContext> formula = new ArrayList<>();
+
+    public List<PivotFormulaColumnContext> getFormula() {
+        return formula;
+    }
+
+    public void setFormula(List<PivotFormulaColumnContext> formula) {
+        this.formula = formula;
     }
 
     private JSONObject sortBy;
@@ -2571,6 +2593,7 @@ public class V2ReportAction extends FacilioAction {
         FacilioContext context = c.getContext();
         context.put(FacilioConstants.Reports.ROWS, rows);
         context.put(FacilioConstants.Reports.DATA, data);
+        context.put(FacilioConstants.ContextNames.FORMULA, formula);
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
         context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
         context.put(FacilioConstants.ContextNames.SORTING, sortBy);
@@ -2583,15 +2606,21 @@ public class V2ReportAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.TIME_FILTER, showTimelineFilter);
         c.addCommand(new ConstructTabularReportData());
         c.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
+        c.addCommand(new PivotFormulaColumnCommand());
         c.addCommand(new PivotColumnFormatCommand());
         c.execute();
         setResult(FacilioConstants.ContextNames.ROW_HEADERS, context.get(FacilioConstants.ContextNames.ROW_HEADERS));
         setResult(FacilioConstants.ContextNames.DATA_HEADERS, context.get(FacilioConstants.ContextNames.DATA_HEADERS));
+        setResult(FacilioConstants.ContextNames.FORMULA_HEADERS,
+                context.get(FacilioConstants.ContextNames.FORMULA_HEADERS));
         setResult(FacilioConstants.ContextNames.ROW_ALIAS, context.get(FacilioConstants.ContextNames.ROW_ALIAS));
         setResult(FacilioConstants.ContextNames.DATA_ALIAS, context.get(FacilioConstants.ContextNames.DATA_ALIAS));
-        setResult(FacilioConstants.ContextNames.PIVOT_TABLE_DATA, context.get(FacilioConstants.ContextNames.PIVOT_TABLE_DATA));
-        setResult(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD, context.get(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD));
-        setResult(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA, context.get(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA));
+        setResult(FacilioConstants.ContextNames.PIVOT_TABLE_DATA,
+                context.get(FacilioConstants.ContextNames.PIVOT_TABLE_DATA));
+        setResult(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD,
+                context.get(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD));
+        setResult(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA,
+                context.get(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA));
         setResult(FacilioConstants.Reports.ROWS, rows);
         return SUCCESS;
     }
@@ -2601,6 +2630,7 @@ public class V2ReportAction extends FacilioAction {
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.Reports.ROWS, rows);
         context.put(FacilioConstants.Reports.DATA, data);
+        context.put(FacilioConstants.ContextNames.FORMULA, formula);
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
         context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
         context.put(FacilioConstants.ContextNames.SORTING, sortBy);
@@ -2623,6 +2653,7 @@ public class V2ReportAction extends FacilioAction {
         pivotparams.setDateValue(dateValue);
         pivotparams.setStartTime(startTime);
         pivotparams.setEndTime(endTime);
+        pivotparams.setFormula(formula);
         if (showTimelineFilter != null) {
             pivotparams.setShowTimelineFilter(showTimelineFilter);
         }
@@ -2643,6 +2674,7 @@ public class V2ReportAction extends FacilioAction {
 
         chain.addCommand(new ConstructTabularReportData());
         chain.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
+        chain.addCommand(new PivotFormulaColumnCommand());
         chain.addCommand(new PivotColumnFormatCommand());
         chain.addCommand(new AddOrUpdateReportCommand());
         chain.execute(context);
@@ -2651,10 +2683,14 @@ public class V2ReportAction extends FacilioAction {
         setResult("report", reportContext);
         setResult(FacilioConstants.ContextNames.ROW_HEADERS, context.get(FacilioConstants.ContextNames.ROW_HEADERS));
         setResult(FacilioConstants.ContextNames.DATA_HEADERS, context.get(FacilioConstants.ContextNames.DATA_HEADERS));
+        setResult(FacilioConstants.ContextNames.FORMULA_HEADERS,
+                context.get(FacilioConstants.ContextNames.FORMULA_HEADERS));
         setResult(FacilioConstants.ContextNames.ROW_ALIAS, context.get(FacilioConstants.ContextNames.ROW_ALIAS));
         setResult(FacilioConstants.ContextNames.DATA_ALIAS, context.get(FacilioConstants.ContextNames.DATA_ALIAS));
-        setResult(FacilioConstants.ContextNames.PIVOT_TABLE_DATA, context.get(FacilioConstants.ContextNames.PIVOT_TABLE_DATA));
-        setResult(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA, context.get(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA));
+        setResult(FacilioConstants.ContextNames.PIVOT_TABLE_DATA,
+                context.get(FacilioConstants.ContextNames.PIVOT_TABLE_DATA));
+        setResult(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA,
+                context.get(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA));
 
         return SUCCESS;
     }
@@ -2675,9 +2711,11 @@ public class V2ReportAction extends FacilioAction {
         }
 
         JSONParser parser = new JSONParser();
-        ReportPivotParamsContext pivotparams = FieldUtil.getAsBeanFromJson((JSONObject) parser.parse(reportContext.getTabularState()), ReportPivotParamsContext.class);
+        ReportPivotParamsContext pivotparams = FieldUtil.getAsBeanFromJson(
+                (JSONObject) parser.parse(reportContext.getTabularState()), ReportPivotParamsContext.class);
         context.put(FacilioConstants.Reports.ROWS, pivotparams.getRows());
         context.put(FacilioConstants.Reports.DATA, pivotparams.getData());
+        context.put(FacilioConstants.ContextNames.FORMULA, pivotparams.getFormula());
         context.put(FacilioConstants.ContextNames.MODULE_NAME, pivotparams.getModuleName());
         context.put(FacilioConstants.ContextNames.CRITERIA, pivotparams.getCriteria());
         context.put(FacilioConstants.ContextNames.SORTING, pivotparams.getSortBy());
@@ -2695,12 +2733,20 @@ public class V2ReportAction extends FacilioAction {
             context.put(FacilioConstants.ContextNames.END_TIME, pivotparams.getEndTime());
         }
 
+        if (getFilters() != null) {
+            c.addCommand(new GenerateCriteriaFromFilterCommand());
+            JSONObject filter = (JSONObject) parser.parse(getFilters());
+            context.put(FacilioConstants.ContextNames.FILTERS, filter);
+        }
+
         context.put(FacilioConstants.ContextNames.TIME_FILTER, pivotparams.getShowTimelineFilter());
         context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, pivotparams.getDateValue());
         context.put(FacilioConstants.ContextNames.IS_EXPORT_REPORT, true);
 
         c.addCommand(new ConstructTabularReportData());
         c.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
+        c.addCommand(new PivotFormulaColumnCommand());
+        c.addCommand(new PivotColumnFormatCommand());
         c.addCommand(new ExportPivotReport());
         c.execute();
         setResult("fileUrl", context.get(FacilioConstants.ContextNames.FILE_URL));
@@ -2721,7 +2767,8 @@ public class V2ReportAction extends FacilioAction {
             reportContext.setDateRange(new DateRange(startTime, endTime));
         }
         JSONParser parser = new JSONParser();
-        ReportPivotParamsContext pivotparams = FieldUtil.getAsBeanFromJson((JSONObject) parser.parse(reportContext.getTabularState()), ReportPivotParamsContext.class);
+        ReportPivotParamsContext pivotparams = FieldUtil.getAsBeanFromJson(
+                (JSONObject) parser.parse(reportContext.getTabularState()), ReportPivotParamsContext.class);
 
         if (getFilters() != null) {
             chain.addCommand(new GenerateCriteriaFromFilterCommand());
@@ -2731,6 +2778,7 @@ public class V2ReportAction extends FacilioAction {
 
         context.put(FacilioConstants.Reports.ROWS, pivotparams.getRows());
         context.put(FacilioConstants.Reports.DATA, pivotparams.getData());
+        context.put(FacilioConstants.ContextNames.FORMULA, pivotparams.getFormula());
         context.put(FacilioConstants.ContextNames.MODULE_NAME, pivotparams.getModuleName());
         context.put(FacilioConstants.ContextNames.CRITERIA, pivotparams.getCriteria());
         if (sortBy != null) {
@@ -2755,20 +2803,25 @@ public class V2ReportAction extends FacilioAction {
 
         chain.addCommand(new ConstructTabularReportData());
         chain.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
+        chain.addCommand(new PivotFormulaColumnCommand());
         chain.addCommand(new PivotColumnFormatCommand());
         chain.execute(context);
         setResult("report", reportContext);
         setResult(FacilioConstants.ContextNames.ROW_HEADERS, context.get(FacilioConstants.ContextNames.ROW_HEADERS));
         setResult(FacilioConstants.ContextNames.DATA_HEADERS, context.get(FacilioConstants.ContextNames.DATA_HEADERS));
+        setResult(FacilioConstants.ContextNames.FORMULA_HEADERS,
+                context.get(FacilioConstants.ContextNames.FORMULA_HEADERS));
         setResult(FacilioConstants.ContextNames.ROW_ALIAS, context.get(FacilioConstants.ContextNames.ROW_ALIAS));
         setResult(FacilioConstants.ContextNames.DATA_ALIAS, context.get(FacilioConstants.ContextNames.DATA_ALIAS));
-        setResult(FacilioConstants.ContextNames.PIVOT_TABLE_DATA, context.get(FacilioConstants.ContextNames.PIVOT_TABLE_DATA));
+        setResult(FacilioConstants.ContextNames.PIVOT_TABLE_DATA,
+                context.get(FacilioConstants.ContextNames.PIVOT_TABLE_DATA));
         setResult(FacilioConstants.ContextNames.SORTING, pivotparams.getSortBy());
         setResult(FacilioConstants.ContextNames.CRITERIA, pivotparams.getCriteria());
         setResult(FacilioConstants.ContextNames.PIVOT_TEMPLATE_JSON, pivotparams.getTemplateJSON());
 
         setResult(FacilioConstants.Reports.ROWS, pivotparams.getRows());
         setResult(FacilioConstants.Reports.DATA, pivotparams.getData());
+        setResult(FacilioConstants.ContextNames.FORMULA, pivotparams.getFormula());
         setResult(FacilioConstants.ContextNames.MODULE_NAME, pivotparams.getModuleName());
         setResult(FacilioConstants.ContextNames.DATE_FIELD, pivotparams.getDateFieldId());
         setResult(FacilioConstants.ContextNames.DATE_OPERATOR, pivotparams.getDateOperator());
@@ -2776,12 +2829,13 @@ public class V2ReportAction extends FacilioAction {
         setResult(FacilioConstants.ContextNames.END_TIME, pivotparams.getEndTime());
         setResult((String) FacilioConstants.ContextNames.TIME_FILTER, pivotparams.getShowTimelineFilter());
         setResult(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, pivotparams.getDateValue());
-        setResult(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD, context.get(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD));
-        setResult(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA, context.get(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA));
+        setResult(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD,
+                context.get(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD));
+        setResult(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA,
+                context.get(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA));
 
         return SUCCESS;
     }
-
 
     private int scatterGraphId;
     private String scatterGraphLabel;
@@ -2821,11 +2875,12 @@ public class V2ReportAction extends FacilioAction {
     }
 
     public String scatterLineGraph() throws Exception {
-        //setResult("result","success");
+        // setResult("result","success");
         FacilioModule module = ModuleFactory.getScatterGraphLineModule();
         FacilioContext context = new FacilioContext();
         // FacilioChain chain = FacilioChain.
-        if (getScatterGraphAction() != null && (getScatterGraphAction().equals("ADD") || getScatterGraphAction().equals("MODIFY"))) {
+        if (getScatterGraphAction() != null
+                && (getScatterGraphAction().equals("ADD") || getScatterGraphAction().equals("MODIFY"))) {
             System.out.println("Add or update data to database");
             if (getScatterGraphValue() != null && getScatterGraphLabel() != null) {
                 FacilioChain chain = TransactionChainFactory.addOrUpdateScatterGraph();
