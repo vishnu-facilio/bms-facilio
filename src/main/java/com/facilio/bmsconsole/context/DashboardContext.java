@@ -21,6 +21,8 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Clon
 	private static Logger log = LogManager.getLogger(DashboardContext.class.getName());
 
 	private String dashboardName;
+
+	private boolean skipDefaultWidgetDeletion;
 	
 	private String clientMetaJsonString;
 	
@@ -35,6 +37,13 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Clon
 	
 	public Object clone() throws CloneNotSupportedException { 
 		return super.clone(); 
+	}
+	public boolean isSkipDefaultWidgetDeletion() {
+		return skipDefaultWidgetDeletion;
+	}
+
+	public void setSkipDefaultWidgetDeletion(boolean skipDefaultWidgetDeletion) {
+		this.skipDefaultWidgetDeletion = skipDefaultWidgetDeletion;
 	}
 	
 	DashboardTabPlacement dashboardTabPlacement;
