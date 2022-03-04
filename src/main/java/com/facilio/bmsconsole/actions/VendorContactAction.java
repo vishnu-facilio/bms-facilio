@@ -115,6 +115,14 @@ public class VendorContactAction extends FacilioAction{
 		this.stateTransitionId = stateTransitionId;
 	}
 
+	private String genericSearch;
+	public String getGenericSearch() {
+		return genericSearch;
+	}
+	public void setGenericSearch(String genericSearch) {
+		this.genericSearch = genericSearch;
+	}
+
 	public String addVendorContacts() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(vendorContacts)) {
@@ -194,6 +202,14 @@ public class VendorContactAction extends FacilioAction{
  			searchObj.put("query", getSearch());
  			chain.getContext().put(FacilioConstants.ContextNames.SEARCH, searchObj);
  		}
+
+		if(getGenericSearch() != null){
+			JSONObject searchObj = new JSONObject();
+			searchObj.put("fields", "vendorcontact.name,vendorcontact.email");
+			searchObj.put("query", getGenericSearch());
+			chain.getContext().put(FacilioConstants.ContextNames.GENERIC_SEARCH, searchObj);
+		}
+
  		if(!getFetchCount()) {
 			JSONObject pagination = new JSONObject();
 			pagination.put("page", getPage());
