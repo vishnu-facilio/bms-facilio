@@ -19,7 +19,7 @@ sources:
   - name: msk-ff #Frankfurt Region
     type: kafka
     configs:
-      broker: b-1.kafka-europe.i3i6kg.c6.kafka.eu-central-1.amazonaws.com:9096,b-5.kafka-europe.i3i6kg.c6.kafka.eu-central-1.amazonaws.com:9096,b-2.kafka-europe.i3i6kg.c6.kafka.eu-central-1.amazonaws.com:9096
+      broker: b-1.eu-kafka.x8fngk.c6.kafka.eu-central-1.amazonaws.com:9096,b-3.eu-kafka.x8fngk.c6.kafka.eu-central-1.amazonaws.com:9096,b-2.eu-kafka.x8fngk.c6.kafka.eu-central-1.amazonaws.com:9096
       auth: true
 
   - name: msk-uk #London Region
@@ -37,4 +37,10 @@ sources:
     type: kafka
     configs:
       broker: b-2.sp-kafka.89tf4q.c2.kafka.ap-southeast-1.amazonaws.com:9096,b-3.sp-kafka.89tf4q.c2.kafka.ap-southeast-1.amazonaws.com:9096,b-4.sp-kafka.89tf4q.c2.kafka.ap-southeast-1.amazonaws.com:9096
+      auth: true
+      
+  - name: msk-eu #eu region
+    type: kafka
+    configs:
+      broker: b-1.eu-kafka.x8fngk.c6.kafka.eu-central-1.amazonaws.com:9096,b-3.eu-kafka.x8fngk.c6.kafka.eu-central-1.amazonaws.com:9096,b-2.eu-kafka.x8fngk.c6.kafka.eu-central-1.amazonaws.com:9096
       auth: true
