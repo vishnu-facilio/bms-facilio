@@ -39,10 +39,6 @@ public class EmailFromAddressValidateCommand extends FacilioCommand {
 				}
 				if(emailFromAddress.getEmail() != null) {
 					throw new RESTException(ErrorCode.VALIDATION_ERROR, "Email Id cannot be changed to- "+ emailFromAddress.getEmail());
-				}	
-				if(oldRecord.getSourceType().equals(EmailFromAddress.SourceType.SUPPORT.getIndex())
-						&& emailFromAddress.getSiteId() <= 0) {
-					throw new RESTException(ErrorCode.VALIDATION_ERROR, "Site is mandatory");
 				}
 				emailFromAddress.setEmail(oldRecord.getEmail());
 				emailFromAddress.setSourceType(oldRecord.getSourceType());			
@@ -55,10 +51,7 @@ public class EmailFromAddressValidateCommand extends FacilioCommand {
 				if(!UniqueCheckUtil.checkIfUnique(emailFromAddress.getEmail(), FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME, "email")) {
 					throw new RESTException(ErrorCode.VALIDATION_ERROR, "Email "+emailFromAddress.getEmail()+" already exist");
 				}
-				if(emailFromAddress.getSourceType().equals(EmailFromAddress.SourceType.SUPPORT.getIndex())
-						&& emailFromAddress.getSiteId() <= 0) {
-					throw new RESTException(ErrorCode.VALIDATION_ERROR, "Site is mandatory");
-				}
+
 		   }
 		}
 		

@@ -20,6 +20,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
@@ -90,7 +91,11 @@ public class FromEmailForEmailThreadingReplyCommand extends FacilioCommand {
 				criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("email"), fromAddress.getEmail(), StringOperators.ISN_T));
 			}
 			if(record.getSiteId() > 0) {
-				criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(modBean.getModule(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME)), record.getSiteId()+"", NumberOperators.EQUALS));
+				Criteria newCri = new Criteria();
+				newCri.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(modBean.getModule(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME)), record.getSiteId()+"", NumberOperators.EQUALS));
+				newCri.addOrCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(modBean.getModule(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME)),"", CommonOperators.IS_EMPTY));
+				
+				criteria.andCriteria(newCri);
 			}
 			
 			List<EmailFromAddress> emailAddressList = MailMessageUtil.getEmailFromAddress(criteria);
