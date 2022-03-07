@@ -4,7 +4,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.*;
@@ -22,7 +21,10 @@ import com.facilio.modules.fields.*;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.time.DateTimeUtil;
-
+import com.facilio.v3.V3Builder.V3Config;
+import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.ChainUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -580,6 +582,21 @@ public class ExportUtil {
 			
 			break;
 		}
+			case MULTI_LOOKUP: {
+				if (!(value instanceof Collection)) {
+					return null;
+				}
+				if (CollectionUtils.isNotEmpty((Collection) value)) {
+					StringJoiner sj = new StringJoiner(",");
+					for (Object obj : (Collection) value) {
+						if (obj instanceof Map) {
+							sj.add(((Map<?, ?>) obj).get("name").toString());
+						}
+					}
+					return sj.toString();
+				}
+				break;
+			}
 		case DATE:
 		case DATE_TIME:{
 			return DateTimeUtil.getFormattedTime((long)value);
@@ -734,17 +751,24 @@ public class ExportUtil {
 		prepareExportModuleConfig(fileFormat, moduleName, viewName, filters, criteria, specialFields, viewLimit, viewFields, records);
 		return exportDataAsFileId(fileFormat, modBean.getModule(moduleName), viewFields, records);
 	}
-	
+
 	private static void prepareExportModuleConfig(FileFormat fileFormat, String moduleName, String viewName, String filters,Criteria criteria, boolean specialFields, Integer viewLimit, List<ViewField> viewFields, List<ModuleBaseWithCustomFields> records) throws Exception {
-		FacilioContext context = new FacilioContext();
+		FacilioChain listChain = ChainUtil.getListChain(moduleName);
+		FacilioContext context = listChain.getContext();
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+
+		V3Config v3Config = ChainUtil.getV3Config(moduleName);
+		Class beanClass = ChainUtil.getBeanClass(v3Config, module);
+		context.put(Constants.BEAN_CLASS, beanClass);
+
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
 
 		int limit = 5000;
 		Map<String, String> orgInfo = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.MODULE_EXPORT_LIMIT);
 		String orgLimit = orgInfo.get(FacilioConstants.OrgInfoKeys.MODULE_EXPORT_LIMIT);
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(moduleName);
 		List<FacilioField> fieldsList = modBean.getAllFields(moduleName);
 		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fieldsList);
 		if (moduleName.equals("asset")) {
@@ -797,19 +821,17 @@ public class ExportUtil {
 		if (criteria != null) {
 			context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, criteria);
 		}
-		
+
 		// TODO handle in view info
 		if (moduleName.equals("workorder") && viewName.startsWith("upcoming")) {
 			context.put(ContextNames.SKIP_MODULE_CRITERIA, true);
 		}
-		
-		context.put("checkPermission", true);
-		
-		FacilioChain moduleListChain = ReadOnlyChainFactory.fetchModuleDataListChain();
-		moduleListChain.execute(context);
 
-		records.addAll((List<ModuleBaseWithCustomFields>) context.get(FacilioConstants.ContextNames.RECORD_LIST));
-		
+		context.put("checkPermission", true);
+		listChain.execute();
+
+		records.addAll(Constants.getRecordListFromContext(context, moduleName));
+
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 
 		if (moduleName.equals("workorder")) {
@@ -831,7 +853,7 @@ public class ExportUtil {
 			viewFields.addAll(view.getFields());
 		}
 		if (moduleName.equals("alarm")) {
-			Iterator<ViewField> it = viewFields.iterator();	
+			Iterator<ViewField> it = viewFields.iterator();
 			while (it.hasNext()) {
 				ViewField field = it.next();
 				if (field.getField().getName().equals("modifiedTime")) {
@@ -855,7 +877,7 @@ public class ExportUtil {
 		if (specialFields) {
 			List<Long> ids = records.stream().map(a -> a.getId()).collect(Collectors.toList());
 			viewFields.removeIf(viewField -> viewField.getField() != null && viewField.getField().getName().equals("noOfNotes"));
-			
+
 			ViewField comment = new ViewField("comment", "Comment");
 			FacilioField commentField = new FacilioField();
 			commentField.setName("comment");
@@ -896,7 +918,7 @@ public class ExportUtil {
 							records.get(i).addData(props);
 						}
 					}
-			
+
 				}
 			}
 
