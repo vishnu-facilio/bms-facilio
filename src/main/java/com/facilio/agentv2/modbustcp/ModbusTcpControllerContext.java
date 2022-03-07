@@ -11,7 +11,6 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.log4j.LogManager;
@@ -117,5 +116,15 @@ public class ModbusTcpControllerContext extends Controller {
     @Override
     public String getIdentifier() {
         return slaveId+IDENTIFIER_SEPERATER+ipAddress;
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof ModbusTcpControllerContext){
+            ModbusTcpControllerContext obj = (ModbusTcpControllerContext) o;
+            return this.getSlaveId()==obj.getSlaveId() && this.getIpAddress().equals(obj.getIpAddress()) && super.equals(obj);
+        }else{
+            return false;
+        }
     }
 }

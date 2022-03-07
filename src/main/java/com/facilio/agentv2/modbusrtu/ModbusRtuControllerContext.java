@@ -7,7 +7,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.fw.FacilioException;
 import com.facilio.modules.fields.FacilioField;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.log4j.LogManager;
@@ -148,4 +147,13 @@ public class ModbusRtuControllerContext extends Controller {
         return slaveId + IDENTIFIER_SEPERATER + network.getComPort();
     }
 
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof ModbusRtuControllerContext){
+            ModbusRtuControllerContext obj = (ModbusRtuControllerContext) o;
+            return this.getNetworkId()==obj.getNetworkId() && this.getSlaveId()==obj.getSlaveId() && super.equals(obj);
+        }else{
+            return false;
+        }
+    }
 }

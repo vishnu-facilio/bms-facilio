@@ -112,7 +112,7 @@ public class BacnetIpControllerContext extends Controller {
         if(getIpAddress() != null){
             conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.IP_ADDRESS),getIpAddress(), StringOperators.IS));
         }else {
-            throw new Exception(" ip address can't be null for bacnerIpController ");
+            throw new Exception(" ip address can't be null for bacnetIpController ");
         }
         return conditions;
     }
@@ -121,6 +121,13 @@ public class BacnetIpControllerContext extends Controller {
     public String getIdentifier() {
         return instanceNumber+IDENTIFIER_SEPERATER+ipAddress+IDENTIFIER_SEPERATER+networkNumber;
     }
-
-
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof BacnetIpControllerContext){
+            BacnetIpControllerContext obj = (BacnetIpControllerContext) o;
+            return this.getNetworkNumber()==obj.getNetworkNumber() && this.getInstanceNumber()==obj.getInstanceNumber() && this.getIpAddress().equals(obj.getIpAddress()) && super.equals(obj);
+        }else{
+            return false;
+        }
+    }
 }

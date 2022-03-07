@@ -1,13 +1,5 @@
 package com.facilio.agentv2.lonWorks;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
@@ -18,6 +10,13 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.fields.FacilioField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class LonWorksControllerContext extends Controller {
 
@@ -122,5 +121,15 @@ public class LonWorksControllerContext extends Controller {
     @Override
     public String getIdentifier() {
         return subnetNode+IDENTIFIER_SEPERATER+neuronId;
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof LonWorksControllerContext){
+            LonWorksControllerContext obj = (LonWorksControllerContext) o;
+            return this.getNeuronId().equals(obj.getNeuronId()) && this.getSubnetNode().equals(obj.getSubnetNode()) && super.equals(obj);
+        }else{
+            return false;
+        }
     }
 }

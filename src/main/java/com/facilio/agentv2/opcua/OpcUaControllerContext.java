@@ -125,4 +125,14 @@ public class OpcUaControllerContext extends Controller {
     public String getIdentifier() {
         return url+IDENTIFIER_SEPERATER+certPath+IDENTIFIER_SEPERATER+securityMode+IDENTIFIER_SEPERATER+securityPolicy;
     }
+
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof OpcUaControllerContext){
+            OpcUaControllerContext obj = (OpcUaControllerContext) o;
+            return this.getSecurityMode()==obj.getSecurityMode() && this.getSecurityPolicy()==obj.getSecurityPolicy() && this.getUrl().equals(obj.getUrl()) && super.equals(obj);
+        }else{
+            return false;
+        }
+    }
 }

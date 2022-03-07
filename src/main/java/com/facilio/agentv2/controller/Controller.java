@@ -1,12 +1,5 @@
 package com.facilio.agentv2.controller;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import org.json.simple.JSONObject;
-
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
@@ -20,6 +13,11 @@ import com.facilio.modules.fields.FacilioField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import org.json.simple.JSONObject;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public abstract class Controller extends AssetContext {
 
@@ -387,4 +385,15 @@ public abstract class Controller extends AssetContext {
 	public int getResourceType() {
 		return ResourceType.CONTROLLER.getValue();
 	}
+
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof Controller){
+            Controller obj=(Controller) o;
+            return obj.getAgentId()==this.getAgentId();
+        }
+        else{
+            return false;
+        }
+    }
 }

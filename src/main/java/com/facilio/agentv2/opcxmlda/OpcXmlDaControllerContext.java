@@ -17,7 +17,6 @@ import org.json.simple.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class OpcXmlDaControllerContext extends Controller {
 
@@ -117,5 +116,15 @@ public class OpcXmlDaControllerContext extends Controller {
     @Override
     public String getIdentifier() {
         return url+IDENTIFIER_SEPERATER+userName+IDENTIFIER_SEPERATER+password;
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof OpcXmlDaControllerContext){
+            OpcXmlDaControllerContext obj = (OpcXmlDaControllerContext) o;
+            return this.getUrl().equals(obj.getUrl()) && super.equals(obj);
+        }else{
+            return false;
+        }
     }
 }

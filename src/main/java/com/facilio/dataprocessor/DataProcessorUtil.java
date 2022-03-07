@@ -1,32 +1,8 @@
 package com.facilio.dataprocessor;
 
-import java.sql.SQLException;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.google.api.client.json.Json;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agent.AgentContent;
-import com.facilio.agent.AgentKeys;
-import com.facilio.agent.AgentUtil;
-import com.facilio.agent.CommandStatus;
-import com.facilio.agent.ControllerCommand;
-import com.facilio.agent.FacilioAgent;
-import com.facilio.agent.MessageStatus;
-import com.facilio.agent.PublishType;
+import com.facilio.agent.*;
 import com.facilio.agent.agentcontrol.AgentControl;
 import com.facilio.agent.integration.queue.preprocessor.AgentMessagePreProcessor;
 import com.facilio.agentv2.AgentApiV2;
@@ -61,6 +37,21 @@ import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.util.AckUtil;
 import com.facilio.util.FacilioUtil;
 import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
+import org.json.simple.JSONObject;
+
+import java.sql.SQLException;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DataProcessorUtil {
 
@@ -399,7 +390,7 @@ public class DataProcessorUtil {
                 	prop.put(AgentConstants.PUBLIC_REDIS_PUT_TIME, account.getPublicRedisPutTime());
                 	prop.put(AgentConstants.PUBLIC_REDIS_DELETE_TIME, account.getPublicRedisDeleteTime());
                 	prop.put(AgentConstants.AGENT_ID, agentMsgId);
-                	updateAgentMsg(prop,recordId);
+//                	updateAgentMsg(prop,recordId);
             } catch (Exception e) {
                 LOGGER.error("record: " + recordId);
             }

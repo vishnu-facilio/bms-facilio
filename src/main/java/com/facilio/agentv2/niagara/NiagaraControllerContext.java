@@ -75,4 +75,13 @@ public class NiagaraControllerContext extends Controller {
         return portNumber+IDENTIFIER_SEPERATER+ipAddress;
     }
 
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof NiagaraControllerContext){
+            NiagaraControllerContext obj = (NiagaraControllerContext) o;
+            return this.getIpAddress().equals(obj.getIpAddress()) && this.getPortNumber()==obj.getPortNumber() && super.equals(obj);
+        }else{
+            return false;
+        }
+    }
 }

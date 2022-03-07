@@ -7,18 +7,16 @@ import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.agentv2.modbusrtu.ModbusRtuControllerContext;
 import com.facilio.agentv2.modbusrtu.RtuNetworkContext;
-
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.custom.CustomController;
-import com.facilio.modules.FieldUtil;
+import com.facilio.util.FacilioUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -168,7 +166,7 @@ public class ControllerUtilV2 {
 
     }
 
-    public static Controller getControllerFromJSON(JSONObject deviceJSON,FacilioControllerType controllerType) throws Exception {
+    public static <T extends Controller> T getControllerFromJSON(JSONObject deviceJSON,FacilioControllerType controllerType) throws Exception {
         Controller controller = null;
         JSONObject controllerPropJSON;
         Object object = deviceJSON.get(AgentConstants.CONTROLLER);
@@ -181,7 +179,7 @@ public class ControllerUtilV2 {
             }
         }
         controller = ControllerApiV2.makeControllerFromMap(deviceJSON,controllerType);
-        return controller;
+        return (T) controller;
     }
 
 /*    *//**
@@ -201,27 +199,6 @@ public class ControllerUtilV2 {
      * @param jsonObject - must contain key "controller"
      * @return - null if controller is not found or if the key "controller" is missing.
      */
-/*
-    public Controller getControllerFromAgentPayload(JSONObject payload) throws Exception {
-        if (payload.containsKey(AgentConstants.CONTROLLER)) {
-
-            JSONObject controllerJson = (JSONObject) payload.get(AgentConstants.CONTROLLER);
-            if (payload.containsKey(AgentConstants.CONTROLLER_TYPE)) {
-                FacilioControllerType controllerType = FacilioControllerType.valueOf(((Number) payload.get(AgentConstants.CONTROLLER_TYPE)).intValue());
-                if (controllerType != null) {
-                    LOGGER.info(" getControllerFromPayload " + controllerMapList.get(controllerType.asInt()));
-                    GetControllerRequest getControllerRequest = new GetControllerRequest()
-                            .withControllerProperties(controllerJson,controllerType);
-                    Controller controller = getControllerRequest.getController();
-                    return controller;
-                }
-                // if controllerType is null from the information - then make it custom
-
-            }
-        }  else {
-            throw new Exception("payload is missing key "+AgentConstants.CONTROLLER);
-        }
-    }*/
 
     private static boolean containsValueCheck(String key, Map<String, Object> jsonObject) {
         if (jsonObject.containsKey(key) && (jsonObject.get(key) != null)) {
@@ -231,23 +208,26 @@ public class ControllerUtilV2 {
     }
 
     public static boolean processControllers(FacilioAgent agent, JSONObject payload) throws Exception {
-        List<Controller> controllers = new ArrayList<>();
+
         if (containsValueCheck(AgentConstants.DATA, payload)) {
             JSONArray controllersArray = (JSONArray) payload.get(AgentConstants.DATA);
-            if (controllersArray.isEmpty()) {
-                throw new Exception("Exception Occurred, Device data is empty");
-            }
+
+            FacilioUtil.throwIllegalArgumentException((controllersArray == null || controllersArray.isEmpty()), "Controller Array should not be empty");
+
+            Long ct = (Long) ((JSONObject) controllersArray.get(0)).get(AgentConstants.CONTROLLER_TYPE);
+            FacilioControllerType controllerType = FacilioControllerType.valueOf(Math.toIntExact(ct));
+
+            List<? extends Controller> controllerList = new ArrayList<>();
             for (Object controllerObject : controllersArray) {
                 JSONObject deviceJSON = (JSONObject) controllerObject;
                 deviceJSON.put(AgentConstants.AGENT_ID, agent.getId());
-                if ((deviceJSON != null) && (!deviceJSON.isEmpty())) {
-                    Integer availablePoints = 0;
-                    if(deviceJSON.containsKey(AgentConstants.AVAILABLE_POINTS)) {
-                        availablePoints = Integer.parseInt(deviceJSON.getOrDefault(AgentConstants.AVAILABLE_POINTS,0).toString());
-                    }
-                    FacilioControllerType controllerType = FacilioControllerType.valueOf(((Number) deviceJSON.get(AgentConstants.CONTROLLER_TYPE)).intValue());
-                    Controller controller = getControllerFromJSON(deviceJSON, controllerType);
+                controllerList.add(getControllerFromJSON(deviceJSON, controllerType));
+            }
 
+            List<? extends Controller> controllersToAdd = ControllerApiV2.getControllersToAdd(agent.getId(), controllerType, controllerList);
+            if(controllersToAdd !=null && !controllersToAdd.isEmpty()){
+                for (Object controllerObject : controllersToAdd) {
+                    Controller controller = (Controller) controllerObject;
                     if (controller != null) {
                         controller.setAgentId(agent.getId());
                         controller.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
@@ -258,13 +238,12 @@ public class ControllerUtilV2 {
                         controller.setSiteId(agent.getSiteId());
                         controller.setActive(true);
                         controller.setDataInterval(900000);
-                        controller.setAvailablePoints(availablePoints);
                         controller.setControllerType(controllerType.asInt());
                         long controllerId = -1;
                         if (controller.getControllerType() == MODBUS_RTU.asInt()) {
+
                             ModbusRtuControllerContext rtuControllerContext = (ModbusRtuControllerContext) controller;
-                            JSONObject network = (JSONObject) deviceJSON.get("network");
-                            RtuNetworkContext rtuNetworkContextFromJson = FieldUtil.getAsBeanFromJson(network, RtuNetworkContext.class);
+                            RtuNetworkContext rtuNetworkContextFromJson = rtuControllerContext.getNetwork();
                             RtuNetworkContext rtuNetworkContext = RtuNetworkContext.getRtuNetworkContext(agent.getId(), rtuNetworkContextFromJson.getComPort());
                             if (rtuNetworkContext == null) {
                                 rtuControllerContext.setNetwork(rtuNetworkContextFromJson);
@@ -281,13 +260,9 @@ public class ControllerUtilV2 {
                     }else {
                         throw new Exception("Controller cant be null ");
                     }
-                }else{
-                    throw new Exception("controllerProps can't be null or empty -> " +deviceJSON);
                 }
             }
         }
         return true;
     }
-
-
 }
