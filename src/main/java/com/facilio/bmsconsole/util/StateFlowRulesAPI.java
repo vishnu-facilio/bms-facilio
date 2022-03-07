@@ -325,12 +325,12 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 				timeLogProp = TimerLogUtil.getLastTimerActiveLog(timeLogModule, parentId, fromStatus.getId());
 				if (timeLogProp != null) {
 					long startTime = timeLogProp.getStartTime();
-					timeLogProp.setToStatusId(toStatus.getId());
+					timeLogProp.setToStatus(toStatus);
 					timeLogProp.setEndTime(currentTime);
 					long duration = (currentTime - startTime) / 1000;
 
 					timeLogProp.setDuration(duration);
-					timeLogProp.setDoneById(AccountUtil.getCurrentUser().getId());
+					timeLogProp.setDoneBy(AccountUtil.getCurrentUser());
 					TimerLogUtil.addOrUpdate(timeLogModule,timeLogProp);
 				}
 			}
@@ -338,10 +338,10 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			timeLogProp = new TimelogContext();
 
 			timeLogProp.setModuleId(timeLogModule.getModuleId());
-			timeLogProp.setParentId(parentId);
-			timeLogProp.setFromStatusId(toStatus.getId());
+			timeLogProp.setParent(record);
+			timeLogProp.setFromStatus(toStatus);
 			timeLogProp.setStartTime(currentTime);
-			timeLogProp.setTimerEnabled(toStatus.isTimerEnabled());
+			timeLogProp.setIsTimerEnabled(toStatus.isTimerEnabled());
 			TimerLogUtil.addOrUpdate(timeLogModule, timeLogProp);
 		}
 	}

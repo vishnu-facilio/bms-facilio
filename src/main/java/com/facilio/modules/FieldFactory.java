@@ -8354,26 +8354,6 @@ public class FieldFactory extends BaseFieldFactory {
         return list;
     }
 
-    public static List<FacilioField> getTimeLogFields(FacilioModule module) {
-        List<FacilioField> list = new ArrayList<>();
-
-        list.add(getField("id", "ID", module, FieldType.ID));
-        list.add(getField("moduleId", "MODULEID", module, FieldType.NUMBER));
-        list.add(getField("name", "NAME", module, FieldType.STRING));
-        list.add(getField("parentId", "PARENT_ID", module, FieldType.NUMBER));
-
-        list.add(getField("fromStatusId", "FROM_STATUS_ID", module, FieldType.NUMBER));
-        list.add(getField("toStatusId", "TO_STATUS_ID", module, FieldType.NUMBER));
-
-        list.add(getField("startTime", "START_TIME", module, FieldType.NUMBER));
-        list.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));
-        list.add(getField("duration", "DURATION", module, FieldType.NUMBER));
-
-        list.add(getField("timerEnabled", "IS_TIMER_ENABLED", module, FieldType.BOOLEAN));
-        list.add(getField("doneById", "DONE_BY", module, FieldType.NUMBER));
-        return list;
-    }
-
     public static List<FacilioField> getTimelineViewFields(FacilioModule module){
         List<FacilioField> list = new ArrayList<>();
 
