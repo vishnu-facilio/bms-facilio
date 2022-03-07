@@ -20,6 +20,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.LogManager;
+import org.json.simple.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -55,6 +56,8 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.queue.source.MessageSourceUtil;
+import com.facilio.queueingservice.services.ScriptLogHandlerQueueingService;
 import com.facilio.report.util.DemoHelperUtil;
 import com.facilio.scriptengine.context.ParameterContext;
 import com.facilio.scriptengine.context.WorkflowFieldType;
@@ -69,7 +72,14 @@ import com.facilio.scriptengine.systemfunctions.FacilioSystemFunctionNameSpace;
 import com.facilio.scriptengine.systemfunctions.FacilioWorkflowFunctionInterface;
 import com.facilio.scriptengine.systemfunctions.FacilioXMLBuilderFunctions;
 import com.facilio.scriptengine.util.WorkflowGlobalParamUtil;
+import com.facilio.services.messageQueue.MessageQueue;
+import com.facilio.services.messageQueue.MessageQueueFactory;
+import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.util.FacilioUtil;
+import com.facilio.wmsv2.constants.Topics;
+import com.facilio.wmsv2.endpoint.SessionManager;
+import com.facilio.wmsv2.handler.AuditLogHandler;
+import com.facilio.wmsv2.message.Message;
 import com.facilio.workflows.conditions.context.ElseContext;
 import com.facilio.workflows.conditions.context.ElseIfContext;
 import com.facilio.workflows.conditions.context.IfContext;
@@ -2563,4 +2573,18 @@ public class WorkflowUtil {
 		}
 		return -1l;
 	}
+	
+	public static void sendScriptLogs(WorkflowContext workflowContext, String logs) throws Exception {
+        if (logs == null) {
+            return;
+        }
+        long orgId = AccountUtil.getCurrentOrg() != null ? AccountUtil.getCurrentOrg().getOrgId() : -1;
+        if (orgId > 0L) {
+        	JSONObject json = new JSONObject();
+        	json.put("logs", logs);
+        	
+        	MessageQueue mq = MessageQueueFactory.getMessageQueue(MessageSourceUtil.getDefaultSource());
+        	mq.putRecord(ScriptLogHandlerQueueingService.TOPIC, workflowContext.getOrgId()+"_"+workflowContext.getId(), json);
+        }
+    }
 }

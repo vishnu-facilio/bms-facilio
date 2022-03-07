@@ -357,6 +357,8 @@ public class WorkflowContext extends ScriptContext{
 				        fillDefaultGlobalVariables(globalParameters);
 				        visitor.setGlobalParams(globalParameters);
 				        visitor.visit(tree);
+				        
+//				        WorkflowUtil.sendScriptLogs(this,this.getLogString());
 			        }
 			        else {
 			        	if(isThrowExceptionForSyntaxError()) {
