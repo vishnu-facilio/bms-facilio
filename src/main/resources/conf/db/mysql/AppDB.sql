@@ -1,4 +1,4 @@
-
+Quota
 CREATE DATABASE IF NOT EXISTS ${defaultAppDB};
 USE ${defaultAppDB};
 
@@ -27973,7 +27973,7 @@ CREATE TABLE IF NOT EXISTS Quotation
     ORGID                      BIGINT       NOT NULL,
     MODULEID                   BIGINT       NOT NULL,
     SITE_ID                    BIGINT,
-    SUBJECT                    VARCHAR(100) NOT NULL,
+    SUBJECT                    VARCHAR(500) NOT NULL,
     SYS_CREATED_TIME           BIGINT,
     SYS_MODIFIED_TIME          BIGINT,
     FORM_ID                    BIGINT,
