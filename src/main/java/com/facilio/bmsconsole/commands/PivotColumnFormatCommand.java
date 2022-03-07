@@ -193,9 +193,9 @@ public class PivotColumnFormatCommand extends FacilioCommand {
 
         for (PivotFormulaColumnContext prop : formulaColumns) {
             String key = prop.getAlias();
-            Map<String, Object> data = (Map<String, Object>) JsonTable.get(key);
+            Map<String, Object> formula = (Map<String, Object>) JsonTable.get(key);
             StringJoiner header = new StringJoiner("");
-            header.add(data.get("label").toString());
+            header.add(formula.get("label").toString());
             JSONObject columnFormatMap = getColumnFormatMap(key);
 
             Formatter formatter = Formatter.getInstance(prop.toFacilioField());
