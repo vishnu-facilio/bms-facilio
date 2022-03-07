@@ -652,4 +652,9 @@
             </property>
         </requestbody>
     </request>
+    <request path="/api/v2/pages/lookuprelatedlist">
+        <requestbody type="object">
+            <property name="moduleName" type="string"/>
+        </requestbody>
+    </request>
 </config>

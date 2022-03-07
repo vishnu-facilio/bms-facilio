@@ -617,6 +617,12 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
+	public static FacilioChain getRelatedListChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetRelatedListMetaCommand());
+		return c;
+	}
+
 	public static FacilioChain getSpecialModulePageChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetSpecialModuleDataDetailCommand());

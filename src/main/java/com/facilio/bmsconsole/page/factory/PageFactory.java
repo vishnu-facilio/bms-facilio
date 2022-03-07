@@ -434,6 +434,10 @@ public class PageFactory {
 		}
 	}
 
+	public static void getRelatedListMeta(Section section, long moduleId, List<String> relatedModules, boolean include) throws Exception {
+		addRelatedListWidgets(section, moduleId, relatedModules, include);
+	}
+
 	static void addSubModuleRelatedListWidget(Page.Section section, String moduleName, long parenModuleId) throws Exception {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
