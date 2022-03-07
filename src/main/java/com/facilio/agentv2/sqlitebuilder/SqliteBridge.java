@@ -15,7 +15,7 @@ import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.GetControllerRequest;
 import com.facilio.agentv2.lonWorks.LonWorksControllerContext;
 import com.facilio.agentv2.lonWorks.LonWorksPointContext;
-import com.facilio.agentv2.misc.MiscController;
+import com.facilio.agentv2.misc.MiscControllerContext;
 import com.facilio.agentv2.misc.MiscPoint;
 import com.facilio.agentv2.niagara.NiagaraControllerContext;
 import com.facilio.agentv2.niagara.NiagaraPointContext;
@@ -31,7 +31,6 @@ import com.facilio.timeseries.TimeSeriesAPI;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -400,7 +399,7 @@ public class SqliteBridge {
     }
 
     private static Controller toMiscControllerV2(ControllerContext controller) {
-        MiscController controllerContext = new MiscController();
+        MiscControllerContext controllerContext = new MiscControllerContext();
         controllerContext.setName(controller.getName());
         toControllerV2(controllerContext, controller);
         return controllerContext;

@@ -16,16 +16,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class MiscController extends Controller {
+public class MiscControllerContext extends Controller {
 
-    public MiscController(long agentId, long orgId) {
+    public MiscControllerContext(long agentId, long orgId) {
         super(agentId, orgId);
         setControllerType(FacilioControllerType.MISC.asInt());
     }
 
     public static final String ASSETCATEGORY = FacilioConstants.ContextNames.MISC_CONTROLLER_MODULE_NAME;
 
-    public MiscController() {
+    public MiscControllerContext() {
         setControllerType(FacilioControllerType.MISC.asInt());
     }
 
@@ -34,7 +34,7 @@ public class MiscController extends Controller {
 
 
     public static Controller getMiscControllerFromJSON(long agentId, Map<String,Object> controllerJSON){
-        MiscController controller = new MiscController(agentId, AccountUtil.getCurrentOrg().getOrgId());
+        MiscControllerContext controller = new MiscControllerContext(agentId, AccountUtil.getCurrentOrg().getOrgId());
         if(controllerJSON.containsKey(AgentConstants.IDENTIFIER)){
             controller.setName(String.valueOf((controllerJSON.get(AgentConstants.IDENTIFIER))));
         }else if(controllerJSON.containsKey(AgentConstants.NAME)){
@@ -72,8 +72,8 @@ public class MiscController extends Controller {
 
     @Override
     public boolean equals(Object o){
-        if(o instanceof MiscController){
-            MiscController obj = (MiscController) o;
+        if(o instanceof MiscControllerContext){
+            MiscControllerContext obj = (MiscControllerContext) o;
             return this.getName().equals(obj.getName()) && super.equals(obj);
         }else{
             return false;

@@ -4,15 +4,13 @@ import java.net.HttpURLConnection;
 
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.FacilioAgent;
-import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.misc.MiscControllerContext;
 import com.facilio.fw.FacilioException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.ControllerApiV2;
-import com.facilio.agentv2.misc.MiscController;
 
 public class AddMiscControllerAction extends AgentIdAction{
 
@@ -26,7 +24,7 @@ public class AddMiscControllerAction extends AgentIdAction{
             if (agent != null) {
                 Long controllerId = null;
                 // if (deviceId != null && deviceId > 0) {
-                    MiscController context = new MiscController();
+                    MiscControllerContext context = new MiscControllerContext();
                     context.setAgentId(agent.getId());
                     context.setActive(true);
                     context.setDataInterval(agent.getInterval() * 60 * 1000);

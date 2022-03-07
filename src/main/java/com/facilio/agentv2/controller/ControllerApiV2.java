@@ -4,13 +4,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
+import com.facilio.agentv2.misc.MiscControllerContext;
 import com.facilio.agentv2.rdm.RdmControllerContext;
 import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.FacilioException;
 import com.facilio.modules.*;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -25,7 +24,6 @@ import com.facilio.agentv2.actions.GetPointsAction;
 import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.lonWorks.LonWorksControllerContext;
-import com.facilio.agentv2.misc.MiscController;
 import com.facilio.agentv2.modbusrtu.ModbusRtuControllerContext;
 import com.facilio.agentv2.modbusrtu.RtuNetworkContext;
 import com.facilio.agentv2.modbustcp.ModbusTcpControllerContext;
@@ -201,7 +199,7 @@ public class ControllerApiV2 {
                 controller = FieldUtil.getAsBeanFromMap(map, ModbusTcpControllerContext.class);
                 break;
             case MISC:
-                controller = FieldUtil.getAsBeanFromMap(map, MiscController.class);
+                controller = FieldUtil.getAsBeanFromMap(map, MiscControllerContext.class);
                 break;
             case CUSTOM:
                 controller = FieldUtil.getAsBeanFromMap(map, CustomController.class);
@@ -845,39 +843,9 @@ public class ControllerApiV2 {
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(moduleFields);
 
         Criteria criteria = new Criteria();
-        switch (controllerType) {
-            case MODBUS_IP:
-                criteria.andCriteria(getModbusIpControllerCriteria(controllerList));
-                break;
-            case MODBUS_RTU:
-                criteria.andCriteria(getModbusRtuControllerCriteria(controllerList));
-                break;
-            case OPC_UA:
-                criteria.andCriteria(getOpcUAControllerCriteria(controllerList));
-                break;
-            case OPC_XML_DA:
-                criteria.andCriteria(getOpcXMLDAControllerCriteria(controllerList));
-                break;
-            case NIAGARA:
-                criteria.andCriteria(getNiagaraControllerCriteria(controllerList));
-                break;
-            case BACNET_IP:
-                criteria.andCriteria(getBacnetControllerCriteria(controllerList));
-                break;
-            case REST:
-            case CUSTOM:
-            case SYSTEM:
-            case MISC:
-                criteria.andCriteria(getMiscControllerCriteria(controllerList));
-                break;
-            case LON_WORKS:
-                criteria.andCriteria(getLonWorksControllerCriteria(controllerList));
-                break;
-            case RDM:
-                criteria.andCriteria(getRDMControllerCriteria(controllerList));
-                break;
-        }
+        criteria.andCriteria(getControllerCriteria(controllerList));
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS));
+
         SelectRecordsBuilder<? extends Controller> builder = new SelectRecordsBuilder<Controller>()
                 .module(module)
                 .beanClass(beanClassName)
@@ -893,117 +861,12 @@ public class ControllerApiV2 {
         return controllerList;
     }
 
-    public static Criteria getMiscControllerCriteria(List<? extends Controller> controllerList) throws Exception {
+    public static Criteria getControllerCriteria(List<? extends Controller> controllerList) throws Exception {
         Criteria criteriaList = new Criteria();
 
-        for (Object controller : controllerList){
+        for (Controller controller : controllerList){
             Criteria criteria = new Criteria();
-            MiscController miscController = (MiscController) controller;
-            List<Condition> conditions = miscController.getControllerConditions();
-            criteria.addAndConditions(conditions);
-            criteriaList.orCriteria(criteria);
-        }
-        return criteriaList;
-    }
-
-    public static Criteria getBacnetControllerCriteria(List<? extends Controller> controllerList) throws Exception{
-
-        Criteria criteriaList = new Criteria();
-
-        for (Object controller : controllerList){
-            Criteria criteria = new Criteria();
-            BacnetIpControllerContext bacnetIpControllerContext = (BacnetIpControllerContext) controller;
-            List<Condition> conditions = bacnetIpControllerContext.getControllerConditions();
-            criteria.addAndConditions(conditions);
-            criteriaList.orCriteria(criteria);
-        }
-        return criteriaList;
-    }
-
-    public static Criteria getModbusIpControllerCriteria(List<? extends Controller> controllerList) throws Exception {
-        Criteria criteriaList = new Criteria();
-
-        for (Object controller:controllerList){
-            Criteria criteria = new Criteria();
-            ModbusTcpControllerContext modbusTcpControllerContext = (ModbusTcpControllerContext) controller;
-            List<Condition> conditions = modbusTcpControllerContext.getControllerConditions();
-            criteria.addAndConditions(conditions);
-            criteriaList.orCriteria(criteria);
-        }
-        return criteriaList;
-    }
-
-    public static Criteria getModbusRtuControllerCriteria(List<? extends Controller> controllerList) throws Exception {
-        Criteria criteriaList = new Criteria();
-
-        for (Object controller:controllerList){
-            Criteria criteria = new Criteria();
-            ModbusRtuControllerContext modbusRtuControllerContext = (ModbusRtuControllerContext) controller;
-            List<Condition> conditions = modbusRtuControllerContext.getControllerConditions();
-            criteria.addAndConditions(conditions);
-            criteriaList.orCriteria(criteria);
-        }
-        return criteriaList;
-    }
-    public static Criteria getOpcXMLDAControllerCriteria(List<? extends Controller> controllerList) throws Exception {
-        Criteria criteriaList = new Criteria();
-
-        for (Object controller:controllerList){
-            Criteria criteria = new Criteria();
-            OpcXmlDaControllerContext opcXmlDaControllerContext = (OpcXmlDaControllerContext) controller;
-            List<Condition> conditions = opcXmlDaControllerContext.getControllerConditions();
-            criteria.addAndConditions(conditions);
-            criteriaList.orCriteria(criteria);
-        }
-        return criteriaList;
-    }
-
-    public static Criteria getOpcUAControllerCriteria(List<? extends Controller> controllerList) throws Exception {
-        Criteria criteriaList = new Criteria();
-
-        for (Object controller:controllerList){
-            Criteria criteria = new Criteria();
-            OpcUaControllerContext opcUaControllerContext = (OpcUaControllerContext) controller;
-            List<Condition> conditions = opcUaControllerContext.getControllerConditions();
-            criteria.addAndConditions(conditions);
-            criteriaList.orCriteria(criteria);
-        }
-        return criteriaList;
-    }
-
-    public static Criteria getNiagaraControllerCriteria(List<? extends Controller> controllerList) throws Exception {
-        Criteria criteriaList = new Criteria();
-
-        for (Object controller:controllerList){
-            Criteria criteria = new Criteria();
-            NiagaraControllerContext niagaraControllerContext = (NiagaraControllerContext) controller;
-            List<Condition> conditions = niagaraControllerContext.getControllerConditions();
-            criteria.addAndConditions(conditions);
-            criteriaList.orCriteria(criteria);
-        }
-        return criteriaList;
-    }
-
-    public static Criteria getLonWorksControllerCriteria(List<? extends Controller> controllerList) throws Exception {
-        Criteria criteriaList = new Criteria();
-
-        for (Object controller:controllerList){
-            Criteria criteria = new Criteria();
-            LonWorksControllerContext lonWorksControllerContext = (LonWorksControllerContext) controller;
-            List<Condition> conditions = lonWorksControllerContext.getControllerConditions();
-            criteria.addAndConditions(conditions);
-            criteriaList.orCriteria(criteria);
-        }
-        return criteriaList;
-    }
-
-    public static Criteria getRDMControllerCriteria(List<? extends Controller> controllerList) throws Exception {
-        Criteria criteriaList = new Criteria();
-
-        for (Object controller:controllerList){
-            Criteria criteria = new Criteria();
-            RdmControllerContext rdmControllerContext = (RdmControllerContext) controller;
-            List<Condition> conditions = rdmControllerContext.getControllerConditions();
+            List<Condition> conditions = controller.getControllerConditions();
             criteria.addAndConditions(conditions);
             criteriaList.orCriteria(criteria);
         }

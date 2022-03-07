@@ -2,10 +2,8 @@ package com.facilio.agentv2.actions;
 
 import com.facilio.agent.integration.wattsense.WattsenseClient;
 import com.facilio.agentv2.AgentApiV2;
-import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
-import com.facilio.agentv2.misc.MiscController;
 import com.facilio.agentv2.misc.MiscPoint;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.bmsconsole.actions.FacilioAction;
