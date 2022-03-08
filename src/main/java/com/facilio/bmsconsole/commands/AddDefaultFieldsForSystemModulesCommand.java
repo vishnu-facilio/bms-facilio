@@ -32,7 +32,9 @@ public class AddDefaultFieldsForSystemModulesCommand extends FacilioCommand {
                 }
             }
         }
-        context.put(FacilioConstants.Module.SKIP_EXISTING_MODULE_WITH_SAME_NAME_CHECK, true);
+        if(context.get(FacilioConstants.Module.SKIP_EXISTING_MODULE_WITH_SAME_NAME_CHECK) == null) {
+        	context.put(FacilioConstants.Module.SKIP_EXISTING_MODULE_WITH_SAME_NAME_CHECK, true);
+        }
         return false;
     }
 }

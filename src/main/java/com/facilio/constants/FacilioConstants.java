@@ -2631,11 +2631,18 @@ public class FacilioConstants {
 			public static final String MULTI_FILE_UPLOAD_QUESTION = "qandaMultiFileUploadQuestion";
 			public static final String BOOLEAN_QUESTION = "qandaBooleanQuestion";
 			public static final String RATING_QUESTION ="qandaRatingQuestion";
+			public static final String MATRIX_QUESTION ="matrixQuestion";
+			public static final String MULTI_QUESTION ="multiQuestion";
+			
+			public static final String MATRIX_QUESTION_ROW ="qandaMatrixQuestionRow";
+			public static final String MATRIX_QUESTION_COLUMN ="qandaMatrixQuestionColumn";
 		}
 
 		public static class Answers {
 			
 			public static final String ATTACHMENT = "qandaAnswerattachments";
+			
+			public static final String MATRIX_ANSWER = "qandaMatrixAnswer";
 			
 			public static final String MULTI_FILE_ANSWER = "qandaMultiFileAnswer";
 			public static final String MCQ_MULTI_ANSWER_REL = "qandaMcqMultiAnswerRel";

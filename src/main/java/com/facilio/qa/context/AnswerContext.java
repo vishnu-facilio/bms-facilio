@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.modules.FieldUtil;
 import com.facilio.qa.QAndAUtil;
 import com.facilio.qa.context.answers.MultiFileAnswerContext;
+import com.facilio.qa.context.client.answers.MatrixAnswerContext;
 import com.facilio.qa.context.questions.MCQOptionContext;
 import com.facilio.v3.context.V3Context;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -41,6 +42,8 @@ public class AnswerContext extends V3Context {
     // Multi record answers and these field names should be added as fetchsupplement in AddAnswerSupplementsCommand
     private List<MCQOptionContext> multiEnumAnswer; // Multi lookup field
     private List<MultiFileAnswerContext> multiFileAnswer; // Line Item field
+    
+    private MatrixAnswerContext.MatrixAnswer matrixAnswer;
 
     // Score fields
     private Double fullScore, score;
