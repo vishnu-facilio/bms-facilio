@@ -75,5 +75,22 @@ public class ScopingAction extends FacilioAction{
         return SUCCESS;
     }
 
+    public String delete() throws Exception {
+        FacilioChain chain = TransactionChainFactory.getDeleteScopingChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.SCOPING_ID, scopingId);
+        chain.execute();
+        setResult(FacilioConstants.ContextNames.SCOPING_ID, scopingId);
+        return SUCCESS;
+    }
+
+    public String cloneScoping() throws Exception {
+        FacilioChain chain = TransactionChainFactory.getCloneScopingChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.SCOPING_ID, scopingId);
+        chain.execute();
+        setResult(FacilioConstants.ContextNames.SCOPING_ID, scopingId);
+        return SUCCESS;
+    }
 
 }

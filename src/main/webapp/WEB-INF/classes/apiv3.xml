@@ -583,6 +583,30 @@
                 class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
                 method="sendMail">
         </action>
+        <action name="details"
+                class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
+                method="getReport">
+        </action>
+        <action name="scheduled/create"
+                class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
+                method="createOrUpdateScheduledReport">
+        </action>
+        <action name="scheduled/update"
+                class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
+                method="createOrUpdateScheduledReport">
+        </action>
+        <action name="scheduled/delete"
+                class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
+                method="deleteScheduledReport">
+        </action>
+        <action name="scheduled/list"
+                class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
+                method="scheduledList">
+        </action>
+        <action name="fetch_data"
+                class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
+                method="fetchData">
+        </action>
     </package>
     <package name="pivotReportApi" namespace="/api/v3/report/pivot" extends="v3Api">
         <action name="create"

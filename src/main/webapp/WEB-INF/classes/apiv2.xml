@@ -6760,6 +6760,14 @@
 				class="com.facilio.bmsconsole.actions.ScopingAction"
 				method="listValueGenerators" >
 		</action>
+		<action name="delete"
+				class="com.facilio.bmsconsole.actions.ScopingAction" method="delete">
+		</action>
+		<action name="clone"
+				class="com.facilio.bmsconsole.actions.ScopingAction" method="cloneScoping">
+	</action>
+
+
 
 	</package>
 </struts>

@@ -1406,5 +1406,14 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ExportPivotReport());
         return c;
     }
+    public static FacilioChain getScheduledReportChain(boolean isUpdate) {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddTemplateCommand());
+        if(isUpdate){
+            c.addCommand(new DeleteScheduledReportsCommand(true));
+        }
+        c.addCommand(new ScheduleV2ReportCommand());
+        return c;
+    }
 
 }

@@ -6535,6 +6535,10 @@ public class DashboardAction extends FacilioAction {
 		if(dashboardMeta.get("mobileEnabled") != null) {
 			this.dashboard.setMobileEnabled((boolean)dashboardMeta.get("mobileEnabled"));
 		}
+		if(dashboard.isTabEnabled() && dashboardMeta.get("tabEnabled") != null && !((Boolean)dashboardMeta.get("tabEnabled")))
+		{
+			dashboard.setSkipDefaultWidgetDeletion(true);
+		}
 		if (dashboardMeta.get("tabEnabled") != null) {
 			this.dashboard.setTabEnabled((boolean) dashboardMeta.get("tabEnabled"));
 		}
@@ -6603,7 +6607,19 @@ public class DashboardAction extends FacilioAction {
 		updateDashboardChain.execute(context);
 		return SUCCESS;
 	}
-	
+	public String enableDashboardTabs()throws Exception
+	{
+		if(dashboardId != null) {
+			List<DashboardTabContext> list = DashboardUtil.getDashboardTabs(dashboardId);
+			if(list != null)
+			{
+				this.dashboard = DashboardUtil.getDashboardWithWidgets(dashboardId);
+				this.dashboard.setTabEnabled(true);
+				DashboardUtil.updateDashboard(this.dashboard);
+			}
+		}
+		return SUCCESS;
+	}
 	public String updateDashboardTabsListWithWidgets() throws Exception {
 		if (dashboardMeta.containsKey("dashboardId")) {
 			Long dashboardId = (Long) dashboardMeta.get("dashboardId");

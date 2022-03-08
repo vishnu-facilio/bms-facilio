@@ -1587,12 +1587,12 @@ public class FieldFactory extends BaseFieldFactory {
         if (module != null && FacilioConstants.ContextNames.SITE.equals(module.getName())) {
             return getIdField(module);
         }
-
-		FacilioField field = getField ("siteId", "SITE_ID", FieldType.NUMBER);
-		field.setDisplayName ("Site");
-		field.setDefault (true);
+		
+		FacilioField field = getField ("siteId","SITE_ID",FieldType.NUMBER);
+		field.setDisplayName("Site");
+		field.setDefault(true);
 		if (module != null) {
-			field.setModule (module);
+			field.setModule(module);
 		}
         return field;
     }
@@ -1743,10 +1743,10 @@ public class FieldFactory extends BaseFieldFactory {
     }
 
     public static FacilioField getModuleIdField(FacilioModule module) {
-
-		FacilioField field = getField ("moduleId", "MODULEID", FieldType.NUMBER);
+       
+		FacilioField field = getField ("moduleId","MODULEID",FieldType.NUMBER);
 		if (module != null) {
-			field.setModule (module);
+			field.setModule(module);
 		}
         return field;
     }

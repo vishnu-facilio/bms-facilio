@@ -66,6 +66,11 @@ public class UpdateDashboardWithWidgetCommand extends FacilioCommand {
 
 			List<Long> removedWidgets = new ArrayList<Long>();
 			for (int i = 0; i < existingWidgets.size(); i++) {
+				DashboardWidgetContext dashboardWidget = existingWidgets.get(i);
+				if(dashboard.isSkipDefaultWidgetDeletion() && existingWidgets.get(i).getDashboardId() != null)
+				{
+					continue;
+				}
 				if (!widgetMapping.containsKey(existingWidgets.get(i)
 						.getId())) {
 					removedWidgets.add(existingWidgets.get(i).getId());

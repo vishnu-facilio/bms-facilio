@@ -16,9 +16,19 @@ public class AddOrUpdateScopingConfigCommand extends FacilioCommand {
             throw new IllegalArgumentException("Invalid Scoping Config");
         }
         if(scopingContext.getId() > 0) {
+            ScopingContext sc = ApplicationApi.getScoping(scopingContext.getId());
+            if(sc != null && sc.isDefault()) {
+                throw new IllegalArgumentException("Updation of default Scoping is not permitted");
+            }
+            else if (scopingContext.isDefault()) {
+                throw new IllegalArgumentException("There can be only one default scoping for an application");
+            }
             ApplicationApi.deleteScopingConfig(scopingContext.getId());
         }
         else {
+            if (scopingContext.isDefault()) {
+                throw new IllegalArgumentException("There can be only one default scoping for an application");
+            }
             ApplicationApi.addScoping(scopingContext);
         }
         for(ScopingConfigContext sc : scopingContext.getScopingConfigList()) {

@@ -922,6 +922,38 @@ public class DashboardUtil {
 		}
 		return null;
 	}
+	public static Long getDashboardFromTabId(Long dashboardTabId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getDashboardTabFields())
+				.table(ModuleFactory.getDashboardTabModule().getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(dashboardTabId, ModuleFactory.getDashboardTabModule()));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+
+		if (props != null && !props.isEmpty()) {
+			Long dashboardId = (Long) props.get(0).get("dashboardId");
+			if(dashboardId != null)
+			{
+				return dashboardId;
+			}
+		}
+		return null;
+	}
+	public static DashboardContext getDashboardContextFromDashboardId(Long dashboardId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getDashboardTabFields())
+				.table(ModuleFactory.getDashboardTabModule().getTableName())
+				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+				.andCustomWhere("DASHBOARD_ID = ?", dashboardId);
+
+		List<Map<String, Object>> props = selectBuilder.get();
+
+		if (props == null || props.isEmpty()) {
+				return DashboardUtil.getDashboard(dashboardId);
+		}
+		return null;
+	}
+
 	
 	public static DashboardContext getDashboard(String dashboardLinkName,long moduleId) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()

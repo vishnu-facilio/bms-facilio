@@ -60,7 +60,9 @@ public class ValidateWorkOrderFieldsCommandV3 extends FacilioCommand {
                     	if(woContext.getSiteId() < 0) {
                     		woContext.setSiteId(tenant.getSiteId());
                     	}
-                        woContext.setTenant(tenant);
+                        if(woContext.getTenant() == null || woContext.getTenant().getId() <= 0) {
+                            woContext.setTenant(tenant);
+                        }
                     }
                 }
                 catch(Exception e) {
