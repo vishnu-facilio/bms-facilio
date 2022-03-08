@@ -82,7 +82,11 @@ public  class DevicePointsUtil {
 			controller.setControllerType(controllerType);
 			controller.setPortNumber(portNumber);
 			controller.setControllerProps(properties);
-			controller = bean.addController(controller);
+			try {
+				controller = bean.addController(controller);
+			} catch (Exception ex) {
+				LOGGER.error("Exception while adding controller");
+			}
 		} else {
 			if (controller.getAgentId() < 1 && controller.getId() > -1) {
 				controller.setAgentId(agentId);
