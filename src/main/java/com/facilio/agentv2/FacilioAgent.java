@@ -1,6 +1,8 @@
 package com.facilio.agentv2;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.json.simple.JSONObject;
 
@@ -43,6 +45,8 @@ public class FacilioAgent implements Serializable {
     @JsonInclude
     private Boolean isDisable;
     private String messageSource;
+    
+    Map<String, Object> params;
 
     private long workflowId = -1;
     public long getWorkflowId() {

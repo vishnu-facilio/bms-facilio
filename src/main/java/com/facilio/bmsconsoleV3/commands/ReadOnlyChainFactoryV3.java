@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands;
 
+import com.facilio.agentv2.commands.FetchAgentDetailsCommand;
 import com.facilio.bmsconsole.automation.command.ListGlobalVariableCommand;
 import com.facilio.bmsconsole.automation.command.ListGlobalVariableGroupCommand;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -197,6 +198,12 @@ public class ReadOnlyChainFactoryV3 {
         FacilioChain c = getDefaultChain();
 		c.addCommand(FacilioChainFactory.getFieldsByAccessType());
         c.addCommand(new GetSortableFieldsCommand());
+        return c;
+    }
+    
+    public static FacilioChain getAgentDetailsCommand() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchAgentDetailsCommand());
         return c;
     }
 }
