@@ -28,6 +28,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -46,6 +47,8 @@ public class FormRuleAPI {
 	public static final String FORM_RULE_CONTEXT = "formRuleContext";
 	public static final String FORM_RULE_CONTEXTS = "formRuleContexts";
 	public static final String FORM_RULE_ACTION_CONTEXT = "formRuleActionContext";
+	
+	public static final String FETCH_ONLY_SUB_FORM_RULES = "fetchOnlySubFormRules";
 	
 	public static final String IS_SUB_FORM_TRIGGER_FIELD = "isSubFormTriggerField";
 	
@@ -413,7 +416,7 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 		return formRuleContexts;
 	}
 	
-	public static List<FormRuleContext> getFormRuleContexts(String moduleName, Long formId) throws Exception {
+	public static List<FormRuleContext> getFormRuleContexts(String moduleName, Long formId, boolean fetchOnlySubformRules) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -427,6 +430,13 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 				.andCondition(CriteriaAPI.getCondition(formRuleFieldMap.get("formId"), ""+formId, NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(formRuleFieldMap.get("type"), ""+FormRuleContext.FormRuleType.FROM_RULE.getIntVal(), NumberOperators.EQUALS))
 				;
+		
+		if(fetchOnlySubformRules) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(formRuleFieldMap.get("subFormId"), "", CommonOperators.IS_NOT_EMPTY));
+		}
+		else {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(formRuleFieldMap.get("subFormId"), "", CommonOperators.IS_EMPTY));
+		}
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		

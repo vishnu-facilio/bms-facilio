@@ -22,6 +22,7 @@ public class FormRuleAction extends FacilioAction {
 	 private long subFormId = -1;
 	 private long formFieldId;
 	 private int triggerType;
+	 private boolean fetchOnlySubformRules;
 	 Map<String,Object> formData;
 	 String moduleName;
 	 
@@ -153,6 +154,7 @@ public class FormRuleAction extends FacilioAction {
 		
 		context.put(FacilioConstants.ContextNames.FORM_ID, this.getFormId());
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, this.getModuleName());
+		context.put(FormRuleAPI.FETCH_ONLY_SUB_FORM_RULES, isFetchOnlySubformRules());
 		
 		chain.execute();
 		
@@ -199,6 +201,14 @@ public class FormRuleAction extends FacilioAction {
 
 	public void setSubFormId(long subFormId) {
 		this.subFormId = subFormId;
+	}
+
+	public boolean isFetchOnlySubformRules() {
+		return fetchOnlySubformRules;
+	}
+
+	public void setFetchOnlySubformRules(boolean fetchOnlySubformRules) {
+		this.fetchOnlySubformRules = fetchOnlySubformRules;
 	}
 
 }
