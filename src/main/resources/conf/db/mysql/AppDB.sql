@@ -1,4 +1,3 @@
-Quota
 CREATE DATABASE IF NOT EXISTS ${defaultAppDB};
 USE ${defaultAppDB};
 
