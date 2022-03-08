@@ -48,7 +48,7 @@ public class BaseMatrixQuestionHandler {
 
 	public void createAnswerModuleAndSetField(BaseMatrixQuestionContext question) throws Exception {
 		
-		V3Util.throwRestException(question.getQuestion() == null || question.getQuestion().isBlank(), ErrorCode.VALIDATION_ERROR, "Question cannot be empty");
+		V3Util.throwRestException(question.getQuestion() == null || question.getQuestion().trim().isEmpty(), ErrorCode.VALIDATION_ERROR, "Question cannot be empty");
 		
 		String questionName = question.getQuestion().length() <= 50 ? question.getQuestion() : question.getQuestion().substring(0, 49);  
 		
