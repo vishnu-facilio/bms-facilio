@@ -36,6 +36,7 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.dealsandoffers.FillDe
 import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.FillNeighbourhoodSharingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.NeighbourhoodFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.FillNewsAndInformationDetailsCommandV3;
+
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.FillNewsRelatedModuleDataInListCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.LoadNewsAndInformationLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
@@ -81,7 +82,9 @@ import com.facilio.bmsconsoleV3.commands.storeroom.UpdateServingSitesinStoreRoom
 import com.facilio.bmsconsoleV3.commands.tenant.FillTenantsLookupCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.ValidateTenantSpaceCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.LoadTenantcontactLookupsCommandV3;
+import com.facilio.bmsconsoleV3.commands.tenantspaces.LoadTenantSpacesLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantunit.AddSpaceCommandV3;
+import com.facilio.bmsconsoleV3.commands.tenantunit.LoadTenantUnitLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.termsandconditions.CheckForPublishedCommand;
 import com.facilio.bmsconsoleV3.commands.termsandconditions.LoadTermsLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesLookUpCommandV3;
@@ -439,12 +442,26 @@ public class APIv3Config {
     public static Supplier<V3Config> getTenantUnit() {
         return () -> new V3Config(V3TenantUnitSpaceContext.class, new ModuleCustomFieldCount30())
                 .create()
-                    .beforeSave(new AddSpaceCommandV3())
-                    .afterSave(TransactionChainFactoryV3.getTenantUnitAfterSaveChain())
+                    .beforeSave(new AddOrUpdateSpaceLocation(),new AddSpaceCommandV3())
+                    .afterSave(new CreateSpaceAfterSave(),TransactionChainFactoryV3.getTenantUnitAfterSaveChain())
                 .update()
-                	.beforeSave(new MarkTenantunitAsVacantCommandV3())
+                	.beforeSave(new AddOrUpdateSpaceLocation(),new MarkTenantunitAsVacantCommandV3())
                 .list()
+                .beforeFetch(new LoadTenantUnitLookupCommandV3())
+                .summary().beforeFetch(new LoadTenantUnitLookupCommandV3())
+                .delete()
+                .build();
+    }
+
+    @Module("tenantspaces")
+    public static Supplier<V3Config> getTenantSpaces() {
+        return () -> new V3Config(V3TenantUnitSpaceContext.class, null)
+                .create()
+                .update()
+                .list()
+                .beforeFetch(new LoadTenantSpacesLookupCommandV3())
                 .summary()
+                .beforeFetch(new LoadTenantSpacesLookupCommandV3())
                 .build();
     }
 

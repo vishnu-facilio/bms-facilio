@@ -2,27 +2,32 @@ package com.facilio.bmsconsoleV3.commands.tenantunit;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.facilio.bmsconsoleV3.context.V3FloorContext;
 import com.facilio.bmsconsoleV3.context.V3SpaceContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestContext;
+import com.facilio.chain.FacilioContext;
+import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.FloorContext;
-import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsoleV3.context.V3BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsoleV3.context.V3TenantUnitSpaceContext;
+import org.apache.commons.collections4.CollectionUtils;
+
 public class AddSpaceCommandV3 extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		HashMap record = (HashMap)context.get("recordMap");
-		
-		List<V3TenantUnitSpaceContext> spaces = (List<V3TenantUnitSpaceContext>)record.get("tenantunit");
-		
-		if (spaces != null && !spaces.isEmpty()) {
+		String moduleName = Constants.getModuleName(context);
+		Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
+		List<V3TenantUnitSpaceContext> spaces = recordMap.get(moduleName);
+		if (CollectionUtils.isNotEmpty(spaces)) {
 			for (V3TenantUnitSpaceContext unitspace : spaces) {
 				unitspace.setSpaceType(SpaceType.SPACE);
 				updateSiteAndBuildingId(unitspace);
@@ -70,5 +75,4 @@ public class AddSpaceCommandV3 extends FacilioCommand {
 			}
 		}
 	}
-
 }

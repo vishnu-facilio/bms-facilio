@@ -14,13 +14,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class PageWidget {
 	private static final long serialVersionUID = 1L;
-	
+
 	public PageWidget () {}
-	
+
 	public PageWidget(WidgetType type) {
 		this(type, null);
 	}
-	
+
 	public PageWidget(WidgetType type, String name) {
 		this.widgetType = type;
 		this.name = name;
@@ -33,7 +33,7 @@ public class PageWidget {
 	public void setOrgId(long orgId) {
 		this.orgId = orgId;
 	}
-	
+
 	private long id = -1;
 	public long getId() {
 		return id;
@@ -41,7 +41,7 @@ public class PageWidget {
 	public void setId(long id) {
 		this.id = id;
 	}
-	
+
 	private String name;
 	public String getName() {
 		return name;
@@ -67,12 +67,12 @@ public class PageWidget {
 	public void setWidgetType(WidgetType widgetType) {
 		this.widgetType = widgetType;
 	}
-	
+
 	@JsonIgnore
 	public Map<String, Object> getWidgetTypeObj() throws Exception {
 		return FieldUtil.getAsProperties(widgetType);
 	}
-	
+
 	private long sectionId;
 	public long getSectionId() {
 		return sectionId;
@@ -80,7 +80,7 @@ public class PageWidget {
 	public void setSectionId(long sectionId) {
 		this.sectionId = sectionId;
 	}
-	
+
 	private Section section;
 	public Section getSection() {
 		return section;
@@ -88,9 +88,9 @@ public class PageWidget {
 	public void setSection(Section section) {
 		this.section = section;
 	}
-	
+
 	private JSONObject relatedList;
-	
+
 	public JSONObject getRelatedList() {
 		return relatedList;
 	}
@@ -99,7 +99,7 @@ public class PageWidget {
 		this.relatedList = relatedList;
 	}
 
-	
+
 	private JSONObject widgetParams;
 	public JSONObject getWidgetParams() {
 		return widgetParams;
@@ -113,14 +113,14 @@ public class PageWidget {
 			this.widgetParams = (JSONObject) parser.parse(widgetParams);
 		}
 	}
-	
+
 	public void addToWidgetParams (String key, Object value) {
 		if (widgetParams == null) {
 			widgetParams = new JSONObject();
 		}
 		widgetParams.put(key, value);
 	}
-	
+
 	public void addCardType (CardType cardType) {
 		addToWidgetParams("type", cardType.getName());
 	}
@@ -170,14 +170,14 @@ public class PageWidget {
 		setWidth(width);
 		setHeight(height);
 	}
-	
+
 	private void addToLayoutParams (String key, Object value) {
 		if (layoutParams == null) {
 			layoutParams = new JSONObject();
 		}
 		layoutParams.put(key, value);
 	}
-	
+
 	private List<PageWidget> widgets;
 	public List<PageWidget> getWidgets() {
 		return widgets;
@@ -195,37 +195,37 @@ public class PageWidget {
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum WidgetType {
 		DETAILS_WIDGET("detailsWidget"),
- 		PRIMARY_DETAILS_WIDGET("primaryDetailsWidget"),
- 		MV_DETAILS_WIDGET("mvSummaryWidget"),
- 		SECONDARY_DETAILS_WIDGET("secondaryDetailsWidget"),
- 		CUSTOM_SECONDARY_DETAILS_WIDGET("customSecondaryDetailsWidget"),
- 		TENANT_SPECIAL_WIDGET("tenantSpecialWidget"),
- 		CARD("card"),
- 		CHART("chart"),
- 		LIST("list"),
- 		COUNT("count"),
- 		COMMENT("comment"),
- 		ATTACHMENT("attachment"),
- 		RELATED_LIST("relatedList"),
- 		ACTIVITY("activity"),
- 		GROUP("group"),
- 		HISTORY("history"),
- 		RULE_DETIALS_WIGET("ruleDetialsWidget"),
- 		RULE_ASSOCIATED_WO("ruleAssociatedWo"),
- 		RULE_RCA("ruleRCA"),
- 		HISTORY_LOG("historyLog"),
- 		GRAPHICS("graphics"),
- 		ANOMALY_DETAILS_WIDGET("anomalyDetailsWidget"),
- 		ANOMALIES_TREND_WIDGET("anomaliesTrendWidget"),
- 		ANOMALY_SUB_METER_WIDGET("anomalySubMeterWidget"),
- 		ANOMALY_RCA("anomalyRca"),
- 		OCCURRENCE_HISTORY("occurrenceHistory"),
- 		ANOMALY_METRICS("anomalyMetrics"),
- 		FORMULA_LOG("formulaLog"),
+		PRIMARY_DETAILS_WIDGET("primaryDetailsWidget"),
+		MV_DETAILS_WIDGET("mvSummaryWidget"),
+		SECONDARY_DETAILS_WIDGET("secondaryDetailsWidget"),
+		CUSTOM_SECONDARY_DETAILS_WIDGET("customSecondaryDetailsWidget"),
+		TENANT_SPECIAL_WIDGET("tenantSpecialWidget"),
+		CARD("card"),
+		CHART("chart"),
+		LIST("list"),
+		COUNT("count"),
+		COMMENT("comment"),
+		ATTACHMENT("attachment"),
+		RELATED_LIST("relatedList"),
+		ACTIVITY("activity"),
+		GROUP("group"),
+		HISTORY("history"),
+		RULE_DETIALS_WIGET("ruleDetialsWidget"),
+		RULE_ASSOCIATED_WO("ruleAssociatedWo"),
+		RULE_RCA("ruleRCA"),
+		HISTORY_LOG("historyLog"),
+		GRAPHICS("graphics"),
+		ANOMALY_DETAILS_WIDGET("anomalyDetailsWidget"),
+		ANOMALIES_TREND_WIDGET("anomaliesTrendWidget"),
+		ANOMALY_SUB_METER_WIDGET("anomalySubMeterWidget"),
+		ANOMALY_RCA("anomalyRca"),
+		OCCURRENCE_HISTORY("occurrenceHistory"),
+		ANOMALY_METRICS("anomalyMetrics"),
+		FORMULA_LOG("formulaLog"),
 		ALARM_DETAILS("alarmDetails"),
 		SENSOR_ALARM_DETAIL("sensorAlarmDetail"),
- 		ALARM_REPORT("alarmReport"),
- 		KPI_DETAILS_WIDGET("kpiDetailsWidget"),
+		ALARM_REPORT("alarmReport"),
+		KPI_DETAILS_WIDGET("kpiDetailsWidget"),
 		IMPACTS("impactsWidget"),
 		ALARM_TIME_LINE("alarmTimeLine"),
 		INSURANCE("insurance"),
@@ -273,25 +273,25 @@ public class PageWidget {
 		SUPPLIER_DETAILS("supplierDetails"),
 		TARIFF_DETAILS("tariffDetails"),
 		TARIFF_INFORMATION("tariffInformation"),
-		
+
 		UTILITY_DETAILS("utilityDetails"),
 		UTILITY_CONNECTIONS("utilityConnections"),
 		UTILITY_ACTIVITY_PAYMENT("utilityActivePayments"),
 		UTILITY_CANCEL_PAYMENT("utilityCancelPayments"),
 		UTILITY_TRANSACTIONS("utilityTransactions"),
 		UTILITY_ALL_ACTIVITIES("utilityAllActivities"),
-		
+
 		BILL_SITE_DETAILS("billSiteDetails"),
-		
+
 		INVENTORY_REQUEST_CARD1("inventoryrequestcard1"),
 		INVENTORY_REQUEST_CARD2("inventoryrequestcard2"),
 		INVENTORY_REQUEST_CARD3("inventoryrequestcard3"),
 		INVENTORY_REQUEST_LINE_ITEMS("inventoryrequestlineitems"),
 
 		SERVICE_VENDORS("servicevendors"),
-		
 
-		
+
+
 		CONNNECTED_APP("connectedApp"),
 
 		VISITS_PRIMARY_FIELDS("visitsPrimaryFields"),
@@ -305,7 +305,7 @@ public class PageWidget {
 		NEIGHBOURHOOD_DETAILS_WIDGET("neighbourhoodDetailsWidget"),
 		DEALS_DETAILS_WIDGET("dealsDetailsWidget"),
 		NEIGHBOURHOOD_DEALS("neighbourhoodDeals"),
-        NEWS_AND_INFORMATION("newsAndInformationWidget"),
+		NEWS_AND_INFORMATION("newsAndInformationWidget"),
 
 		// Budget Widgets
 		TOTAL_BUDGET("totalBudget"),
@@ -328,16 +328,16 @@ public class PageWidget {
 		BOOKING_SLOT_INFORMATION("bookingSlotInformation"),
 		BOOKING_INTERNAL_ATTENDEES("bookingInternalAttendees"),
 		BOOKING_EXTERNAL_ATTENDEES("bookingExternalAttendees"),
-		
+
 		INSPECTION_TEMPLATE_inspectionDetails("inspectionDetails"),
 		INSPECTION_TEMPLATE_inspectionPageDetails("inspectionPageDetails"),
 		INSPECTION_TEMPLATE_inspectionTriggers("inspectionTriggers"),
 		INSPECTION_TEMPLATE_inspectionInsights("inspectionInsights"),
 		INSPECTION_TEMPLATE_inspectionQuestions("inspectionQuestions"),
 		INSPECTION_TEMPLATE_history("inspectionHistory"),
-		
+
 		INSPECTION_RESPONSE_WIDGET("inspectionResponseWidget"),
-		
+
 		INDUCTION_TEMPLATE_inductionDetails("inductionDetails"),
 		INDUCTION_TEMPLATE_inductionPageDetails("inductionPageDetails"),
 		INDUCTION_TEMPLATE_inductionTriggers("inductionTriggers"),
@@ -346,7 +346,7 @@ public class PageWidget {
 		INDUCTION_TEMPLATE_history("inductionHistory"),
 
 		INDUCTION_RESPONSE_WIDGET("inductionResponseWidget"),
-		
+
 		Q_AND_A_SECONDARY_DETAILS_WIDGET("qandASecondaryDetailsWidget"),
 
 		// Service Request Module Widgets
@@ -419,7 +419,14 @@ public class PageWidget {
 		ASSOCIATED_TERMS("associatedterms"),
 		TENANT_DETAIL_OVERVIEW("tenantdetailoverview"),
 		PURCHASED_ITEMS("purchaseditems"),
-		ITEM_TRANSACTIONS("transactionsitem");
+		ITEM_TRANSACTIONS("transactionsitem"),
+
+		TENANT_UNIT_OVERVIEW("tenantunitoverview"),
+		TENANT_UNIT_SPECIAL_WIDGET("tenantunitspecialwidget"),
+		TENANT_UNIT_TENANT("tenantunittenant"),
+		TENANT_UNIT_WORKORDER("tenantunitworkorder"),
+		TENANT_UNIT_LOCATION("tenantunitlocation"),
+		TENANT_UNIT_PHOTO("tenantunitphoto");
 
 
 		private String name;
@@ -431,19 +438,19 @@ public class PageWidget {
 		public String getName() {
 			return name;
 		}
-		
- 		public int getValue() {
+
+		public int getValue() {
 			return ordinal() + 1;
 		}
-		
+
 		public static WidgetType valueOf (int value) {
 			if (value > 0 && value <= values().length) {
 				return values() [value - 1];
 			}
 			return null;
 		}
- 	}
-	
+	}
+
 	public enum CardType {
 		NEXT_PM("nextPm"),
 		FAILURE_METRICS("failureMetrics"),
@@ -458,15 +465,15 @@ public class PageWidget {
 		AVG_TTR("avgTtr"),
 		SET_COMMAND("setCommand"),
 		MAINTENACE_COST("maintenanceCost"),
- 		PLANNED_MAINTENACE_COST("plannedMaintenanceCost"),
- 		UNPLANNED_MAINTENACE_COST("unplannedMaintenanceCost"),
- 		MAINTENANCE_COST_TREND("maintenanceCostTrend"),
- 		ASSET_COST_DETAILS("assetCostDetails"),
- 		COST_BREAKUP("costBreakup"),
- 		DEPRECIATION_SCHEDULE("depreciationSchedule"),
- 		DEPRECIATION_COST_TREND("depreciationCostTrend"),
+		PLANNED_MAINTENACE_COST("plannedMaintenanceCost"),
+		UNPLANNED_MAINTENACE_COST("unplannedMaintenanceCost"),
+		MAINTENANCE_COST_TREND("maintenanceCostTrend"),
+		ASSET_COST_DETAILS("assetCostDetails"),
+		COST_BREAKUP("costBreakup"),
+		DEPRECIATION_SCHEDULE("depreciationSchedule"),
+		DEPRECIATION_COST_TREND("depreciationCostTrend"),
 		OPERATION_ALARM_REPORT("operationAlarm"),
-		
+
 		RANK_RULE("rankRule"),
 		RULE_ASSETS_ALARM("assetsAlarm"),
 		RULE_ALARM_INSIGHT("ruleInsights"),
@@ -474,17 +481,17 @@ public class PageWidget {
 		RULE_ASSOCIATED_WO("ruleAssociatedWo"),
 		RULE_WO_DURATION("ruleWoDuration"),
 		NO_OF_ANOMALIES("noOfAnomalies"),
- 		ML_ALARM_ENERGY_CDD("mlAlarmEnergyCdd"),
- 		ENERGY_WASTAGE_DETAILS("energWastageDetails"),
- 		ML_MTBA("mlMtba"),
- 		ML_MTTC("mlMttc"),
- 		ML_DEVIATION("mlDeviation"),
- 		ALARM_DUARTION("alarmDuration"),
+		ML_ALARM_ENERGY_CDD("mlAlarmEnergyCdd"),
+		ENERGY_WASTAGE_DETAILS("energWastageDetails"),
+		ML_MTBA("mlMtba"),
+		ML_MTTC("mlMttc"),
+		ML_DEVIATION("mlDeviation"),
+		ALARM_DUARTION("alarmDuration"),
 		ANALYTICS_CHART("analyticsChart"),
- 		IMPACT_DETAILS("impactDetails"),
+		IMPACT_DETAILS("impactDetails"),
 		OUT_OF_SCHEDULE("outOfSchedule"),
 		DEFAULT_COMPARISION_CARD("defaultComparison"),
-		
+
 		ECM("ecm"),
 		MV_SAVINGS("savings"),
 		MV_ENERGY("mvEnergy"),
@@ -495,42 +502,42 @@ public class PageWidget {
 		MV_COST_TREND("costTrend"),
 		MV_CUMULATIVE_SAVINGS("cumulativeSavings"),
 		MV_PERCENTAGE_SAVINGS("mvPercentageSavings"),
- 		
- 		KPI_METERS_ASSOCIATED("metersAssociated"),
- 		KPI_VIOLATIONS("kpiViolations"),
- 		KPI_TARGET("kpiTarget"),
- 		KPI_LATEST_VALUE("kpiLatestValue"),
- 		KPI_TREND("kpiTrend"),
- 		KPI_TABULAR("kpiTabular"),
- 		
- 		WEATHER("weather"),
- 		ENERGY("energy"),
- 		OPERATING_HOURS("operatingHours"),
- 		BUILDING("building"),
- 		SPACE("space"),
+
+		KPI_METERS_ASSOCIATED("metersAssociated"),
+		KPI_VIOLATIONS("kpiViolations"),
+		KPI_TARGET("kpiTarget"),
+		KPI_LATEST_VALUE("kpiLatestValue"),
+		KPI_TREND("kpiTrend"),
+		KPI_TABULAR("kpiTabular"),
+
+		WEATHER("weather"),
+		ENERGY("energy"),
+		OPERATING_HOURS("operatingHours"),
+		BUILDING("building"),
+		SPACE("space"),
 		OCCUPANCY("occupancy"),
 		ASSET_READING_WIDGET("assetReadingWidget"),
- 		;
+		;
 		private String name;
-		
+
 		CardType(String name) {
 			this.name = name;
 		}
-		
+
 		public String getName() {
 			return name;
 		}
-		
- 		public int getValue() {
+
+		public int getValue() {
 			return ordinal() + 1;
 		}
-		
+
 		public static CardType valueOf (int value) {
 			if (value > 0 && value <= values().length) {
 				return values() [value - 1];
 			}
 			return null;
 		}
- 	}
-	
+	}
+
 }
