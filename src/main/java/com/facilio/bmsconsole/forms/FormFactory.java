@@ -1706,18 +1706,11 @@ public class FormFactory {
 		fields.add(new FormField("site", FieldDisplayType.LOOKUP_SIMPLE, "Located Site", Required.REQUIRED, "site", 3, 2));
 		fields.add(new FormField("location", FieldDisplayType.LOOKUP_SIMPLE, "Location", Required.OPTIONAL, "location", 3, 3).setAllowCreateOptions(true).setCreateFormName("location_form"));
 		fields.add(new FormField("owner", FieldDisplayType.LOOKUP_SIMPLE, "Owner", Required.OPTIONAL,"users", 4, 1));
-		FormField field = new FormField("sites", FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Serving Sites", Required.OPTIONAL,"site", 5, 1);
+
+		FormField field = new FormField("servingsites", FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Serving Sites", Required.OPTIONAL,14, 1);
 		JSONObject filterObj = new JSONObject();
 		filterObj.put("skipSiteFilter", true);
 		field.setConfig(filterObj);
-		
-		//multilookup site field object
-		FacilioField fieldObj = new FacilioField();
-		fieldObj.setDataType(FieldType.MULTI_LOOKUP);
-		fieldObj.setColumnName("SERVING_SITES");
-		fieldObj.setDisplayType(FieldDisplayType.MULTI_LOOKUP_SIMPLE);
-		fieldObj.setModule(ModuleFactory.getStoreRoomModule());
-		field.setField(fieldObj);
 		fields.add(field);
 
 		fields.add(new FormField("isApprovalNeeded", FieldDisplayType.DECISION_BOX, "Approval Needed", Required.OPTIONAL, 6, 2));
