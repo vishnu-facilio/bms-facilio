@@ -1065,8 +1065,10 @@ public class FacilioConstants {
 		public static final String FILTER_CRITERIA = "filterCriteria";
 		public static final String INCLUDE_PARENT_CRITERIA = "includeParentCriteria";
 		public static final String SEARCH = "search";
+		public static final String GENERIC_SEARCH = "genericSearch";
 		public static final String SEARCH_RESULT = "searchResult";
 		public static final String SEARCH_CRITERIA = "searchCriteria";
+		public static final String GENERIC_SEARCH_CRITERIA = "genericSearchCriteria";
 		public static final String FILTER_SERVER_CRITERIA = "filterServerCriteria";
 		public static final String SORTING = "sorting";
 		public static final String OVERRIDE_SORTING = "overrideSorting";
@@ -1381,8 +1383,9 @@ public class FacilioConstants {
 
 		public static final String IDS_TO_UPDATE_TASK_COUNT = "ids_to_update_task_count";
 		public static final String IDS_TO_UPDATE_COUNT = "ids_to_update_count";
-		
+
 		public static final String PAGE = "page";
+		public static final String RELATED_LIST_META = "relatedListMeta";
 		public static final String CURRENT_CALENDAR_VIEW = "currentCalendarView";
 		public static final String ML_FORECASTING = "ml_forecasting";
         public static final String CREATE_IN_PREOPEN = "crateInPreOpen";

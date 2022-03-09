@@ -103,6 +103,14 @@ public class PeopleAction extends FacilioAction{
 		this.peopleIds = peopleIds;
 	}
 
+	private String genericSearch;
+	public String getGenericSearch() {
+		return genericSearch;
+	}
+	public void setGenericSearch(String genericSearch) {
+		this.genericSearch = genericSearch;
+	}
+
 	public String addPeople() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(peopleList)) {
@@ -188,6 +196,14 @@ public class PeopleAction extends FacilioAction{
  			searchObj.put("query", getSearch());
  			chain.getContext().put(FacilioConstants.ContextNames.SEARCH, searchObj);
  		}
+
+		if(getGenericSearch() != null){
+			JSONObject searchObj = new JSONObject();
+			searchObj.put("fields", "people.name,people.email");
+			searchObj.put("query", getGenericSearch());
+			chain.getContext().put(FacilioConstants.ContextNames.GENERIC_SEARCH, searchObj);
+		}
+
  		if(!getFetchCount()) {
 			JSONObject pagination = new JSONObject();
 			pagination.put("page", getPage());

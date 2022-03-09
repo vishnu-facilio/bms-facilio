@@ -141,6 +141,11 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 		if (searchCriteria != null && !searchCriteria.isEmpty()) {
 			builder.andCriteria(searchCriteria);
 		}
+
+		Criteria genericSearchCriteria = (Criteria) context.get(ContextNames.GENERIC_SEARCH_CRITERIA);
+		if (genericSearchCriteria != null && !genericSearchCriteria.isEmpty()) {
+			builder.andCriteria(genericSearchCriteria);
+		}
 		
 		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(moduleName);
 		if(scopeCriteria != null && !scopeCriteria.isEmpty())

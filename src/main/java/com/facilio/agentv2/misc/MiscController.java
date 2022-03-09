@@ -69,5 +69,15 @@ public class MiscController extends Controller {
     public String getIdentifier() {
         return getName();
     }
+
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof MiscController){
+            MiscController obj = (MiscController) o;
+            return this.getName().equals(obj.getName()) && super.equals(obj);
+        }else{
+            return false;
+        }
+    }
 }
 

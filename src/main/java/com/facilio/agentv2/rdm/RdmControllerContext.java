@@ -1,11 +1,8 @@
 package com.facilio.agentv2.rdm;
 
-import com.facilio.agent.controller.FacilioController;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.opcxmlda.OpcXmlDaControllerContext;
-import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -18,7 +15,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -106,6 +102,16 @@ public class RdmControllerContext extends Controller {
     private String getHost(String url) throws URISyntaxException {
         URI uri = new URI(url);
         return uri.getHost();
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof RdmControllerContext){
+            RdmControllerContext obj = (RdmControllerContext) o;
+            return this.getDevice().equals(obj.getDevice()) && this.getUrl().equals(obj.getUrl()) && super.equals(obj);
+        }else{
+            return false;
+        }
     }
 
 }

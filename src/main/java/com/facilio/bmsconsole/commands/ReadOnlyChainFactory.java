@@ -617,6 +617,12 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
+	public static FacilioChain getRelatedListChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetRelatedListMetaCommand());
+		return c;
+	}
+
 	public static FacilioChain getSpecialModulePageChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetSpecialModuleDataDetailCommand());
@@ -2435,6 +2441,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new LoadViewCommand());
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GenerateGenericSearchConditionCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		chain.addCommand(new FetchRolesForPeopleCommand());
 		return chain;
@@ -2447,6 +2454,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new LoadViewCommand());
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GenerateGenericSearchConditionCommand());
 		chain.addCommand(new AddVendorContactLookUpCommand());
         chain.addCommand(new FetchCustomLookupFieldsCommand());
         chain.addCommand(new FetchCustomMultiRecordFieldsCommand());
@@ -2578,6 +2586,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new LoadViewCommand());
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GenerateGenericSearchConditionCommand());
 		chain.addCommand(new AddTenantContactLookUpCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		chain.addCommand(new FetchRolesForPeopleCommand());

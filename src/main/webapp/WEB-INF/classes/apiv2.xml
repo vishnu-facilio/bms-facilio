@@ -3395,6 +3395,9 @@
 	</package>
 	<package name="pageApiv2" namespace="/api/v2/pages"
 		extends="v2Api">
+		<action name="lookuprelatedlist"
+				class="com.facilio.bmsconsole.actions.PageAction" method="fetchLookupRelatedListData">
+		</action>
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.PageAction" method="fetchPage">
 			<param name="moduleName">{1}</param>

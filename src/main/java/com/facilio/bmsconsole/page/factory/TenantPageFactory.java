@@ -27,11 +27,11 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
 public class TenantPageFactory extends PageFactory{
-	
+
 	public static Page getTenantPage(TenantContext record, FacilioModule module) throws Exception {
 		Page page = new Page();
-		
-		
+
+
 		Tab tab1 = page.new Tab("summary");
 		page.addTab(tab1);
 
@@ -39,22 +39,22 @@ public class TenantPageFactory extends PageFactory{
 
 		tab1.addSection(tab1Sec1);
 
-		
+
 		PageWidget detailsWidgetPrimaryContact= new PageWidget(WidgetType.TENANT_DETAIL_CONTACT);
 		detailsWidgetPrimaryContact.addToLayoutParams(tab1Sec1, 12, 4);
 		detailsWidgetPrimaryContact.addToWidgetParams("card","tenantdetailcontact");
 		tab1Sec1.addWidget(detailsWidgetPrimaryContact);
-		
+
 		PageWidget detailsWidgetOverview= new PageWidget(WidgetType.TENANT_DETAIL_OVERVIEW);
 		detailsWidgetOverview.addToLayoutParams(tab1Sec1, 12, 4);
 		detailsWidgetOverview.addToWidgetParams("card","tenantdetailoverview");
 		tab1Sec1.addWidget(detailsWidgetOverview);
 
 		if (record.getDescription() != null && !record.getDescription().isEmpty()) {
-            PageWidget descWidget = new PageWidget(PageWidget.WidgetType.TENANT_DESCRIPTION);
-            descWidget.addToLayoutParams(tab1Sec1,24, 2);
-            tab1Sec1.addWidget(descWidget);
-        }
+			PageWidget descWidget = new PageWidget(PageWidget.WidgetType.TENANT_DESCRIPTION);
+			descWidget.addToLayoutParams(tab1Sec1,24, 2);
+			tab1Sec1.addWidget(descWidget);
+		}
 
 		PageWidget card2= new PageWidget(PageWidget.WidgetType.TENANT_WORKORDERS);
 		card2.addToLayoutParams(tab1Sec1, 12, 7);
@@ -69,7 +69,7 @@ public class TenantPageFactory extends PageFactory{
 
 
 		addTenantSpecialWidget(tab1Sec1);
-		
+
 
 		addSubModuleRelatedListWidget(tab1Sec1, FacilioConstants.ContextNames.TENANT_CONTACT, module.getModuleId());
 		if (record == null) {
@@ -93,16 +93,16 @@ public class TenantPageFactory extends PageFactory{
 			addSpecialRelatedListWidgetForDemoOrg(tab3Sec1, record.getModuleId());
 		}
 		addRelatedList(tab3Sec1, record.getModuleId());
-		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
-			addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.QUOTE, module.getModuleId());
-		}
-		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.FACILITY_BOOKING)) {
-			addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.FACILITY_BOOKING, module.getModuleId());
-		}
+//		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
+//			addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.QUOTE, module.getModuleId());
+//		}
+//		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.FACILITY_BOOKING)) {
+//			addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.FACILITY_BOOKING, module.getModuleId());
+//		}
 
 		Page.Tab tab4 = page.new Tab("History");;
-	    page.addTab(tab4);
-	    Page.Section tab4Sec1 = page.new Section();
+		page.addTab(tab4);
+		Page.Section tab4Sec1 = page.new Section();
 		tab4.addSection(tab4Sec1);
 		PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
 		activityWidget.addToLayoutParams(tab4Sec1, 24, 3);
@@ -165,6 +165,14 @@ public class TenantPageFactory extends PageFactory{
 
 		if (CollectionUtils.isNotEmpty(subModules)) {
 			for (FacilioModule subModule : subModules) {
+				if(subModule.getName().equals(FacilioConstants.ContextNames.FACILITY_BOOKING )|| subModule.getName().equals(FacilioConstants.ContextNames.QUOTE)) {
+					if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
+						continue;
+					}
+					if (!AccountUtil.isFeatureEnabled(FeatureLicense.FACILITY_BOOKING)) {
+						continue;
+					}
+				}
 				if(subModule.getName().equals(FacilioConstants.ContextNames.CONTACT) && AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS)) {
 					continue;
 				}

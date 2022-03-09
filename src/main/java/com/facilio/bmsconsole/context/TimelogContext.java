@@ -2,24 +2,10 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.modules.FacilioStatus;
-import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.v3.context.V3Context;
 
-public class TimelogContext {
-    private long id = -1;
-    public void setId(long id) {
-        this.id = id;
-    }
-    public long getId() {
-        return id;
-    }
-
-    private long moduleId = -1;
-    public void setModuleId(long moduleId) {
-        this.moduleId = moduleId;
-    }
-    public long getModuleId() {
-        return moduleId;
-    }
+public class TimelogContext extends V3Context{
 
     private String name;
     public String getName() {
@@ -27,30 +13,6 @@ public class TimelogContext {
     }
     public void setName(String name) {
         this.name = name;
-    }
-
-    private long parentId = -1;
-    public long getParentId() {
-        return parentId;
-    }
-    public void setParentId(long parentId) {
-        this.parentId = parentId;
-    }
-
-    private long fromStatusId = -1;
-    public void setFromStatusId(long fromStatusId) {
-        this.fromStatusId = fromStatusId;
-    }
-    public long getFromStatusId() {
-        return fromStatusId;
-    }
-
-    private long toStatusId = -1;
-    public void setToStatusId(long toStatusId) {
-        this.toStatusId = toStatusId;
-    }
-    public long getToStatusId() {
-        return toStatusId;
     }
 
     private long startTime = -1;
@@ -77,28 +39,43 @@ public class TimelogContext {
         return duration;
     }
 
-    private Boolean timerEnabled;
-    public void setTimerEnabled(Boolean timerEnabled) {
-        this.timerEnabled = timerEnabled;
-    }
-    public Boolean getTimerEnabled() {
-        return timerEnabled;
+    private Boolean isTimerEnabled;
+
+    public Boolean getIsTimerEnabled() {
+        return isTimerEnabled;
     }
 
-    private long doneById = -1;
-    public void setDoneById(long doneById) {
-        this.doneById = doneById;
-    }
-    public long getDoneById() {
-        return doneById;
+    public void setIsTimerEnabled(Boolean timerEnabled) {
+        isTimerEnabled = timerEnabled;
     }
 
+    private ModuleBaseWithCustomFields parent;
+
+    public void setParent(ModuleBaseWithCustomFields parent) {
+        this.parent = parent;
+    }
+
+    public ModuleBaseWithCustomFields getParent() {
+        return parent;
+    }
     private FacilioStatus fromStatus;
+
+    public FacilioStatus getFromStatus() {
+        return fromStatus;
+    }
+
     public void setFromStatus(FacilioStatus fromStatus) {
         this.fromStatus = fromStatus;
     }
-    public FacilioStatus getFromStatus() {
-        return fromStatus;
+
+    private FacilioStatus toStatus;
+
+    public FacilioStatus getToStatus() {
+        return toStatus;
+    }
+
+    public void setToStatus(FacilioStatus toStatus) {
+        this.toStatus = toStatus;
     }
 
     private User doneBy;

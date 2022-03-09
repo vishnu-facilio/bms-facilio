@@ -146,7 +146,7 @@ public class GenerateCriteriaFromFilterForNonModulesCommand extends FacilioComma
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
         if (module.getTypeEnum() == FacilioModule.ModuleType.TIME_LOG ){
-            return FieldFactory.getTimeLogFields(module);
+            return moduleBean.getAllFields(moduleName);
         }
         return null;
     }

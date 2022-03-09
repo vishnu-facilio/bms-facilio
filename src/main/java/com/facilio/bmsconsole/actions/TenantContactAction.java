@@ -107,6 +107,14 @@ private static final long serialVersionUID = 1L;
 		this.stateTransitionId = stateTransitionId;
 	}
 
+	private String genericSearch;
+	public String getGenericSearch() {
+		return genericSearch;
+	}
+	public void setGenericSearch(String genericSearch) {
+		this.genericSearch = genericSearch;
+	}
+
 	public String addTenantContacts() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(tenantContacts) || tenantContact != null) {
@@ -184,7 +192,15 @@ private static final long serialVersionUID = 1L;
  			searchObj.put("query", getSearch());
  			chain.getContext().put(FacilioConstants.ContextNames.SEARCH, searchObj);
  		}
- 		if(!getFetchCount()) {
+
+		if(getGenericSearch() != null){
+			JSONObject searchObj = new JSONObject();
+			searchObj.put("fields", "tenantcontact.name,tenantcontact.email");
+			searchObj.put("query", getGenericSearch());
+			chain.getContext().put(FacilioConstants.ContextNames.GENERIC_SEARCH, searchObj);
+		}
+
+		if(!getFetchCount()) {
 			JSONObject pagination = new JSONObject();
 			pagination.put("page", getPage());
 			pagination.put("perPage", getPerPage());

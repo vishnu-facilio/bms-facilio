@@ -31,6 +31,11 @@ import com.facilio.services.procon.processor.FacilioProcessor;
 import lombok.NonNull;
 
 //Renamed from Processor
+
+/**
+ * Agent Live data processor
+ *
+ */
 public class KafkaProcessor extends FacilioProcessor {
 
 

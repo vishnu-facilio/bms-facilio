@@ -3,6 +3,7 @@ package com.facilio.apiv3;
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
+import com.facilio.bmsconsole.context.TimelogContext;
 import com.facilio.bmsconsole.util.MLServiceUtil;
 import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
@@ -1457,6 +1458,12 @@ public class APIv3Config {
                 .list()
                 .summary()
                   .afterFetch(new GetServiceVendorListCommandV3())
+                .build();
+    }
+
+    @Module("workorderTimeLog")
+    public static Supplier<V3Config> getWorkOrderTimeLog(){
+        return () -> new V3Config(TimelogContext.class,null)
                 .build();
     }
 
