@@ -393,7 +393,6 @@ public class SqliteBridge {
         controllerContext.setIpAddress(controller.getIpAddress());
         controllerContext.setNetworkNumber((int) controller.getNetworkNumber());
         controllerContext.setControllerType(FacilioControllerType.BACNET_IP.asInt());
-        controllerContext.setVendorId((int) controller.getVendorId());
         toControllerV2(controllerContext, controller);
         return controllerContext;
     }
