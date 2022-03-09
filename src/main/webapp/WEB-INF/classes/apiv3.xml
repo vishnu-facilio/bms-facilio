@@ -351,6 +351,29 @@
                 method="validateAnswers">
         </action>
     </package>
+    
+    <package name="qandaDisplayLogic" namespace="/api/v3/qandaDisplayLogic" extends="v3Api">
+        <action name="add"
+                class="com.facilio.qa.displaylogic.actions.QAndADisplayLogicActionClass"
+                method="add">
+        </action>
+        <action name="update"
+                class="com.facilio.qa.displaylogic.actions.QAndADisplayLogicActionClass"
+                method="update">
+        </action>
+        <action name="delete"
+                class="com.facilio.qa.displaylogic.actions.QAndADisplayLogicActionClass"
+                method="delete">
+        </action>
+       	<action name="list"
+                class="com.facilio.qa.displaylogic.actions.QAndADisplayLogicActionClass"
+                method="list">
+        </action>
+        <action name="execute"
+                class="com.facilio.qa.displaylogic.actions.QAndADisplayLogicActionClass"
+                method="execute">
+        </action>
+    </package>
 
     <package name="qandaRules" namespace="/api/v3/qandarules" extends="v3Api">
         <action name="operators"
@@ -358,7 +381,7 @@
                 method="fetchOperators">
         </action>
     </package>
-
+    
     <package name="scoringRulesAdd" namespace="/api/v3/scoringrules/add" extends="v3Api">
         <action name="*"
                 class="com.facilio.qa.rules.actions.QAndARuleAction"

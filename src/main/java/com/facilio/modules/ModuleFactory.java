@@ -4730,6 +4730,27 @@ public class ModuleFactory {
 		module.setTableName("New_Reading_Rule_AlarmDetails");
 		return module;
 	}
+	
+	public static FacilioModule getQAndADisplayLogicModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("qAndADisplayLogic");
+		module.setTableName("Q_And_A_Display_Logic");
+		return module;
+	}
+	
+	public static FacilioModule getQAndADisplayLogicTriggerQuestionModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("qAndADisplayLogic");
+		module.setTableName("Q_And_A_Display_Logic_Trigger_Questions");
+		return module;
+	}
+	
+	public static FacilioModule getQAndADisplayLogicActionModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("qAndADisplayLogic");
+		module.setTableName("Q_And_A_Display_Logic_Action");
+		return module;
+	}
 
 
     //Bundle Related Modules ends

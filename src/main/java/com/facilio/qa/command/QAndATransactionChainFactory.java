@@ -224,4 +224,33 @@ public class QAndATransactionChainFactory {
         c.addCommand(new AddOrUpdateMatrixAnswersCommand());
         return c;
 	}
+	
+	public static FacilioChain addOrUpdateDisplayLogicChain() {
+		FacilioChain c = getDefaultChain();
+        c.addCommand(new PrepareDisplayLogicforAddOrUpdate());
+        c.addCommand(new AddOrUpdateDisplayLogicCommand());
+        c.addCommand(new AddDisplayLogicDependentsCommand());
+        return c;
+	}
+
+	public static FacilioChain deleteDisplayLogicChain() {
+		FacilioChain c = getDefaultChain();
+        c.addCommand(new DeleteDisplayLogicCommand());
+        return c;
+	}
+	
+	public static FacilioChain executeDisplayLogicChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new ValidateResponseStatus());
+        c.addCommand(new PrepareAnswersForDisplayLogicExecution());
+        c.addCommand(new FetchDisplayLogicForExecution());
+        c.addCommand(new ExecuteDisplayLogicRules());
+        return c;
+	}
+	
+	public static FacilioChain getDisplayLogicListChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new FetchDisplayLogicListCommand());
+        return c;
+	}
 }

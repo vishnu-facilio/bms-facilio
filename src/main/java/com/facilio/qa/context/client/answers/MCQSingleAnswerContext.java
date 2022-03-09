@@ -8,6 +8,11 @@ import lombok.Setter;
 @Setter
 public class MCQSingleAnswerContext extends ClientAnswerContext<MCQSingleAnswerContext.MCQAnswer> {
     private MCQAnswer answer;
+    
+    @Override
+    public Object getActualAnswerObject() {
+    	return answer.getSelected();
+    }
 
     @Getter
     @Setter

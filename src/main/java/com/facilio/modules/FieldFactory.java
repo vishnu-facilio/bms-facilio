@@ -9994,6 +9994,50 @@ public class FieldFactory extends BaseFieldFactory {
     }
     
     //Bundle Related Fields ends
+    
+    public static List<FacilioField> getQAndADisplayLogicFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getQAndADisplayLogicModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("name", "NAME", module, FieldType.STRING));
+        fields.add(getField("templateId", "TEMPLATE_ID", module, FieldType.NUMBER));
+        fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
+        fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
+        fields.add(getField("pageId", "PAGE_ID", module, FieldType.NUMBER));
+        fields.add(getField("questionId", "QUESTION_ID", module, FieldType.NUMBER));
+        fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));
+        
+        fields.add(getSystemField("sysCreatedTime", module));
+        fields.add(getSystemField("sysCreatedBy", module));
+        fields.add(getSystemField("sysModifiedTime", module));
+        fields.add(getSystemField("sysModifiedBy", module));
+        
+        return fields;
+    }
+    
+    public static List<FacilioField> getQAndADisplayLogicTriggerQuestionFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getQAndADisplayLogicTriggerQuestionModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("displayLogicId", "DISPLAY_LOGIC_ID", module, FieldType.NUMBER));
+        fields.add(getField("triggerQuestionId", "TRIGGER_QUESTION_ID", module, FieldType.NUMBER));
+        
+        return fields;
+    }
+    
+    public static List<FacilioField> getQAndADisplayLogicActionFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getQAndADisplayLogicActionModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("displayLogicId", "DISPLAY_LOGIC_ID", module, FieldType.NUMBER));
+        fields.add(getField("actionType", "ACTION_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("actionMeta", "ACTION_META", module, FieldType.STRING));
+        
+        return fields;
+    }
 
     public  static List<FacilioField> getScatterGraphFields(){
         List<FacilioField> fields = new ArrayList<>();
