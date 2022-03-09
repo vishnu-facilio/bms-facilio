@@ -31,10 +31,10 @@ public class BacnetIpControllerContext extends Controller {
     }
 
     public static boolean validateControllerJSON(Map<String, Object> map) throws Exception {
-        if(  containsValueCheck(AgentConstants.IP_ADDRESS,map) && containsValueCheck(AgentConstants.INSTANCE_NUMBER,map) && containsValueCheck(AgentConstants.NETWORK_NUMBER,map) && containsValueCheck(AgentConstants.VENDOR_ID,map)){
+        if(  containsValueCheck(AgentConstants.IP_ADDRESS,map) && containsValueCheck(AgentConstants.INSTANCE_NUMBER,map) && containsValueCheck(AgentConstants.NETWORK_NUMBER,map) ){
             return true;
         }
-        throw new Exception(" controllerJSON of type "+ASSETCATEGORY+" must have keys "+ AgentConstants.IP_ADDRESS+ ","+AgentConstants.INSTANCE_NUMBER+","+AgentConstants.NETWORK_NUMBER+","+AgentConstants.VENDOR_ID+"  and json is ->"+map);
+        throw new Exception(" controllerJSON of type "+ASSETCATEGORY+" must have keys "+ AgentConstants.IP_ADDRESS+ ","+AgentConstants.INSTANCE_NUMBER+","+AgentConstants.NETWORK_NUMBER+"  and json is ->"+map);
     }
 
     @Override
@@ -59,9 +59,6 @@ public class BacnetIpControllerContext extends Controller {
     @JsonInclude
     private String ipAddress;
 
-    @JsonInclude
-    private int vendorId;
-
     @JsonIgnore
     private String identifier;
 
@@ -85,9 +82,6 @@ public class BacnetIpControllerContext extends Controller {
     public String getIpAddress() { return ipAddress; }
     public void setIpAddress(String ipAddress) { this.ipAddress = ipAddress; }
 
-    public int getVendorId() { return vendorId; }
-    public void setVendorId(int vendorId) { this.vendorId = vendorId; }
-
     @JsonIgnore
     public String getModuleName() {
         return ASSETCATEGORY;
@@ -100,7 +94,6 @@ public class BacnetIpControllerContext extends Controller {
         bacnetIpControllerJSON.put(AgentConstants.INSTANCE_NUMBER, getInstanceNumber());
         bacnetIpControllerJSON.put(AgentConstants.IP_ADDRESS, getIpAddress());
         bacnetIpControllerJSON.put(AgentConstants.NETWORK_NUMBER, getNetworkNumber());
-        bacnetIpControllerJSON.put(AgentConstants.VENDOR_ID, getVendorId());
         return bacnetIpControllerJSON;
     }
 
@@ -113,11 +106,9 @@ public class BacnetIpControllerContext extends Controller {
             LOGGER.info("nn : " + fieldsMap.get(AgentConstants.NETWORK_NUMBER));
             LOGGER.info("in : " + fieldsMap.get(AgentConstants.INSTANCE_NUMBER));
             LOGGER.info("ip : " + fieldsMap.get(AgentConstants.IP_ADDRESS));
-            LOGGER.info("vid : " + fieldsMap.get(AgentConstants.VENDOR_ID));
         }
         conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.NETWORK_NUMBER), String.valueOf(getNetworkNumber()), NumberOperators.EQUALS));
         conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.INSTANCE_NUMBER), String.valueOf(getInstanceNumber()),NumberOperators.EQUALS));
-        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.VENDOR_ID), String.valueOf(getVendorId()),NumberOperators.EQUALS));
         if(getIpAddress() != null){
             conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.IP_ADDRESS),getIpAddress(), StringOperators.IS));
         }else {
@@ -128,7 +119,7 @@ public class BacnetIpControllerContext extends Controller {
 
     @Override
     public String getIdentifier() {
-        return instanceNumber+IDENTIFIER_SEPERATER+ipAddress+IDENTIFIER_SEPERATER+networkNumber+IDENTIFIER_SEPERATER+vendorId;
+        return instanceNumber+IDENTIFIER_SEPERATER+ipAddress+IDENTIFIER_SEPERATER+networkNumber;
     }
     @Override
     public boolean equals(Object o){

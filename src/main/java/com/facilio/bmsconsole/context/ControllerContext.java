@@ -174,13 +174,8 @@ public class ControllerContext implements Serializable {
 	public long getNetworkNumber() {
 		return this.networkNumber;
 	}
-
-	private long vendorId = -1;
-	public void setVendorId(long vendorId) { this.vendorId = vendorId; }
-	public long getVendorId() {
-		return this.vendorId;
-	}
-
+	
+	
 	private JSONObject controllerProps;
 	
 	public JSONObject getControllerProps() {
