@@ -4,9 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.*;
-import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.PivotDataColumnContext;
 import com.facilio.report.context.PivotFormulaColumnContext;
 import com.facilio.report.context.PivotRowColumnContext;
@@ -260,7 +258,7 @@ public class PivotColumnFormatCommand extends FacilioCommand {
                 }
                 tempMap.put("value", formula.get(actualKey));
                 Formatter formatter = formatterMap.get(actualKey);
-                if (formatter != null && formula.get(actualKey) != null && !formula.get(actualKey).equals("")) {
+                if (formatter != null && formula.get(actualKey) != null && !formula.get(actualKey).equals("") && !formula.get(actualKey).equals("#VALUE!")) {
                     tempMap.put("formattedValue", formatter.format(formula.get(actualKey)));
                 } else {
                     tempMap.put("formattedValue", formula.get(actualKey));
