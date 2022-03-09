@@ -330,7 +330,8 @@ public enum CardLayout {
 						period = (String) timeLineFilters.get("dateLabel");
 
 						if (baselineRange != null) {
-							baselineRange = "Previous Period";
+							if(!dateRange.equals(period))
+								baselineRange = "Previous Period";
 							cardBaseValue = KPIUtil.getKPIBaseValueValue(kpiContext, baselineRange);
 						}
 

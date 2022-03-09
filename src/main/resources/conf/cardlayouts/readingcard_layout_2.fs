@@ -21,7 +21,7 @@ Map cardLayout(Map params) {
         }
 
 
-        if (params.cardFilters != null) {
+        if (params.cardFilters != null && params.dateRange != cardFilters.dateLabel) {
             cardFilters = params.cardFilters;
             operatorId = cardFilters.operatorId;
             dateLabel = cardFilters.dateLabel;
@@ -30,7 +30,7 @@ Map cardLayout(Map params) {
                 // omitting custom range
                 dateLabel = params.dateRange;
             }
-            baselineDateRangeObj = date.getDateRange(dateLabel, params.baseline);
+            baselineDateRangeObj = date.getDateRange(dateLabel, baseLineLabel);
         } else {
             baselineDateRangeObj = date.getDateRange(params.dateRange, params.baseline);
         }
