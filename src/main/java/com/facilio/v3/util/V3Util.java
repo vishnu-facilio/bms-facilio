@@ -175,9 +175,9 @@ public class V3Util {
         return context;
     }
 
-    public static JSONObject processAndUpdateSingleRecord(String moduleName, long id, Map<String, Object> patchObj, Map<String, Object> bodyParams, HttpServletRequest httpServletRequest,
+    public static JSONObject processAndUpdateSingleRecord(String moduleName, long id, Map<String, Object> patchObj, Map<String, Object> bodyParams, Map<String, List<Object>> queryParams,
                         Long stateTransitionId, Long customButtonId, Long approvalTransitionId,String qrValue) throws Exception {
-        Object record = getRecord(moduleName, id, httpServletRequest);
+        Object record = getRecord(moduleName, id, queryParams);
         FacilioModule module = ChainUtil.getModule(moduleName);
         V3Config v3Config = ChainUtil.getV3Config(moduleName);
 
@@ -201,7 +201,7 @@ public class V3Util {
             id = ((ModuleBaseWithCustomFields)record).getId();
         }
 
-        FacilioContext context = V3Util.updateSingleRecord(module, v3Config, (ModuleBaseWithCustomFields) record, summaryRecord, id, bodyParams, getQueryParameters(httpServletRequest), stateTransitionId, customButtonId, approvalTransitionId,qrValue);
+        FacilioContext context = V3Util.updateSingleRecord(module, v3Config, (ModuleBaseWithCustomFields) record, summaryRecord, id, bodyParams, queryParams, stateTransitionId, customButtonId, approvalTransitionId,qrValue);
 
         ModuleBaseWithCustomFields updatedRecord = Constants.getRecord(context, moduleName, id);
         JSONObject result = new JSONObject();
@@ -247,8 +247,8 @@ public class V3Util {
         return queryParameters;
     }
 
-    public static Object getRecord(String moduleName, long id, HttpServletRequest httpServletRequest) throws Exception {
-        FacilioContext context = V3Util.getSummary(moduleName, Collections.singletonList(id), getQueryParameters(httpServletRequest));
+    public static Object getRecord(String moduleName, long id, Map<String, List<Object>> queryParams) throws Exception {
+        FacilioContext context = V3Util.getSummary(moduleName, Collections.singletonList(id), queryParams);
 
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List list = recordMap.get(moduleName);

@@ -48,7 +48,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         api currentApi = currentApi();
         Object record;
         if (currentApi == api.v3) {
-            record = V3Util.getRecord(moduleName, id, this.httpServletRequest);
+            record = V3Util.getRecord(moduleName, id, getQueryParameters());
         } else {
             record = getV4TransformedRecord(moduleName, id);
         }
@@ -490,7 +490,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         }
         removeRestrictedFields(data, this.getModuleName(), true);
 
-        JSONObject result = V3Util.processAndUpdateSingleRecord(this.getModuleName(), this.getId(), data, this.getParams(), this.httpServletRequest, this.getStateTransitionId(), this.getCustomButtonId(), this.getApprovalTransitionId(),this.getQrValue());
+        JSONObject result = V3Util.processAndUpdateSingleRecord(this.getModuleName(), this.getId(), data, this.getParams(), getQueryParameters(), this.getStateTransitionId(), this.getCustomButtonId(), this.getApprovalTransitionId(),this.getQrValue());
 
         addAuditLog(Collections.singletonList((JSONObject)result.get(getModuleName())), getModuleName(), "Record {%s} of module %s has been updated",
                     AuditLogHandler.ActionType.UPDATE, true);
@@ -633,7 +633,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         validationContext.put(FacilioConstants.ContextNames.CV_NAME, this.getViewName());
         validationContext.put(FacilioConstants.ContextNames.MODULE_NAME, this.getModuleName());
         validationContext.put(FacilioConstants.ContextNames.DATA, this.getData());
-        Object oldRecord = V3Util.getRecord(this.getModuleName(), this.getId(), httpServletRequest);
+        Object oldRecord = V3Util.getRecord(this.getModuleName(), this.getId(), this.getQueryParameters());
         validationContext.put(FacilioConstants.ContextNames.OLD_RECORD_MAP, oldRecord);
         validationChain.execute();
 
@@ -644,7 +644,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         }
         removeRestrictedFields(data, this.getModuleName(), true);
 
-        JSONObject result = V3Util.processAndUpdateSingleRecord(this.getModuleName(), this.getId(), data, this.getParams(), this.httpServletRequest, this.getStateTransitionId(), this.getCustomButtonId(), this.getApprovalTransitionId(), this.getQrValue());
+        JSONObject result = V3Util.processAndUpdateSingleRecord(this.getModuleName(), this.getId(), data, this.getParams(), this.getQueryParameters(), this.getStateTransitionId(), this.getCustomButtonId(), this.getApprovalTransitionId(), this.getQrValue());
 
         String message = "Record {%s} of module %s has been "
                         + (validationContext.containsKey(FacilioConstants.ContextNames.TIMELINE_PATCHTYPE) ? validationContext.get(FacilioConstants.ContextNames.TIMELINE_PATCHTYPE): "updated")
