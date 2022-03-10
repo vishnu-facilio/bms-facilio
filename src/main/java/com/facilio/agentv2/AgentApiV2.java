@@ -194,7 +194,7 @@ public class AgentApiV2 {
     	if (agentType == AgentType.FACILIO || agentType == AgentType.NIAGARA) {
     		return false;
     	}
-    	if (name.equals(AgentConstants.WORKFLOW) && (agentType != AgentType.CLOUD || agentType != AgentType.CLOUD_ON_SERVICE)) {
+    	if (name.equals(AgentConstants.WORKFLOW) && agentType != AgentType.CLOUD && agentType != AgentType.CLOUD_ON_SERVICE) {
     		return false;
     	}
     	return true;

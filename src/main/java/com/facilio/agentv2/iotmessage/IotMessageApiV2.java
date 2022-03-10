@@ -268,26 +268,15 @@ public class IotMessageApiV2 {
         for (IotMessage message : data.getMessages()) {
             LogsApi.logIotCommand(agentId,message.getId(),data.getFacilioCommand(),Status.MESSAGE_SENT);
             message.getMessageData().put("msgid", message.getId());
-            publishIotMessage(agent, topic, message, messageSource, data.getFacilioCommand());
+            publishIotMessage(agent, topic, message, messageSource);
         }
     }
 
-    private static void publishIotMessage(FacilioAgent agent, String client, IotMessage message, MessageSource messageSource, FacilioCommand command) throws Exception {
+    private static void publishIotMessage(FacilioAgent agent, String client, IotMessage message, MessageSource messageSource) throws Exception {
     	JSONObject object = message.getMessageData();
-    	if (agent.getCommandWorkflowId() > 0) {
-    		object = executeCommandWorkflow(agent.getCommandWorkflowId(), agent, object,command);
-        	if (MapUtils.isEmpty(object)) {
-        		return;
-        	}
-    	}
-    	
         if (FacilioProperties.isOnpremise()) {
             publishToRabbitMQ(client, object);
         } else if (agent.getAgentTypeEnum().isAgentService()) {
-        	// Adding mandatory values
-        	object.put("agent", agent.getName());
-        	object.put("command", command.asInt());
-        	object.put("msgid", message.getId());
             publishToAgentService(agent, client, object, (KafkaMessageSource) messageSource);
         } else {
             publishToAwsIot(client, object);
