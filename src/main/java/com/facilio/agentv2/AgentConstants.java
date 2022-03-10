@@ -31,6 +31,7 @@ public class AgentConstants
     public static final String IS_LATEST_VERSION = "isLatestVersion";
     public static final String WORKFLOW = "workflow";
     public static final String TRANSFORM_WORKFLOW = "transformWorkflow";
+    public static final String COMMAND_WORKFLOW = "commandWorkflow";
 
     //modbus constants
     public static final String SLAVE_ID = "slaveId";

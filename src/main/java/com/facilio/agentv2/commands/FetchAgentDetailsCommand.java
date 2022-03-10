@@ -62,6 +62,9 @@ public class FetchAgentDetailsCommand extends FacilioCommand {
 			if (agent.getTransformWorkflowId() > 0) {
 				agent.setTransformWorkflow(workflowsAsMap.get(agent.getTransformWorkflowId()));
 			}
+			if (agent.getCommandWorkflowId() > 0) {
+				agent.setCommandWorkflow(workflowsAsMap.get(agent.getCommandWorkflowId()));
+			}
 		}
 	}
 
