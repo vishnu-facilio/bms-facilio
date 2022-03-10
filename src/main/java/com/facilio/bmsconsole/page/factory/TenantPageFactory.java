@@ -93,12 +93,12 @@ public class TenantPageFactory extends PageFactory{
 			addSpecialRelatedListWidgetForDemoOrg(tab3Sec1, record.getModuleId());
 		}
 		addRelatedList(tab3Sec1, record.getModuleId());
-//		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
-//			addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.QUOTE, module.getModuleId());
-//		}
-//		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.FACILITY_BOOKING)) {
-//			addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.FACILITY_BOOKING, module.getModuleId());
-//		}
+		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
+			addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.QUOTE, module.getModuleId());
+		}
+		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.FACILITY_BOOKING)) {
+			addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.FACILITY_BOOKING, module.getModuleId());
+		}
 
 		Page.Tab tab4 = page.new Tab("History");;
 		page.addTab(tab4);
