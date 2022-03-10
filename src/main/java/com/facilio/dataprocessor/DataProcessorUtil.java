@@ -1,5 +1,23 @@
 package com.facilio.dataprocessor;
 
+import java.sql.SQLException;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.google.api.client.json.Json;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.*;
@@ -7,6 +25,7 @@ import com.facilio.agent.agentcontrol.AgentControl;
 import com.facilio.agent.integration.queue.preprocessor.AgentMessagePreProcessor;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.AgentUtilV2;
 import com.facilio.agentv2.DataProcessorV2;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleCRUDBean;
@@ -28,6 +47,7 @@ import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.queue.source.MessageSource;
@@ -36,6 +56,9 @@ import com.facilio.services.kinesis.ErrorDataProducer;
 import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.util.AckUtil;
 import com.facilio.util.FacilioUtil;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
+import com.facilio.workflowv2.util.WorkflowV2Util;
 import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -63,6 +86,7 @@ public class DataProcessorUtil {
     private String errorStream;
     private HashMap<String, HashMap<String, Long>> deviceVsPublishTypeVsMessageTime = new HashMap<>();
     private AgentUtil agentUtil;
+    private AgentUtilV2 agentUtilV2;
     private DevicePointsUtil devicePointsUtil;
     private AckUtil ackUtil;
     private EventUtil eventUtil;
@@ -90,12 +114,13 @@ public class DataProcessorUtil {
         this.messageSource = source;
         this.errorStream = orgDomainName + "-error";
         agentUtil = new AgentUtil(orgId, orgDomainName);
+        agentUtilV2 = new AgentUtilV2(orgId, orgDomainName);
         agentUtil.populateAgentContextMap(null, null);
         devicePointsUtil = new DevicePointsUtil();
         ackUtil = new AckUtil();
         eventUtil = new EventUtil();
         try {
-            dataProcessorV2 = new DataProcessorV2(orgId, orgDomainName);
+            dataProcessorV2 = new DataProcessorV2(orgId, orgDomainName, agentUtilV2);
         } catch (Exception e) {
             dataProcessorV2 = null;
             LOGGER.info("Exception occurred ", e);
@@ -436,14 +461,38 @@ public class DataProcessorUtil {
 		}
     }
 
-    private boolean sendToProcessorV2(JSONObject payLoad, long recordId, String partitionKey, int partitionId) {
+    private boolean sendToProcessorV2(JSONObject payload, long recordId, String partitionKey, int partitionId) {
         if (dataProcessorV2 != null) {
             try {
-                if (!dataProcessorV2.processRecord(payLoad, partitionKey, eventUtil)) {
-                    return false;
+                List<JSONObject> payloads = new ArrayList<>();
+                com.facilio.agentv2.FacilioAgent agent = getFacilioAgentV2FromPayload(payload);
+                //preprocess the JSON data if necessary
+                if (agent.getTransformWorkflowId() > 0) {
+                    WorkflowContext transformWorkflow = WorkflowUtil.getWorkflowContext(agent.getTransformWorkflowId());
+                    FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
+                    FacilioContext context = chain.getContext();
+                    context.put(WorkflowV2Util.WORKFLOW_CONTEXT, transformWorkflow);
+                    List params = new ArrayList<>();
+                    params.add(payload);
+                    params.add(FieldUtil.getAsProperties(agent));
+                    context.put(WorkflowV2Util.WORKFLOW_PARAMS, params);
+                    chain.execute();
+                    List<Map<String, Object>> resultsFromPreProcessor = (List<Map<String, Object>>) transformWorkflow.getReturnValue();
+                    for (Map<String, Object> item : resultsFromPreProcessor) {
+                        payload = (JSONObject) new JSONParser().parse(JSONObject.toJSONString(item));
+                        payloads.add(payload);
+                    }
+                } else {
+                    payloads.add(payload);
                 }
-                updateAgentMessage(recordId, partitionId, MessageStatus.PROCESSED);
-                return true;
+                boolean processed = true;
+                for (JSONObject jsonObject : payloads) {
+                    processed = processed && dataProcessorV2.processRecord(jsonObject, partitionKey, eventUtil, agent);
+                }
+                if (processed) {
+                    updateAgentMessage(recordId, partitionId, MessageStatus.PROCESSED);
+                }
+                return processed;
             } catch (Exception newProcessorException) {
                 LOGGER.info("Exception occurred ", newProcessorException);
                 return false;
@@ -454,14 +503,36 @@ public class DataProcessorUtil {
         }
     }
 
+    /**
+     * gets {@link com.facilio.agentv2.FacilioAgent } for a payload.
+     *
+     * @param payload JSONObject which must contain the key 'agent' to which agent's name is mapped.
+     * @return {@link com.facilio.agentv2.FacilioAgent}
+     * @throws Exception if the key 'agent' is missing from payload or if no agent is found for a name.
+     */
+    private com.facilio.agentv2.FacilioAgent getFacilioAgentV2FromPayload(JSONObject payload) throws Exception {
+        String agentName = null;
+        if (payload.containsKey(AgentConstants.AGENT)) {
+            agentName = payload.get(AgentConstants.AGENT).toString().trim();
+            com.facilio.agentv2.FacilioAgent agent = agentUtilV2.getFacilioAgent(agentName);
+            if (agent != null) {
+                return agent;
+            } else {
+                throw new Exception(" No such agent found ");
+            }
+        } else {
+            throw new Exception(" payload missing agent name");
+        }
+    }
+
     private boolean checkIfDuplicate(long recordId, int partitionId) {
         try {
             Map<String, Object> prop = getRecord(recordId, partitionId);
-            if(prop == null) {
+            if (prop == null) {
                 addAgentMessage(recordId, partitionId);
             } else {
-                Long statusValue =  (Long) prop.getOrDefault(AgentKeys.MSG_STATUS, 0L);
-                if(statusValue == 1L) {
+                Long statusValue = (Long) prop.getOrDefault(AgentKeys.MSG_STATUS, 0L);
+                if (statusValue == 1L) {
                     LOGGER.info("Message already processed " + recordId);
                     return true;
                 } else {
