@@ -75,8 +75,8 @@ public class UpdateDashboardTabWithWidgetCommand extends FacilioCommand {
 					removedWidgets.add(existingWidgets.get(i).getId());
 				}
 			}
-			
-			if(removedWidgets.size() > 0) {
+			String fromType = (String) context.get("fromType");
+			if((fromType ==null || !fromType.equals("report_page")) && removedWidgets.size() > 0) {
 				GenericDeleteRecordBuilder genericDeleteRecordBuilder = new GenericDeleteRecordBuilder();
 				genericDeleteRecordBuilder.table(ModuleFactory.getWidgetModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition(ModuleFactory.getWidgetModule().getTableName()+".ID", "ID", StringUtils.join(removedWidgets, ","),StringOperators.IS));

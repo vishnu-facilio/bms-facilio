@@ -1,5 +1,7 @@
 package com.facilio.qa.command;
 
+import org.apache.commons.chain.Command;
+
 import com.facilio.bmsconsole.commands.VerifyApprovalCommand;
 import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
 import com.facilio.chain.FacilioChain;
@@ -216,4 +218,10 @@ public class QAndATransactionChainFactory {
         c.addCommand(new ClonePageAndQuestionsCommand());
         return c;
     }
+
+	public static FacilioChain addOrUpdateMatrixAnswersChain() {
+		FacilioChain c = getDefaultChain();
+        c.addCommand(new AddOrUpdateMatrixAnswersCommand());
+        return c;
+	}
 }

@@ -120,7 +120,22 @@ public enum QuestionType implements FacilioStringEnum {
             new RatingAnswerHandler(RatingAnswerContext.class),
             new SmileyRatingQuestionHandler(),
             RatingRuleHandler.RATING
-    );
+    ),
+    MATRIX (
+            FacilioConstants.QAndA.Questions.MATRIX_QUESTION,
+            MatrixQuestionContext.class,
+            new MatrixAnswerHandler(MatrixAnswerContext.class),
+            new MatrixQuestionHandler(),
+            null
+    ),
+    MULTI_QUESTION(
+            FacilioConstants.QAndA.Questions.MULTI_QUESTION,
+            MultiQuestionContext.class,
+            new MatrixAnswerHandler(MatrixAnswerContext.class),
+            new MultiQuestionHandler(),
+            null
+    ),
+    ;
 
     private static final Map<String, QuestionType> MODULE_VS_TYPE = initModuleVsTypeMap();
     private final String subModuleName;

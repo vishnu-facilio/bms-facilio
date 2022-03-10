@@ -21,7 +21,6 @@ import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agent.fw.constants.Status;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
-import com.facilio.agentv2.logs.LogsApi;
 import com.facilio.agentv2.metrics.MetricsApi;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;

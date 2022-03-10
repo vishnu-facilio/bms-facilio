@@ -6598,13 +6598,17 @@ public class DashboardAction extends FacilioAction {
 		List<DashboardWidgetContext> widgets = getDashboardWidgetsFromWidgetMeta(dashboardWidgets);
 
 		dashboardTabContext.setDashboardWidgets(widgets);
-		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.DASHBOARD_TAB, dashboardTabContext);
 		context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
+		if (dashboardMeta.containsKey("fromType")) {
+			context.put("fromType", dashboardMeta.get("fromType"));
+		}
 		
 		FacilioChain updateDashboardChain = TransactionChainFactory.getUpdateDashboardTabChain();
 		updateDashboardChain.execute(context);
+
+
 		return SUCCESS;
 	}
 	public String enableDashboardTabs()throws Exception

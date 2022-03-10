@@ -1,7 +1,6 @@
 package com.facilio.agentv2;
 
 import java.sql.SQLException;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -13,7 +12,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.facilio.agentv2.controller.Controller;
@@ -25,12 +23,9 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import com.facilio.agent.AgentKeys;
 import com.facilio.agent.AgentType;
 import com.facilio.agentv2.controller.ControllerApiV2;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.Job;
@@ -49,8 +44,6 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.taskengine.ScheduleInfo;
-import com.facilio.tasker.FacilioTimer;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
@@ -180,7 +173,7 @@ public class AgentApiV2 {
             if (agentType.isAgentService()) {
                  WorkflowContext workflow = FieldUtil.getAsBeanFromMap((Map<String, Object>) jsonObject.get(AgentConstants.WORKFLOW), WorkflowContext.class);
                  agent.setWorkflow(workflow);
-                 CloudAgentUtil.addWorkflowString(agent);
+                 CloudAgentUtil.editServiceAgent(agent);
 
             }
 
@@ -525,12 +518,4 @@ public class AgentApiV2 {
     	FacilioTimer.schedulePeriodicJob(agent.getId(), Job.CLOUD_AGENT_JOB_NAME, interval, (int)interval, "facilio");
     }
 
-    
-    public static void addCloudServiceAgent() {
-    		
-    }
-
-    /*public static long getWattsenseAgentCount(){
-        getAgentCount();
-    }*/
 }

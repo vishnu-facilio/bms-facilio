@@ -91,6 +91,8 @@ public class AgentConstants
     public static final String FIELD_ID = "fieldId";
     public static final String MAPPED_TIME = "mappedTime";
     public static final String AGENT_ID = "agentId";
+    public static final String AGENT_NAME = "agentName";
+    public static final String AGENT_PARAMS = "agentParams";
 
 
 

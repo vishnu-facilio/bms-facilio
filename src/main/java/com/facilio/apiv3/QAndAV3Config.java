@@ -63,6 +63,10 @@ public class QAndAV3Config {
                 .delete()
                     .beforeDelete(QAndATransactionChainFactory.beforeAnswerDeleteChain())
                     .afterDelete(QAndATransactionChainFactory.afterAnswerDeleteChain())
+                .create()
+                	.afterSave(QAndATransactionChainFactory.addOrUpdateMatrixAnswersChain())
+                .update()
+                	.afterSave(QAndATransactionChainFactory.addOrUpdateMatrixAnswersChain())
                 .build();
     }
 

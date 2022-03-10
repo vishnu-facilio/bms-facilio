@@ -12,10 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class restController extends Controller {
+public class RestControllerContext extends Controller {
 
 
-    public restController() {
+    public RestControllerContext() {
         setControllerType(FacilioControllerType.REST.asInt());
     }
 

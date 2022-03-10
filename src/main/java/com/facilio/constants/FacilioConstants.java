@@ -7,7 +7,7 @@ import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.lonWorks.LonWorksControllerContext;
 import com.facilio.agentv2.metrics.AgentMetrics;
-import com.facilio.agentv2.misc.MiscController;
+import com.facilio.agentv2.misc.MiscControllerContext;
 import com.facilio.agentv2.modbusrtu.ModbusRtuControllerContext;
 import com.facilio.agentv2.modbustcp.ModbusTcpControllerContext;
 import com.facilio.agentv2.niagara.NiagaraControllerContext;
@@ -2208,12 +2208,12 @@ public class FacilioConstants {
 			classMap.put(OPC_XML_DA_CONTROLLER_MODULE_NAME, OpcXmlDaControllerContext.class);
 			classMap.put(NIAGARA_CONTROLLER_MODULE_NAME, NiagaraControllerContext.class);
 			classMap.put(CONTROLLER_MODULE_NAME, Controller.class);
-			classMap.put(MISC_CONTROLLER_MODULE_NAME, MiscController.class);
+			classMap.put(MISC_CONTROLLER_MODULE_NAME, MiscControllerContext.class);
 			classMap.put(AGENT_METRICS_MODULE, AgentMetrics.class);
 			classMap.put(SYSTEM_CONTROLLER_MODULE_NAME, SystemControllerContext.class);
 			classMap.put(LON_WORKS_CONTROLLER_MODULE_NAME, LonWorksControllerContext.class);
 			classMap.put(RDM_CONTROLLER_MODULE_NAME, RdmControllerContext.class);
-			//classMap.put(REST_CONTROLLER_MODULE_NAME,MiscController.class);
+			//classMap.put(REST_CONTROLLER_MODULE_NAME,MiscControllerContext.class);
 			//classMap.put(CUSTOM_CONTROLLER_MODULE_NAME, CustomController.class);
 
 
@@ -2631,11 +2631,18 @@ public class FacilioConstants {
 			public static final String MULTI_FILE_UPLOAD_QUESTION = "qandaMultiFileUploadQuestion";
 			public static final String BOOLEAN_QUESTION = "qandaBooleanQuestion";
 			public static final String RATING_QUESTION ="qandaRatingQuestion";
+			public static final String MATRIX_QUESTION ="matrixQuestion";
+			public static final String MULTI_QUESTION ="multiQuestion";
+			
+			public static final String MATRIX_QUESTION_ROW ="qandaMatrixQuestionRow";
+			public static final String MATRIX_QUESTION_COLUMN ="qandaMatrixQuestionColumn";
 		}
 
 		public static class Answers {
 			
 			public static final String ATTACHMENT = "qandaAnswerattachments";
+			
+			public static final String MATRIX_ANSWER = "qandaMatrixAnswer";
 			
 			public static final String MULTI_FILE_ANSWER = "qandaMultiFileAnswer";
 			public static final String MCQ_MULTI_ANSWER_REL = "qandaMcqMultiAnswerRel";

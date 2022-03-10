@@ -54,9 +54,10 @@ public class AddQAndAModules extends SignUpData {
         changeSysCreatedTimeFieldDisplayName(response);
 
         addAnswerAttachmentModule(answer);
+        
     }
 
-    private void changeSysCreatedTimeFieldDisplayName(FacilioModule response) throws Exception {
+	private void changeSysCreatedTimeFieldDisplayName(FacilioModule response) throws Exception {
 
         ModuleBean modBean = Constants.getModBean();
 
@@ -259,9 +260,95 @@ public class AddQAndAModules extends SignUpData {
         addModuleChain.execute();
 
         addRichTextField(headingQuestion, headingRichText);
+        
+        addMatrixRelatedModules(question);
     }
 
-    private void addRichTextField(FacilioModule headingQuestion, FacilioModule richText) throws Exception {
+    public void addMatrixRelatedModules(FacilioModule question) throws Exception {
+    	
+    	List<FacilioModule> modules = new ArrayList<FacilioModule>();
+    	
+    	 FacilioModule questionModule = new FacilioModule(FacilioConstants.QAndA.Questions.MATRIX_QUESTION,
+                 "Q And A Matrix Questions",
+                 "Q_And_A_Matrix_Questions",
+                 FacilioModule.ModuleType.SUB_ENTITY,
+                 question);
+
+         List<FacilioField> questionFields = new ArrayList<>();
+         questionFields.add(FieldFactory.getDefaultField("answerModuleId", "Answer Module", "ANSWER_MODULEID", FieldType.NUMBER));
+         questionModule.setFields(questionFields);
+         
+         modules.add(questionModule);
+         
+         
+         FacilioModule multiQuestionModule = new FacilioModule(FacilioConstants.QAndA.Questions.MULTI_QUESTION,
+                 "Q And A Multi Questions",
+                 "Q_And_A_Matrix_Questions",
+                 FacilioModule.ModuleType.SUB_ENTITY,
+                 question);
+
+         List<FacilioField> multiQuestionFields = new ArrayList<>();
+         multiQuestionFields.add(FieldFactory.getDefaultField("answerModuleId", "Answer Module", "ANSWER_MODULEID", FieldType.NUMBER));
+         multiQuestionModule.setFields(multiQuestionFields);
+         
+         modules.add(multiQuestionModule);
+
+         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
+         
+         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
+         addModuleChain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, false);
+         addModuleChain.execute();
+         
+         modules = new ArrayList<FacilioModule>();
+         
+         FacilioModule questionRowModule = new FacilioModule(FacilioConstants.QAndA.Questions.MATRIX_QUESTION_ROW,
+                 "Q And A Matrix Questions Row",
+                 "Q_And_A_Matrix_Questions_Row",
+                 FacilioModule.ModuleType.SUB_ENTITY,true);
+
+         List<FacilioField> questionRowFields = new ArrayList<>();
+         
+         questionRowFields.add(FieldFactory.getDefaultField("name", "Name", "NAME", FieldType.STRING));
+         
+         questionRowFields.add(FieldFactory.getDefaultField("parentId", "Parent Id", "PARENT_ID", FieldType.NUMBER));
+         
+         questionRowFields.add(FieldFactory.getDefaultField("mandatory", "Mandatory", "MANDATORY", FieldType.BOOLEAN));
+         
+         questionRowModule.setFields(questionRowFields);
+
+         modules.add(questionRowModule);
+    	
+         
+         FacilioModule questionColumnModule = new FacilioModule(FacilioConstants.QAndA.Questions.MATRIX_QUESTION_COLUMN,
+                 "Q And A Matrix Questions Column",
+                 "Q_And_A_Matrix_Questions_Column",
+                 FacilioModule.ModuleType.SUB_ENTITY,true);
+
+         List<FacilioField> questionColumnFields = new ArrayList<>();
+         
+         questionColumnFields.add(FieldFactory.getDefaultField("parentId", "Parent Id", "PARENT_ID", FieldType.NUMBER));
+         
+         questionColumnFields.add(FieldFactory.getDefaultField("name", "Name", "NAME", FieldType.STRING));
+         
+         questionColumnFields.add(FieldFactory.getDefaultField("fieldId", "Field", "FIELDID", FieldType.NUMBER));
+         
+         questionColumnFields.add(FieldFactory.getDefaultField("mandatory", "Mandatory", "MANDATORY", FieldType.BOOLEAN));
+         
+         questionColumnFields.add(FieldFactory.getDefaultField("meta", "Meta", "META_JSON", FieldType.STRING));
+         
+         questionColumnModule.setFields(questionColumnFields);
+
+         modules.add(questionColumnModule);
+         
+         addModuleChain = TransactionChainFactory.addSystemModuleChain();
+         
+         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
+         addModuleChain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
+         addModuleChain.execute();
+         
+	}
+
+	private void addRichTextField(FacilioModule headingQuestion, FacilioModule richText) throws Exception {
         LargeTextField field = (LargeTextField) FieldFactory.getDefaultField("richText", "Rich Text", null, FieldType.LARGE_TEXT);
         field.setModule(headingQuestion);
         field.setRelModuleId(richText.getModuleId());

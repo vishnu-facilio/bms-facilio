@@ -12,12 +12,11 @@ import com.facilio.agentv2.controller.ControllerUtilV2;
 import com.facilio.agentv2.iotmessage.IotMessage;
 import com.facilio.agentv2.iotmessage.IotMessageApiV2;
 import com.facilio.agentv2.metrics.MetricsApi;
-import com.facilio.agentv2.misc.MiscController;
+import com.facilio.agentv2.misc.MiscControllerContext;
 import com.facilio.agentv2.point.PointsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -339,11 +338,11 @@ public class DataProcessorV2
                         } else {
                             FacilioAgent agent = AgentApiV2.getAgent(agentId);
                             if (agent.getAgentType() == AgentType.CLOUD.getKey() || agent.getAgentType() == AgentType.MQTT.getKey()) {
-                                MiscController miscController = new MiscController(agent.getId(), AccountUtil.getCurrentOrg().getOrgId());
-                                miscController.setName(((JSONObject) (payload.get(AgentConstants.CONTROLLER))).get(AgentConstants.NAME).toString());
-                                miscController.setDataInterval(agent.getInterval() * 60 * 1000);
-                                ControllerApiV2.addController(miscController);
-                                return miscController;
+                                MiscControllerContext miscControllerContext = new MiscControllerContext(agent.getId(), AccountUtil.getCurrentOrg().getOrgId());
+                                miscControllerContext.setName(((JSONObject) (payload.get(AgentConstants.CONTROLLER))).get(AgentConstants.NAME).toString());
+                                miscControllerContext.setDataInterval(agent.getInterval() * 60 * 1000);
+                                ControllerApiV2.addController(miscControllerContext);
+                                return miscControllerContext;
                             } else {
                                 throw new Exception("controller not found for " + payload);
                             }

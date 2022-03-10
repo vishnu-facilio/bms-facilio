@@ -3028,7 +3028,11 @@ public class FormFactory {
 		fields.add(isOccupied);
 		
 		fields.add(new FormField("floor", FieldDisplayType.LOOKUP_SIMPLE, "Floor", Required.OPTIONAL,"floor", 5, 1));
-		
+		fields.add(new FormField("location", FieldDisplayType.GEO_LOCATION, "Location", Required.OPTIONAL, 4, 1));
+		FormField spaceCategory = new FormField("spaceCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL,"spacecategory", 3, 1,false);
+		spaceCategory.setHideField(true);
+		fields.add(spaceCategory);
+
 		return fields;
 	}
 

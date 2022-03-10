@@ -4,6 +4,7 @@ import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.AssetDepreciationContext;
 import com.facilio.bmsconsole.context.TimelogContext;
+import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.util.MLServiceUtil;
 import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
@@ -35,6 +36,7 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.dealsandoffers.FillDe
 import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.FillNeighbourhoodSharingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.NeighbourhoodFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.FillNewsAndInformationDetailsCommandV3;
+
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.FillNewsRelatedModuleDataInListCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.LoadNewsAndInformationLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
@@ -80,7 +82,9 @@ import com.facilio.bmsconsoleV3.commands.storeroom.UpdateServingSitesinStoreRoom
 import com.facilio.bmsconsoleV3.commands.tenant.FillTenantsLookupCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.ValidateTenantSpaceCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.LoadTenantcontactLookupsCommandV3;
+import com.facilio.bmsconsoleV3.commands.tenantspaces.LoadTenantSpacesLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantunit.AddSpaceCommandV3;
+import com.facilio.bmsconsoleV3.commands.tenantunit.LoadTenantUnitLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.termsandconditions.CheckForPublishedCommand;
 import com.facilio.bmsconsoleV3.commands.termsandconditions.LoadTermsLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesLookUpCommandV3;
@@ -126,17 +130,26 @@ import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount10
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30_BS2;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount50;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.control.*;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.controlaction.context.ControlActionCommandContext;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.elasticsearch.command.PushDataToESCommand;
+import com.facilio.modules.FacilioModule;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
+import com.facilio.v3.annotation.ModuleType;
 import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
 import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
 import com.facilio.v3.commands.FetchChangeSetForCustomActivityCommand;
+import com.facilio.v3.context.Constants;
+import org.apache.commons.chain.Context;
 
 import java.util.function.Supplier;
 
@@ -181,6 +194,22 @@ public class APIv3Config {
                     .afterSave(TransactionChainFactoryV3.getEmailFromAddressAfterSaveChain())
                    .update()
                    .beforeSave(new EmailFromAddressValidateCommand())
+                .build();
+    }
+
+    @ModuleType(type = FacilioModule.ModuleType.NOTES)
+    public static Supplier<V3Config> getNotesHandler() {
+	    return () -> new V3Config(NoteContext.class, null)
+                .list()
+                .beforeFetch(new FacilioCommand() {
+                    @Override
+                    public boolean executeCommand(Context context) throws Exception {
+                        long parentId = FacilioUtil.parseLong(Constants.getQueryParamOrThrow(context, "parentId"));
+                        Condition condition = CriteriaAPI.getCondition("PARENT_ID", "parentId", String.valueOf(parentId), NumberOperators.EQUALS);
+                        context.put(FacilioConstants.ContextNames.FILTER_SERVER_CRITERIA, condition);
+                        return false;
+                    }
+                })
                 .build();
     }
 
@@ -413,12 +442,26 @@ public class APIv3Config {
     public static Supplier<V3Config> getTenantUnit() {
         return () -> new V3Config(V3TenantUnitSpaceContext.class, new ModuleCustomFieldCount30())
                 .create()
-                    .beforeSave(new AddSpaceCommandV3())
-                    .afterSave(TransactionChainFactoryV3.getTenantUnitAfterSaveChain())
+                    .beforeSave(new AddOrUpdateSpaceLocation(),new AddSpaceCommandV3())
+                    .afterSave(new CreateSpaceAfterSave(),TransactionChainFactoryV3.getTenantUnitAfterSaveChain())
                 .update()
-                	.beforeSave(new MarkTenantunitAsVacantCommandV3())
+                	.beforeSave(new AddOrUpdateSpaceLocation(),new MarkTenantunitAsVacantCommandV3())
                 .list()
+                .beforeFetch(new LoadTenantUnitLookupCommandV3())
+                .summary().beforeFetch(new LoadTenantUnitLookupCommandV3())
+                .delete()
+                .build();
+    }
+
+    @Module("tenantspaces")
+    public static Supplier<V3Config> getTenantSpaces() {
+        return () -> new V3Config(V3TenantUnitSpaceContext.class, null)
+                .create()
+                .update()
+                .list()
+                .beforeFetch(new LoadTenantSpacesLookupCommandV3())
                 .summary()
+                .beforeFetch(new LoadTenantSpacesLookupCommandV3())
                 .build();
     }
 

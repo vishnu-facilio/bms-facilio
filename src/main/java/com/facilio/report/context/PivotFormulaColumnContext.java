@@ -5,10 +5,21 @@ import com.facilio.modules.fields.*;
 import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.util.ArrayList;
+
 public class PivotFormulaColumnContext extends PivotColumnContext {
     private String scriptExpression;
     private String dataTypeEnum;
     private String expression;
+    private ArrayList<String> variablesUsedInExp = new ArrayList<>();
+
+    public ArrayList<String> getVariablesUsedInExp() {
+        return variablesUsedInExp;
+    }
+
+    public void setVariablesUsedInExp(ArrayList<String> variablesUsedInExp) {
+        this.variablesUsedInExp = variablesUsedInExp;
+    }
 
     public String getScriptExpression() {
         return scriptExpression;

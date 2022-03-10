@@ -1,11 +1,13 @@
 package com.facilio.agentv2;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
@@ -16,7 +18,6 @@ import com.facilio.fw.FacilioException;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.services.FacilioHttpUtils;
 import com.facilio.util.FacilioUtil;
 import com.facilio.util.RequestUtil;
 import com.facilio.util.ServiceHttpUtils;
@@ -26,29 +27,34 @@ public class CloudAgentUtil {
 	private static class Urls {
 		private static final String ADD_AGENT = "/api/v1/agent/add";
 		private static final String EDIT_AGENT = "/api/v1/agent/edit";
+		private static final String FETCH_AGENT_DETAILS = "/api/v1/agent/fetch";
 	}
 	
 	public static void addCloudServiceAgent(FacilioAgent agent) throws Exception {
+		Map<String, Object> props = FieldUtil.getAsProperties(agent);
+		doPost(Urls.ADD_AGENT, "agent", props);
 		
-		Map<String, Object> props = FieldUtil.getAsProperties(agent);
-
-		String response = doPost(Urls.ADD_AGENT, "agent", props);
-		if (StringUtils.isNotEmpty(response)) {
-			JSONObject obj = FacilioUtil.parseJson(response);
-			if (obj.containsKey("code")) {
-				int code = FacilioUtil.parseInt(obj.get("code").toString());
-				if (code != 0) {
-					throw new FacilioException(obj.get("message").toString());
-				}
-			}
-		}
-		else {
-			throw new FacilioException("Agent not added. Please check the details again");
-		}
 	}
-	public static boolean addWorkflowString(FacilioAgent agent) throws Exception{
+	
+	public static void editServiceAgent(FacilioAgent agent) throws Exception{
 		Map<String, Object> props = FieldUtil.getAsProperties(agent);
-		String response = doPost(Urls.EDIT_AGENT, "agent",props);
+		doPost(Urls.EDIT_AGENT, "agent",props);
+	}
+
+	public static Map<String, Object> fetchAgentDetails(FacilioAgent agent) throws Exception{
+		Map<String, Object> data = doGet(Urls.FETCH_AGENT_DETAILS, Collections.singletonMap("name", agent.getName()));
+		if (data != null) {
+			return (Map<String, Object>) data.get(AgentConstants.AGENT_PARAMS);
+		}
+		return null;
+	}
+	
+	
+	
+	
+	/********************* HTTP Util *****************************/
+	
+	private static Map<String, Object> validateAndGetData(String response) throws Exception {
 		if (StringUtils.isNotEmpty(response)) {
 			JSONObject obj = FacilioUtil.parseJson(response);
 			if (obj.containsKey("code")) {
@@ -57,19 +63,33 @@ public class CloudAgentUtil {
 					throw new FacilioException(obj.get("message").toString());
 				}
 			}
-			return true;
+			JSONObject data = (JSONObject) obj.get("data");
+			if (data != null) {
+				return FacilioUtil.getAsMap(data);
+			}
+			return null;
 		}
 		else {
-			throw new FacilioException("Workflow string was not added");
+			throw new FacilioException("Error occurred. Please check the details again");
 		}
 	}
 	
-	private static String doPost(String url, String key, Map<String, Object> props) throws Exception {
+	private static Map<String, Object> doPost(String url, String key, Object props) throws Exception {
 		JSONObject body = new JSONObject();
 		body.put(key, props);
+		String response = ServiceHttpUtils.doHttpPost(FacilioProperties.getRegion(), Services.AGENT_SERVICE, getUrl(url), getHeaders(), null, body);
+		return validateAndGetData(response);
+	}
+	
+	private static Map<String, Object> doGet(String url, Map<String, String> params) throws Exception {
+		String response = ServiceHttpUtils.doHttpGet(FacilioProperties.getRegion(), Services.AGENT_SERVICE, getUrl(url), getHeaders(), params);
+		return validateAndGetData(response);
+	}
+	
+	private static Map<String, String> getHeaders() {
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put("X-Org-Id", String.valueOf(AccountUtil.getCurrentOrg().getOrgId()));
-		return ServiceHttpUtils.doHttpPost(FacilioProperties.getRegion(), Services.AGENT_SERVICE, getUrl(url), headers, null, body);
+		return headers;
 	}
 
 	private static String getUrl(String url) throws Exception {
