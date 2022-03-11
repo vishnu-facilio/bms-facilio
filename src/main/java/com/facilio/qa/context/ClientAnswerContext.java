@@ -24,4 +24,7 @@ public abstract class ClientAnswerContext<A> {
     }
 
     public abstract A getAnswer();
+    public Object getActualAnswerObject() {
+    	return getAnswer();
+    }
 }

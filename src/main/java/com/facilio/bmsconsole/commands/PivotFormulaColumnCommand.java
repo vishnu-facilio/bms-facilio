@@ -10,7 +10,10 @@ import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 import org.apache.commons.chain.Context;
 
+import java.text.NumberFormat;
 import java.util.*;
+
+import static sun.security.krb5.Confounder.longValue;
 
 public class PivotFormulaColumnCommand extends FacilioCommand {
     @Override
@@ -52,18 +55,24 @@ public class PivotFormulaColumnCommand extends FacilioCommand {
                 Map<String,Object> formulaRecord = paramList.get(index);
                 if(formulaRecord.containsKey(formulaContext.getAlias()) &&
                         formulaRecord.get(formulaContext.getAlias()) != null &&
-                        isRequiredVariablesAvailable(columnHeaders, rowHeaders, formulaContext.getVariablesUsedInExp())){
+                        !formulaRecord.get(formulaContext.getAlias()).equals("#VALUE!")){
                     if(formulaContext.getDataTypeEnum() != null && formulaContext.getDataTypeEnum().equals("DECIMAL")){
                         formulaMap.put(formulaContext.getAlias(),formulaRecord.get(formulaContext.getAlias()));
                     } else if(formulaContext.getDataTypeEnum() != null && formulaContext.getDataTypeEnum().equals("NUMBER") || formulaContext.getDataTypeEnum().equals("DATE_TIME")) {
-                        Long res = Long.parseLong(formulaRecord.get(formulaContext.getAlias()).toString());
+                        NumberFormat numberFormat = NumberFormat.getInstance();
+                        long res = numberFormat.parse(formulaRecord.get(formulaContext.getAlias()).toString()).longValue();
                         formulaMap.put(formulaContext.getAlias(),Math.round(res));
-                    } else if(formulaContext.getDataTypeEnum() != null && formulaContext.getDataTypeEnum().equals("BOOLEAN") || formulaContext.getDataTypeEnum().equals("STRING")) {
+                    } else if(formulaContext.getDataTypeEnum() != null && formulaContext.getDataTypeEnum().equals("BOOLEAN")) {
+                        Boolean res = Boolean.parseBoolean(formulaRecord.get(formulaContext.getAlias()).toString());
+                        formulaMap.put(formulaContext.getAlias(),res);
+                    } else if(formulaContext.getDataTypeEnum().equals("STRING")) {
                         String res = String.valueOf(formulaRecord.get(formulaContext.getAlias()));
                         formulaMap.put(formulaContext.getAlias(),res);
                     }
-                } else {
-                    formulaMap.put(formulaContext.getAlias(),"#VALUE!");
+                } else if(formulaRecord.containsKey(formulaContext.getAlias()) &&
+                            formulaRecord.get(formulaContext.getAlias()) != null &&
+                            formulaRecord.get(formulaContext.getAlias()).equals("#VALUE!")){
+                    formulaMap.put(formulaContext.getAlias(), "#VALUE!");
                 }
             }
             record.put("formula",formulaMap);
@@ -102,11 +111,16 @@ public class PivotFormulaColumnCommand extends FacilioCommand {
     }
 
     private void executeFormulaColumn(String script, List<Map<String,Object>> params, String key) {
-        Map<String,Object> paramMap = new HashMap<>();
-        paramMap.put("data",params);
-        paramMap.put("key",key);
+        List<Object> paramList = new ArrayList<>();
+        paramList.add(params);
+        paramList.add(key);
         try {
-            WorkflowUtil.getWorkflowExpressionResult(script, paramMap, true);
+            WorkflowContext workflowContext = new WorkflowContext();
+            workflowContext.setIsV2Script(true);
+            workflowContext.setThrowExceptionForSyntaxError(true);
+            workflowContext.setWorkflowV2String(script);
+            workflowContext.setParams(paramList);
+            workflowContext.executeWorkflow();
         } catch (Exception e){
             for (Map<String,Object> row : params){
                 row.put(key, "#VALUE!");

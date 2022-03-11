@@ -11,6 +11,11 @@ import java.util.Set;
 public class MCQMultiAnswerContext extends ClientAnswerContext<MCQMultiAnswerContext.MCQMultiAnswer>  {
 
     private MCQMultiAnswer answer;
+    
+    @Override
+    public Object getActualAnswerObject() {
+    	return answer.getSelected();
+    }
 
     @Getter
     @Setter

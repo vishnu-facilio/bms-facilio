@@ -264,6 +264,10 @@ public class ProcessImportCommand extends FacilioCommand {
 
 				Long siteId = getSpaceID(importProcessContext, col, fieldMapping, row_no, true);
 				props.put("siteId", siteId);
+				
+				lookupHolder = new HashMap<>();
+				lookupHolder.put("id", Long.parseLong(props.get("siteId").toString()));
+				props.put("site",lookupHolder);
 
 				if(!isBim){
 					Long floorId = getSpaceID(importProcessContext,colVal, fieldMapping,row_no, true);
@@ -271,12 +275,9 @@ public class ProcessImportCommand extends FacilioCommand {
 					lookupHolder.put("id", floorId);
 					props.put(ImportAPI.ImportProcessConstants.BUILDING_ID_FIELD,lookupHolder);
 					props.put("buildingId", floorId);
+										
 				}else{
-					props.put("siteId", Long.parseLong(props.get("site").toString()));
-					lookupHolder = new HashMap<>();
-					lookupHolder.put("id", Long.parseLong(props.get("siteId").toString()));
-					props.put("site",lookupHolder);
-
+					props.put("siteId", Long.parseLong(props.get("site").toString()));					
 					props.put("buildingId", Long.parseLong(props.get("building").toString()));
 					lookupHolder = new HashMap<>();
 					lookupHolder.put("id", Long.parseLong(props.get("building").toString()));

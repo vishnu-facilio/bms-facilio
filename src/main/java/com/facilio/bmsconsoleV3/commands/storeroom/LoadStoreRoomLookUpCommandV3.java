@@ -1,9 +1,13 @@
 package com.facilio.bmsconsoleV3.commands.storeroom;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.*;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -11,8 +15,6 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
 
 public class LoadStoreRoomLookUpCommandV3 extends FacilioCommand {
     @Override
@@ -22,18 +24,25 @@ public class LoadStoreRoomLookUpCommandV3 extends FacilioCommand {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
+        FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
         if (fields == null) {
             fields = modBean.getAllFields(moduleName);
         }
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-        List<LookupField> additionaLookups = new ArrayList<LookupField>();
+        List<SupplementRecord> additionaLookups = new ArrayList<SupplementRecord>();
         LookupField locationField = (LookupField) fieldsAsMap.get("location");
         LookupField ownerField = (LookupField) fieldsAsMap.get("owner");
         LookupField siteField = (LookupField) fieldsAsMap.get("site");
-        
+
+        MultiLookupMeta servingsites = new MultiLookupMeta((MultiLookupField) fieldsAsMap.get("servingsites"));
+
+        FacilioField nameField = FieldFactory.getField("name", "NAME", resourceModule, FieldType.STRING);
+        servingsites.setSelectFields(Collections.singletonList(nameField));
+
         additionaLookups.add(locationField);
         additionaLookups.add(ownerField);
         additionaLookups.add(siteField);
+        additionaLookups.add(servingsites);
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,additionaLookups);
         return false;

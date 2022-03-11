@@ -360,6 +360,13 @@ public class QAndAUtil {
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("question"), questionIds, PickListOperators.IS))
                 .andCondition(CriteriaAPI.getCondition(responseSysModifiedTime, range.toString(), DateOperators.BETWEEN));
     }
+    
+    public static void populatePagesAndQuestionsInTemplates(Collection<QAndATemplateContext> templates) throws Exception {
+    	populatePagesInTemplates(templates);
+    	for(QAndATemplateContext template : templates) {
+    		populateQuestionsInPages(template.getPages());
+    	}
+    }
 
     public static void populatePagesInTemplates(Collection<QAndATemplateContext> templates) throws Exception {
             fetchChildrenFromParent(templates,
