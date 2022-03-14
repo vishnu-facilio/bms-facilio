@@ -656,6 +656,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField(AgentConstants.PROCESSOR_VERSION, "PROCESSOR_VERSION", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.DELETED_TIME, "DELETED_TIME", FieldType.NUMBER));
         fields.add(getField(AgentKeys.TRANSFORM_WORKFLOW_ID, "TRANSFORM_WORKFLOW_ID", module, FieldType.NUMBER));
+        fields.add(getField(AgentKeys.COMMAND_WORKFLOW_ID, "COMMAND_WORKFLOW_ID", module, FieldType.NUMBER));
         fields.add(getField("isDisable", "IS_DISABLE", module, FieldType.BOOLEAN));
         fields.add(getField("lastActionModified", "LAST_ACTION_MODIFIED", module, FieldType.NUMBER));
         fields.add(getField("recordId", "RECORD_ID", module, FieldType.NUMBER));

@@ -919,13 +919,23 @@ public class FormsAPI {
 		return forms;
 	}
 
-	private static void addUnusedSystemFields(FacilioForm form, List<FormField> defaultFields) throws Exception {
+	private static void addUnusedSystemFields(FacilioForm form, List<FormField> defaultFields, ModuleBean modBean, String moduleName) throws Exception {
 		String appLinkName = form.getAppLinkName();
 		if (isPortalApp(appLinkName)) {
 			addUnusedPortalSystemFields(form, defaultFields);
 		}
 		else {
 			addUnusedWebSystemFields(form, defaultFields);
+		}
+		
+		for (FormField f: defaultFields) {
+			if (f.getField() == null) {
+				FacilioField field = modBean.getField(f.getName(), moduleName);
+				if (field != null) {
+					f.setFieldId(field.getFieldId());
+					f.setField(field);
+				}
+			}
 		}
 	}
 	
@@ -1050,7 +1060,7 @@ public class FormsAPI {
 		List<FormField> systemFields = new ArrayList<>();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		if (form.getModule().isCustom()) {
-			addUnusedSystemFields(form, systemFields);
+			addUnusedSystemFields(form, systemFields, modBean, moduleName);
 		}
 		else {
 			// Temp handling
@@ -1065,17 +1075,8 @@ public class FormsAPI {
 			if (defaultForm != null && CollectionUtils.isNotEmpty(defaultForm.getFields())) {
 				
 				setUnusedSystemFields(systemFields, defaultForm, formFieldMap);
-				addUnusedSystemFields(form, systemFields);
+				addUnusedSystemFields(form, systemFields, modBean, moduleName);
 				
-				for (FormField f: systemFields) {
-					if (f.getField() == null) {
-						FacilioField field = modBean.getField(f.getName(), moduleName);
-						if (field != null) {
-							f.setFieldId(field.getFieldId());
-							f.setField(field);
-						}
-					}
-				}
 			}
 		}
 		

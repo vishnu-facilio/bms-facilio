@@ -42,6 +42,8 @@ public class FacilioAgent implements Serializable {
     private String displayName;
     private long createdTime = -1L;
     private long transformWorkflowId = -1;
+    private long commandWorkflowId = -1;
+    private WorkflowContext commandWorkflow;
     @JsonInclude
     private Boolean isDisable;
     private String messageSource;

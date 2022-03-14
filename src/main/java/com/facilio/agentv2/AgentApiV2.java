@@ -37,6 +37,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fw.FacilioException;
 import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -168,8 +169,9 @@ public class AgentApiV2 {
 
 
             List<Long> oldWorkflowIds = new ArrayList<>();
-            addWorkflows(AgentConstants.WORKFLOW, jsonObject, agent.getWorkflowId(), oldWorkflowIds, agent::setWorkflowId);
-            addWorkflows(AgentConstants.TRANSFORM_WORKFLOW, jsonObject, agent.getTransformWorkflowId(), oldWorkflowIds, agent::setTransformWorkflowId);
+            addWorkflows(AgentConstants.WORKFLOW, agent, jsonObject, agent.getWorkflowId(), oldWorkflowIds, agent::setWorkflowId);
+            addWorkflows(AgentConstants.TRANSFORM_WORKFLOW, agent, jsonObject, agent.getTransformWorkflowId(), oldWorkflowIds, agent::setTransformWorkflowId);
+            addWorkflows(AgentConstants.COMMAND_WORKFLOW, agent, jsonObject, agent.getCommandWorkflowId(), oldWorkflowIds, agent::setCommandWorkflowId);
             if (agentType.isAgentService()) {
                  WorkflowContext workflow = FieldUtil.getAsBeanFromMap((Map<String, Object>) jsonObject.get(AgentConstants.WORKFLOW), WorkflowContext.class);
                  agent.setWorkflow(workflow);
@@ -186,9 +188,23 @@ public class AgentApiV2 {
             return status;
 
     }
+    
+    private static boolean validateWorkflows(FacilioAgent agent, String name) {
+    	AgentType agentType = agent.getAgentTypeEnum();
+    	if (agentType == AgentType.FACILIO || agentType == AgentType.NIAGARA) {
+    		return false;
+    	}
+    	if (name.equals(AgentConstants.WORKFLOW) && agentType != AgentType.CLOUD && agentType != AgentType.CLOUD_ON_SERVICE) {
+    		return false;
+    	}
+    	return true;
+    }
 
-    private static void addWorkflows(String property, JSONObject jsonObject, long oldWorkflowId, List<Long> oldWorkflowIds, Consumer<Long> setWorkflow) throws Exception {
+    private static void addWorkflows(String property, FacilioAgent agent, JSONObject jsonObject, long oldWorkflowId, List<Long> oldWorkflowIds, Consumer<Long> setWorkflow) throws Exception {
     	if (containsValueCheck(property, jsonObject)) {
+    		if (!validateWorkflows(agent, property)) {
+    			throw new FacilioException("Workflow cannot be added for this agent type");
+    		}
             WorkflowContext workflow = FieldUtil.getAsBeanFromMap((Map<String, Object>)jsonObject.get(property), WorkflowContext.class);
             if(workflow.validateWorkflow()) {
                 long workflowId = WorkflowUtil.addWorkflow(workflow);
@@ -360,6 +376,9 @@ public class AgentApiV2 {
 	        		if (agent.get("transformWorkflowId") != null) {
 	        			workflowIds.add((long) agent.get("transformWorkflowId"));
 	        		}
+	        		if (agent.get("commandWorkflowId") != null) {
+	        			workflowIds.add((long) agent.get("commandWorkflowId"));
+	        		}
 	        	}
 	        	if (!workflowIds.isEmpty()) {
 	        		Map<Long, WorkflowContext> workflowMap = WorkflowUtil.getWorkflowsAsMap(workflowIds);
@@ -371,6 +390,10 @@ public class AgentApiV2 {
 		        		if (agent.get("transformWorkflowId") != null) {
 		        			WorkflowContext workflow = workflowMap.get(agent.get("transformWorkflowId"));
 		        			agent.put(AgentConstants.TRANSFORM_WORKFLOW, workflow);
+		        		}
+		        		if (agent.get("commandWorkflowId") != null) {
+		        			WorkflowContext workflow = workflowMap.get(agent.get("commandWorkflowId"));
+		        			agent.put(AgentConstants.COMMAND_WORKFLOW, workflow);
 		        		}
 		        	}
 	        	}

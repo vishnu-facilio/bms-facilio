@@ -43,7 +43,7 @@ public class GetStoreRoomListCommand extends FacilioCommand {
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 
 		long siteId = (long) context.get(FacilioConstants.ContextNames.WORK_ORDER_SITE_ID);
-		SelectRecordsBuilder<StoreRoomContext> builder = StoreroomApi.getStoreRoomListBuilder(siteId, false);
+		SelectRecordsBuilder<StoreRoomContext> builder = StoreroomApi.getStoreRoomListBuilder(siteId, true);
 		if (getCount) {
 			builder.select(FieldFactory.getCountField(module));
 			builder.setAggregation();

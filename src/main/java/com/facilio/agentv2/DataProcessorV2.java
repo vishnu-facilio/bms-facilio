@@ -61,18 +61,14 @@ public class DataProcessorV2
 
     private static final Logger LOGGER = LogManager.getLogger(DataProcessorV2.class.getName());
 
-    public DataProcessorV2(long orgId, String orgDomainName) {
+    public DataProcessorV2(long orgId, String orgDomainName, AgentUtilV2 agentUtil) {
         this.orgId = orgId;
         this.orgDomainName = orgDomainName;
-        try {
-            agentUtil = new AgentUtilV2(orgId, orgDomainName);
-        } catch (Exception e) {
-            LOGGER.info("Exception occurred ", e);
-        }
+        this.agentUtil = agentUtil;
     }
 
 
-    public boolean processRecord(JSONObject payload, String partitionKey, EventUtil eventUtil) {
+    public boolean processRecord(JSONObject payload, String partitionKey, EventUtil eventUtil, FacilioAgent agent) {
         boolean processStatus = false;
         try {
             if (payload.containsKey("clearAgentCache")) {
@@ -81,22 +77,6 @@ public class DataProcessorV2
                 return true;
             }
 
-            FacilioAgent agent = getFacilioAgentForPayload(payload);
-
-            //preprocess the JSON data if necessary
-            if(agent.getTransformWorkflowId() > 0) {
-                WorkflowContext transformWorkflow = WorkflowUtil.getWorkflowContext(agent.getTransformWorkflowId());
-                FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
-                FacilioContext context = chain.getContext();
-                context.put(WorkflowV2Util.WORKFLOW_CONTEXT, transformWorkflow);
-                List params = new ArrayList<>();
-                params.add(payload);
-                params.add(FieldUtil.getAsProperties(agent));
-                context.put(WorkflowV2Util.WORKFLOW_PARAMS, params);
-                chain.execute();
-                HashMap mapFromPreProcessor = (HashMap) transformWorkflow.getReturnValue();
-                payload = (JSONObject) new JSONParser().parse(JSONObject.toJSONString(mapFromPreProcessor));
-            }
 
             Long timeStamp = System.currentTimeMillis();
             if(payload.containsKey(AgentConstants.TIMESTAMP)){
@@ -366,27 +346,6 @@ public class DataProcessorV2
             return true;
         }
         return false;
-    }
-
-    /**
-     * gets {@link FacilioAgent } for a payload.
-     * @param payload JSONObject which must contain the key 'agent' to which agent's name is mapped.
-     * @return {@link FacilioAgent}
-     * @throws Exception if the key 'agent' is missing from payload or if no agent is found for a name.
-     * */
-    private FacilioAgent getFacilioAgentForPayload(JSONObject payload) throws Exception {
-        String agentName = null;
-        if (payload.containsKey(AgentConstants.AGENT)) {
-            agentName = payload.get(AgentConstants.AGENT).toString().trim();
-            FacilioAgent agent = agentUtil.getFacilioAgent(agentName);
-            if (agent != null) {
-                return agent;
-            }else {
-                throw new Exception(" No such agent found ");
-            }
-        }else {
-            throw new Exception(" payload missing agent name");
-        }
     }
 
 

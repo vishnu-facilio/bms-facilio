@@ -21,16 +21,8 @@ Map cardLayout(Map params) {
         }
 
 
-        if (params.cardFilters != null && params.dateRange != cardFilters.dateLabel) {
-            cardFilters = params.cardFilters;
-            operatorId = cardFilters.operatorId;
-            dateLabel = cardFilters.dateLabel;
-            baseLineLabel = "Previous Period";
-            if (operatorId == 20) {
-                // omitting custom range
-                dateLabel = params.dateRange;
-            }
-            baselineDateRangeObj = date.getDateRange(dateLabel, baseLineLabel);
+        if (params.cardFilters != null) {
+            baselineDateRangeObj = new NameSpace("dateRange").create(startTime, endTime, baseLineLabel);
         } else {
             baselineDateRangeObj = date.getDateRange(params.dateRange, params.baseline);
         }
@@ -54,6 +46,7 @@ Map cardLayout(Map params) {
         enumMap = Reading(fieldid, params.reading.parentId).getEnumMap();
         valueMap = {};
         baselineValueMap = {};
+        baselineValueMap["dateRange"] = baselineDateRangeObj;
         valueMap["value"] = cardValue;
         valueMap["actualValue"] = cardValue;
         baselineValueMap["value"] = baselineCardValue;

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.collections4.MapUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -18,6 +19,7 @@ import com.amazonaws.services.iot.client.AWSIotException;
 import com.amazonaws.services.iot.client.AWSIotMessage;
 import com.amazonaws.services.iot.client.AWSIotMqttClient;
 import com.amazonaws.services.iot.client.AWSIotQos;
+import com.amazonaws.services.iot.client.shadow.AwsIotDeviceCommandManager.Command;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentType;
 import com.facilio.agent.controller.FacilioControllerType;
@@ -29,6 +31,8 @@ import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.logs.LogsApi;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -49,7 +53,11 @@ import com.facilio.services.kafka.FacilioKafkaProducer;
 import com.facilio.services.kafka.KafkaUtil;
 import com.facilio.services.messageQueue.MessageQueueTopic;
 import com.facilio.services.procon.message.FacilioRecord;
+import com.facilio.util.FacilioUtil;
 import com.facilio.wms.message.WmsPublishResponse;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
+import com.facilio.workflowv2.util.WorkflowV2Util;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -260,16 +268,12 @@ public class IotMessageApiV2 {
         for (IotMessage message : data.getMessages()) {
             LogsApi.logIotCommand(agentId,message.getId(),data.getFacilioCommand(),Status.MESSAGE_SENT);
             message.getMessageData().put("msgid", message.getId());
-            publishIotMessage(agent, topic, message.getMessageData(), messageSource);
-            //FacilioContext context = new FacilioContext();
-            //context.put(FacilioConstants.ContextNames.PUBLISH_DATA, data);
-            //FacilioTimer.scheduleInstantJob("PublishedDataChecker", context);
+            publishIotMessage(agent, topic, message, messageSource);
         }
     }
 
-    private static void publishIotMessage(FacilioAgent agent, String client, JSONObject object, MessageSource messageSource) throws Exception {
-
-
+    private static void publishIotMessage(FacilioAgent agent, String client, IotMessage message, MessageSource messageSource) throws Exception {
+    	JSONObject object = message.getMessageData();
         if (FacilioProperties.isOnpremise()) {
             publishToRabbitMQ(client, object);
         } else if (agent.getAgentTypeEnum().isAgentService()) {
@@ -277,6 +281,29 @@ public class IotMessageApiV2 {
         } else {
             publishToAwsIot(client, object);
         }
+    }
+    
+    private static JSONObject executeCommandWorkflow(long workflowId, FacilioAgent agent, JSONObject object, FacilioCommand command) throws Exception {
+    	WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext(workflowId);
+
+		FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
+		FacilioContext context = chain.getContext();
+
+		List<Object> props = new ArrayList<>();
+		props.add(object);
+		props.add(FieldUtil.getAsProperties(agent));
+		props.add(command.toString());
+
+		context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflowContext);
+		context.put(WorkflowV2Util.WORKFLOW_PARAMS, props);
+
+		chain.execute();
+		
+		Map<String, Object> result = (Map<String, Object>) workflowContext.getReturnValue();
+		if (result != null) {
+			return FacilioUtil.parseJson(JSONObject.toJSONString(result));
+		}
+		return null;
     }
 
     private static void publishToAgentService(FacilioAgent agent, String client, JSONObject payload, KafkaMessageSource messageSource) {

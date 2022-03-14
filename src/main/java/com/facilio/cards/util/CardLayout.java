@@ -287,6 +287,7 @@ public enum CardLayout {
 			Object fields = null;
 			Object kpi = null;
 			String period = null;
+			DateRange baselineDateObj = null;
 			JSONArray variables = null;
 
 			if ("module".equalsIgnoreCase(kpiType)) {
@@ -330,8 +331,9 @@ public enum CardLayout {
 						period = (String) timeLineFilters.get("dateLabel");
 
 						if (baselineRange != null) {
-							if(!dateRange.equals(period))
-								baselineRange = "Previous Period";
+							BaseLineContext baseline = BaseLineAPI.getBaseLine(baselineRange);
+							DateRange actualRange = kpiContext.getDateOperatorEnum().getRange(kpiContext.getDateValue());
+							baselineDateObj = baseline.calculateBaseLineRange(actualRange, baseline.getAdjustTypeEnum());
 							cardBaseValue = KPIUtil.getKPIBaseValueValue(kpiContext, baselineRange);
 						}
 
@@ -386,6 +388,7 @@ public enum CardLayout {
 			JSONObject jobj1 = new JSONObject();
 			jobj1.put("value", cardBaseValue);
 			jobj1.put("unit", null);
+			jobj1.put("dateRange", baselineDateObj);
 			jobj.put("kpi", kpi);
 			jobj.put("moduleData", listData);
 			jobj.put("fields", fields);
@@ -399,7 +402,6 @@ public enum CardLayout {
 			returnValue.put("baselineValue", jobj1);
 			returnValue.put("period", dateRange);
 			returnValue.put("baselinePeriod", baselineRange);
-
 			returnValue.put("title", title);
 			returnValue.put("value", jobj);
 
