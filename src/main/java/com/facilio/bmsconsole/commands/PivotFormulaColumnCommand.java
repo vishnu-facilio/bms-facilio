@@ -53,10 +53,11 @@ public class PivotFormulaColumnCommand extends FacilioCommand {
             Map<String,Object> formulaMap = new HashMap<>();
             for(PivotFormulaColumnContext formulaContext : formulaContextList) {
                 Map<String,Object> formulaRecord = paramList.get(index);
-                if(formulaRecord.containsKey(formulaContext.getAlias()) &&
-                        formulaRecord.get(formulaContext.getAlias()) != null &&
-                        !formulaRecord.get(formulaContext.getAlias()).equals("#VALUE!")){
-                    if(formulaContext.getDataTypeEnum() != null && formulaContext.getDataTypeEnum().equals("DECIMAL")){
+                if(formulaRecord.containsKey(formulaContext.getAlias()) && formulaRecord.get(formulaContext.getAlias()) != null){
+                    if(formulaRecord.get(formulaContext.getAlias()).equals("#VALUE!")) {
+                        String res = String.valueOf(formulaRecord.get(formulaContext.getAlias()));
+                        formulaMap.put(formulaContext.getAlias(), res);
+                    } else if(formulaContext.getDataTypeEnum() != null && formulaContext.getDataTypeEnum().equals("DECIMAL")){
                         formulaMap.put(formulaContext.getAlias(),formulaRecord.get(formulaContext.getAlias()));
                     } else if(formulaContext.getDataTypeEnum() != null && formulaContext.getDataTypeEnum().equals("NUMBER") || formulaContext.getDataTypeEnum().equals("DATE_TIME")) {
                         NumberFormat numberFormat = NumberFormat.getInstance();
@@ -69,10 +70,6 @@ public class PivotFormulaColumnCommand extends FacilioCommand {
                         String res = String.valueOf(formulaRecord.get(formulaContext.getAlias()));
                         formulaMap.put(formulaContext.getAlias(),res);
                     }
-                } else if(formulaRecord.containsKey(formulaContext.getAlias()) &&
-                            formulaRecord.get(formulaContext.getAlias()) != null &&
-                            formulaRecord.get(formulaContext.getAlias()).equals("#VALUE!")){
-                    formulaMap.put(formulaContext.getAlias(), "#VALUE!");
                 }
             }
             record.put("formula",formulaMap);
