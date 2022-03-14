@@ -427,6 +427,7 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getTenantContactBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new CheckforPeopleDuplicationCommandV3());
         c.addCommand(new CheckForMandatoryTenantIdCommandV3());
         return c;
