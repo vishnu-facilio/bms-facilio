@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import lombok.NonNull;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
@@ -232,6 +233,21 @@ public enum PickListOperators implements Operator<String> {
 		}
 		else {
 			return null;
+		}
+	}
+
+	public static String getDisplayNameForCurrentValue (@NonNull String value) {
+		switch (value) {
+			case FacilioConstants.Criteria.LOGGED_IN_USER_GROUP:
+				return FacilioConstants.Criteria.LOGGED_IN_USER_GROUP_DISPLAY_NAME;
+			case FacilioConstants.Criteria.LOGGED_IN_USER:
+				return FacilioConstants.Criteria.LOGGED_IN_USER_DISPLAY_NAME;
+			case FacilioConstants.Criteria.LOGGED_IN_PEOPLE:
+				return FacilioConstants.Criteria.LOGGED_IN_PEOPLE_DISPLAY_NAME;
+			case FacilioConstants.Criteria.CURRENT_SITE:
+				return FacilioConstants.Criteria.CURRENT_SITE_DISPLAY_NAME;
+			default:
+				return null;
 		}
 	}
 	
