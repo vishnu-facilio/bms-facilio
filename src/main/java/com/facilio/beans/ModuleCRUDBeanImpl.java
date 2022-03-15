@@ -1557,6 +1557,10 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 //		MLServiceAction.initMLServiceV3FromAdmin(mlServiceData);
 	}
 
+	@Override
+	public ApplicationContext getApplicationForLinkName(String appName) throws Exception {
+		return ApplicationApi.getApplicationForLinkName(appName);
+	}
 }
 
 

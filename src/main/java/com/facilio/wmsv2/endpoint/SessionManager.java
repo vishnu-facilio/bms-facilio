@@ -66,16 +66,39 @@ public class SessionManager {
 		}
 		return sessionList;
 	}
+
+	public Collection<LiveSession> getLiveSessionsForAppUsers(String topic, Long appId) {
+		List<LiveSession> sessionList = new ArrayList<>();
+		if (appId == null) {
+			return sessionList;
+		}
+
+		for (LiveSession session : liveSessions.values()) {
+			if (appId.equals(session.getAppId()) && session.matchTopic(topic)) {
+				sessionList.add(session);
+			}
+		}
+		return sessionList;
+	}
 	
-	public Collection<LiveSession> getLiveSessions(LiveSessionType liveSessionType, long id) {
+	public Collection<LiveSession> getLiveSessions(LiveSessionType liveSessionType, Long id, Long orgId, Long appId) {
 		
 		List<LiveSession> sessionList = new ArrayList<>();
+		if (id == null) {
+			return sessionList;
+		}
 		
 		Iterator<String> itr = liveSessions.keySet().iterator();
 		while (itr.hasNext()) {
 			String key = itr.next();
 			LiveSession liveSession = liveSessions.get(key);
 			if (liveSession != null && (liveSessionType == null || liveSession.getLiveSessionType().equals(liveSessionType)) && liveSession.getOuid() == id) {
+				if (orgId != null && !orgId.equals(liveSession.getOrgId())) {
+					continue;
+				}
+				if (appId != null && !appId.equals(liveSession.getAppId())) {
+					continue;
+				}
 				sessionList.add(liveSession);
 			}
 		}

@@ -53,7 +53,7 @@ public class DefaultBroadcaster {
 
             case USER: {
                 Long to = message.getTo();
-                Collection<LiveSession> liveSessions = SessionManager.getInstance().getLiveSessions(message.getSessionTypeEnum(), to);
+                Collection<LiveSession> liveSessions = SessionManager.getInstance().getLiveSessions(message.getSessionTypeEnum(), to, message.getOrgId(), message.getAppId());
                 sendObject(liveSessions, message);
                 break;
             }
@@ -62,6 +62,13 @@ public class DefaultBroadcaster {
                 Long orgId = message.getOrgId();
                 Collection<LiveSession> liveSessions = SessionManager.getInstance().getLiveSessions(message.getTopic(), orgId);
                 sendObject(liveSessions, message);
+                break;
+            }
+
+            case APP: {
+                Long appId = message.getAppId();
+                Collection<LiveSession> livesessions = SessionManager.getInstance().getLiveSessionsForAppUsers(message.getTopic(), appId);
+                sendObject(livesessions, message);
                 break;
             }
 

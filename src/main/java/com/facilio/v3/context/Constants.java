@@ -326,10 +326,18 @@ public class Constants {
 
     private static final String EVENT_TYPE = FacilioConstants.ContextNames.EVENT_TYPE;
 
+    @Deprecated
+    /**
+     * use {@link CommonCommandUtil#getEventTypes(Context)}
+     */
     public static EventType getEventType(Context context) {
         return (EventType) context.get(EVENT_TYPE);
     }
 
+    @Deprecated
+    /**
+     * use {@link CommonCommandUtil#addEventType(EventType, FacilioContext)}
+     */
     public static void setEventType(Context context, EventType eventType) {
         context.put(EVENT_TYPE, eventType);
     }

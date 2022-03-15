@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TopicHandler {
-    enum DELIVER_TO { ALL, USER, ORG, SESSION }
+    enum DELIVER_TO { ALL, USER, ORG, SESSION, APP }
 
     String[] topic();
     DELIVER_TO deliverTo() default DELIVER_TO.ORG;

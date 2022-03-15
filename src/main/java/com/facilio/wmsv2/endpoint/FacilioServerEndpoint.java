@@ -1,29 +1,14 @@
 package com.facilio.wmsv2.endpoint;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.websocket.EncodeException;
-import javax.websocket.OnClose;
-import javax.websocket.OnError;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.server.HandshakeRequest;
-import javax.websocket.server.PathParam;
-import javax.websocket.server.ServerEndpoint;
-
 import com.facilio.accounts.dto.Account;
-import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.FacilioProperties;
+import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.ConnectedDeviceContext;
 import com.facilio.bmsconsole.util.DevicesUtil;
+import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.util.ScreenUtil;
@@ -34,6 +19,17 @@ import com.facilio.wmsv2.handler.Processor;
 import com.facilio.wmsv2.message.Message;
 import com.facilio.wmsv2.message.MessageDecoder;
 import com.facilio.wmsv2.message.MessageEncoder;
+import org.apache.commons.collections4.CollectionUtils;
+
+import javax.websocket.*;
+import javax.websocket.server.HandshakeRequest;
+import javax.websocket.server.PathParam;
+import javax.websocket.server.ServerEndpoint;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -137,6 +133,15 @@ public class FacilioServerEndpoint
 			
 			if (org != null || user != null) {
 				Account currentAccount = new Account(org, user);
+				if (params.containsKey("app")) {
+					List<String> apps = params.get("app");
+					if (CollectionUtils.isNotEmpty(apps)) {
+						String appName = apps.get(0);
+						ModuleCRUDBean moduleCRUD = (ModuleCRUDBean) TransactionBeanFactory.lookup("ModuleCRUD", org.getOrgId());
+						ApplicationContext applicationContext = moduleCRUD.getApplicationForLinkName(appName);
+						currentAccount.setApp(applicationContext);
+					}
+				}
 				LiveSession liveSession = new LiveSession().setId(session.getId()).setCurrentAccount(currentAccount).setSession(session).setCreatedTime(System.currentTimeMillis()).setLiveSessionType(sessionType);
 				return liveSession;
 			}

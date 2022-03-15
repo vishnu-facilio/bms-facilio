@@ -23,6 +23,7 @@ public class Message
 	private JSONObject content = new JSONObject();
 	private Long timestamp;
 	private Long orgId = -1l;
+	private Long appId;
 
 	@JsonIgnore
 	private LiveSession liveSession;
@@ -79,7 +80,14 @@ public class Message
 		this.orgId = orgId;
 		return this;
 	}
-	
+
+	public Long getAppId() {
+		return appId;
+	}
+	public void setAppId(Long appId) {
+		this.appId = appId;
+	}
+
 	public Long getTimestamp() {
 		return this.timestamp;
 	}
