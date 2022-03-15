@@ -515,16 +515,17 @@ public class TransactionChainFactoryV3 {
 	public static FacilioChain getAddPurchaseRequestAfterSaveChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new PurchaseRequestTotalCostRollUpCommandV3()); //update purchase request total cost
+        c.addCommand(new UpdateTransactionEventTypeV3Command());
+        c.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
+                .addCommand(new ExecuteAllWorkflowsCommand(RuleType.TRANSACTION_RULE))
+        );
 		return c;
 	}
     public static FacilioChain getAddPurchaseRequestBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new PreFillAddPurchaseRequestCommand());
-        c.addCommand(new UpdateTransactionEventTypeV3Command());
-        c.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
-                .addCommand(new ExecuteAllWorkflowsCommand(RuleType.TRANSACTION_RULE))
-        );
+
         return c;
     }
 
@@ -682,10 +683,6 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new POBeforeCreateOrEditV3Command());
-        c.addCommand(new UpdateTransactionEventTypeV3Command());
-        c.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
-                .addCommand(new ExecuteAllWorkflowsCommand(RuleType.TRANSACTION_RULE))
-        );
         return c;
     }
 
@@ -693,6 +690,10 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateIsPoCreatedCommand());
         c.addCommand(new POAfterCreateOrEditV3Command());
+        c.addCommand(new UpdateTransactionEventTypeV3Command());
+        c.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
+                .addCommand(new ExecuteAllWorkflowsCommand(RuleType.TRANSACTION_RULE))
+        );
         return c;
     }
 
@@ -1180,6 +1181,10 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new POAfterCreateOrEditV3Command());
         c.addCommand(new CompletePoCommandV3());
+        c.addCommand(new UpdateTransactionEventTypeV3Command());
+        c.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
+                .addCommand(new ExecuteAllWorkflowsCommand(RuleType.TRANSACTION_RULE))
+        );
         return c;
     }
     public static FacilioChain getPurchaseOrderCompleteChain() {
