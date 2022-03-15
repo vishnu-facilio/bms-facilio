@@ -58,6 +58,7 @@ public class ExecuteFormActionRulesCommand extends FacilioCommand {
 				Boolean isSubFormTriggerField = (Boolean) context.getOrDefault(FormRuleAPI.IS_SUB_FORM_TRIGGER_FIELD, Boolean.FALSE);
 				
 				V3Util.throwRestException(allSubFormDatas == null, ErrorCode.VALIDATION_ERROR, "Subform data cannot be null here");
+				V3Util.throwRestException(allSubFormDatas.get(formRuleContext.getSubFormContext().getName()) == null, ErrorCode.VALIDATION_ERROR, "Subform data cannot be null here");
 				
 				List<Map<String,Object>> subFormDatas = (List<Map<String, Object>>) (((Map<String, Object>) allSubFormDatas.get(formRuleContext.getSubFormContext().getName())).get("data"));
 				
