@@ -260,6 +260,33 @@ public class V3PeopleAPI {
         return null;
     }
 
+    public static int markPrimaryContact(V3PeopleContext person) throws Exception{
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = null;
+        List<FacilioField> fields = new ArrayList<FacilioField>();
+        List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+        com.facilio.db.criteria.Condition condition = null;
+
+        if(person instanceof V3TenantContactContext) {
+            module = modBean.getModule(FacilioConstants.ContextNames.TENANT_CONTACT);
+            fields.addAll(modBean.getAllFields(FacilioConstants.ContextNames.TENANT_CONTACT));
+            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+            FacilioField primaryContactField = fieldMap.get("isPrimaryContact");
+            updatedfields.add(primaryContactField);
+        }
+        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+                .table(module.getTableName())
+                .fields(updatedfields)
+                .andCondition(CriteriaAPI.getCondition("ID", "peopleId", String.valueOf(person.getId()), NumberOperators.EQUALS));
+
+        Map<String, Object> value = new HashMap<>();
+        value.put("isPrimaryContact", true);
+        int count = updateBuilder.update(value);
+        return count;
+
+    }
+
     public static int unMarkPrimaryContact(V3PeopleContext person, long parentId) throws Exception{
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

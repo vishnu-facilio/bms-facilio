@@ -3385,7 +3385,21 @@ public class FieldFactory extends BaseFieldFactory {
 
         return fields;
     }
+    public static List<FacilioField> getTenantContactFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getTenantContactModule();
 
+        fields.add(getIdField(module));
+
+        FacilioField tenantField = new FacilioField();
+        tenantField.setName("tenant");
+        tenantField.setDataType(FieldType.NUMBER);
+        tenantField.setColumnName("TENANT_ID");
+        tenantField.setModule(module);
+        fields.add(tenantField);
+
+        return fields;
+    }
     public static List<FacilioField> getWorkOrderTemplateFields(){
         List<FacilioField> woTemplateFields = getWOrderTemplateFields();
         LookupField vendorField = (LookupField) getField("vendorId", "VENDOR_ID", ModuleFactory.getWorkOrderTemplateModule(), FieldType.LOOKUP);

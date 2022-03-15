@@ -58,6 +58,8 @@ import com.facilio.bmsconsoleV3.commands.jobplan.FillJobPlanDetailsCommand;
 import com.facilio.bmsconsoleV3.commands.moves.UpdateEmployeeInDesksCommandV3;
 import com.facilio.bmsconsoleV3.commands.moves.ValidateMovesCommand;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
+import com.facilio.bmsconsoleV3.commands.people.MarkRandomContactAsPrimaryCommandV3;
+import com.facilio.bmsconsoleV3.commands.people.ValidateContactsBeforeDeleteCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.DeleteReceivableByPOIdV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.FetchPODetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.LoadAssociatedTermsLookupCommandV3;
@@ -77,7 +79,6 @@ import com.facilio.bmsconsoleV3.commands.site.SetSiteRelatedContextCommand;
 import com.facilio.bmsconsoleV3.commands.site.SiteFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.space.*;
 import com.facilio.bmsconsoleV3.commands.storeroom.LoadStoreRoomLookUpCommandV3;
-import com.facilio.bmsconsoleV3.commands.storeroom.UpdateServingSitesinStoreRoomCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenant.FillTenantsLookupCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.ValidateTenantSpaceCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.LoadTenantcontactLookupsCommandV3;
@@ -877,6 +878,9 @@ public class APIv3Config {
                 .summary()
                     .beforeFetch(new LoadTenantcontactLookupsCommandV3())
                     .afterFetch(new FetchRolesForPeopleCommandV3())
+                .delete()
+                    .beforeDelete(new ValidateContactsBeforeDeleteCommandV3())
+                    .afterDelete(new MarkRandomContactAsPrimaryCommandV3())
                 .build();
     }
 
