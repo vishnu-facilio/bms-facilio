@@ -10,7 +10,6 @@ import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.asset.*;
-import com.facilio.bmsconsoleV3.commands.assetCategory.AssetCategoryChainV3;
 import com.facilio.bmsconsoleV3.commands.budget.*;
 import com.facilio.bmsconsoleV3.commands.building.AddOrUpdateBuildingLocation;
 import com.facilio.bmsconsoleV3.commands.building.BuildingFillLookupFieldsCommand;
@@ -1566,10 +1565,11 @@ public class APIv3Config {
     public static Supplier<V3Config> getAssetCategory() {
         return () -> new V3Config(V3AssetCategoryContext.class, null)
                 .create()
-                    .beforeSave(AssetCategoryChainV3.getAssetCategoryChain())
+                    .beforeSave(TransactionChainFactoryV3.getCreateAssetCategoryChain())
                 .list()
                 .update()
                 .delete()
+                    .beforeDelete(TransactionChainFactoryV3.getDeleteAssetCategoryChain())
                 .build();
     }
 }
