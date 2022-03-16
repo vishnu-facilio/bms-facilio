@@ -6289,6 +6289,12 @@ public class TransactionChainFactory {
 		return c;
 	}
 
+	public static FacilioChain addOrUpdateScopingChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AddOrUpdateScopingMetaCommand());
+		return c;
+	}
+
 	public static FacilioChain getDeleteScopingChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new DeleteScopingCommand());

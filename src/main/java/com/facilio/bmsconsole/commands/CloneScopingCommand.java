@@ -24,6 +24,7 @@ public class CloneScopingCommand extends FacilioCommand {
             ScopingContext scoping = ApplicationApi.getScoping(scopingId);
             if(scoping != null) {
                 ScopingContext cloned = FieldUtil.cloneBean(scoping, ScopingContext.class);
+                cloned.setScopeName(scoping.getScopeName() +"_cloned");
                 cloned.setId(-1);
                 cloned.setIsDefault(false);
                 ApplicationApi.addScoping(cloned);
@@ -38,7 +39,7 @@ public class CloneScopingCommand extends FacilioCommand {
                         ApplicationApi.addScopingConfigForApp(new ArrayList<>(scopingConfigList));
                     }
                 }
-
+            context.put(FacilioConstants.ContextNames.SCOPING_ID, cloned.getId());
             }
         }
         return false;
