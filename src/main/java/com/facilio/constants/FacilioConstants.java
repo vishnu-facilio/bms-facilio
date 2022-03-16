@@ -1889,7 +1889,6 @@ public class FacilioConstants {
 		public static final String INDOOR_FLOOR_PLANS = "indoorFloorPlans";
 		public static final String INDOOR_FLOOR_PLAN_OBJECTS = "indoorfloorplanobjects";
 		public static final String INDOOR_FLOOR_PLAN_MARKER = "markertype";
-		
 
 		public static final String EMPLOYEE = "employee";
 		public static final String EMPLOYEES = "employees";
@@ -2127,6 +2126,8 @@ public class FacilioConstants {
 			public static final String MARKER_LIST  = "markerList";
 			public static final String ZONE_LIST  = "zoneList";
 			public static final String SPACE_MAP  = "spaceMap";
+			public static final String CUSTOMIZATION = "customizationJSON";
+			public static final String CUSTOMIZATION_BOOKING = "customizationBookingJSON";
 
 		}
 		

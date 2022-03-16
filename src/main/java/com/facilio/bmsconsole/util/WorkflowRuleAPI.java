@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringSubstitutor;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -111,7 +112,20 @@ public class WorkflowRuleAPI {
 	public static Map<String, Object> getRecordPlaceHolders(String moduleName, Object record, Map<String, Object> currentPlaceholders) throws Exception {
 		return getRecordPlaceHolders(moduleName, record, currentPlaceholders, 0);
 	}
-	
+
+	public static String replacePlaceholders(String moduleName, Object record, String placeholderString, String nullValue) throws Exception {
+		if (placeholderString == null) {
+			return null;
+		}
+		if (nullValue == null) { nullValue = ""; }
+
+		Map<String, Object> params = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, record, WorkflowRuleAPI.getOrgPlaceHolders());
+		String replacedString = StringSubstitutor.replace(placeholderString, params);
+		String finalString = replacedString.replaceAll("\\$\\{[a-zA-Z1-9.-_]+\\}", nullValue);
+
+		return finalString;
+	}
+
 	public static long addWorkflowRule(WorkflowRuleContext rule) throws Exception {
 		rule.setOrgId(AccountUtil.getCurrentOrg().getId());
 		rule.setStatus(true);

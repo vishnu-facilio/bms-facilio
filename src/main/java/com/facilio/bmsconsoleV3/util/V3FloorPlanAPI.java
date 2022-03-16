@@ -5,10 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.EmployeeContext;
+import com.facilio.bmsconsole.context.SpaceContext;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsoleV3.context.V3EmployeeContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.BookingSlotsContext;
+import com.facilio.bmsconsoleV3.context.floorplan.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.text.StringSubstitutor;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
@@ -17,11 +23,6 @@ import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.V3LockersContext;
 import com.facilio.bmsconsoleV3.context.V3ParkingStallContext;
 import com.facilio.bmsconsoleV3.context.V3ResourceContext;
-import com.facilio.bmsconsoleV3.context.floorplan.V3DeskContext;
-import com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanContext;
-import com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanPropertiesContext;
-import com.facilio.bmsconsoleV3.context.floorplan.V3MarkerContext;
-import com.facilio.bmsconsoleV3.context.floorplan.V3MarkerdZonesContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -37,6 +38,8 @@ import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+
 
 public class V3FloorPlanAPI {
 
@@ -165,20 +168,34 @@ public class V3FloorPlanAPI {
 			  Map<Long, List<BookingSlotsContext>> facilityBookingsMap = (Map<Long, List<BookingSlotsContext>>) context.get(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
 
 			  V3IndoorFloorPlanPropertiesContext properties = new V3IndoorFloorPlanPropertiesContext();
-	 	         	 		   
+			  V3FloorplanCustomizationContext assignCustomization = (V3FloorplanCustomizationContext) context.get("FLOORPLAN_ASSIGNMENT_CUSTOMIZATION");
+			  V3FloorplanCustomizationContext bookingCustomization = (V3FloorplanCustomizationContext) context.get("FLOORPLAN_BOOKING_CUSTOMIZATION");
+			  String bookingColor = assignCustomization.getSpaceBookingState().getNonReservableColor();
+			  String reservedColor = bookingCustomization.getSpaceBookingState().getNotAvailableColor();
+			  String availableColor = bookingCustomization.getSpaceBookingState().getAvailableColor();
+			  String isreservableColor = bookingCustomization.getSpaceBookingState().getPartiallyAvailableColor();
+
 	 			   properties.setObjectId(zone.getId());
 	 			   properties.setRecordId(zone.getRecordId());
 	 			if (zone.getSpace() != null) {
 	 				properties.setSpaceId(zone.getSpace().getId());
-	 				
-	 			    properties.setLabel(zone.getSpace().getName());
+					if (viewMode.equals(FacilioConstants.ContextNames.Floorplan.ASSIGNMENT_VIEW)) {
+						properties.setLabel(assignCustomization.getSpacePrimaryLabel().getLabelType().format(zone.getSpace()));
+						properties.setSecondaryLabel(assignCustomization.getSpaceSecondaryLabel().getLabelType().format(zone.getSpace()));
+					}
+					else if(viewMode.equals(FacilioConstants.ContextNames.Floorplan.BOOKING_VIEW))
+					{
+						properties.setLabel(bookingCustomization.getSpacePrimaryLabel().getLabelType().format(zone.getSpace()));
+						properties.setSecondaryLabel(bookingCustomization.getSpaceSecondaryLabel().getLabelType().format(zone.getSpace()));
+
+					}
 
 	 				if (zone.getSpace().getSpaceCategory() != null && zone.getSpace().getSpaceCategory().getName() != null) {
 	 					properties.setSpaceCategory(zone.getSpace().getSpaceCategory().getName());
 
 	 				}
 	 				
-	 				properties.setZoneBackgroundColor("#000000");
+	 				properties.setZoneBackgroundColor(bookingColor);
 	 				properties.setIsOccupied(false);
 	 				
 	 			
@@ -196,10 +213,10 @@ public class V3FloorPlanAPI {
 	 						if (locker.getEmployee() != null) {
 	 							properties.setIsOccupied(true);
 	 							properties.setEmployeeId(locker.getEmployee().getId());
-	 							properties.setZoneBackgroundColor("#dc4a4c");
+	 							properties.setZoneBackgroundColor(reservedColor);
 	 						}
 	 						else {
-	 							properties.setZoneBackgroundColor("#22ae5c");
+	 							properties.setZoneBackgroundColor(availableColor);
 	 						}
 	 						
 	 						
@@ -217,10 +234,10 @@ public class V3FloorPlanAPI {
 	 				        	
 	 							if (parking.getModuleState().getId() == status.getId()) {
 	 								properties.setIsOccupied(true);
-	 								properties.setZoneBackgroundColor("#dc4a4c");
+	 								properties.setZoneBackgroundColor(reservedColor);
 	 							}
 	 							else if (parking.getModuleState().getId() == vacantStatus.getId()) {
-	 								properties.setZoneBackgroundColor("#22ae5c");
+	 								properties.setZoneBackgroundColor(availableColor);
 	 							}
 	 						}
 	 						
@@ -228,14 +245,14 @@ public class V3FloorPlanAPI {
 	 					
 	 				    if (viewMode.equals(FacilioConstants.ContextNames.Floorplan.BOOKING_VIEW)) {
 	 				    	if (zone.isIsReservable()) {
-		 						properties.setZoneBackgroundColor("#0D5BE1");
+		 						properties.setZoneBackgroundColor(isreservableColor);
 		 					}
 
 							if (MapUtils.isNotEmpty(facilityBookingsMap) && zone.getSpace().getId() > 0) {
 								List<BookingSlotsContext> facilityBooking = (List<BookingSlotsContext>) facilityBookingsMap.get(zone.getSpace().getId());
 
 								if (CollectionUtils.isNotEmpty(facilityBooking)) {
-									properties.setZoneBackgroundColor("#dc4a4c");
+									properties.setZoneBackgroundColor(reservedColor);
 									properties.setIsBooked(true);
 								}
 
@@ -256,9 +273,9 @@ public class V3FloorPlanAPI {
 	 			return properties;
 	 		   
 	 	   }
-	 
+
 	
-	   public static V3IndoorFloorPlanPropertiesContext getMarkerProperties(ModuleBaseWithCustomFields record, V3MarkerContext marker,Long markerModuleId, String viewMode) throws Exception {
+	   public static V3IndoorFloorPlanPropertiesContext getMarkerProperties(ModuleBaseWithCustomFields record, V3MarkerContext marker,Long markerModuleId, String viewMode, Context context) throws Exception {
 	    
 	          V3IndoorFloorPlanPropertiesContext properties = new V3IndoorFloorPlanPropertiesContext();
 		   
@@ -282,11 +299,12 @@ public class V3FloorPlanAPI {
 				   // to handle desk details here
 				   
 				   V3DeskContext desk = (V3DeskContext) record;
+				   V3FloorplanCustomizationContext assignCustomization = (V3FloorplanCustomizationContext) context.get("FLOORPLAN_ASSIGNMENT_CUSTOMIZATION");
 				   String iconName = "desk";
 				   properties.setDeskCode(desk.getDeskCode());
 				   properties.setDeskId(desk.getId());
 				   properties.setDeskType(desk.getDeskType());
-				   
+				   properties.setLabel(assignCustomization.getDeskSecondaryLabel().getLabelType().format(desk));
 				   properties.setIsCustom(true); // need to change based on the desktype
 				   
 
@@ -304,8 +322,9 @@ public class V3FloorPlanAPI {
 				   }
 				   
 				   if (desk.getEmployee() != null) {
+					   properties.setSecondaryLabel(assignCustomization.getDeskPrimaryLabel().getLabelType().format(desk));
+
 					   properties.setEmployeeId(desk.getEmployee().getId());
-					   properties.setSecondaryLabel(desk.getEmployee().getName());
 					   properties.setCenterLabel(getCenterLabel(desk.getEmployee().getName()));
 					   properties.setIconName(iconName);
 					
@@ -334,9 +353,8 @@ public class V3FloorPlanAPI {
 				   
 				   if (desk.getEmployee() != null) {
 					   properties.setEmployeeId(desk.getEmployee().getId());
-					   properties.setSecondaryLabel(desk.getEmployee().getName());
 					   properties.setIconName(iconName);
-
+					   properties.setSecondaryLabel(desk.getEmployee().getName());
 					   // set booking desk icon name
 
 				   }
