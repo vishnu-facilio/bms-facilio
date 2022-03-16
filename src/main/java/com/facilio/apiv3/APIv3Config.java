@@ -79,6 +79,8 @@ import com.facilio.bmsconsoleV3.commands.site.SetSiteRelatedContextCommand;
 import com.facilio.bmsconsoleV3.commands.site.SiteFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.space.*;
 import com.facilio.bmsconsoleV3.commands.storeroom.LoadStoreRoomLookUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.storeroom.SetLocationObjectFromSiteV3;
+import com.facilio.bmsconsoleV3.commands.storeroom.UpdateServingSitesinStoreRoomCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenant.FillTenantsLookupCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.ValidateTenantSpaceCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.LoadTenantcontactLookupsCommandV3;
@@ -496,6 +498,8 @@ public class APIv3Config {
     public static Supplier<V3Config> getStoreRoom() {
         return () -> new V3Config(V3StoreRoomContext.class, new ModuleCustomFieldCount30())
                 .create()
+                .beforeSave(new SetLocationObjectFromSiteV3())
+                .afterSave(new UpdateServingSitesinStoreRoomCommandV3())
                 .update()
                 .list()
                     .beforeFetch(new LoadStoreRoomLookUpCommandV3())

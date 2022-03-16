@@ -39,7 +39,7 @@ public class UpdateServingSitesinStoreRoomCommandV3 extends FacilioCommand {
 					if(record != null && record instanceof ModuleBaseWithCustomFields && (ModuleBaseWithCustomFields)record != null)
 					{			
 						V3StoreRoomContext sr = (V3StoreRoomContext)record;
-						Long storeRoomId = ((ModuleBaseWithCustomFields)record).getId();
+						Long storeRoomId = ((V3StoreRoomContext)record).getId();
 						Map<String, Object> recordProps = FieldUtil.getAsProperties(record);	
 						if(storeRoomId != null && storeRoomId > 0) {
 							GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
@@ -49,15 +49,29 @@ public class UpdateServingSitesinStoreRoomCommandV3 extends FacilioCommand {
 						}
 						if(storeRoomId != null && storeRoomId > 0 && recordProps != null) 
 						{			
-							List<SiteContext> sites = (List<SiteContext>) sr.getSites();
+							List<SiteContext> sites = (List<SiteContext>) sr.getServingsites();
+							Long locatedSiteId = ((V3StoreRoomContext) record).getSite().getId();
 							if(CollectionUtils.isEmpty(sites)) {
-								Long locatedSiteId = ((ModuleBaseWithCustomFields)record).getSiteId();
 								if(locatedSiteId != null && locatedSiteId > 0) {
+									sites = new ArrayList<>();
 									SiteContext locatedSite = new SiteContext();
 									locatedSite.setId(locatedSiteId);
 									sites.add(locatedSite); //adding located site as one of the serving sites if no serving site is given
 								}
-						     }
+						     }else{
+								boolean isLocatedSitePresent = false;
+								for(SiteContext site : sites){
+									if(site.getId()==locatedSiteId){
+										isLocatedSitePresent=true;
+										break;
+									}
+								}
+								if(!isLocatedSitePresent){
+									SiteContext locatedSite = new SiteContext();
+									locatedSite.setId(locatedSiteId);
+									sites.add(locatedSite);
+								}
+							}
 							
 							if (sites != null && !sites.isEmpty()) 
 							{	
