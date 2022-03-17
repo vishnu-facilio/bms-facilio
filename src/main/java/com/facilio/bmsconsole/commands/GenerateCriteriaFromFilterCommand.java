@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.facilio.db.criteria.operators.*;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -179,7 +180,13 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 					obj = obj.replace(",", StringOperators.DELIMITED_COMMA);
 					values.append(obj.trim());
 				} else {
-					values.append(ESAPI.encoder().encodeForSQL(new MySQLCodec(MySQLCodec.Mode.STANDARD), obj.trim()));
+					String splDisplayName = PickListOperators.getDisplayNameForCurrentValue(obj);
+					if (StringUtils.isEmpty(splDisplayName)) {
+						values.append(ESAPI.encoder().encodeForSQL(new MySQLCodec(MySQLCodec.Mode.STANDARD), obj.trim()));
+					}
+					else {
+						values.append(obj.trim());
+					}
 				}
 			}
 			String valuesString = values.toString();

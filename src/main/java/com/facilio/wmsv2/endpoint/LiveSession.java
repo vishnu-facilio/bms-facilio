@@ -17,6 +17,7 @@ public class LiveSession {
 	
 	private String id;
 	private long orgId;
+	private long appId = -1;
 	private User user;
 	private Session session;
 	private LiveSessionType liveSessionType;
@@ -38,6 +39,14 @@ public class LiveSession {
 	}
 	public LiveSession setOrgId(long orgId) {
 		this.orgId = orgId;
+		return this;
+	}
+
+	public long getAppId() {
+		return appId;
+	}
+	public LiveSession setAppId(long appdId) {
+		this.appId = appdId;
 		return this;
 	}
 
@@ -140,6 +149,9 @@ public class LiveSession {
 		if (currentAccount != null) {
 			if (currentAccount.getOrg() != null) {
 				orgId = currentAccount.getOrg().getId();
+			}
+			if (currentAccount.getApp() != null) {
+				appId = currentAccount.getApp().getId();
 			}
 			user = currentAccount.getUser();
 		}

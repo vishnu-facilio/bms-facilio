@@ -21,4 +21,6 @@
 
 	<!-- i18n Translation-->
 	<bean name="TranslationBean" class="com.facilio.bmsconsole.localization.translationbean.TranslationBeanImpl" />
+	
+	<bean name="QueueingServiceBean" class="com.facilio.queueingservice.QueueingServiceBeanImpl" />
 </beans>

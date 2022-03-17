@@ -14,6 +14,7 @@ public interface Topics {
         String auditLogs = "__audit_logs__";
         String customUser = "__custom__/user";
         String customOrg = "__custom__/org";
+        String customApp = "__custom__/app";
     }
 
     interface Push {

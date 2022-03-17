@@ -436,9 +436,9 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 				selectBuilder.skipModuleCriteria();
 			}
 			
-			if (FieldUtil.isSiteIdFieldPresent(module) && AccountUtil.getCurrentSiteId() > 0) {
-				selectBuilder.andCondition(CriteriaAPI.getCurrentSiteIdCondition(module));
-			}
+//			if (FieldUtil.isSiteIdFieldPresent(module) && AccountUtil.getCurrentSiteId() > 0) {
+//				selectBuilder.andCondition(CriteriaAPI.getCurrentSiteIdCondition(module));
+//			}
 			
 			if (AccountUtil.getCurrentUser() == null) {
 				User user = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());

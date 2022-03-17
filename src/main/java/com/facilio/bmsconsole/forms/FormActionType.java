@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.forms;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +23,6 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FieldType;
-import com.facilio.modules.fields.LookupField;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -109,15 +107,18 @@ public enum FormActionType {
 				if (formDetails != null) {
 					CommonCommandUtil.appendModuleNameInKey(formDetails.getModule().getName(), formDetails.getModule().getName(), formData, placeHolders);	
 				}
+				
+				if(formRuleActionContext.getRuleContext().getSubFormId() > 0) {
+					Map<String, Object> subFormData = (Map<String, Object>) facilioContext.get(FormRuleAPI.SUB_FORM_DATA);
+					if(MapUtils.isNotEmpty(subFormData)) {
+						FacilioForm subForm = formRuleActionContext.getRuleContext().getSubFormContext();
+						if (formDetails != null) {
+							CommonCommandUtil.appendModuleNameInKey(formDetails.getModule().getName()+"."+subForm.getName(), formDetails.getModule().getName()+"."+subForm.getName(), subFormData, placeHolders);	
+						}
+					}
+				}
 			}
 			
-//			List<Long> valueFilledFields = (List<Long>) facilioContext.getOrDefault(FormRuleAPI.VALUE_FILLED_FIELD_IDS, new ArrayList<Long>());
-//			
-//			facilioContext.put(FormRuleAPI.VALUE_FILLED_FIELD_IDS,valueFilledFields);
-//			
-//			Map<String,Object> formDataToBeAddedforNextRound = (Map<String,Object>) facilioContext.getOrDefault(FormRuleAPI.FORM_DATA_FOR_NEXT_ROUND, new HashMap<String,Object>());
-//			
-//			facilioContext.put(FormRuleAPI.FORM_DATA_FOR_NEXT_ROUND,formDataToBeAddedforNextRound);
 			
 			FacilioForm form = (FacilioForm) facilioContext.get(ContextNames.FORM);
 			
@@ -143,18 +144,6 @@ public enum FormActionType {
 					
 					FormRuleAPI.AddResultJSONToRespectiveResultSet(facilioContext,json);
 					
-					//TODO get the field from the form object itself
-//					FormField field = FormsAPI.getFormFieldFromId(actionField.getFormFieldId());
-//					if(formRuleActionContext.getRuleContext().getSubFormId() > 0) {
-//						
-//						FormRuleAPI.setDataForNextRoundInSubFormData(facilioContext, field, value);
-//					}
-//					else {
-//						
-//						formDataToBeAddedforNextRound.put(field.getName(), value);
-//					}
-//					
-//					valueFilledFields.add(actionField.getFormFieldId());
 				}
 			}
 			
@@ -172,6 +161,15 @@ public enum FormActionType {
 				FacilioForm formDetails = formRuleActionContext.getRuleContext().getFormContext();
 				if (formDetails != null) {
 					CommonCommandUtil.appendModuleNameInKey(formDetails.getModule().getName(), formDetails.getModule().getName(), formData, placeHolders);	
+				}
+				if(formRuleActionContext.getRuleContext().getSubFormId() > 0) {
+					Map<String, Object> subFormData = (Map<String, Object>) facilioContext.get(FormRuleAPI.SUB_FORM_DATA);
+					if(MapUtils.isNotEmpty(subFormData)) {
+						FacilioForm subForm = formRuleActionContext.getRuleContext().getSubFormContext();
+						if (formDetails != null) {
+							CommonCommandUtil.appendModuleNameInKey(formDetails.getModule().getName()+"."+subForm.getName(), formDetails.getModule().getName()+"."+subForm.getName(), subFormData, placeHolders);	
+						}
+					}
 				}
 			}
 			
@@ -266,14 +264,6 @@ public enum FormActionType {
 
 			chain.execute();
 			
-//			List<Long> valueFilledFields = (List<Long>) facilioContext.getOrDefault(FormRuleAPI.VALUE_FILLED_FIELD_IDS, new ArrayList<Long>());
-//			
-//			facilioContext.put(FormRuleAPI.VALUE_FILLED_FIELD_IDS,valueFilledFields);
-//			
-//			Map<String,Object> formDataToBeAddedforNextRound = (Map<String,Object>) facilioContext.getOrDefault(FormRuleAPI.FORM_DATA_FOR_NEXT_ROUND, new HashMap<String,Object>());
-//			
-//			facilioContext.put(FormRuleAPI.FORM_DATA_FOR_NEXT_ROUND,formDataToBeAddedforNextRound);
-			
 			List returnList = (List) workflowContext.getReturnValue();
 			
 			JSONArray jsonArray = new JSONArray();
@@ -285,25 +275,6 @@ public enum FormActionType {
 					
 					JSONObject fieldJSON = mapToJson(fieldMap);
 					
-//					Long fieldId = (Long) fieldJSON.get(FormRuleAPI.JSON_RESULT_FIELDID_STRING);
-					
-//					JSONObject actionJSON = mapToJson((Map<String, Object>) fieldJSON.get(FormRuleAPI.JSON_RESULT_ACTION_STRING));
-					
-//					String actionName = (String) actionJSON.get(FormRuleAPI.JSON_RESULT_ACTION_NAME_STRING);
-					
-//					if(FormActionType.SET_FIELD_VALUE.getName().equals(actionName)) {
-//						
-//						FormField field = FormsAPI.getFormFieldFromId(fieldId);
-//						
-//						if(formRuleActionContext.getRuleContext().getSubFormId() > 0) {
-//							
-//							FormRuleAPI.setDataForNextRoundInSubFormData(facilioContext, field, actionJSON.get(FormRuleAPI.JSON_RESULT_VALUE_STRING));
-//						}
-//						else {
-//							valueFilledFields.add(fieldId);
-//							formDataToBeAddedforNextRound.put(field.getName(), actionJSON.get(FormRuleAPI.JSON_RESULT_VALUE_STRING));
-//						}
-//					}
 					jsonArray.add(fieldJSON);
 				}
 				

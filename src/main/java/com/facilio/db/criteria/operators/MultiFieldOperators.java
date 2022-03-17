@@ -79,6 +79,11 @@ public enum MultiFieldOperators implements Operator<String> {
 		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			return null;
 		}
+
+		@Override
+		public boolean isValueNeeded () {
+			return false;
+		}
 	},
 	IS_NOT_EMPTY (105, "is not empty") {
 		@Override
@@ -89,6 +94,11 @@ public enum MultiFieldOperators implements Operator<String> {
 		@Override
 		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			return null;
+		}
+
+		@Override
+		public boolean isValueNeeded () {
+			return false;
 		}
 	},
 	;

@@ -21,7 +21,17 @@ public class PushHandler extends BaseHandler {
             Message sendMessage = new Message();
             sendMessage.setTopic(topic);
             sendMessage.setContent(content);
-            sendMessage.setOrgId(message.getOrgId());
+            if (content.containsKey("to")) {
+                sendMessage.setTo(((Number) content.get("to")).longValue());
+            }
+            if (content.containsKey("appId")) {
+                sendMessage.setAppId(((Number) content.get("appId")).longValue());
+            }
+            if (content.containsKey("orgId")) {
+                sendMessage.setOrgId(((Number) content.get("orgId")).longValue());
+            } else {
+                sendMessage.setOrgId(message.getOrgId());
+            }
             SessionManager.getInstance().sendMessage(sendMessage);
         }
     }
