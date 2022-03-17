@@ -705,7 +705,7 @@ public class PickListAction extends FacilioAction {
 		fetchLabel.getContext().put(FacilioConstants.PickList.LOOKUP_LABEL_META, labelMeta);
 		fetchLabel.execute();
 
-		Map<String, List<FieldOption<String>>> labels = (Map<String, List<FieldOption<String>>>) fetchLabel.getContext().get(FacilioConstants.PickList.LOOKUP_LABELS);
+		Map<String, List<FieldOption<? extends Object>>> labels = (Map<String, List<FieldOption<? extends Object>>>) fetchLabel.getContext().get(FacilioConstants.PickList.LOOKUP_LABELS);
 		setResult("label", labels);
 
 		return SUCCESS;
