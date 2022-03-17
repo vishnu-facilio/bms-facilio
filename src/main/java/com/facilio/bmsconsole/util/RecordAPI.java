@@ -268,13 +268,13 @@ public class RecordAPI {
 		}
 	}
 
-	public static List<FieldOption<String>> constructFieldOptionsFromRecords (List<Map<String, Object>> records, FacilioField defaultField, FacilioField secondaryField, boolean isResource) throws Exception {
+	public static List<FieldOption<Long>> constructFieldOptionsFromRecords (List<Map<String, Object>> records, FacilioField defaultField, FacilioField secondaryField, boolean isResource) throws Exception {
 
 		if (CollectionUtils.isEmpty(records)) {
 			return null;
 		}
 
-		List<FieldOption<String>> options = new ArrayList<>();
+		List<FieldOption<Long>> options = new ArrayList<>();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField defaultFieldLookupPrimary = getMainFieldOfLookup(defaultField, modBean);
 		FacilioField secondaryFieldLookupPrimary = getMainFieldOfLookup(secondaryField, modBean);
@@ -283,7 +283,7 @@ public class RecordAPI {
 			Object primaryLabel = getValue(prop, defaultField, defaultFieldLookupPrimary);
 			Object secondaryLabel = secondaryField == null ? null : getValue(prop, secondaryField, secondaryFieldLookupPrimary);
 			options.add(new FieldOption<>(
-					id.toString(),
+					id,
 					primaryLabel,
 					secondaryLabel,
 					isResource ? ResourceAPI.getResourceSubModuleFromType((Integer) prop.get("resourceType")) : null
