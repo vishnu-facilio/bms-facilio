@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
+import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
@@ -197,7 +198,7 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
                     }
                 }
 
-                // handling for lookup
+				// handling for picklist
                 if (formField.getField() != null &&
                         !formField.getField().isDefault() &&
                         formField.getField().getDataTypeEnum() == FieldType.ENUM) {
