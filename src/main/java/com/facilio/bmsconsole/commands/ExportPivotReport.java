@@ -41,7 +41,24 @@ public class ExportPivotReport extends FacilioCommand {
         List<String> headers = new ArrayList<>();
         Map<String, Object> pivotTable = (Map<String, Object>) context.get(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA);
         List<Map<String, Object>> pivotRecords = (List<Map<String, Object>>) pivotTable.get("records");
+
         List<Map<String, Object>> records = new ArrayList<>();
+        if(!templateJson.containsKey("theme") || templateJson.get("theme") == null)
+        {
+            Map<String,Object> theme = (Map<String,Object>) templateJson.get("theme");
+            if(!theme.containsKey("number") || theme.get("number") == null)
+            {
+                String rowNumberKey = "number";
+                String rowDisplayName = "#";
+                boolean rowNumber = (boolean) theme.get("number");
+
+                if(rowNumber){
+                    headers.add(rowDisplayName);
+                    aliasVsDisplayName.put(rowNumberKey, rowDisplayName);
+                }
+            }
+        }
+
 
         for (String key : rowHeaders) {
             Map<String, Object> data = (Map<String, Object>) JsonTable.get(key);

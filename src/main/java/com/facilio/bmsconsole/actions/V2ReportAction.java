@@ -2649,6 +2649,7 @@ public class V2ReportAction extends FacilioAction {
         c.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
         c.addCommand(new PivotFormulaColumnCommand());
         c.addCommand(new PivotColumnFormatCommand());
+        c.addCommand(new PivotThemeCustomizationCommand());
         c.execute();
         setResult(FacilioConstants.ContextNames.ROW_HEADERS, context.get(FacilioConstants.ContextNames.ROW_HEADERS));
         setResult(FacilioConstants.ContextNames.DATA_HEADERS, context.get(FacilioConstants.ContextNames.DATA_HEADERS));
@@ -2717,6 +2718,7 @@ public class V2ReportAction extends FacilioAction {
         chain.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
         chain.addCommand(new PivotFormulaColumnCommand());
         chain.addCommand(new PivotColumnFormatCommand());
+        chain.addCommand(new PivotThemeCustomizationCommand());
         chain.addCommand(new AddOrUpdateReportCommand());
         chain.execute(context);
 
@@ -2846,6 +2848,7 @@ public class V2ReportAction extends FacilioAction {
         chain.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
         chain.addCommand(new PivotFormulaColumnCommand());
         chain.addCommand(new PivotColumnFormatCommand());
+        chain.addCommand(new PivotThemeCustomizationCommand());
         chain.execute(context);
         setResult("report", reportContext);
         setResult(FacilioConstants.ContextNames.ROW_HEADERS, context.get(FacilioConstants.ContextNames.ROW_HEADERS));
