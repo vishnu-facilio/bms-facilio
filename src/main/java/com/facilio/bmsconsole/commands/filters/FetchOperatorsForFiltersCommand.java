@@ -70,10 +70,12 @@ public class FetchOperatorsForFiltersCommand extends FacilioCommand {
 
     private Map<String, Operator> filterDateOperators() {
         Map<String, Operator> operators = new LinkedHashMap<>();
+		addToOperators(DateOperators.BETWEEN, operators);
         addToOperators(CommonOperators.IS_EMPTY, operators);
         addToOperators(CommonOperators.IS_NOT_EMPTY, operators);
         addToOperators(DateOperators.IS_BEFORE, operators);
         addToOperators(DateOperators.IS_AFTER, operators);
+		addToOperators (DateOperators.HOURS_OF_DAY,operators);
         addToOperators(DateOperators.TODAY, operators);
         addToOperators(DateOperators.TILL_NOW, operators);
         addToOperators(DateOperators.TOMORROW, operators);
@@ -81,14 +83,19 @@ public class FetchOperatorsForFiltersCommand extends FacilioCommand {
         addToOperators(DateOperators.YESTERDAY, operators);
         addToOperators(DateOperators.TILL_YESTERDAY, operators);
         addToOperators(DateOperators.NEXT_N_DAYS, operators);
+		addToOperators (DateOperators.AFTER_N_DAYS,operators);
+		addToOperators (DateOperators.BEFORE_N_DAYS,operators);
         addToOperators(DateOperators.CURRENT_WEEK, operators);
         addToOperators(DateOperators.LAST_WEEK, operators);
         addToOperators(DateOperators.LAST_N_WEEKS, operators);
         addToOperators(DateOperators.NEXT_WEEK, operators);
+		addToOperators (DateOperators.DAY_OF_WEEK,operators);
         addToOperators(DateOperators.CURRENT_MONTH, operators);
         addToOperators(DateOperators.LAST_MONTH, operators);
         addToOperators(DateOperators.NEXT_MONTH, operators);
-        addToOperators(DateOperators.BETWEEN, operators);
+		addToOperators (DateOperators.DAY_OF_MONTH,operators);
+		addToOperators (DateOperators.DAY_OF_YEAR,operators);
+		addToOperators (DateOperators.WEEK_OF_YEAR,operators);
         return operators;
     }
 

@@ -1,14 +1,10 @@
 package com.facilio.bmsconsoleV3.commands.floorplan;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.FloorPlanContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsoleV3.context.V3ResourceContext;
-import com.facilio.bmsconsoleV3.context.floorplan.V3DeskContext;
-import com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanContext;
-import com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanGeoJsonContext;
-import com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanPropertiesContext;
-import com.facilio.bmsconsoleV3.context.floorplan.V3MarkerContext;
-import com.facilio.bmsconsoleV3.context.floorplan.V3MarkerdZonesContext;
+import com.facilio.bmsconsoleV3.context.floorplan.*;
 import com.facilio.bmsconsoleV3.util.V3FloorPlanAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
@@ -18,10 +14,12 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LargeTextField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -35,7 +33,33 @@ public class getIndoorFloorPlanViewerCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 
 	    long floorplanId = (long) context.get(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN_ID);
+		JSONObject AssignmentSettings = new JSONObject();
 
+		List<String> deskSecondaryLabelList = new ArrayList<>();
+		List<String> spaceSecondaryLabelList = new ArrayList<>();
+
+
+		// to get the floorplandata
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+		FacilioModule floorplanModule = modBean.getModule(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN);
+		Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(floorplanModule);
+		Collection<SupplementRecord>floorplansupplements = new ArrayList<>();
+		List<FacilioField> floorplanFields = modBean.getAllFields(floorplanModule.getName());
+		Map<String, FacilioField> floorplanFieldMap = FieldFactory.getAsMap(floorplanFields);
+		floorplansupplements.add((LookupField) floorplanFieldMap.get(FacilioConstants.ContextNames.FLOOR));
+		floorplansupplements.add((LookupField) floorplanFieldMap.get(FacilioConstants.ContextNames.BUILDING));
+		floorplansupplements.add((LargeTextField)floorplanFieldMap.get(FacilioConstants.ContextNames.Floorplan.CUSTOMIZATION));
+		floorplansupplements.add((LargeTextField)floorplanFieldMap.get(FacilioConstants.ContextNames.Floorplan.CUSTOMIZATION_BOOKING));
+
+		List<Long> floorplanIds = new ArrayList<>();
+		floorplanIds.add(floorplanId);
+
+		List<V3IndoorFloorPlanContext> floorplanList = V3RecordAPI.getRecordsListWithSupplements(floorplanModule.getName(), floorplanIds, beanClassName, floorplansupplements);
+
+
+		V3IndoorFloorPlanContext floorplan = floorplanList.get(0);
 		String viewMode = (String) context.get(FacilioConstants.ContextNames.Floorplan.VIEW_MODE);
 		
 		if (viewMode == null) {
@@ -135,10 +159,9 @@ public class getIndoorFloorPlanViewerCommand extends FacilioCommand {
 			
 			
 			
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule spaceModule = modBean.getModule(FacilioConstants.ContextNames.SPACE);
             
-            Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(spaceModule);
+            Class spacebeanClassName = FacilioConstants.ContextNames.getClassFromModule(spaceModule);
 
             
 			  Collection<SupplementRecord>lookUpfields = new ArrayList<>();
@@ -146,7 +169,7 @@ public class getIndoorFloorPlanViewerCommand extends FacilioCommand {
         		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
          		lookUpfields.add((LookupField) fieldMap.get(FacilioConstants.ContextNames.SPACE_CATEGORY_FIELD));
    			
-			spaceList = V3RecordAPI.getRecordsListWithSupplements(spaceModule.getName(), zoneRecordIds, beanClassName, lookUpfields);
+			spaceList = V3RecordAPI.getRecordsListWithSupplements(spaceModule.getName(), zoneRecordIds, spacebeanClassName, lookUpfields);
 			
 			spacesMap = spaceList.stream().collect( Collectors.toMap(r -> r.getId(), r -> r));
 			
@@ -158,12 +181,11 @@ public class getIndoorFloorPlanViewerCommand extends FacilioCommand {
    	     List<Long> recordIds = markerIdvsRecordIds.get(markerModuleId);
 
         	if (CollectionUtils.isNotEmpty(recordIds)) {
-                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                  FacilioModule module = modBean.getModule(markerModuleId);
                  
                  if(module.getName().equals(FacilioConstants.ContextNames.Floorplan.DESKS)) {
                 	 
-                	  Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
+                	  Class deskbeanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
                       
                       Collection<SupplementRecord>lookUpfields = new ArrayList<>();
               		List<FacilioField> fields = modBean.getAllFields(module.getName());
@@ -172,7 +194,7 @@ public class getIndoorFloorPlanViewerCommand extends FacilioCommand {
                		lookUpfields.add((LookupField) fieldMap.get("department"));
 
            
-           			markerIdvsModuleListData.put(module.getName(), V3RecordAPI.getRecordsListWithSupplements(module.getName(), recordIds, beanClassName, lookUpfields));
+           			markerIdvsModuleListData.put(module.getName(), V3RecordAPI.getRecordsListWithSupplements(module.getName(), recordIds, deskbeanClassName, lookUpfields));
            	      Map<Long, ModuleBaseWithCustomFields> recordVsRecordMap = markerIdvsModuleListData.get(module.getName()).stream().collect(
    		                Collectors.toMap(r -> r.getId(), r -> r));
    		      
@@ -195,21 +217,29 @@ public class getIndoorFloorPlanViewerCommand extends FacilioCommand {
         	}
 
         }
-        
-        
-        
-        // zone changes
-        
-        for (Long zoneModuleId : zoneIdvsRecordIds.keySet()) {
+
+
+		// get the floorplan settings
+		if (floorplan != null) {
+			V3FloorplanCustomizationContext floorplanAssign = floorplan.getCustomization();
+			V3FloorplanCustomizationContext floorplanBooking = floorplan.getCustomizationBooking();
+            context.put("FLOORPLAN_ASSIGNMENT_CUSTOMIZATION", floorplanAssign);
+            context.put("FLOORPLAN_BOOKING_CUSTOMIZATION", floorplanBooking);
+		}
+
+
+		// zone changes
+
+
+		for (Long zoneModuleId : zoneIdvsRecordIds.keySet()) {
    	     List<Long> recordIds = zoneIdvsRecordIds.get(zoneModuleId);
 
         	if (CollectionUtils.isNotEmpty(recordIds)) {
-                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                  FacilioModule module = modBean.getModule(zoneModuleId);
                  
                  if(module.getName().equals(FacilioConstants.ContextNames.LOCKERS)) {
                 	 
-                	Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
+                	Class lockerbeanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
                       
                      Collection<SupplementRecord>lookUpfields = new ArrayList<>();
               		List<FacilioField> fields = modBean.getAllFields(module.getName());
@@ -217,7 +247,7 @@ public class getIndoorFloorPlanViewerCommand extends FacilioCommand {
                		lookUpfields.add((LookupField) fieldMap.get("employee"));
                		lookUpfields.add((LookupField) fieldMap.get(FacilioConstants.ContextNames.SPACE_CATEGORY_FIELD));
 
-               		zoneIdvsModuleListData.put(module.getName(), V3RecordAPI.getRecordsListWithSupplements(module.getName(), recordIds, beanClassName, lookUpfields));
+               		zoneIdvsModuleListData.put(module.getName(), V3RecordAPI.getRecordsListWithSupplements(module.getName(), recordIds, lockerbeanClassName, lookUpfields));
                		Map<Long, ModuleBaseWithCustomFields> recordVsRecordMap = zoneIdvsModuleListData.get(module.getName()).stream().collect(
    		                Collectors.toMap(r -> r.getId(), r -> r));
    		      
@@ -226,14 +256,14 @@ public class getIndoorFloorPlanViewerCommand extends FacilioCommand {
                  }
                  else {
                 	 
-                		Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
-                        
+                		Class spaceCatbeanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
+
                         Collection<SupplementRecord>lookUpfields = new ArrayList<>();
                  		List<FacilioField> fields = modBean.getAllFields(module.getName());
                  		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
                   		lookUpfields.add((LookupField) fieldMap.get(FacilioConstants.ContextNames.SPACE_CATEGORY_FIELD));
 
-                  		zoneIdvsModuleListData.put(module.getName(), V3RecordAPI.getRecordsListWithSupplements(module.getName(), recordIds, beanClassName, lookUpfields));
+                  		zoneIdvsModuleListData.put(module.getName(), V3RecordAPI.getRecordsListWithSupplements(module.getName(), recordIds, spaceCatbeanClassName, lookUpfields));
                   		Map<Long, ModuleBaseWithCustomFields> recordVsRecordMap = zoneIdvsModuleListData.get(module.getName()).stream().collect(
       		                Collectors.toMap(r -> r.getId(), r -> r));
       		      
@@ -269,11 +299,11 @@ public class getIndoorFloorPlanViewerCommand extends FacilioCommand {
         	
         	if (recordId != null && markerModuleId != null ) {
      		
-            	feature.setProperties(V3FloorPlanAPI.getMarkerProperties(markervsRecordObjectMap.get(markerModuleId).get(recordId), marker, markerModuleId, viewMode));
+            	feature.setProperties(V3FloorPlanAPI.getMarkerProperties(markervsRecordObjectMap.get(markerModuleId).get(recordId), marker, markerModuleId, viewMode, context));
             	feature.setTooltipData(V3FloorPlanAPI.getMarkerTooltip(markervsRecordObjectMap.get(markerModuleId).get(recordId), marker, markerModuleId, viewMode));
         	}
         	else {
-            	feature.setProperties(V3FloorPlanAPI.getMarkerProperties(null, marker,  null, viewMode));
+            	feature.setProperties(V3FloorPlanAPI.getMarkerProperties(null, marker,  null, viewMode, context));
             	feature.setTooltipData(V3FloorPlanAPI.getMarkerTooltip(null, marker, null, viewMode));
         	}
         	
@@ -327,25 +357,7 @@ public class getIndoorFloorPlanViewerCommand extends FacilioCommand {
    
         }
 
-		// to get the floorplandata
-        
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
-		FacilioModule floorplanModule = modBean.getModule(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN);
-			Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(floorplanModule);
-			Collection<SupplementRecord>floorplanLookUpfields = new ArrayList<>();
-			List<FacilioField> floorplanFields = modBean.getAllFields(floorplanModule.getName());
-			Map<String, FacilioField> floorplanFieldMap = FieldFactory.getAsMap(floorplanFields);
-			floorplanLookUpfields.add((LookupField) floorplanFieldMap.get(FacilioConstants.ContextNames.FLOOR));
-			floorplanLookUpfields.add((LookupField) floorplanFieldMap.get(FacilioConstants.ContextNames.BUILDING));
-
-			List<Long> floorplanIds = new ArrayList<>();
-			floorplanIds.add(floorplanId);
-			
-			List<V3IndoorFloorPlanContext> floorplanList = V3RecordAPI.getRecordsListWithSupplements(floorplanModule.getName(), floorplanIds, beanClassName, floorplanLookUpfields);
-			
-		
-        V3IndoorFloorPlanContext floorplan = floorplanList.get(0);
        
         context.put(FacilioConstants.ContextNames.Floorplan.MARKERS, markerObjectMap);
         context.put(FacilioConstants.ContextNames.Floorplan.ZONES, zoneObjectMap);

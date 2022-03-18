@@ -9,6 +9,9 @@ import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.GetControllerRequest;
 import com.facilio.agentv2.modbusrtu.RtuNetworkContext;
 import com.facilio.bacnet.BACNetUtil;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -168,8 +171,13 @@ public class PointsUtil
             if (points.size() == 0) {
                 throw new Exception(" points to add can't be empty");
             }
+            FacilioChain addPointsChain = TransactionChainFactory.getAddPointsChain();
+            FacilioContext context = new FacilioContext();
+            context.put(AgentConstants.CONTROLLER,controller);
+            context.put(AgentConstants.POINTS,points);
+            addPointsChain.setContext(context);
+            addPointsChain.execute();
 
-            addPoints(controller,points);
 
 
 

@@ -1703,8 +1703,7 @@ public class FormFactory {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
-		fields.add(new FormField("site", FieldDisplayType.LOOKUP_SIMPLE, "Located Site", Required.REQUIRED, "site", 3, 2));
-		fields.add(new FormField("location", FieldDisplayType.LOOKUP_SIMPLE, "Location", Required.OPTIONAL, "location", 3, 3).setAllowCreateOptions(true).setCreateFormName("location_form"));
+		fields.add(new FormField("site", FieldDisplayType.LOOKUP_SIMPLE, "Located Site", Required.REQUIRED, "site", 3, 1));
 		fields.add(new FormField("owner", FieldDisplayType.LOOKUP_SIMPLE, "Owner", Required.OPTIONAL,"users", 4, 1));
 
 		FormField field = new FormField("servingsites", FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Serving Sites", Required.OPTIONAL,14, 1);

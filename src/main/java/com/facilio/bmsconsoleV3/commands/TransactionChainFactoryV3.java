@@ -21,6 +21,8 @@ import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.CompletePoCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.reports.*;
+import com.facilio.bmsconsoleV3.commands.storeroom.SetLocationObjectFromSiteV3;
+import com.facilio.bmsconsoleV3.commands.storeroom.UpdateServingSitesinStoreRoomCommandV3;
 import com.facilio.bmsconsoleV3.commands.termsandconditions.ReviseTandCCommand;
 import com.facilio.bmsconsoleV3.commands.transferRequest.*;
 import com.facilio.command.FacilioCommand;

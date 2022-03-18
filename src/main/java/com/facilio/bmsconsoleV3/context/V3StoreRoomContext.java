@@ -23,6 +23,7 @@ public class V3StoreRoomContext extends V3Context {
 	private Long lastPurchasedDate;
 	private Boolean isGatePassRequired;
 	private SiteContext site;
+	private List<SiteContext> servingsites;
 	
 	public Long getTtime() {
 		return ttime;
@@ -132,4 +133,11 @@ public class V3StoreRoomContext extends V3Context {
 		this.site = site;
 	}
 
+	public List<SiteContext> getServingsites() {
+		return servingsites;
+	}
+
+	public void setServingsites(List<SiteContext> servingsites) {
+		this.servingsites = servingsites;
+	}
 }

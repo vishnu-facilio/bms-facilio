@@ -117,7 +117,9 @@ public class AttachmentAction  extends FacilioAction {
 
 		if (module.equals(FacilioConstants.ContextNames.ITEM_TYPES_ATTACHMENTS)) {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ITEM_ACTIVITY);
-		} else if (module.equals(FacilioConstants.ContextNames.TOOL_TYPES_ATTACHMENTS)) {
+		}else if (module.equals(FacilioConstants.ContextNames.TOOL_TYPES_ATTACHMENTS)) {
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.CUSTOM_ACTIVITY);
+		} else if (module.equals(FacilioConstants.ContextNames.RECEIVABLE_ATTACHMENTS)) {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.CUSTOM_ACTIVITY);
 		}else if (module.equals(FacilioConstants.ContextNames.CONTRACT_ATTACHMENTS)) {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.CUSTOM_ACTIVITY);
@@ -187,6 +189,10 @@ public class AttachmentAction  extends FacilioAction {
 			}
 			if (module.equals(FacilioConstants.ContextNames.TOOL_TYPES_ATTACHMENTS)) {
 				attachmentList.get(0).setAttachmentModule(FacilioConstants.ContextNames.TOOL_TYPES_LIST);
+				attachmentList.get(0).setRecordId(recordId);
+			}
+			if (module.equals(FacilioConstants.ContextNames.RECEIVABLE_ATTACHMENTS)) {
+				attachmentList.get(0).setAttachmentModule(FacilioConstants.ContextNames.RECEIVABLES);
 				attachmentList.get(0).setRecordId(recordId);
 			}
 			if (module.equals(FacilioConstants.ContextNames.STORE_ROOM_ATTACHMENTS)) {

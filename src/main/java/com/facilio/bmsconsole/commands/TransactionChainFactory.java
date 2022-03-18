@@ -4282,6 +4282,12 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getAddPointsChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddPointsCommand());
+		return chain;
+	}
+
 	public static FacilioChain getUpdateControllerChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GenericUpdateModuleDataCommand());
@@ -6280,6 +6286,12 @@ public class TransactionChainFactory {
 	public static FacilioChain addOrUpdateScopingConfigChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new AddOrUpdateScopingConfigCommand());
+		return c;
+	}
+
+	public static FacilioChain addOrUpdateScopingChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AddOrUpdateScopingMetaCommand());
 		return c;
 	}
 

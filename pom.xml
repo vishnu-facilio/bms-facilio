@@ -3,8 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.facilio</groupId>
     <artifactId>bms</artifactId>
-    <packaging>war</packaging>
-    <version>0.0.1-SNAPSHOT</version>
+    <packaging>${build.type}</packaging>
+    <version>${build.branch}-${build.number}</version>
     <name>bms Maven Webapp</name>
     <url>http://maven.apache.org</url>
     <repositories>
@@ -753,12 +753,48 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
+        <plugins>
+            <plugin>
+                <artifactId>maven-install-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+<!--        <plugins>-->
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-source-plugin</artifactId>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>attach-sources</id>-->
+<!--                        <goals>-->
+<!--                            <goal>jar</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
+<!--        </plugins>-->
     </build>
+    <distributionManagement>
+        <repository>
+            <id>bms-s3-release-repo</id>
+            <name>Release Repository for bms</name>
+            <url>s3://repo.facilio/bms/release</url>
+        </repository>
+        <snapshotRepository>
+            <id>bms-s3-snapshot-repo</id>
+            <name>Snapshot Repository for bms</name>
+            <url>s3://repo.facilio/bms/snapshot</url>
+        </snapshotRepository>
+    </distributionManagement>
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <timestamp>${maven.build.timestamp}</timestamp>
         <build.number>0</build.number>
+        <build.type>war</build.type>
+        <build.branch>master</build.branch>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

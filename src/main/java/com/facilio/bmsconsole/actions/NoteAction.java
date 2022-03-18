@@ -138,6 +138,9 @@ public class NoteAction extends FacilioAction {
 		else if (moduleName.equals(FacilioConstants.ContextNames.TOOL_TYPES_NOTES)) {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.CUSTOM_ACTIVITY);
 		}
+		else if (moduleName.equals(FacilioConstants.ContextNames.RECEIVABLE_NOTES)) {
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.CUSTOM_ACTIVITY);
+		}
 		else if (moduleName.equals(FacilioConstants.ContextNames.CONTRACT_NOTES)) {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.CUSTOM_ACTIVITY);
 		}

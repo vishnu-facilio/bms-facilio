@@ -10,10 +10,14 @@ import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.IndoorFloorPlanContext.FloorPlanType;
 import com.facilio.modules.FacilioIntEnum;
+import com.facilio.modules.FieldUtil;
 import com.facilio.v3.context.V3Context;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 public class V3IndoorFloorPlanContext extends V3Context {
-    
+
+
 	public FloorContext getFloor() {
 		return floor;
 	}
@@ -66,7 +70,65 @@ public class V3IndoorFloorPlanContext extends V3Context {
 	private String geometry;
 	private String properties;
 	private Boolean isActive;
-	
+	private String customizationJSON;
+	private String customizationBookingJSON;
+
+
+	private V3FloorplanCustomizationContext customization;
+	private V3FloorplanCustomizationContext customizationBooking;
+
+	public V3FloorplanCustomizationContext getCustomizationBooking() {
+		if (customizationBooking == null) {
+			return new V3FloorplanCustomizationContext();
+		}
+		return customizationBooking;
+	}
+
+	public void setCustomizationBooking(V3FloorplanCustomizationContext customizationBooking) {
+		this.customizationBooking = customizationBooking;
+	}
+
+	public void setCustomizationBookingJSON(String customizationString) throws Exception {
+		if (customizationString != null && !customizationString.trim().isEmpty()) {
+			JSONObject customizationJsonObj = (JSONObject) new JSONParser().parse(customizationString);
+			this.customizationBooking = FieldUtil.getAsBeanFromJson(customizationJsonObj, V3FloorplanCustomizationContext.class);
+			this.customizationBookingJSON=customizationString;
+		}
+	}
+
+	public String getCustomizationBookingJSON() throws Exception {
+		if (getCustomizationBooking() != null) {
+			return FieldUtil.getAsJSON(getCustomizationBooking()).toJSONString();
+		}
+		return customizationBookingJSON;
+	}
+
+	public void setCustomization(V3FloorplanCustomizationContext customization) {
+		this.customization = customization;
+	}
+
+	public V3FloorplanCustomizationContext getCustomization() {
+		if (customization == null) {
+			return new V3FloorplanCustomizationContext();
+		}
+		return customization;
+	}
+
+	public void setCustomizationJSON(String customizationString) throws Exception {
+		if (customizationString != null && !customizationString.trim().isEmpty()) {
+			JSONObject customizationJsonObj = (JSONObject) new JSONParser().parse(customizationString);
+			this.customization = FieldUtil.getAsBeanFromJson(customizationJsonObj, V3FloorplanCustomizationContext.class);
+			this.customizationJSON=customizationString ;
+		}
+	}
+
+	public String getCustomizationJSON() throws Exception {
+		if (getCustomization() != null) {
+			return FieldUtil.getAsJSON(getCustomization()).toJSONString();
+		}
+		return customizationJSON;
+	}
+
     public String getFileUrl() {
 		return fileUrl;
 	}

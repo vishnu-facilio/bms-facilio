@@ -1513,6 +1513,8 @@ public class FacilioConstants {
 		public static final String RECEIPTS = "receipts";
 		
 		public static final String RECEIVABLE = "receivable";
+		public static final String RECEIVABLE_NOTES ="receivablenotes";
+		public static final String RECEIVABLE_ATTACHMENTS ="receivableattachments";
 		public static final String RECEIVABLES = "receivables";
 		public static final String PO_ID = "poId";
 		public static final String PR_IDS = "prIds";
@@ -1887,7 +1889,6 @@ public class FacilioConstants {
 		public static final String INDOOR_FLOOR_PLANS = "indoorFloorPlans";
 		public static final String INDOOR_FLOOR_PLAN_OBJECTS = "indoorfloorplanobjects";
 		public static final String INDOOR_FLOOR_PLAN_MARKER = "markertype";
-		
 
 		public static final String EMPLOYEE = "employee";
 		public static final String EMPLOYEES = "employees";
@@ -2125,6 +2126,8 @@ public class FacilioConstants {
 			public static final String MARKER_LIST  = "markerList";
 			public static final String ZONE_LIST  = "zoneList";
 			public static final String SPACE_MAP  = "spaceMap";
+			public static final String CUSTOMIZATION = "customizationJSON";
+			public static final String CUSTOMIZATION_BOOKING = "customizationBookingJSON";
 
 		}
 		

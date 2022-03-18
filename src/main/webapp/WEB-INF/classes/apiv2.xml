@@ -6769,6 +6769,9 @@
 		<action name="clone"
 				class="com.facilio.bmsconsole.actions.ScopingAction" method="cloneScoping">
 	</action>
+		<action name="addOrUpdate"
+				class="com.facilio.bmsconsole.actions.ScopingAction" method="addOrUpdateScoping">
+		</action>
 
 
 

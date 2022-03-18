@@ -110,7 +110,7 @@ public class ContainsSiteValueGenerator extends ValueGenerator {
 
     @Override
     public String getLinkName() {
-        return "com.facilio.modules.SiteValueGenerator";
+        return "com.facilio.modules.ContainsSiteValueGenerator";
     }
 
     @Override

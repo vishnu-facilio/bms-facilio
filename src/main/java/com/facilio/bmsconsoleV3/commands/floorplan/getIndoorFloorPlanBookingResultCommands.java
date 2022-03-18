@@ -9,11 +9,7 @@ import com.facilio.bmsconsoleV3.context.V3ResourceContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.BookingSlotsContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext;
-import com.facilio.bmsconsoleV3.context.floorplan.V3DeskContext;
-import com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanGeoJsonContext;
-import com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanPropertiesContext;
-import com.facilio.bmsconsoleV3.context.floorplan.V3MarkerContext;
-import com.facilio.bmsconsoleV3.context.floorplan.V3MarkerdZonesContext;
+import com.facilio.bmsconsoleV3.context.floorplan.*;
 import com.facilio.bmsconsoleV3.util.V3FloorPlanAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -21,6 +17,7 @@ import com.facilio.constants.FacilioConstants;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import com.facilio.db.criteria.Criteria;
@@ -239,18 +236,21 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 			   properties.setDeskId(desk.getId());
 			   
 			   properties.setIsCustom(true); // need to change based on the desktype
-			   
 
-			
+
+			   V3FloorplanCustomizationContext bookingCustomization = (V3FloorplanCustomizationContext) context.get("FLOORPLAN_BOOKING_CUSTOMIZATION");
+			   properties.setLabel(bookingCustomization.getDeskSecondaryLabel().getLabelType().format(desk));
+
 
 			   if (desk.getDepartment() != null) {
 				   properties.setDepartmentId(desk.getDepartment().getId());
 			   }
-			   
+
 			   if (desk.getEmployee() != null) {
 				   properties.setEmployeeId(desk.getEmployee().getId());
 				   if (desk.getDeskType() == 1) {
-					   properties.setSecondaryLabel(desk.getEmployee().getName());
+
+					   properties.setSecondaryLabel(bookingCustomization.getDeskPrimaryLabel().getLabelType().format(desk));
 					   properties.setCenterLabel(V3FloorPlanAPI.getCenterLabel(desk.getEmployee().getName()));
 					   iconName = "desk";
 					   properties.setIconName(iconName);

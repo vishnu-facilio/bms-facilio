@@ -196,6 +196,20 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
                         }
                     }
                 }
+
+                // handling for lookup
+                if (formField.getField() != null &&
+                        !formField.getField().isDefault() &&
+                        formField.getField().getDataTypeEnum() == FieldType.ENUM) {
+
+                    EnumField enumfield = (EnumField) formField.getField();
+                    
+                    Map<String, Object> data = workorder.getData();
+                    if (data != null && data.containsKey(enumfield.getName())) {
+                        Integer enumKey = Integer.parseInt((String) data.get(enumfield.getName()));
+                        data.put(enumfield.getName(), enumfield.getEnumMap().get(enumKey));
+                    }
+                }
             }
         }
 
