@@ -292,6 +292,12 @@ public class V3FloorplanCustomizationContext {
                 return desk.getName();
             }
         },
+        RETURN_NULL() {
+            @Override
+            public String format(V3DeskContext desk) {
+                return "";
+            }
+        },
         FIRST_NAME() {
             @Override
             public String format(V3DeskContext desk) {
@@ -386,6 +392,12 @@ public class V3FloorplanCustomizationContext {
             @Override
             public String format(SpaceContext space) throws Exception {
                 return  space.getName();
+            }
+        },
+        RETURN_NULL() {
+            @Override
+            public String format(SpaceContext space) throws Exception{
+                return "";
             }
         },
         CATEGORY() {
