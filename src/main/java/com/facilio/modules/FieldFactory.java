@@ -9589,6 +9589,7 @@ public class FieldFactory extends BaseFieldFactory {
 
 	        fields.add(getIdField(module));
 	        fields.add(getField("scopeName", "SCOPE_NAME", module, FieldType.STRING));
+            fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
             fields.add(getField("isDefault", "IS_DEFAULT", module, FieldType.BOOLEAN));
             fields.add(getField("applicationId", "APPLICATION_ID", module, FieldType.NUMBER));
 

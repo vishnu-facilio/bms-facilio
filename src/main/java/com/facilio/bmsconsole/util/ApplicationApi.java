@@ -1418,7 +1418,8 @@ public class ApplicationApi {
                 return scoping.getId();
             }
             scoping = new ScopingContext();
-            scoping.setScopeName("default scoping for app - " + appId);
+            scoping.setScopeName("Default scoping for app - " + appId);
+            scoping.setDescription("default scoping for app - " + appId);
             scoping.setApplicationId(appId);
             scoping.setIsDefault(true);
             long scopingId = addScoping(scoping);
