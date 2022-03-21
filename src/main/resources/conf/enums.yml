@@ -172,6 +172,12 @@ enums:
   - name: InspectionCreationType
     enumClassName: com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext$CreationType
 
+  - name: WorkflowLogTypes
+    enumClassName: com.facilio.workflowlog.context.WorkflowLogContext$WorkflowLogType
+
+  - name: WorkflowLogState
+    enumClassName: com.facilio.workflowlog.context.WorkflowLogContext$WorkflowLogStatus
+
   - name: MultiResourceAssignmentType
     enumClassName: com.facilio.bmsconsole.context.PreventiveMaintenance$PMAssignmentType
 

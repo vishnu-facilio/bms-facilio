@@ -151,6 +151,8 @@ import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
 import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
 import com.facilio.v3.commands.FetchChangeSetForCustomActivityCommand;
 import com.facilio.v3.context.Constants;
+import com.facilio.workflowlog.context.WorkflowLogContext;
+
 import org.apache.commons.chain.Context;
 
 import java.util.function.Supplier;
@@ -1512,6 +1514,12 @@ public class APIv3Config {
     @Module("workorderTimeLog")
     public static Supplier<V3Config> getWorkOrderTimeLog(){
         return () -> new V3Config(TimelogContext.class,null)
+                .build();
+    }
+    
+    @Module(FacilioConstants.Workflow.WORKFLOW_LOG)
+    public static Supplier<V3Config> getWorkflowLog(){
+        return () -> new V3Config(WorkflowLogContext.class,null)
                 .build();
     }
 

@@ -80,6 +80,9 @@ import com.facilio.wmsv2.constants.Topics;
 import com.facilio.wmsv2.endpoint.SessionManager;
 import com.facilio.wmsv2.handler.AuditLogHandler;
 import com.facilio.wmsv2.message.Message;
+import com.facilio.workflowlog.context.WorkflowLogContext;
+import com.facilio.workflowlog.context.WorkflowLogContext.WorkflowLogStatus;
+import com.facilio.workflowlog.context.WorkflowLogContext.WorkflowLogType;
 import com.facilio.workflows.conditions.context.ElseContext;
 import com.facilio.workflows.conditions.context.ElseIfContext;
 import com.facilio.workflows.conditions.context.IfContext;
@@ -395,6 +398,54 @@ public class WorkflowUtil {
 		return getWorkflowResult(workflowContext, paramMap, rdmCache, ignoreNullExpressions, ignoreMarked, false);
 	}
 	
+	public static Object getWorkflowExpressionResult(WorkflowContext workflowContext,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked, long parentId, long resourceId ,WorkflowLogType logtype) throws Exception {
+		return getWorkflowResult(workflowContext, paramMap, rdmCache, ignoreNullExpressions, ignoreMarked, false,parentId,resourceId,logtype);
+	}
+	
+	private static Object getWorkflowResult(WorkflowContext workflowContext,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked, boolean isVariableMapNeeded, long parentId, long resourceId,WorkflowLogType logtype) throws Exception {
+
+		if(!workflowContext.isV2Script()) {
+			workflowContext = getWorkflowContextFromString(workflowContext.getWorkflowString(),workflowContext);
+			List<ParameterContext> parameterContexts = validateAndGetParameters(workflowContext,paramMap);
+			workflowContext.setParameters(parameterContexts);
+		}
+		else {
+			workflowContext.fillFunctionHeaderFromScript();
+			List<Object> params = new ArrayList<>();
+			for(ParameterContext parameterContext : workflowContext.getParameters()) {
+				Object objectValue = paramMap.get(parameterContext.getName());
+				if(objectValue instanceof ModuleBaseWithCustomFields) {
+					objectValue = FieldUtil.getAsProperties(objectValue);
+				}
+				params.add(objectValue);
+			}
+			workflowContext.setParams(params);
+		}
+		Map<String, Object> globalParameters = validateAndGetGlobalParameters(workflowContext,paramMap);
+		workflowContext.setGlobalParameters(globalParameters);
+		workflowContext.setCachedRDM(rdmCache);
+		workflowContext.setIgnoreMarkedReadings(ignoreMarked);
+		workflowContext.setResourceId(resourceId);
+		workflowContext.setParentId(parentId);
+		workflowContext.setLogType(logtype.getTypeId());
+		
+		paramMap = workflowContext.getVariableResultMap();
+		
+		workflowContext.setIgnoreNullParams(ignoreNullExpressions);
+		Object result = workflowContext.executeWorkflow();
+		
+//		if(workflowContext.isLogNeeded()) {
+//			WorkflowLogUtil.addWorkflowLog(workflowContext,paramMap,result);
+//		}
+		
+		if(isVariableMapNeeded) {
+			return workflowContext.getVariableResultMap();
+		}
+		else {
+			return result;
+		}
+	}
+	
 	private static Object getWorkflowResult(WorkflowContext workflowContext,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked, boolean isVariableMapNeeded) throws Exception {
 
 		if(!workflowContext.isV2Script()) {
@@ -424,9 +475,9 @@ public class WorkflowUtil {
 		workflowContext.setIgnoreNullParams(ignoreNullExpressions);
 		Object result = workflowContext.executeWorkflow();
 		
-		if(workflowContext.isLogNeeded()) {
-			WorkflowLogUtil.addWorkflowLog(workflowContext,paramMap,result);
-		}
+//		if(workflowContext.isLogNeeded()) {
+//			WorkflowLogUtil.addWorkflowLog(workflowContext,paramMap,result);
+//		}
 		
 		if(isVariableMapNeeded) {
 			return workflowContext.getVariableResultMap();
@@ -2574,14 +2625,24 @@ public class WorkflowUtil {
 		return -1l;
 	}
 	
-	public static void sendScriptLogs(WorkflowContext workflowContext, String logs) throws Exception {
+	public static void sendScriptLogs(WorkflowContext workflowContext, String logs,WorkflowLogStatus statusId,String exception) throws Exception {
         if (logs == null) {
             return;
         }
         long orgId = AccountUtil.getCurrentOrg() != null ? AccountUtil.getCurrentOrg().getOrgId() : -1;
         if (orgId > 0L) {
-        	JSONObject json = new JSONObject();
-        	json.put("logs", logs);
+        	WorkflowLogContext workflowlogcontext = new WorkflowLogContext();
+        	workflowlogcontext.setOrgId(orgId);
+        	workflowlogcontext.setRecordId(workflowContext.getResourceId());
+        	workflowlogcontext.setParentId(workflowContext.getParentId());
+        	workflowlogcontext.setWorkflowId(workflowContext.getId());
+        	workflowlogcontext.setException(exception);
+        	workflowlogcontext.setLogType(workflowContext.getLogType());
+        	workflowlogcontext.setLogValue(logs);
+        	workflowlogcontext.setStatus(statusId.getStatusId());
+        	workflowlogcontext.setCreatedTime(System.currentTimeMillis());
+        		
+        	JSONObject json= FieldUtil.getAsJSON(workflowlogcontext);
         	
         	MessageQueue mq = MessageQueueFactory.getMessageQueue(MessageSourceUtil.getDefaultSource());
         	mq.putRecord(ScriptLogHandlerQueueingService.TOPIC, workflowContext.getOrgId()+"_"+workflowContext.getId(), json);
