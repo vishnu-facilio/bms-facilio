@@ -1,14 +1,22 @@
 package com.facilio.bmsconsole.page.factory;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ServiceRequestContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
+
 import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ServiceRequestPageFactory extends PageFactory {
     public static Page getServiceRequestPage(ServiceRequestContext record, FacilioModule module) throws Exception {
@@ -21,7 +29,7 @@ public class ServiceRequestPageFactory extends PageFactory {
             //hide comments section for portal users except for atre org
             boolean hideComments = AccountUtil.getCurrentUser().isPortalUser() && AccountUtil.getCurrentOrg().getOrgId() != 418l;
 
-            String tab2Title = hideComments ? "Attachments" : "Comments & Attachments";
+            String tab2Title = hideComments ? "Attachments" : "Notes & Information";
             Page.Tab tab2 = page.new Tab(tab2Title);
             page.addTab(tab2);
 
@@ -33,6 +41,12 @@ public class ServiceRequestPageFactory extends PageFactory {
             if (hideComments) {
                 addCommonSubModuleWidget(tab2sec1, module, record, titleMap, false, PageWidget.WidgetType.ATTACHMENT);
             } else {
+            	
+            	PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.Q_AND_A_SECONDARY_DETAILS_WIDGET);
+                secondaryDetailsWidget.addToLayoutParams(tab2sec1, 24, 7);
+                secondaryDetailsWidget.setWidgetParams(getServiceRequestWidgetParams(module));
+                tab2sec1.addWidget(secondaryDetailsWidget);
+            	
                 addCommonSubModuleWidget(tab2sec1, module, record, titleMap, false);
             }
             // Showing Related list for Main app and in portal for nmdp org
@@ -59,4 +73,24 @@ public class ServiceRequestPageFactory extends PageFactory {
 
             return page;
     }
+
+	private static JSONObject getServiceRequestWidgetParams(FacilioModule module) throws Exception {
+		// TODO Auto-generated method stub
+		
+		JSONObject widgetParam = new JSONObject();
+		
+		JSONArray fieldList = new JSONArray();
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		if(fields != null) {
+			fieldList.addAll(fields.stream().map(FacilioField::getName).collect(Collectors.toList()));
+		}
+		
+		widgetParam.put("fields", fieldList);
+		
+		return widgetParam;
+		
+	}
 }
