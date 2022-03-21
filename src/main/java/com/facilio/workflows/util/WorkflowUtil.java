@@ -373,7 +373,6 @@ public class WorkflowUtil {
 		return getWorkflowResult(workflowContext,paramMap, null, false, false,false);
 	}
 	
-	
 	public static Map<String, Object> getExpressionResultMap(String workflowContext,Map<String,Object> paramMap,Criteria criteria) throws Exception {
 		WorkflowContext workflow = new WorkflowContext(workflowContext);
 		workflow.setCriteria(criteria);
@@ -382,7 +381,6 @@ public class WorkflowUtil {
 	public static Map<String, Object> getExpressionResultMap(WorkflowContext workflowContext,Map<String,Object> paramMap) throws Exception {
 		return (Map<String, Object>) getWorkflowResult(workflowContext,paramMap, null, false, false,true);
 	}
-	
 	
 	public static boolean getWorkflowExpressionResultAsBoolean(WorkflowContext workflowContext,Map<String,Object> paramMap) throws Exception {
 		Object result = getWorkflowResult(workflowContext,paramMap, null, false, false,false);
@@ -401,6 +399,11 @@ public class WorkflowUtil {
 	public static Object getWorkflowExpressionResult(WorkflowContext workflowContext,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked, long parentId, long resourceId ,WorkflowLogType logtype) throws Exception {
 		return getWorkflowResult(workflowContext, paramMap, rdmCache, ignoreNullExpressions, ignoreMarked, false,parentId,resourceId,logtype);
 	}
+	
+	private static Object getWorkflowResult(WorkflowContext workflowContext,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked, boolean isVariableMapNeeded) throws Exception {
+		return getWorkflowResult(workflowContext, paramMap, rdmCache, ignoreNullExpressions, ignoreMarked, isVariableMapNeeded, -1l, -1l, null);
+	}
+	
 	
 	private static Object getWorkflowResult(WorkflowContext workflowContext,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked, boolean isVariableMapNeeded, long parentId, long resourceId,WorkflowLogType logtype) throws Exception {
 
@@ -427,57 +430,12 @@ public class WorkflowUtil {
 		workflowContext.setIgnoreMarkedReadings(ignoreMarked);
 		workflowContext.setResourceId(resourceId);
 		workflowContext.setParentId(parentId);
-		workflowContext.setLogType(logtype.getTypeId());
+		workflowContext.setLogType(logtype);
 		
 		paramMap = workflowContext.getVariableResultMap();
 		
 		workflowContext.setIgnoreNullParams(ignoreNullExpressions);
 		Object result = workflowContext.executeWorkflow();
-		
-//		if(workflowContext.isLogNeeded()) {
-//			WorkflowLogUtil.addWorkflowLog(workflowContext,paramMap,result);
-//		}
-		
-		if(isVariableMapNeeded) {
-			return workflowContext.getVariableResultMap();
-		}
-		else {
-			return result;
-		}
-	}
-	
-	private static Object getWorkflowResult(WorkflowContext workflowContext,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked, boolean isVariableMapNeeded) throws Exception {
-
-		if(!workflowContext.isV2Script()) {
-			workflowContext = getWorkflowContextFromString(workflowContext.getWorkflowString(),workflowContext);
-			List<ParameterContext> parameterContexts = validateAndGetParameters(workflowContext,paramMap);
-			workflowContext.setParameters(parameterContexts);
-		}
-		else {
-			workflowContext.fillFunctionHeaderFromScript();
-			List<Object> params = new ArrayList<>();
-			for(ParameterContext parameterContext : workflowContext.getParameters()) {
-				Object objectValue = paramMap.get(parameterContext.getName());
-				if(objectValue instanceof ModuleBaseWithCustomFields) {
-					objectValue = FieldUtil.getAsProperties(objectValue);
-				}
-				params.add(objectValue);
-			}
-			workflowContext.setParams(params);
-		}
-		Map<String, Object> globalParameters = validateAndGetGlobalParameters(workflowContext,paramMap);
-		workflowContext.setGlobalParameters(globalParameters);
-		workflowContext.setCachedRDM(rdmCache);
-		workflowContext.setIgnoreMarkedReadings(ignoreMarked);
-		
-		paramMap = workflowContext.getVariableResultMap();
-		
-		workflowContext.setIgnoreNullParams(ignoreNullExpressions);
-		Object result = workflowContext.executeWorkflow();
-		
-//		if(workflowContext.isLogNeeded()) {
-//			WorkflowLogUtil.addWorkflowLog(workflowContext,paramMap,result);
-//		}
 		
 		if(isVariableMapNeeded) {
 			return workflowContext.getVariableResultMap();
@@ -2626,11 +2584,11 @@ public class WorkflowUtil {
 	}
 	
 	public static void sendScriptLogs(WorkflowContext workflowContext, String logs,WorkflowLogStatus statusId,String exception) throws Exception {
-        if (logs == null) {
-            return;
-        }
-        long orgId = AccountUtil.getCurrentOrg() != null ? AccountUtil.getCurrentOrg().getOrgId() : -1;
-        if (orgId > 0L) {
+
+		long orgId = AccountUtil.getCurrentOrg() != null ? AccountUtil.getCurrentOrg().getOrgId() : -1;
+		
+        if (orgId > 0L && workflowContext.getId() > 0 && workflowContext.getParentId() > 0 && workflowContext.getLogType() != null) {
+        	
         	WorkflowLogContext workflowlogcontext = new WorkflowLogContext();
         	workflowlogcontext.setOrgId(orgId);
         	workflowlogcontext.setRecordId(workflowContext.getResourceId());

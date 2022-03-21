@@ -50,6 +50,9 @@ public class WorkflowLogContext extends V3Context {
 	public void setLogType(int type) {
 		this.logType = (type <= 0 ? null: WorkflowLogType.typeMap.get(type));
 	}
+	public void setLogType(WorkflowLogType type) {
+		this.logType = type;
+	}
 	
 	public enum WorkflowLogType implements FacilioIntEnum{
 		FORMULA(1);
@@ -80,7 +83,9 @@ public class WorkflowLogContext extends V3Context {
 
 	public enum WorkflowLogStatus implements FacilioIntEnum{
 		SUCCESS(1),
-		FAILURE(2);
+		FAILURE(2),
+		SYNTAX_ERROR(3)
+		;
 		
 		WorkflowLogStatus(int i) {
 			this.statusId = i;

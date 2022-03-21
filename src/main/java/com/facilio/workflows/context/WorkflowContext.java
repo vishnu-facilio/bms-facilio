@@ -134,7 +134,7 @@ public class WorkflowContext extends ScriptContext{
 	}
 
 	long parentId;
-	int logType;
+	WorkflowLogType logType;
 	
 	public long getParentId() {
 		return parentId;
@@ -142,10 +142,10 @@ public class WorkflowContext extends ScriptContext{
 	public void setParentId(long parentId) {
 		this.parentId = parentId;
 	}
-	public int getLogType() {
+	public WorkflowLogType getLogType() {
 		return logType;
 	}
-	public void setLogType(int logType) {
+	public void setLogType(WorkflowLogType logType) {
 		this.logType = logType;
 	}
 
@@ -390,13 +390,13 @@ public class WorkflowContext extends ScriptContext{
 				        WorkflowUtil.sendScriptLogs(this,this.getLogString(),WorkflowLogStatus.SUCCESS,null);
 			        }
 			        else {
-						WorkflowUtil.sendScriptLogs(this,this.getLogString(),WorkflowLogStatus.FAILURE,getErrorListener().getErrorsAsString());
 			        	if(isThrowExceptionForSyntaxError()) {
 			        		throw new Exception(getErrorListener().getErrorsAsString());
 			        	}
 			        	else {
 			        		LOGGER.log(Level.SEVERE, "Workflow - "+getId()+" has syntax errors - "+getErrorListener().getErrorsAsString());
 			        	}
+			        	WorkflowUtil.sendScriptLogs(this,null,WorkflowLogStatus.SYNTAX_ERROR,getErrorListener().getErrorsAsString());
 			        }
 			        
 			        return this.getReturnValue();
@@ -408,9 +408,11 @@ public class WorkflowContext extends ScriptContext{
 						errorMeg = errorMeg+" name - "+ name;
 					}
 					errorMeg = errorMeg+" message - "+e.getMessage();						
-					WorkflowUtil.sendScriptLogs(this,this.getLogString(),WorkflowLogStatus.FAILURE,errorMeg);
 					this.getLogStringBuilder().append("ERROR ::: "+errorMeg+"\n");
 					LOGGER.log(Level.SEVERE, errorMeg, e);
+					
+					WorkflowUtil.sendScriptLogs(this,this.getLogString(),WorkflowLogStatus.FAILURE,errorMeg);
+					
 					throw e;
 				}
 			}
