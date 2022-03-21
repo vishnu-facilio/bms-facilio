@@ -42,9 +42,8 @@ public class ServiceRequestPageFactory extends PageFactory {
                 addCommonSubModuleWidget(tab2sec1, module, record, titleMap, false, PageWidget.WidgetType.ATTACHMENT);
             } else {
             	
-            	PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.Q_AND_A_SECONDARY_DETAILS_WIDGET);
+            	PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.SECONDARY_DETAILS_WIDGET);
                 secondaryDetailsWidget.addToLayoutParams(tab2sec1, 24, 7);
-                secondaryDetailsWidget.setWidgetParams(getServiceRequestWidgetParams(module));
                 tab2sec1.addWidget(secondaryDetailsWidget);
             	
                 addCommonSubModuleWidget(tab2sec1, module, record, titleMap, false);
@@ -73,24 +72,4 @@ public class ServiceRequestPageFactory extends PageFactory {
 
             return page;
     }
-
-	private static JSONObject getServiceRequestWidgetParams(FacilioModule module) throws Exception {
-		// TODO Auto-generated method stub
-		
-		JSONObject widgetParam = new JSONObject();
-		
-		JSONArray fieldList = new JSONArray();
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		List<FacilioField> fields = modBean.getAllFields(module.getName());
-		if(fields != null) {
-			fieldList.addAll(fields.stream().map(FacilioField::getName).collect(Collectors.toList()));
-		}
-		
-		widgetParam.put("fields", fieldList);
-		
-		return widgetParam;
-		
-	}
 }
