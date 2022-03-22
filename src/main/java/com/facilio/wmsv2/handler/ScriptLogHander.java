@@ -21,7 +21,7 @@ public class ScriptLogHander extends BaseHandler {
 	@Override
     public Message processOutgoingMessage(Message message) {
         try {
-        	if(message.getOrgId() != null) {
+        	if(message.getOrgId() != null && message.getOrgId() > 0) {
         		QueueingServiceBean bean = (QueueingServiceBean) BeanFactory.lookup("QueueingServiceBean", message.getOrgId());
         		bean.addScriptLog(message.getContent());
         	}
