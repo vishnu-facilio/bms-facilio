@@ -32,6 +32,7 @@ import com.facilio.wms.endpoints.LiveSession.LiveSessionSource;
 import com.facilio.wms.endpoints.LiveSession.LiveSessionType;
 import com.facilio.wms.util.WmsApi;
 import com.opensymphony.xwork2.ActionContext;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -875,6 +876,30 @@ public class LoginAction extends FacilioAction {
 
 		account.put("org", AccountUtil.getCurrentOrg());
 		account.put("user", AccountUtil.getCurrentUser());
+
+		boolean isDev = false;
+
+		Account currentAccount = AccountUtil.getCurrentAccount();
+		if (currentAccount != null) {
+			User user = currentAccount.getUser();
+			isDev = user != null && user.isSuperAdmin();
+		}
+
+		if (!isDev) {
+			List<Long> devAppIds = new ArrayList<>();
+			long applicationIdForLinkName = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.DEVELOPER_APP);
+			if (applicationIdForLinkName > 0) {
+				devAppIds.add(applicationIdForLinkName);
+			}
+
+			if (!devAppIds.isEmpty()) {
+				List<Role> rolesList = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getOrgId()).getRolesForApps(devAppIds);
+				isDev = !CollectionUtils.isEmpty(rolesList)
+						&& rolesList.stream().anyMatch(i -> i.getRoleId() == AccountUtil.getCurrentAccount().getUser().getRoleId());
+			}
+		}
+
+		account.put("isDev", isDev);
 
 		if (AccountUtil.getCurrentUser() != null) {
 			long securityPolicyId = AccountUtil.getCurrentUser().getSecurityPolicyId();
