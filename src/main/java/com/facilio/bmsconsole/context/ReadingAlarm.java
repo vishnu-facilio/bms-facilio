@@ -1,8 +1,10 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.enums.FaultType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleInterface;
+import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 public class ReadingAlarm extends BaseAlarmContext {
@@ -23,8 +25,14 @@ public class ReadingAlarm extends BaseAlarmContext {
         return rule;
     }
 
-    public void setRule(ReadingRuleInterface rule) {
-        this.rule = rule;
+    public void setRule(ReadingRuleInterface rule) throws Exception {
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
+            NewReadingRuleContext ruleContext = new NewReadingRuleContext();
+            ruleContext.setId(rule.getId());
+            this.rule = ruleContext;
+        } else {
+            this.rule = rule;
+        }
     }
 
     @JsonDeserialize(as = ReadingRuleContext.class)
@@ -33,8 +41,17 @@ public class ReadingAlarm extends BaseAlarmContext {
     public ReadingRuleInterface getSubRule() {
         return subRule;
     }
-    public void setSubRule(ReadingRuleInterface subRule) {
-        this.subRule = subRule;
+    public void setSubRule(ReadingRuleInterface subRule) throws Exception {
+        if(subRule == null) {
+            return;
+        }
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
+            NewReadingRuleContext ruleContext = new NewReadingRuleContext();
+            ruleContext.setId(subRule.getId());
+            this.subRule = ruleContext;
+        } else {
+            this.subRule = subRule;
+        }
     }
 
     private long readingFieldId;
@@ -67,5 +84,15 @@ public class ReadingAlarm extends BaseAlarmContext {
     }
     public void setFaultType(int faultType) {
         this.faultType = FaultType.valueOf(faultType);
+    }
+
+    private boolean isNewReadingRule;
+
+    public void setNewReadingRule(boolean isNewReadingRule) {
+        this.isNewReadingRule = isNewReadingRule;
+    }
+
+    public boolean getIsNewReadingRule() {
+        return isNewReadingRule;
     }
 }

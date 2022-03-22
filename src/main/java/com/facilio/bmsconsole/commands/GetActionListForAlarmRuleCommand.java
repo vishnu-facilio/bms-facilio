@@ -2,16 +2,12 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
+import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.ActionAPI;
-import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
-import com.facilio.bmsconsole.workflow.rule.ReadingAlarmRuleContext;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 
 public class GetActionListForAlarmRuleCommand extends FacilioCommand {
@@ -20,7 +16,7 @@ public class GetActionListForAlarmRuleCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		AlarmRuleContext alarmRule = (AlarmRuleContext) context.get(FacilioConstants.ContextNames.ALARM_RULE);
 		
-		ReadingRuleContext alarmTriggerRule = alarmRule.getAlarmTriggerRule();
+		ReadingRuleInterface alarmTriggerRule = alarmRule.getAlarmTriggerRule();
 		if(alarmTriggerRule.getActions() == null || alarmTriggerRule.getActions().isEmpty()) {
 			List<ActionContext> actions = ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), alarmTriggerRule.getId());
 			alarmTriggerRule.setActions(actions);

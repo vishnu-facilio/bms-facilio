@@ -64,12 +64,18 @@ public class RulePageFactory extends PageFactory {
 
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.READING_EVENT));
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("rule"), String.valueOf(alarmRule.getPreRequsite().getId()), NumberOperators.EQUALS));
+		Long ruleId;
+		if(alarmRule.getPreRequsite() == null) { //TODO:SPK - For new reading rule, prerequiste is null, should be change this design
+			ruleId = alarmRule.getAlarmTriggerRule().getId();
+		} else {
+			ruleId = alarmRule.getPreRequsite().getId();
+		}
+		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("rule"), String.valueOf(ruleId), NumberOperators.EQUALS));
 //		addImpactDetails(tab2Sec1,criteria);
 
 
 		// if (alarmRule.alarmTriggerRule.actions.get(0).template.getOriginalTemplate().containsKey("impact")) {
-		if (alarmRule.getAlarmTriggerRule() != null) {
+		if (alarmRule.getAlarmTriggerRule() != null && alarmRule.getAlarmTriggerRule().getActions() != null) {
 			{
 				List<ActionContext> actions = alarmRule.getAlarmTriggerRule().getActions();
 				for (ActionContext action: actions) {

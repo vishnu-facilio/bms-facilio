@@ -15,6 +15,7 @@ public class NamespaceModuleAndFieldFactory extends FieldFactory {
         module.setName("namespace");
         module.setDisplayName("Namespace Configuration");
         module.setTableName("Namespace");
+        module.setType(FacilioModule.ModuleType.CUSTOM);
         return module;
     }
 
@@ -23,6 +24,7 @@ public class NamespaceModuleAndFieldFactory extends FieldFactory {
         module.setName("namespace_fields");
         module.setDisplayName("Namespace Field Configuration");
         module.setTableName("Namespace_Fields");
+        module.setType(FacilioModule.ModuleType.CUSTOM);
         return module;
     }
 

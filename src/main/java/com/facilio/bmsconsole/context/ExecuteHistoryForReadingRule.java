@@ -111,8 +111,8 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 					preRequisiteFields.addAll(workflowFields);
 				}
 			}
-			if(alarmRule.getAlarmTriggerRule().getWorkflowId() != -1) {
-				List<WorkflowFieldContext> workflowFields = WorkflowUtil.getWorkflowFields(alarmRule.getAlarmTriggerRule().getWorkflowId());
+			if(((ReadingRuleContext)alarmRule.getAlarmTriggerRule()).getWorkflowId() != -1) {
+				List<WorkflowFieldContext> workflowFields = WorkflowUtil.getWorkflowFields(((ReadingRuleContext)alarmRule.getAlarmTriggerRule()).getWorkflowId());
 				if(workflowFields != null) {
 					fields.addAll(workflowFields);
 				}
@@ -281,7 +281,8 @@ public class ExecuteHistoryForReadingRule extends ExecuteHistoricalRule {
 								{
 									shouldSkipCurrentReading = true;
 									context.put(EventConstants.EventContextNames.PREVIOUS_EVENT_META, previousEventMeta);
-									if(alarmRule.getAlarmTriggerRule().getOverPeriod() > 0 || alarmRule.getAlarmTriggerRule().getOccurences() > 0 || alarmRule.getAlarmTriggerRule().isConsecutive() || alarmRule.getAlarmTriggerRule().getThresholdTypeEnum() == ReadingRuleContext.ThresholdType.FLAPPING) {						
+									ReadingRuleContext triggerRule = (ReadingRuleContext) alarmRule.getAlarmTriggerRule();
+									if(triggerRule.getOverPeriod() > 0 || triggerRule.getOccurences() > 0 || triggerRule.isConsecutive() || triggerRule.getThresholdTypeEnum() == ReadingRuleContext.ThresholdType.FLAPPING) {
 										PreEventContext preEvent = readingRule.constructPreClearEvent(reading, currentResourceContext);
 										preEvent.setComment("System auto cleared alarm due to the presence of associated sensor alarm");
 										preEvent.constructAndAddPreClearEvent(context);		

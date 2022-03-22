@@ -84,7 +84,7 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand implements P
 		Long primaryId = (Long)loggerInfo.get(primaryPropKeyName);
 		if(ruleJobTypeEnum == RuleJobType.READING_ALARM) {
 			AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(Collections.singletonList(primaryId), false, true),null);
-			ReadingRuleContext triggerRule = alarmRule.getAlarmTriggerRule();
+			ReadingRuleContext triggerRule = (ReadingRuleContext) alarmRule.getAlarmTriggerRule();
 			if(triggerRule.isConsecutive() || triggerRule.getOverPeriod() > 0 || triggerRule.getOccurences() > 1) {
 				ruleJobType = RuleJobType.PRE_ALARM.getIndex();
 			}	

@@ -1,8 +1,11 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleInterface;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.chain.Context;
 import org.apache.struts2.json.annotations.JSON;
 
@@ -76,9 +79,11 @@ public class ReadingEventContext extends BaseEventContext {
     }
 
     private ReadingAlarmCategoryContext readingAlarmCategory;
+
     public ReadingAlarmCategoryContext getReadingAlarmCategory() {
         return readingAlarmCategory;
     }
+
     public void setReadingAlarmCategory(ReadingAlarmCategoryContext readingAlarmCategory) {
         this.readingAlarmCategory = readingAlarmCategory;
     }
@@ -90,8 +95,14 @@ public class ReadingEventContext extends BaseEventContext {
         return rule;
     }
 
-    public void setRule(ReadingRuleInterface rule) {
-        this.rule = rule;
+    public void setRule(ReadingRuleInterface rule) throws Exception {
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
+            NewReadingRuleContext ruleContext = new NewReadingRuleContext();
+            ruleContext.setId(rule.getId());
+            this.rule = ruleContext;
+        } else {
+            this.rule = rule;
+        }
     }
 
     @JsonDeserialize(as = ReadingRuleContext.class)
@@ -101,31 +112,47 @@ public class ReadingEventContext extends BaseEventContext {
         return subRule;
     }
 
-    public void setSubRule(ReadingRuleInterface subRule) {
-        this.subRule = subRule;
+    public void setSubRule(ReadingRuleInterface subRule) throws Exception {
+        if(subRule == null) {
+            return;
+        }
+
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
+            NewReadingRuleContext ruleContext = new NewReadingRuleContext();
+            ruleContext.setId(subRule.getId());
+            this.subRule = ruleContext;
+        } else {
+            this.subRule = subRule;
+        }
     }
 
     private long readingFieldId = -1;
+
     public long getReadingFieldId() {
         return readingFieldId;
     }
+
     public void setReadingFieldId(long readingFieldId) {
         this.readingFieldId = readingFieldId;
     }
 
     private FaultType faultType;
+
     public int getFaultType() {
         if (faultType != null) {
             return faultType.getIndex();
         }
         return -1;
     }
+
     public FaultType getFaultTypeEnum() {
         return faultType;
     }
+
     public void setFaultType(FaultType faultType) {
         this.faultType = faultType;
     }
+
     public void setFaultType(int faultType) {
         this.faultType = FaultType.valueOf(faultType);
     }
@@ -133,13 +160,21 @@ public class ReadingEventContext extends BaseEventContext {
     @Override
     @JsonSerialize
     public Type getEventTypeEnum() {
-            return Type.READING_ALARM;
-        }
+        return Type.READING_ALARM;
+    }
 
     @JsonIgnore
     @JSON(deserialize = false)
-    public void setRuleId(long ruleId) {
-        if (ruleId > 0) {
+    public void setRuleId(long ruleId) throws Exception {
+        if (ruleId <= 0) {
+            return;
+        }
+
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
+            NewReadingRuleContext ruleContext = new NewReadingRuleContext();
+            ruleContext.setId(ruleId);
+            setRule(ruleContext);
+        } else {
             ReadingRuleContext ruleContext = new ReadingRuleContext();
             ruleContext.setId(ruleId);
             setRule(ruleContext);
@@ -148,31 +183,30 @@ public class ReadingEventContext extends BaseEventContext {
 
     @JsonIgnore
     @JSON(deserialize = false)
-    public void setNewRuleId(long ruleId) {
-        if (ruleId > 0) {
+    public void setSubRuleId(long subRuleId) throws Exception {
+        if (subRuleId <= 0) {
+            return;
+        }
+
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
             NewReadingRuleContext ruleContext = new NewReadingRuleContext();
-            ruleContext.setId(ruleId);
+            ruleContext.setId(subRuleId);
+            setRule(ruleContext);
+        } else {
+            ReadingRuleContext ruleContext = new ReadingRuleContext();
+            ruleContext.setId(subRuleId);
             setRule(ruleContext);
         }
     }
 
-    @JsonIgnore
-    @JSON(deserialize = false)
-    public void setSubRuleId(long subRuleId) {
-        if (subRuleId > 0) {
-            ReadingRuleContext ruleContext = new ReadingRuleContext();
-            ruleContext.setId(subRuleId);
-            setSubRule(ruleContext);
-        }
+    private boolean isNewReadingRule;
+
+    public void setNewReadingRule(boolean isNewReadingRule) {
+        this.isNewReadingRule = isNewReadingRule;
     }
 
-    @JsonIgnore
-    @JSON(deserialize = false)
-    public void setNewSubRuleId(long subRuleId) {
-        if (subRuleId > 0) {
-            NewReadingRuleContext ruleContext = new NewReadingRuleContext();
-            ruleContext.setId(subRuleId);
-            setSubRule(ruleContext);
-        }
+    public boolean getIsNewReadingRule() {
+        return isNewReadingRule;
     }
+
 }

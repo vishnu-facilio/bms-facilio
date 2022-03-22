@@ -435,7 +435,6 @@ public class WorkflowRuleAction extends FacilioAction {
 	}
 	public String fetchWorkflowRuleSummary() throws Exception {
 
-
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, ruleId);
 		context.put(FacilioConstants.ContextNames.IS_SUMMARY, true);

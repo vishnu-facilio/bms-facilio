@@ -67,7 +67,7 @@ public class GetDataPointFromAlarmCommand extends FacilioCommand {
         if ((boolean)context.get("isWithPrerequsite")) {
             ReadingAlarm readingAlarmContext = (ReadingAlarm) alarmOccurrence.getAlarm();
             AlarmRuleContext alarmRuleContext = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(readingAlarmContext.getRule().getId()));
-            readingRules.add(alarmRuleContext.getAlarmTriggerRule());
+            readingRules.add((ReadingRuleContext) alarmRuleContext.getAlarmTriggerRule());
             readingRules.add(alarmRuleContext.getPreRequsite());
         } else if ((Long) context.get("readingRuleId") > 0) {
             ReadingRuleContext readingruleContext = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule((Long) context.get("readingRuleId"));
@@ -436,7 +436,7 @@ public class GetDataPointFromAlarmCommand extends FacilioCommand {
 
             ReadingAlarmContext readingAlarmContext = (ReadingAlarmContext) alarmContext;
             AlarmRuleContext alarmRuleContext = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(readingAlarmContext.getRuleId()));
-            readingRules.add(alarmRuleContext.getAlarmTriggerRule());
+            readingRules.add((ReadingRuleContext) alarmRuleContext.getAlarmTriggerRule());
             readingRules.add(alarmRuleContext.getPreRequsite());
 
         } else if (readingRuleId > 0) {                    // new 2nd

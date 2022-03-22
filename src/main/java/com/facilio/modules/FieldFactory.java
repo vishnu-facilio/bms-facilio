@@ -193,8 +193,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getNumberField("faultType", "FAULT_TYPE", module));
         fields.add(getStringField("severityId", "ALARM_SEVERITY_ID", module));
         fields.add(getStringField("problem", "PROBLEM", module));
-        fields.add(getStringField("possibleCauses", "POSSIBLE_CAUSES", module));
-        fields.add(getStringField("recommendations", "RECOMMENDATIONS", module));
+        fields.add(getStringField("possibleCausesStr", "POSSIBLE_CAUSES", module));
+        fields.add(getStringField("recommendationsStr", "RECOMMENDATIONS", module));
         return fields;
     }
 
@@ -1903,6 +1903,14 @@ public class FieldFactory extends BaseFieldFactory {
     public static List<FacilioField> getWorkflowRuleRCAMapping() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getWorkflowRuleRCAMapping();
+        fields.add(getField("rule", "RULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("rcaRule", "RCA_RULE_ID", module, FieldType.NUMBER));
+        return fields;
+    }
+
+    public static List<FacilioField> getReadingRuleRCAMapping() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getReadingRuleRCAMapping();
         fields.add(getField("rule", "RULE_ID", module, FieldType.NUMBER));
         fields.add(getField("rcaRule", "RCA_RULE_ID", module, FieldType.NUMBER));
         return fields;

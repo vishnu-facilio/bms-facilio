@@ -1601,12 +1601,6 @@
 				method="categoryRules"></action>
 	</package>
 
-	<package name="newAlarmRules" namespace="/api/v2/alarm/new_rules" extends="v2Api">
-		<action name="addNew"  class="com.facilio.readingrule.action.ReadingRuleAction" method="addNewReadingRule">
-			<param name="permission">CREATE</param>
-		</action>
-	</package>
-
 	<package name="alarmImpact" namespace="/api/v2/alarm/impacts" extends="v2Api">
 		<action name="addOrUpdate"
 				class="com.facilio.bmsconsole.actions.ImpactAction"

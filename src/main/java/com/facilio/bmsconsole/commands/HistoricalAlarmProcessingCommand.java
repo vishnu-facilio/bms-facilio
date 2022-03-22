@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.*;
@@ -322,7 +323,7 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 			if(type == Type.READING_ALARM || type == Type.PRE_ALARM) {
 				alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(Collections.singletonList(ruleId), false, true),null);
 				ReadingRuleAPI.fetchAlarmMeta(alarmRule.getPreRequsite());
-				ReadingRuleAPI.fetchAlarmMeta(alarmRule.getAlarmTriggerRule());
+				ReadingRuleAPI.fetchAlarmMeta((ReadingRuleContext) alarmRule.getAlarmTriggerRule());
 			}
 			
 			for(BaseEventContext baseEvent :baseEvents)
@@ -335,7 +336,7 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 				if (baseEvent instanceof PreEventContext && alarmRule != null) {
 					PreEventContext preEvent = (PreEventContext) baseEvent;
 					preEvent.setRule(alarmRule.getPreRequsite());
-					preEvent.setSubRule(alarmRule.getAlarmTriggerRule());
+					preEvent.setSubRule((ReadingRuleContext) alarmRule.getAlarmTriggerRule());
 				}
 				baseEvent.getSeverity().setSeverity(alarmSeverityMap.get(baseEvent.getSeverity().getId()).getSeverity());
 				baseEvent.setSeverityString(alarmSeverityMap.get(baseEvent.getSeverity().getId()).getSeverity());

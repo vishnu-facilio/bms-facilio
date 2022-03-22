@@ -1,5 +1,6 @@
 package com.facilio.storm.command;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -47,12 +48,16 @@ public class StormReadingPostProcessingCommand extends FacilioCommand {
                         json.put("fieldId", field.getFieldId());
                         json.put("ttime", readingContext.getTtime());
 
-                        mq.put("storm-q", new FacilioRecord("rule-exec", json));
+                        mq.put(getTopicName(), new FacilioRecord("rule-exec", json));
                     }
                 }
             }
         }
 
         return false;
+    }
+
+    private String getTopicName() {
+        return FacilioProperties.getEnvironment() + "-storm-queue";
     }
 }

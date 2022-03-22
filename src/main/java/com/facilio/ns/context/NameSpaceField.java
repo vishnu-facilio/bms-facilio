@@ -4,10 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashMap;
+
 @Getter
 @Setter
 public class NameSpaceField {
 
+    Long id;
     Long orgId;
     Long nsId;
     String varName;
@@ -35,66 +38,28 @@ public class NameSpaceField {
 
     boolean isEnabledCompaction;
 
-    NameSpaceContext namespace;
-
-    @JsonIgnore
-    Key fieldKey;
-
-    public void setFieldKey(Key fieldKey) {
-        this.fieldKey = new Key(this);
+    public String fieldKey() {
+        return isEnabledCompaction ? compactedKey() : baseKey();
     }
 
     @JsonIgnore
-    public Key getFieldKey() {
-        return fieldKey;
+    private String compactedKey() {
+        return baseKey() + "_COMPACT";
     }
 
-    public class Key {
-        String key;
-        boolean isCompaction;
-        Long fieldId;
+    @JsonIgnore
+    private String baseKey() {
+        return "NS" + nsId + "_R" + resourceId + "_FLD" + fieldId + "_" + aggregationType;
+    }
 
-        private Key(String key, boolean isCompaction, Long fieldId) {
-            this.key = key;
-            this.isCompaction = isCompaction;
-            this.fieldId = fieldId;
-        }
-
-        public Key(NameSpaceField field) {
-            this("NS" + field.getNamespace().getId() + "_R" + field.getResourceId() + "_FLD" + field.getFieldId() + "_" + field.getAggregationType(), field.isEnabledCompaction(), field.getFieldId());
-        }
-
-        public String getCompactedKey() {
-            return key + "_COMPACT";
-        }
-
-        public String getKey() {
-            return isCompaction ? getCompactedKey() : key;
-        }
-
-        public String getBaseKey() {
-            return key;
-        }
-
-        public int hashCode() {
-            return 1;
-        }
-
-        @Override
-        public boolean equals(Object grpKey) {
-            if (grpKey instanceof Key) {
-                return ((Key) grpKey).getKey().equals(getKey());
+    public String toString() {
+        return new HashMap<String, Object>() {
+            {
+                put("nsid", nsId);
+                put("varname", varName);
+                put("resource id ", resourceId);
+                put("field id ", fieldId);
             }
-            return Boolean.FALSE;
-        }
-
-        public String toString() {
-            return key;
-        }
-    }
-
-    public void setNullForResponse() {
-        fieldKey = null;
-        namespace = null;
+        }.toString();
     }
 }

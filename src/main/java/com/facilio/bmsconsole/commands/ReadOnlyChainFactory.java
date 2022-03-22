@@ -32,6 +32,7 @@ import com.facilio.emailtemplate.command.GetAllEmailTemplatesCommand;
 import com.facilio.emailtemplate.command.GetEmailStructureCommand;
 import com.facilio.energystar.command.*;
 import com.facilio.mv.command.FetchMVWidgetResultCommand;
+import com.facilio.readingrule.command.FetchReadingRuleSummaryCommand;
 import com.facilio.readingrule.command.GetReadingRulesCommand;
 import com.facilio.storm.command.StormReadingPostProcessingCommand;
 import com.facilio.trigger.context.TriggerType;
@@ -386,6 +387,12 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FetchAlarmRuleCommand());
 		c.addCommand(new GetActionListForAlarmRuleCommand());
 		c.addCommand(new FetchExtraMetaForAlarmRuleCommand());
+		return c;
+	}
+
+	public static FacilioChain fetchReadingRuleSummaryChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new FetchReadingRuleSummaryCommand());
 		return c;
 	}
 

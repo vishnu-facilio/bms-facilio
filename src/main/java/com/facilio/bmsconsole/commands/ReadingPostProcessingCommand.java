@@ -14,6 +14,8 @@ import org.apache.commons.chain.Context;
 import java.util.List;
 import java.util.Map;
 
+import static com.facilio.accounts.util.AccountUtil.FeatureLicense.NEW_READING_RULE;
+
 @Log4j
 public class ReadingPostProcessingCommand extends FacilioCommand {
     @Override
@@ -37,9 +39,9 @@ public class ReadingPostProcessingCommand extends FacilioCommand {
     }
 
     private void executeRules(Context context) throws Exception {
-        boolean stormExec = Boolean.valueOf(CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.CAN_EXECUTE_FROM_STORM, Boolean.FALSE));
-        LOGGER.debug("Executing rules. strom exec ?? " + stormExec);
-        if (stormExec) {
+        boolean isNewReadingRule = AccountUtil.isFeatureEnabled(NEW_READING_RULE);
+        LOGGER.debug("Executing rules. storm exec ?? " + isNewReadingRule);
+        if (isNewReadingRule) {
             forwardToStorm(context);
         } else {
             executeWorkflowsRules(context);
@@ -47,6 +49,9 @@ public class ReadingPostProcessingCommand extends FacilioCommand {
     }
 
     private void forwardToStorm(Context context) {
+        if((Boolean) context.getOrDefault(FacilioConstants.ContextNames.CALL_FROM_STORM, Boolean.FALSE)){
+            return;
+        }
         try {
             FacilioChain postProcessingChain = ReadOnlyChainFactory.stormReadingPostProcessingChain();
             postProcessingChain.setContext((FacilioContext) context);

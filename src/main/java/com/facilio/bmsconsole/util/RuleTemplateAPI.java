@@ -183,7 +183,7 @@ public class RuleTemplateAPI {
 		alarmRule.setAlarmTriggerRule(convertByRuleType((JSONObject) ruleObj.get("alarmCondition")));
 		FacilioModule readingModule = modBean.getModule((String) ruleObj.get("moduleName"));
 		FacilioField readingfield = modBean.getField((String) ruleObj.get("threshold_metric"), readingModule.getName());
-		alarmRule.getAlarmTriggerRule().setReadingFieldId(readingfield.getId());
+		((ReadingRuleContext) alarmRule.getAlarmTriggerRule()).setReadingFieldId(readingfield.getId());
 		if ((JSONObject) ruleObj.get("alarmClear") != null) {
 			alarmRule.setAlarmClearRule(convertByRuleType((JSONObject) ruleObj.get("preRequsite")));
 		} else {
@@ -225,7 +225,7 @@ public class RuleTemplateAPI {
 		content = new JSONObject();
 		possible.put("fieldMatcher", fieldMatcher);
 		action.setTemplateJson(possible);
-		alarmRule.getAlarmTriggerRule().setActions(Collections.singletonList(action));
+		((ReadingRuleContext) alarmRule.getAlarmTriggerRule()).setActions(Collections.singletonList(action));
 		return alarmRule;
 	}
 }

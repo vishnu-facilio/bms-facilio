@@ -1,77 +1,66 @@
 package com.facilio.readingrule.action;
 
-import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.readingrule.context.NewReadingRuleContext;
-import com.facilio.readingrule.util.NewReadingRuleAPI;
-import com.facilio.workflowv2.util.WorkflowV2Util;
+import com.facilio.v3.V3Action;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
 @Log4j
 @Setter
 @Getter
-public class ReadingRuleAction extends FacilioAction {
+public class ReadingRuleAction extends V3Action {
 
     private String isCount;
 
     private long ruleId = -1;
 
 
-    public String execute() {
-        return SUCCESS;
-    }
-
     NewReadingRuleContext readingRule;
 
 
     public String addNewReadingRule() throws Exception {
 
-        FacilioChain chain = TransactionChainFactory.addReadingRule();
+        FacilioChain chain = TransactionChainFactory.addReadingRuleChain();
 
         FacilioContext ctx = chain.getContext();
         ctx.put(FacilioConstants.ContextNames.NEW_READING_RULE, readingRule);
         chain.execute();
 
         readingRule.setNullForResponse();
-        setResult("result", readingRule);
+        setData("result", readingRule);
 
         return SUCCESS;
     }
 
-    public String v2RulesList() throws Exception {
+    public String v3RulesList() throws Exception {
         FacilioContext context = new FacilioContext();
         if (getFilters() != null) {
             JSONParser parser = new JSONParser();
             JSONObject json = (JSONObject) parser.parse(getFilters());
             context.put(FacilioConstants.ContextNames.FILTERS, json);
-            context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
+//            context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
         }
         if (getIsCount() != null) {
             context.put(FacilioConstants.ContextNames.RULE_COUNT, getIsCount());
         }
 
         if (getSearch() != null) {
-            JSONObject searchObj = new JSONObject();
-            searchObj.put("fields", "workflowrule.name");
-            searchObj.put("query", getSearch());
-            context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
+//            JSONObject searchObj = new JSONObject();
+//            searchObj.put("fields", "workflowrule.name");
+//            searchObj.put("query", getSearch());
+//            context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
         }
 
         if (getPage() != 0) {
@@ -81,7 +70,6 @@ public class ReadingRuleAction extends FacilioAction {
             context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
         }
 
-        System.out.println("request" + getIsCount());
         context.put(FacilioConstants.ContextNames.ID, ruleId);
         context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
         context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.READING_RULE_MODULE);
@@ -89,18 +77,51 @@ public class ReadingRuleAction extends FacilioAction {
         FacilioChain workflowRuleType = ReadOnlyChainFactory.fetchReadingRules();
         workflowRuleType.execute(context);
 
-//		workflowRuleList = (List<WorkflowRuleContext>) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST);
-//		if (getIsCount() != null) {
-//			setCount((long) context.get(FacilioConstants.ContextNames.RULE_COUNT));
-//		}
-//		setResult("count", context.get(FacilioConstants.ContextNames.RULE_COUNT));
-
         List<NewReadingRuleContext> rules = (List<NewReadingRuleContext>) context.get(FacilioConstants.ContextNames.NEW_READING_RULE);
-        for(NewReadingRuleContext r : rules) {
+        for (NewReadingRuleContext r : rules) {
             r.setNullForResponse();
         }
 
-        setResult("rules", rules);
+        setData("rules", rules);
+        return SUCCESS;
+
+    }
+
+    public String fetchReadingRuleSummary() throws Exception {
+        FacilioContext context = new FacilioContext();
+        context.put(FacilioConstants.ContextNames.ID, ruleId);
+        context.put(FacilioConstants.ContextNames.IS_SUMMARY, true);
+
+        FacilioChain fetchAlarmChain = ReadOnlyChainFactory.fetchReadingRuleSummaryChain();
+        fetchAlarmChain.execute(context);
+        AlarmRuleContext alarmRule = (AlarmRuleContext) context.get(FacilioConstants.ContextNames.ALARM_RULE);
+        alarmRule.setNullForResponse();
+        setData("matchedassetcount", context.get(FacilioConstants.ContextNames.RULE_ASSET_COUNT));
+        setData("matchedassetids", context.get(FacilioConstants.ContextNames.ASSET_LIST));
+        setData("alarmRule", alarmRule);
+        setData("module", context.get(FacilioConstants.ContextNames.MODULE));
+        return SUCCESS;
+    }
+
+    public String deleteReadingRule() throws Exception {
+        FacilioChain chain = TransactionChainFactory.deleteReadingRuleChain();
+        FacilioContext ctx = chain.getContext();
+        ctx.put(FacilioConstants.ContextNames.ID, ruleId);
+        chain.execute();
+        setData("result", true);
+        return SUCCESS;
+    }
+
+    public String updateReadingRule() throws Exception {
+        FacilioChain chain = TransactionChainFactory.updateReadingRuleChain();
+        FacilioContext ctx = chain.getContext();
+        ctx.put(FacilioConstants.ContextNames.NEW_READING_RULE, readingRule);
+        chain.execute();
+
+        NewReadingRuleContext ruleContext = (NewReadingRuleContext) ctx.get(FacilioConstants.ContextNames.NEW_READING_RULE);
+        ruleContext.setNullForResponse();
+
+        setData("result", ruleContext);
         return SUCCESS;
 
     }

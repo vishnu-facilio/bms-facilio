@@ -31,9 +31,9 @@ public class NameSpaceContext {
      * @return Returns Group Fields which has match with resource id and field id.
      */
     public List<NameSpaceField> getFields(long resourceId, long fieldId) {
-        Map<NameSpaceField.Key, NameSpaceField> flds = new HashMap<>();
+        Map<String, NameSpaceField> flds = new HashMap<>();
         for (NameSpaceField f : fields) {
-            NameSpaceField.Key key = f.getFieldKey();
+            String key = f.fieldKey();
             if (!flds.containsKey(key) && f.getResourceId() == resourceId && f.getFieldId() == fieldId) {
                 flds.put(key, f);
             }
@@ -67,15 +67,11 @@ public class NameSpaceContext {
     }
 
     @JsonIgnore
-    public String getNSKey() {
+    public String nsKey() {
         return "NS_" + id + "_LETS";
     }
 
     public void setNullForResponse() {
-        if (fields != null) {
-            for (NameSpaceField fld : fields) {
-                fld.setNullForResponse();
-            }
-        }
+
     }
 }

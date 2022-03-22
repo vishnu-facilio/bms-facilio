@@ -1,8 +1,9 @@
 package com.facilio.ns;
 
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.ns.context.NameSpaceField;
 import com.facilio.ns.factory.NamespaceModuleAndFieldFactory;
@@ -46,7 +47,7 @@ public class NamespaceAPI {
 
             NameSpaceField field = FieldUtil.getAsBeanFromMap(m, NameSpaceField.class);
 
-            if (field.getResourceId() == null) {
+            if (field.getResourceId() == null || field.getResourceId() == -1L) {
                 field.setResourceId(resourceId);
             }
 
@@ -54,12 +55,49 @@ public class NamespaceAPI {
                 ns.addField(field);
             }
 
-            field.setNamespace(ns);
-            field.setFieldKey(null);
         }
 
         return nsMap;
     }
 
+    public static NameSpaceContext getNameSpaceById1(Long id) throws Exception {
+        GenericSelectRecordBuilder select = new GenericSelectRecordBuilder();
+        select.select(NamespaceModuleAndFieldFactory.getNSAndFields())
+                .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("ID", "id", id.toString(), NumberOperators.EQUALS));
+        Map<String, Object> resObj = select.fetchFirst();
+        if(resObj != null) {
+            NameSpaceContext ns = FieldUtil.getAsBeanFromMap(resObj, NameSpaceContext.class);
+            return ns;
+        }
+        return null;
+    }
+
+    public static NameSpaceContext getNameSpaceById(Long nsId) throws Exception {
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder();
+        selectBuilder.select(NamespaceModuleAndFieldFactory.getNSAndFields())
+                .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())
+                .innerJoin(NamespaceModuleAndFieldFactory.getNamespaceFieldsModule().getTableName()).on("Namespace.ID = Namespace_Fields.NAMESPACE_ID")
+                .andCondition(CriteriaAPI.getCondition(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName()+".ID", "id", nsId.toString(), NumberOperators.EQUALS));
+
+        List<Map<String, Object>> maps = selectBuilder.get();
+        if (CollectionUtils.isEmpty(maps)) {
+            return null;
+        }
+
+        NameSpaceContext nsCtx = null;
+
+        for (Map<String, Object> m : maps) {
+
+            if (nsCtx == null) {
+                nsCtx = FieldUtil.getAsBeanFromMap(m, NameSpaceContext.class);
+            }
+
+            NameSpaceField field = FieldUtil.getAsBeanFromMap(m, NameSpaceField.class);
+            nsCtx.addField(field);
+        }
+
+        return nsCtx;
+    }
 
 }

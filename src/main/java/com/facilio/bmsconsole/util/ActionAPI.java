@@ -301,7 +301,7 @@ public class ActionAPI {
 		}
 		return null;
 	}
-	
+
 	public static void deleteAllActionsFromWorkflowRules(List<Long> workflowRuleIds) throws Exception {
 		FacilioModule module = ModuleFactory.getWorkflowRuleActionModule();
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleActionFields();

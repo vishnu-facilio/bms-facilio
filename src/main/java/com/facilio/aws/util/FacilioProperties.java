@@ -1,6 +1,7 @@
 package com.facilio.aws.util;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -128,7 +129,7 @@ public class FacilioProperties {
     private static String senderName;
     private static String mandrillUrl;
     private static String mandrillApiKey;
-    
+
     private static String iamUrl;
     private static String iamDCLookupUrl;
     private static String iamAddDCUserUrl;
@@ -139,7 +140,7 @@ public class FacilioProperties {
     private static String incomingEmailS3Bucket;
     private static String secretManager;
     private static String service;
-    
+
     private static String cloudAgentUrl;
     private static int maxProcessorThreads;
     @Getter
@@ -165,179 +166,178 @@ public class FacilioProperties {
     }
 
     private static void loadProperties() {
-        URL resource = FacilioProperties.class.getClassLoader().getResource(AWS_PROPERTY_FILE);
-        if (resource != null) {
-            try (InputStream stream = resource.openStream()) {
-                PROPERTIES.load(stream);
-                PROPERTIES.forEach((k, v) -> PROPERTIES.put(k.toString().trim(), v.toString().trim()));
-                environment = PROPERTIES.getProperty("environment");
+        File confFilePath = FacilioUtil.getConfFilePath(AWS_PROPERTY_FILE);
+        try (InputStream stream = new FileInputStream(confFilePath)) {
+            PROPERTIES.load(stream);
+            PROPERTIES.forEach((k, v) -> PROPERTIES.put(k.toString().trim(), v.toString().trim()));
+            environment = PROPERTIES.getProperty("environment");
 
-                mailDomain = PROPERTIES.getProperty("mail.domain");
-                if (StringUtils.isEmpty(mailDomain)){
-                    mailDomain = "facilio.com";
-                }
-
-                deployment = PROPERTIES.getProperty("deployment", "facilio");
-                region = PROPERTIES.getProperty("region", "us-west-2");
-                HashMap<String, String> awsSecret = getPassword(environment +"-app.properties");
-                awsSecret.forEach((k,v) -> PROPERTIES.put(k.trim(), v.trim()));
-                productionEnvironment = ("demo".equalsIgnoreCase(environment) || "production".equalsIgnoreCase(environment));
-                developmentEnvironment = "development".equalsIgnoreCase(environment);
-                isOnpremise = "true".equals(PROPERTIES.getProperty("onpremise", "false").trim());
-                securityFilterEnabled = Boolean.parseBoolean(PROPERTIES.getProperty("security.filter", "false").trim());
-                scheduleServer = "true".equals(getConfig("schedulerServer"));
-                messageProcessor = "true".equalsIgnoreCase(PROPERTIES.getProperty("messageProcessor"));
-                maxProcessorThreads = Integer.parseInt(PROPERTIES.getOrDefault("processor.max.threads", 50).toString().trim());
-                userServer = !scheduleServer;
-                db = PROPERTIES.getProperty("db.name");
-                dbClass = PROPERTIES.getProperty("db.class");
-                appDomain = PROPERTIES.getProperty("app.domain");
-                pushNotificationKey = PROPERTIES.getProperty("push.notification.key");
-                portalPushNotificationKey = PROPERTIES.getProperty("portal.push.notification.key");
-                allowedAppDomains = PROPERTIES.getProperty("allowedapp.domains");
-                stageDomains = parseCommaSeparatedProps("stage.domains", PROPERTIES.getProperty("stage.domains"));
-
-                nodejs = PROPERTIES.getProperty("nodejs");
-                isSmtp = "smtp".equalsIgnoreCase(PROPERTIES.getProperty("email.type"));
-                isServicesEnabled="enabled".equalsIgnoreCase(PROPERTIES.getProperty("services.isEnabled"));
-                emailClient = PROPERTIES.getProperty("service.email");
-                fileStore=PROPERTIES.getProperty("service.file.store");
-                anomalyTempDir = PROPERTIES.getProperty("anomalyTempDir", "/tmp");
-                anomalyCheckServiceURL = PROPERTIES.getProperty("anomalyCheckServiceURL", "http://localhost:7444/api");
-                anomalyBucket = PROPERTIES.getProperty("anomalyBucket","facilio-analytics");
-                anomalyBucketDir = PROPERTIES.getProperty("anomalyBucketDir","stage/anomaly");
-                anomalyPeriodicity = PROPERTIES.getProperty("anomalyPeriodicity","30");
-                anomalyRefreshWaitTimeInSeconds = PROPERTIES.getProperty("anomalyRefreshWaitTimeInSeconds","10");
-                anomalyDetectWaitTimeInSeconds = PROPERTIES.getProperty("anomalyDetectWaitTimeInSeconds","3");
-                anomalyPredictAPIURL = PROPERTIES.getProperty("anomalyPredictServiceURL","http://localhost:7444/api");
-                mlModelBuildingApi = PROPERTIES.getProperty("mlModelBuildingApiURL","http://localhost:7444/api/trainingModel");
-                sysLogEnabled = "true".equals(PROPERTIES.getProperty("syslog.enabled", "false"));
-                sentryEnabled = "true".equals(PROPERTIES.getProperty( "sentry.enabled", "false"));
-                userAccessLog = "true".equalsIgnoreCase(PROPERTIES.getProperty("user.access.log", "false"));
-                iotEndPoint = (String) PROPERTIES.get("iot.endpoint");
-                messageReprocessInterval = Long.parseLong(PROPERTIES.getProperty(AgentKeys.MESSAGE_REPROCESS_INTERVAL,"300000"));
-                defaultDataSource = PROPERTIES.getProperty("db.default.ds");
-                defaultDB = PROPERTIES.getProperty("db.default.db");
-                defaultAppDB = PROPERTIES.getProperty("db.default.app.db");
-                defaultAppDBForNewOrg = PROPERTIES.getProperty("db.default.app.db.new.org");
-                queueSource = PROPERTIES.getProperty("mQueue.source");
-                domain = PROPERTIES.getProperty("domain");
-                iotUser = PROPERTIES.getProperty("iot.accessKeyId");
-                iotPassword = PROPERTIES.getProperty("iot.secretKeyId");
-                iotVirtualHost = PROPERTIES.getProperty("iot.virtual.host");
-                iotExchange = PROPERTIES.getProperty("iot.exchange");
-                bridgeUrl = PROPERTIES.getProperty("bridge.url");
-                sentrydsn = PROPERTIES.getProperty("sentry.dsn");
-                sentryslownessdsn = PROPERTIES.getProperty("sentry.slowness.dsn");
-                sentryschedulerdsn=PROPERTIES.getProperty("sentry.scheduler.dsn");
-                pythonAI = PROPERTIES.getProperty("pythonai.url");
-                pythonPath = PROPERTIES.getProperty("pythonPath");
-                facilioResponse = "true".equals(PROPERTIES.get("response.size"));
-
-                mainAppDomain = PROPERTIES.getProperty("mainapp.domain");
-                tenantAppDomain = PROPERTIES.getProperty("tenantportal.domain");
-                clientAppDomain = PROPERTIES.getProperty("clientportal.domain");
-                vendorAppDomain = PROPERTIES.getProperty("vendorportal.domain");
-                occupantAppDomain = PROPERTIES.getProperty("occupantportal.domain");
-
-                mobileMainAppScheme = PROPERTIES.getProperty("mobile.mainapp.scheme");
-                mobileServiceportalAppScheme = PROPERTIES.getProperty("mobile.serviceportal.scheme");
-                mobileTenantportalAppScheme = PROPERTIES.getProperty("mobile.tenantportal.scheme");
-                mobileVendorportalAppScheme = PROPERTIES.getProperty("mobile.vendorportal.scheme");
-                mobileClientportalAppScheme = PROPERTIES.getProperty("mobile.clientportal.scheme");
-                workQAppScheme = PROPERTIES.getProperty("mobile.workQ.scheme", "workq");
-
-                senderEmail = PROPERTIES.getProperty("sender.email");
-                senderName = PROPERTIES.getProperty("sender.name");
-                mandrillUrl = PROPERTIES.getProperty("mandrill.url");
-                mandrillApiKey = PROPERTIES.getProperty("mandrill.apikey");
-                
-                iamUrl = PROPERTIES.getProperty("iam.url", "app.facilio.com");
-                iamDCLookupUrl = getIAMURL() + PROPERTIES.getProperty("iam.dc.lookupurl", "/api/v3/internal/dc/lookup");
-                iamAddDCUserUrl = getIAMURL() + PROPERTIES.getProperty("iam.dc.addurl", "/api/v3/internal/dc/add");
-
-                accessLog = "true".equalsIgnoreCase(PROPERTIES.getProperty("facilio.access.log", "false"));
-
-                passwordHashingFunction = PROPERTIES.getProperty("password.hashing.function");
-                incomingEmailS3Bucket = PROPERTIES.getProperty("incoming.email.s3.name");
-                secretManager = PROPERTIES.getProperty("secretmanger");
-                iamregion = PROPERTIES.getProperty("iamregion");
-                
-                cloudAgentUrl = PROPERTIES.getProperty("agent.cloud.url", "facilioagent.com");
-
-                service = PROPERTIES.getProperty("service");
-                developerAppDomain = PROPERTIES.getProperty("facilioapisdomain", "facilioapis.com");
-                hydraUrl = PROPERTIES.getProperty("hydraUrl");
-
-                String cookieLifespanProp = PROPERTIES.getProperty("token.cookie.lifespan");
-                if (StringUtils.isNotEmpty(cookieLifespanProp)) {
-                    try {
-                        int timeout = Integer.parseInt(cookieLifespanProp);
-                        if (timeout > 0) {
-                            authTokenCookieLifespan = timeout * 60;
-                        }
-                        else {
-                            LOGGER.info(MessageFormat.format("Negative value ({0}) for 'user.token.timeout'. So using default timeout ({1})", timeout, authTokenCookieLifespan));
-                        }
-                    }
-                    catch (NumberFormatException e) {
-                        LOGGER.info(MessageFormat.format("Exception while parsing 'user.token.timeout' with value : {0}. So using default timeout ({1})",cookieLifespanProp, authTokenCookieLifespan));
-                    }
-                }
-                String responseThreshold = PROPERTIES.getProperty("response.size.threshold");
-                if (StringUtils.isNotEmpty(responseThreshold)) {
-                    try {
-                        long threshold = Long.parseLong(responseThreshold);
-                        if (threshold > 0) {
-                            responseSizeThreshold = threshold;
-                        }
-                        else {
-                            LOGGER.error(MessageFormat.format("Negative value ({0}) for 'response.size.threshold'. So using default timeout ({1})", responseThreshold, responseSizeThreshold));
-                        }
-                    }
-                    catch (NumberFormatException e) {
-                        LOGGER.error(MessageFormat.format("Exception while parsing 'response.size.threshold' with value : {0}. So using default timeout ({1})",responseThreshold, responseSizeThreshold), e);
-                    }
-                }
-                String whiteListedUrls = PROPERTIES.getProperty("response.size.threshold.whitelist");
-                thresholdWhiteListedUrls = parseCommaSeparatedProps("response.size.threshold.whitelist", whiteListedUrls);
-                esDomain = PROPERTIES.getProperty("es.domain");
-                esIndex = PROPERTIES.getProperty("es.index");
-
-                wmsBroadcaster = PROPERTIES.getProperty("wms.broadcaster");
-
-                if(PROPERTIES.containsKey("iot.endpoint.port")) {
-                    try {
-                        iotEndPointPort = Integer.parseInt(PROPERTIES.getProperty("iot.endpoint.port"));
-                    } catch (NumberFormatException e) {
-                        LOGGER.info("Exception while parsing iot.endpoint.port, " + PROPERTIES.getProperty("iot.endpoint.port"));
-                    }
-                }
-
-                localFileStorePath = PROPERTIES.getProperty("files.localFileStore.path");
-                clientVersion = PROPERTIES.getProperty("client.version");
-                PROPERTIES.put("clientapp.url", getClientAppUrl());
-                URL resourceDir = AwsUtil.class.getClassLoader().getResource("");
-                if(resourceDir != null) {
-                    File file = new File(resourceDir.getPath());
-                    if (file.getParentFile() != null) {
-                        pdfjs = file.getParentFile().getParentFile().getAbsolutePath() + "/js";
-                    }
-                }
-
-                String db = PROPERTIES.getProperty("db.identifiers");
-                if(db != null) {
-                    String[] dbNames = db.split(",");
-                    for(String dbName : dbNames) {
-                        String identifier = dbName.trim();
-                        dbIdentifiers.add(identifier);
-                    }
-                }
-                LOGGER.info(getIotEndPoint() + "iot endpoint");
-            } catch (IOException e) {
-                LOGGER.info("Exception while trying to load property file " + AWS_PROPERTY_FILE);
+            mailDomain = PROPERTIES.getProperty("mail.domain");
+            if (StringUtils.isEmpty(mailDomain)) {
+                mailDomain = "facilio.com";
             }
+
+            deployment = PROPERTIES.getProperty("deployment", "facilio");
+            region = PROPERTIES.getProperty("region", "us-west-2");
+            HashMap<String, String> awsSecret = getPassword(environment + "-app.properties");
+            awsSecret.forEach((k, v) -> PROPERTIES.put(k.trim(), v.trim()));
+            productionEnvironment = ("demo".equalsIgnoreCase(environment) || "production".equalsIgnoreCase(environment));
+            developmentEnvironment = "development".equalsIgnoreCase(environment);
+            isOnpremise = "true".equals(PROPERTIES.getProperty("onpremise", "false").trim());
+            securityFilterEnabled = Boolean.parseBoolean(PROPERTIES.getProperty("security.filter", "false").trim());
+            scheduleServer = "true".equals(getConfig("schedulerServer"));
+            messageProcessor = "true".equalsIgnoreCase(PROPERTIES.getProperty("messageProcessor"));
+            maxProcessorThreads = Integer.parseInt(PROPERTIES.getOrDefault("processor.max.threads", 50).toString().trim());
+            userServer = !scheduleServer;
+            db = PROPERTIES.getProperty("db.name");
+            dbClass = PROPERTIES.getProperty("db.class");
+            appDomain = PROPERTIES.getProperty("app.domain");
+            pushNotificationKey = PROPERTIES.getProperty("push.notification.key");
+            portalPushNotificationKey = PROPERTIES.getProperty("portal.push.notification.key");
+            allowedAppDomains = PROPERTIES.getProperty("allowedapp.domains");
+            stageDomains = parseCommaSeparatedProps("stage.domains", PROPERTIES.getProperty("stage.domains"));
+
+            nodejs = PROPERTIES.getProperty("nodejs");
+            isSmtp = "smtp".equalsIgnoreCase(PROPERTIES.getProperty("email.type"));
+            isServicesEnabled = "enabled".equalsIgnoreCase(PROPERTIES.getProperty("services.isEnabled"));
+            emailClient = PROPERTIES.getProperty("service.email");
+            fileStore = PROPERTIES.getProperty("service.file.store");
+            anomalyTempDir = PROPERTIES.getProperty("anomalyTempDir", "/tmp");
+            anomalyCheckServiceURL = PROPERTIES.getProperty("anomalyCheckServiceURL", "http://localhost:7444/api");
+            anomalyBucket = PROPERTIES.getProperty("anomalyBucket", "facilio-analytics");
+            anomalyBucketDir = PROPERTIES.getProperty("anomalyBucketDir", "stage/anomaly");
+            anomalyPeriodicity = PROPERTIES.getProperty("anomalyPeriodicity", "30");
+            anomalyRefreshWaitTimeInSeconds = PROPERTIES.getProperty("anomalyRefreshWaitTimeInSeconds", "10");
+            anomalyDetectWaitTimeInSeconds = PROPERTIES.getProperty("anomalyDetectWaitTimeInSeconds", "3");
+            anomalyPredictAPIURL = PROPERTIES.getProperty("anomalyPredictServiceURL", "http://localhost:7444/api");
+            mlModelBuildingApi = PROPERTIES.getProperty("mlModelBuildingApiURL", "http://localhost:7444/api/trainingModel");
+            sysLogEnabled = "true".equals(PROPERTIES.getProperty("syslog.enabled", "false"));
+            sentryEnabled = "true".equals(PROPERTIES.getProperty("sentry.enabled", "false"));
+            userAccessLog = "true".equalsIgnoreCase(PROPERTIES.getProperty("user.access.log", "false"));
+            iotEndPoint = (String) PROPERTIES.get("iot.endpoint");
+            messageReprocessInterval = Long.parseLong(PROPERTIES.getProperty(AgentKeys.MESSAGE_REPROCESS_INTERVAL, "300000"));
+            defaultDataSource = PROPERTIES.getProperty("db.default.ds");
+            defaultDB = PROPERTIES.getProperty("db.default.db");
+            defaultAppDB = PROPERTIES.getProperty("db.default.app.db");
+            defaultAppDBForNewOrg = PROPERTIES.getProperty("db.default.app.db.new.org");
+            queueSource = PROPERTIES.getProperty("mQueue.source");
+            domain = PROPERTIES.getProperty("domain");
+            iotUser = PROPERTIES.getProperty("iot.accessKeyId");
+            iotPassword = PROPERTIES.getProperty("iot.secretKeyId");
+            iotVirtualHost = PROPERTIES.getProperty("iot.virtual.host");
+            iotExchange = PROPERTIES.getProperty("iot.exchange");
+            bridgeUrl = PROPERTIES.getProperty("bridge.url");
+            sentrydsn = PROPERTIES.getProperty("sentry.dsn");
+            sentryslownessdsn = PROPERTIES.getProperty("sentry.slowness.dsn");
+            sentryschedulerdsn = PROPERTIES.getProperty("sentry.scheduler.dsn");
+            pythonAI = PROPERTIES.getProperty("pythonai.url");
+            pythonPath = PROPERTIES.getProperty("pythonPath");
+            facilioResponse = "true".equals(PROPERTIES.get("response.size"));
+
+            mainAppDomain = PROPERTIES.getProperty("mainapp.domain");
+            tenantAppDomain = PROPERTIES.getProperty("tenantportal.domain");
+            clientAppDomain = PROPERTIES.getProperty("clientportal.domain");
+            vendorAppDomain = PROPERTIES.getProperty("vendorportal.domain");
+            occupantAppDomain = PROPERTIES.getProperty("occupantportal.domain");
+
+            mobileMainAppScheme = PROPERTIES.getProperty("mobile.mainapp.scheme");
+            mobileServiceportalAppScheme = PROPERTIES.getProperty("mobile.serviceportal.scheme");
+            mobileTenantportalAppScheme = PROPERTIES.getProperty("mobile.tenantportal.scheme");
+            mobileVendorportalAppScheme = PROPERTIES.getProperty("mobile.vendorportal.scheme");
+            mobileClientportalAppScheme = PROPERTIES.getProperty("mobile.clientportal.scheme");
+            workQAppScheme = PROPERTIES.getProperty("mobile.workQ.scheme", "workq");
+
+            senderEmail = PROPERTIES.getProperty("sender.email");
+            senderName = PROPERTIES.getProperty("sender.name");
+            mandrillUrl = PROPERTIES.getProperty("mandrill.url");
+            mandrillApiKey = PROPERTIES.getProperty("mandrill.apikey");
+
+            iamUrl = PROPERTIES.getProperty("iam.url", "app.facilio.com");
+            iamDCLookupUrl = getIAMURL() + PROPERTIES.getProperty("iam.dc.lookupurl", "/api/v3/internal/dc/lookup");
+            iamAddDCUserUrl = getIAMURL() + PROPERTIES.getProperty("iam.dc.addurl", "/api/v3/internal/dc/add");
+
+            accessLog = "true".equalsIgnoreCase(PROPERTIES.getProperty("facilio.access.log", "false"));
+
+            passwordHashingFunction = PROPERTIES.getProperty("password.hashing.function");
+            incomingEmailS3Bucket = PROPERTIES.getProperty("incoming.email.s3.name");
+            secretManager = PROPERTIES.getProperty("secretmanger");
+            iamregion = PROPERTIES.getProperty("iamregion");
+
+            cloudAgentUrl = PROPERTIES.getProperty("agent.cloud.url", "facilioagent.com");
+
+            service = PROPERTIES.getProperty("service");
+            developerAppDomain = PROPERTIES.getProperty("facilioapisdomain", "facilioapis.com");
+            hydraUrl = PROPERTIES.getProperty("hydraUrl");
+
+            String cookieLifespanProp = PROPERTIES.getProperty("token.cookie.lifespan");
+            if (StringUtils.isNotEmpty(cookieLifespanProp)) {
+                try {
+                    int timeout = Integer.parseInt(cookieLifespanProp);
+                    if (timeout > 0) {
+                        authTokenCookieLifespan = timeout * 60;
+                        }
+                        else {
+                        LOGGER.info(MessageFormat.format("Negative value ({0}) for 'user.token.timeout'. So using default timeout ({1})", timeout, authTokenCookieLifespan));
+                    }
+                    }
+                    catch (NumberFormatException e) {
+                    LOGGER.info(MessageFormat.format("Exception while parsing 'user.token.timeout' with value : {0}. So using default timeout ({1})", cookieLifespanProp, authTokenCookieLifespan));
+                }
+            }
+            String responseThreshold = PROPERTIES.getProperty("response.size.threshold");
+            if (StringUtils.isNotEmpty(responseThreshold)) {
+                try {
+                    long threshold = Long.parseLong(responseThreshold);
+                    if (threshold > 0) {
+                        responseSizeThreshold = threshold;
+                        }
+                        else {
+                        LOGGER.error(MessageFormat.format("Negative value ({0}) for 'response.size.threshold'. So using default timeout ({1})", responseThreshold, responseSizeThreshold));
+                    }
+                    }
+                    catch (NumberFormatException e) {
+                    LOGGER.error(MessageFormat.format("Exception while parsing 'response.size.threshold' with value : {0}. So using default timeout ({1})", responseThreshold, responseSizeThreshold), e);
+                }
+            }
+            String whiteListedUrls = PROPERTIES.getProperty("response.size.threshold.whitelist");
+            thresholdWhiteListedUrls = parseCommaSeparatedProps("response.size.threshold.whitelist", whiteListedUrls);
+            esDomain = PROPERTIES.getProperty("es.domain");
+            esIndex = PROPERTIES.getProperty("es.index");
+
+            wmsBroadcaster = PROPERTIES.getProperty("wms.broadcaster");
+
+            if (PROPERTIES.containsKey("iot.endpoint.port")) {
+                try {
+                    iotEndPointPort = Integer.parseInt(PROPERTIES.getProperty("iot.endpoint.port"));
+                } catch (NumberFormatException e) {
+                    LOGGER.info("Exception while parsing iot.endpoint.port, " + PROPERTIES.getProperty("iot.endpoint.port"));
+                }
+            }
+
+            localFileStorePath = PROPERTIES.getProperty("files.localFileStore.path");
+            clientVersion = PROPERTIES.getProperty("client.version");
+            PROPERTIES.put("clientapp.url", getClientAppUrl());
+            URL resourceDir = AwsUtil.class.getClassLoader().getResource("");
+            if (resourceDir != null) {
+                File file = new File(resourceDir.getPath());
+                if (file.getParentFile() != null) {
+                    pdfjs = file.getParentFile().getParentFile().getAbsolutePath() + "/js";
+                }
+            }
+
+            String db = PROPERTIES.getProperty("db.identifiers");
+            if (db != null) {
+                String[] dbNames = db.split(",");
+                for (String dbName : dbNames) {
+                    String identifier = dbName.trim();
+                    dbIdentifiers.add(identifier);
+                }
+            }
+            LOGGER.info(getIotEndPoint() + "iot endpoint");
+        } catch (IOException e) {
+            LOGGER.info("Exception while trying to load property file " + AWS_PROPERTY_FILE);
         }
+
     }
 
     public static String getIamregion() { return iamregion; }
@@ -393,7 +393,7 @@ public class FacilioProperties {
                 .append(appDomain);
         return builder.toString();
     }
-    
+
     public static String getAllowedAppDomains() {
         return allowedAppDomains;
     }
@@ -411,10 +411,10 @@ public class FacilioProperties {
     }
 
     public static String getNodeJSLocation() {
-    	if (nodejs != null && !nodejs.trim().isEmpty()) {
-    		return nodejs;
-    	}
-    	return "/usr/bin/node";
+        if (nodejs != null && !nodejs.trim().isEmpty()) {
+            return nodejs;
+        }
+        return "/usr/bin/node";
     }
 
     public static boolean isSmtp() {
@@ -456,9 +456,9 @@ public class FacilioProperties {
     public static String getAnomalyPredictAPIURL() {
         return anomalyPredictAPIURL;
     }
-    
+
     public static String getMlModelBuildingApi() {
-    	return mlModelBuildingApi;
+        return mlModelBuildingApi;
     }
 
     public static boolean isSysLogEnabled() {
@@ -562,7 +562,7 @@ public class FacilioProperties {
 
     private static Map<String, String> getSecretFromFile(String secretKey) {
         HashMap<String, String> secret = new HashMap<>();
-        if("db".equals(secretKey)) {
+        if ("db".equals(secretKey)) {
             secret.put("host", PROPERTIES.getProperty("db.host"));
             secret.put("port", PROPERTIES.getProperty("db.port"));
             secret.put("username", PROPERTIES.getProperty("db.username"));
@@ -588,8 +588,8 @@ public class FacilioProperties {
             ObjectMapper objectMapper = new ObjectMapper();
             try {
                 secretMap.putAll(objectMapper.readValue(secretBinaryString, HashMap.class));
-                String connections = FacilioProperties.getConfig(secretKey+".connections");
-                if(connections != null) {
+                String connections = FacilioProperties.getConfig(secretKey + ".connections");
+                if (connections != null) {
                     secretMap.put("maxConnections", connections);
                 }
             } catch (IOException e) {
@@ -630,11 +630,11 @@ public class FacilioProperties {
     public static String getSentryslownessdsn() {return sentryslownessdsn;}
 
     public static String getSentryschedulerdsn() {return sentryschedulerdsn;}
-    
+
     public static String getPythonAI() {
         return pythonAI;
     }
-    
+
     public static String getPythonPath() {
         return pythonPath;
     }
@@ -759,14 +759,14 @@ public class FacilioProperties {
         return mandrillApiKey;
     }
 
-    public static boolean isAccessLogEnable(){
+    public static boolean isAccessLogEnable() {
         return accessLog;
     }
 
     public static String getIAMURL() {
-    		if (developmentEnvironment) {
-    			return getAppDomain();
-    		}
+        if (developmentEnvironment) {
+            return getAppDomain();
+        }
         return iamUrl;
     }
     public static String getIAMDCLookupURL() {
@@ -776,19 +776,19 @@ public class FacilioProperties {
         return iamAddDCUserUrl;
     }
 
-	public static String getPasswordHashingFunction() {
-		return passwordHashingFunction;
-	}
-	public static String getIncomingEmailS3Bucket() {
+    public static String getPasswordHashingFunction() {
+        return passwordHashingFunction;
+    }
+    public static String getIncomingEmailS3Bucket() {
         return incomingEmailS3Bucket;
     }
-	
+
     public static long getBuildNumber() {
-        Properties buildInfo = (Properties)ServletActionContext.getServletContext().getAttribute("buildinfo");
+        Properties buildInfo = (Properties) ServletActionContext.getServletContext().getAttribute("buildinfo");
         return Long.parseLong(buildInfo.getProperty("build.number")); // Shouldn't be null
     }
 
-	public static boolean isInstantJobServer(){
+    public static boolean isInstantJobServer() {
         return Boolean.parseBoolean(getConfig("instantJobServer"));
     }
 
