@@ -13,6 +13,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
@@ -23,6 +24,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.taskengine.job.FacilioJob;
 import com.facilio.taskengine.job.JobContext;
+import com.facilio.workflowlog.context.WorkflowLogContext;
 import com.facilio.workflows.command.SchedulerAPI;
 import com.facilio.workflows.context.ScheduledWorkflowContext;
 
@@ -44,6 +46,8 @@ public class ScheduledWorkflowJob extends FacilioJob{
 				if (CollectionUtils.isNotEmpty(actions)) {
 					for (ActionContext action : actions) {
 						FacilioContext context = new FacilioContext();
+						context.put(FacilioConstants.Workflow.WORKFLOW_LOG_PARENT_ID, scheduledWorkflowContext.getId());
+						context.put(FacilioConstants.Workflow.WORKFLOW_LOG_PARENT_TYPE, WorkflowLogContext.WorkflowLogType.SCHEDULER);
 						action.executeAction(null, context, null, null);
 					}
 				}

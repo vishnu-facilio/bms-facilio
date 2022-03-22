@@ -125,12 +125,12 @@ public class WorkflowContext extends ScriptContext{
 	Map<String,Object> globalParameters;
 	List<Object> params;
 	
-	long resourceId;
-	public long getResourceId() {
-		return resourceId;
+	long recordId;
+	public long getRecordId() {
+		return recordId;
 	}
-	public void setResourceId(long resourceId) {
-		this.resourceId = resourceId;
+	public void setRecordId(long recordId) {
+		this.recordId = recordId;
 	}
 
 	long parentId;

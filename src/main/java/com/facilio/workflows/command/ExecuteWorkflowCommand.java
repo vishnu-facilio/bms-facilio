@@ -5,8 +5,10 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 
-import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.workflowlog.context.WorkflowLogContext.WorkflowLogType;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
@@ -44,6 +46,18 @@ public class ExecuteWorkflowCommand extends FacilioCommand {
 		
 		if(context.containsKey("ignoreNullExpressions")) {
 			workflowContext.setIgnoreNullParams((boolean) context.get("ignoreNullExpressions"));		// check and remove
+		}
+		
+		if(context.get(FacilioConstants.Workflow.WORKFLOW_LOG_PARENT_ID) != null) {
+			workflowContext.setParentId((long)context.get(FacilioConstants.Workflow.WORKFLOW_LOG_PARENT_ID));
+		}
+		
+		if(context.get(FacilioConstants.Workflow.WORKFLOW_LOG_RECORD_ID) != null) {
+			workflowContext.setRecordId((long)context.get(FacilioConstants.Workflow.WORKFLOW_LOG_RECORD_ID));
+		}
+		
+		if(context.get(FacilioConstants.Workflow.WORKFLOW_LOG_PARENT_TYPE) != null) {
+			workflowContext.setLogType((WorkflowLogType)context.get(FacilioConstants.Workflow.WORKFLOW_LOG_PARENT_TYPE));
 		}
 	}
 }

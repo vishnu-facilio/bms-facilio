@@ -55,7 +55,9 @@ public class WorkflowLogContext extends V3Context {
 	}
 	
 	public enum WorkflowLogType implements FacilioIntEnum{
-		FORMULA(1);
+		FORMULA(1),
+		SCHEDULER(2),
+		;
 		
 		WorkflowLogType(int i) {
 			this.typeId = i;

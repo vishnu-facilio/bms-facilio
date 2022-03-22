@@ -2768,8 +2768,14 @@ public class FacilioConstants {
 		
 		public static final String WORKFLOW = "workflow";
 		public static final String WORKFLOW_LIST = "workflows";
+
 		public static final String WORKFLOW_LOG = "workflowLog";
 		public static final String WORKFLOW_LOG_TABLENAME = "Workflow_Log";
+		
+		public static final String WORKFLOW_LOG_PARENT_ID = "workflowLogParentId";
+		public static final String WORKFLOW_LOG_PARENT_TYPE = "workflowLogRecordType";
+		public static final String WORKFLOW_LOG_RECORD_ID = "workflowLogRecordId";
+
 	}
 	public static class WorkOrder{
 		public static final String TABLE_NAME = "Workorders";

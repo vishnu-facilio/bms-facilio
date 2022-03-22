@@ -405,7 +405,7 @@ public class WorkflowUtil {
 	}
 	
 	
-	private static Object getWorkflowResult(WorkflowContext workflowContext,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked, boolean isVariableMapNeeded, long parentId, long resourceId,WorkflowLogType logtype) throws Exception {
+	private static Object getWorkflowResult(WorkflowContext workflowContext,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked, boolean isVariableMapNeeded, long parentId, long recordId,WorkflowLogType logtype) throws Exception {
 
 		if(!workflowContext.isV2Script()) {
 			workflowContext = getWorkflowContextFromString(workflowContext.getWorkflowString(),workflowContext);
@@ -428,7 +428,7 @@ public class WorkflowUtil {
 		workflowContext.setGlobalParameters(globalParameters);
 		workflowContext.setCachedRDM(rdmCache);
 		workflowContext.setIgnoreMarkedReadings(ignoreMarked);
-		workflowContext.setResourceId(resourceId);
+		workflowContext.setRecordId(recordId);
 		workflowContext.setParentId(parentId);
 		workflowContext.setLogType(logtype);
 		
@@ -2591,7 +2591,7 @@ public class WorkflowUtil {
         	
         	WorkflowLogContext workflowlogcontext = new WorkflowLogContext();
         	workflowlogcontext.setOrgId(orgId);
-        	workflowlogcontext.setRecordId(workflowContext.getResourceId());
+        	workflowlogcontext.setRecordId(workflowContext.getRecordId());
         	workflowlogcontext.setParentId(workflowContext.getParentId());
         	workflowlogcontext.setWorkflowId(workflowContext.getId());
         	workflowlogcontext.setException(exception);
