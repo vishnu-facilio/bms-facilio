@@ -33,4 +33,12 @@ public class QueueingServiceBeanImpl implements QueueingServiceBean {
 				LOGGER.info(e);
 			}
 	}
+
+	@Override
+	public void addScriptLog(Map<String, Object> record) throws Exception {
+		// TODO Auto-generated method stub
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.Workflow.WORKFLOW_LOG);
+		V3Util.createRecord(module, record);
+	}
 }

@@ -79,6 +79,7 @@ import com.facilio.util.FacilioUtil;
 import com.facilio.wmsv2.constants.Topics;
 import com.facilio.wmsv2.endpoint.SessionManager;
 import com.facilio.wmsv2.handler.AuditLogHandler;
+import com.facilio.wmsv2.handler.ScriptLogHander;
 import com.facilio.wmsv2.message.Message;
 import com.facilio.workflowlog.context.WorkflowLogContext;
 import com.facilio.workflowlog.context.WorkflowLogContext.WorkflowLogStatus;
@@ -2602,8 +2603,11 @@ public class WorkflowUtil {
         		
         	JSONObject json= FieldUtil.getAsJSON(workflowlogcontext);
         	
-//        	MessageQueue mq = MessageQueueFactory.getMessageQueue(MessageSourceUtil.getDefaultSource());
-//        	mq.putRecord(ScriptLogHandlerQueueingService.TOPIC, workflowContext.getOrgId()+"_"+workflowContext.getId(), json);
+        	 SessionManager.getInstance().sendMessage(new Message()
+                     .setTopic(ScriptLogHander.TOPIC)
+                     .setOrgId(orgId)
+                     .setContent(json)
+             );
         }
     }
 }
