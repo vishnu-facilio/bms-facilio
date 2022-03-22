@@ -62,7 +62,7 @@ public class DeleteWorkorderToolCommand extends FacilioCommand {
 
 						List<AssetContext> purchasedTools = selectBuilder.get();
 
-						if (purchasedTools != null && !purchasedTools.isEmpty() && workordertool.getTransactionStateEnum() != TransactionState.USE) {
+						if (purchasedTools != null && !purchasedTools.isEmpty() && workordertool.getTransactionStateEnum() == TransactionState.USE) {
 							AssetContext purchasedTool = purchasedTools.get(0);
 							purchasedTool.setIsUsed(false);
 							updateAsset(purchasedTool, module, fields);
