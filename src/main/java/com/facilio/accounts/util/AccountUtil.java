@@ -391,7 +391,8 @@ public class AccountUtil {
 
 	private static Map<String, FeatureLicense> moduleVsLicense;
 	
-	public enum LicenseMapping {
+	public enum LicenseMapping
+	{
 		GROUP1LICENSE(1,FacilioConstants.LicenseKeys.LICENSE1),
 		GROUP2LICENSE(2,FacilioConstants.LicenseKeys.LICENSE2);
 		
@@ -488,6 +489,7 @@ public class AccountUtil {
     	SURVEY(64,1,LicenseMapping.GROUP2LICENSE),
     	GOOGLE_TRANSLATION(65,2,LicenseMapping.GROUP2LICENSE),
 		READING_LIVE_UPDATE(66,4,LicenseMapping.GROUP2LICENSE),
+		RESOURCE_SCHEDULER(68,16,LicenseMapping.GROUP2LICENSE),
 		;
 
     	public int featureId;
@@ -675,7 +677,7 @@ public class AccountUtil {
 
 	public static Boolean applyDBScoping(FacilioModule module) {
     	try {
-			if (AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) && AccountUtil.getCurrentApp() != null && (!AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP) || (AccountUtil.getCurrentOrg().getOrgId() == 583l && module.getName().equals("storeRoom")) || (AccountUtil.getCurrentOrg().getOrgId() == 28l && module.getName().equals("vendors")) || (AccountUtil.getCurrentOrg().getOrgId() == 183l && module.getName().equals("storeRoom")) || (AccountUtil.getCurrentOrg().getOrgId() == 274l && (module.getName().equals(FacilioConstants.ContextNames.PURCHASE_ORDER) || module.getName().equals(FacilioConstants.ContextNames.PURCHASE_REQUEST)|| module.getName().equals(ContextNames.RECEIVABLE))) || module.getName().equals(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME) || module.getName().equals(FacilioConstants.Inspection.INSPECTION_TEMPLATE) ||  module.getName().equals(FacilioConstants.Induction.INDUCTION_TEMPLATE) || module.getName().equals(FacilioConstants.Survey.SURVEY_TEMPLATE) ||
+			if (AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) && AccountUtil.getCurrentApp() != null && (!AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP) || (AccountUtil.getCurrentOrg().getOrgId() == 398l && module.getName().equals("custom_client")) || (AccountUtil.getCurrentOrg().getOrgId() == 583l && (module.getName().equals("storeRoom") || module.getName().equals("item") || module.getName().equals("tool"))) || (AccountUtil.getCurrentOrg().getOrgId() == 28l && module.getName().equals("vendors")) || (AccountUtil.getCurrentOrg().getOrgId() == 183l && (module.getName().equals("storeRoom") || module.getName().equals("item") || module.getName().equals("tool"))) || (AccountUtil.getCurrentOrg().getOrgId() == 274l && (module.getName().equals(FacilioConstants.ContextNames.PURCHASE_ORDER) || module.getName().equals(FacilioConstants.ContextNames.PURCHASE_REQUEST)|| module.getName().equals(ContextNames.RECEIVABLE))) || module.getName().equals(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME) || module.getName().equals(FacilioConstants.Inspection.INSPECTION_TEMPLATE) ||  module.getName().equals(FacilioConstants.Induction.INDUCTION_TEMPLATE) || module.getName().equals(FacilioConstants.Survey.SURVEY_TEMPLATE) ||
 					(AccountUtil.getCurrentOrg().getOrgId() == 418l && (module.getName().equals(ContextNames.VENDORS) || module.getName().equals(ContextNames.VISITOR_LOG) || module.getName().equals(ContextNames.INVITE_VISITOR) || module.getName().equals(ContextNames.BASE_VISIT)  || module.getName().equals("custom_vendormapping") || module.getName().equals("custom_utilityaccounts") || module.getName().equals("custom_utilityconnections") || module.getName().equals("custom_utilitybill") || module.getName().equals("custom_utilitybilllineitems") || module.getName().equals("custom_incidentmanagement_1") || module.getName().equals("custom_quoteselectionform")  || module.getName().equals("custom_supplierquotation") || module.getName().equals("custom_supplierquote") || module.getName().equals(ContextNames.VENDOR_CONTACT))))) {
 				return true;
 			}

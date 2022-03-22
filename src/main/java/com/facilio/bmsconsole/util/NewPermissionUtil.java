@@ -294,6 +294,13 @@ public class NewPermissionUtil {
 
         permissions = new ArrayList<>();
         permissionMap = new HashMap<>();
+        permissions.add(new Permission("READ", "Read", customTabType.get("READ"), null));
+        permissions.add(new Permission("UPDATE", "Update", customTabType.get("UPDATE"), null));
+        permissionMap.put("*", permissions);
+        permissionList.put(Type.TIMELINE.getIndex(), permissionMap);
+
+        permissions = new ArrayList<>();
+        permissionMap = new HashMap<>();
         permissions.add(new Permission("VIEW", "View", appTabType.get("VIEW"), null));
         permissionMap.put("*", permissions);
         permissionList.put(Type.APPS.getIndex(), permissionMap);

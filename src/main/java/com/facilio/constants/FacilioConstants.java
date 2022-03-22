@@ -2011,6 +2011,7 @@ public class FacilioConstants {
 			public static final String PEOPLE_LIST = "In People List Based on Current User";
 			public static final String PEOPLE = "Is Current People";
 			public static final String SITE = "In Current User Sites";
+			public static final String STOREROOM = "In Current User Storerooms";
 			public static final String TENANT = "Is Current Tenant";
 			public static final String USER = "Is Current User";
 			public static final String CONTAINS_USER = "Contains Current User";

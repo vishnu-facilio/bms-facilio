@@ -26,6 +26,8 @@ import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.accounts.sso.SSOUtil;
 import com.facilio.auth.actions.PasswordHashUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.bmsconsole.context.APIClient;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.db.util.DBConf;
 import com.facilio.iam.accounts.context.SecurityPolicy;
@@ -73,6 +75,7 @@ import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
+import sh.ory.hydra.model.OAuth2Client;
 
 import static com.facilio.constants.FacilioConstants.INVITATION_EXPIRY_DAYS;
 
@@ -1870,10 +1873,64 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return -1;
 	}
 
+	public List<APIClient> getApiClientList(long orgId, long userId) throws Exception {
+		Map<String, FacilioField> asMap = FieldFactory.getAsMap(IAMAccountConstants.getDevClientFields());
+		List<FacilioField> fields = Arrays.asList(asMap.get("id"), asMap.get("authType"), asMap.get("name"), asMap.get("oauth2ClientId"), asMap.get("createdTime"));
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder();
+		selectBuilder.select(fields)
+				.table(IAMAccountConstants.getDevClientModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("USERID", "uid", userId+"", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", orgId+"", NumberOperators.EQUALS));
+		List<Map<String, Object>> props = selectBuilder.get();
+
+		if (CollectionUtils.isEmpty(props)) {
+			return Collections.emptyList();
+		}
+
+		return FieldUtil.getAsBeanListFromMapList(props, APIClient.class);
+	}
+
 	private static int OAUTH2  = 1;
 	private static int APIKEY  = 2;
 
-	public String createApiKey(long orgId, long userId) throws Exception {
+	public void deleteApiClient(long orgId, long userId, long id) throws Exception {
+		Map<String, FacilioField> asMap = FieldFactory.getAsMap(IAMAccountConstants.getDevClientFields());
+
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(IAMAccountConstants.getDevClientModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(asMap.get("id"), id+"", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(asMap.get("orgId"), orgId+"", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(asMap.get("uid"), userId+"", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getIdCondition(id, IAMAccountConstants.getDevClientModule()));
+		builder.delete();
+	}
+
+	public Map<String, String> createOauth2Client(long orgId, long userId, String name) throws Exception {
+		OAuth2Client client = new HydraClient().createClient(name);
+
+		GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder();
+		insertRecordBuilder.table(IAMAccountConstants.getDevClientModule().getTableName())
+				.fields(IAMAccountConstants.getDevClientFields());
+
+		Map<String, Object> prop = new HashMap<>();
+		prop.put("orgId", orgId);
+		prop.put("uid", userId);
+		prop.put("authType", OAUTH2);
+		prop.put("createdTime", System.currentTimeMillis());
+		prop.put("name", name);
+		prop.put("oauth2ClientId", client.getClientId());
+
+		insertRecordBuilder.addRecord(prop);
+		insertRecordBuilder.save();
+
+		Map<String, String> res = new HashMap<>();
+		res.put("token", client.getClientSecret());
+		res.put("clientId", client.getClientId());
+
+		return res;
+	}
+
+	public String createApiKey(long orgId, long userId, String name) throws Exception {
 		GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder();
 		insertRecordBuilder.table(IAMAccountConstants.getDevClientModule().getTableName())
 				.fields(IAMAccountConstants.getDevClientFields());
@@ -1883,7 +1940,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		prop.put("uid", userId);
 		prop.put("authType", APIKEY);
 		prop.put("createdTime", System.currentTimeMillis());
-
+		prop.put("name", name);
 		KeyGenerator keyGen = KeyGenerator.getInstance("AES");
 		keyGen.init(256); // for example
 		SecretKey secretKey = keyGen.generateKey();
@@ -2469,7 +2526,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		if(orgId != null && orgId > 0){
 			criteria.addAndCondition(CriteriaAPI.getCondition("App_Domain.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		}
-		if(domainType == 1) {
+		if(domainType == 1 || domainType == 6) {
 			criteria.addOrCondition(CriteriaAPI.getCondition("App_Domain.ORGID", "orgId", "1", CommonOperators.IS_EMPTY));
 		}
 

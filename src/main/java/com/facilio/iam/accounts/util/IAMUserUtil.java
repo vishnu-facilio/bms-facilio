@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.APIClient;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -459,8 +460,20 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().fetchAccountByAPIKey(apiKey));
 	}
 
-	public static String createApiKey(long orgId, long userId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().createApiKey(orgId, userId));
+	public static String createApiKey(long orgId, long userId, String name) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().createApiKey(orgId, userId, name));
+	}
+
+	public static Map<String, String> createOauth2Client(long orgId, long userId, String name) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().createOauth2Client(orgId, userId, name));
+	}
+
+	public static void deleteApiClient(long orgId, long userId, long id) throws Exception {
+		FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().deleteApiClient(orgId, userId, id));
+	}
+
+	public static List<APIClient> getApiClientList(long orgId, long userId) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().getApiClientList(orgId, userId));
 	}
 
 	public static boolean totpChecking(String code, long uid) throws Exception{

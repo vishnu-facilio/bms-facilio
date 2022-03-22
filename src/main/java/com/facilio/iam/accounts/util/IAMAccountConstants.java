@@ -553,6 +553,13 @@ public class IAMAccountConstants {
 			authType.setModule(module);
 			fields.add(authType);
 
+			FacilioField name = new FacilioField();
+			name.setName("name");
+			name.setDataType(FieldType.STRING);
+			name.setColumnName("NAME");
+			name.setModule(module);
+			fields.add(name);
+
 			FacilioField oauth2ClientId = new FacilioField();
 			oauth2ClientId.setName("oauth2ClientId");
 			oauth2ClientId.setDataType(FieldType.STRING);
