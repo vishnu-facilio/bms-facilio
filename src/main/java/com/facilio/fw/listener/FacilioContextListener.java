@@ -157,9 +157,9 @@ public class FacilioContextListener implements ServletContextListener {
 			if (FacilioProperties.isMessageProcessor()) {
 				MessageQueueFactory.start();
 			}
-			if(FacilioProperties.isScheduleServer()) {
-				FacilioQueueingServiceHandler.init();
-			}
+//			if(FacilioProperties.isScheduleServer()) {
+//				FacilioQueueingServiceHandler.init();
+//			}
 			//AgentIntegrationQueueFactory.startIntegrationQueues();
 
 			PortalAuthInterceptor.setPortalDomain(FacilioProperties.getOccupantAppDomain());// event.getServletContext().getInitParameter("SERVICEPORTAL_DOMAIN");

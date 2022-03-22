@@ -2602,8 +2602,8 @@ public class WorkflowUtil {
         		
         	JSONObject json= FieldUtil.getAsJSON(workflowlogcontext);
         	
-        	MessageQueue mq = MessageQueueFactory.getMessageQueue(MessageSourceUtil.getDefaultSource());
-        	mq.putRecord(ScriptLogHandlerQueueingService.TOPIC, workflowContext.getOrgId()+"_"+workflowContext.getId(), json);
+//        	MessageQueue mq = MessageQueueFactory.getMessageQueue(MessageSourceUtil.getDefaultSource());
+//        	mq.putRecord(ScriptLogHandlerQueueingService.TOPIC, workflowContext.getOrgId()+"_"+workflowContext.getId(), json);
         }
     }
 }
