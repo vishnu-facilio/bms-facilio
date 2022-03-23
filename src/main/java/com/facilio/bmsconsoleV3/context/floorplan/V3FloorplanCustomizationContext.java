@@ -56,6 +56,16 @@ public class V3FloorplanCustomizationContext {
 
     private int fontSize = 11;
 
+    public double getImageOpacity() {
+        return imageOpacity;
+    }
+
+    public void setImageOpacity(double imageOpacity) {
+        this.imageOpacity = imageOpacity;
+    }
+
+    private double imageOpacity=0.7;
+
 
     public DeskLabel getDeskPrimaryLabel() {
         if (deskPrimaryLabel == null) {
