@@ -10075,6 +10075,22 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getBasespaceFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getBaseSpaceModule();
+        fields.add(getIdField(module));
+        fields.add(getField("spaceType", "SPACE_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("site", "SITE_ID", module, FieldType.NUMBER));
+        fields.add(getField("building", "BUILDING_ID", module, FieldType.NUMBER));
+        fields.add(getField("floor", "FLOOR_ID", module, FieldType.NUMBER));
+        fields.add(getField("space1", "SPACE_ID1", module, FieldType.NUMBER));
+        fields.add(getField("space2", "SPACE_ID2", module, FieldType.NUMBER));
+        fields.add(getField("space3", "SPACE_ID3", module, FieldType.NUMBER));
+        fields.add(getField("space4", "SPACE_ID4", module, FieldType.NUMBER));
+        fields.add(getDeletedTimeField(module));
+        return fields;
+    }
+
     public  static List<FacilioField> getScatterGraphMetaFields(){
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getScatterGraphLineModule();
