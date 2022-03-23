@@ -3,7 +3,7 @@ version: 0.1
 phases:
   build:
     commands:
-      - mvn package -Dbuild.number=$CODEBUILD_BUILD_NUMBER
+      - mvn package -Dbuild.number=$CODEBUILD_BUILD_NUMBER -Dbuild.branch=$BRANCH_NAME
       - mvn deploy -Dbuild.type=jar -Dbuild.number=$CODEBUILD_BUILD_NUMBER -Dbuild.branch=$BRANCH_NAME
 artifacts:
   files:
