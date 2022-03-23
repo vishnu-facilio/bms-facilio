@@ -15,18 +15,12 @@ sources:
     configs:
       broker: b-3.us-kafka.4b5q4n.c10.kafka.us-west-2.amazonaws.com:9096,b-4.us-kafka.4b5q4n.c10.kafka.us-west-2.amazonaws.com:9096,b-1.us-kafka.4b5q4n.c10.kafka.us-west-2.amazonaws.com:9096
       auth: true
-      iot.rule.arn: arn:aws:iot:us-west-2:668907905219:ruledestination/vpc/91fd102c-e59a-4410-b3ee-84de6d9a2784
-      iot.rule.security.protocol: SASL_SSL
-      iot.rule.sasl.mechanism: SCRAM-SHA-512
-      iot.rule.sasl.scram.username: ${get_secret('AmazonMSK_ClientCredential','SecretString','username','arn:aws:iam::668907905219:role/kafkaSASLRole')}
-      iot.rule.sasl.scram.password: ${get_secret('AmazonMSK_ClientCredential','SecretString','password','arn:aws:iam::668907905219:role/kafkaSASLRole')}
 
   - name: msk-ff #Frankfurt Region
     type: kafka
     configs:
       broker: b-1.eu-kafka.x8fngk.c6.kafka.eu-central-1.amazonaws.com:9096,b-3.eu-kafka.x8fngk.c6.kafka.eu-central-1.amazonaws.com:9096,b-2.eu-kafka.x8fngk.c6.kafka.eu-central-1.amazonaws.com:9096
       auth: true
-
 
   - name: msk-uk #London Region
     type: kafka
