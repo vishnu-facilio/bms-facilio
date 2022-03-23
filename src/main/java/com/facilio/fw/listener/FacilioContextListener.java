@@ -111,10 +111,6 @@ public class FacilioContextListener implements ServletContextListener {
 		}
 
 		try {
-			if(FacilioProperties.isScheduleServer()) {
-				LOGGER.info("Starting FacilioDBQueueExceptionProcessor");
-				timer.schedule(new FacilioDBQueueExceptionProcessor(), 0L, 900000L); // 30 minutes
-			}
 			setVersion(event);
 
 			//All these init should be moved to config
@@ -136,7 +132,13 @@ public class FacilioContextListener implements ServletContextListener {
 			DCUtil.init();
 			TranslationConf.getTranslationImpl("test");
 			AddSignupDataCommandV3.initSignUpDataClasses();
+
 			initializeDB();
+			if(FacilioProperties.isScheduleServer()) {
+				LOGGER.info("Starting FacilioDBQueueExceptionProcessor");
+				timer.schedule(new FacilioDBQueueExceptionProcessor(), 0L, 900000L); // 30 minutes
+			}
+
 			ServerInfo.registerServer();
 			if( !FacilioProperties.isDevelopment() && StringUtils.isNotEmpty(FacilioProperties.getQueueSource())) {
 				 new Thread(new NotificationProcessor()).start();
