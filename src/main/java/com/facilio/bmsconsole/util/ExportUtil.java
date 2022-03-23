@@ -590,7 +590,9 @@ public class ExportUtil {
 					StringJoiner sj = new StringJoiner(",");
 					for (Object obj : (Collection) value) {
 						if (obj instanceof Map) {
-							sj.add(((Map<?, ?>) obj).get("name").toString());
+							if (((Map<?, ?>) obj).containsKey("name")) {
+								sj.add(((Map<?, ?>) obj).get("name").toString());
+							}
 						}
 					}
 					return sj.toString();
