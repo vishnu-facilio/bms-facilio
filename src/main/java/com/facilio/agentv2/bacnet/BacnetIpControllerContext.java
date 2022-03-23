@@ -59,6 +59,9 @@ public class BacnetIpControllerContext extends Controller {
     @JsonInclude
     private String ipAddress;
 
+    @JsonInclude
+    private int vendorId;
+
     @JsonIgnore
     private String identifier;
 
@@ -82,6 +85,9 @@ public class BacnetIpControllerContext extends Controller {
     public String getIpAddress() { return ipAddress; }
     public void setIpAddress(String ipAddress) { this.ipAddress = ipAddress; }
 
+    public int getVendorId() { return vendorId; }
+    public void setVendorId(int vendorId) { this.vendorId = vendorId; }
+
     @JsonIgnore
     public String getModuleName() {
         return ASSETCATEGORY;
@@ -94,6 +100,7 @@ public class BacnetIpControllerContext extends Controller {
         bacnetIpControllerJSON.put(AgentConstants.INSTANCE_NUMBER, getInstanceNumber());
         bacnetIpControllerJSON.put(AgentConstants.IP_ADDRESS, getIpAddress());
         bacnetIpControllerJSON.put(AgentConstants.NETWORK_NUMBER, getNetworkNumber());
+        bacnetIpControllerJSON.put(AgentConstants.VENDOR_ID, getVendorId());
         return bacnetIpControllerJSON;
     }
 
@@ -106,6 +113,7 @@ public class BacnetIpControllerContext extends Controller {
             LOGGER.info("nn : " + fieldsMap.get(AgentConstants.NETWORK_NUMBER));
             LOGGER.info("in : " + fieldsMap.get(AgentConstants.INSTANCE_NUMBER));
             LOGGER.info("ip : " + fieldsMap.get(AgentConstants.IP_ADDRESS));
+            LOGGER.info("vid : " + fieldsMap.get(AgentConstants.VENDOR_ID));
         }
         conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.NETWORK_NUMBER), String.valueOf(getNetworkNumber()), NumberOperators.EQUALS));
         conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.INSTANCE_NUMBER), String.valueOf(getInstanceNumber()),NumberOperators.EQUALS));
