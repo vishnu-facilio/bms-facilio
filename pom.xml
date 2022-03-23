@@ -272,14 +272,14 @@
             <artifactId>aws-java-sdk-rekognition</artifactId>
             <version>1.11.303</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-iot -->
+        <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-core -->
         <dependency>
             <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-iot</artifactId>
-            <version>1.12.182</version>
+            <artifactId>aws-java-sdk-core</artifactId>
+            <version>1.11.303</version>
         </dependency>
 
-
+        
         <!-- https://mvnrepository.com/artifact/org.glassfish.jaxb/jaxb-runtime -->
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
