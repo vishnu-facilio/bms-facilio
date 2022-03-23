@@ -20,7 +20,9 @@ import com.facilio.i18n.util.TranslationUtil;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.V3Builder.V3Config;
+import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
@@ -36,10 +38,10 @@ import java.util.stream.Collectors;
 
 @Log4j
 public class AddFieldsCommand extends FacilioCommand {
-	
+
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		
+
 		//Have to be converted to batch insert
 		List<FacilioModule> modules = CommonCommandUtil.getModulesWithFields(context);
 		if(modules != null && !modules.isEmpty()) {
@@ -47,9 +49,9 @@ public class AddFieldsCommand extends FacilioCommand {
 			List<Long> fieldIds = new ArrayList<>();
 			List<List<ReadingRuleContext>> readingRules = new ArrayList<>();
 			List<List<List<ActionContext>>> actionsList = new ArrayList<>();
-			boolean allowSameName = (Boolean) context.getOrDefault(ContextNames.ALLOW_SAME_FIELD_DISPLAY_NAME, false);
+			boolean changeDisplayName = (Boolean) context.getOrDefault(ContextNames.ALLOW_SAME_FIELD_DISPLAY_NAME, false);
 			boolean isNewModules = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_NEW_MODULES, false);
-			
+
 			boolean isSkipCounterfieldAdd = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_SKIP_COUNTER_FIELD_ADD, false);
 
 			for (FacilioModule module : modules) {
@@ -59,14 +61,14 @@ public class AddFieldsCommand extends FacilioCommand {
 					List<FacilioField> existingFields = isNewModules ? null : modBean.getAllFields(module.getName());
 					List<String> existingNames = existingFields != null ? existingFields.stream().map(FacilioField::getName).collect(Collectors.toList()) : null;
 					Map<FieldType, List<String>> existingColumns = getColumnNamesGroupedByType(existingFields, module.getModuleId());
-					
+
 					List<FacilioField> counterFields = new ArrayList<>();
-					
+
 					for(FacilioField field : module.getFields()) {
 						try {
 							field.setModule(cloneMod);
 							setColumnName(field, existingColumns);
-							constructFieldName(field, module, allowSameName, existingNames, extendedModuleIds);
+							constructFieldName(field, module, changeDisplayName, existingNames, cloneMod.getName ());
 							long fieldId = modBean.addField(field);
 							field.setFieldId(fieldId);
 							fieldIds.add(fieldId);
@@ -96,7 +98,7 @@ public class AddFieldsCommand extends FacilioCommand {
 							throw e;
 						}
 					}
-					
+
 					if (!counterFields.isEmpty()) {
 						module.getFields().addAll(counterFields);
 					}
@@ -114,90 +116,86 @@ public class AddFieldsCommand extends FacilioCommand {
 		}
 		return false;
 	}
-	
-	private void setColumnName(FacilioField field, Map<FieldType, List<String>> existingColumns) throws Exception {
-		FieldType dataType = field.getDataTypeEnum();
-		if(dataType != null) {
-			if (!dataType.isRelRecordField()) {
-				List<String> existingColumnNames = existingColumns.get(dataType);
-				if (existingColumnNames == null) {
-					existingColumnNames = new ArrayList<>();
-					existingColumns.put(dataType, existingColumnNames);
-				}
-				if (field.getColumnName() == null || field.getColumnName().isEmpty()) {
-					V3Config v3Config = ChainUtil.getV3Config(field.getModule().getName());
-					String newColumnName;
-					if (v3Config != null) {
-						if (v3Config.getCustomFieldsCount() != null) {
-							newColumnName = v3Config.getCustomFieldsCount().getNewColumnNameForFieldType(dataType.getTypeAsInt(), existingColumnNames);
 
-						} else {
-							throw new IllegalArgumentException("No column available for the Field type");
-						}
-					} else {
-						newColumnName = new ModuleCustomFieldCount50().getNewColumnNameForFieldType(dataType.getTypeAsInt(), existingColumnNames);
-					}
-					if (StringUtils.isEmpty(newColumnName)) {
-						throw new IllegalArgumentException("No more column available for the Field type");
-					}
-					field.setColumnName(newColumnName);
-				}
-				existingColumnNames.add(field.getColumnName());
+	private void setColumnName (FacilioField field, Map< FieldType, List< String > > existingColumns) throws Exception {
+
+		FieldType dataType = field.getDataTypeEnum ();
+		FacilioUtil.throwIllegalArgumentException (dataType == null, "Invalid Data Type Value");
+
+		if (!dataType.isRelRecordField ()) {
+			List< String > existingColumnNames = existingColumns.get (dataType);
+			if (existingColumnNames == null) {
+				existingColumnNames = new ArrayList<> ();
+				existingColumns.put (dataType, existingColumnNames);
 			}
-		}
-		else {
-			throw new IllegalArgumentException("Invalid Data Type Value");
+			if (field.getColumnName () == null || field.getColumnName ().isEmpty ()) {
+				V3Config v3Config = ChainUtil.getV3Config (field.getModule ().getName ());
+				String newColumnName;
+				if (v3Config != null) {
+					FacilioUtil.throwIllegalArgumentException (v3Config.getCustomFieldsCount () == null, "No column available for the Field type");
+					newColumnName = v3Config.getCustomFieldsCount ().getNewColumnNameForFieldType (dataType.getTypeAsInt (), existingColumnNames);
+				} else {
+					newColumnName = new ModuleCustomFieldCount50 ().getNewColumnNameForFieldType (dataType.getTypeAsInt (), existingColumnNames);
+				}
+				FacilioUtil.throwIllegalArgumentException (StringUtils.isEmpty (newColumnName), "No more column available for the Field type");
+
+				field.setColumnName (newColumnName);
+			}
+			existingColumnNames.add (field.getColumnName ());
 		}
 	}
-	
-	private void constructFieldName(FacilioField field, FacilioModule module, boolean changeDisplayName, List<String> existingNames, List<Long> extendedModuleIds) throws Exception {
+
+	private void constructFieldName(FacilioField field, FacilioModule module, boolean changeDisplayName, List<String> existingNames, String moduleName) throws Exception {
 		if(field.getName() == null || field.getName().isEmpty()) {
 			if(field.getDisplayName() != null && !field.getDisplayName().isEmpty()) {
 				field.setName(field.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
 				// Will be used while adding a new field from form
-				if (changeDisplayName) {
-					changeDisplayName(field, extendedModuleIds);
-				}
-				else if (existingNames != null && existingNames.contains(field.getName())) {
-					throw new FacilioException(TranslationUtil.getString(Error.FIELD_DUPLICATE, field.getDisplayName()));
-				}
+				handleDuplicateField (field, changeDisplayName, existingNames, moduleName);
 			}
 			else {
 				throw new IllegalArgumentException("Invalid name for field of module : "+module.getName());
 			}
+		}else {
+			handleDuplicateField (field, changeDisplayName, existingNames, moduleName);
 		}
 	}
-	
 
-	private void changeDisplayName(FacilioField field, List<Long> extendedModuleIds) throws Exception {
-		FacilioModule module = ModuleFactory.getFieldsModule();
-		List<FacilioField> fields = FieldFactory.getSelectFieldFields();
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-					.table(module.getTableName())
-					.select(fields)
-					.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), extendedModuleIds, NumberOperators.EQUALS))
-					.orderBy(fieldMap.get("fieldId").getColumnName() + " desc")
-					.limit(1);
-		
-		Criteria criteria = new Criteria();
-		criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("name"), field.getName(), StringOperators.IS));
-		criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("name"), field.getName() + "\\_%", StringOperators.CONTAINS));
-		builder.andCriteria(criteria);
-		
-		List<Map<String, Object>> props = builder.get();
-		String dbFieldName = null;
-		if (props != null && !props.isEmpty()) {
-			dbFieldName = (String) props.get(0).get("name");
-			int count = 0;
-			if (dbFieldName.contains("_")) {
-				count = Integer.parseInt(dbFieldName.substring(dbFieldName.lastIndexOf('_') + 1));
-			}
-			field.setName(field.getName() + "_" + ++count);
-			field.setDisplayName(field.getDisplayName() + " " + count);
+	private void handleDuplicateField (FacilioField field, boolean changeDisplayName, List< String > existingNames, String moduleName) throws Exception {
+
+		if (changeDisplayName) {
+			setDisplayNameAndFieldName(field, moduleName);
+		}
+		else if (existingNames != null && existingNames.contains(field.getName())) {
+			throw new FacilioException(TranslationUtil.getString(Error.FIELD_DUPLICATE, field.getDisplayName()));
 		}
 	}
-	
+
+
+	private void setDisplayNameAndFieldName(FacilioField field, String moduleName) throws Exception {
+
+		List< FacilioField > existingFields = Constants.getModBean ().getAllFields (moduleName);
+		int count = 0;
+		if (CollectionUtils.isNotEmpty (existingFields)) {
+			List< FacilioField > filteredFields = existingFields.stream ().filter (str -> str.getName ().contains (field.getName ())).collect (Collectors.toList ());
+			if (CollectionUtils.isNotEmpty (filteredFields)) {
+				String fieldName = field.getName ();
+				while ( true ) {
+					String finalDbFieldName = fieldName;
+					FacilioField duplicateField = filteredFields.stream ().filter (f -> f.getName ().equals (finalDbFieldName)).findFirst ().orElse (null);
+					if (duplicateField == null) {
+						break;
+					}
+					if (!fieldName.equals (field.getName ()) && fieldName.contains ("_")) {
+						count = Integer.parseInt (fieldName.substring (fieldName.lastIndexOf ('_') + 1));
+					}
+					fieldName = field.getName () + "_" + ++count;
+				}
+				field.setName (field.getName () + "_" + count);
+				field.setDisplayName (field.getDisplayName () + " " + count);
+			}
+		}
+	}
+
 	private Map<FieldType, List<String>> getColumnNamesGroupedByType(List<FacilioField> fields, long moduleId) {
 		Map<FieldType, List<String>> existingColumns = new HashMap<>();
 		if(fields != null) {
