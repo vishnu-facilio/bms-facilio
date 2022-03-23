@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -80,7 +81,25 @@ public class ToolAction extends FacilioAction {
 		}
 		return false;
 	}
+	public String searchQuery;
 
+	public String getSearchQuery() {
+		return searchQuery;
+	}
+
+	public void setSearchQuery(String searchQuery) {
+		this.searchQuery = searchQuery;
+	}
+	private Boolean showForWorkorder;
+	public Boolean getShowForWorkorder() {
+		if(showForWorkorder == null) {
+			return false;
+		}
+		return showForWorkorder;
+	}
+	public void setShowForWorkorder(Boolean showForWorkorder) {
+		this.showForWorkorder = showForWorkorder;
+	}
 	public String addTool() throws Exception {
 		FacilioContext context = new FacilioContext();
 		tool.setLastPurchasedDate(System.currentTimeMillis());
@@ -143,7 +162,12 @@ public class ToolAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_SITE_ID, siteId);
 		context.put(FacilioConstants.ContextNames.INCLUDE_SERVING_SITE, includeServingSite);
-		
+		if(StringUtils.isNotEmpty(getSearchQuery())){
+			context.put(FacilioConstants.ContextNames.SEARCH_QUERY,searchQuery);
+		}
+		if(getShowForWorkorder()) {
+			context.put(FacilioConstants.ContextNames.SHOW_TOOL_FOR_WORKORDER, showForWorkorder);
+		}
 		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Tool.LOCAL_ID desc");
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();

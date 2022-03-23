@@ -13,6 +13,8 @@ public class ScopingContext implements Serializable {
 	private long id;
 	private long orgId;
 	private String scopeName;
+	private String description;
+
 	public long getId() {
 		return id;
 	}
@@ -65,5 +67,13 @@ public class ScopingContext implements Serializable {
 
 	public void setApplicationId(long applicationId) {
 		this.applicationId = applicationId;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }

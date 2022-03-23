@@ -1477,6 +1477,7 @@ public class FacilioConstants {
 		public static final String SHOW_TOOLS_FOR_ISSUE = "showToolsForIssue";
 
 		public static final String SHOW_ITEM_FOR_WORKORDER = "showItemsForWorkorder";
+		public static final String SHOW_TOOL_FOR_WORKORDER = "showToolsForWorkorder";
 
 		public static final String ITEM_VENDORS = "itemVendors";
 		public static final String TOOL_VENDORS = "toolVendors";
