@@ -1526,6 +1526,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 		fields.add(fieldMap.get("mobileInstanceId"));
 		fields.add(fieldMap.get("fromPortal"));
+		fields.add(fieldMap.get("userId"));
 
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields).table("User_Mobile_Setting")
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("userId"), uIds, NumberOperators.EQUALS))

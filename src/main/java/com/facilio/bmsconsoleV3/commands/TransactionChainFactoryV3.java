@@ -568,6 +568,7 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getUserNotifactionBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new CheckUpdateMappingSeenCommand());
+        c.addCommand(new SetMessageTopicCommand());
         c.addCommand(new SendUserNotificationCommandV3());
         return c;
     }

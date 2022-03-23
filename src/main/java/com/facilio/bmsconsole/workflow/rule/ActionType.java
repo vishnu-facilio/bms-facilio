@@ -37,7 +37,6 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -75,7 +74,6 @@ import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
-import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldFactory;
@@ -439,43 +437,33 @@ public enum ActionType {
 				}
 
 				String ids = (String) obj.get("id");
-				if (!StringUtils.isEmpty(ids) && parentModuleId > 0) {
-					String[] toList = ids.trim().split(",");
-					for (String toId : toList) {
-						if (toId.isEmpty()) {
-							continue;
+				List<Long> idLongList = Stream.of(ids.split(",")).map(Long::valueOf).collect(Collectors.toList());
+				Boolean isPushNotification = (Boolean) obj.get("isSendNotification");
+				if (CollectionUtils.isNotEmpty(idLongList) && parentModuleId > 0) {
+					LOGGER.info("Notification Modules entry : " + idLongList);
+					List<UserNotificationContext> recordList = new ArrayList<>();
+					if (idLongList.size() > 0) {
+						for (Long uid : idLongList) {
+							UserNotificationContext userNotification = new UserNotificationContext();
+							userNotification = UserNotificationContext.instance(obj);
+							User user = new User();
+							user.setId(uid);
+							userNotification.setUser(user);
+							userNotification.setSiteId(currentRule.getSiteId());
+							userNotification.setParentModule(parentModuleId);
+							if (currentRecord instanceof ModuleBaseWithCustomFields) {
+								long parentId = ((ModuleBaseWithCustomFields) currentRecord).getId();
+								userNotification.setParentId(parentId);
+							}
+							userNotification.setActionType(UserNotificationContext.ActionType.SUMMARY);
+							recordList.add(userNotification);
 						}
-						long id = Long.valueOf(toId);
-						
-						List<Long> delegatedUserList = NotificationAPI.checkUserDelegation(Collections.singletonList(id));
-						
-						if(CollectionUtils.isNotEmpty(delegatedUserList)) {
-							id = delegatedUserList.get(0);
-						}
-						
-						LOGGER.info("Notification Modules entry : "+ id);
-						UserNotificationContext userNotification = UserNotificationContext.instance(obj);
-						User user = new User();
-						user.setId(id);
-						userNotification.setUser(user);
-						userNotification.setSiteId(currentRule.getSiteId());
-						userNotification.setParentModule(parentModuleId);
-						if (currentRecord instanceof ModuleBaseWithCustomFields) {
-							long parentId = ((ModuleBaseWithCustomFields) currentRecord).getId();
-							userNotification.setParentId(parentId);
-						}
-						userNotification.setActionType(UserNotificationContext.ActionType.SUMMARY);
-						FacilioChain chain = TransactionChainFactoryV3.addRecords();
-						FacilioContext notificationContext = chain.getContext();
-						notificationContext.put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(userNotification));
-						notificationContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.USER_NOTIFICATION);
-						Boolean isPushNotification = (Boolean) obj.get("isSendNotification");
-
-						if (isPushNotification != null && isPushNotification ) {
-							notificationContext.put(FacilioConstants.ContextNames.DATA, obj);
-						}
-						chain.execute();
 					}
+
+					FacilioModule userNotificationModule = modBean.getModule(FacilioConstants.ContextNames.USER_NOTIFICATION);
+					JSONObject pushNotificationObj = new JSONObject();
+					pushNotificationObj.put("isPushNotification",isPushNotification);
+					V3Util.createRecordList(userNotificationModule,FieldUtil.getAsMapList(recordList,UserNotificationContext.class),pushNotificationObj,null);
 				}
 			} catch (Exception e) {
 				LOGGER.error("Exception occurred ", e);
