@@ -11,6 +11,7 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 
@@ -110,9 +111,6 @@ public class FacilioContextListener implements ServletContextListener {
 		}
 
 		try {
-
-			timer.schedule(new TransactionMonitor(), 0L, 3000L);
-
 			if(FacilioProperties.isScheduleServer()) {
 				LOGGER.info("Starting FacilioDBQueueExceptionProcessor");
 				timer.schedule(new FacilioDBQueueExceptionProcessor(), 0L, 900000L); // 30 minutes
@@ -124,7 +122,10 @@ public class FacilioContextListener implements ServletContextListener {
 				RedisManager.getInstance().connect(true); // creating redis connection pool
 			}
 			LRUCache.getRoleNameCachePs();
+
 			initDBConnectionPool();
+			timer.schedule(new TransactionMonitor(), 0L, 3000L);
+
 			Operator.getOperator(1);
 			registerMBeans();
 			TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION,1);
@@ -298,7 +299,7 @@ public class FacilioContextListener implements ServletContextListener {
 		}
 	}
 
-	private void initDBConnectionPool() {
+	private void initDBConnectionPool() throws Exception {
 		LOGGER.info("Initializing DB Connection Pool");
 		Connection conn = null;
 		Statement stmt = null;
@@ -313,6 +314,7 @@ public class FacilioContextListener implements ServletContextListener {
 			}
 		} catch(Exception e) {
 			LOGGER.error("Exception occurred ", e);
+			throw e;
 		}
 		finally {
 			DBUtil.closeAll(conn, stmt, rs);
