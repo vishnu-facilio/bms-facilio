@@ -546,7 +546,7 @@ public class ExportUtil {
         	return filePath;
     }
 
-	private static Object getFormattedValue(Map<String, Map<Long, Object>> modVsData, FacilioField field, Object value) {
+	private static Object getFormattedValue(Map<String, Map<Long, Object>> modVsData, FacilioField field, Object value) throws Exception {
 		if (value == null) {
 			return null;
 		}
@@ -587,11 +587,15 @@ public class ExportUtil {
 					return null;
 				}
 				if (CollectionUtils.isNotEmpty((Collection) value)) {
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					MultiLookupField multiLookupField = (MultiLookupField) field;
+					FacilioField primaryField = modBean.getPrimaryField(multiLookupField.getLookupModule().getName());
+					primaryField = primaryField == null ? FieldFactory.getIdField(multiLookupField.getLookupModule()) : primaryField;
 					StringJoiner sj = new StringJoiner(",");
 					for (Object obj : (Collection) value) {
 						if (obj instanceof Map) {
-							if (((Map<?, ?>) obj).containsKey("name")) {
-								sj.add(((Map<?, ?>) obj).get("name").toString());
+							if (((Map<?, ?>) obj).containsKey(primaryField.getName())) {
+								sj.add(((Map<?, ?>) obj).get(primaryField.getName()).toString());
 							}
 						}
 					}
