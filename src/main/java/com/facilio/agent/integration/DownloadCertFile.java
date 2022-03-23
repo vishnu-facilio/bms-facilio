@@ -78,7 +78,7 @@ public class DownloadCertFile {
         if (url == null) {
             LOGGER.info(" url not present ");
             String orgDomainName = AccountUtil.getCurrentAccount().getOrg().getDomain();
-            CreateKeysAndCertificateResult certificateResult = AwsUtil.createIotToKinesis(policyName, orgDomainName, type);
+            CreateKeysAndCertificateResult certificateResult = AwsUtil.createIotToKafkaLink(policyName, orgDomainName, type);
             String directoryName = "facilio/";
             String outFileName = FacilioAgent.getCertFileName(type);
             File file = new File(System.getProperty("user.home") + outFileName);
@@ -99,9 +99,9 @@ public class DownloadCertFile {
     }
 
     public static long addCertificate(String policyName, String type) throws Exception {
-		long fileId = -1;
-		CreateKeysAndCertificateResult certificateResult = AwsUtil.createIotToKinesis(policyName, policyName, type);
-		String directoryName = "facilio/";
+        long fileId = -1;
+        CreateKeysAndCertificateResult certificateResult = AwsUtil.createIotToKafkaLink(policyName, policyName, type);
+        String directoryName = "facilio/";
 		String certFileId = FacilioAgent.getCertFileId(type);
 		String outFileName = FacilioAgent.getCertFileName(type);
 		File file = new File(System.getProperty("user.home") + outFileName);
