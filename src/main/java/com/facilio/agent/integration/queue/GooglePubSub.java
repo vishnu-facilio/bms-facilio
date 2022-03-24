@@ -56,10 +56,7 @@ public class GooglePubSub extends AgentIntegrationQueue{
                             JSONObject jsonObject = (JSONObject)parser.parse(message.getData().toStringUtf8());
                             if (jsonObject.containsKey("events")&&(((JSONArray)jsonObject.get("events")).size()>0)) {
                                 List<JSONObject> messages = getPreProcessor().preProcess(jsonObject);
-                                for (JSONObject msg :
-                                        messages) {
-                                    TimeSeriesAPI.processPayLoad(0,msg, null);
-                                }
+
                             }
                         } catch (Exception e) {
                             LOGGER.error("Error while processing data");

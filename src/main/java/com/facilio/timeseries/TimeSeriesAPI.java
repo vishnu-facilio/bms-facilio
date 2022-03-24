@@ -1,6 +1,5 @@
 package com.facilio.timeseries;
 
-import com.amazonaws.services.kinesis.model.PutRecordResult;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.point.PointEnum;
@@ -52,22 +51,7 @@ import java.util.stream.Collectors;
 public class TimeSeriesAPI {
 
 	private static final Logger LOGGER = LogManager.getLogger(TimeSeriesAPI.class.getName());
-	
-	public static void processPayLoad(long ttime, JSONObject payLoad, String macAddr) throws Exception {
-		LOGGER.debug(payLoad);
-		if(AccountUtil.getCurrentOrg() != null && FacilioProperties.isProduction()) {
-			String stream = AccountUtil.getCurrentOrg().getDomain();
-			if (macAddr == null) {
-				macAddr = stream;
-			}
-			PutRecordResult recordResult = AwsUtil.getKinesisClient().putRecord(stream, ByteBuffer.wrap(payLoad.toJSONString().getBytes(Charset.defaultCharset())), macAddr);
-			int status = recordResult.getSdkHttpMetadata().getHttpStatusCode();
-			if (status != 200) {
-				LOGGER.info("Couldn't add data to " + stream);
-			}
-		}
-		// processPayLoad(ttime, payLoad, null, null, macAddr, true);
-	}
+
 	
 	public static void processPayLoad(long ttime, JSONObject payLoad, String macAddr, boolean adjustTime) throws Exception {
 		processPayLoad(ttime, payLoad, null, macAddr, adjustTime);

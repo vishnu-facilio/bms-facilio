@@ -25,16 +25,5 @@ public abstract class DataFetcher {
     abstract List<JSONObject> preProcess(Object o);
 
     public void process() {
-        try {
-            Object data = getData();
-            LOGGER.info("Data : " + data.toString());
-            List<JSONObject> timeSeriesData = preProcess(data);
-            LOGGER.info("TimeSeriesData :" + timeSeriesData);
-            for (JSONObject item : timeSeriesData) {
-                TimeSeriesAPI.processPayLoad(0, item, null);
-            }
-        } catch (Exception ex) {
-            LOGGER.info("Error while getting/Processing Data from endpoint", ex);
-        }
     }
 }

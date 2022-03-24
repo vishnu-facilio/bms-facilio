@@ -10,10 +10,6 @@ import com.amazonaws.services.iot.AWSIotClientBuilder;
 import com.amazonaws.services.iot.client.AWSIotException;
 import com.amazonaws.services.iot.client.AWSIotMqttClient;
 import com.amazonaws.services.iot.model.*;
-import com.amazonaws.services.kinesis.AmazonKinesis;
-import com.amazonaws.services.kinesis.AmazonKinesisClientBuilder;
-import com.amazonaws.services.kinesis.model.CreateStreamResult;
-import com.amazonaws.services.kinesis.model.ResourceInUseException;
 import com.amazonaws.services.rekognition.AmazonRekognition;
 import com.amazonaws.services.rekognition.AmazonRekognitionClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
@@ -101,7 +97,6 @@ public class AwsUtil extends BaseAwsUtil{
 	private static volatile AWSIot awsIot = null;
 	private static volatile AmazonSQS awsSQS = null;
 	// private static volatile User user = null;
-	private static volatile AmazonKinesis kinesis = null;
 	private static String region = null;
 
 	public static Map<String, Object> getClientInfoAsService() throws Exception {
@@ -587,33 +582,6 @@ public class AwsUtil extends BaseAwsUtil{
 
 	}
 
-	public static AmazonKinesis getKinesisClient() {
-		if (kinesis == null) {
-			synchronized (LOCK) {
-				if (kinesis == null) {
-					kinesis = AmazonKinesisClientBuilder.standard()
-							.withCredentials(getAWSCredentialsProvider())
-							.withRegion(getRegion())
-							.build();
-				}
-			}
-		}
-		return kinesis;
-	}
-
-	public static void createKinesisStream(AmazonKinesis kinesisClient, String streamName) {
-		LOGGER.info(" creating kenisis stream " + streamName);
-		Objects.requireNonNull(kinesisClient, " kinesis client can't be null");
-		Objects.requireNonNull(streamName, "stream name can't be null");
-		try {
-			CreateStreamResult streamResult = kinesisClient.createStream(streamName, 1);
-			LOGGER.info("Stream created : " + streamName + " with status " + streamResult.getSdkHttpMetadata().getHttpStatusCode());
-		} catch (ResourceInUseException resourceInUse) {
-			LOGGER.info(" Exception Stream exists for name : " + streamName);
-		}
-	}
-
-
 	private static void createIotTopicRule(AWSIot iotClient, String policyAndOrgDomainName) {
 		Objects.requireNonNull(iotClient, "iotClient null");
 		Objects.requireNonNull(policyAndOrgDomainName, "policyAndOrgDomainName null");
@@ -651,7 +619,7 @@ public class AwsUtil extends BaseAwsUtil{
 		IotPolicy policy = AwsPolicyUtils.createOrUpdateIotPolicy(clientName, policyAndOrgDomainName, type, iotClient);
 		CreateKeysAndCertificateResult certificateResult = createCertificate(iotClient);
 		attachPolicy(iotClient, certificateResult, policyAndOrgDomainName);
-		createKinesisStream(getKinesisClient(), policyAndOrgDomainName);
+		//createKinesisStream(getKinesisClient(), policyAndOrgDomainName);
 		policy.setStreamName(policyAndOrgDomainName);
 		createIotTopicRule(iotClient, policyAndOrgDomainName);
 		return certificateResult;

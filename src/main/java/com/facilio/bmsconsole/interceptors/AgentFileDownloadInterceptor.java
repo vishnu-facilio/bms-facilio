@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.amazonaws.services.kinesis.metrics.impl.MetricsHelper.SUCCESS;
 
 public class AgentFileDownloadInterceptor implements Interceptor {
     private static final Logger LOGGER = LogManager.getLogger(AgentFileDownloadInterceptor.class.getName());
@@ -55,7 +54,7 @@ public class AgentFileDownloadInterceptor implements Interceptor {
                     params.put("agentId", new Parameter.Request("agentId", Long.parseLong(res.get(0).get("agentId").toString())));
                     ActionContext.getContext().getParameters().appendAll(params);
                     actionInvocation.invoke();
-                    return SUCCESS;
+                    return "success";
                 } else {
                     return "expired";
                 }

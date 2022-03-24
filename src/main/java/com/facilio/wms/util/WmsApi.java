@@ -18,7 +18,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.json.simple.JSONObject;
 
-import com.amazonaws.services.kinesis.model.PutRecordResult;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
@@ -182,19 +181,6 @@ public class WmsApi
 			} else {
 				sendToKafka(message.toJson());
 			}
-		}
-	}
-
-	private static void sendToKinesis(JSONObject object) {
-		try {
-			String partitionKey = (String) object.get("namespace");
-			if (partitionKey == null) {
-				partitionKey = kinesisNotificationTopic;
-			}
-			PutRecordResult result = AwsUtil.getKinesisClient().putRecord(kinesisNotificationTopic, ByteBuffer.wrap(object.toJSONString().getBytes(Charset.defaultCharset())), partitionKey);
-			LOGGER.fine("Sent notification message to kinesis :  " + object.toJSONString() + " , " + result.getSequenceNumber());
-		} catch (Exception e) {
-			LOGGER.log(Level.INFO, "Exception while sending messages to kinesis ", e);
 		}
 	}
 
