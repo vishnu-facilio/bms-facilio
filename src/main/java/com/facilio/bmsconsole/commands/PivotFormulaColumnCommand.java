@@ -13,7 +13,6 @@ import org.apache.commons.chain.Context;
 import java.text.NumberFormat;
 import java.util.*;
 
-import static sun.security.krb5.Confounder.longValue;
 
 public class PivotFormulaColumnCommand extends FacilioCommand {
     @Override

@@ -52,7 +52,6 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.queue.source.MessageSource;
 import com.facilio.service.FacilioService;
-import com.facilio.services.kinesis.ErrorDataProducer;
 import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.util.AckUtil;
 import com.facilio.util.FacilioUtil;
@@ -124,15 +123,6 @@ public class DataProcessorUtil {
         } catch (Exception e) {
             dataProcessorV2 = null;
             LOGGER.info("Exception occurred ", e);
-        }
-    }
-
-    private void sendToErrorStream(FacilioRecord record) {
-        try {
-            ErrorDataProducer.send(new ProducerRecord<>(errorStream, record.getPartitionKey(), record.getData().toString()));
-        } catch (Exception e) {
-            LOGGER.info(errorStream + " : " + record.getData().toString());
-            LOGGER.info("Exception while producing to kafka ", e);
         }
     }
 
@@ -352,7 +342,6 @@ public class DataProcessorUtil {
             try {
                 if (FacilioProperties.isProduction()) {
                     LOGGER.info("Sending data to " + errorStream);
-                    sendToErrorStream(record);
                 }
             } catch (Exception e1) {
                 LOGGER.info("Exception while sending data to " + errorStream, e1);

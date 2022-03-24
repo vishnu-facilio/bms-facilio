@@ -19,7 +19,6 @@ import org.json.simple.parser.ParseException;
 import java.util.List;
 import java.util.Map;
 
-import static com.amazonaws.services.kinesis.metrics.impl.MetricsHelper.SUCCESS;
 
 public class AgentDownloadInterceptor implements Interceptor {
 
@@ -74,7 +73,7 @@ public class AgentDownloadInterceptor implements Interceptor {
                 LOGGER.info("DIFF:" +(cMillis - createdTime));
                 if ((System.currentTimeMillis() - createdTime) < 3_600_000L) {
                     actionInvocation.invoke();
-                    return SUCCESS;
+                    return "success";
                 } else {
                     return "expired";
                 }
