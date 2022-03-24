@@ -114,12 +114,13 @@ public class FacilioContextListener implements ServletContextListener {
 			setVersion(event);
 
 			//All these init should be moved to config
+			initDBConnectionPool();
+
 			if(RedisManager.getInstance() != null) {
 				RedisManager.getInstance().connect(true); // creating redis connection pool
 			}
 			LRUCache.getRoleNameCachePs();
 
-			initDBConnectionPool();
 			timer.schedule(new TransactionMonitor(), 0L, 3000L);
 
 			Operator.getOperator(1);
@@ -170,15 +171,12 @@ public class FacilioContextListener implements ServletContextListener {
 			initLocalHostName();
 			initClientAppConfig();
 			registerValidatorTypes();
+			HealthCheckFilter.setStatus(200);
 		} catch (Exception e) {
 			sendFailureEmail(e);
-			LOGGER.info("Shutting down, because of an exception ", e);
+			LOGGER.info("Shutting down, because of an exception", e);
 			throw e;
 		}
-		finally {
-			HealthCheckFilter.setStatus(200);
-		}
-
 	}
 
 	private void registerValidatorTypes() {

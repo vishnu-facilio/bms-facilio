@@ -28,7 +28,9 @@ files:
   - source: /oom.sh
     destination: /home/facilio
   - source: /monitor_server.sh
-    destination: /home/facilio    
+    destination: /home/facilio
+  - source: /validate_health.sh
+    destination: /home/facilio
   - source: /awsprops-scheduler.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-scheduler-app.properties
@@ -159,4 +161,7 @@ hooks:
   ApplicationStart:
     - location: /start_server.sh
       timeout: 3600
+      runas: facilio
+  ValidateService:
+    - location: /validate_health.sh
       runas: facilio
