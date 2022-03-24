@@ -48,149 +48,178 @@ import java.text.MessageFormat;
 import java.util.*;
 
 public class ReadingRuleContext extends WorkflowRuleContext implements ReadingRuleInterface, Cloneable {
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	private static final Logger LOGGER = LogManager.getLogger(ReadingRuleContext.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(ReadingRuleContext.class.getName());
 
-	long dataModuleId = -1l;
-	long dataModuleFieldId = -1l;
+    long dataModuleId = -1l;
+    long dataModuleFieldId = -1l;
 
-	public long getDataModuleFieldId() {
-		return dataModuleFieldId;
-	}
-	public void setDataModuleFieldId(long dataModuleFieldId) {
-		this.dataModuleFieldId = dataModuleFieldId;
-	}
-	public long getDataModuleId() {
-		return dataModuleId;
-	}
-	public void setDataModuleId(long dataModuleId) {
-		this.dataModuleId = dataModuleId;
-	}
-	List<ReadingRuleMetricContext> ruleMetrics;
+    public long getDataModuleFieldId() {
+        return dataModuleFieldId;
+    }
 
-	public List<ReadingRuleMetricContext> getRuleMetrics() {
-		return ruleMetrics;
-	}
-	public void setRuleMetrics(List<ReadingRuleMetricContext> ruleMetrics) {
-		this.ruleMetrics = ruleMetrics;
-	}
-	public Object clone()throws CloneNotSupportedException{
-		return super.clone();
-	}
-	private long startValue = -1;
-	public long getStartValue() {
-		return startValue;
-	}
-	public void setStartValue(long startValue) {
-		this.startValue = startValue;
-	}
+    public void setDataModuleFieldId(long dataModuleFieldId) {
+        this.dataModuleFieldId = dataModuleFieldId;
+    }
 
-	private int triggerExecutePeriod = -1;
-	public int getTriggerExecutePeriod() {	//in sec
-		return triggerExecutePeriod;
-	}
-	public void setTriggerExecutePeriod(int triggerExecutePeriod) {
-		this.triggerExecutePeriod = triggerExecutePeriod;
-	}
+    public long getDataModuleId() {
+        return dataModuleId;
+    }
 
-	private long interval = -1;
-	public long getInterval() {
-		return interval;
-	}
-	public void setInterval(long interval) {
-		this.interval = interval;
-	}
+    public void setDataModuleId(long dataModuleId) {
+        this.dataModuleId = dataModuleId;
+    }
 
-	private long lastValue = -1;
-	public long getLastValue() {
-		if(lastValue != -1) {
-			return lastValue;
-		}
-		else if (startValue != -1) {
-			return startValue - interval;
-		}
-		return lastValue;
-	}
-	public void setLastValue(long lastValue) {
-		this.lastValue = lastValue;
-	}
+    List<ReadingRuleMetricContext> ruleMetrics;
 
-	private long resourceId = -1;
-	public long getResourceId() {
-		return resourceId;
-	}
-	public void setResourceId(long resourceId) {
-		this.resourceId = resourceId;
-	}
+    public List<ReadingRuleMetricContext> getRuleMetrics() {
+        return ruleMetrics;
+    }
 
-	private long assetCategoryId = -1;
-	public long getAssetCategoryId() {
-		return assetCategoryId;
-	}
-	public void setAssetCategoryId(long assetCategoryId) {
-		this.assetCategoryId = assetCategoryId;
-	}
+    public void setRuleMetrics(List<ReadingRuleMetricContext> ruleMetrics) {
+        this.ruleMetrics = ruleMetrics;
+    }
 
-	private Map<Long, ResourceContext> matchedResources;
-	public Map<Long, ResourceContext> getMatchedResources() {
-		return matchedResources;
-	}
-	public void setMatchedResources(Map<Long, ResourceContext> matchedResources) {
-		this.matchedResources = matchedResources;
-	}
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 
-	private List<Long> includedResources;
-	public List<Long> getIncludedResources() {
-		return includedResources;
-	}
-	public void setIncludedResources(List<Long> includedResources) {
-		this.includedResources = includedResources;
-	}
+    private long startValue = -1;
 
-	private List<Long> excludedResources;
-	public List<Long> getExcludedResources() {
-		return excludedResources;
-	}
-	public void setExcludedResources(List<Long> excludedResources) {
-		this.excludedResources = excludedResources;
-	}
+    public long getStartValue() {
+        return startValue;
+    }
 
-	private FacilioField readingField;
-	public FacilioField getReadingField(){
-		try {
-			if(readingField == null && readingFieldId > 0) {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				readingField = modBean.getField(readingFieldId);
-			}
-		}
-		catch(Exception e) {
-			LOGGER.error("Error while fetching reading fieldid : "+readingFieldId, e);
-		}
-		return readingField;
-	}
-	public void setReadingField(FacilioField readingField) {
-		this.readingField = readingField;
-	}
+    public void setStartValue(long startValue) {
+        this.startValue = startValue;
+    }
 
-	private long readingFieldId = -1;
-	public long getReadingFieldId() {
-		return readingFieldId;
-	}
-	public void setReadingFieldId(long readingFieldId) {
-		this.readingFieldId = readingFieldId;
-	}
+    private int triggerExecutePeriod = -1;
 
-	private long baselineId = -1;
-	public long getBaselineId() {
-		return baselineId;
-	}
-	public void setBaselineId(long baselineId) {
-		this.baselineId = baselineId;
-	}
+    public int getTriggerExecutePeriod() {    //in sec
+        return triggerExecutePeriod;
+    }
+
+    public void setTriggerExecutePeriod(int triggerExecutePeriod) {
+        this.triggerExecutePeriod = triggerExecutePeriod;
+    }
+
+    private long interval = -1;
+
+    public long getInterval() {
+        return interval;
+    }
+
+    public void setInterval(long interval) {
+        this.interval = interval;
+    }
+
+    private long lastValue = -1;
+
+    public long getLastValue() {
+        if (lastValue != -1) {
+            return lastValue;
+        } else if (startValue != -1) {
+            return startValue - interval;
+        }
+        return lastValue;
+    }
+
+    public void setLastValue(long lastValue) {
+        this.lastValue = lastValue;
+    }
+
+    private long resourceId = -1;
+
+    public long getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(long resourceId) {
+        this.resourceId = resourceId;
+    }
+
+    private long assetCategoryId = -1;
+
+    public long getAssetCategoryId() {
+        return assetCategoryId;
+    }
+
+    public void setAssetCategoryId(long assetCategoryId) {
+        this.assetCategoryId = assetCategoryId;
+    }
+
+    private Map<Long, ResourceContext> matchedResources;
+
+    public Map<Long, ResourceContext> getMatchedResources() {
+        return matchedResources;
+    }
+
+    public void setMatchedResources(Map<Long, ResourceContext> matchedResources) {
+        this.matchedResources = matchedResources;
+    }
+
+    private List<Long> includedResources;
+
+    public List<Long> getIncludedResources() {
+        return includedResources;
+    }
+
+    public void setIncludedResources(List<Long> includedResources) {
+        this.includedResources = includedResources;
+    }
+
+    private List<Long> excludedResources;
+
+    public List<Long> getExcludedResources() {
+        return excludedResources;
+    }
+
+    public void setExcludedResources(List<Long> excludedResources) {
+        this.excludedResources = excludedResources;
+    }
+
+    private FacilioField readingField;
+
+    public FacilioField getReadingField() {
+        try {
+            if (readingField == null && readingFieldId > 0) {
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                readingField = modBean.getField(readingFieldId);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error while fetching reading fieldid : " + readingFieldId, e);
+        }
+        return readingField;
+    }
+
+    public void setReadingField(FacilioField readingField) {
+        this.readingField = readingField;
+    }
+
+    private long readingFieldId = -1;
+
+    public long getReadingFieldId() {
+        return readingFieldId;
+    }
+
+    public void setReadingFieldId(long readingFieldId) {
+        this.readingFieldId = readingFieldId;
+    }
+
+    private long baselineId = -1;
+
+    public long getBaselineId() {
+        return baselineId;
+    }
+
+    public void setBaselineId(long baselineId) {
+        this.baselineId = baselineId;
+    }
 
     private String aggregation;
 
@@ -1068,7 +1097,9 @@ public class ReadingRuleContext extends WorkflowRuleContext implements ReadingRu
                             Boolean onlyPrequisiteReadingsPresent = (Boolean) context.get(FacilioConstants.ContextNames.ONLY_PREQUISITE_READINGS_PRESENT);
                             onlyPrequisiteReadingsPresent = onlyPrequisiteReadingsPresent == null ? Boolean.FALSE : onlyPrequisiteReadingsPresent;
 
-                            if (alarmRule.getAlarmTriggerRule().overPeriod > 0 || alarmRule.getAlarmTriggerRule().occurences > 0 || alarmRule.getAlarmTriggerRule().isConsecutive() || alarmRule.getAlarmTriggerRule().thresholdType == ReadingRuleContext.ThresholdType.FLAPPING) {
+                            ReadingRuleContext triggerRule = (ReadingRuleContext) alarmRule.getAlarmTriggerRule();
+
+                            if (triggerRule.overPeriod > 0 || triggerRule.occurences > 0 || triggerRule.isConsecutive() || triggerRule.thresholdType == ReadingRuleContext.ThresholdType.FLAPPING) {
                                 PreEventContext preEvent = constructPreClearEvent(reading, (ResourceContext) reading.getParent());
                                 preEvent.constructAndAddPreClearEvent(context);
                                 isPreEvent = true;
@@ -1092,7 +1123,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements ReadingRu
                         }
                     }
                     if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 339l) {
-//						LOGGER.info("Time taken to execute false actions  : "+getId()+ " for isPreEvent: " + isPreEvent +" is "+(System.currentTimeMillis() - startTime));			
+						LOGGER.debug("Time taken to execute false actions  : "+getId()+ " for isPreEvent: " + isPreEvent +" is "+(System.currentTimeMillis() - startTime));
                     }
                 } else {
                     ReadingRuleAPI.addClearEvent(context, placeHolders, this, reading.getId(), val, reading.getTtime(), reading.getParentId());

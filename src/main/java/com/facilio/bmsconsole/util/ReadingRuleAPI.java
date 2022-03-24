@@ -703,7 +703,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 
 		ReadingRuleContext preRequsiteRule = alarmRule.getPreRequsite();
 
-		ReadingRuleContext alarmTriggerRule = alarmRule.getAlarmTriggerRule();
+		ReadingRuleContext alarmTriggerRule = (ReadingRuleContext) alarmRule.getAlarmTriggerRule();
 		if(alarmTriggerRule != null) {
 			ReadingRuleAPI.fillDefaultPropsForAlarmRule(alarmTriggerRule,preRequsiteRule,WorkflowRuleContext.RuleType.ALARM_TRIGGER_RULE,preRequsiteRule.getId());
 			alarmTriggerRule.setOnSuccess(true);
@@ -718,14 +718,14 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		else if (!alarmRule.isAutoClear()) {
 			FacilioChain chain = TransactionChainFactory.updateWorkflowRuleChain();
 			FacilioContext updateWorkflowContext = chain.getContext();
-			ReadingRuleContext oldReadingRule = oldRule.getAlarmTriggerRule();
+			ReadingRuleContext oldReadingRule = (ReadingRuleContext) oldRule.getAlarmTriggerRule();
 			oldReadingRule.setClearAlarm(alarmRule.isAutoClear());
 			updateWorkflowContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, oldReadingRule);
 			chain.execute();
 		}
 
 		if(alarmTriggerRule == null) {
-			alarmTriggerRule = oldRule.getAlarmTriggerRule();			// setting it here since its used bellow
+			alarmTriggerRule = (ReadingRuleContext) oldRule.getAlarmTriggerRule();			// setting it here since its used bellow
 		}
 
 		List<Long> alarmRCARules = alarmRule.getAlarmRCARules();
@@ -768,7 +768,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		
 		ReadingRuleContext preRequsiteRule = alarmRule.getPreRequsite();
 
-		ReadingRuleContext alarmTriggerRule = alarmRule.getAlarmTriggerRule();
+		ReadingRuleContext alarmTriggerRule = (ReadingRuleContext) alarmRule.getAlarmTriggerRule();
 		fillDefaultPropsForAlarmRule(alarmTriggerRule,preRequsiteRule,WorkflowRuleContext.RuleType.ALARM_TRIGGER_RULE,preRequsiteRule.getId());
 		alarmTriggerRule.setOnSuccess(true);
 		alarmTriggerRule.setClearAlarm(alarmRule.isAutoClear());
@@ -946,42 +946,41 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		}
 		return rcaMap;
 	}
-	public static Map<String,Object> getMatchedResourcesWithCount(ReadingRuleContext readingRule) throws Exception{
-		Map<String,Object> resourcesWithCount=new HashMap<>();
-		List<Long> matchedResourceIds=new ArrayList<>();
+
+	public static Map<String, Object> getMatchedResourcesWithCount(ReadingRuleContext readingRule) throws Exception {
+		Map<String, Object> resourcesWithCount = new HashMap<>();
+		List<Long> matchedResourceIds = new ArrayList<>();
 		Map<Long, ResourceContext> matchedResources = new HashMap<>();
-			if (readingRule.getAssetCategoryId() == -1) {
-				long resourceId = readingRule.getResourceId();
-				matchedResources=Collections.singletonMap(resourceId, ResourceAPI.getExtendedResource(resourceId));
-				for(Long matchedResourceId:matchedResources.keySet())
-				{
-					matchedResourceIds.add(matchedResourceId);
-				}	
+		if (readingRule.getAssetCategoryId() == -1) {
+			long resourceId = readingRule.getResourceId();
+			matchedResources = Collections.singletonMap(resourceId, ResourceAPI.getExtendedResource(resourceId));
+			for (Long matchedResourceId : matchedResources.keySet()) {
+				matchedResourceIds.add(matchedResourceId);
 			}
-			else {
-				List<AssetContext> categoryAssets = AssetsAPI.getAssetListOfCategory(readingRule.getAssetCategoryId());
-				if (categoryAssets != null && !categoryAssets.isEmpty()) {
-					fetchInclusionsExclusions(readingRule);
-					
-					for (AssetContext asset : categoryAssets) {
-						if ( (readingRule.getIncludedResources() == null 
-								|| readingRule.getIncludedResources().isEmpty() 
-								|| readingRule.getIncludedResources().contains(asset.getId()))
-								&& (readingRule.getExcludedResources() == null 
-									|| readingRule.getExcludedResources().isEmpty()
-									|| !readingRule.getExcludedResources().contains(asset.getId()))
-								) {
-							matchedResources.put(asset.getId(), asset);
-							matchedResourceIds.add(asset.getId());
-						}
+		} else {
+			List<AssetContext> categoryAssets = AssetsAPI.getAssetListOfCategory(readingRule.getAssetCategoryId());
+			if (categoryAssets != null && !categoryAssets.isEmpty()) {
+				fetchInclusionsExclusions(readingRule);
+
+				for (AssetContext asset : categoryAssets) {
+					if ((readingRule.getIncludedResources() == null
+							|| readingRule.getIncludedResources().isEmpty()
+							|| readingRule.getIncludedResources().contains(asset.getId()))
+							&& (readingRule.getExcludedResources() == null
+							|| readingRule.getExcludedResources().isEmpty()
+							|| !readingRule.getExcludedResources().contains(asset.getId()))
+					) {
+						matchedResources.put(asset.getId(), asset);
+						matchedResourceIds.add(asset.getId());
 					}
 				}
 			}
-			resourcesWithCount.put("count",matchedResourceIds.size());
-			resourcesWithCount.put("resourceIds",matchedResourceIds);
-
-			return resourcesWithCount;
 		}
+		resourcesWithCount.put("count", matchedResourceIds.size());
+		resourcesWithCount.put("resourceIds", matchedResourceIds);
+
+		return resourcesWithCount;
+	}
 	
 	public static FacilioContext addAdditionalPropsForRecordBasedInstantJob(FacilioModule module, Object record, Map<Long, List<UpdateChangeSet>> currentChangeSet, List<EventType> eventTypes, Context context, RuleType... ruleTypes) {
 		

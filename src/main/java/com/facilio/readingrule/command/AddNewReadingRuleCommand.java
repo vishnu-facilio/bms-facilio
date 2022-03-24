@@ -28,7 +28,7 @@ public class AddNewReadingRuleCommand extends FacilioCommand {
         context.put(NSContextNames.NAMESPACE, readingRule.getCondition().getNs());
         context.put(NSContextNames.PARENT_RULE_ID, readingRule.getCondition().getId());
         context.put(NSContextNames.NAMESPACE_FIELDS, readingRule.getCondition().getNs().getFields());
-        context.put(FacilioConstants.ContextNames.ASSETS, readingRule.getAssetContexts());
+        context.put(FacilioConstants.ContextNames.ASSETS, readingRule.getMatchedResources());
 
         return Boolean.FALSE;
     }

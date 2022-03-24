@@ -104,8 +104,8 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRul
 							fields.addAll(workflowFields);
 						}
 					}
-					if(alarmRule.getAlarmTriggerRule().getWorkflow() != null) {
-						List<WorkflowFieldContext> workflowFields = WorkflowUtil.getWorkflowFields(alarmRule.getAlarmTriggerRule().getWorkflow().getId());
+					if(((ReadingRuleContext)alarmRule.getAlarmTriggerRule()).getWorkflow() != null) {
+						List<WorkflowFieldContext> workflowFields = WorkflowUtil.getWorkflowFields(((ReadingRuleContext)alarmRule.getAlarmTriggerRule()).getWorkflow().getId());
 						if(workflowFields != null) {
 							fields.addAll(workflowFields);
 						}

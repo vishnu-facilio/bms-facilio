@@ -83,6 +83,7 @@ public class LookupSpecialTypeUtil {
 				|| ModuleFactory.getNewAgentModule().getName().equals(specialType)
 				|| ModuleFactory.getAgentDataModule().getName().equals(specialType)
 				|| ModuleFactory.getTriggerModule().getName().equals(specialType)
+				|| ModuleFactory.getNewReadingRuleModule().getName().equals(specialType)
 				;
 	}
 	
@@ -808,6 +809,9 @@ public class LookupSpecialTypeUtil {
 		}
 		else if(FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
 			return ModuleFactory.getReadingRuleModule();
+		}
+		else if(FacilioConstants.ContextNames.NEW_READING_RULE_MODULE.equals(specialType)) {
+			return ModuleFactory.getNewReadingRuleModule();
 		}
 //		else if (ContextNames.SLA_RULE_MODULE.equals(specialType)) {
 //			return ModuleFactory.getSLAWorkflowRuleModule();

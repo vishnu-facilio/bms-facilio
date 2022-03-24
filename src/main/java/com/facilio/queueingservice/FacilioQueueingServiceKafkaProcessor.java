@@ -2,6 +2,8 @@ package com.facilio.queueingservice;
 
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import com.facilio.queue.source.KafkaMessageSource;
 import com.facilio.queueingservice.services.QueueingService;
 import com.facilio.server.ServerInfo;
@@ -32,12 +34,14 @@ public class FacilioQueueingServiceKafkaProcessor extends FacilioProcessor {
 	}
 
 	@Override
-	public void processRecords(List<FacilioRecord> records) {
+	public void processRecords(List<FacilioRecord> records){
 		// TODO Auto-generated method stub
-		queueingService.processRecords(records);
-		for (FacilioRecord record : records) {
-			getConsumer().commit(record);
-		}
+		if(!CollectionUtils.isEmpty(records)) {
+			queueingService.processRecords(records);
+			for (FacilioRecord record : records) {
+				getConsumer().commit(record);
+			}
+	}
 	}
 
 }

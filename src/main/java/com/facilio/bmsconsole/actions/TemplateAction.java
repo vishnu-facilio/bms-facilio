@@ -170,8 +170,8 @@ public class TemplateAction  extends FacilioAction {
 			preRequsiteRule.setAssetCategoryId(assetCategory.getId());
 			
 			FacilioField field = modBean.getField((String) obj.get("threshold_metric"), module.getName());
-			
-			alarmRule.getAlarmTriggerRule().setReadingFieldId(field.getFieldId());
+
+			((ReadingRuleContext) alarmRule.getAlarmTriggerRule()).setReadingFieldId(field.getFieldId());
 			preRequsiteRule.setModuleId(module.getModuleId());
 			preRequsiteRule.setActivityType(EventType.CREATE.getValue());
 			alarmRule.setIsAutoClear(true);
@@ -189,8 +189,8 @@ public class TemplateAction  extends FacilioAction {
 					preRequsiteRule.setReadingFieldId(preRequesitefield.getId());
 				} else if (((String)rule.get("action")).equals("TRIGGER_ALARM")) {
 					alarmRule.getAlarmTriggerRule().setName("TRIGGER_ALARM");
-					alarmRule.getAlarmTriggerRule().setWorkflow(list.get(0));
-					alarmRule.getAlarmTriggerRule().setThresholdType((int) thresholdType);
+					((ReadingRuleContext) alarmRule.getAlarmTriggerRule()).setWorkflow(list.get(0));
+					((ReadingRuleContext) alarmRule.getAlarmTriggerRule()).setThresholdType((int) thresholdType);
 					ActionContext action = new ActionContext();
 					action.setActionType(ActionType.ADD_ALARM);
 					JSONObject possible = new JSONObject();
@@ -218,7 +218,7 @@ public class TemplateAction  extends FacilioAction {
 					content = new JSONObject();
 					possible.put("fieldMatcher", fieldMatcher);
 					action.setTemplateJson(possible);
-					alarmRule.getAlarmTriggerRule().setActions(Collections.singletonList(action));
+					((ReadingRuleContext) alarmRule.getAlarmTriggerRule()).setActions(Collections.singletonList(action));
 				}
 			}
 			FacilioContext facilioContext = new FacilioContext();

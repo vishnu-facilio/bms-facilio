@@ -143,6 +143,7 @@ public class ModuleFactory {
 		moduleMap.put(ContextNames.FacilityBooking.FACILITY, getFacilityModule());
 		moduleMap.put(ContextNames.TRANSFER_REQUEST, getTransferRequestModule());
 		moduleMap.put(ContextNames.TRANSFER_REQUEST_SHIPMENT, getTransferRequestShipmentModule());
+		moduleMap.put(ContextNames.NEW_READING_RULE_MODULE, getNewReadingRuleModule());
 		return moduleMap;
 	}
 	
@@ -597,6 +598,14 @@ public class ModuleFactory {
 		workflowRuleModule.setName("workflowruleRCAMapping");
 		workflowRuleModule.setDisplayName("Workflow Rule RCA Mapping");
 		workflowRuleModule.setTableName("Workflow_RCA_Mapping");
+		return workflowRuleModule;
+	}
+
+	public static FacilioModule getReadingRuleRCAMapping() {
+		FacilioModule workflowRuleModule = new FacilioModule();
+		workflowRuleModule.setName("reading_rule_rca_mapping");
+		workflowRuleModule.setDisplayName("Reading Rule RCA Mapping");
+		workflowRuleModule.setTableName("ReadingRule_RCA_Mapping");
 		return workflowRuleModule;
 	}
 	

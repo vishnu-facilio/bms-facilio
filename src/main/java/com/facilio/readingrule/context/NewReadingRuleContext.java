@@ -1,6 +1,7 @@
 package com.facilio.readingrule.context;
 
-import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleInterface;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
@@ -9,6 +10,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Setter
 @Getter
@@ -40,7 +42,7 @@ public class NewReadingRuleContext implements ReadingRuleInterface, Cloneable {
 
     List<Long> assets;
 
-    List<AssetContext> assetContexts;
+    private Map<Long, ResourceContext> matchedResources;
 
     RuleAlarmDetails alarmDetails;
 
@@ -48,31 +50,34 @@ public class NewReadingRuleContext implements ReadingRuleInterface, Cloneable {
 
     boolean status;
 
+    List<Long> rcaRules;
+
+    public List<Long> getRcaRules() {
+        return (rcaRules == null) ? new ArrayList<>() : rcaRules;
+    }
+
     public boolean isActive() {
         return status;
     }
 
     FacilioField readingField;
 
-    public List<FacilioField> getReadingFields() {
-        return new ArrayList<FacilioField>() {{
-            add(readingField);
-        }};
-    }
-
     public ResourceType getResourceTypeEnum() {
         return ResourceType.ASSET_CATEGORY;
     }
+
+    List<ActionContext> actions;
 
     public String toString() {
         return "id: " + id + ", name : " + name;
     }
 
     public void setNullForResponse() {
-        setAssetContexts(null);
+        setMatchedResources(null);
         setModule(null);
         setReadingField(null);
         condition.setNullForResponse();
+        alarmDetails.setNullForResponse();
     }
 
     public enum ResourceType {

@@ -38,7 +38,7 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
         subscribe(topic);
     }
 
-    private Properties getConsumerProperties(String client, String consumerGroup, KafkaMessageSource messageSource) {
+    public Properties getConsumerProperties(String client, String consumerGroup, KafkaMessageSource messageSource) {
 
         Properties props = new Properties();
         props.put("bootstrap.servers", messageSource.getBroker());

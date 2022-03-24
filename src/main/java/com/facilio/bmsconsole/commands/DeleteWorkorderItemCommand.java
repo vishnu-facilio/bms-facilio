@@ -62,7 +62,7 @@ public class DeleteWorkorderItemCommand extends FacilioCommand {
 
 						List<AssetContext> assets = selectBuilder.get();
 
-						if (assets != null && !assets.isEmpty() && workorderItem.getTransactionStateEnum() != TransactionState.USE) {
+						if (assets != null && !assets.isEmpty() && workorderItem.getTransactionStateEnum() == TransactionState.USE) {
 							AssetContext asset = assets.get(0);
 							asset.setIsUsed(false);
 							updateAsset(asset);

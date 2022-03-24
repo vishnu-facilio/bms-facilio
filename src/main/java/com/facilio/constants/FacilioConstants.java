@@ -1100,7 +1100,9 @@ public class FacilioConstants {
 		public static final String EVENT_TYPES = "eventTypes";
 		public static final String RULE_TYPES = "ruleTypes";
 		public static final String READING_RULE_MODULE = "readingrule";
+		public static final String NEW_READING_RULE_MODULE = "newreadingrule";
 		public static final String NEW_READING_RULE = "newReadingRule";
+		public static final String IS_NEW_READING_RULE = "isnewreadingrule";
 		public static final String READING_ALARM_RULES = "readingalarmrules";
 		public static final String READING_ALARM_RULE = "readingalarmrule";
 		public static final String ALARM_RULE_META = "alarmRuleMeta";
@@ -1992,8 +1994,8 @@ public class FacilioConstants {
 		public static final String SCOPING_CONTEXT_LIST = "scopingContextList";
 		public static final String SCOPING_ID = "scopingId";
 		public static final String VALUE_GENERATORS = "valueGenerators";
-
-
+		public static final String RCA_RULE_IDS = "rca_rule_ids";
+		public static final String CALL_FROM_STORM = "req_from_storm_service";
 		public static class WorkPermit {
 			public static final String WORK_PERMIT_TYPE_CHECKLIST = "workpermittypechecklist";
 			public static final String WORK_PERMIT_TYPE_CHECKLIST_CATEGORY = "workpermittypechecklistcategory";
@@ -2766,6 +2768,14 @@ public class FacilioConstants {
 		
 		public static final String WORKFLOW = "workflow";
 		public static final String WORKFLOW_LIST = "workflows";
+
+		public static final String WORKFLOW_LOG = "workflowLog";
+		public static final String WORKFLOW_LOG_TABLENAME = "Workflow_Log";
+		
+		public static final String WORKFLOW_LOG_PARENT_ID = "workflowLogParentId";
+		public static final String WORKFLOW_LOG_PARENT_TYPE = "workflowLogRecordType";
+		public static final String WORKFLOW_LOG_RECORD_ID = "workflowLogRecordId";
+
 	}
 	public static class WorkOrder{
 		public static final String TABLE_NAME = "Workorders";

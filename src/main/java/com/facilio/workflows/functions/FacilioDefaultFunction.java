@@ -889,7 +889,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 		@Override
 		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			if(objects[0] != null) {
-				return URLEncoder.encode((String)objects[0], "UTF-8");
+				return (URLEncoder.encode((String)objects[0], "UTF-8").replace("+", "%20"));
 			}
 			return null;
 		}

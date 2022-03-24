@@ -30,8 +30,6 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 
-;
-
 public class GetReadingRuleDetailsCommand extends FacilioCommand {
 	
 	private static final Logger LOGGER = LogManager.getLogger(GetReadingRuleDetailsCommand.class.getName());

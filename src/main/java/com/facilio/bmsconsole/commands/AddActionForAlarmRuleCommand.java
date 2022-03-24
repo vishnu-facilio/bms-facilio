@@ -20,7 +20,7 @@ public class AddActionForAlarmRuleCommand extends FacilioCommand {
 		EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 
 		if(eventType != null && eventType == EventType.CREATE) {
-			ReadingRuleContext alarmTriggerRule =  alarmRule.getAlarmTriggerRule();
+			ReadingRuleContext alarmTriggerRule = (ReadingRuleContext) alarmRule.getAlarmTriggerRule();
 			
 			if(alarmTriggerRule != null) {
 				List<ActionContext> actions = ActionAPI.addActions(alarmTriggerRule.getActions(), alarmTriggerRule);

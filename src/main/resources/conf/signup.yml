@@ -104,4 +104,5 @@ classes:
   - com.facilio.bmsconsoleV3.signup.scoping.SensorRollUpAlarmScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.SensorRollUpEventScopingConfig
   - com.facilio.bmsconsoleV3.signup.scoping.SurveyResponseScopingConfig
+  - com.facilio.bmsconsoleV3.signup.workflowlog.WorkFlowLogModules
 

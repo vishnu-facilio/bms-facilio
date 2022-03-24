@@ -29,6 +29,7 @@ import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.v3.util.V3Util;
+import com.facilio.workflowlog.context.WorkflowLogContext.WorkflowLogType;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -1462,7 +1463,17 @@ public enum ActionType {
 			
 			newContext.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflowContext);
 			newContext.put(WorkflowV2Util.WORKFLOW_PARAMS, currentRecordList);
-
+			
+			if(context.get(FacilioConstants.Workflow.WORKFLOW_LOG_PARENT_ID) != null) {
+				newContext.put(FacilioConstants.Workflow.WORKFLOW_LOG_PARENT_ID, context.get(FacilioConstants.Workflow.WORKFLOW_LOG_PARENT_ID));
+			}
+			if(context.get(FacilioConstants.Workflow.WORKFLOW_LOG_RECORD_ID) != null) {
+				newContext.put(FacilioConstants.Workflow.WORKFLOW_LOG_RECORD_ID, context.get(FacilioConstants.Workflow.WORKFLOW_LOG_RECORD_ID));
+			}
+			if(context.get(FacilioConstants.Workflow.WORKFLOW_LOG_PARENT_TYPE) != null) {
+				newContext.put(FacilioConstants.Workflow.WORKFLOW_LOG_PARENT_TYPE, context.get(FacilioConstants.Workflow.WORKFLOW_LOG_PARENT_TYPE));
+			}
+			
 			chain.execute();
 			
 			context.put(WorkflowV2Util.WORKFLOW_RESPONSE, workflowContext.getReturnValue());

@@ -38,8 +38,8 @@ public class GetWorkflowRuleLoggersCommand extends FacilioCommand {
 		Integer preAlarmRuleJobType = null;
 
 		if(ruleJobTypeEnum == RuleJobType.READING_ALARM) {
-			AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(Collections.singletonList(ruleId), false, true),null);
-			ReadingRuleContext triggerRule = alarmRule.getAlarmTriggerRule();
+//			AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(Collections.singletonList(ruleId), false, true),null);
+//			ReadingRuleContext triggerRule = alarmRule.getAlarmTriggerRule();
 //			if(triggerRule.isConsecutive() || triggerRule.getOverPeriod() > 0 || triggerRule.getOccurences() > 1) {
 				preAlarmRuleJobType = RuleJobType.PRE_ALARM.getIndex();
 //			}	

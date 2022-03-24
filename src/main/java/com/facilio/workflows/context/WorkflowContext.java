@@ -33,10 +33,17 @@ import com.facilio.scriptengine.context.ErrorListener;
 import com.facilio.scriptengine.context.ParameterContext;
 import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.util.WorkflowGlobalParamUtil;
+import com.facilio.workflowlog.context.WorkflowLogContext;
+import com.facilio.workflowlog.context.WorkflowLogContext.WorkflowLogStatus;
+import com.facilio.workflowlog.context.WorkflowLogContext.WorkflowLogType;
 import com.facilio.workflows.context.WorkflowExpression.WorkflowExpressionType;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.Visitor.WorkflowFunctionVisitor;
 import com.facilio.workflowv2.parser.ScriptParser;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.log4j.Log4j;
 
 public class WorkflowContext extends ScriptContext{
 	
@@ -116,8 +123,32 @@ public class WorkflowContext extends ScriptContext{
 
 	String workflowString;
 	Map<String,Object> globalParameters;
-	List<Object> params;							// for v2 workflow
+	List<Object> params;
 	
+	long recordId;
+	public long getRecordId() {
+		return recordId;
+	}
+	public void setRecordId(long recordId) {
+		this.recordId = recordId;
+	}
+
+	long parentId;
+	WorkflowLogType logType;
+	
+	public long getParentId() {
+		return parentId;
+	}
+	public void setParentId(long parentId) {
+		this.parentId = parentId;
+	}
+	public WorkflowLogType getLogType() {
+		return logType;
+	}
+	public void setLogType(WorkflowLogType logType) {
+		this.logType = logType;
+	}
+
 	boolean isParsedV2Script;
 	
 	public boolean isParsedV2Script() {
@@ -348,7 +379,6 @@ public class WorkflowContext extends ScriptContext{
 				try {
 					WorkflowV2Parser parser = getParser(this.getWorkflowV2String());
 			        ParseTree tree = parser.parse();
-			        
 			        if(!getErrorListener().hasErrors()) {
 			        	WorkflowFunctionVisitor visitor = new WorkflowFunctionVisitor();
 			        	visitor.setScriptContext(this);
@@ -357,8 +387,7 @@ public class WorkflowContext extends ScriptContext{
 				        fillDefaultGlobalVariables(globalParameters);
 				        visitor.setGlobalParams(globalParameters);
 				        visitor.visit(tree);
-				        
-//				        WorkflowUtil.sendScriptLogs(this,this.getLogString());
+				        WorkflowUtil.sendScriptLogs(this,this.getLogString(),WorkflowLogStatus.SUCCESS,null);
 			        }
 			        else {
 			        	if(isThrowExceptionForSyntaxError()) {
@@ -367,6 +396,7 @@ public class WorkflowContext extends ScriptContext{
 			        	else {
 			        		LOGGER.log(Level.SEVERE, "Workflow - "+getId()+" has syntax errors - "+getErrorListener().getErrorsAsString());
 			        	}
+			        	WorkflowUtil.sendScriptLogs(this,null,WorkflowLogStatus.SYNTAX_ERROR,getErrorListener().getErrorsAsString());
 			        }
 			        
 			        return this.getReturnValue();
@@ -377,10 +407,12 @@ public class WorkflowContext extends ScriptContext{
 						String name = ((WorkflowUserFunctionContext)this).getName();
 						errorMeg = errorMeg+" name - "+ name;
 					}
-					
-					errorMeg = errorMeg+" message - "+e.getMessage();
+					errorMeg = errorMeg+" message - "+e.getMessage();						
 					this.getLogStringBuilder().append("ERROR ::: "+errorMeg+"\n");
 					LOGGER.log(Level.SEVERE, errorMeg, e);
+					
+					WorkflowUtil.sendScriptLogs(this,this.getLogString(),WorkflowLogStatus.FAILURE,errorMeg);
+					
 					throw e;
 				}
 			}

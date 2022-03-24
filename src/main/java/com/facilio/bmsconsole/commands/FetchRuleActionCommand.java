@@ -16,14 +16,14 @@ public class FetchRuleActionCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         long ruleId = (long) context.get(FacilioConstants.ContextNames.RULE_ID);
         if (ruleId > 0) {
-            List<WorkflowRuleContext> alarmWorkflowRules = ReadingRuleAPI.getAlarmWorkflowRules(ruleId);
-            if (alarmWorkflowRules != null) {
-                for (WorkflowRuleContext alarmWorkflowRule : alarmWorkflowRules ) {
-                    alarmWorkflowRule.setActions(ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), alarmWorkflowRule.getId()));
+                List<WorkflowRuleContext> alarmWorkflowRules = ReadingRuleAPI.getAlarmWorkflowRules(ruleId);
+                if (alarmWorkflowRules != null) {
+                    for (WorkflowRuleContext alarmWorkflowRule : alarmWorkflowRules) {
+                        alarmWorkflowRule.setActions(ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), alarmWorkflowRule.getId()));
+                    }
                 }
-            }
 
-            context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, alarmWorkflowRules);
+                context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, alarmWorkflowRules);
         }
         return false;
     }

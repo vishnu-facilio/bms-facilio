@@ -15,6 +15,9 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.sensor.SensorAlarmContext;
 import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
 
+import com.facilio.bmsconsole.workflow.rule.*;
+import com.facilio.readingrule.context.NewReadingRuleContext;
+import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.report.context.*;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportFolderContext;
@@ -47,11 +50,7 @@ import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.SharingAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
-import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ReadingRuleType;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleMetricContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -712,6 +711,8 @@ public class V2ReportAction extends FacilioAction {
         this.alarmType = alarmType;
     }
 
+    private boolean isNewReadingRule;
+
     public String fetchReadingsFromAlarm() throws Exception {
 
         if (AccountUtil.isFeatureEnabled(FeatureLicense.NEW_ALARMS)) {
@@ -725,6 +726,7 @@ public class V2ReportAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.REPORT_FROM_ALARM, true);
         context.put(FacilioConstants.ContextNames.ALARM_RESOURCE, alarmResource);
         context.put(FacilioConstants.ContextNames.ALARM_TYPE, alarmType);
+        context.put(FacilioConstants.ContextNames.IS_NEW_READING_RULE, this.isNewReadingRule);
         if (readingRuleId > 0) {
             context.put(FacilioConstants.ContextNames.FETCH_EVENT_BAR, true);
             context.put(FacilioConstants.ContextNames.READING_RULE_ID, readingRuleId);
@@ -1291,17 +1293,27 @@ public class V2ReportAction extends FacilioAction {
 
     private void getDataPointFromNewAlarm() throws Exception {
         AlarmOccurrenceContext alarmOccurrence = NewAlarmAPI.getAlarmOccurrence(alarmId);
-
-        List<ReadingRuleContext> readingRules = new ArrayList<>();
+        ReadingAlarm readingAlarmContext = (ReadingAlarm) alarmOccurrence.getAlarm();
+        this.isNewReadingRule = alarmOccurrence instanceof ReadingAlarmOccurrenceContext ? ((ReadingAlarmOccurrenceContext) alarmOccurrence).getIsNewReadingRule() : false;
+        List<ReadingRuleInterface> readingRules = new ArrayList<>();
         if (isWithPrerequsite) { // new 1st
-            ReadingAlarm readingAlarmContext = (ReadingAlarm) alarmOccurrence.getAlarm();
-            AlarmRuleContext alarmRuleContext = new AlarmRuleContext(
-                    ReadingRuleAPI.getReadingRulesList(readingAlarmContext.getRule().getId()));
-            readingRules.add(alarmRuleContext.getAlarmTriggerRule());
-            readingRules.add(alarmRuleContext.getPreRequsite());
+            if (isNewReadingRule) {
+                NewReadingRuleContext newRuleCtx = NewReadingRuleAPI.getRule(readingAlarmContext.getRule().getId());
+                readingRules.add(newRuleCtx);
+                readingRules.add(newRuleCtx);
+            } else {
+                AlarmRuleContext alarmRuleContext = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(readingAlarmContext.getRule().getId()));
+                readingRules.add(alarmRuleContext.getAlarmTriggerRule());
+                readingRules.add(alarmRuleContext.getPreRequsite());
+            }
         } else if (readingRuleId > 0) { // new 2nd
-            ReadingRuleContext readingruleContext = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(readingRuleId);
-            readingRules.add(readingruleContext);
+            if (isNewReadingRule) {
+                NewReadingRuleContext newRuleCtx = NewReadingRuleAPI.getRule(readingRuleId);
+                readingRules.add(newRuleCtx);
+            } else {
+                ReadingRuleContext readingruleContext = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(readingRuleId);
+                readingRules.add(readingruleContext);
+            }
         } else { // old
             long ruleId = -1;
 
@@ -1334,18 +1346,24 @@ public class V2ReportAction extends FacilioAction {
         if (readingRules != null && !readingRules.isEmpty() && readingRules.get(0) != null) {
 
             Set readingMap = new HashSet();
-            for (ReadingRuleContext readingRule : readingRules) {
+            for (ReadingRuleInterface readingRule : readingRules) {
                 if (readingRule != null) {
-                    dataPoints.addAll(getDataPointsJSONFromRule(readingRule, resource, alarmOccurrence, readingMap));
+                    if (readingRule instanceof ReadingRuleContext) {
+                        dataPoints.addAll(getDataPointsJSONFromRule((ReadingRuleContext) readingRule, resource, alarmOccurrence, readingMap));
+                    } else {//For NewReadingRuleContext
+                        dataPoints.addAll(getDataPointsJSONFromNewRule((NewReadingRuleContext) readingRule, resource));
+                    }
                 }
             }
 
-            if (readingRules.get(0).getBaselineId() != -1) {
-                JSONArray baselineArray = new JSONArray();
-                JSONObject baselineJson = new JSONObject();
-                baselineJson.put("baseLineId", readingRules.get(0).getBaselineId());
-                baselineArray.add(baselineJson);
-                baseLines = baselineArray.toJSONString();
+            if (!isNewReadingRule) {
+                if (((ReadingRuleContext) readingRules.get(0)).getBaselineId() != -1) {
+                    JSONArray baselineArray = new JSONArray();
+                    JSONObject baselineJson = new JSONObject();
+                    baselineJson.put("baseLineId", ((ReadingRuleContext) readingRules.get(0)).getBaselineId());
+                    baselineArray.add(baselineJson);
+                    baseLines = baselineArray.toJSONString();
+                }
             }
 
         } else if (alarmOccurrence.getAlarm() instanceof MLAnomalyAlarm) {
@@ -1365,7 +1383,9 @@ public class V2ReportAction extends FacilioAction {
         if (newFormat) {
             long baselineId = -1l;
             if (readingRules != null && !readingRules.isEmpty() && readingRules.get(0) != null) {
-                baselineId = readingRules.get(0).getBaselineId();
+                if(readingRules.get(0) instanceof ReadingRuleContext) {
+                    baselineId = ((ReadingRuleContext) readingRules.get(0)).getBaselineId();
+                }
             }
             ReportUtil.setAliasForDataPoints(dataPoints, baselineId);
         }
@@ -1421,7 +1441,7 @@ public class V2ReportAction extends FacilioAction {
             ReadingAlarmContext readingAlarmContext = (ReadingAlarmContext) alarmContext;
             AlarmRuleContext alarmRuleContext = new AlarmRuleContext(
                     ReadingRuleAPI.getReadingRulesList(readingAlarmContext.getRuleId()));
-            readingRules.add(alarmRuleContext.getAlarmTriggerRule());
+            readingRules.add((ReadingRuleContext) alarmRuleContext.getAlarmTriggerRule());
             readingRules.add(alarmRuleContext.getPreRequsite());
 
         } else if (readingRuleId > 0) { // new 2nd
@@ -1540,8 +1560,29 @@ public class V2ReportAction extends FacilioAction {
         fields = dataPoints.toJSONString();
     }
 
+    private Collection getDataPointsJSONFromNewRule(NewReadingRuleContext readingRule, ResourceContext resource) throws Exception {
+        JSONArray dataPoints = new JSONArray();
+
+        if (readingRule.getFieldId() > 0) {
+            JSONObject dataPoint = new JSONObject();
+
+            dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
+
+            JSONObject yAxisJson = new JSONObject();
+            yAxisJson.put("fieldId", readingRule.getFieldId());
+            updateTimeRangeAsPerFieldType(readingRule.getFieldId());
+            yAxisJson.put("aggr", 0);
+
+            dataPoint.put("yAxis", yAxisJson);
+
+            dataPoint.put("type", 1);
+            dataPoints.add(dataPoint);
+        }
+        return dataPoints;
+    }
+
     private JSONArray getDataPointsJSONFromRule(ReadingRuleContext readingruleContext, ResourceContext resource,
-            AlarmOccurrenceContext alarm, Set readingMap) throws Exception {
+                                                AlarmOccurrenceContext alarm, Set readingMap) throws Exception {
         JSONArray dataPoints = new JSONArray();
         ResourceContext currentResource = resource;
 
@@ -1776,7 +1817,7 @@ public class V2ReportAction extends FacilioAction {
     }
 
     private JSONArray getDataPointsJSONFromRule(ReadingRuleContext readingruleContext, ResourceContext resource,
-            AlarmContext alarmContext) throws Exception {
+                                                AlarmContext alarmContext) throws Exception {
 
         JSONArray dataPoints = new JSONArray();
         if (readingruleContext.getReadingRuleTypeEnum() == ReadingRuleType.ML_RULE) {
@@ -2120,7 +2161,7 @@ public class V2ReportAction extends FacilioAction {
             setResult("report", reportContext);
         }
         setResult("reportXValues", context.get(FacilioConstants.ContextNames.REPORT_X_VALUES)); // This can be removed
-                                                                                                // from new format
+        // from new format
         setResult("reportData", context.get(FacilioConstants.ContextNames.REPORT_DATA));
         setResult("reportVarianceData", context.get(FacilioConstants.ContextNames.REPORT_VARIANCE_DATA));
         // setResult("reportAlarms",

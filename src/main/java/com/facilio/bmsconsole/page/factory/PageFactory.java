@@ -116,6 +116,7 @@ public class PageFactory {
 			case ContextNames.TENANT:
 				return TenantPageFactory.getTenantPage((TenantContext) record, module);
 			case ContextNames.READING_RULE_MODULE:
+			case ContextNames.NEW_READING_RULE_MODULE:
 				return RulePageFactory.getRulePage((AlarmRuleContext) record);
 			case ContextNames.MV_PROJECT_MODULE:
 				return MVProjectPageFactory.getMVProjectPage((MVProjectWrapper) record);

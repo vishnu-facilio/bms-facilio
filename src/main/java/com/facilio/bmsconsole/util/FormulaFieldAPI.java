@@ -68,6 +68,8 @@ import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
+import com.facilio.workflowlog.context.WorkflowLogContext;
+import com.facilio.workflowlog.context.WorkflowLogContext.WorkflowLogType;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.IteratorContext;
 import com.facilio.workflows.context.WorkflowContext;
@@ -295,12 +297,10 @@ public class FormulaFieldAPI {
 	public static List<ReadingContext> calculateFormulaReadings(long resourceId, String moduleName, String fieldName, List<DateRange> intervals, WorkflowContext workflow, boolean ignoreNullValues, boolean addValue) throws Exception {
 		return calculateFormulaReadings(resourceId, moduleName, fieldName, intervals, workflow, ignoreNullValues, addValue, false);
 	}
-	
 	public static List<ReadingContext> calculateFormulaReadings(long resourceId, String moduleName, String fieldName, List<DateRange> intervals, WorkflowContext workflow, boolean ignoreNullValues, boolean addValue, boolean calculateVMDeltaThroughFormula) throws Exception {
 		if (intervals != null && !intervals.isEmpty()) {
 //			intervals.get(0).getStartTime();
 //			intervals.get(intervals.size() - 1).getEndTime();
-			
 			List<ReadingContext> readings = new ArrayList<>();
 			for(DateRange interval : intervals) {
 				long iStartTime = interval.getStartTime();
@@ -320,6 +320,100 @@ public class FormulaFieldAPI {
 					
 					boolean isChildMeterMarked = setWorkflowCacheMapForVM(moduleName,fieldName,iStartTime,iEndTime, workflow, calculateVMDeltaThroughFormula, params);	
 					Object workflowResult = WorkflowUtil.getWorkflowExpressionResult(workflow, params, null, ignoreNullValues, false);
+					if (AccountUtil.getCurrentOrg().getId() == 78l && resourceId == 1248194l) {
+						LOGGER.debug("Result of Formula : " + fieldName + " for resource : " + resourceId + " : " + workflowResult+", ttime : "+iEndTime);
+					}
+					if (AccountUtil.getCurrentOrg().getId() == 405) {
+						LOGGER.debug("Result of Formula : " + fieldName + " for resource : " + resourceId + " : " + workflowResult+", ttime : "+iEndTime);
+					}
+					
+					if(workflowResult != null) {
+						Double resultVal = Double.parseDouble(workflowResult.toString());
+						if (resultVal != null) {
+							ReadingContext reading = new ReadingContext();
+							reading.setParentId(resourceId);
+							reading.addReading(fieldName, resultVal);
+							reading.addReading("startTime", iStartTime);
+							reading.setTtime(iEndTime);
+							if(isChildMeterMarked && calculateVMDeltaThroughFormula) {
+								reading.setMarked(isChildMeterMarked);
+							}
+							readings.add(reading);
+							
+							if (addValue) {	
+								ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");	
+								FacilioField field = modBean.getField(fieldName, moduleName);
+								FormulaFieldContext formulaField = getFormulaField(field);
+								
+								Unit inputUnit = null; 
+								if(AccountUtil.getCurrentOrg().getOrgId() == 349l && formulaField != null && formulaField.getFormulaFieldTypeEnum() == FormulaFieldType.ENPI && field instanceof NumberField) {	//temp check doing only for ENPI
+									NumberField numberfield = (NumberField) field;
+									inputUnit = getOrgDisplayUnit(numberfield);
+								}
+								
+								FacilioContext context = new FacilioContext();
+								context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+								context.put(FacilioConstants.ContextNames.READING, reading);
+		//						context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
+								context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
+								
+								context.put(FacilioConstants.ContextNames.FORMULA_INPUT_UNIT_STRING,inputUnit);
+								
+								FacilioChain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+								addReadingChain.execute(context);
+							}
+						}
+					}
+					if(calculateVMDeltaThroughFormula) {
+						workflow.setCachedData(null);
+					}
+					long timeTaken = System.currentTimeMillis() - startTime;
+					LOGGER.debug("Time taken for Formula calculation of : "+fieldName+" between "+iStartTime+" and "+iEndTime+" : "+timeTaken);
+
+				}
+				catch (SQLException e) {
+					LOGGER.error("calculateFormulaReadings failed by SQLException. resource id : " + resourceId + " , field name : " + fieldName +", workflow : " + workflow.getId() , e );
+					throw e;
+				}
+				catch (Exception e) {
+					LOGGER.error("calculateFormulaReadings failed. resource id : " + resourceId + " , field name : " + fieldName + ", intervals : " + intervals +", workflow : " + workflow.getId() , e );
+					if (e.getMessage() == null || !(e.getMessage().contains("Division by zero") || e.getMessage().contains("Division undefined")  || e.getMessage().contains("/ by zero"))) {
+						CommonCommandUtil.emailException("FormulaFieldAPI", "Formula calculation failed for : "+fieldName+" between "+iStartTime+" and "+iEndTime, e);
+					}
+				}
+			}
+			return readings;
+		}
+		return null;
+	}
+	
+	public static List<ReadingContext> calculateFormulaReadings(long resourceId, String moduleName, String fieldName, List<DateRange> intervals, WorkflowContext workflow, boolean ignoreNullValues, boolean addValue, long formulaId) throws Exception {
+		return calculateFormulaReadings(resourceId, moduleName, fieldName, intervals, workflow, ignoreNullValues, addValue, false, formulaId);
+	}
+	
+	public static List<ReadingContext> calculateFormulaReadings(long resourceId, String moduleName, String fieldName, List<DateRange> intervals, WorkflowContext workflow, boolean ignoreNullValues, boolean addValue, boolean calculateVMDeltaThroughFormula, long formulaId) throws Exception {
+		if (intervals != null && !intervals.isEmpty()) {
+//			intervals.get(0).getStartTime();
+//			intervals.get(intervals.size() - 1).getEndTime();
+			List<ReadingContext> readings = new ArrayList<>();
+			for(DateRange interval : intervals) {
+				long iStartTime = interval.getStartTime();
+				long iEndTime = interval.getEndTime();
+				try {
+					long startTime = System.currentTimeMillis();
+					HashMap<String, Object> params = new HashMap<>();
+					params.put("startTime", iStartTime);
+					params.put("endTime", iEndTime);
+					params.put("resourceId", resourceId);
+					params.put("currentModule", moduleName);
+					params.put("currentField", fieldName);
+					
+					if (workflow.getWorkflowString() == null) {
+						workflow.setWorkflowString(WorkflowUtil.getXmlStringFromWorkflow(workflow));
+					}
+					
+					boolean isChildMeterMarked = setWorkflowCacheMapForVM(moduleName,fieldName,iStartTime,iEndTime, workflow, calculateVMDeltaThroughFormula, params);	
+					Object workflowResult = WorkflowUtil.getWorkflowExpressionResult(workflow, params, null, ignoreNullValues, false, formulaId,resourceId,WorkflowLogType.FORMULA);
 					if (AccountUtil.getCurrentOrg().getId() == 78l && resourceId == 1248194l) {
 						LOGGER.debug("Result of Formula : " + fieldName + " for resource : " + resourceId + " : " + workflowResult+", ttime : "+iEndTime);
 					}

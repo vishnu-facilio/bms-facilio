@@ -1,6 +1,7 @@
 package com.facilio.readingrule.command;
 
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.command.FacilioCommand;
@@ -11,12 +12,14 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
+import lombok.NonNull;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ReadingRuleDependenciesCommand extends FacilioCommand {
@@ -51,16 +54,17 @@ public class ReadingRuleDependenciesCommand extends FacilioCommand {
     private void setAssets() throws Exception {
         List<Long> assets = rule.getAssets();
         if (CollectionUtils.isNotEmpty(assets)) {
-            List<AssetContext> assetInfo = AssetsAPI.getAssetInfo(assets);
+            @NonNull List<AssetContext> assetInfo = AssetsAPI.getAssetInfo(assets);
 
             for (Long asset : assets) {
-                List<AssetContext> info = assetInfo.stream().filter(assetCtx -> assetCtx.getId() == asset).collect(Collectors.toList());
-                if (info.isEmpty()) {
+                boolean present = assetInfo.stream().filter(assetCtx -> assetCtx.getId() == asset).findAny().isPresent();
+                if (!present) {
                     throw new RuntimeException("Asset (" + asset + ") is not found");
                 }
             }
 
-            rule.setAssetContexts(assetInfo);
+            Map<Long, ResourceContext> resourcesMap = assetInfo.stream().collect(Collectors.toMap(ResourceContext::getId, Function.identity()));
+            rule.setMatchedResources(resourcesMap);
         }
     }
 

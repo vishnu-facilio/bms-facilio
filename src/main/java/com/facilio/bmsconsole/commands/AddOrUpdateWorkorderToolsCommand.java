@@ -125,10 +125,10 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 										throw new IllegalArgumentException("Insufficient quantity in inventory!");
 									}
 									WorkorderToolsContext woTool = new WorkorderToolsContext();
+									asset.setIsUsed(true);
 									woTool = setWorkorderItemObj(null, 1, tool, parentId, workorder,
 											workorderTool, approvalState, asset, workorderTool.getRequestedLineItem(), parentTransactionId, context);
 									updatePurchasedTool(asset);
-									asset.setIsUsed(true);
 									workorderToolslist.add(woTool);
 									toolsToBeAdded.add(woTool);
 								}
