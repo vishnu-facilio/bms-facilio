@@ -171,10 +171,10 @@ public class V3FloorPlanAPI {
 			  V3FloorplanCustomizationContext assignCustomization = (V3FloorplanCustomizationContext) context.get("FLOORPLAN_ASSIGNMENT_CUSTOMIZATION");
 			  V3FloorplanCustomizationContext bookingCustomization = (V3FloorplanCustomizationContext) context.get("FLOORPLAN_BOOKING_CUSTOMIZATION");
 			  String spaceColor = assignCustomization.getSpaceBookingState().getNonReservableColor();
-			  String reservedColor = bookingCustomization.getSpaceBookingState().getNotAvailableColor();
-			  String availableColor = bookingCustomization.getSpaceBookingState().getAvailableColor();
-			  String nonReservableColor = bookingCustomization.getSpaceBookingState().getNonReservableColor();
-			  String partiallyAvailableColor = bookingCustomization.getSpaceBookingState().getPartiallyAvailableColor();
+			  String reservedColor = bookingCustomization.getBookingState().getNotAvailableColor();
+			  String availableColor = bookingCustomization.getBookingState().getAvailableColor();
+			  String nonReservableColor = bookingCustomization.getBookingState().getNonReservableColor();
+			  String partiallyAvailableColor = bookingCustomization.getBookingState().getPartiallyAvailableColor();
 
 	 			   properties.setObjectId(zone.getId());
 	 			   properties.setRecordId(zone.getRecordId());
@@ -190,7 +190,6 @@ public class V3FloorPlanAPI {
 						properties.setLabel(bookingCustomization.getSpacePrimaryLabel().getLabelType().format(zone.getSpace()));
 						properties.setSecondaryLabel(bookingCustomization.getSpaceSecondaryLabel().getLabelType().format(zone.getSpace()));
 						properties.setZoneBackgroundColor(nonReservableColor);
-
 					}
 
 	 				if (zone.getSpace().getSpaceCategory() != null && zone.getSpace().getSpaceCategory().getName() != null) {
