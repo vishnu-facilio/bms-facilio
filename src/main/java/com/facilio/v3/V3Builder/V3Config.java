@@ -18,6 +18,16 @@ public class V3Config implements V3Builder {
     private ListHandler listHandler;
     private SummaryHandler summaryHandler;
     private ModuleCustomFieldsCount customFieldsCount;
+    private boolean dontUseInScript = false;
+
+    public V3Config dontUseInScript() {
+        this.dontUseInScript = true;
+        return this;
+    }
+
+    public boolean canUseInScript() {
+        return !dontUseInScript;
+    }
 
     public SummaryHandler getSummaryHandler() {
         return summaryHandler;

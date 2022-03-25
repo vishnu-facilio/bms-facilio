@@ -1,21 +1,22 @@
 package com.facilio.bmsconsole.workflow.rule;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.TemplateAttachment;
 import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.modules.FieldUtil;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ActionContext implements Serializable {
 	/**
@@ -108,6 +109,13 @@ public class ActionContext implements Serializable {
 	}
 	
 	public boolean executeAction(Map<String, Object> placeHolders, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+		if (context.containsKey(FacilioConstants.ContextNames.ONLY_PERMITTED_ACTIONS)) {
+			Boolean onlyPermittedActions = (Boolean) context.get(ContextNames.ONLY_PERMITTED_ACTIONS);
+			if (BooleanUtils.isTrue(onlyPermittedActions) && !actionType.isPermitted()) {
+				// it won't run restricted actions
+				return true;
+			}
+		}
 		if(template != null) {
 			JSONObject actionObj = template.getTemplate(placeHolders);
 			

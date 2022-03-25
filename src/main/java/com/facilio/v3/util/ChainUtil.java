@@ -369,6 +369,26 @@ public class ChainUtil {
         return module;
     }
 
+    /**
+     * Check whether particular module is v3 supported or not. For now any module that supports v3
+     * should have valid v3Config entry.
+     *
+     * By default, all custom modules are v3 supported.
+     *
+     * This method will be deprecated once all the system modules supports v3.
+     *
+     * @param module
+     * @return
+     * @throws Exception
+     */
+    public static boolean isV3Enabled(FacilioModule module) throws Exception {
+        if (module.isCustom()) {
+            return true;
+        }
+        V3Config v3Config = getV3Config(module);
+        return v3Config != null && v3Config.canUseInScript();
+    }
+
     public static V3Config getV3Config(String moduleName) throws Exception {
         FacilioModule module = getModule(moduleName);
         Objects.requireNonNull(module, "Invalid module for v3 config fetch");
