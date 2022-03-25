@@ -68,7 +68,7 @@ public class V3PeopleAPI {
         return records;
     }
 
-    public static List<V3TenantContactContext> getTenantContacts(Long tenantId, boolean fetchOnlyPrimaryContact, boolean fetchOnlyWithAccess) throws Exception {
+        public static List<V3TenantContactContext> getTenantContacts(Long tenantId, boolean fetchOnlyPrimaryContact, boolean fetchOnlyWithAccess) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT_CONTACT);
         List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.TENANT_CONTACT);
@@ -758,7 +758,30 @@ public class V3PeopleAPI {
 
     }
 
-    public static List<Map<String, Object>> getPeopleForRoles(List<Long> roleIds) throws Exception {
+    public static List<V3TenantContactContext> getTenantContactTenantAndRoles(Long tenantId,List<Long> roleIds) throws Exception {
+        if(tenantId != null  && CollectionUtils.isNotEmpty(roleIds)){
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule tenantContactModule = modBean.getModule(FacilioConstants.ContextNames.TENANT_CONTACT);
+            List<FacilioField> fields = Collections.singletonList(FieldFactory.getIdField("id","ID", tenantContactModule));
+
+            GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                    .table(tenantContactModule.getTableName())
+                    .select(fields)
+                    .innerJoin("ORG_Users")
+                    .on("ORG_Users.PEOPLE_ID = Tenant_Contacts.ID")
+                    .innerJoin("ORG_User_Apps")
+                    .on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
+                    .andCondition(CriteriaAPI.getCondition("ORG_User_Apps.ROLE_ID", "roleId", String.valueOf(StringUtils.join(roleIds, ",")), NumberOperators.EQUALS))
+                    .andCondition(CriteriaAPI.getCondition("Tenant_Contacts.TENANT_ID", "tenantId", String.valueOf(tenantId), NumberOperators.EQUALS));
+
+            List<Map<String, Object>> props = selectBuilder.get();
+            if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(props)) {
+                return FieldUtil.getAsBeanListFromMapList(props, V3TenantContactContext.class);
+            }
+        }
+        return null;
+    }
+        public static List<Map<String, Object>> getPeopleForRoles(List<Long> roleIds) throws Exception {
 
         if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(roleIds)) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

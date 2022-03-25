@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.util.MLServiceUtil;
 import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.*;
+import com.facilio.bmsconsoleV3.commands.Audience.ValidateAudienceSharingCommandV3;
 import com.facilio.bmsconsoleV3.commands.asset.*;
 import com.facilio.bmsconsoleV3.commands.basespace.DeleteBasespaceChildrenCommandV3;
 import com.facilio.bmsconsoleV3.commands.basespace.FetchBasespaceChildrenCountCommandV3;
@@ -1022,15 +1023,17 @@ public class APIv3Config {
     public static Supplier<V3Config> getAudience() {
         return () -> new V3Config(AudienceContext.class, null)
                 .create()
-                .afterSave(new AddOrUpdateAudienceSharingInfoCommandV3())
+                    .beforeSave(new ValidateAudienceSharingCommandV3())
+                    .afterSave(new AddOrUpdateAudienceSharingInfoCommandV3())
                 .update()
-                .afterSave(new AddOrUpdateAudienceSharingInfoCommandV3())
+                    .beforeSave(new ValidateAudienceSharingCommandV3())
+                    .afterSave(new AddOrUpdateAudienceSharingInfoCommandV3())
                 .list()
                   .beforeFetch(new LoadAudienceLookupCommandV3())
                   .afterFetch(new FillAudienceSharingInfoCommandV3())
                 .summary()
-                .beforeFetch(new LoadAudienceLookupCommandV3())
-                .afterFetch(new FillAudienceSharingInfoCommandV3())
+                    .beforeFetch(new LoadAudienceLookupCommandV3())
+                    .afterFetch(new FillAudienceSharingInfoCommandV3())
                 .delete()
                 .build();
     }

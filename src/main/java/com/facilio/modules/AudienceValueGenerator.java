@@ -5,11 +5,15 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.TenantsAPI;
+import com.facilio.bmsconsoleV3.context.CommunitySharingInfoContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceSharingInfoContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -17,13 +21,21 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class AudienceValueGenerator extends ValueGenerator{
+    private static final Logger LOGGER = org.apache.log4j.Logger.getLogger(AudienceValueGenerator.class);
+
     @Override
     public Object generateValueForCondition(int appType) {
         List<Long> tuIds = new ArrayList<Long>();
@@ -73,20 +85,46 @@ public class AudienceValueGenerator extends ValueGenerator{
 
             if(!criteria.isEmpty()) {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
                 FacilioModule subModule = modBean.getModule(FacilioConstants.ContextNames.Tenant.AUDIENCE_SHARING);
+                List<FacilioField> fields = modBean.getAllFields(subModule.getName());
                 SelectRecordsBuilder<AudienceSharingInfoContext> builderCategory = new SelectRecordsBuilder<AudienceSharingInfoContext>()
                         .module(subModule)
                         .beanClass(AudienceSharingInfoContext.class)
-                        .select(modBean.getAllFields(subModule.getName()))
+                        .select(fields)
                         .andCriteria(criteria)
                         ;
+
+                Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+                List<LookupField> supplements = new ArrayList<>();
+
+                LookupField audienceField = (LookupField) fieldsMap.get("audienceId");
+                supplements.add(audienceField);
+
+                builderCategory.fetchSupplements(supplements);
+
                 List<AudienceSharingInfoContext> list = builderCategory.get();
                 if(CollectionUtils.isNotEmpty(list)){
                     List<Long> ids = new ArrayList<>();
+                    List<Long> filterAppliedAudience = new ArrayList<>();
                     for(AudienceSharingInfoContext sh : list) {
+                        if(filterAppliedAudience.contains(sh.getAudienceId().getId())) {
+                            continue;
+                        }
+                        if((sh.getSharingTypeEnum() == CommunitySharingInfoContext.SharingType.BUILDING || sh.getSharingTypeEnum() == CommunitySharingInfoContext.SharingType.TENANT_UNIT) && sh.getAudienceId().getFilterSharingType() != null && sh.getAudienceId().getFilterSharingType().equals(2l)) {
+                            filterAppliedAudience.add(sh.getAudienceId().getId());
+
+                            List<AudienceSharingInfoContext> roleFilter = list.stream()
+                                    .filter(s -> s.getAudienceId().getId() == sh.getAudienceId().getId() && s.getSharingTypeEnum() == CommunitySharingInfoContext.SharingType.ROLE && s.getSharedToRoleId() == AccountUtil.getCurrentUser().getRole().getRoleId())
+                                    .collect(Collectors.toList());
+
+                            if(CollectionUtils.isEmpty(roleFilter)) {
+                                continue;
+                            }
+                        }
+
                         ids.add(sh.getAudienceId().getId());
                     }
+
                     return StringUtils.join(ids, ",");
                 }
             }

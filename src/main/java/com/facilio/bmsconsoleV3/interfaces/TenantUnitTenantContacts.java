@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 public class TenantUnitTenantContacts implements CommunitySharedPeople {
     @Override
-    public List<V3PeopleContext> getPeople(Long id) throws Exception{
+    public List<V3PeopleContext> getPeople(Long id,Long filterSharingType,List<Long> roleIds) throws Exception{
         if(id != null){
 	      Map<Long, TenantContext> tenants= TenantsAPI.getTenantForResources(Collections.singletonList(id));
 	      if(!tenants.isEmpty()) {
@@ -26,7 +26,13 @@ public class TenantUnitTenantContacts implements CommunitySharedPeople {
 	          }
 	          List<V3PeopleContext> users = new ArrayList<>();
 	          for(Long tenantId : tenantIds) {
-	              List<V3TenantContactContext> list = V3PeopleAPI.getTenantContacts(tenantId, false, true);
+				  List<V3TenantContactContext> list = new ArrayList<>();
+				  if(filterSharingType != null && CollectionUtils.isNotEmpty(roleIds)){
+					  list = V3PeopleAPI.getTenantContactTenantAndRoles(tenantId,roleIds);
+				  }
+				  else{
+					  list = V3PeopleAPI.getTenantContacts(tenantId, false, true);
+				  }
 	              if(CollectionUtils.isNotEmpty(list)) {
 	                  users.addAll(list);
 	              }

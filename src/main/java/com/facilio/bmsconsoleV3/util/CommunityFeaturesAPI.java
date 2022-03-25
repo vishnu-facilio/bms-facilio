@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.bmsconsoleV3.context.CommunitySharingInfoContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
+import com.facilio.bmsconsoleV3.context.V3TenantContactContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceSharingInfoContext;
@@ -156,89 +157,102 @@ public class CommunityFeaturesAPI {
 
     }
 
-    public static void addAnnouncementPeople(AnnouncementContext announcement) throws Exception{
+    public static void addAnnouncementPeople(AnnouncementContext announcement) throws Exception {
 
+        Long filterSharingType = null;
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Tenant.PEOPLE_ANNOUNCEMENTS);
         //only if is needed..so condition can be removed once the client supports audience
-        if(announcement.getAudience() != null) {
-           announcement.setAnnouncementsharing(setAudienceSharingInfo(announcement.getAudience()));
-        }
-        else {
+        if (announcement.getAudience() != null) {
+            announcement.setAnnouncementsharing(setAudienceSharingInfo(announcement.getAudience()));
+            filterSharingType = announcement.getAudience().getFilterSharingType();
+        } else {
             announcement.setAnnouncementsharing(getSharingInfo(announcement.getId()));
         }
 
         if(CollectionUtils.isNotEmpty(announcement.getAnnouncementsharing())) {
             Map<Long, PeopleAnnouncementContext> pplMap = new HashMap<>();
-            for(CommunitySharingInfoContext sharingInfo : announcement.getAnnouncementsharing()){
-                List<V3PeopleContext> ppl = new ArrayList<>();
-                //handling only for building sharing type for now.. can be supported for others as well
-                
-                //Tenant Unit
-                if(sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.TENANT_UNIT) {
-                     ppl.addAll(new TenantUnitTenantContacts().getPeople(sharingInfo.getSharedToSpace() != null ? sharingInfo.getSharedToSpace().getId() : null));
-                }
-                
-                //Building
-                if(sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.BUILDING) {
-                    ppl.addAll(new BuildingTenantContacts().getPeople(sharingInfo.getSharedToSpace() != null ? sharingInfo.getSharedToSpace().getId() : null));
-                }
-                
-                //Role
-                if(sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.ROLE) {
-                	List<Map<String, Object>> pplForRoleMap = new ArrayList<>();
-                	if(sharingInfo.getSharedToRole() != null) {
-                        pplForRoleMap = V3PeopleAPI.getPeopleForRoles(Collections.singletonList(sharingInfo.getSharedToRole().getRoleId()));
-                	}
-                	else {
-                		List<Long> portalAppIds = new ArrayList<Long>();
-                    	portalAppIds.add(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP));
-                    	portalAppIds.add(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP));
-                    	portalAppIds.add(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP));
-                        List<Role> roles = AccountUtil.getRoleBean().getRolesForApps(portalAppIds);
-                        if(CollectionUtils.isNotEmpty(roles)) {
-                        	pplForRoleMap = V3PeopleAPI.getPeopleForRoles(roles.stream().map(role -> role.getId()).collect(Collectors.toList()));
+            List<V3PeopleContext> ppl = new ArrayList<>();
+            List<CommunitySharingInfoContext> sharingInfoList = new ArrayList<>();
+            List<Long> sharedToRoleIds = new ArrayList<>();
+            //special handling for including roles filter to spaces (tenant units and buildings)
+            if (filterSharingType != null && filterSharingType == Long.valueOf(CommunitySharingInfoContext.SharingType.ROLE.getIndex())) {
+                sharedToRoleIds = getSharedToRoleIds(announcement.getAnnouncementsharing());
+                sharingInfoList = getSharedToSpaceInfo(announcement.getAnnouncementsharing());;
+            } else {
+                sharingInfoList = announcement.getAnnouncementsharing();
+            }
+            if(CollectionUtils.isNotEmpty(sharingInfoList)) {
+                for (CommunitySharingInfoContext sharingInfo : sharingInfoList) {
+
+                    //Tenant Unit
+                    if (sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.TENANT_UNIT) {
+                        List<V3PeopleContext> people = new TenantUnitTenantContacts().getPeople(sharingInfo.getSharedToSpace() != null ? sharingInfo.getSharedToSpace().getId() : null, filterSharingType, CollectionUtils.isNotEmpty(sharedToRoleIds) ? sharedToRoleIds : null);
+                        if(CollectionUtils.isNotEmpty(people)){
+                            ppl.addAll(people);
                         }
-                	}
-                    if(CollectionUtils.isNotEmpty(pplForRoleMap)) {
-                        ppl.addAll(FieldUtil.getAsBeanListFromMapList(pplForRoleMap, V3PeopleContext.class));
                     }
-                }
-                
-                //People
-                if(sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.PEOPLE) {
-                	if(sharingInfo.getSharedToPeople() != null) {
-                        ppl.add(V3PeopleAPI.getPeopleById(sharingInfo.getSharedToPeople().getId()));
-                	}
-                	else {
-                		List<V3PeopleContext.PeopleType> peopleTypeIds = new ArrayList<V3PeopleContext.PeopleType>();
-                		peopleTypeIds.add(V3PeopleContext.PeopleType.TENANT_CONTACT);
-                		peopleTypeIds.add(V3PeopleContext.PeopleType.VENDOR_CONTACT);
-                    	ppl.addAll(V3PeopleAPI.getPeopleByPeopleTypes(peopleTypeIds));
-                	}
-                }
 
-                if(CollectionUtils.isNotEmpty(ppl)){
-                    for(V3PeopleContext person : ppl) {
+                    //Building
+                    if (sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.BUILDING) {
+                        List<V3PeopleContext> people = new BuildingTenantContacts().getPeople(sharingInfo.getSharedToSpace() != null ? sharingInfo.getSharedToSpace().getId() : null, filterSharingType, CollectionUtils.isNotEmpty(sharedToRoleIds) ? sharedToRoleIds : null);
+                        if(CollectionUtils.isNotEmpty(people)){
+                            ppl.addAll(people);
+                        }
+                    }
 
-                        announcement = getAnnouncementById(announcement.getId());
+                    //Role
+                    if (sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.ROLE) {
+                        List<Map<String, Object>> pplForRoleMap = new ArrayList<>();
+                        if (sharingInfo.getSharedToRole() != null) {
+                            pplForRoleMap = V3PeopleAPI.getPeopleForRoles(Collections.singletonList(sharingInfo.getSharedToRole().getRoleId()));
+                        } else {
+                            List<Long> portalAppIds = new ArrayList<Long>();
+                            portalAppIds.add(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP));
+                            portalAppIds.add(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP));
+                            portalAppIds.add(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP));
+                            List<Role> roles = AccountUtil.getRoleBean().getRolesForApps(portalAppIds);
+                            if (CollectionUtils.isNotEmpty(roles)) {
+                                pplForRoleMap = V3PeopleAPI.getPeopleForRoles(roles.stream().map(role -> role.getId()).collect(Collectors.toList()));
+                            }
+                        }
+                        if (CollectionUtils.isNotEmpty(pplForRoleMap)) {
+                            ppl.addAll(FieldUtil.getAsBeanListFromMapList(pplForRoleMap, V3PeopleContext.class));
+                        }
+                    }
 
-                        PeopleAnnouncementContext pplAnnouncement = FieldUtil.cloneBean(announcement, PeopleAnnouncementContext.class);
-                        pplAnnouncement.setAudience(null);
-                        pplAnnouncement.setIsRead(false);
-                        pplAnnouncement.setPeople(person);
-                        pplAnnouncement.setParentId(announcement.getId());
-                        pplAnnouncement.setCreatedBy(announcement.getSysModifiedBy());
-                        pplAnnouncement.setCreatedTime(announcement.getSysModifiedTime());
-                        pplMap.put(person.getId(), pplAnnouncement);
+                    //People
+                    if (sharingInfo.getSharingTypeEnum() == AnnouncementSharingInfoContext.SharingType.PEOPLE) {
+                        if (sharingInfo.getSharedToPeople() != null) {
+                            ppl.add(V3PeopleAPI.getPeopleById(sharingInfo.getSharedToPeople().getId()));
+                        } else {
+                            List<V3PeopleContext.PeopleType> peopleTypeIds = new ArrayList<V3PeopleContext.PeopleType>();
+                            peopleTypeIds.add(V3PeopleContext.PeopleType.TENANT_CONTACT);
+                            peopleTypeIds.add(V3PeopleContext.PeopleType.VENDOR_CONTACT);
+                            ppl.addAll(V3PeopleAPI.getPeopleByPeopleTypes(peopleTypeIds));
+                        }
                     }
                 }
             }
-            if(MapUtils.isNotEmpty(pplMap)) {
+            if (CollectionUtils.isNotEmpty(ppl)) {
+                for (V3PeopleContext person : ppl) {
+
+                    announcement = getAnnouncementById(announcement.getId());
+
+                    PeopleAnnouncementContext pplAnnouncement = FieldUtil.cloneBean(announcement, PeopleAnnouncementContext.class);
+                    pplAnnouncement.setAudience(null);
+                    pplAnnouncement.setIsRead(false);
+                    pplAnnouncement.setPeople(person);
+                    pplAnnouncement.setParentId(announcement.getId());
+                    pplAnnouncement.setCreatedBy(announcement.getSysModifiedBy());
+                    pplAnnouncement.setCreatedTime(announcement.getSysModifiedTime());
+                    pplMap.put(person.getId(), pplAnnouncement);
+                }
+            }
+            if (MapUtils.isNotEmpty(pplMap)) {
                 V3RecordAPI.addRecord(true, new ArrayList<PeopleAnnouncementContext>(pplMap.values()), module, modBean.getAllFields(FacilioConstants.ContextNames.Tenant.PEOPLE_ANNOUNCEMENTS));
             }
         }
-
     }
 
     public static List<? extends CommunitySharingInfoContext> getSharingInfo(V3Context record, String sharingModuleName, String parentFieldName) throws Exception {
@@ -412,4 +426,33 @@ public class CommunityFeaturesAPI {
         return builder.fetchFirst();
     }
 
+    private static List<Long> getSharedToRoleIds(List<CommunitySharingInfoContext> communitySharingInfo){
+        List<Long> ids = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(communitySharingInfo)) {
+            for (CommunitySharingInfoContext sharingInfo : communitySharingInfo) {
+                if(sharingInfo.getSharedToRole() != null){
+                    ids.add(sharingInfo.getSharedToRole().getId());
+                }
+            }
+        }
+        if(CollectionUtils.isNotEmpty(ids)){
+            return ids;
+        }
+        return null;
+    }
+
+    private static List<CommunitySharingInfoContext> getSharedToSpaceInfo(List<CommunitySharingInfoContext> communitySharingInfo){
+        List<CommunitySharingInfoContext> spaceSharingInfo = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(communitySharingInfo)) {
+            for (CommunitySharingInfoContext sharingInfo : communitySharingInfo) {
+                if(sharingInfo.getSharedToSpace() != null){
+                    spaceSharingInfo.add(sharingInfo);
+                }
+            }
+        }
+        if(CollectionUtils.isNotEmpty(spaceSharingInfo)){
+            return spaceSharingInfo;
+        }
+        return null;
+    }
 }
