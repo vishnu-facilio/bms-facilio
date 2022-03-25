@@ -20,4 +20,8 @@ public interface Topics {
     interface Push {
         String push = "__push__";
     }
+
+    interface InApp{
+        String inApp = "__inApp__";
+    }
 }

@@ -491,6 +491,7 @@ public class AccountUtil {
 		READING_LIVE_UPDATE(66,4,LicenseMapping.GROUP2LICENSE),
 		NEW_READING_RULE(67,8,LicenseMapping.GROUP2LICENSE),
 		RESOURCE_SCHEDULER(68,16,LicenseMapping.GROUP2LICENSE),
+		CUSTOM_MODULE_PERMISSION(69,32,LicenseMapping.GROUP2LICENSE),
 		;
 
     	public int featureId;

@@ -4,6 +4,9 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.V3BuildingContext;
 import com.facilio.bmsconsoleV3.context.V3SiteContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -69,4 +72,30 @@ public class V3SpaceAPI {
         return null;
     }
 
+    public static Criteria getBaseSpaceChildrenCriteria(String moduleName, Long id) {
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(FieldFactory.getBasespaceFields());
+        Criteria criteria = new Criteria();
+        switch (moduleName) {
+            case FacilioConstants.ContextNames.SITE:
+                criteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("site"), String.valueOf(id), NumberOperators.EQUALS));
+                break;
+            case FacilioConstants.ContextNames.BUILDING:
+                criteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("building"), String.valueOf(id), NumberOperators.EQUALS));
+                break;
+            case FacilioConstants.ContextNames.FLOOR:
+                criteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("floor"), String.valueOf(id), NumberOperators.EQUALS));
+                break;
+            case FacilioConstants.ContextNames.SPACE:
+                criteria.addOrCondition(CriteriaAPI.getCondition(fieldsMap.get("space1"), String.valueOf(id), NumberOperators.EQUALS));
+                criteria.addOrCondition(CriteriaAPI.getCondition(fieldsMap.get("space2"), String.valueOf(id), NumberOperators.EQUALS));
+                criteria.addOrCondition(CriteriaAPI.getCondition(fieldsMap.get("space3"), String.valueOf(id), NumberOperators.EQUALS));
+                criteria.addOrCondition(CriteriaAPI.getCondition(fieldsMap.get("space4"), String.valueOf(id), NumberOperators.EQUALS));
+                break;
+            default:
+                criteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("id"), String.valueOf(-1), NumberOperators.EQUALS));
+                break;
+        }
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("id"), String.valueOf(id), NumberOperators.NOT_EQUALS));
+        return criteria;
+    }
 }

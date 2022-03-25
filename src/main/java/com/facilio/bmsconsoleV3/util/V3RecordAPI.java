@@ -312,6 +312,13 @@ public class V3RecordAPI {
         return null;
     }
 
+    public static int deleteRecords (String moduleName, Criteria criteria,boolean markAsDelete) throws Exception {
+        DeleteRecordBuilder deleteRecordBuilder = new DeleteRecordBuilder<ModuleBaseWithCustomFields>().moduleName(moduleName).andCriteria(criteria);
+        if(markAsDelete){
+            return deleteRecordBuilder.markAsDelete();
+        }
+        return deleteRecordBuilder.delete();
+    }
     public static int deleteRecordsById (String moduleName, List<Long> ids) throws Exception {
         return new DeleteRecordBuilder<ModuleBaseWithCustomFields>()
                     .moduleName(moduleName)

@@ -10,6 +10,8 @@ import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.asset.*;
+import com.facilio.bmsconsoleV3.commands.basespace.DeleteBasespaceChildrenCommandV3;
+import com.facilio.bmsconsoleV3.commands.basespace.FetchBasespaceChildrenCountCommandV3;
 import com.facilio.bmsconsoleV3.commands.budget.*;
 import com.facilio.bmsconsoleV3.commands.building.AddOrUpdateBuildingLocation;
 import com.facilio.bmsconsoleV3.commands.building.BuildingFillLookupFieldsCommand;
@@ -1448,7 +1450,10 @@ public class APIv3Config {
                     .beforeSave(new AddOrUpdateSiteLocationCommand())
                     .afterSave(new ConstructUpdateCustomActivityCommandV3(), new AddActivitiesCommand(FacilioConstants.ContextNames.SITE_ACTIVITY))
                 .delete()
-                .summary().beforeFetch(new SiteFillLookupFieldsCommand())
+                    .afterDelete(new DeleteBasespaceChildrenCommandV3())
+                .summary()
+                    .beforeFetch(new SiteFillLookupFieldsCommand())
+                    .afterFetch(new FetchBasespaceChildrenCountCommandV3())
                 .list().beforeFetch(new SiteFillLookupFieldsCommand())
                 .build();
     }
@@ -1463,7 +1468,9 @@ public class APIv3Config {
                     .beforeSave(new AddOrUpdateBuildingLocation(), new SetBuildingRelatedContextCommand())
                     .afterSave(new ConstructUpdateCustomActivityCommandV3(), new AddActivitiesCommand(FacilioConstants.ContextNames.BUILDING_ACTIVITY))
                 .delete()
+                    .afterDelete(new DeleteBasespaceChildrenCommandV3())
                 .summary().beforeFetch(new BuildingFillLookupFieldsCommand())
+                .afterFetch(new FetchBasespaceChildrenCountCommandV3())
                 .list().beforeFetch(new BuildingFillLookupFieldsCommand())
                 .build();
     }
@@ -1478,7 +1485,9 @@ public class APIv3Config {
                     .beforeSave(new SetFloorRelatedContextCommand())
                     .afterSave(new ConstructUpdateCustomActivityCommandV3(), new AddActivitiesCommand(FacilioConstants.ContextNames.FLOOR_ACTIVITY))
                 .delete()
+                    .afterDelete(new DeleteBasespaceChildrenCommandV3())
                 .summary().beforeFetch(new FloorFillLookupFieldsCommand())
+                .afterFetch(new FetchBasespaceChildrenCountCommandV3())
                 .list().beforeFetch(new FloorFillLookupFieldsCommand())
                 .build();
     }
@@ -1493,7 +1502,9 @@ public class APIv3Config {
                     .beforeSave(new AddOrUpdateSpaceLocation(), new SetSpaceRelatedContextCommand())
                     .afterSave(new ConstructUpdateCustomActivityCommandV3(), new AddActivitiesCommand(FacilioConstants.ContextNames.SPACE_ACTIVITY))
                 .delete()
+                    .afterDelete(new DeleteBasespaceChildrenCommandV3())
                 .summary().beforeFetch(new SpaceFillLookupFieldsCommand())
+                    .afterFetch(new FetchBasespaceChildrenCountCommandV3())
                 .list().beforeFetch(new SpaceFillLookupFieldsCommand())
                 .build();
     }

@@ -19,6 +19,8 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
@@ -192,10 +194,10 @@ public class ModuleAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
-	
+
 	public String v2addCustomFields() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ALLOW_SAME_FIELD_DISPLAY_NAME, true);
+		context.put(ContextNames.ALLOW_SAME_FIELD_DISPLAY_NAME, true);
 		setFields(Collections.singletonList(field));
 		addCustomFields(context);
 		

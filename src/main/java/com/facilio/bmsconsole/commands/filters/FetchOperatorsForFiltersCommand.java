@@ -95,7 +95,7 @@ public class FetchOperatorsForFiltersCommand extends FacilioCommand {
         addToOperators(DateOperators.NEXT_MONTH, operators);
 		addToOperators (DateOperators.DAY_OF_MONTH,operators);
 		addToOperators (DateOperators.MONTH,operators);
-		addToOperators (DateOperators.DAY_OF_YEAR,operators);
+//		addToOperators (DateOperators.DAY_OF_YEAR,operators);
 		addToOperators (DateOperators.WEEK_OF_YEAR,operators);
         return operators;
     }

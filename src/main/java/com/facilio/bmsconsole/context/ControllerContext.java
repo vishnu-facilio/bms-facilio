@@ -174,8 +174,7 @@ public class ControllerContext implements Serializable {
 	public long getNetworkNumber() {
 		return this.networkNumber;
 	}
-	
-	
+
 	private JSONObject controllerProps;
 	
 	public JSONObject getControllerProps() {

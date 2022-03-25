@@ -170,10 +170,11 @@ public class V3FloorPlanAPI {
 			  V3IndoorFloorPlanPropertiesContext properties = new V3IndoorFloorPlanPropertiesContext();
 			  V3FloorplanCustomizationContext assignCustomization = (V3FloorplanCustomizationContext) context.get("FLOORPLAN_ASSIGNMENT_CUSTOMIZATION");
 			  V3FloorplanCustomizationContext bookingCustomization = (V3FloorplanCustomizationContext) context.get("FLOORPLAN_BOOKING_CUSTOMIZATION");
-			  String bookingColor = assignCustomization.getSpaceBookingState().getNonReservableColor();
+			  String spaceColor = assignCustomization.getSpaceBookingState().getNonReservableColor();
 			  String reservedColor = bookingCustomization.getSpaceBookingState().getNotAvailableColor();
 			  String availableColor = bookingCustomization.getSpaceBookingState().getAvailableColor();
-			  String isreservableColor = bookingCustomization.getSpaceBookingState().getPartiallyAvailableColor();
+			  String nonReservableColor = bookingCustomization.getSpaceBookingState().getNonReservableColor();
+			  String partiallyAvailableColor = bookingCustomization.getSpaceBookingState().getPartiallyAvailableColor();
 
 	 			   properties.setObjectId(zone.getId());
 	 			   properties.setRecordId(zone.getRecordId());
@@ -182,11 +183,13 @@ public class V3FloorPlanAPI {
 					if (viewMode.equals(FacilioConstants.ContextNames.Floorplan.ASSIGNMENT_VIEW)) {
 						properties.setLabel(assignCustomization.getSpacePrimaryLabel().getLabelType().format(zone.getSpace()));
 						properties.setSecondaryLabel(assignCustomization.getSpaceSecondaryLabel().getLabelType().format(zone.getSpace()));
+						properties.setZoneBackgroundColor(spaceColor);
 					}
 					else if(viewMode.equals(FacilioConstants.ContextNames.Floorplan.BOOKING_VIEW))
 					{
 						properties.setLabel(bookingCustomization.getSpacePrimaryLabel().getLabelType().format(zone.getSpace()));
 						properties.setSecondaryLabel(bookingCustomization.getSpaceSecondaryLabel().getLabelType().format(zone.getSpace()));
+						properties.setZoneBackgroundColor(nonReservableColor);
 
 					}
 
@@ -194,8 +197,6 @@ public class V3FloorPlanAPI {
 	 					properties.setSpaceCategory(zone.getSpace().getSpaceCategory().getName());
 
 	 				}
-	 				
-	 				properties.setZoneBackgroundColor(bookingColor);
 	 				properties.setIsOccupied(false);
 	 				
 	 			
@@ -245,7 +246,7 @@ public class V3FloorPlanAPI {
 	 					
 	 				    if (viewMode.equals(FacilioConstants.ContextNames.Floorplan.BOOKING_VIEW)) {
 	 				    	if (zone.isIsReservable()) {
-		 						properties.setZoneBackgroundColor(isreservableColor);
+		 						properties.setZoneBackgroundColor(availableColor);
 		 					}
 
 							if (MapUtils.isNotEmpty(facilityBookingsMap) && zone.getSpace().getId() > 0) {

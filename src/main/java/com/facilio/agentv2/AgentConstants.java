@@ -53,6 +53,7 @@ public class AgentConstants
     public static final String NETWORK_NUMBER = "networkNumber";
     public static final String URL = "url";
     public static final String INSTANCE_TYPE = "instanceType";
+    public static final String VENDOR_ID = "vendorId";
 
     // opc-ua
     public static final String CERT_PATH = "certPath";
