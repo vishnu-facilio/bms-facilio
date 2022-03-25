@@ -12,15 +12,19 @@ import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
 import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j;
+
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.text.MessageFormat;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Log4j
 public class SerializeAnswersCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -30,6 +34,10 @@ public class SerializeAnswersCommand extends FacilioCommand {
             Map<Long, QuestionContext> questions = getQuestionMap((FacilioContext) context, answers);
             List<ClientAnswerContext> clientAnswers = answers.stream().map(a -> serialze(a, questions, isSingleResponse)).collect(Collectors.toList());
             Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
+            
+            LOGGER.error("recordMap --- "+recordMap);
+            LOGGER.error("answers --- "+answers);
+            
             recordMap.put(FacilioConstants.QAndA.ANSWER, clientAnswers);
             Constants.setJsonRecordMap(context, FieldUtil.getAsJSON(recordMap));
         }
