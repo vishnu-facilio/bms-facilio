@@ -17,6 +17,7 @@ import com.facilio.bmsconsoleV3.commands.floorplan.getFloorplanPropertiesBooking
 import com.facilio.bmsconsoleV3.commands.floorplan.getIndoorFloorPlanBookingResultCommands;
 import com.facilio.bmsconsoleV3.commands.floorplan.getIndoorFloorPlanBookingViewerCommand;
 import com.facilio.bmsconsoleV3.commands.floorplan.getIndoorFloorPlanPropertiesCommand;
+import com.facilio.bmsconsoleV3.commands.people.FetchScopingForPeopleCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.AddDefaultCriteriaForQuoteFetchCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.QuotationFillLookupFields;
 import com.facilio.bmsconsoleV3.commands.tenant.LoadTenantLookUpsCommandV3;
@@ -204,6 +205,13 @@ public class ReadOnlyChainFactoryV3 {
     public static FacilioChain getAgentDetailsCommand() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchAgentDetailsCommand());
+        return c;
+    }
+
+    public static FacilioChain getPeopleRoleAndScopingCommand() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchRolesForPeopleCommandV3());
+        c.addCommand(new FetchScopingForPeopleCommandV3());
         return c;
     }
 }

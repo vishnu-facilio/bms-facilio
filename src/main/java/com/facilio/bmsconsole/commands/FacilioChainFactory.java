@@ -131,6 +131,7 @@ public class FacilioChainFactory {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new AddUserCommand());
 		c.addCommand(new AddEmployeeTypePeopleForUserAdditionCommand());
+		c.addCommand(new AddorUpdateUserScopingCommand());
 		return c;
 	}
 	

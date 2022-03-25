@@ -61,6 +61,7 @@ import com.facilio.bmsconsoleV3.commands.jobplan.FillJobPlanDetailsCommand;
 import com.facilio.bmsconsoleV3.commands.moves.UpdateEmployeeInDesksCommandV3;
 import com.facilio.bmsconsoleV3.commands.moves.ValidateMovesCommand;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
+import com.facilio.bmsconsoleV3.commands.people.FetchScopingForPeopleCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.MarkRandomContactAsPrimaryCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.ValidateContactsBeforeDeleteCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.DeleteReceivableByPOIdV3;
@@ -883,10 +884,10 @@ public class APIv3Config {
 		            .afterSave(TransactionChainFactoryV3.getTenantContactAfterSaveChain())
                 .list()
                     .beforeFetch(new LoadTenantcontactLookupsCommandV3())
-                    .afterFetch(new FetchRolesForPeopleCommandV3())
+                    .afterFetch(ReadOnlyChainFactoryV3.getPeopleRoleAndScopingCommand())
                 .summary()
                     .beforeFetch(new LoadTenantcontactLookupsCommandV3())
-                    .afterFetch(new FetchRolesForPeopleCommandV3())
+                    .afterFetch(ReadOnlyChainFactoryV3.getPeopleRoleAndScopingCommand())
                 .delete()
                     .beforeDelete(new ValidateContactsBeforeDeleteCommandV3())
                     .afterDelete(new MarkRandomContactAsPrimaryCommandV3())

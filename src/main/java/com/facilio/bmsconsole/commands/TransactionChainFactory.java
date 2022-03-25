@@ -20,6 +20,7 @@ import com.facilio.banner.commands.CloseBannerCommand;
 import com.facilio.bmsconsole.actions.GetModuleFromReportContextCommand;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
+import com.facilio.bmsconsole.commands.people.UpdateScopingForPeopleCommand;
 import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.CreateInternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.ValidateAndSetReservationPropCommand;
@@ -5422,8 +5423,7 @@ public class TransactionChainFactory {
 		c.addCommand(new CheckForPeopleDuplicationCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new AddPeopleAccessCommand());
-
-
+		c.addCommand(new UpdateScopingForPeopleCommand());
 		return c;
 	}
 
@@ -5435,6 +5435,7 @@ public class TransactionChainFactory {
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		c.addCommand(new UpdateTenantAppPortalAccessCommand());
+		c.addCommand(new UpdateScopingForPeopleCommand());
 		c.addCommand(new ExecuteStateFlowCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
@@ -5455,6 +5456,7 @@ public class TransactionChainFactory {
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		c.addCommand(new UpdateVendorContactAppPortalAccessCommand());
+		c.addCommand(new UpdateScopingForPeopleCommand());
 		c.addCommand(new ExecuteStateFlowCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
@@ -5473,6 +5475,7 @@ public class TransactionChainFactory {
 		c.addCommand(new AddPeopleTypeForEmployeeCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new UpdateEmployeePeopleAppPortalAccessCommand());
+		c.addCommand(new UpdateScopingForPeopleCommand());
 		c.addCommand(new ExecuteStateFlowCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
@@ -5497,6 +5500,7 @@ public class TransactionChainFactory {
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		c.addCommand(new UpdateTenantAppPortalAccessCommand());
+		c.addCommand(new UpdateScopingForPeopleCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new UpdateStateForModuleDataCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
@@ -5516,6 +5520,7 @@ public class TransactionChainFactory {
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		c.addCommand(new UpdateVendorContactAppPortalAccessCommand());
+		c.addCommand(new UpdateScopingForPeopleCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new ChangeApprovalStatusForModuleDataCommand());
 		c.addCommand(new UpdateStateForModuleDataCommand());
@@ -5537,6 +5542,7 @@ public class TransactionChainFactory {
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		c.addCommand(new UpdateEmployeePeopleAppPortalAccessCommand());
+		c.addCommand(new UpdateScopingForPeopleCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new UpdateStateForModuleDataCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
@@ -5556,6 +5562,7 @@ public class TransactionChainFactory {
 		c.addCommand(new CheckForPeopleDuplicationCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new AddPeopleAccessCommand());
+		c.addCommand(new UpdateScopingForPeopleCommand());
 		c.addCommand(new UpdateContactDirectoryCommand());
 
 
@@ -6141,6 +6148,7 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new ValidateUserCommand());
 		c.addCommand(new UpdateUserCommand());
+		c.addCommand(new AddorUpdateUserScopingCommand());
 		return c;
 	}
 

@@ -1514,6 +1514,37 @@ public class ApplicationApi {
 
     }
 
+    public static void updateScopingForUser(Long scopingId,Long applicationId,Long ouid) throws Exception {
+
+        List<FacilioField> fields = AccountConstants.getOrgUserAppsFields();
+
+        GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+                .table("ORG_User_Apps")
+                .fields(fields)
+                .andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserId", String.valueOf(ouid), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", String.valueOf(applicationId), NumberOperators.EQUALS));
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("scopingId", scopingId);
+        builder.update(map);
+    }
+
+        public static List<OrgUserApp> getScopingsForUser(Long ouid,Long appId) throws Exception {
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(AccountConstants.getOrgUserAppsFields())
+                .table(AccountConstants.getOrgUserAppsModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserid", String.valueOf(ouid), NumberOperators.EQUALS));
+
+        if(appId != null){
+            selectBuilder.andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", String.valueOf(appId), NumberOperators.EQUALS));
+        }
+        List<Map<String, Object>> props = selectBuilder.get();
+        if(props != null && !props.isEmpty()) {
+            return FieldUtil.getAsBeanListFromMapList(props, OrgUserApp.class);
+        }
+        return null;
+    }
+
     public static void deleteScopingConfig(long scopingId) throws Exception {
         GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
                 .table(ModuleFactory.getScopingConfigModule().getTableName())

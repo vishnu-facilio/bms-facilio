@@ -408,7 +408,6 @@ public class V3PeopleAPI {
 
     }
 
-
     public static void updateTenantContactAppPortalAccess(V3TenantContactContext person, String appLinkName) throws Exception {
 
         V3TenantContactContext existingPeople = (V3TenantContactContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.TENANT_CONTACT, person.getId(), V3TenantContactContext.class);
