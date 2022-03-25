@@ -507,6 +507,7 @@ public class APIv3Config {
                 .beforeSave(new SetLocationObjectFromSiteV3())
                 .afterSave(new UpdateServingSitesinStoreRoomCommandV3())
                 .update()
+                .afterSave(new UpdateServingSitesinStoreRoomCommandV3())
                 .list()
                     .beforeFetch(new LoadStoreRoomLookUpCommandV3())
                 .summary()
