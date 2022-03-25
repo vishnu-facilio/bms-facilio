@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
+import com.facilio.agentv2.AgentConstants;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -70,17 +71,18 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
                 StringReader reader = new StringReader(record.value());
                 JSONObject object = null;
                 JSONObject data = null;
-                if (!parseData) {
-                	data = (JSONObject) parser.parse(reader);
+                JSONObject incomingData = (JSONObject) parser.parse(reader);
+                if (!parseData && (incomingData.containsKey(AgentConstants.PUBLISH_TYPE) || incomingData.containsKey("PUBLISH_TYPE"))) {
+                    data = incomingData;
                 } else {
-                    object = (JSONObject) parser.parse(reader);
-                    data = (JSONObject) parser.parse((String)object.get("data"));
+                    object = incomingData;
+                    data = (JSONObject) parser.parse((String) object.get("data"));
                 }
                 FacilioRecord facilioRecord = new FacilioRecord(record.key(), data);
                 facilioRecord.setId(record.offset());
                 facilioRecord.setPartition(record.partition());
                 try {
-                    if(object != null && object.containsKey("timestamp")) {
+                    if (object != null && object.containsKey("timestamp")) {
                         Long timestamp = Long.parseLong(object.get("timestamp").toString());
                         facilioRecord.setTimeStamp(timestamp);
                     } else {

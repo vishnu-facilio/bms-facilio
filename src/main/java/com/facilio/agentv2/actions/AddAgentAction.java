@@ -81,7 +81,7 @@ public class AddAgentAction extends AgentActionV2
             switch (AgentType.valueOf(agentType)){
                 case REST:
                     long orgId = AccountUtil.getCurrentOrg().getOrgId();
-                    long inboundId = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.AGENT_SERVICE,()->insertApiKey(getAgentName(),orgId));
+                    long inboundId = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.AGENT_SERVICE, () -> insertApiKey(agent.getName(), orgId));
                     agent.setInboundConnectionId(inboundId);
                 case CLOUD:
                 case CUSTOM:
