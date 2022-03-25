@@ -51,6 +51,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private Collection<FacilioModule> joinModules;
 	private boolean ignoreSplNullHandling;
 	private boolean skipModuleCriteria = false;
+	private StringJoiner sql = new StringJoiner(",");
 
 	public UpdateRecordBuilder () {
 		// TODO Auto-generated constructor stub
@@ -493,6 +494,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			if (!f.isEmpty()) {
 				updateCount += updateBuilder.update(new HashMap<>(moduleProps));
 			}
+			sql.add(builder.toString());
 			f.clear();
 			if (CollectionUtils.isNotEmpty(updateBuilder.getFileFields())) {
 				fileFields.addAll(updateBuilder.getFileFields());
@@ -580,7 +582,14 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		}
 
 	}
-	
+
+	@Override
+	public String toString() {
+		return sql.length() > 0 ?
+				sql.toString() :
+				"Update Query not run yet";
+	}
+
 	//will be an interface method once i check in in framework
 		public void addJoinModules(Collection<FacilioModule> joinModules) {
 			if(this.joinModules == null) {
@@ -588,4 +597,5 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			}
 			this.joinModules.addAll(joinModules);
 		}
+
 }
