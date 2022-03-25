@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.fw.constants.PublishType;
 import com.facilio.services.kafka.FacilioKafkaProducer;
 import com.facilio.services.kafka.KafkaUtil;
 import com.facilio.services.messageQueue.MessageQueue;
@@ -133,7 +134,12 @@ public class CloudAgent extends FacilioJob {
         			JSONObject payload = new JSONObject();
         			payloads.add(payload);
         			
-        			payload.put("publishType", 6);
+        			PublishType type = PublishType.TIMESERIES;
+        			if ((boolean) result.getOrDefault("cov", false)) {
+        				type = PublishType.COV;
+        			}
+        			
+        			payload.put("publishType", type.asInt());
         			payload.put("agent", agent.getName());
         			payload.put("controllerType", 0);
 
