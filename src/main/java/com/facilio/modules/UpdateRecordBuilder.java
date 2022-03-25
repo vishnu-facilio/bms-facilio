@@ -24,6 +24,8 @@ import com.google.common.collect.MapDifference.ValueDifference;
 import com.google.common.collect.Maps;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.log4j.Logger;
+import org.apache.log4j.LogManager;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -32,6 +34,7 @@ import java.util.stream.Collectors;
 
 public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implements UpdateBuilderIfc<E> {
 
+	private static Logger LOGGER = LogManager.getLogger(UpdateRecordBuilder.class.getName());
 	private GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder();
 	private SelectRecordsBuilder<E> selectBuilder = new SelectRecordsBuilder<E>();
 	private String moduleName;
@@ -311,6 +314,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 //					}
 
 					whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
+					LOGGER.info("Where Condition while Update "+whereCondition.getWhereClause());
 					rowsUpdated = update(whereCondition, moduleProps);
 				}
 				handleSupplements(moduleProps);
@@ -362,6 +366,9 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			this.selectBuilder.select(allFields);
 			selectBuilder.skipPermission().skipModuleCriteria();
 			oldValues = selectBuilder.get();
+			if (AccountUtil.getCurrentOrg().getOrgId() == 1) {
+				LOGGER.info("Adding Log for Select Query "+selectBuilder);
+			} 
 		}
 
 		isIdsFetched = true;
@@ -494,7 +501,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			if (!f.isEmpty()) {
 				updateCount += updateBuilder.update(new HashMap<>(moduleProps));
 			}
-			sql.add(builder.toString());
+			sql.add(updateBuilder.toString());
 			f.clear();
 			if (CollectionUtils.isNotEmpty(updateBuilder.getFileFields())) {
 				fileFields.addAll(updateBuilder.getFileFields());

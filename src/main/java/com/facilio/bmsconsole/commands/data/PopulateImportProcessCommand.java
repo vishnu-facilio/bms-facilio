@@ -424,6 +424,7 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 					.module(module)
 					.fields(tobeUpdated);
 				updateBuilder.update(readingsList.get(j));
+				LOGGER.info("Adding Log for Update Query "+updateBuilder.toString());
 				Map<Long, List<UpdateChangeSet>> recordChanges = updateBuilder.getChangeSet();
 				if (MapUtils.isNotEmpty(recordChanges)) {
 					recordChanges.forEach((key, value) -> listOfIds.add(key));
