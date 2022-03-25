@@ -35,9 +35,6 @@ public class SerializeAnswersCommand extends FacilioCommand {
             List<ClientAnswerContext> clientAnswers = answers.stream().map(a -> serialze(a, questions, isSingleResponse)).collect(Collectors.toList());
             Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
             
-            LOGGER.error("recordMap --- "+recordMap);
-            LOGGER.error("answers --- "+answers);
-            
             recordMap.put(FacilioConstants.QAndA.ANSWER, clientAnswers);
             Constants.setJsonRecordMap(context, FieldUtil.getAsJSON(recordMap));
         }

@@ -11,6 +11,9 @@ public class MCQSingleAnswerContext extends ClientAnswerContext<MCQSingleAnswerC
     
     @Override
     public Object getActualAnswerObject() {
+    	if(answer == null) {
+    		return null;
+    	}
     	return answer.getSelected();
     }
 
