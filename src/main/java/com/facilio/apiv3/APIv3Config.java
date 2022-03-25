@@ -1458,7 +1458,7 @@ public class APIv3Config {
                 .summary()
                     .beforeFetch(new SiteFillLookupFieldsCommand())
                     .afterFetch(new FetchBasespaceChildrenCountCommandV3())
-                .list().beforeFetch(new SiteFillLookupFieldsCommand())
+                .list().beforeFetch(ReadOnlyChainFactoryV3.getFetchSiteFilterChain())
                 .build();
     }
 
@@ -1475,7 +1475,7 @@ public class APIv3Config {
                     .afterDelete(new DeleteBasespaceChildrenCommandV3())
                 .summary().beforeFetch(new BuildingFillLookupFieldsCommand())
                 .afterFetch(new FetchBasespaceChildrenCountCommandV3())
-                .list().beforeFetch(new BuildingFillLookupFieldsCommand())
+                .list().beforeFetch(ReadOnlyChainFactoryV3.getFetchBuildingFilterChain())
                 .build();
     }
 

@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.GenerateCriteriaFromFilterCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.module.GetSortableFieldsCommand;
+import com.facilio.bmsconsoleV3.commands.building.BuildingFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.floorplan.getIndoorFloorPlanViewerCommand;
 import com.facilio.bmsconsole.commands.page.GetSummaryFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.facility.GetFacilityAvailabilityCommandV3;
@@ -20,6 +21,7 @@ import com.facilio.bmsconsoleV3.commands.floorplan.getIndoorFloorPlanPropertiesC
 import com.facilio.bmsconsoleV3.commands.people.FetchScopingForPeopleCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.AddDefaultCriteriaForQuoteFetchCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.QuotationFillLookupFields;
+import com.facilio.bmsconsoleV3.commands.site.SiteFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.LoadTenantLookUpsCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenant.SetTenantSpaceAndContactsCommandV3;
 import com.facilio.bmsconsoleV3.commands.usernotification.AddUserCriteriaMyNotification;
@@ -212,6 +214,20 @@ public class ReadOnlyChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchRolesForPeopleCommandV3());
         c.addCommand(new FetchScopingForPeopleCommandV3());
+        return c;
+    }
+
+    public static FacilioChain getFetchSiteFilterChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SiteFillLookupFieldsCommand());
+        c.addCommand(new FetchSpaceExcludingAccessibleSpacesCommandV3());
+        return c;
+    }
+
+    public static FacilioChain getFetchBuildingFilterChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new BuildingFillLookupFieldsCommand());
+        c.addCommand(new FetchSpaceExcludingAccessibleSpacesCommandV3());
         return c;
     }
 }
