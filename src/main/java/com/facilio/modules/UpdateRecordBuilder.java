@@ -314,7 +314,9 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 //					}
 
 					whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
-					LOGGER.info("Where Condition while Update "+whereCondition.getWhereClause());
+					if (AccountUtil.getCurrentOrg().getOrgId() == 1l) {
+						LOGGER.info("Where Condition while Update "+whereCondition.getWhereClause());
+					}
 					rowsUpdated = update(whereCondition, moduleProps);
 				}
 				handleSupplements(moduleProps);
@@ -366,7 +368,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			this.selectBuilder.select(allFields);
 			selectBuilder.skipPermission().skipModuleCriteria();
 			oldValues = selectBuilder.get();
-			if (AccountUtil.getCurrentOrg().getOrgId() == 1) {
+			if (AccountUtil.getCurrentOrg().getOrgId() == 1l) {
 				LOGGER.info("Adding Log for Select Query "+selectBuilder);
 			} 
 		}
