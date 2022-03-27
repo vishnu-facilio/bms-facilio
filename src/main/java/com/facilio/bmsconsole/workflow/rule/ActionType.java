@@ -1662,7 +1662,7 @@ public enum ActionType {
 				FacilioModule module = form.getModule();
 				
 				Long recordId = null; 
-				if(mailContext.getReferenceMessageId() != null) {
+				if(mailContext.getReferenceMessageId() != null) { // checking w.r.t. In reference message to
 					EmailToModuleDataContext emailToModuleData = MailMessageUtil.getEmailToModuleData(mailContext.getReferenceMessageId(), module);
 					if(emailToModuleData != null) {
 						recordId = emailToModuleData.getRecordId();
@@ -1679,6 +1679,21 @@ public enum ActionType {
 					if(localId != null) {
 						Map<String, Object> record = MailMessageUtil.fetchRecordWithLocalIdOrId(module, localId);
 						recordId = (Long) record.get("id");
+					}
+				}
+				
+				if(recordId == null) {
+					if(mailContext.getInReplyToMessageId() != null) {	// checking w.r.t. In reply to 
+						EmailToModuleDataContext emailToModuleData = MailMessageUtil.getEmailToModuleData(mailContext.getInReplyToMessageId(), module);
+						if(emailToModuleData != null) {
+							recordId = emailToModuleData.getRecordId();
+						}
+						else {
+							EmailConversationThreadingContext conversation = MailMessageUtil.getEmailConversationData(mailContext.getInReplyToMessageId(), module);
+							if(conversation != null) {
+								recordId = conversation.getRecordId();
+							}
+						}
 					}
 				}
 				
