@@ -195,7 +195,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		}
 		else {
 			
-			boolean isV3SupportedModule = ChainUtil.isV3Enabled(module);
+			boolean isV3SupportedModule = false;
 			
 			if(isV3SupportedModule) {
 				
@@ -295,7 +295,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		
 		Map<String, Object> updateMap = (Map<String, Object>)objects.get(2);
 		
-		boolean isV3SupportedModule = ChainUtil.isV3Enabled(module);
+		boolean isV3SupportedModule = false;
 		
 		if(isV3SupportedModule) {
 			
@@ -367,7 +367,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		}
 		ScriptUtil.fillCriteriaField(criteria, module.getName());
 		
-		boolean isV3SupportedModule = ChainUtil.isV3Enabled(module);
+		boolean isV3SupportedModule = false;
 		
 		if(isV3SupportedModule) {
 			
