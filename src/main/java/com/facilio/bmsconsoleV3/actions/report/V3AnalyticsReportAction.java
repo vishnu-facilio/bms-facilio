@@ -41,6 +41,8 @@ public class V3AnalyticsReportAction extends V3Action {
     private long endTime = -1;
     private List<Long> assetCategory;
     private List<Long> spaceId;
+    private Long spaceId_forExport;
+    private Integer filterModeValue_toExport;
     private List<Long> parentId;
     private ResourceContext alarmResource;
     private Boolean showAlarms;
@@ -437,6 +439,12 @@ public class V3AnalyticsReportAction extends V3Action {
         FacilioChain chain = TransactionChainFactoryV3.getReadingDataChain(-1, null, newFormat, true);
         FacilioContext context = chain.getContext();
         setReportWithDataContext(context); //This could be moved to a command
+        if(spaceId_forExport != null){
+            List<Long> list = new ArrayList<Long>();
+            list.add(spaceId_forExport);
+            context.put(FacilioConstants.ContextNames.BASE_SPACE_LIST, list);
+            context.put("filterModeValue", filterModeValue_toExport);
+        }
         chain.execute();
         return setReportResult(context);
     }
@@ -522,15 +530,21 @@ public class V3AnalyticsReportAction extends V3Action {
         FacilioChain exportChain = null;
         if(reportId != -1)
         {
-            exportChain = TransactionChainFactoryV3.getExportReportFileChain(false);
+            exportChain = spaceId != null || assetCategory!=null ? TransactionChainFactoryV3.getExportReportFileChain(false, true) : TransactionChainFactoryV3.getExportReportFileChain(false, false);
             context = exportChain.getContext();
             setReportWithDataContext(context);
+            if(spaceId != null || assetCategory!=null){
+                context.put(FacilioConstants.ContextNames.REPORT_FILTER_MODE, filterMode);
+                context.put(FacilioConstants.ContextNames.ASSET_CATEGORY, assetCategory);
+                context.put(FacilioConstants.ContextNames.BASE_SPACE_LIST, spaceId);
+                context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, parentId);
+            }
             reportContext.setDateOperator(dateOperator);
             reportContext.setDateValue(dateOperatorValue);
         }
         else
         {
-            exportChain = TransactionChainFactoryV3.getExportReportFileChain(true);
+            exportChain = TransactionChainFactoryV3.getExportReportFileChain(true, false);
             context = exportChain.getContext();
             setReadingsDataContext(context);
             if (template != null) {

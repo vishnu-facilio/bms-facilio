@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsole.workflow.rule.impact.GetAllAlarmImpactsCommand;
+import com.facilio.bmsconsoleV3.commands.reports.ConstructLiveFilterCommandToExport;
 import com.facilio.chain.FacilioChain;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -110,7 +111,13 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
-	
+	public static FacilioChain newFetchReportDataChainV3()
+	{
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new ConstructLiveFilterCommandToExport());
+		c.addCommand(newFetchReportDataChain());
+		return c;
+	}
 	public static FacilioChain newFetchReportDataChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new ReportDrilldownCommand());

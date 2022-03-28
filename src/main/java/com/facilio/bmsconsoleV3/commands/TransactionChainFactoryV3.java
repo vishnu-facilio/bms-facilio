@@ -1317,6 +1317,7 @@ public class TransactionChainFactoryV3 {
             c.addCommand(new GetDataPointFromAlarmCommand());
         }
         if(newFormat){
+            c.addCommand(new ConstructLiveFilterCommandToExport());
             if(!isOnlyReportDataChain){
                 c.addCommand(new CreateReadingAnalyticsReportCommand());
             }
@@ -1406,8 +1407,12 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new GetFolderPermissionUpdateCommand());
         return c;
     }
-    public static FacilioChain getExportReportFileChain(boolean isAnalyticsReport) {
+    public static FacilioChain getExportReportFileChain(boolean isAnalyticsReport, boolean isFilterNeeded) {
         FacilioChain c = getDefaultChain();
+        if(isFilterNeeded)
+        {
+            c.addCommand(new ConstructLiveFilterCommandToExport());
+        }
         c.addCommand(isAnalyticsReport ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.newFetchReportDataChain());
         c.addCommand(new GetExportReportFileCommand());
         return c;
