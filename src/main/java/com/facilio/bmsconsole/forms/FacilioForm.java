@@ -306,7 +306,7 @@ public class FacilioForm implements Serializable {
 	public void setAppId(long appId) {
 		this.appId = appId;
 	}
-	
+
 	public enum FormSourceType {
 		FROM_BUILDER,
 		FROM_FORM,

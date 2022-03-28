@@ -43,10 +43,13 @@ public class GetFormListCommand extends FacilioCommand {
 
 		Boolean fetchExtendedModuleForms = (Boolean) context.get(ContextNames.FETCH_EXTENDED_MODULE_FORMS);
 		Boolean fetchDisabledForms = (Boolean) context.get(ContextNames.FETCH_DISABLED_FORMS);
+		Boolean fetchHiddenForms = (Boolean) context.getOrDefault(ContextNames.FETCH_HIDDEN_FORMS, false);
 
 
 		List<FacilioForm> formsList = getFormsList(moduleName, fetchExtendedModuleForms, fetchDisabledForms, appLinkNames);
-		formsList.removeIf(form -> form.isHideInList() || (AccountUtil.getCurrentAccount().isFromMobile() && form.getShowInMobile() != null && !form.getShowInMobile()));
+		if(!fetchHiddenForms) {
+			formsList.removeIf(form -> form.isHideInList() || (AccountUtil.getCurrentAccount().isFromMobile() && form.getShowInMobile() != null && !form.getShowInMobile()));
+		}
 
 		List<Long> stateFlowIds = new ArrayList<>();
 		for (FacilioForm form : formsList) {

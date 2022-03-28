@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -2618,4 +2619,36 @@ public class WorkflowUtil {
              );
         }
     }
+
+	public static Map<Long, String> getWorkFlowNameFromId(List<Long> workflowIds) throws Exception{
+		FacilioModule workflowModule = ModuleFactory.getWorkflowRuleModule();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getWorkflowRuleFields())
+				.table(ModuleFactory.getWorkflowRuleModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(workflowModule), workflowIds, NumberOperators.EQUALS));
+		List<Map<String, Object>> props = selectBuilder.get();
+		Map<Long, String> idVsName = new HashMap<>();
+		if(!CollectionUtils.isEmpty(props)) {
+			for(Map<String, Object> prop : props) {
+				idVsName.put((Long)prop.get("id"), (String)prop.get("name"));
+			}
+		}
+		return idVsName;
+	}
+
+	public static Map<Long, Long> getStateFlowIdFromTransitionId(List<Long> transitionIds) throws Exception{
+		FacilioModule transitionModule = ModuleFactory.getStateRuleTransitionModule();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getStateRuleTransitionFields())
+				.table(transitionModule.getTableName())
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(transitionModule), transitionIds, NumberOperators.EQUALS));
+		List<Map<String, Object>> props = selectBuilder.get();
+		Map<Long, Long> transitionIdVsStateFlowId = new HashMap<>();
+		if(!CollectionUtils.isEmpty(props)) {
+			for(Map<String, Object> prop : props) {
+				transitionIdVsStateFlowId.put((Long)prop.get("id"), (Long)prop.get("stateFlowId"));
+			}
+		}
+		return transitionIdVsStateFlowId;
+	}
 }

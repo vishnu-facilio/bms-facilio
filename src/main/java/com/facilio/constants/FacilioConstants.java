@@ -619,6 +619,7 @@ public class FacilioConstants {
 		public static final String FETCH_EXTENDED_MODULE_FORMS = "fetchExtendedModuleForms";
 		public static final String FETCH_FORM_RULE_FIELDS = "fetchFormRuleFields";
 		public static final String FETCH_DISABLED_FORMS = "fetchDisabledForms";
+		public static final String FETCH_HIDDEN_FORMS = "fetchHiddenForms";
 		public static final String IS_BEFORE = "isbefore";
 		public static final String DURATION = "duration";
 		public static final String TYPE = "type";
@@ -765,6 +766,7 @@ public class FacilioConstants {
 		public static final String MODULE_FIELD_MAP = "moduleFieldMap";
 		public static final String EXISTING_FIELD_LIST = "existingFields";
 		public static final String FORM_FIELD_MAP = "formFieldMap";
+		public static final String FIELD_FORM_USAGE_DETAILS = "formUsageDetails";
 		public static final String FIELD_NAME_LIST = "fieldList";
 		public static final String DEFAULT_FIELD = "defaultField";
 		public static final String MODULE_FIELD_IDS = "moduleFieldIds";
