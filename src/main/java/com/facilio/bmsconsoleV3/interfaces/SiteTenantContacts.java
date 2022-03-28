@@ -13,7 +13,7 @@ import java.util.List;
 
 public class SiteTenantContacts implements CommunitySharedPeople {
     @Override
-    public List<V3PeopleContext> getPeople(Long id) throws Exception {
+    public List<V3PeopleContext> getPeople(Long id,Long filterSharingType,List<Long> roleIds) throws Exception {
         List<BuildingContext> buildings = new ArrayList<>();
         if(id == null) {
              buildings = SpaceAPI.getAllBuildings();

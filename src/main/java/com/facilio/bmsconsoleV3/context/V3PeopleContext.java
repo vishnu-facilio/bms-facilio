@@ -138,6 +138,16 @@ public class V3PeopleContext extends V3Context {
         return rolesMap;
     }
 
+    public Map<String, Long> getScopingsMap() {
+        return scopingsMap;
+    }
+
+    public void setScopingsMap(Map<String, Long> scopingsMap) {
+        this.scopingsMap = scopingsMap;
+    }
+
+    private Map<String, Long> scopingsMap;
+
     public void setRolesMap(Map<String, Long> rolesMap) {
         this.rolesMap = rolesMap;
     }

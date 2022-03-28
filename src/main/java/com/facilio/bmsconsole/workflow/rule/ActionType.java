@@ -98,7 +98,7 @@ import com.facilio.workflowv2.util.WorkflowV2Util;
 
 public enum ActionType {
 
-	EMAIL_NOTIFICATION(1) {
+	EMAIL_NOTIFICATION(1, true, true) {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 								  Object currentRecord) {
@@ -130,7 +130,7 @@ public enum ActionType {
 			}
 		}
 	},
-	SMS_NOTIFICATION(2) {
+	SMS_NOTIFICATION(2, true, true) {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 								  Object currentRecord) {
@@ -147,7 +147,7 @@ public enum ActionType {
 			}
 		}
 	},
-	BULK_EMAIL_NOTIFICATION(3) {
+	BULK_EMAIL_NOTIFICATION(3, true, true) {
 
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
@@ -198,7 +198,7 @@ public enum ActionType {
 			}
 		}
 	},
-	BULK_SMS_NOTIFICATION(4) {
+	BULK_SMS_NOTIFICATION(4, true, true) {
 
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
@@ -230,7 +230,7 @@ public enum ActionType {
 		}
 
 	},
-	WEB_NOTIFICATION(5) {
+	WEB_NOTIFICATION(5, true, true) {
 
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
@@ -265,7 +265,7 @@ public enum ActionType {
 			}
 		}
 	},
-	ADD_ALARM(6) {
+	ADD_ALARM(6, true, true) {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) {
 			try {
@@ -415,7 +415,7 @@ public enum ActionType {
 
 
 	},
-	PUSH_NOTIFICATION(7) {
+	PUSH_NOTIFICATION(7, true, true) {
 
 		@SuppressWarnings("unchecked")
 		@Override
@@ -796,7 +796,7 @@ public enum ActionType {
 		}
 
 	},
-	FIELD_CHANGE(13) {
+	FIELD_CHANGE(13, true, true) {
 
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
@@ -906,7 +906,7 @@ public enum ActionType {
 			}
 		}
 	},
-	FORMULA_FIELD_CHANGE(16) {
+	FORMULA_FIELD_CHANGE(16, true, true) {
 
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception {
@@ -1122,7 +1122,7 @@ public enum ActionType {
 			}
 		}
 	},
-	CHANGE_STATE (19) {
+	CHANGE_STATE (19, true, true) {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 								  Object currentRecord) throws Exception {
@@ -1151,7 +1151,7 @@ public enum ActionType {
 		}
 
 	},
-	WORKFLOW_ACTION (21) {
+	WORKFLOW_ACTION (21, true) {
 
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception
@@ -1306,7 +1306,7 @@ public enum ActionType {
 		}
 		
 	},
-	WHATSAPP_MESSAGE(26) {		
+	WHATSAPP_MESSAGE(26, true, true) {
 		
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) {
@@ -1352,7 +1352,7 @@ public enum ActionType {
 			}
 		}
 	},
-	MAKE_CALL(27) {
+	MAKE_CALL(27, true, true) {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) {
 			// TODO Auto-generated method stub
@@ -1433,7 +1433,7 @@ public enum ActionType {
 
 	},
 	
-	WORKFLOW_ACTION_WITH_LIST_PARAMS(30) {
+	WORKFLOW_ACTION_WITH_LIST_PARAMS(30, true) {
 
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception
@@ -1479,7 +1479,7 @@ public enum ActionType {
 		}
 
 	},
-	ACTIVITY_FOR_MODULE_RECORD(31) {
+	ACTIVITY_FOR_MODULE_RECORD(31, true, true) {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
 			try {
@@ -1593,7 +1593,7 @@ public enum ActionType {
 			}
 		}
 	},
-	INVOKE_TRIGGER(34) {
+	INVOKE_TRIGGER(34, true, true) {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
 			Long triggerId = (Long) obj.get(TriggerUtil.TRIGGER_ID);
@@ -1755,12 +1755,21 @@ public enum ActionType {
 		this.isTemplateNeeded = isTemplateNeeded;
 	}
 
+	ActionType (int val, boolean isTemplateNeeded, boolean isPermitted) {
+		this (val, isTemplateNeeded);
+		this.isPermitted = isPermitted;
+	}
+
 	public int getVal() {
 		return val;
 	}
 	boolean isTemplateNeeded = true;
 	public boolean isTemplateNeeded() {
 		return isTemplateNeeded;
+	}
+	boolean isPermitted = false;
+	public boolean isPermitted() {
+		return isPermitted;
 	}
 
 	abstract public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,

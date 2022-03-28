@@ -16,8 +16,23 @@ public class V3FloorplanCustomizationContext {
     private String defaultSpaceColor;
     private BookingStateColor spaceBookingState;
 
+
     private boolean compactView=false;
     private  boolean textHalo = true;
+
+    public BookingStateColor getBookingState() {
+        if(this.bookingState == null)
+        {
+            return new BookingStateColor();
+        }
+        return bookingState;
+    }
+
+    public void setBookingState(BookingStateColor bookingState) {
+        this.bookingState = bookingState;
+    }
+
+    private BookingStateColor bookingState;
 
     public boolean isCompactView() {
         return compactView;

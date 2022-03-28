@@ -1044,6 +1044,11 @@ public class ViewFactory {
 		views.put("all",getAllEmailConversationThreadingViews().setOrder(order++));
 		viewsMap.put(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME, views);
 		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("workflowLog", getWorkflowLog().setOrder(order++));
+		viewsMap.put(FacilioConstants.Workflow.WORKFLOW_LOG, views);
+		
 		
 		return viewsMap;
 	}
@@ -1716,6 +1721,29 @@ public class ViewFactory {
 
 		return allView;
 	}
+	
+	private static FacilioView getWorkflowLog() {
+
+		FacilioView workflowLogView = new FacilioView();
+		workflowLogView.setName("workflowLogView");
+		workflowLogView.setDisplayName("workflowLogView");
+
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		workflowLogView.setSortFields(sortFields);
+
+		workflowLogView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+
+		return workflowLogView;
+	}
+		
 
 	private static FacilioView getRulesByStatus(String name, String displayName, boolean status) {
 		Condition statusCondition = getRulesStateCondition(status);

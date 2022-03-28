@@ -56,7 +56,7 @@ public class DCUtil {
     				return dc;
     			}
     		}
-    		if (FacilioProperties.isDevelopment()) {
+    		if (FacilioProperties.isDevelopment() || FacilioProperties.isOnpremise()) {
     			return 1;
     		}
     		return null;

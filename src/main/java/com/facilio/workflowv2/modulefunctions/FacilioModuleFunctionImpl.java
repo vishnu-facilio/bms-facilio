@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
@@ -151,7 +154,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		
 		for(Map<String, Object> rawData : dataList) {
 			
-			FacilioContext context = V3Util.createRecord(module, rawData);
+			FacilioContext context = V3Util.createRecord(module, rawData, true, null, null,true);
 			ModuleBaseWithCustomFields record = Constants.getRecordMap(context).get(module.getName()).get(0);
 			rawData.put("id", record.getId());
 		}
@@ -192,7 +195,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		}
 		else {
 			
-			boolean isV3SupportedModule = false;
+			boolean isV3SupportedModule = ChainUtil.isV3Enabled(module);
 			
 			if(isV3SupportedModule) {
 				
@@ -209,34 +212,14 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 					}
 				}
 				
-				for(Map<String, Object> rawData : dataList) {
-					module = ChainUtil.getModule(module.getName());
-
-			        V3Config v3Config = ChainUtil.getV3Config(module.getName());
-			        FacilioChain createRecordChain = ChainUtil.getCreateChain(module.getName());
-			        FacilioContext context = createRecordChain.getContext();
-
-			        if (module.isCustom()) {
-			            FacilioField localIdField = modBean.getField("localId", module.getName());
-			            if (localIdField != null) {
-			                context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
-			            }
-			        }
-
-			        Constants.setV3config(context, v3Config);
-			        context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
-			        Constants.setModuleName(context, module.getName());
-			        context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
-
-			        Constants.setRawInput(context, rawData);
-
-			        Class beanClass = ChainUtil.getBeanClass(v3Config, module);
-			        context.put(Constants.BEAN_CLASS, beanClass);
-			        
-			        context.put(Constants.FROM_SCRIPT, Boolean.TRUE);
-
-			        createRecordChain.execute();
+				FacilioContext context = V3Util.createRecord(module, dataList, true, null, null,true);
+				
+				List<ModuleBaseWithCustomFields> records = Constants.getRecordList(context);
+				
+				for(int i=0;i<records.size();i++) {
+					dataList.get(i).put("id", records.get(i).getId());
 				}
+				
 			}
 			else {
 				
@@ -312,29 +295,56 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		
 		Map<String, Object> updateMap = (Map<String, Object>)objects.get(2);
 		
-		if (LookupSpecialTypeUtil.isSpecialType(module.getName())) {
+		boolean isV3SupportedModule = ChainUtil.isV3Enabled(module);
+		
+		if(isV3SupportedModule) {
 			
-			GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
-					.table(module.getTableName())
-					.fields(modBean.getAllFields(module.getName()))
+			List<FacilioField> fields = Collections.singletonList(FieldFactory.getIdField(module));
+			
+			SelectRecordsBuilder<ModuleBaseWithCustomFields> select = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
+					.module(module)
+					.select(fields)
+					.beanClass(ModuleBaseWithCustomFields.class)
 					.andCriteria(criteria);
-			updateRecordBuilder.update(updateMap);
 			
+			List<Map<String, Object>> props = select.getAsProps();
+			
+			List<Long> ids = new ArrayList<Long>();
+			if(CollectionUtils.isNotEmpty(props)) {
+				for(Map<String, Object> prop : props) {
+					ids.add((Long)prop.get("id"));
+				}
+			}
+			
+			FacilioContext context = V3Util.updateBulkRecords(module.getName(), updateMap,ids, true);
 		}
 		else {
-			List<FacilioField> fields = modBean.getAllFields(module.getName());
-			UpdateRecordBuilder<ModuleBaseWithCustomFields> updateRecordBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
-					.module(module)
-					.fields(fields)
-					.andCriteria(criteria);
-			
-			List<SupplementRecord> supplements = new ArrayList<>();
-			CommonCommandUtil.handleFormDataAndSupplement(fields, updateMap, supplements);
-			if(!supplements.isEmpty()) {
-				updateRecordBuilder.updateSupplements(supplements);
+			if (LookupSpecialTypeUtil.isSpecialType(module.getName())) {
+				
+				GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+						.table(module.getTableName())
+						.fields(modBean.getAllFields(module.getName()))
+						.andCriteria(criteria);
+				updateRecordBuilder.update(updateMap);
+				
 			}
-			updateRecordBuilder.updateViaMap(updateMap);
+			else {
+				
+				List<FacilioField> fields = modBean.getAllFields(module.getName());
+				
+				UpdateRecordBuilder<ModuleBaseWithCustomFields> updateRecordBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
+						.module(module)
+						.fields(fields)
+						.andCriteria(criteria);
+				
+				List<SupplementRecord> supplements = new ArrayList<>();
+				CommonCommandUtil.handleFormDataAndSupplement(fields, updateMap, supplements);
+				if(!supplements.isEmpty()) {
+					updateRecordBuilder.updateSupplements(supplements);
+				}
+				updateRecordBuilder.updateViaMap(updateMap);
 
+			}
 		}
 	}
 
@@ -343,10 +353,8 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		
 		FacilioModule module = (FacilioModule) objects.get(0);
 		
-		DeleteRecordBuilder<ModuleBaseWithCustomFields> delete = new DeleteRecordBuilder<>()
-				.module(module);
-		
 		Criteria criteria = null;
+		DBParamContext dbParamContext = null;
 		if(objects.get(1) instanceof DBParamContext) {
 			criteria = ((DBParamContext) objects.get(1)).getCriteria();
 		}
@@ -354,27 +362,56 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			criteria = (Criteria)objects.get(1);
 		}
 		else if (objects.get(1) instanceof Map) {
-			DBParamContext dbParamContext = FieldUtil.getAsBeanFromMap((Map)objects.get(1), DBParamContext.class);
+			dbParamContext = FieldUtil.getAsBeanFromMap((Map)objects.get(1), DBParamContext.class);
 			criteria = dbParamContext.getCriteria();
+		}
+		ScriptUtil.fillCriteriaField(criteria, module.getName());
+		
+		boolean isV3SupportedModule = ChainUtil.isV3Enabled(module);
+		
+		if(isV3SupportedModule) {
+			
+			List<FacilioField> fields = Collections.singletonList(FieldFactory.getIdField(module));
+			
+			SelectRecordsBuilder<ModuleBaseWithCustomFields> select = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
+					.module(module)
+					.select(fields)
+					.beanClass(ModuleBaseWithCustomFields.class)
+					.andCriteria(criteria);
+			
+			List<Map<String, Object>> props = select.getAsProps();
+			
+			List<Long> ids = new ArrayList<Long>();
+			if(CollectionUtils.isNotEmpty(props)) {
+				for(Map<String, Object> prop : props) {
+					ids.add((Long)prop.get("id"));
+				}
+			}
+			
+			JSONObject deleteObj = new JSONObject();
+			deleteObj.put(module.getName(), ids);
+			
+			FacilioContext context = V3Util.deleteRecords(module.getName(), deleteObj, null,true);
+		}
+		else {
+			DeleteRecordBuilder<ModuleBaseWithCustomFields> delete = new DeleteRecordBuilder<>()
+					.module(module);
+			
+			if(criteria == null) {
+				throw new Exception("criteria cannot be null during delete");
+			}
 			if(dbParamContext.isSkipModuleCriteria()) {
 				delete.skipModuleCriteria();
 			}
-		}
-		
-		
-		if(criteria == null) {
-			throw new Exception("criteria cannot be null during delete");
-		}
-		
-		ScriptUtil.fillCriteriaField(criteria, module.getName());
-		
-		delete.andCriteria(criteria);
-		
-		if (module.isTrashEnabled()) {
-            delete.markAsDelete();
-        }
-		else {
-			delete.delete();
+			
+			delete.andCriteria(criteria);
+			
+			if (module.isTrashEnabled()) {
+	            delete.markAsDelete();
+	        }
+			else {
+				delete.delete();
+			}
 		}
 	}
 	

@@ -6,7 +6,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.command.FacilioCommand;
+import com.facilio.modules.BaseLineContext;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Context;
@@ -256,19 +258,52 @@ public class ConstructTabularReportData extends FacilioCommand {
             }
             boolean isTimeLineFilterApplied = true;
             boolean showTimelineFilter = false;
-
-            if (globalContext.containsKey(FacilioConstants.ContextNames.IS_TIMELINE_FILTER_APPLIED)) {
-                isTimeLineFilterApplied = (boolean) globalContext
-                        .get(FacilioConstants.ContextNames.IS_TIMELINE_FILTER_APPLIED);
-            }
-            if (globalContext.containsKey(FacilioConstants.ContextNames.TIME_FILTER)) {
-                showTimelineFilter = globalContext.containsKey(FacilioConstants.ContextNames.TIME_FILTER);
-            }
+            int dateOperatorInt = -1;
+            if(globalContext.containsKey(FacilioConstants.ContextNames.DATE_OPERATOR) && globalContext.get(FacilioConstants.ContextNames.DATE_OPERATOR) != null)
+                dateOperatorInt = (int) globalContext.get(FacilioConstants.ContextNames.DATE_OPERATOR);
+            if (globalContext.containsKey(FacilioConstants.ContextNames.IS_TIMELINE_FILTER_APPLIED))
+                isTimeLineFilterApplied = (boolean) globalContext.get(FacilioConstants.ContextNames.IS_TIMELINE_FILTER_APPLIED);
+            if(globalContext.containsKey(FacilioConstants.ContextNames.TIME_FILTER) && globalContext.get(FacilioConstants.ContextNames.TIME_FILTER) != null)
+                showTimelineFilter = (boolean) globalContext.get(FacilioConstants.ContextNames.TIME_FILTER);
 
             if (reportContext.getTypeEnum() == ReportType.PIVOT_REPORT) {
-                if (dateFieldId > 0 && startTime > 0 && endTime > 0 && isTimeLineFilterApplied) {
+                if(data.getBaselineLabel() != null && data.getDateFieldId() > 0 && data.getDatePeriod() > 0){
+                    FacilioField dateField = modBean.getField(data.getDateFieldId(), yAxisModule.getName()).clone();
+                    dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));
+                    BaseLineContext baseline = BaseLineAPI.getBaseLine(data.getBaselineLabel());
+                    DateOperators dateOperator = (DateOperators) Operator.getOperator(data.getDatePeriod());
+                    DateRange actualRange = null;
+                    if(startTime > -1 && endTime > -1 && !data.isExcludeFromTimelineFilter())
+                        actualRange = new DateRange(startTime, endTime);
+                    else if(data.getStartTime() > -1 && data.getEndTime() > -1 && data.getDatePeriod() == 20)
+                        actualRange = new DateRange(data.getStartTime(), data.getEndTime());
+                    else
+                        actualRange = dateOperator.getRange(null);
+                    DateRange baselineDateRange = baseline.calculateBaseLineRange(actualRange, baseline.getAdjustTypeEnum());
+                    Criteria otherCrit = new Criteria();
+                    Condition newCond = CriteriaAPI.getCondition(dateField, baselineDateRange.toString(), DateOperators.BETWEEN);
+                    otherCrit.addAndCondition(newCond);
+                    dataPointContext.setOtherCriteria(otherCrit);
+                } else if (dateFieldId > 0 && startTime > 0 && endTime > 0 && isTimeLineFilterApplied && !data.isExcludeFromTimelineFilter()) {
                     FacilioField dateField = modBean.getField(dateFieldId);
+                    dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));
                     DateRange range = new DateRange(startTime, endTime);
+                    Criteria otherCrit = new Criteria();
+                    Condition newCond = CriteriaAPI.getCondition(dateField, range.toString(), DateOperators.BETWEEN);
+                    otherCrit.addAndCondition(newCond);
+                    dataPointContext.setOtherCriteria(otherCrit);
+                }  else if (dateFieldId > 0 && dateOperatorInt > 0 && showTimelineFilter && !data.isExcludeFromTimelineFilter()) {
+                    FacilioField dateField = modBean.getField(dateFieldId, yAxisModule.getName()).clone();
+                    dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));
+                    Operator dateOperator = Operator.getOperator(dateOperatorInt);
+                    Criteria otherCrit = new Criteria();
+                    Condition newCond = CriteriaAPI.getCondition(dateField, dateOperator);
+                    otherCrit.addAndCondition(newCond);
+                    dataPointContext.setOtherCriteria(otherCrit);
+                } else if(data.getStartTime() > -1 && data.getEndTime() > -1 && data.getDatePeriod() == 20){
+                    FacilioField dateField = modBean.getField(data.getDateFieldId(), yAxisModule.getName()).clone();
+                    dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));
+                    DateRange range = new DateRange(data.getStartTime(), data.getEndTime());
                     Criteria otherCrit = new Criteria();
                     Condition newCond = CriteriaAPI.getCondition(dateField, range.toString(), DateOperators.BETWEEN);
                     otherCrit.addAndCondition(newCond);
@@ -284,7 +319,8 @@ public class ConstructTabularReportData extends FacilioCommand {
                 } else if (startTime > 0 && endTime > 0
                         && yField.getModule().getTypeEnum() == FacilioModule.ModuleType.READING) {
                     FacilioField dateField = FieldFactory
-                            .getDateField("actual_ttime", "ACTUAL_TTIME", yField.getModule()).clone();
+                            .getDateField("ttime", "TTIME", yField.getModule()).clone();
+                    dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));
                     DateRange range = new DateRange(startTime, endTime);
                     Criteria otherCrit = new Criteria();
                     Condition newCond = CriteriaAPI.getCondition(dateField, range.toString(), DateOperators.BETWEEN);
@@ -293,7 +329,8 @@ public class ConstructTabularReportData extends FacilioCommand {
                 } else if (data.getDatePeriod() > 0
                         && yField.getModule().getTypeEnum() == FacilioModule.ModuleType.READING) {
                     FacilioField dateField = FieldFactory
-                            .getDateField("actual_ttime", "ACTUAL_TTIME", yField.getModule()).clone();
+                            .getDateField("ttime", "TTIME", yField.getModule()).clone();
+                    dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));
                     // dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));
                     Operator dateOperator = Operator.getOperator(data.getDatePeriod());
                     Criteria otherCrit = new Criteria();

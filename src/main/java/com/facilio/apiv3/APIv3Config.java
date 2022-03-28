@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.util.MLServiceUtil;
 import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.*;
+import com.facilio.bmsconsoleV3.commands.Audience.ValidateAudienceSharingCommandV3;
 import com.facilio.bmsconsoleV3.commands.asset.*;
 import com.facilio.bmsconsoleV3.commands.basespace.DeleteBasespaceChildrenCommandV3;
 import com.facilio.bmsconsoleV3.commands.basespace.FetchBasespaceChildrenCountCommandV3;
@@ -60,6 +61,7 @@ import com.facilio.bmsconsoleV3.commands.jobplan.FillJobPlanDetailsCommand;
 import com.facilio.bmsconsoleV3.commands.moves.UpdateEmployeeInDesksCommandV3;
 import com.facilio.bmsconsoleV3.commands.moves.ValidateMovesCommand;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
+import com.facilio.bmsconsoleV3.commands.people.FetchScopingForPeopleCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.MarkRandomContactAsPrimaryCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.ValidateContactsBeforeDeleteCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.DeleteReceivableByPOIdV3;
@@ -505,6 +507,7 @@ public class APIv3Config {
                 .beforeSave(new SetLocationObjectFromSiteV3())
                 .afterSave(new UpdateServingSitesinStoreRoomCommandV3())
                 .update()
+                .afterSave(new UpdateServingSitesinStoreRoomCommandV3())
                 .list()
                     .beforeFetch(new LoadStoreRoomLookUpCommandV3())
                 .summary()
@@ -882,10 +885,10 @@ public class APIv3Config {
 		            .afterSave(TransactionChainFactoryV3.getTenantContactAfterSaveChain())
                 .list()
                     .beforeFetch(new LoadTenantcontactLookupsCommandV3())
-                    .afterFetch(new FetchRolesForPeopleCommandV3())
+                    .afterFetch(ReadOnlyChainFactoryV3.getPeopleRoleAndScopingCommand())
                 .summary()
                     .beforeFetch(new LoadTenantcontactLookupsCommandV3())
-                    .afterFetch(new FetchRolesForPeopleCommandV3())
+                    .afterFetch(ReadOnlyChainFactoryV3.getPeopleRoleAndScopingCommand())
                 .delete()
                     .beforeDelete(new ValidateContactsBeforeDeleteCommandV3())
                     .afterDelete(new MarkRandomContactAsPrimaryCommandV3())
@@ -1022,15 +1025,17 @@ public class APIv3Config {
     public static Supplier<V3Config> getAudience() {
         return () -> new V3Config(AudienceContext.class, null)
                 .create()
-                .afterSave(new AddOrUpdateAudienceSharingInfoCommandV3())
+                    .beforeSave(new ValidateAudienceSharingCommandV3())
+                    .afterSave(new AddOrUpdateAudienceSharingInfoCommandV3())
                 .update()
-                .afterSave(new AddOrUpdateAudienceSharingInfoCommandV3())
+                    .beforeSave(new ValidateAudienceSharingCommandV3())
+                    .afterSave(new AddOrUpdateAudienceSharingInfoCommandV3())
                 .list()
                   .beforeFetch(new LoadAudienceLookupCommandV3())
                   .afterFetch(new FillAudienceSharingInfoCommandV3())
                 .summary()
-                .beforeFetch(new LoadAudienceLookupCommandV3())
-                .afterFetch(new FillAudienceSharingInfoCommandV3())
+                    .beforeFetch(new LoadAudienceLookupCommandV3())
+                    .afterFetch(new FillAudienceSharingInfoCommandV3())
                 .delete()
                 .build();
     }
@@ -1454,7 +1459,7 @@ public class APIv3Config {
                 .summary()
                     .beforeFetch(new SiteFillLookupFieldsCommand())
                     .afterFetch(new FetchBasespaceChildrenCountCommandV3())
-                .list().beforeFetch(new SiteFillLookupFieldsCommand())
+                .list().beforeFetch(ReadOnlyChainFactoryV3.getFetchSiteFilterChain())
                 .build();
     }
 
@@ -1471,7 +1476,7 @@ public class APIv3Config {
                     .afterDelete(new DeleteBasespaceChildrenCommandV3())
                 .summary().beforeFetch(new BuildingFillLookupFieldsCommand())
                 .afterFetch(new FetchBasespaceChildrenCountCommandV3())
-                .list().beforeFetch(new BuildingFillLookupFieldsCommand())
+                .list().beforeFetch(ReadOnlyChainFactoryV3.getFetchBuildingFilterChain())
                 .build();
     }
 

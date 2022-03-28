@@ -3165,6 +3165,11 @@ public class FormFactory {
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Group Name", Required.REQUIRED, 1, 1));
 
 		fields.add(new FormField("audienceSharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 6, 1));
+
+		FormField filterSharingTypeField = new FormField("filterSharingType", FieldDisplayType.NUMBER, "Filter Sharing Type", Required.OPTIONAL, 6, 1);
+		filterSharingTypeField.setHideField(true);
+		fields.add(filterSharingTypeField);
+
 		return fields;
 	}
 

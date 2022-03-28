@@ -310,7 +310,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         V3Config v3Config = ChainUtil.getV3Config(moduleName);
         FacilioContext context = V3Util.updateBulkRecords(module, v3Config, moduleBaseWithCustomFields, values,
                 ids, bodyParams, getQueryParameters(), getStateTransitionId(),
-                getCustomButtonId(), getApprovalTransitionId(),getQrValue());
+                getCustomButtonId(), getApprovalTransitionId(),getQrValue(),false);
 
         Integer count = (Integer) context.get(Constants.ROWS_UPDATED);
 
@@ -500,7 +500,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
     }
 
     public String delete() throws Exception {
-        FacilioContext context = V3Util.deleteRecords(getModuleName(), getData(), getParams());
+        FacilioContext context = V3Util.deleteRecords(getModuleName(), getData(), getParams(),false);
         Map<String, Integer> countMap = Constants.getCountMap(context);
         if (MapUtils.isEmpty(countMap)) {
             throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND);

@@ -55,7 +55,6 @@ public class V3StoreRoomContext extends V3Context {
 	public void setLastPurchasedDate(Long lastPurchasedDate) {
 		this.lastPurchasedDate = lastPurchasedDate;
 	}
-	private List<SiteContext> sites;
 
 	public String getName() {
 		return name;
@@ -103,14 +102,6 @@ public class V3StoreRoomContext extends V3Context {
 			return isApprovalNeeded.booleanValue();
 		}
 		return false;
-	}
-	
-	
-	public List<SiteContext> getSites() {
-		return sites;
-	}
-	public void setSites(List<SiteContext> sites) {
-		this.sites = sites;
 	}
 	
 	public Boolean getIsGatePassRequired() {

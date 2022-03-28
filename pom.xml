@@ -143,7 +143,7 @@
         <dependency>
             <groupId>com.facilio.framework</groupId>
             <artifactId>facilio-framework</artifactId>
-            <version>1.0.480</version>
+            <version>1.0.481</version>
         </dependency>
 		<dependency>
             <groupId>com.facilio.scriptengine</groupId>
@@ -274,7 +274,7 @@
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-rekognition</artifactId>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-iot -->
+        <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-core -->
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-core</artifactId>

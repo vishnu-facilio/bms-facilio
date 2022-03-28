@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.commands.anomaly.GetEnergyByCDDCommand;
 import com.facilio.bmsconsole.commands.filters.FetchOperatorsForFiltersCommand;
 import com.facilio.bmsconsole.commands.filters.HandleFilterFieldsCommand;
 import com.facilio.bmsconsole.commands.module.GetAllModulesCommand;
+import com.facilio.bmsconsole.commands.people.FetchScopingForPeopleCommand;
 import com.facilio.bmsconsole.commands.picklist.ConstructFieldOptionForPicklist;
 import com.facilio.bmsconsole.commands.picklist.HandleDefaultIdAndOrderByForPicklist;
 import com.facilio.bmsconsole.commands.picklist.SpecialPickListFieldsCommand;
@@ -2451,6 +2452,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GenerateGenericSearchConditionCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		chain.addCommand(new FetchRolesForPeopleCommand());
+		chain.addCommand(new FetchScopingForPeopleCommand());
 		return chain;
 	}
 	
@@ -2467,6 +2469,7 @@ public class ReadOnlyChainFactory {
         chain.addCommand(new FetchCustomMultiRecordFieldsCommand());
         chain.addCommand(new GenericGetModuleDataListCommand());
 		chain.addCommand(new FetchRolesForPeopleCommand());
+		chain.addCommand(new FetchScopingForPeopleCommand());
 		return chain;
 	}
 
@@ -2597,7 +2600,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new AddTenantContactLookUpCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		chain.addCommand(new FetchRolesForPeopleCommand());
-		
+		chain.addCommand(new FetchScopingForPeopleCommand());
 		return chain;
 	}
 	
@@ -2611,6 +2614,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new AddEmployeeLookupCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		chain.addCommand(new FetchRolesForPeopleCommand());
+		chain.addCommand(new FetchScopingForPeopleCommand());
 		return chain;
 	}
 	
@@ -2625,6 +2629,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new AddClientContactLookUpCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		chain.addCommand(new FetchRolesForPeopleCommand());
+		chain.addCommand(new FetchScopingForPeopleCommand());
 		return chain;
 	}
 	
@@ -2633,7 +2638,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(SetTableNamesCommand.getForPeople());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new FetchRolesForPeopleCommand());
-
+		c.addCommand(new FetchScopingForPeopleCommand());
 		return c;
 	}
 	
@@ -2644,7 +2649,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FetchCustomMultiRecordFieldsCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new FetchRolesForPeopleCommand());
-
+		c.addCommand(new FetchScopingForPeopleCommand());
 		return c;
 	}
 	
@@ -2655,6 +2660,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new LookupPrimaryFieldHandlingCommand());
 		c.addCommand(new FetchRolesForPeopleCommand());
+		c.addCommand(new FetchScopingForPeopleCommand());
 		return c;
 	}
 	
@@ -2663,6 +2669,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(SetTableNamesCommand.getForEmployee());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new FetchRolesForPeopleCommand());
+		c.addCommand(new FetchScopingForPeopleCommand());
 		return c;
 	}
 	
@@ -2672,7 +2679,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new AddClientContactLookUpCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new FetchRolesForPeopleCommand());
-
+		c.addCommand(new FetchScopingForPeopleCommand());
 		return c;
 	}
 
@@ -2710,12 +2717,14 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getApplicationUsersChain () {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetApplicationUsersCommand());
+		chain.addCommand(new FetchUserScopingCommand());
 		return chain;
 	}
 
 	public static FacilioChain getApplicationUserDetailsChain () {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetApplicationUserDetailsCommand());
+		chain.addCommand(new FetchUserScopingCommand());
 		return chain;
 	}
 

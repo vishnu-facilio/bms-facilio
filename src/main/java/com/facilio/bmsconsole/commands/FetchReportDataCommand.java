@@ -446,7 +446,10 @@ public class FetchReportDataCommand extends FacilioCommand {
                             Condition condition = conditions.get(key);
                             if(dp.getCriteria() != null && dp.getCriteria().getConditions().containsValue(condition)) {
                                 String tableNameAndColumnName = condition.getColumnName();
-                                String columnName = tableNameAndColumnName.split("\\.")[1];
+                                String columnName = tableNameAndColumnName;
+                                if(columnName.split("\\.").length > 1){
+                                    columnName = columnName.split("\\.")[1];
+                                }
                                 tableNameAndColumnName = getAndSetModuleAlias(dp.getyAxis().getModuleName()) + "." + columnName;
                                 dp.getAllCriteria().getConditions().get(key).setColumnName(tableNameAndColumnName);
                             }

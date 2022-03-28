@@ -1340,7 +1340,8 @@ public class FacilioConstants {
 		public static final String READING_FIELD_ID = "readingFieldId";
 		public static final String ACTIONS_LIST = "actionsList";
 		public static final String ACTION = "action";
-		
+		public static final String ONLY_PERMITTED_ACTIONS = "onlyPermittedActions";
+
 		public static final String DEL_READING_RULE_IDS = "delReadingRuleIDs";
 		public static final String DEL_READING_RULE = "delReadingRule";
 		public static final String DO_VALIDTION = "doValidation";

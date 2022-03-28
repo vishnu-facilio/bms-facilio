@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -37,7 +39,7 @@ public class UpdateServingSitesinStoreRoomCommandV3 extends FacilioCommand {
 				for(Object record:records) 
 				{		
 					if(record != null && record instanceof ModuleBaseWithCustomFields && (ModuleBaseWithCustomFields)record != null)
-					{			
+					{
 						V3StoreRoomContext sr = (V3StoreRoomContext)record;
 						Long storeRoomId = ((V3StoreRoomContext)record).getId();
 						Map<String, Object> recordProps = FieldUtil.getAsProperties(record);	
@@ -47,32 +49,37 @@ public class UpdateServingSitesinStoreRoomCommandV3 extends FacilioCommand {
 									.andCustomWhere("STORE_ROOM_ID = ?", storeRoomId);
 							builder.delete();
 						}
-						if(storeRoomId != null && storeRoomId > 0 && recordProps != null) 
+						if(storeRoomId != null && storeRoomId > 0 && recordProps != null)
 						{			
 							List<SiteContext> sites = (List<SiteContext>) sr.getServingsites();
 							Long locatedSiteId = ((V3StoreRoomContext) record).getSite().getId();
-							if(CollectionUtils.isEmpty(sites)) {
-								if(locatedSiteId != null && locatedSiteId > 0) {
-									sites = new ArrayList<>();
-									SiteContext locatedSite = new SiteContext();
-									locatedSite.setId(locatedSiteId);
-									sites.add(locatedSite); //adding located site as one of the serving sites if no serving site is given
-								}
-						     }else{
-								boolean isLocatedSitePresent = false;
-								for(SiteContext site : sites){
-									if(site.getId()==locatedSiteId){
-										isLocatedSitePresent=true;
-										break;
+
+							List<EventType> eventTypes = CommonCommandUtil.getEventTypes(context);
+
+							if(eventTypes.contains(EventType.CREATE)){
+								if(CollectionUtils.isEmpty(sites)) {
+									if(locatedSiteId != null && locatedSiteId > 0) {
+										sites = new ArrayList<>();
+										SiteContext locatedSite = new SiteContext();
+										locatedSite.setId(locatedSiteId);
+										sites.add(locatedSite); //adding located site as one of the serving sites if no serving site is given
+									}
+								}else{
+									boolean isLocatedSitePresent = false;
+									for(SiteContext site : sites){
+										if(site.getId()==locatedSiteId){
+											isLocatedSitePresent=true;
+											break;
+										}
+									}
+									if(!isLocatedSitePresent){
+										SiteContext locatedSite = new SiteContext();
+										locatedSite.setId(locatedSiteId);
+										sites.add(locatedSite);
 									}
 								}
-								if(!isLocatedSitePresent){
-									SiteContext locatedSite = new SiteContext();
-									locatedSite.setId(locatedSiteId);
-									sites.add(locatedSite);
-								}
 							}
-							
+
 							if (sites != null && !sites.isEmpty()) 
 							{	
 								GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()

@@ -133,6 +133,16 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 		return false;
 	}
 
+	public Map<String, Long> getScopingsMap() {
+		return scopingsMap;
+	}
+
+	public void setScopingsMap(Map<String, Long> scopingsMap) {
+		this.scopingsMap = scopingsMap;
+	}
+
+	private Map<String, Long> scopingsMap;
+
 	private Map<String, Long> rolesMap;
 
 	public Map<String, Long> getRolesMap() {

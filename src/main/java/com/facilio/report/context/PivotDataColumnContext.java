@@ -37,6 +37,33 @@ public class PivotDataColumnContext extends PivotColumnContext {
 		this.readingField = readingField;
 
 	}
+	private long startTime = -1;
+	private long endTime = -1;
+	private boolean excludeFromTimelineFilter = false;
+
+	public long getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(long startTime) {
+		this.startTime = startTime;
+	}
+
+	public long getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(long endTime) {
+		this.endTime = endTime;
+	}
+
+	public boolean isExcludeFromTimelineFilter() {
+		return excludeFromTimelineFilter;
+	}
+
+	public void setExcludeFromTimelineFilter(boolean excludeFromTimelineFilter) {
+		this.excludeFromTimelineFilter = excludeFromTimelineFilter;
+	}
 
 	private String moduleType;
 
@@ -87,7 +114,15 @@ public class PivotDataColumnContext extends PivotColumnContext {
 	public void setParentModuleId(long parentModuleId) {
 		this.parentModuleId = parentModuleId;
 	}
+	private String baselineLabel;
 
+	public String getBaselineLabel() {
+		return baselineLabel;
+	}
+
+	public void setBaselineLabel(String baselineLabel) {
+		this.baselineLabel = baselineLabel;
+	}
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub

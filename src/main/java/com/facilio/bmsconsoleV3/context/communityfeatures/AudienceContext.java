@@ -8,6 +8,14 @@ import java.util.List;
 public class AudienceContext extends V3Context {
 
     private String name;
+    private Long filterSharingType;
+
+    public Long getFilterSharingType() {
+        return filterSharingType;
+    }
+    public void setFilterSharingType(Long filterSharingType) {
+        this.filterSharingType = filterSharingType;
+    }
 
     public String getName() {
         return name;

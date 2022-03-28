@@ -42,7 +42,7 @@ public class AddStoreRoomDetailsCommandV3 extends FacilioCommand{
     					Map<Long, LocationContext> spaceMap = LocationAPI.getLocationMap(Collections.singleton(storeRoom.getLocationId()));
     					storeRoom.setLocation(spaceMap.get(storeRoom.getLocationId()));
     				}
-    				storeRoom.setSites(getSitesList(storeRoom.getId()));
+    				storeRoom.setServingsites(getSitesList(storeRoom.getId()));
     			}
         	}
         }
