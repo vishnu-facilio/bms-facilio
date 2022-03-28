@@ -308,7 +308,10 @@ public class V3FloorplanCustomizationContext {
             @Override
             public String format(V3DeskContext desk) {
                 V3EmployeeContext emp=desk.getEmployee();
-                return emp.getName();
+                if (emp != null) {
+                 return emp.getName();
+                  }
+                return "";
             }
         },
         DESK_NAME() {
@@ -327,63 +330,69 @@ public class V3FloorplanCustomizationContext {
             @Override
             public String format(V3DeskContext desk) {
                 V3EmployeeContext emp=desk.getEmployee();
-                String name = emp.getName();
-                String namesplit[] =name.split(" ");
-                return namesplit[0];
+                if (emp != null) {
+                 String name = emp.getName();
+                 String namesplit[] = name.split(" ");
+                 return namesplit[0];
+                }
+                return "";
             }
         },
         LAST_NAME() {
             @Override
             public String format(V3DeskContext desk) {
                 V3EmployeeContext emp=desk.getEmployee();
-                String name = emp.getName();
-                String namesplit[] =name.split(" ");
-                String lname="";
-                if(namesplit.length==1)
-                {
-                    return namesplit[0];
+                if (emp != null) {
+                  String name = emp.getName();
+                  String namesplit[] = name.split(" ");
+                  String lname = "";
+                  if (namesplit.length == 1) {
+                        return namesplit[0];
+                    }
+                   for (int i = 1; i < namesplit.length; i++) {
+                     lname = lname + " " + namesplit[i];
+                    }
+                   return lname;
                 }
-                for(int i=1;i<namesplit.length;i++)
-                {
-                    lname=lname+" "+namesplit[i];
-                }
-                return lname;
+                  return "";
             }
         },
         INITIAL_WITH_FIRST_NAME() {
             @Override
             public String format(V3DeskContext desk) {
                 V3EmployeeContext emp=desk.getEmployee();
-                String name = emp.getName();
-                String namesplit[] =name.split(" ");
-                if(namesplit.length==1)
-                {
+                if (emp != null) {
+                  String name = emp.getName();
+                  String namesplit[] = name.split(" ");
+                  if (namesplit.length == 1) {
                     return namesplit[0];
+                   }
+                  String initialname = namesplit[0];
+                  for (int i = 1; i < namesplit.length; i++) {
+                     initialname = initialname + " " + namesplit[i].charAt(0);
+                   }
+                  return initialname;
                 }
-                String initialname = namesplit[0];
-                for(int i=1;i<namesplit.length;i++)
-                {
-                    initialname=initialname+" "+namesplit[i].charAt(0);
-                }
-                return initialname;
+                 return "";
             }
         },
         INITIAL_WITH_LAST_NAME() {
             @Override
             public String format(V3DeskContext desk) {
                 V3EmployeeContext emp=desk.getEmployee();
-                String name = emp.getName();
-                String namesplit[] =name.split(" ");
-                if(namesplit.length==1)
-                {
-                    return namesplit[0];
+                if (emp != null) {
+                   String name = emp.getName();
+                   String namesplit[] = name.split(" ");
+                   if (namesplit.length == 1) {
+                       return namesplit[0];
+                   }
+                   String initialname = "";
+                    for (int i = 0; i < namesplit.length - 1; i++) {
+                       initialname = initialname + namesplit[i].charAt(0) + " ";
+                     }
+                     return initialname + namesplit[namesplit.length - 1];
                 }
-                String initialname = "";
-                for(int i=0;i<namesplit.length-1;i++)
-                {
-                    initialname=initialname+namesplit[i].charAt(0)+" ";
-                }
-                return initialname+namesplit[namesplit.length-1];
+                return "";
             }
         },
         CUSTOM() {

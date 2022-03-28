@@ -240,6 +240,7 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 
 			   V3FloorplanCustomizationContext bookingCustomization = (V3FloorplanCustomizationContext) context.get("FLOORPLAN_BOOKING_CUSTOMIZATION");
 			   properties.setLabel(bookingCustomization.getDeskSecondaryLabel().getLabelType().format(desk));
+			   properties.setSecondaryLabel(bookingCustomization.getDeskPrimaryLabel().getLabelType().format(desk));
 
 
 			   if (desk.getDepartment() != null) {
@@ -249,8 +250,6 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 			   if (desk.getEmployee() != null) {
 				   properties.setEmployeeId(desk.getEmployee().getId());
 				   if (desk.getDeskType() == 1) {
-
-					   properties.setSecondaryLabel(bookingCustomization.getDeskPrimaryLabel().getLabelType().format(desk));
 					   properties.setCenterLabel(V3FloorPlanAPI.getCenterLabel(desk.getEmployee().getName()));
 					   iconName = "desk";
 					   properties.setIconName(iconName);

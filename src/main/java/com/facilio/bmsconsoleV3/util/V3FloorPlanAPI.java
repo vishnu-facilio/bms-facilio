@@ -305,6 +305,7 @@ public class V3FloorPlanAPI {
 				   properties.setDeskId(desk.getId());
 				   properties.setDeskType(desk.getDeskType());
 				   properties.setLabel(assignCustomization.getDeskSecondaryLabel().getLabelType().format(desk));
+				   properties.setSecondaryLabel(assignCustomization.getDeskPrimaryLabel().getLabelType().format(desk));
 				   properties.setIsCustom(true); // need to change based on the desktype
 				   
 
@@ -322,8 +323,6 @@ public class V3FloorPlanAPI {
 				   }
 				   
 				   if (desk.getEmployee() != null) {
-					   properties.setSecondaryLabel(assignCustomization.getDeskPrimaryLabel().getLabelType().format(desk));
-
 					   properties.setEmployeeId(desk.getEmployee().getId());
 					   properties.setCenterLabel(getCenterLabel(desk.getEmployee().getName()));
 					   properties.setIconName(iconName);
