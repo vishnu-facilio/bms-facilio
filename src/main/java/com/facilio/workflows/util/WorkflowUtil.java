@@ -62,6 +62,7 @@ import com.facilio.report.util.DemoHelperUtil;
 import com.facilio.scriptengine.context.ParameterContext;
 import com.facilio.scriptengine.context.WorkflowFieldType;
 import com.facilio.scriptengine.context.WorkflowFunctionContext;
+import com.facilio.scriptengine.systemfunctions.FacilioCSVFunctions;
 import com.facilio.scriptengine.systemfunctions.FacilioHTTPFunctions;
 import com.facilio.scriptengine.systemfunctions.FacilioListFunction;
 import com.facilio.scriptengine.systemfunctions.FacilioMapFunction;
@@ -2202,6 +2203,9 @@ public class WorkflowUtil {
 				case WMS:
 					facilioWorkflowFunction = FacilioWMSFunctions.getFacilioWMSFunction(functionName);
 					break;
+				case CSV_BUILDER:
+					facilioWorkflowFunction = FacilioCSVFunctions.getFacilioCSVFunctions(functionName);
+					break;
 			}
 		}
 		return facilioWorkflowFunction;
@@ -2317,8 +2321,12 @@ public class WorkflowUtil {
 					break;
 				case FILE:
 					facilioWorkflowFunction = new ArrayList<>( FacilioFileFunction.getAllFunctions().values());
+					break;
 				case WMS:
 					facilioWorkflowFunction = new ArrayList<>( FacilioWMSFunctions.getAllFunctions().values());
+					break;
+				case CSV_BUILDER:
+					facilioWorkflowFunction = new ArrayList<>( FacilioCSVFunctions.getAllFunctions().values());
 					break;
 			}
 		}
