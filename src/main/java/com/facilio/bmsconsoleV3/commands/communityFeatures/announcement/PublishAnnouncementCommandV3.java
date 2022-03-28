@@ -27,6 +27,7 @@ public class PublishAnnouncementCommandV3 extends FacilioCommand {
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<AnnouncementContext> announcements = recordMap.get(moduleName);
 
+        //CommunityFeaturesAPI.addAnnouncementPeople(announcements.get(0));
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT);
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));

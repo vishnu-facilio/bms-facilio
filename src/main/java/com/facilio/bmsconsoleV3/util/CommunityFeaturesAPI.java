@@ -20,6 +20,7 @@ import com.facilio.bmsconsoleV3.context.communityfeatures.ContactDirectoryContex
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementSharingInfoContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
+import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext;
 import com.facilio.bmsconsoleV3.interfaces.BuildingTenantContacts;
 import com.facilio.bmsconsoleV3.interfaces.SiteTenantContacts;
 import com.facilio.bmsconsoleV3.interfaces.TenantUnitTenantContacts;
@@ -36,6 +37,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.LookupFieldMeta;
+import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
@@ -96,7 +98,24 @@ public class CommunityFeaturesAPI {
 
         return builder.get();
     }
-    
+
+    public static AudienceContext getAudienceForAnnouncement(Long id) throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule announcementModule = modBean.getModule(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT);
+        if(id != null) {
+            Collection<SupplementRecord> lookUpfields = new ArrayList<>();
+            List<FacilioField> announcementFields = modBean.getAllFields(announcementModule.getName());
+            Map<String, FacilioField> announcementFieldMap = FieldFactory.getAsMap(announcementFields);
+            lookUpfields.add((LookupField) announcementFieldMap.get("audience"));
+            List<AnnouncementContext> announcements = V3RecordAPI.getRecordsListWithSupplements(announcementModule.getName(), Collections.singletonList(id), AnnouncementContext.class, lookUpfields);
+            if(CollectionUtils.isNotEmpty(announcements)){
+                return announcements.get(0).getAudience();
+            }
+        }
+        return null;
+    }
+
     public static List<CommunitySharingInfoContext> getSharingInfo(Long id) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENTS_SHARING_INFO);
@@ -168,17 +187,19 @@ public class CommunityFeaturesAPI {
             filterSharingType = announcement.getAudience().getFilterSharingType();
         } else {
             announcement.setAnnouncementsharing(getSharingInfo(announcement.getId()));
-        }
+            filterSharingType = getAudienceForAnnouncement(announcement.getId()).getFilterSharingType();
 
+        }
         if(CollectionUtils.isNotEmpty(announcement.getAnnouncementsharing())) {
             Map<Long, PeopleAnnouncementContext> pplMap = new HashMap<>();
             List<V3PeopleContext> ppl = new ArrayList<>();
             List<CommunitySharingInfoContext> sharingInfoList = new ArrayList<>();
             List<Long> sharedToRoleIds = new ArrayList<>();
             //special handling for including roles filter to spaces (tenant units and buildings)
-            if (filterSharingType != null && filterSharingType == Long.valueOf(CommunitySharingInfoContext.SharingType.ROLE.getIndex())) {
+            if (filterSharingType != null && filterSharingType.equals(2l)) {
                 sharedToRoleIds = getSharedToRoleIds(announcement.getAnnouncementsharing());
                 sharingInfoList = getSharedToSpaceInfo(announcement.getAnnouncementsharing());;
+
             } else {
                 sharingInfoList = announcement.getAnnouncementsharing();
             }
@@ -432,6 +453,9 @@ public class CommunityFeaturesAPI {
             for (CommunitySharingInfoContext sharingInfo : communitySharingInfo) {
                 if(sharingInfo.getSharedToRole() != null){
                     ids.add(sharingInfo.getSharedToRole().getId());
+                }
+                else if(sharingInfo.getSharedToRoleId() != null) {
+                    ids.add(sharingInfo.getSharedToRoleId());
                 }
             }
         }

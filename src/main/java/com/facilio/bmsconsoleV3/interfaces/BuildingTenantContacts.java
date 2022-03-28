@@ -8,13 +8,15 @@ import com.facilio.bmsconsoleV3.context.V3TenantContactContext;
 import com.facilio.bmsconsoleV3.util.CommunityFeaturesAPI;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class BuildingTenantContacts implements CommunitySharedPeople {
-    @Override
+
+	@Override
     public List<V3PeopleContext> getPeople(Long id,Long filterSharingType,List<Long> roleIds) throws Exception{
     	List<Long> tenantIds = new ArrayList<Long>();
         if(id != null){
@@ -26,7 +28,7 @@ public class BuildingTenantContacts implements CommunitySharedPeople {
         		tenantIds = CommunityFeaturesAPI.getBuildingTenants(buildings.stream().map(building -> building.getId()).collect(Collectors.toList()));
         	}
         }
-	      if(CollectionUtils.isNotEmpty(tenantIds)) {
+		if(CollectionUtils.isNotEmpty(tenantIds)) {
 	    	  List<V3PeopleContext> users = new ArrayList<>();
 		      for(Long tenantId : tenantIds) {
 				  List<V3TenantContactContext> list = new ArrayList<>();
@@ -40,7 +42,7 @@ public class BuildingTenantContacts implements CommunitySharedPeople {
 		              users.addAll(list);
 		          }
 		      }
-	          return users;
+			return users;
 	      }
         return null;
     }
