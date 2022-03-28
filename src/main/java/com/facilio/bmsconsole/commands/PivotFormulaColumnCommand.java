@@ -79,7 +79,7 @@ public class PivotFormulaColumnCommand extends FacilioCommand {
     private ArrayList<String> getVariablesUsedInExp(Map<String,String> variableMap){
         ArrayList<String> result = new ArrayList<>();
         for(String key: variableMap.keySet()){
-            result.add(variableMap.get(key));
+            result.add(key);
         }
         return result;
     }
