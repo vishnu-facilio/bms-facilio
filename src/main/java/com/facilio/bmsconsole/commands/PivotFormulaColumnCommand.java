@@ -22,9 +22,6 @@ public class PivotFormulaColumnCommand extends FacilioCommand {
 
         List<String> rowHeaders= (List<String>) context.get(FacilioConstants.ContextNames.ROW_HEADERS);
         List<String>  columnHeaders = (List<String>) context.get(FacilioConstants.ContextNames.DATA_HEADERS);
-        List<String> aliasList = new ArrayList<>();
-        aliasList.addAll(rowHeaders);
-        aliasList.addAll(columnHeaders);
 
         List<Map<String,Object>> paramList = new ArrayList<>();
         for (Map<String, Object> record : table) {
@@ -37,8 +34,9 @@ public class PivotFormulaColumnCommand extends FacilioCommand {
         }
 
         for(PivotFormulaColumnContext formulaContext : formulaContextList) {
-            String script = this.generateScript(aliasList,formulaContext.getScriptExpression());
-            if (isRequiredVariablesAvailable(columnHeaders, rowHeaders, formulaContext.getVariablesUsedInExp())) {
+            String script = this.generateScript(formulaContext.getVariableMap(),formulaContext.getExpression());
+            ArrayList<String> variablesUsedInExp = getVariablesUsedInExp(formulaContext.getVariableMap());
+            if (isRequiredVariablesAvailable(columnHeaders, rowHeaders, variablesUsedInExp)) {
                 this.executeFormulaColumn(script,paramList,formulaContext.getAlias());
             }
         }
@@ -78,15 +76,26 @@ public class PivotFormulaColumnCommand extends FacilioCommand {
         return false;
     }
 
-    private String generateScript(List<String> aliases, String expression){
+    private ArrayList<String> getVariablesUsedInExp(Map<String,String> variableMap){
+        ArrayList<String> result = new ArrayList<>();
+        for(String key: variableMap.keySet()){
+            result.add(variableMap.get(key));
+        }
+        return result;
+    }
+
+    private String generateScript(Map<String, String> aliases, String expression){
         StringJoiner scriptString = new StringJoiner("\n");
         scriptString.add("void test(List data, String key)");
         scriptString.add("{");
         scriptString.add("for each index, value in data {");
-        String varInitTemplate = "${alias} = new NameSpace(\"map\").get(value, \"${alias}\");";
+        String varInitTemplate = "${variable} = new NameSpace(\"map\").get(value, \"${alias}\");";
         String varExpressionTemplate = "result = ${expression};";
-        for (String alias: aliases) {
-            scriptString.add(varInitTemplate.replace("${alias}", alias));
+        for (String alias: aliases.keySet()) {
+            String expressionString = varInitTemplate
+                    .replace("${alias}", alias)
+                    .replace("${variable}", aliases.get(alias));
+            scriptString.add(expressionString);
         }
         scriptString.add(varExpressionTemplate.replace("${expression}", expression));
         scriptString.add("put = new NameSpace(\"map\").put(value, key, result);");

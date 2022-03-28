@@ -6,27 +6,19 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class PivotFormulaColumnContext extends PivotColumnContext {
-    private String scriptExpression;
     private String dataTypeEnum;
     private String expression;
-    private ArrayList<String> variablesUsedInExp = new ArrayList<>();
+    private HashMap<String, String> variableMap = new HashMap<>();
 
-    public ArrayList<String> getVariablesUsedInExp() {
-        return variablesUsedInExp;
+    public HashMap<String, String> getVariableMap() {
+        return variableMap;
     }
 
-    public void setVariablesUsedInExp(ArrayList<String> variablesUsedInExp) {
-        this.variablesUsedInExp = variablesUsedInExp;
-    }
-
-    public String getScriptExpression() {
-        return scriptExpression;
-    }
-
-    public void setScriptExpression(String scriptExpression) {
-        this.scriptExpression = scriptExpression;
+    public void setVariableMap(HashMap<String, String> variableMap) {
+        this.variableMap = variableMap;
     }
 
     public String getExpression() {
