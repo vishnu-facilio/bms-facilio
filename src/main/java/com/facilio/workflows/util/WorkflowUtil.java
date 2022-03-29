@@ -390,6 +390,11 @@ public class WorkflowUtil {
 		return evalWorkflowResultForBoolean(result);
 	}
 	
+	public static boolean getWorkflowExpressionResultAsBoolean(WorkflowContext workflowContext,Map<String,Object> paramMap,long parentId, long recordId ,WorkflowLogType logtype) throws Exception {
+		Object result = getWorkflowResult(workflowContext,paramMap, null, false, false,false,parentId, recordId ,logtype);
+		return evalWorkflowResultForBoolean(result);
+	}
+	
 	public static boolean getWorkflowExpressionResultAsBoolean(WorkflowContext workflowContext,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked) throws Exception {
 		Object result = getWorkflowResult(workflowContext, paramMap, rdmCache, ignoreNullExpressions, ignoreMarked, false);
 		return evalWorkflowResultForBoolean(result);

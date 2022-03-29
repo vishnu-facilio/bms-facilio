@@ -1728,12 +1728,17 @@ public class ViewFactory {
 		workflowLogView.setName("workflowLogView");
 		workflowLogView.setDisplayName("workflowLogView");
 
-
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("createdTime");
 		createdTime.setDataType(FieldType.NUMBER);
 		createdTime.setColumnName("CREATED_TIME");
-		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
+		try {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.Workflow.WORKFLOW_LOG);
+			createdTime.setModule(module);
+		} catch (Exception e) {
+			LOGGER.info(e);
+		}
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
 		workflowLogView.setSortFields(sortFields);

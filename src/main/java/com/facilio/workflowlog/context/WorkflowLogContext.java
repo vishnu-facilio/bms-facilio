@@ -9,6 +9,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionCategoryContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionPriorityContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
@@ -57,13 +58,36 @@ public class WorkflowLogContext extends V3Context {
 	public enum WorkflowLogType implements FacilioIntEnum{
 		FORMULA(1),
 		SCHEDULER(2),
+		MODULE_RULE(3,RuleType.MODULE_RULE),
+		STATE_RULE(4,RuleType.STATE_RULE),
+		WORKFLOWRULEEVALUATION(5),
 		;
 		
 		WorkflowLogType(int i) {
 			this.typeId = i;
 		}
 		
+
+		WorkflowLogType(int i, RuleType ruleType) {
+			this.typeId=i;
+			this.ruleType = ruleType;
+		}
+
+
+		public RuleType getRuleType() {
+			return ruleType;
+		}
+
+
+		public void setRuleType(RuleType ruleType) {
+			this.ruleType = ruleType;
+		}
+
+
 		private int typeId;
+		private RuleType ruleType;
+
+
 
 		public void setTypeId(int typeId) {
 			this.typeId = typeId;
@@ -80,6 +104,15 @@ public class WorkflowLogContext extends V3Context {
 				typeMap.put(type.getTypeId(), type);
 			}
 			return typeMap;
+		}
+		public static final Map<RuleType, WorkflowLogType> RuleTypeMap = Collections.unmodifiableMap(initRuleTypeMap());
+		private static Map<RuleType, WorkflowLogType> initRuleTypeMap() {
+			Map<RuleType, WorkflowLogType> RuleTypeMap = new HashMap<>();
+			
+			for(WorkflowLogType type : values()) {
+				RuleTypeMap.put(type.getRuleType(), type);
+			}
+			return RuleTypeMap;
 		}
 	}	
 

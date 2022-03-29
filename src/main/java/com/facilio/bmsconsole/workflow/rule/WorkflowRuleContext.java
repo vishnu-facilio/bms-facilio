@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.trigger.context.BaseTriggerContext;
+import com.facilio.workflowlog.context.WorkflowLogContext.WorkflowLogType;
+
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
@@ -482,14 +484,13 @@ public class WorkflowRuleContext implements Serializable {
 	public boolean evaluateWorkflowExpression (String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
 		try {
 			boolean workflowFlag = true;
+			long recordId = -1;
+			if(record !=null && record instanceof ModuleBaseWithCustomFields) {
+				ModuleBaseWithCustomFields recordObject = (ModuleBaseWithCustomFields) record;
+				recordId = recordObject.getId();
+			}
 			if (workflow != null) {
-				if(FacilioProperties.isDevelopment()) {
-					workflow.setLogNeeded(true);
-				}
-				if(workflow.getId() == 5391l || workflow.getId() == 5739l) {
-					workflow.setLogNeeded(true);
-				}
-				workflowFlag = WorkflowUtil.getWorkflowExpressionResultAsBoolean(workflow, placeHolders);
+					workflowFlag = WorkflowUtil.getWorkflowExpressionResultAsBoolean(workflow, placeHolders,workflow.getId(),recordId,WorkflowLogType.WORKFLOWRULEEVALUATION);
 			}
 			return workflowFlag;
 		}
