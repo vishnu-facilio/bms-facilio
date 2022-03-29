@@ -14,6 +14,7 @@ public class NameSpaceContext {
     Long orgId;
     Long parentRuleId;
     Long execInterval;
+    NSType type;
     List<NameSpaceField> fields;
 
     {
@@ -60,7 +61,7 @@ public class NameSpaceContext {
     }
 
     @JsonIgnore
-    public Long getIntervalTimeWithMaxDuration() {
+    public Long intervalTimeWithMaxDuration() {
         NameSpaceField maxIntervalField = getMaxIntervalField();
         return maxIntervalField.getDataInterval() > getExecInterval() ?
                 maxIntervalField.getDataInterval() : getExecInterval();
@@ -69,6 +70,21 @@ public class NameSpaceContext {
     @JsonIgnore
     public String nsKey() {
         return "NS_" + id + "_LETS";
+    }
+
+    public NSType getTypeEnum() {
+        return type;
+    }
+
+    public int getType() {
+        if (type != null) {
+            return type.getIndex();
+        }
+        return -1;
+    }
+
+    public void setType(Integer type) {
+        this.type = NSType.valueOf(type);
     }
 
     public void setNullForResponse() {

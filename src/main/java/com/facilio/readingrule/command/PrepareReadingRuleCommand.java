@@ -4,6 +4,7 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
+import com.facilio.workflowv2.util.WorkflowV2Util;
 import org.apache.commons.chain.Context;
 
 public class PrepareReadingRuleCommand extends FacilioCommand {
@@ -16,6 +17,7 @@ public class PrepareReadingRuleCommand extends FacilioCommand {
         }
         constructRuleDetails(newRuleCtx, oldRule);
         context.put(FacilioConstants.ContextNames.NEW_READING_RULE, oldRule);
+        context.put(WorkflowV2Util.WORKFLOW_CONTEXT, newRuleCtx.getWorkflowContext());
         return false;
     }
 
@@ -41,8 +43,8 @@ public class PrepareReadingRuleCommand extends FacilioCommand {
         if (newCtx.getRcaRules() != null) {
             oldRule.setRcaRules(newCtx.getRcaRules());
         }
-        if (newCtx.getCondition() != null) {
-            oldRule.setCondition(newCtx.getCondition());
+        if (newCtx.getNs() != null) {
+            oldRule.setNs(newCtx.getNs());
         }
     }
 

@@ -1,5 +1,7 @@
 package com.facilio.ns.context;
 
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,8 +20,13 @@ public class NameSpaceField {
     Long resourceId;
     Long fieldId;
 
-    String module;
-    String field;
+    Long moduleId;
+
+    @JsonIgnore
+    FacilioField field;
+
+    @JsonIgnore
+    FacilioModule module;
 
     Long dataInterval;
     int aggregationTypeI;

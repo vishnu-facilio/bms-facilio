@@ -188,6 +188,7 @@ public class FieldFactory extends BaseFieldFactory {
     public static List<FacilioField> getRuleAlarmDetailsFields() {
         FacilioModule module = ModuleFactory.getRuleAlarmDetailsModule();
         List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField("id", "ID", module));
         fields.add(getNumberField("ruleId", "RULE_ID", module));
         fields.add(getStringField("message", "MESSAGE", module));
         fields.add(getNumberField("faultType", "FAULT_TYPE", module));
@@ -2003,14 +2004,15 @@ public class FieldFactory extends BaseFieldFactory {
         FacilioModule module = ModuleFactory.getNewReadingRuleModule();
         fields.add(getIdField(module));
         fields.add(getModuleIdField(module));
-        fields.add(getField("fieldId", "READING_FIELD_ID", module, FieldType.NUMBER));
-        fields.add(getField("name", "NAME", module, FieldType.STRING));
-        fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
-        fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
-        fields.add(getField("createdBy", "CREATED_BY", module, FieldType.NUMBER));
-        fields.add(getField("alarmType", "ALARM_APPLIED_TO", module, FieldType.NUMBER));
-        fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));
-        fields.add(getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.NUMBER));
+        fields.add(getNumberField("fieldId", "READING_FIELD_ID", module));
+        fields.add(getStringField("name", "NAME", module));
+        fields.add(getStringField("description", "DESCRIPTION", module));
+        fields.add(getNumberField("createdTime", "CREATED_TIME", module));
+        fields.add(getNumberField("createdBy", "CREATED_BY", module));
+        fields.add(getNumberField("alarmType", "ALARM_APPLIED_TO", module));
+        fields.add(getBooleanField("status", "STATUS", module));
+        fields.add(getNumberField("assetCategoryId", "ASSET_CATEGORY_ID", module));
+        fields.add(getNumberField("workflowId", "WORKFLOW_ID", module));
         return fields;
     }
 

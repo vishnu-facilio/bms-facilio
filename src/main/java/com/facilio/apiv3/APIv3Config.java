@@ -146,6 +146,8 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.elasticsearch.command.PushDataToESCommand;
 import com.facilio.modules.FacilioModule;
+import com.facilio.readingrule.faultimpact.FaultImpactContext;
+import com.facilio.readingrule.faultimpact.FaultImpactNameSpaceFieldContext;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
@@ -1602,6 +1604,26 @@ public class APIv3Config {
                 .update()
                 .delete()
                     .beforeDelete(TransactionChainFactoryV3.getDeleteAssetCategoryChain())
+                .build();
+    }
+    
+    @Module(FacilioConstants.FaultImpact.MODULE_NAME)
+    public static Supplier<V3Config> getFaultImpact() {
+        return () -> new V3Config(FaultImpactContext.class, null)
+                .create()
+                	.beforeSave(TransactionChainFactoryV3.getFaultImpactAddOrUpdateBeforeChain())
+                    .afterSave(TransactionChainFactoryV3.getFaultImpactAddOrUpdateAfterChain())
+                .summary()
+                	.afterFetch(TransactionChainFactoryV3.getFaultImpactFetchChain())
+                .update()
+                	.beforeSave(TransactionChainFactoryV3.getFaultImpactAddOrUpdateBeforeChain())
+                	.afterSave(TransactionChainFactoryV3.getFaultImpactAddOrUpdateAfterChain())
+                .build();
+    }
+    
+    @Module(FacilioConstants.FaultImpact.FAULT_IMPACT_FIELDS_MODULE_NAME)
+    public static Supplier<V3Config> getFaultImpactFields(){
+        return () -> new V3Config(FaultImpactNameSpaceFieldContext.class,null)
                 .build();
     }
 }

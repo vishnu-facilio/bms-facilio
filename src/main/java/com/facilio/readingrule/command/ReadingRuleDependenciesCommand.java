@@ -10,8 +10,10 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.ns.context.NSType;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
+import com.facilio.workflowv2.util.WorkflowV2Util;
 import lombok.NonNull;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
@@ -30,6 +32,8 @@ public class ReadingRuleDependenciesCommand extends FacilioCommand {
     public boolean executeCommand(Context ctx) throws Exception {
 
         this.rule = (NewReadingRuleContext) ctx.get(FacilioConstants.ContextNames.NEW_READING_RULE);
+        this.rule.getWorkflowContext().setIsV2Script(true);
+        this.rule.getNs().setType(NSType.READING_RULE.getIndex());
 
         ctx.put(FacilioConstants.ContextNames.READING_NAME, rule.getName());
         ctx.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, NewReadingRuleAPI.READING_RULE_FIELD_TABLE_NAME);
@@ -44,6 +48,7 @@ public class ReadingRuleDependenciesCommand extends FacilioCommand {
         }});
 
         ctx.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+        ctx.put(WorkflowV2Util.WORKFLOW_CONTEXT, rule.getWorkflowContext());
 
         setReadingParent(ctx);
         setAssets();

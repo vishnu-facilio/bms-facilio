@@ -1,6 +1,6 @@
-package com.facilio.ns.command;
+package com.facilio.ns;
 
-public interface NSContextNames {
+public interface NamespaceConstants {
     String NAMESPACE = "namespace";
     String NAMESPACE_FIELDS = "namespace_fields";
     String PARENT_RULE_ID = "parentRuleId";

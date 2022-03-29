@@ -50,6 +50,8 @@ public class ReadingEventContext extends BaseEventContext {
         if (readingFieldId != -1) {
             readingAlarm.setReadingFieldId(readingFieldId);
         }
+        readingAlarm.setNewReadingRule(isNewReadingRule);
+
         return baseAlarm;
     }
 
@@ -75,6 +77,7 @@ public class ReadingEventContext extends BaseEventContext {
         if (readingFieldId != -1) {
             readingOccurrence.setReadingFieldId(readingFieldId);
         }
+        readingOccurrence.setNewReadingRule(isNewReadingRule);
         return super.updateAlarmOccurrenceContext(alarmOccurrence, context, add);
     }
 
@@ -96,7 +99,7 @@ public class ReadingEventContext extends BaseEventContext {
     }
 
     public void setRule(ReadingRuleInterface rule) throws Exception {
-        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
+        if (isNewReadingRule) {
             NewReadingRuleContext ruleContext = new NewReadingRuleContext();
             ruleContext.setId(rule.getId());
             this.rule = ruleContext;
@@ -117,7 +120,7 @@ public class ReadingEventContext extends BaseEventContext {
             return;
         }
 
-        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
+        if (isNewReadingRule) {
             NewReadingRuleContext ruleContext = new NewReadingRuleContext();
             ruleContext.setId(subRule.getId());
             this.subRule = ruleContext;

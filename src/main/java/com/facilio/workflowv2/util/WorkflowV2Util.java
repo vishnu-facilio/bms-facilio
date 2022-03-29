@@ -84,7 +84,8 @@ public class WorkflowV2Util {
 	
 	public static final String NEW_NAMESPACE_INITIALIZATION = "NameSpace";
 	public static final String NEW_CONNECTION_INITIALIZATION = "Connection";
-	
+
+	public static final String IS_V2 = "IsV2";
 	
 	public static Function<List<?>, List<Integer>> anyListToIntList = (objList) -> {
 		

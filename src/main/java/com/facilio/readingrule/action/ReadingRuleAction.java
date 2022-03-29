@@ -6,8 +6,13 @@ import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.ns.NamespaceConstants;
 import com.facilio.readingrule.context.NewReadingRuleContext;
+import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.v3.V3Action;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.util.V3Util;
+import com.facilio.workflowv2.util.WorkflowV2Util;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
@@ -104,9 +109,15 @@ public class ReadingRuleAction extends V3Action {
     }
 
     public String deleteReadingRule() throws Exception {
+
+        NewReadingRuleContext rule = NewReadingRuleAPI.getRule(ruleId);
+        V3Util.throwRestException(rule == null, ErrorCode.VALIDATION_ERROR, String.format("Rule ({0}) is not found", ruleId));
+
         FacilioChain chain = TransactionChainFactory.deleteReadingRuleChain();
         FacilioContext ctx = chain.getContext();
-        ctx.put(FacilioConstants.ContextNames.ID, ruleId);
+        ctx.put(FacilioConstants.ContextNames.NEW_READING_RULE, rule);
+        ctx.put(NamespaceConstants.NAMESPACE, rule.getNs());
+        ctx.put(WorkflowV2Util.WORKFLOW_CONTEXT, rule.getWorkflowContext());
         chain.execute();
         setData("result", true);
         return SUCCESS;
