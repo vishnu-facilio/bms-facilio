@@ -154,7 +154,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		
 		for(Map<String, Object> rawData : dataList) {
 			
-			FacilioContext context = V3Util.createRecord(module, rawData, true, null, null,true);
+			FacilioContext context = V3Util.createRecord(module, rawData);
 			ModuleBaseWithCustomFields record = Constants.getRecordMap(context).get(module.getName()).get(0);
 			rawData.put("id", record.getId());
 		}
