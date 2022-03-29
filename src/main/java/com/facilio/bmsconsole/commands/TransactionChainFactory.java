@@ -83,6 +83,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddSignupDataCommandV3());
 			c.addCommand(new AddEmployeeTypePeopleForUserAdditionCommand());
 			c.addCommand(new AddDefaultBundleCommand());
+			c.addCommand(new AddDefaultWoTimelineCommand());
 			return c;
 		}
 
