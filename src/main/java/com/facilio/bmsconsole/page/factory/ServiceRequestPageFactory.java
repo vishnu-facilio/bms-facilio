@@ -29,7 +29,7 @@ public class ServiceRequestPageFactory extends PageFactory {
             //hide comments section for portal users except for atre org
             boolean hideComments = AccountUtil.getCurrentUser().isPortalUser() && AccountUtil.getCurrentOrg().getOrgId() != 418l;
 
-            String tab2Title = hideComments ? "Attachments" : "Notes & Information";
+            String tab2Title = hideComments ? "Attachments" : "Comments & Information";
             Page.Tab tab2 = page.new Tab(tab2Title);
             page.addTab(tab2);
 
