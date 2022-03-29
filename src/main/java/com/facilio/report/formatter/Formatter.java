@@ -61,9 +61,13 @@ public abstract class Formatter {
             case ENUM:
             case SYSTEM_ENUM:
                 return new EnumFormatter(field);
+            case MULTI_ENUM:
+                return new MultiEnumFormatter(field);
             case DATE:
             case DATE_TIME:
                 return new DateFormatter(field);
+            case LOOKUP:
+                return new LookupFormatter(field);
             default:
                 return null;
         }

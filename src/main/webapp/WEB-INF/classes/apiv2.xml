@@ -2482,6 +2482,14 @@
 			method="fetchReportData">
 			<param name="cacheUrl">true</param>
 		</action>
+		<action name="pivotMetaFields"
+				class="com.facilio.bmsconsole.actions.PivotMetaField"
+				method="getPivotMetaFields">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">meta.*</param>
+			</result>
+		</action>
 		<action name="saveReport"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="saveReport">
