@@ -23,9 +23,7 @@ import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.SpaceAggregateOperator;
 import com.facilio.modules.FacilioModule.ModuleType;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.modules.fields.*;
 import com.facilio.report.context.*;
 import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
@@ -277,7 +275,31 @@ public class FetchReportDataCommand extends FacilioCommand {
             for (FacilioField field : fields) {
                 if (field != null) {
                     FacilioField cloneField = field.clone();
-                    cloneFields.add(cloneField);
+                   if(cloneField instanceof MultiEnumField)
+                   {
+                        List<FacilioField> list = modBean.getAllFields(((MultiEnumField)cloneField).getRelModule().getName());
+                        for(FacilioField multi_select_fld : list)
+                        {
+                           if(multi_select_fld.getColumnName().equals("INDEX_ID"))
+                           {
+                               cloneFields.add(multi_select_fld);
+                           }
+                        }
+                    }
+                    else if(cloneField instanceof MultiLookupField)
+                    {
+                        List<FacilioField> list = modBean.getAllFields(((MultiLookupField)cloneField).getRelModule().getName());
+                        for(FacilioField multi_select_fld : list)
+                        {
+                            if(multi_select_fld.getColumnName().equals("RIGHT_ID"))
+                            {
+                                cloneFields.add(multi_select_fld);
+                            }
+                        }
+                    }
+                    else {
+                        cloneFields.add(cloneField);
+                    }
                 }
             }
         }
@@ -658,7 +680,30 @@ public class FetchReportDataCommand extends FacilioCommand {
                 if (reportType == ReportType.PIVOT_REPORT && gField.getModule() != null && gField.getModule().equals(baseModule) && !gField.getCompleteColumnName().endsWith("null")) {
                     groupBy.add(gField.getCompleteColumnName());
                 } else if (reportType != ReportType.PIVOT_REPORT) {
-                    groupBy.add(gField.getCompleteColumnName());
+                    if(gField instanceof MultiEnumField )
+                    {
+                        if( ((MultiEnumField) gField).getRelModule().getName() != null) {
+                            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                            FacilioModule relModule = modBean.getModule(((MultiEnumField) gField).getRelModule().getName());
+                            addedModules.add(relModule);
+                            groupBy.add(new StringBuilder().append(relModule.getTableName()).append('.').append("INDEX_ID").toString());
+                            FacilioField idField = FieldFactory.getIdField(gField.getModule());
+                            applyJoin(new StringBuilder(idField.getCompleteColumnName()).append("=").append(relModule.getTableName()).append('.').append("PARENT_ID").toString(), relModule, selectBuilder);
+                        }
+                    }
+                    else if(gField instanceof MultiLookupField ){
+                        if( ((MultiLookupField) gField).getRelModule().getName() != null) {
+                            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                            FacilioModule relModule = modBean.getModule(((MultiLookupField) gField).getRelModule().getName());
+                            addedModules.add(relModule);
+                            groupBy.add(new StringBuilder().append(relModule.getTableName()).append('.').append("RIGHT_ID").toString());
+                            FacilioField idField = FieldFactory.getIdField(gField.getModule());
+                            applyJoin(new StringBuilder(idField.getCompleteColumnName()).append("=").append(relModule.getTableName()).append('.').append("LEFT_ID").toString(), relModule, selectBuilder);
+                        }
+                    }
+                    else {
+                        groupBy.add(gField.getCompleteColumnName());
+                    }
                 } else if(groupByField.getAggrEnum() != null && reportType == ReportType.PIVOT_REPORT) {
                     groupBy.add(gField.getCompleteColumnName());
                 }
@@ -1068,7 +1113,25 @@ public class FetchReportDataCommand extends FacilioCommand {
             } else if (xAggrField.getModule() != null && dp.getxAxis().getAlias() != null && reportType == ReportType.PIVOT_REPORT) {
                 xAggrField.setTableAlias(getAndSetModuleAlias(xAggrField.getModule().getName()));
             }
-            groupBy.add(xAggrField.getCompleteColumnName());
+            else if( xAggrField instanceof MultiEnumField && ((MultiEnumField) xAggrField).getRelModule() != null && ((MultiEnumField) xAggrField).getRelModule().getName() != null) {
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                FacilioModule relModule = modBean.getModule(((MultiEnumField) xAggrField).getRelModule().getName());
+                addedModules.add(relModule);
+                groupBy.add(new StringBuilder().append(relModule.getTableName()).append('.').append("INDEX_ID").toString());
+                FacilioField idField = FieldFactory.getIdField(xAggrField.getModule());
+                applyJoin(new StringBuilder(idField.getCompleteColumnName()).append("=").append(relModule.getTableName()).append('.').append("PARENT_ID").toString(), relModule, selectBuilder);
+            }
+            else if( xAggrField instanceof MultiLookupField && ((MultiLookupField) xAggrField).getRelModule() != null && ((MultiLookupField) xAggrField).getRelModule().getName() != null) {
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                FacilioModule relModule = modBean.getModule(((MultiLookupField) xAggrField).getRelModule().getName());
+                addedModules.add(relModule);
+                groupBy.add(new StringBuilder().append(relModule.getTableName()).append('.').append("RIGHT_ID").toString());
+                FacilioField idField = FieldFactory.getIdField(xAggrField.getModule());
+                applyJoin(new StringBuilder(idField.getCompleteColumnName()).append("=").append(relModule.getTableName()).append('.').append("LEFT_ID").toString(), relModule, selectBuilder);
+            }
+            else {
+                groupBy.add(xAggrField.getCompleteColumnName());
+            }
 
             if (xAggr instanceof DateAggregateOperator) {
                 fields.add(((DateAggregateOperator) xAggr).getTimestampField(dp.getxAxis().getField()));
