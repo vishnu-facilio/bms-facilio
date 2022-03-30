@@ -4852,6 +4852,10 @@
 			class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2updateField">
 		</action>
+		<action name="getFieldForms"
+				class="com.facilio.bmsconsole.actions.ModuleAction"
+				method="v2getFieldUsageInForms">
+		</action>
 		<action name="changeFieldTo" class="com.facilio.bmsconsole.actions.ModuleAction"
 				method="changeNameToLocalID" />
 		<action name="canChangeField" class="com.facilio.bmsconsole.actions.ModuleAction"

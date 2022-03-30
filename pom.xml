@@ -143,12 +143,12 @@
         <dependency>
             <groupId>com.facilio.framework</groupId>
             <artifactId>facilio-framework</artifactId>
-            <version>1.0.481</version>
+            <version>1.0.484</version>
         </dependency>
 		<dependency>
             <groupId>com.facilio.scriptengine</groupId>
             <artifactId>script-engine</artifactId>
-            <version>1.0.12</version>
+            <version>1.0.15</version>
         </dependency>
         <dependency>
             <groupId>com.facilio.taskengine</groupId>

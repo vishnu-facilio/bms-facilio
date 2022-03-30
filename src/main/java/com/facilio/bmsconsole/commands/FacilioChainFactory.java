@@ -1489,6 +1489,13 @@ public class FacilioChainFactory {
 		c.addCommand(new FetchFieldsTemplates());
 		return c;
 	}
+
+	public static FacilioChain getGetFieldUsageChain() {
+		FacilioChain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(new GetFormListCommand());
+		c.addCommand(new FetchFieldUsageInForms());
+		return c;
+	}
 	
 	public static FacilioChain fetchExportModuleChain() {
 		FacilioChain c = FacilioChain.getNonTransactionChain();

@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.RollUpField;
+import com.facilio.bmsconsole.forms.FieldFormUsage;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
@@ -458,10 +459,27 @@ public class ModuleAction extends FacilioAction {
 		setResult("fields", fields);
 //		Map<Long, List<FacilioForm>> fieldVsForms = (Map<Long, List<FacilioForm>>) context.get(FacilioConstants.ContextNames.FORM_FIELD_MAP);
 //		setResult("fieldVsForms", fieldVsForms);
-		
+
 		return SUCCESS;
 	}
-	
+
+	public String v2getFieldUsageInForms() throws Exception {
+
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+		context.put(ContextNames.FIELD_ID, fieldId);
+		context.put(ContextNames.FETCH_DISABLED_FORMS, true);
+		context.put(ContextNames.FETCH_HIDDEN_FORMS, true);
+
+		FacilioChain getFieldsChain = FacilioChainFactory.getGetFieldUsageChain();
+		getFieldsChain.execute(context);
+
+		List<FieldFormUsage> fieldUsage = (List<FieldFormUsage>) context.get(ContextNames.FIELD_FORM_USAGE_DETAILS);
+		setResult("forms", fieldUsage);
+
+		return SUCCESS;
+	}
+
 	private String moduleName;
 	public String getModuleName() {
 		return moduleName;
