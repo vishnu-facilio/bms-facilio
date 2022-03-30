@@ -490,7 +490,7 @@ public class WorkflowRuleContext implements Serializable {
 				recordId = recordObject.getId();
 			}
 			if (workflow != null) {
-					workflowFlag = WorkflowUtil.getWorkflowExpressionResultAsBoolean(workflow, placeHolders,workflow.getId(),recordId,WorkflowLogType.WORKFLOWRULEEVALUATION);
+					workflowFlag = WorkflowUtil.getWorkflowExpressionResultAsBoolean(workflow, placeHolders,workflow.getId(),recordId,WorkflowLogType.WORKFLOW_RULE_EVALUATION);
 			}
 			return workflowFlag;
 		}

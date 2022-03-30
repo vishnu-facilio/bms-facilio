@@ -60,7 +60,7 @@ public class WorkflowLogContext extends V3Context {
 		SCHEDULER(2),
 		MODULE_RULE(3,RuleType.MODULE_RULE),
 		STATE_RULE(4,RuleType.STATE_RULE),
-		WORKFLOWRULEEVALUATION(5),
+		WORKFLOW_RULE_EVALUATION(5),
 		;
 		
 		WorkflowLogType(int i) {
@@ -105,7 +105,7 @@ public class WorkflowLogContext extends V3Context {
 			}
 			return typeMap;
 		}
-		public static final Map<RuleType, WorkflowLogType> RuleTypeMap = Collections.unmodifiableMap(initRuleTypeMap());
+		public static final Map<RuleType, WorkflowLogType> ruleTypeMap = Collections.unmodifiableMap(initRuleTypeMap());
 		private static Map<RuleType, WorkflowLogType> initRuleTypeMap() {
 			Map<RuleType, WorkflowLogType> RuleTypeMap = new HashMap<>();
 			
