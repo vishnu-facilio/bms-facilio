@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.*;
+import com.facilio.auth.actions.PasswordHashUtil;
 import com.facilio.bmsconsole.context.ScopingContext;
 import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.iam.accounts.util.IAMAccountConstants;
@@ -499,6 +500,31 @@ public class UserBeanImpl implements UserBean {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public List<User> getUsers(List<Long> ouids, boolean fetchDeleted) throws Exception {
+		List<FacilioField> fields = new ArrayList<>(AccountConstants.getAppOrgUserFields());
+		fields.add(AccountConstants.getOrgIdField());
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields).table("ORG_Users");
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserId", StringUtils.join(ouids,  ","), NumberOperators.EQUALS));
+
+		selectBuilder.andCriteria(criteria);
+		List<Map<String, Object>> props = selectBuilder.get();
+		List<User> users = new ArrayList<>();
+		if (props != null && !props.isEmpty()) {
+			IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), fetchDeleted);
+			if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(props)) {
+				for (Map<String, Object> prop: props) {
+
+					User user = createUserFromProps(prop, false, false, null);
+					users.add(user);
+				}
+				return users;
+			}
+		}
+		return Collections.EMPTY_LIST;
 	}
 	
 	@Override
