@@ -22,7 +22,7 @@ public class SendUserNotificationJob extends InstantJob {
 
     @Override
     public void execute(FacilioContext facilioContext) throws Exception {
-        Map<Long,UserMobileSetting> userMobileSettings = (Map<Long, UserMobileSetting>) facilioContext.get(FacilioConstants.ContextNames.USER_MOBILE_SETTING);
+        Map<Long,List<UserMobileSetting>> userMobileSettings = (Map<Long, List<UserMobileSetting>>) facilioContext.get(FacilioConstants.ContextNames.USER_MOBILE_SETTING);
         List<UserNotificationContext> userNotification  = Constants.getRecordList(facilioContext);
 
         if (userMobileSettings!=null) {
@@ -34,17 +34,20 @@ public class SendUserNotificationJob extends InstantJob {
                         User userList = AccountUtil.getUserBean().getUser(userNotificationContext.getApplication(),uid);
                         if (userMobileSettings.containsKey(userList.getUid())) {
                             Map<String, Object> data = new HashMap<>();
-                            data.put("to", userMobileSettings.get(userList.getUid()));
-                            userNotificationContext.addData(data);
+                            List<UserMobileSetting> mobileSettings = userMobileSettings.get(userList.getUid());
+                            for(UserMobileSetting mobileSetting : mobileSettings) {
+                                data.put("to", mobileSetting);
+                                userNotificationContext.addData(data);
 
-                            Map<String, String> headers = new HashMap<>();
-                            headers.put("Content-Type", "application/json");
-                            headers.put("Authorization", "key=" + (userMobileSettings.get(userList.getUid()).isFromPortal() ? FacilioProperties.getPortalPushNotificationKey() : FacilioProperties.getPushNotificationKey()));
+                                Map<String, String> headers = new HashMap<>();
+                                headers.put("Content-Type", "application/json");
+                                headers.put("Authorization", "key=" + (mobileSetting.isFromPortal() ? FacilioProperties.getPortalPushNotificationKey() : FacilioProperties.getPushNotificationKey()));
 
-                            String url = "https://fcm.googleapis.com/fcm/send";
+                                String url = "https://fcm.googleapis.com/fcm/send";
 
-                            AwsUtil.doHttpPost(url, headers, null, userNotificationContext.toString());
-                            LOGGER.debug("Sending push notification data ====> " + userNotificationContext);
+                                AwsUtil.doHttpPost(url, headers, null, userNotificationContext.toString());
+                                LOGGER.debug("Sending push notification data ====> " + userNotificationContext);
+                            }
                         }
                     }
         }

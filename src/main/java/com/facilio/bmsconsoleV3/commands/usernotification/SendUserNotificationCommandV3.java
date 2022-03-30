@@ -55,8 +55,10 @@ public class SendUserNotificationCommandV3 extends FacilioCommand implements Pos
                 ApplicationContext applicationContext = ApplicationApi.getApplicationForId(records.get(0).getApplication());
                 String appLinkName = applicationContext.getLinkName();
                 List<UserMobileSetting> mobileInstanceSettings = NotificationAPI.getMobileInstanceIDs(idLongList, appLinkName);
-                Map<Long,UserMobileSetting> userMobileSettingMap = new HashMap<>();
-                userMobileSettingMap = mobileInstanceSettings.stream().collect(Collectors.toMap(UserMobileSetting::getUserId, Function.identity()));
+                Map<Long,List<UserMobileSetting>> userMobileSettingMap = new HashMap<>();
+                userMobileSettingMap = mobileInstanceSettings.stream().collect(
+                        Collectors.groupingBy(UserMobileSetting::getUserId,HashMap::new,Collectors.toCollection(
+                                ArrayList::new)));
                 LOGGER.info("Sending push notifications for ids : " + idLongList);
                 sendNotification(records, userMobileSettingMap);
             }
@@ -92,7 +94,7 @@ public class SendUserNotificationCommandV3 extends FacilioCommand implements Pos
         return false;
     }
 
-    public void sendNotification(List<UserNotificationContext> userNotification,Map<Long,UserMobileSetting> mobileInstanceSettings) throws Exception {
+    public void sendNotification(List<UserNotificationContext> userNotification,Map<Long,List<UserMobileSetting>> mobileInstanceSettings) throws Exception {
         FacilioContext context = new FacilioContext();
         Constants.setRecordList(context,userNotification);
         context.put(FacilioConstants.ContextNames.USER_MOBILE_SETTING,mobileInstanceSettings);
