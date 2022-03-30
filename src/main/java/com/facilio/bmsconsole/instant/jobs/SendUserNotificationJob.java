@@ -36,7 +36,7 @@ public class SendUserNotificationJob extends InstantJob {
                             Map<String, Object> data = new HashMap<>();
                             List<UserMobileSetting> mobileSettings = userMobileSettings.get(userList.getUid());
                             for(UserMobileSetting mobileSetting : mobileSettings) {
-                                data.put("to", mobileSetting);
+                                data.put("to", mobileSetting.getMobileInstanceId());
                                 userNotificationContext.addData(data);
 
                                 Map<String, String> headers = new HashMap<>();
