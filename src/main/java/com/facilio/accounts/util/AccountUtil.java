@@ -626,6 +626,7 @@ public class AccountUtil {
 		for(Integer featureId: featureLicenses.keySet()) {
 
 			FeatureLicense license = featureLicenses.get(featureId);
+			// boolean isEnabled = (FeatureLicense.TENANTS == license) || (FeatureLicense.VENDOR == license) || ((getOrgFeatureLicense(orgId).get(license.getGroup().getLicenseKey()) & license.getLicense()) == license.getLicense());
 			boolean isEnabled = (getOrgFeatureLicense(orgId).get(license.getGroup().getLicenseKey()) & license.getLicense()) == license.getLicense();
 			features.put(license.toString(), isEnabled);
 		}

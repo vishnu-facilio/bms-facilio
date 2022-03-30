@@ -788,8 +788,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public String generateTotpSessionToken(String userName) throws Exception {
-		String jwt = createJWT("id", "auth0", userName, System.currentTimeMillis());
+	public String generateTotpSessionToken(String userName, String token) throws Exception {
+		String jwt = createJWT("id", "auth0", token, System.currentTimeMillis());
 		final List<Map<String, Object>> userForUsername = getUserData(userName, -1, null);
 
 		Map<String, Object> user = userForUsername.get(0);
@@ -799,8 +799,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public String generateMFAConfigSessionToken(String userName) throws Exception {
-		String jwt = createJWT("id", "auth0", userName, System.currentTimeMillis());
+	public String generateMFAConfigSessionToken(String userName, String token) throws Exception {
+		String jwt = createJWT("id", "auth0", token, System.currentTimeMillis());
 		final List<Map<String, Object>> userForUserName = getUserData(userName, -1, null);
 
 		Map<String, Object> user = userForUserName.get(0);

@@ -1,8 +1,9 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.accounts.dto.RoleApp;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Map;
 
@@ -152,5 +153,9 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 	public void setRolesMap(Map<String, Long> rolesMap) {
 		this.rolesMap = rolesMap;
 	}
+
+	@Getter
+	@Setter
+	private Map<String, Long> securityPolicyMap;
 
 }
