@@ -1108,10 +1108,13 @@ public class FetchReportDataCommand extends FacilioCommand {
             }
             if (xAggrField.getModule() != null && (xAggrField.getModule().isCustom() && !baseModule.equals(xAggrField.getModule()))) {
                 xAggrField.setTableAlias(getAndSetModuleAlias(xAggrField.getModule().getName()));
+                groupBy.add(xAggrField.getCompleteColumnName());
             } else if (xAggrField.getModule() != null && dp.getxAxis().getAlias() != null && dp.getxAxis().getLookupFieldId() > 0 && reportType == ReportType.PIVOT_REPORT) {
                 xAggrField.setTableAlias(getAndSetModuleAlias(xAggrField.getModule().getName() + "_" + dp.getxAxis().getField().getName()));
+                groupBy.add(xAggrField.getCompleteColumnName());
             } else if (xAggrField.getModule() != null && dp.getxAxis().getAlias() != null && reportType == ReportType.PIVOT_REPORT) {
                 xAggrField.setTableAlias(getAndSetModuleAlias(xAggrField.getModule().getName()));
+                groupBy.add(xAggrField.getCompleteColumnName());
             }
             else if( xAggrField instanceof MultiEnumField && ((MultiEnumField) xAggrField).getRelModule() != null && ((MultiEnumField) xAggrField).getRelModule().getName() != null) {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -1128,9 +1131,6 @@ public class FetchReportDataCommand extends FacilioCommand {
                 groupBy.add(new StringBuilder().append(relModule.getTableName()).append('.').append("RIGHT_ID").toString());
                 FacilioField idField = FieldFactory.getIdField(xAggrField.getModule());
                 applyJoin(new StringBuilder(idField.getCompleteColumnName()).append("=").append(relModule.getTableName()).append('.').append("LEFT_ID").toString(), relModule, selectBuilder);
-            }
-            else {
-                groupBy.add(xAggrField.getCompleteColumnName());
             }
 
             if (xAggr instanceof DateAggregateOperator) {
