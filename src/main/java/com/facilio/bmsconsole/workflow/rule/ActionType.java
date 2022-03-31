@@ -1165,7 +1165,7 @@ public enum ActionType {
 								
 				if (currentRecord != null) {
 					Map<String, Object> props = FieldUtil.getAsProperties(currentRecord);
-					if(context.get(FacilioConstants.Workflow.WORKFLOW_LOG_RECORD_ID) == null && props.get("id")!=null) {
+					if(context.get(FacilioConstants.Workflow.WORKFLOW_LOG_RECORD_ID) == null &&  props != null && props.get("id")!=null) {
 						context.put(FacilioConstants.Workflow.WORKFLOW_LOG_RECORD_ID, props.get("id"));
 					}
 					List<Object> currentRecordList = new ArrayList<>();
