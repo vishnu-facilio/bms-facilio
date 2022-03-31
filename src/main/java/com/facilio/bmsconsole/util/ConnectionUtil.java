@@ -76,7 +76,8 @@ public class ConnectionUtil {
 	public static final String EQUALS = "=";
 	public static final String QUERY_STRING_SEPERATOR = "?";
 	public static final String PARAM_SEPERATOR = "&";
-	
+
+
 	public static String getUrlResult(ConnectionContext connectionContext,String urlString,Map<String,String> params,HttpMethod method,String bodyString,String bodyType,Map<String,String> headerParam) throws Exception {
 
 		params = params == null ? new HashMap<>() : params;
@@ -96,7 +97,7 @@ public class ConnectionUtil {
             	String username = null;
             	String password = null;
 				if(connectionContext.getConnectionParams() != null) {
-					for(ConnectionParamContext connectionParams : connectionContext.getConnectionParams()) {
+					for( ConnectionParamContext connectionParams : connectionContext.getConnectionParams()) {
 						if(connectionParams.getKey().equals ("username")){
 							username = connectionParams.getValue();}
 
