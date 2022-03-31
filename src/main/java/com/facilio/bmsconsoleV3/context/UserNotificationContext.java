@@ -10,10 +10,13 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
+import org.apache.commons.collections.MapUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class UserNotificationContext extends V3Context {
 
@@ -232,15 +235,26 @@ public class UserNotificationContext extends V3Context {
             userNotification.setApplication(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
         }
         userNotification.setNotificationStatus(UserNotificationContext.NotificationStatus.UNSEEN);
+
+        if (notiObj.containsKey("click_action")) {
+            userNotification.addExtraParam("click_action", notiObj.get("click_action"));
+        }
+        if (notiObj.containsKey("content_available")) {
+            userNotification.addExtraParam("content_available", notiObj.get("content_available"));
+        }
+        if (notiObj.containsKey("sound")) {
+            userNotification.addExtraParam("sound", notiObj.get("sound"));
+        }
+        if (notiObj.containsKey("priority")) {
+            userNotification.addExtraParam("priority", notiObj.get("priority"));
+        }
+
         return  userNotification;
     }
 
-    public static JSONObject setExtraParam() {
-        JSONObject extraParam = new JSONObject();
-        extraParam.put("content_available",true);
-        extraParam.put("sound","default");
-        extraParam.put("priority","high");
-        return extraParam;
+    private Map<String, Object> extraParams = new HashMap<>();
+    private void addExtraParam(String key, Object value) {
+        extraParams.put(key, value);
     }
 
     public static JSONObject getFcmObject(UserNotificationContext userNotification) throws Exception{
@@ -251,7 +265,10 @@ public class UserNotificationContext extends V3Context {
         obj.put("text",userNotification.getSubject());
         obj.put("click_action",module.getName().toUpperCase()+"_"+userNotification.getActionTypeEnum().toString());
         obj.put("title",userNotification.getTitle());
-        obj.put("extraParam",setExtraParam());
+
+        if (MapUtils.isNotEmpty(userNotification.extraParams)) {
+            obj.putAll(userNotification.extraParams);
+        }
 
         JSONObject notificationObj = new JSONObject();
         notificationObj.put("notification",obj);
