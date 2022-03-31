@@ -257,17 +257,20 @@ public class UserNotificationContext extends V3Context {
         extraParams.put(key, value);
     }
 
+    public Map<String, Object> getExtraParams() {
+        return extraParams;
+    }
+
     public static JSONObject getFcmObject(UserNotificationContext userNotification) throws Exception{
         JSONObject obj = new JSONObject();
         FacilioModule module = Constants.getModBean().getModule(userNotification.getParentModule());
         obj.put("summary_id",userNotification.getParentId());
         obj.put("module_name",module.getName());
         obj.put("text",userNotification.getSubject());
-        obj.put("click_action",module.getName().toUpperCase()+"_"+userNotification.getActionTypeEnum().toString());
         obj.put("title",userNotification.getTitle());
 
-        if (MapUtils.isNotEmpty(userNotification.extraParams)) {
-            obj.putAll(userNotification.extraParams);
+        if (MapUtils.isNotEmpty(userNotification.getExtraParams())) {
+            obj.putAll(userNotification.getExtraParams());
         }
 
         JSONObject notificationObj = new JSONObject();
