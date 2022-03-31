@@ -5666,6 +5666,9 @@
 		<action name="parseHandler"
 				class="com.facilio.bmsconsole.actions.ImportDataAction" method="parseHandler">
 		</action>
+		<action name="importHandler"
+				class="com.facilio.bmsconsole.actions.ImportDataAction" method="importHandler">
+		</action>
 	</package>
 
 	<package name="autoCommissiondata"

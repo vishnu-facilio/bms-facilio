@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -79,7 +80,7 @@ public class V3Util {
         contextNew.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
 
         if (bulkOp) {
-            Constants.setBulkRawInput(contextNew, (Collection<JSONObject>) data);
+            Constants.setBulkRawInput(contextNew, (Collection<Map<String, Object>>) data);
         } else {
             Constants.setRawInput(contextNew, (Map<String, Object>) data);
         }
@@ -117,7 +118,7 @@ public class V3Util {
     	FacilioContext summaryContext = V3Util.getSummary(moduleName, ids);
         List<ModuleBaseWithCustomFields> moduleBaseWithCustomFields = Constants.getRecordListFromContext(summaryContext, moduleName);
 
-        List<JSONObject> values = new ArrayList<JSONObject>();
+        List<Map<String, Object>> values = new ArrayList<>();
         JSONObject jsonObject;
 		for (ModuleBaseWithCustomFields record: moduleBaseWithCustomFields) {
             
@@ -143,7 +144,7 @@ public class V3Util {
     
     public static FacilioContext updateBulkRecords(FacilioModule module, V3Config v3Config,
                                                    List<ModuleBaseWithCustomFields> oldRecords,
-                                                   List<JSONObject> recordList, List<Long> ids,
+                                                   List<Map<String, Object>> recordList, List<Long> ids,
                                                    Map<String, Object> bodyParams, Map<String, List<Object>> queryParams,
                                                    Long stateTransitionId, Long customButtonId, Long approvalTransitionId,
                                                    String qrValue,boolean onlyPermittedActions
@@ -154,7 +155,7 @@ public class V3Util {
 
     private static FacilioContext updateRecords(FacilioModule module, V3Config v3Config, boolean bulkOp,
                                                 List<ModuleBaseWithCustomFields> oldRecords,
-                                                List<JSONObject> recordList, List<Long> ids,
+                                                List<Map<String, Object>> recordList, List<Long> ids,
                                                 Map<String, Object> bodyParams, Map<String, List<Object>> queryParams,
                                                 Long stateTransitionId, Long customButtonId, Long approvalTransitionId,
                                                 String qrValue,boolean onlyPermittedActions
@@ -201,6 +202,31 @@ public class V3Util {
         context.put(Constants.QUERY_PARAMS, queryParams);
 
         patchChain.execute();
+        return context;
+    }
+
+    public static FacilioContext processAndUpdateBulkRecords(FacilioModule module, List<ModuleBaseWithCustomFields> oldRecords, List<Map<String, Object>> rawRecords,
+                                                             Map<String, Object> bodyParams, Map<String, List<Object>> queryParams,
+                                                             Long stateTransitionId, Long customButtonId, Long approvalTransitionId, String qrValue,
+                                                             boolean restrictedActions) throws Exception {
+        Map<Long, Map<String, Object>> idVsRecordMap = new HashMap<>();
+        for (ModuleBaseWithCustomFields record: oldRecords) {
+            idVsRecordMap.put(record.getId(), FieldUtil.getAsJSON(record));
+        }
+
+        for (Map<String, Object> rec: rawRecords) {
+            Map<String, Object> jsonObject = idVsRecordMap.get((long) rec.get("id"));
+            Set<String> keys = rec.keySet();
+            for (String key : keys) {
+                jsonObject.put(key, rec.get(key));
+            }
+        }
+        List<Map<String, Object>> values = new ArrayList<>(idVsRecordMap.values());
+        V3Config v3Config = ChainUtil.getV3Config(module.getName());
+        List<Long> ids = oldRecords.stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toList());
+
+        FacilioContext context = V3Util.updateBulkRecords(module, v3Config, oldRecords, values, ids, bodyParams,
+                queryParams, stateTransitionId, customButtonId, approvalTransitionId, qrValue, restrictedActions);
         return context;
     }
 
@@ -282,7 +308,7 @@ public class V3Util {
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List list = recordMap.get(moduleName);
 
-        if (org.apache.commons.collections4.CollectionUtils.isEmpty(list)) {
+        if (CollectionUtils.isEmpty(list)) {
             FacilioModule module = ChainUtil.getModule(moduleName);
             throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND, module.getDisplayName() + " with id: " + id + " does not exist.");
         }

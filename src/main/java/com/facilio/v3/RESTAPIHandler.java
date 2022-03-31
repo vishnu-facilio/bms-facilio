@@ -292,25 +292,9 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         FacilioContext summaryContext = V3Util.getSummary(moduleName, ids);
         List<ModuleBaseWithCustomFields> moduleBaseWithCustomFields = Constants.getRecordListFromContext(summaryContext, moduleName);
 
-        Map<Long, JSONObject> idVsRecordMap = new HashMap<>();
-        for (ModuleBaseWithCustomFields record: moduleBaseWithCustomFields) {
-            idVsRecordMap.put(record.getId(), FieldUtil.getAsJSON(record));
-        }
-
-        for (Map<String, Object> rec: rawRecords) {
-            JSONObject jsonObject = idVsRecordMap.get((long) rec.get("id"));
-            Set<String> keys = rec.keySet();
-            for (String key : keys) {
-                jsonObject.put(key, rec.get(key));
-            }
-        }
-        List<JSONObject> values = new ArrayList<>(idVsRecordMap.values());
-
         FacilioModule module = ChainUtil.getModule(moduleName);
-        V3Config v3Config = ChainUtil.getV3Config(moduleName);
-        FacilioContext context = V3Util.updateBulkRecords(module, v3Config, moduleBaseWithCustomFields, values,
-                ids, bodyParams, getQueryParameters(), getStateTransitionId(),
-                getCustomButtonId(), getApprovalTransitionId(),getQrValue(),false);
+        FacilioContext context = V3Util.processAndUpdateBulkRecords(module, moduleBaseWithCustomFields, rawRecords, bodyParams, getQueryParameters(), getStateTransitionId(),
+                getCustomButtonId(), getApprovalTransitionId(), getQrValue(), false);
 
         Integer count = (Integer) context.get(Constants.ROWS_UPDATED);
 

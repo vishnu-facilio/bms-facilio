@@ -5,6 +5,8 @@ import com.facilio.bmsconsole.commands.ImportProcessLogContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.imports.config.ImportChainUtil;
+import com.facilio.bmsconsole.imports.job.ImportDataJob;
+import com.facilio.bmsconsole.imports.job.InsertDataLogJob;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -93,13 +95,24 @@ public class ImportDataAction extends FacilioAction {
 		importProcessContext.setStatus(ImportProcessContext.ImportStatus.PARSING_IN_PROGRESS.getValue());
 		ImportAPI.updateImportProcess(importProcessContext);
 
-		FacilioChain chain = ImportChainUtil.getParseChain(moduleName);
+		FacilioContext context = new FacilioContext();
+		context.put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcessContext);
+		FacilioTimer.scheduleInstantJob(InsertDataLogJob.JOB_NAME, context);
 
-		FacilioContext context = chain.getContext();
-		context.put(FacilioConstants.ContextNames.IMPORT_PROCESS_CONTEXT, importProcessContext);
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-		chain.execute();
+		ImportProcessContext imp = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
+		setResult(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT ,imp);
 		
+		return SUCCESS;
+	}
+
+	public String importHandler() throws Exception {
+		importProcessContext.setStatus(ImportProcessContext.ImportStatus.IN_PROGRESS.getValue());
+		ImportAPI.updateImportProcess(importProcessContext);
+
+		// remove any existing job
+		FacilioTimer.deleteJob(importProcessContext.getId(), ImportDataJob.JOB_NAME);
+
+		FacilioTimer.scheduleOneTimeJobWithTimestampInSec(importProcessContext.getId(), ImportDataJob.JOB_NAME, 10, "priority");
 		return SUCCESS;
 	}
 	
