@@ -6,7 +6,9 @@ import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioIntEnum;
+import com.facilio.modules.FacilioModule;
 import com.facilio.util.FacilioUtil;
+import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -231,6 +233,31 @@ public class UserNotificationContext extends V3Context {
         }
         userNotification.setNotificationStatus(UserNotificationContext.NotificationStatus.UNSEEN);
         return  userNotification;
+    }
+
+    public static JSONObject setExtraParam() {
+        JSONObject extraParam = new JSONObject();
+        extraParam.put("content_available",true);
+        extraParam.put("sound","default");
+        extraParam.put("priority","high");
+        return extraParam;
+    }
+
+    public static JSONObject getFcmObject(UserNotificationContext userNotification) throws Exception{
+        JSONObject obj = new JSONObject();
+        FacilioModule module = Constants.getModBean().getModule(userNotification.getParentModule());
+        obj.put("summary_id",userNotification.getParentId());
+        obj.put("module_name",module.getName());
+        obj.put("text",userNotification.getSubject());
+        obj.put("click_action",module.getName().toUpperCase()+"_"+userNotification.getActionTypeEnum().toString());
+        obj.put("title",userNotification.getTitle());
+        obj.put("extraParam",setExtraParam());
+
+        JSONObject notificationObj = new JSONObject();
+        notificationObj.put("notification",obj);
+        notificationObj.put("data",obj);
+
+        return notificationObj;
     }
 
     public static class Action implements Serializable {

@@ -12,6 +12,7 @@ import com.facilio.taskengine.job.InstantJob;
 import com.facilio.v3.context.Constants;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
@@ -30,14 +31,13 @@ public class SendUserNotificationJob extends InstantJob {
                     // content.put("to",
                     // "exA12zxrItk:APA91bFzIR6XWcacYh24RgnTwtsyBDGa5oCs5DVM9h3AyBRk7GoWPmlZ51RLv4DxPt2Dq2J4HDTRxW6_j-RfxwAVl9RT9uf9-d9SzQchMO5DHCbJs7fLauLIuwA5XueDuk7p5P7k9PfV");
                     for(UserNotificationContext userNotificationContext:userNotification) {
+                        JSONObject obj = UserNotificationContext.getFcmObject(userNotificationContext);
                         long uid = userNotificationContext.getUser().getId();
                         User userList = AccountUtil.getUserBean().getUser(userNotificationContext.getApplication(),uid);
                         if (userMobileSettings.containsKey(userList.getUid())) {
-                            Map<String, Object> data = new HashMap<>();
                             List<UserMobileSetting> mobileSettings = userMobileSettings.get(userList.getUid());
                             for(UserMobileSetting mobileSetting : mobileSettings) {
-                                data.put("to", mobileSetting.getMobileInstanceId());
-                                userNotificationContext.addData(data);
+                                obj.put("to", mobileSetting.getMobileInstanceId());
 
                                 Map<String, String> headers = new HashMap<>();
                                 headers.put("Content-Type", "application/json");
@@ -45,8 +45,8 @@ public class SendUserNotificationJob extends InstantJob {
 
                                 String url = "https://fcm.googleapis.com/fcm/send";
 
-                                AwsUtil.doHttpPost(url, headers, null, userNotificationContext.toString());
-                                LOGGER.debug("Sending push notification data ====> " + userNotificationContext);
+                                AwsUtil.doHttpPost(url, headers, null, obj.toJSONString());
+                                LOGGER.debug("Sending push notification data ====> " + obj.toJSONString());
                             }
                         }
                     }
