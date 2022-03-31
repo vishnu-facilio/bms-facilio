@@ -285,7 +285,7 @@ public class ConstructTabularReportData extends FacilioCommand {
                     otherCrit.addAndCondition(newCond);
                     dataPointContext.setOtherCriteria(otherCrit);
                 } else if (dateFieldId > 0 && startTime > 0 && endTime > 0 && isTimeLineFilterApplied && !data.isExcludeFromTimelineFilter()) {
-                    FacilioField dateField = modBean.getField(dateFieldId);
+                    FacilioField dateField = modBean.getField(dateFieldId).clone();
                     dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));
                     DateRange range = new DateRange(startTime, endTime);
                     Criteria otherCrit = new Criteria();
