@@ -53,7 +53,9 @@ import com.facilio.events.commands.NewExecuteEventRulesCommand;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.modules.fields.relations.CalculateDependencyCommand;
 import com.facilio.mv.command.*;
-import com.facilio.ns.command.AddNamespaceAndFieldsCommand;
+import com.facilio.ns.command.AddNamespaceCommand;
+import com.facilio.ns.command.AddNamespaceFieldsCommand;
+import com.facilio.ns.command.DeleteNamespaceCommand;
 import com.facilio.readingrule.command.*;
 import com.facilio.trigger.context.TriggerType;
 import com.facilio.weekends.*;
@@ -64,8 +66,6 @@ import org.apache.log4j.Logger;
 import java.util.Collections;
 
 public class TransactionChainFactory {
-
-	private static final Logger LOGGER = Logger.getLogger(TransactionChainFactory.class.getName());
 
 	private static FacilioChain getDefaultChain() {
 		return FacilioChain.getTransactionChain();
@@ -83,6 +83,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddSignupDataCommandV3());
 			c.addCommand(new AddEmployeeTypePeopleForUserAdditionCommand());
 			c.addCommand(new AddDefaultBundleCommand());
+			c.addCommand(new AddDefaultWoTimelineCommand());
 			return c;
 		}
 
@@ -773,9 +774,10 @@ public class TransactionChainFactory {
 			c.addCommand(new ReadingRuleDependenciesCommand());
 			c.addCommand(new GetCategoryResourcesCommand());
 			c.addCommand(addResourceReadingChain());
+			c.addCommand(new AddWorkflowCommand());
 			c.addCommand(new AddNewReadingRuleCommand());
-			//inclusion exclusion
-			c.addCommand(new AddNamespaceAndFieldsCommand());
+			c.addCommand(new AddNamespaceCommand());
+			c.addCommand(new AddNamespaceFieldsCommand());
 			c.addCommand(new AddRCARulesCommand());
 			return c;
 		}
@@ -783,6 +785,8 @@ public class TransactionChainFactory {
 		public static FacilioChain deleteReadingRuleChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new DeleteReadingRuleCommand());
+			c.addCommand(new DeleteNamespaceCommand());
+			c.addCommand(new DeleteWorkflowCommand());
             c.addCommand(new DeleteReadingRuleActionsCommand());
 			return c;
 		}
@@ -791,6 +795,7 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new PrepareReadingRuleCommand());
 			c.addCommand(new UpdateReadingRuleCommand());
+			c.addCommand(new UpdateWorkflowCommand());
 			c.addCommand(new AddRCARulesCommand());
 			return c;
 		}

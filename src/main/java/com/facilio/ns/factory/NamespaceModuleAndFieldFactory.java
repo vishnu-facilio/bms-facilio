@@ -47,6 +47,7 @@ public class NamespaceModuleAndFieldFactory extends FieldFactory {
         fields.add(getIdField(module));
         fields.add(getNumberField("parentRuleId", "PARENT_RULE_ID", module));
         fields.add(getNumberField("execInterval", "EXEC_INTERVAL", module));
+        fields.add(getNumberField("type", "TYPE", module));
         return fields;
     }
 

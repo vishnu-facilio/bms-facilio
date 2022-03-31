@@ -236,8 +236,13 @@ public class V2ReportAction extends FacilioAction {
 
         FacilioContext context = new FacilioContext();
         setReportWithDataContext(context); // This could be moved to a command
-
-        FacilioChain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReportDataChain()
+        if(spaceId_forExport != null){
+            List<Long> list = new ArrayList<Long>();
+            list.add(spaceId_forExport);
+            context.put(FacilioConstants.ContextNames.BASE_SPACE_LIST, list);
+            context.put("filterModeValue", filterModeValue_toExport);
+        }
+        FacilioChain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReportDataChainV3()
                 : ReadOnlyChainFactory.fetchReportDataChain();
         fetchReadingDataChain.execute(context);
 
@@ -1237,6 +1242,24 @@ public class V2ReportAction extends FacilioAction {
     }
 
     private List<Long> spaceId;
+    private Long spaceId_forExport;
+    public Integer getFilterModeValue_toExport() {
+        return filterModeValue_toExport;
+    }
+
+    public void setFilterModeValue_toExport(Integer filterModeValue_toExport) {
+        this.filterModeValue_toExport = filterModeValue_toExport;
+    }
+
+    private Integer filterModeValue_toExport;
+
+    public Long getSpaceId_forExport() {
+        return spaceId_forExport;
+    }
+
+    public void setSpaceId_forExport(Long spaceId_forExport) {
+        this.spaceId_forExport = spaceId_forExport;
+    }
 
     public List<Long> getSpaceId() {
         return spaceId;

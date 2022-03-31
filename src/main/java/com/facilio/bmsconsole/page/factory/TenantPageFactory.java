@@ -81,6 +81,11 @@ public class TenantPageFactory extends PageFactory{
 		Page.Section tab2Sec1 = page.new Section();
 		tab2.addSection(tab2Sec1);
 		addSecondaryDetailsWidget(tab2Sec1);
+		if(record.getAddress()!=null) {
+			Section tab1Sec2 = page.new Section();
+			tab1.addSection(tab1Sec2);
+			addAddressInfoWidget(tab2Sec1);
+		}
 		addNotesAttachmentsModule(tab2Sec1);
 
 		Tab tab3 = page.new Tab("related records");
@@ -210,5 +215,9 @@ public class TenantPageFactory extends PageFactory{
 		detailsWidget.addToLayoutParams(section, 24, 7);
 		section.addWidget(detailsWidget);
 	}
-
+	private static void addAddressInfoWidget(Section section) {
+		PageWidget recurringInfoWidget = new PageWidget(WidgetType.ADDRESS, "addressLocation");
+		recurringInfoWidget.addToLayoutParams(section, 24, 6);
+		section.addWidget(recurringInfoWidget);
+	}
 }

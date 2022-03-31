@@ -1,5 +1,10 @@
 package com.facilio.bmsconsoleV3.commands;
 
+import java.util.Collections;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.actions.GetModuleFromReportContextCommand;
@@ -8,33 +13,74 @@ import com.facilio.bmsconsole.automation.command.AddOrUpdateGlobalVariableComman
 import com.facilio.bmsconsole.automation.command.AddOrUpdateGlobalVariableGroupCommand;
 import com.facilio.bmsconsole.automation.command.DeleteGlobalVariableCommand;
 import com.facilio.bmsconsole.automation.command.DeleteGlobalVariableGroupCommand;
-import com.facilio.bmsconsole.commands.*;
+import com.facilio.bmsconsole.commands.ActivateMLServiceCommand;
+import com.facilio.bmsconsole.commands.AddBulkToolStockTransactionsCommand;
+import com.facilio.bmsconsole.commands.AddClientUserCommandV3;
+import com.facilio.bmsconsole.commands.AddOrUpdateItemQuantityCommand;
+import com.facilio.bmsconsole.commands.AddOrUpdateItemTypeVendorCommand;
+import com.facilio.bmsconsole.commands.AddOrUpdateReportCommand;
+import com.facilio.bmsconsole.commands.AddOrUpdateToolVendorCommand;
+import com.facilio.bmsconsole.commands.AddPurchasedItemsForBulkItemAddCommand;
+import com.facilio.bmsconsole.commands.AddTemplateCommand;
+import com.facilio.bmsconsole.commands.BulkItemAdditionCommand;
+import com.facilio.bmsconsole.commands.BulkToolAdditionCommand;
+import com.facilio.bmsconsole.commands.ClearAlarmOnWOCloseCommand;
+import com.facilio.bmsconsole.commands.ConstructMLModelDetails;
+import com.facilio.bmsconsole.commands.ConstructReadingForMLServiceCommand;
+import com.facilio.bmsconsole.commands.ConstructReportData;
+import com.facilio.bmsconsole.commands.ConstructTabularReportData;
+import com.facilio.bmsconsole.commands.ConstructTicketNotesCommand;
+import com.facilio.bmsconsole.commands.CreateReadingAnalyticsReportCommand;
+import com.facilio.bmsconsole.commands.DeleteScheduledReportsCommand;
+import com.facilio.bmsconsole.commands.ExecuteAllWorkflowsCommand;
+import com.facilio.bmsconsole.commands.ExecuteRollUpFieldCommand;
+import com.facilio.bmsconsole.commands.ExecuteSLACommitmentWorkflowsCommand;
+import com.facilio.bmsconsole.commands.ExecuteSLAWorkFlowsCommand;
+import com.facilio.bmsconsole.commands.ExecuteTaskFailureActionCommand;
+import com.facilio.bmsconsole.commands.ExecuteWorkFlowsBusinessLogicInPostTransactionCommand;
+import com.facilio.bmsconsole.commands.ExportPivotReport;
+import com.facilio.bmsconsole.commands.FetchCustomBaselineData;
+import com.facilio.bmsconsole.commands.ForkChainToInstantJobCommand;
+import com.facilio.bmsconsole.commands.GenerateCriteriaFromFilterCommand;
+import com.facilio.bmsconsole.commands.GetCategoryReadingsCommand;
+import com.facilio.bmsconsole.commands.GetCriteriaDataCommand;
+import com.facilio.bmsconsole.commands.GetExportReportFileCommand;
+import com.facilio.bmsconsole.commands.GetReadingFieldsCommand;
+import com.facilio.bmsconsole.commands.GetSpaceSpecifcReadingsCommand;
+import com.facilio.bmsconsole.commands.InitMLServiceCommand;
+import com.facilio.bmsconsole.commands.InsertReadingDataMetaForNewResourceCommand;
+import com.facilio.bmsconsole.commands.ItemTypeQuantityRollupCommand;
+import com.facilio.bmsconsole.commands.PivotColumnFormatCommand;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.ScheduleV2ReportCommand;
+import com.facilio.bmsconsole.commands.SetItemAndToolTypeForStoreRoomCommand;
+import com.facilio.bmsconsole.commands.SetTableNamesCommand;
+import com.facilio.bmsconsole.commands.ToolQuantityRollUpCommand;
+import com.facilio.bmsconsole.commands.ToolTypeQuantityRollupCommand;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.TriggerMLServiceJobCommand;
+import com.facilio.bmsconsole.commands.UpdateServiceVendorPriceCommand;
+import com.facilio.bmsconsole.commands.ValidateMLServiceCommand;
+import com.facilio.bmsconsole.commands.VerifyQrCommand;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.commands.accessibleSpaces.AddAccessibleSpacesCommand;
 import com.facilio.bmsconsoleV3.commands.accessibleSpaces.DeleteAccessibleSpacesCommand;
 import com.facilio.bmsconsoleV3.commands.accessibleSpaces.FetchAccessibleSpacesCommand;
 import com.facilio.bmsconsoleV3.commands.assetCategory.AddAssetCategoryModuleCommandV3;
 import com.facilio.bmsconsoleV3.commands.assetCategory.UpdateCategoryAssetModuleIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.assetCategory.ValidateAssetCategoryDeletionV3;
-import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
-import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
-import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.CompletePoCommandV3;
-import com.facilio.bmsconsoleV3.commands.quotation.*;
-import com.facilio.bmsconsoleV3.commands.reports.*;
-import com.facilio.bmsconsoleV3.commands.storeroom.SetLocationObjectFromSiteV3;
-import com.facilio.bmsconsoleV3.commands.storeroom.UpdateServingSitesinStoreRoomCommandV3;
-import com.facilio.bmsconsoleV3.commands.termsandconditions.ReviseTandCCommand;
-import com.facilio.bmsconsoleV3.commands.transferRequest.*;
-import com.facilio.command.FacilioCommand;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.commands.budget.ValidateBudgetAmountCommandV3;
 import com.facilio.bmsconsoleV3.commands.budget.ValidateChartOfAccountTypeCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.UpdateClientIdInSiteCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.CheckForMandatoryClientIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.UpdateClientAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.admindocuments.AddOrUpdateAdminDocumentsSharingCommandV3;
-import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.*;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.AddOrUpdateAnnouncementSharingInfoCommandV3;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.CancelParentChildAnnouncementsCommandV3;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.PublishAnnouncementCommandV3;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.ValidateCancelAnnouncementActionCommandV3;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.ValidatePublishAnnouncementActionCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.contactdirectory.AddOrUpdateContactDirectorySharingCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.dealsandoffers.AddOrUpdateDealsSharingInfoCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.AddOrUpdateNeighbourhoodSharingCommandV3;
@@ -42,38 +88,153 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.Neighbo
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.AddOrUpdateNewsSharingCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.AddPeopleTypeForEmployeeCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
-import com.facilio.bmsconsoleV3.commands.facility.*;
-import com.facilio.bmsconsoleV3.commands.floorplan.*;
+import com.facilio.bmsconsoleV3.commands.facility.CancelBookingCommand;
+import com.facilio.bmsconsoleV3.commands.facility.CreatePaymentRecordForBookingCommandOnEditV3;
+import com.facilio.bmsconsoleV3.commands.facility.SetCanEditForBookingCommand;
+import com.facilio.bmsconsoleV3.commands.facility.ValidateCancelBookingCommandV3;
+import com.facilio.bmsconsoleV3.commands.facility.ValidateFacilityBookingCommandV3;
+import com.facilio.bmsconsoleV3.commands.facility.ValidateFacilityCommand;
+import com.facilio.bmsconsoleV3.commands.floorplan.AddDeskCommand;
+import com.facilio.bmsconsoleV3.commands.floorplan.AddMarkedZonesCommand;
+import com.facilio.bmsconsoleV3.commands.floorplan.AddMarkerCommand;
+import com.facilio.bmsconsoleV3.commands.floorplan.AddORUpdateModuleRecordCommand;
+import com.facilio.bmsconsoleV3.commands.floorplan.AddOrUpdateObjectCommand;
+import com.facilio.bmsconsoleV3.commands.floorplan.SerializeCommand;
+import com.facilio.bmsconsoleV3.commands.floorplan.UpdateDeskCommand;
+import com.facilio.bmsconsoleV3.commands.floorplan.UpdateMarkerCommand;
+import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
+import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.AddOrUpdateInventoryRequestCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.AddOrUpdateManualItemTransactionCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.AddOrUpdateManualToolTransactionsCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.CopyToToolTransactionCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.ItemTransactionRemainingQuantityRollupCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.LoadItemTransactionEntryInputCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.PurchasedItemsQuantityRollUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.ToolTransactionRemainingQuantityRollupCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.UpdateRequestedItemIssuedQuantityCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.UpdateRequestedToolIssuedQuantityCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.ValidateInventoryRequestCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.ValidateInventoryRequestUpdateCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanPMsInContextCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksCommand;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.UpdatePeoplePrimaryContactCommandV3;
+import com.facilio.bmsconsoleV3.commands.purchaseorder.CompletePoCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.POAfterCreateOrEditV3Command;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.POBeforeCreateOrEditV3Command;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.UpdateIsPoCreatedCommand;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.PreFillAddPurchaseRequestCommand;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.PurchaseRequestTotalCostRollUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.quotation.InsertQuotationLineItemsAndActivitiesCommand;
+import com.facilio.bmsconsoleV3.commands.quotation.QuotationValidationAndCostCalculationCommand;
+import com.facilio.bmsconsoleV3.commands.quotation.ReviseQuotationCommand;
+import com.facilio.bmsconsoleV3.commands.quotation.UpdateQuotationParentIdCommand;
+import com.facilio.bmsconsoleV3.commands.quotation.UpdateQuotationTermsAndConditionCommand;
+import com.facilio.bmsconsoleV3.commands.reports.ConstructReportDeleteCommand;
+import com.facilio.bmsconsoleV3.commands.reports.ConstructReportDetailsCommand;
+import com.facilio.bmsconsoleV3.commands.reports.GetAllReportsCommand;
+import com.facilio.bmsconsoleV3.commands.reports.GetCreateFolderCommand;
+import com.facilio.bmsconsoleV3.commands.reports.GetDataPointFromAlarmCommand;
+import com.facilio.bmsconsoleV3.commands.reports.GetFolderPermissionUpdateCommand;
+import com.facilio.bmsconsoleV3.commands.reports.GetMoveReportCommand;
+import com.facilio.bmsconsoleV3.commands.reports.GetReportFieldsCommand;
+import com.facilio.bmsconsoleV3.commands.reports.GetReportFoldersCommand;
+import com.facilio.bmsconsoleV3.commands.reports.GetSubModulesListCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.AddTenantSpaceRelationCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenant.AddTenantUserCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.CheckForMandatoryTenantIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.UpdateTenantAppPortalAccessCommandV3;
-import com.facilio.bmsconsoleV3.commands.usernotification.*;
+import com.facilio.bmsconsoleV3.commands.termsandconditions.ReviseTandCCommand;
+import com.facilio.bmsconsoleV3.commands.transferRequest.SetLineItemsCommandV3;
+import com.facilio.bmsconsoleV3.commands.transferRequest.UpdateCurrentBalanceAfterTransferCommandV3;
+import com.facilio.bmsconsoleV3.commands.transferRequest.UpdateCurrentBalanceCommandV3;
+import com.facilio.bmsconsoleV3.commands.transferRequest.UpdateItemTransactionAfterTransferCommandV3;
+import com.facilio.bmsconsoleV3.commands.transferRequest.UpdateItemTransactionCommandV3;
+import com.facilio.bmsconsoleV3.commands.transferRequest.UpdateNewLineItemsCommandV3;
+import com.facilio.bmsconsoleV3.commands.transferRequest.UpdateShipmentIdCommandV3;
+import com.facilio.bmsconsoleV3.commands.transferRequest.UpdateStatusOfShipmentCommandV3;
+import com.facilio.bmsconsoleV3.commands.transferRequest.UpdateToolTransactionAfterTransferCommandV3;
+import com.facilio.bmsconsoleV3.commands.transferRequest.UpdateToolTransactionCommandV3;
+import com.facilio.bmsconsoleV3.commands.usernotification.CheckUpdateMappingSeenCommand;
+import com.facilio.bmsconsoleV3.commands.usernotification.MarkAsReadUserNotificationCommand;
+import com.facilio.bmsconsoleV3.commands.usernotification.SendUserNotificationCommandV3;
+import com.facilio.bmsconsoleV3.commands.usernotification.UpdateSeenNotificationCommandV3;
+import com.facilio.bmsconsoleV3.commands.usernotification.UserNotificationSeenCommand;
 import com.facilio.bmsconsoleV3.commands.vendor.AddInsuranceVendorRollupCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.AddVendorContactsCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorcontact.CheckForMandatoryVendorIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorcontact.UpdateVendorContactAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitor.AddOrUpdateLocationForVisitorCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitor.CheckForVisitorDuplicationCommandV3;
-import com.facilio.bmsconsoleV3.commands.visitorlog.*;
-import com.facilio.bmsconsoleV3.commands.visitorlogging.*;
-import com.facilio.bmsconsoleV3.commands.workorder.*;
-import com.facilio.bmsconsoleV3.commands.workpermit.*;
+import com.facilio.bmsconsoleV3.commands.visitorlog.AddNdaForVisitorLogModuleCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.AddNewVisitorWhileBaseVisitCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.AddOrUpdateScheduleInRecurringVisitorCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.AddOrUpdateVisitorFromBaseVisitCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.AddWatchListRecordCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.ChangeInviteVisitorStateCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.ChangeVisitorLogStateCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.CheckForWatchListRecordBaseVisitCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.GenerateQrInviteUrlForBaseVisitCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.LoadRecordIdForPassCodeCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.PreFillInviteVisitorCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.PreFillVisitorLogCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.PutOldVisitRecordsInInviteVisitorContextCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.PutOldVisitRecordsInVisitorLogContextCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.UpdateInviteVisitorStateInChangeSetCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.UpdateRecurringRecordIdForBaseScheduleTrigger;
+import com.facilio.bmsconsoleV3.commands.visitorlog.UpdateVisitorLogArrivedStateCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.VisitResponseCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlog.VisitorFaceRecognitionForBaseVisitCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlogging.AddNdaForVisitorLogCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlogging.AddNewVisitorWhileLoggingCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlogging.AddOrUpdateVisitorFromVisitsCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlogging.ChangeVisitorInviteStateCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlogging.CheckForWatchListRecordCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlogging.GenerateQrInviteUrlCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlogging.PutOldVisitRecordsInContextCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlogging.UpdateVisitorInviteRelArrivedStateCommandV3;
+import com.facilio.bmsconsoleV3.commands.visitorlogging.VisitorFaceRecognitionCommandV3;
+import com.facilio.bmsconsoleV3.commands.workorder.AddPortalRequestsDetailsCommandV3;
+import com.facilio.bmsconsoleV3.commands.workorder.AddPrerequisiteApproversCommandV3;
+import com.facilio.bmsconsoleV3.commands.workorder.AddRequesterCommandV3;
+import com.facilio.bmsconsoleV3.commands.workorder.AddTicketActivityCommandV3;
+import com.facilio.bmsconsoleV3.commands.workorder.AddWorkOrderCommandV3;
+import com.facilio.bmsconsoleV3.commands.workorder.AddWorkorderHazardsFromSafetyPlanCommandV3;
+import com.facilio.bmsconsoleV3.commands.workorder.BackwardCompatibleStateFlowUpdateCommandV3;
+import com.facilio.bmsconsoleV3.commands.workorder.FetchOldWorkordersCommandV3;
+import com.facilio.bmsconsoleV3.commands.workorder.FillContextAfterWorkorderAddCommandV3;
+import com.facilio.bmsconsoleV3.commands.workorder.FillContextAfterWorkorderUpdateCommandV3;
+import com.facilio.bmsconsoleV3.commands.workorder.LoadTicketLookupsCommand;
+import com.facilio.bmsconsoleV3.commands.workorder.PMSettingsCommandV3;
+import com.facilio.bmsconsoleV3.commands.workorder.SkipModuleCriteriaForSummaryCommand;
+import com.facilio.bmsconsoleV3.commands.workorder.SkipModuleCriteriaForUpcomingViewCommand;
+import com.facilio.bmsconsoleV3.commands.workorder.ToVerifyStateFlowtransitionForStartCommandV3;
+import com.facilio.bmsconsoleV3.commands.workorder.UpdateEventListForStateFlowCommandV3;
+import com.facilio.bmsconsoleV3.commands.workorder.UpdateTicketAttachmentsOldParentIdCommandV3;
+import com.facilio.bmsconsoleV3.commands.workorder.UpdateWorkorderFieldsForUpdateCommandV3;
+import com.facilio.bmsconsoleV3.commands.workorder.ValidateWorkOrderFieldsCommandV3;
+import com.facilio.bmsconsoleV3.commands.workorder.WorkOrderPreAdditionHandlingCommandV3;
+import com.facilio.bmsconsoleV3.commands.workpermit.ComputeScheduleForWorkPermitCommandV3;
+import com.facilio.bmsconsoleV3.commands.workpermit.FillWorkPermitChecklistCommand;
+import com.facilio.bmsconsoleV3.commands.workpermit.InsertWorkPermitActivitiesCommand;
+import com.facilio.bmsconsoleV3.commands.workpermit.LoadWorkPermitLookUpsCommandV3;
+import com.facilio.bmsconsoleV3.commands.workpermit.LoadWorkPermitRecurringInfoCommandV3;
+import com.facilio.bmsconsoleV3.commands.workpermit.RollUpWorkOrderFieldOnWorkPermitApprovalCommandV3;
 import com.facilio.chain.FacilioChain;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.trigger.command.*;
+import com.facilio.readingrule.faultimpact.command.FaultImpactAfterSaveCommand;
+import com.facilio.readingrule.faultimpact.command.FaultImpactBeforeSaveCommand;
+import com.facilio.trigger.command.AddOrUpdateTriggerActionAndRelCommand;
+import com.facilio.trigger.command.AddOrUpdateTriggerCommand;
+import com.facilio.trigger.command.DeleteTriggerCommand;
+import com.facilio.trigger.command.ExecuteTriggerCommand;
+import com.facilio.trigger.command.GetAllTriggersCommand;
 import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import com.facilio.bmsconsoleV3.commands.reports.ConstructLiveFilterCommandToExport;
 
 import java.util.Collections;
 import static com.facilio.bmsconsole.commands.TransactionChainFactory.getUpdateItemQuantityRollupChain;
@@ -1317,6 +1478,7 @@ public class TransactionChainFactoryV3 {
             c.addCommand(new GetDataPointFromAlarmCommand());
         }
         if(newFormat){
+            c.addCommand(new ConstructLiveFilterCommandToExport());
             if(!isOnlyReportDataChain){
                 c.addCommand(new CreateReadingAnalyticsReportCommand());
             }
@@ -1406,8 +1568,12 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new GetFolderPermissionUpdateCommand());
         return c;
     }
-    public static FacilioChain getExportReportFileChain(boolean isAnalyticsReport) {
+    public static FacilioChain getExportReportFileChain(boolean isAnalyticsReport, boolean isFilterNeeded) {
         FacilioChain c = getDefaultChain();
+        if(isFilterNeeded)
+        {
+            c.addCommand(new ConstructLiveFilterCommandToExport());
+        }
         c.addCommand(isAnalyticsReport ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.newFetchReportDataChain());
         c.addCommand(new GetExportReportFileCommand());
         return c;
@@ -1443,4 +1609,23 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new ValidateAssetCategoryDeletionV3());
         return chain;
     }
+
+    public static FacilioChain getFaultImpactAddOrUpdateBeforeChain(){
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new FaultImpactBeforeSaveCommand());
+        return chain;
+    }
+
+    public static FacilioChain getFaultImpactAddOrUpdateAfterChain(){
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new FaultImpactAfterSaveCommand());
+        return chain;
+    }
+
+    public static FacilioChain getFaultImpactFetchChain(){
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new FaultImpactAfterFetchCommand());
+        return chain;
+    }
+
 }

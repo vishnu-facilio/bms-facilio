@@ -26,7 +26,7 @@ public class ReadingAlarm extends BaseAlarmContext {
     }
 
     public void setRule(ReadingRuleInterface rule) throws Exception {
-        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
+        if(isNewReadingRule) {
             NewReadingRuleContext ruleContext = new NewReadingRuleContext();
             ruleContext.setId(rule.getId());
             this.rule = ruleContext;
@@ -45,7 +45,7 @@ public class ReadingAlarm extends BaseAlarmContext {
         if(subRule == null) {
             return;
         }
-        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
+        if (isNewReadingRule) {
             NewReadingRuleContext ruleContext = new NewReadingRuleContext();
             ruleContext.setId(subRule.getId());
             this.subRule = ruleContext;

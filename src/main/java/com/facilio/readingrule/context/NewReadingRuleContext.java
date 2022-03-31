@@ -1,10 +1,13 @@
 package com.facilio.readingrule.context;
 
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleInterface;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.ns.context.NameSpaceContext;
+import com.facilio.workflows.context.WorkflowContext;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -46,7 +49,15 @@ public class NewReadingRuleContext implements ReadingRuleInterface, Cloneable {
 
     RuleAlarmDetails alarmDetails;
 
-    RuleBuilderConfiguration condition;
+//    RuleBuilderConfiguration condition;
+
+    Long nsId;
+
+    NameSpaceContext ns;
+
+    Long workflowId;
+
+    WorkflowContext workflowContext;
 
     boolean status;
 
@@ -76,7 +87,6 @@ public class NewReadingRuleContext implements ReadingRuleInterface, Cloneable {
         setMatchedResources(null);
         setModule(null);
         setReadingField(null);
-        condition.setNullForResponse();
         alarmDetails.setNullForResponse();
     }
 

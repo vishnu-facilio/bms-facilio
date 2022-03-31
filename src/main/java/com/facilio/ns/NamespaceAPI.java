@@ -1,9 +1,12 @@
 package com.facilio.ns;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.ns.context.NameSpaceField;
 import com.facilio.ns.factory.NamespaceModuleAndFieldFactory;
@@ -73,6 +76,20 @@ public class NamespaceAPI {
         return null;
     }
 
+    public static NameSpaceContext getNameSpaceByRuleId(Long ruleId) throws Exception {
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder();
+        selectBuilder.select(NamespaceModuleAndFieldFactory.getNSAndFields())
+                .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())
+                .innerJoin(NamespaceModuleAndFieldFactory.getNamespaceFieldsModule().getTableName()).on("Namespace.ID = Namespace_Fields.NAMESPACE_ID")
+                .andCondition(CriteriaAPI.getCondition(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName()+".PARENT_RULE_ID", "ruleId", ruleId.toString(), NumberOperators.EQUALS));
+
+        List<Map<String, Object>> maps = selectBuilder.get();
+        if (CollectionUtils.isEmpty(maps)) {
+            return null;
+        }
+        return constructNamespaceAndFields(maps);
+    }
+
     public static NameSpaceContext getNameSpaceById(Long nsId) throws Exception {
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder();
         selectBuilder.select(NamespaceModuleAndFieldFactory.getNSAndFields())
@@ -85,6 +102,11 @@ public class NamespaceAPI {
             return null;
         }
 
+        return constructNamespaceAndFields(maps);
+    }
+
+    private static NameSpaceContext constructNamespaceAndFields(List<Map<String, Object>> maps) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         NameSpaceContext nsCtx = null;
 
         for (Map<String, Object> m : maps) {
@@ -94,6 +116,9 @@ public class NamespaceAPI {
             }
 
             NameSpaceField field = FieldUtil.getAsBeanFromMap(m, NameSpaceField.class);
+            FacilioField facilioField = modBean.getField(field.getFieldId());
+            field.setField(modBean.getField(field.getFieldId()));
+            field.setModule(modBean.getModule(facilioField.getModuleId()));
             nsCtx.addField(field);
         }
 

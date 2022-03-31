@@ -2617,6 +2617,12 @@ public class FacilioConstants {
 	public static class Email {
 		public static final String EMAIL_FROM_ADDRESS_MODULE_NAME = "emailFromAddress";
 	}
+	
+	public static class FaultImpact {
+		public static final String MODULE_NAME = "faultImpact";
+		public static final String FAULT_IMPACT_FIELDS_MODULE_NAME = "faultImpactFields";
+		
+	}
 
 	public static class QAndA {
 		public static final String Q_AND_A_TEMPLATE = "qandaTemplate";

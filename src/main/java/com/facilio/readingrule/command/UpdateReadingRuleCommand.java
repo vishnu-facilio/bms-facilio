@@ -27,7 +27,7 @@ public class UpdateReadingRuleCommand extends FacilioCommand {
 
         updateReadingRule();
         updateAlarmDetails();
-        updateRuleBuilder();
+//        updateRuleBuilder();
         updateNamespace();
         updateNamespaceFields();
 
@@ -52,18 +52,18 @@ public class UpdateReadingRuleCommand extends FacilioCommand {
         }
     }
 
-    private void updateRuleBuilder() throws Exception {
-        if(rule.getCondition() != null) {
-            GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-                    .fields(FieldFactory.getRuleBuilderConfigFields())
-                    .table(ModuleFactory.getRuleBuilderConfigModule().getTableName())
-                    .andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(rule.getCondition().getId()), NumberOperators.EQUALS));
-            updateBuilder.update(FieldUtil.getAsProperties(rule.getCondition()));
-        }
-    }
+//    private void updateRuleBuilder() throws Exception {
+//        if(rule.getCondition() != null) {
+//            GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+//                    .fields(FieldFactory.getRuleBuilderConfigFields())
+//                    .table(ModuleFactory.getRuleBuilderConfigModule().getTableName())
+//                    .andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(rule.getCondition().getId()), NumberOperators.EQUALS));
+//            updateBuilder.update(FieldUtil.getAsProperties(rule.getCondition()));
+//        }
+//    }
 
     private void updateNamespace() throws Exception {
-        NameSpaceContext ns = rule.getCondition().getNs();
+        NameSpaceContext ns = rule.getNs();
         if(ns != null) {
             GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
                     .fields(NamespaceModuleAndFieldFactory.getNamespaceFields())
@@ -74,7 +74,7 @@ public class UpdateReadingRuleCommand extends FacilioCommand {
     }
 
     private void updateNamespaceFields() throws Exception {
-        List<NameSpaceField> fields = rule.getCondition().getNs().getFields();
-        NewReadingRuleAPI.addNamespaceFields(rule.getCondition().getNs().getId(), rule.getMatchedResources(), fields);
+        List<NameSpaceField> fields = rule.getNs().getFields();
+        NewReadingRuleAPI.addNamespaceFields(rule.getNs().getId(), rule.getMatchedResources(), fields);
     }
 }

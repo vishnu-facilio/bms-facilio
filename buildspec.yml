@@ -4,7 +4,7 @@ phases:
   build:
     commands:
       - mvn package -Dbuild.number=$CODEBUILD_BUILD_NUMBER -Dbuild.branch=$BRANCH_NAME
-      - mvn deploy -Dbuild.type=jar -Dbuild.number=$CODEBUILD_BUILD_NUMBER -Dbuild.branch=$BRANCH_NAME
+      - mvn deploy -Dbuild.type=jar -Dbuild.number=$CODEBUILD_BUILD_NUMBER -Dbuild.branch=$BRANCH_NAME -DskipTests
 artifacts:
   files:
     - target/ROOT.war

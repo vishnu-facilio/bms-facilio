@@ -72,7 +72,7 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
                 JSONObject object = null;
                 JSONObject data = null;
                 JSONObject incomingData = (JSONObject) parser.parse(reader);
-                if (!parseData && (incomingData.containsKey(AgentConstants.PUBLISH_TYPE) || incomingData.containsKey("PUBLISH_TYPE"))) {
+                if (!parseData) {
                     data = incomingData;
                 } else {
                     object = incomingData;

@@ -1,8 +1,11 @@
 package com.facilio.bmsconsole.reports;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import com.facilio.report.context.ReadingAnalysisContext;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -86,6 +89,12 @@ public class ReportExportUtil {
 			dateRange.put("operatorId", report.getDateOperator());
 			dateRange.put("value", report.getDateValue());
 			url.append("&daterange=").append(ReportsUtil.encodeURIComponent(dateRange.toJSONString()));
+		}
+		if(context.get(FacilioConstants.ContextNames.BASE_SPACE_LIST) != null )
+		{
+			List<Long> spaceIdlist = (ArrayList<Long>) context.get(FacilioConstants.ContextNames.BASE_SPACE_LIST);
+			ReadingAnalysisContext.ReportFilterMode filtermode = (ReadingAnalysisContext.ReportFilterMode) context.get(FacilioConstants.ContextNames.REPORT_FILTER_MODE);
+			url.append("&filterModeValue_toExport=").append(filtermode.getValue()).append("&spaceId_forExport=").append(spaceIdlist.get(0));
 		}
 		
 		String chartType = (String) context.get("chartType");
