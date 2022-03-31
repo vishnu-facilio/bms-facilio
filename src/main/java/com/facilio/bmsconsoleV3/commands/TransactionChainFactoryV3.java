@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.commands;
 
 import java.util.Collections;
 
+import com.facilio.bmsconsoleV3.commands.people.UpdateScopingForPeopleCommandV3;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -70,6 +71,20 @@ import com.facilio.bmsconsoleV3.commands.accessibleSpaces.FetchAccessibleSpacesC
 import com.facilio.bmsconsoleV3.commands.assetCategory.AddAssetCategoryModuleCommandV3;
 import com.facilio.bmsconsoleV3.commands.assetCategory.UpdateCategoryAssetModuleIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.assetCategory.ValidateAssetCategoryDeletionV3;
+import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
+import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
+import com.facilio.bmsconsoleV3.commands.people.UpdateScopingForPeopleCommandV3;
+import com.facilio.bmsconsoleV3.commands.purchaseorder.CompletePoCommandV3;
+import com.facilio.bmsconsoleV3.commands.quotation.*;
+import com.facilio.bmsconsoleV3.commands.reports.*;
+import com.facilio.bmsconsoleV3.commands.storeroom.SetLocationObjectFromSiteV3;
+import com.facilio.bmsconsoleV3.commands.storeroom.UpdateServingSitesinStoreRoomCommandV3;
+import com.facilio.bmsconsoleV3.commands.termsandconditions.ReviseTandCCommand;
+import com.facilio.bmsconsoleV3.commands.transferRequest.*;
+import com.facilio.command.FacilioCommand;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.commands.budget.ValidateBudgetAmountCommandV3;
 import com.facilio.bmsconsoleV3.commands.budget.ValidateChartOfAccountTypeCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.UpdateClientIdInSiteCommandV3;
@@ -600,11 +615,13 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdatePeoplePrimaryContactCommandV3());
         c.addCommand(new UpdateTenantAppPortalAccessCommandV3());
+        c.addCommand(new UpdateScopingForPeopleCommandV3());
         return c;
     }
 
     public static FacilioChain getVendorContactBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new CheckforPeopleDuplicationCommandV3());
         c.addCommand(new CheckForMandatoryVendorIdCommandV3());
         return c;
@@ -614,6 +631,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdatePeoplePrimaryContactCommandV3());
         c.addCommand(new UpdateVendorContactAppPortalAccessCommandV3());
+        c.addCommand(new UpdateScopingForPeopleCommandV3());
         return c;
     }
 

@@ -3410,6 +3410,20 @@ public class FieldFactory extends BaseFieldFactory {
 
         return fields;
     }
+
+    public static List<FacilioField> getVendorContactFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getVendorContactModule();
+        fields.add(getIdField(module));
+        FacilioField tenantField = new FacilioField();
+        tenantField.setName("vendor");
+        tenantField.setDataType(FieldType.NUMBER);
+        tenantField.setColumnName("VENDOR_ID");
+        tenantField.setModule(module);
+        fields.add(tenantField);
+        return fields;
+    }
+
     public static List<FacilioField> getWorkOrderTemplateFields(){
         List<FacilioField> woTemplateFields = getWOrderTemplateFields();
         LookupField vendorField = (LookupField) getField("vendorId", "VENDOR_ID", ModuleFactory.getWorkOrderTemplateModule(), FieldType.LOOKUP);

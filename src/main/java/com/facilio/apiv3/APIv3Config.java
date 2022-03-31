@@ -908,11 +908,13 @@ public class APIv3Config {
                     .afterSave(TransactionChainFactoryV3.getVendorContactAfterSaveChain())
                 .list()
                     .beforeFetch(new LoadVendorContactLookupCommandV3())
-                    .afterFetch(new FetchRolesForPeopleCommandV3())
+                    .afterFetch(ReadOnlyChainFactoryV3.getPeopleRoleAndScopingCommand())
                 .summary()
                     .beforeFetch(new LoadVendorContactLookupCommandV3())
-                    .afterFetch(new FetchRolesForPeopleCommandV3())
-
+                    .afterFetch(ReadOnlyChainFactoryV3.getPeopleRoleAndScopingCommand())
+                .delete()
+                    .beforeDelete(new ValidateContactsBeforeDeleteCommandV3())
+                    .afterDelete(new MarkRandomContactAsPrimaryCommandV3())
                 .build();
     }
 

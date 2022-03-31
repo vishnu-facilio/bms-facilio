@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.people;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContactContext;
+import com.facilio.bmsconsoleV3.context.V3VendorContactContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
@@ -32,6 +33,17 @@ public class MarkRandomContactAsPrimaryCommandV3 extends FacilioCommand {
                     V3TenantContactContext tenantContact = tenantContacts.get(0);
                     V3PeopleAPI.markPrimaryContact(tenantContact);
                     V3PeopleAPI.rollUpModulePrimarycontactFields(parentId, FacilioConstants.ContextNames.TENANT, tenantContact.getName(), tenantContact.getEmail(), tenantContact.getPhone());
+                }
+            }
+            else if (people.getPeopleType() == V3PeopleContext.PeopleType.VENDOR_CONTACT.getIndex() && ((V3VendorContactContext) people).getVendor() != null) {
+                parentId = ((V3VendorContactContext) people).getVendor().getId();
+                Criteria criteria = new Criteria();
+                criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getVendorContactFields()).get("vendor"), String.valueOf(parentId), NumberOperators.EQUALS));
+                List<V3VendorContactContext> vendorContacts = V3RecordAPI.getRecordsListWithSupplements(moduleName, null, V3VendorContactContext.class, criteria, null);
+                if(CollectionUtils.isNotEmpty(vendorContacts)){
+                    V3VendorContactContext vendorContact = vendorContacts.get(0);
+                    V3PeopleAPI.markPrimaryContact(vendorContact);
+                    V3PeopleAPI.rollUpModulePrimarycontactFields(parentId, FacilioConstants.ContextNames.VENDORS, vendorContact.getName(), vendorContact.getEmail(), vendorContact.getPhone());
                 }
             }
         }

@@ -275,6 +275,13 @@ public class V3PeopleAPI {
             FacilioField primaryContactField = fieldMap.get("isPrimaryContact");
             updatedfields.add(primaryContactField);
         }
+        else if(person instanceof V3VendorContactContext) {
+            module = modBean.getModule(FacilioConstants.ContextNames.VENDOR_CONTACT);
+            fields.addAll(modBean.getAllFields(FacilioConstants.ContextNames.VENDOR_CONTACT));
+            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+            FacilioField primaryContactField = fieldMap.get("isPrimaryContact");
+            updatedfields.add(primaryContactField);
+        }
         GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
                 .table(module.getTableName())
                 .fields(updatedfields)
