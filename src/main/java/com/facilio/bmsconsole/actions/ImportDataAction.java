@@ -100,7 +100,7 @@ public class ImportDataAction extends FacilioAction {
 		FacilioTimer.scheduleInstantJob(InsertDataLogJob.JOB_NAME, context);
 
 		ImportProcessContext imp = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
-		setResult(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT ,imp);
+		setResult(FacilioConstants.ContextNames.IMPORT_PROCESS_CONTEXT ,imp);
 		
 		return SUCCESS;
 	}
