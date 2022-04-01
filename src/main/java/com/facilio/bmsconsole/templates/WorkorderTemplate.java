@@ -5,7 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -20,9 +23,9 @@ import com.facilio.modules.FieldUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class WorkorderTemplate extends Template {
-	
+	private static Logger LOGGER = LogManager.getLogger(WorkorderTemplate.class.getName());
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	@Override
@@ -322,16 +325,21 @@ public class WorkorderTemplate extends Template {
 			if (workorder.getTenant() != null) {
 				tenantId = workorder.getTenant().getId();
 			}
-			
+
 			if (workorder.getVendor() != null) {
 				vendorId = workorder.getVendor().getId();
 			}
-			
+
 			if (workorder.getSafetyPlan() != null) {
 				safetyPlanId = workorder.getSafetyPlan().getId();
 			}
-			
+
+			LOGGER.info("C :: wo-object" + workorder);
+
 			Map<String, Object> prop = FieldUtil.getAsProperties(workorder);
+
+			LOGGER.info("D :: wo-props before removal" + prop);
+
 			prop.remove("id");
 			prop.remove("subject");
 			prop.remove("description");
@@ -347,9 +355,13 @@ public class WorkorderTemplate extends Template {
 			prop.remove("tenant");
 			prop.remove("vendor");
 			prop.remove("safetyPlan");
-			
+
+			LOGGER.info("E :: wo-props after removal" + prop);
+
 			additionInfo = new JSONObject();
+			
 			additionInfo.putAll(prop);
+			LOGGER.info("F :: additional info object" + additionInfo);
 		}
 	}
 
