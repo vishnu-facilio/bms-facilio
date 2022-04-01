@@ -705,16 +705,12 @@ public class PointsAPI {
         switch (type) {
             case NIAGARA:
                 return NiagaraPointContext.class;
-            case REST:
-            case CUSTOM:
             case OPC_UA:
                 return OpcUaPointContext.class;
-            case KNX:
             case MISC:
                 return MiscPoint.class;
             case BACNET_IP:
                 return BacnetIpPointContext.class;
-            case LON_WORKS:
             case MODBUS_IP:
                 return ModbusTcpPointContext.class;
             case MODBUS_RTU:
@@ -806,11 +802,11 @@ public class PointsAPI {
             FacilioContext context = editChain.getContext();
             context.put(FacilioConstants.ContextNames.CRITERIA, getIdCriteria(pointIds));
             if (command == FacilioCommand.SUBSCRIBE) {
-            	newInstance.put(AgentConstants.SUBSCRIBE_STATUS, PointEnum.SubscribeStatus.IN_PROGRESS.getIndex());
+                newInstance.put(AgentConstants.SUBSCRIBE_STATUS, PointEnum.SubscribeStatus.IN_PROGRESS.getIndex());
                 context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, newInstance);
             } else if (command == FacilioCommand.UNSUBSCRIBE) {
-            	newInstance.put(AgentConstants.SUBSCRIBE_STATUS, PointEnum.SubscribeStatus.UNSUBSCRIBED.getIndex());
-            	context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP,newInstance);
+                newInstance.put(AgentConstants.SUBSCRIBE_STATUS, PointEnum.SubscribeStatus.UNSUBSCRIBED.getIndex());
+                context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, newInstance);
             } else {
                 throw new Exception(" command cant be anything other than sub or unsub");
             }
@@ -996,14 +992,41 @@ public class PointsAPI {
 		FacilioField resourceField = FieldFactory.getPointResourceIdField(pointModule);
 		Criteria criteriaList = new Criteria();
 		for(Pair<Long, Long> pair: assetFieldPairs) {
-			Criteria criteria = new Criteria();
-			criteria.addAndCondition(CriteriaAPI.getCondition(resourceField, String.valueOf(pair.getLeft()), NumberOperators.EQUALS));
-			criteria.addAndCondition(CriteriaAPI.getCondition(readingField, String.valueOf(pair.getRight()), NumberOperators.EQUALS));
-			criteriaList.orCriteria(criteria);
-		}
-		GetPointRequest getPointRequest = new GetPointRequest()
-				.withCriteria(criteriaList)
-				.limit(-1);
-		return getPointRequest.getPoints();
-	}
+            Criteria criteria = new Criteria();
+            criteria.addAndCondition(CriteriaAPI.getCondition(resourceField, String.valueOf(pair.getLeft()), NumberOperators.EQUALS));
+            criteria.addAndCondition(CriteriaAPI.getCondition(readingField, String.valueOf(pair.getRight()), NumberOperators.EQUALS));
+            criteriaList.orCriteria(criteria);
+        }
+        GetPointRequest getPointRequest = new GetPointRequest()
+                .withCriteria(criteriaList)
+                .limit(-1);
+        return getPointRequest.getPoints();
+    }
+
+    public static void updatePointsValue(List<Point> points) throws Exception {
+
+        List<GenericUpdateRecordBuilder.BatchUpdateByIdContext> batchUpdateList = new ArrayList<>();
+
+        for (Point point : points) {
+            GenericUpdateRecordBuilder.BatchUpdateByIdContext batchValue = new GenericUpdateRecordBuilder.BatchUpdateByIdContext();
+            batchValue.setWhereId(point.getId());
+            batchValue.addUpdateValue(AgentConstants.LAST_RECORDED_VALUE, point.getLastRecordedValue());
+            batchValue.addUpdateValue(AgentConstants.LAST_RECORDED_TIME, point.getLastRecordedTime());
+            batchUpdateList.add(batchValue);
+        }
+
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
+        List<FacilioField> updateFields = new ArrayList<>();
+        updateFields.add(fieldMap.get(AgentConstants.LAST_RECORDED_VALUE));
+        updateFields.add(fieldMap.get(AgentConstants.LAST_RECORDED_TIME));
+
+
+        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+                .table(ModuleFactory.getPointModule().getTableName())
+                .fields(updateFields);
+
+        updateBuilder.batchUpdateById(batchUpdateList);
+
+
+    }
 }

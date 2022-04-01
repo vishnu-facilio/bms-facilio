@@ -483,25 +483,25 @@ public class AccountUtil {
 		SMS(59,288230376151711744L,LicenseMapping.GROUP1LICENSE), // 2 ^ 58
 		MULTI_LANGUAGE_TRANSLATION(60,576460752303423488L,LicenseMapping.GROUP1LICENSE), // 2^59
 		WOV3_BETA(61,1152921504606846976L,LicenseMapping.GROUP1LICENSE), // 2^60
-		PIVOT_TABLE(62,2305843009213693952L,LicenseMapping.GROUP1LICENSE),// 2^61
-		TRANSFER_REQUEST(63,4611686018427387904L,LicenseMapping.GROUP1LICENSE),//2^62
+		PIVOT_TABLE(62, 2305843009213693952L, LicenseMapping.GROUP1LICENSE),// 2^61
+		TRANSFER_REQUEST(63, 4611686018427387904L, LicenseMapping.GROUP1LICENSE),//2^62
 		// Add Module name if license is added for specific module
-    	SURVEY(64,1,LicenseMapping.GROUP2LICENSE),
-    	GOOGLE_TRANSLATION(65,2,LicenseMapping.GROUP2LICENSE),
-		READING_LIVE_UPDATE(66,4,LicenseMapping.GROUP2LICENSE),
-		NEW_READING_RULE(67,8,LicenseMapping.GROUP2LICENSE),
-		RESOURCE_SCHEDULER(68,16,LicenseMapping.GROUP2LICENSE),
-		CUSTOM_MODULE_PERMISSION(69,32,LicenseMapping.GROUP2LICENSE),
-		CUSTOM_MODULE_SCOPING(70,64,LicenseMapping.GROUP2LICENSE),
-
+		SURVEY(64, 1, LicenseMapping.GROUP2LICENSE),
+		GOOGLE_TRANSLATION(65, 2, LicenseMapping.GROUP2LICENSE),
+		READING_LIVE_UPDATE(66, 4, LicenseMapping.GROUP2LICENSE),
+		NEW_READING_RULE(67, 8, LicenseMapping.GROUP2LICENSE),
+		RESOURCE_SCHEDULER(68, 16, LicenseMapping.GROUP2LICENSE),
+		CUSTOM_MODULE_PERMISSION(69, 32, LicenseMapping.GROUP2LICENSE),
+		CUSTOM_MODULE_SCOPING(70, 64, LicenseMapping.GROUP2LICENSE),
+		POINT_FILTER(71, 128, LicenseMapping.GROUP2LICENSE),//2^7
 		;
 
-    	public int featureId;
+		public int featureId;
 		private long license;
 		private String[] modules;
 		private LicenseMapping group;
 
-		FeatureLicense(int featureId,long license, LicenseMapping group) {
+		FeatureLicense(int featureId, long license, LicenseMapping group) {
 			this.featureId = featureId;
 			this.license = license;
 			this.group = group;
@@ -570,22 +570,22 @@ public class AccountUtil {
 
 		private static Map<Integer, FeatureLicense> initFeatureIdMap() {
 			// TODO Auto-generated method stub
-			
+
 			Map<Integer, FeatureLicense> featureIdMap = new HashMap<Integer, AccountUtil.FeatureLicense>();
-			for(FeatureLicense fLicense : values()) {
+			for (FeatureLicense fLicense : values()) {
 				featureIdMap.put(fLicense.getFeatureId(), fLicense);
 			}
 			return featureIdMap;
 		}
 
-		public boolean isEnabled (Map<String,Long > totalLicense) {
-			return (totalLicense.get(this.group.getLicenseKey()) & this.license) == this.license;
+		public boolean isEnabled(Map<LicenseMapping, Long> totalLicense) {
+			return (totalLicense.get(this.group) & this.license) == this.license;
 		}
 
 		public int getFeatureId() {
 			return featureId;
 		}
-    }
+	}
     /*private static Map<String, FeatureLicense> moduleVsLicense = Collections.unmodifiableMap(initializeLicenseRelation());
     private static  Map<String, FeatureLicense> initializeLicenseRelation() {
 	    	Map<String, FeatureLicense> licenseMap = new HashMap();

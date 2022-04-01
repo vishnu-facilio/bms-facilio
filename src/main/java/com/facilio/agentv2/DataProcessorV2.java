@@ -134,7 +134,7 @@ public class DataProcessorV2
                         controllerIdVsLastTimeSeriesTimeStamp.put(timeseriesController.getId(), timeStamp);
 
                         timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, timeseriesController.getId());
-                        processStatus = processTimeSeries(timeSeriesPayload, timeseriesController, true);
+                        processStatus = processTimeSeries(agent, timeSeriesPayload, timeseriesController, true);
 
                     } else {
                         LOGGER.info("Duplicate message for controller id : " + timeseriesController.getId() +
@@ -149,7 +149,7 @@ public class DataProcessorV2
                     } else {
                         timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, null);
                     }
-                    processStatus = processTimeSeries(timeSeriesPayload, controller, false);
+                    processStatus = processTimeSeries(agent, timeSeriesPayload, controller, false);
                     break;
                     //processTimeSeries(payload,)
                 case AGENT_EVENTS:
@@ -402,10 +402,11 @@ public class DataProcessorV2
         return false;
     }
 
-    private boolean processTimeSeries(JSONObject payload, Controller controller, boolean isTimeSeries) {
+    private boolean processTimeSeries(FacilioAgent agent, JSONObject payload, Controller controller, boolean isTimeSeries) {
         try {
             FacilioChain chain = TransactionChainFactory.getTimeSeriesProcessChainV2();
             FacilioContext context = chain.getContext();
+            context.put(AgentConstants.AGENT, agent);
             context.put(AgentConstants.IS_NEW_AGENT, true);
             //TODO
             if (controller != null) {
@@ -423,7 +424,6 @@ public class DataProcessorV2
             }
             if (controller == null) {
                 int type = Integer.parseInt(payload.get(AgentConstants.CONTROLLER_TYPE).toString());
-                FacilioAgent agent = AgentApiV2.getAgent(getAgentId(payload.get("agent").toString()));
                 if (type == FacilioControllerType.MISC.asInt() && agent.getAgentType() == AgentType.CLOUD.getKey()) {
                     String name = ((JSONObject) payload.get("controller")).get("name").toString();
                     context.put(AgentConstants.CONTROLLER_NAME, name);

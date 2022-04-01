@@ -60,16 +60,21 @@ public abstract class Point extends FacilioPoint{
     @JsonInclude
     private long mappedTime;
     @JsonInclude
+    private long lastRecordedTime;
+    @JsonInclude
+    private String lastRecordedValue;
+    @JsonInclude
     private boolean agentWritable;
-    @Getter @Setter
+    @Getter
+    @Setter
     private int interval;
-    
+
     public boolean isAgentWritable() {
-    	return agentWritable;
+        return agentWritable;
     }
 
     public void setAgentWritable(boolean agentWritable) {
-    	this.agentWritable = agentWritable;
+        this.agentWritable = agentWritable;
     }
 
 	/*  private Integer subscribestatus = PointEnum.SubscribeStatus.UNSUBSCRIBED.getIndex();
@@ -145,40 +150,107 @@ public abstract class Point extends FacilioPoint{
     public long getOrgId() { return orgId; }
     public void setOrgId(long orgId) { this.orgId = orgId; }
 
-    public String getDisplayName() { return displayName; }
-    public void setDisplayName(String displayName) { this.displayName = displayName; }
+    public String getDisplayName() {
+        return displayName;
+    }
 
-    public int getPointType() { return pointType; }
-    public void setPointType(int pointType) { this.pointType = pointType; }
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
 
-    public String getDeviceName() { return deviceName; }
-    public void setDeviceName(String deviceName) { this.deviceName = deviceName; }
+    public int getPointType() {
+        return pointType;
+    }
 
-    public Long getCategoryId() { return categoryId; }
-    public void setCategoryId(Long categoryId) { this.categoryId = categoryId; }
+    public void setPointType(int pointType) {
+        this.pointType = pointType;
+    }
 
-    public Long getResourceId() { return resourceId; }
-    public void setResourceId(Long resourceId) { this.resourceId = resourceId; }
+    public String getDeviceName() {
+        return deviceName;
+    }
 
-    public Long getFieldId() { return fieldId; }
-    public void setFieldId(Long fieldId) { this.fieldId = fieldId; }
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
+    }
 
-    public long getMappedTime() { return mappedTime; }
-    public void setMappedTime(long mappedTime) { this.mappedTime = mappedTime; }
+    public Long getCategoryId() {
+        return categoryId;
+    }
 
-    public int getConfigureStatus() { return configureStatus.getIndex(); }
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public Long getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(Long resourceId) {
+        this.resourceId = resourceId;
+    }
+
+    public Long getFieldId() {
+        return fieldId;
+    }
+
+    public void setFieldId(Long fieldId) {
+        this.fieldId = fieldId;
+    }
+
+    public long getMappedTime() {
+        return mappedTime;
+    }
+
+    public void setMappedTime(long mappedTime) {
+        this.mappedTime = mappedTime;
+    }
+
+    public long getLastRecordedTime() {
+        return lastRecordedTime;
+    }
+
+    public void setLastRecordedTime(long lastRecordedTime) {
+        this.lastRecordedTime = lastRecordedTime;
+    }
+
+    public String getLastRecordedValue() {
+        return lastRecordedValue;
+    }
+
+    public void setLastRecordedValue(String lastRecordedValue) {
+        this.lastRecordedValue = lastRecordedValue;
+    }
+
+    public int getConfigureStatus() {
+        return configureStatus.getIndex();
+    }
+
     @JSON(serialize = false)
-    public PointEnum.ConfigureStatus getConfigureStatusEnum() { return configureStatus; }
-   /* @JsonIgnore
-    public void setConfigureStatus(PointEnum.ConfigureStatus configureStatus) { this.configureStatus = configureStatus; }*/
-    public void setConfigureStatus(int configureStatus) { this.configureStatus = PointEnum.ConfigureStatus.valueOf(configureStatus); }
+    public PointEnum.ConfigureStatus getConfigureStatusEnum() {
+        return configureStatus;
+    }
 
-    public int getSubscribeStatus() { return subscribeStatus.getIndex(); }
+    /* @JsonIgnore
+     public void setConfigureStatus(PointEnum.ConfigureStatus configureStatus) { this.configureStatus = configureStatus; }*/
+    public void setConfigureStatus(int configureStatus) {
+        this.configureStatus = PointEnum.ConfigureStatus.valueOf(configureStatus);
+    }
+
+    public int getSubscribeStatus() {
+        return subscribeStatus.getIndex();
+    }
+
     @JSON(serialize = false)
-    public PointEnum.SubscribeStatus getSubscribestatusEnum() { return subscribeStatus; }
-   /* @JsonIgnore
-    public void setSubscribestatus(PointEnum.SubscribeStatus subscribestatus) { this.subscribestatus = subscribestatus; }*/
-    public void setSubscribeStatus(int subscribestatus) { this.subscribeStatus = PointEnum.SubscribeStatus.valueOf(subscribestatus); }
+    public PointEnum.SubscribeStatus getSubscribestatusEnum() {
+        return subscribeStatus;
+    }
+
+    /* @JsonIgnore
+     public void setSubscribestatus(PointEnum.SubscribeStatus subscribestatus) { this.subscribestatus = subscribestatus; }*/
+    public void setSubscribeStatus(int subscribestatus) {
+        this.subscribeStatus = PointEnum.SubscribeStatus.valueOf(subscribestatus);
+    }
 
 
     /**

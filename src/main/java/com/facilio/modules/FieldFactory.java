@@ -6894,6 +6894,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField(AgentConstants.THRESHOLD_JSON, "THRESHOLD_JSON", module, FieldType.STRING));
         fields.add(getField(AgentConstants.CREATED_TIME, "CREATED_TIME", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.MAPPED_TIME, "MAPPED_TIME", module, FieldType.NUMBER));
+        fields.add(getField(AgentConstants.LAST_RECORDED_TIME, "LAST_RECORDED_TIME", module, FieldType.NUMBER));
+        fields.add(getField(AgentConstants.LAST_RECORDED_VALUE, "LAST_RECORDED_VALUE", module, FieldType.STRING));
         fields.add(getField(AgentConstants.UNIT, "UNIT", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.AGENT_ID, "AGENT_ID", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.DATA_INTERVAL, "DATA_INTERVAL", module, FieldType.NUMBER));

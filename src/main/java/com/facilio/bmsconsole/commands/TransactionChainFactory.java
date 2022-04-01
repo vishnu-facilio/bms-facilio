@@ -61,7 +61,6 @@ import com.facilio.trigger.context.TriggerType;
 import com.facilio.weekends.*;
 import com.facilio.workflows.command.*;
 import org.apache.commons.chain.Context;
-import org.apache.log4j.Logger;
 
 import java.util.Collections;
 
@@ -1414,14 +1413,14 @@ public class TransactionChainFactory {
 			c.addCommand(ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain());
 			return c;
 		}
-	public static FacilioChain getTimeSeriesProcessChainV2() {
+
+	public static FacilioChain getTimeSeriesProcessChainV2() throws Exception {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new ProcessDataCommandV2());
-		chain.addCommand(new ModeledDataCommand());
-		chain.addCommand(new UnModeledDataCommand());
+		chain.addCommand(new UpdateLastRecordedValueAndFilterPointsCommand());
+		chain.addCommand(new ModeledDataCommandV2());
+		chain.addCommand(new UnModeledDataCommandV2());
 		chain.addCommand(ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain());
-
-		//chain.addCommand(new ProcessTimeSeriesData());
 		return chain;
 	}
 

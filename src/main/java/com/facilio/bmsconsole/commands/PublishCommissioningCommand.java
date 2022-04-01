@@ -167,7 +167,7 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 				}
 				
 				if(mappingChanged || unitChanged) {
-					addPointtoBatchUpdateProp(point, batchUpdateList, publishTime);
+					addPointToBatchUpdateProp(point, batchUpdateList, publishTime);
 				}
 			}
 			
@@ -222,12 +222,12 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 				;
 		return getPointRequest.getPointsData();
 	}
-	
-	private void addPointtoBatchUpdateProp(Map<String, Object> point, List<BatchUpdateByIdContext> batchUpdateList, long publishTime) {
+
+	private void addPointToBatchUpdateProp(Map<String, Object> point, List<BatchUpdateByIdContext> batchUpdateList, long publishTime) {
 		BatchUpdateByIdContext batchValue = new BatchUpdateByIdContext();
-		
+
 		batchValue.setWhereId((long) point.get("id"));
-		
+
 		Long fieldId = (Long) point.get(AgentConstants.FIELD_ID);
 		if (fieldId != null && fieldId > 0) {
 			batchValue.addUpdateValue(AgentConstants.FIELD_ID, fieldId);

@@ -59,7 +59,7 @@ public interface OrgBean {
 	
 	public boolean isFeatureEnabled(FeatureLicense featureLicense) throws Exception;
 
-	public int addLicence(Map<String, Long> licenseMap) throws Exception;
+	public int addLicence(Map<LicenseMapping, Long> licenseMap) throws Exception;
 	
 	public JSONObject orgInfo() throws Exception;
 	
