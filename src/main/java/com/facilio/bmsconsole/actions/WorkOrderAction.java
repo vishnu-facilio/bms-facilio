@@ -2048,6 +2048,8 @@ public class WorkOrderAction extends FacilioAction {
 	
 	public void setWorkordercontex(String workorder_string) throws Exception {
 
+		LOGGER.info("A :: before parsing wo-string: " + workorder_string);
+
 		JSONParser parser = new JSONParser();
 		JSONObject obj = (JSONObject) parser.parse(workorder_string);
 		this.workorder = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
@@ -2063,6 +2065,8 @@ public class WorkOrderAction extends FacilioAction {
 				}
 			}
 		}
+
+		LOGGER.info("B :: after parsing wo-string" + this.workorder.getData());
 	}
 
 	@SuppressWarnings("unchecked")
