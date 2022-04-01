@@ -4,6 +4,7 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.MLContext;
+import com.facilio.bmsconsole.context.MLModelParamsContext;
 import com.facilio.bmsconsoleV3.context.V3MLServiceContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -191,8 +192,8 @@ public class MLServiceUtil {
 		}
 
 
-		long trainingPeriodTime = endTime - startTime;
-		if(trainingPeriodTime < MLServiceUtil.TRAINING_SAMPLING_PERIOD) {
+		long trainingSamplingPeriod = endTime - startTime;
+		if(trainingSamplingPeriod < MLServiceUtil.TRAINING_SAMPLING_PERIOD) {
 			String errorMsg = "Training Data date range can't be less than "+ MLServiceUtil.MIN_TRAINING_DAYS+" days";
 			throw new RESTException(ErrorCode.VALIDATION_ERROR, errorMsg);
 		}
@@ -205,10 +206,13 @@ public class MLServiceUtil {
 		mlServiceContext.setEndTime(endTime);
 		mlServiceContext.setStartTime(startTime);
 
-		long trainingSamplingPeriod = endTime - startTime;
+//		long trainingSamplingPeriod = endTime - startTime;
 		mlServiceContext.setTrainingSamplingPeriod(trainingSamplingPeriod);
 	}
 
+	public static int getDataDuration(V3MLServiceContext mlServiceContext) {
+		return (int) (mlServiceContext.getTrainingSamplingPeriod()/DAYS_IN_MILLISECONDS);
+	}
 
 	public static void updateMLModelMeta(V3MLServiceContext mlServiceContext) throws Exception {
 		Map<String, Object> mlModelMetaMap = new LinkedHashMap<>();
@@ -410,7 +414,7 @@ public class MLServiceUtil {
 			updateWorkflowIdInModelVariables(mlServiceContext);
 		} catch (Exception e) {
 			LOGGER.error("Error while getting flow id for given namespace <"+namespace+"> and function <"+function+">");
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 	}
 
@@ -471,6 +475,25 @@ public class MLServiceUtil {
 		}
 		return mlServiceContext;
 	}
+
+    public static List<Map<String, Object>> getModelVariables(String modelName) throws Exception {
+		FacilioModule module = ModuleFactory.getMLModelParamsModule();
+		GenericSelectRecordBuilder genericSelectBuilder = new GenericSelectRecordBuilder()
+				.table(module.getTableName())
+				.select(FieldFactory.getMLModelParamsFields())
+				.andCondition(CriteriaAPI.getCondition("MODELNAME", "modelName", modelName, StringOperators.IS));
+
+
+		List<MLModelParamsContext> result = FieldUtil.getAsBeanListFromMapList(genericSelectBuilder.get(), MLModelParamsContext.class);
+		for(MLModelParamsContext data : result) {
+			if(data.getDataType() == FieldType.ENUM.getTypeAsInt()) {
+				data.setKeyValue(new JSONParser().parse(String.valueOf(data.getKeyValue())));
+			}
+		}
+
+		return FieldUtil.getAsMapList(result, MLModelParamsContext.class);
+//		MLContext jobMlContext = FieldUtil.getAsBeanFromMap(listMap.get(0), MLContext.class);
+    }
 }
 
 

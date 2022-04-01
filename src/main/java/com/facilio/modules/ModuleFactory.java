@@ -3134,6 +3134,13 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getMLModelParamsModule(){
+		FacilioModule module = new FacilioModule();
+		module.setName("mlModelParams");
+		module.setDisplayName("ML Model Params");
+		module.setTableName("ML_Model_Params");
+		return module;
+	}
 
 	public static FacilioModule getSitesForStoreRoomModule() {
 		FacilioModule accessbileSpaceModule = new FacilioModule();

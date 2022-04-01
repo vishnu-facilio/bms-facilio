@@ -48,7 +48,7 @@ public class GetAnomalyDeviationAndWastageCommand extends FacilioCommand {
 		}
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule logReadingModule = modBean.getModule("energyanomalydetectionmlreadings");
+		FacilioModule logReadingModule = modBean.getModule("energyanomaly");
 		List<FacilioField> fields = modBean.getAllFields(logReadingModule.getName());
 		Map<String, FacilioField> fieldMap= FieldFactory.getAsMap(fields);
 		

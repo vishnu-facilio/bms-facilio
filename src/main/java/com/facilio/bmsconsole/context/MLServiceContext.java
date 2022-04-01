@@ -21,6 +21,7 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 	 */
 	private String modelName;
 	private String scenario;
+	private String inputType = "default";
 	private String serviceType = "default" ;
 	private String assetIds;
 	private List<Long> assetList;
@@ -141,6 +142,7 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 		addParams(requestMap, "scenario", this.scenario);
 		addParams(requestMap, "assetIds", this.assetIds);
 		addParams(requestMap, "serviceType", this.serviceType);
+		addParams(requestMap, "inputType", this.inputType);
 		addParams(requestMap, "readingVariables", this.readingVariables); //constructed variable
 		addParams(requestMap, "models", this.models);
 		addParams(requestMap, "mlVariables", this.mlVariables);
@@ -280,6 +282,14 @@ public class MLServiceContext extends ModuleBaseWithCustomFields {
 
 	public void setServiceType(String serviceType) {
 		this.serviceType = serviceType;
+	}
+
+	public String getInputType() {
+		return inputType;
+	}
+
+	public void setInputType(String inputType) {
+		this.inputType = inputType;
 	}
 
 	public long getMlID() {

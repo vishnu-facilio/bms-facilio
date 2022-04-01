@@ -432,6 +432,9 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
             case AGENT_ALARM:
                 baseEvent = new AgentEventContext();
                 break;
+            case ML_ANOMALY_ALARM:
+                baseEvent = new MLAnomalyEvent();
+                break;
             case MULTIVARIATE_ANOMALY_ALARM:
                 baseEvent = new MultiVariateAnomalyEvent();
                 break;

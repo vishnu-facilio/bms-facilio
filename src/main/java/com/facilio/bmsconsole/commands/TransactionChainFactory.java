@@ -1240,6 +1240,14 @@ public class TransactionChainFactory {
 			c.addCommand(new InsertReadingDataMetaForNewReadingCommand());
 			return c;
 		}
+	public static FacilioChain addMlReadingChain(boolean isModuleAlreadyCreated) {
+		FacilioChain c = getDefaultChain();
+		if(!isModuleAlreadyCreated){
+			c.addCommand(getAddReadingsChain());
+		}
+		c.addCommand(new InsertReadingDataMetaForNewReadingCommand());
+		return c;
+	}
 
 		public static FacilioChain getAddFieldsChain() {
 			FacilioChain c = getDefaultChain();

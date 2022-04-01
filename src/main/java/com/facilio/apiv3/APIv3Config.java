@@ -1585,7 +1585,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getMLService() {
         return () -> new V3Config(V3MLServiceContext.class, new ModuleCustomFieldCount10())
                 .create()
-                .beforeSave(new MLServiceBeforeCreateValidationCommand())
+                .beforeSave(new MLServiceBeforeCreateValidationCommand(), new ValidateMLServiceCommand())
                 .afterSave(TransactionChainFactoryV3.addMLServiceChain())
                 .update()
                 .beforeSave(new MLServiceBeforeUpdateCommand(), new MLServiceBeforeCreateValidationCommand())

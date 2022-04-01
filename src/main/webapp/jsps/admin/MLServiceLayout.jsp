@@ -171,6 +171,7 @@
         		>Energy Anomaly</option>
         		<option value="energyprediction"<%=(request.getParameter("usecase") != null && request.getParameter("usecase").equals("energyprediction")) ? "selected" : " "%>>Energy Prediction</option>
         		<option value="loadprediction"<%=(request.getParameter("usecase") != null && request.getParameter("usecase").equals("loadprediction")) ? "selected" : " "%>>Load Prediction</option>
+            	<option value="ahuoptimization"<%=(request.getParameter("usecase") != null && request.getParameter("usecase").equals("ahuoptimization")) ? "selected" : " "%>>AHU Start time Optimization</option>
             	<option value="multivariateanomaly"<%=(request.getParameter("usecase") != null && request.getParameter("usecase").equals("multivariateanomaly")) ? "selected" : " "%>>Multivariate Anomaly</option>
             	
             </select>
@@ -205,7 +206,7 @@
       
 
 <%
-     if ((org != null) && (usecase.equalsIgnoreCase("multivariateanomaly"))) {
+     if ((org != null) && ((usecase.equalsIgnoreCase("multivariateanomaly"))  || (usecase.equalsIgnoreCase("ahuoptimization")))) {
 %>            		
  		<div class="useinput">
         <label for="model"><h5>Readings</h5></label>
@@ -215,7 +216,7 @@
       </div><br><br><br>
 
 <%
-    } else {
+    }
 %>
 	
 	<div class="useinput">
@@ -224,8 +225,7 @@
         
         <textarea id="assetIdList" name="assetIdList" placeholder="Enter Asset ID" rows=100 cols=1000/></textarea>
       </div><br><br><br>
-<%
-}%>
+
        	<div class="useinput">
         <label for="modelvariables"><h5>Model Details</h5></label>
         &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;&ensp;&nbsp;

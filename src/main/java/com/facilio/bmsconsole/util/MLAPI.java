@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.modules.*;
+import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
@@ -179,7 +180,7 @@ public class MLAPI {
 					.andCondition(CriteriaAPI.getCondition(fieldIdField, fields.stream().map(FacilioField::getId).collect(Collectors.toList()), NumberOperators.EQUALS));
 			deleteRecordBuilder.delete();
 
-
+			/*
 			//to remove if reading module added for the resource in ResourceReading
 			List<FacilioField> rrFields = FieldFactory.getResourceReadingsFields();
 			FacilioField resField = rrFields.stream().filter(f->f.getName().equalsIgnoreCase("resourceId")).findFirst().get();
@@ -187,11 +188,11 @@ public class MLAPI {
 			deleteRecordBuilder = new GenericDeleteRecordBuilder().table(ModuleFactory.getResourceReadingsModule().getTableName())
 					.andCondition(CriteriaAPI.getCondition(resField, assetIds, NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(readingField, String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
-			deleteRecordBuilder.delete();
+			deleteRecordBuilder.delete();*/
 
 		}
 
-		FacilioChain chain = TransactionChainFactory.addResourceReadingChain(module != null);
+		FacilioChain chain = TransactionChainFactory.addMlReadingChain(module != null);
 		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.READING_NAME,readingName);
 		context.put(FacilioConstants.ContextNames.MODULE,module);
@@ -273,6 +274,33 @@ public class MLAPI {
 				.table(ModuleFactory.getMLAssetVariablesModule().getTableName())
 				.fields(FieldFactory.getMLAssetVariablesFields());
 		builder.insert(FieldUtil.getAsProperties(context));
+	}
+
+
+	public static void updateMLStatusInMLService(MLContext mlContext, String status) throws Exception { //for success status update
+		updateMLStatusInMLService(mlContext, status, false);
+	}
+
+	public static void updateMLStatusInMLService(MLContext mlContext, String status, boolean isFailed) throws Exception {
+		long mlserviceId = mlContext.getMlServiceID();
+		if(mlserviceId == 0) {
+			return;
+		}
+
+		Map<String, Object> row = new HashMap<>();
+		row.put("status", status);
+		row.put("failed", isFailed);
+		row.put("sysModifiedTime", DateTimeUtil.getCurrenTime());
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule("mlService");
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+
+		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+				.table(module.getTableName())
+				.fields(fields)
+				.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(mlserviceId), NumberOperators.EQUALS));
+		builder.update(row);
 	}
 
 	public static void addJobs(long mlID,String jobName,ScheduleInfo info,String executorName) throws Exception

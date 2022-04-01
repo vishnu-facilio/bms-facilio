@@ -460,7 +460,13 @@ public class AdminAction extends ActionSupport {
 			if(request.getParameter("filtermethod").length() > 2) {
 				mlServiceData.put("filteringMethod", new JSONParser().parse(request.getParameter("filtermethod")));
 			}
-		}else {
+		}else if (request.getParameter("usecase").equals("ahuoptimization")){
+			mlServiceData.put("serviceType","custom");
+			if(request.getParameter("model").length() > 2) {
+				mlServiceData.put("modelReadings", new JSONParser().parse(request.getParameter("model")));
+			}
+		}
+
 			String assetIds = request.getParameter("assetIdList");
 			if(assetIds!=null) {
 				String []assetArr = assetIds.split(",");
@@ -470,10 +476,10 @@ public class AdminAction extends ActionSupport {
 					for (int i = 1; i < assetArr.length; i++) {
 						childAssetIds.add(Long.valueOf(assetArr[i]));
 					}
-					mlServiceData.put("childAssetIds", Long.valueOf(assetArr[0]));
+					mlServiceData.put("childAssetIds",childAssetIds);
 				}
 			}
-		}
+
 		Long orgId = Long.parseLong(request.getParameter("orgid"));
 		ModuleCRUDBean bean = (ModuleCRUDBean) TransactionBeanFactory.lookup("ModuleCRUD", orgId);
 		bean.initMLService(mlServiceData);

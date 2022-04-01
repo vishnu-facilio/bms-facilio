@@ -29,6 +29,7 @@ public class TriggerMLServiceJobCommand extends FacilioCommand implements Serial
 			LOGGER.info("MLService historic data trigger started..");
 			switch(mlServiceContext.getModelName()){
 				case "energyprediction":
+				case "ahuoptimization":
 				case "loadprediction": {
 					triggerSingleHistoricJob(mlServiceContext);
 					break;

@@ -6408,7 +6408,8 @@
 	</package>
 	
 	<package name="mlService" namespace="/api/v2/mlService" extends="v2Api">
-		<action name="add" class="com.facilio.bmsconsole.actions.MLServiceAction" method="addMLModel" />	
+		<action name="add" class="com.facilio.bmsconsole.actions.MLServiceAction" method="addMLModel" />
+		<action name="modeldetails" class="com.facilio.bmsconsole.actions.MLServiceAction" method="getModelVariables" />
 	</package>
 	
 	<package name="fieldMigration" namespace="/api/v2/fieldMigrate" extends="v2Api">

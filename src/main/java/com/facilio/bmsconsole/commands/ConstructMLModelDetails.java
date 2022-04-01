@@ -40,6 +40,7 @@ public class ConstructMLModelDetails extends FacilioCommand implements Serializa
 					List<Map<String, Object>> model = new ArrayList<>();
 					model.add(getEnergyReading(assetContext.getId()));
 					model.add(getTemperatureReading(assetContext.getSiteId()));
+					model.add(getHumidityReading(assetContext.getSiteId()));
 					models.add(model);
 					break;
 				}
@@ -111,6 +112,17 @@ public class ConstructMLModelDetails extends FacilioCommand implements Serializa
 	private Map<String, Object> getTemperatureReading(long siteId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField temperatureField = modBean.getField("temperature", FacilioConstants.ContextNames.WEATHER_READING);
+		Map<String, Object> temperatureReading = new HashMap<>();
+		temperatureReading.put("parentId", siteId);
+		temperatureReading.put("name", temperatureField.getName());
+		temperatureReading.put("fieldId", temperatureField.getFieldId());
+		return temperatureReading;
+
+	}
+
+	private Map<String, Object> getHumidityReading(long siteId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioField temperatureField = modBean.getField("humidity", FacilioConstants.ContextNames.WEATHER_READING);
 		Map<String, Object> temperatureReading = new HashMap<>();
 		temperatureReading.put("parentId", siteId);
 		temperatureReading.put("name", temperatureField.getName());

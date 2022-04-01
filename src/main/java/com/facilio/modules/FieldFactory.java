@@ -8052,6 +8052,18 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getMLModelParamsFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getMLModelParamsModule();
+        fields.add(getField("id", "ID", module, FieldType.NUMBER));
+        fields.add(getField("modelName", "MODELNAME", module, FieldType.STRING));
+        fields.add(getField("dataType", "DATATYPE", module, FieldType.NUMBER));
+        fields.add(getField("isMandatory", "IS_MANDATORY", module, FieldType.BOOLEAN));
+        fields.add(getField("keyName", "KEYNAME", module, FieldType.STRING));
+        fields.add(getField("keyValue", "KEYVALUE", module, FieldType.STRING));
+        return fields;
+    }
+
     public static List<FacilioField> getMLLogCheckGamFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getMLLogReadingModule();

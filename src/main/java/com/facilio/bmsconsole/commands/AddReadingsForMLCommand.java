@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.util.MLAPI;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
@@ -31,12 +32,14 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.util.WorkflowUtil;
 
+import static java.util.stream.Collectors.groupingBy;
+
 public class AddReadingsForMLCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = Logger.getLogger(AddReadingsForMLCommand.class.getName());
 
 	@Override
-	public boolean executeCommand(Context context) throws Exception 
+	public boolean executeCommand(Context context) throws Exception
 	{
 		MLContext mlContext = (MLContext) context.get(FacilioConstants.ContextNames.ML);
 		try
@@ -51,14 +54,15 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 			if(parentID < 0){
 				LOGGER.info("Error_JAVA "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" FILE : AddReadingsForMLCommand "+" ERROR MESSAGE : Error parentID is not present : "+ parentID);
 			}
+			long mlID = mlContext.getId();
 
 //			parentID = mlContext.getId();
 
 			List<ReadingContext> logReadingList = new ArrayList<>();
-			List<ReadingContext> predictReadingList = new ArrayList<>(); 
+			List<ReadingContext> predictReadingList = new ArrayList<>();
 			Boolean mlError = (Boolean) context.get("ML_ERROR");
 			if(mlError == null){
-				mlError = false;	
+				mlError = false;
 			}
 			if(mlError){
 				ReadingContext newReading = new ReadingContext();
@@ -79,7 +83,11 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 				predictReadingList.add(newUpdatedReading);
 			}
 			else {
-				JSONArray mlArray = (JSONArray) new JSONObject(mlContext.getResult()).get("data");
+				JSONObject mlResult = new JSONObject(mlContext.getResult());
+				if(mlResult.has("error_msg")) {
+					MLAPI.updateMLStatusInMLService(mlContext, (String) mlResult.get("error_msg"), true);
+				}
+				JSONArray mlArray = (JSONArray) mlResult.get("data");
 				if(mlArray.length()>0)
 				{
 					long workflowId = getWorkFlowId(mlContext);
@@ -94,6 +102,11 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 						ReadingContext newReading = new ReadingContext();
 						ReadingContext newUpdatedReading = new ReadingContext();
 
+						if(readingObj.has("parentId")) {
+							parentID = ((Integer) readingObj.get("parentId")).longValue();
+							newReading.addReading("mlID", mlID);
+							newUpdatedReading.addReading("mlID", mlID);
+						}
 						newReading.setParentId(parentID);
 						newUpdatedReading.setParentId(parentID);
 
@@ -117,11 +130,10 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 							}
 						}
 
-
 						newReading.addReading("predictedTime", mlContext.getPredictionTime());
 						logReadingList.add(newReading);
 
-						boolean readingExist = newUpdatedReading.getReadings().entrySet().stream().anyMatch(f-> !(f.getKey().equals("mlRunning") || 
+						boolean readingExist = newUpdatedReading.getReadings().entrySet().stream().anyMatch(f-> !(f.getKey().equals("mlRunning") ||
 								(f.getKey().equals("errorCode") && Long.parseLong(f.getValue().toString()) == -1 ) ));
 
 						if(readingExist){
@@ -135,34 +147,44 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 				try
 				{
 					if(predictModule!=null){ // predictionModule null for ratiocheck in demo acc
-						updateExistingPredictReading(parentID,predictModule,predictReadingList);
+						Map<Long, List<ReadingContext>> groupByParentIds = predictReadingList.stream().collect(groupingBy(ReadingContext::getParentId));
+						groupByParentIds.forEach((parentId, readingList) -> {
+							try {
+								updateExistingPredictReading(parentId, predictModule, readingList);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						});
 					}
 				}
 				catch(Exception e)
 				{
 					LOGGER.error("Error while updating Predicted Reading", e);
+					throw e;
 				}
+				MLAPI.updateMLStatusInMLService(mlContext, "Successfully added the ML readings");
 			}
 			if(!logReadingList.isEmpty() && logModule != null)
 			{
 				try
 				{
-					updateReading(logModule,logReadingList);
+					updateReading(logModule, logReadingList);
 				}
 				catch(Exception e)
 				{
 					LOGGER.error("Error while updating Log Reading", e);
-					throw e;				 
+					throw e;
 				}
+				MLAPI.updateMLStatusInMLService(mlContext, "Successfully added the ML readings");
 			}
 
 		}
 		catch(Exception e)
 		{
 			LOGGER.fatal("Error_JAVA "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" FILE : AddReadingsForMLCommand "+" ERROR MESSAGE : "+e);
+			MLAPI.updateMLStatusInMLService(mlContext, "Failed while added ML readings", true);
 			throw e;
 		}
-
 		return false;
 	}
 
@@ -200,7 +222,7 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 		chain.execute();
 	}
 
-	private void updateExistingPredictReading(long assetID,FacilioModule module,List<ReadingContext> readingList) throws Exception
+	private void updateExistingPredictReading(long assetID, FacilioModule module, List<ReadingContext> readingList) throws Exception
 	{
 		Condition parentCondition=CriteriaAPI.getCondition("PARENT_ID","parentId", String.valueOf(assetID),NumberOperators.EQUALS);
 		Condition ttimeCondition=CriteriaAPI.getCondition("TTIME","ttime", getTtimeList(readingList),NumberOperators.EQUALS);
@@ -217,16 +239,15 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 				.andCondition(ttimeCondition);
 		List<ReadingContext> props = selectBuilder.get();
 
-		Map<Long,ReadingContext> ttimeVsReading = new HashMap<Long,ReadingContext>();
+		Map<Long,ReadingContext> ttimeVsReading = new HashMap<>();
 		props.forEach(readingContext->ttimeVsReading.put(readingContext.getTtime(), readingContext));
-
 
 		if(!ttimeVsReading.isEmpty())
 		{
-			for (ReadingContext reading: readingList) 
+			for (ReadingContext reading: readingList)
 			{
 				ReadingContext ttimeReading = ttimeVsReading.get(reading.getTtime());
-				reading.setId(ttimeReading!=null ? ttimeReading.getId() : -1);
+				reading.setId(ttimeReading != null ? ttimeReading.getId() : -1);
 			}
 		}
 		FacilioChain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
@@ -237,7 +258,7 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 		chain.execute();
 	}
 
-	private static String getTtimeList(List<ReadingContext> readingList) 
+	private static String getTtimeList(List<ReadingContext> readingList)
 	{
 		StringJoiner ttimeCriteria = new StringJoiner(",");
 		readingList.forEach(reading->ttimeCriteria.add(String.valueOf(reading.getTtime())));

@@ -79,12 +79,21 @@ public class ActivateMLServiceCommand extends FacilioCommand implements Serializ
 					FacilioContext context = chain.getContext();
 
 					List<Long> assetIds = MLServiceUtil.getAllAssetIds(mlServiceContext);
-					assetIds.add(0, mlServiceContext.getParentAssetId());
-					context.put("TreeHierarchy", assetIds);
-
+					String assetIdStr = assetIds.stream().map(i -> i.toString()).collect(Collectors.joining(","));
+					context.put("TreeHierarchy", assetIdStr);
 					context.put("mlModelVariables", mlServiceContext.getMlModelVariables());
 					context.put("mlVariables", mlServiceContext.getTrainingSamplingJson());
 					context.put("parentHierarchy", "true");
+					context.put(FacilioConstants.ContextNames.ML_SERVICE_DATA, mlServiceContext);
+					chain.execute();
+					break;
+				}
+				case "ahuoptimization": {
+					FacilioChain chain = FacilioChainFactory.addAhuOptimizationchain();
+					FacilioContext context = chain.getContext();
+					context.put("assetId", mlServiceContext.getParentAssetId());
+					context.put("mlModelVariables", mlServiceContext.getMlModelVariables());
+					context.put("mlVariables", mlServiceContext.getTrainingSamplingJson());
 					context.put(FacilioConstants.ContextNames.ML_SERVICE_DATA, mlServiceContext);
 					chain.execute();
 					break;
