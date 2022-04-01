@@ -58,15 +58,15 @@ public class ReadingPostProcessingCommand extends FacilioCommand {
             postProcessingChain.execute();
         } catch (Exception e) {
             Map<String, List<ReadingContext>> readingMap = (Map<String, List<ReadingContext>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
-            LOGGER.error("Error occurred during workflow execution of readings. \n" + readingMap, e);
-            CommonCommandUtil.emailException(this.getClass().getName(), "Error occurred during workflow execution of readings.", e, String.valueOf(readingMap));
+            LOGGER.error("Error occurred during storm execution of readings. \n" + readingMap, e);
+            CommonCommandUtil.emailException(this.getClass().getName(), "Error occurred during storm execution of readings.", e, String.valueOf(readingMap));
         }
     }
 
 
     private void executeWorkflowsRules(Context context) {
         try {
-            boolean executeReadingRuleCommand = Boolean.valueOf(CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.EXECUTE_READING_RULE_COMMAND, Boolean.TRUE));
+            boolean executeReadingRuleCommand = Boolean.valueOf(CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.EXECUTE_READING_RULE_COMMAND, Boolean.FALSE));
             FacilioChain execChain = executeReadingRuleCommand ? ReadOnlyChainFactory.executeReadingRuleChain() : ReadOnlyChainFactory.executeWorkflowsForReadingChain();
             execChain.setContext((FacilioContext) context);
             execChain.execute();
