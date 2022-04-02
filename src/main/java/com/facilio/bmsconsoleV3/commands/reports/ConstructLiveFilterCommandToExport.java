@@ -26,6 +26,7 @@ public class ConstructLiveFilterCommandToExport extends FacilioCommand {
     {
         ReportContext reportContext = (ReportContext) context.get("report");
         Integer filterModeValue = (Integer) context.get("filterModeValue");
+        ReadingAnalysisContext.ReportFilterMode criteriafilterMode = (ReadingAnalysisContext.ReportFilterMode) context.get(FacilioConstants.ContextNames.REPORT_FILTER_MODE);
         if(filterModeValue != null) {
             ReadingAnalysisContext.ReportFilterMode filterMode = ReadingAnalysisContext.ReportFilterMode.NONE;
             if (filterModeValue == 4) {
@@ -34,6 +35,13 @@ public class ConstructLiveFilterCommandToExport extends FacilioCommand {
                 filterMode = ReadingAnalysisContext.ReportFilterMode.SPECIFIC_ASSETS_OF_CATEGORY;
             }
             List<ReportFilterContext> filters = constructFilters(filterMode, (FacilioContext) context);
+            if (filters != null) {
+                reportContext.setFilters(filters);
+            }
+        }
+        else if(criteriafilterMode != null)
+        {
+            List<ReportFilterContext> filters = constructFilters(criteriafilterMode, (FacilioContext) context);
             if (filters != null) {
                 reportContext.setFilters(filters);
             }
@@ -54,9 +62,12 @@ public class ConstructLiveFilterCommandToExport extends FacilioCommand {
                     List<Long> categoryId = (List<Long>) context.get(FacilioConstants.ContextNames.ASSET_CATEGORY);
                     filter = getBasicReadingReportFilter(modBean, "parentId");
                     FacilioField categoryField = modBean.getField("category", FacilioConstants.ContextNames.ASSET);
-
+                    if(categoryId != null && categoryId.size() == 0)
+                    {
+                        return null;
+                    }
                     criteria = new Criteria();
-                    if(categoryId != null) {
+                    if(categoryId != null && categoryId.size()>0) {
                         criteria.addAndCondition(CriteriaAPI.getCondition(categoryField, categoryId, PickListOperators.IS));
                     }
 
@@ -83,7 +94,7 @@ public class ConstructLiveFilterCommandToExport extends FacilioCommand {
                     FacilioField spaceField = modBean.getField("space", FacilioConstants.ContextNames.ASSET);
 
                     criteria = new Criteria();
-                    if(categoryId != null) {
+                    if(categoryId != null && categoryId.size()>0) {
                         criteria.addAndCondition(CriteriaAPI.getCondition(categoryField, categoryId, PickListOperators.IS));
                     }
                     if(spaceId != null) {
