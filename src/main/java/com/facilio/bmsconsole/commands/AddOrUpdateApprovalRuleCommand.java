@@ -150,8 +150,8 @@ public class AddOrUpdateApprovalRuleCommand extends FacilioCommand {
             ruleContext = ruleChain.getContext();
             transitionRuleContext =
                     getApprovalTransition(approvalMeta.getResendApprovers(), ApprovalRuleContext.ApprovalOrder.PARALLEL.getValue(),
-                            false, null, -1, true, null, "Re-Send", module,
-                            null, approvalStateFlowId);
+                            false, null, approvalMeta.getResendFormId(), true, null, "Re-Send", module,
+                            approvalMeta.getResendActions(), approvalStateFlowId);
             transitionRuleContext.setFromStateId(rejected.getId());
             transitionRuleContext.setToStateId(requested.getId());
             ruleContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, transitionRuleContext);

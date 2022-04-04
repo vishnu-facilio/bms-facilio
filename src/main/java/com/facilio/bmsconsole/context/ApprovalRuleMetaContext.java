@@ -167,6 +167,14 @@ public class ApprovalRuleMetaContext implements Serializable {
         this.rejectActions = rejectActions;
     }
 
+    private List<ActionContext> resendActions;
+    public List<ActionContext> getResendActions() {
+        return resendActions;
+    }
+    public void setResendActions(List<ActionContext> resendActions) {
+        this.resendActions = resendActions;
+    }
+
     private AbstractStateTransitionRuleContext.DialogType approvalDialogType = AbstractStateTransitionRuleContext.DialogType.MODULE;
     public int getApprovalDialogType() {
         if (approvalDialogType != null) {
@@ -237,5 +245,13 @@ public class ApprovalRuleMetaContext implements Serializable {
     @Deprecated
     public void setRejectForm(FacilioForm rejectForm) {
         this.rejectForm = rejectForm;
+    }
+
+    private long resendFormId = -1;
+    public long getResendFormId() {
+        return resendFormId;
+    }
+    public void setResendFormId(long resendFormId) {
+        this.resendFormId = resendFormId;
     }
 }
