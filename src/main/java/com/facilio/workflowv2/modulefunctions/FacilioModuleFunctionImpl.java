@@ -400,7 +400,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			if(criteria == null) {
 				throw new Exception("criteria cannot be null during delete");
 			}
-			if(dbParamContext.isSkipModuleCriteria()) {
+			if(dbParamContext != null && dbParamContext.isSkipModuleCriteria()) {
 				delete.skipModuleCriteria();
 			}
 			
