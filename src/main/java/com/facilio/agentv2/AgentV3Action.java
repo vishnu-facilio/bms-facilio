@@ -28,6 +28,14 @@ public class AgentV3Action extends V3Action {
 		
 		return SUCCESS;
 	}
+	public String getMessageSource() throws Exception{
+		FacilioChain chain = ReadOnlyChainFactoryV3.getMessageSourcesCommand();
+		FacilioContext context = chain.getContext();
+		chain.execute();
+		setData(AgentConstants.MESSAGE_SOURCES, context.get(AgentConstants.MESSAGE_SOURCES));
+
+		return SUCCESS;
+	}
 	
 	
 }

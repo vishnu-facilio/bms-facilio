@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.commands;
 
 import com.facilio.agentv2.commands.FetchAgentDetailsCommand;
+import com.facilio.agentv2.commands.FetchMessageSourcesCommand;
 import com.facilio.bmsconsole.automation.command.ListGlobalVariableCommand;
 import com.facilio.bmsconsole.automation.command.ListGlobalVariableGroupCommand;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -228,6 +229,11 @@ public class ReadOnlyChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new BuildingFillLookupFieldsCommand());
         c.addCommand(new FetchSpaceExcludingAccessibleSpacesCommandV3());
+        return c;
+    }
+    public static FacilioChain getMessageSourcesCommand() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchMessageSourcesCommand());
         return c;
     }
 }

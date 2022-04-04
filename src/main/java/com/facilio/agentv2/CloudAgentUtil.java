@@ -2,6 +2,7 @@ package com.facilio.agentv2;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +29,7 @@ public class CloudAgentUtil {
 		private static final String ADD_AGENT = "/api/v1/agent/add";
 		private static final String EDIT_AGENT = "/api/v1/agent/edit";
 		private static final String FETCH_AGENT_DETAILS = "/api/v1/agent/fetch";
+		private static final String FETCH_MESSAGE_SOURCES = "/api/v1/agent/fetchSources";
 	}
 	
 	public static void addCloudServiceAgent(FacilioAgent agent) throws Exception {
@@ -48,7 +50,13 @@ public class CloudAgentUtil {
 		}
 		return null;
 	}
-	
+	public static List fetchMessageSources() throws Exception{
+		Map<String, Object> data = doGet(Urls.FETCH_MESSAGE_SOURCES,null);
+		if (data != null) {
+			return (List) data.get(AgentConstants.MESSAGE_SOURCES);
+		}
+		return null;
+	}
 	
 	
 	

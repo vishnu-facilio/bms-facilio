@@ -277,4 +277,5 @@ public class AgentConstants
     public static final String TTIME = "ttime";
     public static final String INSTANCE_ID = "instanceId";
     public static final String UNMODELED_DATA_TABLE = "Unmodeled_Data";
+    public static final String MESSAGE_SOURCES = "messageSources";
 }

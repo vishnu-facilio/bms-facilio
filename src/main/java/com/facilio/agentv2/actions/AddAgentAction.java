@@ -45,7 +45,8 @@ public class AddAgentAction extends AgentActionV2
     @Min(value = 1,message = "Data interval can't be less than 1")
     @NotNull
     private long dataInterval;
-
+    private long messageSourceId;
+    private String subscribeTopics;
     @NotNull
     @Min(value = 1,message = "Site can't be less than 1")
     private long siteId;
@@ -75,6 +76,8 @@ public class AddAgentAction extends AgentActionV2
             agent.setDisplayName(getDisplayName());
             agent.setWorkflow(getWorkflow());
             agent.setPartitionId(partitionId);
+            agent.setMessageSourceId(getMessageSourceId());
+            agent.setSubscribeTopics(getSubscribeTopics());
             if (agentType != AgentType.CUSTOM.getKey()) {
                 agent.setProcessorVersion(2);
             }
