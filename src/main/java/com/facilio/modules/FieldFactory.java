@@ -312,7 +312,9 @@ public class FieldFactory extends BaseFieldFactory {
                 "serialNumber",
                 "isQuotationNeeded",
                 "id",
-                "serviceRequest"
+                "serviceRequest",
+                "noOfNotes",
+                "noOfAttachments"
         }));
 
         public static final List<String> ASSET_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
