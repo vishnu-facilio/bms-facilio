@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.*;
 import com.facilio.report.context.PivotDataColumnContext;
@@ -66,8 +67,11 @@ public class PivotColumnFormatCommand extends FacilioCommand {
                     facilioField = modBean.getField(data.getField().getName(), data.getModuleName()).clone();
                 }
             } else {
-                if (data.getAlias().equals(alias)) {
+                if (data.getAlias().equals(alias) && data.getReadingField().getId() > 0) {
                     facilioField = modBean.getReadingField(data.getReadingField().getId()).clone();
+                } else if(data.getAlias().equals(alias) && data.getReadingField().getModuleId() > 0 &&  data.getReadingField().getName() != null){
+                    FacilioModule module = modBean.getModule(data.getReadingField().getModuleId());
+                    facilioField = modBean.getField(data.getReadingField().getName(), module.getName());
                 }
             }
         }
