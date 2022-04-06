@@ -399,8 +399,7 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 			else {
 				updateFields.add("name");
 			}
-
-
+			LOGGER.info("Log for data "+readingsList.toString());
 			for(int j=0;j< readingsList.size();j++) {
 				UpdateRecordBuilder<ReadingContext> updateBuilder = new UpdateRecordBuilder<ReadingContext>();
 				Map<String,Object> currentRow= readingsList.get(j).getData();
@@ -424,7 +423,11 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 					.module(module)
 					.fields(tobeUpdated);
 				updateBuilder.update(readingsList.get(j));
+				
 				LOGGER.info("Adding Log for Update Query "+updateBuilder.toString());
+				LOGGER.info("Fields in Update Query"+tobeUpdated.toString());
+				LOGGER.info("Data to be added in Update Query "+readingsList.get(j).toString());
+
 				Map<Long, List<UpdateChangeSet>> recordChanges = updateBuilder.getChangeSet();
 				if (MapUtils.isNotEmpty(recordChanges)) {
 					recordChanges.forEach((key, value) -> listOfIds.add(key));
