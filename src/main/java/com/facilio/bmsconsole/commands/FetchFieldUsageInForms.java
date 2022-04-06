@@ -16,16 +16,18 @@ import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class FetchFieldUsageInForms extends FacilioCommand {
 
+	private static final Logger LOGGER = LogManager.getLogger(FetchFieldUsageInForms.class.getName());
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -33,7 +35,16 @@ public class FetchFieldUsageInForms extends FacilioCommand {
 		Long fieldId = (Long) context.get(FacilioConstants.ContextNames.FIELD_ID);
 		List<FacilioForm> forms = (List<FacilioForm>) context.get(FacilioConstants.ContextNames.FORMS);
 
-		Map<Long, FacilioForm> formVsIdMap = (forms != null) ? forms.stream().collect(Collectors.toMap(FacilioForm::getId, Function.identity())) : null;
+		//Map<Long, FacilioForm> formVsIdMap = (forms != null) ? forms.stream().collect(Collectors.toMap(FacilioForm::getId, Function.identity())) : null;
+		Map<Long, FacilioForm> formVsIdMap = new HashMap<>();
+		for(FacilioForm form: forms) {
+			if(formVsIdMap.containsKey(form.getId())) {
+				LOGGER.info(MessageFormat.format("Duplicate Form present in List - formID - {0} ", form.getId()));
+			}
+			else {
+				formVsIdMap.put(form.getId(), form);
+			}
+		}
 
 		FacilioModule module = ModuleFactory.getFormFieldsModule();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()

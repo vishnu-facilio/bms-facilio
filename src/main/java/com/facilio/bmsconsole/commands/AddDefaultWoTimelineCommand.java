@@ -57,8 +57,8 @@ public class AddDefaultWoTimelineCommand extends FacilioCommand {
 		timelineView.setModuleId(module.getModuleId());
 
 		timelineView.setGroupByFieldId(fieldNameVsField.get("assignedTo").getFieldId());
-		timelineView.setStartDateFieldId(fieldNameVsField.get("actualWorkStart").getFieldId());
-		timelineView.setEndDateFieldId(fieldNameVsField.get("actualWorkEnd").getFieldId());
+		timelineView.setStartDateFieldId(fieldNameVsField.get("scheduledStart").getFieldId());
+		timelineView.setEndDateFieldId(fieldNameVsField.get("estimatedEnd").getFieldId());
 
 		timelineView.setAllowRescheduling(true);
 		timelineView.setAllowGroupAssignment(true);
