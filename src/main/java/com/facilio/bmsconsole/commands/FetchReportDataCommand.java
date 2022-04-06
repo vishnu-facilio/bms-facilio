@@ -1132,7 +1132,9 @@ public class FetchReportDataCommand extends FacilioCommand {
                 FacilioField idField = FieldFactory.getIdField(xAggrField.getModule());
                 applyJoin(new StringBuilder(idField.getCompleteColumnName()).append("=").append(relModule.getTableName()).append('.').append("LEFT_ID").toString(), relModule, selectBuilder);
             }
-
+            else {
+                groupBy.add(xAggrField.getCompleteColumnName());
+            }
             if (xAggr instanceof DateAggregateOperator) {
                 fields.add(((DateAggregateOperator) xAggr).getTimestampField(dp.getxAxis().getField()));
             } else {
