@@ -312,7 +312,9 @@ public class FieldFactory extends BaseFieldFactory {
                 "serialNumber",
                 "isQuotationNeeded",
                 "id",
-                "serviceRequest"
+                "serviceRequest",
+                "noOfNotes",
+                "noOfAttachments"
         }));
 
         public static final List<String> ASSET_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
@@ -3410,6 +3412,20 @@ public class FieldFactory extends BaseFieldFactory {
 
         return fields;
     }
+
+    public static List<FacilioField> getVendorContactFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getVendorContactModule();
+        fields.add(getIdField(module));
+        FacilioField tenantField = new FacilioField();
+        tenantField.setName("vendor");
+        tenantField.setDataType(FieldType.NUMBER);
+        tenantField.setColumnName("VENDOR_ID");
+        tenantField.setModule(module);
+        fields.add(tenantField);
+        return fields;
+    }
+
     public static List<FacilioField> getWorkOrderTemplateFields(){
         List<FacilioField> woTemplateFields = getWOrderTemplateFields();
         LookupField vendorField = (LookupField) getField("vendorId", "VENDOR_ID", ModuleFactory.getWorkOrderTemplateModule(), FieldType.LOOKUP);
@@ -6880,6 +6896,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField(AgentConstants.THRESHOLD_JSON, "THRESHOLD_JSON", module, FieldType.STRING));
         fields.add(getField(AgentConstants.CREATED_TIME, "CREATED_TIME", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.MAPPED_TIME, "MAPPED_TIME", module, FieldType.NUMBER));
+        fields.add(getField(AgentConstants.LAST_RECORDED_TIME, "LAST_RECORDED_TIME", module, FieldType.NUMBER));
+        fields.add(getField(AgentConstants.LAST_RECORDED_VALUE, "LAST_RECORDED_VALUE", module, FieldType.STRING));
         fields.add(getField(AgentConstants.UNIT, "UNIT", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.AGENT_ID, "AGENT_ID", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.DATA_INTERVAL, "DATA_INTERVAL", module, FieldType.NUMBER));
@@ -8035,6 +8053,18 @@ public class FieldFactory extends BaseFieldFactory {
         FacilioModule module = ModuleFactory.getMLCriteriaVariablesModule();
         fields.add(getField("moduleID", "MODULEID", module, FieldType.NUMBER));
         fields.add(getField("fieldID", "FIELDID", module, FieldType.NUMBER));
+        return fields;
+    }
+
+    public static List<FacilioField> getMLModelParamsFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getMLModelParamsModule();
+        fields.add(getField("id", "ID", module, FieldType.NUMBER));
+        fields.add(getField("modelName", "MODELNAME", module, FieldType.STRING));
+        fields.add(getField("dataType", "DATATYPE", module, FieldType.NUMBER));
+        fields.add(getField("isMandatory", "IS_MANDATORY", module, FieldType.BOOLEAN));
+        fields.add(getField("keyName", "KEYNAME", module, FieldType.STRING));
+        fields.add(getField("keyValue", "KEYVALUE", module, FieldType.STRING));
         return fields;
     }
 

@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.actions.FacilioAction;
+import org.apache.http.client.methods.HttpPost;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -74,7 +76,8 @@ public class ConnectionUtil {
 	public static final String EQUALS = "=";
 	public static final String QUERY_STRING_SEPERATOR = "?";
 	public static final String PARAM_SEPERATOR = "&";
-	
+
+
 	public static String getUrlResult(ConnectionContext connectionContext,String urlString,Map<String,String> params,HttpMethod method,String bodyString,String bodyType,Map<String,String> headerParam) throws Exception {
 
 		params = params == null ? new HashMap<>() : params;
@@ -89,15 +92,30 @@ public class ConnectionUtil {
 				
 				break;
 			case BASIC:
+
+
+            	String username = null;
+            	String password = null;
 				if(connectionContext.getConnectionParams() != null) {
-					for(ConnectionParamContext connectionParams : connectionContext.getConnectionParams()) {
-						if (connectionParams.isProperty()) {
-							headerParam.put(connectionParams.getKey(), connectionParams.getValue());
-						}
-						else {
-							params.put(connectionParams.getKey(),connectionParams.getValue());
-						}
+					for( ConnectionParamContext connectionParams : connectionContext.getConnectionParams()) {
+						if(connectionParams.getKey().equals ("username")){
+							username = connectionParams.getValue();}
+
+						if(connectionParams.getKey().equals("password")){
+							password = connectionParams.getValue();}
+
+
 					}
+
+					if(username == null || password == null)
+					{
+						throw new IllegalArgumentException("username and password should not be empty");
+					}
+
+					String encoding = Base64.getEncoder().encodeToString((username+":"+password).getBytes());
+					headerParam.put("Authorization", "Basic " + encoding);
+
+
 				}
 				break;
 		}

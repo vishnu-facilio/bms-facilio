@@ -1158,19 +1158,30 @@ public enum ActionType {
 		{
 
 			try {
+				
 				WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext((Long)obj.get("resultWorkflowId"));
 				workflowContext.setLogNeeded(true);
-	
 				context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflowContext);
-
+								
 				if (currentRecord != null) {
 					Map<String, Object> props = FieldUtil.getAsProperties(currentRecord);
+					if(context.get(FacilioConstants.Workflow.WORKFLOW_LOG_RECORD_ID) == null &&  props != null && props.get("id")!=null) {
+						context.put(FacilioConstants.Workflow.WORKFLOW_LOG_RECORD_ID, props.get("id"));
+					}
 					List<Object> currentRecordList = new ArrayList<>();
 					currentRecordList.add(props);
 					context.put(WorkflowV2Util.WORKFLOW_PARAMS, currentRecordList);
 				}
-	
+								
 				FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
+
+				if(context.get(FacilioConstants.Workflow.WORKFLOW_LOG_PARENT_ID) == null && currentRule!=null && currentRule.getId()>0) {
+					context.put(FacilioConstants.Workflow.WORKFLOW_LOG_PARENT_ID, currentRule.getId());
+				}
+
+				if(context.get(FacilioConstants.Workflow.WORKFLOW_LOG_PARENT_TYPE) == null && currentRule!=null &&currentRule.getRuleTypeEnum()!=null) {
+					context.put(FacilioConstants.Workflow.WORKFLOW_LOG_PARENT_TYPE, WorkflowLogType.ruleTypeMap.get(currentRule.getRuleTypeEnum()));
+				}
 				
 				chain.execute(context);
 				

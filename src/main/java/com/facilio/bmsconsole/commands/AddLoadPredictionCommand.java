@@ -1,29 +1,25 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsoleV3.context.V3MLServiceContext;
+import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.v3.exception.ErrorCode;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.command.FacilioCommand;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioModule.ModuleType;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.taskengine.ScheduleInfo;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AddLoadPredictionCommand extends FacilioCommand {
 	
@@ -38,9 +34,7 @@ public class AddLoadPredictionCommand extends FacilioCommand {
 		if(mlServiceContext!=null) {
 			mlServiceId = mlServiceContext.getId();
 		}
-
-		try
-		{
+		try {
 			LOGGER.info("Inside Load Prediction Command");
 			long energyMeterID=(long) jc.get("energyMeterID");
 			
@@ -48,18 +42,16 @@ public class AddLoadPredictionCommand extends FacilioCommand {
 			if(assetContext != null){
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
-				FacilioModule module = modBean.getModule("loadpredictionmllogreadings");
-				List<FacilioField> fields = module != null ? modBean.getAllFields(module.getName()) : FieldFactory.getMLLogLoadPredictFields();
-				MLAPI.addReading(Collections.singletonList(energyMeterID),"LoadPredictionMLLogReadings", fields,ModuleFactory.getMLLogReadingModule().getTableName(), ModuleType.PREDICTED_READING,module);
-				
-				module = modBean.getModule("loadpredictionmlreadings");
-				fields = module != null ? modBean.getAllFields(module.getName()) : FieldFactory.getMLLoadPredictFields();
-				MLAPI.addReading(Collections.singletonList(energyMeterID),"LoadPredictionMLReadings", fields,ModuleFactory.getMLReadingModule().getTableName(),module);
-				
+				FacilioModule module = modBean.getModule("loadprediction");
+				List<FacilioField> fields = modBean.getAllFields(module.getName());
+
 				long mlID = updateLoadModel(assetContext, (JSONObject) jc.get("mlModelVariables"), (JSONObject) jc.get("mlVariables"),(String) jc.get("modelPath"), mlServiceId);
 				if(mlServiceContext!=null) {
 					mlServiceContext.setMlID(mlID);
 				}
+
+				MLAPI.addReading(Collections.singletonList(energyMeterID),"LoadPrediction", fields, module.getTableName(), module);
+
 				scheduleJob(mlID, mlServiceContext);
 				LOGGER.info("After updating load model");
 				
@@ -74,8 +66,8 @@ public class AddLoadPredictionCommand extends FacilioCommand {
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
 			String errMsg = "Error while adding Load Prediction Job";
+			e.printStackTrace();
 			if(mlServiceContext!=null) {
 				throw MLServiceUtil.throwError(mlServiceContext, ErrorCode.UNHANDLED_EXCEPTION, errMsg);
 			}
@@ -91,8 +83,7 @@ public class AddLoadPredictionCommand extends FacilioCommand {
 		}
 		try {
 			if(!isHistoric) {
-				ScheduleInfo info = new ScheduleInfo();
-				info = FormulaFieldAPI.getSchedule(FacilioFrequency.DAILY);
+				ScheduleInfo info = FormulaFieldAPI.getSchedule(FacilioFrequency.DAILY);
 				MLAPI.addJobs(mlID,"DefaultMLJob",info,"ml");
 //			} else {
 //				FacilioTimer.scheduleOneTimeJobWithTimestampInSec(mlID, "DefaultMLJob",(executionTime/1000), "ml");
@@ -106,21 +97,13 @@ public class AddLoadPredictionCommand extends FacilioCommand {
 	private long updateLoadModel(EnergyMeterContext context,JSONObject mlModelVariables,JSONObject mlVariables,String modelPath, long mlServiceId) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		FacilioModule logReadingModule = modBean.getModule("loadpredictionmllogreadings");
-		FacilioModule readingModule = modBean.getModule("loadpredictionmlreadings");
-		
-		FacilioField powerField = modBean.getField("totalDemand", FacilioConstants.ContextNames.ENERGY_DATA_READING);
-		FacilioField energyParentField = modBean.getField("parentId", FacilioConstants.ContextNames.ENERGY_DATA_READING);
-		
-		FacilioField temperatureField = modBean.getField("temperature", FacilioConstants.ContextNames.WEATHER_READING);
-		FacilioField temperatureParentField = modBean.getField("parentId", FacilioConstants.ContextNames.WEATHER_READING);
-		
-		long mlID = MLAPI.addMLModel(modelPath,context.getName(), logReadingModule.getModuleId(),readingModule.getModuleId(), mlServiceId);
-		
-		Map<String,Long> maxSamplingPeriodMap = new HashMap<String, Long>();
-		Map<String,Long> futureSamplingPeriodMap = new HashMap<String, Long>();
-		Map<String,String> aggregationMap = new HashMap<String, String>();
+		FacilioModule loadPredictionModule = modBean.getModule("loadprediction");
+
+		long mlID = MLAPI.addMLModel(modelPath, context.getName(), -1,loadPredictionModule.getModuleId(), mlServiceId);
+
+		Map<String,Long> maxSamplingPeriodMap = new HashMap<>();
+		Map<String,Long> futureSamplingPeriodMap = new HashMap<>();
+		Map<String,String> aggregationMap = new HashMap<>();
 		
 		if (mlVariables != null) {
 			for(Object entry:mlVariables.entrySet()){
@@ -136,9 +119,16 @@ public class AddLoadPredictionCommand extends FacilioCommand {
 				}
 			}
 		}
-		
-		MLAPI.addMLVariables(mlID,powerField.getModuleId(),powerField.getFieldId(),energyParentField.getFieldId(),context.getId(),maxSamplingPeriodMap.containsKey(powerField.getName())? maxSamplingPeriodMap.get(powerField.getName()):7776000000l,futureSamplingPeriodMap.containsKey(powerField.getName())? futureSamplingPeriodMap.get(powerField.getName()):0,true,aggregationMap.containsKey(powerField.getName())? aggregationMap.get(powerField.getName()):"SUM");
-		MLAPI.addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),temperatureParentField.getFieldId(),context.getSiteId(),maxSamplingPeriodMap.containsKey(temperatureField.getName())? maxSamplingPeriodMap.get(temperatureField.getName()):7776000000l,futureSamplingPeriodMap.containsKey(temperatureField.getName())? futureSamplingPeriodMap.get(temperatureField.getName()):172800000l,false,aggregationMap.containsKey(temperatureField.getName())? aggregationMap.get(temperatureField.getName()):"SUM");
+
+		FacilioField powerField = modBean.getField("totalDemand", FacilioConstants.ContextNames.ENERGY_DATA_READING);
+		FacilioField energyParentField = modBean.getField("parentId", FacilioConstants.ContextNames.ENERGY_DATA_READING);
+
+		FacilioField temperatureField = modBean.getField("temperature", FacilioConstants.ContextNames.WEATHER_READING);
+		FacilioField temperatureParentField = modBean.getField("parentId", FacilioConstants.ContextNames.WEATHER_READING);
+
+
+		MLAPI.addMLVariables(mlID,powerField.getModuleId(),powerField.getFieldId(),energyParentField.getFieldId(),context.getId(),maxSamplingPeriodMap.getOrDefault(powerField.getName(), 7776000000L),futureSamplingPeriodMap.getOrDefault(powerField.getName(), 0L),true,aggregationMap.getOrDefault(powerField.getName(), "SUM"));
+		MLAPI.addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),temperatureParentField.getFieldId(),context.getSiteId(),maxSamplingPeriodMap.getOrDefault(temperatureField.getName(), 7776000000L), futureSamplingPeriodMap.getOrDefault(temperatureField.getName(), 172800000L),false, aggregationMap.getOrDefault(temperatureField.getName(), "SUM"));
 		
 		MLAPI.addMLAssetVariables(mlID,context.getId(),"TYPE","Energy Meter");
 		MLAPI.addMLAssetVariables(mlID,context.getSiteId(),"TYPE","Site");

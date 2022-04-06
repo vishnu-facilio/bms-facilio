@@ -13,7 +13,7 @@ import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
@@ -29,6 +29,8 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
+import org.json.simple.parser.JSONParser;
+import java.util.Arrays;
 
 public class TriggerAlarmForMLCommand extends FacilioCommand {
 	
@@ -43,20 +45,26 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 			if(mlContext.getModelPath().equals("ratioCheck"))
 			{
 				
-	            Set<Long> assetIDList = mlContext.getMlVariablesDataMap().keySet();
+	            //Set<Long> assetIDList = mlContext.getMlVariablesDataMap().keySet();
 	            String treeHierachy = mlContext.getMLModelVariable("TreeHierarchy");
-	            String[] assetList = treeHierachy.split(",");
-	            long parentID = Long.parseLong(assetList[0]);
+				String mlIdMapString = mlContext.getMLModelVariable("mlid_map");
+				JSONParser parser = new JSONParser();
+				JSONObject mlIdMap = (JSONObject) parser.parse(mlIdMapString);
+				//String[] assetList = treeHierachy.split(",");
+				long[] assetIDList = Arrays.stream(treeHierachy.split(",")).mapToLong(Long::parseLong).toArray();
+
+
+				long parentID = assetIDList[0];
 	            
-	            MLAnomalyEvent parentEvent = checkAndGenerateEvent(mlContext,parentID);
+	            MLAnomalyEvent parentEvent = checkAndGenerateEvent(mlContext,parentID,mlIdMap);
 	            
-	            for(long assetID : assetIDList)
+	            for(Long assetID : assetIDList)
             	{
             		if(assetID==parentID)
             		{
             			continue;
             		}
-            		generateEvent(mlContext,assetID,parentEvent);
+            		generateEvent(mlContext,assetID,parentEvent,mlIdMap);
             	}
 	            
 	         }
@@ -73,23 +81,23 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 			return false;
 	}
 	
-	private void generateEvent(MLContext mlContext,long assetID,MLAnomalyEvent parentEvent) throws Exception
+	private void generateEvent(MLContext mlContext,long assetID,MLAnomalyEvent parentEvent,JSONObject mlIdMap) throws Exception
 	{
 		if(parentEvent!=null)
 		{
-			checkAndGenerateRCAEvent(mlContext,assetID,parentEvent);
+			checkAndGenerateRCAEvent(mlContext,assetID,parentEvent,mlIdMap);
 		}
 		else
 		{
-			checkAndGenerateEvent(mlContext,assetID);
+			checkAndGenerateEvent(mlContext,assetID,mlIdMap);
 		}
 	}
 	
-	private MLAnomalyEvent checkAndGenerateEvent(MLContext mlContext, long parentID) throws Exception
+	private MLAnomalyEvent checkAndGenerateEvent(MLContext mlContext, long parentID,JSONObject mlIdMap) throws Exception
 	{
 		try
 		{
-			Hashtable<String,SortedMap<Long,Object>> variablesData = mlContext.getMlVariablesDataMap().get(parentID);
+			Hashtable<String,SortedMap<Long,Object>> variablesData = mlContext.getMlVariablesDataMap().get(mlIdMap.get(String.valueOf(parentID)));
 			
 	    	SortedMap<Long,Object> actualValueMap = variablesData.get("actualValue");
 	    	if(!actualValueMap.isEmpty()){
@@ -117,10 +125,10 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
     	return null;
 	}
 	
-	private void checkAndGenerateRCAEvent(MLContext mlContext, long assetID,MLAnomalyEvent parentEvent)
+	private void checkAndGenerateRCAEvent(MLContext mlContext, long assetID,MLAnomalyEvent parentEvent,JSONObject mlIdMap)
 	{
 		try{
-			Hashtable<String,SortedMap<Long,Object>> variablesData = mlContext.getMlVariablesDataMap().get(assetID);
+			Hashtable<String,SortedMap<Long,Object>> variablesData = mlContext.getMlVariablesDataMap().get(mlIdMap.get(String.valueOf(assetID)));
 			
 	    	SortedMap<Long,Object> actualValueMap = variablesData.get("actualValue");
 	    	if(!actualValueMap.isEmpty()){
@@ -222,11 +230,11 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
         event.setParentEvent(parentEvent);
         event.setType(MLAlarmOccurenceContext.MLAnomalyType.RCA);
         event.setSiteId(resource.getSiteId());
-        if(assetDetails.containsKey(assetID+"_ratio"))
+        if(assetDetails.containsKey("ratio"))
         {
-        	event.setRatio(((Number)assetDetails.get(assetID+"_ratio")).doubleValue());
-            event.setUpperAnomaly(((Number) assetDetails.get(assetID+"_upperAnomaly")).doubleValue());
-            event.setLowerAnomaly(((Number)assetDetails.get(assetID+"_lowerAnomaly")).doubleValue());
+        	event.setRatio(((Number)assetDetails.get("ratio")).doubleValue());
+            event.setUpperAnomaly(((Number)assetDetails.get("upperAnomaly")).doubleValue());
+            event.setLowerAnomaly(((Number)assetDetails.get("lowerAnomaly")).doubleValue());
         }
         
         event.setmlid(mlid);
@@ -247,9 +255,9 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 	
 	public static void main(String arg[])
 	{
-		try 
+		try
 		{
-			JSONObject response = new JSONObject(" {'ml_id': 27, 'orgid': 104, 'assetid': 14249, 'data': [{'ttime': 1558442700000, 'actualValue': 13.6979, 'temperature': 50.629999999999995, 'predicted': 9.961061648342277, 'residual': 3.736838351657724, 'predictedResidual': 0.08733544757678538, 'upperGAM': 29.77101612804105, 'lowerGAM': -9.848892831356498, 'upperBound': 28.0272589686494, 'lowerBound': -7.930464776811277, 'upperARMA': 18.066197320307122, 'lowerARMA': -17.891526425153554, 'adjustedUpperBound': 28.0272589686494, 'adjustedLowerBound': 0.0, 'gamAnomaly': 0, 'upperAnomaly': 0, 'lowerAnomaly': 0}], 'OutputMetrics': \"'actualValue','adjustedLowerBound','adjustedUpperBound','gamAnomaly','lowerARMA','lowerAnomaly','lowerBound','lowerGAM','predicted','predictedResidual','residual','temperature','ttime','upperARMA','upperAnomaly','upperBound','upperGAM'\"}");
+			/*JSONObject response = new JSONObject(" {'ml_id': 27, 'orgid': 104, 'assetid': 14249, 'data': [{'ttime': 1558442700000, 'actualValue': 13.6979, 'temperature': 50.629999999999995, 'predicted': 9.961061648342277, 'residual': 3.736838351657724, 'predictedResidual': 0.08733544757678538, 'upperGAM': 29.77101612804105, 'lowerGAM': -9.848892831356498, 'upperBound': 28.0272589686494, 'lowerBound': -7.930464776811277, 'upperARMA': 18.066197320307122, 'lowerARMA': -17.891526425153554, 'adjustedUpperBound': 28.0272589686494, 'adjustedLowerBound': 0.0, 'gamAnomaly': 0, 'upperAnomaly': 0, 'lowerAnomaly': 0}], 'OutputMetrics': \"'actualValue','adjustedLowerBound','adjustedUpperBound','gamAnomaly','lowerARMA','lowerAnomaly','lowerBound','lowerGAM','predicted','predictedResidual','residual','temperature','ttime','upperARMA','upperAnomaly','upperBound','upperGAM'\"}");
 			long meterId = response.getLong("assetid");
 			JSONArray responseData = (JSONArray)response.get("data");
 			for(int i=0;i<responseData.length();i++)
@@ -272,7 +280,7 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 			//obj.put("startTime", context.getTtime());
 			obj.put("readingMessage", message);
 			}
-			/*FacilioContext addEventContext = new FacilioContext();
+			FacilioContext addEventContext = new FacilioContext();
 			addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
 			FacilioChain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
 			getAddEventChain.execute(addEventContext);*/

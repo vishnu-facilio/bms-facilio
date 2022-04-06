@@ -259,27 +259,33 @@ public class FacilioConstants {
 		public static final String TIMELINE_AGGREGATE_DATA = "timelineAggregateData";
 		public static final String TIMELINE_V3_DATAMAP = "timelineV3Datamap";
 		public static final String TIMELINE_CUSTOMIZATONDATA_MAP = "timelineCustomizationDataMap";
-		public static final String TIMELINE_GET_UNSCHEDULED_DATA = "timelineGetUnscheduled";
-		public static final String TIMELINE_DATA = "timelineData";
-		public static final String TIMELINE_PATCHTYPE = "patchType";
-		public static final String TIMELINE_PATCHTYPE_RESCHEDULE = "rescheduled";
-		public static final String TIMELINE_PATCHTYPE_REASSIGN = "reassigned";
-		public static final String TIMELINE_PATCHTYPE_GROUPASSIGN = "assigned a group";
-		public static final String FACILIO_BANNER = "facilioBanner";
-		public static final String FACILIO_BANNERS = "facilioBanners";
-		public static final String EMAIL_STRUCTURES = "emailStructures";
-		public static final String EMAIL_STRUCTURE = "emailStructure";
+        public static final String TIMELINE_GET_UNSCHEDULED_DATA = "timelineGetUnscheduled";
+        public static final String TIMELINE_DATA = "timelineData";
+        public static final String TIMELINE_PATCHTYPE = "patchType";
+        public static final String TIMELINE_PATCHTYPE_RESCHEDULE = "rescheduled";
+        public static final String TIMELINE_PATCHTYPE_REASSIGN = "reassigned";
+        public static final String TIMELINE_PATCHTYPE_GROUPASSIGN = "assigned a group";
+        public static final String FACILIO_BANNER = "facilioBanner";
+        public static final String FACILIO_BANNERS = "facilioBanners";
+        public static final String EMAIL_STRUCTURES = "emailStructures";
+        public static final String EMAIL_STRUCTURE = "emailStructure";
+
+        public static class DataProcessor {
+            public static final String UNMODELED = "unmodeled";
+            public static final String POINT_RECORDS = "pointRecords";
+            public static final String DATA_SNAPSHOT = "dataSnapshot";
+        }
 
         public static class Reservation {
-			public static final String RESERVATION = "reservation";
-			public static final String RESERVATION_LIST = "reservations";
-			public static final String RESERVATIONS_INTERNAL_ATTENDEE = "reservationInternalAttendee";
-			public static final String RESERVATIONS_EXTERNAL_ATTENDEE = "reservationExternalAttendee";
-		}
+            public static final String RESERVATION = "reservation";
+            public static final String RESERVATION_LIST = "reservations";
+            public static final String RESERVATIONS_INTERNAL_ATTENDEE = "reservationInternalAttendee";
+            public static final String RESERVATIONS_EXTERNAL_ATTENDEE = "reservationExternalAttendee";
+        }
 
-		public static final String FIELDS = "fields";
-		public static final String FIELD = "field";
-		public static final String TO_UPDATE_MAP = "toUpdateMap";
+        public static final String FIELDS = "fields";
+        public static final String FIELD = "field";
+        public static final String TO_UPDATE_MAP = "toUpdateMap";
 		public static final String TO_INSERT_MAP = "toInsertMap";
 		public static final String BULK_DATA = "BULK_DATA";
         public static final String FEDGE_ZIP = "/fedge.zip";
@@ -1621,7 +1627,6 @@ public class FacilioConstants {
 		public static final String DEMO_ROLLUP_EXECUTION_TIME="nextexecution";
 		public static final String DEMO_ROLLUP_JOB_ORG="rollup_job_org";
 		public static final String DATA_POINTS="data_points";
-		public static final String POINTS_DATA_RECORD="points_data_record";
 		public static final String AUTO_COMMISSION_DATA="autocommissiondata";
 		
 		public static final String START_TTIME = "startTtime";

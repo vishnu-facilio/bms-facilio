@@ -1,6 +1,7 @@
 package com.facilio.agentv2.commands;
 
 import com.facilio.agent.AgentType;
+import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
@@ -20,7 +21,6 @@ import org.json.simple.JSONObject;
 
 import java.util.*;
 
-import static com.facilio.agentv2.point.PointsAPI.getDevicePointsAsMapList;
 import static com.facilio.agentv2.point.PointsAPI.getPointsFromDb;
 
 public class ProcessDataCommandV2 extends AgentV2Command {
@@ -46,79 +46,54 @@ public class ProcessDataCommandV2 extends AgentV2Command {
                     JSONArray pointData = (JSONArray) payload.get(AgentConstants.DATA);
                     List<String> pointNames = new ArrayList<>();
                     JSONObject pointsJSON;
-                    Map<String, Map<String,String>> deviceData= new HashMap<>();
-                    if (controller !=null) {
-                        deviceData.put(controller.getName(),new HashMap<>());
-                    }
-                    else  {
-                        deviceData.put("UNKNOWN",new HashMap<>());
-                    }
+                    Map<String, Object> deviceData = new HashMap<>();
                     pointsJSON = (JSONObject) pointData.get(0);
 
                     for (Object key : pointsJSON.keySet()) {
                         String pointName = (String) key;
                         if (pointsJSON.containsKey(pointName)) {
-                            pointName = pointName.trim();
-                            pointNames.add(pointName);
-                            if (controller != null) {
-                                deviceData.get(controller.getName()).put(pointName, String.valueOf(pointsJSON.get(key)));
-                            } else {
-                                deviceData.get("UNKNOWN").put(pointName, String.valueOf(pointsJSON.get(key)));
+                            Object value = pointsJSON.get(key);
+                            if (value != null) {
+                                deviceData.put(pointName.trim(), value);
+                                pointNames.add(pointName);
                             }
                         }
                     }
-                    context.put("DEVICE_DATA_2", deviceData);
 
-                    if( ! pointNames.isEmpty()){
-                        List<Map<String, Object>> pointsFromDb = getPointsFromDb(pointNames,controller);
-
-                            if (pointsFromDb.size() < pointNames.size() && controller != null &&
-                                    (controller.getAgent().getAgentType() == AgentType.CLOUD.getKey()
-                                            || controller.getAgent().getAgentType() == AgentType.REST.getKey()
-                                            || controller.getAgent().getAgentType() == AgentType.FACILIO.getKey()
-                                            || controller.getAgent().getAgentType() == AgentType.MQTT.getKey())) {
-                                Set<String> pointsFromDbSet = new HashSet<>();
-                                pointsFromDb.forEach(row -> pointsFromDbSet.add(row.get("name").toString()));
-                                Set<String> pointNamesSet = new HashSet<>(pointNames);
-                                pointNamesSet.removeAll(pointsFromDbSet);
-                                List<Map<String, Object>> points = new ArrayList<>();
-                                for (String name : pointNamesSet) {
-                                    MiscPoint point = new MiscPoint(agent.getId(), controller.getControllerId());
-                                    point.setName(name);
-                                    point.setDeviceName(controller.getName());
-                                    point.setConfigureStatus(3);
-                                    point.setControllerId(controller.getId());
-                                    point.setPath(name);
-                                    point.setCreatedTime(System.currentTimeMillis());
-                                    pointsFromDb.add(point.getPointJSON());
-                                    
-                                    Map<String, Object> pointMap = FieldUtil.getAsProperties(point.toJSON());
-                                    points.add(pointMap);
-                                }
-                                PointsUtil.addPoints(controller, points);
-                                
-                        }
-                        if( ! pointsFromDb.isEmpty() && controller!=null){
-                            for (Map<String, Object> pointRow : pointsFromDb) {
-                                if( ! pointRow.isEmpty()){
-                                    pointRow.put(AgentConstants.CONTROLLER_NAME, controller.getName());
-                                    reformatDataPoint(pointRow);
-                                }
+                    if (!pointNames.isEmpty()) {
+                        List<Point> pointsFromDb = FieldUtil.getAsBeanListFromMapList(getPointsFromDb(pointNames, controller), PointsAPI.getPointType(FacilioControllerType.valueOf(controller.getControllerType())));
+                        if (pointsFromDb.size() < pointNames.size() && (controller.getAgent().getAgentType() == AgentType.CLOUD.getKey() || controller.getAgent().getAgentType() == AgentType.REST.getKey() || controller.getAgent().getAgentType() == AgentType.FACILIO.getKey() || controller.getAgent().getAgentType() == AgentType.MQTT.getKey())) {
+                            Set<String> pointsFromDbSet = new HashSet<>();
+                            pointsFromDb.forEach(point -> pointsFromDbSet.add(point.getName()));
+                            Set<String> pointNamesSet = new HashSet<>(pointNames);
+                            pointNamesSet.removeAll(pointsFromDbSet);
+                            List<Map<String, Object>> pointRecordsToAdd = new ArrayList<>();
+                            List<Point> points = new ArrayList<>();
+                            for (String name : pointNamesSet) {
+                                MiscPoint point = new MiscPoint(agent.getId(), controller.getControllerId());
+                                point.setName(name);
+                                point.setDeviceName(controller.getName());
+                                point.setConfigureStatus(3);
+                                point.setControllerId(controller.getId());
+                                point.setPath(name);
+                                point.setCreatedTime(System.currentTimeMillis());
+                                points.add(point);
+                                Map<String, Object> pointMap = FieldUtil.getAsProperties(point.toJSON());
+                                pointRecordsToAdd.add(pointMap);
                             }
-
-                            context.put("DATA_POINTS",pointsFromDb);
+                            PointsUtil.addPoints(controller, pointRecordsToAdd);
+                            //get newly added points from db with point ids
+                            List<Point> newlyAddedPoints = FieldUtil.getAsBeanListFromMapList(getPointsFromDb(new ArrayList<>(pointNamesSet), controller), PointsAPI.getPointType(FacilioControllerType.valueOf(controller.getControllerType())));
+                            pointsFromDb.addAll(newlyAddedPoints);
                         }
-                        if(! pointsFromDb.isEmpty() && controller==null){
-                            for (Map<String, Object> pointRow : pointsFromDb) {
-                                if( ! pointRow.isEmpty()){
-                                    pointRow.put(AgentConstants.CONTROLLER_NAME, "UNKNOWN");
-                                    reformatDataPoint(pointRow);
-                                }
-                            }
-                            context.put("DATA_POINTS_WITHOUT_CONTROLLER",pointsFromDb);
+                        context.put(FacilioConstants.ContextNames.DataProcessor.DATA_SNAPSHOT, deviceData);
+                        Map<String, Point> pointRecords = new HashMap<>();
+                        for (Point p : pointsFromDb) {
+                            pointRecords.put(p.getName(), p);
                         }
+                        context.put(FacilioConstants.ContextNames.DataProcessor.POINT_RECORDS, pointRecords);
 
-                    }else {
+                    } else {
                         LOGGER.info("points empty");
                     }
                 }
@@ -130,29 +105,9 @@ public class ProcessDataCommandV2 extends AgentV2Command {
         }else {
             throw new Exception("payload missing from context->"+context);
         }
-       /* LOGGER.info("--------process data command v2---------");
-        for (Object key : context.keySet()) {
-            LOGGER.info(key+"->"+context.get(key));
-        }
-        LOGGER.info("----------------------------------------");*/
 
         return false;
     }
-
-    private void reformatDataPoint(Map<String, Object> pointRow) {
-
-        if(containsCheck(AgentConstants.NAME,pointRow)){
-            pointRow.put("instance",pointRow.get(AgentConstants.NAME));
-        }
-        if(containsCheck(AgentConstants.CONTROLLER_NAME,pointRow)){
-            pointRow.put("device",pointRow.get(AgentConstants.CONTROLLER_NAME));
-        }
-        if(containsCheck(AgentConstants.NAME,pointRow)){
-            pointRow.put("instanceName",pointRow.get(AgentConstants.NAME));
-        }
-    }
-
-
 
 
 }

@@ -157,52 +157,38 @@ public class AdminAction extends ActionSupport {
 		Long orgId = Long.parseLong(request.getParameter("orgid"));
 
 		if (selectedFeatures != null) {
-			Map<String,Long> licenseMap = new HashMap<String,Long>();
-
-			if (selectedFeatures != null) {
-				for (int i = 0; i < selectedFeatures.length; i++) {
-					AccountUtil.FeatureLicense license = AccountUtil.FeatureLicense.valueOf(selectedFeatures[i]);
-					
-					Long sumOfLicense = licenseMap.getOrDefault(license.getGroup().getLicenseKey(), 0l);
-					
-					sumOfLicense += license.getLicense();
-					
-					licenseMap.put(license.getGroup().getLicenseKey(), sumOfLicense);
-//					if(license.getGroup() == AccountUtil.LicenseMapping.GROUP1LICENSE) {
-//						sumOfLicenses1 += license.getLicense();
-//					}
-//					else if(license.getGroup() == AccountUtil.LicenseMapping.GROUP2LICENSE) {
-//						sumOfLicenses2 += license.getLicense();
-//					}
-					
-				}
+			Map<LicenseMapping, Long> licenseMap = new HashMap<>(LicenseMapping.values().length);
+			//initialize license map
+			for (LicenseMapping licenseMapping : LicenseMapping.values()) {
+				licenseMap.put(licenseMapping, 0L);
+			}
+			for (String selectedFeature : selectedFeatures) {
+				AccountUtil.FeatureLicense license = AccountUtil.FeatureLicense.valueOf(selectedFeature);
+				licenseMap.put(license.getGroup(), licenseMap.get(license.getGroup()) + license.getLicense());
 			}
 
 			try {
-				
-				//licenseMap.put(LicenseMapping.GROUP1LICENSE.getLicenseKey(), sumOfLicenses1);
-				//licenseMap.put(LicenseMapping.GROUP2LICENSE.getLicenseKey(), sumOfLicenses2);
-				//temp handling for enabling people contacts license
-				if (	AccountUtil.FeatureLicense.INVENTORY.isEnabled(licenseMap)
-						||	AccountUtil.FeatureLicense.CLIENT.isEnabled(licenseMap)
-						||	AccountUtil.FeatureLicense.VENDOR.isEnabled(licenseMap)
-						||  AccountUtil.FeatureLicense.TENANTS.isEnabled(licenseMap)
-						||	AccountUtil.FeatureLicense.PEOPLE.isEnabled(licenseMap)
+
+				if (AccountUtil.FeatureLicense.INVENTORY.isEnabled(licenseMap)
+						|| AccountUtil.FeatureLicense.CLIENT.isEnabled(licenseMap)
+						|| AccountUtil.FeatureLicense.VENDOR.isEnabled(licenseMap)
+						|| AccountUtil.FeatureLicense.TENANTS.isEnabled(licenseMap)
+						|| AccountUtil.FeatureLicense.PEOPLE.isEnabled(licenseMap)
 				) {
 					if(!AccountUtil.FeatureLicense.PEOPLE_CONTACTS.isEnabled(licenseMap)) {
-						
-						Long sumOfLicense = licenseMap.getOrDefault(AccountUtil.FeatureLicense.PEOPLE_CONTACTS.getGroup().getLicenseKey(), 0l);
+
+						Long sumOfLicense = licenseMap.getOrDefault(AccountUtil.FeatureLicense.PEOPLE_CONTACTS.getGroup(), 0l);
 						sumOfLicense += AccountUtil.FeatureLicense.PEOPLE_CONTACTS.getLicense();
-						
-						licenseMap.put(AccountUtil.FeatureLicense.PEOPLE_CONTACTS.getGroup().getLicenseKey(), sumOfLicense);
+
+						licenseMap.put(AccountUtil.FeatureLicense.PEOPLE_CONTACTS.getGroup(), sumOfLicense);
 					}
 					if(!AccountUtil.FeatureLicense.SCOPING.isEnabled(licenseMap)) {
-						
-						Long sumOfLicense = licenseMap.getOrDefault(AccountUtil.FeatureLicense.SCOPING.getGroup().getLicenseKey(), 0l);
+
+						Long sumOfLicense = licenseMap.getOrDefault(AccountUtil.FeatureLicense.SCOPING.getGroup(), 0l);
 						
 						sumOfLicense += AccountUtil.FeatureLicense.SCOPING.getLicense();
-						
-						licenseMap.put(AccountUtil.FeatureLicense.SCOPING.getGroup().getLicenseKey(), sumOfLicense);
+
+						licenseMap.put(AccountUtil.FeatureLicense.SCOPING.getGroup(), sumOfLicense);
 					}
 				}
 
@@ -460,7 +446,13 @@ public class AdminAction extends ActionSupport {
 			if(request.getParameter("filtermethod").length() > 2) {
 				mlServiceData.put("filteringMethod", new JSONParser().parse(request.getParameter("filtermethod")));
 			}
-		}else {
+		}else if (request.getParameter("usecase").equals("ahuoptimization")){
+			mlServiceData.put("serviceType","custom");
+			if(request.getParameter("model").length() > 2) {
+				mlServiceData.put("modelReadings", new JSONParser().parse(request.getParameter("model")));
+			}
+		}
+
 			String assetIds = request.getParameter("assetIdList");
 			if(assetIds!=null) {
 				String []assetArr = assetIds.split(",");
@@ -470,10 +462,10 @@ public class AdminAction extends ActionSupport {
 					for (int i = 1; i < assetArr.length; i++) {
 						childAssetIds.add(Long.valueOf(assetArr[i]));
 					}
-					mlServiceData.put("childAssetIds", Long.valueOf(assetArr[0]));
+					mlServiceData.put("childAssetIds",childAssetIds);
 				}
 			}
-		}
+
 		Long orgId = Long.parseLong(request.getParameter("orgid"));
 		ModuleCRUDBean bean = (ModuleCRUDBean) TransactionBeanFactory.lookup("ModuleCRUD", orgId);
 		bean.initMLService(mlServiceData);

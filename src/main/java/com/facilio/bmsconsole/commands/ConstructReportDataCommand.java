@@ -11,6 +11,8 @@ import java.util.StringJoiner;
 import java.util.TreeSet;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.modules.fields.MultiEnumField;
+import com.facilio.modules.fields.MultiLookupField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -120,19 +122,27 @@ public class ConstructReportDataCommand extends FacilioCommand {
 
     private void constructData(ReportContext report, ReportDataPointContext dataPoint, List<Map<String, Object>> props, ReportBaseLineContext baseLine, Collection<Map<String, Object>> transformedData, Map<String, Object> directHelperData) throws Exception {
         HashMap<ReportFieldContext, List<Long>> dpLookUpMap = new HashMap();
+        HashMap<ReportFieldContext, List<Long>> dpMultiLookUpMap = new HashMap();
         if (props != null && !props.isEmpty()) {
             for (Map<String, Object> prop : props) {
                 Object xVal = prop.get(dataPoint.getxAxis().getField().getName());
+                if(dataPoint.getxAxis().getField() instanceof MultiEnumField)
+                {
+                    xVal = prop.containsKey("index") ? prop.get("index") : null;
+				}
+                else if(dataPoint.getxAxis().getField() instanceof MultiLookupField){
+                    xVal = prop.containsKey("right") ? prop.get("right") : null;
+                }
                 if (xVal != null) {
                     xVal = getBaseLineAdjustedXVal(xVal, dataPoint.getxAxis(), baseLine);
-                    Object formattedxVal = formatVal(dataPoint.getxAxis(), report.getxAggrEnum(), xVal, null, false, dpLookUpMap);
+                    Object formattedxVal = formatVal(dataPoint.getxAxis(), report.getxAggrEnum(), xVal, null, false, dpLookUpMap, dpMultiLookUpMap);
                     Object yVal = prop.get(ReportUtil.getAggrFieldName(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum()));
                     Object minYVal = null, maxYVal = null;
                     if (yVal != null) {
-                        yVal = formatVal(dataPoint.getyAxis(), dataPoint.getyAxis().getAggrEnum(), yVal, xVal, dataPoint.isHandleEnum(), dpLookUpMap);
+                        yVal = formatVal(dataPoint.getyAxis(), dataPoint.getyAxis().getAggrEnum(), yVal, xVal, dataPoint.isHandleEnum(), dpLookUpMap, dpMultiLookUpMap);
                         if (dataPoint.getyAxis().isFetchMinMax()) {
-                            minYVal = formatVal(dataPoint.getyAxis(), NumberAggregateOperator.MIN, prop.get(dataPoint.getyAxis().getField().getName() + "_min"), xVal, dataPoint.isHandleEnum(), dpLookUpMap);
-                            maxYVal = formatVal(dataPoint.getyAxis(), NumberAggregateOperator.MAX, prop.get(dataPoint.getyAxis().getField().getName() + "_max"), xVal, dataPoint.isHandleEnum(), dpLookUpMap);
+                            minYVal = formatVal(dataPoint.getyAxis(), NumberAggregateOperator.MIN, prop.get(dataPoint.getyAxis().getField().getName() + "_min"), xVal, dataPoint.isHandleEnum(), dpLookUpMap, dpMultiLookUpMap);
+                            maxYVal = formatVal(dataPoint.getyAxis(), NumberAggregateOperator.MAX, prop.get(dataPoint.getyAxis().getField().getName() + "_max"), xVal, dataPoint.isHandleEnum(), dpLookUpMap, dpMultiLookUpMap);
                         }
 
                         StringJoiner key = new StringJoiner("|");
@@ -142,7 +152,14 @@ public class ConstructReportDataCommand extends FacilioCommand {
                             for (ReportGroupByField groupBy : dataPoint.getGroupByFields()) {
                                 FacilioField field = groupBy.getField();
                                 Object groupByVal = prop.get(field.getName());
-                                groupByVal = formatVal(groupBy, null, groupByVal, xVal, dataPoint.isHandleEnum(), dpLookUpMap);
+                                if(field instanceof MultiEnumField)
+                                {
+                                    groupByVal = prop.containsKey("index") ? prop.get("index") : groupByVal;
+                                }
+                                else if(field instanceof MultiLookupField){
+                                    groupByVal = prop.containsKey("right") ? prop.get("right") : groupByVal;
+                                }
+                                groupByVal = formatVal(groupBy, null, groupByVal, xVal, dataPoint.isHandleEnum(), dpLookUpMap, dpMultiLookUpMap);
                                 data.put(groupBy.getAlias(), groupByVal);
                                 key.add(groupBy.getAlias() + "_" + groupByVal.toString());
                             }
@@ -159,7 +176,7 @@ public class ConstructReportDataCommand extends FacilioCommand {
                     }
                 }
             }
-            updateLookupMap(dpLookUpMap, report.getxAggrEnum());
+            updateLookupMap(dpLookUpMap, report.getxAggrEnum(), dpMultiLookUpMap);
         }
     }
 
@@ -212,7 +229,7 @@ public class ConstructReportDataCommand extends FacilioCommand {
 
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
-    private Object formatVal(ReportFieldContext reportFieldContext, AggregateOperator aggr, Object val, Object actualxVal, boolean handleEnum, HashMap<ReportFieldContext, List<Long>> dpLookUpMap) throws Exception {
+    private Object formatVal(ReportFieldContext reportFieldContext, AggregateOperator aggr, Object val, Object actualxVal, boolean handleEnum, HashMap<ReportFieldContext, List<Long>> dpLookUpMap, HashMap<ReportFieldContext, List<Long>> dpMultiLookUpMap) throws Exception {
         FacilioField field = reportFieldContext.getField();
         if (val == null) {
             return "";
@@ -264,6 +281,14 @@ public class ConstructReportDataCommand extends FacilioCommand {
                 ids.add((Long) val);
                 dpLookUpMap.put(reportFieldContext, ids);
                 break;
+            case MULTI_LOOKUP:
+                if (val instanceof Map) {
+                    val = ((Map) val).get("id");
+                }
+                List<Long> multi_lookup_val_ids = dpMultiLookUpMap.getOrDefault(reportFieldContext, new ArrayList<Long>());
+                multi_lookup_val_ids.add((Long) val);
+                dpMultiLookUpMap.put(reportFieldContext, multi_lookup_val_ids);
+                break;
             default:
                 break;
         }
@@ -283,7 +308,10 @@ public class ConstructReportDataCommand extends FacilioCommand {
             reportFieldContext.setLookupMap(lookupMap);
         }
     }
-
+    private void updateLookupMap(HashMap<ReportFieldContext, List<Long>> dpLookUpMap, AggregateOperator aggr, HashMap<ReportFieldContext, List<Long>> dpMultiLookUpMap)throws Exception{
+        updateLookupMap(dpLookUpMap, aggr);
+        updateLookupMap(dpMultiLookUpMap, aggr);
+    }
     private void updateLookupMap(HashMap<ReportFieldContext, List<Long>> dpLookUpMap, AggregateOperator aggr) throws Exception {
         if (MapUtils.isNotEmpty(dpLookUpMap)) {
             for (Map.Entry<ReportFieldContext, List<Long>> entry : dpLookUpMap.entrySet()) {
@@ -291,10 +319,21 @@ public class ConstructReportDataCommand extends FacilioCommand {
 
                 ReportFieldContext reportFieldContext = entry.getKey();
                 List<Long> ids = entry.getValue();
-
-                LookupField lookupField = (LookupField) reportFieldContext.getField();
-                String specialType = lookupField.getSpecialType();
-                FacilioModule lookupModule = lookupField.getLookupModule();
+                LookupField lookupField = null;
+                MultiLookupField multiLookupField = null;
+                String specialType = null;
+                FacilioModule lookupModule = null;
+                if(reportFieldContext.getField() instanceof LookupField)
+                {
+                    lookupField = (LookupField)reportFieldContext.getField();
+                    specialType = lookupField.getSpecialType();
+                    lookupModule = lookupField.getLookupModule();
+                }
+                else if(reportFieldContext.getField() instanceof MultiLookupField){
+                    multiLookupField = (MultiLookupField) reportFieldContext.getField();
+                    specialType = multiLookupField.getSpecialType();
+                    lookupModule = multiLookupField.getLookupModule();
+                }
 
                 if (aggr != null && aggr instanceof SpaceAggregateOperator && (reportFieldContext.getModuleName().equals(FacilioConstants.ModuleNames.ASSET_BREAKDOWN))) {
                     ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

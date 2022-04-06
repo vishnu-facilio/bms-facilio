@@ -26,6 +26,8 @@
     <job name='BulkPointDiscoverJob' classname='com.facilio.bmsconsole.instant.jobs.BulkPointDiscoverJob' transactionTimeout='900'/>
     <job name="SendUserNotificationJob" classname='com.facilio.bmsconsole.instant.jobs.SendUserNotificationJob' transactionTimeout='3600'/>
 
+    <job name="V3InsertDataLogJob" classname='com.facilio.bmsconsole.imports.job.InsertDataLogJob' transactionTimeout= '3600' />
+
     -->
 
 </instantjob>

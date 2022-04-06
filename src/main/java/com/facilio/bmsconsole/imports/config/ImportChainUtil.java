@@ -1,15 +1,24 @@
 package com.facilio.bmsconsole.imports.config;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.InsertImportDataIntoLogCommand;
 import com.facilio.bmsconsole.imports.annotations.ImportModule;
 import com.facilio.bmsconsole.imports.annotations.RowFunction;
+import com.facilio.bmsconsole.imports.command.FilterImportDataCommand;
 import com.facilio.bmsconsole.imports.command.ImportUploadFileCommand;
 import com.facilio.bmsconsole.imports.command.ParseImportFileCommand;
 import com.facilio.bmsconsole.imports.command.V3ProcessImportCommand;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.command.FacilioCommand;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
@@ -18,6 +27,7 @@ import org.reflections.util.ClasspathHelper;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -124,7 +134,7 @@ public class ImportChainUtil {
         return chain;
     }
 
-    public static FacilioChain getImportChain(String moduleName) {
+    public static FacilioChain getImportChain(String moduleName) throws Exception {
         ImportConfig importConfig = getImportConfig(moduleName);
 
         Command beforeImportCommand = null;
@@ -145,7 +155,27 @@ public class ImportChainUtil {
         FacilioChain chain = getDefaultChain();
         addIfNotNull(chain, beforeImportCommand);
         chain.addCommand(new V3ProcessImportCommand());
+        chain.addCommand(new FilterImportDataCommand());
         addIfNotNull(chain, afterImportCommand);
+        chain.addCommand(new FacilioCommand() {
+            @Override
+            public boolean executeCommand(Context context) throws Exception {
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                FacilioModule module = modBean.getModule(moduleName);
+
+                List<Map<String, Object>> insertRecordList = (List<Map<String, Object>>) context.get(ImportAPI.ImportProcessConstants.INSERT_RECORDS);
+                if (CollectionUtils.isNotEmpty(insertRecordList)) {
+                    V3Util.createRecordList(module, insertRecordList, null, null);
+                }
+                List<Map<String, Object>> updateRecordList = (List<Map<String, Object>>) context.get(ImportAPI.ImportProcessConstants.UPDATE_RECORDS);
+                if (CollectionUtils.isNotEmpty(updateRecordList)) {
+                    List<ModuleBaseWithCustomFields> oldRecords =
+                            (List<ModuleBaseWithCustomFields>) context.get(ImportAPI.ImportProcessConstants.OLD_RECORDS);
+                    V3Util.processAndUpdateBulkRecords(module, oldRecords, updateRecordList, null, null, null, null, null, null, true);
+                }
+                return false;
+            }
+        });
 
         FacilioContext context = chain.getContext();
         context.put(ImportAPI.ImportProcessConstants.BEFORE_IMPORT_FUNCTION, beforeImportFunction);

@@ -54,10 +54,30 @@ public class UpdatePeoplePrimaryContactCommandV3 extends FacilioCommand {
                         }
                     }
                 }
-                else if(people instanceof V3VendorContactContext && ((V3VendorContactContext) people).getVendor() != null && ((V3VendorContactContext)people).isPrimaryContact()) {
+                else if(people instanceof V3VendorContactContext && ((V3VendorContactContext) people).getVendor() != null) {
                     parentId = ((V3VendorContactContext)people).getVendor().getId();
-                    V3PeopleAPI.unMarkPrimaryContact(people, parentId);
-                    V3PeopleAPI.rollUpModulePrimarycontactFields(parentId, FacilioConstants.ContextNames.VENDORS, people.getName(), people.getEmail(), people.getPhone());
+                    if(((V3VendorContactContext)people).isPrimaryContact()) {
+                        V3PeopleAPI.unMarkPrimaryContact(people, parentId);
+                        V3PeopleAPI.rollUpModulePrimarycontactFields(parentId, FacilioConstants.ContextNames.VENDORS, people.getName(), people.getEmail(), people.getPhone());
+                    }
+                    else{
+                        List<V3VendorContactContext> vendorContacts = V3PeopleAPI.getVendorContacts(parentId, false);
+                        if(CollectionUtils.isNotEmpty(vendorContacts)){
+                            if(vendorContacts.size() <= 1) {
+                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Cannot mark contact as non primary");
+                            }
+                            else{
+                                for(V3VendorContactContext vendorContact : vendorContacts){
+                                    if(vendorContact.getId() != people.getId()){
+                                        V3PeopleAPI.unMarkPrimaryContact(vendorContact, parentId);
+                                        V3PeopleAPI.markPrimaryContact(vendorContact);
+                                        V3PeopleAPI.rollUpModulePrimarycontactFields(parentId, FacilioConstants.ContextNames.VENDORS, vendorContact.getName(), vendorContact.getEmail(), vendorContact.getPhone());
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
                 else if(people instanceof V3ClientContactContext && ((V3ClientContactContext) people).getClient() != null && ((V3ClientContactContext)people).isPrimaryContact()) {
                     parentId = ((V3ClientContactContext)people).getClient().getId();

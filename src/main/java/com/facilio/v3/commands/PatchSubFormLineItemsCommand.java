@@ -41,10 +41,10 @@ public class PatchSubFormLineItemsCommand extends ProcessSubFormLineItemsCommand
         Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(context);
         String mainModuleName = Constants.getModuleName(context);
 
-        Collection<JSONObject> bulkRawInput = Constants.getBulkRawInput(context);
-        Map<Long, JSONObject> bulkRawInputMap = new HashMap<>();
+        Collection<Map<String, Object>> bulkRawInput = Constants.getBulkRawInput(context);
+        Map<Long, Map<String, Object>> bulkRawInputMap = new HashMap<>();
         if (CollectionUtils.isNotEmpty(bulkRawInput)) {
-            for (JSONObject jsonObject : bulkRawInput) {
+            for (Map<String, Object> jsonObject : bulkRawInput) {
                 Object idObject = jsonObject.get("id");
                 if (idObject != null && idObject instanceof Number) {
                     bulkRawInputMap.putIfAbsent(((Number) idObject).longValue(), jsonObject);
@@ -61,7 +61,7 @@ public class PatchSubFormLineItemsCommand extends ProcessSubFormLineItemsCommand
 
             for (String moduleName : lineItems.keySet()) {
                 List<SubFormContext> subFormContextList = lineItems.get(moduleName);
-                JSONObject jsonObject = bulkRawInputMap.get(record.getId());
+                Map<String, Object> jsonObject = bulkRawInputMap.get(record.getId());
                 Map<String, Object> relationRawInput = (Map<String, Object>) jsonObject.get("relations");
                 List<Map<String, Object>> relationData = (List<Map<String, Object>>) relationRawInput.get(moduleName);
                 update(mainModuleName, moduleName, subFormContextList, record.getId(), relationData);
@@ -121,19 +121,19 @@ public class PatchSubFormLineItemsCommand extends ProcessSubFormLineItemsCommand
             FacilioContext summaryContext = V3Util.getSummary(moduleName, ids);
             List<ModuleBaseWithCustomFields> oldRecordList = Constants.getRecordListFromContext(summaryContext, moduleName);
             if (CollectionUtils.isNotEmpty(oldRecordList)) {
-                Map<Long, JSONObject> idVsRecordMap = new HashMap<>();
+                Map<Long, Map<String, Object>> idVsRecordMap = new HashMap<>();
                 for (ModuleBaseWithCustomFields record: oldRecordList) {
                     idVsRecordMap.put(record.getId(), FieldUtil.getAsJSON(record));
                 }
 
                 for (Map<String, Object> rec: subFormDataList) {
-                    JSONObject jsonObject = idVsRecordMap.get((long) rec.get("id"));
+                    Map<String, Object> jsonObject = idVsRecordMap.get((long) rec.get("id"));
                     Set<String> keys = rec.keySet();
                     for (String key : keys) {
                         jsonObject.put(key, rec.get(key));
                     }
                 }
-                Collection<JSONObject> values = idVsRecordMap.values();
+                Collection<Map<String, Object>> values = idVsRecordMap.values();
 
                 V3Config v3Config = ChainUtil.getV3Config(module);
                 V3Util.updateBulkRecords(module, v3Config, oldRecordList, new ArrayList<>(values), ids,

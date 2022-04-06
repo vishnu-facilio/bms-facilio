@@ -5,16 +5,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.facilio.modules.fields.*;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.fields.BooleanField;
-import com.facilio.modules.fields.EnumField;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.NumberField;
 import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -156,6 +153,9 @@ public class ReportFieldContext {
 			}
 			else if (field instanceof EnumField) {
 				enumMap = ((EnumField) field).getEnumMap();
+			}
+			else if(field instanceof MultiEnumField){
+				enumMap = ((MultiEnumField) field).getEnumMap();
 			}
 		}
 		this.field = field;

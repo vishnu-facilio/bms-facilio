@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.facilio.modules.*;
+import com.facilio.modules.fields.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,14 +32,6 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.SupplementRecord;
 
 public class GetWorkOrderListCommand extends FacilioCommand {
 
@@ -55,6 +49,7 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 		List<String> selectFields = (List<String>) context.get(FacilioConstants.ContextNames.FETCH_SELECTED_FIELDS);
 
 		List<FacilioField> fields;
+		List<FacilioField> fieldwithIdList = new ArrayList<>();
 
 		List<Map<String, Object>> subViewsCount = null;
 		if (count != null) {
@@ -63,6 +58,7 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 			countFld.setColumnName("COUNT(WorkOrders.ID)");
 			countFld.setDataType(FieldType.NUMBER);
 			fields = Collections.singletonList(countFld);
+			fieldwithIdList.add(countFld);
 		}
 		else {
 			Boolean getSubViewCount = (Boolean) context.get(FacilioConstants.ContextNames.WO_VIEW_COUNT);
@@ -107,11 +103,15 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 			workOrders = selectBuilder.get();
 		}
 		else {
+			if (count != null) {
+				FacilioField idField = FieldFactory.getIdField(modBean.getModule(moduleName));
+				fieldwithIdList.add(idField);
+			}
 			SelectRecordsBuilder<WorkOrderContext> selectBuilder = new SelectRecordsBuilder<WorkOrderContext>()
 					.table(dataTableName)
 					.moduleName(moduleName)
 					.beanClass(WorkOrderContext.class)
-					.select(fields)
+					.select(fieldwithIdList.size() > 1 ? fieldwithIdList : fields)
 					.maxLevel(0);
 			if (fetchWoWithDeletedResource != null && fetchWoWithDeletedResource) {
 				selectBuilder.innerJoin("Resources")
@@ -126,7 +126,7 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 		    if(clientFilterCriteria != null) {
 		    	selectBuilder.andCriteria(clientFilterCriteria);
 			}
-		    
+
 			if (filterCriteria != null) {
 				selectBuilder.andCriteria(filterCriteria);
 			}
@@ -231,7 +231,7 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 						else if (field.getDataTypeEnum() == FieldType.MULTI_ENUM) {
 							customLookupFields.add((SupplementRecord) field);
 						}
-						
+
 					}
 				}
 				selectBuilder.fetchSupplements(customLookupFields);

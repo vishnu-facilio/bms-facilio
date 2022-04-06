@@ -1,5 +1,7 @@
 package com.facilio.workflows.functions;
 
+import java.io.File;
+import java.io.InputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,10 +9,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.AppDomain;
@@ -56,6 +60,7 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.delegate.context.DelegationContext;
+import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMAppUtil;
@@ -1165,6 +1170,54 @@ ADD_INVITE_RECORD_VIA_V3CHAIN (29, "addInviteRecordViaV3Chain") {
 
 		        return FieldUtil.getAsMapList((List<DelegationContext>) context.get(FacilioConstants.ContextNames.DELEGATION_LIST) ,DelegationContext.class);
 
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	
+	HTTP_POST_WITH_FILES(2,"postWithFiles") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			String url = (String) objects[0];
+			
+			Map<String,String> params = null;
+			Map<String,String> headers = null;
+			Map<String,File> files = null;
+			if(objects.length > 1) {
+				headers = (Map<String, String>) objects[1];
+				if(objects.length > 2) {
+					params = (Map<String, String>) objects[2];
+					if(objects.length > 3) {
+						Map<String,Long> fileIdMap = (Map<String,Long>) objects[3];
+						
+						if(fileIdMap != null) {
+							files = new HashMap<String, File>();
+							
+							FileStore fs = FacilioFactory.getFileStore();
+							
+							for(Entry<String, Long> set : fileIdMap.entrySet()) {
+								 FileInfo fileInfo = fs.getFileInfo(set.getValue());
+								InputStream ipStream = fs.readFile(set.getValue());
+								File file = new File(fileInfo.getFileName());
+								FileUtils.copyInputStreamToFile(ipStream, file);
+								files.put(set.getKey(), file);
+							}
+						}
+					}
+				}
+				
+			}
+			
+			String res = FacilioHttpUtilsFW.doHttpPost(url, headers, params, null,files,-1);
+			
+			return res;
 		};
 		
 		public void checkParam(Object... objects) throws Exception {

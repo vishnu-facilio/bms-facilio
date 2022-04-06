@@ -127,12 +127,13 @@ public class AddEnergyPredictionCommand extends FacilioCommand {
 		//		FacilioField markedField = modBean.getField("marked", FacilioConstants.ContextNames.ENERGY_DATA_READING);
 		FacilioField energyParentField = modBean.getField("parentId", FacilioConstants.ContextNames.ENERGY_DATA_READING);
 
-		FacilioField temperatureField = modBean.getField("temperature", FacilioConstants.ContextNames.WEATHER_READING);
-		FacilioField temperatureParentField = modBean.getField("parentId", FacilioConstants.ContextNames.WEATHER_READING);
 
 		MLAPI.addMLVariables(mlID,energyField.getModuleId(),energyField.getFieldId(),energyParentField.getFieldId(),context.getId(), maxSamplingPeriodMap.getOrDefault(energyField.getName(), 7776000000L),futureSamplingPeriodMap.getOrDefault(energyField.getName(), 0L),true,aggregationMap.getOrDefault(energyField.getName(), "SUM"));
 		//		MLAPI.addMLVariables(mlID,markedField.getModuleId(),markedField.getFieldId(),energyParentField.getFieldId(),context.getId(),maxSamplingPeriodMap.containsKey(markedField.getName())? maxSamplingPeriodMap.get(markedField.getName()):7776000000l,futureSamplingPeriodMap.containsKey(markedField.getName())? futureSamplingPeriodMap.get(markedField.getName()):0,false,aggregationMap.containsKey(markedField.getName())? aggregationMap.get(markedField.getName()):"SUM");
-		
+
+		FacilioField weatherParentField = modBean.getField("parentId", FacilioConstants.ContextNames.WEATHER_READING);
+		FacilioField temperatureField = modBean.getField("temperature", FacilioConstants.ContextNames.WEATHER_READING);
+
 		long oneYearSampling = 365 * DAYS_IN_MILLISECONDS; 
 		long tempMaxSamplingPeriod = maxSamplingPeriodMap.getOrDefault(temperatureField.getName(), oneYearSampling);
 
@@ -142,11 +143,22 @@ public class AddEnergyPredictionCommand extends FacilioCommand {
 		MLAPI.addMLVariables(mlID,
 				temperatureField.getModuleId(),
 				temperatureField.getFieldId(),
-				temperatureParentField.getFieldId(),
+				weatherParentField.getFieldId(),
 				context.getSiteId(),
 				tempMaxSamplingPeriod,
 				futureSamplingPeriodMap.getOrDefault(temperatureField.getName(),172800000L),false,
 				aggregationMap.getOrDefault(temperatureField.getName(),"SUM"));
+
+		FacilioField humidityField = modBean.getField("humidity", FacilioConstants.ContextNames.WEATHER_READING);
+
+		MLAPI.addMLVariables(mlID,
+				humidityField.getModuleId(),
+				humidityField.getFieldId(),
+				weatherParentField.getFieldId(),
+				context.getSiteId(),
+				tempMaxSamplingPeriod,
+				futureSamplingPeriodMap.getOrDefault(humidityField.getName(),172800000L),false,
+				aggregationMap.getOrDefault(humidityField.getName(),"SUM"));
 
 		MLAPI.addMLAssetVariables(mlID,context.getId(),"TYPE","Energy Meter");
 		MLAPI.addMLAssetVariables(mlID,context.getSiteId(),"TYPE","Site");

@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TimeZone;
 
+import com.facilio.bmsconsole.util.MLUtil;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang.StringUtils;
@@ -34,88 +35,89 @@ public class GenerateMLModelCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = Logger.getLogger(GenerateMLModelCommand.class.getName());
 	@Override
-	public boolean executeCommand(Context context) throws Exception 
+	public boolean executeCommand(Context context) throws Exception
 	{
 		MLContext mlContext = (MLContext) context.get(FacilioConstants.ContextNames.ML);
 		try{
-		JSONObject postObj = new JSONObject();
-		postObj.put("ml_id",mlContext.getId());
-		postObj.put("orgid", mlContext.getOrgId());
-		postObj.put("date", getCurrentDate(mlContext));
-		postObj.put("predictedtime", mlContext.getPredictionTime());
-		
-		JSONObject modelVariables = new JSONObject();
-		if(mlContext.getMLModelVariable()!=null)
-		{
-			for(MLModelVariableContext modelVariableContext : mlContext.getMLModelVariable())
+			JSONObject postObj = new JSONObject();
+			postObj.put("ml_id",mlContext.getId());
+			postObj.put("orgid", mlContext.getOrgId());
+			postObj.put("date", getCurrentDate(mlContext));
+			postObj.put("predictedtime", mlContext.getPredictionTime());
+			postObj.put("duration" , MLUtil.getDataDuration(mlContext.getMLVariable()));
+
+			JSONObject modelVariables = new JSONObject();
+			if(mlContext.getMLModelVariable()!=null)
 			{
-				modelVariables.put(modelVariableContext.getVariableKey(), modelVariableContext.getVariableValue());
-			}
-		}
-		postObj.put("modelvariables",modelVariables);
-		
-		JSONArray assetVariables = new JSONArray();
-		
-		if(mlContext.getAssetVariables()!=null)
-		{
-			Set<Long> assetIDList = mlContext.getAssetVariables().keySet();
-			for(long assetID:assetIDList)
-			{
-				JSONObject data = new JSONObject();
-				HashMap<String,String> assetVariablesMap= mlContext.getAssetVariables().get(assetID);
-				Set<String> keySet = assetVariablesMap.keySet();
-				JSONObject variableMap = new JSONObject();
-				for(String key:keySet)
+				for(MLModelVariableContext modelVariableContext : mlContext.getMLModelVariable())
 				{
-					variableMap.put(key, assetVariablesMap.get(key));
+					modelVariables.put(modelVariableContext.getVariableKey(), modelVariableContext.getVariableValue());
 				}
-				data.put(""+assetID, variableMap);
-				assetVariables.put(data);
 			}
-		}
-		postObj.put("assetdetails", assetVariables);
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		JSONArray ip = new JSONArray();
-		for(MLVariableContext variableContext : mlContext.getMLVariable())
-		{
-			FacilioField field =modBean.getField(variableContext.getFieldID());
-			ip.put(field.getName());
-		}
-		postObj.put("inputmetrics",ip);
-		
-		JSONArray op = new JSONArray();
-		FacilioModule module = modBean.getModule(mlContext.getPredictionLogModuleID());
-		if(module!=null)
-		{
-			List<FacilioField> fields = modBean.getAllFields(module.getName());
-			for(FacilioField field:fields)
+			postObj.put("modelvariables",modelVariables);
+
+			JSONArray assetVariables = new JSONArray();
+
+			if(mlContext.getAssetVariables()!=null)
 			{
-				op.put(field.getName());
+				Set<Long> assetIDList = mlContext.getAssetVariables().keySet();
+				for(long assetID:assetIDList)
+				{
+					JSONObject data = new JSONObject();
+					HashMap<String,String> assetVariablesMap= mlContext.getAssetVariables().get(assetID);
+					Set<String> keySet = assetVariablesMap.keySet();
+					JSONObject variableMap = new JSONObject();
+					for(String key:keySet)
+					{
+						variableMap.put(key, assetVariablesMap.get(key));
+					}
+					data.put(""+assetID, variableMap);
+					assetVariables.put(data);
+				}
+			}
+			postObj.put("assetdetails", assetVariables);
+
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			JSONArray ip = new JSONArray();
+			for(MLVariableContext variableContext : mlContext.getMLVariable())
+			{
+				FacilioField field =modBean.getField(variableContext.getFieldID());
+				ip.put(field.getName());
+			}
+			postObj.put("inputmetrics",ip);
+
+			JSONArray op = new JSONArray();
+			FacilioModule module = modBean.getModule(mlContext.getPredictionLogModuleID());
+			if(module!=null)
+			{
+				List<FacilioField> fields = modBean.getAllFields(module.getName());
+				for(FacilioField field:fields)
+				{
+					op.put(field.getName());
+				}
+			}
+			postObj.put("outputmetrics",op);
+			postObj.put("data", constructJSONArray(mlContext.getMlVariablesDataMap()));
+
+			String postURL= FacilioProperties.getAnomalyPredictAPIURL() + "/"+mlContext.getModelPath();
+			Map<String, String> headers = new HashMap<>();
+			headers.put("Content-Type", "application/json");
+			LOGGER.info(" Sending request to ML Server "+postURL+"::"+mlContext.getId());
+			String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString(),300);
+			if(StringUtils.isEmpty(result) || result.contains("Internal Server Error")){
+				LOGGER.fatal("Error_ML "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" ERROR MESSAGE : "+"Response is not valid. RESULT : "+result);
+				context.put("ML_ERROR", true);
+			}
+			mlContext.setResult(result);
+		}catch(Exception e){
+			if(!e.getMessage().contains("ML error")){
+				LOGGER.fatal("Error_JAVA "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" FILE : GenerateMLModelCommand "+" ERROR MESSAGE : "+e);
+				throw e;
 			}
 		}
-		postObj.put("outputmetrics",op);
-		postObj.put("data", constructJSONArray(mlContext.getMlVariablesDataMap()));
-		
-		String postURL= FacilioProperties.getAnomalyPredictAPIURL() + "/"+mlContext.getModelPath();
-		Map<String, String> headers = new HashMap<>();
-		headers.put("Content-Type", "application/json");
-		LOGGER.info(" Sending request to ML Server "+postURL+"::"+mlContext.getId());
-		String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString(),300);
-		if(StringUtils.isEmpty(result) || result.contains("Internal Server Error")){
-			LOGGER.fatal("Error_ML "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" ERROR MESSAGE : "+"Response is not valid. RESULT : "+result);
-		    context.put("ML_ERROR", true);
-		}
-		mlContext.setResult(result);
-	}catch(Exception e){
-		if(!e.getMessage().contains("ML error")){
-			LOGGER.fatal("Error_JAVA "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" FILE : GenerateMLModelCommand "+" ERROR MESSAGE : "+e);
-			throw e;
-		}
-	}
 		return false;
- 	}
-	
+	}
+
 	private LocalDate getCurrentDate(MLContext mlContext) {
 		if(mlContext.isHistoric()) {
 			return Instant.ofEpochMilli(mlContext.getExecutionEndTime()).atZone(TimeZone.getTimeZone(AccountUtil.getCurrentAccount().getTimeZone()).toZoneId()).toLocalDate();
@@ -152,7 +154,7 @@ public class GenerateMLModelCommand extends FacilioCommand {
 						object.put(attributeName, attributeDataMap.get(time));
 					}
 					object.put("assetID", assetID);
-					
+
 					attributeArray.put(object);
 				}
 				dataObject.put(attributeArray);
@@ -160,8 +162,8 @@ public class GenerateMLModelCommand extends FacilioCommand {
 			//dataObject.put(assetArray);
 		}
 		return dataObject;
-		
+
 	}
-	
+
 
 }

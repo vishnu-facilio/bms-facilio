@@ -270,6 +270,12 @@ public class AgentConstants
     public static final String MAX_CONSUMERS = "maxConsumers";
     public static final String MAX_CONSUMERS_PER_INSTANCE = "maxConsumersPerInstance";
     public static final String MESSAGE_SOURCE = "messageSource";
-    public static final String DISCOVER_CONTROLLERS_TIMEOUT="discoverControllersTimeOut";
-    public static final String DISCOVER_POINTS_TIMEOUT="discoverPointsTimeOut";
+    public static final String DISCOVER_CONTROLLERS_TIMEOUT = "discoverControllersTimeOut";
+    public static final String DISCOVER_POINTS_TIMEOUT = "discoverPointsTimeOut";
+    public static final String LAST_RECORDED_TIME = "lastRecordedTime";
+    public static final String LAST_RECORDED_VALUE = "lastRecordedValue";
+    public static final String TTIME = "ttime";
+    public static final String INSTANCE_ID = "instanceId";
+    public static final String UNMODELED_DATA_TABLE = "Unmodeled_Data";
+    public static final String MESSAGE_SOURCES = "messageSources";
 }

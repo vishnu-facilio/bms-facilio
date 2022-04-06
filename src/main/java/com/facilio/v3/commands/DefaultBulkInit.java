@@ -17,7 +17,7 @@ public class DefaultBulkInit extends FacilioCommand {
             return false;
         }
 
-        Collection<JSONObject> bulkRawInput = Constants.getBulkRawInput(context);
+        Collection<Map<String, Object>> bulkRawInput = Constants.getBulkRawInput(context);
         Class beanClass = (Class) context.get(Constants.BEAN_CLASS);
         String moduleName = Constants.getModuleName(context);
 

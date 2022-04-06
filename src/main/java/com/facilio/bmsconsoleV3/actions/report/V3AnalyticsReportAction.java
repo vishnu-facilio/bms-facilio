@@ -445,6 +445,12 @@ public class V3AnalyticsReportAction extends V3Action {
             context.put(FacilioConstants.ContextNames.BASE_SPACE_LIST, list);
             context.put("filterModeValue", filterModeValue_toExport);
         }
+        if(filterMode != null ){
+            context.put(FacilioConstants.ContextNames.REPORT_FILTER_MODE, filterMode);
+            context.put(FacilioConstants.ContextNames.ASSET_CATEGORY, assetCategory);
+            context.put(FacilioConstants.ContextNames.BASE_SPACE_LIST, spaceId);
+            context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, parentId);
+        }
         chain.execute();
         return setReportResult(context);
     }

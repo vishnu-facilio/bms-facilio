@@ -38,6 +38,8 @@
    		<action name="*" class="com.facilio.agentv2.AgentV3Action" method="fetchAgent">
    		 	<param name="id">{1}</param>
         </action>
+        <action name="connections" class="com.facilio.agentv2.AgentV3Action" method="getMessageSource">
+        </action>
         
         
     </package>

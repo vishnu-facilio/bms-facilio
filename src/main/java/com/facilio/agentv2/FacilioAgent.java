@@ -47,6 +47,8 @@ public class FacilioAgent implements Serializable {
     @JsonInclude
     private Boolean isDisable;
     private String messageSource;
+    private long messageSourceId = -1;
+    private String subscribeTopics;
     
     Map<String, Object> params;
 

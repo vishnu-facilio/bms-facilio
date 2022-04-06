@@ -67,10 +67,6 @@ public class UnModeledDataCommand extends FacilioCommand {
 
 				}else{
 					long newInstanceId = getPointsUnmodledInstance(deviceName,pointName,controllerId,pointsRecords);
-					if(deviceName.equals("BECO 2") && pointName.equals("Cooling Capacity Enable|dac-8")) {
-						LOGGER.info("InsatanceName and deviceName is in Unmodeled_Data_Command");
-					}
-					
 					if (newInstanceId >=0 ) {
 						record.put("newInstanceId", newInstanceId);
 					}

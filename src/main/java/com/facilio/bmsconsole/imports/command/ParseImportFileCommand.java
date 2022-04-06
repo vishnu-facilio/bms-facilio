@@ -74,7 +74,7 @@ public class ParseImportFileCommand extends FacilioCommand {
 
         RowFunction uniqueFunction = (RowFunction) context.get(ImportAPI.ImportProcessConstants.UNIQUE_FUNCTION);
         if (uniqueFunction == null) {
-            uniqueFunction = ParseImportFileCommand::getUniqueFunction;
+            uniqueFunction = ParseImportFileCommand::getDefaultUniqueFunction;
         }
         RowFunction rowFunction = (RowFunction) context.get(ImportAPI.ImportProcessConstants.ROW_FUNCTION);
 
@@ -125,14 +125,14 @@ public class ParseImportFileCommand extends FacilioCommand {
                 rowContext.setSheetNumber(i);
 
                 if (ImportAPI.isInsertImport(importProcessContext)) {
-                    checkMandatoryFields(requiredFields, context, rowVal, rowNo);
+                    checkMandatoryFields(requiredFields, fieldMapping, rowNo);
                 }
 
                 Object uniqueStringObject = uniqueFunction.apply(rowNo, rowVal, context);
                 String uniqueString;
                 if (uniqueStringObject == null) {
                     LOGGER.info("Unique string is null -> fallback to default method");
-                    uniqueString = getUniqueFunction(rowNo, rowVal, context);
+                    uniqueString = getDefaultUniqueFunction(rowNo, rowVal, context);
                 } else {
                     uniqueString = uniqueStringObject.toString();
                 }
@@ -220,17 +220,16 @@ public class ParseImportFileCommand extends FacilioCommand {
      * Check the value of the particular row is null.
      *
      * @param mandatoryFields
-     * @param context
-     * @param rowVal
+     * @param fieldMapping
      * @param rowNo
      * @throws ImportMandatoryFieldsException
      */
-    private void checkMandatoryFields(List<FacilioField> mandatoryFields, Context context, HashMap<String, Object> rowVal, int rowNo) throws ImportMandatoryFieldsException {
+    private void checkMandatoryFields(List<FacilioField> mandatoryFields, HashMap<String, String> fieldMapping, int rowNo) throws ImportMandatoryFieldsException {
         if (CollectionUtils.isNotEmpty(mandatoryFields)) {
             ArrayList<String> columns = new ArrayList<>();
             for (FacilioField field : mandatoryFields) {
                 String fieldColumnName = field.getModule().getName() + "__" + field.getName();
-                if (rowVal.containsKey(fieldColumnName) || rowVal.get(fieldColumnName) == null) {
+                if (!fieldMapping.containsKey(fieldColumnName) || fieldMapping.get(fieldColumnName) == null) {
                     columns.add(field.getDisplayName());
                 }
             }
@@ -256,14 +255,14 @@ public class ParseImportFileCommand extends FacilioCommand {
         List<FacilioField> allFields = modBean.getAllFields(moduleName);
         for (FacilioField field : allFields) {
             if (field.isRequired()) {
-                allFields.add(field);
+                fields.add(field);
             }
         }
         return fields;
     }
 
-    private static String getUniqueFunction(Integer rowNumber, Map<String, Object> rowVal, Context context) {
-        return null;
+    private static String getDefaultUniqueFunction(Integer rowNumber, Map<String, Object> rowVal, Context context) {
+        return String.valueOf(rowNumber);
     }
 
     private boolean isRowValueEmpty(Map<String, Object> rowVal) {

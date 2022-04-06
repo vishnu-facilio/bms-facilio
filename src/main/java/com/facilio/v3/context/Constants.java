@@ -65,11 +65,11 @@ public class Constants {
     }
 
     private static final String BULK_RAW_INPUT = "bulkRawInput";
-    public static Collection<JSONObject> getBulkRawInput(Context context) {
-        return (Collection<JSONObject>) context.get(BULK_RAW_INPUT);
+    public static Collection<Map<String, Object>> getBulkRawInput(Context context) {
+        return (Collection<Map<String, Object>>) context.get(BULK_RAW_INPUT);
     }
 
-    public static void setBulkRawInput(Context context, Collection<JSONObject> jsonObjects) {
+    public static void setBulkRawInput(Context context, Collection<Map<String, Object>> jsonObjects) {
         context.put(BULK_RAW_INPUT, jsonObjects);
     }
 

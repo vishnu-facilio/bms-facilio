@@ -31,6 +31,7 @@ public class InitMLServiceCommand extends FacilioCommand implements Serializable
 		boolean updateApi = context.get(MLServiceUtil.IS_UPDATE) != null;
 		Long predictedTime = mlServiceContext.getEndTime();
 		String postURL= FacilioProperties.getAnomalyPredictAPIURL() + "/trainingModel";
+		int dataDuration = MLServiceUtil.getDataDuration(mlServiceContext);
 		try {
 
 			LOGGER.info("Start of InitMLModelCommand for usecase id "+mlServiceContext.getId());
@@ -54,6 +55,7 @@ public class InitMLServiceCommand extends FacilioCommand implements Serializable
 				postObj.put("predictedtime", predictedTime);
 				postObj.put("usecaseId", mlServiceContext.getId());
 				postObj.put("assetId" , assetIds.get(index));
+				postObj.put("duration" , dataDuration);
 				LOGGER.info("ML api request without data :: "+postObj.toString());
 				if(updateApi) {
 					postObj.put("data", new JSONArray());

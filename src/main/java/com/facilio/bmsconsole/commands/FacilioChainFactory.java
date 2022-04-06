@@ -2225,8 +2225,14 @@ public class FacilioChainFactory {
 		c.addCommand(new EnableAnomalyDetectionCommand());
 		return c;
 	}
-	
-	
+	public static FacilioChain addAhuOptimizationchain(){
+		FacilioChain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(new AddAhuOptimizationCommand());
+		return c;
+	}
+
+
+
 	public static FacilioChain getNewInventoryChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForInventory());

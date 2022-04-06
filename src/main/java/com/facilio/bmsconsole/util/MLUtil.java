@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.StringJoiner;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import org.apache.log4j.Logger;
@@ -355,6 +354,10 @@ public class MLUtil
 														.andCondition(mlIDCondition);
 		return selectBuilder.get();
 	}
-	
 
+
+    public static int getDataDuration(List<MLVariableContext> mlVariable) {
+		Long dataDurationTtime = mlVariable.stream().map(row -> row.getMaxSamplingPeriod()).min(Long::compare).get();
+		return (int) (dataDurationTtime/MLServiceUtil.DAYS_IN_MILLISECONDS);
+    }
 }

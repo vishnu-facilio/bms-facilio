@@ -499,8 +499,8 @@ public class OrgBeanImpl implements OrgBean {
 
 	@Override
 	public boolean isFeatureEnabled(FeatureLicense featureLicense) throws Exception {
-		return (getFeatureLicense().get(featureLicense.getGroup().getLicenseKey())& featureLicense.getLicense()) == featureLicense.getLicense();
-		
+		return (getFeatureLicense().get(featureLicense.getGroup().getLicenseKey()) & featureLicense.getLicense()) == featureLicense.getLicense();
+
 //		if(featureLicense.getGroup()==1) {
 //			return (getFeatureLicense().get(FacilioConstants.LicenseKeys.GROUP_1_LICENSE) & featureLicense.getLicense()) == featureLicense.getLicense();
 //		}
@@ -508,20 +508,21 @@ public class OrgBeanImpl implements OrgBean {
 //			return (getFeatureLicense().get(FacilioConstants.LicenseKeys.GROUP_2_LICENSE) & featureLicense.getLicense()) == featureLicense.getLicense();
 //		}
 	}
-	public int addLicence(Map<String,Long> summodule) throws Exception{
-    	GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+
+	public int addLicence(Map<LicenseMapping, Long> summodule) throws Exception {
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(AccountConstants.getFeatureLicenseModule().getTableName())
 				.fields(AccountConstants.getFeatureLicenseFields());
 
-    	updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getId()), NumberOperators.EQUALS));
+		updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getId()), NumberOperators.EQUALS));
 
 		Map<String, Object> props = new HashMap<>();
-		for (Map.Entry<String,Long> entry : summodule.entrySet()) {
-			props.put(entry.getKey(), entry.getValue());
+		for (Map.Entry<LicenseMapping, Long> entry : summodule.entrySet()) {
+			props.put(entry.getKey().getLicenseKey(), entry.getValue());
 //			props.put(FacilioConstants.LicenseKeys.LICENSE2, summodule.get(FacilioConstants.LicenseKeys.LICENSE2));
 		}
-	 	int value = updateBuilder.update(props);
-	 	return value;
+		int value = updateBuilder.update(props);
+		return value;
 	}
 
 	public JSONObject orgInfo() throws Exception{

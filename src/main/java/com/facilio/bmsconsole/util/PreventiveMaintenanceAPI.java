@@ -4617,6 +4617,10 @@ public class PreventiveMaintenanceAPI {
 	
 	public static String getPmModule(List<String> templateFields, String fieldName) {
 		if (templateFields.contains(fieldName)) {
+			// check if the field is ID and return PREVENTIVE_MAINTENANCE
+			if(fieldName.equals("id")){
+				return FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE;
+			}
 			return FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE;
 		}
 		return FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE;
