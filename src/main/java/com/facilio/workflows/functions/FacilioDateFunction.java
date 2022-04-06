@@ -824,6 +824,20 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 
 		}
 	},
+	GET_MILLISEC(40,"getMilliSeconds") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			String timeString = objects[0].toString();
+			String formatString = objects[1].toString();
+			
+			return DateTimeUtil.getTimeInstant(formatString, timeString).toEpochMilli();
+			
+		};
+		public void checkParam(Object... objects) throws Exception {
+
+		}
+	},
 	;
 	private Integer value;
 	private String functionName;
