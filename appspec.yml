@@ -37,6 +37,8 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /awsprops-kinesis.properties
     destination: /home/facilio/deployment-files/
+  - source: /awsprops-kafka.properties
+    destination: /home/facilio/deployment-files/    
   - source: /awsprops-stage.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-stage2.properties
