@@ -91,6 +91,12 @@ public class V3AnalyticsReportAction extends V3Action {
     private ReadingAnalysisContext.ReportFilterMode filterMode;
     private ReadingAnalysisContext.ReportFilterMode xCriteriaMode;
     private AggregateOperator groupByTimeAggr;
+    private JSONObject templateJSON;
+
+    public void setTemplateString(String templateJSON) throws Exception {
+        JSONObject jsonObject = (JSONObject) new JSONParser().parse(templateJSON);
+        this.template = FieldUtil.getAsBeanFromJson(jsonObject, ReportTemplateContext.class);
+    }
     public int getxAggr() {
         return xAggr != null ? xAggr.getValue() : -1;
     }
