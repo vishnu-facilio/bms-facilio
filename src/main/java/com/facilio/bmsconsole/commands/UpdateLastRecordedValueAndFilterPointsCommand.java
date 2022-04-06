@@ -7,15 +7,16 @@ import com.facilio.agentv2.commands.AgentV2Command;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.constants.FacilioConstants;
-import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@Log4j
 public class UpdateLastRecordedValueAndFilterPointsCommand extends AgentV2Command {
+    private static final Logger LOGGER = LogManager.getLogger(UpdateLastRecordedValueAndFilterPointsCommand.class.getName());
     private static final long TOLERANCE = 30000; //30secs tolerance
 
     @Override
@@ -35,9 +36,13 @@ public class UpdateLastRecordedValueAndFilterPointsCommand extends AgentV2Comman
                 pointsToRemove.add(pointName);
             } else {
                 //update point last recorded time and value
-                point.setLastRecordedTime(timeStamp);
-                point.setLastRecordedValue(value.toString());
-                points.add(point);
+                if (point != null) {
+                    point.setLastRecordedTime(timeStamp);
+                    point.setLastRecordedValue(value.toString());
+                    points.add(point);
+                } else {
+                    LOGGER.info("Point name not found for " + pointName);
+                }
             }
         }
         PointsAPI.updatePointsValue(points);
@@ -45,7 +50,9 @@ public class UpdateLastRecordedValueAndFilterPointsCommand extends AgentV2Comman
         for (String pointName : pointsToRemove) {
             snapshot.remove(pointName);
         }
-        LOGGER.info("Filtered points : " + pointsToRemove);
+        if (!pointsToRemove.isEmpty()) {
+            LOGGER.info("Filtered points : " + pointsToRemove);
+        }
         return false;
     }
 
