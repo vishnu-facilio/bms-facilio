@@ -64,10 +64,7 @@ import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommand
 import com.facilio.bmsconsoleV3.commands.people.FetchScopingForPeopleCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.MarkRandomContactAsPrimaryCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.ValidateContactsBeforeDeleteCommandV3;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.DeleteReceivableByPOIdV3;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.FetchPODetailsCommandV3;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.LoadAssociatedTermsLookupCommandV3;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.LoadPOSummaryLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.FetchPurchaseRequestDetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestSummaryLookupCommandV3;
@@ -572,7 +569,7 @@ public class APIv3Config {
                 .beforeSave(TransactionChainFactoryV3.getPoBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getUpdatePoAfterSaveChain())
                 .list()
-                .beforeFetch(new LoadPoPrListLookupCommandV3())
+                .beforeFetch(TransactionChainFactoryV3.getBeforeFetchPOListChain())
                 .summary()
                 .beforeFetch(new LoadPOSummaryLookupCommandV3())
                 .afterFetch(new FetchPODetailsCommandV3())
