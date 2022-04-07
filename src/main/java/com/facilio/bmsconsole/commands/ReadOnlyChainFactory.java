@@ -2975,4 +2975,11 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetValueGeneratorsCommand());
 		return chain;
 	}
+
+	public static FacilioChain getPivotMetaFieldsChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new PivotMetaFieldCommand());
+		return chain;
+	}
+
 }

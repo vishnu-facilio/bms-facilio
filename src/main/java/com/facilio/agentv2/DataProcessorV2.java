@@ -317,7 +317,7 @@ public class DataProcessorV2
                             return controller;
                         } else {
                             FacilioAgent agent = AgentApiV2.getAgent(agentId);
-                            if (agent.getAgentType() == AgentType.CLOUD.getKey() || agent.getAgentType() == AgentType.MQTT.getKey()) {
+                            if (agent.getAgentTypeEnum().allowAutoAddition()) {
                                 MiscControllerContext miscControllerContext = new MiscControllerContext(agent.getId(), AccountUtil.getCurrentOrg().getOrgId());
                                 miscControllerContext.setName(((JSONObject) (payload.get(AgentConstants.CONTROLLER))).get(AgentConstants.NAME).toString());
                                 miscControllerContext.setDataInterval(agent.getInterval() * 60 * 1000);

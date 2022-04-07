@@ -60,18 +60,9 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 				}
 			}
 		}
-		for (Map<String, Object> data : transformedData) {
-			if(data.get("rows") != null) {
-				Map<String, Object> rows = (Map<String, Object>) data.get("rows");
-				for(String id : rows.keySet()) {
-					if(lookupMap.get(id) != null) {
-						Map<String, Object> lmap =(Map<String, Object>) lookupMap.get(id);
-						rows.put(id, lmap.get(rows.get(id)));
-					}
-				}
-			}
-		}
+
 		context.put(FacilioConstants.ContextNames.PIVOT_TABLE_DATA, transformedData);
+		context.put(FacilioConstants.ContextNames.PIVOT_LOOKUP_MAP, lookupMap);
 		return false;
 	}
 	
@@ -172,66 +163,18 @@ public class ConstructTabularResultDataCommand extends ConstructReportDataComman
 		if (val == null) {
 			return "";
 		}
-		boolean isExportReport = false;
-		if(globalContext != null && globalContext.containsKey(FacilioConstants.ContextNames.IS_EXPORT_REPORT)){
-			isExportReport = (boolean) globalContext.get(FacilioConstants.ContextNames.IS_EXPORT_REPORT);
-		}
+
 		switch (field.getDataTypeEnum()) {
 			case BOOLEAN:
-				if (val.toString().equals("true")) {
-					val = val.toString();
-				}
-				else if (val.toString().equals("false")) {
-					val = val.toString();
-				}
 				if (handleEnum && actualxVal != null) {
 					val = new SimpleEntry<Long, Integer>((Long)actualxVal, (Integer) val);
 				}
 				break;
-			case ENUM:
-//				EnumField enumField = (EnumField) field;
-//				List<EnumFieldValue<Integer>> enumFieldValues = enumField.getValues();
-//				if(val instanceof Integer) {
-//					for(EnumFieldValue<Integer> field1: enumFieldValues){
-//						if(Objects.equals(field1.getIndex(), val)){
-//							val = field1.getValue();
-//						}
-//					}
-//				} else if(val instanceof Long){
-//					val = enumFieldValues.get(Math.toIntExact((Long) val)).getValue();
-//				}
-				break;
-			case SYSTEM_ENUM:
-//				Map<Integer,Object> enumMap = reportFieldContext.getEnumMap();
-//				val = enumMap.get(val);
-				break;
-			case DATE:
-				if(isExportReport) {
-					val = DateTimeUtil.getFormattedTime((Long) val);
-					break;
-				}
-			case DATE_TIME:
-				if (isExportReport) {
-					if (aggr != null && aggr instanceof DateAggregateOperator) {
-						val = ((DateAggregateOperator) aggr).getAdjustedTimestamp((long) val);
-					}
-					val = DateTimeUtil.getFormattedTime((Long) val);
-					break;
-				}
 			case NUMBER:
 				if (StringUtils.isNotEmpty(field.getName()) && field.getName().equals("siteId")) {
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					updateLookupMap(reportFieldContext, field.getFieldId(), null, modBean.getModule("site"),labelMap);
 				}
-				break;
-			case MULTI_ENUM:
-				MultiEnumField multiEnumField = (MultiEnumField) field;
-				List<Integer> values = (List<Integer>) val;
-				StringJoiner valueString = new StringJoiner(",");
-				for(int index : values){
-					valueString.add(multiEnumField.getValue(index));
-				}
-				val = valueString.toString();
 				break;
 			case LOOKUP:
 				if (val instanceof Map) {

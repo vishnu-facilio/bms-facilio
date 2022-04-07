@@ -4,14 +4,17 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.*;
 import com.facilio.report.context.PivotDataColumnContext;
 import com.facilio.report.context.PivotFormulaColumnContext;
 import com.facilio.report.context.PivotRowColumnContext;
 import com.facilio.report.formatter.DecimalFormatter;
 import com.facilio.report.formatter.Formatter;
+import com.facilio.report.formatter.LookupFormatter;
 import com.facilio.report.formatter.NumberFormatter;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -23,9 +26,9 @@ public class PivotColumnFormatCommand extends FacilioCommand {
     JSONObject templateJson;
     HashMap<String, Object> JsonTable;
     List<Map<String, Object>> pivotRecords;
-    Map<String, Object> table;
     Map<String, FacilioField> aliasVsFieldMap = new HashMap<>();
     Map<String, Formatter> formatterMap = new HashMap<>();
+    Map<String, Object> lookupMap;
     private ModuleBean modBean;
 
     @Override
@@ -37,9 +40,14 @@ public class PivotColumnFormatCommand extends FacilioCommand {
         templateJson = (JSONObject) context.get(FacilioConstants.ContextNames.TEMPLATE_JSON);
         JsonTable = (HashMap<String, Object>) templateJson.get("columnFormatting");
         pivotRecords = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.PIVOT_TABLE_DATA);
-        table = reconstruct();
+        lookupMap = (Map<String, Object>) context.get(FacilioConstants.ContextNames.PIVOT_LOOKUP_MAP);
+
+        Map<String,Object> params = formatHeaders();
+        Map<String, Object> table = formatPivotRecords(params);
+
         context.put(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA, table);
         context.put(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD, aliasVsFieldMap);
+
         return false;
     }
 
@@ -48,20 +56,37 @@ public class PivotColumnFormatCommand extends FacilioCommand {
 
         for (PivotRowColumnContext row : rowColumns) {
             if (row.getAlias().equals(alias)) {
-                facilioField = modBean.getField(row.getField().getId());
+                facilioField = modBean.getField(row.getField().getId()).clone();
             }
         }
 
         for (PivotDataColumnContext data : dataColumns) {
             if (data.getModuleType().equals("1")) {
                 if (data.getAlias().equals(alias)) {
-                    facilioField = modBean.getField(data.getField().getName(), data.getModuleName());
+                    facilioField = modBean.getField(data.getField().getName(), data.getModuleName()).clone();
                 }
             } else {
                 if (data.getAlias().equals(alias)) {
-                    facilioField = modBean.getReadingField(data.getReadingField().getId());
+                    facilioField = modBean.getReadingField(data.getReadingField().getId()).clone();
                 }
             }
+        }
+
+        for (PivotFormulaColumnContext formula : formulaColumns) {
+            if (formula.getAlias().equals(alias)) {
+                facilioField = formula.toFacilioField().clone();
+            }
+        }
+
+        return facilioField;
+    }
+
+
+    private FacilioField getField(String alias, String header) throws Exception {
+        FacilioField facilioField = getField(alias);
+        if(facilioField != null){
+            facilioField.setName(alias);
+            facilioField.setDisplayName(header);
         }
         return facilioField;
     }
@@ -115,54 +140,76 @@ public class PivotColumnFormatCommand extends FacilioCommand {
 
         return styleMap;
     }
+    private String applyHeaderUnit(String header, boolean headerUnit, Formatter formatter){
+        StringJoiner headerString = new StringJoiner("");
+        headerString.add(header);
+        if (headerUnit) {
+            if (formatter instanceof DecimalFormatter) {
+                DecimalFormatter decimalFormatter = (DecimalFormatter) formatter;
+                headerString.add(" ( " + decimalFormatter.getUnit() + " )");
+            } else if (formatter instanceof NumberFormatter) {
+                NumberFormatter numberFormatter = (NumberFormatter) formatter;
+                headerString.add(" ( " + numberFormatter.getUnit() + " )");
+            }
+        }
+        return headerString.toString();
+    }
+    private Map<String, Object> formatHeaders() throws Exception {
 
-    private Map<String, Object> reconstruct() throws Exception {
+        Map<String, Object> params = new HashMap<>();
+
         LinkedHashMap<String, String> aliasVsDisplayNameRows = new LinkedHashMap<>();
         LinkedHashMap<String, String> aliasVsDisplayNameData = new LinkedHashMap<>();
         LinkedHashMap<String, String> aliasVsDisplayNameFormula = new LinkedHashMap<>();
-
         Map<String, Object> headers = new HashMap<>();
-        List<Map<String, Object>> records = new ArrayList<>();
 
         for (PivotRowColumnContext row : rowColumns) {
             String key = row.getAlias();
             Map<String, Object> data = (Map<String, Object>) JsonTable.get(key);
-            StringJoiner header = new StringJoiner("");
-            header.add(data.get("label").toString());
-            aliasVsFieldMap.put(key, getField(key));
+
+            String header = "";
+
             JSONObject columnFormatMap = getColumnFormatMap(key);
-            Formatter formatter = Formatter.getInstance(getField(key));
+            FacilioField field = getField(key);
+
+            if(StringUtils.isNotEmpty(field.getName()) && field.getName().equals("siteId")){
+                field = new FacilioField();
+                field.setDataType(FieldType.LOOKUP);
+            }
+
+            Formatter formatter = Formatter.getInstance(field);
 
             if (formatter != null && !columnFormatMap.isEmpty()) {
                 formatter.deserialize(columnFormatMap);
             } else if (formatter != null) {
                 setColumnFormatMap(key, formatter.serialize());
             }
-
+            boolean headerUnit = false;
             if (columnFormatMap.containsKey("headerUnit")) {
-                boolean headerUnit = Boolean.parseBoolean(columnFormatMap.get("headerUnit").toString());
-                if (headerUnit) {
-                    if (formatter instanceof DecimalFormatter) {
-                        DecimalFormatter decimalFormatter = (DecimalFormatter) formatter;
-                        header.add(" ( " + decimalFormatter.getUnit() + " )");
-                    } else if (formatter instanceof NumberFormatter) {
-                        NumberFormatter numberFormatter = (NumberFormatter) formatter;
-                        header.add(" ( " + numberFormatter.getUnit() + " )");
-                    }
-                }
+                headerUnit = Boolean.parseBoolean(columnFormatMap.get("headerUnit").toString());
             }
 
+            header = applyHeaderUnit(data.get("label").toString(), headerUnit, formatter);
+
+            if(formatter instanceof LookupFormatter){
+                Map<String,Object> rowLookupMap = (Map<String, Object>) lookupMap.get(row.getAlias());
+                ((LookupFormatter) formatter).setLookupMap(rowLookupMap);
+                ((LookupFormatter) formatter).setAlias(row.getAlias());
+            }
+
+            aliasVsFieldMap.put(key, getField(key, header));
+
             formatterMap.put(key, formatter);
-            headers.put(key, header.toString());
-            aliasVsDisplayNameRows.put(key, header.toString());
+            headers.put(key, header);
+            aliasVsDisplayNameRows.put(key, header);
         }
 
         for (PivotDataColumnContext prop : dataColumns) {
             String key = prop.getAlias();
             Map<String, Object> data = (Map<String, Object>) JsonTable.get(key);
-            StringJoiner header = new StringJoiner("");
-            header.add(data.get("label").toString());
-            aliasVsFieldMap.put(key, getField(key));
+
+            String header = "";
+
             JSONObject columnFormatMap = getColumnFormatMap(key);
             Formatter formatter = Formatter.getInstance(getField(key));
 
@@ -172,28 +219,26 @@ public class PivotColumnFormatCommand extends FacilioCommand {
                 setColumnFormatMap(key, formatter.serialize());
             }
 
+            boolean headerUnit = false;
             if (columnFormatMap.containsKey("headerUnit")) {
-                boolean headerUnit = Boolean.parseBoolean(columnFormatMap.get("headerUnit").toString());
-                if (headerUnit) {
-                    if (formatter instanceof DecimalFormatter) {
-                        DecimalFormatter decimalFormatter = (DecimalFormatter) formatter;
-                        header.add(" ( " + decimalFormatter.getUnit() + " )");
-                    } else if (formatter instanceof NumberFormatter) {
-                        NumberFormatter numberFormatter = (NumberFormatter) formatter;
-                        header.add(" ( " + numberFormatter.getUnit() + " )");
-                    }
-                }
+                headerUnit = Boolean.parseBoolean(columnFormatMap.get("headerUnit").toString());
             }
+            header = applyHeaderUnit(data.get("label").toString(), headerUnit, formatter);
+
+
+            aliasVsFieldMap.put(key, getField(key, header));
+
             formatterMap.put(key, formatter);
-            headers.put(key, header.toString());
-            aliasVsDisplayNameData.put(key, header.toString());
+            headers.put(key, header);
+            aliasVsDisplayNameData.put(key, header);
         }
 
         for (PivotFormulaColumnContext prop : formulaColumns) {
             String key = prop.getAlias();
             Map<String, Object> formula = (Map<String, Object>) JsonTable.get(key);
-            StringJoiner header = new StringJoiner("");
-            header.add(formula.get("label").toString());
+
+            String header = "";
+
             JSONObject columnFormatMap = getColumnFormatMap(key);
 
             Formatter formatter = Formatter.getInstance(prop.toFacilioField());
@@ -204,22 +249,37 @@ public class PivotColumnFormatCommand extends FacilioCommand {
                 setColumnFormatMap(key, formatter.serialize());
             }
 
+
+            boolean headerUnit = false;
             if (columnFormatMap.containsKey("headerUnit")) {
-                boolean headerUnit = Boolean.parseBoolean(columnFormatMap.get("headerUnit").toString());
-                if (headerUnit) {
-                    if (formatter instanceof DecimalFormatter) {
-                        DecimalFormatter decimalFormatter = (DecimalFormatter) formatter;
-                        header.add(" ( " + decimalFormatter.getUnit() + " )");
-                    } else if (formatter instanceof NumberFormatter) {
-                        NumberFormatter numberFormatter = (NumberFormatter) formatter;
-                        header.add(" ( " + numberFormatter.getUnit() + " )");
-                    }
-                }
+                headerUnit = Boolean.parseBoolean(columnFormatMap.get("headerUnit").toString());
             }
+            header = applyHeaderUnit(formula.get("label").toString(), headerUnit, formatter);
+
+            aliasVsFieldMap.put(key, getField(key, header));
+
             formatterMap.put(key, formatter);
-            headers.put(key, header.toString());
-            aliasVsDisplayNameFormula.put(key, header.toString());
+            headers.put(key, header);
+            aliasVsDisplayNameFormula.put(key, header);
         }
+
+
+        params.put("aliasVsDisplayNameRows", aliasVsDisplayNameRows);
+        params.put("aliasVsDisplayNameData", aliasVsDisplayNameData);
+        params.put("aliasVsDisplayNameFormula", aliasVsDisplayNameFormula);
+        params.put("headers", headers);
+
+        return params;
+    }
+
+    private Map<String, Object> formatPivotRecords(Map<String, Object> params) throws Exception {
+        LinkedHashMap<String, String> aliasVsDisplayNameRows = (LinkedHashMap<String, String>) params.get("aliasVsDisplayNameRows");
+        LinkedHashMap<String, String> aliasVsDisplayNameData = (LinkedHashMap<String, String>) params.get("aliasVsDisplayNameData");
+        LinkedHashMap<String, String> aliasVsDisplayNameFormula = (LinkedHashMap<String, String>) params.get("aliasVsDisplayNameFormula");
+        Map<String, Object> headers = (Map<String, Object>) params.get("headers");
+
+        List<Map<String, Object>> records = new ArrayList<>();
+
 
         for (Map<String, Object> record : pivotRecords) {
             LinkedHashMap<String, Object> tempRecord = new LinkedHashMap<>();

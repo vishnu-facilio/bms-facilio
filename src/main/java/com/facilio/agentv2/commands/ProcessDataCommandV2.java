@@ -62,7 +62,7 @@ public class ProcessDataCommandV2 extends AgentV2Command {
 
                     if (!pointNames.isEmpty()) {
                         List<Point> pointsFromDb = FieldUtil.getAsBeanListFromMapList(getPointsFromDb(pointNames, controller), PointsAPI.getPointType(FacilioControllerType.valueOf(controller.getControllerType())));
-                        if (pointsFromDb.size() < pointNames.size() && (controller.getAgent().getAgentType() == AgentType.CLOUD.getKey() || controller.getAgent().getAgentType() == AgentType.REST.getKey() || controller.getAgent().getAgentType() == AgentType.FACILIO.getKey() || controller.getAgent().getAgentType() == AgentType.MQTT.getKey())) {
+                        if (pointsFromDb.size() < pointNames.size() && controller.getAgent().getAgentTypeEnum().allowAutoAddition()) {
                             Set<String> pointsFromDbSet = new HashSet<>();
                             pointsFromDb.forEach(point -> pointsFromDbSet.add(point.getName()));
                             Set<String> pointNamesSet = new HashSet<>(pointNames);

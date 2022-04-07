@@ -476,7 +476,6 @@ public class SpaceAPI {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
-		
 		SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
 																	.select(fields)
 																	.table(module.getTableName())
@@ -484,13 +483,11 @@ public class SpaceAPI {
 																	.beanClass(BaseSpaceContext.class)
 //																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.andCustomWhere(module.getTableName()+".ID = ?", id);
-		
 		if (fetchDeleted) {
 			selectBuilder.fetchDeleted();
 		}
 		
 		List<BaseSpaceContext> spaces = selectBuilder.get();
-		
 		if(spaces != null && !spaces.isEmpty()) {
 			return spaces.get(0);
 		}

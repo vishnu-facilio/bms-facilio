@@ -2672,6 +2672,7 @@ public class V2ReportAction extends FacilioAction {
         c.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
         c.addCommand(new PivotFormulaColumnCommand());
         c.addCommand(new PivotColumnFormatCommand());
+        c.addCommand(new PivotConditionalFormatCommand());
         c.addCommand(new PivotThemeCustomizationCommand());
         c.execute();
         setResult(FacilioConstants.ContextNames.ROW_HEADERS, context.get(FacilioConstants.ContextNames.ROW_HEADERS));
@@ -2741,6 +2742,7 @@ public class V2ReportAction extends FacilioAction {
         chain.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
         chain.addCommand(new PivotFormulaColumnCommand());
         chain.addCommand(new PivotColumnFormatCommand());
+        chain.addCommand(new PivotConditionalFormatCommand());
         chain.addCommand(new PivotThemeCustomizationCommand());
         chain.addCommand(new AddOrUpdateReportCommand());
         chain.execute(context);
@@ -2813,6 +2815,8 @@ public class V2ReportAction extends FacilioAction {
         c.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
         c.addCommand(new PivotFormulaColumnCommand());
         c.addCommand(new PivotColumnFormatCommand());
+        c.addCommand(new PivotConditionalFormatCommand());
+        c.addCommand(new PivotThemeCustomizationCommand());
         c.addCommand(new ExportPivotReport());
         c.execute();
         setResult("fileUrl", context.get(FacilioConstants.ContextNames.FILE_URL));
@@ -2871,6 +2875,7 @@ public class V2ReportAction extends FacilioAction {
         chain.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
         chain.addCommand(new PivotFormulaColumnCommand());
         chain.addCommand(new PivotColumnFormatCommand());
+        chain.addCommand(new PivotConditionalFormatCommand());
         chain.addCommand(new PivotThemeCustomizationCommand());
         chain.execute(context);
         setResult("report", reportContext);

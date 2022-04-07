@@ -6,6 +6,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.V3Action;
+import org.json.simple.JSONObject;
 
 import java.util.List;
 
@@ -59,8 +60,32 @@ public class AccessibleSpacesAction extends V3Action {
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.ORG_USER_ID, ouId);
 
+        JSONObject pagination = new JSONObject();
+        pagination.put("page",getPage());
+        pagination.put("perPage",getPerPage());
+        if(getPerPage() < 0){
+            pagination.put("perPage",5000);
+        }
+        context.put(FacilioConstants.ContextNames.PAGINATION,pagination);
+
+        if(getSearch() != null){
+            context.put(FacilioConstants.ContextNames.SEARCH,getSearch());
+        }
+
+        if(getWithCount()){
+            context.put(FacilioConstants.ContextNames.FETCH_COUNT,true);
+        }
+
         chain.execute();
         List<BaseSpaceContext> baseSpaces = (List<BaseSpaceContext>)context.get(FacilioConstants.ContextNames.ACCESSIBLE_SPACE);
+        if(context.get(FacilioConstants.ContextNames.FETCH_COUNT) != null){
+           if(context.get(FacilioConstants.ContextNames.COUNT) != null) {
+               setData("count",context.get(FacilioConstants.ContextNames.COUNT));
+           }
+           else {
+               setData("count",0);
+           }
+        }
         setData(FacilioConstants.ContextNames.ACCESSIBLE_SPACE, baseSpaces);
 
 
