@@ -186,38 +186,8 @@ public class ConnectionUtil {
 		params.put(ConnectionUtil.SECRET_STATE, connectionContext.getSecretStateKey());
 
 		String res = ConnectionUtil.getUrlResult(url, params, HttpMethod.POST,null,null,null);
-		JSONParser parser = new JSONParser();
-		JSONObject resultJson = (JSONObject) parser.parse(res);
-
-		if(resultJson.containsKey(ConnectionUtil.ACCESS_TOKEN_STRING)) {
-			connectionContext.setAccessToken((String)resultJson.get(ConnectionUtil.ACCESS_TOKEN_STRING));
-			
-			if(resultJson.containsKey(ConnectionUtil.EXPIRES_IN_STRING)) {
-				long expireTimeInSec = (long) resultJson.get(ConnectionUtil.EXPIRES_IN_STRING);
-
-				expireTimeInSec = expireTimeInSec - 60;
-
-				connectionContext.setExpiryTime(DateTimeUtil.getCurrenTime() + (expireTimeInSec * 1000));
-
-			}
-			else {
-				if(connectionContext.getMetaJson() != null && connectionContext.getMetaJson().containsKey(ConnectionUtil.DEFAULT_ACCESS_EXP_IN_SEC)) {
-					
-					long expireTimeInSec = (long) connectionContext.getMetaJson().get(ConnectionUtil.DEFAULT_ACCESS_EXP_IN_SEC);
-					
-					expireTimeInSec = expireTimeInSec - 60;
-
-					connectionContext.setExpiryTime(DateTimeUtil.getCurrenTime() + (expireTimeInSec * 1000));
-				}
-				else {
-					connectionContext.setExpiryTime(ConnectionUtil.MAX_TIME);
-				}
-			}
-			ConnectionUtil.updateConnectionContext(connectionContext);
-		}
-		else {
-			throw new Exception("Required Param is Missing During updateAuthTokenByRefreshToken in Response - "+resultJson.toJSONString());
-		}
+		
+		ConnectionUtil.parseJsonAndUpdateConnection(res, connectionContext);
 	}
 
 	
