@@ -3,8 +3,10 @@ package com.facilio.agentv2.actions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.util.CommissioningApi;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -80,6 +82,16 @@ public class GetPointsAction extends AgentActionV2 {
 	 */
 	public String getPoints() {
 		try {
+
+			List<Map<String,Object>> data= getPointsData(PointStatus.valueOf(status));
+			if(status.equals("COMMISSIONED")){
+				Set<Long> resourceIdSet =data.stream().map(x->(Long)x.get("resourceId")).collect(Collectors.toSet());
+				Set<Long>fieldIdSet =data.stream().map(x->(Long)x.get("fieldId")).collect(Collectors.toSet());
+				Map<Long, String> resourceMap = CommissioningApi.getResources(resourceIdSet);
+				Map<Long, Map<String, Object>> fieldMap = CommissioningApi.getFields(fieldIdSet);
+			    setResult("resourceMap", resourceMap);
+				setResult("fieldMap", fieldMap);
+			}
 			setResult(AgentConstants.DATA, getPointsData(PointStatus.valueOf(status)));
 			ok();
 		} catch (Exception e) {
