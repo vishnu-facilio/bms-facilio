@@ -92,7 +92,7 @@ public class GetPointsAction extends AgentActionV2 {
 			    setResult("resourceMap", resourceMap);
 				setResult("fieldMap", fieldMap);
 			}
-			setResult(AgentConstants.DATA, getPointsData(PointStatus.valueOf(status)));
+			setResult(AgentConstants.DATA, data);
 			ok();
 		} catch (Exception e) {
 			LOGGER.error("Exception  occurred while getting points ", e);
