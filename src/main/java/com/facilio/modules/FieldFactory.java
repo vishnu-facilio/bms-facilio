@@ -1145,6 +1145,14 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+	public static List<FacilioField> getCurrencyFieldFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getCurrencyFieldsModule ();
+
+		fields.add(getField("fieldId", "FIELDID", module, FieldType.ID));
+		return fields;
+	}
+
     public static List<FacilioField> getRollUpFieldFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getRollUpFieldsModule();
@@ -10159,6 +10167,8 @@ public class FieldFactory extends BaseFieldFactory {
                 return (F) new LargeTextField();
             case URL_FIELD:
                 return (F) new UrlField();
+			case CURRENCY_FIELD:
+				return (F) new CurrencyField ();
             default:
                 return BaseFieldFactory.getNewFieldObject(type);
         }

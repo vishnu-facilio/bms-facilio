@@ -663,6 +663,9 @@ public class FieldUtil {
 					case DATE_TIME:
 						facilioField = FieldUtil.getAsBeanFromMap(fieldJson,DateField.class);
 						break;
+					case CURRENCY_FIELD:
+						facilioField = FieldUtil.getAsBeanFromMap (fieldJson,CurrencyField.class);
+						break;
 					default:
 						facilioField = ( FacilioField ) FieldUtil.getAsBeanFromMap (fieldJson, FacilioField.class);
 						break;
