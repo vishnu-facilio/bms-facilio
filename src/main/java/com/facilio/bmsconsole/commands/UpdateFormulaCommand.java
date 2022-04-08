@@ -48,7 +48,7 @@ public class UpdateFormulaCommand extends FacilioCommand {
 		validateUpdate(newFormula);
 		FormulaFieldContext oldFormula = FormulaFieldAPI.getFormulaField(newFormula.getId());
 		context.put(FacilioConstants.ContextNames.READING_FIELD_ID,oldFormula.getReadingFieldId());
-		if (newFormula.getWorkflow() != null && hasCyclicDependency(newFormula.getWorkflow(), oldFormula.getReadingField(), oldFormula.getTriggerTypeEnum())) {
+		if (newFormula.getWorkflow().isV2Script() && newFormula.getWorkflow() != null && hasCyclicDependency(newFormula.getWorkflow(), oldFormula.getReadingField(), oldFormula.getTriggerTypeEnum())) {
 			throw new IllegalArgumentException("Formula has cyclic dependency and so cannot be updated");
 		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

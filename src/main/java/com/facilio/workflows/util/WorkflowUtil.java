@@ -543,13 +543,15 @@ public class WorkflowUtil {
 			getV2ScriptFromWorkflowContext(workflowContext);
 		}
 		else {
-			if(workflowContext.getWorkflowString() == null) {
+			if(!workflowContext.isV2Script()&&workflowContext.getWorkflowString() == null) {
 				workflowContext.setWorkflowString(getXmlStringFromWorkflow(workflowContext));
 			}
-			
-			getWorkflowContextFromString(workflowContext.getWorkflowString(),workflowContext);
-			
-			validateWorkflow(workflowContext);
+
+			if (!workflowContext.isV2Script()) {
+				getWorkflowContextFromString(workflowContext.getWorkflowString(), workflowContext);
+
+				validateWorkflow(workflowContext);
+			}
 		}
 		
 		if(workflowContext.isV2Script()) {

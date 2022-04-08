@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -1602,5 +1603,16 @@ public class FormulaFieldAPI {
 			context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);	
 			addReadingChain.execute();					
 		}	
+	}
+
+	public static int updateKPIReadingsStatus(FormulaFieldContext rule) throws Exception {
+		FacilioModule module = ModuleFactory.getFormulaFieldModule();
+		rule.setModifiedTime(DateTimeUtil.getCurrenTime());
+		Map<String, Object> ruleProps = FieldUtil.getAsProperties(rule);
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(module.getTableName())
+				.fields(FieldFactory.getFormulaFieldFields())
+				.andCondition(CriteriaAPI.getIdCondition(rule.getId(), module));
+		return updateBuilder.update(ruleProps);
 	}
 }

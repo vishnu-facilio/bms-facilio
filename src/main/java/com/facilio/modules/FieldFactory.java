@@ -6582,6 +6582,7 @@ public class FieldFactory extends BaseFieldFactory {
         /*fields.add(getOrgIdField(module));*/
         fields.add(getSiteIdField(module));
         fields.add(getNameField(module));
+
         fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
         fields.add(getField("formulaFieldType", "FORMULA_FIELD_TYPE", module, FieldType.NUMBER));
         fields.add(getField("kpiCategory", "KPI_CATEGORY", module, FieldType.LOOKUP));
@@ -6598,7 +6599,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
         fields.add(getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP));
         fields.add(getField("spaceCategoryId", "SPACE_CATEGORY_ID", module, FieldType.LOOKUP));
-        fields.add(getField("active", "ACTIVE", module, FieldType.BOOLEAN));
+        fields.add(getBooleanField("active", "ACTIVE", module));
         fields.add(getField("startTime", "START_TIME", module, FieldType.NUMBER));
         fields.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));
         fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
