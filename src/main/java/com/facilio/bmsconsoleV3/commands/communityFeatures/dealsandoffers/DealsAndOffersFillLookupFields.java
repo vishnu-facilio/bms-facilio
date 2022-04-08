@@ -5,9 +5,7 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.LookupFieldMeta;
+import com.facilio.modules.fields.*;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
@@ -23,7 +21,7 @@ public class DealsAndOffersFillLookupFields extends FacilioCommand {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioField> fields = modBean.getAllFields(moduleName);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-        List<LookupField> fetchLookupsList = new ArrayList<>();
+        List<SupplementRecord> fetchLookupsList = new ArrayList<>();
         LookupFieldMeta neighbourhoodField = new LookupFieldMeta((LookupField) fieldsAsMap.get("neighbourhood"));
         LookupField location = (LookupField) modBean.getField("location", FacilioConstants.ContextNames.Tenant.NEIGHBOURHOOD);
         neighbourhoodField.addChildSupplement(location);
@@ -33,6 +31,7 @@ public class DealsAndOffersFillLookupFields extends FacilioCommand {
         LookupField sysModifiedBy = (LookupField) FieldFactory.getSystemField("sysModifiedBy", modBean.getModule(moduleName));
         fetchLookupsList.add(sysModifiedBy);
         fetchLookupsList.add((LookupField) fieldsAsMap.get("audience"));
+        fetchLookupsList.add((LargeTextField)fieldsAsMap.get("description"));
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
 

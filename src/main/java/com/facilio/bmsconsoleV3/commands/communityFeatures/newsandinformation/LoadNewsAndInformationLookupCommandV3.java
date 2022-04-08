@@ -7,7 +7,9 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LargeTextField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
@@ -21,12 +23,13 @@ public class LoadNewsAndInformationLookupCommandV3 extends FacilioCommand {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioField> fields = modBean.getAllFields(moduleName);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-        List<LookupField> fetchLookupsList = new ArrayList<LookupField>();
+        List<SupplementRecord> fetchLookupsList = new ArrayList<SupplementRecord>();
         LookupField sysCreatedBy = (LookupField) FieldFactory.getSystemField("sysCreatedBy", modBean.getModule(moduleName));
         fetchLookupsList.add(sysCreatedBy);
         LookupField sysModifiedBy = (LookupField) FieldFactory.getSystemField("sysModifiedBy", modBean.getModule(moduleName));
         fetchLookupsList.add(sysModifiedBy);
         fetchLookupsList.add((LookupField) fieldsAsMap.get("audience"));
+        fetchLookupsList.add((LargeTextField)fieldsAsMap.get("description"));
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
 

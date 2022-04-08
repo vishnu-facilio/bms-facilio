@@ -24,12 +24,11 @@ public class CommunityFeaturesPageFactory extends PageFactory {
 
         Page.Section tab1Sec1 = page.new Section();
         tab1.addSection(tab1Sec1);
-        if (StringUtils.isNotEmpty(record.getDescription())) {
-            PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.RICH_TEXT_PREVIEW);
-            previewWidget.addToLayoutParams(tab1Sec1, 24, 6);
-            previewWidget.addToWidgetParams("fieldKey", "description");
-            tab1Sec1.addWidget(previewWidget);
-        }
+
+        PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.RICH_TEXT_PREVIEW);
+        previewWidget.addToLayoutParams(tab1Sec1, 24, 6);
+        previewWidget.addToWidgetParams("fieldKey", "description");
+        tab1Sec1.addWidget(previewWidget);
 
         PageWidget secDetailsWidget = new PageWidget(PageWidget.WidgetType.NEIGHBOURHOOD_DETAILS_WIDGET);
         secDetailsWidget.addToLayoutParams(tab1Sec1, 24, 6);
@@ -65,12 +64,12 @@ public class CommunityFeaturesPageFactory extends PageFactory {
 
         Page.Section tab1Sec1 = page.new Section();
         tab1.addSection(tab1Sec1);
-        if (StringUtils.isNotEmpty(record.getDescription())) {
-            PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.RICH_TEXT_PREVIEW);
-            previewWidget.addToLayoutParams(tab1Sec1, 24, 6);
-            previewWidget.addToWidgetParams("fieldKey", "description");
-            tab1Sec1.addWidget(previewWidget);
-        }
+
+        PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.RICH_TEXT_PREVIEW);
+        previewWidget.addToLayoutParams(tab1Sec1, 24, 6);
+        previewWidget.addToWidgetParams("fieldKey", "description");
+        tab1Sec1.addWidget(previewWidget);
+
         PageWidget secDetailsWidget = new PageWidget(PageWidget.WidgetType.DEALS_DETAILS_WIDGET);
         secDetailsWidget.addToLayoutParams(tab1Sec1, 24, 6);
         secDetailsWidget.setTitle("Deals and Offers Details");

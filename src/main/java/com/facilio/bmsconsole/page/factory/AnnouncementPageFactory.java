@@ -17,12 +17,11 @@ public class AnnouncementPageFactory extends PageFactory {
 
         Page.Section tab1Sec1 = page.new Section();
         tab1.addSection(tab1Sec1);
-        if (StringUtils.isNotEmpty(record.getLongDescription())) {
-            PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.RICH_TEXT_PREVIEW);
-            previewWidget.addToLayoutParams(tab1Sec1, 24, 6);
-            previewWidget.addToWidgetParams("fieldKey", "longDescription");
-            tab1Sec1.addWidget(previewWidget);
-        }
+
+        PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.RICH_TEXT_PREVIEW);
+        previewWidget.addToLayoutParams(tab1Sec1, 24, 6);
+        previewWidget.addToWidgetParams("fieldKey", "longDescription");
+        tab1Sec1.addWidget(previewWidget);
 
         PageWidget secDetailsWidget = new PageWidget(PageWidget.WidgetType.ANNOUNCEMENT_SECONDARY_DETAILS_WIDGET);
         secDetailsWidget.addToLayoutParams(tab1Sec1, 24, 6);
