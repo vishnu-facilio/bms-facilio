@@ -3,6 +3,8 @@ package com.facilio.bmsconsoleV3.commands;
 import java.util.Collections;
 
 import com.facilio.bmsconsoleV3.commands.people.UpdateScopingForPeopleCommandV3;
+import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
+import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -61,7 +63,6 @@ import com.facilio.bmsconsole.commands.ToolTypeQuantityRollupCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.TriggerMLServiceJobCommand;
 import com.facilio.bmsconsole.commands.UpdateServiceVendorPriceCommand;
-import com.facilio.bmsconsole.commands.ValidateMLServiceCommand;
 import com.facilio.bmsconsole.commands.VerifyQrCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
@@ -73,18 +74,8 @@ import com.facilio.bmsconsoleV3.commands.assetCategory.UpdateCategoryAssetModule
 import com.facilio.bmsconsoleV3.commands.assetCategory.ValidateAssetCategoryDeletionV3;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
-import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
-import com.facilio.bmsconsoleV3.commands.people.UpdateScopingForPeopleCommandV3;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.CompletePoCommandV3;
-import com.facilio.bmsconsoleV3.commands.quotation.*;
-import com.facilio.bmsconsoleV3.commands.reports.*;
-import com.facilio.bmsconsoleV3.commands.storeroom.SetLocationObjectFromSiteV3;
-import com.facilio.bmsconsoleV3.commands.storeroom.UpdateServingSitesinStoreRoomCommandV3;
 import com.facilio.bmsconsoleV3.commands.termsandconditions.ReviseTandCCommand;
-import com.facilio.bmsconsoleV3.commands.transferRequest.*;
 import com.facilio.command.FacilioCommand;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.commands.budget.ValidateBudgetAmountCommandV3;
 import com.facilio.bmsconsoleV3.commands.budget.ValidateChartOfAccountTypeCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.UpdateClientIdInSiteCommandV3;
@@ -117,8 +108,6 @@ import com.facilio.bmsconsoleV3.commands.floorplan.AddOrUpdateObjectCommand;
 import com.facilio.bmsconsoleV3.commands.floorplan.SerializeCommand;
 import com.facilio.bmsconsoleV3.commands.floorplan.UpdateDeskCommand;
 import com.facilio.bmsconsoleV3.commands.floorplan.UpdateMarkerCommand;
-import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
-import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.AddOrUpdateInventoryRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.AddOrUpdateManualItemTransactionCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.AddOrUpdateManualToolTransactionsCommandV3;
@@ -136,9 +125,6 @@ import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksCommand;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.UpdatePeoplePrimaryContactCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.CompletePoCommandV3;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.POAfterCreateOrEditV3Command;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.POBeforeCreateOrEditV3Command;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.UpdateIsPoCreatedCommand;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.PreFillAddPurchaseRequestCommand;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.PurchaseRequestTotalCostRollUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.InsertQuotationLineItemsAndActivitiesCommand;
@@ -160,7 +146,6 @@ import com.facilio.bmsconsoleV3.commands.tenant.AddTenantSpaceRelationCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenant.AddTenantUserCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.CheckForMandatoryTenantIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.UpdateTenantAppPortalAccessCommandV3;
-import com.facilio.bmsconsoleV3.commands.termsandconditions.ReviseTandCCommand;
 import com.facilio.bmsconsoleV3.commands.transferRequest.SetLineItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.transferRequest.UpdateCurrentBalanceAfterTransferCommandV3;
 import com.facilio.bmsconsoleV3.commands.transferRequest.UpdateCurrentBalanceCommandV3;
@@ -237,7 +222,6 @@ import com.facilio.bmsconsoleV3.commands.workpermit.LoadWorkPermitLookUpsCommand
 import com.facilio.bmsconsoleV3.commands.workpermit.LoadWorkPermitRecurringInfoCommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.RollUpWorkOrderFieldOnWorkPermitApprovalCommandV3;
 import com.facilio.chain.FacilioChain;
-import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.readingrule.faultimpact.command.FaultImpactAfterSaveCommand;
 import com.facilio.readingrule.faultimpact.command.FaultImpactBeforeSaveCommand;
@@ -247,12 +231,8 @@ import com.facilio.trigger.command.DeleteTriggerCommand;
 import com.facilio.trigger.command.ExecuteTriggerCommand;
 import com.facilio.trigger.command.GetAllTriggersCommand;
 import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 import com.facilio.bmsconsoleV3.commands.reports.ConstructLiveFilterCommandToExport;
 
-import java.util.Collections;
-import static com.facilio.bmsconsole.commands.TransactionChainFactory.getUpdateItemQuantityRollupChain;
 public class TransactionChainFactoryV3 {
     private static FacilioChain getDefaultChain() {
         return FacilioChain.getTransactionChain();
@@ -1643,6 +1623,13 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getFaultImpactFetchChain(){
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new FaultImpactAfterFetchCommand());
+        return chain;
+    }
+
+    public static FacilioChain getBeforeFetchPOListChain(){
+        FacilioChain chain=getDefaultChain();
+        chain.addCommand(new LoadPoPrListLookupCommandV3());
+        chain.addCommand(new GetPurchaseOrdersListOnInventoryTypeIdCommandV3());
         return chain;
     }
 
