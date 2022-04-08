@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.enums.FaultType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleInterface;
@@ -31,7 +30,7 @@ public class ReadingAlarmOccurrenceContext extends AlarmOccurrenceContext {
     }
 
     public void setRule(ReadingRuleInterface rule) throws Exception {
-        if (isNewReadingRule) {
+        if (getIsNewReadingRule()) {
             NewReadingRuleContext ruleContext = new NewReadingRuleContext();
             ruleContext.setId(rule.getId());
             this.rule = ruleContext;
@@ -51,7 +50,7 @@ public class ReadingAlarmOccurrenceContext extends AlarmOccurrenceContext {
         if(subRule == null) {
             return;
         }
-        if (isNewReadingRule) {
+        if (getIsNewReadingRule()) {
             NewReadingRuleContext ruleContext = new NewReadingRuleContext();
             ruleContext.setId(subRule.getId());
             this.subRule = ruleContext;
@@ -96,13 +95,4 @@ public class ReadingAlarmOccurrenceContext extends AlarmOccurrenceContext {
         return Type.READING;
     }
 
-    private boolean isNewReadingRule;
-
-    public void setNewReadingRule(boolean isNewReadingRule) {
-        this.isNewReadingRule = isNewReadingRule;
-    }
-
-    public boolean getIsNewReadingRule() {
-        return isNewReadingRule;
-    }
 }

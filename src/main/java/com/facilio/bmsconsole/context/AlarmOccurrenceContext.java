@@ -285,7 +285,17 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 			baseAlarm.setLastWoId(getWoId());
 		}
 	}
-	
+
+	private boolean isNewReadingRule;
+
+    public void setNewReadingRule(boolean isNewReadingRule) {
+        this.isNewReadingRule = isNewReadingRule;
+    }
+
+    public boolean getIsNewReadingRule() {
+        return isNewReadingRule;
+    }
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {

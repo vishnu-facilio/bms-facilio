@@ -20,7 +20,7 @@ public class AddRCARulesCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
 
         NewReadingRuleContext rule = (NewReadingRuleContext) context.get(FacilioConstants.ContextNames.NEW_READING_RULE);
-        List<Long> alarmRCARules = rule.getRcaRules();
+        List<Long> alarmRCARules = rule.getAlarmRCARules();
         Long ruleId = rule.getId();
 
         //TODO:SPK, need to validate RCA rules already exists or not
