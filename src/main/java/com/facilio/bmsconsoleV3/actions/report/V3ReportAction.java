@@ -696,4 +696,12 @@ public class V3ReportAction extends V3Action {
                 }).apply(null));
         sendAuditLogs(auditLog);
     }
+    public String getModuleList() throws Exception {
+        FacilioChain chain = TransactionChainFactoryV3.getReportModuleListChain();
+        FacilioContext context = chain.getContext();
+        chain.execute();
+        setData("moduleList", context.get(FacilioConstants.ContextNames.MODULE_LIST));
+        return SUCCESS;
+    }
+
 }

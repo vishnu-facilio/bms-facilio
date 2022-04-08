@@ -1633,4 +1633,9 @@ public class TransactionChainFactoryV3 {
         return chain;
     }
 
+    public static FacilioChain getReportModuleListChain(){
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new GetReportModuleListCommand());
+        return chain;
+    }
 }
