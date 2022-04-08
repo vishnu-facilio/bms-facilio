@@ -1,12 +1,17 @@
 package com.facilio.bmsconsoleV3.commands.communityFeatures.announcement;
 
+import com.facilio.agent.integration.AgentIntegrationKeys;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LargeTextField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
@@ -25,12 +30,14 @@ public class LoadPeopleAnnouncementLookupCommand extends FacilioCommand {
             fields = modBean.getAllFields(moduleName);
         }
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-        List<LookupField> additionaLookups = new ArrayList<LookupField>();
+        List<SupplementRecord> additionaLookups = new ArrayList<SupplementRecord>();
         LookupField sysCreatedBy = (LookupField) FieldFactory.getSystemField("sysCreatedBy", modBean.getModule(FacilioConstants.ContextNames.ANNOUNCEMENT));
         additionaLookups.add(sysCreatedBy);
         LookupField sysModifiedBy = (LookupField) FieldFactory.getSystemField("sysModifiedBy", modBean.getModule(FacilioConstants.ContextNames.ANNOUNCEMENT));
         additionaLookups.add(sysModifiedBy);
         additionaLookups.add((LookupField) fieldsAsMap.get("audience"));
+        additionaLookups.add((LargeTextField)fieldsAsMap.get("longDescription"));
+
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,additionaLookups);
 

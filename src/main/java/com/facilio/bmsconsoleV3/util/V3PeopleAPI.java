@@ -404,7 +404,7 @@ public class V3PeopleAPI {
 
         GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
                 .table(module.getTableName())
-                .fields(fields)
+                .fields(updatedfields)
                 .andCondition(CriteriaAPI.getIdCondition(id, module));
 
         Map<String, Object> value = new HashMap<>();

@@ -34,14 +34,12 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.LookupFieldMeta;
-import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.modules.fields.*;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.ChainUtil;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -267,11 +265,13 @@ public class CommunityFeaturesAPI {
                     pplAnnouncement.setParentId(announcement.getId());
                     pplAnnouncement.setCreatedBy(announcement.getSysModifiedBy());
                     pplAnnouncement.setCreatedTime(announcement.getSysModifiedTime());
+                    pplAnnouncement.setLongDescription(announcement.getLongDescription());
                     pplMap.put(person.getId(), pplAnnouncement);
                 }
             }
             if (MapUtils.isNotEmpty(pplMap)) {
-                V3RecordAPI.addRecord(true, new ArrayList<PeopleAnnouncementContext>(pplMap.values()), module, modBean.getAllFields(FacilioConstants.ContextNames.Tenant.PEOPLE_ANNOUNCEMENTS));
+                V3Util.createRecordList(modBean.getModule(FacilioConstants.ContextNames.PEOPLE_ANNOUNCEMENTS), FieldUtil.getAsJSONArray(new ArrayList<PeopleAnnouncementContext>(pplMap.values()),PeopleAnnouncementContext.class),null,null);
+                //V3RecordAPI.addRecord(true, new ArrayList<PeopleAnnouncementContext>(pplMap.values()), module, modBean.getAllFields(FacilioConstants.ContextNames.Tenant.PEOPLE_ANNOUNCEMENTS));
             }
         }
     }
@@ -434,15 +434,21 @@ public class CommunityFeaturesAPI {
     }
 
     public static AnnouncementContext getAnnouncementById(long id) throws  Exception{
-
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ANNOUNCEMENT);
+
+        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+        List<SupplementRecord> supplements = new ArrayList<SupplementRecord>();
+        supplements.add((LargeTextField)fieldsAsMap.get("longDescription"));
+
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ANNOUNCEMENT);
         SelectRecordsBuilder<AnnouncementContext> builder = new SelectRecordsBuilder<AnnouncementContext>()
                 .module(module)
                 .beanClass(AnnouncementContext.class)
                 .select(modBean.getAllFields(module.getName()))
-                .andCondition(CriteriaAPI.getIdCondition(id,module))
-                ;
+                .fetchSupplements(supplements)
+                .andCondition(CriteriaAPI.getIdCondition(id,module));
 
         return builder.fetchFirst();
     }
