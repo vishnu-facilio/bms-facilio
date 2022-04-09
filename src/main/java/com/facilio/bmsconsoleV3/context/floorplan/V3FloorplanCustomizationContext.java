@@ -4,8 +4,11 @@ import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsoleV3.context.V3EmployeeContext;
 import com.facilio.constants.FacilioConstants;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class V3FloorplanCustomizationContext {
+    private static final Logger LOGGER = LogManager.getLogger(V3FloorplanCustomizationContext.class.getName());
 
     private DeskLabel deskPrimaryLabel;
     private DeskLabel deskSecondaryLabel;
@@ -331,9 +334,15 @@ public class V3FloorplanCustomizationContext {
             public String format(V3DeskContext desk) {
                 V3EmployeeContext emp=desk.getEmployee();
                 if (emp != null) {
-                 String name = emp.getName();
-                 String namesplit[] = name.split(" ");
-                 return namesplit[0];
+                    try {
+                        String name = emp.getName();
+                        String namesplit[] = name.split("\\s+");
+                        return namesplit[0];
+                    }
+                    catch (Exception e)
+                    {
+                        LOGGER.error("Error while Handling Desk Label"+e);
+                    }
                 }
                 return "";
             }
@@ -343,16 +352,22 @@ public class V3FloorplanCustomizationContext {
             public String format(V3DeskContext desk) {
                 V3EmployeeContext emp=desk.getEmployee();
                 if (emp != null) {
-                  String name = emp.getName();
-                  String namesplit[] = name.split(" ");
-                  String lname = "";
-                  if (namesplit.length == 1) {
-                        return namesplit[0];
+                    try {
+                        String name = emp.getName();
+                        String namesplit[] = name.split("\\s+");
+                        String lname = "";
+                        if (namesplit.length == 1) {
+                            return namesplit[0];
+                        }
+                        for (int i = 1; i < namesplit.length; i++) {
+                            lname = lname + " " + namesplit[i];
+                        }
+                        return lname;
                     }
-                   for (int i = 1; i < namesplit.length; i++) {
-                     lname = lname + " " + namesplit[i];
+                    catch (Exception e)
+                    {
+                        LOGGER.error("Error while Handling Desk Label"+e);
                     }
-                   return lname;
                 }
                   return "";
             }
@@ -362,16 +377,22 @@ public class V3FloorplanCustomizationContext {
             public String format(V3DeskContext desk) {
                 V3EmployeeContext emp=desk.getEmployee();
                 if (emp != null) {
-                  String name = emp.getName();
-                  String namesplit[] = name.split(" ");
-                  if (namesplit.length == 1) {
-                    return namesplit[0];
-                   }
-                  String initialname = namesplit[0];
-                  for (int i = 1; i < namesplit.length; i++) {
-                     initialname = initialname + " " + namesplit[i].charAt(0);
-                   }
-                  return initialname;
+                    try {
+                        String name = emp.getName();
+                        String namesplit[] = name.split("\\s+");
+                        if (namesplit.length == 1) {
+                            return namesplit[0];
+                        }
+                        String initialname = namesplit[0];
+                        for (int i = 1; i < namesplit.length; i++) {
+                            initialname = initialname + " " + namesplit[i].charAt(0);
+                        }
+                        return initialname;
+                    }
+                    catch (Exception e)
+                    {
+                        LOGGER.error("Error while Handling Desk Label"+e);
+                    }
                 }
                  return "";
             }
@@ -381,16 +402,22 @@ public class V3FloorplanCustomizationContext {
             public String format(V3DeskContext desk) {
                 V3EmployeeContext emp=desk.getEmployee();
                 if (emp != null) {
-                   String name = emp.getName();
-                   String namesplit[] = name.split(" ");
-                   if (namesplit.length == 1) {
-                       return namesplit[0];
-                   }
-                   String initialname = "";
-                    for (int i = 0; i < namesplit.length - 1; i++) {
-                       initialname = initialname + namesplit[i].charAt(0) + " ";
-                     }
-                     return initialname + namesplit[namesplit.length - 1];
+                    try {
+                        String name = emp.getName();
+                        String namesplit[] = name.split("\\s+");
+                        if (namesplit.length == 1) {
+                            return namesplit[0];
+                        }
+                        String initialname = "";
+                        for (int i = 0; i < namesplit.length - 1; i++) {
+                            initialname = initialname + namesplit[i].charAt(0) + " ";
+                        }
+                        return initialname + namesplit[namesplit.length - 1];
+                    }
+                    catch (Exception e)
+                    {
+                        LOGGER.error("Error while Handling Desk Label"+e);
+                    }
                 }
                 return "";
             }
