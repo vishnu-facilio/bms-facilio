@@ -113,7 +113,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 						)).collect(Collectors.toList());
 			}
 
-			if (orderType != SummaryOrderType.FORM_SECTION) {	
+			if (orderType != SummaryOrderType.FORM_SECTION) {
 				int count = !formFields.isEmpty() ? Collections.max(formFields, Comparator.comparing(s -> s.getSequenceNumber())).getSequenceNumber() : 0;
 				List<String> existingFieldNames = formFields.stream().map(FormField::getName).collect(Collectors.toList());
 				count = addModuleAndSystemFields(modBean, formFields, existingFieldNames, count);
@@ -122,6 +122,22 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 				}
 				addFieldsonBottom(modBean, formFields, existingFieldNames, count);
 			}
+		}
+
+		// replaces sysCreatedTime with createdTime
+		if (moduleName.equals("workorder")) {
+			FormField sysCreatedTimeField = formFields.stream()
+					.filter(f -> "sysCreatedTime".equals(f.getName()))
+					.findAny()
+					.orElse(null);
+
+			if (sysCreatedTimeField != null) {
+				// field exists and needs to be replaced.
+				formFields.removeIf(f -> "sysCreatedTime".equals(f.getName()));
+				FacilioField field = modBean.getField("createdTime", moduleName);
+				formFields.add(FormsAPI.getFormFieldFromFacilioField(field, 1));
+			}
+
 		}
 
 		context.put("fields", formFields);
