@@ -29,7 +29,7 @@ public class ServiceRequestPageFactory extends PageFactory {
             //hide comments section for portal users except for atre org
             boolean hideComments = AccountUtil.getCurrentUser().isPortalUser() && AccountUtil.getCurrentOrg().getOrgId() != 418l;
 
-            String tab2Title = hideComments ? "Attachments" : "Comments & Information";
+            String tab2Title = hideComments ? "More Information" : "Comments & Information";
             Page.Tab tab2 = page.new Tab(tab2Title);
             page.addTab(tab2);
 
@@ -39,6 +39,10 @@ public class ServiceRequestPageFactory extends PageFactory {
             titleMap.put("notes", "Comment");
             titleMap.put("documents", "Attachment");
             if (hideComments) {
+                PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.SECONDARY_DETAILS_WIDGET);
+                secondaryDetailsWidget.addToLayoutParams(tab2sec1, 24, 7);
+                tab2sec1.addWidget(secondaryDetailsWidget);
+
                 addCommonSubModuleWidget(tab2sec1, module, record, titleMap, false, PageWidget.WidgetType.ATTACHMENT);
             } else {
             	
