@@ -1046,7 +1046,7 @@ public class ViewFactory {
 		
 		order = 1;
 		views = new LinkedHashMap<>();
-		views.put("workflowLog", getWorkflowLog().setOrder(order++));
+		views.put("all", getWorkflowLog().setOrder(order++));
 		viewsMap.put(FacilioConstants.Workflow.WORKFLOW_LOG, views);
 		
 		
@@ -1725,8 +1725,8 @@ public class ViewFactory {
 	private static FacilioView getWorkflowLog() {
 
 		FacilioView workflowLogView = new FacilioView();
-		workflowLogView.setName("workflowLogView");
-		workflowLogView.setDisplayName("workflowLogView");
+		workflowLogView.setName("all");
+		workflowLogView.setDisplayName(FacilioConstants.Workflow.WORKFLOW_LOG_VIEW);
 
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("createdTime");

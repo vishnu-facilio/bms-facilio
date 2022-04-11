@@ -251,6 +251,8 @@ public class ColumnFactory {
 		columnMap.put(FacilioConstants.ContextNames.Floorplan.DESKS + "-default", getDefaultDeskColumns());
 		columnMap.put(FacilioConstants.Inspection.INSPECTION_TEMPLATE+"-default", getDefaultInspectionTemplateColumns());
 		columnMap.put(FacilioConstants.Inspection.INSPECTION_RESPONSE+"-default", getDefaultInspectionResponseColumns());
+		columnMap.put(FacilioConstants.Workflow.WORKFLOW_LOG+"-default", getDefaultWorkflowLogViewTemplateColumns());
+
 		
 		columnMap.put(FacilioConstants.Inspection.INSPECTION_RESPONSE+"-hidden-all", getDefaultInspectionResponseColumnsWithName());
 		
@@ -778,6 +780,22 @@ public class ColumnFactory {
 		
 		columns.add(new ViewField("totalPages", "Total Pages"));
 		columns.add(new ViewField("totalQuestions", "Total Questions"));
+
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultWorkflowLogViewTemplateColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("parentId", "Parent"));
+		columns.add(new ViewField("logType", "TYPE"));
+		columns.add(new ViewField("recordId", "RECORD ID"));
+		columns.add(new ViewField("workflowId", "WORKFLOW ID"));
+		columns.add(new ViewField("status", "STATUS"));
+		
+		
+		columns.add(new ViewField("exception", "EXCEPTION"));
+		columns.add(new ViewField("logValue", "LOG VALUE"));
 
 		return columns;
 	}
