@@ -67,7 +67,7 @@ public class NewReadingRuleContext implements ReadingRuleInterface, Cloneable {
         return (alarmRCARules == null) ? new ArrayList<>() : alarmRCARules;
     }
 
-    public Boolean isActive() {
+    public boolean isActive() {
         return status;
     }
 

@@ -337,7 +337,7 @@ public class WorkflowRuleContext implements Serializable {
 	public void setStatus(Boolean status) {
 		this.status = status;
 	}
-	public Boolean isActive() {
+	public boolean isActive() {
 		if(status != null) {
 			return status.booleanValue();
 		}

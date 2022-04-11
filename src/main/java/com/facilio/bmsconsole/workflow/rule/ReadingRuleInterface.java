@@ -14,7 +14,7 @@ public interface ReadingRuleInterface {
 
     String getDescription();
 
-    Boolean isActive();
+    boolean isActive();
 
     void setMatchedResources(Map<Long, ResourceContext> matchedResources);
 
