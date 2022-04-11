@@ -2,8 +2,10 @@ package com.facilio.report.context;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import com.facilio.db.criteria.operators.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.json.annotations.JSON;
@@ -12,10 +14,6 @@ import org.json.simple.JSONObject;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.operators.BuildingOperator;
-import com.facilio.db.criteria.operators.EnumOperators;
-import com.facilio.db.criteria.operators.Operator;
-import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.fields.FacilioField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -111,7 +109,12 @@ public class ReportUserFilterContext {
 		if (CollectionUtils.isEmpty(data)) {
 			return null;
 		}
+		boolean isSelectAll = false;
+		if(values == null || (values!= null && values.size() == 0)){
+			isSelectAll= true;
+		}
 		if (data.contains(ALL)) {
+			isSelectAll = true;
 			if (chooseValue != null) {
 				if (chooseValue.isOtherEnabled()) {
 					return null;
@@ -125,7 +128,7 @@ public class ReportUserFilterContext {
 		List<String> selectedValues = new ArrayList<>();
 		
 		Condition otherCriteria = null;
-		
+
 		for (String s : data) {
 			if (s.equals(OTHERS) && chooseValue != null && chooseValue.isOtherCriteria()) {
 				otherCriteria = new Condition();
@@ -142,8 +145,13 @@ public class ReportUserFilterContext {
 		if (CollectionUtils.isNotEmpty(selectedValues)) {
 			Condition condition = new Condition();
 			condition.setField(field);
-			condition.setValue(StringUtils.join(selectedValues, ","));
-			condition.setOperator(getOperator(false));
+			if(isSelectAll) {
+				condition.setOperator(CommonOperators.IS_NOT_EMPTY);
+			}
+			else{
+				condition.setValue(StringUtils.join(selectedValues, ","));
+				condition.setOperator(getOperator(false));
+			}
 			
 			c.addAndCondition(condition);
 		}
