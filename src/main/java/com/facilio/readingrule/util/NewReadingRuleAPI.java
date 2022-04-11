@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
@@ -31,7 +32,10 @@ import com.facilio.workflows.util.WorkflowUtil;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -130,8 +134,9 @@ public class NewReadingRuleAPI {
                 .andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", String.valueOf(readingRule.getId()), NumberOperators.EQUALS));
         Map<String, Object> props = selectBuilder.fetchFirst();
         if (props != null) {
-            RuleAlarmDetails ruleBuilderConfig = FieldUtil.getAsBeanFromMap(props, RuleAlarmDetails.class);
-            readingRule.setAlarmDetails(ruleBuilderConfig);
+            RuleAlarmDetails alarmDetails = FieldUtil.getAsBeanFromMap(props, RuleAlarmDetails.class);
+            alarmDetails.setSeverity(AlarmAPI.getAlarmSeverity(alarmDetails.getSeverityId()).getSeverity());
+            readingRule.setAlarmDetails(alarmDetails);
         }
     }
 
@@ -156,7 +161,7 @@ public class NewReadingRuleAPI {
     }
 
     public static NewReadingRuleContext getRule(Long ruleId) throws Exception {
-        List<NewReadingRuleContext> rules = getRules(new Condition[]{CriteriaAPI.getCondition("STATUS", "status", "true", BooleanOperators.IS),
+        List<NewReadingRuleContext> rules = getRules(new Condition[]{
                 CriteriaAPI.getIdCondition(ruleId, ModuleFactory.getNewReadingRuleModule())});
         return CollectionUtils.isNotEmpty(rules) ? rules.get(0) : null;
     }
@@ -206,7 +211,8 @@ public class NewReadingRuleAPI {
             }
         } else {
             for (NameSpaceField fld : fields) {
-                prepareNSField(fld, nsId, -1);
+                Long resourceID = (fld.getResourceId() == -1) ? -1 : fld.getResourceId();
+                prepareNSField(fld, nsId, resourceID);
                 assetList.add(FieldUtil.getAsProperties(fld));
             }
         }
@@ -251,6 +257,33 @@ public class NewReadingRuleAPI {
         fld.setModule(module);
         fld.setNsId(nsId);
         fld.setResourceId(resourceId);
+    }
+
+    public static Map<Long, String> getReadingRuleNamesByIds(List<Long> ruleIds) throws Exception {
+
+        String s = "("+StringUtils.join(ruleIds, ",") +")";
+        Map<Long, String> nameMap = new HashMap<>();
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(FieldFactory.getNewReadingRuleFields())
+                .table(ModuleFactory.getNewReadingRuleModule().getTableName())
+                .andCustomWhere("ID in " + s);
+        List<Map<String, Object>> resList = selectBuilder.get();
+        if(resList != null) {
+            for (Map<String, Object> props : resList) {
+                nameMap.put((Long) props.get("id"), (String) props.get("name"));
+            }
+        }
+        return nameMap;
+    }
+    public static int updateReadingRuleStatus(NewReadingRuleContext rule) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, SQLException {
+        FacilioModule module = ModuleFactory.getNewReadingRuleModule();
+        Map<String, Object> ruleProps = FieldUtil.getAsProperties(rule);
+        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+                .table(module.getTableName())
+                .fields(FieldFactory.getNewReadingRuleFields())
+                .andCondition(CriteriaAPI.getIdCondition(rule.getId(), module));
+        int a = updateBuilder.update(ruleProps);
+        return a;
     }
 
 }

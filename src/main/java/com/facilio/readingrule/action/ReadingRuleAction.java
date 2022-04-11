@@ -31,6 +31,9 @@ public class ReadingRuleAction extends V3Action {
 
     private long ruleId = -1;
 
+    private boolean status;
+    public boolean getStatus(){return status;}
+    public void setStatus(boolean status){this.status=status;}
 
     NewReadingRuleContext readingRule;
 
@@ -136,4 +139,14 @@ public class ReadingRuleAction extends V3Action {
         return SUCCESS;
 
     }
+
+    public String changeReadingRuleStatus() throws Exception {
+        NewReadingRuleContext newReadingRuleContext = new NewReadingRuleContext();
+        newReadingRuleContext.setStatus(getStatus());
+        newReadingRuleContext.setId(getRuleId());
+        NewReadingRuleAPI.updateReadingRuleStatus(newReadingRuleContext);
+        setData("result", "success");
+        return SUCCESS;
+    }
+
 }

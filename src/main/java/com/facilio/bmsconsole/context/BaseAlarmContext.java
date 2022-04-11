@@ -231,6 +231,16 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 		return posList;
 	}
 
+	private boolean isNewReadingRule;
+
+    public void setNewReadingRule(boolean isNewReadingRule) {
+        this.isNewReadingRule = isNewReadingRule;
+    }
+
+    public boolean getIsNewReadingRule() {
+        return isNewReadingRule;
+    }
+
 	public static enum Type implements FacilioIntEnum {
 		READING_ALARM,
 		ML_ANOMALY_ALARM,

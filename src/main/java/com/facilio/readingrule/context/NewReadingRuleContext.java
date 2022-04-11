@@ -1,6 +1,5 @@
 package com.facilio.readingrule.context;
 
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleInterface;
@@ -59,15 +58,16 @@ public class NewReadingRuleContext implements ReadingRuleInterface, Cloneable {
 
     WorkflowContext workflowContext;
 
-    boolean status;
+    Boolean status;
+    public void setStatus(Boolean status){this.status=status;}
 
-    List<Long> rcaRules;
+    List<Long> alarmRCARules;
 
-    public List<Long> getRcaRules() {
-        return (rcaRules == null) ? new ArrayList<>() : rcaRules;
+    public List<Long> getAlarmRCARules() {
+        return (alarmRCARules == null) ? new ArrayList<>() : alarmRCARules;
     }
 
-    public boolean isActive() {
+    public Boolean isActive() {
         return status;
     }
 

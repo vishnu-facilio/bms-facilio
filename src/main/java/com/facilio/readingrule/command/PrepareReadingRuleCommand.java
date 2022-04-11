@@ -40,8 +40,8 @@ public class PrepareReadingRuleCommand extends FacilioCommand {
         if (newCtx.getAlarmDetails() != null) {
             oldRule.setAlarmDetails(newCtx.getAlarmDetails());
         }
-        if (newCtx.getRcaRules() != null) {
-            oldRule.setRcaRules(newCtx.getRcaRules());
+        if (newCtx.getAlarmRCARules() != null) {
+            oldRule.setAlarmRCARules(newCtx.getAlarmRCARules());
         }
         if (newCtx.getNs() != null) {
             oldRule.setNs(newCtx.getNs());

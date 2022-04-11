@@ -23,7 +23,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.ActionAPI;
@@ -338,7 +337,7 @@ public class WorkflowRuleContext implements Serializable {
 	public void setStatus(Boolean status) {
 		this.status = status;
 	}
-	public boolean isActive() {
+	public Boolean isActive() {
 		if(status != null) {
 			return status.booleanValue();
 		}

@@ -13,7 +13,7 @@ public class GetNSetRCARuleIdsCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         NewReadingRuleContext rule = (NewReadingRuleContext) context.get(FacilioConstants.ContextNames.NEW_READING_RULE);
         List<Long> alarmRCARules = NewReadingRuleAPI.getRCARulesForReadingRule(rule.getId());
-        rule.setRcaRules(alarmRCARules);
+        rule.setAlarmRCARules(alarmRCARules);
         return false;
     }
 }

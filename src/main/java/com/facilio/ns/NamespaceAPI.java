@@ -3,9 +3,11 @@ package com.facilio.ns;
 import com.facilio.beans.ModuleBean;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.ns.context.NameSpaceField;
@@ -26,11 +28,11 @@ public class NamespaceAPI {
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder();
         selectBuilder.select(NamespaceModuleAndFieldFactory.getNSAndFields())
                 .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())
-                .innerJoin(NamespaceModuleAndFieldFactory.getNamespaceFieldsModule().getTableName()).on("Namespace.ID = Namespace_Fields.NAMESPACE_ID");
-        StringBuilder sb = new StringBuilder();
-        sb.append("Namespace.ID IN (SELECT NAMESPACE_ID FROM Namespace_Fields WHERE FIELD_ID=? )");
+                .innerJoin(NamespaceModuleAndFieldFactory.getNamespaceFieldsModule().getTableName()).on("Namespace.ID = Namespace_Fields.NAMESPACE_ID")
+                .innerJoin(ModuleFactory.getNewReadingRuleModule().getTableName()).on("New_Reading_Rule.ID = Namespace.PARENT_RULE_ID");
+        selectBuilder.andCondition(CriteriaAPI.getCondition("STATUS", "status", String.valueOf(true), BooleanOperators.IS));
 
-        selectBuilder.andCustomWhere(sb.toString(), fieldId);
+        selectBuilder.andCustomWhere("Namespace.ID IN (SELECT NAMESPACE_ID FROM Namespace_Fields WHERE FIELD_ID=? )", fieldId);
 
         List<Map<String, Object>> maps = selectBuilder.get();
         if (CollectionUtils.isEmpty(maps)) {
