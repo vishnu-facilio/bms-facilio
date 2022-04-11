@@ -1179,7 +1179,7 @@ ADD_INVITE_RECORD_VIA_V3CHAIN (29, "addInviteRecordViaV3Chain") {
 		}
 	},
 	
-	HTTP_POST_WITH_FILES(2,"postWithFiles") {
+	HTTP_POST_WITH_FILES(35,"postWithFiles") {
 		@Override
 		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			

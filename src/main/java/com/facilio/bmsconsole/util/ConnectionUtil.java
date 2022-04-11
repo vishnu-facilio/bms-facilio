@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.io.File;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -78,7 +79,7 @@ public class ConnectionUtil {
 	public static final String PARAM_SEPERATOR = "&";
 
 
-	public static String getUrlResult(ConnectionContext connectionContext,String urlString,Map<String,String> params,HttpMethod method,String bodyString,String bodyType,Map<String,String> headerParam) throws Exception {
+	public static String getUrlResult(ConnectionContext connectionContext,String urlString,Map<String,String> params,HttpMethod method,String bodyString,String bodyType,Map<String,String> headerParam,Map<String,File> files) throws Exception {
 
 		params = params == null ? new HashMap<>() : params;
 
@@ -119,7 +120,7 @@ public class ConnectionUtil {
 				}
 				break;
 		}
-		return getUrlResult(urlString, params, method,headerParam,bodyString,bodyType);
+		return getUrlResult(urlString, params, method,headerParam,bodyString,bodyType, files);
 	}
 	
 	public static void parseJsonAndUpdateConnection(String result,ConnectionContext connectionContext) throws Exception {
@@ -202,8 +203,11 @@ public class ConnectionUtil {
 		NewTransactionService.newTransaction(() ->  ConnectionUtil.updateConnectionContext(connectionContext));
 	}
 
-
 	public static String getUrlResult(String urlString,Map<String,String> params,HttpMethod method,Map<String,String> headerParam,String bodyString,String bodyType) throws Exception {
+		return getUrlResult(urlString, params, method, headerParam, bodyString, bodyType, null);
+	}
+
+	public static String getUrlResult(String urlString,Map<String,String> params,HttpMethod method,Map<String,String> headerParam,String bodyString,String bodyType,Map<String,File> files) throws Exception {
 
 		
 		if(method == HttpMethod.GET) {
@@ -218,7 +222,7 @@ public class ConnectionUtil {
 				headerParam = headerParam == null ? new HashMap<>() : headerParam; 
 				headerParam.put("Content-Type", "application/x-www-form-urlencoded");
 			}
-			return FacilioHttpUtils.doHttpPost(urlString, headerParam, params,bodyString);
+			return FacilioHttpUtils.doHttpPost(urlString, headerParam, params,bodyString,files,-1);
 		}
 		return null;
 	}
