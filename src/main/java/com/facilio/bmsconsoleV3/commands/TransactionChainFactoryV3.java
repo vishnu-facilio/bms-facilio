@@ -7,7 +7,7 @@ import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-
+import com.facilio.bmsconsoleV3.commands.GetReportModuleListCommand;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.actions.GetModuleFromReportContextCommand;
@@ -1633,4 +1633,9 @@ public class TransactionChainFactoryV3 {
         return chain;
     }
 
+    public static FacilioChain getReportModuleListChain(){
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new GetReportModuleListCommand());
+        return chain;
+    }
 }

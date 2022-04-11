@@ -561,6 +561,10 @@
                 class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
                 method="create">
         </action>
+        <action name="modules/list"
+                class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
+                method="getModuleList">
+        </action>
         <action name="update"
                 class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
                 method="update">
