@@ -55,7 +55,7 @@ public class GetPreventiveMaintenanceCommand extends FacilioCommand {
 		
 		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria("planned");
 		if(scopeCriteria != null) {
-			criteria.andCriteria(scopeCriteria);
+			//criteria.andCriteria(scopeCriteria);
 		}
 		
 		Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria("planned","read");
