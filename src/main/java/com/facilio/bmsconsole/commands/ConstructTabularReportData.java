@@ -227,6 +227,9 @@ public class ConstructTabularReportData extends FacilioCommand {
             if (data.getReadingField() != null) {
                 if (data.getReadingField().getId() > 0) {
                     yField = modBean.getField(data.getReadingField().getId()).clone();
+                } else if(data.getReadingField().getModuleId() > 0 && data.getReadingField().getName() != null){
+                    FacilioModule facilioModule = modBean.getModule(data.getReadingField().getModuleId());
+                    yField = modBean.getField(data.getReadingField().getName(),facilioModule.getName()).clone();
                 }
                 yAxisModule = modBean.getModule(data.getReadingField().getModuleId());
             } else if (data.getField() != null) {
@@ -331,7 +334,6 @@ public class ConstructTabularReportData extends FacilioCommand {
                     FacilioField dateField = FieldFactory
                             .getDateField("ttime", "TTIME", yField.getModule()).clone();
                     dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));
-                    // dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));
                     Operator dateOperator = Operator.getOperator(data.getDatePeriod());
                     Criteria otherCrit = new Criteria();
                     Condition newCond = CriteriaAPI.getCondition(dateField, dateOperator);

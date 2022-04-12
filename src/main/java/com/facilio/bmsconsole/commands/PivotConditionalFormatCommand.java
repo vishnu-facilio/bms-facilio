@@ -87,14 +87,12 @@ public class PivotConditionalFormatCommand extends FacilioCommand {
     }
 
     public boolean evaluateCriteria(Criteria criteria, Map<String,Object> data){
-        if(criteria!= null && data != null) {
+        try {
             Predicate predicate = criteria.computePredicate(data);
-            if(predicate != null) {
-                return predicate.evaluate(data);
-            }
+            return predicate.evaluate(data);
+        } catch (Exception e){
             return false;
         }
-        return false;
     }
 
 }

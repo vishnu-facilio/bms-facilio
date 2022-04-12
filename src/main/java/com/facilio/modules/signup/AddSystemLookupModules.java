@@ -22,13 +22,34 @@ public class AddSystemLookupModules extends SignUpData {
         FacilioModule urlRecord = constructUrlRecordMod();
         modules.add(urlRecord);
 
+		FacilioModule currencyRecord = constructCurrencyRecordMod();
+		modules.add (currencyRecord);
+
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         addModuleChain.execute();
 
     }
 
-    private FacilioModule constructUrlRecordMod() {
+	private FacilioModule constructCurrencyRecordMod () {
+		FacilioModule module = new FacilioModule(FacilioConstants.SystemLookup.CURRENCY_RECORD,
+				"Currency Record",
+				"Currency_Records",
+				FacilioModule.ModuleType.SYSTEM_LOOKUP,
+				false);
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(FieldFactory.getDefaultField(SystemLookupCRUDHandler.PARENT_ID_FIELD_NAME, "Parent Id", "PARENT_ID", FieldType.NUMBER));
+		fields.add(FieldFactory.getDefaultField(SystemLookupCRUDHandler.FIELD_ID_FIELD_NAME, "Field Id", "FIELD_ID", FieldType.NUMBER));
+		fields.add(FieldFactory.getDefaultField("currencyCode", "Currency Code", "CURRENCY_CODE", FieldType.STRING));
+		fields.add(FieldFactory.getDefaultField("currencyValue", "Currency Value", "CURRENCY_VALUE", FieldType.DECIMAL));
+
+
+		module.setFields(fields);
+		return module;
+	}
+
+	private FacilioModule constructUrlRecordMod() {
         FacilioModule module = new FacilioModule(FacilioConstants.SystemLookup.URL_RECORD,
                 "Url Record",
                 "Url_Records",

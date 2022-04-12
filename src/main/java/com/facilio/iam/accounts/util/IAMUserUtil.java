@@ -332,12 +332,12 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getLoginModes(userName, appDomainType, groupType));
 	}
 
-	public static String generateTotpSessionToken(String userName) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().generateTotpSessionToken(userName));
+	public static String generateTotpSessionToken(String userName, String token) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().generateTotpSessionToken(userName, token));
 	}
 
-	public static String generateMFAConfigSessionToken(String userName) throws Exception {
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().generateMFAConfigSessionToken(userName));
+	public static String generateMFAConfigSessionToken(String userName, String token) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().generateMFAConfigSessionToken(userName, token));
 	}
 
 	public static IAMUser resetExpiredPassword(String digest, String password) throws Exception {

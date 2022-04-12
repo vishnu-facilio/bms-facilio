@@ -66,6 +66,12 @@ public class GetApprovalRuleCommand extends FacilioCommand {
                     }
                     else if (rule.getName().equals("Re-Send")) {
                         approvalMeta.setResendApprovers(stateTransitionRule.getApprovers());
+                        approvalMeta.setResendFormId(stateTransitionRule.getFormId());
+                        if (stateTransitionRule.getActions() == null) {
+                            List<ActionContext> actions = ActionAPI.getActiveActionsFromWorkflowRule(stateTransitionRule.getId());
+                            stateTransitionRule.setActions(actions);
+                        }
+                        approvalMeta.setResendActions(stateTransitionRule.getActions());
                     }
                 }
             }

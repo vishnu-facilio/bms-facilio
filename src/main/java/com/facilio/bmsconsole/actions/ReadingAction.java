@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.taskengine.common.JobConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,16 +37,7 @@ import com.facilio.bmsconsole.context.ResetCounterMetaContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
 import com.facilio.bmsconsole.enums.SourceType;
-import com.facilio.bmsconsole.util.AggregatedEnergyConsumptionUtil;
-import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.EnergyMeterUtilAPI;
-import com.facilio.bmsconsole.util.FormulaFieldAPI;
-import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
-import com.facilio.bmsconsole.util.LoggerAPI;
-import com.facilio.bmsconsole.util.ReadingsAPI;
-import com.facilio.bmsconsole.util.RollUpFieldUtil;
-import com.facilio.bmsconsole.util.WorkflowRuleHistoricalLoggerUtil;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.chain.FacilioChain;
@@ -914,10 +907,9 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.DEL_READING_RULE_IDS, getDelReadingRulesIds());
 		
 		WorkflowContext workflow = formula.getWorkflow();
-		if(workflow!= null && workflow.getExpressions() == null) {
+		if(!workflow.isV2Script() && workflow!= null && workflow.getExpressions() == null) {
 			WorkflowUtil.getWorkflowContextFromString(workflow.getWorkflowString(), workflow);
 		}
-		
 		updateEnPIChain.execute();
 		
 		setResult(FacilioConstants.ContextNames.MESSAGE, context.get(FacilioConstants.ContextNames.RESULT));
@@ -1296,7 +1288,7 @@ public class ReadingAction extends FacilioAction {
 			setResult("success", "Rule evaluation for the readings in the given period has been started");	
 		}
 		catch(Exception userException) {
-			setResult("Failed", userException.getMessage());	
+			setResult("Failed", userException.getMessage());
 		}	
 		
 		return SUCCESS;
@@ -1838,4 +1830,24 @@ public class ReadingAction extends FacilioAction {
 		this.excludeForecastReadings = excludeForecastReadings;
 	}
 
+	private Boolean status;
+	public Boolean getStatus() {
+		if (status == null) {
+			return false;
+		}
+		return status;
+	}
+	public void setStatus(Boolean status) {
+		this.status = status;
+	}
+
+	public String changeKPIStatus() throws Exception {
+		FormulaFieldContext context = new FormulaFieldContext();
+		context.setActive(status);
+		context.setId(ruleId);
+		FormulaFieldAPI.updateKPIReadingsStatus(context);
+		setResult("result", "success");
+		return SUCCESS;
+	}
 }
+

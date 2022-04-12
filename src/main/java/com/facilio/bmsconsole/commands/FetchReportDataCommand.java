@@ -1180,7 +1180,7 @@ public class FetchReportDataCommand extends FacilioCommand {
             }
         }
 
-        if (!isAlreadyAdded(addedModules, yAxisModule)) {
+        if (!isAlreadyAdded(addedModules, yAxisModule) && reportType != ReportType.PIVOT_REPORT) {
             selectBuilder.addJoinModules(Collections.singletonList(yAxisModule));
             selectBuilder.innerJoin(yAxisModule.getTableName())
                     .on(fieldMap.get("parentId").getCompleteColumnName() + " = " + resourceModule.getTableName() + ".ID");
@@ -1222,9 +1222,10 @@ public class FetchReportDataCommand extends FacilioCommand {
             if(reportType == ReportType.PIVOT_REPORT && dataPoint.getyAxis().getModule().getTypeEnum() != ModuleType.READING) {
                 facilioField.setTableAlias(getAndSetModuleAlias(facilioField.getModule().getName()));
             } else if(reportType == ReportType.PIVOT_REPORT && dataPoint.getyAxis().getModule().getTypeEnum() == ModuleType.READING) {
-                facilioField.setTableAlias(null);
+                facilioField.setTableAlias(getAndSetModuleAlias(dataPoint.getyAxis().getModuleName()));
+//                facilioField.setTableAlias(null);
             }
-            FacilioField aggrField = dataPoint.getyAxis().getAggrEnum().getSelectField(facilioField);
+            FacilioField aggrField = dataPoint.getyAxis().getAggrEnum().getSelectField(facilioField).clone();
             aggrField.setName(ReportUtil.getAggrFieldName(aggrField, dataPoint.getyAxis().getAggrEnum()));
             fields.add(aggrField);
             if (reportType == ReportType.PIVOT_REPORT) {
@@ -1448,9 +1449,29 @@ public class FetchReportDataCommand extends FacilioCommand {
 
         if(module.getTypeEnum() == ModuleType.READING){
             FacilioField facilioField = (FacilioField) pivotField.get("field");
-            FacilioField moduleField = modBean.getField(facilioField.getFieldId());
-            Condition moduleCondition = CriteriaAPI.getModuleIdIdCondition(moduleField.getModuleId(), moduleField.getModule());
+            FacilioField moduleField = modBean.getField(facilioField.getFieldId()).clone();
+
+            FacilioModule facilioModule = modBean.getModule(moduleField.getModuleId());
+            String tableAlias =  getAndSetModuleAlias(facilioModule.getName());
+
+            FacilioField moduleIdField = FieldFactory.getModuleIdField(facilioModule).clone();
+            moduleIdField.setTableAlias(tableAlias);
+
+            Condition moduleCondition = CriteriaAPI.getCondition(moduleIdField,  String.valueOf(facilioModule.getModuleId()), NumberOperators.EQUALS);
             selectBuilder.andCondition(moduleCondition);
+
+            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(facilioModule.getName()));
+            FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+
+            FacilioField joinField = fieldMap.get("parentId").clone();
+            joinField.setTableAlias(getAndSetModuleAlias(facilioModule.getName()));
+
+            String joinString = joinField.getCompleteColumnName() + " = " + resourceModule.getTableName() + ".ID";
+            String tableName = facilioModule.getTableName()+ " " + tableAlias;
+//            selectBuilder.addJoinModules(Collections.singletonList(facilioModule));
+
+            selectBuilder.innerJoin(tableName)
+                    .on(joinString);
         }
     }
 
@@ -1485,9 +1506,11 @@ public class FetchReportDataCommand extends FacilioCommand {
             field.setTableAlias(getAndSetModuleAlias(field.getModule().getName() + "_" + field.getName()));
         } else {
             tempMap.put("isLookupField",false);
-            if(field.getModule() != null && field.getModule().getTypeEnum() != ModuleType.READING) {
-                field.setName(field.getName());
-                field.setTableAlias(getAndSetModuleAlias(field.getModule().getName()));
+            FacilioField moduleField = modBean.getField(field.getFieldId());
+            FacilioModule facilioModule = module;
+            if(moduleField != null) facilioModule = moduleField.getModule();
+            if(facilioModule != null && !isDataField) {
+                field.setTableAlias(getAndSetModuleAlias(facilioModule.getName()));
             }
         }
         tempMap.put("field", field);

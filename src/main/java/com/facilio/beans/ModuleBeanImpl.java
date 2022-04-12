@@ -658,6 +658,10 @@ public class ModuleBeanImpl implements ModuleBean {
 							prop.putAll (extendedPropsMap.get (type).get (prop.get ("fieldId")));
 							field = FieldUtil.getAsBeanFromMap (prop,DateField.class);
 							break;
+						case CURRENCY_FIELD:
+							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
+							field = constructSystemLookupField(prop, CurrencyField.class);
+							break;
 						default:
 							field = FieldUtil.getAsBeanFromMap(prop, FacilioField.class);
 							break;
@@ -766,6 +770,9 @@ public class ModuleBeanImpl implements ModuleBean {
 				case DATE:
 				case DATE_TIME:
 					extendedProps.put(entry.getKey(), getDateExtendedProps(entry.getValue()));
+					break;
+				case CURRENCY_FIELD:
+					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getCurrencyFieldsModule (), FieldFactory.getCurrencyFieldFields (), entry.getValue()));
 					break;
 				default:
 					break;
@@ -1200,6 +1207,12 @@ public class ModuleBeanImpl implements ModuleBean {
 						LOGGER.info ("Invalid Field instance for the " + field.getDataTypeEnum() + " data type : " + field.getClass().getSimpleName());
 						addExtendedProps(ModuleFactory.getStringFieldModule (), FieldFactory.getStringFieldFields (), fieldProps);
 					}
+					break;
+				case CURRENCY_FIELD:
+					if (!(field instanceof CurrencyField)) {
+						LOGGER.info ("Invalid Field instance for the " + field.getDataTypeEnum() + " data type : " + field.getClass().getSimpleName());
+					}
+					addExtendedProps (ModuleFactory.getCurrencyFieldsModule (), FieldFactory.getCurrencyFieldFields (), fieldProps);
 					break;
 				default:
 					break;
@@ -1671,6 +1684,9 @@ public class ModuleBeanImpl implements ModuleBean {
 			}
 			else if (field instanceof DateField){
 				extendendPropsCount = updateDateField((DateField) field);
+			}
+			else if (field instanceof CurrencyField){
+				extendendPropsCount = updateExtendedProps(ModuleFactory.getCurrencyFieldsModule (), FieldFactory.getCurrencyFieldFields (), field);
 			}
 //			else if (field instanceof ScoreField) {
 //				extendendPropsCount = updateExtendedProps(ModuleFactory.getScoreFieldModule(), FieldFactory.getScoreFieldFields(), field);

@@ -390,6 +390,15 @@ public class ModuleFactory {
 		return fieldModule;
 	}
 
+	public static FacilioModule getCurrencyFieldsModule() {
+		FacilioModule fieldModule = new FacilioModule();
+		fieldModule.setName("currencyField");
+		fieldModule.setDisplayName("Currency Field");
+		fieldModule.setTableName("CurrencyFields");
+		fieldModule.setExtendModule(getFieldsModule());
+		return fieldModule;
+	}
+
 	public static FacilioModule getMultiLookupFieldsModule() {
 		FacilioModule multiLookup = new FacilioModule();
 		multiLookup.setName("multiLookupField");

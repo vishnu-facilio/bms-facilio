@@ -288,9 +288,6 @@ public class FormulaFieldContext implements Serializable {
 	public Boolean getActive() {
 		return active;
 	}
-	public void setActive(Boolean active) {
-		this.active = active;
-	}
 	public void setActive(boolean active) {
 		this.active = active;
 	}

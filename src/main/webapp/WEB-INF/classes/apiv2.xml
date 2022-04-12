@@ -984,7 +984,10 @@
 		<action name="getAllKPICategories"
 			class="com.facilio.bmsconsole.actions.KPIAction" method="getAllKPICategories">
 			<param name="permission">READ</param></action>
-		
+
+		<action name="status"
+				class="com.facilio.bmsconsole.actions.ReadingAction" method="changeKPIStatus">
+		</action>
 	</package>
 	
 	<package name="KPIViewerModule" namespace="/api/v2/kpi/viewer" extends="v2Api">
