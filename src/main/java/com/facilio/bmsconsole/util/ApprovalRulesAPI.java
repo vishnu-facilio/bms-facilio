@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.workflow.rule.*;
-import com.facilio.db.criteria.Condition;
-import com.facilio.db.criteria.manager.NamedCondition;
 import com.facilio.db.criteria.manager.NamedCriteria;
 import com.facilio.db.criteria.manager.NamedCriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
@@ -224,6 +222,15 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 			StateFlowRulesAPI.addOrUpdateFormDetails(rule);
 		}
 		updateExtendedRule(rule, ModuleFactory.getCustomButtonRuleModule(), FieldFactory.getCustomButtonRuleFields());
+
+		return rule;
+	}
+
+	public static WorkflowRuleContext updateSystemButtonRuleWithChildren(SystemButtonRuleContext rule, SystemButtonRuleContext oldRule)throws Exception{
+		updateWorkflowRuleWithChildren(rule,oldRule);
+
+		updateApproverRule(oldRule,rule);
+		updateExtendedRule(rule,ModuleFactory.getSystemButtonRuleModule(),FieldFactory.getSystemButtonRuleFields());
 
 		return rule;
 	}

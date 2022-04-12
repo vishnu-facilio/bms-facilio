@@ -416,6 +416,17 @@
 		</action>
 	</package>
 
+	<package name="systemButton" namespace="/api/v2/systemButton" extends="v2Api">
+		<action name="update"
+				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="updateSystemButton"/>
+		<action name="list"
+				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="getAllSystemButtons"/>
+		<action name="get"
+				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="getSystemButton"/>
+		<action name="getAvailableButtons"
+				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="getAvailableSystemButton"/>
+	</package>
+
 	<package name="fieldRelation" namespace="/api/v2/fieldRelation" extends="v2Api">
 		<action name="runDependency"
 				class="com.facilio.bmsconsole.actions.FieldRelationAction" method="runDependencyHistory" />

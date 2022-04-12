@@ -1961,6 +1961,23 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getAllSystemButtonChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetSystemButtonListCommand());
+		return chain;
+	}
+
+	public static FacilioChain getSystemButtonChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetSystemButtonCommand());
+		return chain;
+	}
+
+	public static FacilioChain getAvailableSystemButtonChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetAvailableSystemButtonsCommand());
+		return chain;
+	}
 	public static FacilioChain getAllServiceCatalogGroupChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetAllServiceCatalogGroupCommand());

@@ -592,7 +592,8 @@ public class WorkflowRuleContext implements Serializable {
 		PM_CUSTOM_TRIGGER_RULE,
 		TRANSACTION_RULE, //43
 
-		SCORING_RULE, // 43
+		SCORING_RULE,// 44
+		SYSTEM_BUTTON,//45
 		;
 		//Always add at the end
 		

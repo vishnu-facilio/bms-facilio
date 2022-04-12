@@ -8341,6 +8341,18 @@ public class FieldFactory extends BaseFieldFactory {
         return list;
     }
 
+    public static List<FacilioField> getSystemButtonRuleFields(){
+        FacilioModule module = ModuleFactory.getSystemButtonRuleModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        fields.add(getIdField(module));
+        fields.add(getField("identifier","IDENTIFIER",module,FieldType.STRING));
+        fields.add(getField("positionType","POSITION_TYPE",module,FieldType.NUMBER));
+        fields.add(getField("buttonType","BUTTON_TYPE",module,FieldType.NUMBER));
+
+        return fields;
+    }
+
     public static List<FacilioField> getStateRuleTransitionFields() {
         FacilioModule stageRuleModule = ModuleFactory.getStateRuleTransitionModule();
         List<FacilioField> list = new ArrayList<>();

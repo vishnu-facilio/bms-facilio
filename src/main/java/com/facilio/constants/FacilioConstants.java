@@ -1002,6 +1002,9 @@ public class FacilioConstants {
 		
 		public static final String LEEDID = "leedID";
 		public static final String LEED = "LEED";
+
+		public static final String SYSTEM_BUTTON = "systemButton";
+		public static final String SYSTEM_BUTTONS = "systemButtons";
 		
 		public static final String METERID = "meterID";
 		public static final String METER = "METER";

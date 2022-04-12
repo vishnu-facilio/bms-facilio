@@ -4685,6 +4685,12 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getUpdateSystemButtonChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new UpdateSystemButtonCommand());
+		return chain;
+	}
+
 
 	public static FacilioChain addContactsChain() {
 		FacilioChain c = getDefaultChain();
