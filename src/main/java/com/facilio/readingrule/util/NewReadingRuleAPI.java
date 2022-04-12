@@ -21,6 +21,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.ns.NamespaceAPI;
+import com.facilio.ns.NamespaceConstants;
 import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.ns.context.NameSpaceField;
 import com.facilio.ns.factory.NamespaceModuleAndFieldFactory;
@@ -198,6 +199,18 @@ public class NewReadingRuleAPI {
         List<Long> rcaRuleIds = resList.stream().map(el -> (Long) el.get("rcaRule")).collect(Collectors.toList());
         return rcaRuleIds;
     }
+    
+    public static Long addNamespace(NameSpaceContext ns) throws Exception {
+    	
+    	GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+                .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())
+                .fields(NamespaceModuleAndFieldFactory.getNamespaceFields());
+        long id = insertBuilder.insert(FieldUtil.getAsProperties(ns));
+        ns.setId(id);
+        
+        return id;
+    }
+
 
     public static void addNamespaceFields(Long nsId, Map<Long, ResourceContext> assetsMap, List<NameSpaceField> fields) throws Exception {
         deleteFieldsIfAlreadyExists(nsId);

@@ -2,12 +2,14 @@ package com.facilio.ns.context;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.*;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class NameSpaceContext {
 
     Long id;
@@ -19,6 +21,12 @@ public class NameSpaceContext {
 
     {
         fields = new ArrayList<>();
+    }
+    
+    public NameSpaceContext(NSType type,Long parentRuleId,Long execInterval) {
+    	this.type = type;
+    	this.parentRuleId = parentRuleId;
+    	this.execInterval = execInterval;
     }
 
     public void addField(NameSpaceField... fs) {

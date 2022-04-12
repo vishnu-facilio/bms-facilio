@@ -778,6 +778,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddNamespaceCommand());
 			c.addCommand(new AddNamespaceFieldsCommand());
 			c.addCommand(new AddRCARulesCommand());
+			c.addCommand(new AddFaultImpactRelationCommand());
 			return c;
 		}
 

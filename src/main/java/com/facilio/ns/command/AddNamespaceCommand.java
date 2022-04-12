@@ -6,6 +6,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.ns.NamespaceConstants;
 import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.ns.factory.NamespaceModuleAndFieldFactory;
+import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
@@ -21,14 +22,10 @@ public class AddNamespaceCommand extends FacilioCommand {
         if (parentRuleId != null) {
             ns.setParentRuleId(parentRuleId);
         }
+        
+        Long id = NewReadingRuleAPI.addNamespace(ns);
 
-        GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-                .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())
-                .fields(NamespaceModuleAndFieldFactory.getNamespaceFields());
-        long id = insertBuilder.insert(FieldUtil.getAsProperties(ns));
         context.put(NamespaceConstants.NAMESPACE_ID, id);
-        ns.setId(id);
-
         return Boolean.FALSE;
     }
 }
