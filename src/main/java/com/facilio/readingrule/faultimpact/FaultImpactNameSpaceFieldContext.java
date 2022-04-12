@@ -21,27 +21,27 @@ public class FaultImpactNameSpaceFieldContext extends V3Context {
 	Long fieldId;
     Long dataInterval;
     
-    AggregationType aggregationType;
+    AggregationType aggregationTypeEnum;
     boolean enabledCompaction;
     String varName;
     
-    public void setAggregationTypeString(String typ) {
-    	aggregationType = AggregationType.valueOf(typ);
+    public void setAggregationType(String aggregationType) {
+        this.aggregationTypeEnum = AggregationType.valueOf(aggregationType);
     }
-    public String getAggregationTypeString() {
-    	if(aggregationType != null) {
-    		return aggregationType.getValue();
+    public String getAggregationType() {
+    	if(aggregationTypeEnum != null) {
+    		return aggregationTypeEnum.getValue();
     	}
     	return null;
     }
     
-    public void setAggregationType(int aggregationType) {
-        this.aggregationType = AggregationType.valueOf(aggregationType);
+    public void setAggregationTypeEnum(int aggregationType) {
+        this.aggregationTypeEnum = AggregationType.valueOf(aggregationType);
     }
     
-    public int getAggregationType() {
-        if(aggregationType != null) {
-        	return aggregationType.getIndex();
+    public int getAggregationTypeEnum() {
+        if(aggregationTypeEnum != null) {
+        	return aggregationTypeEnum.getIndex();
         }
         return -1;
     }
