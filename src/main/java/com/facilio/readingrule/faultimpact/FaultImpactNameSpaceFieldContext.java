@@ -25,6 +25,16 @@ public class FaultImpactNameSpaceFieldContext extends V3Context {
     boolean enabledCompaction;
     String varName;
     
+    public void setAggregationTypeString(String typ) {
+    	aggregationType = AggregationType.valueOf(typ);
+    }
+    public String getAggregationTypeString() {
+    	if(aggregationType != null) {
+    		return aggregationType.getValue();
+    	}
+    	return null;
+    }
+    
     public void setAggregationType(int aggregationType) {
         this.aggregationType = AggregationType.valueOf(aggregationType);
     }
