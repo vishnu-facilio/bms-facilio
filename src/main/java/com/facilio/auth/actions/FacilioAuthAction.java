@@ -655,15 +655,6 @@ public class FacilioAuthAction extends FacilioAction {
 					setDomain(org.getDomain());
 				}
 				appdomainObj = IAMAppUtil.getAppDomainForType(3, org.getOrgId()).get(0);
-			} else if (getLookUpType().equalsIgnoreCase("vendor")) {
-				if (org == null) {
-					List<Map<String, Object>> userData = IAMUserUtil.getUserData(emailFromDigest, AppDomain.GroupType.VENDOR_PORTAL);
-					List<Long> orgIds = new ArrayList<>();
-					userData.forEach(i -> orgIds.add((long) i.get("orgId")));
-					org = IAMOrgUtil.getOrg(orgIds.get(0));
-					setDomain(org.getDomain());
-				}
-				appdomainObj = IAMAppUtil.getAppDomainForType(4, org.getOrgId()).get(0);
 			}
 
 			HttpServletRequest request = ServletActionContext.getRequest();
@@ -674,56 +665,15 @@ public class FacilioAuthAction extends FacilioAction {
 			ipAddress = (ipAddress == null || "".equals(ipAddress.trim())) ? request.getRemoteAddr() : ipAddress;
 			String userType = "mobile";
 
-			SecurityPolicy securityPolicy = null;
+			authtoken = IAMUserUtil.verifyLoginPasswordv3(emailFromDigest, getPassword(), appdomainObj.getDomain(), userAgent, userType, ipAddress);
+			setJsonresponse("token", authtoken);
+			setJsonresponse("username", emailFromDigest);
 
-			List<Map<String, Object>> userData = IAMUserUtil.getUserData(emailFromDigest, appdomainObj.getGroupTypeEnum());
-			Map<String, Object> userMap = userData.get(0);
-			Organization defaultOrg = IAMUserUtil.getDefaultOrg((long) userMap.get("uid"));
-			setDomain(defaultOrg.getDomain());
-			LOGGER.log(Level.INFO,"validateLogin() : default org id : " + defaultOrg.getOrgId());
-			securityPolicy = IAMUserUtil.getUserSecurityPolicy(emailFromDigest, appdomainObj.getGroupTypeEnum());
-			LOGGER.log(Level.INFO,"validateLogin() : security policy is null : " + (securityPolicy == null));
-			LOGGER.log(Level.INFO,"validateLogin() : security policy id : " + (securityPolicy != null ? securityPolicy.getId(): -1L));
+			//deleting .facilio.com cookie(temp handling)
+			FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.com");
+			FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.in");
 
-			boolean hasMfaSettings;
-			Boolean totpEnabled = securityPolicy == null ? null : securityPolicy.getIsTOTPEnabled();
-			hasMfaSettings = totpEnabled != null && totpEnabled;
-
-			if (!hasMfaSettings) {
-				authtoken = IAMUserUtil.verifyLoginPasswordv3(emailFromDigest, getPassword(), appdomainObj.getDomain(), userAgent, userType, ipAddress);
-
-				var resetRequired = false;
-				if (securityPolicy != null && securityPolicy.getIsPwdPolicyEnabled() != null && securityPolicy.getIsPwdPolicyEnabled() && securityPolicy.getPwdMinAge() != null) {
-					resetRequired = handlePasswordPolicy(securityPolicy, emailFromDigest, appdomainObj.getGroupTypeEnum());
-				}
-
-				if (!resetRequired && StringUtils.isNotEmpty(authtoken)) {
-					setJsonresponse("token", authtoken);
-					setJsonresponse("username", emailFromDigest);
-
-					//deleting .facilio.com cookie(temp handling)
-					FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.com");
-					FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.in");
-
-					addAuthCookies(authtoken, false, false, request, true);
-				}
-			} else {
-				IAMUserUtil.validateLoginv3(emailFromDigest, getPassword(), appdomainObj.getDomain(), userAgent, userType, ipAddress, false);
-				Map<String, Object> userMfaSettings = IAMUserUtil.getUserMfaSettings(emailFromDigest, appdomainObj.getGroupTypeEnum());
-				Boolean totpStatus = (Boolean) userMfaSettings.get("totpStatus");
-				boolean isTotpEnabled = totpStatus != null && totpStatus;
-				if (!isTotpEnabled) {
-					setJsonresponse("isOrgTotpEnabled", true);
-					setJsonresponse("isMFASetupRequired", true);
-					setJsonresponse("mfaConfigToken", IAMUserUtil.generateMFAConfigSessionToken(emailFromDigest, emailFromDigest+"_" +appdomainObj.getGroupType()));
-					setJsonresponse("username", emailFromDigest);
-				} else {
-					String jwt = IAMUserUtil.generateTotpSessionToken(emailFromDigest, emailFromDigest+"_" +appdomainObj.getGroupType());
-					setJsonresponse("isOrgTotpEnabled", true);
-					setJsonresponse("isMFASetupRequired", false);
-					setJsonresponse("totpToken", jwt);
-				}
-			}
+			addAuthCookies(authtoken, false, false, request, true);
 		} catch (Exception e) {
 			LOGGER.log(Level.INFO, "Exception while validating password, ", e);
 			Exception ex = e;
@@ -743,11 +693,11 @@ public class FacilioAuthAction extends FacilioAction {
 
 	public String loginWithPasswordAndDigest() throws Exception {
 		if (!StringUtils.isEmpty(getLookUpType())) {
-//			if (getLookUpType().equals("service") || getLookUpType().equalsIgnoreCase("tenant")) {
-			return serviceLoginWithPasswordAndDigest();
-//			} else if (getLookUpType().equals("vendor")) {
-//				return vendorLoginWithPasswordAndDigest();
-//			}
+			if (getLookUpType().equals("service") || getLookUpType().equalsIgnoreCase("tenant")) {
+				return serviceLoginWithPasswordAndDigest();
+			} else if (getLookUpType().equals("vendor")) {
+				return vendorLoginWithPasswordAndDigest();
+			}
 		}
 		String digest = getDigest();
 		String emailFromDigest = null;
@@ -911,13 +861,8 @@ public class FacilioAuthAction extends FacilioAction {
 			} else {
 				groupType = AppDomain.GroupType.FACILIO;
 			}
-		} else {
-			HttpServletRequest request = ServletActionContext.getRequest();
-			AppDomain appdomainObj = IAMAppUtil.getAppDomain(request.getServerName());
-			groupType = appdomainObj.getGroupTypeEnum();
 		}
 
-		emailFromDigest = StringUtils.removeEnd(emailFromDigest, "_"+groupType.getIndex());
 		List<Map<String, Object>> userData = IAMUserUtil.getUserData(emailFromDigest, groupType);
 		var userInfo = userData.get(0);
 
@@ -930,32 +875,14 @@ public class FacilioAuthAction extends FacilioAction {
 		} else {
 			Organization defaultOrg = IAMUserUtil.getDefaultOrg((long) userInfo.get("uid"));
 			setDomain(defaultOrg.getDomain());
-			var securityPolicy = IAMUserUtil.getUserSecurityPolicy(emailFromDigest, groupType);
+			var securityPolicy = IAMUserUtil.getUserSecurityPolicy(emailFromDigest, AppDomain.GroupType.FACILIO);
 			var resetRequired = false;
 			if (securityPolicy != null && securityPolicy.getIsPwdPolicyEnabled() != null && securityPolicy.getIsPwdPolicyEnabled() && securityPolicy.getPwdMinAge() != null) {
-				resetRequired = handlePasswordPolicy(securityPolicy, emailFromDigest, groupType);
-			}
-
-			HttpServletRequest request = ServletActionContext.getRequest();
-
-			var serverName = request.getServerName();
-			if (StringUtils.isNotEmpty(getLookUpType())) {
-				if (getLookUpType().equalsIgnoreCase("service")) {
-					List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL, defaultOrg.getOrgId());
-					serverName = appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain();
-				} else if (getLookUpType().equalsIgnoreCase("tenant"))  {
-					List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.TENANT_PORTAL, defaultOrg.getOrgId());
-					serverName = appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain();
-				} else if (getLookUpType().equalsIgnoreCase("vendor")) {
-					List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.VENDOR_PORTAL, defaultOrg.getOrgId());
-					serverName = appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain();
-				} else if (getLookUpType().equalsIgnoreCase("workq")) {
-					List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.FACILIO, defaultOrg.getOrgId());
-					serverName = appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain();
-				}
+				resetRequired = handlePasswordPolicy(securityPolicy, emailFromDigest);
 			}
 
 			if (!resetRequired) {
+				HttpServletRequest request = ServletActionContext.getRequest();
 				HttpServletResponse response = ServletActionContext.getResponse();
 				String userAgent = request.getHeader("User-Agent");
 
@@ -968,7 +895,7 @@ public class FacilioAuthAction extends FacilioAction {
 
 				String ipAddress = request.getHeader("X-Forwarded-For");
 
-				String authtoken = IAMUserUtil.verifyLoginWithoutPassword(emailFromDigest, userAgent, userType, ipAddress, serverName, null);
+				String authtoken = IAMUserUtil.verifyLoginWithoutPassword(emailFromDigest, userAgent, userType, ipAddress, request.getServerName(), null);
 				setJsonresponse("token", authtoken);
 				setJsonresponse("username", emailFromDigest);
 
@@ -987,11 +914,7 @@ public class FacilioAuthAction extends FacilioAction {
 
 				String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
 				if ("true".equalsIgnoreCase(isWebView)) {
-					if (StringUtils.isNotEmpty(getLookUpType()) && "mobile".equals(userType)) {
-						setPortalWebViewCookies(getLookUpType());
-					} else {
-						setWebViewCookies();
-					}
+					setWebViewCookies();
 				}
 			}
 		}
@@ -1028,15 +951,16 @@ public class FacilioAuthAction extends FacilioAction {
 				}
 
 				SecurityPolicy securityPolicy = null;
-
-				List<Map<String, Object>> userData = IAMUserUtil.getUserData(getUsername(), appdomainObj.getGroupTypeEnum());
-				Map<String, Object> userMap = userData.get(0);
-				Organization defaultOrg = IAMUserUtil.getDefaultOrg((long) userMap.get("uid"));
-				setDomain(defaultOrg.getDomain());
-				LOGGER.log(Level.INFO,"validateLogin() : default org id : " + defaultOrg.getOrgId());
-				securityPolicy = IAMUserUtil.getUserSecurityPolicy(getUsername(), appdomainObj.getGroupTypeEnum());
-				LOGGER.log(Level.INFO,"validateLogin() : security policy is null : " + (securityPolicy == null));
-				LOGGER.log(Level.INFO,"validateLogin() : security policy id : " + (securityPolicy != null ? securityPolicy.getId(): -1L));
+				if (!portalUser) {
+					List<Map<String, Object>> userData = IAMUserUtil.getUserData(getUsername(), AppDomain.GroupType.FACILIO);
+					Map<String, Object> userMap = userData.get(0);
+					Organization defaultOrg = IAMUserUtil.getDefaultOrg((long) userMap.get("uid"));
+					setDomain(defaultOrg.getDomain());
+					LOGGER.log(Level.INFO,"validateLogin() : default org id : " + defaultOrg.getOrgId());
+					securityPolicy = IAMUserUtil.getUserSecurityPolicy(getUsername(), AppDomain.GroupType.FACILIO);
+					LOGGER.log(Level.INFO,"validateLogin() : security policy is null : " + (securityPolicy == null));
+					LOGGER.log(Level.INFO,"validateLogin() : security policy id : " + (securityPolicy != null ? securityPolicy.getId(): -1L));
+				}
 
 				boolean hasMfaSettings;
 				Boolean totpEnabled = securityPolicy == null ? null : securityPolicy.getIsTOTPEnabled();
@@ -1048,7 +972,7 @@ public class FacilioAuthAction extends FacilioAction {
 
 					var resetRequired = false;
 					if (securityPolicy != null && securityPolicy.getIsPwdPolicyEnabled() != null && securityPolicy.getIsPwdPolicyEnabled() && securityPolicy.getPwdMinAge() != null) {
-						resetRequired = handlePasswordPolicy(securityPolicy, getUsername(), appdomainObj.getGroupTypeEnum());
+						resetRequired = handlePasswordPolicy(securityPolicy, getUsername());
 					}
 
 					if (!resetRequired && StringUtils.isNotEmpty(authtoken)) {
@@ -1063,16 +987,16 @@ public class FacilioAuthAction extends FacilioAction {
 					}
 				} else {
 					IAMUserUtil.validateLoginv3(getUsername(), getPassword(), request.getServerName(), userAgent, userType, ipAddress, false);
-					Map<String, Object> userMfaSettings = IAMUserUtil.getUserMfaSettings(getUsername(), appdomainObj.getGroupTypeEnum());
+					Map<String, Object> userMfaSettings = IAMUserUtil.getUserMfaSettings(getUsername(), AppDomain.GroupType.FACILIO);
 					Boolean totpStatus = (Boolean) userMfaSettings.get("totpStatus");
 					boolean isTotpEnabled = totpStatus != null && totpStatus;
 					if (!isTotpEnabled) {
 						setJsonresponse("isOrgTotpEnabled", true);
 						setJsonresponse("isMFASetupRequired", true);
-						setJsonresponse("mfaConfigToken", IAMUserUtil.generateMFAConfigSessionToken(getUsername(), getUsername() + "_" + appdomainObj.getGroupType()));
+						setJsonresponse("mfaConfigToken", IAMUserUtil.generateMFAConfigSessionToken(getUsername()));
 						setJsonresponse("username", getUsername());
 					} else {
-						String jwt = IAMUserUtil.generateTotpSessionToken(getUsername(), getUsername() + "_" + appdomainObj.getGroupType());
+						String jwt = IAMUserUtil.generateTotpSessionToken(getUsername());
 						setJsonresponse("isOrgTotpEnabled", true);
 						setJsonresponse("isMFASetupRequired", false);
 						setJsonresponse("totpToken", jwt);
@@ -1100,12 +1024,12 @@ public class FacilioAuthAction extends FacilioAction {
 		return ERROR;
 	}
 
-	private boolean handlePasswordPolicy(SecurityPolicy securityPolicy, String emailaddress, GroupType groupType) throws Exception {
+	private boolean handlePasswordPolicy(SecurityPolicy securityPolicy, String emailaddress) throws Exception {
 		Integer pwdMinAge = securityPolicy.getPwdMinAge();
 		if (pwdMinAge == null) {
 			return false;
 		}
-		List<Map<String, Object>> userData = IAMUserUtil.getUserData(emailaddress, groupType);
+		List<Map<String, Object>> userData = IAMUserUtil.getUserData(emailaddress, AppDomain.GroupType.FACILIO);
 		Long pwdLastUpdatedTime = (Long) userData.get(0).get("pwdLastUpdatedTime");
 		if (pwdLastUpdatedTime != null) {
 			Instant pwdLastUpdatedInstant = Instant.ofEpochMilli(pwdLastUpdatedTime);
@@ -1113,7 +1037,7 @@ public class FacilioAuthAction extends FacilioAction {
 			Duration elapsedDuration = Duration.between(pwdLastUpdatedInstant, currentTimeInstant);
 			var allowedDuration = Duration.ofDays(pwdMinAge);
 			if (elapsedDuration.compareTo(allowedDuration) >= 0) {
-				String resetToken = IAMUserUtil.generatePWDPolicyPWDResetToken(emailaddress, groupType);
+				String resetToken = IAMUserUtil.generatePWDPolicyPWDResetToken(emailaddress, AppDomain.GroupType.FACILIO);
 				setJsonresponse("pwdPolicyResetToken", resetToken);
 				return true;
 			}
@@ -1139,7 +1063,7 @@ public class FacilioAuthAction extends FacilioAction {
 			return ERROR;
 		}
 
-		AppDomain.GroupType groupType;
+		AppDomain.GroupType groupType = AppDomain.GroupType.FACILIO;
 		if (StringUtils.isNotEmpty(getLookUpType())) {
 			if (getLookUpType().equalsIgnoreCase("service") || getLookUpType().equalsIgnoreCase("tenant")) {
 				groupType = AppDomain.GroupType.TENANT_OCCUPANT_PORTAL;
@@ -1148,12 +1072,8 @@ public class FacilioAuthAction extends FacilioAction {
 			} else {
 				groupType = AppDomain.GroupType.FACILIO;
 			}
-		} else {
-			HttpServletRequest request = ServletActionContext.getRequest();
-			AppDomain appdomainObj = IAMAppUtil.getAppDomain(request.getServerName());
-			groupType = appdomainObj.getGroupTypeEnum();
 		}
-		emailFromDigest = StringUtils.removeEnd(emailFromDigest, "_"+groupType.getIndex());
+
 		Map<String, Object> userMfaSettings = IAMUserUtil.getUserMfaSettings(emailFromDigest, groupType);
 		SettingsMfa settingsMfa = new SettingsMfa();
 		settingsMfa.generateMfaData((Long) userMfaSettings.get("userId"));
@@ -1183,9 +1103,7 @@ public class FacilioAuthAction extends FacilioAction {
 			return ERROR;
 		}
 
-		AppDomain.GroupType groupType;
-		HttpServletRequest request = ServletActionContext.getRequest();
-		String serverName = request.getServerName();
+		AppDomain.GroupType groupType = AppDomain.GroupType.FACILIO;
 		if (StringUtils.isNotEmpty(getLookUpType())) {
 			if (getLookUpType().equalsIgnoreCase("service") || getLookUpType().equalsIgnoreCase("tenant")) {
 				groupType = AppDomain.GroupType.TENANT_OCCUPANT_PORTAL;
@@ -1194,39 +1112,21 @@ public class FacilioAuthAction extends FacilioAction {
 			} else {
 				groupType = AppDomain.GroupType.FACILIO;
 			}
-		} else {
-			AppDomain appdomainObj = IAMAppUtil.getAppDomain(request.getServerName());
-			groupType = appdomainObj.getGroupTypeEnum();
 		}
-		emailFromDigest = StringUtils.removeEnd(emailFromDigest, "_"+groupType.getIndex());
+
 		Map<String, Object> userMfaSettings = IAMUserUtil.getUserMfaSettings(emailFromDigest, groupType);
 		if(IAMUserUtil.totpChecking(totp, (long) userMfaSettings.get("userId"))){
 			IAMUserUtil.updateUserMfaSettingsStatus((long) userMfaSettings.get("userId"),true);
 			Organization org = IAMUserUtil.getDefaultOrg((long) userMfaSettings.get("userId"));
 			setDomain(org.getDomain());
-			var securityPolicy = IAMUserUtil.getUserSecurityPolicy(emailFromDigest, groupType);
+			var securityPolicy = IAMUserUtil.getUserSecurityPolicy(emailFromDigest, AppDomain.GroupType.FACILIO);
 			var resetRequired = false;
 			if (securityPolicy != null && securityPolicy.getIsPwdPolicyEnabled() != null && securityPolicy.getIsPwdPolicyEnabled() && securityPolicy.getPwdMinAge() != null) {
-				resetRequired = handlePasswordPolicy(securityPolicy, emailFromDigest, groupType);
-			}
-
-			if (StringUtils.isNotEmpty(getLookUpType())) {
-				if (getLookUpType().equalsIgnoreCase("service")) {
-					List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL, org.getOrgId());
-					serverName = appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain();
-				} else if (getLookUpType().equalsIgnoreCase("tenant"))  {
-					List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.TENANT_PORTAL, org.getOrgId());
-					serverName = appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain();
-				} else if (getLookUpType().equalsIgnoreCase("vendor")) {
-					List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.VENDOR_PORTAL, org.getOrgId());
-					serverName = appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain();
-				} else if (getLookUpType().equalsIgnoreCase("workq")) {
-					List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.FACILIO, org.getOrgId());
-					serverName = appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain();
-				}
+				resetRequired = handlePasswordPolicy(securityPolicy, emailFromDigest);
 			}
 
 			if (!resetRequired) {
+				HttpServletRequest request = ServletActionContext.getRequest();
 				HttpServletResponse response = ServletActionContext.getResponse();
 				String userAgent = request.getHeader("User-Agent");
 
@@ -1239,7 +1139,7 @@ public class FacilioAuthAction extends FacilioAction {
 
 				String ipAddress = request.getHeader("X-Forwarded-For");
 
-				String authtoken = IAMUserUtil.verifyLoginWithoutPassword(emailFromDigest, userAgent, userType, ipAddress, serverName, null);
+				String authtoken = IAMUserUtil.verifyLoginWithoutPassword(emailFromDigest, userAgent, userType, ipAddress, request.getServerName(), null);
 				setJsonresponse("token", authtoken);
 				setJsonresponse("username", emailFromDigest);
 
@@ -1258,11 +1158,7 @@ public class FacilioAuthAction extends FacilioAction {
 
 				String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
 				if ("true".equalsIgnoreCase(isWebView)) {
-					if (StringUtils.isNotEmpty(getLookUpType()) && "mobile".equals(userType)) {
-						setPortalWebViewCookies(getLookUpType());
-					} else {
-						setWebViewCookies();
-					}
+					setWebViewCookies();
 				}
 			}
 		} else{
@@ -1823,12 +1719,8 @@ public class FacilioAuthAction extends FacilioAction {
 				var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; HttpOnly;";
 				response.addHeader("Set-Cookie", cookieString);
 			} else {
-				var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; HttpOnly; SameSite=Lax";
+				var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
 				response.addHeader("Set-Cookie", cookieString);
-				if(portalUser) {
-					var portalCookie = "fc.idToken.facilioportal="+authtoken+"; Max-Age=604800; Path=/; HttpOnly; SameSite=Lax";
-					response.addHeader("Set-Cookie", portalCookie);
-				}
 			}
 		} else if("stage".equals(FacilioProperties.getEnvironment()) && !isMobile) {
 			var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
@@ -2133,7 +2025,7 @@ public class FacilioAuthAction extends FacilioAction {
 			return ERROR;
 		}
 
-		AppDomain.GroupType groupType;
+		AppDomain.GroupType groupType = AppDomain.GroupType.FACILIO;
 		if (StringUtils.isNotEmpty(getLookUpType())) {
 			if (getLookUpType().equalsIgnoreCase("service") || getLookUpType().equalsIgnoreCase("tenant")) {
 				groupType = AppDomain.GroupType.TENANT_OCCUPANT_PORTAL;
@@ -2142,33 +2034,9 @@ public class FacilioAuthAction extends FacilioAction {
 			} else {
 				groupType = AppDomain.GroupType.FACILIO;
 			}
-		} else {
-			HttpServletRequest request = ServletActionContext.getRequest();
-			AppDomain appdomainObj = IAMAppUtil.getAppDomain(request.getServerName());
-			groupType = appdomainObj.getGroupTypeEnum();
 		}
-		Map<String, Object> userMfaSettings = IAMUserUtil.getUserMfaSettings(user.getUserName(), groupType);
-		Organization org = IAMUserUtil.getDefaultOrg((long) userMfaSettings.get("userId"));
-		setDomain(org.getDomain());
 
 		HttpServletRequest request = ServletActionContext.getRequest();
-		String serverName = request.getServerName();
-		if (StringUtils.isNotEmpty(getLookUpType())) {
-			if (getLookUpType().equalsIgnoreCase("service")) {
-				List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL, org.getOrgId());
-				serverName = appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain();
-			} else if (getLookUpType().equalsIgnoreCase("tenant"))  {
-				List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.TENANT_PORTAL, org.getOrgId());
-				serverName = appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain();
-			} else if (getLookUpType().equalsIgnoreCase("vendor")) {
-				List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.VENDOR_PORTAL, org.getOrgId());
-				serverName = appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain();
-			} else if (getLookUpType().equalsIgnoreCase("workq")) {
-				List<AppDomain> appDomain = IAMAppUtil.getAppDomain(AppDomainType.FACILIO, org.getOrgId());
-				serverName = appDomain.stream().filter(i -> i.getDomainTypeEnum() == AppDomain.DomainType.DEFAULT).findAny().get().getDomain();
-			}
-		}
-
 		HttpServletResponse response = ServletActionContext.getResponse();
 		String userAgent = request.getHeader("User-Agent");
 
@@ -2181,7 +2049,7 @@ public class FacilioAuthAction extends FacilioAction {
 
 		String ipAddress = request.getHeader("X-Forwarded-For");
 
-		String authtoken = IAMUserUtil.verifyLoginWithoutPassword(user.getEmail(), userAgent, userType, ipAddress, serverName, null);
+		String authtoken = IAMUserUtil.verifyLoginWithoutPassword(user.getEmail(), userAgent, userType, ipAddress, request.getServerName(), null);
 		setJsonresponse("token", authtoken);
 		setJsonresponse("username", user.getEmail());
 

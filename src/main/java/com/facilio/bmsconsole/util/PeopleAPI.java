@@ -338,13 +338,6 @@ public class PeopleAPI {
 			appId = ApplicationApi.getApplicationIdForLinkName(appLinkName);
 			AppDomain appDomain = ApplicationApi.getAppDomainForApplication(appId);
 			if(appDomain != null) {
-				long secPolId = -1L;
-				if (person.getSecurityPolicyMap() != null) {
-					Long securityPolicyId = person.getSecurityPolicyMap().get(appLinkName);
-					if (securityPolicyId != null) {
-						secPolId = securityPolicyId;
-					}
-				}
 	        	User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
 	        	if((appLinkName.equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP) && existingPeople.isTenantPortalAccess())) {
 	        		if(MapUtils.isEmpty(person.getRolesMap()) || !person.getRolesMap().containsKey(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP)){
@@ -355,13 +348,12 @@ public class PeopleAPI {
 						user.setAppDomain(appDomain);
 						user.setRoleId(roleId);
 						user.setApplicationId(appId);
-						user.setSecurityPolicyId(secPolId);
 						user.setLanguage(person.getLanguage());
 						ApplicationApi.addUserInApp(user, false);
 						AccountUtil.getUserBean().updateUser(user);
 					}
 					else {
-						addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP, appDomain.getIdentifier(), false, roleId, secPolId);
+						addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP, appDomain.getIdentifier(), roleId);
 					}
 				}
 				else {
@@ -393,13 +385,6 @@ public class PeopleAPI {
 			AppDomain appDomain = null;
 			long appId = ApplicationApi.getApplicationIdForLinkName(linkName); 
 			appDomain = ApplicationApi.getAppDomainForApplication(appId);
-			long secPolId = -1L;
-			if (person.getSecurityPolicyMap() != null) {
-				Long securityPolicyId = person.getSecurityPolicyMap().get(linkName);
-				if (securityPolicyId != null) {
-					secPolId = securityPolicyId;
-				}
-			}
 			if(appDomain != null) {
 	        	User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
 	        	if((linkName.equals(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP) && existingPeople.isOccupantPortalAccess())) {
@@ -412,7 +397,6 @@ public class PeopleAPI {
 						user.setApplicationId(appId);
 						user.setRoleId(roleId);
 						user.setLanguage(person.getLanguage());
-						user.setSecurityPolicyId(secPolId);
 						if(isSsoEnabled)
 						{
 							user.setUserVerified(true);
@@ -422,7 +406,7 @@ public class PeopleAPI {
 						AccountUtil.getUserBean().updateUser(user);
 					}
 					else {
-						addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, appDomain.getIdentifier(), verifyUser, roleId, secPolId);
+						addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, appDomain.getIdentifier(), verifyUser, roleId);
 					}
 				}
 				else {
@@ -492,13 +476,6 @@ public class PeopleAPI {
 			long appId = ApplicationApi.getApplicationIdForLinkName(linkName);
 			appDomain = ApplicationApi.getAppDomainForApplication(appId); 
 			if(appDomain != null) {
-				long secPolId = -1L;
-				if (person.getSecurityPolicyMap() != null) {
-					Long securityPolicyId = person.getSecurityPolicyMap().get(linkName);
-					if (securityPolicyId != null) {
-						secPolId = securityPolicyId;
-					}
-				}
 	        	User user = AccountUtil.getUserBean().getUser(existingPeople.getEmail(), appDomain.getIdentifier());
 	        	if((linkName.equals(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP) && existingPeople.isVendorPortalAccess())) {
 					if(MapUtils.isEmpty(person.getRolesMap()) || !person.getRolesMap().containsKey(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP)){
@@ -511,12 +488,11 @@ public class PeopleAPI {
 						user.setApplicationId(appId);
 						user.setRoleId(roleId);
 						user.setLanguage(person.getLanguage());
-						user.setSecurityPolicyId(secPolId);
 						ApplicationApi.addUserInApp(user, false);
 						AccountUtil.getUserBean().updateUser(user);
 					}
 					else {
-						User newUser = addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP, appDomain.getIdentifier(), false, roleId, secPolId);
+						User newUser = addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP, appDomain.getIdentifier(), roleId);
 						newUser.setAppDomain(appDomain);
 			    	}
 				}
@@ -640,9 +616,9 @@ public class PeopleAPI {
 	}
 
 	public static User addPortalAppUser(PeopleContext existingPeople, String linkName, String identifier, long roleId) throws Exception {
-		return addPortalAppUser(existingPeople, linkName, identifier, false, roleId, -1);
+		return addPortalAppUser(existingPeople, linkName, identifier, false, roleId);
 	}
-	public static User addPortalAppUser(PeopleContext existingPeople, String linkName, String identifier, boolean verifyUser, long roleId, long securityPolicyId) throws Exception {
+	public static User addPortalAppUser(PeopleContext existingPeople, String linkName, String identifier, boolean verifyUser, long roleId) throws Exception {
 		if(StringUtils.isEmpty(linkName)) {
 			throw new IllegalArgumentException("Invalid link name");
 		}
@@ -659,7 +635,7 @@ public class PeopleAPI {
 		user.setUserType(AccountConstants.UserType.REQUESTER.getValue());
 		user.setRoleId(roleId);
 		user.setLanguage(existingPeople.getLanguage());
-		user.setSecurityPolicyId(securityPolicyId);
+		
 		user.setApplicationId(appId);
 		user.setAppDomain(ApplicationApi.getAppDomainForApplication(appId));
 		

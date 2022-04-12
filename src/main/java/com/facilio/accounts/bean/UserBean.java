@@ -38,8 +38,6 @@ public interface UserBean {
 	public boolean deleteUser(long ouId, boolean shouldDeletePeople) throws Exception;
 
 	public User getUser(long ouid, boolean fetchDeleted) throws Exception;
-
-	List<User> getUsers(List<Long> ouids, boolean fetchDeleted) throws Exception;
 	
 	public User getUser(long appId, long orgId, long userId, String appDomain) throws Exception;
 
