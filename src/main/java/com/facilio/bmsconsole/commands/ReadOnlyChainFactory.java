@@ -2459,7 +2459,6 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GenerateGenericSearchConditionCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		chain.addCommand(new FetchRolesForPeopleCommand());
-		chain.addCommand(new FetchSecurityPoliciesForPeopleCommand());
 		chain.addCommand(new FetchScopingForPeopleCommand());
 		return chain;
 	}
@@ -2478,7 +2477,6 @@ public class ReadOnlyChainFactory {
         chain.addCommand(new GenericGetModuleDataListCommand());
 		chain.addCommand(new FetchRolesForPeopleCommand());
 		chain.addCommand(new FetchScopingForPeopleCommand());
-		chain.addCommand(new FetchSecurityPoliciesForPeopleCommand());
 		return chain;
 	}
 
@@ -2610,7 +2608,6 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		chain.addCommand(new FetchRolesForPeopleCommand());
 		chain.addCommand(new FetchScopingForPeopleCommand());
-		chain.addCommand(new FetchSecurityPoliciesForPeopleCommand());
 		return chain;
 	}
 	

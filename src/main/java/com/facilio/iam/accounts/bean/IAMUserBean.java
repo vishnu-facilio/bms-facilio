@@ -174,9 +174,9 @@ public interface IAMUserBean {
 
 	public Map<String, Object> getLoginModes(String userName, AppDomain.AppDomainType appDomainType, AppDomain.GroupType groupType) throws Exception;
 
-	public String generateTotpSessionToken(String userName, String token) throws Exception;
+	public String generateTotpSessionToken(String userName) throws Exception;
 
-	String generateMFAConfigSessionToken(String userName, String token) throws Exception;
+	String generateMFAConfigSessionToken(String userName) throws Exception;
 
 	public boolean updateUserMfaSettingsSecretKey(long userId,String value) throws Exception;
 
