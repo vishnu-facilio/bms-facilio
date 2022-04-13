@@ -379,10 +379,12 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				if(user != null) {
 					user.setUserVerified(true);
 					user.setPassword(password);
+					user.setPwdLastUpdatedTime(System.currentTimeMillis());
 					Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(IAMAccountConstants.getAccountsUserFields());
 					List<FacilioField> fieldsToBeUpdated = new ArrayList<FacilioField>();
 					fieldsToBeUpdated.add(fieldMap.get("userVerified"));
 					fieldsToBeUpdated.add(IAMAccountConstants.getUserPasswordField());
+					fieldsToBeUpdated.add(fieldMap.get("pwdLastUpdatedTime"));
 					updateUserv2(user, fieldsToBeUpdated);
 					return true;
 				}
