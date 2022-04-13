@@ -76,7 +76,9 @@ public class TenantUnitSpacePageFactory extends PageFactory {
         Page.Section tab2Sec1 = page.new Section();
         tab2.addSection(tab2Sec1);
         addSecondaryDetailsWidget(tab2Sec1);
-        addNotesAttachmentsModule(tab2Sec1);
+        if(!(AccountUtil.getCurrentOrg().getId() == 418l && AccountUtil.getCurrentApp() != null && AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP))) {
+            addNotesAttachmentsModule(tab2Sec1);
+        }
 
         Page.Tab tab3 = page.new Tab("related records");
         page.addTab(tab3);
