@@ -126,13 +126,11 @@ public class AgentApiV2 {
     public static boolean editAgent(FacilioAgent agent, JSONObject jsonObject, boolean updateLastDataReceivedTime) throws Exception {
             AgentType agentType = AgentType.valueOf(agent.getAgentType());
             Long currTime = System.currentTimeMillis();
-            if (jsonObject.containsKey(AgentConstants.TIMESTAMP)) {
-                currTime = (Long) jsonObject.get(AgentConstants.TIMESTAMP);
-            }
             if (updateLastDataReceivedTime) {
                 agent.setLastDataReceivedTime(currTime);
             }
-            if (containsValueCheck(AgentConstants.DISPLAY_NAME, jsonObject)) {
+            updateAgentLastDataRevievedTime(agent);
+        if (containsValueCheck(AgentConstants.DISPLAY_NAME, jsonObject)) {
                 if (!jsonObject.get(AgentConstants.DISPLAY_NAME).toString().equals(agent.getDisplayName())) {
                     agent.setDisplayName(jsonObject.get(AgentConstants.DISPLAY_NAME).toString());
                     agent.setLastModifiedTime(currTime);
