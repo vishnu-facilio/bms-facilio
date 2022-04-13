@@ -64,9 +64,9 @@ public class TenantUnitSpacePageFactory extends PageFactory {
         photoWidget.addToLayoutParams(tab1Sec1, 24, 4);
         photoWidget.addToWidgetParams("card","tenantunitphoto");
         tab1Sec1.addWidget(photoWidget);
-
-        addTenantUnitSpecialWidget(tab1Sec1);
-
+        if(!(AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().isPortalUser())){
+            addTenantUnitSpecialWidget(tab1Sec1);
+        }
         if (record == null) {
             return page;
         }
