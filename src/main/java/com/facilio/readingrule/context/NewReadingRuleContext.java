@@ -73,7 +73,10 @@ public class NewReadingRuleContext implements ReadingRuleInterface, Cloneable {
     }
 
     public boolean isActive() {
-        return status;
+        if(status != null) {
+			return status.booleanValue();
+		}
+		return false;
     }
 
     FacilioField readingField;

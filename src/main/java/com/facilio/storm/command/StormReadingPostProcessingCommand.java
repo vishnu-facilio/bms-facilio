@@ -12,6 +12,7 @@ import com.facilio.queue.source.MessageSourceUtil;
 import com.facilio.services.messageQueue.MessageQueue;
 import com.facilio.services.messageQueue.MessageQueueFactory;
 import com.facilio.services.procon.message.FacilioRecord;
+import lombok.extern.log4j.Log4j;
 import lombok.val;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.MapUtils;
@@ -20,6 +21,7 @@ import org.json.simple.JSONObject;
 import java.util.List;
 import java.util.Map;
 
+@Log4j
 public class StormReadingPostProcessingCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -40,6 +42,10 @@ public class StormReadingPostProcessingCommand extends FacilioCommand {
                         Object readingVal = readingEntry.getValue();
 
                         FacilioField field = modBean.getField(fieldName, moduleName);
+
+                        if(field == null) {//TODO: find the problem and delete this check.
+                            LOGGER.info("field is null. field name : " + fieldName + ",  module : " + moduleName);
+                        }
 
                         JSONObject json = new JSONObject();
                         json.put("orgId", readingContext.getOrgId());
