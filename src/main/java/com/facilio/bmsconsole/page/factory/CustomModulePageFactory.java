@@ -88,8 +88,10 @@ public class CustomModulePageFactory extends PageFactory {
 			addCommonSubModuleWidget(tab1Sec1, module, record, titleMap,true);
 		}
 		else if(isAtreTenantHideCommentsModules) {
+			if(!module.getName().equals("custom_contracts")) {
 				PageWidget.WidgetType widgetType = PageWidget.WidgetType.ATTACHMENT;
-				addCommonSubModuleWidget(tab1Sec1, module, record, titleMap,false,widgetType);
+				addCommonSubModuleWidget(tab1Sec1, module, record, titleMap, false, widgetType);
+			}
 		}else{
 			addCommonSubModuleWidget(tab1Sec1, module, record, titleMap,false);
 		}
