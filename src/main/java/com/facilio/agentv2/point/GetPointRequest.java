@@ -185,7 +185,7 @@ public class GetPointRequest {
                         LOGGER.info(controllerType.asString()+"Getpoints query "+selectRecordBuilder.toString());
                     }
                 }catch (Exception e){
-                    LOGGER.info("Exceptio  while getting points for type "+controllerType.asString()+" "+e);
+                    LOGGER.info("Exceptio  while getting points for type "+controllerType.asString(), e);
                 }
             }
         }
