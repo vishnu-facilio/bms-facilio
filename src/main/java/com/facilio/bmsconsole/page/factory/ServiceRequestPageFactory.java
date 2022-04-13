@@ -45,12 +45,18 @@ public class ServiceRequestPageFactory extends PageFactory {
 
                 addCommonSubModuleWidget(tab2sec1, module, record, titleMap, false, PageWidget.WidgetType.ATTACHMENT);
             } else {
-            	
-            	PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.SECONDARY_DETAILS_WIDGET);
-                secondaryDetailsWidget.addToLayoutParams(tab2sec1, 24, 7);
-                tab2sec1.addWidget(secondaryDetailsWidget);
-            	
-                addCommonSubModuleWidget(tab2sec1, module, record, titleMap, false);
+            	if(AccountUtil.getCurrentUser().isPortalUser() && AccountUtil.getCurrentOrg().getOrgId() == 418l){
+                    PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.SECONDARY_DETAILS_WIDGET);
+                    secondaryDetailsWidget.addToLayoutParams(tab2sec1, 24, 7);
+                    tab2sec1.addWidget(secondaryDetailsWidget);
+                    addCommonSubModuleWidget(tab2sec1, module, record, titleMap, false, PageWidget.WidgetType.COMMENT);
+                }
+                else{
+                    PageWidget secondaryDetailsWidget = new PageWidget(PageWidget.WidgetType.SECONDARY_DETAILS_WIDGET);
+                    secondaryDetailsWidget.addToLayoutParams(tab2sec1, 24, 7);
+                    tab2sec1.addWidget(secondaryDetailsWidget);
+                    addCommonSubModuleWidget(tab2sec1, module, record, titleMap, false);
+                }
             }
             // Showing Related list for Main app and in portal for nmdp org
             if (AccountUtil.getCurrentOrg().getOrgId() == 429l || !AccountUtil.getCurrentUser().isPortalUser()) {
