@@ -3,15 +3,10 @@ package com.facilio.agent.integration;
 import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.FacilioAgent;
-import com.facilio.agentv2.AgentUtilV2;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.queue.source.MessageSource;
-import com.facilio.queue.source.MessageSourceUtil;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
-import com.facilio.services.messageQueue.MessageQueueFactory;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -78,7 +73,7 @@ public class DownloadCertFile {
         if (url == null) {
             LOGGER.info(" url not present ");
             String orgDomainName = AccountUtil.getCurrentAccount().getOrg().getDomain();
-            CreateKeysAndCertificateResult certificateResult = AwsUtil.createIotToKinesis(policyName, orgDomainName, type);
+            CreateKeysAndCertificateResult certificateResult = AwsUtil.createIotToKafkaLink(policyName, orgDomainName, type);
             String directoryName = "facilio/";
             String outFileName = FacilioAgent.getCertFileName(type);
             File file = new File(System.getProperty("user.home") + outFileName);
@@ -99,9 +94,9 @@ public class DownloadCertFile {
     }
 
     public static long addCertificate(String policyName, String type) throws Exception {
-		long fileId = -1;
-		CreateKeysAndCertificateResult certificateResult = AwsUtil.createIotToKinesis(policyName, policyName, type);
-		String directoryName = "facilio/";
+        long fileId = -1;
+        CreateKeysAndCertificateResult certificateResult = AwsUtil.createIotToKafkaLink(policyName, policyName, type);
+        String directoryName = "facilio/";
 		String certFileId = FacilioAgent.getCertFileId(type);
 		String outFileName = FacilioAgent.getCertFileName(type);
 		File file = new File(System.getProperty("user.home") + outFileName);

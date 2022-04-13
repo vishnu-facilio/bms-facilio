@@ -20,20 +20,14 @@ import com.amazonaws.services.simpleemail.model.*;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.util.CommonAPI;
-import com.facilio.bmsconsole.util.CommonAPI.NotificationType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.db.transaction.FacilioTransactionManager;
-import com.facilio.email.EmailUtil;
-import com.facilio.queue.source.MessageSource;
+import com.facilio.fw.FacilioException;
+import com.facilio.queue.source.KafkaMessageSource;
+import com.facilio.queue.source.MessageSourceUtil;
 import com.facilio.service.FacilioService;
-import com.facilio.services.factory.FacilioFactory;
-import com.facilio.services.messageQueue.MessageQueueFactory;
-import com.facilio.time.DateTimeUtil;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
@@ -82,10 +76,7 @@ public class AwsUtil extends BaseAwsUtil{
 
 	private static final String AWS_IOT_SERVICE_NAME = "iotdata";
 
-	private static final String KINESIS_PARTITION_KEY = "${clientid()}";
-	private static final String IAM_ARN_PREFIX = "arn:aws:iam::";
-	private static final String KINESIS_PUT_ROLE_SUFFIX = ":role/service-role/kinesisput";
-	private static final String IOT_SQL_VERSION = "2016-03-23";//Refer the versions available in AWS iot sql version document before changing.
+	private static final String KAFKA_PARTITION_KEY = "${clientid()}";
 
 	private static Map<String, AWSIotMqttClient> AWS_IOT_MQTT_CLIENTS = new HashMap<>();
 
@@ -98,6 +89,13 @@ public class AwsUtil extends BaseAwsUtil{
 	private static volatile AmazonSQS awsSQS = null;
 	// private static volatile User user = null;
 	private static String region = null;
+	private static final String IOT_RULE_SECURITY_PROTOCOL = "iot.rule.security.protocol";
+	private static final String IOT_RULE_SASL_MECHANISM = "iot.rule.sasl.mechanism";
+	private static final String BOOTSTRAP_SERVERS = "bootstrap.servers";
+	private static final String IOT_RULE_SASL_SCRAM_USERNAME = "iot.rule.sasl.scram.username";
+	private static final String IOT_RULE_SASL_SCRAM_PASSWORD = "iot.rule.sasl.scram.password";
+	private static final String IOT_SQL_VERSION = "2016-03-23";//Refer the versions available in AWS iot sql version document before changing.
+	private static final String IOT_RULE_ARN = "iot.rule.arn";
 
 	public static Map<String, Object> getClientInfoAsService() throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE, () -> getClientInfo());
@@ -582,27 +580,55 @@ public class AwsUtil extends BaseAwsUtil{
 
 	}
 
-	private static void createIotTopicRule(AWSIot iotClient, String policyAndOrgDomainName) {
+	private static void createIotTopicRule(AWSIot iotClient, String policyAndOrgDomainName) throws Exception {
 		Objects.requireNonNull(iotClient, "iotClient null");
 		Objects.requireNonNull(policyAndOrgDomainName, "policyAndOrgDomainName null");
 		LOGGER.info(" creating iot rule ");
 		try {
-			KinesisAction kinesisAction = new KinesisAction().withStreamName(policyAndOrgDomainName)
-					.withPartitionKey(KINESIS_PARTITION_KEY)
-					.withRoleArn(IAM_ARN_PREFIX + getUserId() + KINESIS_PUT_ROLE_SUFFIX);
 
-			Action action = new Action().withKinesis(kinesisAction);
+			Map<String, String> ruleConfig = new HashMap<>();
+			KafkaMessageSource defaultSource = MessageSourceUtil.getDefaultSource();
+			Map<String, Object> configs = defaultSource.getConfigs();
+			if (configs != null) {
+				if (configs.containsKey(IOT_RULE_SECURITY_PROTOCOL)
+						&& configs.containsKey(IOT_RULE_SASL_MECHANISM)
+						&& configs.containsKey(BOOTSTRAP_SERVERS)
+						&& configs.containsKey(IOT_RULE_SASL_SCRAM_USERNAME)
+						&& configs.containsKey(IOT_RULE_SASL_SCRAM_PASSWORD)
+						&& configs.containsKey(IOT_RULE_ARN)) {
+					ruleConfig.put("security.protocol", configs.get(IOT_RULE_SECURITY_PROTOCOL).toString());
+					ruleConfig.put("sasl.mechanism", configs.get(IOT_RULE_SASL_MECHANISM).toString());
+					ruleConfig.put("sasl.scram.username", configs.get(IOT_RULE_SASL_SCRAM_USERNAME).toString());
+					ruleConfig.put("sasl.scram.password", configs.get(IOT_RULE_SASL_SCRAM_PASSWORD).toString());
+					ruleConfig.put("bootstrap.servers", defaultSource.getBroker());
+				} else {
+					throw new Exception("Required keys not found in  : " + configs);
 
-			TopicRulePayload rulePayload = new TopicRulePayload()
-					.withActions(action)
-					.withSql("SELECT * FROM '" + policyAndOrgDomainName + "'")
-					.withAwsIotSqlVersion(IOT_SQL_VERSION); //Refer the versions available in AWS iot sql version document before changing.
+				}
+			} else {
+				throw new FacilioException("Config is null for message source" + defaultSource.getName());
+			}
+			if (FacilioProperties.isProduction()) {
+				KafkaAction kafkaAction = new KafkaAction()
+						.withTopic(policyAndOrgDomainName)
+						.withDestinationArn(configs.get(IOT_RULE_ARN).toString())
+						.withPartition(KAFKA_PARTITION_KEY)
+						.withClientProperties(ruleConfig);
 
-			CreateTopicRuleRequest topicRuleRequest = new CreateTopicRuleRequest().withRuleName(policyAndOrgDomainName).withTopicRulePayload(rulePayload);
+				Action action = new Action().withKafka(kafkaAction);
+				TopicRulePayload rulePayload = new TopicRulePayload()
+						.withActions(action)
+						.withSql("SELECT * FROM '" + policyAndOrgDomainName + "'")
+						.withAwsIotSqlVersion(IOT_SQL_VERSION); //Refer the versions available in AWS iot sql version document before changing.
 
-			CreateTopicRuleResult topicRuleResult = iotClient.createTopicRule(topicRuleRequest);
+				CreateTopicRuleRequest topicRuleRequest = new CreateTopicRuleRequest().withRuleName(policyAndOrgDomainName).withTopicRulePayload(rulePayload);
 
-			LOGGER.info("Topic Rule created : " + topicRuleResult.getSdkHttpMetadata().getHttpStatusCode());
+				CreateTopicRuleResult topicRuleResult = iotClient.createTopicRule(topicRuleRequest);
+
+				LOGGER.info("Topic Rule created : " + topicRuleResult.getSdkHttpMetadata().getHttpStatusCode());
+			} else {
+				LOGGER.info("Topic Rule Creation skipped with configs : " + ruleConfig + " :" + configs);
+			}
 		} catch (ResourceAlreadyExistsException resourceExists) {
 			LOGGER.info("Topic Rule already exists for name : " + policyAndOrgDomainName);
 		}
@@ -611,10 +637,9 @@ public class AwsUtil extends BaseAwsUtil{
 	}
 
 
-	public static CreateKeysAndCertificateResult createIotToKinesis(String clientName, String policyAndOrgDomainName, String type) throws Exception {
+	public static CreateKeysAndCertificateResult createIotToKafkaLink(String clientName, String policyAndOrgDomainName, String type) throws Exception {
 		Objects.requireNonNull(policyAndOrgDomainName, "policyAndOrgDomainName can't be null");
 		Objects.requireNonNull(type, " type can't be null");
-		LOGGER.info(" create Iot Kenesis " + policyAndOrgDomainName);
 		AWSIot iotClient = getIotClient();
 		IotPolicy policy = AwsPolicyUtils.createOrUpdateIotPolicy(clientName, policyAndOrgDomainName, type, iotClient);
 		CreateKeysAndCertificateResult certificateResult = createCertificate(iotClient);
@@ -623,10 +648,6 @@ public class AwsUtil extends BaseAwsUtil{
 		policy.setStreamName(policyAndOrgDomainName);
 		createIotTopicRule(iotClient, policyAndOrgDomainName);
 		return certificateResult;
-	}
-
-	public static String getIotKinesisTopic(String orgDomainName) {
-		return orgDomainName;
 	}
 
 	public static void addClientToPolicy(String agentName, String policyName, String type) throws Exception {
