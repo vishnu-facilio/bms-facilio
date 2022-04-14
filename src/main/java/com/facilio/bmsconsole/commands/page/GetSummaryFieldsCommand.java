@@ -409,6 +409,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 
 	private static final List<String> customContracts = Collections.unmodifiableList(Arrays.asList(new String[] {
 			"number",
+			"date",
 			"date_1",
 			"multiline",
 			"multiline_1",
@@ -439,9 +440,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 			"singleline_2",
 			"date_1",
 			"date",
-			"number",
 			"number_3",
-			"number_1",
 			"number_2",
 			"singleline_1",
 			"contract",
