@@ -28,12 +28,13 @@ public class ReadingUnitConversionToDisplayUnit extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
+		boolean isFromStorm = (boolean) context.getOrDefault(FacilioConstants.ContextNames.CALL_FROM_STORM, Boolean.FALSE);
 		long startTime = System.currentTimeMillis();
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
 		Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
 		Map<String, ReadingDataMeta> currentReadingMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META);
 
-		if (readingMap != null && !readingMap.isEmpty()) {
+		if (readingMap != null && !readingMap.isEmpty() && !isFromStorm) {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
 			for (Map.Entry<String, List<ReadingContext>> entry : readingMap.entrySet()) {
@@ -79,7 +80,7 @@ public class ReadingUnitConversionToDisplayUnit extends FacilioCommand {
 
 			//LOGGER.info("Time taken for Unit conversion for modules : "+readingMap.keySet()+" is "+(System.currentTimeMillis() - startTime));
 		}
-		if((boolean) context.getOrDefault(FacilioConstants.ContextNames.CALL_FROM_STORM, Boolean.FALSE)) {
+		if(isFromStorm) {
 			LOGGER.info("ReadingUnitConversionToDisplayUnit time taken " + (System.currentTimeMillis() - startTime) +", modules : " + readingMap.keySet());
 		}
 		return false;
