@@ -34,8 +34,9 @@ public class ReadingUnitAndInputConversionCommand extends FacilioCommand {
 		long startTime = System.currentTimeMillis();
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
 		Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
+		boolean isFromStorm = (boolean) context.getOrDefault(FacilioConstants.ContextNames.CALL_FROM_STORM, Boolean.FALSE);
 
-		if (readingMap != null && !readingMap.isEmpty()) {
+		if (readingMap != null && !readingMap.isEmpty() && !isFromStorm) {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
 			Map<Long,Map<String, Integer>> valuesMap = getInputValuesMap(metaMap);
