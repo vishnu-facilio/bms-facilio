@@ -29,14 +29,13 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 
-;
-
 public class EnergyDataDeltaCalculationCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(EnergyDataDeltaCalculationCommand.class.getName());
 	
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
+		long startTime = System.currentTimeMillis();
 		Boolean historyReading = (Boolean) context.get(FacilioConstants.ContextNames.HISTORY_READINGS);
 		if (historyReading != null && historyReading==true) {
 			return false;
@@ -109,6 +108,9 @@ public class EnergyDataDeltaCalculationCommand extends FacilioCommand {
 			context.put(FacilioConstants.ContextNames.MARKED_READINGS, markedList);
 			LOGGER.debug("Inside DeltaCommand#######  "+markedList);
 
+		}
+		if((boolean) context.getOrDefault(FacilioConstants.ContextNames.CALL_FROM_STORM, Boolean.FALSE)) {
+			LOGGER.info("EnergyDataDeltaCalculationCommand time taken : " + (System.currentTimeMillis() - startTime));
 		}
 		LOGGER.debug("Exiting DeltaCommand#######  ");
 

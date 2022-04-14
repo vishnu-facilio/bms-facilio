@@ -23,11 +23,13 @@ public class AddOrUpdateReadingsCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-
+        long startTime = System.currentTimeMillis();
         FacilioChain addOrUpdateChain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
         addOrUpdateChain.execute(context);
 
-        if (!context.containsKey(AgentConstants.IS_NEW_AGENT)) {
+        boolean isReqFromStorm = (boolean) context.getOrDefault(FacilioConstants.ContextNames.CALL_FROM_STORM, Boolean.FALSE);
+
+        if (!context.containsKey(AgentConstants.IS_NEW_AGENT) && !isReqFromStorm) {
             ControllerContext controller = updateCheckPointAndControllerActivity(context);
             context.put(FacilioConstants.ContextNames.OLD_CONTROLLER, controller);
         }
@@ -47,6 +49,10 @@ public class AddOrUpdateReadingsCommand extends FacilioCommand {
             postProcessingChain.setContext((FacilioContext) context);
             postProcessingChain.execute();
         }
+
+        if((boolean) context.getOrDefault(FacilioConstants.ContextNames.CALL_FROM_STORM, Boolean.FALSE)) {
+			LOGGER.info("AddOrUpdateReadingsCommand time taken " + (System.currentTimeMillis() - startTime));
+		}
         return false;
     }
 

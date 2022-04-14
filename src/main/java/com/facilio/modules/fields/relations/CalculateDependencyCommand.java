@@ -1,17 +1,16 @@
 package com.facilio.modules.fields.relations;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioContext;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -22,10 +21,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Log4j
 public class CalculateDependencyCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        long startTime = System.currentTimeMillis();
         Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
         if (MapUtils.isEmpty(readingMap)) {
             return false;
@@ -72,6 +73,9 @@ public class CalculateDependencyCommand extends FacilioCommand {
                 previousRDMMap.put(ReadingsAPI.getRDMKey(meta.getResourceId(), meta.getField()), meta);
             }
         }
+        if((boolean) context.getOrDefault(FacilioConstants.ContextNames.CALL_FROM_STORM, Boolean.FALSE)) {
+			LOGGER.info("CalculateDependencyCommand time taken " + (System.currentTimeMillis() - startTime));
+		}
         return false;
     }
 }

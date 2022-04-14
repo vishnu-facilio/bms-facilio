@@ -30,6 +30,7 @@ public class GetReadingDataMetaCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
+		Long startTime = System.currentTimeMillis();
 		if (readingMap != null && !readingMap.isEmpty()) {
 			Map<String, ReadingDataMeta> readingDataMeta = null;
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -73,6 +74,9 @@ public class GetReadingDataMetaCommand extends FacilioCommand {
 				LOGGER.info(" reading data meta empty-> "  + ", parentId - " + parentId + ", readingFieldId - " + readingFieldId + "  rdm pairs " + rdmPairs + " reading map : " + readingMap);
 			}
 			context.put(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META, readingDataMeta);
+		}
+		if((boolean) context.getOrDefault(FacilioConstants.ContextNames.CALL_FROM_STORM, Boolean.FALSE)) {
+			LOGGER.info("GetReadingDataMetaCommand time taken " + (System.currentTimeMillis() - startTime));
 		}
 		return false;
 	}

@@ -34,12 +34,12 @@ public class ReadingUnitAndInputConversionCommand extends FacilioCommand {
 		long startTime = System.currentTimeMillis();
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
 		Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
-		
+
 		if (readingMap != null && !readingMap.isEmpty()) {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			
+
 			Map<Long,Map<String, Integer>> valuesMap = getInputValuesMap(metaMap);
-			
+
 			if (FacilioProperties.isOnpremise()) {
 				if (readingMap.keySet().contains("liftmode")) {
 					LOGGER.info("Lift mode readings before - " + readingMap.get("liftmode"));
@@ -48,7 +48,7 @@ public class ReadingUnitAndInputConversionCommand extends FacilioCommand {
 					LOGGER.info("Moving state readings before - " + readingMap.get("movingdirection"));
 				}
 			}
-			
+
 			for (Map.Entry<String, List<ReadingContext>> entry : readingMap.entrySet()) {
 				String moduleName = entry.getKey();
 				List<ReadingContext> readings = entry.getValue();
@@ -73,7 +73,7 @@ public class ReadingUnitAndInputConversionCommand extends FacilioCommand {
 													LOGGER.info("Temperature for " + orgId + ", Ttime - " + reading.getTtime() + ", Parent - " + reading.getParentId() + ", Value - " + readingData.get(fieldName) + ", id - " + reading.getId());
 												}
 											}
-											
+
                                             if (readingDataMeta != null && readingDataMeta.getUnitEnum() != null) {
                                                 Object value = UnitsUtil.convertToSiUnit(readingData.get(fieldName), readingDataMeta.getUnitEnum());
                                                 readingData.put(fieldName, value);
@@ -104,12 +104,11 @@ public class ReadingUnitAndInputConversionCommand extends FacilioCommand {
 					LOGGER.info("Moving state readings" + readingMap.get("movingdirection"));
 				}
 			}
-					
-			LOGGER.info("Time taken for Unit conversion for modules : "+readingMap.keySet()+" is "+(System.currentTimeMillis() - startTime));
+            LOGGER.info("Time taken for Unit conversion is : " + (System.currentTimeMillis() - startTime) + ", modules: " + readingMap.keySet());
 		}
 		return false;
 	}
-	
+
 	private void convertInputValue(ReadingDataMeta readingDataMeta, Map<Long,Map<String, Integer>> rdmValueMap, Map<String, Object> readingData, String fieldName) {
 		boolean checkField = false;
 		if (FacilioProperties.isOnpremise() && (fieldName.equals("liftmode") || fieldName.equals("movingstate")) ) {
@@ -127,7 +126,7 @@ public class ReadingUnitAndInputConversionCommand extends FacilioCommand {
 			}
 		}
 	}
-	
+
 	private Map<Long,Map<String, Integer>> getInputValuesMap(Map<String, ReadingDataMeta> metaMap) throws Exception {
 		List<Long> rdmIds = metaMap.values().stream().map(ReadingDataMeta::getId).collect(Collectors.toList());
 		return ReadingsAPI.getReadingInputValuesMap(rdmIds);

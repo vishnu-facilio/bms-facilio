@@ -34,6 +34,7 @@ public class CalculateDeltaCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
+		long startTime = System.currentTimeMillis();
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
 		if (readingMap != null && !readingMap.isEmpty()) {
 			Map<String, ReadingDataMeta> rdmMap = (Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
@@ -121,6 +122,9 @@ public class CalculateDeltaCommand extends FacilioCommand {
 					rdmMap.put(ReadingsAPI.getRDMKey(meta.getResourceId(), meta.getField()), meta);
 				}
 			}
+		}
+		if((boolean) context.getOrDefault(FacilioConstants.ContextNames.CALL_FROM_STORM, Boolean.FALSE)) {
+			LOGGER.info("CalculateDeltaCommand time taken " + (System.currentTimeMillis() - startTime));
 		}
 		return false;
 	}

@@ -50,7 +50,7 @@ public class ExecuteValidationRule extends FacilioCommand {
 		}
 			
 		fetchAndExecuteRules(recordMap, (FacilioContext) context);
-		LOGGER.info("Time taken for execute validation rule : "+recordMap.keySet()+" is "+(System.currentTimeMillis() - processStarttime));
+		LOGGER.info("Time taken for execute validation rule is " + (System.currentTimeMillis() - processStarttime) + ", keyset : " + recordMap.keySet());
 		return false;
 	}
 	
