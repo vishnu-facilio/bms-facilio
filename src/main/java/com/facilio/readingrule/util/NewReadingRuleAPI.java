@@ -286,4 +286,13 @@ public class NewReadingRuleAPI {
         return a;
     }
 
+    public static Long getPrimaryFieldId(NewReadingRuleContext readingRule) {
+        List<NameSpaceField> fields = readingRule.getNs().getFields();
+        for(NameSpaceField field : fields) {
+            if(field.getResourceId() == null || field.getResourceId() == -1) {
+                return field.getFieldId();
+            }
+        }
+        return -1L;
+    }
 }
