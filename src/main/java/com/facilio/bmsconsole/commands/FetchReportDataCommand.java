@@ -689,6 +689,7 @@ public class FetchReportDataCommand extends FacilioCommand {
                             groupBy.add(new StringBuilder().append(relModule.getTableName()).append('.').append("INDEX_ID").toString());
                             FacilioField idField = FieldFactory.getIdField(gField.getModule());
                             applyJoin(new StringBuilder(idField.getCompleteColumnName()).append("=").append(relModule.getTableName()).append('.').append("PARENT_ID").toString(), relModule, selectBuilder);
+                            selectBuilder.andCondition(CriteriaAPI.getCondition(new StringBuilder(relModule.getTableName()).append(".MODULEID").toString(), "relModuleId", String.valueOf(relModule.getModuleId()) , NumberOperators.EQUALS));
                         }
                     }
                     else if(gField instanceof MultiLookupField ){
@@ -699,6 +700,7 @@ public class FetchReportDataCommand extends FacilioCommand {
                             groupBy.add(new StringBuilder().append(relModule.getTableName()).append('.').append("RIGHT_ID").toString());
                             FacilioField idField = FieldFactory.getIdField(gField.getModule());
                             applyJoin(new StringBuilder(idField.getCompleteColumnName()).append("=").append(relModule.getTableName()).append('.').append("LEFT_ID").toString(), relModule, selectBuilder);
+                            selectBuilder.andCondition(CriteriaAPI.getCondition(new StringBuilder(relModule.getTableName()).append(".MODULEID").toString(), "relModuleId", String.valueOf(relModule.getModuleId()) , NumberOperators.EQUALS));
                         }
                     }
                     else {
@@ -1123,6 +1125,7 @@ public class FetchReportDataCommand extends FacilioCommand {
                 groupBy.add(new StringBuilder().append(relModule.getTableName()).append('.').append("INDEX_ID").toString());
                 FacilioField idField = FieldFactory.getIdField(xAggrField.getModule());
                 applyJoin(new StringBuilder(idField.getCompleteColumnName()).append("=").append(relModule.getTableName()).append('.').append("PARENT_ID").toString(), relModule, selectBuilder);
+                selectBuilder.andCondition(CriteriaAPI.getCondition(new StringBuilder(relModule.getTableName()).append(".MODULEID").toString(), "relModuleId", String.valueOf(relModule.getModuleId()) , NumberOperators.EQUALS));
             }
             else if( xAggrField instanceof MultiLookupField && ((MultiLookupField) xAggrField).getRelModule() != null && ((MultiLookupField) xAggrField).getRelModule().getName() != null) {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -1131,6 +1134,7 @@ public class FetchReportDataCommand extends FacilioCommand {
                 groupBy.add(new StringBuilder().append(relModule.getTableName()).append('.').append("RIGHT_ID").toString());
                 FacilioField idField = FieldFactory.getIdField(xAggrField.getModule());
                 applyJoin(new StringBuilder(idField.getCompleteColumnName()).append("=").append(relModule.getTableName()).append('.').append("LEFT_ID").toString(), relModule, selectBuilder);
+                selectBuilder.andCondition(CriteriaAPI.getCondition(new StringBuilder(relModule.getTableName()).append(".MODULEID").toString(), "relModuleId", String.valueOf(relModule.getModuleId()) , NumberOperators.EQUALS));
             }
             else {
                 groupBy.add(xAggrField.getCompleteColumnName());
