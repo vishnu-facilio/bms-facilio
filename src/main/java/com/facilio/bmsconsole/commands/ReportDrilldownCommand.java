@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 
 import com.facilio.command.FacilioCommand;
 import com.facilio.db.criteria.operators.*;
+import com.facilio.modules.fields.MultiEnumField;
+import com.facilio.modules.fields.MultiLookupField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
@@ -159,9 +161,20 @@ public class ReportDrilldownCommand extends FacilioCommand {
 
 			} else {
 				xAxisField = modBean.getField(fieldId);
-				Condition condition = CriteriaAPI.getCondition(xAxisField, dimensionValues,
-						getOperator(xAxisField, xAggr));
-				criteria.addAndCondition(condition);
+				if(xAxisField instanceof MultiEnumField || xAxisField instanceof MultiLookupField)
+				{
+					Condition condition = new Condition();
+					condition.setField(xAxisField);
+					condition.setOperatorId(90);
+					condition.setValue(dimensionValues);
+					condition.validateValue();
+					criteria.addAndCondition(condition);
+				}
+				else {
+					Condition condition = CriteriaAPI.getCondition(xAxisField, dimensionValues,
+							getOperator(xAxisField, xAggr));
+					criteria.addAndCondition(condition);
+				}
 
 			}
 			
