@@ -28,14 +28,15 @@ public class ReadingUnitConversionToDisplayUnit extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
+		boolean isFromStorm = (boolean) context.getOrDefault(FacilioConstants.ContextNames.CALL_FROM_STORM, Boolean.FALSE);
 		long startTime = System.currentTimeMillis();
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
 		Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
 		Map<String, ReadingDataMeta> currentReadingMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META);
-		
-		if (readingMap != null && !readingMap.isEmpty()) {
+
+		if (readingMap != null && !readingMap.isEmpty() && !isFromStorm) {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			
+
 			for (Map.Entry<String, List<ReadingContext>> entry : readingMap.entrySet()) {
 				String moduleName = entry.getKey();
 				List<ReadingContext> readings = entry.getValue();
@@ -50,9 +51,9 @@ public class ReadingUnitConversionToDisplayUnit extends FacilioCommand {
 								if(field != null && readingData.get(fieldName) != null) {
 									if(reading.getParentId() > 0  && field.getId() > 0) {
 										ReadingDataMeta readingDataMeta = metaMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), field));
-										
+
 										if(readingDataMeta==null) {
-											//LOGGER.info("Reading data meta is null for parent: "+reading.getParentId()+" for field: "+field);
+											LOGGER.debug("Reading data meta is null for parent: "+reading.getParentId()+" for field: "+field);
 										}
 										Object convertedValue = null;
 										if(field instanceof NumberField) {
@@ -60,13 +61,13 @@ public class ReadingUnitConversionToDisplayUnit extends FacilioCommand {
 											convertedValue = UnitsUtil.convertToDisplayUnit(readingData.get(fieldName), numberField);
 											readingData.put(fieldName, convertedValue);
 										}
-										
+
 										if(currentReadingMap != null && MapUtils.isNotEmpty(currentReadingMap)) {
 											ReadingDataMeta currentReadingDataMeta = currentReadingMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), field));
 											if(currentReadingDataMeta!= null && currentReadingDataMeta.getValue() != null && currentReadingDataMeta.getField() != null && currentReadingDataMeta.getField() instanceof NumberField && !currentReadingDataMeta.getValue().equals("-1.0")) {
 												if(convertedValue != null) {
 													currentReadingDataMeta.setValue(convertedValue);
-												}				
+												}
 											}
 										}
 									}
@@ -76,7 +77,11 @@ public class ReadingUnitConversionToDisplayUnit extends FacilioCommand {
 					}
 				}
 			}
+
 			//LOGGER.info("Time taken for Unit conversion for modules : "+readingMap.keySet()+" is "+(System.currentTimeMillis() - startTime));
+		}
+		if(isFromStorm) {
+			LOGGER.info("ReadingUnitConversionToDisplayUnit time taken " + (System.currentTimeMillis() - startTime) +", modules : " + readingMap.keySet());
 		}
 		return false;
 	}

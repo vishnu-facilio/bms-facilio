@@ -49,9 +49,6 @@ public class ReadingPostProcessingCommand extends FacilioCommand {
     }
 
     private void forwardToStorm(Context context) {
-        if((Boolean) context.getOrDefault(FacilioConstants.ContextNames.CALL_FROM_STORM, Boolean.FALSE)){
-            return;
-        }
         try {
             FacilioChain postProcessingChain = ReadOnlyChainFactory.stormReadingPostProcessingChain();
             postProcessingChain.setContext((FacilioContext) context);

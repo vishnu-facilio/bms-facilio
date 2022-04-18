@@ -35,7 +35,7 @@ public class CalculateAggregatedEnergyConsumptionCommand extends FacilioCommand 
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-
+		long startTime = System.currentTimeMillis();
 		try 
 		{
 			Map<String, ReadingDataMeta> readingsMetaMap = (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
@@ -73,6 +73,10 @@ public class CalculateAggregatedEnergyConsumptionCommand extends FacilioCommand 
 		catch(Exception e) {
 			LOGGER.log(Level.SEVERE, "Error in CalculateAggregatedEnergyConsumptionCommand -- meterIdVsMaxDateRange: "+ meterIdVsMaxDateRange+ 
 					" Exception: " + e.getMessage() , e);
+		}
+
+		if((boolean) context.getOrDefault(FacilioConstants.ContextNames.CALL_FROM_STORM, Boolean.FALSE)) {
+			LOGGER.info("CalculateAggregatedEnergyConsumption time taken " + (System.currentTimeMillis() - startTime));
 		}
 		
 		return false;

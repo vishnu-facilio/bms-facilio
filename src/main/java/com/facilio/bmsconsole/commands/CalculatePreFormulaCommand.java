@@ -32,7 +32,7 @@ public class CalculatePreFormulaCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(CalculatePreFormulaCommand.class.getName());
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		// TODO Auto-generated method stub
+		long startTime = System.currentTimeMillis();
 		Map<String, ReadingDataMeta> rdm = (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
 		if (readingMap != null && !readingMap.isEmpty()) {
@@ -72,6 +72,9 @@ public class CalculatePreFormulaCommand extends FacilioCommand {
 				}
 			}
 			LOGGER.info("Time taken for pre formula calculation for modules : "+readingMap.keySet()+" is "+(System.currentTimeMillis() - processStarttime));
+		}
+		if((boolean) context.getOrDefault(FacilioConstants.ContextNames.CALL_FROM_STORM, Boolean.FALSE)) {
+			LOGGER.info("CalculatePreFormulaCommand time taken " + (System.currentTimeMillis() - startTime));
 		}
 		return false;
 	}

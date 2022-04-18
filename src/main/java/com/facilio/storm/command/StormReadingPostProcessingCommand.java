@@ -45,6 +45,7 @@ public class StormReadingPostProcessingCommand extends FacilioCommand {
 
                         if(field == null) {//TODO: find the problem and delete this check.
                             LOGGER.info("field is null. field name : " + fieldName + ",  module : " + moduleName);
+                            continue;
                         }
 
                         JSONObject json = new JSONObject();

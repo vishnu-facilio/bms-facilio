@@ -1317,12 +1317,11 @@ public class V2ReportAction extends FacilioAction {
     private void getDataPointFromNewAlarm() throws Exception {
         AlarmOccurrenceContext alarmOccurrence = NewAlarmAPI.getAlarmOccurrence(alarmId);
         ReadingAlarm readingAlarmContext = (ReadingAlarm) alarmOccurrence.getAlarm();
-        this.isNewReadingRule = alarmOccurrence instanceof ReadingAlarmOccurrenceContext ? ((ReadingAlarmOccurrenceContext) alarmOccurrence).getIsNewReadingRule() : false;
+        this.isNewReadingRule = alarmOccurrence instanceof ReadingAlarmOccurrenceContext ? alarmOccurrence.getIsNewReadingRule() : false;
         List<ReadingRuleInterface> readingRules = new ArrayList<>();
         if (isWithPrerequsite) { // new 1st
             if (isNewReadingRule) {
                 NewReadingRuleContext newRuleCtx = NewReadingRuleAPI.getRule(readingAlarmContext.getRule().getId());
-                readingRules.add(newRuleCtx);
                 readingRules.add(newRuleCtx);
             } else {
                 AlarmRuleContext alarmRuleContext = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(readingAlarmContext.getRule().getId()));
@@ -1586,14 +1585,16 @@ public class V2ReportAction extends FacilioAction {
     private Collection getDataPointsJSONFromNewRule(NewReadingRuleContext readingRule, ResourceContext resource) throws Exception {
         JSONArray dataPoints = new JSONArray();
 
-        if (readingRule.getFieldId() > 0) {
+        long readingFieldId = NewReadingRuleAPI.getPrimaryFieldId(readingRule);
+
+        if (readingFieldId > 0) {
             JSONObject dataPoint = new JSONObject();
 
             dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
 
             JSONObject yAxisJson = new JSONObject();
-            yAxisJson.put("fieldId", readingRule.getFieldId());
-            updateTimeRangeAsPerFieldType(readingRule.getFieldId());
+            yAxisJson.put("fieldId", readingFieldId);
+            updateTimeRangeAsPerFieldType(readingFieldId);
             yAxisJson.put("aggr", 0);
 
             dataPoint.put("yAxis", yAxisJson);
