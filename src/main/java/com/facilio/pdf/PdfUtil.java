@@ -164,6 +164,29 @@ public class PdfUtil {
 		return null;
 	}
 	
+	public static Long exportUrlAsPDF(String url, String name, JSONObject additionalInfo, FileFormat... formats){      	
+		FileFormat format = FileFormat.PDF;
+		if (formats != null && formats.length > 0) {
+			format = formats[0];
+		}                
+		String pdfFileLocation = convertUrlToPdf(url, null, additionalInfo, format);         
+		File pdfFile = new File(pdfFileLocation);
+		if(pdfFileLocation != null) {
+
+			FileStore fs = FacilioFactory.getFileStore();
+			long fileId = 0;
+			try {
+				fileId = fs.addFile(name != null ? name+format.getExtention() : pdfFile.getName(), pdfFile, format.getContentType());
+				return fileId;
+			} catch (Exception e) {
+				LOGGER.info("Exception occurred ", e);
+			}
+
+
+		}
+		return null;
+	}
+	
 	public static String exportWidget(String url, JSONObject exportOptions, JSONObject widgetContext, FileFormat format){      	
 		
 		String pdfFileLocation = convertWidgetToPdf(url, exportOptions, widgetContext, format);         

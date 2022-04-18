@@ -569,6 +569,17 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 		}
 		
 	},
+	EXPORT_URL_WITH_FILE_RETURN(15, "exportURLWithFileReturn") {
+
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			String url = (String) objects[0];
+			Long fileId = PdfUtil.exportUrlAsPDF(url.toString(), null,null, FileFormat.PDF);
+			return fileId;
+		}
+		
+	},
 	GET_ORG_FILE_URL(16, "getOrgFileUrl") {
 
 		@Override
