@@ -5,6 +5,12 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
+import com.facilio.bmsconsoleV3.context.V3ResourceContext;
+import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestLineItemContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
 import com.facilio.v3.context.V3Context;
 
 import java.util.List;
@@ -12,33 +18,33 @@ import java.util.List;
 public class V3ItemTransactionsContext extends V3Context {
     private static final long serialVersionUID = 1L;
 
-    private ItemTypesContext itemType;
+    private V3ItemTypesContext itemType;
 
-    public ItemTypesContext getItemType() {
+    public V3ItemTypesContext getItemType() {
         return itemType;
     }
 
-    public void setItemType(ItemTypesContext itemType) {
+    public void setItemType(V3ItemTypesContext itemType) {
         this.itemType = itemType;
     }
 
-    private ItemContext item;
+    private V3ItemContext item;
 
-    public ItemContext getItem() {
+    public V3ItemContext getItem() {
         return item;
     }
 
-    public void setItem(ItemContext inventory) {
+    public void setItem(V3ItemContext inventory) {
         this.item = inventory;
     }
 
-    private PurchasedItemContext purchasedItem;
+    private V3PurchasedItemContext purchasedItem;
 
-    public PurchasedItemContext getPurchasedItem() {
+    public V3PurchasedItemContext getPurchasedItem() {
         return purchasedItem;
     }
 
-    public void setPurchasedItem(PurchasedItemContext inventoryCost) {
+    public void setPurchasedItem(V3PurchasedItemContext inventoryCost) {
         this.purchasedItem = inventoryCost;
     }
 
@@ -223,21 +229,21 @@ public class V3ItemTransactionsContext extends V3Context {
     }
 
 
-    private InventoryRequestLineItemContext requestedLineItem;
-    public InventoryRequestLineItemContext getRequestedLineItem() {
+    private V3InventoryRequestLineItemContext requestedLineItem;
+    public V3InventoryRequestLineItemContext getRequestedLineItem() {
         return requestedLineItem;
     }
-    public void setRequestedLineItem(InventoryRequestLineItemContext requestedLineItem) {
+    public void setRequestedLineItem(V3InventoryRequestLineItemContext requestedLineItem) {
         this.requestedLineItem = requestedLineItem;
     }
 
-    private ResourceContext resource;
+    private V3ResourceContext resource;
 
-    public ResourceContext getResource() {
+    public V3ResourceContext getResource() {
         return resource;
     }
 
-    public void setResource(ResourceContext resource) {
+    public void setResource(V3ResourceContext resource) {
         this.resource = resource;
     }
 
@@ -251,13 +257,13 @@ public class V3ItemTransactionsContext extends V3Context {
         this.transactionCost = transactionCost;
     }
 
-    private StoreRoomContext storeRoom;
+    private V3StoreRoomContext storeRoom;
 
-    public StoreRoomContext getStoreRoom() {
+    public V3StoreRoomContext getStoreRoom() {
         return storeRoom;
     }
 
-    public void setStoreRoom(StoreRoomContext storeRoom) {
+    public void setStoreRoom(V3StoreRoomContext storeRoom) {
         this.storeRoom = storeRoom;
     }
 

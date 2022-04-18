@@ -5,10 +5,12 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
+import com.facilio.bmsconsole.util.V3ItemsApi;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -29,7 +31,7 @@ public class AddOrUpdateItemStockTransactionsCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         // TODO Auto-generated method stub
-        List<PurchasedItemContext> purchasedItems = (List<PurchasedItemContext>) context
+        List<V3PurchasedItemContext> purchasedItems = (List<V3PurchasedItemContext>) context
                 .get(FacilioConstants.ContextNames.PURCHASED_ITEM);
         ShipmentContext shipment = (ShipmentContext)context.get(FacilioConstants.ContextNames.SHIPMENT);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -39,10 +41,10 @@ public class AddOrUpdateItemStockTransactionsCommandV3 extends FacilioCommand {
         if (purchasedItems != null && !purchasedItems.isEmpty()) {
             Boolean isBulkItemAdd = (Boolean) context.get(FacilioConstants.ContextNames.IS_BULK_ITEM_ADD);
 
-            List<ItemTransactionsContext> inventoryTransaction = new ArrayList<>();
-            for (PurchasedItemContext ic : purchasedItems) {
-                ItemContext item = ItemsApi.getItems(ic.getItem().getId());
-                ItemTransactionsContext transaction = new ItemTransactionsContext();
+            List<V3ItemTransactionsContext> inventoryTransaction = new ArrayList<>();
+            for (V3PurchasedItemContext ic : purchasedItems) {
+                V3ItemContext item = V3ItemsApi.getItems(ic.getItem().getId());
+                V3ItemTransactionsContext transaction = new V3ItemTransactionsContext();
                 if(shipment == null) {
                     transaction.setTransactionType(TransactionType.STOCK.getValue());
                     transaction.setTransactionState(TransactionState.ADDITION.getValue());
@@ -65,18 +67,18 @@ public class AddOrUpdateItemStockTransactionsCommandV3 extends FacilioCommand {
                 if (isBulkItemAdd != null && isBulkItemAdd) {
                     inventoryTransaction.add(transaction);
                 } else {
-                    SelectRecordsBuilder<ItemTransactionsContext> transactionsselectBuilder = new SelectRecordsBuilder<ItemTransactionsContext>()
+                    SelectRecordsBuilder<V3ItemTransactionsContext> transactionsselectBuilder = new SelectRecordsBuilder<V3ItemTransactionsContext>()
                             .select(fields).table(module.getTableName()).moduleName(module.getName())
-                            .beanClass(ItemTransactionsContext.class)
+                            .beanClass(V3ItemTransactionsContext.class)
                             .andCondition(CriteriaAPI.getCondition(fieldMap.get("transactionState"),
                                     String.valueOf(TransactionState.ADDITION.getValue()), EnumOperators.IS))
                             .andCondition(CriteriaAPI.getCondition(fieldMap.get("purchasedItem"),
                                     String.valueOf(ic.getId()), PickListOperators.IS));
-                    List<ItemTransactionsContext> transactions = transactionsselectBuilder.get();
+                    List<V3ItemTransactionsContext> transactions = transactionsselectBuilder.get();
                     if (transactions != null && !transactions.isEmpty()) {
-                        ItemTransactionsContext it = transactions.get(0);
+                        V3ItemTransactionsContext it = transactions.get(0);
                         it.setQuantity(ic.getQuantity());
-                        UpdateRecordBuilder<ItemTransactionsContext> updateBuilder = new UpdateRecordBuilder<ItemTransactionsContext>()
+                        UpdateRecordBuilder<V3ItemTransactionsContext> updateBuilder = new UpdateRecordBuilder<V3ItemTransactionsContext>()
                                 .module(module).fields(modBean.getAllFields(module.getName()))
                                 .andCondition(CriteriaAPI.getIdCondition(it.getId(), module));
                         updateBuilder.update(it);
@@ -86,7 +88,7 @@ public class AddOrUpdateItemStockTransactionsCommandV3 extends FacilioCommand {
                 }
             }
 
-            InsertRecordBuilder<ItemTransactionsContext> readingBuilder = new InsertRecordBuilder<ItemTransactionsContext>()
+            InsertRecordBuilder<V3ItemTransactionsContext> readingBuilder = new InsertRecordBuilder<V3ItemTransactionsContext>()
                     .module(module).fields(fields).addRecords(inventoryTransaction);
             readingBuilder.save();
         }
@@ -94,7 +96,7 @@ public class AddOrUpdateItemStockTransactionsCommandV3 extends FacilioCommand {
             V3ItemContext item = (V3ItemContext) context.get(FacilioConstants.ContextNames.ITEM);
             V3AssetContext asset = (V3AssetContext) context.get(FacilioConstants.ContextNames.ROTATING_ASSET);
             if (item != null) {
-                ItemContext items = ItemsApi.getItems(item.getId());
+                V3ItemContext items = V3ItemsApi.getItems(item.getId());
                 double q = items.getQuantity() >= 0 ? items.getQuantity() : 0;
                 q+=1;
                 items.setQuantity(q);
@@ -128,11 +130,11 @@ public class AddOrUpdateItemStockTransactionsCommandV3 extends FacilioCommand {
         return false;
     }
 
-    private void updateItemQty (ItemContext item) throws Exception {
+    private void updateItemQty (V3ItemContext item) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM);
 
-        UpdateRecordBuilder<ItemContext> updateBuilder = new UpdateRecordBuilder<ItemContext>()
+        UpdateRecordBuilder<V3ItemContext> updateBuilder = new UpdateRecordBuilder<V3ItemContext>()
                 .module(module).fields(modBean.getAllFields(module.getName()))
                 .andCondition(CriteriaAPI.getIdCondition(item.getId(), module));
         updateBuilder.update(item);

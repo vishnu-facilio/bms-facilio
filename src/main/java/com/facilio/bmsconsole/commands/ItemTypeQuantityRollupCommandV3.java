@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
+import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ItemContext;
-import com.facilio.bmsconsole.context.ItemTransactionsContext;
-import com.facilio.bmsconsole.context.ItemTypesContext;
-import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -25,7 +25,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-public class ItemTypeQuantityRollupCommand extends FacilioCommand {
+public class ItemTypeQuantityRollupCommandV3 extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -48,20 +48,25 @@ public class ItemTypeQuantityRollupCommand extends FacilioCommand {
 				for (Long id : itemTypesIds) {
 					double quantity = getTotalQuantity(id, itemModule, itemFieldMap);
 
-					SelectRecordsBuilder<ItemContext> builder = new SelectRecordsBuilder<ItemContext>()
+					SelectRecordsBuilder<V3ItemContext> builder = new SelectRecordsBuilder<V3ItemContext>()
 							.select(itemFields).moduleName(itemModule.getName())
 							.andCondition(CriteriaAPI.getCondition(itemFieldMap.get("itemType"), String.valueOf(id),
 									NumberOperators.EQUALS))
-							.beanClass(ItemContext.class).orderBy("LAST_PURCHASED_DATE DESC");
+							.beanClass(V3ItemContext.class).orderBy("LAST_PURCHASED_DATE DESC");
 
-					List<ItemContext> items = builder.get();
+					List<V3ItemContext> items = builder.get();
 					long storeRoomId = -1;
-					ItemContext item;
+					V3ItemContext item;
 					if (items != null && !items.isEmpty()) {
 						item = items.get(0);
 						storeRoomId = item.getStoreRoom().getId();
-						lastPurchasedDate = item.getLastPurchasedDate();
-						lastPurchasedPrice = item.getLastPurchasedPrice();
+						if(item.getLastPurchasedDate()!=null){
+							lastPurchasedDate = item.getLastPurchasedDate();
+						}
+						if( item.getLastPurchasedPrice()!=null){
+							lastPurchasedPrice = item.getLastPurchasedPrice();
+						}
+
 					}
 					
 					Criteria criteria = new Criteria();
@@ -77,28 +82,28 @@ public class ItemTypeQuantityRollupCommand extends FacilioCommand {
 					finalCriteria.orCriteria(criteriaIssue);
 					
 
-					SelectRecordsBuilder<ItemTransactionsContext> issuetransactionsbuilder = new SelectRecordsBuilder<ItemTransactionsContext>()
+					SelectRecordsBuilder<V3ItemTransactionsContext> issuetransactionsbuilder = new SelectRecordsBuilder<V3ItemTransactionsContext>()
 							.select(transFields).moduleName(transModule.getName())
 							.andCondition(CriteriaAPI.getCondition(transFieldMap.get("itemType"), String.valueOf(id),
 									NumberOperators.EQUALS))
-							.beanClass(ItemTransactionsContext.class).orderBy("CREATED_TIME DESC");
+							.beanClass(V3ItemTransactionsContext.class).orderBy("CREATED_TIME DESC");
 					builder.andCriteria(finalCriteria);
 					
 
-					List<ItemTransactionsContext> transactions = issuetransactionsbuilder.get();
+					List<V3ItemTransactionsContext> transactions = issuetransactionsbuilder.get();
 					if (transactions != null && !transactions.isEmpty()) {
-						ItemTransactionsContext transaction = transactions.get(0);
+						V3ItemTransactionsContext transaction = transactions.get(0);
 						lastIssuedDate = transaction.getSysCreatedTime();
 					}
 
-					ItemTypesContext itemType = new ItemTypesContext();
+					V3ItemTypesContext itemType = new V3ItemTypesContext();
 					itemType.setId(id);
 					itemType.setCurrentQuantity(quantity);
 					itemType.setLastPurchasedDate(lastPurchasedDate);
 					itemType.setLastPurchasedPrice(lastPurchasedPrice);
 					itemType.setLastIssuedDate(lastIssuedDate);
 
-					UpdateRecordBuilder<ItemTypesContext> updateBuilder = new UpdateRecordBuilder<ItemTypesContext>()
+					UpdateRecordBuilder<V3ItemTypesContext> updateBuilder = new UpdateRecordBuilder<V3ItemTypesContext>()
 							.module(itemTypesModule).fields(modBean.getAllFields(itemTypesModule.getName()))
 							.andCondition(CriteriaAPI.getIdCondition(itemType.getId(), itemTypesModule));
 
@@ -121,7 +126,7 @@ public class ItemTypeQuantityRollupCommand extends FacilioCommand {
 		List<FacilioField> field = new ArrayList<>();
 		field.add(FieldFactory.getField("totalQuantity", "sum(QUANTITY)", FieldType.DECIMAL));
 
-		SelectRecordsBuilder<ItemContext> builder = new SelectRecordsBuilder<ItemContext>()
+		SelectRecordsBuilder<V3ItemContext> builder = new SelectRecordsBuilder<V3ItemContext>()
 				.select(field).moduleName(module.getName()).andCondition(CriteriaAPI
 						.getCondition(itemFieldMap.get("itemType"), String.valueOf(id), NumberOperators.EQUALS))
 				.setAggregation();
@@ -140,10 +145,10 @@ public class ItemTypeQuantityRollupCommand extends FacilioCommand {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.STORE_ROOM);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.STORE_ROOM);
-		StoreRoomContext storeRoom = new StoreRoomContext();
+		V3StoreRoomContext storeRoom = new V3StoreRoomContext();
 		storeRoom.setId(storeRoomId);
 		storeRoom.setLastPurchasedDate(lastPurchasedDate);
-		UpdateRecordBuilder<StoreRoomContext> updateBuilder = new UpdateRecordBuilder<StoreRoomContext>().module(module)
+		UpdateRecordBuilder<V3StoreRoomContext> updateBuilder = new UpdateRecordBuilder<V3StoreRoomContext>().module(module)
 				.fields(fields).andCondition(CriteriaAPI.getIdCondition(storeRoomId, module));
 		updateBuilder.update(storeRoom);
 	}
