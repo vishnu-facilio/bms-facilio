@@ -97,7 +97,7 @@ public class AddOrUpdateItemStockTransactionsCommandV3 extends FacilioCommand {
             V3AssetContext asset = (V3AssetContext) context.get(FacilioConstants.ContextNames.ROTATING_ASSET);
             if (item != null) {
                 V3ItemContext items = V3ItemsApi.getItems(item.getId());
-                double q = items.getQuantity() >= 0 ? items.getQuantity() : 0;
+                double q = items.getQuantity()!=null && items.getQuantity() >= 0 ? items.getQuantity() : 0;
                 q+=1;
                 items.setQuantity(q);
                 V3ItemTransactionsContext transaction = new V3ItemTransactionsContext();
