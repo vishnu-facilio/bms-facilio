@@ -240,6 +240,13 @@ public class ViewFactory {
 
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("active", getRulesByStatusForNewRule("active", "Active", true).setOrder(order++));
+		views.put("inactive", getRulesByStatusForNewRule("inactive", "In Active", false).setOrder(order++));
+		views.put("all", getAllNewReadingRules());
+		viewsMap.put("newreadingrule", views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
 		views.put("active",
 				getSeverityAlarms("active", "Active", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
 		views.put("unacknowledged", getUnacknowledgedAlarms().setOrder(order++));
@@ -1721,6 +1728,24 @@ public class ViewFactory {
 
 		return allView;
 	}
+
+	private static FacilioView getAllNewReadingRules() {
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All");
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getNewReadingRuleModule());
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		allView.setSortFields(sortFields);
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
 	
 	private static FacilioView getWorkflowLog() {
 
@@ -1760,6 +1785,32 @@ public class ViewFactory {
 		createdTime.setDataType(FieldType.NUMBER);
 		createdTime.setColumnName("CREATED_TIME");
 		createdTime.setModule(ModuleFactory.getWorkflowRuleModule());
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		FacilioView view = new FacilioView();
+		view.setName(name);
+		view.setDisplayName(displayName);
+		view.setCriteria(criteria);
+		view.setSortFields(sortFields);
+		view.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+
+		return view;
+	}
+
+	private static FacilioView getRulesByStatusForNewRule(String name, String displayName, boolean status) {
+		List<FacilioField> rulesFields = FieldFactory.getNewReadingRuleFields();
+		FacilioField statusField = FieldFactory.getAsMap(rulesFields).get("status");
+
+		Condition statusCondition = CriteriaAPI.getCondition(statusField, String.valueOf(status), BooleanOperators.IS);
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(statusCondition);
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getNewReadingRuleModule());
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
 		FacilioView view = new FacilioView();

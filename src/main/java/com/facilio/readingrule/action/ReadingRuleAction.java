@@ -80,17 +80,23 @@ public class ReadingRuleAction extends V3Action {
 
         context.put(FacilioConstants.ContextNames.ID, ruleId);
         context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-        context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.READING_RULE_MODULE);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.NEW_READING_RULE_MODULE);
 
         FacilioChain workflowRuleType = ReadOnlyChainFactory.fetchReadingRules();
         workflowRuleType.execute(context);
 
-        List<NewReadingRuleContext> rules = (List<NewReadingRuleContext>) context.get(FacilioConstants.ContextNames.NEW_READING_RULE);
-        for (NewReadingRuleContext r : rules) {
-            r.setNullForResponse();
+
+        if (context.get(FacilioConstants.ContextNames.RULE_COUNT) != null) {
+            setData("count", context.get(FacilioConstants.ContextNames.RULE_COUNT));
+        } else {
+            List<NewReadingRuleContext> rules = (List<NewReadingRuleContext>) context.get(FacilioConstants.ContextNames.NEW_READING_RULE);
+            for (NewReadingRuleContext r : rules) {
+                r.setNullForResponse();
+            }
+            setData("rules", rules);
         }
 
-        setData("rules", rules);
+
         return SUCCESS;
 
     }

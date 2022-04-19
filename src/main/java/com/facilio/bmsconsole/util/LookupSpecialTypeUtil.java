@@ -959,6 +959,9 @@ public class LookupSpecialTypeUtil {
 		else  if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
 		    return  FieldFactory.getReadingRuleFields();
         }
+		else if (ContextNames.NEW_READING_RULE_MODULE.equals(specialType)) {
+			return FieldFactory.getNewReadingRuleFields();
+		}
 		else  if (FacilioConstants.ContextNames.PRINTERS.equals(specialType)) {
 		    return  FieldFactory.getPrinterFields();
         }

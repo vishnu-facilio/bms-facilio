@@ -156,7 +156,7 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand implements P
 			else {
 				addWorkflowRuleHistoricalLoggers(secondaryId, intervals, firstInterval, lastInterval, parentRuleLoggerId, loggerInfo, secondaryPropKeyName, ruleJobType);
 			}
-		}	
+		}
 		
 //		if(!workflowRuleResourceParentLoggerIds.isEmpty()) {
 //			for(Long parentRuleResourceLoggerId :workflowRuleResourceParentLoggerIds)

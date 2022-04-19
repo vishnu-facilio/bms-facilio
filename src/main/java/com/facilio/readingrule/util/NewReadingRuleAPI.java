@@ -104,14 +104,20 @@ public class NewReadingRuleAPI {
         return getReadingRulesFromMap(maps);
     }
 
-    private static List<NewReadingRuleContext> getReadingRulesFromMap(@NonNull List<Map<String, Object>> rulesMap) throws Exception {
+    public static List<NewReadingRuleContext> getReadingRulesFromMap(@NonNull List<Map<String, Object>> rulesMap) throws Exception {
+        return getReadingRulesFromMap(rulesMap, true);
+    }
+
+    public static List<NewReadingRuleContext> getReadingRulesFromMap(@NonNull List<Map<String, Object>> rulesMap, boolean fetchChildren) throws Exception {
         List<NewReadingRuleContext> rules = new ArrayList<>();
         for (Map<String, Object> ruleProps : rulesMap) {
             NewReadingRuleContext readingRule = FieldUtil.getAsBeanFromMap(ruleProps, NewReadingRuleContext.class);
             updateModuleAndFields(readingRule);
-            fetchAndUpdateAlarmDetails(readingRule);
-            updateNamespaceAndFields(readingRule);
-            updateWorkflow(readingRule);
+            if(fetchChildren) {
+                fetchAndUpdateAlarmDetails(readingRule);
+                updateNamespaceAndFields(readingRule);
+                updateWorkflow(readingRule);
+            }
             rules.add(readingRule);
         }
         return rules;
