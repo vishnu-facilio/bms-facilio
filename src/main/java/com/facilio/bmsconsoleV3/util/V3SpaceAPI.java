@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsoleV3.context.V3BaseSpaceContext;
 import com.facilio.bmsconsoleV3.context.V3BuildingContext;
 import com.facilio.bmsconsoleV3.context.V3SiteContext;
 import com.facilio.constants.FacilioConstants;
@@ -13,11 +14,13 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class V3SpaceAPI {
 
@@ -97,5 +100,13 @@ public class V3SpaceAPI {
         }
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("id"), String.valueOf(id), NumberOperators.NOT_EQUALS));
         return criteria;
+    }
+
+    public static List<V3BaseSpaceContext> getBaseSpaceChildren(String moduleName, Long parentId) throws Exception {
+        Map<Long, V3BaseSpaceContext> spacesChildren = V3RecordAPI.getRecordsMap(FacilioConstants.ContextNames.BASE_SPACE,null,V3BaseSpaceContext.class,getBaseSpaceChildrenCriteria(moduleName,parentId));
+        if(!spacesChildren.isEmpty()){
+            return spacesChildren.values().stream().collect(Collectors.toList());
+        }
+        return null;
     }
 }
