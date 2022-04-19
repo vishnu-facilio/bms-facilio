@@ -4904,6 +4904,9 @@
 
 		<action name="replacePlaceHolders" class="com.facilio.bmsconsole.actions.WorkflowRuleAction"
 				method="replacePlaceHolders" />
+
+		<action name="getCount" class="com.facilio.bmsconsole.actions.ModuleWorkflowRuleAction"
+				method="getCountForWorkFlowRules"/>
 	</package>
 	
 	<package name="baseSpaceApiV2" namespace="/api/v2/basespaces" extends="v2Api">

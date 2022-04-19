@@ -1791,6 +1791,12 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetActionListForWorkflowRulesCommand());
 		return c;
 	}
+
+	public static FacilioChain getCountForWorkflowRuleChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetCountForWorkflowRuleCommand());
+		return chain;
+	}
 	
 	public static FacilioChain fetchAnomalyMetricsChain() {
 		FacilioChain c = getDefaultChain();
