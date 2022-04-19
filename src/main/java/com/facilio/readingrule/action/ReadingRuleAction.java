@@ -35,6 +35,12 @@ public class ReadingRuleAction extends V3Action {
     public boolean getStatus(){return status;}
     public void setStatus(boolean status){this.status=status;}
 
+    private boolean includeParentFilter;
+
+	public boolean getIncludeParentFilter() {
+		return includeParentFilter;
+	}
+
     NewReadingRuleContext readingRule;
 
 
@@ -58,17 +64,10 @@ public class ReadingRuleAction extends V3Action {
             JSONParser parser = new JSONParser();
             JSONObject json = (JSONObject) parser.parse(getFilters());
             context.put(FacilioConstants.ContextNames.FILTERS, json);
-//            context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
+            context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
         }
         if (getIsCount() != null) {
             context.put(FacilioConstants.ContextNames.RULE_COUNT, getIsCount());
-        }
-
-        if (getSearch() != null) {
-//            JSONObject searchObj = new JSONObject();
-//            searchObj.put("fields", "workflowrule.name");
-//            searchObj.put("query", getSearch());
-//            context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
         }
 
         if (getPage() != 0) {
