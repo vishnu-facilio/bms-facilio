@@ -6,14 +6,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.util.V3ItemsApi;
+import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ItemContext;
-import com.facilio.bmsconsole.context.PurchasedItemContext;
-import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -31,7 +31,7 @@ import com.facilio.modules.fields.FacilioField;
 
 ;
 
-public class AddOrUpdateItemQuantityCommand extends FacilioCommand {
+public class AddOrUpdateItemQuantityCommandV3 extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -50,44 +50,44 @@ public class AddOrUpdateItemQuantityCommand extends FacilioCommand {
 			if (itemIds != null && !itemIds.isEmpty()) {
 				FacilioModule itemModule = modBean.getModule(FacilioConstants.ContextNames.ITEM);
 				List<FacilioField> itemFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
-                List<ItemContext> itemRecords = new ArrayList<ItemContext>();
+                List<V3ItemContext> itemRecords = new ArrayList<V3ItemContext>();
                 Map<Long, List<UpdateChangeSet>> changes = new HashMap<Long, List<UpdateChangeSet>>();
 				for (long itemId : itemIds) {
-					ItemContext itemContext = ItemsApi.getItems(itemId);
+					V3ItemContext itemContext = V3ItemsApi.getItems(itemId);
 					if(!itemContext.getItemType().isRotating()) {
-						SelectRecordsBuilder<PurchasedItemContext> selectBuilder = new SelectRecordsBuilder<PurchasedItemContext>()
+						SelectRecordsBuilder<V3PurchasedItemContext> selectBuilder = new SelectRecordsBuilder<V3PurchasedItemContext>()
 								.select(purchasedItemsFields).table(purchaseItemsModule.getTableName())
-								.moduleName(purchaseItemsModule.getName()).beanClass(PurchasedItemContext.class)
+								.moduleName(purchaseItemsModule.getName()).beanClass(V3PurchasedItemContext.class)
 								.andCondition(CriteriaAPI.getCondition(purchasedItemsFieldMap.get("item"),
 										String.valueOf(itemId), PickListOperators.IS));
 
-						List<PurchasedItemContext> purchasedItems = selectBuilder.get();
+						List<V3PurchasedItemContext> purchasedItems = selectBuilder.get();
 						double quantity = 0;
 						long lastPurchasedDate = -1;
 						double lastPurchasedPrice = -1;
 						if (purchasedItems != null && !purchasedItems.isEmpty()) {
-							for (PurchasedItemContext purchaseditem : purchasedItems) {
+							for (V3PurchasedItemContext purchaseditem : purchasedItems) {
 								quantity += purchaseditem.getCurrentQuantity();
 							}
 						}
 
 						selectBuilder = new SelectRecordsBuilder<>(selectBuilder);
 						selectBuilder.orderBy("COST_DATE DESC");
-						List<PurchasedItemContext> pItems = selectBuilder.get();
+						List<V3PurchasedItemContext> pItems = selectBuilder.get();
 						if (pItems != null && !pItems.isEmpty()) {
-							PurchasedItemContext pitem = pItems.get(0);
+							V3PurchasedItemContext pitem = pItems.get(0);
 							lastPurchasedDate = pitem.getCostDate();
 							lastPurchasedPrice = pitem.getUnitcost();
 						}
 
 
-						ItemContext item = new ItemContext();
+						V3ItemContext item = new V3ItemContext();
 						item = itemContext;
 						itemTypesId = itemContext.getItemType().getId();
 						item.setQuantity(quantity);
 						item.setLastPurchasedDate(lastPurchasedDate);
 						item.setLastPurchasedPrice(lastPurchasedPrice);
-						if(item.getQuantity() <= item.getMinimumQuantity()) {
+						if( item.getMinimumQuantity()!=null && item.getQuantity() <= item.getMinimumQuantity()) {
 							item.setIsUnderstocked(true);
 						}
 						else {
@@ -95,11 +95,11 @@ public class AddOrUpdateItemQuantityCommand extends FacilioCommand {
 						}
 
 						itemTypesIds.add(itemTypesId);
-						UpdateRecordBuilder<ItemContext> updateBuilder = new UpdateRecordBuilder<ItemContext>()
+						UpdateRecordBuilder<V3ItemContext> updateBuilder = new UpdateRecordBuilder<V3ItemContext>()
 								.module(itemModule).fields(modBean.getAllFields(itemModule.getName()))
 								.andCondition(CriteriaAPI.getIdCondition(item.getId(), itemModule));
 
-						updateBuilder.withChangeSet(ItemContext.class);
+						updateBuilder.withChangeSet(V3ItemContext.class);
 						updateBuilder.update(item);
 						Map<Long, List<UpdateChangeSet>> recordChanges = updateBuilder.getChangeSet();
 						changes.put(itemContext.getId(), recordChanges.get(itemContext.getId()));
@@ -111,11 +111,11 @@ public class AddOrUpdateItemQuantityCommand extends FacilioCommand {
 					else {
 						double totalConsumed = getTotalQuantityConsumed(itemId, "item");
 						itemContext.setQuantity(totalConsumed);
-						UpdateRecordBuilder<ItemContext> updateBuilder = new UpdateRecordBuilder<ItemContext>()
+						UpdateRecordBuilder<V3ItemContext> updateBuilder = new UpdateRecordBuilder<V3ItemContext>()
 								.module(itemModule).fields(modBean.getAllFields(itemModule.getName()))
 								.andCondition(CriteriaAPI.getIdCondition(itemId, itemModule));
-						updateBuilder.withChangeSet(ItemContext.class);
-						if(itemContext.getQuantity() <= itemContext.getMinimumQuantity()) {
+						updateBuilder.withChangeSet(V3ItemContext.class);
+						if(itemContext.getMinimumQuantity()!=null && itemContext.getQuantity() <= itemContext.getMinimumQuantity()) {
 							itemContext.setIsUnderstocked(true);
 						}
 						else {

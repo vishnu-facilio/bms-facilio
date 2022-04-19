@@ -75,7 +75,7 @@ public class ConnectionApiContext {
     public Object execute(Map<String,String> params) throws Exception {
         if (this.type==1){
         	
-        	return ConnectionUtil.getUrlResult(this.connectionContext, this.url, params, HttpMethod.GET,null,null,null);
+        	return ConnectionUtil.getUrlResult(this.connectionContext, this.url, params, HttpMethod.GET,null,null,null,null);
         	
         }
         if (this.type ==2){

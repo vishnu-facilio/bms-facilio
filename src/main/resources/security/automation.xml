@@ -27,4 +27,55 @@
         </requestbody>
     </request>
     <!--    Email Template - end -->
+
+    <request path="/api/v2/systemButton/update">
+        <requestbody type="object">
+            <property name="moduleName" type="string"/>
+            <property name="rule" type="object">
+                <property name="name" type="string"/>
+                <property name="identifier" type="string"/>
+                <property name="id" type="number"/>
+                <property name="buttonType" type="number"/>
+                <property name="buttonTypeEnum" type="string"/>
+                <property name="active" type="boolean"/>
+                <property name="activityType" type="number" />
+                <property name="activityTypeEnum" type="string"/>
+                <property name="positionType" type="number"/>
+                <property name="positionTypeEnum" type="string"/>
+                <property name="ruleType" type="number"/>
+                <property name="ruleTypeEnum" type="string"/>
+                <property name="status" type="boolean"/>
+                <property name="approvers" type="array">
+                    <items type="object">
+                        <property name="id" type="number"/>
+                        <property name="parentId" type="number"/>
+                        <property name="type" type="number"/>
+                        <property name="typeEnum" type="string"/>
+                        <property name="userId" type="number"/>
+                    </items>
+                </property>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/systemButton/list">
+        <requestbody type="object">
+            <property name="moduleName" type="string"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/systemButton/get">
+        <requestbody type="object">
+            <property name="id" type="number"/>
+            <property name="moduleName" type="string"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/systemButton/getAvailableButtons">
+        <requestbody type="object">
+            <property name="id" type="number"/>
+            <property name="moduleName" type="string"/>
+            <property name="positionType" type="number"/>
+        </requestbody>
+    </request>
 </config>

@@ -21,6 +21,12 @@ public class UpdateLastRecordedValueAndFilterPointsCommand extends AgentV2Comman
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        boolean isCov = false;
+        if (context.containsKey(FacilioConstants.ContextNames.ADJUST_READING_TTIME)) {
+            isCov = !(Boolean) context.get(FacilioConstants.ContextNames.ADJUST_READING_TTIME);
+        }
+
+
         FacilioAgent agent = (FacilioAgent) context.get(AgentConstants.AGENT);
         long timeStamp = Long.parseLong(context.get(FacilioConstants.ContextNames.TIMESTAMP).toString());
         Map<String, Object> snapshot = (Map<String, Object>) context.get(FacilioConstants.ContextNames.DataProcessor.DATA_SNAPSHOT);
@@ -32,7 +38,7 @@ public class UpdateLastRecordedValueAndFilterPointsCommand extends AgentV2Comman
             String pointName = stringObjectEntry.getKey();
             Object value = stringObjectEntry.getValue();
             Point point = pointRecords.get(pointName);
-            if (value == null || isPointWithinAgentInterval(agent, timeStamp, point)) {
+            if (value == null || (!isCov && isPointWithinAgentInterval(agent, timeStamp, point))) {
                 pointsToRemove.add(pointName);
             } else {
                 //update point last recorded time and value
@@ -53,7 +59,7 @@ public class UpdateLastRecordedValueAndFilterPointsCommand extends AgentV2Comman
         if (!pointsToRemove.isEmpty()) {
             LOGGER.info("Filtered points : " + pointsToRemove);
         }
-        return false;
+        return snapshot.isEmpty();
     }
 
     private boolean isPointWithinAgentInterval(FacilioAgent agent, long timeStamp, Point point) throws Exception {

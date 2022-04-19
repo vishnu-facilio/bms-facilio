@@ -5,39 +5,45 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum AgentType {
-	CUSTOM(0, "custom"),
-	FACILIO(1, "facilio", false),
-	NIAGARA(2, "niagara", false),
-    CLOUD(3,"cloud"),
-    REST(4,"rest"),
+    CUSTOM(0, "custom", true, false, true),
+    FACILIO(1, "facilio", false, false, true),
+    NIAGARA(2, "niagara", false, false, true),
+    CLOUD(3, "cloud", true, false, false),
+    REST(4, "rest", true, false, false),
     WATTSENSE(5, "wattsense"),
-    RDM(6, "RDM", false, true),
-    CLOUD_ON_SERVICE(7, "cloud-on-service", true, true),
-    MQTT(8, "mqtt", true, true)
-    ;
+    RDM(6, "RDM", false, true, false),
+    CLOUD_ON_SERVICE(7, "cloud-on-service", true, true, false),
+    MQTT(8, "mqtt", true, true, false);
 
 
-	private int key;
+    private int key;
     private String label;
     private boolean agentService;
     private boolean allowAutoAddition;
+    private boolean isMqttConnectionRequired = false;
 
     AgentType(int key, String label) {
-        this(key, label, true);
+        this(key, label, false);
     }
-    
+
     AgentType(int key, String label, boolean allowAutoAddition) {
-    	this(key, label, allowAutoAddition, false);
+        this(key, label, allowAutoAddition, false);
     }
-    
+
     AgentType(int key, String label, boolean allowAutoAddition, boolean agentService) {
+        this(key, label, allowAutoAddition, agentService, false);
+    }
+
+    AgentType(int key, String label, boolean allowAutoAddition, boolean agentService, boolean isMqttConnectionRequired) {
         this.key = key;
         this.label = label;
         this.agentService = agentService;
         this.allowAutoAddition = allowAutoAddition;
+        this.isMqttConnectionRequired = isMqttConnectionRequired;
     }
-    
-    public  int getKey(){
+
+
+    public int getKey() {
         return key;
     }
 
@@ -48,22 +54,26 @@ public enum AgentType {
     public boolean isAgentService() {
     	return agentService;
     }
-    
-    public boolean allowAutoAddition() {
-    	return allowAutoAddition;
-    }
 
     public static AgentType valueOf(int value) {
         return TYPE_MAP.get(value);
     }
 
     private static final Map<Integer, AgentType> TYPE_MAP = Collections.unmodifiableMap(initTypeMap());
+
     private static Map<Integer, AgentType> initTypeMap() {
         Map<Integer, AgentType> typeMap = new HashMap<>();
-        for(AgentType type : values()) {
+        for (AgentType type : values()) {
             typeMap.put(type.getKey(), type);
         }
         return typeMap;
     }
 
+    public boolean isMqttConnectionRequired() {
+        return isMqttConnectionRequired;
+    }
+
+    public boolean allowAutoAddition() {
+        return allowAutoAddition;
+    }
 }

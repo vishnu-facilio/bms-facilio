@@ -41,12 +41,23 @@ public class ReadingRuleDependenciesCommand extends FacilioCommand {
         FacilioField addtnMsgField = FieldFactory.getField(null, "INFO", null, null, FieldType.BIG_STRING);
         ruleField.setDefault(false);
         addtnMsgField.setDefault(false);
+        
+        ArrayList<FacilioField> fieldList = new ArrayList<FacilioField>();
+        
+        fieldList.add(ruleField);
+        fieldList.add(addtnMsgField);
 
-        ctx.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, new ArrayList<FacilioField>() {{
-            add(ruleField);
-            add(addtnMsgField);
-        }});
+        if(rule.getImpact() != null) {
+        	
+        	FacilioField energyImpactField = FieldFactory.getField("energyImpact", "Energy Impact", "ENERGY_IMPACT", null, FieldType.DECIMAL);
+            FacilioField costImpactField = FieldFactory.getField("costImpact", "Cost Impact", "COST_IMPACT", null, FieldType.DECIMAL);
+            
+            fieldList.add(energyImpactField);
+            fieldList.add(costImpactField);
+        }
 
+        ctx.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST,fieldList);
+        
         ctx.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
         ctx.put(WorkflowV2Util.WORKFLOW_CONTEXT, rule.getWorkflowContext());
 

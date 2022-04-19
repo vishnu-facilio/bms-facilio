@@ -66,7 +66,7 @@ public class AddFaultImpactModules extends SignUpData {
 		BooleanField enabledCompaction = (BooleanField) FieldFactory.getDefaultField("enabledCompaction", "Enable Compaction", "ENABLED_COMPACTION", FieldType.BOOLEAN);
         fields.add(enabledCompaction);
 		
-		SystemEnumField creationType = (SystemEnumField) FieldFactory.getDefaultField("aggregationType", "Aggregation Type", "AGGREGATION_TYPE", FieldType.SYSTEM_ENUM);
+		SystemEnumField creationType = (SystemEnumField) FieldFactory.getDefaultField("aggregationTypeEnum", "Aggregation Type", "AGGREGATION_TYPE", FieldType.SYSTEM_ENUM);
         creationType.setEnumName("AggregationType");
         
         fields.add(creationType);

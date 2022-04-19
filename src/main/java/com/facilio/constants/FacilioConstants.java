@@ -1002,6 +1002,9 @@ public class FacilioConstants {
 		
 		public static final String LEEDID = "leedID";
 		public static final String LEED = "LEED";
+
+		public static final String SYSTEM_BUTTON = "systemButton";
+		public static final String SYSTEM_BUTTONS = "systemButtons";
 		
 		public static final String METERID = "meterID";
 		public static final String METER = "METER";
@@ -2788,6 +2791,8 @@ public class FacilioConstants {
 		public static final String WORKFLOW_LIST = "workflows";
 
 		public static final String WORKFLOW_LOG = "workflowLog";
+		public static final String WORKFLOW_LOG_VIEW = "workflowLogView";
+
 		public static final String WORKFLOW_LOG_TABLENAME = "Workflow_Log";
 		
 		public static final String WORKFLOW_LOG_PARENT_ID = "workflowLogParentId";

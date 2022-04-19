@@ -21,6 +21,9 @@ public class AddNewReadingRuleCommand extends FacilioCommand {
         readingRule.setCreatedTime(System.currentTimeMillis());
         readingRule.setModuleId((Long)context.get(FacilioConstants.ContextNames.MODULE_ID));
         readingRule.setWorkflowId(readingRule.getWorkflowContext().getId());
+        if(readingRule.getImpact() != null) {
+        	 readingRule.setImpactId(readingRule.getImpact().getId());
+        }
 
         NewReadingRuleAPI.addReadingRule(readingRule);
 

@@ -3210,6 +3210,13 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getSystemButtonRuleModule(){
+		FacilioModule module = new FacilioModule();
+		module.setName("system_Button");
+		module.setDisplayName("System Button");
+		module.setTableName("SystemButton");
+		return module;
+	}
 	public static FacilioModule getStateRuleTransitionModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("stateruleTransitionWorkflow");

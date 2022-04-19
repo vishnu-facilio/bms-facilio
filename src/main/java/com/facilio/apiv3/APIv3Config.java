@@ -666,7 +666,9 @@ public class APIv3Config {
     public static Supplier<V3Config> getItem() {
         return () -> new V3Config(V3ItemContext.class, new ModuleCustomFieldCount30())
                 .create()
+                .afterSave(TransactionChainFactoryV3.getAddItemChain())
                 .update()
+                .afterSave(TransactionChainFactoryV3.getAddItemChain())
                 .list()
                 .beforeFetch(new LoadItemLookUpCommandV3())
                 .summary()

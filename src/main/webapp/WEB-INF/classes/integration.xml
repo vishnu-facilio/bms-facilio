@@ -202,6 +202,9 @@
 		<result name="success" type="json">
 				<param name="includeProperties">jsonresponse.*</param>
 		</result>
+		<result name="invalid" type="json">
+			<param name="includeProperties">jsonresponse.*</param>
+		</result>
 	</action>
 
 	<action name="changepassword" class="com.facilio.auth.actions.FacilioAuthAction" method="changePassword">

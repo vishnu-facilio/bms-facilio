@@ -82,7 +82,7 @@ public class V3ItemContext extends V3Context {
     }
 
     public Double getQuantity() {
-        return quantity;
+            return quantity;
     }
 
     public void setQuantity(Double quantity) {
@@ -98,7 +98,7 @@ public class V3ItemContext extends V3Context {
     }
 
     public Long getLastPurchasedDate() {
-        return lastPurchasedDate;
+            return lastPurchasedDate;
     }
 
     public void setLastPurchasedDate(Long lastPurchasedDate) {
@@ -106,7 +106,7 @@ public class V3ItemContext extends V3Context {
     }
 
     public Double getLastPurchasedPrice() {
-        return lastPurchasedPrice;
+            return lastPurchasedPrice;
     }
 
     public void setLastPurchasedPrice(Double lastPurchasedPrice) {
@@ -114,18 +114,21 @@ public class V3ItemContext extends V3Context {
     }
 
     public Double getMinimumQuantity() {
-        return minimumQuantity;
+            return minimumQuantity;
     }
 
     public void setMinimumQuantity(Double minimumQuantity) {
         this.minimumQuantity = minimumQuantity;
     }
 
-    public Boolean getUnderstocked() {
-        return isUnderstocked;
+    public Boolean getIsUnderstocked() {
+        if(isUnderstocked!=null){
+            return isUnderstocked.booleanValue();
+        }
+        return false;
     }
 
-    public void setUnderstocked(Boolean understocked) {
+    public void setIsUnderstocked(Boolean understocked) {
         isUnderstocked = understocked;
     }
 

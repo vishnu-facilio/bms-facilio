@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.*;
+import com.facilio.auth.actions.PasswordHashUtil;
 import com.facilio.bmsconsole.context.ScopingContext;
 import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.iam.accounts.util.IAMAccountConstants;

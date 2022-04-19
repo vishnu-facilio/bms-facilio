@@ -465,8 +465,10 @@ public class DataProcessorUtil {
                     params.add(payload);
                     params.add(FieldUtil.getAsProperties(agent));
                     context.put(WorkflowV2Util.WORKFLOW_PARAMS, params);
+                    long workflowStartTime = System.currentTimeMillis();
                     chain.execute();
                     List<Map<String, Object>> resultsFromPreProcessor = (List<Map<String, Object>>) transformWorkflow.getReturnValue();
+                    LOGGER.debug("Time taken to transform payload : " + (System.currentTimeMillis() - workflowStartTime) + " ms");
                     for (Map<String, Object> item : resultsFromPreProcessor) {
                         payload = (JSONObject) new JSONParser().parse(JSONObject.toJSONString(item));
                         payloads.add(payload);

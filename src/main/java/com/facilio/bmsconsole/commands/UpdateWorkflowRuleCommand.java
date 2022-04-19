@@ -81,8 +81,9 @@ public class UpdateWorkflowRuleCommand extends FacilioCommand {
 		}
 		else if (rule instanceof ScoringRuleContext) {
 			ScoringRuleAPI.updateScoringRule((ScoringRuleContext) rule, (ScoringRuleContext) oldRule);
-		}
-		else {
+		}else if(rule instanceof SystemButtonRuleContext){
+			rule = ApprovalRulesAPI.updateSystemButtonRuleWithChildren((SystemButtonRuleContext) rule,(SystemButtonRuleContext) oldRule);
+		}else {
 			rule = WorkflowRuleAPI.updateWorkflowRuleWithChildren(rule, oldRule);
 		}
 	}

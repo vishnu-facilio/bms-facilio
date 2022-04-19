@@ -2024,6 +2024,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getBooleanField("status", "STATUS", module));
         fields.add(getNumberField("assetCategoryId", "ASSET_CATEGORY_ID", module));
         fields.add(getNumberField("workflowId", "WORKFLOW_ID", module));
+        fields.add(getNumberField("impactId", "IMPACT_ID", module));
         return fields;
     }
 
@@ -8339,6 +8340,18 @@ public class FieldFactory extends BaseFieldFactory {
         list.add(getField("configStr", "CONFIG", module, FieldType.STRING));
 
         return list;
+    }
+
+    public static List<FacilioField> getSystemButtonRuleFields(){
+        FacilioModule module = ModuleFactory.getSystemButtonRuleModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        fields.add(getIdField(module));
+        fields.add(getField("identifier","IDENTIFIER",module,FieldType.STRING));
+        fields.add(getField("positionType","POSITION_TYPE",module,FieldType.NUMBER));
+        fields.add(getField("buttonType","BUTTON_TYPE",module,FieldType.NUMBER));
+
+        return fields;
     }
 
     public static List<FacilioField> getStateRuleTransitionFields() {

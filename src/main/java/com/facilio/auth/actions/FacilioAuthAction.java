@@ -2156,13 +2156,28 @@ public class FacilioAuthAction extends FacilioAction {
 	}
 
 	public String acceptUserInvite() throws Exception {
-		
-		HttpServletRequest request = ServletActionContext.getRequest(); 
-		
-		if(AccountUtil.getUserBean().acceptInvite(getInviteToken(), getPassword())) {
-			return SUCCESS;
+		HttpServletRequest request = ServletActionContext.getRequest();
+		try {
+			if(AccountUtil.getUserBean().acceptInvite(getInviteToken(), getRawPassword())) {
+				return SUCCESS;
+			}
+		} catch(SecurityPolicyException secEx) {
+			setJsonresponse("status", "failure");
+			setJsonresponse("messages", secEx.getMessage());
+			return "invalid";
+		} catch(Exception e) {
+			setJsonresponse("status", "failure");
+			Throwable cause = e.getCause();
+			while (cause != null) {
+				if (cause instanceof SecurityPolicyException) {
+					setJsonresponse("status", "failure");
+					setJsonresponse("messages", cause.getMessage());
+					break;
+				}
+				cause = cause.getCause();
+			}
 		}
-		return ERROR;
+		return "invalid";
 	}
 
 	public static String cryptWithMD5(String pass) {

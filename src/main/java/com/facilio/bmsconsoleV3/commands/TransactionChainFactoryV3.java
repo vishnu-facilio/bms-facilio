@@ -19,7 +19,7 @@ import com.facilio.bmsconsole.automation.command.DeleteGlobalVariableGroupComman
 import com.facilio.bmsconsole.commands.ActivateMLServiceCommand;
 import com.facilio.bmsconsole.commands.AddBulkToolStockTransactionsCommand;
 import com.facilio.bmsconsole.commands.AddClientUserCommandV3;
-import com.facilio.bmsconsole.commands.AddOrUpdateItemQuantityCommand;
+import com.facilio.bmsconsole.commands.AddOrUpdateItemQuantityCommandV3;
 import com.facilio.bmsconsole.commands.AddOrUpdateItemTypeVendorCommand;
 import com.facilio.bmsconsole.commands.AddOrUpdateReportCommand;
 import com.facilio.bmsconsole.commands.AddOrUpdateToolVendorCommand;
@@ -52,11 +52,11 @@ import com.facilio.bmsconsole.commands.GetReadingFieldsCommand;
 import com.facilio.bmsconsole.commands.GetSpaceSpecifcReadingsCommand;
 import com.facilio.bmsconsole.commands.InitMLServiceCommand;
 import com.facilio.bmsconsole.commands.InsertReadingDataMetaForNewResourceCommand;
-import com.facilio.bmsconsole.commands.ItemTypeQuantityRollupCommand;
+import com.facilio.bmsconsole.commands.ItemTypeQuantityRollupCommandV3;
 import com.facilio.bmsconsole.commands.PivotColumnFormatCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.ScheduleV2ReportCommand;
-import com.facilio.bmsconsole.commands.SetItemAndToolTypeForStoreRoomCommand;
+import com.facilio.bmsconsole.commands.SetItemAndToolTypeForStoreRoomCommandV3;
 import com.facilio.bmsconsole.commands.SetTableNamesCommand;
 import com.facilio.bmsconsole.commands.ToolQuantityRollUpCommand;
 import com.facilio.bmsconsole.commands.ToolTypeQuantityRollupCommand;
@@ -232,6 +232,9 @@ import com.facilio.trigger.command.ExecuteTriggerCommand;
 import com.facilio.trigger.command.GetAllTriggersCommand;
 import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
 import com.facilio.bmsconsoleV3.commands.reports.ConstructLiveFilterCommandToExport;
+import com.facilio.bmsconsole.commands.AddOrUpdateItemStockTransactionsCommand;
+import com.facilio.bmsconsole.commands.AddItemCommandV3;
+import com.facilio.bmsconsole.commands.GetAddPurchasedItemCommandV3;
 
 public class TransactionChainFactoryV3 {
     private static FacilioChain getDefaultChain() {
@@ -1188,24 +1191,25 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getAddOrUpdateItemStockTransactionChain(){
         FacilioChain c = getDefaultChain();
         c.addCommand(SetTableNamesCommand.getForItemTransactions());
-        c.addCommand(new AddOrUpdateItemStockTransactionsCommandV3());
+        c.addCommand(new AddOrUpdateItemStockTransactionsCommand());
         c.addCommand(getUpdateItemQuantityRollupChain());
         return c;
     }
 
     public static FacilioChain getUpdateItemQuantityRollupChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new AddOrUpdateItemQuantityCommand());
-        c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE));
-        c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_OUT_OF_STOCK_NOTIFICATION_RULE));
+        c.addCommand(new AddOrUpdateItemQuantityCommandV3());
+        c.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
+                        .addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE,RuleType.CUSTOM_STOREROOM_OUT_OF_STOCK_NOTIFICATION_RULE))
 
+        );
         c.addCommand(getUpdateItemTypeQuantityRollupChain());
         return c;
     }
 
     public static FacilioChain getUpdateItemTypeQuantityRollupChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new ItemTypeQuantityRollupCommand());
+        c.addCommand(new ItemTypeQuantityRollupCommandV3());
         return c;
     }
 
@@ -1402,7 +1406,7 @@ public class TransactionChainFactoryV3 {
     }
     public static FacilioChain getSetItemAndToolTypeForStoreRoomChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new SetItemAndToolTypeForStoreRoomCommand());
+        c.addCommand(new SetItemAndToolTypeForStoreRoomCommandV3());
         return c;
     }
 
@@ -1633,9 +1637,30 @@ public class TransactionChainFactoryV3 {
         return chain;
     }
 
-    public static FacilioChain getReportModuleListChain(){
+    public static FacilioChain getReportModuleListChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new GetReportModuleListCommand());
         return chain;
+    }
+    public static FacilioChain getAddItemChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddItemCommandV3());
+        c.addCommand(getAddPurchasedItemChain());
+        c.addCommand(getUpdateItemQuantityRollupChain());
+        c.addCommand(getSetItemAndToolTypeForStoreRoomChain());
+        return c;
+    }
+    public static FacilioChain getAddPurchasedItemChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetAddPurchasedItemCommandV3());
+        c.addCommand(getAddOrUpdateItemStockTransactionChainV3());
+        return c;
+    }
+    public static FacilioChain getAddOrUpdateItemStockTransactionChainV3(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(SetTableNamesCommand.getForItemTransactions());
+        c.addCommand(new AddOrUpdateItemStockTransactionsCommandV3());
+        c.addCommand(getUpdateItemQuantityRollupChain());
+        return c;
     }
 }

@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ToolContext;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ItemContext;
-import com.facilio.bmsconsole.context.StoreRoomContext;
-import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -24,7 +24,7 @@ import com.facilio.modules.fields.FacilioField;
 
 ;
 
-public class SetItemAndToolTypeForStoreRoomCommand extends FacilioCommand {
+public class SetItemAndToolTypeForStoreRoomCommandV3 extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -46,13 +46,13 @@ public class SetItemAndToolTypeForStoreRoomCommand extends FacilioCommand {
 		long itemTotal = -1, toolTotal = -1;
 		itemTotal = getItemTypeTotal(storeRoomId, itemModule, itemFieldMap);
 		toolTotal = getToolTypeTotal(storeRoomId, toolModule, toolFieldMap);
-		
-		StoreRoomContext storeRoom = new StoreRoomContext();
+
+		V3StoreRoomContext storeRoom = new V3StoreRoomContext();
 		storeRoom.setId(storeRoomId);
 		storeRoom.setNoOfItemTypes(itemTotal);
 		storeRoom.setNoOfToolTypes(toolTotal);
 		
-		UpdateRecordBuilder<StoreRoomContext> updateBuilder = new UpdateRecordBuilder<StoreRoomContext>()
+		UpdateRecordBuilder<V3StoreRoomContext> updateBuilder = new UpdateRecordBuilder<V3StoreRoomContext>()
 				.module(storeRoomModule).fields(modBean.getAllFields(storeRoomModule.getName()))
 				.andCondition(CriteriaAPI.getIdCondition(storeRoomId, storeRoomModule));
 
@@ -67,7 +67,7 @@ public class SetItemAndToolTypeForStoreRoomCommand extends FacilioCommand {
 		List<FacilioField> field = new ArrayList<>();
 		field.add(FieldFactory.getField("total", "COUNT(*)", FieldType.DECIMAL));
 
-		SelectRecordsBuilder<ItemContext> builder = new SelectRecordsBuilder<ItemContext>().select(field)
+		SelectRecordsBuilder<V3ItemContext> builder = new SelectRecordsBuilder<V3ItemContext>().select(field)
 				.moduleName(module.getName()).andCondition(CriteriaAPI
 						.getCondition(itemFieldMap.get("storeRoom"), String.valueOf(id), NumberOperators.EQUALS))
 				.setAggregation();
@@ -89,7 +89,7 @@ public class SetItemAndToolTypeForStoreRoomCommand extends FacilioCommand {
 		List<FacilioField> field = new ArrayList<>();
 		field.add(FieldFactory.getField("total", "COUNT(*)", FieldType.DECIMAL));
 
-		SelectRecordsBuilder<ToolContext> builder = new SelectRecordsBuilder<ToolContext>().select(field)
+		SelectRecordsBuilder<V3ToolContext> builder = new SelectRecordsBuilder<V3ToolContext>().select(field)
 				.moduleName(module.getName()).andCondition(CriteriaAPI
 						.getCondition(itemFieldMap.get("storeRoom"), String.valueOf(id), NumberOperators.EQUALS))
 				.setAggregation();

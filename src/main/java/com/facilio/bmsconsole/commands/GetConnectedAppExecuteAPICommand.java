@@ -29,7 +29,7 @@ public class GetConnectedAppExecuteAPICommand extends FacilioCommand {
 			
 			if (connectedAppConnector != null) {
 				LOGGER.info("Connected App - Execute Connector API: connectedAppId: "+apiRequest.getConnectedAppId()+" connector: "+apiRequest.getConnector()+" url: "+apiRequest.getUrl()+" method: "+apiRequest.getMethod());
-				apiResponse = ConnectionUtil.getUrlResult(connectedAppConnector.getConnection(), apiRequest.getUrl(), apiRequest.getParams(), httpMethod, apiRequest.getData(), apiRequest.getContentType(), apiRequest.getHeaders());
+				apiResponse = ConnectionUtil.getUrlResult(connectedAppConnector.getConnection(), apiRequest.getUrl(), apiRequest.getParams(), httpMethod, apiRequest.getData(), apiRequest.getContentType(), apiRequest.getHeaders(),null);
 			}
 			else {
 				LOGGER.info("Connected App - Execute External API: connectedAppId: "+apiRequest.getConnectedAppId()+" url: "+apiRequest.getUrl()+" method: "+apiRequest.getMethod());

@@ -96,7 +96,7 @@ public class ReportFactoryFields {
 		List<FacilioField> customFieldsList = bean.getAllCustomFields("workorder");
 		FacilioModule woModule = bean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 		if(customFieldsList != null) {
-			customFields = FieldFactory.getAsMap(customFieldsList.stream().filter(field -> field.getDataTypeEnum() != null && field.getDataTypeEnum() != FieldType.MULTI_ENUM && field.getDataTypeEnum() != FieldType.MULTI_LOOKUP).collect(Collectors.toList()));
+			customFields = FieldFactory.getAsMap(customFieldsList.stream().filter(field -> field.getDataTypeEnum() != null).collect(Collectors.toList()));
 		}
 		HashMap<String,FacilioField> lookUpModuleFieldMap = new HashMap<String,FacilioField>();
 		HashMap<String,String> additonalModules = new HashMap<String,String>();

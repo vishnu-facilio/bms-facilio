@@ -27,7 +27,7 @@ public class AddRotatingItemToolCommandV3 extends FacilioCommand {
                 } else {
                     if (asset.getRotatingItem() != null && asset.getRotatingItem().getId() > 0) {
                         V3ItemContext item = asset.getRotatingItem();
-                        FacilioChain c = TransactionChainFactoryV3.getAddOrUpdateItemStockTransactionChain();
+                        FacilioChain c = TransactionChainFactoryV3.getAddOrUpdateItemStockTransactionChainV3();
                         c.getContext().put(FacilioConstants.ContextNames.ITEM, item);
                         c.getContext().put(FacilioConstants.ContextNames.ROTATING_ASSET, asset);
                         c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, false);

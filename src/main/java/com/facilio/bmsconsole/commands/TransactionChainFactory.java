@@ -778,6 +778,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddNamespaceCommand());
 			c.addCommand(new AddNamespaceFieldsCommand());
 			c.addCommand(new AddRCARulesCommand());
+			c.addCommand(new AddFaultImpactRelationCommand());
 			return c;
 		}
 
@@ -2118,7 +2119,7 @@ public class TransactionChainFactory {
 		public static FacilioChain getAddItemChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForItem());
-			c.addCommand(new AddItemCommand());
+			c.addCommand(new AddItemCommandV3());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(getAddPurchasedItemChain());
 			c.addCommand(getUpdateItemQuantityRollupChain());
@@ -2151,7 +2152,7 @@ public class TransactionChainFactory {
 		public static FacilioChain getAddPurchasedItemChain(){
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForPurchasedItem());
-			c.addCommand(new GetAddPurchasedItemCommand());
+			c.addCommand(new GetAddPurchasedItemCommandV3());
 			c.addCommand(getAddOrUpdateItemStockTransactionChain());
 			return c;
 		}
@@ -2175,7 +2176,7 @@ public class TransactionChainFactory {
 
 		public static FacilioChain getUpdateItemQuantityRollupChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new AddOrUpdateItemQuantityCommand());
+			c.addCommand(new AddOrUpdateItemQuantityCommandV3());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_OUT_OF_STOCK_NOTIFICATION_RULE));
 
@@ -2185,7 +2186,7 @@ public class TransactionChainFactory {
 
 		public static FacilioChain getUpdateItemTypeQuantityRollupChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new ItemTypeQuantityRollupCommand());
+			c.addCommand(new ItemTypeQuantityRollupCommandV3());
 			return c;
 		}
 
@@ -2516,7 +2517,7 @@ public class TransactionChainFactory {
 
 		public static FacilioChain getSetItemAndToolTypeForStoreRoomChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new SetItemAndToolTypeForStoreRoomCommand());
+			c.addCommand(new SetItemAndToolTypeForStoreRoomCommandV3());
 			return c;
 		}
 
@@ -4682,6 +4683,12 @@ public class TransactionChainFactory {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetWorkflowRuleCommand());
 		chain.addCommand(new WorkflowRuleDeleteCommand());
+		return chain;
+	}
+
+	public static FacilioChain getUpdateSystemButtonChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new UpdateSystemButtonCommand());
 		return chain;
 	}
 

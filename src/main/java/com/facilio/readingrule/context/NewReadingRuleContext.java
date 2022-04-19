@@ -3,9 +3,11 @@ package com.facilio.readingrule.context;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleInterface;
+import com.facilio.constants.FacilioConstants.FaultImpact;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.ns.context.NameSpaceContext;
+import com.facilio.readingrule.faultimpact.FaultImpactContext;
 import com.facilio.workflows.context.WorkflowContext;
 import lombok.Getter;
 import lombok.Setter;
@@ -57,6 +59,9 @@ public class NewReadingRuleContext implements ReadingRuleInterface, Cloneable {
     Long workflowId;
 
     WorkflowContext workflowContext;
+    
+    FaultImpactContext impact;
+    Long impactId;
 
     Boolean status;
     public void setStatus(Boolean status){this.status=status;}

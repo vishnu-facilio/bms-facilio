@@ -17,6 +17,7 @@ import java.util.StringJoiner;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.workflow.rule.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,27 +34,6 @@ import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingEventContext;
 import com.facilio.bmsconsole.scoringrule.ScoringRuleAPI;
 import com.facilio.bmsconsole.scoringrule.ScoringRuleContext;
-import com.facilio.bmsconsole.workflow.rule.AbstractStateTransitionRuleContext;
-import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.bmsconsole.workflow.rule.AlarmWorkflowRuleContext;
-import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
-import com.facilio.bmsconsole.workflow.rule.ApprovalStateFlowRuleContext;
-import com.facilio.bmsconsole.workflow.rule.ApprovalStateTransitionRuleContext;
-import com.facilio.bmsconsole.workflow.rule.ApproverWorkflowRuleContext;
-import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
-import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.bmsconsole.workflow.rule.FieldChangeFieldContext;
-import com.facilio.bmsconsole.workflow.rule.FormInterface;
-import com.facilio.bmsconsole.workflow.rule.ReadingAlarmRuleContext;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
-import com.facilio.bmsconsole.workflow.rule.SLAPolicyContext;
-import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
-import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
-import com.facilio.bmsconsole.workflow.rule.StateTransitionFieldScheduleRuleContext;
-import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
-import com.facilio.bmsconsole.workflow.rule.TransactionRuleContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -748,6 +728,9 @@ public class WorkflowRuleAPI {
 				case CUSTOM_BUTTON:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getCustomButtonRuleModule(), FieldFactory.getCustomButtonRuleFields(), entry.getValue()));
 					break;
+				case SYSTEM_BUTTON:
+					typeWiseProps.put(entry.getKey(),getExtendedProps(ModuleFactory.getSystemButtonRuleModule(),FieldFactory.getSystemButtonRuleFields(),entry.getValue()));
+					break;
 				case ALARM_WORKFLOW_RULE:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getAlarmWorkflowRuleModule(), FieldFactory.getAlarmWorkflowRuleFields(), entry.getValue()));
 					break;
@@ -899,6 +882,10 @@ public class WorkflowRuleAPI {
 						case CUSTOM_BUTTON:
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 							rule = FieldUtil.getAsBeanFromMap(prop, CustomButtonRuleContext.class);
+							break;
+						case SYSTEM_BUTTON:
+							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
+							rule = FieldUtil.getAsBeanFromMap(prop, SystemButtonRuleContext.class);
 							break;
 						case ALARM_WORKFLOW_RULE:
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));

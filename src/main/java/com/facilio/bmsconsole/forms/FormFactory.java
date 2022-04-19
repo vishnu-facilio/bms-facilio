@@ -44,9 +44,6 @@ public class FormFactory {
 		forms.put("default_asset", getAssetForm());
 		forms.put("energymeter", getEnergyMeterForm());
 		forms.put("tenant", getTenantForm());
-		forms.put("item_form", getItemForm());
-		forms.put("item_track_form", getItemWithIndTrackForm());
-		//forms.put("store_room_form", getStoreRoomForm());
 		forms.put("item_types_form", getItemTypesForm());
 		forms.put("tool_types_form", getTooltypesForm());
 		forms.put("vendors_form", getVendorsForm());
@@ -504,6 +501,7 @@ public class FormFactory {
 		List<FacilioForm> trShipmentForm = Arrays.asList(getTransferRequestShipmentForm());
 		List<FacilioForm> storeRoomForm = Arrays.asList(getStoreRoomForm());
 		List<FacilioForm> inventoryCategoryForm = Arrays.asList(getInventoryCategoryForm());
+		List<FacilioForm> itemFormsList = Arrays.asList(getItemForm());
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
 				.put(FacilioConstants.ContextNames.ASSET, getFormMap(assetForms))
@@ -577,6 +575,7 @@ public class FormFactory {
 				.put(ContextNames.TRANSFER_REQUEST_SHIPMENT, getFormMap(trShipmentForm))
 				.put(ContextNames.STORE_ROOM, getFormMap(storeRoomForm))
 				.put(ContextNames.INVENTORY_CATEGORY,getFormMap(inventoryCategoryForm))
+				.put(ContextNames.ITEM,getFormMap(itemFormsList))
 				.build();
 	}
 	
@@ -1190,7 +1189,7 @@ public class FormFactory {
 
     public static FacilioForm getItemForm() {
 		FacilioForm form = new FacilioForm();
-		form.setDisplayName("ADD ITEM");
+		form.setDisplayName("UPDATE ITEM ATTRIBUTES");
 		form.setName("web_default");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.ITEM));
 		form.setLabelPosition(LabelPosition.TOP);
@@ -1199,17 +1198,6 @@ public class FormFactory {
 		return form;
 	}
 
-	public static FacilioForm getItemWithIndTrackForm() {
-		FacilioForm form = new FacilioForm();
-		form.setDisplayName("ADD ITEM");
-		form.setName("web_default");
-		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.ITEM));
-		form.setLabelPosition(LabelPosition.TOP);
-		form.setFields(getItemWithIndTrackFormField());
-		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
-		return form;
-	}
-	
 	public static FacilioForm getStockedToolsForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("ADD TOOL");
@@ -2013,19 +2001,6 @@ public class FormFactory {
 		fields.add(new FormField("minimumQuantity", FieldDisplayType.NUMBER, "Minimum Quantity", Required.OPTIONAL, 2, 2));
 //		fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.OPTIONAL, "itemStatus", 2, 3));
 		fields.add(new FormField("costType", FieldDisplayType.SELECTBOX, "Cost Type", Required.OPTIONAL, 2, 3));
-		fields.add(new FormField("purchasedItems", FieldDisplayType.PURCHASEDITEM, "Purchased Item", Required.OPTIONAL, 3, 1));
-
-		return fields;
-	}
-
-	private static List<FormField> getItemWithIndTrackFormField() {
-		List<FormField> fields = new ArrayList<>();
-		fields.add(new FormField("itemType", FieldDisplayType.LOOKUP_SIMPLE, "Item Type", Required.REQUIRED, "itemTypes", 1, 1));
-		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Store Room", Required.REQUIRED, "storeRoom", 2, 1));
-		fields.add(new FormField("minimumQuantity", FieldDisplayType.NUMBER, "Minimum Quantity", Required.OPTIONAL, 3, 1));
-//		fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.OPTIONAL, "itemStatus", 3, 3));
-//		fields.add(new FormField("purchasedItems", FieldDisplayType.PURCHASEDITEMT, "Purchased Item", Required.OPTIONAL, 4, 1));
-
 		return fields;
 	}
 

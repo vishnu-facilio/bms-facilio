@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.facilio.queue.source.MessageSourceUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -38,40 +39,27 @@ public class CreateAgentCommand extends AgentV2Command {
             if (agent.getWorkflow() != null) {
 	            	if(agent.getWorkflow().validateWorkflow()) {
 	            		long workflowId = WorkflowUtil.addWorkflow(agent.getWorkflow());
-	            		agent.setWorkflowId(workflowId);
-	    			}
-	    			else {
-	    				throw new IllegalArgumentException(agent.getWorkflow().getErrorListener().getErrorsAsString());
-	    			}
+                        agent.setWorkflowId(workflowId);
+                    } else {
+                        throw new IllegalArgumentException(agent.getWorkflow().getErrorListener().getErrorsAsString());
+                    }
             }
             AgentType agentType = AgentType.valueOf(agent.getAgentType());
             long agentId = AgentApiV2.addAgent(agent);
             agent.setId(agentId);
             Organization currentOrg = AccountUtil.getCurrentOrg();
-            switch (agentType) {
-                case REST:
-                case WATTSENSE:
-                    createMessageTopic(currentOrg);
-                    break;
-                case FACILIO:
-                case NIAGARA:
-                case CUSTOM:
-                    String messageTopic = createMessageTopic(currentOrg);
-                    createPolicy(agent, currentOrg, messageTopic);
-                    break;
-                case CLOUD:
-                    //adding topic to db
-                    createMessageTopic(currentOrg);
-                    AgentApiV2.scheduleRestJob(agent);
-                    break;
-                	
+            createMessageTopic(currentOrg);
+            if (agentType.isMqttConnectionRequired()) {
+                createPolicy(agent, currentOrg, currentOrg.getDomain());
             }
-            
+            if (agentType == AgentType.CLOUD) {
+                AgentApiV2.scheduleRestJob(agent);
+            }
             if (agentType.isAgentService()) {
-            	CloudAgentUtil.addCloudServiceAgent(agent);
-            	createMessageTopic(currentOrg);
+                CloudAgentUtil.addCloudServiceAgent(agent);
+                createMessageTopic(currentOrg);
             }
-            
+
             return false;
         } else {
             throw new Exception(" agent missing from context " + context);
@@ -95,8 +83,8 @@ public class CreateAgentCommand extends AgentV2Command {
     }
 
     private String createMessageTopic ( Organization currentOrg) throws Exception {
-    	long orgId = currentOrg.getOrgId();
-    	List<Map<String, Object>> topics = MessageQueueTopic.getTopics(Collections.singletonList(orgId), null);
+        long orgId = currentOrg.getOrgId();
+        List<Map<String, Object>> topics = MessageQueueTopic.getTopics(Collections.singletonList(orgId), MessageSourceUtil.getDefaultSource());
     	if(CollectionUtils.isEmpty(topics)) {
     		String domain = currentOrg.getDomain();
     		MessageSource source = AgentUtilV2.getMessageSource(null);

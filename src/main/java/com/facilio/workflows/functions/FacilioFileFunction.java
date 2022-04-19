@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import com.facilio.scriptengine.systemfunctions.FacilioSystemFunctionNameSpace;
 import com.facilio.scriptengine.systemfunctions.FacilioWorkflowFunctionInterface;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +35,7 @@ public enum FacilioFileFunction implements FacilioWorkflowFunctionInterface  {
 		};
 	},
 	
-	PUT_FILE_TO_REMOTE_FS(1,"putFileToRemoteFileServer") {
+	PUT_FILE_TO_REMOTE_FS(2,"putFileToRemoteFileServer") {
 		@Override
 		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
@@ -45,6 +47,24 @@ public enum FacilioFileFunction implements FacilioWorkflowFunctionInterface  {
 			}
 			
 			return null;
+		};
+	},
+	
+	GET_FILE_FROM_REMOTE_FS(3,"getFileFromRemoteFileServer") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			String filePath = objects[4].toString();
+				
+			InputStream is = FTPUtil.getFile(objects[0].toString(), objects[1].toString(), objects[2].toString(), objects[3].toString(), filePath);
+			
+			FileStore fs = FacilioFactory.getFileStore();
+			
+			String result = IOUtils.toString(is);
+			
+			long fileId = fs.addFile(objects[5].toString(), result, objects[6].toString());
+			
+			return fileId;
 		};
 	},
 	
