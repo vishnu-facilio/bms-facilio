@@ -8,6 +8,8 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.GenerateCriteriaFromFilterCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.module.GetSortableFieldsCommand;
+import com.facilio.bmsconsoleV3.commands.asset.AssetSupplementsSupplyCommand;
+import com.facilio.bmsconsoleV3.commands.asset.CheckPMForAssetsCommandV3;
 import com.facilio.bmsconsoleV3.commands.building.BuildingFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.floorplan.getIndoorFloorPlanViewerCommand;
 import com.facilio.bmsconsole.commands.page.GetSummaryFieldsCommand;

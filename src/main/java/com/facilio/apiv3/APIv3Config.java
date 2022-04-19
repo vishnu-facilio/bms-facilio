@@ -1550,7 +1550,7 @@ public class APIv3Config {
                 .beforeSave(new AssetCategoryAdditionInExtendModuleCommand(),new AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMFV3(),new ValidateQrValueCommandV3())
                 .afterSave(new ConstructAddAssetActivityCommandV3(), new AddRotatingItemToolCommandV3(),new AssetAfterSaveCommandV3(), FacilioChainFactory.getCategoryReadingsChain(), new InsertReadingDataMetaForNewResourceCommand(), new PushDataToESCommand())
                 .update()
-                .beforeSave(new AssetCategoryAdditionInExtendModuleCommand(),new AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMFV3(),new ValidateQrValueCommandV3())
+                .beforeSave(new CheckPMForAssetsCommandV3(),new AssetCategoryAdditionInExtendModuleCommand(),new AutomatedAggregatedEnergyConsumptionHistoricalRunBasedOnMFV3(),new ValidateQrValueCommandV3())
                 .afterSave( new ConstructUpdateCustomActivityCommandV3(), new AddActivitiesCommandV3())
                 .delete()
                 .summary()
