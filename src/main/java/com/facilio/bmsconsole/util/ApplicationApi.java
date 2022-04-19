@@ -1788,4 +1788,22 @@ public class ApplicationApi {
          }
          return null;
      }
+     public static List<User> getUsersList(Map<String,Object> paramsMap) throws Exception {
+         int page = 0,perPage = 5000,offset = 0;
+         String search = null;
+         if(!paramsMap.isEmpty()){
+             page = (int) paramsMap.get("page");
+             perPage = (int) paramsMap.get("perPage");
+             search = (String) paramsMap.get("search");
+             offset = ((page - 1) * perPage);
+             if (offset < 0) {
+                 offset = 0;
+             }
+         }
+         List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), -1, -1, false, true, offset, perPage, search, true);
+         if(CollectionUtils.isNotEmpty(users)){
+             return users;
+         }
+         return null;
+     }
 }
