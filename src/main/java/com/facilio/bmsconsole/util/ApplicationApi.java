@@ -1481,6 +1481,9 @@ public class ApplicationApi {
     public static long addScoping(ScopingContext scoping) throws Exception {
         List<FacilioField> fields = FieldFactory.getScopingFields();
 
+        scoping.setCreatedTime(System.currentTimeMillis());
+        scoping.setCreatedBy(AccountUtil.getCurrentUser().getOuid());
+
         GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
                 .table(ModuleFactory.getScopingModule().getTableName())
                 .fields(fields);
