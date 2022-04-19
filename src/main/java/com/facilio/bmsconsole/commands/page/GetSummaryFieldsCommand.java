@@ -452,9 +452,6 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 	}));
 
 	private static final List<String> customReceipts = Collections.unmodifiableList(Arrays.asList(new String[] {
-			"paymentmilestone",
-			"date_1",
-			"number",
 			"sysModifiedBy",
 			"sysCreatedTime",
 			"sysModifiedTime",
