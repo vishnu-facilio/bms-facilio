@@ -38,7 +38,7 @@ public class UpdateLastRecordedValueAndFilterPointsCommand extends AgentV2Comman
             String pointName = stringObjectEntry.getKey();
             Object value = stringObjectEntry.getValue();
             Point point = pointRecords.get(pointName);
-            if (value == null || (!isCov && isPointWithinAgentInterval(agent, timeStamp, point))) {
+            if (value == null || (!isCov && isPointWithinAgentInterval(agent, timeStamp, point)) || value.toString().equalsIgnoreCase("NaN")) {
                 pointsToRemove.add(pointName);
             } else {
                 //update point last recorded time and value
