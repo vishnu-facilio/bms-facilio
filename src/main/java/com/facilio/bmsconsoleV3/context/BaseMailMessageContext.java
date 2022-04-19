@@ -1,38 +1,23 @@
 package com.facilio.bmsconsoleV3.context;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.Part;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.mail.util.MimeMessageParser;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.tiles.request.collection.CollectionUtil;
 
 import com.amazonaws.util.CollectionUtils;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.MailMessageUtil;
-import com.facilio.fs.FileInfo;
-import com.facilio.pdf.PdfUtil;
 import com.facilio.util.EmailMessageParser;
 import com.facilio.v3.context.V3Context;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -137,9 +122,13 @@ public class BaseMailMessageContext extends V3Context {
             	
             	mailContext.setMessageId(MailMessageUtil.getEmailFromPrettifiedFromAddress.apply(messageIDList[0]));
             }
-            if(referenceHeader != null && referenceHeader[0] != null) {
-            	LOGGER.error("referenceHeader ----" + referenceHeader[0]);
-            	mailContext.setReferenceMessageId(MailMessageUtil.getEmailFromPrettifiedFromAddress.apply(referenceHeader[0]));
+            if(referenceHeader != null && referenceHeader.length > 0) {
+            	List<String> refferenceMails = new ArrayList<String>();
+            	for(int i=0;i<referenceHeader.length;i++) {
+            		LOGGER.info("referenceHeader ---- "+ i +" -- "+ referenceHeader[i]);
+            		refferenceMails.addAll(getReferenceMailList(referenceHeader[i]));
+            	}
+            	mailContext.setReferenceMessageId(StringUtils.join(refferenceMails, ','));
             }
             if(inReplyTo != null && inReplyTo[0] != null) {
             	mailContext.setInReplyToMessageId(MailMessageUtil.getEmailFromPrettifiedFromAddress.apply(inReplyTo[0]));
@@ -150,6 +139,32 @@ public class BaseMailMessageContext extends V3Context {
         }
         return mailContext;
     }
+    
+    public static List<String> getReferenceMailList(String refferenceIds) {
+		
+		int sIndex = 0;
+		
+		List<String> refferenceMails = new ArrayList<String>();
+		
+		while(sIndex >= 0 && sIndex < refferenceIds.length()) {
+			
+			sIndex = refferenceIds.indexOf("<", sIndex);
+			if(sIndex < 0) {
+				break;
+			}
+			int eIndex = refferenceIds.indexOf(">", sIndex);
+			if(eIndex < 0) {
+				break;
+			}
+			String mail = refferenceIds.substring(sIndex+1, eIndex);
+			
+			sIndex = eIndex;
+			
+			refferenceMails.add(mail);
+		}
+		
+		return refferenceMails;
+	}
     
     public List<Map<String, Object>> getAttachmentsList() {
         return attachmentsList;
