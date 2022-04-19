@@ -95,7 +95,9 @@ public class NewReadingRuleContext implements ReadingRuleInterface, Cloneable {
         setMatchedResources(null);
         setModule(null);
         setReadingField(null);
-        alarmDetails.setNullForResponse();
+        if(alarmDetails != null) {
+            alarmDetails.setNullForResponse();
+        }
     }
 
     public enum ResourceType {
