@@ -89,17 +89,17 @@ public class  LoadRecordIdForPassCodeCommandV3 extends FacilioCommand {
             			List<Object> recordIdParam = new ArrayList<Object>();
             			recordIdParam.addAll(recordIds);
             			queryParams.put("id", recordIdParam);
-            			
-            			if(MapUtils.isNotEmpty(recordMap)){
-            				List<VisitorLogContextV3> visitorLogs = recordMap.get(moduleName);
-                			if(CollectionUtils.isNotEmpty(visitorLogs) && visitorLogs.get(0).getId() == activeLog.getId()) {
-                				visitorLogs.get(0).setCheckOutTime(System.currentTimeMillis());
-                				List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(activeLog.getStateFlowId(), activeLog.getModuleState().getId(), FacilioConstants.ContextNames.VISITOR_LOG, activeLog, (FacilioContext)context);
-                    			long nextTransitionId = nextStateRule.get(0).getId();
-                                context.put(FacilioConstants.ContextNames.TRANSITION_ID, nextTransitionId);
 
-                			}
-            			}
+						if(MapUtils.isNotEmpty(recordMap)){
+							List<VisitorLogContextV3> visitorLogs = recordMap.get(moduleName);
+							if(CollectionUtils.isNotEmpty(visitorLogs) && visitorLogs.get(0).getId() == activeLog.getId()) {
+								visitorLogs.get(0).setCheckOutTime(System.currentTimeMillis());
+								List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(activeLog.getStateFlowId(), activeLog.getModuleState().getId(), FacilioConstants.ContextNames.VISITOR_LOG, activeLog, (FacilioContext)context);
+								long nextTransitionId = nextStateRule.get(0).getId();
+								context.put(FacilioConstants.ContextNames.TRANSITION_ID, nextTransitionId);
+
+							}
+						}
         			}
          		}
         	}
@@ -115,6 +115,18 @@ public class  LoadRecordIdForPassCodeCommandV3 extends FacilioCommand {
 //                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Please input a valid passcode or qr");
         	}	
         }
+		else if(MapUtils.isNotEmpty(queryParams) && queryParams.containsKey("id") && queryParams.containsKey("checkOut") && queryParams.get("checkOut") != null && !queryParams.get("checkOut").isEmpty() && Boolean.parseBoolean((String)queryParams.get("checkOut").get(0))){
+			if(MapUtils.isNotEmpty(recordMap)){
+				List<VisitorLogContextV3> visitorLogs = recordMap.get(moduleName);
+				if(CollectionUtils.isNotEmpty(visitorLogs)) {
+					visitorLogs.get(0).setCheckOutTime(System.currentTimeMillis());
+					List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(visitorLogs.get(0).getStateFlowId(), visitorLogs.get(0).getModuleState().getId(), FacilioConstants.ContextNames.VISITOR_LOG, visitorLogs.get(0), (FacilioContext)context);
+					long nextTransitionId = nextStateRule.get(0).getId();
+					context.put(FacilioConstants.ContextNames.TRANSITION_ID, nextTransitionId);
+
+				}
+			}
+		}
 	    
 		return false;
 		
