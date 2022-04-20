@@ -90,6 +90,7 @@ import com.facilio.bmsconsoleV3.commands.tenantunit.AddSpaceCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantunit.LoadTenantUnitLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.termsandconditions.CheckForPublishedCommand;
 import com.facilio.bmsconsoleV3.commands.termsandconditions.LoadTermsLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.tool.LoadToolLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.transferRequest.*;
 import com.facilio.bmsconsoleV3.commands.vendor.AddOrUpdateLocationForVendorCommandV3;
@@ -685,6 +686,17 @@ public class APIv3Config {
                 	.beforeFetch(new LoadToolTypesLookUpCommandV3())
                 .summary()
             		.beforeFetch(new LoadToolTypesLookUpCommandV3())
+                .build();
+    }
+    @Module("tool")
+    public static Supplier<V3Config> getTool() {
+        return () -> new V3Config(V3ToolContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .update()
+                .list()
+                .beforeFetch(new LoadToolLookupCommandV3())
+                .summary()
+                .beforeFetch(new LoadToolLookupCommandV3())
                 .build();
     }
 
