@@ -742,7 +742,7 @@ public class FacilioAuthAction extends FacilioAction {
 	}
 
 	public String loginWithPasswordAndDigest() throws Exception {
-		if (!StringUtils.isEmpty(getLookUpType())) {
+		if (!StringUtils.isEmpty(getLookUpType()) && !getLookUpType().equalsIgnoreCase("workq")) {
 //			if (getLookUpType().equals("service") || getLookUpType().equalsIgnoreCase("tenant")) {
 			return serviceLoginWithPasswordAndDigest();
 //			} else if (getLookUpType().equals("vendor")) {
@@ -793,6 +793,8 @@ public class FacilioAuthAction extends FacilioAction {
 			schemeCookie = new Cookie("fc.mobile.scheme", FacilioProperties.getMobileVendorportalAppScheme());
 		} else if (mobileAppType.equalsIgnoreCase("facilio")) {
 			schemeCookie = new Cookie("fc.mobile.scheme", FacilioProperties.getMobileMainAppScheme());
+		} else if (mobileAppType.equalsIgnoreCase("workQ")) {
+			schemeCookie = new Cookie("fc.mobile.scheme", FacilioProperties.getWorkQAppScheme());
 		}
 
 		setTempCookieProperties(schemeCookie, false);
