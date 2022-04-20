@@ -2203,7 +2203,11 @@ public class FacilioAuthAction extends FacilioAction {
 
 		String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
 		if ("true".equalsIgnoreCase(isWebView)) {
-			setWebViewCookies();
+			if (StringUtils.isNotEmpty(getLookUpType()) && "mobile".equals(userType)) {
+				setPortalWebViewCookies(getLookUpType());
+			} else {
+				setWebViewCookies();
+			}
 		}
 
 		return SUCCESS;
