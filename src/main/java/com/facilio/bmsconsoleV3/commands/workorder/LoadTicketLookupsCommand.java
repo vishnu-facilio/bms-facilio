@@ -32,6 +32,9 @@ public class LoadTicketLookupsCommand extends FacilioCommand {
         LookupField createdByField = (LookupField) fieldsAsMap.get("createdBy");
         fetchLookupsList.add(createdByField);
 
+        LookupField type = (LookupField) fieldsAsMap.get("type");
+        fetchLookupsList.add(type);
+
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
         return false;
     }
