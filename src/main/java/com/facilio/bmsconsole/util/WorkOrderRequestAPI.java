@@ -42,7 +42,7 @@ public class WorkOrderRequestAPI {
 			        .setTopic(EmailProcessHandler.TOPIC)
 			        .setContent(FieldUtil.getAsJSON(workOrderEmailProps)));
 
-            
+            LOGGER.info("ID of the workOrder : "+workOrderEmailProps.get("id"));
             return (long) workOrderEmailProps.get("id");
         } catch (Exception e) {
             LOGGER.error("Exception occurred during adding Workorder request email S3 ", e);

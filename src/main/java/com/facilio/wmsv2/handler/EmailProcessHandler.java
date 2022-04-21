@@ -51,9 +51,11 @@ public class EmailProcessHandler extends BaseHandler{
 	@Override
 	public Message processOutgoingMessage(Message message) {
         try {
+			LOGGER.info("KAFKA EMAIL PROCESS HANDLER STARTED");
     		long emailID = -1L;
         	if (message != null && message.getContent()!=null) {
         			Map<String, Object> messageMap = message.getContent();
+        			if(messageMap!=null) {
 						String s3Id = (String) messageMap.get("s3MessageId");
 						emailID = (long) Long.parseLong(messageMap.get("id").toString());
 						try (S3Object rawEmail = AwsUtil.getAmazonS3Client().getObject(S3_BUCKET_NAME, s3Id); InputStream is = rawEmail.getObjectContent()) {
@@ -73,6 +75,7 @@ public class EmailProcessHandler extends BaseHandler{
 							LOGGER.error("Exception occurred for id - " + s3Id, e);
 							markAsFailed(emailID);
 						}
+        			}
                 }
       } catch (Exception e) {
         	LOGGER.error("ERROR IN ADDING SCRIPT LOGS : "+ e);
