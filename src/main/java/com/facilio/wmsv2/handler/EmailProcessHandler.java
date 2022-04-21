@@ -52,13 +52,10 @@ public class EmailProcessHandler extends BaseHandler{
 	public Message processOutgoingMessage(Message message) {
         try {
     		long emailID = -1L;
-        	if (message != null) {
-        		if(message.getContent()!=null) {
-        			List<Map<String, Object>> messageMapList = FieldUtil.getAsMapList(Collections.singletonList(message.getContent()),Message.class);
-                if(messageMapList !=null) {
-                	for (Map<String, Object> messageMap : messageMapList) {
+        	if (message != null && message.getContent()!=null) {
+        			Map<String, Object> messageMap = message.getContent();
 						String s3Id = (String) messageMap.get("s3MessageId");
-						emailID = (long) messageMap.get("id");
+						emailID = (long) Long.parseLong(messageMap.get("id").toString());
 						try (S3Object rawEmail = AwsUtil.getAmazonS3Client().getObject(S3_BUCKET_NAME, s3Id); InputStream is = rawEmail.getObjectContent()) {
 							MimeMessage emailMsg = new MimeMessage(null, is);
 							MimeMessageParser parser = new MimeMessageParser(emailMsg);
@@ -77,12 +74,8 @@ public class EmailProcessHandler extends BaseHandler{
 							markAsFailed(emailID);
 						}
                 }
-			
-                }
-        	}
-        }
       } catch (Exception e) {
-        	LOGGER.info("ERROR IN ADDING SCRIPT LOGS", e);
+        	LOGGER.error("ERROR IN ADDING SCRIPT LOGS : "+ e);
         }
         return null;
     }
@@ -138,6 +131,7 @@ public class EmailProcessHandler extends BaseHandler{
 		dataBag.put("orgId", orgID);
 		dataBag.put("state", Status.PROCESSED.getVal());
 		updateEmailProp(id, dataBag);
+		LOGGER.info("Mark as Done Completed");
 	}
 	
 	private void updateEmailProp(long id, Map<String, Object> dataBag) throws Exception {
@@ -146,6 +140,8 @@ public class EmailProcessHandler extends BaseHandler{
 				.fields(FieldFactory.getWorkorderEmailFields())
 				.table("WorkOrderRequest_EMail")
 				.andCondition(CriteriaAPI.getIdCondition(id, module));
+		LOGGER.info("Update Query in Email Process handler : "+updateBuilder.toString());
 		updateBuilder.update(dataBag);
+		LOGGER.info("Update Query in Email Process handler ran Successfully ");
 	}
 }
