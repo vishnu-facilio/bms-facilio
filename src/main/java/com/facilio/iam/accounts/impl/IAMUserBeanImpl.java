@@ -131,13 +131,16 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			String creationTimeStr = userObj[3];
 			long creationTime = Long.parseLong(creationTimeStr);
 			Instant creationInstant = Instant.ofEpochMilli(creationTime);
-			Instant plus7Days = creationInstant.plus(INVITATION_EXPIRY_DAYS, ChronoUnit.DAYS);
+			Instant expiryDay = creationInstant.plus(INVITATION_EXPIRY_DAYS, ChronoUnit.DAYS);
+			user = getFacilioUser(Long.parseLong(userObj[0]), Long.parseLong(userObj[1]), true);
+			if (((long) Long.parseLong(userObj[0])) == 17) {
+				expiryDay = creationInstant.plus(45, ChronoUnit.DAYS); // temp code for investa
+			}
 			Instant currentTime = Instant.ofEpochMilli(System.currentTimeMillis());
-			if (currentTime.isAfter(plus7Days)) {
+			if (currentTime.isAfter(expiryDay)) {
 				LOGGER.error("user token expired " + userToken);
 				return null;
 			}
-			user = getFacilioUser(Long.parseLong(userObj[0]), Long.parseLong(userObj[1]), true);
 		}
 		return user;
 	}
