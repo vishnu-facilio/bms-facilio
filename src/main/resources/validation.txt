@@ -1,0 +1,15 @@
+api/auth/login
+/api/integ/lookup
+/api/integ/loginWithPasswordAndDigest
+/app
+/api/v2/getSite
+/api/v2/banner/list
+/api/v2/fetchAccount
+/api/v2/features
+/api/basespace
+/api/v2/getOrgs
+/api/v2/getRoles
+/api/v2/getGroups
+/api/v2/getAllBuildings
+/api/dashboard/supportedmodules
+
