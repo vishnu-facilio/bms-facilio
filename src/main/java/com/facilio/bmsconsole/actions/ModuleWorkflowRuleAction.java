@@ -44,6 +44,17 @@ public class ModuleWorkflowRuleAction extends FacilioAction {
         return SUCCESS;
     }
 
+    public String getCountForWorkFlowRules() throws Exception{
+        FacilioChain chain = ReadOnlyChainFactory.getCountForWorkflowRuleChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.MODULE_NAME,getModuleName());
+        context.put(FacilioConstants.ContextNames.RULE_TYPE,ruleType);
+        chain.execute();
+
+        setResult(FacilioConstants.ContextNames.COUNT,context.get(FacilioConstants.ContextNames.COUNT));
+        return SUCCESS;
+    }
+
     private WorkflowRuleContext workflowRule;
     public WorkflowRuleContext getWorkflowRule() {
         return workflowRule;

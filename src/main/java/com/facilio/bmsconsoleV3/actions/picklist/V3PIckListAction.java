@@ -5,16 +5,26 @@ import com.facilio.bmsconsole.actions.PickListAction;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FacilioModule;
 import com.facilio.v3.V3Action;
 
+import java.util.HashMap;
+import java.util.Map;
+
+
 public class V3PIckListAction extends V3Action {
 
     public String pickList() throws Exception {
         if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
-            setData(FacilioConstants.ContextNames.PICKLIST, LookupSpecialTypeUtil.getNewPickList(moduleName));
+            Map<String,Object> paramsData = new HashMap<>();
+            paramsData.put("page",getPage());
+            paramsData.put("perPage",getPerPage());
+            paramsData.put("search" , getSearch());
+
+            setData(FacilioConstants.ContextNames.PICKLIST, LookupSpecialTypeUtil.getNewPickList(moduleName,paramsData));
             setMeta("moduleType", FacilioModule.ModuleType.PICK_LIST.name());
             setMeta("localSearch", true);
         }

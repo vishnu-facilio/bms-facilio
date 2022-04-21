@@ -78,4 +78,11 @@
             <property name="positionType" type="number"/>
         </requestbody>
     </request>
+
+    <request path="/api/v2/modules/rules/getCount">
+        <requestbody type="object">
+            <property name="ruleType" type="number"/>
+            <property name="moduleName" type="string"/>
+        </requestbody>
+    </request>
 </config>

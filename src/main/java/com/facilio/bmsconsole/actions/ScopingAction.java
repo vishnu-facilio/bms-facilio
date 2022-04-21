@@ -2,10 +2,17 @@ package com.facilio.bmsconsole.actions;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.ScopingContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.wmsv2.handler.AuditLogHandler;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.function.Function;
 
 public class ScopingAction extends FacilioAction{
 
@@ -49,6 +56,11 @@ public class ScopingAction extends FacilioAction{
     public String addOrUpdateScoping() throws Exception {
         FacilioChain c = TransactionChainFactory.addOrUpdateScopingChain();
         c.getContext().put(FacilioConstants.ContextNames.SCOPING_CONTEXT, scopingContext);
+        if(scopingContext.getId() <= 0) {
+            addAuditLogs(scopingContext,"added");
+        }else{
+            addAuditLogs(scopingContext,"updated");
+        }
         c.execute();
         setResult(FacilioConstants.ContextNames.SCOPING_CONTEXT, c.getContext().get(FacilioConstants.ContextNames.SCOPING_CONTEXT));
         return SUCCESS;
@@ -88,6 +100,10 @@ public class ScopingAction extends FacilioAction{
         FacilioChain chain = TransactionChainFactory.getDeleteScopingChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.SCOPING_ID, scopingId);
+        ScopingContext scoping = ApplicationApi.getScoping(scopingId);
+        if(scoping != null) {
+            addAuditLogs(scoping, "deleted");
+        }
         chain.execute();
         setResult(FacilioConstants.ContextNames.SCOPING_ID, scopingId);
         return SUCCESS;
@@ -98,8 +114,39 @@ public class ScopingAction extends FacilioAction{
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.SCOPING_ID, scopingId);
         chain.execute();
+        ScopingContext scoping = ApplicationApi.getScoping(scopingId);
+        if(scoping != null) {
+            addAuditLogs(scoping, "cloned");
+        }
         setResult(FacilioConstants.ContextNames.SCOPING_ID, context.get(FacilioConstants.ContextNames.SCOPING_ID));
         return SUCCESS;
     }
 
+    private void addAuditLogs(ScopingContext scoping,String action) throws Exception {
+        ApplicationContext app = ApplicationApi.getApplicationForId(scoping.getApplicationId());
+        AuditLogHandler.ActionType actionType;
+        if(action.equals("added") || action.equals("cloned")){
+            actionType = AuditLogHandler.ActionType.ADD;
+        }else if(action.equals("updated")) {
+            actionType = AuditLogHandler.ActionType.UPDATE;
+        }
+        else if(action.equals("deleted")) {
+            actionType = AuditLogHandler.ActionType.DELETE;
+        }
+        sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("User scoping {%s} for '%s' application has been %s.", scoping.getScopeName(),  app.getName(), action),
+            String.format("User scoping %s for '%s' application has been %s.", scoping.getScopeName(),  app.getName(), action),
+            AuditLogHandler.RecordType.SETTING,
+            "Scoping", scoping.getId())
+            .setActionType(AuditLogHandler.ActionType.ADD)
+            .setLinkConfig(((Function<Void, String>) o -> {
+                JSONArray array = new JSONArray();
+                JSONObject json = new JSONObject();
+                json.put("id", scoping.getId());
+                json.put("appId", scoping.getApplicationId());
+                json.put("navigateTo", "Scoping");
+                array.add(json);
+                return array.toJSONString();
+            }).apply(null))
+        );
+    }
 }

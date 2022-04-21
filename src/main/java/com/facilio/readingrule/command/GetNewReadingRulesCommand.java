@@ -24,26 +24,26 @@ public class GetNewReadingRulesCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         String count = (String) context.get(FacilioConstants.ContextNames.RULE_COUNT);
 
-//        JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
+        JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
         JSONObject serachQuery = (JSONObject) context.get(FacilioConstants.ContextNames.SEARCH);
-//        Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+        Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
         FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
         JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
         String query = null;
         if ((serachQuery != null)) {
             query = (String) serachQuery.get("query");
         }
-        Boolean includeParentCriteria = (Boolean) context.get(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA);
+        Boolean includeParentCriteria = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, Boolean.FALSE);
         Criteria criteria = new Criteria();
-//        if (filterCriteria != null) {
-//            criteria.andCriteria(filterCriteria);
-//        }
-//        if ((filters == null || includeParentCriteria) && view != null) {
-//            Criteria viewCriteria = view.getCriteria();
-//            if (viewCriteria != null) {
-//                criteria.andCriteria(viewCriteria);
-//            }
-//        }
+        if (filterCriteria != null) {
+            criteria.andCriteria(filterCriteria);
+        }
+        if ((filters == null || includeParentCriteria) && view != null) {
+            Criteria viewCriteria = view.getCriteria();
+            if (viewCriteria != null) {
+                criteria.andCriteria(viewCriteria);
+            }
+        }
         List<FacilioField> fields = FieldFactory.getNewReadingRuleFields();
         FacilioField ruleNameField = FieldFactory.getAsMap(fields).get("name");
 

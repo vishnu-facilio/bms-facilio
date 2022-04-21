@@ -743,7 +743,7 @@ public class V3TicketAPI {
             ticket.setAttachments(getRelatedAttachments(ticket.getId()));
             if(ticket.getResource() != null)
             {
-                ticket.setResource(ResourceAPI.getResource(ticket.getResource().getId()));
+                ticket.setResource(ResourceAPI.getResource(ticket.getResource().getId(),true));
             }
         }
     }

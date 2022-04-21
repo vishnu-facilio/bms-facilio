@@ -9647,16 +9647,21 @@ public class FieldFactory extends BaseFieldFactory {
 	 }
 	 
 	 public static List<FacilioField> getScopingFields() {
-		 List<FacilioField> fields = new ArrayList<>();
-	        FacilioModule module = ModuleFactory.getScopingModule();
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getScopingModule();
 
-	        fields.add(getIdField(module));
-	        fields.add(getField("scopeName", "SCOPE_NAME", module, FieldType.STRING));
-            fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
-            fields.add(getField("isDefault", "IS_DEFAULT", module, FieldType.BOOLEAN));
-            fields.add(getField("applicationId", "APPLICATION_ID", module, FieldType.NUMBER));
+        fields.add(getIdField(module));
+        fields.add(getField("scopeName", "SCOPE_NAME", module, FieldType.STRING));
+        fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
+        fields.add(getField("isDefault", "IS_DEFAULT", module, FieldType.BOOLEAN));
+        fields.add(getField("applicationId", "APPLICATION_ID", module, FieldType.NUMBER));
 
-	        return fields;
+        fields.add(getNumberField("createdBy", "CREATED_BY", module));
+        fields.add(getNumberField("modifiedBy", "MODIFIED_BY", module));
+        fields.add(getNumberField("createdTime", "CREATED_TIME", module));
+        fields.add(getNumberField("modifiedTime", "MODIFIED_TIME", module));
+
+        return fields;
 	 }
 	 
 	 public static List<FacilioField> getFieldModulePermissionFields() {

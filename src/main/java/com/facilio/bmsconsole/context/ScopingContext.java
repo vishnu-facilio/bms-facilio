@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.accounts.dto.IAMUser;
+import com.facilio.accounts.dto.User;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -14,6 +17,10 @@ public class ScopingContext implements Serializable {
 	private long orgId;
 	private String scopeName;
 	private String description;
+	private long createdTime = -1l;
+	private long modifiedTime = -1l;
+	private long createdBy;
+	private long modifiedBy;
 
 	public long getId() {
 		return id;
@@ -76,4 +83,33 @@ public class ScopingContext implements Serializable {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+	public long getCreatedTime() {
+		return createdTime;
+	}
+	public void setCreatedTime(long createdTime) {
+		this.createdTime = createdTime;
+	}
+
+	public long getModifiedTime() {
+		return modifiedTime;
+	}
+	public void setModifiedTime(long modifiedTime) {
+		this.modifiedTime = modifiedTime;
+	}
+
+	public long getCreatedBy() {
+		return this.createdBy;
+	}
+	public void setCreatedBy(long createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public long getModifiedBy() {
+		return this.modifiedBy;
+	}
+	public void setModifiedBy(long modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+
 }

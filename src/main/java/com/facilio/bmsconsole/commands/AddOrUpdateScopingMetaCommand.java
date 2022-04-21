@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ScopingContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.command.FacilioCommand;
@@ -24,6 +25,7 @@ public class AddOrUpdateScopingMetaCommand extends FacilioCommand {
             throw new IllegalArgumentException("There can be only one default scoping for an application");
         }
         if(scopingContext.getId() <= 0) {
+            scopingContext.setCreatedTime(System.currentTimeMillis());
             ApplicationApi.addScoping(scopingContext);
         }
         else {
@@ -34,6 +36,8 @@ public class AddOrUpdateScopingMetaCommand extends FacilioCommand {
             else if (scopingContext.isDefault()) {
                 throw new IllegalArgumentException("There can be only one default scoping for an application");
             }
+            scopingContext.setModifiedTime(System.currentTimeMillis());
+            scopingContext.setModifiedBy(AccountUtil.getCurrentUser().getOuid());
             update(FieldUtil.getAsProperties(scopingContext), ModuleFactory.getScopingModule(), FieldFactory.getScopingFields(), scopingContext.getId());
         }
         return false;

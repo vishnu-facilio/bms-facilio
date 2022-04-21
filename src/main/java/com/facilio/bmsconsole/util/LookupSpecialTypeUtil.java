@@ -13,6 +13,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.context.*;
+import com.facilio.chain.FacilioContext;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.StringSystemEnumField;
 import org.apache.commons.collections4.CollectionUtils;
@@ -124,9 +125,9 @@ public class LookupSpecialTypeUtil {
 		return ruleList;
 	}
 
-	public static List<FieldOption<Long>> getNewPickList(String specialType) throws Exception {
+		public static List<FieldOption<Long>> getNewPickList(String specialType,Map<String,Object> paramsMap) throws Exception {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType)) {
-			List<User> users = AccountUtil.getOrgBean().getOrgUsers(AccountUtil.getCurrentOrg().getOrgId(), true);
+			List<User> users = ApplicationApi.getUsersList(paramsMap);
 			return getUserPickList(users);
 		}
 		else if(FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
