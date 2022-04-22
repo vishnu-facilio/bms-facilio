@@ -137,33 +137,33 @@
         </requestbody>
     </request>
 
-    <request path="/api/settings/updateCompanySettings">
-        <requestbody type="object">
-                <property name="org.businessHour" type="number"/>
-                <property name="org.city" type="string"/>
-                <property name="org.country" type="string"/>
-                <property name="org.createdTime" type="number"/>
-                <property name="org.currency" type="number"/>
-                <property name="org.dbName" type="string"/>
-                <property name="org.domain" type="string"/>
-                <property name="org.emailDomain" type="string"/>
-                <property name="org.fax" type="number"/>
-                <property name="org.id" type="number"/>
-                <property name="org.language" type="string"/>
-                <property name="org.loggerLevel" type="number"/>
-                <property name="org.mobile" type="number"/>
-                <property name="org.name" type="string"/>
-                <property name="org.orgId" type="number"/>
-                <property name="org.phone" type="number"/>
-                <property name="org.state" type="string"/>
-                <property name="org.street" type="string"/>
-                <property name="org.timeFormat" type="number"/>
-                <property name="org.timezone" type="string"/>
-                <property name="org.zip" type="number"/>
-                <property name="org.dateformat" type="string"/>
-                <property name="org.timestate" type="number"/>
-        </requestbody>
-    </request>
+<!--    <request path="/api/settings/updateCompanySettings">-->
+<!--        <requestbody type="object">-->
+<!--                <property name="org.businessHour" type="number"/>-->
+<!--                <property name="org.city" type="string"/>-->
+<!--                <property name="org.country" type="string"/>-->
+<!--                <property name="org.createdTime" type="number"/>-->
+<!--                <property name="org.currency" type="number"/>-->
+<!--                <property name="org.dbName" type="string"/>-->
+<!--                <property name="org.domain" type="string"/>-->
+<!--                <property name="org.emailDomain" type="string"/>-->
+<!--                <property name="org.fax" type="number"/>-->
+<!--                <property name="org.id" type="number"/>-->
+<!--                <property name="org.language" type="string"/>-->
+<!--                <property name="org.loggerLevel" type="number"/>-->
+<!--                <property name="org.mobile" type="number"/>-->
+<!--                <property name="org.name" type="string"/>-->
+<!--                <property name="org.orgId" type="number"/>-->
+<!--                <property name="org.phone" type="number"/>-->
+<!--                <property name="org.state" type="string"/>-->
+<!--                <property name="org.street" type="string"/>-->
+<!--                <property name="org.timeFormat" type="number"/>-->
+<!--                <property name="org.timezone" type="string"/>-->
+<!--                <property name="org.zip" type="number"/>-->
+<!--                <property name="org.dateformat" type="string"/>-->
+<!--                <property name="org.timestate" type="number"/>-->
+<!--        </requestbody>-->
+<!--    </request>-->
 
     <request path="/api/serviceportal/updateserviceportal">
         <requestbody type="object">
