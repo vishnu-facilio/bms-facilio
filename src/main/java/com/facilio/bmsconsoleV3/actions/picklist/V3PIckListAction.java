@@ -26,7 +26,14 @@ public class V3PIckListAction extends V3Action {
 
             setData(FacilioConstants.ContextNames.PICKLIST, LookupSpecialTypeUtil.getNewPickList(moduleName,paramsData));
             setMeta("moduleType", FacilioModule.ModuleType.PICK_LIST.name());
-            setMeta("localSearch", true);
+
+            //supported api search for users module
+            if(FacilioConstants.ContextNames.USERS.equals(moduleName)){
+                setMeta("localSearch", false);
+            }
+            else{
+                setMeta("localSearch", true);
+            }
         }
         else {
             FacilioChain pickListChain = ReadOnlyChainFactory.newPicklistFromDataChain();
