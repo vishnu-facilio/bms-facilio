@@ -19,7 +19,6 @@ public class V3ToolContext extends V3Context {
     private Double currentQuantity;
     private List<V3PurchasedToolContext> purchasedTools;
     private Long lastPurchasedDate;
-    private Double lastPurchasedPrice;
     private Double minimumQuantity;
     public Boolean isUnderstocked;
 
@@ -104,14 +103,6 @@ public class V3ToolContext extends V3Context {
 
     public void setLastPurchasedDate(Long lastPurchasedDate) {
         this.lastPurchasedDate = lastPurchasedDate;
-    }
-
-    public Double getLastPurchasedPrice() {
-        return lastPurchasedPrice;
-    }
-
-    public void setLastPurchasedPrice(Double lastPurchasedPrice) {
-        this.lastPurchasedPrice = lastPurchasedPrice;
     }
 
     public Double getMinimumQuantity() {

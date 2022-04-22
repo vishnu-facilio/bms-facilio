@@ -252,6 +252,8 @@ public class PageFactory {
 				return ToolTypesPageFactory.getToolTypesPage((ToolTypesContext) record, module);
 			case ContextNames.ITEM:
 				return ItemPageFactory.getItemPage((ItemContext) record, module);
+			case ContextNames.TOOL:
+				return ToolPageFactory.getToolPage((ToolContext) record, module);
 		}
 		if (module.getExtendModule() == null) {	// temp
 			// etisalat changes will be changed to standard method

@@ -420,6 +420,7 @@ public class PageWidget {
 		TENANT_DETAIL_OVERVIEW("tenantdetailoverview"),
 		PURCHASED_ITEMS("purchaseditems"),
 		ITEM_TRANSACTIONS("transactionsitem"),
+		TOOL_TRANSACTIONS("transactionstool"),
 
 		TENANT_UNIT_OVERVIEW("tenantunitoverview"),
 		TENANT_UNIT_SPECIAL_WIDGET("tenantunitspecialwidget"),
