@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.context.BaseScheduleContext.ScheduleType;
 import com.facilio.bmsconsoleV3.context.induction.InductionTemplateContext;
 import com.facilio.bmsconsoleV3.context.induction.InductionTriggerContext;
 import com.facilio.bmsconsoleV3.context.induction.InductionTriggerIncludeExcludeResourceContext;
+import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -26,6 +27,8 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.util.V3Util;
 
 public class AddInductionTriggersCommand extends FacilioCommand {
 	
@@ -65,37 +68,38 @@ public class AddInductionTriggersCommand extends FacilioCommand {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
+		boolean isManualTriggerFound = false;
+		
 		if(triggers != null) {
 			
-			triggers.stream().forEach((trigger) -> {
-				try {
-					if(trigger.getType() == InductionTriggerContext.TriggerType.SCHEDULE.getVal()) {
-						
-						BaseScheduleContext scheduleTrigger = trigger.getSchedule();
-						
-						scheduleTrigger.setModuleId(modBean.getModule(FacilioConstants.Induction.INDUCTION_TEMPLATE).getModuleId());
-						scheduleTrigger.setRecordId(trigger.getParent().getId());
-						scheduleTrigger.setScheduleType(ScheduleType.INSPECTION);
-						scheduleTrigger.setDataModuleId(modBean.getModule(FacilioConstants.Induction.INDUCTION_RESPONSE).getModuleId());
-						
-						GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-								.table(ModuleFactory.getBaseSchedulerModule().getTableName())
-				                .fields(FieldFactory.getBaseSchedulerFields());
-						
-						Map<String, Object> props = FieldUtil.getAsProperties(scheduleTrigger);
-						insertBuilder.addRecord(props);
-						insertBuilder.save();
-						
-						scheduleTrigger.setId((Long) props.get("id"));
-						
-						trigger.setScheduleId(scheduleTrigger.getId());
-					}
+			for(InductionTriggerContext trigger : triggers) {
+				
+				if(trigger.getType() == InductionTriggerContext.TriggerType.SCHEDULE.getVal()) {
 					
+					BaseScheduleContext scheduleTrigger = trigger.getSchedule();
+					
+					scheduleTrigger.setModuleId(modBean.getModule(FacilioConstants.Induction.INDUCTION_TEMPLATE).getModuleId());
+					scheduleTrigger.setRecordId(trigger.getParent().getId());
+					scheduleTrigger.setScheduleType(ScheduleType.INSPECTION);
+					scheduleTrigger.setDataModuleId(modBean.getModule(FacilioConstants.Induction.INDUCTION_RESPONSE).getModuleId());
+					
+					GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+							.table(ModuleFactory.getBaseSchedulerModule().getTableName())
+			                .fields(FieldFactory.getBaseSchedulerFields());
+					
+					Map<String, Object> props = FieldUtil.getAsProperties(scheduleTrigger);
+					insertBuilder.addRecord(props);
+					insertBuilder.save();
+					
+					scheduleTrigger.setId((Long) props.get("id"));
+					
+					trigger.setScheduleId(scheduleTrigger.getId());
 				}
-				catch(Exception e) {
-					throw new RuntimeException(e);
+				else if (trigger.getType() == InductionTriggerContext.TriggerType.USER.getVal()) {
+					V3Util.throwRestException(isManualTriggerFound, ErrorCode.VALIDATION_ERROR, "Induction should have only one manual trigger");
+					isManualTriggerFound = true;
 				}
-			});
+			}
 			
 			if(moduleName.equals(FacilioConstants.Induction.INDUCTION_TEMPLATE)) {
 				V3RecordAPI.addRecord(false, triggers, modBean.getModule(FacilioConstants.Induction.INDUCTION_TRIGGER), modBean.getAllFields(FacilioConstants.Induction.INDUCTION_TRIGGER));
