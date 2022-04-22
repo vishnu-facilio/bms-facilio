@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import com.amazonaws.util.StringUtils;
+import com.facilio.accounts.bean.RoleBean;
 import com.facilio.accounts.dto.*;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.sso.SSOUtil;
@@ -894,8 +895,12 @@ public class LoginAction extends FacilioAction {
 
 			if (!devAppIds.isEmpty()) {
 				List<Role> rolesList = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getOrgId()).getRolesForApps(devAppIds);
+				RoleBean roleBean = AccountUtil.getRoleBean();
+				List<OrgUserApp> rolesAppsMappingForUser = roleBean.getRolesAppsMappingForUser(AccountUtil.getCurrentAccount().getUser().getOuid());
+				List<Long> roleIds = rolesAppsMappingForUser.stream().map(OrgUserApp::getRoleId).collect(Collectors.toList());
+				Set<Long> roleSet = new HashSet<>(roleIds);
 				isDev = !CollectionUtils.isEmpty(rolesList)
-						&& rolesList.stream().anyMatch(i -> i.getRoleId() == AccountUtil.getCurrentAccount().getUser().getRoleId());
+						&& rolesList.stream().anyMatch(i -> roleSet.contains(i.getRoleId()));
 			}
 		}
 
