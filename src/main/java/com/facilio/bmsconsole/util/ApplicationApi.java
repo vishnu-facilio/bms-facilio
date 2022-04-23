@@ -1800,7 +1800,7 @@ public class ApplicationApi {
                  offset = 0;
              }
          }
-         List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), -1, -1, false, true, offset, perPage, search, true);
+         List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP), -1, false, false, offset, perPage, search, true,true);
          if(CollectionUtils.isNotEmpty(users)){
              return users;
          }
