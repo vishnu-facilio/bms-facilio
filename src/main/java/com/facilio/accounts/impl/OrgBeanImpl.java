@@ -120,7 +120,34 @@ public class OrgBeanImpl implements OrgBean {
 	private List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage) throws Exception {
 		return getAppUsers(orgId,appId,ouId,checkAccessibleSites,fetchNonAppUsers,offset,perPage,null,null);
 	}
-	
+
+	@Override
+	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,Boolean inviteAcceptStatus,boolean status) throws Exception {
+		List<User> users = getAppUsers( orgId,  appId,  ouId,  checkAccessibleSites,  fetchNonAppUsers,  -1,  -1, searchQuery, inviteAcceptStatus);
+		List<User> finalList = new ArrayList<>();
+		int recordsAdded = 0,actualRecordsSkipped = 0;
+		if(CollectionUtils.isNotEmpty(users)) {
+			for (User user : users) {
+				if (perPage <= recordsAdded) {
+					break;
+				}
+				if(user.isActive() == status) {
+					if (offset > -1 && actualRecordsSkipped < offset) {
+						actualRecordsSkipped++;
+					} else {
+						recordsAdded++;
+						finalList.add(user);
+					}
+				}
+			}
+			if(CollectionUtils.isNotEmpty(finalList)){
+				return finalList;
+			}
+			return null;
+		}
+		return null;
+	}
+
 	@Override
 	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,Boolean inviteAcceptStatus) throws Exception {
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
@@ -142,9 +169,7 @@ public class OrgBeanImpl implements OrgBean {
 				.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
 				.innerJoin("People")
 				.on("People.ID = ORG_Users.PEOPLE_ID")
-				.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS))
-				;
-
+				.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		if(ouId > 0) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.ORG_USERID", "orgUserId", String.valueOf(ouId), NumberOperators.EQUALS));
 		}
