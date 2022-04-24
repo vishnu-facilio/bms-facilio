@@ -356,7 +356,7 @@ public class LoginAction extends FacilioAction {
 			long securityPolicyId = AccountUtil.getCurrentUser().getSecurityPolicyId();
 			if (securityPolicyId > 0) {
 				SecurityPolicy securityPolicy = IAMUserUtil.getUserSecurityPolicy(AccountUtil.getCurrentUser().getUid());
-				account.put("isMFAEnabled", securityPolicy.getIsMFAEnabled());
+				account.put("isMFAEnabled", securityPolicy.getIsTOTPEnabled());
 				if (securityPolicy.getIsWebSessManagementEnabled() != null && securityPolicy.getIsWebSessManagementEnabled()) {
 					Long userSessionId = AccountUtil.getCurrentAccount().getUserSessionId();
 					if (userSessionId != null && userSessionId > 0) {
@@ -924,7 +924,7 @@ public class LoginAction extends FacilioAction {
 			long securityPolicyId = AccountUtil.getCurrentUser().getSecurityPolicyId();
 			if (securityPolicyId > 0) {
 				SecurityPolicy securityPolicy = IAMUserUtil.getUserSecurityPolicy(AccountUtil.getCurrentUser().getUid());
-				account.put("isMFAEnabled", securityPolicy.getIsMFAEnabled());
+				account.put("isMFAEnabled", securityPolicy.getIsTOTPEnabled());
 				if (securityPolicy.getIsWebSessManagementEnabled() != null && securityPolicy.getIsWebSessManagementEnabled()) {
 					Long userSessionId = AccountUtil.getCurrentAccount().getUserSessionId();
 					if (userSessionId != null && userSessionId > 0) {
