@@ -29,19 +29,19 @@ public class HealthCheckFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         response.setStatus(status);
-        boolean isHydraAlive = false;
-        try {
-            isHydraAlive = new HydraClient().isAlive();
-        } catch (Exception e) {
-            LOGGER.error(e);
-        }
-        if (!isHydraAlive) {
-            status = HttpServletResponse.SC_SERVICE_UNAVAILABLE;
-            message = "hydra down";
-        } else {
-            status = HttpServletResponse.SC_OK;
-            message = "app_server_running 1";
-        }
+//        boolean isHydraAlive = false;
+//        try {
+//            isHydraAlive = new HydraClient().isAlive();
+//        } catch (Exception e) {
+//            LOGGER.error(e);
+//        }
+//        if (!isHydraAlive) {
+//            status = HttpServletResponse.SC_SERVICE_UNAVAILABLE;
+//            message = "hydra down";
+//        } else {
+//            status = HttpServletResponse.SC_OK;
+//            message = "app_server_running 1";
+//        }
 
         PrintWriter writer = response.getWriter();
         try {
