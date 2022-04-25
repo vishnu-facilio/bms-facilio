@@ -710,6 +710,7 @@ public class FacilioConstants {
 		public static final String PIVOT_TABLE_DATA = "pivotTableData";
 		public static final String PIVOT_TEMPLATE_JSON = "pivotTemplateJSON";
 		public static final String PIVOT_RECONSTRUCTED_DATA = "pivotReconstructedData";
+		public static final String SHOW_TIME_LINE_FILTER = "showTimelineFilter";
 		public static final String PIVOT_ALIAS_VS_FIELD = "pivotAliasVsField";
 		public static final String PIVOT_LOOKUP_MAP = "pivotLookupMap";
 		public static final String IS_TIMELINE_FILTER_APPLIED = "isTimelineFilterApplied";

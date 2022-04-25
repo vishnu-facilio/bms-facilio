@@ -266,12 +266,16 @@ public class ConstructTabularReportData extends FacilioCommand {
                 dateOperatorInt = (int) globalContext.get(FacilioConstants.ContextNames.DATE_OPERATOR);
             if (globalContext.containsKey(FacilioConstants.ContextNames.IS_TIMELINE_FILTER_APPLIED))
                 isTimeLineFilterApplied = (boolean) globalContext.get(FacilioConstants.ContextNames.IS_TIMELINE_FILTER_APPLIED);
-            if(globalContext.containsKey(FacilioConstants.ContextNames.TIME_FILTER) && globalContext.get(FacilioConstants.ContextNames.TIME_FILTER) != null)
-                showTimelineFilter = (boolean) globalContext.get(FacilioConstants.ContextNames.TIME_FILTER);
+            if(globalContext.containsKey(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER) && globalContext.get(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER) != null)
+                showTimelineFilter = (boolean) globalContext.get(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER);
 
             if (reportContext.getTypeEnum() == ReportType.PIVOT_REPORT) {
                 if(data.getBaselineLabel() != null && data.getDateFieldId() > 0 && data.getDatePeriod() > 0){
-                    FacilioField dateField = modBean.getField(data.getDateFieldId(), yAxisModule.getName()).clone();
+                    FacilioField dateField = null;
+                    if(yField.getModule().getTypeEnum() == FacilioModule.ModuleType.READING)
+                        dateField = FieldFactory.getDateField("ttime", "TTIME", yField.getModule()).clone();
+                    else
+                        dateField = modBean.getField(data.getDateFieldId(), yAxisModule.getName()).clone();
                     dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));
                     BaseLineContext baseline = BaseLineAPI.getBaseLine(data.getBaselineLabel());
                     DateOperators dateOperator = (DateOperators) Operator.getOperator(data.getDatePeriod());

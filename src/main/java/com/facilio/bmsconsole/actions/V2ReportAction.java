@@ -2687,7 +2687,7 @@ public class V2ReportAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateValue);
         context.put(FacilioConstants.ContextNames.START_TIME, startTime);
         context.put(FacilioConstants.ContextNames.END_TIME, endTime);
-        context.put(FacilioConstants.ContextNames.TIME_FILTER, showTimelineFilter);
+        context.put(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER, showTimelineFilter);
         c.addCommand(new ConstructTabularReportData());
         c.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
         c.addCommand(new PivotFormulaColumnCommand());
@@ -2726,7 +2726,7 @@ public class V2ReportAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateValue);
         context.put(FacilioConstants.ContextNames.START_TIME, startTime);
         context.put(FacilioConstants.ContextNames.END_TIME, endTime);
-        context.put(FacilioConstants.ContextNames.TIME_FILTER, showTimelineFilter);
+        context.put(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER, showTimelineFilter);
         ReportPivotParamsContext pivotparams = new ReportPivotParamsContext();
         pivotparams.setRows(rows);
         pivotparams.setData(data);
@@ -2740,9 +2740,8 @@ public class V2ReportAction extends FacilioAction {
         pivotparams.setStartTime(startTime);
         pivotparams.setEndTime(endTime);
         pivotparams.setFormula(formula);
-        if (showTimelineFilter != null) {
-            pivotparams.setShowTimelineFilter(showTimelineFilter);
-        }
+        pivotparams.setShowTimelineFilter(getShowTimelineFilter());
+
 
         if (reportContext == null) {
             reportContext = new ReportContext();
@@ -2888,7 +2887,7 @@ public class V2ReportAction extends FacilioAction {
             context.put(FacilioConstants.ContextNames.START_TIME, pivotparams.getStartTime());
             context.put(FacilioConstants.ContextNames.END_TIME, pivotparams.getEndTime());
         }
-        context.put(FacilioConstants.ContextNames.TIME_FILTER, pivotparams.getShowTimelineFilter());
+        context.put(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER, pivotparams.getShowTimelineFilter());
         context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, pivotparams.getDateValue());
 
         chain.addCommand(new ConstructTabularReportData());
@@ -2919,7 +2918,7 @@ public class V2ReportAction extends FacilioAction {
         setResult(FacilioConstants.ContextNames.DATE_OPERATOR, pivotparams.getDateOperator());
         setResult(FacilioConstants.ContextNames.START_TIME, pivotparams.getStartTime());
         setResult(FacilioConstants.ContextNames.END_TIME, pivotparams.getEndTime());
-        setResult((String) FacilioConstants.ContextNames.TIME_FILTER, pivotparams.getShowTimelineFilter());
+        setResult((String) FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER, pivotparams.getShowTimelineFilter());
         setResult(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, pivotparams.getDateValue());
         setResult(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD,
                 context.get(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD));
@@ -3004,6 +3003,16 @@ public class V2ReportAction extends FacilioAction {
         return SUCCESS;
     }
 
+    private boolean showTimelineFilter;
+
+    public boolean getShowTimelineFilter() {
+        return showTimelineFilter;
+    }
+
+    public void setShowTimelineFilter(boolean showTimelineFilter) {
+        this.showTimelineFilter = showTimelineFilter;
+    }
+
     private long dateFieldId = -1;
 
     public long getDateFieldId() {
@@ -3022,15 +3031,5 @@ public class V2ReportAction extends FacilioAction {
 
     public void setDateValue(String dateValue) {
         this.dateValue = dateValue;
-    }
-
-    private Boolean showTimelineFilter;
-
-    public Boolean getShowTimelineFilter() {
-        return showTimelineFilter;
-    }
-
-    public void setShowTimelineFilter(boolean showTimelineFilter) {
-        this.showTimelineFilter = showTimelineFilter;
     }
 }
