@@ -28,7 +28,7 @@ public class ConstructMLModelDetails extends FacilioCommand implements Serializa
 	public boolean executeCommand(Context context) throws Exception {
 		mlServiceContext = (V3MLServiceContext) context.get(MLServiceUtil.MLSERVICE_CONTEXT);
 
-		if (!mlServiceContext.getServiceType().equals("default")) {
+		if (!mlServiceContext.getInputType().equals("default")) {
 			return false;
 		}
 		try {

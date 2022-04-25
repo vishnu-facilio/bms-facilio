@@ -99,7 +99,6 @@ public class AddMLModelParams extends SignUpData {
         return weekendParams;
     }
 
-
     private void addMLModelParams(List<MLModelParamsContext> mlParams) throws Exception {
         GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
                 .table(ModuleFactory.getMLModelParamsModule().getTableName())
