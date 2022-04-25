@@ -109,9 +109,7 @@ public class EnergyDataDeltaCalculationCommand extends FacilioCommand {
 			LOGGER.debug("Inside DeltaCommand#######  "+markedList);
 
 		}
-		if((boolean) context.getOrDefault(FacilioConstants.ContextNames.CALL_FROM_STORM, Boolean.FALSE)) {
-			LOGGER.info("EnergyDataDeltaCalculationCommand time taken : " + (System.currentTimeMillis() - startTime));
-		}
+		LOGGER.debug("EnergyDataDeltaCalculationCommand time taken : " + (System.currentTimeMillis() - startTime));
 		LOGGER.debug("Exiting DeltaCommand#######  ");
 
 		return false;

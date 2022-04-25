@@ -73,9 +73,7 @@ public class CalculatePreFormulaCommand extends FacilioCommand {
 			}
 			LOGGER.info("Time taken for pre formula calculation for modules : "+readingMap.keySet()+" is "+(System.currentTimeMillis() - processStarttime));
 		}
-		if((boolean) context.getOrDefault(FacilioConstants.ContextNames.CALL_FROM_STORM, Boolean.FALSE)) {
-			LOGGER.info("CalculatePreFormulaCommand time taken " + (System.currentTimeMillis() - startTime));
-		}
+		LOGGER.debug("CalculatePreFormulaCommand time taken " + (System.currentTimeMillis() - startTime));
 		return false;
 	}
 	

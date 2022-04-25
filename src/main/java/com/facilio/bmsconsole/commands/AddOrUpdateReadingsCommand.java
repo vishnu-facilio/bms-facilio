@@ -50,9 +50,7 @@ public class AddOrUpdateReadingsCommand extends FacilioCommand {
             postProcessingChain.execute();
         }
 
-        if((boolean) context.getOrDefault(FacilioConstants.ContextNames.CALL_FROM_STORM, Boolean.FALSE)) {
-			LOGGER.info("AddOrUpdateReadingsCommand time taken " + (System.currentTimeMillis() - startTime));
-		}
+        LOGGER.debug("AddOrUpdateReadingsCommand time taken " + (System.currentTimeMillis() - startTime));
         return false;
     }
 

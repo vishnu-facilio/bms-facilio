@@ -73,9 +73,7 @@ public class CalculateDependencyCommand extends FacilioCommand {
                 previousRDMMap.put(ReadingsAPI.getRDMKey(meta.getResourceId(), meta.getField()), meta);
             }
         }
-        if((boolean) context.getOrDefault(FacilioConstants.ContextNames.CALL_FROM_STORM, Boolean.FALSE)) {
-			LOGGER.info("CalculateDependencyCommand time taken " + (System.currentTimeMillis() - startTime));
-		}
+        LOGGER.debug("CalculateDependencyCommand time taken " + (System.currentTimeMillis() - startTime));
         return false;
     }
 }

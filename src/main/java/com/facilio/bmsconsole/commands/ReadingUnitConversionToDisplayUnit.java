@@ -80,9 +80,7 @@ public class ReadingUnitConversionToDisplayUnit extends FacilioCommand {
 
 			//LOGGER.info("Time taken for Unit conversion for modules : "+readingMap.keySet()+" is "+(System.currentTimeMillis() - startTime));
 		}
-		if(isFromStorm) {
-			LOGGER.info("ReadingUnitConversionToDisplayUnit time taken " + (System.currentTimeMillis() - startTime) +", modules : " + readingMap.keySet());
-		}
+		LOGGER.debug("ReadingUnitConversionToDisplayUnit time taken " + (System.currentTimeMillis() - startTime) +", modules : " + readingMap.keySet());
 		return false;
 	}
 }
