@@ -149,6 +149,8 @@ public class FacilioProperties {
     @Getter
     private static String hydraUrl;
 
+    private static String hydraPublicUrl;
+
     static {
         loadProperties();
     }
@@ -268,6 +270,7 @@ public class FacilioProperties {
             service = PROPERTIES.getProperty("service");
             developerAppDomain = PROPERTIES.getProperty("facilioapisdomain", "facilioapis.com");
             hydraUrl = PROPERTIES.getProperty("hydraUrl", "http://localhost:4445");
+            hydraPublicUrl = PROPERTIES.getProperty("hydraPublicUrl", "http://localhost:4444");
 
             String cookieLifespanProp = PROPERTIES.getProperty("token.cookie.lifespan");
             if (StringUtils.isNotEmpty(cookieLifespanProp)) {

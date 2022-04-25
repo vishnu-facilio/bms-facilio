@@ -12,11 +12,13 @@ import java.util.Arrays;
 
 public class HydraClient {
     private AdminApi adminApi;
+    private PublicApi publicApi;
 
     public HydraClient() {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath(FacilioProperties.getHydraUrl());
         this.adminApi = new AdminApi(defaultClient);
+        this.publicApi = new PublicApi(defaultClient);
     }
 
     public String getClientIdForToken(String token) throws Exception {
