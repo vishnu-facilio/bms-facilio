@@ -14,11 +14,13 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.text.ParseException;
 import java.util.List;
+import java.util.Map;
 
 public class V3WorkOrderContext extends V3TicketContext {
     /**
      *
      */
+
     private static final long serialVersionUID = 1L;
     private static Logger log = LogManager.getLogger(V3WorkOrderContext.class.getName());
     private User requester;
@@ -744,4 +746,14 @@ public class V3WorkOrderContext extends V3TicketContext {
     public void setJobPlan(JobPlanContext jobPlan) {
         this.jobPlan = jobPlan;
     }
+
+    public Map<String, List<V3TaskContext>> getTasksString() {
+        return tasksString;
+    }
+
+    public void setTasksString(Map<String, List<V3TaskContext>> tasksString) {
+        this.tasksString = tasksString;
+    }
+
+    private Map<String, List<V3TaskContext>> tasksString;
 }
