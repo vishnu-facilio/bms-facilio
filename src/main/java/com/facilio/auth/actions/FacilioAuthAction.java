@@ -490,6 +490,41 @@ public class FacilioAuthAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	@Getter
+	@Setter
+	private String proxiedUserName;
+
+	public String proxyUser() throws Exception {
+		if (!IAMUserUtil.isUserInProxyList(getUsername())) {
+			setJsonresponse("errorcode", "1");
+			setJsonresponse("message", "User is not authorized");
+			return ERROR;
+		}
+
+		HttpServletRequest request = ServletActionContext.getRequest();
+		HttpServletResponse response = ServletActionContext.getResponse();
+
+		String userAgent = request.getHeader("User-Agent");
+		userAgent = userAgent != null ? userAgent : "";
+		String ipAddress = request.getHeader("X-Forwarded-For");
+		ipAddress = (ipAddress == null || "".equals(ipAddress.trim())) ? request.getRemoteAddr() : ipAddress;
+		String userType = "web";
+
+		Map<String, Object> props = IAMUserUtil.validateAndGenerateTokenV3(getUsername(), getPassword(), request.getServerName(), userAgent, userType, ipAddress);
+		FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.com");
+		FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.in");
+		FacilioCookie.eraseUserCookie(request, response,"fc.idToken.proxy","facilio.in");
+		FacilioCookie.eraseUserCookie(request, response,"fc.idToken.proxy","facilio.com");
+
+		Map<String, Object> proxyProps = IAMUserUtil.generatePropsForWithoutPassword(proxiedUserName, userAgent, userType, ipAddress, request.getServerName());
+
+		String proxyToken = IAMUserUtil.addProxySession(props, proxiedUserName, (long) proxyProps.get("sessionId"));
+
+		addAuthCookies(token, false, false, request, false, proxyToken);
+
+		return SUCCESS;
+	}
+
 	public String loginWithUserNameAndPassword() throws Exception {
 		if (StringUtils.isNotEmpty(lookUpType)) {
 			validateLoginPortal();
@@ -1796,10 +1831,18 @@ public class FacilioAuthAction extends FacilioAction {
 	private void addAuthCookies(String authtoken, boolean portalUser, boolean isDeviceUser, HttpServletRequest request) throws Exception {
 		addAuthCookies(authtoken, portalUser, isDeviceUser, request, false);
 	}
-	
+
 	private void addAuthCookies(String authtoken, boolean portalUser, boolean isDeviceUser, HttpServletRequest request, boolean isMobile) throws Exception {
+		addAuthCookies(authtoken, portalUser, isDeviceUser, request, false, null);
+	}
+	
+	private void addAuthCookies(String authtoken, boolean portalUser, boolean isDeviceUser, HttpServletRequest request, boolean isMobile, String proxyToken) throws Exception {
 		HttpServletResponse response = ServletActionContext.getResponse();
 		Cookie cookie = new Cookie("fc.idToken.facilio", authtoken);
+		Cookie proxyCookie = null;
+		if (StringUtils.isNotEmpty(proxyToken)) {
+			proxyCookie = new Cookie("fc.idToken.proxy", proxyToken);
+		}
 
 		if (isDeviceUser) {
 			cookie = new Cookie("fc.deviceTokenNew", authtoken);
@@ -1824,9 +1867,17 @@ public class FacilioAuthAction extends FacilioAction {
 			if (FacilioProperties.isOnpremise()) {
 				var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; HttpOnly;";
 				response.addHeader("Set-Cookie", cookieString);
+				if (proxyCookie != null) {
+					var proxyCookieString = "fc.idToken.proxy="+proxyToken+"; Max-Age=604800; Path=/; HttpOnly;";
+					response.addHeader("Set-Cookie", proxyCookieString);
+				}
 			} else {
 				var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; HttpOnly; SameSite=Lax";
 				response.addHeader("Set-Cookie", cookieString);
+				if (proxyCookie != null) {
+					var proxyCookieString = "fc.idToken.proxy="+proxyToken+"; Max-Age=604800; Path=/; HttpOnly; SameSite=Lax";
+					response.addHeader("Set-Cookie", proxyCookieString);
+				}
 				if(portalUser) {
 					var portalCookie = "fc.idToken.facilioportal="+authtoken+"; Max-Age=604800; Path=/; HttpOnly; SameSite=Lax";
 					response.addHeader("Set-Cookie", portalCookie);
@@ -1835,8 +1886,13 @@ public class FacilioAuthAction extends FacilioAction {
 		} else if("stage".equals(FacilioProperties.getEnvironment()) && !isMobile) {
 			var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
 			response.addHeader("Set-Cookie", cookieString);
+			if (proxyCookie != null) {
+				var proxyCookieString = "fc.idToken.proxy="+proxyToken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
+				response.addHeader("Set-Cookie", proxyCookieString);
+			}
 		} else {
 			response.addCookie(cookie);
+			response.addCookie(proxyCookie);
 
 			//Can be removed once service portal file api is not used.
 			if(portalUser) {

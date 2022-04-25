@@ -10,6 +10,15 @@ import com.facilio.iam.accounts.util.IAMUserUtil;
 
 
 public class AuthenticationUtil {
+
+    public static IAMAccount validateProxyToken(HttpServletRequest request, IAMAccount proxyAccount) throws Exception {
+        String proxyToken = FacilioCookie.getUserCookie(request, "fc.idToken.proxy");
+        if (StringUtils.isEmpty(proxyToken)) {
+            return null;
+        }
+
+        return IAMUserUtil.verifyProxyToken(proxyToken, proxyAccount);
+    }
 	
 	public static IAMAccount validateToken(HttpServletRequest request, boolean portalUser) throws Exception {
 		String facilioToken = null;
