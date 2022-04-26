@@ -123,9 +123,7 @@ public class CalculateDeltaCommand extends FacilioCommand {
 				}
 			}
 		}
-		if((boolean) context.getOrDefault(FacilioConstants.ContextNames.CALL_FROM_STORM, Boolean.FALSE)) {
-			LOGGER.info("CalculateDeltaCommand time taken " + (System.currentTimeMillis() - startTime));
-		}
+		LOGGER.debug("CalculateDeltaCommand time taken " + (System.currentTimeMillis() - startTime));
 		return false;
 	}
 

@@ -3,7 +3,6 @@ package com.facilio.readingrule.context;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleInterface;
-import com.facilio.constants.FacilioConstants.FaultImpact;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.ns.context.NameSpaceContext;
@@ -46,11 +45,9 @@ public class NewReadingRuleContext implements ReadingRuleInterface, Cloneable {
 
     List<Long> assets;
 
-    private Map<Long, ResourceContext> matchedResources;
+    Map<Long, ResourceContext> matchedResources;
 
     RuleAlarmDetails alarmDetails;
-
-//    RuleBuilderConfiguration condition;
 
     Long nsId;
 
@@ -59,12 +56,18 @@ public class NewReadingRuleContext implements ReadingRuleInterface, Cloneable {
     Long workflowId;
 
     WorkflowContext workflowContext;
-    
+
     FaultImpactContext impact;
+
     Long impactId;
 
+    Boolean autoClear;
+
     Boolean status;
-    public void setStatus(Boolean status){this.status=status;}
+
+    public void setStatus(Boolean status) {
+        this.status = status;
+    }
 
     List<Long> alarmRCARules;
 
@@ -73,10 +76,10 @@ public class NewReadingRuleContext implements ReadingRuleInterface, Cloneable {
     }
 
     public boolean isActive() {
-        if(status != null) {
-			return status.booleanValue();
-		}
-		return false;
+        if (status != null) {
+            return status.booleanValue();
+        }
+        return false;
     }
 
     FacilioField readingField;
@@ -95,7 +98,7 @@ public class NewReadingRuleContext implements ReadingRuleInterface, Cloneable {
         setMatchedResources(null);
         setModule(null);
         setReadingField(null);
-        if(alarmDetails != null) {
+        if (alarmDetails != null) {
             alarmDetails.setNullForResponse();
         }
     }

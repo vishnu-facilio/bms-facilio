@@ -30,9 +30,8 @@ public class RuleAlarmDetails {
 
     FaultType faultTypeEnum;
 
-    public void setFaultTypeEnum(FaultType faultTypeEnum) {
-        this.faultTypeEnum = faultTypeEnum;
-        this.faultType = faultTypeEnum.getIndex();
+    public FaultType getFaultTypeEnum() {
+        return FaultType.valueOf(faultType);
     }
 
     String severity;
@@ -43,6 +42,18 @@ public class RuleAlarmDetails {
 
     String possibleCausesStr;
     List<String> possibleCauses;
+
+    public void setPossibleCausesStr(String possibleCausesStr) throws ParseException {
+        List<String> causes = new ArrayList<>();
+        if (possibleCausesStr != null) {
+            JSONParser parser = new JSONParser();
+            JSONArray arr = (JSONArray) parser.parse(possibleCausesStr);
+            for (int i = 0; i < arr.size(); i++) {
+                causes.add((String) arr.get(i));
+            }
+        }
+        this.possibleCauses = causes;
+    }
 
     public void setPossibleCauses(List<String> possibleCauses) {
         this.possibleCauses = possibleCauses;
@@ -55,24 +66,20 @@ public class RuleAlarmDetails {
         }
     }
 
-    public List<String> getPossibleCauses() throws ParseException {
-        if (CollectionUtils.isNotEmpty(possibleCauses)) {
-            return possibleCauses;
-        }
-        List<String> causes = new ArrayList<>();
-        if (possibleCausesStr != null) {
-            JSONParser parser = new JSONParser();
-            JSONArray arr = (JSONArray) parser.parse(possibleCausesStr);
-            for (int i = 0; i < arr.size(); i++) {
-                causes.add((String) arr.get(i));
-            }
-        }
-        this.possibleCauses = causes;
-        return causes;
-    }
-
     String recommendationsStr;
     List<String> recommendations;
+
+    public void setRecommendationsStr(String recommendationsStr) throws ParseException {
+        List<String> recoms = new ArrayList<>();
+        if (recommendationsStr != null) {
+            JSONParser parser = new JSONParser();
+            JSONArray arr = (JSONArray) parser.parse(recommendationsStr);
+            for (int i = 0; i < arr.size(); i++) {
+                recoms.add((String) arr.get(i));
+            }
+        }
+        this.recommendations = recoms;
+    }
 
     public void setRecommendations(List<String> recommendations) {
         this.recommendations = recommendations;
@@ -85,24 +92,8 @@ public class RuleAlarmDetails {
         }
     }
 
-    public List<String> getRecommendations() throws ParseException {
-        if (CollectionUtils.isNotEmpty(recommendations)) {
-            return recommendations;
-        }
-        List<String> recoms = new ArrayList<>();
-        if (recommendationsStr != null) {
-            JSONParser parser = new JSONParser();
-            JSONArray arr = (JSONArray) parser.parse(recommendationsStr);
-            for (int i = 0; i < arr.size(); i++) {
-                recoms.add((String) arr.get(i));
-            }
-        }
-        this.recommendations = recoms;
-        return recoms;
-    }
-
     public void setNullForResponse() {
-        recommendationsStr = null;
         possibleCausesStr = null;
+        recommendationsStr = null;
     }
 }

@@ -75,9 +75,7 @@ public class GetReadingDataMetaCommand extends FacilioCommand {
 			}
 			context.put(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META, readingDataMeta);
 		}
-		if((boolean) context.getOrDefault(FacilioConstants.ContextNames.CALL_FROM_STORM, Boolean.FALSE)) {
-			LOGGER.info("GetReadingDataMetaCommand time taken " + (System.currentTimeMillis() - startTime));
-		}
+		LOGGER.debug("GetReadingDataMetaCommand time taken " + (System.currentTimeMillis() - startTime));
 		return false;
 	}
 	

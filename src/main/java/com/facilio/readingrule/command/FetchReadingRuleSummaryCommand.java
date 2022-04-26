@@ -19,7 +19,7 @@ public class FetchReadingRuleSummaryCommand extends FacilioCommand {
         NewReadingRuleContext rule = NewReadingRuleAPI.getRule(id);
         FacilioUtil.throwRunTimeException(rule == null, "Rule (" + id + ") is not found!!");
 
-        AlarmRuleContext alarmRule = new AlarmRuleContext(NewReadingRuleAPI.getRule(id));
+        AlarmRuleContext alarmRule = new AlarmRuleContext(rule);
         Map<String, Object> resourcesWithCount = NewReadingRuleAPI.getMatchedResourcesWithCount((NewReadingRuleContext) alarmRule.getAlarmTriggerRule());
         context.put(FacilioConstants.ContextNames.RULE_ASSET_COUNT, resourcesWithCount.get("count"));
         context.put(FacilioConstants.ContextNames.ASSET_LIST, resourcesWithCount.get("resourceIds"));

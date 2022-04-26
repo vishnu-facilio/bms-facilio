@@ -2025,6 +2025,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getNumberField("assetCategoryId", "ASSET_CATEGORY_ID", module));
         fields.add(getNumberField("workflowId", "WORKFLOW_ID", module));
         fields.add(getNumberField("impactId", "IMPACT_ID", module));
+        fields.add(getBooleanField("autClear", "AUTO_CLEAR", module));
         return fields;
     }
 

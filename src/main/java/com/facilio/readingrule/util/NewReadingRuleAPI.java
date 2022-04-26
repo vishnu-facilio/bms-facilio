@@ -230,7 +230,7 @@ public class NewReadingRuleAPI {
             }
         } else {
             for (NameSpaceField fld : fields) {
-                Long resourceID = (fld.getResourceId() == -1) ? -1 : fld.getResourceId();
+                Long resourceID = (fld.getResourceId() != null && fld.getResourceId() != -1) ? fld.getResourceId() : -1;
                 prepareNSField(fld, nsId, resourceID);
                 assetList.add(FieldUtil.getAsProperties(fld));
             }
