@@ -476,7 +476,11 @@ public class ReportFactoryFields {
 					addFieldInList(dimensionFieldMap, "time", field);
 				} else if(field.getDataTypeEnum() != FieldType.FILE && (field.getDataTypeEnum() != FieldType.STRING || AccountUtil.isFeatureEnabled(FeatureLicense.ETISALAT))){
 					addFieldInList(dimensionFieldMap, module.getDisplayName(), field);
-				} else if(field.isMainField()) {
+				}
+				else if(field.getDataTypeEnum() == FieldType.STRING){
+					addFieldInList(dimensionFieldMap, module.getDisplayName(), field);
+				}
+				else if(field.isMainField()) {
 					addFieldInList(dimensionFieldMap, module.getDisplayName(), field);
 				}
 			}
