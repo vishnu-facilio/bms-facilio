@@ -36,6 +36,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -745,6 +746,15 @@ public class FetchReportDataCommand extends FacilioCommand {
                 selectBuilder.andCondition(CriteriaAPI.getCondition(dp.getDateField().getField(), baseLine.getBaseLineRange().toString(), DateOperators.BETWEEN));
             } else {
                 selectBuilder.andCondition(CriteriaAPI.getCondition(dp.getDateField().getField(), report.getDateRange().toString(), DateOperators.BETWEEN));
+            }
+            if(report.getReportTTimeFilter() != null)
+            {
+               List<Condition> ttimeCondition_list = constructTTimeFilters(report.getReportTTimeFilter(), dp);
+               if(ttimeCondition_list != null && ttimeCondition_list.size() > 0) {
+                   for(Condition condition : ttimeCondition_list){
+                       selectBuilder.andCondition(condition);
+                   }
+               }
             }
         }
     }
@@ -1567,5 +1577,58 @@ public class FetchReportDataCommand extends FacilioCommand {
         tempMap.put("module", module);
         tempMap.put("extendedModules", tempModulesList);
         pivotFieldsList.add(tempMap);
+    }
+    private List<Condition> constructTTimeFilters(JSONObject conditionJson, ReportDataPointContext dataPoint) throws Exception
+    {
+        String moduleName = null;
+        if(dataPoint.getDateFieldModuleName() != null)
+        {
+            moduleName = dataPoint.getDateFieldModuleName();
+        }
+        else if(dataPoint.getDateField() != null && dataPoint.getDateField().getField() != null && dataPoint.getDateField().getField().getModule() != null){
+            moduleName = dataPoint.getDateField().getField().getModule().getName();
+        }
+        if(moduleName != null)
+        {
+            List<Condition> ttime_filter_condition_list = new ArrayList<Condition>();
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            Iterator<String> iter = conditionJson.keySet().iterator();
+            while(iter.hasNext())
+            {
+                String filter_key = iter.next();
+                JSONObject filterValue = (JSONObject) conditionJson.get(filter_key);
+                if (filterValue != null && filterValue.containsKey("operatorId") && filterValue.containsKey("value")) {
+                    Condition condition = new Condition();
+                    FacilioField ttimeField = modBean.getField("ttime", moduleName);
+                    condition.setField(ttimeField);
+                    condition.setOperatorId(Integer.parseInt(filterValue.get("operatorId").toString()));
+
+                    JSONArray value = (JSONArray) filterValue.get("value");
+                    if (value == null || (value != null && value.size() <= 0)) {
+                        return null;
+                    }
+                    if (value != null && value.size() > 0) {
+                        boolean isFirst = true;
+                        StringBuilder values = new StringBuilder();
+                        Iterator<String> iterator = value.iterator();
+                        while (iterator.hasNext()) {
+                            String obj = iterator.next();
+                            if (!isFirst) {
+                                values.append(',');
+                            }
+                            values.append(obj.trim());
+                            isFirst = false;
+                        }
+                        condition.setValue(values.toString());
+                        ttime_filter_condition_list.add(condition);
+                    }
+                }
+            }
+            if(ttime_filter_condition_list.size() > 0)
+            {
+                return ttime_filter_condition_list;
+            }
+        }
+        return null;
     }
 }

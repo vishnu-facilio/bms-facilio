@@ -84,6 +84,7 @@ public class V3AnalyticsReportAction extends V3Action {
     private Map<String, Object> exportParams;
     private Map<String, Object> renderParams;
     private EMailTemplate emailTemplate;
+    private String ttimeFilter;
 
 
     private AggregateOperator xAggr;
@@ -435,6 +436,11 @@ public class V3AnalyticsReportAction extends V3Action {
         }
         if (analyticsType != -1) {
             reportContext.addToReportState(FacilioConstants.ContextNames.ANALYTICS_TYPE, analyticsType);
+        }
+        if(ttimeFilter != null)
+        {
+            JSONObject ttimeFilterJson = (JSONObject) new JSONParser().parse(ttimeFilter);
+            context.put(FacilioConstants.ContextNames.REPORT_TTIME_FILTER, ttimeFilterJson);
         }
         context.put(FacilioConstants.ContextNames.REPORT, reportContext);
         context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);

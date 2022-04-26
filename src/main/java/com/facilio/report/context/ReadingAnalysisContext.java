@@ -237,7 +237,8 @@ public class ReadingAnalysisContext {
 		ALL_ASSET_CATEGORY,
 		SPECIFIC_ASSETS_OF_CATEGORY,
 		SPACE,
-		SITE
+		SITE,
+		TTIME,
 		;
 		
 		public int getValue() {

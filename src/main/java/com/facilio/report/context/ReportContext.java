@@ -48,6 +48,15 @@ public class ReportContext {
 						: false;
 	}
 
+	public JSONObject getReportTTimeFilter() {
+		return reportTTimeFilter;
+	}
+
+	public void setReportTTimeFilter(JSONObject reportTTimeFilter) {
+		this.reportTTimeFilter = reportTTimeFilter;
+	}
+
+	public JSONObject reportTTimeFilter;
 	public void setShowHideAlarm() {
 		booleanSetting = booleanSetting | BooleanSettings.SHOW_HIDE_ALARM.booleanValue;
 	}
