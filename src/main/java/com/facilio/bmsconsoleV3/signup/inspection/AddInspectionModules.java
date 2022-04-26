@@ -91,10 +91,10 @@ public class AddInspectionModules extends SignUpData {
         
         List<FacilioModule> modules = new ArrayList<>();
         
-        FacilioModule insepctionCategoryModule = constructInspectionCategory();
-        FacilioModule insepctionPriorityModule = constructInspectionPriority();
-        modules.add(insepctionCategoryModule);
-        modules.add(insepctionPriorityModule);
+        FacilioModule inspectionCategoryModule = constructInspectionCategory();
+        FacilioModule inspectionPriorityModule = constructInspectionPriority();
+        modules.add(inspectionCategoryModule);
+        modules.add(inspectionPriorityModule);
         
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
@@ -142,8 +142,8 @@ public class AddInspectionModules extends SignUpData {
         
         addDefaultScheduleJobs();
         
-        addDefaultInspectionPriorities(insepctionPriorityModule,modBean);
-        addDefaultInspectionCategories(insepctionCategoryModule,modBean);
+        addDefaultInspectionPriorities(inspectionPriorityModule,modBean);
+        addDefaultInspectionCategories(inspectionCategoryModule,modBean);
         
         
         addActivityModuleForInspectionResponse(inspectionResponseModule);
@@ -710,7 +710,9 @@ public class AddInspectionModules extends SignUpData {
 		 mandatoryAction.setFormRuleActionFieldsContext(mandatoryFields);
 
 		 actions.add(mandatoryAction);
-	      
+
+		 singleRule.setActions(actions);
+
 		 FacilioChain chain = TransactionChainFactory.getAddFormRuleChain();
 		 Context context = chain.getContext();
 			
@@ -785,8 +787,8 @@ public class AddInspectionModules extends SignUpData {
 	      
 	      actions.add(showAction);
 
-		FormRuleActionContext  actionmandatory = new FormRuleActionContext();
-		actionmandatory.setActionType(FormActionType.SET_MANDATORY.getVal());
+		FormRuleActionContext  mandatoryactions = new FormRuleActionContext();
+		mandatoryactions.setActionType(FormActionType.SET_MANDATORY.getVal());
 
 		List<FormRuleActionFieldsContext> mandatoryfields = new ArrayList<FormRuleActionFieldsContext>();
 
@@ -811,9 +813,9 @@ public class AddInspectionModules extends SignUpData {
 
 		mandatoryfields.add(mandatoryField4);
 
-		actionmandatory.setFormRuleActionFieldsContext(mandatoryfields);
+		mandatoryactions.setFormRuleActionFieldsContext(mandatoryfields);
 
-		actions.add(actionmandatory);
+		actions.add(mandatoryactions);
 
 		multipleRule.setActions(actions);
 	      
