@@ -1501,6 +1501,40 @@ public class PreventiveMaintenanceAPI {
 				}
 
 				pm.setSiteIds(pmSitesMap.get(pm.getId()));
+
+				// set up data for additional [SITE] column
+				if (pm.getSiteIds() != null && pm.getSiteIds().size() > 0) {
+					List<SiteContext> siteContextList = SpaceAPI.getSites(pm.getSiteIds());
+					pm.setSiteObjects(siteContextList);
+				}
+
+				// set up data for additional [category] column
+				if(pm.getWoTemplate() != null && pm.getWoTemplate().getCategoryId() > -1L){
+					long categoryID = pm.getWoTemplate().getCategoryId();
+					TicketCategoryContext categoryContext = TicketAPI.getCategory(pm.getOrgId(), categoryID);
+					pm.setTicketCategory(categoryContext);
+				}
+
+				// set up data for additional [vendor name] column
+				if(pm.getWoTemplate() != null && pm.getWoTemplate().getVendorId() > -1L){
+					long vendorId = pm.getWoTemplate().getVendorId();
+					VendorContext vendorContext = (VendorContext) RecordAPI.getRecord(ContextNames.VENDORS, vendorId);
+					pm.setVendor(vendorContext);
+				}
+
+				// set up data for additional [next execution time] column
+				Long nextExecution = PreventiveMaintenanceAPI.getNextExecutionTime(pm.getId());
+				if (nextExecution != null) {
+					pm.setNextExecutionTime(nextExecution);
+				}
+
+				// set up data for additional [last triggered time] column
+				if(pm.getWorkorders() == null || pm.getWorkorders().size() == 0){
+					Long lastTriggeredTime = getLastTriggeredTime(pm);
+					if(lastTriggeredTime > 0){
+						pm.setLastTriggeredTime(lastTriggeredTime);
+					}
+				}
 			}
 			if (fetchDependency) {
 				Map<Long, List<PMReminder>> reminders = PreventiveMaintenanceAPI.getPMRemindersAsMap(ids);
@@ -4628,5 +4662,25 @@ public class PreventiveMaintenanceAPI {
 			}
 		}
 		return null;
+	}
+
+	public static Long getLastTriggeredTime(PreventiveMaintenance pm) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+		FacilioField pmField = modBean.getField("pm", FacilioConstants.ContextNames.WORK_ORDER);
+		FacilioField createdTimeField = modBean.getField("createdTime", FacilioConstants.ContextNames.WORK_ORDER);
+
+		SelectRecordsBuilder<WorkOrderContext> selectBuilder = new SelectRecordsBuilder<WorkOrderContext>()
+				.beanClass(WorkOrderContext.class)
+				.moduleName(FacilioConstants.ContextNames.WORK_ORDER)
+				.select(Collections.singletonList(createdTimeField))
+				.andCondition(CriteriaAPI.getCondition(pmField, String.valueOf(pm.getId()), PickListOperators.IS))
+				.orderBy("WorkOrders.CREATED_TIME DESC")
+				.limit(1);
+
+		List<WorkOrderContext> wos = selectBuilder.get();
+		if(wos != null && wos.size() > 0)
+			return wos.get(0).getCreatedTime();
+		return -1L;
 	}
 }
