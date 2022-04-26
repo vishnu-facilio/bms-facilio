@@ -26,4 +26,12 @@ public class InductionTriggerIncludeExcludeResourceContext extends V3Context {
 		return -1l;
 	}
 	
+	public Long getResourceId() {
+		if(resource != null) {
+			return resource.getId();
+		}
+		return -1l;
+	}
+	
+	
 }

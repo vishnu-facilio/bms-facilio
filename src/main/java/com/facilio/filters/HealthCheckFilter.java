@@ -1,5 +1,9 @@
 package com.facilio.filters;
 
+import com.facilio.iam.accounts.impl.HydraClient;
+import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -11,6 +15,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
+@Log4j
 public class HealthCheckFilter implements Filter {
 
     private static int status = HttpServletResponse.SC_SERVICE_UNAVAILABLE;
@@ -20,9 +25,24 @@ public class HealthCheckFilter implements Filter {
 
     }
 
+    @SneakyThrows
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         response.setStatus(status);
+//        boolean isHydraAlive = false;
+//        try {
+//            isHydraAlive = new HydraClient().isAlive();
+//        } catch (Exception e) {
+//            LOGGER.error(e);
+//        }
+//        if (!isHydraAlive) {
+//            status = HttpServletResponse.SC_SERVICE_UNAVAILABLE;
+//            message = "hydra down";
+//        } else {
+//            status = HttpServletResponse.SC_OK;
+//            message = "app_server_running 1";
+//        }
+
         PrintWriter writer = response.getWriter();
         try {
             writer.println(message);

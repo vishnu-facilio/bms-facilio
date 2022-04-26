@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class UpdateLastRecordedValueAndFilterPointsCommand extends AgentV2Command {
     private static final Logger LOGGER = LogManager.getLogger(UpdateLastRecordedValueAndFilterPointsCommand.class.getName());
-    private static final long TOLERANCE = 30000; //30secs tolerance
+    private static final long TOLERANCE_MS = 30000; //30secs tolerance
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -38,7 +38,7 @@ public class UpdateLastRecordedValueAndFilterPointsCommand extends AgentV2Comman
             String pointName = stringObjectEntry.getKey();
             Object value = stringObjectEntry.getValue();
             Point point = pointRecords.get(pointName);
-            if (value == null || (!isCov && isPointWithinAgentInterval(agent, timeStamp, point)) || value.toString().equalsIgnoreCase("NaN")) {
+            if (value == null || (!isCov && intervalFilterConditions(agent, timeStamp, point)) || value.toString().equalsIgnoreCase("NaN")) {
                 pointsToRemove.add(pointName);
             } else {
                 //update point last recorded time and value
@@ -62,7 +62,15 @@ public class UpdateLastRecordedValueAndFilterPointsCommand extends AgentV2Comman
         return snapshot.isEmpty();
     }
 
-    private boolean isPointWithinAgentInterval(FacilioAgent agent, long timeStamp, Point point) throws Exception {
-        return AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.POINT_FILTER) && timeStamp - point.getLastRecordedTime() + TOLERANCE < agent.getInterval() * 60 * 1000;
+    private boolean intervalFilterConditions(FacilioAgent agent, long timeStamp, Point point) throws Exception {
+        boolean featureEnabled = AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.POINT_FILTER);
+        boolean isFiltered;
+        long timeFromLastRecorded = timeStamp - point.getLastRecordedTime() + TOLERANCE_MS;
+        if (point.getInterval() > 0) {
+            isFiltered = timeFromLastRecorded < (long) point.getInterval() * 60 * 1000;
+        } else {
+            isFiltered = timeFromLastRecorded < agent.getInterval() * 60 * 1000;
+        }
+        return featureEnabled && isFiltered;
     }
 }

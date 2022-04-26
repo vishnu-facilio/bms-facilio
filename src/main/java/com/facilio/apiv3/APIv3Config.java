@@ -41,6 +41,7 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.Fi
 
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.FillNewsRelatedModuleDataInListCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.LoadNewsAndInformationLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.employee.LoadEmployeeLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.facility.*;
 import com.facilio.bmsconsoleV3.commands.floor.CreateFloorAfterSave;
@@ -939,8 +940,10 @@ public class APIv3Config {
                     .beforeSave(new CheckforPeopleDuplicationCommandV3())
                     .afterSave(TransactionChainFactoryV3.getUpdateEmployeeAfterUpdateChain())
                 .list()
+                    .beforeFetch(new LoadEmployeeLookupCommandV3())
                     .afterFetch(new FetchRolesForPeopleCommandV3())
                 .summary()
+                    .beforeFetch(new LoadEmployeeLookupCommandV3())
                     .afterFetch(new FetchRolesForPeopleCommandV3())
 
                 .build();

@@ -327,7 +327,8 @@ public class UserBeanImpl implements UserBean {
 		
 		addBrandPlaceHolders("brandUrl", placeholders);
 		AppDomain appDomainObj = user.getAppDomain();
-		if (appDomainObj != null && appDomainObj.getAppDomainTypeEnum() != AppDomainType.FACILIO) {
+		if (appDomainObj != null && (appDomainObj.getAppDomainTypeEnum() != AppDomainType.FACILIO
+			&& appDomainObj.getAppDomainTypeEnum() != AppDomainType.DEVELOPER)) {
 			String inviteLink = getUserLink(user, "/invitation/", appDomainObj);
 			if (registration) {
 				inviteLink = getUserLink(user, "/emailregistration/", appDomainObj);
@@ -342,6 +343,11 @@ public class UserBeanImpl implements UserBean {
 				AccountEmailTemplate.ADDED_TO_APP_EMAIL.send(placeholders, true);
 			}
 		} else {
+			if (appDomainObj != null && appDomainObj.getAppDomainTypeEnum() == AppDomainType.DEVELOPER) {
+				List<AppDomain> appDomains = IAMAppUtil.getAppDomain(AppDomainType.FACILIO, AccountUtil.getCurrentOrg().getOrgId());
+				appDomainObj = appDomains.get(0);
+			}
+
 			String inviteLink = getUserLink(user, "/invitation/", appDomainObj);
 			placeholders.put("appType", ApplicationApi.getApplicationName(user.getApplicationId()));
 			

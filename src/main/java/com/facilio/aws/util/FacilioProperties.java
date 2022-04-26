@@ -267,7 +267,7 @@ public class FacilioProperties {
 
             service = PROPERTIES.getProperty("service");
             developerAppDomain = PROPERTIES.getProperty("facilioapisdomain", "facilioapis.com");
-            hydraUrl = PROPERTIES.getProperty("hydraUrl");
+            hydraUrl = PROPERTIES.getProperty("hydraUrl", "http://localhost:4445");
 
             String cookieLifespanProp = PROPERTIES.getProperty("token.cookie.lifespan");
             if (StringUtils.isNotEmpty(cookieLifespanProp)) {

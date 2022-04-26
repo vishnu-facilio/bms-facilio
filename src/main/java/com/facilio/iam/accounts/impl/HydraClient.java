@@ -4,6 +4,7 @@ import com.facilio.aws.util.FacilioProperties;
 import sh.ory.hydra.ApiClient;
 import sh.ory.hydra.Configuration;
 import sh.ory.hydra.api.AdminApi;
+import sh.ory.hydra.api.PublicApi;
 import sh.ory.hydra.model.OAuth2Client;
 import sh.ory.hydra.model.OAuth2TokenIntrospection;
 
@@ -37,5 +38,8 @@ public class HydraClient {
         return adminApi.createOAuth2Client(oAuth2Client);
     }
 
+    public boolean isAlive() throws Exception {
+        return adminApi.isInstanceAlive().getStatus().equalsIgnoreCase("ok");
+    }
 
 }

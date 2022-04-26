@@ -28,6 +28,8 @@ public class LoadTenantcontactLookupsCommandV3 extends FacilioCommand {
         List<LookupField> additionaLookups = new ArrayList<LookupField>();
         LookupField tenantField = (LookupField) fieldsAsMap.get("tenant");
         additionaLookups.add(tenantField);
+        additionaLookups.add((LookupField) fieldsAsMap.get("sysCreatedBy"));
+        additionaLookups.add((LookupField) fieldsAsMap.get("sysModifiedBy"));
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,additionaLookups);
         return false;
     }

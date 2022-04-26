@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.amazonaws.util.IOUtils;
-import com.facilio.ftp.FTPUtil;
+import com.facilio.ftp.SFTPUtil;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 
@@ -43,7 +43,7 @@ public enum FacilioFileFunction implements FacilioWorkflowFunctionInterface  {
 			
 			try(InputStream is = new ByteArrayInputStream(stringContent.getBytes())) {
 				
-				FTPUtil.putFile(objects[0].toString(), objects[1].toString(), objects[2].toString(), objects[3].toString(), is, objects[4].toString());
+				SFTPUtil.putFile((String)objects[0], objects[1].toString(), objects[2].toString(), objects[3].toString(), is, objects[4].toString());
 			}
 			
 			return null;
@@ -56,11 +56,9 @@ public enum FacilioFileFunction implements FacilioWorkflowFunctionInterface  {
 			
 			String filePath = objects[4].toString();
 				
-			InputStream is = FTPUtil.getFile(objects[0].toString(), objects[1].toString(), objects[2].toString(), objects[3].toString(), filePath);
+			String result = SFTPUtil.getFile((String)objects[0], objects[1].toString(), objects[2].toString(), objects[3].toString(), filePath);
 			
 			FileStore fs = FacilioFactory.getFileStore();
-			
-			String result = IOUtils.toString(is);
 			
 			long fileId = fs.addFile(objects[5].toString(), result, objects[6].toString());
 			
