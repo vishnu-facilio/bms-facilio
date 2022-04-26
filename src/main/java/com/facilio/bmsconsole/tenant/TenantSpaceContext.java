@@ -39,4 +39,27 @@ public class TenantSpaceContext extends ModuleBaseWithCustomFields {
 		this.tenantId = tenantId;
 	}
 
+	private Boolean currentlyOccupied;
+	public Boolean getCurrentlyOccupied() {
+		return currentlyOccupied;
+	}
+	public void setCurrentlyOccupied(Boolean currentlyOccupied) {
+		this.currentlyOccupied = currentlyOccupied;
+	}
+
+	private Long associatedTime;
+	public Long getAssociatedTime() {
+		return associatedTime;
+	}
+	public void setAssociatedTime(Long associatedTime) {
+		this.associatedTime = associatedTime;
+	}
+
+	private Long disassociatedTime;
+	public Long getDisassociatedTime() {
+		return disassociatedTime;
+	}
+	public void setDisassociatedTime(Long disassociatedTime) {
+		this.disassociatedTime = disassociatedTime;
+	}
 }

@@ -35,6 +35,8 @@ public class RollupTenantSpacesCommand extends FacilioCommand {
                             if (record.getTenant() != null) {
                                 TenantSpaceContext tenantSpace = new TenantSpaceContext();
                                 tenantSpace.setTenant(record.getTenant());
+                                tenantSpace.setCurrentlyOccupied(true);
+                                tenantSpace.setAssociatedTime(System.currentTimeMillis());
                                 tenantSpace.setSpace(record);
                                 tenantSpaces.add(tenantSpace);
                             }
