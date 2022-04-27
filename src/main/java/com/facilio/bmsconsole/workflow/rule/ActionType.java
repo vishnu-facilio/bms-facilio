@@ -36,6 +36,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -1674,18 +1675,42 @@ public enum ActionType {
 				
 				Long recordId = null; 
 				if(mailContext.getReferenceMessageId() != null) { // checking w.r.t. In reference message to
-					EmailToModuleDataContext emailToModuleData = MailMessageUtil.getEmailToModuleData(mailContext.getReferenceMessageId(), module);
-					if(emailToModuleData != null) {
-						recordId = emailToModuleData.getRecordId();
+					
+					List<String> refferenceMessageIds = new ArrayList<String>();
+					if(mailContext.getReferenceMessageId().contains(",")) {
+						String[] refferenceMessageIdArray = mailContext.getReferenceMessageId().split(",");
+						
+						if(ArrayUtils.isNotEmpty(refferenceMessageIdArray)) {
+							
+							for(int i=refferenceMessageIdArray.length -1 ; i>=0 ;i--) {
+								refferenceMessageIds.add(refferenceMessageIdArray[i]);
+							}
+						}
 					}
 					else {
-						EmailConversationThreadingContext conversation = MailMessageUtil.getEmailConversationData(mailContext.getReferenceMessageId(), module);
-						if(conversation != null) {
-							recordId = conversation.getRecordId();
+						refferenceMessageIds.add(mailContext.getReferenceMessageId());
+					}
+					
+					for(String refferenceMessageId : refferenceMessageIds) {
+						
+						EmailToModuleDataContext emailToModuleData = MailMessageUtil.getEmailToModuleData(refferenceMessageId, module);
+						if(emailToModuleData != null) {
+							recordId = emailToModuleData.getRecordId();
+						}
+						else {
+							EmailConversationThreadingContext conversation = MailMessageUtil.getEmailConversationData(refferenceMessageId, module);
+							if(conversation != null) {
+								recordId = conversation.getRecordId();
+							}
+						}
+						
+						if(recordId != null) {
+							break;
 						}
 					}
 				}
-				else {
+				
+				if(recordId == null) {
 					Long localId = MailMessageUtil.getLocalIdFromSubject(mailContext.getSubject());
 					if(localId != null) {
 						Map<String, Object> record = MailMessageUtil.fetchRecordWithLocalIdOrId(module, localId);

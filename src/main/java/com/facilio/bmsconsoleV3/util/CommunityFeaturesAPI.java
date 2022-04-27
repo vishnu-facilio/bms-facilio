@@ -154,8 +154,8 @@ public class CommunityFeaturesAPI {
                 context.put(Constants.RECORD_ID, peopleAnnouncement.getId());
                 Constants.setModuleName(context, FacilioConstants.ContextNames.Tenant.PEOPLE_ANNOUNCEMENTS);
                 peopleAnnouncement.setIsCancelled(true);
-                peopleAnnouncement.setModuleState(parentAnnouncement.getModuleState());
-                peopleAnnouncement.setApprovalStatus(parentAnnouncement.getApprovalStatus());
+                //peopleAnnouncement.setModuleState(parentAnnouncement.getModuleState());
+                //peopleAnnouncement.setApprovalStatus(parentAnnouncement.getApprovalStatus());
                 Constants.setRawInput(context, FieldUtil.getAsJSON(peopleAnnouncement));
                 context.put(Constants.BEAN_CLASS, PeopleAnnouncementContext.class);
                 context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_WRITE);
@@ -266,6 +266,8 @@ public class CommunityFeaturesAPI {
                     pplAnnouncement.setCreatedBy(announcement.getSysModifiedBy());
                     pplAnnouncement.setCreatedTime(announcement.getSysModifiedTime());
                     pplAnnouncement.setLongDescription(announcement.getLongDescription());
+                    pplAnnouncement.setStateFlowId(-1);
+                    pplAnnouncement.setModuleState(null);
                     pplMap.put(person.getId(), pplAnnouncement);
                 }
             }

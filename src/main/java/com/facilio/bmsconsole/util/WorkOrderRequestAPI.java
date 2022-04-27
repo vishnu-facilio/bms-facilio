@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,12 +13,16 @@ import org.json.simple.JSONObject;
 
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.wmsv2.endpoint.SessionManager;
+import com.facilio.wmsv2.handler.EmailProcessHandler;
+import com.facilio.wmsv2.message.Message;
 
 public class WorkOrderRequestAPI {
 
     private static final Logger LOGGER = LogManager.getLogger(WorkOrderRequestAPI.class.getName());
 
-    public static long addS3MessageId(JSONObject mailObj) throws SQLException {
+    public static long addS3MessageId(JSONObject mailObj) throws Exception {
         try {
             String s3Id = (String) mailObj.get("messageId");
             String destination = mailObj.get("destination").toString();
@@ -32,9 +37,15 @@ public class WorkOrderRequestAPI {
                     .fields(FieldFactory.getWorkorderEmailFields())
                     .addRecord(workOrderEmailProps);
             insertBuilder.save();
+            
+			SessionManager.getInstance().sendMessage(new Message()
+			        .setTopic(EmailProcessHandler.TOPIC)
+			        .setContent(FieldUtil.getAsJSON(workOrderEmailProps)));
+
+            LOGGER.info("ID of the workOrder : "+workOrderEmailProps.get("id"));
             return (long) workOrderEmailProps.get("id");
-        } catch (SQLException e) {
-            LOGGER.error("Exception occurred during adding Workorder request email S3 id to DB ", e);
+        } catch (Exception e) {
+            LOGGER.error("Exception occurred during adding Workorder request email S3 ", e);
             throw e;
         }
     }
