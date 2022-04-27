@@ -59,8 +59,11 @@ public class UpdateSupportEmailCommand extends FacilioCommand {
 		}
 		return false;
 	}catch(Exception e) {
-		throw new IllegalArgumentException(e.getMessage());		
-	}
+		if(e.getMessage().contains("Duplicate entry")){
+			throw new IllegalArgumentException("Email ID already exsists");
+		}
+		throw new IllegalArgumentException(e.getMessage());	
+		}
 
  }
 }
