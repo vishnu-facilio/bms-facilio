@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -1483,6 +1484,8 @@ public class ApplicationApi {
 
         scoping.setCreatedTime(System.currentTimeMillis());
         scoping.setCreatedBy(AccountUtil.getCurrentUser().getOuid());
+        scoping.setModifiedTime(System.currentTimeMillis());
+        scoping.setModifiedBy(AccountUtil.getCurrentUser().getOuid());
 
         GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
                 .table(ModuleFactory.getScopingModule().getTableName())
@@ -1496,6 +1499,21 @@ public class ApplicationApi {
         return scopingId;
     }
 
+    public static void updateCreatedByForDefaultScoping(User superAdminUser) throws Exception {
+        List<FacilioField> fields = FieldFactory.getScopingFields();
+        ScopingContext scoping = new ScopingContext();
+        scoping.setCreatedTime(System.currentTimeMillis());
+        scoping.setCreatedBy(superAdminUser.getOuid());
+        scoping.setModifiedTime(System.currentTimeMillis());
+        scoping.setModifiedBy(superAdminUser.getOuid());
+
+        GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+                .table(ModuleFactory.getScopingModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("CREATED_BY","createdBy", "NULL", CommonOperators.IS_EMPTY))
+                .fields(fields);
+        Map<String, Object> map = FieldUtil.getAsProperties(scoping);
+        updateRecordBuilder.update(map);
+    }
     public static void addScopingConfigForApp(List<ScopingConfigContext> scoping) throws Exception {
 
         List<FacilioField> fields = FieldFactory.getScopingConfigFields();
