@@ -41,15 +41,6 @@ public class ReadingUnitAndInputConversionCommand extends FacilioCommand {
 
 			Map<Long,Map<String, Integer>> valuesMap = getInputValuesMap(metaMap);
 
-			if (FacilioProperties.isOnpremise()) {
-				if (readingMap.keySet().contains("liftmode")) {
-					LOGGER.info("Lift mode readings before - " + readingMap.get("liftmode"));
-				}
-				if (readingMap.keySet().contains("movingdirection")) {
-					LOGGER.info("Moving state readings before - " + readingMap.get("movingdirection"));
-				}
-			}
-
 			for (Map.Entry<String, List<ReadingContext>> entry : readingMap.entrySet()) {
 				String moduleName = entry.getKey();
 				List<ReadingContext> readings = entry.getValue();
@@ -97,33 +88,17 @@ public class ReadingUnitAndInputConversionCommand extends FacilioCommand {
 					}
 				}
 			}
-			if (FacilioProperties.isOnpremise()) {
-				if (readingMap.keySet().contains("liftmode")) {
-					LOGGER.info("Lift mode readings" + readingMap.get("liftmode"));
-				}
-				if (readingMap.keySet().contains("movingdirection")) {
-					LOGGER.info("Moving state readings" + readingMap.get("movingdirection"));
-				}
-			}
             LOGGER.info("Time taken for Unit conversion is : " + (System.currentTimeMillis() - startTime) + ", modules: " + readingMap.keySet());
 		}
 		return false;
 	}
 
 	private void convertInputValue(ReadingDataMeta readingDataMeta, Map<Long,Map<String, Integer>> rdmValueMap, Map<String, Object> readingData, String fieldName) {
-		boolean checkField = false;
-		if (FacilioProperties.isOnpremise() && (fieldName.equals("liftmode") || fieldName.equals("movingstate")) ) {
-			LOGGER.info("-------Data for " + fieldName + ": " + readingData.get(fieldName));
-			checkField = true;
-		}
 		if (rdmValueMap != null && rdmValueMap.get(readingDataMeta.getId()) != null && readingDataMeta.getInputTypeEnum() == ReadingInputType.CONTROLLER_MAPPED) {
 			Map<String, Integer> valueMap = rdmValueMap.get(readingDataMeta.getId());
 			String value = readingData.get(fieldName).toString();
 			if (valueMap != null && valueMap.get(value) != null) {
 				readingData.put(fieldName, valueMap.get(value));
-			}
-			if (checkField) {
-				LOGGER.info("Value Map- " + valueMap);
 			}
 		}
 	}

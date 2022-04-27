@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.commands.AgentV2Command;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.point.Point;
@@ -26,6 +27,7 @@ public class ModeledDataCommandV2 extends AgentV2Command {
         Long timeStamp = Long.parseLong(context.get(FacilioConstants.ContextNames.TIMESTAMP).toString());
         Map<String, Object> snapshot = (Map<String, Object>) context.get(FacilioConstants.ContextNames.DataProcessor.DATA_SNAPSHOT);
         Map<String, Point> pointRecords = (Map<String, Point>) context.get(FacilioConstants.ContextNames.DataProcessor.POINT_RECORDS);
+
         Map<String, ReadingContext> iModuleVsReading;
         if (pointRecords != null) {
             iModuleVsReading = getModuleVsReading(context, pointRecords, timeStamp, snapshot);
@@ -35,6 +37,9 @@ public class ModeledDataCommandV2 extends AgentV2Command {
     }
 
     private Map<String, ReadingContext> getModuleVsReading(Context context, Map<String, Point> dataPointsRecords, Long timeStamp, Map<String, Object> data) throws Exception {
+    	FacilioAgent agent = (FacilioAgent) context.get(AgentConstants.AGENT);
+    	int agentInterval = (int)agent.getInterval(); 
+    	
         Map<String, Object> unmodelled = new HashMap<>();
         Map<String, ReadingContext> iModuleVsReading = new HashMap<>();
         for (String pointName : data.keySet()) {
@@ -48,21 +53,26 @@ public class ModeledDataCommandV2 extends AgentV2Command {
                     FacilioField field = bean.getField(fieldId);
                     FieldType type = field.getDataTypeEnum();
                     String moduleName = field.getModule().getName();
-                    String readingKey = moduleName + "|" + resourceId;
-                    ReadingContext reading = iModuleVsReading.get(readingKey);
+                    
                     try {
                         Object value = pointValue;
                         if (type == FieldType.DECIMAL || type == FieldType.NUMBER) {
                             value = FacilioUtil.castOrParseValueAsPerType(field, pointValue);
                         }
+                        
+                        int interval = p.getInterval() > 0 ? p.getInterval() : agentInterval;
+                        String readingKey = moduleName + "|" + resourceId + "|" + interval;
+                        ReadingContext reading = iModuleVsReading.get(readingKey);
                         if (reading == null) {
                             reading = new ReadingContext();
+                            reading.setParentId(resourceId);
+                            reading.setTtime(timeStamp);
+                            reading.setDataInterval(interval);
                             iModuleVsReading.put(readingKey, reading);
                         }
+                        
                         reading.addReading(field.getName(), value);
-                        reading.setParentId(resourceId);
-                        reading.setTtime(timeStamp);
-
+                        
                     } catch (NumberFormatException ex) {
                         LOGGER.info(MessageFormat.format("Error while converting to reading. Field: {0}, Parent: {1}, Value: {2}", field, resourceId, pointValue), ex);
                     }
