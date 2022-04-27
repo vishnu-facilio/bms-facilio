@@ -27,11 +27,11 @@
                                       </div>
                                         <#if (vLog.visitedSpace) ?? >
                                       <div style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;color:#474a51;font-size:20px;line-height:30px;text-align:left;min-width:auto!important;letter-spacing: 0.6px;">
-                                          You have been invited to ${spaceName} <#if (vLog.host) ?? >by ${vLog.host.name} </#if><#if (vLog.expectedCheckInTime &gt; 0)>on ${(vLog.expectedCheckInTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")} </#if>!
+                                          You have been invited to ${spaceName} <#if (vLog.host) ?? >by ${vLog.host.name} </#if><#if (vLog.expectedCheckInTime &gt; 0)>on ${(vLog.expectedCheckInTime)?number_to_datetime?string(formatDates(org))} </#if>!
                                     </div>
                                      <#else>
                                       <div style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;color:#474a51;font-size:20px;line-height:30px;text-align:left;min-width:auto!important;letter-spacing: 0.6px;">
-                                          You have been invited  <#if (vLog.host) ?? > by ${vLog.host.name} </#if><#if (vLog.expectedCheckInTime &gt; 0)>on ${(vLog.expectedCheckInTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")}</#if> !
+                                          You have been invited  <#if (vLog.host) ?? > by ${vLog.host.name} </#if><#if (vLog.expectedCheckInTime &gt; 0)>on ${(vLog.expectedCheckInTime)?number_to_datetime?string(formatDates(org))}</#if> !
                                     </div>
                                    
                                    </#if>
@@ -72,6 +72,24 @@
                         <img src="https://facilio.com/images/facilio-blue-logo.svg" alt="" title="" style="width: 70px;height: 16x;padding-bottom: 10px;max-width: 100%;">
             </div>
       </div>
+      <#function formatDates org>
+        <#if org.timeFormat == 2>
+            <#local timeStr= "hh:mm aa">
+        <#elseif org.timeFormat == 1>
+            <#local timeStr= "HH:mm">
+        <#else>
+            <#local timeStr= "HH:mm">
+        </#if>
+        <#if org.dateFormat == "DD/MM/YYYY">
+            <#return "dd/MM/YYYY "+timeStr>
+        <#elseif org.dateFormat == "MM/DD/YYYY">
+            <#return "MM/dd/YYYY "+timeStr>
+        <#elseif org.dateFormat == "YYYY/MM/DD">
+            <#return "YYYY/MM/dd "+timeStr>
+        <#else>
+            <#return "dd/MM/YYYY "+timeStr>
+        </#if>
+    </#function>
 </body>
 
 </html>

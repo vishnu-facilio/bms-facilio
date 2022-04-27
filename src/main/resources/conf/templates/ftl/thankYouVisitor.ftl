@@ -38,11 +38,11 @@
                                                   </div>
                                     <#if (vLog.visitedSpace) ??>
                                     <div style="color: #000;font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;font-size: 16px;padding-bottom: 30px;letter-spacing: 0.5px;">
-                                                You have successfully checked out of ${vLog.visitedSpace.name} on ${(vLog.checkOutTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")}.
+                                                You have successfully checked out of ${vLog.visitedSpace.name} on ${(vLog.checkOutTime)?number_to_datetime?string(formatDates(org))}.
                                     </div>
                                     <#else>
                                     <div style="color: #000;font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;font-size: 16px;padding-bottom: 30px;letter-spacing: 0.5px;">
-                                                You have successfully checked out on ${(vLog.checkOutTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")}.
+                                                You have successfully checked out on ${(vLog.checkOutTime)?number_to_datetime?string(formatDates(org))}.
                                     </div>
                                     </#if>
                               </td>
@@ -56,6 +56,24 @@
                   
             </div>
       </div>
+      <#function formatDates org>
+        <#if org.timeFormat == 2>
+            <#local timeStr= "hh:mm aa">
+        <#elseif org.timeFormat == 1>
+            <#local timeStr= "HH:mm">
+        <#else>
+            <#local timeStr= "HH:mm">
+        </#if>
+        <#if org.dateFormat == "DD/MM/YYYY">
+            <#return "dd/MM/YYYY "+timeStr>
+        <#elseif org.dateFormat == "MM/DD/YYYY">
+            <#return "MM/dd/YYYY "+timeStr>
+        <#elseif org.dateFormat == "YYYY/MM/DD">
+            <#return "YYYY/MM/dd "+timeStr>
+        <#else>
+            <#return "dd/MM/YYYY "+timeStr>
+        </#if>
+    </#function>
 </body>
 
 </html>
