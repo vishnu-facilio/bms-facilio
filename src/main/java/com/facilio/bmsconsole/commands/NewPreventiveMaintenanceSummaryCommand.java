@@ -207,9 +207,10 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
                     
                     Map<String, Object> data = workorder.getData();
                     if (data != null && data.containsKey(enumfield.getName())) {
-                        Integer enumKey = Integer.parseInt((String) data.get(enumfield.getName()));
-                        data.put(enumfield.getName(), enumfield.getEnumMap().get(enumKey));
-                    }
+						Map<String, Object> enumValue = (Map<String, Object>) data.get(enumfield.getName());
+						int enumKey = FacilioUtil.parseInt(enumValue.get("id"));
+						data.put(enumfield.getName(), enumfield.getEnumMap().get(enumKey));
+					}
                 }
             }
         }
