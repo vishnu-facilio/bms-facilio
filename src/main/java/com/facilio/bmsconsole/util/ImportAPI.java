@@ -720,8 +720,14 @@ public class ImportAPI {
 	public static boolean canUpdateAssetBaseSpace(ImportProcessContext importProcessContext) throws Exception {
 		JSONObject fieldMapping = importProcessContext.getFieldMappingJSON();
 		if (fieldMapping != null) {
-			if (AssetsAPI.isAssetsModule(importProcessContext.getModule()) && (importProcessContext.getImportSetting().intValue() == ImportProcessContext.ImportSetting.UPDATE.getValue() || importProcessContext.getImportSetting().intValue() == ImportProcessContext.ImportSetting.UPDATE_NOT_NULL.getValue())) {
-				if ((fieldMapping.containsKey("asset__floor") || fieldMapping.containsKey("asset__building") || fieldMapping.containsKey("asset__spaceName") || fieldMapping.containsKey("asset__space") || fieldMapping.containsKey("asset__space1") || fieldMapping.containsKey("asset__space2") || fieldMapping.containsKey("asset__space3"))) {
+			if (AssetsAPI.isAssetsModule(importProcessContext.getModule())) {
+					
+				if(importProcessContext.getImportSetting().intValue() == ImportProcessContext.ImportSetting.UPDATE.getValue() || importProcessContext.getImportSetting().intValue() == ImportProcessContext.ImportSetting.UPDATE_NOT_NULL.getValue()) {
+					if ((fieldMapping.containsKey("asset__floor") || fieldMapping.containsKey("asset__building") || fieldMapping.containsKey("asset__spaceName") || fieldMapping.containsKey("asset__space") || fieldMapping.containsKey("asset__space1") || fieldMapping.containsKey("asset__space2") || fieldMapping.containsKey("asset__space3"))) {
+						return true;
+					}
+				}
+				else {
 					return true;
 				}
 			}
