@@ -696,6 +696,7 @@ public class AddSurveyModules extends SignUpData {
         
         NumberField siteField = (NumberField) FieldFactory.getDefaultField("siteId", "Site", "SITE_ID", FieldType.NUMBER);
         fields.add(siteField);
+
         
         SystemEnumField creationType = (SystemEnumField) FieldFactory.getDefaultField("creationType", "Scope", "CREATION_TYPE", FieldType.SYSTEM_ENUM);
         creationType.setEnumName("SurveyCreationType");
@@ -812,7 +813,10 @@ public class AddSurveyModules extends SignUpData {
         
         NumberField siteField = (NumberField) FieldFactory.getDefaultField("siteId", "Site", "SITE_ID", FieldType.NUMBER);
         fields.add(siteField);
-        
+
+		NumberField ruleField = (NumberField) FieldFactory.getDefaultField("ruleId", "Rule Id", "RULE_ID", FieldType.NUMBER);
+		fields.add(ruleField);
+
         LookupField parentField = (LookupField) FieldFactory.getDefaultField("parent", "Parent", "PARENT_ID", FieldType.LOOKUP,true);
         parentField.setLookupModule(survey);
         fields.add(parentField);

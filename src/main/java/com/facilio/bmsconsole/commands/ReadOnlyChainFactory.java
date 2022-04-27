@@ -3008,4 +3008,9 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getSurveyRulesChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetSurveyRulesCommand());
+		return chain;
+	}
 }

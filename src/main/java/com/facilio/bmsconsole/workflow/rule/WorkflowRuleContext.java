@@ -504,7 +504,7 @@ public class WorkflowRuleContext implements Serializable {
 		CommonCommandUtil.appendModuleNameInKey(null, "rule", FieldUtil.getAsProperties(this), rulePlaceHolders);
 		return rulePlaceHolders;
 	}
-	
+
 	public void executeTrueActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
 		long ruleId = getId();
 		long startTime = System.currentTimeMillis();
@@ -594,6 +594,8 @@ public class WorkflowRuleContext implements Serializable {
 
 		SCORING_RULE,// 44
 		SYSTEM_BUTTON,//45
+		SATISFACTION_SURVEY_RULE, //46
+		SURVEY_ACTION_RULE //47
 		;
 		//Always add at the end
 		

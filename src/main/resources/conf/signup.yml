@@ -109,3 +109,6 @@ classes:
 
     # Adding default ML params
   - com.facilio.modules.signup.AddMLModelParams
+
+    #WorkOrder survey Modules
+  - com.facilio.bmsconsoleV3.signup.workordersurvey.AddWorkOrderSurveyModules

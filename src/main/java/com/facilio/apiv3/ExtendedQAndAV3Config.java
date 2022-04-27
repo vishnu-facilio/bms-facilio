@@ -16,6 +16,8 @@ import com.facilio.bmsconsoleV3.context.survey.SurveyResponseContext;
 import com.facilio.bmsconsoleV3.context.survey.SurveyTemplateContext;
 import com.facilio.bmsconsoleV3.context.survey.SurveyTriggerContext;
 import com.facilio.bmsconsoleV3.context.survey.SurveyTriggerIncludeExcludeResourceContext;
+import com.facilio.bmsconsoleV3.context.workordersurvey.WorkOrderSurveyResponseContext;
+import com.facilio.bmsconsoleV3.context.workordersurvey.WorkOrderSurveyTemplateContext;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount50;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.qa.command.InductionSupplementSupplyCommand;
@@ -202,4 +204,34 @@ public class ExtendedQAndAV3Config {
     public static Supplier<V3Config> getInductionTriggerInclExcl() {
         return () -> new V3Config(InductionTriggerIncludeExcludeResourceContext.class, null);
     }
+
+	@Module (FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_TEMPLATE)
+	public static Supplier<V3Config> getWorkOrderSurvey() {
+		return () -> new V3Config(WorkOrderSurveyTemplateContext.class, new ModuleCustomFieldCount50())
+				.create()
+				.beforeSave(QAndATransactionChainFactory.workOrderSurveyTemplateBeforeSaveChain())
+				.afterSave()
+				.update()
+				.afterSave()
+				.list()
+				.summary()
+				.build();
+	}
+
+	@Module (FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_RESPONSE)
+	public static Supplier<V3Config> getWorkOrderSurveyResponse() {
+		return () -> new V3Config(WorkOrderSurveyResponseContext.class, new ModuleCustomFieldCount50())
+				.create()
+				.afterSave(new ConstructAddCustomActivityCommandV3())
+				.afterTransaction(new AddActivitiesCommandV3())
+				.update()
+				.beforeSave(QAndATransactionChainFactory.commonBeforeQAndAResponseUpdate())
+				.afterTransaction(new AddActivitiesCommandV3())
+				.list()
+				.beforeFetch(new SurveySupplementSupplyCommand())
+				.summary()
+				.beforeFetch(new SurveySupplementSupplyCommand())
+				.afterFetch(QAndAReadOnlyChainFactory.commonAfterQAndAResponseFetch())
+				.build();
+	}
 }

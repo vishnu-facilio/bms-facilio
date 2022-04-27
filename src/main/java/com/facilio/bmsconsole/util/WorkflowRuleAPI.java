@@ -106,7 +106,7 @@ public class WorkflowRuleAPI {
 		return finalString;
 	}
 
-	public static long addWorkflowRule(WorkflowRuleContext rule) throws Exception {
+	public static long  addWorkflowRule(WorkflowRuleContext rule) throws Exception {
 		rule.setOrgId(AccountUtil.getCurrentOrg().getId());
 		rule.setStatus(true);
 		rule.setLatestVersion(true);
@@ -200,6 +200,26 @@ public class WorkflowRuleAPI {
 				ruleProps = FieldUtil.getAsProperties(rule);
 				addExtendedProps(ModuleFactory.getScoringRuleModule(), FieldFactory.getScoringRuleFields(), ruleProps);
 				break;
+			case SATISFACTION_SURVEY_RULE:
+				addExtendedProps(ModuleFactory.getSatisfactionSurveyRuleModule (), FieldFactory.getSatisfactionSurveyRuleFields (), ruleProps);
+				break;
+			case SURVEY_ACTION_RULE:
+				SurveyResponseRuleContext surveyResponseRuleContext = (SurveyResponseRuleContext) rule;
+				long createRuleId = surveyResponseRuleContext.getExecuteCreateRuleId();
+				long ruleId = rule.getId();
+				long parentRuleId = surveyResponseRuleContext.getRuleId();
+
+				if(createRuleId <= 0L){
+					rule.setId(parentRuleId);
+					((SurveyResponseRuleContext) rule).setExecuteCreateRuleId(ruleId);
+					addExtendedProps(ModuleFactory.getSurveyResponseRuleModule(),FieldFactory.getSurveyResponseRuleFields(),FieldUtil.getAsProperties(rule));
+
+				}else {
+					((SurveyResponseRuleContext) rule).setExecuteSubmitRuleId(ruleId);
+					updateSurveyResponseRule(parentRuleId,FieldUtil.getAsProperties(rule));
+				}
+				rule.setId(ruleId);
+				break;
 			default:
 				break;
 		}
@@ -214,6 +234,17 @@ public class WorkflowRuleAPI {
 		TriggerUtil.addTriggersForWorkflowRule(rule);
 
 		return rule.getId();
+	}
+
+	public static void updateSurveyResponseRule(long id, Map<String, Object> asProperties) throws SQLException{
+
+		FacilioModule module = ModuleFactory.getSurveyResponseRuleModule();
+		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+				.table(module.getTableName())
+				.fields(FieldFactory.getSurveyResponseRuleFields())
+				.andCondition(CriteriaAPI.getIdCondition(id, module));
+		builder.update(asProperties);
+
 	}
 
 	private static void deleteFieldChangeFields(WorkflowRuleContext rule) throws Exception {
@@ -740,6 +771,12 @@ public class WorkflowRuleAPI {
 				case TRANSACTION_RULE:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getTransactionRuleModule(), FieldFactory.getTransactionWorkflowRuleFields(), entry.getValue()));
 					break;
+				case SATISFACTION_SURVEY_RULE:
+					typeWiseProps.put (entry.getKey (),getExtendedProps (ModuleFactory.getSatisfactionSurveyRuleModule (),FieldFactory.getSatisfactionSurveyRuleFields (),entry.getValue ()));
+					break;
+				case SURVEY_ACTION_RULE:
+					typeWiseProps.put(entry.getKey (),getExtendedProps (ModuleFactory.getSurveyResponseRuleModule(),FieldFactory.getSurveyResponseRuleFields (),entry.getValue()));
+					break;
 				default:
 					break;
 			}
@@ -902,6 +939,15 @@ public class WorkflowRuleAPI {
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 							rule = FieldUtil.getAsBeanFromMap(prop, ScoringRuleContext.class);
 							break;
+						case SATISFACTION_SURVEY_RULE:
+							prop.putAll (typeWiseExtendedProps.get (ruleType).get (prop.get ("id")));
+							rule = FieldUtil.getAsBeanFromMap (prop, SatisfactionSurveyRuleContext.class);
+							break;
+						case SURVEY_ACTION_RULE:
+//							prop.putAll (typeWiseExtendedProps.get (ruleType).get (prop.get ("id")));
+							rule = FieldUtil.getAsBeanFromMap (prop, SurveyResponseRuleContext.class);
+							((SurveyResponseRuleContext) rule).setRuleId(getSurveyParentRule(rule.getId()));;
+							break;
 						default:
 							rule = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleContext.class);
 							break;
@@ -943,7 +989,21 @@ public class WorkflowRuleAPI {
 		}
 		return null;
 	}
-	
+
+	private static long getSurveyParentRule(long ruleId) throws Exception{
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+													 .select(FieldFactory.getSurveyResponseRuleFields())
+													 .table(ModuleFactory.getSurveyResponseRuleModule().getTableName())
+													 .orCondition(CriteriaAPI.getCondition("EXECUTE_CREATE_RULE_ID","executeCreateRuleId",String.valueOf(ruleId),NumberOperators.EQUALS))
+													 .orCondition(CriteriaAPI.getCondition("EXECUTE_SUBMIT_RULE_ID","executeSubmitRuleId",String.valueOf(ruleId),NumberOperators.EQUALS));
+		Map<String,Object> prop = builder.fetchFirst();
+
+		if(prop != null && !prop.isEmpty()){
+			return FieldUtil.getAsBeanFromMap(prop,SurveyResponseRuleContext.class).getId();
+		}
+		return -1L;
+	}
+
 	protected static ReadingAlarmRuleContext constructReadingAlarmRuleFromProps(Map<String, Object> prop, ModuleBean modBean) throws Exception {
 		ReadingAlarmRuleContext readingRule = FieldUtil.getAsBeanFromMap(prop, ReadingAlarmRuleContext.class);
 		return readingRule;

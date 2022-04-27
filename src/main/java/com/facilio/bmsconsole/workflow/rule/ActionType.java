@@ -7,6 +7,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.facilio.apiv3.QAndAV3Config;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -22,6 +23,8 @@ import com.facilio.bmsconsoleV3.util.V3AttachmentAPI;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fs.FileInfo;
 import com.facilio.modules.fields.FileField;
+import com.facilio.qa.QAndAUtil;
+import com.facilio.qa.context.QAndATemplateContext;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.trigger.util.TriggerUtil;
 import com.facilio.v3.V3Builder.V3Config;
@@ -1785,6 +1788,13 @@ public enum ActionType {
 			
 		}
 	},
+	CREATE_SATISFACTION_SURVEY(36){
+		@Override
+		public void performAction (JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+
+			QAndAUtil.executeTemplate (FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_TEMPLATE,(long)obj.get ("qandaTemplateId"),new ArrayList<>(), currentRule.getId());
+		}
+	}
 	
 	;
 	

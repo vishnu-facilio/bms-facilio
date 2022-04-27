@@ -501,6 +501,7 @@ public class ChainUtil {
 
     public static void addWorkflowChain(Chain chain) {
         chain.addCommand(new ExecuteStateFlowCommand());
+		chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.SURVEY_ACTION_RULE));
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE));
         chain.addCommand(new ExecuteStateTransitionsCommand(WorkflowRuleContext.RuleType.STATE_RULE));
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW));

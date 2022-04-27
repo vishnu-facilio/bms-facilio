@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.workflow.rule.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -197,7 +199,9 @@ public class WorkflowRuleAction extends FacilioAction {
 		setResult("rule", rule);
 		return SUCCESS;
 	}
-	
+
+
+
 	public String updateAssignmentRule() throws Exception {
 		FacilioContext facilioContext = new FacilioContext();
 		rule.setRuleType(RuleType.ASSIGNMENT_RULE);

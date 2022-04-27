@@ -1,5 +1,7 @@
 package com.facilio.qa.command;
 
+import com.facilio.bmsconsole.commands.ExecuteAllWorkflowsCommand;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import org.apache.commons.chain.Command;
 
 import com.facilio.bmsconsole.commands.VerifyApprovalCommand;
@@ -41,7 +43,14 @@ public class QAndATransactionChainFactory {
         c.addCommand(new InductionTemplateBeforeSaveCommand());
         return c;
     }
-    
+
+    public static FacilioChain workOrderSurveyTemplateBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(commonQAndABeforeSave());
+        c.addCommand(new WorkOrderSurveyTemplateBeforeSaveCommand());
+        return c;
+    }
+
     public static FacilioChain commonBeforeQAndAResponseUpdate() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ExecuteOnSubmitProcessOfResponse());
@@ -211,6 +220,12 @@ public class QAndATransactionChainFactory {
         c.addCommand(new ExecuteQAndATemplateCommand());
         return c;
     }
+
+	public static FacilioChain executeSurveyTemplateChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new ExecuteSurveyTemplateCommand());
+		return c;
+	}
 
     public static FacilioChain clonePageChain() {
         FacilioChain c = getDefaultChain();

@@ -40,7 +40,8 @@ public class SurveyResponseContext extends ResponseContext <SurveyTemplateContex
     private Long actualWorkStart;
     private Long actualWorkEnd;
     private PeopleContext assignedTo;
-    
+	private Long ruleId;
+
     public void setStatus(Integer status) { // Using wrapper object to avoid -1 being inserted
     	this.status = status == null ? null : Status.valueOf(status);
     }

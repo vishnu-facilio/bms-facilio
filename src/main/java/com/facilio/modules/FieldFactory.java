@@ -3362,6 +3362,45 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+	public static List<FacilioField> getSatisfactionSurveyTemplateFields () {
+		FacilioModule module = ModuleFactory.getSatisfactionSurveyTemplateModule ();
+
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getIdField(module));
+		fields.add(getField("qandaTemplateId", "Q_AND_A_TEMPLATE_ID", module, FieldType.NUMBER));
+		fields.add(getField ("assignedTo","ASSIGNED_TO",module,FieldType.NUMBER));
+		fields.add (getField ("expiryDays","EXPIRY_DAYS",module,FieldType.NUMBER));
+		fields.add (getField ("isRetake","IS_RETAKE",module,FieldType.BOOLEAN));
+		fields.add (getField ("retakeExpiryDays","RETAKE_EXPIRY_DAYS",module,FieldType.NUMBER));
+		return fields;
+	}
+
+	public static List<FacilioField> getSatisfactionSurveyRuleFields () {
+		FacilioModule module = ModuleFactory.getSatisfactionSurveyRuleModule ();
+
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getIdField(module));
+		fields.add(getField("emailTemplateId", "EMAIL_TEMPLATE_ID", module, FieldType.NUMBER));
+		fields.add(getField ("smsTemplateId","SMS_TEMPLATE_ID",module,FieldType.NUMBER));
+
+		return fields;
+	}
+
+	public static List<FacilioField> getSurveyResponseRuleFields () {
+		FacilioModule module = ModuleFactory.getSurveyResponseRuleModule();
+
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getIdField(module));
+		fields.add(getField("isResponseSubmitted", "IS_RESPONSE_SUBMITTED", module, FieldType.BOOLEAN));
+		fields.add(getField ("executeCreateRuleId","EXECUTE_CREATE_RULE_ID",module,FieldType.NUMBER));
+		fields.add(getField("executeSubmitRuleId","EXECUTE_SUBMIT_RULE_ID",module,FieldType.NUMBER));
+
+		return fields;
+	}
+
 
     public static List<FacilioField> getTenantFields() {
         List<FacilioField> fields = new ArrayList<>();
