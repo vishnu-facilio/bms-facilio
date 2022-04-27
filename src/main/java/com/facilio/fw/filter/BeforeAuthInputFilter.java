@@ -64,10 +64,11 @@ public class BeforeAuthInputFilter implements Filter {
         Matcher matcher = this.urlReTree.matcher(httpServletRequest.getRequestURI());
         Matcher matcher1 = this.execlutionUrlReTree.matcher(httpServletRequest.getRequestURI());
         if (!matcher.isMatch()) {
-            if(matcher1.isMatch()) {
+            if(httpServletRequest.getRequestURI().equals("/")) {
                 filterChain.doFilter(servletRequest, servletResponse);
                 return;
-            }else if(httpServletRequest.getRequestURI().matches("/")) {
+            }
+            if(matcher1.isMatch()) {
                 filterChain.doFilter(servletRequest, servletResponse);
                 return;
             }else {
