@@ -321,9 +321,6 @@ public class FormulaFieldAPI {
 					
 					boolean isChildMeterMarked = setWorkflowCacheMapForVM(moduleName,fieldName,iStartTime,iEndTime, workflow, calculateVMDeltaThroughFormula, params);	
 					Object workflowResult = WorkflowUtil.getWorkflowExpressionResult(workflow, params, null, ignoreNullValues, false);
-					if (AccountUtil.getCurrentOrg().getId() == 1) {
-						LOGGER.info("Result of Formula : " + fieldName + " for resource : " + resourceId + " : " + workflowResult+", ttime : "+iEndTime);
-					}
 					if (AccountUtil.getCurrentOrg().getId() == 78l && resourceId == 1248194l) {
 						LOGGER.debug("Result of Formula : " + fieldName + " for resource : " + resourceId + " : " + workflowResult+", ttime : "+iEndTime);
 					}
@@ -418,6 +415,9 @@ public class FormulaFieldAPI {
 					
 					boolean isChildMeterMarked = setWorkflowCacheMapForVM(moduleName,fieldName,iStartTime,iEndTime, workflow, calculateVMDeltaThroughFormula, params);	
 					Object workflowResult = WorkflowUtil.getWorkflowExpressionResult(workflow, params, null, ignoreNullValues, false, formulaId,resourceId,WorkflowLogType.FORMULA);
+					if (AccountUtil.getCurrentOrg().getId() == 1) {
+						LOGGER.info("Result of Formula : " + fieldName + " for resource : " + resourceId + " : " + workflowResult+", ttime : "+iEndTime);
+					}
 					if (AccountUtil.getCurrentOrg().getId() == 78l && resourceId == 1248194l) {
 						LOGGER.debug("Result of Formula : " + fieldName + " for resource : " + resourceId + " : " + workflowResult+", ttime : "+iEndTime);
 					}
