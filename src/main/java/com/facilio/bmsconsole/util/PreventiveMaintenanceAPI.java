@@ -1506,6 +1506,9 @@ public class PreventiveMaintenanceAPI {
 				if (pm.getSiteIds() != null && pm.getSiteIds().size() > 0) {
 					List<SiteContext> siteContextList = SpaceAPI.getSites(pm.getSiteIds());
 					pm.setSiteObjects(siteContextList);
+				}else if(pm.getSiteId() > 0){
+					List<SiteContext> siteContextList = SpaceAPI.getSites(Collections.singletonList(pm.getSiteId()));
+					pm.setSiteObjects(siteContextList);
 				}
 
 				// set up data for additional [category] column
