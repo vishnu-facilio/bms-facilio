@@ -93,7 +93,7 @@ public class RuleAlarmDetails {
     }
 
     public void setNullForResponse() {
-        recommendationsStr = null;
         possibleCausesStr = null;
+        recommendationsStr = null;
     }
 }

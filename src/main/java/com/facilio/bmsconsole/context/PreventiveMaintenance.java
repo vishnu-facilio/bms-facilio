@@ -403,6 +403,38 @@ public class PreventiveMaintenance extends ResourceContext {
 		this.woCreationOffset = woCreationOffset;
 	}
 
+	private List<SiteContext> siteObjects;
+	public List<SiteContext> getSiteObjects() {
+		return siteObjects;
+	}
+	public void setSiteObjects(List<SiteContext> siteObjects) {
+		this.siteObjects = siteObjects;
+	}
+
+	private TicketCategoryContext ticketCategory;
+	public TicketCategoryContext getTicketCategory() {
+		return ticketCategory;
+	}
+	public void setTicketCategory(TicketCategoryContext ticketCategory) {
+		this.ticketCategory = ticketCategory;
+	}
+
+	private VendorContext vendor;
+	public VendorContext getVendor() {
+		return vendor;
+	}
+	public void setVendor(VendorContext vendor) {
+		this.vendor = vendor;
+	}
+
+	private Long lastTriggeredTime;
+	public Long getLastTriggeredTime() {
+		return lastTriggeredTime;
+	}
+	public void setLastTriggeredTime(Long lastTriggeredTime) {
+		this.lastTriggeredTime = lastTriggeredTime;
+	}
+
 	public static enum TriggerType {
 		ONLY_SCHEDULE_TRIGGER, 
 		FLOATING, 

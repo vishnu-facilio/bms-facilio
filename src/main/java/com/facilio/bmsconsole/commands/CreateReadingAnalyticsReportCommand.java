@@ -73,7 +73,10 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 			if (filters != null) {
 				report.setFilters(filters);
 			}
-			
+			JSONObject ttimeFilter = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_TTIME_FILTER);
+			if(ttimeFilter != null) {
+				report.setReportTTimeFilter(ttimeFilter);
+			}
 			List<ReportDataPointContext> dataPoints = new ArrayList<>();
 			JSONObject resourceAlias = new JSONObject();
 			for (ReadingAnalysisContext metric : metrics) {

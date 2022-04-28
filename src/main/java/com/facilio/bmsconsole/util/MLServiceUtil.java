@@ -313,7 +313,6 @@ public class MLServiceUtil {
 		return mlContexts;
 	}
 
-
 	public static RESTException throwError(V3MLServiceContext mlServiceContext, ErrorCode errorCode, String errorMsg) throws Exception {
 		return throwError(mlServiceContext, errorCode, errorMsg, null);
 	}

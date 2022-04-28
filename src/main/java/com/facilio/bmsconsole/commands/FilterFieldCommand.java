@@ -16,6 +16,7 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportFilterContext;
+import org.json.simple.JSONObject;
 
 public class FilterFieldCommand extends FacilioCommand {
 
@@ -46,6 +47,10 @@ public class FilterFieldCommand extends FacilioCommand {
 					}
 				}
 			}
+		}
+		JSONObject ttimeFilter = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_TTIME_FILTER);
+		if(report.getReportTTimeFilter() == null && ttimeFilter != null) {
+			report.setReportTTimeFilter(ttimeFilter);
 		}
 		return false;
 	}

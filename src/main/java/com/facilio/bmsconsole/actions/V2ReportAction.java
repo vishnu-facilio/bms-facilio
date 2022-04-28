@@ -124,6 +124,16 @@ public class V2ReportAction extends FacilioAction {
     private ReportContext reportContext;
     private long folderId = -1;
 
+    public String getTtimeFilter() {
+        return ttimeFilter;
+    }
+
+    public void setTtimeFilter(String ttimeFilter) {
+        this.ttimeFilter = ttimeFilter;
+    }
+
+    private String ttimeFilter;
+
     public ReportContext getReportContext() {
         return reportContext;
     }
@@ -421,6 +431,11 @@ public class V2ReportAction extends FacilioAction {
         }
         if (scatterConfig != null && !scatterConfig.isEmpty()) {
             context.put(FacilioConstants.ContextNames.REPORT_SCATTER_CONFIG, scatterConfig);
+        }
+        if(ttimeFilter != null)
+        {
+            JSONObject timefilter = (JSONObject) parser.parse(ttimeFilter);
+            context.put(FacilioConstants.ContextNames.REPORT_TTIME_FILTER, timefilter);
         }
 
         context.put(FacilioConstants.ContextNames.ALARM_ID, alarmId);

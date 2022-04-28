@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.modules.FieldType;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -115,6 +116,14 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 
 										this.addToWidgetUserFiltersMap(widgetId, filter.getId(), widgetUserFiltersMap);
 									}
+									else if(filter.getFieldId() != -1 && filter.getField() != null && filter.getField().getDataTypeEnum() == FieldType.DATE_TIME && report != null && report.getModuleId() != -1){
+										FacilioModule energyModule = modBean.getModule(report.getModuleId());
+										if(energyModule != null && energyModule.getName().equals("energydata")) {
+											FacilioField ttimeField = modBean.getField("ttime", energyModule.getName());
+											filter.getWidgetFieldMap().put(widgetId, ttimeField);
+											this.addToWidgetUserFiltersMap(widgetId, filter.getId(), widgetUserFiltersMap);
+										}
+									}
 								}
 								}
 							
@@ -177,9 +186,14 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 								}
 								
 							} else if (fieldForFilter != null) {
-								Boolean isFilterApplicableForWidget = 
+								Boolean isFilterApplicableForWidget =
 										DashboardFilterUtil.isEnumFilterApplicableToWidget(filter.getField().getModule(), widgetModule);
-
+								if(customAppliesToMapping!=null && customAppliesToMapping.containsKey(widgetId))
+								{
+									FacilioField filterApplicableField=customAppliesToMapping.get(widgetId);
+									filter.getWidgetFieldMap().put(widgetId, filterApplicableField);
+									this.addToWidgetUserFiltersMap(widgetId, filter.getId(), widgetUserFiltersMap);
+								}
 								if (isFilterApplicableForWidget) {
 									filter.getWidgetFieldMap().put(widgetId, fieldForFilter);
 									this.addToWidgetUserFiltersMap(widgetId, filter.getId(), widgetUserFiltersMap);

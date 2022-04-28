@@ -2,9 +2,14 @@ package com.facilio.bmsconsoleV3.commands;
 
 import java.util.Collections;
 
+import com.facilio.bmsconsole.commands.AddTasksCommand;
 import com.facilio.bmsconsoleV3.commands.people.UpdateScopingForPeopleCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.tasks.AddTaskSectionsV3;
+import com.facilio.bmsconsoleV3.commands.tasks.AddTasksCommandV3;
+import com.facilio.bmsconsoleV3.commands.tasks.ValidateTasksCommandV3;
+import com.facilio.bmsconsoleV3.commands.workorder.*;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import com.facilio.bmsconsoleV3.commands.GetReportModuleListCommand;
@@ -195,26 +200,6 @@ import com.facilio.bmsconsoleV3.commands.visitorlogging.GenerateQrInviteUrlComma
 import com.facilio.bmsconsoleV3.commands.visitorlogging.PutOldVisitRecordsInContextCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.UpdateVisitorInviteRelArrivedStateCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.VisitorFaceRecognitionCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.AddPortalRequestsDetailsCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.AddPrerequisiteApproversCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.AddRequesterCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.AddTicketActivityCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.AddWorkOrderCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.AddWorkorderHazardsFromSafetyPlanCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.BackwardCompatibleStateFlowUpdateCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.FetchOldWorkordersCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.FillContextAfterWorkorderAddCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.FillContextAfterWorkorderUpdateCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.LoadTicketLookupsCommand;
-import com.facilio.bmsconsoleV3.commands.workorder.PMSettingsCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.SkipModuleCriteriaForSummaryCommand;
-import com.facilio.bmsconsoleV3.commands.workorder.SkipModuleCriteriaForUpcomingViewCommand;
-import com.facilio.bmsconsoleV3.commands.workorder.ToVerifyStateFlowtransitionForStartCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.UpdateEventListForStateFlowCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.UpdateTicketAttachmentsOldParentIdCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.UpdateWorkorderFieldsForUpdateCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.ValidateWorkOrderFieldsCommandV3;
-import com.facilio.bmsconsoleV3.commands.workorder.WorkOrderPreAdditionHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.ComputeScheduleForWorkPermitCommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.FillWorkPermitChecklistCommand;
 import com.facilio.bmsconsoleV3.commands.workpermit.InsertWorkPermitActivitiesCommand;
@@ -526,6 +511,9 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getWorkorderAfterSaveChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new ValidateTasksCommandV3());
+        c.addCommand(new AddTaskSectionsV3());
+        c.addCommand(new AddTasksCommandV3());
         c.addCommand(new FillContextAfterWorkorderAddCommandV3());
         c.addCommand(new AddWorkorderHazardsFromSafetyPlanCommandV3());
         c.addCommand(new GetRecordIdsFromRecordMapCommandV3());

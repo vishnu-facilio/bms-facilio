@@ -113,17 +113,17 @@ public enum FacilioConnectionFunctions implements FacilioWorkflowFunctionInterfa
 			}
 			ConnectionContext connectionContext = (ConnectionContext)objects[0];
 			
-			String url = (String) objects[0];
+			String url = (String) objects[1];
 			
 			Map<String,String> headers = null;
 			Map<String,String> params = null;
 			Map<String,File> files = null;
 			if(objects.length > 1) {
-				headers = (Map<String, String>) objects[1];
+				headers = (Map<String, String>) objects[2];
 				if(objects.length > 2) {
-					params = (Map<String, String>) objects[2];
+					params = (Map<String, String>) objects[3];
 					if(objects.length > 3) {
-						Map<String,Long> fileIdMap = (Map<String,Long>) objects[3];
+						Map<String,Long> fileIdMap = (Map<String,Long>) objects[4];
 						
 						if(fileIdMap != null) {
 							files = new HashMap<String, File>();

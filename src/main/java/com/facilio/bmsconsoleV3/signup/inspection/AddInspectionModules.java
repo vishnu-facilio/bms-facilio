@@ -96,10 +96,10 @@ public class AddInspectionModules extends SignUpData {
         
         List<FacilioModule> modules = new ArrayList<>();
         
-        FacilioModule insepctionCategoryModule = constructInspectionCategory();
-        FacilioModule insepctionPriorityModule = constructInspectionPriority();
-        modules.add(insepctionCategoryModule);
-        modules.add(insepctionPriorityModule);
+        FacilioModule inspectionCategoryModule = constructInspectionCategory();
+        FacilioModule inspectionPriorityModule = constructInspectionPriority();
+        modules.add(inspectionCategoryModule);
+        modules.add(inspectionPriorityModule);
         
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
@@ -147,8 +147,8 @@ public class AddInspectionModules extends SignUpData {
         
         addDefaultScheduleJobs();
         
-        addDefaultInspectionPriorities(insepctionPriorityModule,modBean);
-        addDefaultInspectionCategories(insepctionCategoryModule,modBean);
+        addDefaultInspectionPriorities(inspectionPriorityModule,modBean);
+        addDefaultInspectionCategories(inspectionCategoryModule,modBean);
         
         
         addActivityModuleForInspectionResponse(inspectionResponseModule);
@@ -283,8 +283,7 @@ public class AddInspectionModules extends SignUpData {
 
 	public void addDefaultFormForInspectionTemplate(FacilioModule inspection) throws Exception {
 		// TODO Auto-generated method stub
-		
-      ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 	  FacilioForm defaultForm = new FacilioForm();
       defaultForm.setName("standard");
@@ -625,7 +624,7 @@ public class AddInspectionModules extends SignUpData {
 
 	public void addSingleAssetSelectRule(FacilioForm defaultForm,Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
 		
-		FormRuleContext singleRule = new FormRuleContext();
+		  FormRuleContext singleRule = new FormRuleContext();
 	      singleRule.setName("Single Resource Show/Hide Rule");
 	      singleRule.setDescription("Rule To Show/Hide single resource's related fields.");
 	      singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
@@ -648,21 +647,21 @@ public class AddInspectionModules extends SignUpData {
 	      FormRuleActionContext showAction = new FormRuleActionContext(); 
 	      showAction.setActionType(FormActionType.SHOW_FIELD.getVal());
 	      
-	      List<FormRuleActionFieldsContext> hideFields = new ArrayList<FormRuleActionFieldsContext>();
+	      List<FormRuleActionFieldsContext> showFields = new ArrayList<FormRuleActionFieldsContext>();
 	      
 	      FormRuleActionFieldsContext actionField = new FormRuleActionFieldsContext();
 	      
 	      actionField.setFormFieldId(formFieldMap.get(fieldMap.get("resource").getId()).getId());
 	      
-	      hideFields.add(actionField);
+	      showFields.add(actionField);
 	      
 	      FormRuleActionFieldsContext actionField1 = new FormRuleActionFieldsContext();	
 	      
 	      actionField1.setFormFieldId(formFieldMap.get(fieldMap.get("siteId").getId()).getId());
 	      
-	      hideFields.add(actionField1);
-	      
-	      showAction.setFormRuleActionFieldsContext(hideFields);
+	      showFields.add(actionField1);
+
+	      showAction.setFormRuleActionFieldsContext(showFields);
 	      
 	      actions.add(showAction);
 	      
@@ -678,8 +677,8 @@ public class AddInspectionModules extends SignUpData {
 	      
 	      FormRuleActionFieldsContext hideField2 = new FormRuleActionFieldsContext();
 	      hideField2.setFormFieldId(formFieldMap.get(fieldMap.get("buildings").getId()).getId());
-	      hidefields.add(hideField2);
-	      
+          hidefields.add(hideField2);
+
 	      FormRuleActionFieldsContext hideField3 = new FormRuleActionFieldsContext();
 	      hideField3.setFormFieldId(formFieldMap.get(fieldMap.get("assetCategory").getId()).getId());
 	      hidefields.add(hideField3);
@@ -695,24 +694,45 @@ public class AddInspectionModules extends SignUpData {
 	      hideAction.setFormRuleActionFieldsContext(hidefields);
 	      
 	      actions.add(hideAction);
-	      
-	      singleRule.setActions(actions);
-	      
-	      FacilioChain chain = TransactionChainFactory.getAddFormRuleChain();
-		  Context context = chain.getContext();
+
+		  FormRuleActionContext mandatoryAction = new FormRuleActionContext();
+		  mandatoryAction.setActionType(FormActionType.SET_MANDATORY.getVal());
+
+		 List<FormRuleActionFieldsContext> mandatoryFields = new ArrayList<FormRuleActionFieldsContext>();
+
+		 FormRuleActionFieldsContext mandatoryField = new FormRuleActionFieldsContext();
+
+		 mandatoryField.setFormFieldId(formFieldMap.get(fieldMap.get("resource").getId()).getId());
+
+		 mandatoryFields.add(mandatoryField);
+
+		 FormRuleActionFieldsContext mandatoryField1 = new FormRuleActionFieldsContext();
+
+		 mandatoryField1.setFormFieldId(formFieldMap.get(fieldMap.get("siteId").getId()).getId());
+
+		 mandatoryFields.add(mandatoryField1);
+
+		 mandatoryAction.setFormRuleActionFieldsContext(mandatoryFields);
+
+		 actions.add(mandatoryAction);
+
+		 singleRule.setActions(actions);
+
+		 FacilioChain chain = TransactionChainFactory.getAddFormRuleChain();
+		 Context context = chain.getContext();
 			
-		  context.put(FormRuleAPI.FORM_RULE_CONTEXT,singleRule);
+		 context.put(FormRuleAPI.FORM_RULE_CONTEXT,singleRule);
 			
-		  chain.execute();
+		 chain.execute();
 		
 	}
 	
 	public void addMultipleAssetSelectRule(FacilioForm defaultForm,Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
 		
-		FormRuleContext multipleRule = new FormRuleContext();
-		multipleRule.setName("Multiple Resource Show/Hide Rule");
-		multipleRule.setDescription("Rule to Show/Hide Multiple Resource's related fields.");
-		multipleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
+		 FormRuleContext multipleRule = new FormRuleContext();
+		 multipleRule.setName("Multiple Resource Show/Hide Rule");
+		 multipleRule.setDescription("Rule to Show/Hide Multiple Resource's related fields.");
+		 multipleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
 	      multipleRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
 	      multipleRule.setFormId(defaultForm.getId());
 	      multipleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
@@ -771,15 +791,45 @@ public class AddInspectionModules extends SignUpData {
 	      showAction.setFormRuleActionFieldsContext(showfields);
 	      
 	      actions.add(showAction);
+
+		FormRuleActionContext  mandatoryactions = new FormRuleActionContext();
+		mandatoryactions.setActionType(FormActionType.SET_MANDATORY.getVal());
+
+		List<FormRuleActionFieldsContext> mandatoryfields = new ArrayList<FormRuleActionFieldsContext>();
+
+		FormRuleActionFieldsContext mandatoryField1 = new FormRuleActionFieldsContext();
+		mandatoryField1.setFormFieldId(formFieldMap.get(fieldMap.get("sites").getId()).getId());
+		mandatoryfields.add(mandatoryField1);
+
+
+		FormRuleActionFieldsContext mandatoryField2 = new FormRuleActionFieldsContext();
+		mandatoryField2.setFormFieldId(formFieldMap.get(fieldMap.get("assignmentType").getId()).getId());
+		mandatoryfields.add(mandatoryField2);
+
+		FormRuleActionFieldsContext mandatoryField3 = new FormRuleActionFieldsContext();
+
+		mandatoryField3.setFormFieldId(formFieldMap.get(fieldMap.get("spaceCategory").getId()).getId());
+
+		mandatoryfields.add(mandatoryField3);
+
+		FormRuleActionFieldsContext mandatoryField4 = new FormRuleActionFieldsContext();
+
+		mandatoryField4.setFormFieldId(formFieldMap.get(fieldMap.get("assetCategory").getId()).getId());
+
+		mandatoryfields.add(mandatoryField4);
+
+		mandatoryactions.setFormRuleActionFieldsContext(mandatoryfields);
+
+		actions.add(mandatoryactions);
+
+		multipleRule.setActions(actions);
 	      
-	      multipleRule.setActions(actions);
-	      
-	      FacilioChain chain = TransactionChainFactory.getAddFormRuleChain();
-		  Context context = chain.getContext();
+		FacilioChain chain = TransactionChainFactory.getAddFormRuleChain();
+		Context context = chain.getContext();
 			
-		  context.put(FormRuleAPI.FORM_RULE_CONTEXT,multipleRule);
+		context.put(FormRuleAPI.FORM_RULE_CONTEXT,multipleRule);
 			
-		  chain.execute();
+		chain.execute();
 		
 	}
 

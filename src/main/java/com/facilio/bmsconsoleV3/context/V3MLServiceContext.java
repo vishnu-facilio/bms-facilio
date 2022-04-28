@@ -10,6 +10,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +19,7 @@ import java.util.Map;
  * @author seenimohamed
  */
 @Data
-@JsonIgnoreProperties({"readingVariables", "modelReadings"})
+@JsonIgnoreProperties(value = {"readingVariables", "modelReadings"} , allowSetters = true)
 public class V3MLServiceContext extends V3Context {
 
 	private static final long serialVersionUID = 1L;
@@ -29,6 +31,7 @@ public class V3MLServiceContext extends V3Context {
 	private String modelName;
 	private String projectName;
 	private String serviceType;
+	private String inputType;
 	private Long parentAssetId;
 	private List<Long> childAssetIds;
 	private JSONObject workflowInfo;
@@ -75,5 +78,7 @@ public class V3MLServiceContext extends V3Context {
 		}
 		return mlModelMeta;
 	}
-
+	public void setModelReadings(List<List<Map<String,Object>>> modelReadings){
+		this.modelReadings = modelReadings;
+	}
 }

@@ -5,14 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.modules.*;
 import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
 
 import com.facilio.db.criteria.Criteria;
-import com.facilio.modules.FacilioIntEnum;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 
@@ -93,6 +90,31 @@ public Map<Long, FacilioField> getCascadingFilters() {
 		}
 
 		}
+
+		public static enum FilterDisplayType implements FacilioIntEnum{
+			SLIDER("Select Slider"),
+			DROPDOWN("Select DropDown");
+
+			public static FilterDisplayType valueOf(int value) {
+				if (value > 0 && value <= values().length) {
+					return values()[value - 1];
+				}
+				return null;
+			}
+			private String name;
+			FilterDisplayType(String name) {
+				this.name = name;
+			}
+			@Override
+			public Integer getIndex() {
+				return ordinal() + 1;
+			}
+
+			@Override
+			public String getValue() {
+				return this.name;
+			}
+		}
 	public static class DashboardUserFilter {
 
 		private String[] defaultValues;
@@ -103,7 +125,15 @@ public Map<Long, FacilioField> getCascadingFilters() {
 			return this.defaultValues;
 		}
 
-	
+		public Integer getDateTimeOperator() {
+			return dateTimeOperator;
+		}
+
+		public void setDateTimeOperator(Integer dateTimeOperator) {
+			this.dateTimeOperator = dateTimeOperator;
+		}
+
+		private Integer dateTimeOperator;
 
 		public List<String> getSelectedOptions()
 		{
@@ -127,6 +157,39 @@ public Map<Long, FacilioField> getCascadingFilters() {
 			}
 			
 		}
+
+		public Integer getDisplayType() {
+			return displayType;
+		}
+
+		public void setDisplayType(Integer filterDisplayType) {
+			this.displayType = filterDisplayType;
+		}
+
+		Integer displayType;
+
+
+		public List<String> getSelectedDayOrHourValues() {
+			return this.selectedDayOrHourValues;
+		}
+
+		public void setSelectedDayOrHourValues(List<String> selectedDayOrHourValues) {
+			this.selectedDayOrHourValues = selectedDayOrHourValues;
+		}
+
+		List<String> selectedDayOrHourValues;
+
+		public List<Long> getSelectedSliderRangeValues() {
+			return this.selectedSliderRangeValues;
+		}
+
+		public void setSelectedSliderRangeValues(List<Long> selectedSliderRangeValues) {
+			this.selectedSliderRangeValues = selectedSliderRangeValues;
+		}
+
+		List<Long> selectedSliderRangeValues;
+
+
 
 	}
 	public static enum OptionType implements FacilioIntEnum {
@@ -158,6 +221,7 @@ public Map<Long, FacilioField> getCascadingFilters() {
 	}
 	private static final long serialVersionUID = 1L;
 	ComponentType componentType;
+	FilterDisplayType filterDisplayType;
 	long fieldId=-1;
 	
 	Boolean isOthersOptionEnabled;
@@ -212,7 +276,21 @@ public Map<Long, FacilioField> getCascadingFilters() {
 	public String[] getDefaultValues() {
 		return this.filterPojo.getDefaultValues();
 	}
-	
+	public List<Long> getSelectedSliderRangeValues() {
+		return this.filterPojo.getSelectedSliderRangeValues();
+	}
+	public List<String> getSelectedDayOrHourValues() {
+		return this.filterPojo.getSelectedDayOrHourValues();
+	}
+	public Integer getFilterDisplayType() {
+		return this.filterDisplayType!=null ? this.filterDisplayType.getIndex(): this.filterPojo.getDisplayType() != null ? this.filterPojo.getDisplayType() : 1;
+	}
+	public FilterDisplayType getFilterDisplayTypeEnum(){
+		return this.filterDisplayType;
+	}
+	public Integer getDateTimeOperator() {
+		return this.filterPojo.getDateTimeOperator() != null ? this.filterPojo.getDateTimeOperator() : 103;
+	}
 
 
 
@@ -307,7 +385,23 @@ public Map<Long, FacilioField> getCascadingFilters() {
 	public void setDefaultValues(String[] defaultValues) {
 		this.filterPojo.setDefaultValues(defaultValues);
 	}
-	
+	public void setSelectedSliderRangeValues(List<Long> setSelectedSliderRangeValues) {
+		this.filterPojo.setSelectedSliderRangeValues(setSelectedSliderRangeValues);
+	}
+
+	public void setSelectedDayOrHourValues(List<String> selectedDayOrHourValues) {
+		this.filterPojo.setSelectedDayOrHourValues(selectedDayOrHourValues);
+	}
+	public void setFilterDisplayType(Integer filterDisplayType) {
+		this.filterPojo.setDisplayType(filterDisplayType);
+		this.filterDisplayType = FilterDisplayType.valueOf(filterDisplayType);
+	}
+	public void setFilterDisplayTypeEnum(FilterDisplayType filterDisplayType) {
+		this.filterDisplayType = filterDisplayType;
+	}
+	public void setDateTimeOperator(Integer dateTimeOperator){
+		this.filterPojo.setDateTimeOperator(dateTimeOperator);
+	}
 	
 
 	public void setField(FacilioField field) {

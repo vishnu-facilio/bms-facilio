@@ -94,6 +94,7 @@ public class ActivateMLServiceCommand extends FacilioCommand implements Serializ
 					context.put("assetId", mlServiceContext.getParentAssetId());
 					context.put("mlModelVariables", mlServiceContext.getMlModelVariables());
 					context.put("mlVariables", mlServiceContext.getTrainingSamplingJson());
+					context.put("modelPath", mlServiceContext.getMlResponseList().get(0).getModuleInfo().get(0).getModelPath());
 					context.put(FacilioConstants.ContextNames.ML_SERVICE_DATA, mlServiceContext);
 					chain.execute();
 					break;

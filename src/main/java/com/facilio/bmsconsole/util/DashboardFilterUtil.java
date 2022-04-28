@@ -95,7 +95,7 @@ public class DashboardFilterUtil {
 	        		        	
 	            if (mode != null && mode == 1 && reportTemplate != null) {
 					// dashboard filter suppoprt for report template widgets
-					if (reportTemplate.get("categoryId") != null && filter.getModuleName().equals("asset")) {
+					if (reportTemplate.get("categoryId") != null && filter.getModuleName() != null && filter.getModuleName().equals("asset")) {
 						return true;
 					}
 				}

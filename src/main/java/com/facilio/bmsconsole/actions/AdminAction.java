@@ -413,7 +413,7 @@ public class AdminAction extends ActionSupport {
 		return SUCCESS;
 
 	}
-	
+
 	public String mlService() throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();
 
@@ -453,18 +453,18 @@ public class AdminAction extends ActionSupport {
 			}
 		}
 
-			String assetIds = request.getParameter("assetIdList");
-			if(assetIds!=null) {
-				String []assetArr = assetIds.split(",");
-				mlServiceData.put("parentAssetId", Long.valueOf(assetArr[0]));
-				if(assetArr.length > 1) {
-					JSONArray childAssetIds = new JSONArray();
-					for (int i = 1; i < assetArr.length; i++) {
-						childAssetIds.add(Long.valueOf(assetArr[i]));
-					}
-					mlServiceData.put("childAssetIds",childAssetIds);
+		String assetIds = request.getParameter("assetIdList");
+		if(assetIds!=null) {
+			String []assetArr = assetIds.split(",");
+			mlServiceData.put("parentAssetId", Long.valueOf(assetArr[0]));
+			if(assetArr.length > 1) {
+				JSONArray childAssetIds = new JSONArray();
+				for (int i = 1; i < assetArr.length; i++) {
+					childAssetIds.add(Long.valueOf(assetArr[i]));
 				}
+				mlServiceData.put("childAssetIds",childAssetIds);
 			}
+		}
 
 		Long orgId = Long.parseLong(request.getParameter("orgid"));
 		ModuleCRUDBean bean = (ModuleCRUDBean) TransactionBeanFactory.lookup("ModuleCRUD", orgId);

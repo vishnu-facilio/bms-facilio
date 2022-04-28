@@ -54,7 +54,7 @@ public class AddAhuOptimizationCommand extends FacilioCommand {
 
 
 
-                    long mlID = createMlForAhuOptimization(mlServiceContext,assetContext, (JSONObject) jc.get("mlModelVariables"), (JSONObject) jc.get("mlVariables"),(String) jc.get("modelPath"),mlServiceId);
+                    long mlID = createMlForAhuOptimization(mlServiceContext,assetContext, (JSONObject) jc.get("mlModelVariables"), (JSONObject) jc.get("mlVariables"),mlServiceId);
                     if(mlServiceContext!=null) {
                         mlServiceContext.setMlID(mlID);
                     }
@@ -79,7 +79,7 @@ public class AddAhuOptimizationCommand extends FacilioCommand {
                 throw e;
             }
         }
-        private long createMlForAhuOptimization(V3MLServiceContext mlServiceContext,AssetContext assetContext, JSONObject mlModelVariables, JSONObject mlVariables, String modelPath,long mlServiceId)throws Exception {
+        private long createMlForAhuOptimization(V3MLServiceContext mlServiceContext,AssetContext assetContext, JSONObject mlModelVariables, JSONObject mlVariables,long mlServiceId)throws Exception {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule readingModule = modBean.getModule("ahustarttimeprediction");
             long mlID = MLAPI.addMLModel("ahu_model_building",assetContext.getName(),-1,readingModule.getModuleId(), mlServiceId);
@@ -120,7 +120,8 @@ public class AddAhuOptimizationCommand extends FacilioCommand {
             AddAhuOptimizationCommand.addMLVariables(mlID,temperatureField,temperatureParentField,assetContext.getSiteId(),false,maxSamplingPeriodMap,futureSamplingPeriodMap,aggregationMap);
 
             MLAPI.addMLModelVariables(mlID, "timezone", AccountUtil.getCurrentAccount().getTimeZone());
-            MLAPI.addMLModelVariables(mlID, "asset_id", String.valueOf(assetContext.getId()));
+            MLAPI.addMLModelVariables(mlID, "asset_id", String .valueOf(assetContext.getId()));
+            MLAPI.addMLModelVariables(mlID,"dataInterval",String.valueOf(ReadingsAPI.getOrgDefaultDataIntervalInMin()));
 
             for (Object entry : mlModelVariables.entrySet()) {
                 Map.Entry<String, Object> en = (Map.Entry) entry;
