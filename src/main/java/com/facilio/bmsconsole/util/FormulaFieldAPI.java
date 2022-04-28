@@ -427,6 +427,9 @@ public class FormulaFieldAPI {
 					
 					if(workflowResult != null) {
 						Double resultVal = Double.parseDouble(workflowResult.toString());
+						if (AccountUtil.getCurrentOrg().getId() == 1) {
+							LOGGER.info("Result of Formula parsed to double (FormulaFieldAPI:429)" + resultVal);
+						}
 						if (resultVal != null) {
 							ReadingContext reading = new ReadingContext();
 							reading.setParentId(resourceId);
