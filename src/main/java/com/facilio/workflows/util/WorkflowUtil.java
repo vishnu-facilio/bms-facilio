@@ -445,7 +445,9 @@ public class WorkflowUtil {
 		
 		workflowContext.setIgnoreNullParams(ignoreNullExpressions);
 		Object result = workflowContext.executeWorkflow();
-		
+		if (AccountUtil.getCurrentOrg().getId() == 1) {
+			LOGGER.info("Result of Formula from WorkflowUtil:446: " + result );
+		}
 		if(isVariableMapNeeded) {
 			return workflowContext.getVariableResultMap();
 		}
@@ -1585,11 +1587,11 @@ public class WorkflowUtil {
 	        doc.getDocumentElement().normalize();
 	        
 	        workflowContext.setParameters(getParameterListFromWorkflowString(workflow));
-	        
+
 	        List<WorkflowExpression> workflowExpressionList = getWorkflowExpressions(workflow);
-	        
+
 	        workflowContext.setWorkflowExpressions(workflowExpressionList);
-	        
+
 	        NodeList resultNodes = doc.getElementsByTagName(RESULT_STRING);
 	        if(resultNodes.getLength() > 0) {
 	        	Node resultNode = resultNodes.item(0);

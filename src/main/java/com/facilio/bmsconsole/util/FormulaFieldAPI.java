@@ -322,7 +322,7 @@ public class FormulaFieldAPI {
 					boolean isChildMeterMarked = setWorkflowCacheMapForVM(moduleName,fieldName,iStartTime,iEndTime, workflow, calculateVMDeltaThroughFormula, params);	
 					Object workflowResult = WorkflowUtil.getWorkflowExpressionResult(workflow, params, null, ignoreNullValues, false);
 					if (AccountUtil.getCurrentOrg().getId() == 1) {
-						LOGGER.debug("Result of Formula : " + fieldName + " for resource : " + resourceId + " : " + workflowResult+", ttime : "+iEndTime);
+						LOGGER.info("Result of Formula : " + fieldName + " for resource : " + resourceId + " : " + workflowResult+", ttime : "+iEndTime);
 					}
 					if (AccountUtil.getCurrentOrg().getId() == 78l && resourceId == 1248194l) {
 						LOGGER.debug("Result of Formula : " + fieldName + " for resource : " + resourceId + " : " + workflowResult+", ttime : "+iEndTime);
