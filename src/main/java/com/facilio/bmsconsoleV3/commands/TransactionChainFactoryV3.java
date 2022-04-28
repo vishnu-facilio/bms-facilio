@@ -14,6 +14,16 @@ import com.facilio.bmsconsoleV3.commands.tool.AddBulkToolStockTransactionsComman
 import com.facilio.bmsconsoleV3.commands.tool.ToolQuantityRollUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.tool.ToolTypeQuantityRollupCommandV3;
 import com.facilio.bmsconsoleV3.commands.tool.UpdateIsUnderStockedCommandV3;
+import com.facilio.bmsconsole.commands.*;
+import com.facilio.bmsconsoleV3.commands.people.UpdateScopingForPeopleCommandV3;
+import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
+import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.receipts.*;
+import com.facilio.bmsconsole.commands.*;
+import com.facilio.bmsconsoleV3.commands.people.UpdateScopingForPeopleCommandV3;
+import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
+import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.receipts.*;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import com.facilio.accounts.util.AccountUtil;
@@ -224,6 +234,8 @@ import com.facilio.bmsconsole.commands.AddOrUpdateItemStockTransactionsCommand;
 import com.facilio.bmsconsole.commands.AddItemCommandV3;
 import com.facilio.bmsconsole.commands.GetAddPurchasedItemCommandV3;
 
+import static com.facilio.bmsconsole.commands.TransactionChainFactory.*;
+
 public class TransactionChainFactoryV3 {
     private static FacilioChain getDefaultChain() {
         return FacilioChain.getTransactionChain();
@@ -301,13 +313,13 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ChangeVisitorInviteStateCommandV3());
         return c;
     }
-    
+
     public static FacilioChain getVisitorLogBeforeSaveOnCreateChain() {
         FacilioChain c = getDefaultChain();
 
-        c.addCommand(new PutOldVisitRecordsInVisitorLogContextCommandV3()); //check-in related
+        c.addCommand(new PutOldVisitRecordsInVisitorLogContextCommandV3()); // check-in related
         c.addCommand(new AddNewVisitorWhileBaseVisitCommandV3());
-        c.addCommand(new PreFillVisitorLogCommandV3()); //check-in related
+        c.addCommand(new PreFillVisitorLogCommandV3()); // check-in related
         c.addCommand(new AddOrUpdateVisitorFromBaseVisitCommandV3());
         c.addCommand(new CheckForWatchListRecordBaseVisitCommandV3());
 
@@ -317,18 +329,20 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getVisitorLogAfterSaveOnCreateChain() {
         FacilioChain c = getDefaultChain();
 
-        c.addCommand(new UpdateVisitorLogArrivedStateCommandV3()); //check-in related
-        c.addCommand(new ChangeVisitorLogStateCommandV3()); //check-in related
+        c.addCommand(new UpdateVisitorLogArrivedStateCommandV3()); // check-in related
+        c.addCommand(new ChangeVisitorLogStateCommandV3()); // check-in related
         c.addCommand(new GenerateQrInviteUrlForBaseVisitCommandV3());
+        c.addCommand(new UpdateVisitorLogArrivedStateCommandV3()); // check-in related
+        c.addCommand(new ChangeVisitorLogStateCommandV3()); // check-in related
         c.addCommand(new ForkChainToInstantJobCommand()
-                .addCommand(new AddNdaForVisitorLogModuleCommandV3()) //check-in related
+                .addCommand(new AddNdaForVisitorLogModuleCommandV3()) // check-in related
                 .addCommand(new GenerateQrInviteUrlForBaseVisitCommandV3())
                 .addCommand(new VisitorFaceRecognitionForBaseVisitCommandV3()));
         c.addCommand(new VisitResponseCommandV3());
 
         return c;
     }
-    
+
     public static FacilioChain getVisitorLogBeforeSaveOnUpdateChain() {
         FacilioChain c = getDefaultChain();
 
@@ -344,13 +358,13 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddWatchListRecordCommandV3());
         return c;
     }
-    
+
     public static FacilioChain getInviteVisitorBeforeSaveOnCreateChain() {
         FacilioChain c = getDefaultChain();
 
         c.addCommand(new PutOldVisitRecordsInInviteVisitorContextCommandV3());
         c.addCommand(new AddNewVisitorWhileBaseVisitCommandV3());
-        c.addCommand(new PreFillInviteVisitorCommandV3()); 
+        c.addCommand(new PreFillInviteVisitorCommandV3());
         c.addCommand(new AddOrUpdateVisitorFromBaseVisitCommandV3());
         c.addCommand(new CheckForWatchListRecordBaseVisitCommandV3());
 
@@ -364,7 +378,6 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
-
     public static FacilioChain getInviteVisitorAfterSaveOnCreateChain() {
         FacilioChain c = getDefaultChain();
 
@@ -372,7 +385,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ChangeInviteVisitorStateCommandV3());
         return c;
     }
-    
+
     public static FacilioChain getInviteVisitorBeforeSaveOnUpdateChain() {
         FacilioChain c = getDefaultChain();
 
@@ -387,41 +400,40 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ChangeInviteVisitorStateCommandV3());
         return c;
     }
-    
+
     public static FacilioChain getRecurringInviteVisitorBeforeSaveOnCreateChain() {
         FacilioChain c = getDefaultChain();
 
         c.addCommand(new PutOldVisitRecordsInInviteVisitorContextCommandV3());
         c.addCommand(new AddNewVisitorWhileBaseVisitCommandV3());
-        c.addCommand(new PreFillInviteVisitorCommandV3()); 
+        c.addCommand(new PreFillInviteVisitorCommandV3());
         c.addCommand(new AddOrUpdateVisitorFromBaseVisitCommandV3());
         c.addCommand(new CheckForWatchListRecordBaseVisitCommandV3());
-		c.addCommand(new AddOrUpdateScheduleInRecurringVisitorCommandV3());
+        c.addCommand(new AddOrUpdateScheduleInRecurringVisitorCommandV3());
         return c;
     }
-    
+
     public static FacilioChain getRecurringInviteVisitorAfterSaveOnCreateChain() {
         FacilioChain c = getDefaultChain();
-        
+
         c.addCommand(new UpdateInviteVisitorStateInChangeSetCommandV3());
         c.addCommand(new ChangeInviteVisitorStateCommandV3());
-		c.addCommand(new UpdateRecurringRecordIdForBaseScheduleTrigger());
+        c.addCommand(new UpdateRecurringRecordIdForBaseScheduleTrigger());
         c.addCommand(new ForkChainToInstantJobCommand()
                 .addCommand(new GenerateQrInviteUrlForBaseVisitCommandV3())
                 .addCommand(new VisitorFaceRecognitionForBaseVisitCommandV3()));
         return c;
     }
-    
+
     public static FacilioChain getRecurringInviteVisitorBeforeSaveOnUpdateChain() {
         FacilioChain c = getDefaultChain();
 
         c.addCommand(new PutOldVisitRecordsInInviteVisitorContextCommandV3());
         c.addCommand(new AddOrUpdateVisitorFromBaseVisitCommandV3());
-		c.addCommand(new AddOrUpdateScheduleInRecurringVisitorCommandV3());
+        c.addCommand(new AddOrUpdateScheduleInRecurringVisitorCommandV3());
 
         return c;
     }
-
 
     public static FacilioChain getVisitorBeforeSaveOnAddChain() {
         FacilioChain c = getDefaultChain();
@@ -435,8 +447,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
 
         c.addCommand(new ForkChainToInstantJobCommand()
-                .addCommand(new VisitorFaceRecognitionCommandV3())
-        );
+                .addCommand(new VisitorFaceRecognitionCommandV3()));
         return c;
     }
 
@@ -460,11 +471,13 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new QuotationValidationAndCostCalculationCommand());
         return c;
     }
+
     public static FacilioChain getTermsBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ReviseTandCCommand());
         return c;
     }
+
     public static FacilioChain getVendorsAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddVendorContactsCommandV3());
@@ -500,14 +513,20 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.WORKORDER_CUSTOM_CHANGE));
         c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.ASSIGNMENT_RULE));
         c.addCommand(new ExecuteSLAWorkFlowsCommand());
-        c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_RULE, WorkflowRuleContext.RuleType.CHILD_APPROVAL_RULE, WorkflowRuleContext.RuleType.REQUEST_APPROVAL_RULE, WorkflowRuleContext.RuleType.REQUEST_REJECT_RULE));
+        c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_RULE,
+                WorkflowRuleContext.RuleType.CHILD_APPROVAL_RULE, WorkflowRuleContext.RuleType.REQUEST_APPROVAL_RULE,
+                WorkflowRuleContext.RuleType.REQUEST_REJECT_RULE));
 
         if (sendNotification) {
             if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 218L) {
-                c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, WorkflowRuleContext.RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE));
+                c.addCommand(
+                        new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.WORKORDER_AGENT_NOTIFICATION_RULE,
+                                WorkflowRuleContext.RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE));
             } else {
                 c.addCommand(new ForkChainToInstantJobCommand()
-                        .addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, WorkflowRuleContext.RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE)));
+                        .addCommand(new ExecuteAllWorkflowsCommand(
+                                WorkflowRuleContext.RuleType.WORKORDER_AGENT_NOTIFICATION_RULE,
+                                WorkflowRuleContext.RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE)));
             }
         }
         return c;
@@ -522,18 +541,19 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddWorkorderHazardsFromSafetyPlanCommandV3());
         c.addCommand(new GetRecordIdsFromRecordMapCommandV3());
         c.addCommand(new AddTicketActivityCommandV3());
-        //c.addCommand(getAddTasksChainV3());
+        // c.addCommand(getAddTasksChainV3());
         c.addCommand(new AddPrerequisiteApproversCommandV3());
         c.addCommand(new FacilioCommand() {
             @Override
             public boolean executeCommand(Context context) throws Exception {
-                context.put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(context.get(FacilioConstants.ContextNames.WORK_ORDER)));
+                context.put(FacilioConstants.ContextNames.RECORD_LIST,
+                        Collections.singletonList(context.get(FacilioConstants.ContextNames.WORK_ORDER)));
                 return false;
             }
         });
         c.addCommand(getWorkOrderWorkflowsChainV3(true));
         c.addCommand(new AddOrUpdateSLABreachJobCommandV3(true));
-        //to be removed once all attachments are handled as sub module
+        // to be removed once all attachments are handled as sub module
         c.addCommand(new UpdateTicketAttachmentsOldParentIdCommandV3());
         c.addCommand(new AddActivitiesCommandV3());
 
@@ -544,13 +564,12 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new GetRecordIdsFromRecordMapCommandV3());
         c.addCommand(new FetchOldWorkordersCommandV3());
-//        c.addCommand(new ChangeApprovalStatusForModuleDataCommand());
-//        c.addCommand(new VerifyApprovalCommandV3());
+        // c.addCommand(new ChangeApprovalStatusForModuleDataCommand());
+        // c.addCommand(new VerifyApprovalCommandV3());
         c.addCommand(new UpdateEventListForStateFlowCommandV3());
         c.addCommand(new UpdateWorkorderFieldsForUpdateCommandV3());
         c.addCommand(new BackwardCompatibleStateFlowUpdateCommandV3());
         c.addCommand(new ToVerifyStateFlowtransitionForStartCommandV3());
-
 
         return c;
     }
@@ -562,21 +581,23 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new SendNotificationCommandV3());
         c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.ASSIGNMENT_RULE));
         c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW));
-        c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_RULE, WorkflowRuleContext.RuleType.CHILD_APPROVAL_RULE, WorkflowRuleContext.RuleType.REQUEST_APPROVAL_RULE, WorkflowRuleContext.RuleType.REQUEST_REJECT_RULE));
+        c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_RULE,
+                WorkflowRuleContext.RuleType.CHILD_APPROVAL_RULE, WorkflowRuleContext.RuleType.REQUEST_APPROVAL_RULE,
+                WorkflowRuleContext.RuleType.REQUEST_REJECT_RULE));
         c.addCommand(new AddOrUpdateSLABreachJobCommandV3(false));
         c.addCommand(new ExecuteSLACommitmentWorkflowsCommand());
         c.addCommand(new ForkChainToInstantJobCommand()
-                .addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, WorkflowRuleContext.RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE))
+                .addCommand(
+                        new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.WORKORDER_AGENT_NOTIFICATION_RULE,
+                                WorkflowRuleContext.RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE))
                 .addCommand(new ClearAlarmOnWOCloseCommand())
-                .addCommand(new ExecuteTaskFailureActionCommand())
-        );
+                .addCommand(new ExecuteTaskFailureActionCommand()));
         c.addCommand(new ConstructTicketNotesCommand());
         c.addCommand(TransactionChainFactory.getAddNotesChain());
         c.addCommand(new AddActivitiesCommand());
 
         return c;
     }
-
 
     public static FacilioChain getTenantContactBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
@@ -630,57 +651,57 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdateClientAppPortalAccessCommandV3());
         return c;
     }
-    
-	public static FacilioChain getAddClientsAfterSaveChain() {
-		FacilioChain c = getDefaultChain();
-		c.addCommand(new UpdateClientIdInSiteCommandV3());
-		c.addCommand(new AddClientUserCommandV3());
-		return c;
-	}
-	
-	public static FacilioChain getServiceRequestAfterSaveChain() {
-		FacilioChain c = getDefaultChain();
-//		c.addCommand(new UpdateAttachmentsParentIdCommandV3());
-		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
-		return c;
-	}
-	
-	public static FacilioChain getTenantUnitAfterSaveChain() {
-		FacilioChain c = getDefaultChain();
-		c.addCommand(new UpdateHelperFieldsCommandV3());
-		c.addCommand(getSpaceReadingsChain());
-		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
-		c.addCommand(new SetSpaceRecordForRollUpFieldCommandV3());
-		c.addCommand(new ExecuteRollUpFieldCommand());
-		return c;
-	}
-	
-	public static FacilioChain getSpaceReadingsChain() {
-		FacilioChain c = FacilioChain.getNonTransactionChain();
-		c.addCommand(new GetSpaceSpecifcReadingsCommand());
-		c.addCommand(new GetCategoryReadingsCommand());
-		c.addCommand(new GetReadingFieldsCommand());
-		return c;
-	}
-	
-	public static FacilioChain getUpdateAnnouncementAfterSaveChain() {
+
+    public static FacilioChain getAddClientsAfterSaveChain() {
         FacilioChain c = getDefaultChain();
-	    c.addCommand(new UpdateAttachmentsParentIdCommandV3());
+        c.addCommand(new UpdateClientIdInSiteCommandV3());
+        c.addCommand(new AddClientUserCommandV3());
+        return c;
+    }
+
+    public static FacilioChain getServiceRequestAfterSaveChain() {
+        FacilioChain c = getDefaultChain();
+        // c.addCommand(new UpdateAttachmentsParentIdCommandV3());
+        c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
+        return c;
+    }
+
+    public static FacilioChain getTenantUnitAfterSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateHelperFieldsCommandV3());
+        c.addCommand(getSpaceReadingsChain());
+        c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
+        c.addCommand(new SetSpaceRecordForRollUpFieldCommandV3());
+        c.addCommand(new ExecuteRollUpFieldCommand());
+        return c;
+    }
+
+    public static FacilioChain getSpaceReadingsChain() {
+        FacilioChain c = FacilioChain.getNonTransactionChain();
+        c.addCommand(new GetSpaceSpecifcReadingsCommand());
+        c.addCommand(new GetCategoryReadingsCommand());
+        c.addCommand(new GetReadingFieldsCommand());
+        return c;
+    }
+
+    public static FacilioChain getUpdateAnnouncementAfterSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateAttachmentsParentIdCommandV3());
         c.addCommand(new PublishAnnouncementCommandV3());
         c.addCommand(new CancelParentChildAnnouncementsCommandV3());
         return c;
 
     }
-	
-	public static FacilioChain getAddPurchaseRequestAfterSaveChain() {
-		FacilioChain c = getDefaultChain();
-		c.addCommand(new PurchaseRequestTotalCostRollUpCommandV3()); //update purchase request total cost
+
+    public static FacilioChain getAddPurchaseRequestAfterSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new PurchaseRequestTotalCostRollUpCommandV3()); // update purchase request total cost
         c.addCommand(new UpdateTransactionEventTypeV3Command());
         c.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
-                .addCommand(new ExecuteAllWorkflowsCommand(RuleType.TRANSACTION_RULE))
-        );
-		return c;
-	}
+                .addCommand(new ExecuteAllWorkflowsCommand(RuleType.TRANSACTION_RULE)));
+        return c;
+    }
+
     public static FacilioChain getAddPurchaseRequestBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetLocalIdCommandV3());
@@ -689,7 +710,7 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
-    public static FacilioChain addRecords () {
+    public static FacilioChain addRecords() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddRecordsCommandV3());
         return c;
@@ -708,12 +729,13 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new CloneAnnouncementCommandV3());
         c.addCommand(new SetLocalIdCommandV3());
-       // c.addCommand(new CheckForSharingInfoCommandV3());
+        // c.addCommand(new CheckForSharingInfoCommandV3());
         c.addCommand(new AddOrUpdateAnnouncementSharingInfoCommandV3());
         return c;
 
     }
-    public static FacilioChain getNotificationSeenUpdateChain () {
+
+    public static FacilioChain getNotificationSeenUpdateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateSeenNotificationCommandV3());
         return c;
@@ -726,16 +748,19 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new SendUserNotificationCommandV3());
         return c;
     }
+
     public static FacilioChain getUserNotificationSeenUpdateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UserNotificationSeenCommand());
         return c;
     }
+
     public static FacilioChain getMarkAllAsReadUserNotification() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new MarkAsReadUserNotificationCommand());
         return c;
     }
+
     public static FacilioChain getCreateNeighbourhoodBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetLocalIdCommandV3());
@@ -791,7 +816,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new AddOrUpdateContactDirectorySharingCommandV3());
-       // c.addCommand(new AddPeopleIfNotExistsCommandV3());
+        // c.addCommand(new AddPeopleIfNotExistsCommandV3());
         return c;
     }
 
@@ -808,20 +833,21 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdatePeoplePrimaryContactCommandV3());
         return c;
     }
-    
+
     public static FacilioChain getTriggerAddOrUpdateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddOrUpdateTriggerCommand());
-//        c.addCommand(new AddOrUpdateTriggerInclExclCommand());
+        // c.addCommand(new AddOrUpdateTriggerInclExclCommand());
         c.addCommand(new AddOrUpdateTriggerActionAndRelCommand());
         return c;
     }
+
     public static FacilioChain getAllTriggers() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new GetAllTriggersCommand());
         return chain;
     }
-    
+
     public static FacilioChain getTriggerDeleteChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new DeleteTriggerCommand());
@@ -833,7 +859,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new RearrangeTriggerActionCommand());
         return c;
     }
-    
+
     public static FacilioChain getTriggerExecuteChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ExecuteTriggerCommand());
@@ -853,8 +879,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new POAfterCreateOrEditV3Command());
         c.addCommand(new UpdateTransactionEventTypeV3Command());
         c.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
-                .addCommand(new ExecuteAllWorkflowsCommand(RuleType.TRANSACTION_RULE))
-        );
+                .addCommand(new ExecuteAllWorkflowsCommand(RuleType.TRANSACTION_RULE)));
         return c;
     }
 
@@ -868,8 +893,8 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getCreateBookingBeforeEditChain() {
         FacilioChain c = getDefaultChain();
-        //c.addCommand(new ValidateCanEditBookingCommand());
-        //c.addCommand(new ValidateFacilityBookingCommandForEditV3());
+        // c.addCommand(new ValidateCanEditBookingCommand());
+        // c.addCommand(new ValidateFacilityBookingCommandForEditV3());
         c.addCommand(new ValidateCancelBookingCommandV3());
         return c;
     }
@@ -880,85 +905,85 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new CreatePaymentRecordForBookingCommandOnEditV3());
         return c;
     }
-    
+
     public static FacilioChain getAddControlScheduleBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddControlScheduleBeforeSaveCommand());
         return c;
     }
-    
+
     public static FacilioChain getAddControlScheduleAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new DeleteAndAddControlScheduleExceptionCommand());
         c.addCommand(new PlanControlScheduleSlotCommand());
         return c;
     }
-    
+
     public static FacilioChain getDeleteAndAddControlScheduleExceptionChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new DeleteAndAddControlScheduleExceptionCommand());
         return c;
     }
-    
+
     public static FacilioChain getUpdateControlScheduleBeforeSaveCommandChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateControlScheduleBeforeSaveCommand());
         return c;
     }
-    
+
     public static FacilioChain getUpdateControlScheduleAfterSaveCommandChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new DeleteAndAddControlScheduleExceptionCommand());
         c.addCommand(new PlanControlScheduleSlotCommand());
         return c;
     }
-    
+
     public static FacilioChain getAddControlScheduleExceptionBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ControlScheduleExceptionBeforeSaveCommand());
         c.addCommand(new ControlScheduleExceptionValidateCommand());
         return c;
     }
-    
+
     public static FacilioChain getAddControlScheduleExceptionAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ControlScheduleExceptionAfterSaveCommand());
         c.addCommand(new PlanControlScheduleExceptionSlotCommand());
         return c;
     }
-    
+
     public static FacilioChain getUpdateControlScheduleExceptionAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new PlanControlScheduleExceptionSlotCommand());
         return c;
     }
-    
+
     public static FacilioChain getUpdateControlGroupRoutineChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new DeleteControlGroupRoutineSectionAndFieldCommand());
         c.addCommand(new AddControlGroupRoutineSectionAndFieldCommand());
         return c;
     }
-    
+
     public static FacilioChain getAddControlGroupAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddControlGroupV2Command());
         c.addCommand(new PlanControlGroupSlotsCommand());
         return c;
     }
-    
+
     public static FacilioChain getPlanControlGroupSlotChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new PlanControlGroupSlotsCommand());
         return c;
     }
-    
+
     public static FacilioChain deleteControlGroupSlotChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new DeleteControlGroupSlotsCommand());
         return c;
     }
-    
+
     public static FacilioChain getUpdateControlGroupAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateControlGroupV2Command());
@@ -966,7 +991,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new PlanControlGroupSlotsCommand());
         return c;
     }
-    
+
     public static FacilioChain getUpdateOrDeleteControlGroupSlotAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new DeleteExceptionsForOneTimeSlotCommand());
@@ -975,7 +1000,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new PlanControlGroupCommands());
         return c;
     }
-    
+
     public static FacilioChain planControlGroupSlotsAndRoutines() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new PlanControlGroupSlots());
@@ -990,20 +1015,20 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new AddOrUpdateTriggerCommand());
         return chain;
     }
-    
+
     public static FacilioChain getControlGroupPublishChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new ControlSchedulePublishCommand());
         chain.addCommand(new ControlGroupPublishCommand());
         return chain;
     }
-    
+
     public static FacilioChain getControlGroupUnPublishChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new ControlGroupUnPublishCommand());
         return chain;
     }
-    
+
     public static FacilioChain controlGroupResetTenantChanges() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new GetParentcontrolGroupCommand());
@@ -1012,12 +1037,12 @@ public class TransactionChainFactoryV3 {
         return chain;
     }
 
-	public static FacilioChain getControlCommandExecutionCreateScheduleChain() {
-		// TODO Auto-generated method stub
-		FacilioChain chain = getDefaultChain();
+    public static FacilioChain getControlCommandExecutionCreateScheduleChain() {
+        // TODO Auto-generated method stub
+        FacilioChain chain = getDefaultChain();
         chain.addCommand(new GetCommandsAndScheduleForExecutionCommand());
         return chain;
-	}
+    }
 
     public static FacilioChain getUpdateJobPlanChain() {
         FacilioChain chain = getDefaultChain();
@@ -1044,10 +1069,9 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain AddORUpdateMarkersAndModulesCommand() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new AddORUpdateModuleRecordCommand());
-        chain.addCommand(new AddOrUpdateObjectCommand());        
+        chain.addCommand(new AddOrUpdateObjectCommand());
         return chain;
     }
-
 
     public static FacilioChain updateMarkersAndModulesCommand() {
         FacilioChain chain = getDefaultChain();
@@ -1061,14 +1085,14 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new SerializeCommand());
         return chain;
     }
-    
+
     public static FacilioChain getEmailConversationThreadingBeforeListChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new AddSuplimentsForEmailBaseMessageCommand());
         chain.addCommand(new AddFetchCriteriaForEmailConversationThreadingCommand());
         return chain;
     }
-    
+
     public static FacilioChain getAddEmailConversationThreadingAfterSaveChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new SendEmailForEmailConversationThreadingCommand());
@@ -1076,51 +1100,51 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new ExecuteWorkflowInRelatedModuleFroEmailConversationThreadingCommand());
         return chain;
     }
-    
+
     public static FacilioChain getAddEmailConversationThreadingBeforeSaveChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new AddSuplimentsForEmailBaseMessageCommand());
         chain.addCommand(new AddDefaultFieldsForEmailThreadingCommand());
         return chain;
     }
-    
+
     public static FacilioChain getAddEmailToModuleDataBeforeSaveChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new AddSuplimentsForEmailBaseMessageCommand());
         return chain;
     }
 
-	public static FacilioChain getEmailFromAddressBeforeSaveChain() {
-		 FacilioChain chain = getDefaultChain();
-		 chain.addCommand(new EmailFromAddressValidateCommand());
-		 chain.addCommand(new EmailFromAddressAddDefaultValuesCommand());
-	     return chain;
-	}
-	
-	public static FacilioChain getReSendVerificationEmailChain() {
-		 FacilioChain chain = getDefaultChain();
-		 chain.addCommand(new ReSendVerificationEmailCommand());
-	     return chain;
-	}
-	
-	public static FacilioChain getFromEmailForEmailThreadingReplyChain() {
-		 FacilioChain chain = getDefaultChain();
-		 chain.addCommand(new FromEmailForEmailThreadingReplyCommand());
-	     return chain;
-	}
-	
-	public static FacilioChain getEmailFromAddressAfterSaveChain() {
-		 FacilioChain chain = getDefaultChain();
-		 chain.addCommand(new SendVerifcationEmailForFromAddressCommand());
-	     return chain;
-	}
+    public static FacilioChain getEmailFromAddressBeforeSaveChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new EmailFromAddressValidateCommand());
+        chain.addCommand(new EmailFromAddressAddDefaultValuesCommand());
+        return chain;
+    }
 
-	public static Command getEmailConversationThreadingAfterListChain() {
-		FacilioChain chain = getDefaultChain();
-		 chain.addCommand(new AddAttachmentsForEmailConversationThreadingCommand());
-		 chain.addCommand(new SetUserAndPeopleForEmailConversationThreadingCommand());
-	     return chain;
-	}
+    public static FacilioChain getReSendVerificationEmailChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new ReSendVerificationEmailCommand());
+        return chain;
+    }
+
+    public static FacilioChain getFromEmailForEmailThreadingReplyChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new FromEmailForEmailThreadingReplyCommand());
+        return chain;
+    }
+
+    public static FacilioChain getEmailFromAddressAfterSaveChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new SendVerifcationEmailForFromAddressCommand());
+        return chain;
+    }
+
+    public static Command getEmailConversationThreadingAfterListChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new AddAttachmentsForEmailConversationThreadingCommand());
+        chain.addCommand(new SetUserAndPeopleForEmailConversationThreadingCommand());
+        return chain;
+    }
 
     public static FacilioChain addOrUpdateGlobalVariableGroupChain() {
         FacilioChain chain = getDefaultChain();
@@ -1146,19 +1170,19 @@ public class TransactionChainFactoryV3 {
         return chain;
     }
 
-	public static Command getServiceRequestAfterUpdateChain() {
-		FacilioChain chain = getDefaultChain();
-		 chain.addCommand(new FillActivityforServiceRequestCommand());
-	     return chain;
-	}
+    public static Command getServiceRequestAfterUpdateChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new FillActivityforServiceRequestCommand());
+        return chain;
+    }
 
-	public static Command getServiceRequestBeforeUpdateChain() {
-		FacilioChain chain = getDefaultChain();
-		 chain.addCommand(new FillOldServiceRequestCommand());
-	     return chain;
-	}
+    public static Command getServiceRequestBeforeUpdateChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new FillOldServiceRequestCommand());
+        return chain;
+    }
 
-	public static Command getFacilityBeforeSaveChain() {
+    public static Command getFacilityBeforeSaveChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new SetLocalIdCommandV3());
         chain.addCommand(new ValidateFacilityCommand());
@@ -1171,6 +1195,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ValidateDateCommandV3());
         return c;
     }
+
     public static FacilioChain getIRBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetLocalIdCommandV3());
@@ -1179,8 +1204,7 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
-
-    public static FacilioChain getAddOrUpdateItemStockTransactionChain(){
+    public static FacilioChain getAddOrUpdateItemStockTransactionChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(SetTableNamesCommand.getForItemTransactions());
         c.addCommand(new AddOrUpdateItemStockTransactionsCommand());
@@ -1192,7 +1216,8 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddOrUpdateItemQuantityCommandV3());
         c.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
-                        .addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE,RuleType.CUSTOM_STOREROOM_OUT_OF_STOCK_NOTIFICATION_RULE))
+                .addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE,
+                        RuleType.CUSTOM_STOREROOM_OUT_OF_STOCK_NOTIFICATION_RULE))
 
         );
         c.addCommand(getUpdateItemTypeQuantityRollupChain());
@@ -1205,7 +1230,7 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
-    public static FacilioChain getAddOrUpdateToolStockTransactionChain(){
+    public static FacilioChain getAddOrUpdateToolStockTransactionChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(SetTableNamesCommand.getForToolTranaction());
         c.addCommand(new AddOrUpdateToolStockTransactionsCommandV3());
@@ -1237,6 +1262,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(TransactionChainFactoryV3.getUpdateTransferRequestIsCompletedAfterSaveChain());
         return c;
     }
+
     public static FacilioChain getUpdateTransferRequestIsCompletedAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateStatusOfShipmentCommandV3());
@@ -1253,6 +1279,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdateShipmentIdCommandV3());
         return c;
     }
+
     public static FacilioChain getAddAccessibleSpaceChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddAccessibleSpacesCommand());
@@ -1271,8 +1298,7 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
-    public static  FacilioChain getIssueInventoryRequestChainV3()
-    {
+    public static FacilioChain getIssueInventoryRequestChainV3() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddOrUpdateInventoryRequestCommandV3());
         c.addCommand(new LoadItemTransactionEntryInputCommandV3());
@@ -1282,6 +1308,7 @@ public class TransactionChainFactoryV3 {
 
         return c;
     }
+
     public static FacilioChain getAddOrUpdateItemTransactionsChainV3() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddOrUpdateManualItemTransactionCommandV3());
@@ -1292,12 +1319,14 @@ public class TransactionChainFactoryV3 {
 
         return c;
     }
-    public static FacilioChain getItemTransactionRemainingQuantityRollupChainV3(){
+
+    public static FacilioChain getItemTransactionRemainingQuantityRollupChainV3() {
         FacilioChain c = getDefaultChain();
         c.addCommand(SetTableNamesCommand.getForItemTransactions());
         c.addCommand(new ItemTransactionRemainingQuantityRollupCommandV3());
         return c;
     }
+
     public static FacilioChain getAddOrUdpateToolTransactionsChainV3() {
         FacilioChain c = getDefaultChain();
         c.addCommand(SetTableNamesCommand.getForToolTranaction());
@@ -1308,13 +1337,22 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdateRequestedToolIssuedQuantityCommandV3());
         c.addCommand(new AddActivitiesCommand());
 
-
         return c;
     }
-    public static FacilioChain getToolTransactionRemainingQuantityRollupChainV3(){
+
+    public static FacilioChain getToolTransactionRemainingQuantityRollupChainV3() {
         FacilioChain c = getDefaultChain();
         c.addCommand(SetTableNamesCommand.getForToolTranaction());
         c.addCommand(new ToolTransactionRemainingQuantityRollupCommandV3());
+        return c;
+    }
+
+    public static FacilioChain getUpdatetoolQuantityRollupChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ToolQuantityRollUpCommand());
+        c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE));
+        c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_OUT_OF_STOCK_NOTIFICATION_RULE));
+        c.addCommand(getUpdateToolTypeQuantityRollupChain());
         return c;
     }
 
@@ -1331,16 +1369,17 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new SkipModuleCriteriaForSummaryCommand());
         return c;
     }
+
     public static FacilioChain getUpdatePoAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new POAfterCreateOrEditV3Command());
         c.addCommand(new CompletePoCommandV3());
         c.addCommand(new UpdateTransactionEventTypeV3Command());
         c.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
-                .addCommand(new ExecuteAllWorkflowsCommand(RuleType.TRANSACTION_RULE))
-        );
+                .addCommand(new ExecuteAllWorkflowsCommand(RuleType.TRANSACTION_RULE)));
         return c;
     }
+
     public static FacilioChain getPurchaseOrderCompleteChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new PurchaseOrderCompleteCommand());
@@ -1351,16 +1390,19 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdateServiceVendorPriceCommand());
         return c;
     }
+
     public static FacilioChain getAddOrUpdateItemTypeVendorChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddOrUpdateItemTypeVendorCommand());
         return c;
     }
+
     public static FacilioChain getAddOrUpdateToolTypeVendorChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddOrUpdateToolVendorCommand());
         return c;
     }
+
     public static FacilioChain getAddBulkItemChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(SetTableNamesCommand.getForItem());
@@ -1371,6 +1413,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(getSetItemAndToolTypeForStoreRoomChain());
         return c;
     }
+
     public static FacilioChain getBulkAddToolChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(SetTableNamesCommand.getForTool());
@@ -1381,34 +1424,36 @@ public class TransactionChainFactoryV3 {
         c.addCommand(getSetItemAndToolTypeForStoreRoomChain());
         return c;
     }
-    public static FacilioChain getAddBulkPurchasedItemChain(){
+
+    public static FacilioChain getAddBulkPurchasedItemChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(SetTableNamesCommand.getForPurchasedItem());
         c.addCommand(new AddPurchasedItemsForBulkItemAddCommand());
         c.addCommand(getAddOrUpdateItemStockTransactionChain());
         return c;
     }
+
     public static FacilioChain getSetItemAndToolTypeForStoreRoomChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetItemAndToolTypeForStoreRoomCommandV3());
         return c;
     }
 
-    public static FacilioChain getCreateOrUpdateReportChain(){
+    public static FacilioChain getCreateOrUpdateReportChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ConstructReportData());
         c.addCommand(new AddOrUpdateReportCommand());
         return c;
     }
 
-    public static FacilioChain getCreateOrUpdateAnalyticsReportChain(){
+    public static FacilioChain getCreateOrUpdateAnalyticsReportChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new CreateReadingAnalyticsReportCommand());
         c.addCommand(new AddOrUpdateReportCommand());
         return c;
     }
 
-    public static FacilioChain getCreateOrUpdatePivotReportChain(){
+    public static FacilioChain getCreateOrUpdatePivotReportChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ConstructTabularReportData());
         c.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
@@ -1416,40 +1461,40 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
-    public static FacilioChain getDeleteReportChain(){
+    public static FacilioChain getDeleteReportChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ConstructReportDeleteCommand());
         return c;
     }
 
-    public static FacilioChain getReportContextChain(){
+    public static FacilioChain getReportContextChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ConstructReportDetailsCommand());
         return c;
     }
-    public static FacilioChain getDashboardDateFilterChain(){
+
+    public static FacilioChain getDashboardDateFilterChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ConstructReportDetailsCommand());
         return c;
     }
-    public static FacilioChain getExecuteReportChain( String filters, boolean needCriteriaData){
+
+    public static FacilioChain getExecuteReportChain(String filters, boolean needCriteriaData) {
         FacilioChain c = getDefaultChain();
-        if(filters != null)
-        {
+        if (filters != null) {
             c.addCommand(new GenerateCriteriaFromFilterCommand());
         }
         c.addCommand(ReadOnlyChainFactory.constructAndFetchReportDataChain());
         c.addCommand(new GetModuleFromReportContextCommand());
-        if(needCriteriaData)
-        {
+        if (needCriteriaData) {
             c.addCommand(new GetCriteriaDataCommand());
         }
         return c;
     }
+
     public static FacilioChain getExecutePivotReportChain(String filters) {
         FacilioChain c = getDefaultChain();
-        if(filters != null)
-        {
+        if (filters != null) {
             c.addCommand(new GenerateCriteriaFromFilterCommand());
         }
         c.addCommand(new ConstructTabularReportData());
@@ -1458,24 +1503,24 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
-    public static FacilioChain getReadingDataChain(long alarmId , String fields , boolean newFormat, boolean isOnlyReportDataChain){
+    public static FacilioChain getReadingDataChain(long alarmId, String fields, boolean newFormat,
+            boolean isOnlyReportDataChain) {
         FacilioChain c = getDefaultChain();
-        if(alarmId > 0 && fields == null) {
+        if (alarmId > 0 && fields == null) {
             c.addCommand(new GetDataPointFromAlarmCommand());
         }
-        if(newFormat){
+        if (newFormat) {
             c.addCommand(new ConstructLiveFilterCommandToExport());
-            if(!isOnlyReportDataChain){
+            if (!isOnlyReportDataChain) {
                 c.addCommand(new CreateReadingAnalyticsReportCommand());
             }
             c.addCommand(ReadOnlyChainFactory.newFetchReportDataChain());
-        }
-        else{
-            if(!isOnlyReportDataChain) {
+        } else {
+            if (!isOnlyReportDataChain) {
                 c.addCommand(new CreateReadingAnalyticsReportCommand());
             }
             c.addCommand(ReadOnlyChainFactory.fetchReportDataChain());
-            if(!isOnlyReportDataChain) {
+            if (!isOnlyReportDataChain) {
                 c.addCommand(new FetchCustomBaselineData());
             }
         }
@@ -1485,17 +1530,17 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getReadingAlarmDataChain(boolean newFormat) {
         FacilioChain c = getDefaultChain();
         c.addCommand(new GetDataPointFromAlarmCommand());
-        if(newFormat){
+        if (newFormat) {
             c.addCommand(new CreateReadingAnalyticsReportCommand());
             c.addCommand(ReadOnlyChainFactory.newFetchReportDataChain());
-        }
-        else{
+        } else {
             c.addCommand(new CreateReadingAnalyticsReportCommand());
             c.addCommand(ReadOnlyChainFactory.fetchReportDataChain());
             c.addCommand(new FetchCustomBaselineData());
         }
         return c;
     }
+
     public static FacilioChain getFoldersListChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new GetReportFoldersCommand());
@@ -1505,7 +1550,7 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain addMLServiceChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ForkChainToInstantJobCommand()
-//                .addCommand(new ValidateMLServiceCommand())
+                // .addCommand(new ValidateMLServiceCommand())
                 .addCommand(new ConstructMLModelDetails())
                 .addCommand(new ConstructReadingForMLServiceCommand())
                 .addCommand(new InitMLServiceCommand())
@@ -1521,68 +1566,73 @@ public class TransactionChainFactoryV3 {
                 .addCommand(new TriggerMLServiceJobCommand()));
         return c;
     }
+
     public static FacilioChain getAllReportsChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new GetAllReportsCommand());
         return c;
     }
-    public static FacilioChain getReportFieldsChain(){
+
+    public static FacilioChain getReportFieldsChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new GetReportFieldsCommand());
         return c;
     }
-    public static FacilioChain getSubModulesListChain(){
+
+    public static FacilioChain getSubModulesListChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new GetSubModulesListCommand());
         return c;
     }
-    public static FacilioChain getCreateReportFolderChain()
-    {
+
+    public static FacilioChain getCreateReportFolderChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new GetCreateFolderCommand());
         return c;
     }
-    public static FacilioChain getMoveReportChain()
-    {
+
+    public static FacilioChain getMoveReportChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new GetMoveReportCommand());
         return c;
     }
-    public static FacilioChain getFolderPermissionUpdateChain()
-    {
+
+    public static FacilioChain getFolderPermissionUpdateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new GetFolderPermissionUpdateCommand());
         return c;
     }
+
     public static FacilioChain getExportReportFileChain(boolean isAnalyticsReport, boolean isFilterNeeded) {
         FacilioChain c = getDefaultChain();
-        if(isFilterNeeded)
-        {
+        if (isFilterNeeded) {
             c.addCommand(new ConstructLiveFilterCommandToExport());
         }
-        c.addCommand(isAnalyticsReport ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.newFetchReportDataChain());
+        c.addCommand(isAnalyticsReport ? ReadOnlyChainFactory.newFetchReadingReportChain()
+                : ReadOnlyChainFactory.newFetchReportDataChain());
         c.addCommand(new GetExportReportFileCommand());
         return c;
     }
-    public static FacilioChain getExportPivotReportChain()
-    {
+
+    public static FacilioChain getExportPivotReportChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ConstructTabularReportData());
         c.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
         c.addCommand(new ExportPivotReport());
         return c;
     }
+
     public static FacilioChain getScheduledReportChain(boolean isUpdate) {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddTemplateCommand());
-        if(isUpdate){
+        if (isUpdate) {
             c.addCommand(new DeleteScheduledReportsCommand(true));
         }
         c.addCommand(new ScheduleV2ReportCommand());
         return c;
     }
 
-    public static FacilioChain getCreateAssetCategoryChain(){
+    public static FacilioChain getCreateAssetCategoryChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new AddAssetCategoryModuleCommandV3());
         chain.addCommand(TransactionChainFactory.commonAddModuleChain());
@@ -1590,34 +1640,41 @@ public class TransactionChainFactoryV3 {
         return chain;
     }
 
-    public static FacilioChain getDeleteAssetCategoryChain(){
+    public static FacilioChain getDeleteAssetCategoryChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new ValidateAssetCategoryDeletionV3());
         return chain;
     }
 
-    public static FacilioChain getFaultImpactAddOrUpdateBeforeChain(){
+    public static FacilioChain getFaultImpactAddOrUpdateBeforeChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new FaultImpactBeforeSaveCommand());
         return chain;
     }
 
-    public static FacilioChain getFaultImpactAddOrUpdateAfterChain(){
+    public static FacilioChain getFaultImpactAddOrUpdateAfterChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new FaultImpactAfterSaveCommand());
         return chain;
     }
 
-    public static FacilioChain getFaultImpactFetchChain(){
+    public static FacilioChain getFaultImpactFetchChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new FaultImpactAfterFetchCommand());
         return chain;
     }
 
-    public static FacilioChain getBeforeFetchPOListChain(){
-        FacilioChain chain=getDefaultChain();
+    public static FacilioChain getBeforeFetchPOListChain() {
+        FacilioChain chain = getDefaultChain();
         chain.addCommand(new LoadPoPrListLookupCommandV3());
         chain.addCommand(new GetPurchaseOrdersListOnInventoryTypeIdCommandV3());
+        return chain;
+    }
+
+    public static FacilioChain getReceiptsBeforeFetchListChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new LoadReceiptsListLookupCommandV3());
+        chain.addCommand(new GetReceiptsListOnReceivableIdCommandV3());
         return chain;
     }
 
@@ -1655,6 +1712,7 @@ public class TransactionChainFactoryV3 {
         );
         return c;
     }
+
     public static FacilioChain getAddItemChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddItemCommandV3());
@@ -1663,17 +1721,41 @@ public class TransactionChainFactoryV3 {
         c.addCommand(getSetItemAndToolTypeForStoreRoomChain());
         return c;
     }
-    public static FacilioChain getAddPurchasedItemChain(){
+
+    public static FacilioChain getAddPurchasedItemChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new GetAddPurchasedItemCommandV3());
         c.addCommand(getAddOrUpdateItemStockTransactionChainV3());
         return c;
     }
-    public static FacilioChain getAddOrUpdateItemStockTransactionChainV3(){
+
+    public static FacilioChain getAddOrUpdateItemStockTransactionChainV3() {
         FacilioChain c = getDefaultChain();
         c.addCommand(SetTableNamesCommand.getForItemTransactions());
         c.addCommand(new AddOrUpdateItemStockTransactionsCommandV3());
         c.addCommand(getUpdateItemQuantityRollupChain());
         return c;
     }
+
+    public static FacilioChain getPurchaseOrderLineItemQuantityRecievedRollUpChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new PurchaseOrderLineItemQuantityRollUpCommandV3());
+        return chain;
+    }
+
+    public static FacilioChain getPurchaseOrderQuantityRecievedRollUpChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new PurchaseOrderQuantityRecievedRollUpCommandV3());
+        return chain;
+    }
+
+    public static FacilioChain getAddOrUpdateReceiptsChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new AddOrUpdateReceiptCommandV3());
+        chain.addCommand(getPurchaseOrderLineItemQuantityRecievedRollUpChain());
+        chain.addCommand(getPurchaseOrderQuantityRecievedRollUpChain());
+        chain.addCommand(getPurchaseOrderAutoCompleteChain());
+        return chain;
+    }
+
 }
