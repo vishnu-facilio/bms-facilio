@@ -113,12 +113,19 @@ public class V3ToolContext extends V3Context {
         this.minimumQuantity = minimumQuantity;
     }
 
-    public Boolean getUnderstocked() {
+    public Boolean getIsUnderstocked() {
         return isUnderstocked;
     }
 
-    public void setUnderstocked(Boolean understocked) {
-        isUnderstocked = understocked;
+    public void setIsUnderstocked(Boolean understocked) {
+        this.isUnderstocked = understocked;
+    }
+
+    public boolean isUnderstocked() {
+        if (isUnderstocked != null) {
+            return isUnderstocked.booleanValue();
+        }
+        return false;
     }
 
 

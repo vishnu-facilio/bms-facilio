@@ -92,6 +92,7 @@ import com.facilio.bmsconsoleV3.commands.tenantunit.LoadTenantUnitLookupCommandV
 import com.facilio.bmsconsoleV3.commands.termsandconditions.CheckForPublishedCommand;
 import com.facilio.bmsconsoleV3.commands.termsandconditions.LoadTermsLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.tool.LoadToolLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.tool.StockOrUpdateToolsCommandV3;
 import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.transferRequest.*;
 import com.facilio.bmsconsoleV3.commands.vendor.AddOrUpdateLocationForVendorCommandV3;
@@ -693,7 +694,9 @@ public class APIv3Config {
     public static Supplier<V3Config> getTool() {
         return () -> new V3Config(V3ToolContext.class, new ModuleCustomFieldCount30())
                 .create()
+                .afterSave(TransactionChainFactoryV3.getBulkAddToolChainV3())
                 .update()
+                .afterSave(new StockOrUpdateToolsCommandV3())
                 .list()
                 .beforeFetch(new LoadToolLookupCommandV3())
                 .summary()

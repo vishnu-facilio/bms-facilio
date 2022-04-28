@@ -6,6 +6,9 @@ import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestLineItemContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ToolContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ToolTypesContext;
 import com.facilio.v3.context.V3Context;
 
 import java.util.List;
@@ -13,13 +16,13 @@ import java.util.List;
 public class V3ToolTransactionContext extends V3Context {
     private static final long serialVersionUID = 1L;
 
-    private ToolTypesContext toolType;
+    private V3ToolTypesContext toolType;
 
-    public ToolTypesContext getToolType() {
+    public V3ToolTypesContext getToolType() {
         return toolType;
     }
 
-    public void setToolType(ToolTypesContext toolType) {
+    public void setToolType(V3ToolTypesContext toolType) {
         this.toolType = toolType;
     }
 
@@ -33,13 +36,13 @@ public class V3ToolTransactionContext extends V3Context {
         this.purchasedTool = purchasedTool;
     }
 
-    private ToolContext tool;
+    private V3ToolContext tool;
 
-    public ToolContext getTool() {
+    public V3ToolContext getTool() {
         return tool;
     }
 
-    public void setTool(ToolContext stockedTool) {
+    public void setTool(V3ToolContext stockedTool) {
         this.tool = stockedTool;
     }
 
@@ -212,11 +215,11 @@ public class V3ToolTransactionContext extends V3Context {
         this.assetIds = assetIds;
     }
 
-    private InventoryRequestLineItemContext requestedLineItem;
-    public InventoryRequestLineItemContext getRequestedLineItem() {
+    private V3InventoryRequestLineItemContext requestedLineItem;
+    public V3InventoryRequestLineItemContext getRequestedLineItem() {
         return requestedLineItem;
     }
-    public void setRequestedLineItem(InventoryRequestLineItemContext requestedLineItem) {
+    public void setRequestedLineItem(V3InventoryRequestLineItemContext requestedLineItem) {
         this.requestedLineItem = requestedLineItem;
     }
     private ResourceContext resource;
@@ -249,13 +252,13 @@ public class V3ToolTransactionContext extends V3Context {
         this.transactionCost = transactionCost;
     }
 
-    private StoreRoomContext storeRoom;
+    private V3StoreRoomContext storeRoom;
 
-    public StoreRoomContext getStoreRoom() {
+    public V3StoreRoomContext getStoreRoom() {
         return storeRoom;
     }
 
-    public void setStoreRoom(StoreRoomContext storeRoom) {
+    public void setStoreRoom(V3StoreRoomContext storeRoom) {
         this.storeRoom = storeRoom;
     }
 }

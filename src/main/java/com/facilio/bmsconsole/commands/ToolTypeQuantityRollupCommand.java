@@ -8,7 +8,6 @@ import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolTransactionContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
@@ -107,7 +106,7 @@ public class ToolTypeQuantityRollupCommand extends FacilioCommand {
 		List<FacilioField> field = new ArrayList<>();
 		field.add(FieldFactory.getField("totalQuantity", "sum(CURRENT_QUANTITY)", FieldType.DECIMAL));
 
-		SelectRecordsBuilder<ItemContext> builder = new SelectRecordsBuilder<ItemContext>()
+		SelectRecordsBuilder<ToolContext> builder = new SelectRecordsBuilder<ToolContext>()
 				.select(field).moduleName(toolModule.getName()).andCondition(CriteriaAPI
 						.getCondition(toolFieldMap.get("toolType"), String.valueOf(id), NumberOperators.EQUALS))
 				.setAggregation();

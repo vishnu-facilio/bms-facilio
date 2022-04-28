@@ -228,7 +228,9 @@ public class AddOrUpdateManualToolTransactionsCommand extends FacilioCommand {
 
 			if(woTool.getTransactionTypeEnum() == TransactionType.MANUAL) {
 				user = AccountUtil.getUserBean().getUser(woTool.getParentId(), true);
-				newinfo.put("returnedBy", user.getName());
+				if(user!=null && user.getName()!=null){
+					newinfo.put("returnedBy", user.getName());
+				}
 			}
 			else if(woTool.getTransactionTypeEnum() == TransactionType.WORKORDER) {
 				newinfo.put("returnedBy", "WO - #"+ woTool.getParentId());

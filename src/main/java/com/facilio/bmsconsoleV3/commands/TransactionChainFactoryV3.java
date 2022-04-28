@@ -10,9 +10,12 @@ import com.facilio.bmsconsoleV3.commands.tasks.AddTaskSectionsV3;
 import com.facilio.bmsconsoleV3.commands.tasks.AddTasksCommandV3;
 import com.facilio.bmsconsoleV3.commands.tasks.ValidateTasksCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
+import com.facilio.bmsconsoleV3.commands.tool.AddBulkToolStockTransactionsCommandV3;
+import com.facilio.bmsconsoleV3.commands.tool.ToolQuantityRollUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.tool.ToolTypeQuantityRollupCommandV3;
+import com.facilio.bmsconsoleV3.commands.tool.UpdateIsUnderStockedCommandV3;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import com.facilio.bmsconsoleV3.commands.GetReportModuleListCommand;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.actions.GetModuleFromReportContextCommand;
@@ -1206,7 +1209,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(SetTableNamesCommand.getForToolTranaction());
         c.addCommand(new AddOrUpdateToolStockTransactionsCommandV3());
-        c.addCommand(getUpdatetoolQuantityRollupChain());
+        c.addCommand(getUpdatetoolQuantityRollupChainV3());
         return c;
     }
 
@@ -1301,7 +1304,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddOrUpdateManualToolTransactionsCommandV3());
         c.addCommand(getToolTransactionRemainingQuantityRollupChainV3());
         c.addCommand(new ExecuteAllWorkflowsCommand());
-        c.addCommand(getUpdatetoolQuantityRollupChainV3());
+        c.addCommand(getUpdatetoolQuantityRollupChain());
         c.addCommand(new UpdateRequestedToolIssuedQuantityCommandV3());
         c.addCommand(new AddActivitiesCommand());
 
@@ -1312,14 +1315,6 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(SetTableNamesCommand.getForToolTranaction());
         c.addCommand(new ToolTransactionRemainingQuantityRollupCommandV3());
-        return c;
-    }
-    public static FacilioChain getUpdatetoolQuantityRollupChainV3() {
-        FacilioChain c = getDefaultChain();
-        c.addCommand(new ToolQuantityRollUpCommand());
-        c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE));
-        c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_OUT_OF_STOCK_NOTIFICATION_RULE));
-        c.addCommand(getUpdateToolTypeQuantityRollupChain());
         return c;
     }
 
@@ -1630,6 +1625,35 @@ public class TransactionChainFactoryV3 {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new GetReportModuleListCommand());
         return chain;
+    }
+    public static FacilioChain getBulkAddToolChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddBulkToolStockTransactionsCommandV3());
+        c.addCommand(getUpdatetoolQuantityRollupChainV3());
+        c.addCommand(getSetItemAndToolTypeForStoreRoomChain());
+        return c;
+    }
+    public static FacilioChain getUpdatetoolQuantityRollupChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ToolQuantityRollUpCommandV3());
+        c.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
+                .addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE,RuleType.CUSTOM_STOREROOM_OUT_OF_STOCK_NOTIFICATION_RULE))
+        );
+        c.addCommand(getUpdateToolTypeQuantityRollupChainV3());
+        return c;
+    }
+    public static FacilioChain getUpdateToolTypeQuantityRollupChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ToolTypeQuantityRollupCommandV3());
+        return c;
+    }
+    public static FacilioChain getUpdateIsUnderStockedChainV3(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateIsUnderStockedCommandV3());
+        c.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
+                .addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE))
+        );
+        return c;
     }
     public static FacilioChain getAddItemChain() {
         FacilioChain c = getDefaultChain();
