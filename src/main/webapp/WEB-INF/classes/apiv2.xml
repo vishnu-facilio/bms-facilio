@@ -6689,8 +6689,8 @@
 				class="com.facilio.bmsconsole.actions.DashboardFilterAction"
 				method="updateWidgetSettings">			
 		</action>
-		
-		
+
+
 	</package>
 	<package name="transactionrules" namespace="/api/v2/transactionrule" extends="v2Api">
 
