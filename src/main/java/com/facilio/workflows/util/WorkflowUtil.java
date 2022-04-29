@@ -109,6 +109,7 @@ import com.facilio.workflows.functions.FacilioDateFunction;
 import com.facilio.workflows.functions.FacilioDateRangeFunctions;
 import com.facilio.workflows.functions.FacilioDefaultFunction;
 import com.facilio.workflows.functions.FacilioEnergyMeterFunction;
+import com.facilio.workflows.functions.FacilioEventFunctions;
 import com.facilio.workflows.functions.FacilioFieldFunctions;
 import com.facilio.workflows.functions.FacilioFileFunction;
 import com.facilio.workflows.functions.FacilioFunctionsParamType;
@@ -2214,6 +2215,9 @@ public class WorkflowUtil {
 				case CSV_BUILDER:
 					facilioWorkflowFunction = FacilioCSVFunctions.getFacilioCSVFunctions(functionName);
 					break;
+				case EVENT:
+					facilioWorkflowFunction = FacilioEventFunctions.getFacilioEventFunction(functionName);
+					break;
 			}
 		}
 		return facilioWorkflowFunction;
@@ -2335,6 +2339,9 @@ public class WorkflowUtil {
 					break;
 				case CSV_BUILDER:
 					facilioWorkflowFunction = new ArrayList<>( FacilioCSVFunctions.getAllFunctions().values());
+					break;
+				case EVENT:
+					facilioWorkflowFunction = new ArrayList<>( FacilioEventFunctions.getAllFunctions().values());
 					break;
 			}
 		}
