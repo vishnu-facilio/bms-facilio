@@ -29,8 +29,8 @@ public class GenerateQrInviteUrlForBaseVisitCommandV3 extends FacilioCommand imp
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
-        Map<String, List<Object>> queryParams = (Map<String, List<Object>>)context.get(Constants.QUERY_PARAMS);
-        if(queryParams.containsKey("withQrUrl") && queryParams.get("withQrUrl") != null && !queryParams.get("withQrUrl").isEmpty() && Boolean.parseBoolean((String)queryParams.get("withQrUrl").get(0))) {
+        Boolean withQrUrl = (Boolean) context.get(FacilioConstants.ContextNames.WITH_QRURL);
+        if(withQrUrl == null || withQrUrl == true) {
             List<BaseVisitContextV3> inviteVisitors = recordMap.get(moduleName);
             if (CollectionUtils.isNotEmpty(inviteVisitors)) {
                 for (BaseVisitContextV3 inviteVisitor : inviteVisitors) {
@@ -74,11 +74,11 @@ public class GenerateQrInviteUrlForBaseVisitCommandV3 extends FacilioCommand imp
                 }
 
             }
-            queryParams.remove("withQrUrl");
+            context.put(FacilioConstants.ContextNames.WITH_QRURL, false);
         }
         else
         {
-            queryParams.put("withQrUrl", Collections.singletonList("true"));
+            context.put(FacilioConstants.ContextNames.WITH_QRURL, true);
         }
         return false;
     }
