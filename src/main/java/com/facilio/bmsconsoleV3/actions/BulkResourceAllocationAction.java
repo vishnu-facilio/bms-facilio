@@ -53,7 +53,7 @@ public class BulkResourceAllocationAction extends V3Action {
 	    		 case FacilioConstants.Inspection.INSPECTION_TEMPLATE: {
 	
 	    			 InspectionTemplateContext record = (InspectionTemplateContext) V3Util.getRecord(getModuleName(), qAndATemplateId, null);
-	    			 if(record != null) {
+	    			 if(record != null && record.getTriggers() != null ) {
 	    				 List<InspectionTriggerContext> manualTriggers = record.getTriggers().stream().filter(t -> t.getType() == InspectionTriggerContext.TriggerType.USER.getVal()).collect(Collectors.toList());
 	    				 if(manualTriggers != null && !manualTriggers.isEmpty()) {
 	    					 List<InspectionTriggerIncludeExcludeResourceContext> inclExcls = manualTriggers.get(0).getResInclExclList();
