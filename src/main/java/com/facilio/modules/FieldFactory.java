@@ -220,7 +220,7 @@ public class FieldFactory extends BaseFieldFactory {
             return fields.stream().
                     filter(
                             f -> !(type.getFilterBool() ^ filterList.contains(f.getName())) // This is XNOR behaviour. It should be true only if both isInclude and contains are true or if both are false
-                                    || f.isDefault()
+                                    || !f.isDefault()
                     ).collect(Collectors.toList());
         }
 
@@ -1606,7 +1606,7 @@ public class FieldFactory extends BaseFieldFactory {
     }
 
     public static FacilioField getModuleIdField(FacilioModule module) {
-       
+
 		FacilioField field = getField ("moduleId","MODULEID",FieldType.NUMBER);
 		if (module != null) {
 			field.setModule(module);
@@ -2022,23 +2022,23 @@ public class FieldFactory extends BaseFieldFactory {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getNewReadingRuleModule();
         fields.add(getIdField(module));
-        fields.add(getModuleIdField(module));
 
-        FacilioField nameField = getField("name", "Name", "NAME", module, FieldType.STRING);
-        nameField.setMainField(true);
-        fields.add(nameField);
+        FacilioField moduleFld = getModuleIdField(module);
+        moduleFld.setDefault(true);
+        fields.add(moduleFld);
 
-        fields.add(getField("description", "Description", "DESCRIPTION", module, FieldType.STRING));
-        fields.add(getField("alarmType", "Applied To", "ALARM_APPLIED_TO", module, FieldType.NUMBER));
-        fields.add(getField("createdTime", "Created Time", "CREATED_TIME", module, FieldType.NUMBER));
-        fields.add(getField("status", "Status","STATUS", module, FieldType.BOOLEAN));
+        fields.add(getDefaultField("name", "Name", "NAME", module, FieldType.STRING, true));
+        fields.add(getDefaultField("description", "Description", "DESCRIPTION", module, FieldType.STRING));
+        fields.add(getDefaultField("alarmType", "Applied To", "ALARM_APPLIED_TO", module, FieldType.NUMBER));
+        fields.add(getDefaultField("createdTime", "Created Time", "CREATED_TIME", module, FieldType.NUMBER));
+        fields.add(getDefaultField("status", "Status","STATUS", module, FieldType.BOOLEAN));
 
-        fields.add(getField("fieldId", "Field Id", "READING_FIELD_ID", module, FieldType.NUMBER));
-        fields.add(getField("createdBy","Created By", "CREATED_BY", module, FieldType.NUMBER));
-        fields.add(getField("assetCategoryId", "Asset Category Id", "ASSET_CATEGORY_ID", module, FieldType.NUMBER));
-        fields.add(getField("workflowId","Workflow ID", "WORKFLOW_ID", module, FieldType.NUMBER));
-        fields.add(getField("impactId", "Impact Id", "IMPACT_ID", module, FieldType.NUMBER));
-        fields.add(getField("autoClear", "Auto Clear", "AUTO_CLEAR", module, FieldType.BOOLEAN));
+        fields.add(getDefaultField("fieldId", "Field Id", "READING_FIELD_ID", module, FieldType.NUMBER));
+        fields.add(getDefaultField("createdBy","Created By", "CREATED_BY", module, FieldType.NUMBER));
+        fields.add(getDefaultField("assetCategoryId", "Asset Category Id", "ASSET_CATEGORY_ID", module, FieldType.NUMBER));
+        fields.add(getDefaultField("workflowId","Workflow ID", "WORKFLOW_ID", module, FieldType.NUMBER));
+        fields.add(getDefaultField("impactId", "Impact Id", "IMPACT_ID", module, FieldType.NUMBER));
+        fields.add(getDefaultField("autoClear", "Auto Clear", "AUTO_CLEAR", module, FieldType.BOOLEAN));
         return fields;
     }
 
@@ -8333,6 +8333,16 @@ public class FieldFactory extends BaseFieldFactory {
 
     public static <F extends FacilioField> F  getDefaultField(String name, String displayName, String colName, FieldType type, Boolean isMain) {
         return getDefaultField(name, displayName, colName, type, null, isMain);
+    }
+
+    public static <F extends FacilioField> F  getDefaultField(String name, String displayName, String colName, FacilioModule module, FieldType type) {
+        return getDefaultField(name, displayName, colName, module, type, false);
+    }
+
+    public static <F extends FacilioField> F  getDefaultField(String name, String displayName, String colName, FacilioModule module, FieldType type, Boolean isMain) {
+        F fld = getDefaultField(name, displayName, colName, type, null, isMain);
+        fld.setModule(module);
+        return fld;
     }
 
     public static <F extends FacilioField> F  getDefaultField(String name, String displayName, String colName, FieldType type, FacilioField.FieldDisplayType displayType, Boolean isMain) {
