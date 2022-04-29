@@ -272,6 +272,7 @@ public class FacilioConstants {
         public static final String FACILIO_BANNERS = "facilioBanners";
         public static final String EMAIL_STRUCTURES = "emailStructures";
         public static final String EMAIL_STRUCTURE = "emailStructure";
+		public static final String WITH_QRURL="withQrUrl";
 
         public static class DataProcessor {
             public static final String UNMODELED = "unmodeled";
