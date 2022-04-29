@@ -264,6 +264,26 @@
 		</action>
 	</package>
 
+    <package name="surveySetupApiv2" namespace="/api/v2/setup/survey" extends="v2Api">
+        <action name="add" class="com.facilio.bmsconsole.actions.SurveyRuleAction" method="addSurveyRule">
+            <param name="moduleName">setup</param>
+            <param name="permission">WORKORDER_SETTINGS</param>
+        </action>
+        <action name="edit" class="com.facilio.bmsconsole.actions.SurveyRuleAction" method="updateSurveyRule">
+            <param name="moduleName">setup</param>
+            <param name="permission">WORKORDER_SETTINGS</param>
+        </action>
+        <action name="delete" class="com.facilio.bmsconsole.actions.SurveyRuleAction" method="deleteSurveyRule">
+            <param name="moduleName">setup</param>
+            <param name="permission">WORKORDER_SETTINGS</param>
+        </action>
+        <action name="*" class="com.facilio.bmsconsole.actions.SurveyRuleAction" method="fetchSurveyRule">
+            <param name="moduleName">setup</param>
+            <param name="permission">WORKORDER_SETTINGS</param>
+            <param name="workFlowRuleId">{1}</param>
+        </action>
+    </package>
+
 	<package name="assetSetupApiV2" namespace="/api/v2/setup/asset" extends="v2Api">
 		<action name="rules" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="fetchWorkflowRulesOfType">
 			<param name="moduleName">setup</param>

@@ -3066,6 +3066,33 @@ public class ModuleFactory {
 		formTemplate.setExtendModule(getTemplatesModule());
 		return formTemplate;
 	}
+
+	public static FacilioModule getSatisfactionSurveyTemplateModule () {
+		FacilioModule satisfactionSurveyTemplateModule = new FacilioModule();
+		satisfactionSurveyTemplateModule.setName("satisfactionSurveyTemplate");
+		satisfactionSurveyTemplateModule.setDisplayName("Satisfaction Survey Templates");
+		satisfactionSurveyTemplateModule.setTableName("Satisfaction_Survey_Templates");
+		satisfactionSurveyTemplateModule.setExtendModule(getTemplatesModule());
+		return satisfactionSurveyTemplateModule;
+	}
+	
+	public static FacilioModule getSatisfactionSurveyRuleModule() {
+		FacilioModule satisfactionSurveyRuleModule = new FacilioModule();
+		satisfactionSurveyRuleModule.setName("satisfactionSurveyRule");
+		satisfactionSurveyRuleModule.setDisplayName("Satisfaction Survey Rule");
+		satisfactionSurveyRuleModule.setTableName("Satisfaction_Survey_Rules");
+		satisfactionSurveyRuleModule.setExtendModule(getWorkflowRuleModule());
+		return satisfactionSurveyRuleModule;
+	}
+
+	public static FacilioModule getSurveyResponseRuleModule() {
+		FacilioModule satisfactionSurveyRuleModule = new FacilioModule();
+		satisfactionSurveyRuleModule.setName("surveyResponseRule");
+		satisfactionSurveyRuleModule.setDisplayName("Survey Response Rule");
+		satisfactionSurveyRuleModule.setTableName("Survey_Response_Rules");
+		satisfactionSurveyRuleModule.setExtendModule(getWorkflowRuleModule());
+		return satisfactionSurveyRuleModule;
+	}
 	
 	public static FacilioModule getMLModule() 
 	{

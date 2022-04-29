@@ -2,6 +2,7 @@ package com.facilio.qa;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
@@ -18,6 +19,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.qa.command.QAndAReadOnlyChainFactory;
+import com.facilio.qa.command.QAndATransactionChainFactory;
 import com.facilio.qa.context.*;
 import com.facilio.qa.context.questions.BaseMCQContext;
 import com.facilio.qa.context.questions.MCQOptionContext;
@@ -457,4 +459,13 @@ public class QAndAUtil {
         return builder.get();
     }
 
+	public static void executeTemplate (String moduleName, long id, List< ResourceContext> resources,Long ruleId) throws Exception {
+		FacilioChain executeTemplateChain = QAndATransactionChainFactory.executeSurveyTemplateChain();
+		FacilioContext context = executeTemplateChain.getContext();
+		Constants.setModuleName(context,moduleName);
+		Constants.setRecordId(context,id);
+		context.put("ruleId",ruleId);
+		context.put(FacilioConstants.ContextNames.RESOURCE_LIST,resources);
+		executeTemplateChain.execute();
+	}
 }

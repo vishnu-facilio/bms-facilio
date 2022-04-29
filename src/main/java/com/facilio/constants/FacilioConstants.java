@@ -63,6 +63,7 @@ import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.wmsv2.handler.AuditLogHandler;
+import com.sun.org.apache.bcel.internal.generic.PUSH;
 import org.apache.kafka.common.protocol.types.Field;
 import org.json.simple.JSONObject;
 
@@ -2611,7 +2612,15 @@ public class FacilioConstants {
 		public static final String SURVEY_RESPONSE_ACTIVITY = "surveyResponseActivity";
 
 		public static final String SURVEY_TRIGGER_INCL_EXCL = "surveyTriggerResourceInclExcl";
+
+		public static final String EXECUTE_CREATE_ACTIONS = "executeCreateActions";
+		public static final String EXECUTE_RESPONSE_ACTIONS ="executeResponseActions";
 		
+	}
+
+	public static class WorkOrderSurvey {
+		public static final String WORK_ORDER_SURVEY_TEMPLATE = "workOrderSurveyTemplate";
+		public static final String WORK_ORDER_SURVEY_RESPONSE = "workOrderSurveyResponse";
 	}
 	
 	public static class Induction {

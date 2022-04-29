@@ -132,8 +132,8 @@ public class AddOrUpdateReadingValuesCommand extends FacilioCommand {
 	
 	private void adjustTtime(ReadingContext reading) {
 		ZonedDateTime zdt = DateTimeUtil.getDateTime(reading.getTtime());
-		if (reading.getDatum("interval") != null) {
-			int interval = (int) reading.getDatum("interval");
+		if (reading.getDataInterval() > 0) {
+			int interval = reading.getDataInterval();
 			zdt = zdt.truncatedTo(new SecondsChronoUnit(interval * 60));
 		}
 		reading.setTtime(DateTimeUtil.getMillis(zdt, true));

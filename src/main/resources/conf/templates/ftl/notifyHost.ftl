@@ -27,11 +27,11 @@
                                       </div>
                                       <#if (vLog.visitedSpace) ??>
                                       <div style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;color:#474a51;font-size:20px;line-height:30px;text-align:left;min-width:auto!important;letter-spacing: 0.6px;">
-                                          ${vLog.visitor.name}  has successfully checked in at ${vLog.visitedSpace.name} on ${(vLog.checkInTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")} and is on the way to meet you!
+                                          ${vLog.visitor.name}  has successfully checked in at ${vLog.visitedSpace.name} on ${(vLog.checkInTime)?number_to_datetime?string(formatDates(org))} and is on the way to meet you!
                                       </div>
                                       <#else>
                                        <div style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;color:#474a51;font-size:20px;line-height:30px;text-align:left;min-width:auto!important;letter-spacing: 0.6px;">
-                                          ${vLog.visitor.name}  has successfully checked in on ${(vLog.checkInTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")} and is on the way to meet you!
+                                          ${vLog.visitor.name}  has successfully checked in on ${(vLog.checkInTime)?number_to_datetime?string(formatDates(org))} and is on the way to meet you!
                                      </div>
                                      </#if>
                                     </div>
@@ -59,16 +59,33 @@
                   </tr>
                   <tr>
                         <td style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;border-bottom: 1px solid #eaeaec; padding-bottom: 15px;padding-top: 15px; color: #7f8498; padding-left: 10px;padding-right: 10px;font-size: 14px;letter-spacing: 0.9px;">Date / Time</td>
-                        <td style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;border-bottom: 1px solid #eaeaec; padding-bottom: 15px;padding-top: 15px; padding-left: 10px;padding-right: 10px;color: #000;font-weight: 600;letter-spacing: 0.9px;">${(vLog.checkInTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")}</td>
+                        <td style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;border-bottom: 1px solid #eaeaec; padding-bottom: 15px;padding-top: 15px; padding-left: 10px;padding-right: 10px;color: #000;font-weight: 600;letter-spacing: 0.9px;">${(vLog.checkInTime)?number_to_datetime?string(formatDates(org))}</td>
                   </tr>
                   
                   </table>
                   
             </div>
             <div style="text-align: center;margin-top: 20px;">
-                        <img src="https://facilio.com/images/facilio-blue-logo.svg" alt="" title="" style="width: 70px;height: 16x;padding-bottom: 15px;max-width: 100%;">
+                        <img src="https://facilio.com/images/facilio-blue-logo.svg" alt="" title="" style="width: 70px;height: 16px;padding-bottom: 15px;max-width: 100%;">
             </div>
       </div>
+    <#function formatDates org>
+        <#if org.timeFormat == 2>
+            <#local timeStr= "hh:mm aa">
+        <#elseif org.timeFormat == 1>
+            <#local timeStr= "HH:mm">
+        <#else>
+            <#local timeStr= "HH:mm">
+        </#if>
+        <#if org.dateFormat == "DD/MM/YYYY">
+            <#return "dd/MM/YYYY "+timeStr>
+        <#elseif org.dateFormat == "MM/DD/YYYY">
+            <#return "MM/dd/YYYY "+timeStr>
+        <#elseif org.dateFormat == "YYYY/MM/DD">
+            <#return "YYYY/MM/dd "+timeStr>
+        <#else>
+            <#return "dd/MM/YYYY "+timeStr>
+        </#if>
+    </#function>
 </body>
-
 </html>

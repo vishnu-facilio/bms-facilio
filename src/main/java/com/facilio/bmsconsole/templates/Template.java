@@ -17,8 +17,17 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+
 import java.io.Serializable;
 import java.util.*;
+
+import com.facilio.bmsconsole.context.TemplateUrlContext;
+import com.facilio.bmsconsole.util.FreeMarkerAPI;
+import com.facilio.bmsconsole.util.TemplateAttachmentUtil;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
+
+import lombok.Getter;
 
 
 public abstract class Template implements Serializable {
@@ -272,6 +281,7 @@ public abstract class Template implements Serializable {
 		WHATSAPP(26),
 		CALL(27),
 		EMAIL_STRUCTURE(28),
+		SATISFACTION_SURVEY_EXECUTION (29),
 		;
 
 		

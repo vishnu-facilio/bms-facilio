@@ -15,6 +15,7 @@ public class AddSupportEmailCommand extends FacilioCommand {
 	@SuppressWarnings("unchecked")
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
+		try {
 		SupportEmailContext supportEmail = (SupportEmailContext) context.get(FacilioConstants.ContextNames.SUPPORT_EMAIL);
 		
 		if(supportEmail != null) {
@@ -23,6 +24,12 @@ public class AddSupportEmailCommand extends FacilioCommand {
 			FacilioService.runAsService(FacilioConstants.Services.DEFAULT_SERVICE,() -> SupportEmailAPI.addSupportEmailSetting(supportEmail));
 		}
 		return false;
+		}catch(Exception e) {
+			if(e.getMessage().contains("Duplicate entry")){
+				throw new IllegalArgumentException("Email ID already exsists");
+			}
+			throw new IllegalArgumentException(e.getMessage());
+		}
 	}
 		
 	}

@@ -579,9 +579,10 @@ public class ReadingsAPI {
 		}
 		try {
 			if ((AccountUtil.getCurrentOrg().getId() == 210l || AccountUtil.getCurrentOrg().getId() == 321l) && meta.getTtime() > System.currentTimeMillis()) {
-				int interval = getDataInterval(meta.getResourceId(), field);
+				//int interval = getDataInterval(meta.getResourceId(), field);
 				ZonedDateTime zdt = DateTimeUtil.getDateTime();
-				zdt = zdt.truncatedTo(new SecondsChronoUnit(interval * 60));
+//				zdt = zdt.truncatedTo(new SecondsChronoUnit(interval * 60));
+				zdt = zdt.truncatedTo(DEFAULT_DATA_INTERVAL_UNIT);
 				meta.setTtime(DateTimeUtil.getMillis(zdt, true));
 			}
 		}
@@ -1147,7 +1148,7 @@ public class ReadingsAPI {
 		Map<Long,FacilioModule> moduleMap = new HashMap<>();
 		moduleMap.put(facilioModule.getModuleId(), facilioModule);
 		setReadingInterval(Collections.singletonList(readingContext), moduleMap);
-		return (int) readingContext.getDatum("interval");
+		return readingContext.getDataInterval();
 	}
 	
 	public static int getDataInterval(List<WorkflowFieldContext> wFields) throws Exception {
@@ -1175,7 +1176,7 @@ public class ReadingsAPI {
 			}
 			if (!readings.isEmpty()) {
 				setReadingInterval(readings, null);
-				return readings.stream().mapToInt(reading -> (int) reading.getDatum("interval")).max().getAsInt();
+				return readings.stream().mapToInt(reading -> reading.getDataInterval()).max().getAsInt();
 			}
 		}
 		return dataInterval;
@@ -1210,7 +1211,7 @@ public class ReadingsAPI {
 			if (readingMap != null) {
 				FacilioModule module = moduleMap != null ? moduleMap.get(reading.getModuleId()) : bean.getModule(reading.getModuleId());
 				if (module.getDataInterval() != -1) {
-					setInterval(reading, module.getDataInterval());
+					reading.setDataInterval(module.getDataInterval());
 					continue;
 				}
 				remainingReadings.add(reading);
@@ -1239,57 +1240,19 @@ public class ReadingsAPI {
 			return;
 		}
 		
-		List<Point> points = PointsAPI.getPointData(pairs);
-		if (CollectionUtils.isNotEmpty(points)) {
-			try {
-				setNewAgentDataInterval(points, remainingReadings);
-			}
-			catch (Exception e) {
-				LOGGER.error("Exception occurred on getting new interval", e);
-				// Temp. To be removed if no issues
+		// Assuming data interval will be set for all readingcontexts or none
+		if (remainingReadings.get(0).getDataInterval() <= 0) {
+			
+			// temp check till pd7 agents are migrated
+			if (AccountUtil.getCurrentOrg().getOrgId() == 146l) {
 				setOldAgentDataInterval(pairs, remainingReadings);
+				return;
 			}
-		}
-		else {
-			setOldAgentDataInterval(pairs, remainingReadings);
-		}
-		
-	}
-	
-	private static void setNewAgentDataInterval(List<Point> points, List<ReadingContext> readings) throws Exception {
-		int defaultInterval = getDefaultInterval();
-		Map<Long, Long> assetVsAgentMap = new HashMap<>();
-		Set<Long> agentIds = new HashSet<>();
-		int pointInterval = 0; // Assuming points of same interval only will come together
-		for(Point point: points) {
-			if (point.getInterval() > 0) {
-				pointInterval = point.getInterval();
-				break;
-			}
-			assetVsAgentMap.put(point.getResourceId(), point.getAgentId());
-			agentIds.add(point.getAgentId());
-		}
-		Map<Long, com.facilio.agentv2.FacilioAgent> agentMap = null;
-		if (!agentIds.isEmpty()) {
-			agentMap = AgentApiV2.getAgentMap(agentIds);
-		}
-		for (ReadingContext reading : readings) {
-			if (pointInterval > 0) {
-				setInterval(reading, pointInterval);
-				continue;
-			}
-			int interval = defaultInterval;
-			Long agentId = assetVsAgentMap.get(reading.getParentId());
-			if (agentId != null) {
-				com.facilio.agentv2.FacilioAgent agent = agentMap.get(agentId);
-				if (agent.getInterval() > 0l) {
-					interval =  (int)agent.getInterval();
-				}
-			}
-			else {
-				LOGGER.error("controller missing for asset - " + reading.getParentId());
-			}
-			setInterval(reading, interval);
+			
+			int defaultInterval = getDefaultInterval();
+			remainingReadings.forEach(reading -> {
+				reading.setDataInterval(defaultInterval);
+			});
 		}
 	}
 	
@@ -1342,13 +1305,10 @@ public class ReadingsAPI {
 					}
 				}
 			}
-			setInterval(reading, minuteInterval);
+			reading.setDataInterval(minuteInterval);
 		}
 	}
 	
-	private static void setInterval(ReadingContext reading, int interval) {
-		reading.setDatum("interval", interval);
-	}
 	
 	private static int getDefaultInterval() throws Exception {
 		int defaultInterval = DEFAULT_DATA_INTERVAL;

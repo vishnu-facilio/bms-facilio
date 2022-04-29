@@ -1,10 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.visitorlog;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -32,49 +29,56 @@ public class GenerateQrInviteUrlForBaseVisitCommandV3 extends FacilioCommand imp
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
-        List<BaseVisitContextV3> inviteVisitors = recordMap.get(moduleName);
-        if(CollectionUtils.isNotEmpty(inviteVisitors)) {
-            for(BaseVisitContextV3 inviteVisitor : inviteVisitors) {
-            	if(StringUtils.isEmpty(inviteVisitor.getPassCode()) && StringUtils.isEmpty(inviteVisitor.getQrUrl())) {
-                    String passCode = VisitorManagementAPI.generatePassCode();
-                    String qrCode = "visitorLog_" + passCode;
-                    JSONObject size = new JSONObject();
-                    size.put("width", 200);
-                    size.put("height", 200);
-                    String originalUrl = PdfUtil.exportUrlAsPublicFilePdf(FacilioProperties.getClientAppUrl() + "/app/qr?code=" + qrCode, true, null, size, -1,  FileInfo.FileFormat.IMAGE);
-                    String baseUrl = FacilioProperties.getClientAppUrl();
-                    if(!FacilioProperties.isDevelopment() && StringUtils.isNotEmpty(originalUrl)) {
-                        inviteVisitor.setQrUrl(baseUrl.concat(originalUrl));
+        Map<String, List<Object>> queryParams = (Map<String, List<Object>>)context.get(Constants.QUERY_PARAMS);
+        if(queryParams.containsKey("withQrUrl") && queryParams.get("withQrUrl") != null && !queryParams.get("withQrUrl").isEmpty() && Boolean.parseBoolean((String)queryParams.get("withQrUrl").get(0))) {
+            List<BaseVisitContextV3> inviteVisitors = recordMap.get(moduleName);
+            if (CollectionUtils.isNotEmpty(inviteVisitors)) {
+                for (BaseVisitContextV3 inviteVisitor : inviteVisitors) {
+                    if (StringUtils.isEmpty(inviteVisitor.getPassCode()) && StringUtils.isEmpty(inviteVisitor.getQrUrl())) {
+                        String passCode = VisitorManagementAPI.generatePassCode();
+                        String qrCode = "visitorLog_" + passCode;
+                        JSONObject size = new JSONObject();
+                        size.put("width", 200);
+                        size.put("height", 200);
+                        String originalUrl = PdfUtil.exportUrlAsPublicFilePdf(FacilioProperties.getClientAppUrl() + "/app/qr?code=" + qrCode, true, null, size, -1, FileInfo.FileFormat.IMAGE);
+                        String baseUrl = FacilioProperties.getClientAppUrl();
+                        if (!FacilioProperties.isDevelopment() && StringUtils.isNotEmpty(originalUrl)) {
+                            inviteVisitor.setQrUrl(baseUrl.concat(originalUrl));
+                        } else {
+                            inviteVisitor.setQrUrl(originalUrl);
+                        }
+
+                        inviteVisitor.setPassCode(passCode);
+
+                        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_VISIT);
+
+                        Map<String, Object> updateMap = new HashMap<>();
+                        FacilioField qrUrlField = modBean.getField("qrUrl", module.getName());
+                        FacilioField otpField = modBean.getField("passCode", module.getName());
+
+                        updateMap.put("qrUrl", inviteVisitor.getQrUrl());
+                        updateMap.put("passCode", passCode);
+
+                        List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+                        updatedfields.add(qrUrlField);
+                        updatedfields.add(otpField);
+                        UpdateRecordBuilder<BaseVisitContextV3> updateBuilder = new UpdateRecordBuilder<BaseVisitContextV3>()
+                                .module(module)
+                                .fields(updatedfields)
+                                .andCondition(CriteriaAPI.getIdCondition(inviteVisitor.getId(), module));
+
+                        ;
+                        updateBuilder.updateViaMap(updateMap);
                     }
-                    else {
-                        inviteVisitor.setQrUrl(originalUrl);
-                    }
+                }
 
-                    inviteVisitor.setPassCode(passCode);
-
-                    ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                    FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_VISIT);
-
-                    Map<String, Object> updateMap = new HashMap<>();
-                    FacilioField qrUrlField = modBean.getField("qrUrl", module.getName());
-                    FacilioField otpField = modBean.getField("passCode", module.getName());
-
-                    updateMap.put("qrUrl", inviteVisitor.getQrUrl());
-                    updateMap.put("passCode", passCode);
-
-                    List<FacilioField> updatedfields = new ArrayList<FacilioField>();
-                    updatedfields.add(qrUrlField);
-                    updatedfields.add(otpField);
-                    UpdateRecordBuilder<BaseVisitContextV3> updateBuilder = new UpdateRecordBuilder<BaseVisitContextV3>()
-                            .module(module)
-                            .fields(updatedfields)
-                            .andCondition(CriteriaAPI.getIdCondition(inviteVisitor.getId(), module));
-
-                    ;
-                    updateBuilder.updateViaMap(updateMap);  		
-            	}
             }
-
+            queryParams.remove("withQrUrl");
+        }
+        else
+        {
+            queryParams.put("withQrUrl", Collections.singletonList("true"));
         }
         return false;
     }

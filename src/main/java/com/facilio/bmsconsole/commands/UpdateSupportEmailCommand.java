@@ -20,6 +20,7 @@ public class UpdateSupportEmailCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
+		try {
 		SupportEmailContext supportEmail = (SupportEmailContext) context.get(FacilioConstants.ContextNames.SUPPORT_EMAIL);
 			if(supportEmail != null) {
 				supportEmail.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
@@ -57,6 +58,12 @@ public class UpdateSupportEmailCommand extends FacilioCommand {
 //			}
 		}
 		return false;
-	}
+	}catch(Exception e) {
+		if(e.getMessage().contains("Duplicate entry")){
+			throw new IllegalArgumentException("Email ID already exsists");
+		}
+		throw new IllegalArgumentException(e.getMessage());	
+		}
 
+ }
 }

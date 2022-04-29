@@ -8,19 +8,16 @@ import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
 
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.templates.*;
 import com.facilio.bmsconsoleV3.context.EmailFromAddress;
 import com.facilio.emailtemplate.context.EMailStructure;
 import com.facilio.emailtemplate.util.EmailStructureUtil;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
@@ -53,7 +50,6 @@ import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.templates.DefaultTemplateWorkflowsConf.TemplateWorkflowConf;
 import com.facilio.bmsconsole.templates.PrerequisiteApproversTemplate.SharingType;
 import com.facilio.bmsconsole.templates.Template.Type;
-import com.facilio.bmsconsoleV3.context.EmailFromAddress;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -240,6 +236,10 @@ public class TemplateAPI {
 			id = addFormTemplate((FormTemplate) template);
 			template.setId(id);
 		}
+		else if (template instanceof SatisfactionSurveyTemplate){
+			id = addSatisfactionSurveyTemplate (( SatisfactionSurveyTemplate ) template);
+			template.setId (id);
+		}
 		
 		if (template.getAttachments() != null) {
 			TemplateAttachmentUtil.addAttachments(template.getId(), template.getAttachments());
@@ -247,6 +247,7 @@ public class TemplateAPI {
 		
 		return id;
 	}
+	
 
 	public static void setAttachments(List<Map<String, Object>> attachmentsJson, Template emailTemplate) {
 		if (CollectionUtils.isNotEmpty(attachmentsJson)) {
@@ -263,6 +264,16 @@ public class TemplateAPI {
 		}
 	}
 	
+
+	
+
+	private static long addSatisfactionSurveyTemplate (SatisfactionSurveyTemplate template) throws Exception {
+		addDefaultProps (template);
+		template.setType(Type.SATISFACTION_SURVEY_EXECUTION);
+		return insertTemplateWithExtendedProps(ModuleFactory.getSatisfactionSurveyTemplateModule (), FieldFactory.getSatisfactionSurveyTemplateFields (), FieldUtil.getAsProperties(template));
+	}
+
+
 	public static List<Template> getTemplatesOfType(Type type) throws Exception {
 		FacilioModule module = ModuleFactory.getTemplatesModule();
 		List<FacilioField> fields = FieldFactory.getTemplateFields();
@@ -571,6 +582,14 @@ public class TemplateAPI {
 					template = getFormTemplateFromMap(templateMap);
 				}
 			}break;
+			case SATISFACTION_SURVEY_EXECUTION:
+			{
+				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getSatisfactionSurveyTemplateModule (), FieldFactory.getSatisfactionSurveyTemplateFields (), id);
+				if(templates != null && !templates.isEmpty()) {
+					templateMap.putAll(templates.get(0));
+					template = getSatisfactionSurveyTemplateFromMap (templateMap);
+				}
+			}break;
 			default: break;
 		}
 		
@@ -593,6 +612,10 @@ public class TemplateAPI {
 		FormTemplate template =  FieldUtil.getAsBeanFromMap(templateMap, FormTemplate.class);
 		setFormInTemplate(template);
 		return template;
+	}
+
+	private static SatisfactionSurveyTemplate getSatisfactionSurveyTemplateFromMap (Map<String, Object> templateMap) throws Exception {
+		return FieldUtil.getAsBeanFromMap(templateMap, SatisfactionSurveyTemplate.class);
 	}
 
 	public static void setFormInTemplate(FormTemplate template) throws Exception {

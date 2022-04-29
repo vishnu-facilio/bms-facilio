@@ -10,7 +10,9 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.time.DateTimeUtil;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -167,7 +169,7 @@ public class ReadingContext extends ModuleBaseWithCustomFields {
 	
 	public ReadingContext clone()
 	{ 
-		ReadingContext r =  new ReadingContext(actualTtime, ttime, zdt, parentId, marked, parent, newReading, sourceType, sourceId);
+		ReadingContext r =  new ReadingContext(actualTtime, ttime, zdt, parentId, marked, parent, newReading, sourceType, sourceId, dataInterval);
 		r.setId(getId());
 		r.setReadings(new HashMap<>(getReadings()));
 		return r;
@@ -180,4 +182,7 @@ public class ReadingContext extends ModuleBaseWithCustomFields {
 	public void setSourceId(long sourceId) {
 		this.sourceId = sourceId;
 	}
+	
+	@Getter @Setter
+	private int dataInterval = -1; // in mins
 }

@@ -311,6 +311,8 @@ public class TransactionChainFactory {
 		public static FacilioChain getWorkOrderWorkflowsChain(boolean sendNotification) {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new ExecuteStateFlowCommand());
+			c.addCommand (new ExecuteAllWorkflowsCommand (RuleType.SATISFACTION_SURVEY_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SURVEY_ACTION_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_CUSTOM_CHANGE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
@@ -6349,7 +6351,25 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain addSurveyRuleChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddSurveyRuleCommand ());
+		return chain;
+	}
 
+	public static FacilioChain updateSurveyRuleChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new UpdateSurveyRuleCommand ());
+		chain.addCommand(new DeleteOldSurveyRuleActionCommand());
+		chain.addCommand(new AddSurveyRuleActionCommand());
+		return chain;
+	}
+
+	public static FacilioChain deleteSurveyRuleChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new DeleteSurveyRulesCommand());
+		return chain;
+	}
 
 }
 

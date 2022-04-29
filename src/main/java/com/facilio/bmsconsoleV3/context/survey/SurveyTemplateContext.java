@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.bmsconsole.context.AssetCategoryContext;
@@ -55,7 +57,10 @@ public class SurveyTemplateContext extends QAndATemplateContext <SurveyResponseC
     private Boolean status;
     
     private PeopleContext assignedTo;
-    
+
+	@JsonIgnore
+	private Long ruleId;
+
     public Integer getCreationType() { // Everything is wrapper in V3 for null handling
     	if(creationType != null) {
     		return creationType.getIndex();
@@ -103,6 +108,7 @@ public class SurveyTemplateContext extends QAndATemplateContext <SurveyResponseC
 				resource = ResourceAPI.getResource(resource.getId());
 				SurveyResponseContext response = newResponseObject();
 				response.setResource(resource);
+				response.setRuleId(this.getRuleId());
 				response.setSiteId(resource.getSiteId());
 				responses.add(response);
 			}

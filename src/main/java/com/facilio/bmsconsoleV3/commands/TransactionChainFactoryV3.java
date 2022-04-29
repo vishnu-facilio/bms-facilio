@@ -316,6 +316,7 @@ public class TransactionChainFactoryV3 {
 
         c.addCommand(new UpdateVisitorLogArrivedStateCommandV3()); //check-in related
         c.addCommand(new ChangeVisitorLogStateCommandV3()); //check-in related
+        c.addCommand(new GenerateQrInviteUrlForBaseVisitCommandV3());
         c.addCommand(new ForkChainToInstantJobCommand()
                 .addCommand(new AddNdaForVisitorLogModuleCommandV3()) //check-in related
                 .addCommand(new GenerateQrInviteUrlForBaseVisitCommandV3())

@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.qa.QAndAUtil;
 import com.facilio.qa.command.QAndAReadOnlyChainFactory;
 import com.facilio.qa.command.QAndATransactionChainFactory;
 import com.facilio.qa.context.ClientAnswerContext;
@@ -55,13 +56,13 @@ public class QAndAAction extends RESTAPIHandler {
     }
 
     public String executeTemplate() throws Exception {
-        FacilioChain executeTemplateChain = QAndATransactionChainFactory.executeTemplateChain();
-        FacilioContext context = executeTemplateChain.getContext();
-        Constants.setModuleName(context, this.getModuleName());
-        Constants.setRecordId(context, this.getId());
-        context.put(FacilioConstants.ContextNames.RESOURCE_LIST,getResources());
-        executeTemplateChain.execute();
 
+		FacilioChain executeTemplateChain = QAndATransactionChainFactory.executeTemplateChain();
+		FacilioContext context = executeTemplateChain.getContext();
+		Constants.setModuleName(context,this.getModuleName());
+		Constants.setRecordId(context,this.getId());
+		context.put(FacilioConstants.ContextNames.RESOURCE_LIST,resources);
+		executeTemplateChain.execute();
 //        ResponseContext response = (ResponseContext) context.get(FacilioConstants.QAndA.RESPONSE);
 //        handleSummaryRequest(response.getQAndAType().getResponseModule(), response._getId());
 

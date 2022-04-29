@@ -6,6 +6,10 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.templates.*;
+
+import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
@@ -22,25 +26,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.templates.CallTemplate;
-import com.facilio.bmsconsole.templates.ControlActionTemplate;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
-import com.facilio.bmsconsole.templates.EMailTemplate;
-import com.facilio.bmsconsole.templates.FormTemplate;
-import com.facilio.bmsconsole.templates.JSONTemplate;
-import com.facilio.bmsconsole.templates.PushNotificationTemplate;
-import com.facilio.bmsconsole.templates.SMSTemplate;
-import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.Template.Type;
-import com.facilio.bmsconsole.templates.TemplateAttachment;
-import com.facilio.bmsconsole.templates.TemplateAttachmentType;
-import com.facilio.bmsconsole.templates.WhatsappMessageTemplate;
-import com.facilio.bmsconsole.templates.WorkflowTemplate;
-import com.facilio.bmsconsole.templates.WorkorderTemplate;
-import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.bmsconsole.workflow.rule.ActionType;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.context.EmailFromAddress;
 import com.facilio.cb.context.ChatBotIntentAction;
 import com.facilio.constants.FacilioConstants;
@@ -466,6 +453,9 @@ public class ActionAPI {
 							case EMAIL_CONVERSATION:
 								setFormTemplate(action, SourceType.EMAIL_REQUEST);
 								break;
+							case CREATE_SATISFACTION_SURVEY:
+								setSatisfactionSurveyTemplate (action,rule);
+								break;
 							default:
 								break;
 						}
@@ -481,6 +471,15 @@ public class ActionAPI {
 			}
 		}
 		return actions;
+	}
+
+	private static void setSatisfactionSurveyTemplate (ActionContext action,WorkflowRuleContext rule ) throws IOException {
+		SatisfactionSurveyTemplate template = FieldUtil.getAsBeanFromJson(action.getTemplateJson(),SatisfactionSurveyTemplate.class);
+		if (StringUtils.isEmpty(template.getName())) {
+			template.setName(rule.getName() + "_Satisfaction_Action_Template");
+		}
+		action.setTemplate (template);
+		checkAndSetWorkflow(action.getTemplateJson(), template);
 	}
 
 	private static void setControlActionTemplate(ActionContext action, WorkflowRuleContext rule) throws IOException {
