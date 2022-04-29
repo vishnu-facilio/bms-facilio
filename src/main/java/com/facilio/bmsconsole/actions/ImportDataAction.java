@@ -113,6 +113,7 @@ public class ImportDataAction extends FacilioAction {
 		FacilioTimer.deleteJob(importProcessContext.getId(), ImportDataJob.JOB_NAME);
 
 		FacilioTimer.scheduleOneTimeJobWithTimestampInSec(importProcessContext.getId(), ImportDataJob.JOB_NAME, 10, "priority");
+		setResult(FacilioConstants.ContextNames.IMPORT_PROCESS_CONTEXT ,importProcessContext);
 		return SUCCESS;
 	}
 	
