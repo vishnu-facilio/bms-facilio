@@ -29,6 +29,11 @@ public class NameSpaceField {
     FacilioModule module;
 
     Long dataInterval;
+
+    public Long getDataInterval() {
+        return dataInterval != null ? dataInterval : -1L;
+    }
+
     int aggregationTypeI;
 
     public void setAggregationTypeI(int aggregationTypeI) {

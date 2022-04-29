@@ -13,11 +13,7 @@ import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.UserOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ScopeHandler;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import lombok.NonNull;
 import org.apache.commons.chain.Context;
@@ -199,6 +195,8 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
                     return FieldFactory.Fields.filterOutFields(fields, FieldFactory.Fields.QUOTE_FIELDS_INCLUDE, FieldFactory.Fields.FilterType.INCLUDE);
                 case FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM:
                     return FieldFactory.Fields.filterOutFields(fields, SENSOR_ALARM_FIELDS_TO_HIDE, FieldFactory.Fields.FilterType.EXCLUDE);
+                case ContextNames.NEW_READING_RULE_MODULE:
+                    return FieldFactory.Fields.filterOutFields(fields, FieldFactory.Fields.NEW_READING_RULE_FIELDS_INCLUDE, FieldFactory.Fields.FilterType.INCLUDE);
                 default:
                     return fields;
             }

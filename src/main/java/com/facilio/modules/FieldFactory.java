@@ -220,7 +220,7 @@ public class FieldFactory extends BaseFieldFactory {
             return fields.stream().
                     filter(
                             f -> !(type.getFilterBool() ^ filterList.contains(f.getName())) // This is XNOR behaviour. It should be true only if both isInclude and contains are true or if both are false
-                                    || !f.isDefault()
+                                    || f.isDefault()
                     ).collect(Collectors.toList());
         }
 
@@ -405,6 +405,14 @@ public class FieldFactory extends BaseFieldFactory {
                 "urgency",
                 "createdBy"
         }).collect(Collectors.toSet()));
+
+        public static final List<String> NEW_READING_RULE_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.stream(new String[]{
+                "name",
+                "description",
+                "status",
+                "createdTime",
+                "assetCategoryId"
+        }).collect(Collectors.toList()));
     }
 
     public static List<FacilioField> getFormFields() {
@@ -1216,8 +1224,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("metric", "METRIC", module, FieldType.NUMBER));
         fields.add(getField("unitId", "UNIT_ID", module, FieldType.NUMBER));
         fields.add(getField("counterField", "IS_COUNTER_FIELD", module, FieldType.BOOLEAN));
-		fields.add(getField("minValue","MIN_VAL",module,FieldType.DECIMAL));
-		fields.add(getField("maxValue","MAX_VAL",module,FieldType.DECIMAL));
+        fields.add(getField("minValue","MIN_VAL",module,FieldType.DECIMAL));
+        fields.add(getField("maxValue","MAX_VAL",module,FieldType.DECIMAL));
 
         return fields;
     }
@@ -1339,19 +1347,19 @@ public class FieldFactory extends BaseFieldFactory {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getFieldsModule();
 
-        fields.add(getStringField("name", "NAME", module));
-        fields.add(getStringField("displayName", "DISPLAY_NAME", module));
-        fields.add(getStringField("columnName", "COLUMN_NAME", module));
+        fields.add(getStringField("name","NAME",module));
+        fields.add(getStringField("displayName","DISPLAY_NAME",module));
+        fields.add(getStringField("columnName","COLUMN_NAME",module));
 
-        fields.add(getBooleanField("required", "REQUIRED", module));
-        fields.add(getBooleanField("mainField", "IS_MAIN_FIELD", module));
-        fields.add(getBooleanField("default", "IS_DEFAULT", module));
-        fields.add(getBooleanField("isSystemUpdated", "IS_SYSTEM_UPDATED", module));
+        fields.add(getBooleanField("required","REQUIRED",module));
+        fields.add(getBooleanField("mainField","IS_MAIN_FIELD",module));
+        fields.add(getBooleanField("default","IS_DEFAULT",module));
+        fields.add(getBooleanField("isSystemUpdated","IS_SYSTEM_UPDATED",module));
 
         fields.add(getNumberField("moduleId", "MODULEID", module));
-        fields.add(getNumberField("sequenceNumber", "SEQUENCE_NUMBER", module));
-        fields.add(getNumberField("dataType", "DATA_TYPE", module));
-        fields.add(getNumberField("displayTypeInt", "DISPLAY_TYPE", module));
+        fields.add(getNumberField("sequenceNumber","SEQUENCE_NUMBER",module));
+        fields.add(getNumberField("dataType","DATA_TYPE",module));
+        fields.add(getNumberField("displayTypeInt","DISPLAY_TYPE",module));
         fields.add(getNumberField("createdTime", "CREATED_TIME", module));
         fields.add(getNumberField("modifiedTime", "MODIFIED_TIME", module));
         fields.add(getNumberField("sourceBundle", "SOURCE_BUNDLE", module));
@@ -1404,7 +1412,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getStringField("icon","ICON",module));
         fields.add(getStringField("placeHolder","PLACE_HOLDER",module));
 
-        
+
         fields.add(getNumberField("modifiedTime", "MODIFIED_TIME", module));
         fields.add(getNumberField("sourceBundle", "SOURCE_BUNDLE", module));
         fields.add(getBooleanField("deleted", "IS_DELETED", module));
@@ -2015,17 +2023,22 @@ public class FieldFactory extends BaseFieldFactory {
         FacilioModule module = ModuleFactory.getNewReadingRuleModule();
         fields.add(getIdField(module));
         fields.add(getModuleIdField(module));
-        fields.add(getNumberField("fieldId", "READING_FIELD_ID", module));
-        fields.add(getStringField("name", "NAME", module));
-        fields.add(getStringField("description", "DESCRIPTION", module));
-        fields.add(getNumberField("createdTime", "CREATED_TIME", module));
-        fields.add(getNumberField("createdBy", "CREATED_BY", module));
-        fields.add(getNumberField("alarmType", "ALARM_APPLIED_TO", module));
-        fields.add(getBooleanField("status", "STATUS", module));
-        fields.add(getNumberField("assetCategoryId", "ASSET_CATEGORY_ID", module));
-        fields.add(getNumberField("workflowId", "WORKFLOW_ID", module));
-        fields.add(getNumberField("impactId", "IMPACT_ID", module));
-        fields.add(getBooleanField("autoClear", "AUTO_CLEAR", module));
+
+        FacilioField nameField = getField("name", "Name", "NAME", module, FieldType.STRING);
+        nameField.setMainField(true);
+        fields.add(nameField);
+
+        fields.add(getField("description", "Description", "DESCRIPTION", module, FieldType.STRING));
+        fields.add(getField("alarmType", "Applied To", "ALARM_APPLIED_TO", module, FieldType.NUMBER));
+        fields.add(getField("createdTime", "Created Time", "CREATED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("status", "Status","STATUS", module, FieldType.BOOLEAN));
+
+        fields.add(getField("fieldId", "Field Id", "READING_FIELD_ID", module, FieldType.NUMBER));
+        fields.add(getField("createdBy","Created By", "CREATED_BY", module, FieldType.NUMBER));
+        fields.add(getField("assetCategoryId", "Asset Category Id", "ASSET_CATEGORY_ID", module, FieldType.NUMBER));
+        fields.add(getField("workflowId","Workflow ID", "WORKFLOW_ID", module, FieldType.NUMBER));
+        fields.add(getField("impactId", "Impact Id", "IMPACT_ID", module, FieldType.NUMBER));
+        fields.add(getField("autoClear", "Auto Clear", "AUTO_CLEAR", module, FieldType.BOOLEAN));
         return fields;
     }
 

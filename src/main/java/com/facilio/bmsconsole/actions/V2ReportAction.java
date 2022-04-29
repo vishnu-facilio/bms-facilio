@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.context.sensor.SensorAlarmContext;
 import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
 
 import com.facilio.bmsconsole.workflow.rule.*;
+import com.facilio.ns.context.NameSpaceField;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.report.context.*;
@@ -1548,8 +1549,7 @@ public class V2ReportAction extends FacilioAction {
             this.startTime = DateTimeUtil.getDayStartTimeOf(alarmContext.getCreatedTime()); // specific handling for
             dataPoints = new JSONArray(); // anomaly alarms
 
-            JSONArray points = FacilioUtil
-                    .parseJsonArray(alarmContext.getAdditionInfo().get(additionalDataPointString).toString());
+            JSONArray points = FacilioUtil.parseJsonArray(alarmContext.getAdditionInfo().get(additionalDataPointString).toString());
 
             for (int i = 0; i < points.size(); i++) {
                 long fieldId = Long.parseLong(points.get(i).toString());
@@ -1600,22 +1600,26 @@ public class V2ReportAction extends FacilioAction {
     private Collection getDataPointsJSONFromNewRule(NewReadingRuleContext readingRule, ResourceContext resource) throws Exception {
         JSONArray dataPoints = new JSONArray();
 
-        long readingFieldId = NewReadingRuleAPI.getPrimaryFieldId(readingRule);
+        List<NameSpaceField> fields = readingRule.getNs().getFields();
 
-        if (readingFieldId > 0) {
-            JSONObject dataPoint = new JSONObject();
+        for (NameSpaceField nsField : fields) {
+            Long readingFieldId = nsField.getFieldId();
 
-            dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
+            if (readingFieldId > 0) {
+                JSONObject dataPoint = new JSONObject();
 
-            JSONObject yAxisJson = new JSONObject();
-            yAxisJson.put("fieldId", readingFieldId);
-            updateTimeRangeAsPerFieldType(readingFieldId);
-            yAxisJson.put("aggr", 0);
+                dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
 
-            dataPoint.put("yAxis", yAxisJson);
+                JSONObject yAxisJson = new JSONObject();
+                yAxisJson.put("fieldId", readingFieldId);
+                updateTimeRangeAsPerFieldType(readingFieldId);
+                yAxisJson.put("aggr", 0);
 
-            dataPoint.put("type", 1);
-            dataPoints.add(dataPoint);
+                dataPoint.put("yAxis", yAxisJson);
+
+                dataPoint.put("type", 1);
+                dataPoints.add(dataPoint);
+            }
         }
         return dataPoints;
     }

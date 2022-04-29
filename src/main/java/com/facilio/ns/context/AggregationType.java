@@ -3,7 +3,16 @@ package com.facilio.ns.context;
 import com.facilio.modules.FacilioIntEnum;
 
 public enum AggregationType implements FacilioIntEnum {
-    FIRST, LAST, SUM, MAX, MIN, AVG, COUNT, LATEST;
+    FIRST,
+    LAST,
+    SUM,
+    MAX,
+    MIN,
+    AVG,
+    COUNT,
+    LATEST,
+    DISTINCT_COUNT
+    ;
 
     public static AggregationType valueOf(int idx) {
         if (idx > 0 && idx <= values().length) {
