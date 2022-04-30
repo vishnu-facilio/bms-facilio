@@ -94,7 +94,7 @@ public interface IAMUserBean {
     public String validateAndGenerateTokenV3(String emailaddress, String password, String appDomainName, String userAgent, String userType,
 			String ipAddress, boolean startUserSession) throws Exception;
 
-	String addProxySession(Map<String, Object> props, String proxiedUserName, long proxiedSessionId) throws Exception;
+	String addProxySession(String proxyUserName, String proxiedUserName, long proxiedSessionId) throws Exception;
 
     String getEmailFromDigest(String digest) throws Exception;
 
@@ -232,7 +232,15 @@ public interface IAMUserBean {
 	boolean isUserInProxyList(String username) throws Exception;
 
 	Map<String, Object> generatePropsForWithoutPassword(String emailaddress, String userAgent, String userType,
-														String ipAddress, String appDomain) throws Exception;
+														String ipAddress, String appDomain, boolean isProxySession) throws Exception;
 
 	IAMAccount verifyProxyToken(String proxyToken, IAMAccount proxyUser) throws Exception;
+
+	String generateProxyUserSessionToken(String proxyUser) throws Exception;
+
+	String decodeProxyUserToken(String token) throws Exception;
+
+	Map<String, Object> getUserSession(long sessionId) throws Exception;
+
+	Map<String, Object> getProxySession(String proxyToken) throws Exception;
 }

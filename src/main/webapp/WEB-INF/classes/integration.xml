@@ -110,6 +110,18 @@
 		</result>
 	</action>
 
+	<action name="authorizeproxyuser" class="com.facilio.auth.actions.FacilioAuthAction" method="authorizeproxyuser">
+		<param name="auth">false</param>
+		<result name="success" type="json">
+			<param name="ignoreHierarchy">false</param>
+			<param name="includeProperties">responseCode, ^jsonresponse.*</param>
+		</result>
+		<result name="error" type="json">
+			<param name="ignoreHierarchy">false</param>
+			<param name="includeProperties">responseCode, ^jsonresponse.*</param>
+		</result>
+	</action>
+
 
 	<action name="verifyTotp" class="com.facilio.auth.actions.FacilioAuthAction" method="verifyTotp">
 		<param name="auth">false</param>

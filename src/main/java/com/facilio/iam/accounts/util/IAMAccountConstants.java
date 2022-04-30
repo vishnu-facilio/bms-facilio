@@ -27,7 +27,8 @@ public class IAMAccountConstants {
 			DIGEST_SESSION(3),
 			TOTP_SESSION(4),
 			MFA_CONFIG_SESSION(5),
-			PWD_POLICY_PWD_RESET(6)
+			PWD_POLICY_PWD_RESET(6),
+			PROXY_USER_TOKEN(7)
 			;
 
 		    private int sessionType;
@@ -853,7 +854,15 @@ public class IAMAccountConstants {
 			id.setModule(module);
 			fields.add(id);
 
-			fields.add(getUserIdField(module));
+			FacilioField email = new FacilioField();
+			email.setName("email");
+			email.setDisplayName("Email");
+			email.setDataType(FieldType.STRING);
+			email.setColumnName("EMAIL");
+			email.setModule(module);
+			fields.add(email);
+
+			fields.add(FieldFactory.getField("createdTime", "CREATED_TIME", module, FieldType.DATE_TIME));
 
 			FacilioField token = new FacilioField();
 			token.setName("token");
@@ -861,13 +870,6 @@ public class IAMAccountConstants {
 			token.setColumnName("TOKEN");
 			token.setModule(module);
 			fields.add(token);
-
-			FacilioField sessionId = new FacilioField();
-			sessionId.setName("sessionId");
-			sessionId.setDataType(FieldType.NUMBER);
-			sessionId.setColumnName("SESSIONID");
-			sessionId.setModule(module);
-			fields.add(sessionId);
 
 			FacilioField psessionId = new FacilioField();
 			psessionId.setName("proxiedSessionId");
@@ -962,6 +964,13 @@ public class IAMAccountConstants {
 			userType.setColumnName("USER_TYPE");
 			userType.setModule(module);
 			fields.add(userType);
+
+			FacilioField isProxySession = new FacilioField();
+			isProxySession.setName("isProxySession");
+			isProxySession.setDataType(FieldType.BOOLEAN);
+			isProxySession.setColumnName("IS_PROXY_SESSION");
+			isProxySession.setModule(module);
+			fields.add(isProxySession);
 		
 			return fields;
 		}

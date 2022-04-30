@@ -17,6 +17,7 @@ import java.util.Properties;
 import javax.servlet.http.HttpServletRequest;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -149,6 +150,12 @@ public class FacilioProperties {
     @Getter
     private static String hydraUrl;
 
+    @Getter
+    private static String proxygroup;
+
+    @Getter
+    private static String serviceaccountuser;
+
     static {
         loadProperties();
     }
@@ -251,6 +258,8 @@ public class FacilioProperties {
             senderName = PROPERTIES.getProperty("sender.name");
             mandrillUrl = PROPERTIES.getProperty("mandrill.url");
             mandrillApiKey = PROPERTIES.getProperty("mandrill.apikey");
+            proxygroup = PROPERTIES.getProperty("iam.groups.proxygroup", "proxy-users@facilio.com");
+            serviceaccountuser = PROPERTIES.getProperty("iam.groups.serviceaccountuser", "yoge@facilio.com");
 
             iamUrl = PROPERTIES.getProperty("iam.url", "app.facilio.com");
             iamDCLookupUrl = getIAMURL() + PROPERTIES.getProperty("iam.dc.lookupurl", "/api/v3/internal/dc/lookup");

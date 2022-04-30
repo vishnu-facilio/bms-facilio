@@ -100,12 +100,6 @@ public class AuthInterceptor extends AbstractInterceptor {
 					IAMAccount iamAccount = null;
 					try {
 						 iamAccount = AuthenticationUtil.validateToken(request, false);
-						 if (iamAccount != null) {
-							 IAMAccount proxyAccount = AuthenticationUtil.validateProxyToken(request, iamAccount);
-							 if (proxyAccount != null) {
-							 	iamAccount = proxyAccount;
-							 }
-						 }
 					} catch (SecurityPolicyException secEx) {
 						SecurityPolicyException.ErrorCode errorCode = secEx.getErrorCode();
 						if (errorCode == SecurityPolicyException.ErrorCode.WEB_SESSION_EXPIRY) {

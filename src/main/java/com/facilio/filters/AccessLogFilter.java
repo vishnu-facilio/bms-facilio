@@ -12,6 +12,7 @@ import com.facilio.service.FacilioService;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.RequestUtil;
 import com.facilio.util.SentryUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -121,6 +122,9 @@ public class AccessLogFilter implements Filter {
                 event.setProperty("ftqtime",String.valueOf(account.getTotalQueryTime()));
                 event.setProperty("fdatasize",String.valueOf(responseSize));
                 event.setProperty("fjsonconvtime",String.valueOf(account.getJsonConversionTime()));
+                if (account.getUser() != null && StringUtils.isNotEmpty(account.getUser().getProxy())) {
+                    event.setProperty("proxy", String.valueOf(account.getUser().getProxy()));
+                }
             }
 
             RequestUtil.addRequestLogEvents(request,event);

@@ -2,11 +2,15 @@ package com.facilio.util;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.facilio.iam.accounts.exceptions.AccountException;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.iam.accounts.util.IAMUserUtil;
+
+import java.util.Map;
 
 
 public class AuthenticationUtil {
@@ -55,7 +59,41 @@ public class AuthenticationUtil {
 					&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType))) {
 				userType = "mobile";
 			}
+
 			IAMAccount iamAccount = IAMUserUtil.verifiyFacilioTokenv3(facilioToken, overrideSessionCheck, userType);
+            String proxySessionToken = FacilioCookie.getUserCookie(request,"fc.idToken.proxy");
+            if (StringUtils.isNotEmpty(proxySessionToken)) {
+                Long userSessionId = iamAccount.getUserSessionId();
+                if (userSessionId == null || userSessionId <= 0) {
+                    throw new AccountException(AccountException.ErrorCode.NOT_PERMITTED, "Session is missing");
+                }
+
+                Map<String, Object> userSession = IAMUserUtil.getUserSession(userSessionId);
+                if (MapUtils.isEmpty(userSession)) {
+                    throw new AccountException(AccountException.ErrorCode.NOT_PERMITTED, "Invalid session");
+                }
+
+                Boolean isProxySession = (Boolean) userSession.get("isProxySession");
+                if (isProxySession == null || !isProxySession) {
+                    throw new AccountException(AccountException.ErrorCode.INVALID_PROXY_SESSION, "Invalid proxy session");
+                }
+
+                Map<String, Object> proxySession = IAMUserUtil.getProxySession(proxySessionToken);
+                if (MapUtils.isEmpty(proxySession)) {
+                    throw new AccountException(AccountException.ErrorCode.INVALID_PROXY_SESSION, "Invalid proxy session token");
+                }
+
+                if (!IAMUserUtil.isUserInProxyList((String) proxySession.get("email"))) {
+                    throw new AccountException(AccountException.ErrorCode.NOT_PERMITTED, "Not Authorized");
+                }
+
+                long proxiedSessionId = (long) proxySession.get("proxiedSessionId");
+                if (proxiedSessionId != userSessionId) {
+                    throw new AccountException(AccountException.ErrorCode.INVALID_PROXY_SESSION, "Proxy session and the user does not match");
+                }
+
+                iamAccount.getUser().setProxy((String) proxySession.get("email"));
+            }
 			return iamAccount;
         }
         return null;
