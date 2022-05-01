@@ -32,7 +32,7 @@ public class SSOUtil {
 		return new String(Base64.decodeBase64(encodedStr));
 	}
 
-	private static String getProtocol() {
+	public static String getProtocol() {
 		HttpServletRequest request = ActionContext.getContext() != null ? ServletActionContext.getRequest() : null;
 		return RequestUtil.getProtocol(request);
 	}
