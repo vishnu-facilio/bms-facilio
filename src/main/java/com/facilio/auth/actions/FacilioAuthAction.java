@@ -509,8 +509,14 @@ public class FacilioAuthAction extends FacilioAction {
 
 	public String authorizeproxyuser() throws Exception {
 		HttpServletResponse response = ServletActionContext.getResponse();
+		HttpServletRequest request = ServletActionContext.getRequest();
+		String clientPath = "/auth/proxyuser";
+		String isPortalProxy = FacilioCookie.getUserCookie(request, "fc.portalproxy");
+		if ("true".equals(isPortalProxy)) {
+			clientPath = "/auth/portalproxyuser";
+		}
 		if (FacilioProperties.isOnpremise()) {
-			response.sendRedirect(SSOUtil.getCurrentAppURL() +"/auth/proxyuser?message="+"Not allowed");
+			response.sendRedirect(SSOUtil.getCurrentAppURL() + clientPath +"?message="+"Not allowed");
 		}
 		GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
 				// Specify the CLIENT_ID of the app that accesses the backend:
@@ -527,19 +533,19 @@ public class FacilioAuthAction extends FacilioAction {
 			String email = payload.getEmail();
 			boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
 			if (!emailVerified) {
-				response.sendRedirect(SSOUtil.getCurrentAppURL() +"/auth/proxyuser?message="+"email is not verified");
+				response.sendRedirect(SSOUtil.getCurrentAppURL() + clientPath + "?message="+"email is not verified");
 				return ERROR;
 			}
 
 			boolean inProxyList = IAMUserUtil.isUserInProxyList(email);
 			if (!inProxyList) {
-				response.sendRedirect(SSOUtil.getCurrentAppURL() +"/auth/proxyuser?message="+"user is not authorized");
+				response.sendRedirect(SSOUtil.getCurrentAppURL() + clientPath + "?message="+"user is not authorized");
 				return ERROR;
 			}
 
 			String token = IAMUserUtil.generateProxyUserSessionToken(email);
 
-			response.sendRedirect(SSOUtil.getCurrentAppURL() +"/auth/proxyuser?token="+token);
+			response.sendRedirect(SSOUtil.getCurrentAppURL() + clientPath + "token="+token);
 			return SUCCESS;
 		} else {
 			setJsonresponse("errorcode", "1");
@@ -548,13 +554,17 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 	}
 
+	@Getter
+	@Setter
+	private String portalUrl;
+
 	public String proxyUser() throws Exception {
 		String token = getToken();
 		String email = IAMUserUtil.decodeProxyUserToken(token);
 
 		if (StringUtils.isEmpty(email)) {
 			setJsonresponse("errorcode", "1");
-			setJsonresponse("message", "Invalid user");
+			setJsonresponse("message", "Invalid Token");
 			return ERROR;
 		}
 
@@ -567,22 +577,36 @@ public class FacilioAuthAction extends FacilioAction {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		HttpServletResponse response = ServletActionContext.getResponse();
 
-		String userAgent = request.getHeader("User-Agent");
-		userAgent = userAgent != null ? userAgent : "";
-		String ipAddress = request.getHeader("X-Forwarded-For");
-		ipAddress = (ipAddress == null || "".equals(ipAddress.trim())) ? request.getRemoteAddr() : ipAddress;
-		String userType = "web";
+		String servername = request.getServerName();
+		boolean isPortalProxy = "true".equals(FacilioCookie.getUserCookie(request, "fc.portalproxy"));
 
-		FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.com");
-		FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.in");
-		FacilioCookie.eraseUserCookie(request, response,"fc.idToken.proxy","facilio.in");
-		FacilioCookie.eraseUserCookie(request, response,"fc.idToken.proxy","facilio.com");
+		if (!isPortalProxy) {
+			String userAgent = request.getHeader("User-Agent");
+			userAgent = userAgent != null ? userAgent : "";
+			String ipAddress = request.getHeader("X-Forwarded-For");
+			ipAddress = (ipAddress == null || "".equals(ipAddress.trim())) ? request.getRemoteAddr() : ipAddress;
+			String userType = "web";
 
-		Map<String, Object> proxyProps = IAMUserUtil.generatePropsForWithoutPassword(proxiedUserName, userAgent, userType, ipAddress, request.getServerName(), true);
+			FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.com");
+			FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.in");
+			FacilioCookie.eraseUserCookie(request, response,"fc.idToken.proxy","facilio.in");
+			FacilioCookie.eraseUserCookie(request, response,"fc.idToken.proxy","facilio.com");
 
-		String proxyToken = IAMUserUtil.addProxySession(email, proxiedUserName, (long) proxyProps.get("sessionId"));
+			Map<String, Object> proxyProps = IAMUserUtil.generatePropsForWithoutPassword(proxiedUserName, userAgent, userType, ipAddress, servername, true);
 
-		addAuthCookies((String) proxyProps.get("token"), false, false, request, false, proxyToken);
+			String proxyToken = IAMUserUtil.addProxySession(email, proxiedUserName, (long) proxyProps.get("sessionId"));
+
+			addAuthCookies((String) proxyProps.get("token"), false, false, request, false, proxyToken);
+		} else {
+			AppDomain appDomain = IAMAppUtil.getAppDomain(portalUrl);
+			String clientPath = "/auth/portalproxyuser";
+			if (appDomain == null) {
+				response.sendRedirect(SSOUtil.getCurrentAppURL() + clientPath + "?message="+"Invalid portal url");
+				return ERROR;
+			}
+			clientPath = "/auth/proxyuser";
+			response.sendRedirect(portalUrl + clientPath + "token="+token);
+		}
 
 		return SUCCESS;
 	}

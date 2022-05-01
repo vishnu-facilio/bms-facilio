@@ -1855,7 +1855,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		long createdTime = Long.parseLong(split[1]);
 
 		Instant creationInstant = Instant.ofEpochMilli(createdTime);
-		Instant expiry = creationInstant.plus(1, ChronoUnit.MINUTES);
+		Instant expiry = creationInstant.plus(3, ChronoUnit.MINUTES);
 
 
 		if (Instant.ofEpochMilli(System.currentTimeMillis()).isAfter(expiry)) {
