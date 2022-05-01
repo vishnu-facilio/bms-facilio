@@ -605,7 +605,8 @@ public class FacilioAuthAction extends FacilioAction {
 				return ERROR;
 			}
 			clientPath = "/auth/proxyuser";
-			response.sendRedirect(SSOUtil.getProtocol() + "://" + portalUrl + clientPath + "?token="+token);
+
+			setJsonresponse("message", SSOUtil.getProtocol() + "://" + portalUrl + clientPath + "?token="+token);
 		}
 
 		return SUCCESS;
