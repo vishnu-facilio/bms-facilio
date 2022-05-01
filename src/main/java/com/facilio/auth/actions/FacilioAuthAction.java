@@ -545,7 +545,7 @@ public class FacilioAuthAction extends FacilioAction {
 
 			String token = IAMUserUtil.generateProxyUserSessionToken(email);
 
-			response.sendRedirect(SSOUtil.getCurrentAppURL() + clientPath + "token="+token);
+			response.sendRedirect(SSOUtil.getCurrentAppURL() + clientPath + "?token="+token);
 			return SUCCESS;
 		} else {
 			setJsonresponse("errorcode", "1");
@@ -605,7 +605,7 @@ public class FacilioAuthAction extends FacilioAction {
 				return ERROR;
 			}
 			clientPath = "/auth/proxyuser";
-			response.sendRedirect(portalUrl + clientPath + "token="+token);
+			response.sendRedirect(portalUrl + clientPath + "?token="+token);
 		}
 
 		return SUCCESS;
