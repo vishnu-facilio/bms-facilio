@@ -1717,7 +1717,9 @@ public enum ActionType {
 					Long localId = MailMessageUtil.getLocalIdFromSubject(mailContext.getSubject());
 					if(localId != null) {
 						Map<String, Object> record = MailMessageUtil.fetchRecordWithLocalIdOrId(module, localId);
-						recordId = (Long) record.get("id");
+						if(record != null) {
+							recordId = (Long) record.get("id");
+						}
 					}
 				}
 				
