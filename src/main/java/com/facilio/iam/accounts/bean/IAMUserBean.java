@@ -87,9 +87,14 @@ public interface IAMUserBean {
 	public List<UserMobileSetting> getMobileInstanceIds(List<Long> uIds, String appLinkName) throws Exception;
 
 	public Object getPermalinkDetails(String token) throws Exception;
+
+	public Map<String, Object> validateAndGenerateTokenV3(String emailaddress, String password, String appDomainName, String userAgent, String userType,
+											 String ipAddress) throws Exception;
 	
     public String validateAndGenerateTokenV3(String emailaddress, String password, String appDomainName, String userAgent, String userType,
-			String ipAddress, boolean startUserSession) throws Exception ;
+			String ipAddress, boolean startUserSession) throws Exception;
+
+	String addProxySession(String proxyUserName, String proxiedUserName, long proxiedSessionId) throws Exception;
 
     String getEmailFromDigest(String digest) throws Exception;
 
@@ -224,4 +229,18 @@ public interface IAMUserBean {
 
 	void deleteDCLookup(String username, GroupType groupType) throws Exception;
 
+	boolean isUserInProxyList(String username) throws Exception;
+
+	Map<String, Object> generatePropsForWithoutPassword(String emailaddress, String userAgent, String userType,
+														String ipAddress, String appDomain, boolean isProxySession) throws Exception;
+
+	IAMAccount verifyProxyToken(String proxyToken, IAMAccount proxyUser) throws Exception;
+
+	String generateProxyUserSessionToken(String proxyUser) throws Exception;
+
+	String decodeProxyUserToken(String token) throws Exception;
+
+	Map<String, Object> getUserSession(long sessionId) throws Exception;
+
+	Map<String, Object> getProxySession(String proxyToken) throws Exception;
 }

@@ -28,6 +28,10 @@ public class AddRequesterForServiceRequestCommandV3 extends FacilioCommand {
 		if (request != null && !request.isEmpty()) {
 			for (V3ServiceRequestContext serviceRequestContext : request) {
 				
+				if(serviceRequestContext.getDescription() != null && serviceRequestContext.getDescription().length() > V3ServiceRequestContext.DESCIPTION_LENGTH) {
+					serviceRequestContext.setDescription(serviceRequestContext.getDescription().substring(0, V3ServiceRequestContext.DESCIPTION_LENGTH));
+				}
+				
 				PeopleContext requester = serviceRequestContext.getRequester();
 				
 				if (requester != null && requester.getEmail() != null && !"".equals(requester.getEmail()) && requester.getId() <= 0) {

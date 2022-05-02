@@ -11,7 +11,6 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.NumberField;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +46,7 @@ public class AddWorkOrderSurveyModules extends SignUpData {
 		List< FacilioField > fields = new ArrayList<> ();
 
 		LookupField parentField = ( LookupField ) FieldFactory.getDefaultField ("parent", "Parent", "PARENT_ID", FieldType.LOOKUP, true);
-		parentField.setLookupModule (workOrderSurvey);
+		parentField.setLookupModule (modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER));
 		fields.add (parentField);
 
 		module.setFields(fields);

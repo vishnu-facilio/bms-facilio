@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.bmsconsoleV3.context.V3ToolTransactionContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ToolContext;
+import com.facilio.bmsconsoleV3.util.V3ToolsApi;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -169,7 +170,7 @@ public class AddOrUpdateToolStockTransactionsCommandV3 extends FacilioCommand {
             V3ToolContext tool = (V3ToolContext) context.get(FacilioConstants.ContextNames.TOOL);
             V3AssetContext asset = (V3AssetContext) context.get(FacilioConstants.ContextNames.ROTATING_ASSET);
             if (tool != null) {
-                ToolContext t = ToolsApi.getTool(tool.getId());
+                V3ToolContext t = V3ToolsApi.getTool(tool.getId());
                 double q = t.getQuantity() >= 0 ? t.getQuantity() : 0;
                 q += 1;
                 t.setQuantity(q);
@@ -196,16 +197,17 @@ public class AddOrUpdateToolStockTransactionsCommandV3 extends FacilioCommand {
                         .module(module).fields(fields).addRecord(transaction);
                 readingBuilder.save();
                 context.put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(transaction));
+                context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS, Collections.singletonList(t.getToolType().getId()));
             }
         }
         return false;
     }
 
-    private void updateToolQty(ToolContext tool) throws Exception {
+    private void updateToolQty(V3ToolContext tool) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL);
 
-        UpdateRecordBuilder<ToolContext> updateBuilder = new UpdateRecordBuilder<ToolContext>().module(module)
+        UpdateRecordBuilder<V3ToolContext> updateBuilder = new UpdateRecordBuilder<V3ToolContext>().module(module)
                 .fields(modBean.getAllFields(module.getName()))
                 .andCondition(CriteriaAPI.getIdCondition(tool.getId(), module));
         updateBuilder.update(tool);

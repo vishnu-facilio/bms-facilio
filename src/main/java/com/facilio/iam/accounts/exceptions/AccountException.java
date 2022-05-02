@@ -45,7 +45,8 @@ public class AccountException extends FacilioException {
 		INVALID_DIGEST,
 		INVALID_ORG_DOMAIN,
 		DUPLICATE_USER,
-		DC_LOOKUP_FAILURE
+		DC_LOOKUP_FAILURE,
+		INVALID_PROXY_SESSION
 		;
 	}
 }

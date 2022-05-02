@@ -52,16 +52,14 @@ public class ToolQuantityRollUpCommand extends FacilioCommand {
 		if (toolTransactions != null && !toolTransactions.isEmpty()) {
 			// temp check, to be changed
 			if (toolTransactions.get(0) instanceof ToolTransactionContext) {
-				
 				Set<Long> uniqueToolIds = new HashSet<Long>();
 				int totalQuantityConsumed = 0;
 
 				for (ToolTransactionContext consumable : toolTransactions) {
-					if(consumable.getTransactionStateEnum() != TransactionState.USE || consumable.getParentTransactionId() <= 0) {
-					   uniqueToolIds.add(consumable.getTool().getId());
+					if (consumable.getTransactionStateEnum() != TransactionState.USE || consumable.getParentTransactionId() <= 0) {
+						uniqueToolIds.add(consumable.getTool().getId());
 					}
 				}
-
 				// List<Long> toolIds = (List<Long>)
 				// context.get(FacilioConstants.ContextNames.TOOL_IDS);
 				constructToolAndTypeIds(uniqueToolIds,context);
@@ -114,6 +112,7 @@ public class ToolQuantityRollUpCommand extends FacilioCommand {
 					//	availableQty = getRotatingAssetCount(stId);
 					//}
 					tool.setCurrentQuantity(availableQty);
+					tool.setLastPurchasedDate(System.currentTimeMillis());
 					toolTypesIds.add(tool.getToolType().getId());
 					if(tool.getCurrentQuantity() <= tool.getMinimumQuantity()) {
 						tool.setIsUnderstocked(true);

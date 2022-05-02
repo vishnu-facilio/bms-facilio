@@ -87,6 +87,10 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().getSessionExpiry(uid, sessionId));
 	}
 
+	public static String addProxySession(String proxyUsername, String proxiedUserName, long proxiedSessionId) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().addProxySession(proxyUsername, proxiedUserName, proxiedSessionId));
+	}
+
 	public static boolean changePassword(String password, String newPassword, long uId, long orgId, String userType) throws Exception {
 		
 		Boolean verifyOldPassword = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getTransactionalUserBean().verifyPassword(orgId, uId, password));
@@ -152,6 +156,11 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().generateTokenForWithoutPassword(emailaddress, userAgent, userType, ipAddress, true, appDomain, socialLogin));
 	}
 
+	public static Map<String, Object> generatePropsForWithoutPassword(String emailaddress, String userAgent, String userType,
+																	  String ipAddress, String appDomain, boolean isProxySession) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().generatePropsForWithoutPassword(emailaddress, userAgent, userType, ipAddress, appDomain, isProxySession));
+	}
+
 	public static IAMUser verifyEmail(String invitetoken) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().verifyEmailv2(invitetoken));
 	}
@@ -210,6 +219,10 @@ public class IAMUserUtil {
 	
 	public static String generateAuthToken(String username, String password, String appDomain) throws Exception {
 		return validateLoginv3(username, password, appDomain, null, null, null, true);
+	}
+
+	public static boolean isUserInProxyList(String username) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().isUserInProxyList(username));
 	}
 
 	public static boolean logOut(long uId, String facilioToken) throws Exception {
@@ -283,6 +296,11 @@ public class IAMUserUtil {
 		
 	}
 
+	public static Map<String, Object> validateAndGenerateTokenV3(String emailaddress, String password, String appDomainName, String userAgent, String userType,
+																		String ipAddress) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().validateAndGenerateTokenV3(emailaddress, password, appDomainName, userAgent, userType, ipAddress));
+	}
+
 	public static long verifyPasswordv3(String username, String password, String appDomainName, String userType) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().verifyPasswordv3(username, password, appDomainName, userType));
 	}
@@ -338,6 +356,14 @@ public class IAMUserUtil {
 
 	public static String generateMFAConfigSessionToken(String userName, String token) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().generateMFAConfigSessionToken(userName, token));
+	}
+
+	public static String generateProxyUserSessionToken(String proxyUser) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().generateProxyUserSessionToken(proxyUser));
+	}
+
+	public static String decodeProxyUserToken(String token) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().decodeProxyUserToken(token));
 	}
 
 	public static IAMUser resetExpiredPassword(String digest, String password) throws Exception {
@@ -466,6 +492,18 @@ public class IAMUserUtil {
 
 	public static Map<String, String> createOauth2Client(long orgId, long userId, String name) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().createOauth2Client(orgId, userId, name));
+	}
+
+	public static IAMAccount verifyProxyToken(String proxyToken, IAMAccount proxyUser) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().verifyProxyToken(proxyToken, proxyUser));
+	}
+
+	public static Map<String, Object> getUserSession(long sessionId) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().getUserSession(sessionId));
+	}
+
+	public static Map<String, Object> getProxySession(String proxyToken) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().getProxySession(proxyToken));
 	}
 
 	public static void deleteApiClient(long orgId, long userId, long id) throws Exception {

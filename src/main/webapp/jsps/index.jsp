@@ -45,6 +45,7 @@
         rebrandInfo.put("name", brandName);
         rebrandInfo.put("domain", domain);
         rebrandInfo.put("copyright", copyrightInfo);
+        rebrandInfo.put("servername", request.getServerName());
 
         boolean isBuildingstalk = (request.getServerName().endsWith("buildingsoncloud.com")  || ( brandName != null && (brandName.indexOf("BuildingsTalk") != -1 )));
 

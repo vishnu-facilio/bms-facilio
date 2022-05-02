@@ -5,7 +5,7 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
-import com.facilio.bmsconsole.util.V3ItemsApi;
+import com.facilio.bmsconsoleV3.util.V3ItemsApi;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;

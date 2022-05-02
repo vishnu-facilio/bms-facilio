@@ -203,6 +203,7 @@ public class AddOrUpdateToolStockTransactionsCommand extends FacilioCommand {
 						.module(module).fields(fields).addRecord(transaction);
 				readingBuilder.save();
 				context.put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(transaction));
+				context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS, Collections.singletonList(t.getToolType().getId()));
 			}
 		}
 		return false;

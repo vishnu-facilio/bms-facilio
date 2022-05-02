@@ -1,6 +1,6 @@
 package com.facilio.iam.accounts.impl;
 
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
@@ -25,16 +25,28 @@ import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.accounts.sso.SSOUtil;
 import com.facilio.auth.actions.PasswordHashUtil;
+import com.facilio.auth.beans.SecretsManagerBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.bmsconsole.context.APIClient;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.db.util.DBConf;
+import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.context.SecurityPolicy;
 import com.facilio.iam.accounts.exceptions.SecurityPolicyException;
 import com.facilio.iam.accounts.util.*;
 import com.facilio.modules.*;
 import com.facilio.util.FacilioUtil;
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.services.admin.directory.Directory;
+import com.google.api.services.admin.directory.DirectoryScopes;
+import com.google.api.services.admin.directory.model.MembersHasMember;
+import com.google.auth.oauth2.GoogleCredentials;
 import dev.samstevens.totp.recovery.RecoveryCodeGenerator;
 import lombok.SneakyThrows;
 import lombok.var;
@@ -802,6 +814,12 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
+	public String generateProxyUserSessionToken(String proxyUser) throws Exception {
+		String jwt = createJWT("id", "auth0", proxyUser, System.currentTimeMillis());
+		return jwt;
+	}
+
+	@Override
 	public String generateMFAConfigSessionToken(String userName, String token) throws Exception {
 		String jwt = createJWT("id", "auth0", token, System.currentTimeMillis());
 		final List<Map<String, Object>> userForUserName = getUserData(userName, -1, null);
@@ -1001,8 +1019,11 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return result;
 	}
 
-	@Override
 	public long startUserSessionv2(long uid, String token, String ipAddress, String userAgent, String userType) throws Exception {
+		return startUserSessionv2(uid, token, ipAddress, userAgent, userType, false);
+	}
+
+	private long startUserSessionv2(long uid, String token, String ipAddress, String userAgent, String userType, boolean isProxySession) throws Exception {
 		TransactionManager transactionManager = null;
 		try {
 			transactionManager = FacilioTransactionManager.INSTANCE.getTransactionManager();
@@ -1026,6 +1047,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			props.put("ipAddress", ipAddress);
 			props.put("userAgent", userAgent);
 			props.put("userType", userType);
+			props.put("isProxySession", isProxySession);
 
 			insertBuilder.addRecord(props);
 			insertBuilder.save();
@@ -1252,6 +1274,25 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		String jwt = createJWT("id", "auth0", tokenKey, System.currentTimeMillis() + 24 * 60 * 60000);
 
 		insertTokenIntoSession(uid, sessionInfo, jwt, IAMAccountConstants.SessionType.PERMALINK_SESSION);
+
+		return jwt;
+	}
+
+	public String addProxySession(String proxyUsername, String proxiedUserName, long proxiedSessionId) throws Exception {
+		String jwt = createJWT("id", "auth0", proxyUsername+"_"+proxiedUserName, System.currentTimeMillis());
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(IAMAccountConstants.getProxySessionsModule().getTableName())
+				.fields(IAMAccountConstants.getProxySessionsFields());
+
+		Map<String, Object> vals = new HashMap<>();
+		vals.put("email", proxyUsername);
+		vals.put("token", jwt);
+		vals.put("proxiedSessionId", proxiedSessionId);
+		vals.put("createdTime", System.currentTimeMillis());
+		vals.put("isActive", true);
+
+		insertBuilder.addRecord(vals);
+		insertBuilder.save();
 
 		return jwt;
 	}
@@ -1748,6 +1789,35 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return getUserMfaSettings(uid);
 	}
 
+	public Map<String, Object> validateAndGenerateTokenV3(String username, String password, String appDomainName, String userAgent, String userType,
+														  String ipAddress) throws Exception {
+		long validUid = verifyPasswordv3(username, password, appDomainName, userType);
+		if ( FacilioProperties.logUserAccessLog()) {
+			LoggingEvent event = getUserLoginEvent(username, ipAddress);
+			if(validUid > 0) {
+				event.setProperty("responseCode", "200");
+			} else {
+				event.setProperty("responseCode", "500");
+			}
+			USER_LOGIN.callAppenders(event);
+		}
+
+		if (validUid > 0) {
+			//IAMUser user = getFacilioUser(emailaddress, -1, domain);
+			String jwt = createJWT("id", "auth0", String.valueOf(validUid),
+					System.currentTimeMillis() + 24 * 60 * 60000);
+			long sessionId = startUserSessionv2(validUid, jwt, ipAddress, userAgent, userType);
+			Map<String, Object> ret = new HashMap<>();
+			ret.put("uid", validUid);
+			ret.put("token", jwt);
+			ret.put("sessionId", sessionId);
+			ret.put("username", username);
+			return ret;
+			//throw new AccountException(ErrorCode.USER_DEACTIVATED_FROM_THE_ORG, "User is deactivated, Please contact admin to activate.");
+		}
+		throw new AccountException(ErrorCode.ERROR_VALIDATING_CREDENTIALS, "Invalid username or password");
+	}
+
 
 	@Override
 	public String validateAndGenerateTokenV3(String username, String password, String appDomainName,
@@ -1776,6 +1846,26 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			//throw new AccountException(ErrorCode.USER_DEACTIVATED_FROM_THE_ORG, "User is deactivated, Please contact admin to activate.");
 		}
 		throw new AccountException(ErrorCode.ERROR_VALIDATING_CREDENTIALS, "Invalid username or password");
+	}
+
+	@Override
+	public String decodeProxyUserToken(String token) throws Exception {
+		DecodedJWT decodedJWT = validateJWT(token, "auth0");
+		String[] split = decodedJWT.getSubject().split(JWT_DELIMITER);
+		long createdTime = Long.parseLong(split[1]);
+
+		Instant creationInstant = Instant.ofEpochMilli(createdTime);
+		Instant expiry = creationInstant.plus(1, ChronoUnit.MINUTES);
+
+
+		if (Instant.ofEpochMilli(System.currentTimeMillis()).isAfter(expiry)) {
+			if (FacilioProperties.isDevelopment()) {
+				return split[0];
+			}
+			LOGGER.error("Token expired:" + token);
+			return null;
+		}
+		return split[0];
 	}
 
 	@Override
@@ -2003,6 +2093,61 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		IAMAccount accountv3 = getAccountv3(uid);
 		accountv3.setOrg(IAMOrgUtil.getOrg(orgId));
 		return accountv3;
+	}
+
+	@Override
+	public Map<String, Object> getUserSession(long sessionId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getUserSessionFields())
+				.table("Account_Users")
+				.innerJoin("UserSessions")
+				.on("Account_Users.USERID = UserSessions.USERID");
+
+		selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.SESSIONID", "sessionId", sessionId + "", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.IS_ACTIVE", "isActive", "1", NumberOperators.EQUALS));
+
+		return selectBuilder.fetchFirst();
+	}
+
+	public IAMAccount verifyProxyToken(String proxyToken, IAMAccount proxyUser) throws Exception {
+		Long sessionId = proxyUser.getUserSessionId();
+		if (sessionId == null) {
+			return null;
+		}
+
+		Map<String, Object> props = getProxySession(proxyToken);
+		long sessionIdFromDb = (long) props.get("sessionId");
+		if (sessionId != sessionIdFromDb) {
+			throw new AccountException(ErrorCode.NOT_PERMITTED, "Session does not match");
+		}
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getUserSessionFields())
+				.table("Account_Users")
+				.innerJoin("UserSessions")
+				.on("Account_Users.USERID = UserSessions.USERID");
+
+		selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.SESSIONID", "sessionId", ((long) props.get("proxiedSessionId")) + "", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.IS_ACTIVE", "isActive", "1", NumberOperators.EQUALS));
+
+		Map<String, Object> sessionprops = selectBuilder.fetchFirst();
+
+		long proxiedUserId = (long) sessionprops.get("uid");
+		long proxiedSessionId = (long) sessionprops.get("id");
+
+		IAMAccount accountv3 = getAccountv3(proxiedUserId);
+		accountv3.setUserSessionId(proxiedSessionId);
+		return accountv3;
+	}
+
+	@Override
+	public Map<String, Object> getProxySession(String proxyToken) throws Exception {
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder();
+		selectRecordBuilder.table(IAMAccountConstants.getProxySessionsModule().getTableName())
+				.select(IAMAccountConstants.getProxySessionsFields())
+				.andCondition(CriteriaAPI.getCondition("IS_ACTIVE", "isActive","true" ,BooleanOperators.IS))
+				.andCondition(CriteriaAPI.getCondition("TOKEN", "token",proxyToken, StringOperators.IS));
+		return selectRecordBuilder.fetchFirst();
 	}
 
 	@Override
@@ -2649,6 +2794,37 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
+	public Map<String, Object> generatePropsForWithoutPassword(String emailaddress, String userAgent, String userType,
+												  String ipAddress, String appDomain, boolean isProxySession) throws Exception {
+		// TODO Auto-generated method stub
+		if(StringUtils.isEmpty(appDomain)) {
+			appDomain = AccountUtil.getDefaultAppDomain();
+		}
+		AppDomain appDomainObj = getAppDomain(appDomain);
+		if(appDomainObj == null) {
+			throw new AccountException(ErrorCode.INVALID_APP_DOMAIN, "invalid App Domain");
+		}
+		String identifier = appDomainObj.getIdentifier();
+		IAMUser user = getFacilioUserV3(emailaddress, identifier);
+
+		if (user == null) {
+			throw new AccountException(ErrorCode.USER_DEACTIVATED_FROM_THE_ORG, "User is deactivated, Please contact admin to activate.");
+		}
+
+		long uid = user.getUid();
+		String jwt = createJWT("id", "auth0", String.valueOf(user.getUid()),
+				System.currentTimeMillis() + 24 * 60 * 60000);
+
+		long sessionId = startUserSessionv2(uid, jwt, ipAddress, userAgent, userType, isProxySession);
+
+		Map<String, Object> props = new HashMap<>();
+		props.put("uid", uid);
+		props.put("sessionId", sessionId);
+		props.put("token", jwt);
+		return props;
+	}
+
+	@Override
 	public String generateTokenForWithoutPassword(String emailaddress, String userAgent, String userType,
 			String ipAddress, boolean startUserSession, String appDomain, IAMAccountConstants.SocialLogin socialLogin) throws Exception {
 		// TODO Auto-generated method stub
@@ -2884,6 +3060,36 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				.delete();
 
 		IAMUtil.dropUserSecurityPolicyCache(userIds);
+	}
+
+	public boolean isUserInProxyList(String username) throws Exception {
+		if (FacilioProperties.isDevelopment()) {
+			return true;
+		}
+		Boolean isPresent = LRUCache.getProxyUsersCache().get(username);
+		if (isPresent != null && isPresent) {
+			return true;
+		}
+		SecretsManagerBean secretsManagerBean = (SecretsManagerBean) BeanFactory.lookup("SecretsManagerBean");
+		Map<String, String> secret = secretsManagerBean.getSecret("proxy-user-service-account");
+		String key = secret.get("secret");
+		NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+		JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
+
+		GoogleCredential credential = GoogleCredential.fromStream(new ByteArrayInputStream(key.getBytes()))
+				.createScoped(Collections.singleton(DirectoryScopes.ADMIN_DIRECTORY_GROUP_READONLY));
+		credential = credential.toBuilder().setServiceAccountUser(FacilioProperties.getServiceaccountuser()).build();
+
+		Directory directory = new Directory.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
+				.setApplicationName("Facilio Proxy")
+				.build();
+
+		MembersHasMember execute = directory.members().hasMember(FacilioProperties.getProxygroup(), username).execute();
+		if (execute.getIsMember() != null && execute.getIsMember()) {
+			LRUCache.getProxyUsersCache().put(username, true);
+			return true;
+		}
+		return false;
 	}
 
 //	private Map<String, String> getDomainForIdentifiers(List<String> identifiers) throws Exception {

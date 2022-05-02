@@ -15,6 +15,9 @@ import com.facilio.bmsconsole.context.ServiceRequestContext.SourceType;
 import com.facilio.v3.context.V3Context;
 
 public class V3ServiceRequestContext extends V3Context{
+	
+	public static final int DESCIPTION_LENGTH = 1900;  
+	
 	private static final long serialVersionUID = 1L;
 	String subject;
 	public String getSubject() {

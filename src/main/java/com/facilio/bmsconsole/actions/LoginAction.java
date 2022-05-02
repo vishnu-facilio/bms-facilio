@@ -201,6 +201,7 @@ public class LoginAction extends FacilioAction {
 						HttpSession session = request.getSession();
 						session.invalidate();
 						FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilio", null);
+						FacilioCookie.eraseUserCookie(request, response, "fc.idToken.proxy", null);
 						if(portalUser) {
 							FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilioportal", null);
 						}
@@ -208,6 +209,8 @@ public class LoginAction extends FacilioAction {
 						//deleting .facilio.com cookie(temp handling)
 						FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.com");
 						FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.in");
+						FacilioCookie.eraseUserCookie(request, response, "fc.idToken.proxy", "facilio.com");
+						FacilioCookie.eraseUserCookie(request, response, "fc.idToken.proxy", "facilio.in");
 
 						FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
 						FacilioCookie.eraseUserCookie(request, response, "fc.currentOrg", null);

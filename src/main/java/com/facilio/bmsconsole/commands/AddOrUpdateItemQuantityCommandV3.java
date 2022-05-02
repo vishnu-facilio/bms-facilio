@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.bmsconsole.util.V3ItemsApi;
+import com.facilio.bmsconsoleV3.util.V3ItemsApi;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
 import com.facilio.command.FacilioCommand;

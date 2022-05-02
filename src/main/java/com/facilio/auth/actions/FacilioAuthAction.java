@@ -24,7 +24,6 @@ import com.facilio.accounts.dto.*;
 import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.bmsconsole.actions.PeopleAction;
 import com.facilio.bmsconsole.actions.SettingsMfa;
-import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.util.AESEncryption;
 import com.facilio.bmsconsole.util.PeopleAPI;
@@ -32,6 +31,8 @@ import com.facilio.iam.accounts.context.SecurityPolicy;
 import com.facilio.iam.accounts.exceptions.SecurityPolicyException;
 import com.facilio.iam.accounts.util.*;
 import com.facilio.services.email.EmailClient;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
 import com.google.common.base.Throwables;
 import lombok.*;
 import org.apache.commons.collections4.MapUtils;
@@ -73,6 +74,10 @@ import io.sentry.event.UserBuilder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.var;
+
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 
 import static com.facilio.iam.accounts.exceptions.AccountException.ErrorCode.USER_DEACTIVATED_FROM_THE_ORG;
 
@@ -490,6 +495,98 @@ public class FacilioAuthAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	@Getter
+	@Setter
+	private String proxiedUserName;
+
+	@Getter
+	@Setter
+	private String credential;
+
+	@Getter
+	@Setter
+	private String g_csrf_token;
+
+	public String authorizeproxyuser() throws Exception {
+		HttpServletResponse response = ServletActionContext.getResponse();
+		if (FacilioProperties.isOnpremise()) {
+			response.sendRedirect(SSOUtil.getCurrentAppURL() +"/auth/proxyuser?message="+"Not allowed");
+		}
+		GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
+				// Specify the CLIENT_ID of the app that accesses the backend:
+				.setAudience(Collections.singletonList("749943625822-unl69f9ufcga8tkitsoairfbmncam341.apps.googleusercontent.com"))
+				// Or, if multiple clients access the backend:
+				//.setAudience(Arrays.asList(CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3))
+				.build();
+
+		GoogleIdToken idToken = verifier.verify(credential);
+		if (idToken != null) {
+			Payload payload = idToken.getPayload();
+
+			// Print user identifier
+			String email = payload.getEmail();
+			boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
+			if (!emailVerified) {
+				response.sendRedirect(SSOUtil.getCurrentAppURL() +"/auth/proxyuser?message="+"email is not verified");
+				return ERROR;
+			}
+
+			boolean inProxyList = IAMUserUtil.isUserInProxyList(email);
+			if (!inProxyList) {
+				response.sendRedirect(SSOUtil.getCurrentAppURL() +"/auth/proxyuser?message="+"user is not authorized");
+				return ERROR;
+			}
+
+			String token = IAMUserUtil.generateProxyUserSessionToken(email);
+
+			response.sendRedirect(SSOUtil.getCurrentAppURL() +"/auth/proxyuser?token="+token);
+			return SUCCESS;
+		} else {
+			setJsonresponse("errorcode", "1");
+			setJsonresponse("message", "Invalid token");
+			return ERROR;
+		}
+	}
+
+	public String proxyUser() throws Exception {
+		String token = getToken();
+		String email = IAMUserUtil.decodeProxyUserToken(token);
+
+		if (StringUtils.isEmpty(email)) {
+			setJsonresponse("errorcode", "1");
+			setJsonresponse("message", "Invalid user");
+			return ERROR;
+		}
+
+		if (!IAMUserUtil.isUserInProxyList(email)) {
+			setJsonresponse("errorcode", "1");
+			setJsonresponse("message", "User is not authorized");
+			return ERROR;
+		}
+
+		HttpServletRequest request = ServletActionContext.getRequest();
+		HttpServletResponse response = ServletActionContext.getResponse();
+
+		String userAgent = request.getHeader("User-Agent");
+		userAgent = userAgent != null ? userAgent : "";
+		String ipAddress = request.getHeader("X-Forwarded-For");
+		ipAddress = (ipAddress == null || "".equals(ipAddress.trim())) ? request.getRemoteAddr() : ipAddress;
+		String userType = "web";
+
+		FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.com");
+		FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.in");
+		FacilioCookie.eraseUserCookie(request, response,"fc.idToken.proxy","facilio.in");
+		FacilioCookie.eraseUserCookie(request, response,"fc.idToken.proxy","facilio.com");
+
+		Map<String, Object> proxyProps = IAMUserUtil.generatePropsForWithoutPassword(proxiedUserName, userAgent, userType, ipAddress, request.getServerName(), true);
+
+		String proxyToken = IAMUserUtil.addProxySession(email, proxiedUserName, (long) proxyProps.get("sessionId"));
+
+		addAuthCookies((String) proxyProps.get("token"), false, false, request, false, proxyToken);
+
+		return SUCCESS;
+	}
+
 	public String loginWithUserNameAndPassword() throws Exception {
 		if (StringUtils.isNotEmpty(lookUpType)) {
 			validateLoginPortal();
@@ -584,6 +681,8 @@ public class FacilioAuthAction extends FacilioAction {
 			//deleting .facilio.com cookie(temp handling)
 			FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.com");
 			FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.in");
+			FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.proxy","facilio.in");
+			FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.proxy","facilio.com");
 
 			addAuthCookies(authtoken, false, false, request, true);
 		} catch (Exception e) {
@@ -704,6 +803,8 @@ public class FacilioAuthAction extends FacilioAction {
 					//deleting .facilio.com cookie(temp handling)
 					FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.com");
 					FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.in");
+					FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.proxy","facilio.in");
+					FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.proxy","facilio.com");
 
 					addAuthCookies(authtoken, false, false, request, true);
 				}
@@ -862,6 +963,8 @@ public class FacilioAuthAction extends FacilioAction {
 			//deleting .facilio.com cookie(temp handling)
 			FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.com");
 			FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.in");
+			FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.proxy","facilio.in");
+			FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.proxy","facilio.com");
 
 			addAuthCookies(authtoken, false, false, request, "mobile".equals(userType));
 		}
@@ -977,6 +1080,8 @@ public class FacilioAuthAction extends FacilioAction {
 				//deleting .facilio.com cookie(temp handling)
 				FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.com");
 				FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.in");
+				FacilioCookie.eraseUserCookie(request, response,"fc.idToken.proxy","facilio.in");
+				FacilioCookie.eraseUserCookie(request, response,"fc.idToken.proxy","facilio.com");
 
 				String appDomain = request.getServerName();
 				AppDomain appdomainObj = IAMAppUtil.getAppDomain(appDomain);
@@ -1060,6 +1165,9 @@ public class FacilioAuthAction extends FacilioAction {
 						//deleting .facilio.com cookie(temp handling)
 						FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.com");
 						FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.facilio","facilio.in");
+						FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.proxy","facilio.in");
+						FacilioCookie.eraseUserCookie(request, resp,"fc.idToken.proxy","facilio.com");
+
 
 						addAuthCookies(authtoken, portalUser, false, request, "mobile".equals(userType));
 					}
@@ -1248,6 +1356,8 @@ public class FacilioAuthAction extends FacilioAction {
 				//deleting .facilio.com cookie(temp handling)
 				FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.com");
 				FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.in");
+				FacilioCookie.eraseUserCookie(request, response,"fc.idToken.proxy","facilio.in");
+				FacilioCookie.eraseUserCookie(request, response,"fc.idToken.proxy","facilio.com");
 
 				String appDomain = request.getServerName();
 				AppDomain appdomainObj = IAMAppUtil.getAppDomain(appDomain);
@@ -1796,16 +1906,27 @@ public class FacilioAuthAction extends FacilioAction {
 	private void addAuthCookies(String authtoken, boolean portalUser, boolean isDeviceUser, HttpServletRequest request) throws Exception {
 		addAuthCookies(authtoken, portalUser, isDeviceUser, request, false);
 	}
-	
+
 	private void addAuthCookies(String authtoken, boolean portalUser, boolean isDeviceUser, HttpServletRequest request, boolean isMobile) throws Exception {
+		addAuthCookies(authtoken, portalUser, isDeviceUser, request, false, null);
+	}
+	
+	private void addAuthCookies(String authtoken, boolean portalUser, boolean isDeviceUser, HttpServletRequest request, boolean isMobile, String proxyToken) throws Exception {
 		HttpServletResponse response = ServletActionContext.getResponse();
 		Cookie cookie = new Cookie("fc.idToken.facilio", authtoken);
+		Cookie proxyCookie = null;
+		if (StringUtils.isNotEmpty(proxyToken)) {
+			proxyCookie = new Cookie("fc.idToken.proxy", proxyToken);
+		}
 
 		if (isDeviceUser) {
 			cookie = new Cookie("fc.deviceTokenNew", authtoken);
 		}
 
 		setCookieProperties(cookie,true);
+		if (proxyCookie != null) {
+			setCookieProperties(proxyCookie, true);
+		}
 
 		FacilioCookie.addOrgDomainCookie(getDomain(), response);
 
@@ -1824,9 +1945,17 @@ public class FacilioAuthAction extends FacilioAction {
 			if (FacilioProperties.isOnpremise()) {
 				var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; HttpOnly;";
 				response.addHeader("Set-Cookie", cookieString);
+				if (proxyCookie != null) {
+					var proxyCookieString = "fc.idToken.proxy="+proxyToken+"; Max-Age=604800; Path=/; HttpOnly;";
+					response.addHeader("Set-Cookie", proxyCookieString);
+				}
 			} else {
 				var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; HttpOnly; SameSite=Lax";
 				response.addHeader("Set-Cookie", cookieString);
+				if (proxyCookie != null) {
+					var proxyCookieString = "fc.idToken.proxy="+proxyToken+"; Max-Age=604800; Path=/; HttpOnly; SameSite=Lax";
+					response.addHeader("Set-Cookie", proxyCookieString);
+				}
 				if(portalUser) {
 					var portalCookie = "fc.idToken.facilioportal="+authtoken+"; Max-Age=604800; Path=/; HttpOnly; SameSite=Lax";
 					response.addHeader("Set-Cookie", portalCookie);
@@ -1835,8 +1964,13 @@ public class FacilioAuthAction extends FacilioAction {
 		} else if("stage".equals(FacilioProperties.getEnvironment()) && !isMobile) {
 			var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
 			response.addHeader("Set-Cookie", cookieString);
+			if (proxyCookie != null) {
+				var proxyCookieString = "fc.idToken.proxy="+proxyToken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
+				response.addHeader("Set-Cookie", proxyCookieString);
+			}
 		} else {
 			response.addCookie(cookie);
+			response.addCookie(proxyCookie);
 
 			//Can be removed once service portal file api is not used.
 			if(portalUser) {
@@ -2190,6 +2324,8 @@ public class FacilioAuthAction extends FacilioAction {
 		//deleting .facilio.com cookie(temp handling)
 		FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.com");
 		FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.in");
+		FacilioCookie.eraseUserCookie(request, response,"fc.idToken.proxy","facilio.in");
+		FacilioCookie.eraseUserCookie(request, response,"fc.idToken.proxy","facilio.com");
 
 		String appDomain = request.getServerName();
 		AppDomain appdomainObj = IAMAppUtil.getAppDomain(appDomain);
@@ -2489,6 +2625,7 @@ public class FacilioAuthAction extends FacilioAction {
 						HttpSession session = request.getSession();
 						session.invalidate();
 						FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilio", null);
+						FacilioCookie.eraseUserCookie(request, response,"fc.idToken.proxy",null);
 						if(portalUser) {
 							FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilioportal", null);
 						}

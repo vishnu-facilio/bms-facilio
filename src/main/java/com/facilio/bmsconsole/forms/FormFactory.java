@@ -48,7 +48,6 @@ public class FormFactory {
 		forms.put("tool_types_form", getTooltypesForm());
 		forms.put("vendors_form", getVendorsForm());
 		forms.put("tool_form", getStockedToolsForm());
-		forms.put("tool_track_form", getToolWithIndTrackForm());
 		forms.put("location_form", getLocationForm());
 		forms.put("tenantForm", getTenantsForm());
 		forms.put("labourForm", getLabourForm());
@@ -502,6 +501,7 @@ public class FormFactory {
 		List<FacilioForm> storeRoomForm = Arrays.asList(getStoreRoomForm());
 		List<FacilioForm> inventoryCategoryForm = Arrays.asList(getInventoryCategoryForm());
 		List<FacilioForm> itemFormsList = Arrays.asList(getItemForm());
+		List<FacilioForm> toolFormsList = Arrays.asList(getStockedToolsForm());
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
 				.put(FacilioConstants.ContextNames.ASSET, getFormMap(assetForms))
@@ -576,6 +576,7 @@ public class FormFactory {
 				.put(ContextNames.STORE_ROOM, getFormMap(storeRoomForm))
 				.put(ContextNames.INVENTORY_CATEGORY,getFormMap(inventoryCategoryForm))
 				.put(ContextNames.ITEM,getFormMap(itemFormsList))
+				.put(ContextNames.TOOL,getFormMap(toolFormsList))
 				.build();
 	}
 	
@@ -1200,7 +1201,7 @@ public class FormFactory {
 
 	public static FacilioForm getStockedToolsForm() {
 		FacilioForm form = new FacilioForm();
-		form.setDisplayName("ADD TOOL");
+		form.setDisplayName("UPDATE TOOL ATTRIBUTES");
 		form.setName("web_default");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TOOL));
 		form.setLabelPosition(LabelPosition.TOP);
@@ -1209,18 +1210,7 @@ public class FormFactory {
 		return form;
 	}
 
-	public static FacilioForm getToolWithIndTrackForm() {
-		FacilioForm form = new FacilioForm();
-		form.setDisplayName("ADD TOOL");
-		form.setName("web_default");
-		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TOOL));
-		form.setLabelPosition(LabelPosition.TOP);
-		form.setFields(getToolTrackWithIndFormField());
-		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
-		return form;
-	}
-	
-	public static FacilioForm getClientForm() {
+		public static FacilioForm getClientForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("NEW CLIENT");
 		form.setName("default_client_web");
@@ -2007,23 +1997,9 @@ public class FormFactory {
 	private static List<FormField> getToolFormField() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("toolType", FieldDisplayType.LOOKUP_SIMPLE, "Tool Type", Required.REQUIRED, "toolTypes", 1, 1));
-		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Store Room", Required.REQUIRED, "storeRoom", 2, 1).setAllowCreateOptions(true).setCreateFormName("store_room_form"));
-//		fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.OPTIONAL, "toolStatus", 3, 1));
-		fields.add(new FormField("quantity", FieldDisplayType.DECIMAL, "Quantity", Required.OPTIONAL, 5, 1));
-		fields.add(new FormField("rate", FieldDisplayType.DECIMAL, "Rate/Hour", Required.OPTIONAL, 6, 2));
-		fields.add(new FormField("minimumQuantity", FieldDisplayType.DECIMAL, "Minimum Quantity", Required.OPTIONAL, 6, 3));
-		
-		return fields;
-	}
-
-	private static List<FormField> getToolTrackWithIndFormField() {
-		List<FormField> fields = new ArrayList<>();
-		fields.add(new FormField("toolType", FieldDisplayType.LOOKUP_SIMPLE, "Tool Type", Required.REQUIRED, "toolTypes", 1, 1));
-		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", Required.REQUIRED, "storeRoom", 2, 1));
-		fields.add(new FormField("rate", FieldDisplayType.DECIMAL, "Rate/Hour", Required.REQUIRED, 3, 1));
-//		fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.OPTIONAL, "toolStatus", 3, 1));
-//		fields.add(new FormField("purchasedTools", FieldDisplayType.PURCHASEDTOOL, "Purchased Tool", Required.OPTIONAL, 4, 1));
-
+		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Store Room", Required.REQUIRED, "storeRoom", 2, 1));
+		fields.add(new FormField("minimumQuantity", FieldDisplayType.DECIMAL, "Minimum Quantity", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("rate", FieldDisplayType.DECIMAL, "Rate/Hour", Required.OPTIONAL, 4, 1));
 		return fields;
 	}
 	
