@@ -62,13 +62,13 @@ public class BeforeAuthInputFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         Matcher matcher = this.urlReTree.matcher(httpServletRequest.getRequestURI());
-        Matcher matcher1 = this.execlutionUrlReTree.matcher(httpServletRequest.getRequestURI());
+        Matcher exclution = this.execlutionUrlReTree.matcher(httpServletRequest.getRequestURI());
         if (!matcher.isMatch()) {
             if(httpServletRequest.getRequestURI().equals("/")) {
                 filterChain.doFilter(servletRequest, servletResponse);
                return;
             }
-            if(matcher1.isMatch()) {
+            if(exclution.isMatch()) {
                 filterChain.doFilter(servletRequest, servletResponse);
                 return;
             }else {
