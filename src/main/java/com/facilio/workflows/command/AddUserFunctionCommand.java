@@ -13,7 +13,11 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.util.DisplayNameToLinkNameUtil;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
+import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowUserFunctionContext;
+import com.facilio.workflowv2.util.UserFunctionAPI;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
 public class AddUserFunctionCommand extends FacilioCommand {
@@ -33,9 +37,19 @@ public class AddUserFunctionCommand extends FacilioCommand {
 			userFunctionContext.setLinkName(linkName);
 		}
 		
+		checkIfFunctionAlreadyExist(userFunctionContext);
+		
 		addUserFunction(userFunctionContext);
 		
 		return false;
+	}
+
+	private void checkIfFunctionAlreadyExist(WorkflowUserFunctionContext userFunctionContext) throws Exception {
+
+		WorkflowContext function = UserFunctionAPI.getWorkflowFunction(userFunctionContext.getNameSpaceId(), userFunctionContext.getName());
+		if(function != null) {
+			 throw new RESTException(ErrorCode.VALIDATION_ERROR, "function name already exist in the namespace");
+		}
 	}
 
 	private void addUserFunction(WorkflowUserFunctionContext userFunctionContext) throws Exception {
