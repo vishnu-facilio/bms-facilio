@@ -26,6 +26,20 @@ public class MultiReadServletRequest extends HttpServletRequestWrapper {
 	private ByteArrayOutputStream cachedRequest;
     private String jsonContentType = "application/json";
 
+	public MultiReadServletRequest(HttpServletRequest request,boolean requireCache) throws IOException {
+		super(request);
+		if (requireCache) {
+			BufferedReader bufferReader = new BufferedReader(request.getReader());
+			String line;
+			StringBuilder buffer = new StringBuilder();
+			while ((line = bufferReader.readLine()) != null) {
+				buffer.append(line);
+			}
+			cachedRequest = new ByteArrayOutputStream();
+			cachedRequest.write(buffer.toString().getBytes());
+		}
+	}
+
 	public MultiReadServletRequest(HttpServletRequest request) throws IOException {
 		super(request);
 		if (shouldCacheRequest(request)) {
