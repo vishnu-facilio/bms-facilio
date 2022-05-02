@@ -1933,7 +1933,7 @@ public class FacilioAuthAction extends FacilioAction {
 	}
 
 	private void addAuthCookies(String authtoken, boolean portalUser, boolean isDeviceUser, HttpServletRequest request, boolean isMobile) throws Exception {
-		addAuthCookies(authtoken, portalUser, isDeviceUser, request, false, null);
+		addAuthCookies(authtoken, portalUser, isDeviceUser, request, isMobile, null);
 	}
 	
 	private void addAuthCookies(String authtoken, boolean portalUser, boolean isDeviceUser, HttpServletRequest request, boolean isMobile, String proxyToken) throws Exception {
