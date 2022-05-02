@@ -85,7 +85,7 @@ public class FacilioLogHandler extends Handler {
     }
 
     static LoggingEvent addEventProps(LoggingEvent event) {
-        Organization org = AccountUtil.getCurrentOrg();
+       Organization org = AccountUtil.getCurrentOrg();
         if(org != null) {
             event.setProperty("orgId", String.valueOf(org.getOrgId()));
         } else {
@@ -94,6 +94,9 @@ public class FacilioLogHandler extends Handler {
         User user = AccountUtil.getCurrentUser();
         if (user != null) {
             event.setProperty("userId", String.valueOf(user.getOuid()));
+            if (StringUtils.isNotEmpty(user.getProxy())) {
+                event.setProperty("proxy", user.getProxy());
+            }
         } else {
             event.setProperty("userId", DEFAULT_ORG_USER_ID);
         }

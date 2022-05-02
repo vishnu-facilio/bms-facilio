@@ -2004,7 +2004,9 @@ public class FacilioAuthAction extends FacilioAction {
 			}
 		} else {
 			response.addCookie(cookie);
-			response.addCookie(proxyCookie);
+			if (proxyCookie != null) {
+				response.addCookie(proxyCookie);
+			}
 
 			//Can be removed once service portal file api is not used.
 			if(portalUser) {
