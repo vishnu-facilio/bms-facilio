@@ -1,23 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount50;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.FacilioException;
 import com.facilio.i18n.util.Keys.Error;
 import com.facilio.i18n.util.TranslationUtil;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.util.FacilioUtil;
@@ -148,7 +144,7 @@ public class AddFieldsCommand extends FacilioCommand {
 	private void constructFieldName(FacilioField field, FacilioModule module, boolean changeDisplayName, List<String> existingNames, String moduleName) throws Exception {
 		if(field.getName() == null || field.getName().isEmpty()) {
 			if(field.getDisplayName() != null && !field.getDisplayName().isEmpty()) {
-				field.setName(field.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+				field.setName(field.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+","")+"_"+moduleName);
 				// Will be used while adding a new field from form
 				handleDuplicateField (field, changeDisplayName, existingNames, moduleName);
 			}
@@ -190,8 +186,10 @@ public class AddFieldsCommand extends FacilioCommand {
 					}
 					fieldName = field.getName () + "_" + ++count;
 				}
-				field.setName (field.getName () + "_" + count);
-				field.setDisplayName (field.getDisplayName () + " " + count);
+				field.setName(field.getName() +"_"+moduleName + "_" + count);
+				field.setDisplayName(field.getDisplayName() + " " + count);
+			}else {
+				field.setName(field.getName()+"_"+moduleName);
 			}
 		}
 	}
