@@ -510,6 +510,15 @@ public class FacilioAuthAction extends FacilioAction {
 	public String authorizeproxyuser() throws Exception {
 		HttpServletResponse response = ServletActionContext.getResponse();
 		HttpServletRequest request = ServletActionContext.getRequest();
+
+		String g_csrf_tokenCookie = FacilioCookie.getUserCookie(request, "g_csrf_token");
+
+		if (!g_csrf_token.equals(g_csrf_tokenCookie)) {
+			setJsonresponse("errorcode", "1");
+			setJsonresponse("message", "Not Permitted");
+			return ERROR;
+		}
+
 		String clientPath = "/auth/proxyuser";
 		String isPortalProxy = FacilioCookie.getUserCookie(request, "fc.portalproxy");
 		if ("true".equals(isPortalProxy)) {
