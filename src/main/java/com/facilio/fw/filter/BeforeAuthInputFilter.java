@@ -39,11 +39,11 @@ public class BeforeAuthInputFilter implements Filter {
                 = new BufferedReader(new FileReader(file));
         List<String> list= new ArrayList<>();
         String st;
-        while ((st = br.readLine()) != null)
+        while ((st = br.readLine()) != null) {
             list.add(st);
+        }
         String[] arr = new String[list.size()];
         list.toArray(arr);
-        System.out.println(arr);
         return arr;
     }
     @Override

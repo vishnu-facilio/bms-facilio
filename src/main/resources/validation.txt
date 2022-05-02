@@ -2671,3 +2671,8 @@ v/api/ratecard/add
 /api/v2/setup/survey/edit
 /api/v2/setup/survey/delete
 /api/v2/setup/survey/:modulename
+api/auth/login
+/api/integ/lookup
+api/auth/signup
+/api/integ/apisignup
+/api/integ/loginWithPasswordAndDigest
