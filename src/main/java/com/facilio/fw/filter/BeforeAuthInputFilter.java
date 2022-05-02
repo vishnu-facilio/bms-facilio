@@ -51,8 +51,8 @@ public class BeforeAuthInputFilter implements Filter {
         try {
             this.config = new ConfigParser().read("security");
             this.urlReTree = new URLReTree(this.config.getAllPaths());
-            String a[]=execludeFile();
-            this.execlutionUrlReTree = new URLReTree(execludeFile());
+            String[] s = execludeFile();
+            this.execlutionUrlReTree = new URLReTree(s);
         } catch (Exception e) {
             throw new ServletException(e);
         }
@@ -66,7 +66,7 @@ public class BeforeAuthInputFilter implements Filter {
         if (!matcher.isMatch()) {
             if(httpServletRequest.getRequestURI().equals("/")) {
                 filterChain.doFilter(servletRequest, servletResponse);
-                return;
+               return;
             }
             if(matcher1.isMatch()) {
                 filterChain.doFilter(servletRequest, servletResponse);
@@ -79,7 +79,6 @@ public class BeforeAuthInputFilter implements Filter {
 
             }
         }
-
         SecurityRequestWrapper securityRequestWrapper = new SecurityRequestWrapper((HttpServletRequest) servletRequest);
         RequestContext requestContext = new RequestContext(securityRequestWrapper, matcher.getMatchMap());
         String matchedPattern = matcher.getMatchedPattern();
