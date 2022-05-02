@@ -441,6 +441,6 @@ public class ScopeInterceptor extends AbstractInterceptor {
     }
 
     private Parameter getModuleNameParam(String moduleName){
-        return new Parameter.Request(moduleName,moduleName);
+        return new Parameter.Request(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
     }
 }
