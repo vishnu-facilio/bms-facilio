@@ -92,4 +92,8 @@ public class DomainSSO {
     @Getter
     @Setter
     private long modifiedBy;
+
+    @Getter
+    @Setter
+    private Boolean showSSOLink;
 }

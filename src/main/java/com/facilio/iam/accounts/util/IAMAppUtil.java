@@ -75,6 +75,7 @@ public class IAMAppUtil {
 				String ssoEndpoint = SSOUtil.getDomainSSOEndpoint(appDomain.getDomain());
 				resultJSON.put("ssoEndPoint", ssoEndpoint);
 				resultJSON.put("isSLOEnabled", false); // TODO handle SLO
+				resultJSON.put("showSSOLink", domainSSODetails.getShowSSOLink() != null && domainSSODetails.getShowSSOLink());
 			}
 		}
 
