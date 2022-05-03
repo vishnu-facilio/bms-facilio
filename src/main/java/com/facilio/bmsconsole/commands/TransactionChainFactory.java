@@ -3484,11 +3484,6 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateUserFunctionCommand());
 			return c;
 		}
-		public static FacilioChain getDeleteWorkflowUserFunctionChain() {
-			FacilioChain c = getDefaultChain();
-			c.addCommand(new DeleteWorkflowCommand());
-			return c;
-		}
 
 		public static FacilioChain getExecuteDefaultWorkflowChain() {
 			FacilioChain c = getDefaultChain();

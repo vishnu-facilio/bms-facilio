@@ -494,6 +494,7 @@ public class AccountUtil {
 		CUSTOM_MODULE_PERMISSION(69, 32, LicenseMapping.GROUP2LICENSE),
 		CUSTOM_MODULE_SCOPING(70, 64, LicenseMapping.GROUP2LICENSE),
 		POINT_FILTER(71, 128, LicenseMapping.GROUP2LICENSE),//2^7
+		FETCH_SCRIPT_FROM_CACHE(72, 256, LicenseMapping.GROUP2LICENSE),
 		;
 
 		public int featureId;
