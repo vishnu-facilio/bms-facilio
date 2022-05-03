@@ -60,7 +60,10 @@ public class AltayerAudienceValueGenerator extends ValueGenerator{
                             spaceCriteria.andCriteria(spaceSubCriteria);
 
                             criteria.andCriteria(spaceCriteria);
-                            criteria.orCriteria(getRoleCriteria());
+                            Criteria roleCriteria = new Criteria();
+                            roleCriteria.orCriteria(getRoleCriteria());
+                            roleCriteria.addAndCondition(CriteriaAPI.getCondition("FILTER_SHARING_TYPE", "filterSharingType", CommonOperators.IS_EMPTY));
+                            criteria.orCriteria(roleCriteria);
                             criteria.orCriteria(getPeopleCriteria());
 
                         }
@@ -70,9 +73,11 @@ public class AltayerAudienceValueGenerator extends ValueGenerator{
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 FacilioModule subModule = modBean.getModule(FacilioConstants.ContextNames.Tenant.AUDIENCE_SHARING);
                 List<FacilioField> fields = modBean.getAllFields(subModule.getName());
+                fields.addAll(modBean.getAllFields(ModuleFactory.getAudienceModule().getName()));
                 SelectRecordsBuilder<AudienceSharingInfoContext> builderCategory = new SelectRecordsBuilder<AudienceSharingInfoContext>()
                         .module(subModule)
-                        .beanClass(AudienceSharingInfoContext.class)
+                        .innerJoin(ModuleFactory.getAudienceModule().getTableName())
+                        .on(ModuleFactory.getAudienceModule().getTableName() + ".ID = " + subModule.getTableName() + ".AUDIENCE_ID")                        .beanClass(AudienceSharingInfoContext.class)
                         .select(fields)
                         .andCriteria(criteria)
                         ;
