@@ -18,6 +18,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
@@ -58,7 +60,6 @@ public class AudienceValueGenerator extends ValueGenerator{
                                 tuIds.add(ts.getId());
                             }
                         }
-
                         Criteria spaceCriteria = new Criteria();
                         spaceCriteria.addAndCondition(CriteriaAPI.getCondition("SHARING_TYPE", "sharingType", "1,4", StringOperators.IS));
                         Criteria spaceSubCriteria = new Criteria();
@@ -71,7 +72,7 @@ public class AudienceValueGenerator extends ValueGenerator{
                         criteria.andCriteria(spaceCriteria);
                         Criteria roleCriteria = new Criteria();
                         roleCriteria.orCriteria(getRoleCriteria());
-                        roleCriteria.addAndCondition(CriteriaAPI.getCondition("FILTER_SHARING_TYPE", "filterSharingType", CommonOperators.IS_EMPTY));
+                        roleCriteria.addAndCondition(CriteriaAPI.getCondition("FILTER_SHARING_TYPE", "filterSharingType","1", CommonOperators.IS_EMPTY));
                         criteria.orCriteria(roleCriteria);
                         criteria.orCriteria(getPeopleCriteria());
 
@@ -108,6 +109,7 @@ public class AudienceValueGenerator extends ValueGenerator{
                 builderCategory.fetchSupplements(supplements);
 
                 List<AudienceSharingInfoContext> list = builderCategory.get();
+
                 if(CollectionUtils.isNotEmpty(list)){
                     List<Long> ids = new ArrayList<>();
                     List<Long> filterAppliedAudience = new ArrayList<>();
@@ -117,11 +119,18 @@ public class AudienceValueGenerator extends ValueGenerator{
                         }
                         if((sh.getSharingTypeEnum() == CommunitySharingInfoContext.SharingType.BUILDING || sh.getSharingTypeEnum() == CommunitySharingInfoContext.SharingType.TENANT_UNIT) && sh.getAudienceId().getFilterSharingType() != null && sh.getAudienceId().getFilterSharingType().equals(2l)) {
                             filterAppliedAudience.add(sh.getAudienceId().getId());
+                            Criteria roleSharingInfoCriteria = new Criteria();
+                            roleSharingInfoCriteria.addAndCondition(CriteriaAPI.getCondition("AUDIENCE_ID", "audienceId",String.valueOf(sh.getAudienceId().getId()), NumberOperators.EQUALS));
+                            roleSharingInfoCriteria.addAndCondition(CriteriaAPI.getCondition("SHARING_TYPE", "sharingType",String.valueOf(CommunitySharingInfoContext.SharingType.ROLE.getIndex()), NumberOperators.EQUALS));
 
-                            List<AudienceSharingInfoContext> roleFilter = list.stream()
-                                    .filter(s -> s.getAudienceId().getId() == sh.getAudienceId().getId() && s.getSharingTypeEnum() == CommunitySharingInfoContext.SharingType.ROLE && s.getSharedToRoleId() == AccountUtil.getCurrentUser().getRole().getRoleId())
-                                    .collect(Collectors.toList());
+                            List<AudienceSharingInfoContext> roleAudienceSharingInfo = V3RecordAPI.getRecordsListWithSupplements(subModule.getName(), null, AudienceSharingInfoContext.class, roleSharingInfoCriteria,null);
 
+                            List<AudienceSharingInfoContext> roleFilter = new ArrayList<>();
+                            if(CollectionUtils.isNotEmpty(roleAudienceSharingInfo)) {
+                                roleFilter = roleAudienceSharingInfo.stream()
+                                        .filter(s -> s.getAudienceId().getId() == sh.getAudienceId().getId() && s.getSharingTypeEnum() == CommunitySharingInfoContext.SharingType.ROLE && s.getSharedToRoleId() == AccountUtil.getCurrentUser().getRole().getRoleId())
+                                        .collect(Collectors.toList());
+                            }
                             if(CollectionUtils.isEmpty(roleFilter)) {
                                 continue;
                             }
@@ -129,7 +138,6 @@ public class AudienceValueGenerator extends ValueGenerator{
 
                         ids.add(sh.getAudienceId().getId());
                     }
-
                     return StringUtils.join(ids, ",");
                 }
             }
@@ -142,6 +150,7 @@ public class AudienceValueGenerator extends ValueGenerator{
     }
 
     private Criteria getRoleCriteria() {
+
         Criteria roleCriteria = new Criteria();
         roleCriteria.addAndCondition(CriteriaAPI.getCondition("SHARING_TYPE", "sharingType", "2", StringOperators.IS));
 
