@@ -14,6 +14,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.scriptengine.context.WorkflowNamespaceContext;
 import com.facilio.scriptengine.systemfunctions.FacilioSystemFunctionNameSpace;
 import com.facilio.scriptengine.systemfunctions.FacilioWorkflowFunctionInterface;
+import com.facilio.v3.context.Constants;
 import com.facilio.workflows.context.ScheduledWorkflowContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowUserFunctionContext;
@@ -230,73 +231,60 @@ public class WorkflowAction extends FacilioAction {
 		return SUCCESS;
 	}
 	public String deleteWorkflow() throws Exception {
-		FacilioContext context = new FacilioContext();
 		
-		context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
-		FacilioChain addWorkflowChain =  TransactionChainFactory.getDeleteWorkflowChain();
-		addWorkflowChain.execute(context);
+		workflow = Constants.getScriptBean().deleteFunction(workflow);
+		
 		setResult(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
 		return SUCCESS;
+		
 	}
 	
 	public String addNameSpace() throws Exception {
-		
-		FacilioContext context = new FacilioContext();
-		
-		context.put(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT, namespace);
-		FacilioChain addWorkflowChain =  TransactionChainFactory.getAddWorkflowNameSpaceChain();
-		addWorkflowChain.execute(context);
+		namespace = Constants.getScriptBean().addNameSpace(namespace);
 		setResult(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT, namespace);
 		return SUCCESS;
 	}
 	public String updateNameSpace() throws Exception {
-		FacilioContext context = new FacilioContext();
-		
-		context.put(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT, namespace);
-		FacilioChain addWorkflowChain =  TransactionChainFactory.getUpdateWorkflowNameSpaceChain();
-		addWorkflowChain.execute(context);
+		namespace = Constants.getScriptBean().updateNameSpace(namespace);
 		setResult(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT, namespace);
 		return SUCCESS;
 	}
 	
 	public String deleteNameSpace() throws Exception {
-		FacilioContext context = new FacilioContext();
-		
-		context.put(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT, namespace);
-		FacilioChain addWorkflowChain =  TransactionChainFactory.getDeleteWorkflowNameSpaceChain();
-		addWorkflowChain.execute(context);
+		namespace = Constants.getScriptBean().deleteNameSpace(namespace);
 		setResult(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT, namespace);
 		return SUCCESS;
 	}
 	
 	public String addUserFunction() throws Exception {
 		
-		FacilioContext context = new FacilioContext();
+		WorkflowNamespaceContext nameSpace = UserFunctionAPI.getNameSpace(userFunction.getNameSpaceId());
 		
-		context.put(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
-		FacilioChain addWorkflowChain =  TransactionChainFactory.getAddWorkflowUserFunctionChain();
-		addWorkflowChain.execute(context);
+		userFunction.setNameSpaceName(nameSpace.getName());
+		
+		FacilioContext context = Constants.getScriptBean().addFunction(userFunction);
+		
 		setResult(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
 		setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
 		return SUCCESS;
 	}
 	
 	public String updateUserFunction() throws Exception {
-		FacilioContext context = new FacilioContext();
 		
-		context.put(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
-		FacilioChain addWorkflowChain =  TransactionChainFactory.getUpdateWorkflowUserFunctionChain();
-		addWorkflowChain.execute(context);
+		WorkflowNamespaceContext nameSpace = UserFunctionAPI.getNameSpace(userFunction.getNameSpaceId());
+		
+		userFunction.setNameSpaceName(nameSpace.getName());
+		
+		FacilioContext context = Constants.getScriptBean().updateFunction(userFunction);
+		
 		setResult(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
 		setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
 		return SUCCESS;
 	}
 	public String deleteUserFunction() throws Exception {
-		FacilioContext context = new FacilioContext();
 		
-		context.put(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
-		FacilioChain addWorkflowChain =  TransactionChainFactory.getDeleteWorkflowUserFunctionChain();
-		addWorkflowChain.execute(context);
+		userFunction = Constants.getScriptBean().deleteFunction(userFunction);
+		
 		setResult(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
 		return SUCCESS;
 	}

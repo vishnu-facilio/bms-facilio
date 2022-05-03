@@ -13,6 +13,8 @@ import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.commands.SaveOptions;
+import com.facilio.workflowv2.bean.ScriptBean;
+
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -443,6 +445,9 @@ public class Constants {
 
     public static ModuleBean getModBean() throws Exception {
         return (ModuleBean) BeanFactory.lookup("ModuleBean");
+    }
+    public static ScriptBean getScriptBean() throws Exception {
+        return (ScriptBean) BeanFactory.lookup("ScriptBean");
     }
 
     private static final String IS_V4 = "isV4";
