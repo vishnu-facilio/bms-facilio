@@ -2678,3 +2678,4 @@ api/auth/signup
 /api/integ/apisignup
 /api/integ/loginWithPasswordAndDigest
 /api/module/metafields
+/api/integ/faciliosubmit
