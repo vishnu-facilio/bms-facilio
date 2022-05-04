@@ -139,7 +139,7 @@ public class UserFunctionAPI {
 		return null;
 	}
 
-	public static WorkflowContext getWorkflowFunction(String nameSpace, String functionName) throws Exception {
+	public static WorkflowUserFunctionContext getWorkflowFunction(String nameSpace, String functionName) throws Exception {
 
 		WorkflowNamespaceContext workflowNamespaceContext = getNameSpace(nameSpace);
 		return getWorkflowFunction(workflowNamespaceContext.getId(), functionName);
@@ -183,7 +183,7 @@ public class UserFunctionAPI {
 		return fields;
 	}
 
-	public static WorkflowContext getWorkflowFunction(Long nameSpaceId, String functionName) throws Exception {
+	public static WorkflowUserFunctionContext getWorkflowFunction(Long nameSpaceId, String functionName) throws Exception {
 
 		FacilioModule module = ModuleFactory.getWorkflowUserFunctionModule();
 		List<FacilioField> fields = FieldFactory.getWorkflowUserFunctionFields();
@@ -200,7 +200,7 @@ public class UserFunctionAPI {
 
 		List<Map<String, Object>> props = selectBuilder.get();
 
-		WorkflowContext workflowContext = null;
+		WorkflowUserFunctionContext workflowContext = null;
 		if (props != null && !props.isEmpty()) {
 			workflowContext = FieldUtil.getAsBeanFromMap(props.get(0), WorkflowUserFunctionContext.class);
 		}

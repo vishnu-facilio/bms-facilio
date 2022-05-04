@@ -7,6 +7,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BusinessHoursContext;
 import com.facilio.bmsconsole.context.ConnectionContext;
@@ -36,6 +38,7 @@ import com.facilio.scriptengine.util.ScriptUtil;
 import com.facilio.scriptengine.visitor.FunctionVisitor;
 import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.time.DateRange;
+import com.facilio.v3.context.Constants;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.contexts.WorkflowCategoryReadingContext;
@@ -229,8 +232,16 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
             			
             			WorkflowNamespaceContext namespaceContext = (WorkflowNamespaceContext) value.asObject();
             			List<Object> paramValues = ScriptUtil.getParamList(functionCall,false,this,null);
-            			
-            			WorkflowContext wfContext = UserFunctionAPI.getWorkflowFunction(namespaceContext.getId(), functionCall.VAR().getText());
+            			WorkflowContext wfContext = null;
+            			if(AccountUtil.isFeatureEnabled(FeatureLicense.FETCH_SCRIPT_FROM_CACHE)) {
+            				wfContext = Constants.getScriptBean().getFunction(namespaceContext.getName(), functionCall.VAR().getText());
+            			}
+            			else {
+            				wfContext = UserFunctionAPI.getWorkflowFunction(namespaceContext.getId(), functionCall.VAR().getText());
+            			}
+            			if(wfContext == null) {
+                			throw new RuntimeException("No such function - "+functionCall.VAR().getText());
+                		}
             			wfContext.setParams(paramValues);
             			wfContext.setGlobalParameters(getGlobalParam());
             			
@@ -378,7 +389,13 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
         			
         			FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpaceName.asString());
                 	if(nameSpaceEnum == null) {
-                		WorkflowNamespaceContext namespace = UserFunctionAPI.getNameSpace(nameSpaceName.asString());
+                		WorkflowNamespaceContext namespace = null;
+                		if(AccountUtil.isFeatureEnabled(FeatureLicense.FETCH_SCRIPT_FROM_CACHE)) {
+                			namespace = Constants.getScriptBean().getNameSpace(nameSpaceName.asString());
+                		}
+                		else {
+                			namespace = UserFunctionAPI.getNameSpace(nameSpaceName.asString());
+                		}
                 		if(namespace == null) {
                 			throw new RuntimeException("No such namespace - "+nameSpaceName.asString());
                 		}
