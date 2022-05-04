@@ -21,6 +21,7 @@ import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.util.DBConf;
+import com.facilio.filters.MultiReadServletRequest;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
 import com.facilio.screen.context.RemoteScreenContext;
@@ -32,11 +33,14 @@ import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ActionProxy;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -62,6 +66,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
     public String intercept(ActionInvocation arg0) throws Exception {
         long startTime = System.currentTimeMillis();
         HttpServletRequest request = ServletActionContext.getRequest();
+
         IAMAccount iamAccount = (IAMAccount) request.getAttribute("iamAccount");
         if (iamAccount != null) {
             if (request.getAttribute("remoteScreen") != null && request.getAttribute("remoteScreen") instanceof RemoteScreenContext) {
@@ -259,6 +264,21 @@ public class ScopeInterceptor extends AbstractInterceptor {
                         if (permissionModuleName != null && permissionModuleName.getValue() != null) {
                             moduleName = permissionModuleName;
                         }
+                        if(moduleName == null || (moduleName != null && moduleName.getValue() == null)) {
+                            MultiReadServletRequest servletRequest = new MultiReadServletRequest(request,true);
+                            ServletActionContext.setRequest(servletRequest);
+                            if(servletRequest != null && servletRequest.isCachedRequest()) {
+                                if (servletRequest.getReader() != null) {
+                                    String requestBody = IOUtils.toString(servletRequest.getReader());
+                                    if (!StringUtils.isEmpty(requestBody)) {
+                                        JSONObject json = (JSONObject) new JSONParser().parse(requestBody);
+                                        if (json != null && json.containsKey(FacilioConstants.ContextNames.MODULE_NAME)) {
+                                            moduleName = getModuleNameParam(json.get(FacilioConstants.ContextNames.MODULE_NAME).toString());
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         boolean isNewPerm = isNewPermission != null && Boolean.parseBoolean(isNewPermission.getValue());
                         if (action != null && action.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue(), action.getValue(), isNewPerm)) {
                             return logAndReturn("unauthorized", null, startTime, request);
@@ -420,5 +440,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
         return false;
     }
 
-
+    private Parameter getModuleNameParam(String moduleName){
+        return new Parameter.Request(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
+    }
 }
