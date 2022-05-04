@@ -264,21 +264,23 @@ public class ScopeInterceptor extends AbstractInterceptor {
                         if (permissionModuleName != null && permissionModuleName.getValue() != null) {
                             moduleName = permissionModuleName;
                         }
-                        if(moduleName == null || (moduleName != null && moduleName.getValue() == null)) {
-                            MultiReadServletRequest servletRequest = new MultiReadServletRequest(request,true);
-                            ServletActionContext.setRequest(servletRequest);
-                            if(servletRequest != null && servletRequest.isCachedRequest()) {
-                                if (servletRequest.getReader() != null) {
-                                    String requestBody = IOUtils.toString(servletRequest.getReader());
-                                    if (!StringUtils.isEmpty(requestBody)) {
-                                        JSONObject json = (JSONObject) new JSONParser().parse(requestBody);
-                                        if (json != null && json.containsKey(FacilioConstants.ContextNames.MODULE_NAME)) {
-                                            moduleName = getModuleNameParam(json.get(FacilioConstants.ContextNames.MODULE_NAME).toString());
-                                        }
-                                    }
-                                }
-                            }
-                        }
+
+//                        if(moduleName == null || (moduleName != null && moduleName.getValue() == null)) {
+//                            MultiReadServletRequest servletRequest = new MultiReadServletRequest(request,true);
+//                            ServletActionContext.setRequest(servletRequest);
+//                            if(servletRequest != null && servletRequest.isCachedRequest()) {
+//                                if (servletRequest.getReader() != null) {
+//                                    String requestBody = IOUtils.toString(servletRequest.getReader());
+//                                    if (!StringUtils.isEmpty(requestBody)) {
+//                                        JSONObject json = (JSONObject) new JSONParser().parse(requestBody);
+//                                        if (json != null && json.containsKey(FacilioConstants.ContextNames.MODULE_NAME)) {
+//                                            moduleName = getModuleNameParam(json.get(FacilioConstants.ContextNames.MODULE_NAME).toString());
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        }
+
                         boolean isNewPerm = isNewPermission != null && Boolean.parseBoolean(isNewPermission.getValue());
                         if (action != null && action.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue(), action.getValue(), isNewPerm)) {
                             return logAndReturn("unauthorized", null, startTime, request);
