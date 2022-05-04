@@ -73,7 +73,7 @@ import com.facilio.util.FacilioUtil;
 public class FormsAPI {
 
 	private static final Logger LOGGER = LogManager.getLogger(FormsAPI.class.getName());
-	
+
 	public static Map<String, Collection<FacilioForm>> getMobileForms() throws Exception {
 		Map<String, Collection<FacilioForm>> forms = new HashMap<> ();
 		List<FacilioForm> formList = new ArrayList<>();

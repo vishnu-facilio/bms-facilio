@@ -46,6 +46,8 @@ private Boolean isBooked;
 
 private Boolean isOccupied;
 
+private Long bookingFormId;
+
 
 public Boolean getIsOccupied() {
 	if(isOccupied != null) {
@@ -53,6 +55,17 @@ public Boolean getIsOccupied() {
 	}
 	return false;
 }
+
+	public Long getBookingFormId() {
+		if(bookingFormId != null) {
+			return bookingFormId;
+		}
+		return null;
+	}
+
+	public void setBookingFormId(Long bookingFormId) {
+		this.bookingFormId = bookingFormId;
+	}
 
 public void setIsOccupied(Boolean isOccupied) {
 	this.isOccupied = isOccupied;

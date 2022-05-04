@@ -1,42 +1,36 @@
 package com.facilio.bmsconsoleV3.commands.floorplan;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsoleV3.context.V3LockersContext;
-import com.facilio.bmsconsoleV3.context.V3ParkingStallContext;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsoleV3.context.V3ResourceContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.BookingSlotsContext;
-import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext;
 import com.facilio.bmsconsoleV3.context.floorplan.*;
 import com.facilio.bmsconsoleV3.util.V3FloorPlanAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-
-
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import org.apache.commons.lang3.StringUtils;
-
-
 import java.util.*;
-import java.util.stream.Collectors;
-
+@Log4j
 public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		
+
 		Criteria criteria = null;
 
         
@@ -65,7 +59,14 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 		
 		
 		if (CollectionUtils.isNotEmpty(markers)) {
-			  for (V3MarkerContext marker: markers) {
+			try {
+				Map<String, FacilioForm> froms = FormsAPI.getFormsAsMap(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING, false, false, AccountUtil.getCurrentApp().getId());
+				context.put(FacilioConstants.ContextNames.FORMS, froms);
+			}
+			catch (Exception e) {
+				LOGGER.error("Error while fetching forms", e);
+			}
+			for (V3MarkerContext marker: markers) {
 		        	Long recordId = (Long) marker.getRecordId();
 		        	Long markerModuleId = (Long) marker.getMarkerModuleId();
 		        	
@@ -161,8 +162,12 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 	}
 	
 	public static V3IndoorFloorPlanPropertiesContext getMarkerProperties(ModuleBaseWithCustomFields record, V3MarkerContext marker,Long markerModuleId, Context context) throws Exception {
-	    
-	        Map<Long, List<BookingSlotsContext>> facilityBookingsMap = (Map<Long, List<BookingSlotsContext>>) context.get(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
+		Map<String, FacilioForm> forms = (Map<String, FacilioForm>) context.get(FacilioConstants.ContextNames.FORMS);
+
+
+
+
+		Map<Long, List<BookingSlotsContext>> facilityBookingsMap = (Map<Long, List<BookingSlotsContext>>) context.get(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
 
 			Map<Long, V3FacilityBookingContext> bookingMap =  (Map<Long, V3FacilityBookingContext>) context.get("bookingMap");
 
@@ -185,6 +190,8 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 		   }
 		   
 		   if(module.getName().equals(FacilioConstants.ContextNames.Floorplan.DESKS)) {
+
+
 			   
 			   // to handle desk details here
 			   
@@ -204,6 +211,14 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 			   else {
 				   properties.setActive(false);
 
+			   }
+
+			   if (forms != null && CollectionUtils.isNotEmpty(Collections.singleton(forms))) {
+				   FacilioForm hotDeskBookiingForm = forms.get("hot_desk_facilitybooking_web");
+				   FacilioForm bookingForm = forms.get("default_facilitybooking_web");
+				   if (hotDeskBookiingForm != null) {
+					   properties.setBookingFormId(hotDeskBookiingForm.getId());
+				   }
 			   }
 			   
 			   

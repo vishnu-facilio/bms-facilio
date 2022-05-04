@@ -11,16 +11,9 @@ import com.facilio.bmsconsole.commands.module.GetSortableFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.asset.AssetSupplementsSupplyCommand;
 import com.facilio.bmsconsoleV3.commands.asset.CheckPMForAssetsCommandV3;
 import com.facilio.bmsconsoleV3.commands.building.BuildingFillLookupFieldsCommand;
-import com.facilio.bmsconsoleV3.commands.floorplan.getIndoorFloorPlanViewerCommand;
+import com.facilio.bmsconsoleV3.commands.floorplan.*;
 import com.facilio.bmsconsole.commands.page.GetSummaryFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.facility.GetFacilityAvailabilityCommandV3;
-import com.facilio.bmsconsoleV3.commands.floorplan.FetchFloorplanFacilitiesCommmand;
-import com.facilio.bmsconsoleV3.commands.floorplan.FetchFloorplanMapByTypeCommmand;
-import com.facilio.bmsconsoleV3.commands.floorplan.FloorplanDetailsListCommand;
-import com.facilio.bmsconsoleV3.commands.floorplan.getFloorplanPropertiesBookingResultCommands;
-import com.facilio.bmsconsoleV3.commands.floorplan.getIndoorFloorPlanBookingResultCommands;
-import com.facilio.bmsconsoleV3.commands.floorplan.getIndoorFloorPlanBookingViewerCommand;
-import com.facilio.bmsconsoleV3.commands.floorplan.getIndoorFloorPlanPropertiesCommand;
 import com.facilio.bmsconsoleV3.commands.people.FetchScopingForPeopleCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.AddDefaultCriteriaForQuoteFetchCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.QuotationFillLookupFields;
@@ -177,6 +170,7 @@ public class ReadOnlyChainFactoryV3 {
     public static FacilioChain getfloorplanViewerObjectChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new getIndoorFloorPlanViewerCommand());
+        c.addCommand(new getFloorplanLayerCommand());
         return c;
     }
     public static FacilioChain getfloorplanBookingObjectChain() {
@@ -184,6 +178,7 @@ public class ReadOnlyChainFactoryV3 {
         c.addCommand(new getIndoorFloorPlanBookingViewerCommand());
         c.addCommand(new FetchFloorplanFacilitiesCommmand());
         c.addCommand(new getIndoorFloorPlanBookingResultCommands());
+        c.addCommand(new getFloorplanLayerCommand());
         return c;
     }
     public static FacilioChain getfloorplanPropertiesChain() {

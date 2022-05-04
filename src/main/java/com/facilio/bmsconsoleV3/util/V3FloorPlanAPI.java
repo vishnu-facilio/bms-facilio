@@ -1,12 +1,10 @@
 package com.facilio.bmsconsoleV3.util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.facilio.bmsconsole.context.EmployeeContext;
 import com.facilio.bmsconsole.context.SpaceContext;
+import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsoleV3.context.V3EmployeeContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.BookingSlotsContext;
@@ -44,6 +42,42 @@ import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 public class V3FloorPlanAPI {
 
 
+	public static List<V3IndoorFloorPlanContext> getAllFloorPlan() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
+
+		SelectRecordsBuilder<V3IndoorFloorPlanContext> builder = new SelectRecordsBuilder<V3IndoorFloorPlanContext>()
+				.module(module)
+				.beanClass(V3IndoorFloorPlanContext.class)
+				.select(modBean.getAllFields(module.getName()));
+
+		List<V3IndoorFloorPlanContext> floorplans = builder.get();
+		if(CollectionUtils.isNotEmpty(floorplans))
+		{
+			return floorplans;
+		}
+		return new ArrayList<>();
+		}
+		public static List<V3IndoorFloorPlanLayerContext> getFloorplanLayer(Long floorplanId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Floorplan.FLOORPLAN_LAYER);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
+
+		SelectRecordsBuilder<V3IndoorFloorPlanLayerContext> builder = new SelectRecordsBuilder<V3IndoorFloorPlanLayerContext>()
+				.module(module)
+				.beanClass(V3IndoorFloorPlanLayerContext.class)
+				.select(modBean.getAllFields(module.getName()))
+				.andCondition(CriteriaAPI.getCondition("INDOOR_FLOORPLAN_ID", "indoorfloorplanid",
+						String.valueOf(floorplanId), NumberOperators.EQUALS));
+
+		List<V3IndoorFloorPlanLayerContext> layers = builder.get();
+		if(CollectionUtils.isNotEmpty(layers))
+		{
+			return layers;
+		}
+		return new ArrayList<>();
+	}
     	@SuppressWarnings("unchecked")
 		public static JSONObject getZoneTooltipData(V3MarkerdZonesContext zone, String viewMode) throws Exception {
 
@@ -196,7 +230,27 @@ public class V3FloorPlanAPI {
 	 					properties.setSpaceCategory(zone.getSpace().getSpaceCategory().getName());
 
 	 				}
+
 	 				properties.setIsOccupied(false);
+
+					Map<String, FacilioForm> forms = (Map<String, FacilioForm>) context.get(FacilioConstants.ContextNames.FORMS);
+
+					if (forms != null && CollectionUtils.isNotEmpty(Collections.singleton(forms))) {
+						FacilioForm parkingBooking = forms.get("default_parkingbooking_web");
+						FacilioForm spaceBookingform = forms.get("default_facilitybooking_web");
+						String SpaceCategory = "Parking Stall";
+						if (properties.getSpaceCategory().equals(SpaceCategory)) {
+							if (parkingBooking != null) {
+								properties.setBookingFormId(parkingBooking.getId());
+							}
+						}
+						else {
+							if (spaceBookingform != null) {
+								properties.setBookingFormId(spaceBookingform.getId());
+							}
+						}
+
+					}
 	 				
 	 			
 	 				if (markerModuleId != null && record != null) {
@@ -288,6 +342,7 @@ public class V3FloorPlanAPI {
 			   properties.setRecordId(marker.getRecordId());
 			   properties.setMarkerModuleId(marker.getMarkerModuleId());
 			   properties.setMarkerModuleName(module.getName());
+
 			   
 			   properties.setActive(true);
 			   
@@ -357,6 +412,8 @@ public class V3FloorPlanAPI {
 					   // set booking desk icon name
 
 				   }
+
+				  // properties.setBookingFormId(getBookingFormIdFromModule);
 				   
 				   }
 				   else {
