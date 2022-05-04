@@ -427,8 +427,8 @@ public class PageWidget {
 		TENANT_UNIT_TENANT("tenantunittenant"),
 		TENANT_UNIT_WORKORDER("tenantunitworkorder"),
 		TENANT_UNIT_LOCATION("tenantunitlocation"),
-		TENANT_UNIT_PHOTO("tenantunitphoto");
-
+		TENANT_UNIT_PHOTO("tenantunitphoto"),
+		RECEIVABLE_RECEIPTS("receivablereceipts");
 
 		private String name;
 

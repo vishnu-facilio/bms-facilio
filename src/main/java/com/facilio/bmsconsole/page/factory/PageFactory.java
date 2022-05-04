@@ -15,6 +15,7 @@ import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.context.*;
+import com.facilio.bmsconsoleV3.context.purchaseorder.V3ReceivableContext;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -254,6 +255,8 @@ public class PageFactory {
 				return ItemPageFactory.getItemPage((ItemContext) record, module);
 			case ContextNames.TOOL:
 				return ToolPageFactory.getToolPage((ToolContext) record, module);
+			case ContextNames.RECEIVABLE:
+				return ReceivablePageFactory.getReceivablePage((ReceivableContext) record, module);
 		}
 		if (module.getExtendModule() == null) {	// temp
 			// etisalat changes will be changed to standard method
