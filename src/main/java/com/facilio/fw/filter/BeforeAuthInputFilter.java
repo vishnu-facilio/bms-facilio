@@ -64,7 +64,7 @@ public class BeforeAuthInputFilter implements Filter {
         Matcher matcher = this.urlReTree.matcher(httpServletRequest.getRequestURI());
         Matcher exclution = this.execlutionUrlReTree.matcher(httpServletRequest.getRequestURI());
         if (!matcher.isMatch()) {
-            if(httpServletRequest.getRequestURI().equals("/")) {
+            if(!httpServletRequest.getRequestURI().startsWith("/api")) {
                 filterChain.doFilter(servletRequest, servletResponse);
                return;
             }
@@ -73,7 +73,7 @@ public class BeforeAuthInputFilter implements Filter {
                 return;
             }else {
                 Map<String, String> errorMap = new HashMap<>();
-                errorMap.put("message", "Validation missing for this api" + httpServletRequest.getRequestURI());
+                errorMap.put("message", "Validation missing for : " + httpServletRequest.getRequestURI());
                 write(errorMap, 400, servletResponse);
                 return;
 
