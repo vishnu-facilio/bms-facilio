@@ -1717,7 +1717,9 @@ public enum ActionType {
 					Long localId = MailMessageUtil.getLocalIdFromSubject(mailContext.getSubject());
 					if(localId != null) {
 						Map<String, Object> record = MailMessageUtil.fetchRecordWithLocalIdOrId(module, localId);
-						recordId = (Long) record.get("id");
+						if(record != null) {
+							recordId = (Long) record.get("id");
+						}
 					}
 				}
 				
@@ -2121,7 +2123,12 @@ public enum ActionType {
 			InputStream downloadStream = null;
 			fileInfo = fs.getFileInfo(fileId, true);
 			downloadStream = fs.readFile(fileInfo);
-			File file = File.createTempFile(attachment.getFileFileName(), "");
+			String tempFileName = "tempFileName";
+			
+			if(attachment.getFileFileName() != null) {
+				tempFileName = attachment.getFileFileName();
+			}
+			File file = File.createTempFile(tempFileName, "");
 			FileUtils.copyInputStreamToFile(downloadStream, file);
 			
 			

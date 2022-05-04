@@ -55,7 +55,6 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.transaction.SystemException;
 import java.io.*;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -64,7 +63,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.time.ZoneId;
 import java.util.*;
 
 public class AwsUtil extends BaseAwsUtil{
@@ -91,7 +89,7 @@ public class AwsUtil extends BaseAwsUtil{
 	private static String region = null;
 	private static final String IOT_RULE_SECURITY_PROTOCOL = "iot.rule.security.protocol";
 	private static final String IOT_RULE_SASL_MECHANISM = "iot.rule.sasl.mechanism";
-	private static final String BOOTSTRAP_SERVERS = "bootstrap.servers";
+	private static final String BROKER = "broker";
 	private static final String IOT_RULE_SASL_SCRAM_USERNAME = "iot.rule.sasl.scram.username";
 	private static final String IOT_RULE_SASL_SCRAM_PASSWORD = "iot.rule.sasl.scram.password";
 	private static final String IOT_SQL_VERSION = "2016-03-23";//Refer the versions available in AWS iot sql version document before changing.
@@ -592,7 +590,7 @@ public class AwsUtil extends BaseAwsUtil{
 			if (configs != null) {
 				if (configs.containsKey(IOT_RULE_SECURITY_PROTOCOL)
 						&& configs.containsKey(IOT_RULE_SASL_MECHANISM)
-						&& configs.containsKey(BOOTSTRAP_SERVERS)
+						&& configs.containsKey(BROKER)
 						&& configs.containsKey(IOT_RULE_SASL_SCRAM_USERNAME)
 						&& configs.containsKey(IOT_RULE_SASL_SCRAM_PASSWORD)
 						&& configs.containsKey(IOT_RULE_ARN)) {
