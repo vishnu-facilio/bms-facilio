@@ -123,7 +123,7 @@ public class FunctionBundleComponent extends CommonBundleComponent {
 			
 			Long functionId = (Long)context.get(BundleConstants.COMPONENT_ID);
 			
-			FacilioChain addWorkflowChain =  TransactionChainFactory.getDeleteWorkflowUserFunctionChain();
+			FacilioChain addWorkflowChain =  TransactionChainFactory.getDeleteWorkflowChain();
 
 			FacilioContext newContext = addWorkflowChain.getContext();
 			
