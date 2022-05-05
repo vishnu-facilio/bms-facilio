@@ -1561,4 +1561,39 @@
 		<workflow>
 		</workflow>
 	</template>
+	<template id="122">
+		<workflow>
+			<parameter name="org.emailDomain" type="String"/>
+			<parameter name="org" type="String" />
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.name" type="String" />
+			<parameter name="org.timezone" type="String" />
+		
+			<parameter name="invitevisitor"
+				type="String" />
+			<parameter name="invitevisitor.id"
+				type="String" />
+			
+			 <expression name="vLog">
+				<function>resource.getVisitorInvite(invitevisitor.id)
+				</function>
+			</expression>
+			 <expression name="spaceObj">
+				<function>default.getFromObject(vLog, 'visitedSpace')
+				</function>
+			</expression>
+			<expression name="spaceId">
+				<function>default.getFromObject(spaceObj, 'id')
+				</function>
+			</expression>
+			 <expression name="location">
+				<function>default.getLatLngForSite(spaceId)
+				</function>
+			</expression>
+			<expression name="spaceName">
+				<function>resource.getResourceName(spaceId)
+				</function>
+			</expression>
+		</workflow>
+	</template>
 </workflows>
