@@ -1214,6 +1214,13 @@ public class IAMAccountConstants {
 			createUser.setModule(module);
 			fields.add(createUser);
 
+			FacilioField showSSOLink = new FacilioField();
+			showSSOLink.setName("showSSOLink");
+			showSSOLink.setDataType(FieldType.BOOLEAN);
+			showSSOLink.setColumnName("SHOW_SSO_LINK");
+			showSSOLink.setModule(module);
+			fields.add(showSSOLink);
+
 			FacilioField createdTime = new FacilioField();
 			createdTime.setName("createdTime");
 			createdTime.setDataType(FieldType.NUMBER);
