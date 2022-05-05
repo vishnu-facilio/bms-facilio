@@ -23,6 +23,16 @@ public class PivotDataColumnContext extends PivotColumnContext {
 		return -1;
 	}
 
+	private JSONObject visualConfig;
+
+	public JSONObject getVisualConfig() {
+		return visualConfig;
+	}
+
+	public void setVisualConfig(JSONObject visualConfig) {
+		this.visualConfig = visualConfig;
+	}
+
 	public void setAggr(int aggr) {
 		this.aggr = AggregateOperator.getAggregateOperator(aggr);
 	}
