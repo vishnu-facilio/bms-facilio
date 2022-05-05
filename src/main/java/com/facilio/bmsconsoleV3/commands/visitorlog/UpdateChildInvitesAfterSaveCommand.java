@@ -48,7 +48,7 @@ public class UpdateChildInvitesAfterSaveCommand extends FacilioCommand {
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR);
         List<FacilioField> fields = modBean.getAllFields(module.getName());
 		for(InviteVisitorContextV3 childInvite:childInvites) {
-        	V3RecordAPI.updateRecord(childInvite, module, fields);
+        	V3RecordAPI.updateRecord(childInvite, module, fields, false, true);
         }
 
 

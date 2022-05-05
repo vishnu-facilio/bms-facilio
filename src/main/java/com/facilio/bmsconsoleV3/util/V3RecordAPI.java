@@ -57,12 +57,23 @@ public class V3RecordAPI {
     }
 
     public static Map<Long, List<UpdateChangeSet>> updateRecord(V3Context data, FacilioModule module, List<FacilioField> fields, Boolean isChangeSetNeeded) throws Exception {
+        return updateRecord(data, module, fields, isChangeSetNeeded, false);
+    }
+
+    public static Map<Long, List<UpdateChangeSet>> updateRecord(V3Context data, FacilioModule module, List<FacilioField> fields, Boolean isChangeSetNeeded, Boolean updateSupplements) throws Exception {
         UpdateRecordBuilder updateRecordBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
                 .module(module)
                 .fields(fields)
                 .andCondition(CriteriaAPI.getIdCondition(data.getId(), module));
         if(isChangeSetNeeded != null && isChangeSetNeeded) {
             updateRecordBuilder.withChangeSet(ModuleBaseWithCustomFields.class);
+        }
+        if(updateSupplements != null && updateSupplements) {
+            List<SupplementRecord> supplements = new ArrayList<>();
+            CommonCommandUtil.handleFormDataAndSupplement(fields, data.getData(), supplements);
+            if(!supplements.isEmpty()) {
+                updateRecordBuilder.updateSupplements(supplements);
+            }
         }
         updateRecordBuilder.ignoreSplNullHandling();
         updateRecordBuilder.update(data);
