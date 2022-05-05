@@ -2679,3 +2679,5 @@ api/auth/signup
 /api/integ/loginWithPasswordAndDigest
 /api/module/metafields
 /api/integ/faciliosubmit
+/api/integ/google_sign_in
+/api/integ/acceptOpInvite
