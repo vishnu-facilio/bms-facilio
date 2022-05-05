@@ -44,6 +44,15 @@ public class EnableOauth2Command extends FacilioCommand {
             ApplicationApi.addApplicationLayout(devLayout);
             ApplicationApi.addDevAppWebTabs(devLayout);
             Role devAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.DefaultRoleNames.DEV_ADMIN);
+            if (devAdmin == null) {
+                devAdmin = new Role();
+                devAdmin.setName("Dev Admin");
+                devAdmin.setDescription("Dev Admin");
+                devAdmin.setCreatedTime(System.currentTimeMillis());
+                devAdmin.setIsPrevileged(true);
+                long roleId = AccountUtil.getRoleBean().createRole(AccountUtil.getCurrentOrg().getOrgId(), devAdmin);
+                devAdmin.setRoleId(roleId);
+            }
             ApplicationApi.addAppRoleMapping(devAdmin.getRoleId(), devApp.getId());
         }
 
