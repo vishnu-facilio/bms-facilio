@@ -1,6 +1,6 @@
 package com.facilio.workflowv2.bean;
 
-import com.facilio.client.app.pojo.ClientAppInfo;
+import com.facilio.cache.CacheUtil;
 import com.facilio.fw.cache.FacilioCache;
 import com.facilio.fw.cache.PubSubLRUCache;
 import com.facilio.scriptengine.context.WorkflowNamespaceContext;
@@ -12,13 +12,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class FWLRUScriptCache {
+public class LRUScriptCache {
 
 	private static FacilioCache<String, WorkflowUserFunctionContext> scriptFunctionCache = new PubSubLRUCache<>("scriptFunction",5000);
-	private static FacilioCache<String, WorkflowNamespaceContext> ScriptNameSpaceCache = new PubSubLRUCache<>("scriptNameSapce",2000);
+	private static FacilioCache<String, WorkflowNamespaceContext> scriptNameSpaceCache = new PubSubLRUCache<>("scriptNameSapce",2000);
 	
 	public static class CacheKeys {
-        private static final String KEY_SEPARATOR = "#";
 
         private static final String SCRIPT_NAMESPACE_KEY = "scriptNameSpaceCache";
         private static final String SCRIPT_FUNCTION_KEY = "scriptFunctionCache";
@@ -26,9 +25,9 @@ public class FWLRUScriptCache {
         public static final String SCRIPT_NAMESPACE_KEY(@NonNull Long orgId, @NonNull String nameSpace) {
             return new StringBuilder()
                     .append(SCRIPT_NAMESPACE_KEY)
-                    .append(KEY_SEPARATOR)
+                    .append(CacheUtil.KEY_SEPARATOR)
                     .append(orgId)
-                    .append(KEY_SEPARATOR)
+                    .append(CacheUtil.KEY_SEPARATOR)
                     .append(nameSpace)
                     .toString();
         }
@@ -37,18 +36,18 @@ public class FWLRUScriptCache {
         public static final String SCRIPT_FUNCTION_KEY (@NonNull Long orgId, @NonNull String nameSpace,@NonNull String functionName) {
             return new StringBuilder()
                     .append(SCRIPT_FUNCTION_KEY)
-                    .append(KEY_SEPARATOR)
+                    .append(CacheUtil.KEY_SEPARATOR)
                     .append(orgId)
-                    .append(KEY_SEPARATOR)
+                    .append(CacheUtil.KEY_SEPARATOR)
                     .append(nameSpace)
-                    .append(KEY_SEPARATOR)
+                    .append(CacheUtil.KEY_SEPARATOR)
                     .append(functionName)
                     .toString();
         }
     }
 
 	public static FacilioCache<String, WorkflowNamespaceContext> getScriptNameSpaceCache() {
-		return ScriptNameSpaceCache;
+		return scriptNameSpaceCache;
 	}
 
 	public static FacilioCache<String, WorkflowUserFunctionContext> getScriptFunctionCache() {

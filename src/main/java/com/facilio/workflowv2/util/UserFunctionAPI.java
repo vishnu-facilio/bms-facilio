@@ -141,7 +141,7 @@ public class UserFunctionAPI {
 
 	public static WorkflowUserFunctionContext getWorkflowFunction(String nameSpace, String functionName) throws Exception {
 
-		WorkflowNamespaceContext workflowNamespaceContext = getNameSpace(nameSpace);
+		WorkflowNamespaceContext workflowNamespaceContext = getNameSpace(nameSpace); //Shouldn't this be called using bean as well?
 		return getWorkflowFunction(workflowNamespaceContext.getId(), functionName);
 	}
 	

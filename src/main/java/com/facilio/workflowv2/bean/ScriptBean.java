@@ -13,7 +13,9 @@ public interface ScriptBean extends RootBean {
 	public WorkflowNamespaceContext deleteNameSpace(WorkflowNamespaceContext nameSpace) throws Exception;
 	public WorkflowNamespaceContext getNameSpace(Long nameSpaceId) throws Exception;
 	public WorkflowNamespaceContext getNameSpace(String nameSpaceName) throws Exception;
-	
+
+
+	// Why are we using FacilioContext as return type?
 	public FacilioContext addFunction(WorkflowUserFunctionContext function) throws Exception;
 	public FacilioContext updateFunction(WorkflowUserFunctionContext function) throws Exception;
 	public WorkflowUserFunctionContext deleteFunction(WorkflowUserFunctionContext function) throws Exception;
