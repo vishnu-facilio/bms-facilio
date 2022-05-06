@@ -680,6 +680,8 @@ public class FetchReportDataCommand extends FacilioCommand {
                 fields.add(gField);
                 if (reportType == ReportType.PIVOT_REPORT && gField.getModule() != null && gField.getModule().equals(baseModule) && !gField.getCompleteColumnName().endsWith("null")) {
                     groupBy.add(gField.getCompleteColumnName());
+                } else if(groupByField.getAggrEnum() != null && reportType == ReportType.PIVOT_REPORT && !gField.getCompleteColumnName().endsWith("null")) {
+                    groupBy.add(gField.getCompleteColumnName());
                 } else if (reportType != ReportType.PIVOT_REPORT) {
                     if(gField instanceof MultiEnumField )
                     {
@@ -707,9 +709,8 @@ public class FetchReportDataCommand extends FacilioCommand {
                     else {
                         groupBy.add(gField.getCompleteColumnName());
                     }
-                } else if(groupByField.getAggrEnum() != null && reportType == ReportType.PIVOT_REPORT) {
-                    groupBy.add(gField.getCompleteColumnName());
                 }
+
                 handleJoin(groupByField, selectBuilder, addedModules);
             }
         }

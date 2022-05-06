@@ -17,7 +17,7 @@ public class MultiEnumFormatter extends Formatter{
 
         MultiEnumField multiEnumField = (MultiEnumField) getField();
         List<Integer> values = (List<Integer>) value;
-        StringJoiner valueString = new StringJoiner(",");
+        StringJoiner valueString = new StringJoiner(", ");
         for(int index : values){
             valueString.add(multiEnumField.getValue(index));
         }
