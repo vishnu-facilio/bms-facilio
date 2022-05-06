@@ -1134,7 +1134,7 @@
 /api/tenant/generatebill
 /api/tenant/details
 /api/tenant/:fetchAllTenants
-v/api/ratecard/add
+/api/ratecard/add
 /api/ratecard/update
 /api/ratecard/delete
 /api/ratecard/:fetchRateCard
@@ -2672,12 +2672,14 @@ v/api/ratecard/add
 /api/v2/setup/survey/edit
 /api/v2/setup/survey/delete
 /api/v2/setup/survey/:modulename
-api/auth/login
+/api/auth/login
 /api/integ/lookup
-api/auth/signup
+/api/auth/signup
 /api/integ/apisignup
 /api/integ/loginWithPasswordAndDigest
 /api/module/metafields
 /api/integ/faciliosubmit
 /api/integ/google_sign_in
 /api/integ/acceptOpInvite
+/api/integ/getMfaSettingsUsingDigest
+/api/integ/loadwebView
