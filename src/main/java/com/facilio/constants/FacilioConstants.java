@@ -2063,6 +2063,7 @@ public class FacilioConstants {
 			public static final String FACILITY_WEEKDAY_AVAILABILITY = "facilityWeekdayAvailability";
 			public static final String FACILITY_SPECIAL_AVAILABILITY = "facilitySpecialAvailability";
 			public static final String FACILITY_BOOKING = "facilitybooking";
+			public static final String PARKING_BOOKING = "parkingbooking";
 			public static final String FACILITY_BOOKING_INTERNAL_ATTENDEE = "facilityBookingInternalAttendee";
 			public static final String FACILITY_BOOKING_EXTERNAL_ATTENDEE = "facilityBookingExternalAttendee";
 			public static final String FACILITY_BOOKING_ATTACHMENTS = "facilitybookingattachments";
@@ -2150,6 +2151,9 @@ public class FacilioConstants {
 			public static final String SPACE_MAP  = "spaceMap";
 			public static final String CUSTOMIZATION = "customizationJSON";
 			public static final String CUSTOMIZATION_BOOKING = "customizationBookingJSON";
+			public static final String PARKING = "parkingstall";
+			public static final String FLOORPLAN_LAYER = "floorplanlayer";
+			public static final String FLOORPLAN_CLIENT_LAYER = "floorplanlayers";
 
 		}
 		

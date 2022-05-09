@@ -191,7 +191,10 @@ public class LoginAction extends FacilioAction {
 		        }
 			}
 			else {
-				facilioToken = FacilioCookie.getUserCookie(request, portalUser ? "fc.idToken.facilioportal" : "fc.idToken.facilio");
+				facilioToken = FacilioCookie.getUserCookie(request,"fc.idToken.facilio");
+				if (org.apache.commons.lang3.StringUtils.isEmpty(facilioToken)) {
+					facilioToken = FacilioCookie.getUserCookie(request, "fc.idToken.facilioportal");
+				}
 			}
 
 			if (org.apache.commons.lang3.StringUtils.isNotEmpty(facilioToken)) {

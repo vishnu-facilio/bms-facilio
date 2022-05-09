@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.commands;
 import java.util.Collections;
 
 import com.facilio.bmsconsole.commands.AddTasksCommand;
+import com.facilio.bmsconsoleV3.commands.floorplan.*;
 import com.facilio.bmsconsoleV3.commands.people.UpdateScopingForPeopleCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
@@ -118,14 +119,6 @@ import com.facilio.bmsconsoleV3.commands.facility.SetCanEditForBookingCommand;
 import com.facilio.bmsconsoleV3.commands.facility.ValidateCancelBookingCommandV3;
 import com.facilio.bmsconsoleV3.commands.facility.ValidateFacilityBookingCommandV3;
 import com.facilio.bmsconsoleV3.commands.facility.ValidateFacilityCommand;
-import com.facilio.bmsconsoleV3.commands.floorplan.AddDeskCommand;
-import com.facilio.bmsconsoleV3.commands.floorplan.AddMarkedZonesCommand;
-import com.facilio.bmsconsoleV3.commands.floorplan.AddMarkerCommand;
-import com.facilio.bmsconsoleV3.commands.floorplan.AddORUpdateModuleRecordCommand;
-import com.facilio.bmsconsoleV3.commands.floorplan.AddOrUpdateObjectCommand;
-import com.facilio.bmsconsoleV3.commands.floorplan.SerializeCommand;
-import com.facilio.bmsconsoleV3.commands.floorplan.UpdateDeskCommand;
-import com.facilio.bmsconsoleV3.commands.floorplan.UpdateMarkerCommand;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.AddOrUpdateInventoryRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.AddOrUpdateManualItemTransactionCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.AddOrUpdateManualToolTransactionsCommandV3;
@@ -1056,6 +1049,7 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new AddDeskCommand());
         chain.addCommand(new AddMarkerCommand());
         chain.addCommand(new AddMarkedZonesCommand());
+        chain.addCommand(new AddFloorPlanLayerCommand());
         return chain;
     }
 

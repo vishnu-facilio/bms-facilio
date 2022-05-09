@@ -47,10 +47,7 @@ import com.facilio.bmsconsoleV3.commands.facility.*;
 import com.facilio.bmsconsoleV3.commands.floor.CreateFloorAfterSave;
 import com.facilio.bmsconsoleV3.commands.floor.FloorFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.floor.SetFloorRelatedContextCommand;
-import com.facilio.bmsconsoleV3.commands.floorplan.CreateFacilityForDesksCommandV3;
-import com.facilio.bmsconsoleV3.commands.floorplan.FetchFloorPlanMarkerCommand;
-import com.facilio.bmsconsoleV3.commands.floorplan.V3ValidateFloorPlanCommand;
-import com.facilio.bmsconsoleV3.commands.floorplan.V3ValidateSpaceCommand;
+import com.facilio.bmsconsoleV3.commands.floorplan.*;
 import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
@@ -1493,11 +1490,12 @@ public class APIv3Config {
         return () -> new V3Config(V3ParkingStallContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .beforeSave(new AddParkingStallSpaceCommand(), new FetchChangeSetForCustomActivityCommand())
-                .afterSave(new ConstructAddCustomActivityCommandV3(),
+                .afterSave(new ConstructAddCustomActivityCommandV3(), new CreateFacilityForParkingCommandV3(),
                         new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY))
                 .update()
                 .beforeSave(new FetchChangeSetForCustomActivityCommand())
                 .afterSave(new ConstructUpdateCustomActivityCommandV3(),
+                        new CreateFacilityForParkingCommandV3(),
                         new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY))
                 .list()
                 .beforeFetch(new LoadParkingStallLookupCommand())

@@ -7,6 +7,8 @@ public class V3ParkingStallContext  extends V3SpaceContext {
 	private static final long serialVersionUID = 1L;
 	
 	private Integer parkingType;
+
+    private Integer parkingMode;
 	
 	public Integer getParkingType() {
         return parkingType;
@@ -16,4 +18,11 @@ public class V3ParkingStallContext  extends V3SpaceContext {
         this.parkingType = parkingType;
     }
 
+    public Integer getParkingMode() {
+        return parkingMode;
+    }
+
+    public void setParkingMode(Integer parkingMode) {
+        this.parkingMode = parkingMode;
+    }
 }

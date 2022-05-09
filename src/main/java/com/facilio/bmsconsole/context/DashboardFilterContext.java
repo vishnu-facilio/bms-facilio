@@ -25,6 +25,15 @@ public class DashboardFilterContext extends ModuleBaseWithCustomFields{
 	private String dateLabel;
 	private Map<Long,List<Long>> widgetUserFiltersMap;
 	private List<Long > customScriptWidgets=new ArrayList<>();
+	private boolean hideFilterInsideWidgets;
+
+	public boolean isHideFilterInsideWidgets() {
+		return hideFilterInsideWidgets;
+	}
+
+	public void setHideFilterInsideWidgets(boolean hideFilterInsideWidgets) {
+		this.hideFilterInsideWidgets = hideFilterInsideWidgets;
+	}
 	
 	
 	

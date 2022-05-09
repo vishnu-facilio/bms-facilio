@@ -9767,8 +9767,7 @@ public class FieldFactory extends BaseFieldFactory {
 		 fields.add(getField("dateOperator", "DATE_OPERATOR", module, FieldType.NUMBER));
 	     fields.add(getField("dateValue", "DATE_VALUE", module, FieldType.STRING));
 	     fields.add(getField("dateLabel", "DATE_LABEL", module, FieldType.STRING));
-	     
-		 		 
+         fields.add(getField("hideFilterInsideWidgets","WIDGET_TIMELINE_FILTER_STATUS",module,FieldType.BOOLEAN));
 		 return fields;
 	 }
 

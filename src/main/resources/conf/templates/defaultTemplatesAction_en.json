@@ -1032,5 +1032,15 @@
 		"to": "${delegateUser.email}",
 		"subject": "Reminder! Your access to activities delegated to you by ${dUser.name} starts tomorrow.",
 		"message_ftl": "delegationReminder"
+	},
+	"122": {
+		"name": "VISITOR_INVITE_NOTIFICATION",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
+		"mailType": "html",
+		"subject": "<#if (vLog.host) ?? > ${vLog.host.name} invited you to ${org.name} | Invite Code: ${vLog.passCode} <#else>You are invited to ${org.name} | Invite Code: ${vLog.passCode}</#if>",
+		"to": "${vLog.visitor.email}",
+		"message_ftl": "inviteVisitor",
+		"attachmentsUrl":  "https://static.facilio.com/downloads/nmdp/ReturnSafe_HowTo_GUEST_SIGNIN_002.pdf",
+		"attachmentsNames": "ReturnSafe-How-To_GUEST-SIGN-IN-002.pdf"
 	}
 }

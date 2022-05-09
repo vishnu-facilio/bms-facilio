@@ -7,12 +7,16 @@ import java.util.List;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.floorplan.V3FloorplanMarkersContext;
+import com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanLayerContext;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
+import jdk.nashorn.internal.parser.JSONParser;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 
 public class FloorPlanScopingConfig extends SignUpData {
@@ -64,8 +68,8 @@ public class FloorPlanScopingConfig extends SignUpData {
             }
             
 
-            V3RecordAPI.addRecord(false, markerTypes, markerTypeModule, fields);
-            
+           V3RecordAPI.addRecord(false, markerTypes, markerTypeModule, fields);
+
         }
         catch(Exception e){
             e.printStackTrace();

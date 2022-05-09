@@ -70,7 +70,7 @@ public class AddOrUpdateDashboardFilterCommand extends FacilioCommand {
 				.table(module.getTableName())
 				.fields(FieldFactory.getDashboardFilterFields())
 				.andCondition(CriteriaAPI.getIdCondition(dashboardFilterContext.getId(), module));
-		builder.update(FieldUtil.getAsProperties(dashboardFilterContext));
+		builder.update(FieldUtil.getAsProperties(dashboardFilterContext,true));
 			
 	}
 

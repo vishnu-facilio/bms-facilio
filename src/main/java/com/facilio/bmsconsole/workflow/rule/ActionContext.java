@@ -109,13 +109,12 @@ public class ActionContext implements Serializable {
 	}
 	
 	public boolean executeAction(Map<String, Object> placeHolders, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
-		if (context.containsKey(FacilioConstants.ContextNames.ONLY_PERMITTED_ACTIONS)) {
-			Boolean onlyPermittedActions = (Boolean) context.get(ContextNames.ONLY_PERMITTED_ACTIONS);
-			if (BooleanUtils.isTrue(onlyPermittedActions) && !actionType.isPermitted()) {
-				// it won't run restricted actions
-				return true;
-			}
+
+		Boolean onlyPermittedActions = context != null && (Boolean) context.getOrDefault(ContextNames.ONLY_PERMITTED_ACTIONS,false);
+		if(onlyPermittedActions && !actionType.isPermitted()){
+			return true;
 		}
+		
 		if(template != null) {
 			JSONObject actionObj = template.getTemplate(placeHolders);
 			

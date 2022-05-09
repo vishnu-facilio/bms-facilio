@@ -20,20 +20,39 @@ import org.json.JSONObject;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
 
 @Log4j
 public class BeforeAuthInputFilter implements Filter {
     private URLReTree urlReTree;
+    private URLReTree execlutionUrlReTree;
     private Config config;
+    
+    public String[] execludeFile() throws IOException {
+        File file = new File(ConfigParser.class.getClassLoader().getResource("validation.txt").getFile());
+        BufferedReader br
+                = new BufferedReader(new FileReader(file));
+        List<String> list= new ArrayList<>();
+        String st;
+        while ((st = br.readLine()) != null) {
+            list.add(st);
+        }
+        String[] arr = new String[list.size()];
+        list.toArray(arr);
+        return arr;
+    }
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         try {
             this.config = new ConfigParser().read("security");
             this.urlReTree = new URLReTree(this.config.getAllPaths());
+            String[] s = execludeFile();
+            this.execlutionUrlReTree = new URLReTree(s);
         } catch (Exception e) {
             throw new ServletException(e);
         }
@@ -43,12 +62,23 @@ public class BeforeAuthInputFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         Matcher matcher = this.urlReTree.matcher(httpServletRequest.getRequestURI());
-
+        Matcher exclution = this.execlutionUrlReTree.matcher(httpServletRequest.getRequestURI());
         if (!matcher.isMatch()) {
-            filterChain.doFilter(servletRequest, servletResponse);
-            return;
-        }
+            if(!httpServletRequest.getRequestURI().startsWith("/api")) {
+                filterChain.doFilter(servletRequest, servletResponse);
+               return;
+            }
+            if(exclution.isMatch()) {
+                filterChain.doFilter(servletRequest, servletResponse);
+                return;
+            }else {
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put("message", "Validation missing for : " + httpServletRequest.getRequestURI());
+                write(errorMap, 400, servletResponse);
+                return;
 
+            }
+        }
         SecurityRequestWrapper securityRequestWrapper = new SecurityRequestWrapper((HttpServletRequest) servletRequest);
         RequestContext requestContext = new RequestContext(securityRequestWrapper, matcher.getMatchMap());
         String matchedPattern = matcher.getMatchedPattern();

@@ -172,9 +172,7 @@ public class FloorplanAction extends V3Action {
 		return SUCCESS;
 	}
 	public String getFloorplanViewData() throws Exception {
-		
 
-		
 		if (viewMode != null && viewMode.equals(FacilioConstants.ContextNames.Floorplan.ASSIGNMENT_VIEW)) {
 			FacilioChain chain = ReadOnlyChainFactoryV3.getfloorplanViewerObjectChain();
 			FacilioContext context = chain.getContext();
@@ -185,6 +183,7 @@ public class FloorplanAction extends V3Action {
 			setData(FacilioConstants.ContextNames.Floorplan.MARKERS, context.get(FacilioConstants.ContextNames.Floorplan.MARKERS));
 			setData(FacilioConstants.ContextNames.Floorplan.ZONES, context.get(FacilioConstants.ContextNames.Floorplan.ZONES));
 			setData(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN, context.get(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN));
+			setData(FacilioConstants.ContextNames.Floorplan.FLOORPLAN_CLIENT_LAYER, context.get(FacilioConstants.ContextNames.Floorplan.FLOORPLAN_CLIENT_LAYER));
 
 
 		}
@@ -207,6 +206,7 @@ public class FloorplanAction extends V3Action {
 			setData(FacilioConstants.ContextNames.Floorplan.MARKERS, context.get(FacilioConstants.ContextNames.Floorplan.MARKERS));
 			setData(FacilioConstants.ContextNames.Floorplan.ZONES, context.get(FacilioConstants.ContextNames.Floorplan.ZONES));
 			setData(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN, context.get(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN));
+			setData(FacilioConstants.ContextNames.Floorplan.FLOORPLAN_CLIENT_LAYER, context.get(FacilioConstants.ContextNames.Floorplan.FLOORPLAN_CLIENT_LAYER));
 
 		}
 		else {
@@ -219,12 +219,9 @@ public class FloorplanAction extends V3Action {
 			setData(FacilioConstants.ContextNames.Floorplan.MARKERS, context.get(FacilioConstants.ContextNames.Floorplan.MARKERS));
 			setData(FacilioConstants.ContextNames.Floorplan.ZONES, context.get(FacilioConstants.ContextNames.Floorplan.ZONES));
 			setData(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN, context.get(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN));
+			setData(FacilioConstants.ContextNames.Floorplan.FLOORPLAN_CLIENT_LAYER, context.get(FacilioConstants.ContextNames.Floorplan.FLOORPLAN_CLIENT_LAYER));
 
 		}
-		
-	
-		
-		
 		return SUCCESS;
 	}
 	

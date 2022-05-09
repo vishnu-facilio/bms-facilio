@@ -480,7 +480,7 @@ public class FormFactory {
 		List<FacilioForm> workPermitTypeChecklistForm = Arrays.asList(getWorkPermitTypeChecklistForm());
 
 		List<FacilioForm> facilityFormsList = Arrays.asList(getFacilityCreationForm());
-		List<FacilioForm> facilityBookingFormsList = Arrays.asList(getFacilityBookingForm(), getFacilityBookingPortalForm(), getFacilityHotDeskBookingForm(), getFacilitySpaceBookingForm(),getFacilityHotDeskBookingPortalForm(),getFacilitySpaceBookingPortalForm());
+		List<FacilioForm> facilityBookingFormsList = Arrays.asList(getFacilityBookingForm(), getFacilityBookingPortalForm(), getFacilityHotDeskBookingForm(), getFacilitySpaceBookingForm(),getFacilityHotDeskBookingPortalForm(),getFacilitySpaceBookingPortalForm(), getParkingBookingForm(), getParkingBookingPortalForm());
 		List<FacilioForm> facilitySpecialAvailabilityFormsList = Arrays.asList(getFacilitySpecialAvailabilityForm());
 		List<FacilioForm> amenityFormsList = Arrays.asList(getAmenityForm());
 		List<FacilioForm> termsAndConditionsFormsList = Arrays.asList(getTermsAndConditionForm());
@@ -1969,9 +1969,10 @@ public class FormFactory {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("parkingType", FieldDisplayType.SELECTBOX, "Parking Type", Required.REQUIRED, 2, 2));
-		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED,"site", 3, 2));
-		fields.add(new FormField("building", FieldDisplayType.LOOKUP_SIMPLE, "Building", Required.OPTIONAL,"building", 4, 2));
-		fields.add(new FormField("floor", FieldDisplayType.LOOKUP_SIMPLE, "Floor", Required.OPTIONAL,"floor", 5, 2));
+		fields.add(new FormField("parkingMode", FieldDisplayType.SELECTBOX, "Parking Mode", Required.REQUIRED, 3, 2));
+		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED,"site", 4, 2));
+		fields.add(new FormField("building", FieldDisplayType.LOOKUP_SIMPLE, "Building", Required.OPTIONAL,"building", 5, 2));
+		fields.add(new FormField("floor", FieldDisplayType.LOOKUP_SIMPLE, "Floor", Required.OPTIONAL,"floor", 6, 2));
 		return fields;
 	}
 	
@@ -3555,6 +3556,40 @@ public class FormFactory {
 		fields.add(new FormField("bookingslot", FieldDisplayType.FACILITY_BOOKING_SLOTS, "Time Slots", Required.REQUIRED,4, 1));
 		fields.add(new FormField("internalAttendees", FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Internal Attendees", Required.OPTIONAL,5, 1));
 	
+		form.setFields(fields);
+		return form;
+	}
+
+	private static FacilioForm getParkingBookingForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Parking Booking");
+		form.setName("default_"+ ContextNames.FacilityBooking.PARKING_BOOKING +"_web");
+		form.setModule(ModuleFactory.getModule(ContextNames.FacilityBooking.FACILITY_BOOKING));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("facility", FieldDisplayType.LOOKUP_SIMPLE, "Facility", Required.REQUIRED, "facility",1, 1));
+		fields.add(new FormField("reservedFor", FieldDisplayType.LOOKUP_SIMPLE, "Reserved For", Required.REQUIRED,"user",2, 1));
+		fields.add(new FormField("bookingslot", FieldDisplayType.FACILITY_BOOKING_SLOTS, "Time Slots", Required.REQUIRED,4, 1));
+
+		form.setFields(fields);
+		return form;
+	}
+	private static FacilioForm getParkingBookingPortalForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Parking Booking");
+		form.setName("default_"+ ContextNames.FacilityBooking.PARKING_BOOKING +"_portal");
+		form.setModule(ModuleFactory.getModule(ContextNames.FacilityBooking.FACILITY_BOOKING));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setAppLinkName(ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("facility", FieldDisplayType.LOOKUP_SIMPLE, "Facility", Required.REQUIRED, "facility",1, 1));
+		fields.add(new FormField("reservedFor", FieldDisplayType.LOOKUP_SIMPLE, "Reserved For", Required.REQUIRED,"user",2, 1));
+		fields.add(new FormField("bookingslot", FieldDisplayType.FACILITY_BOOKING_SLOTS, "Time Slots", Required.REQUIRED,4, 1));
+		fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.REQUIRED, "tenant", 6, 1));
+
 		form.setFields(fields);
 		return form;
 	}

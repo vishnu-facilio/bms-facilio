@@ -2076,7 +2076,14 @@ public class V3VisitorManagementAPI {
         ActionContext emailAction = new ActionContext();
         emailAction.setActionType(ActionType.EMAIL_NOTIFICATION);
 
-        emailAction.setDefaultTemplateId(105);
+        if(AccountUtil.getCurrentOrg().getId() == 429)
+        {
+            emailAction.setDefaultTemplateId(122);
+        }
+        else
+        {
+            emailAction.setDefaultTemplateId(105);
+        }
         //add rule,action and job
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
