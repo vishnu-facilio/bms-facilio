@@ -610,7 +610,7 @@ public class AwsUtil extends BaseAwsUtil{
 				KafkaAction kafkaAction = new KafkaAction()
 						.withTopic(policyAndOrgDomainName)
 						.withDestinationArn(configs.get(IOT_RULE_ARN).toString())
-						.withPartition(KAFKA_PARTITION_KEY)
+						.withKey(KAFKA_PARTITION_KEY)
 						.withClientProperties(ruleConfig);
 
 				Action action = new Action().withKafka(kafkaAction);
