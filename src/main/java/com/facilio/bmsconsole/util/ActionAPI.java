@@ -430,6 +430,14 @@ public class ActionAPI {
 							case CREATE_WORK_ORDER:
 								setJsonTemplate(action, rule, Type.JSON);
 								break;
+							case CREATE_RECORD:
+								if(action.getTemplateJson().containsKey("moduleName") && action.getTemplateJson().containsKey("data") &&
+										action.getTemplateJson().get("moduleName") != null && action.getTemplateJson().get("data") != null){
+									setDefaultTemplate(action,rule);
+								}else{
+									throw new Exception("Invalid create record action configuration");
+								}
+								break;
 							case ACTIVITY_FOR_MODULE_RECORD:
 								setDefaultTemplate(action, rule);
 								break;
@@ -674,6 +682,7 @@ public class ActionAPI {
 		jsonTemplate.setName(rule.getName());
 		jsonTemplate.setContent(action.getTemplateJson().toString());
 		action.setTemplate(jsonTemplate);
+		checkAndSetWorkflow(action.getTemplateJson(),jsonTemplate);
 	}
 	
 	private static void setJsonTemplate(ActionContext action, WorkflowRuleContext rule, Type templateType) throws Exception {
