@@ -1794,7 +1794,7 @@ public enum ActionType {
 		@Override
 		public void performAction (JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
 
-			QAndAUtil.executeTemplate (FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_TEMPLATE,(long)obj.get ("qandaTemplateId"),new ArrayList<>(), currentRule.getId());
+			QAndAUtil.executeTemplate (FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_TEMPLATE,obj,new ArrayList<>(), currentRule.getId());
 		}
 	},
 	CREATE_RECORD(37,true){

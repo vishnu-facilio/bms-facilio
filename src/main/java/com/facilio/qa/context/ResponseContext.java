@@ -73,6 +73,16 @@ public abstract class ResponseContext <T extends QAndATemplateContext> extends V
     private Double fullScore, totalScore;
     private Float scorePercent;
 
+	private Long ruleId;
+	private Long expiryDate;
+	private Boolean isRetakeAllowed;
+	private Long retakeExpiry;
+	private Integer retakeExpiryDuration; // in minutes
+
+	public boolean isRetake(){
+		return isRetakeAllowed == null?false:isRetakeAllowed.booleanValue();
+	}
+
     @AllArgsConstructor
     public enum ResponseStatus implements FacilioIntEnum {
         DISABLED("Disabled"),

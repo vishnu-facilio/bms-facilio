@@ -9,6 +9,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.qa.QAndAUtil;
 import com.facilio.qa.context.QAndATemplateContext;
 import com.facilio.qa.context.QAndAType;
+import com.facilio.qa.context.ResponseContext;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
@@ -35,10 +36,18 @@ public class ExecuteSurveyTemplateCommand extends FacilioCommand{
 		V3Util.throwRestException(template == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid id ({0}) specified while executing template", id));
 
 		List<ResourceContext> resources = (List<ResourceContext>) context.get(FacilioConstants.ContextNames.RESOURCE_LIST);
-		template.setRuleId((Long) context.get("ruleId"));
-		List response = template.constructResponses(resources);
 
-		if(CollectionUtils.isNotEmpty(response)) {
+		List< ? extends ResponseContext> response = template.constructResponses(resources);
+
+		if(CollectionUtils.isNotEmpty(response)){
+			Long ruleId = (Long) context.get("ruleId");
+			Boolean isRetake = (Boolean) context.get("isRetakeAllowed");
+			Integer retakeExpiryDuration = (Integer) context.get("retakeExpiryDuration");
+			for(ResponseContext res : response){
+				res.setRuleId(ruleId);
+				res.setIsRetakeAllowed(isRetake);
+				res.setRetakeExpiryDuration(retakeExpiryDuration);
+			}
 			QAndAUtil.addRecordViaV3Chain(type.getResponseModule(), response);
 			context.put(FacilioConstants.QAndA.RESPONSE, response);
 		}

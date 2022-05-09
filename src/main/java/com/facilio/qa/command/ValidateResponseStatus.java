@@ -3,6 +3,7 @@ package com.facilio.qa.command;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.qa.QAndAUtil;
 import com.facilio.qa.context.QAndATemplateContext;
 import com.facilio.qa.context.ResponseContext;
 import com.facilio.v3.exception.ErrorCode;
@@ -28,6 +29,9 @@ public class ValidateResponseStatus extends FacilioCommand {
 
         // TODO Check if record is locked
         response = ExtendedModuleUtil.fetchExtendedRecord(response, r -> r.getQAndAType().getResponseModule());
+
+		QAndAUtil.validateResponseExpiry(response);
+
         QAndATemplateContext parent = V3RecordAPI.getRecord(response.getQAndAType().getTemplateModule(), response.getParent().getId());
         V3Util.throwRestException(parent == null, ErrorCode.VALIDATION_ERROR, "Cannot add/ update answer when the template is deleted");
         context.put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(response));

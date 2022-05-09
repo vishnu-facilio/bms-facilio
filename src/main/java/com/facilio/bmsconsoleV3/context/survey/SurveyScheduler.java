@@ -127,7 +127,6 @@ public class SurveyScheduler implements ScheduleTypeInterface {
 				response.setStatus(SurveyResponseContext.Status.PRE_OPEN.getIndex());
 				response.setSourceType(SurveyResponseContext.SourceType.PLANNED.getIndex());
 				response.setResource(resource);
-				response.setRuleId(template.getRuleId());
 				response.setSiteId(resource.getSiteId());
 				responses.add(response);
 			}

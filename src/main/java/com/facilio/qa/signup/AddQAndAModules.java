@@ -191,7 +191,10 @@ public class AddQAndAModules extends SignUpData {
         fields.add(FieldFactory.getDefaultField("totalScore", "Total Score", "TOTAL_SCORE", FieldType.DECIMAL));
         fields.add(FieldFactory.getDefaultField("scorePercent", "Score percent", "SCORE_PERCENT", FieldType.DECIMAL));
         fields.add(FieldFactory.getBaseModuleSystemField("formId",module));
-
+		fields.add(FieldFactory.getDefaultField("expiryDate","Expiry Date","EXPIRY_DATE",FieldType.DATE_TIME));
+		fields.add(FieldFactory.getDefaultField("isRetakeAllowed","Is Retake Allowed","IS_RETAKE_ALLOWED",FieldType.BOOLEAN));
+		fields.add(FieldFactory.getDefaultField("retakeExpiry","Retake Expiry","RETAKE_EXPIRY",FieldType.DATE_TIME));
+		fields.add(FieldFactory.getDefaultField("retakeExpiryDuration","Retake Expiry Duration","RETAKE_EXPIRY_DURATION",FieldType.NUMBER));
         module.setFields(fields);
         return module;
     }
