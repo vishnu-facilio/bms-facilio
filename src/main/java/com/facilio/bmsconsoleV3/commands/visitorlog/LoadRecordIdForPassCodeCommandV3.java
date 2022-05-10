@@ -63,7 +63,7 @@ public class  LoadRecordIdForPassCodeCommandV3 extends FacilioCommand {
         					}
         				}
         				
-        				if(inviteBaseVisit == null && !checkInBaseVisitIds.isEmpty()) {
+        				if(!checkInBaseVisitIds.isEmpty()) {
         					context.put(Constants.RECORD_ID_LIST, checkInBaseVisitIds);
         					recordIds = checkInBaseVisitIds;
         				}
