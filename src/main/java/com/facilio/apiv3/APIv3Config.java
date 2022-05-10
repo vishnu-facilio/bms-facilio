@@ -111,6 +111,7 @@ import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetDepartmentContext;
 import com.facilio.bmsconsoleV3.context.budget.AccountTypeContext;
 import com.facilio.bmsconsoleV3.context.budget.BudgetContext;
 import com.facilio.bmsconsoleV3.context.budget.ChartOfAccountContext;
@@ -1701,7 +1702,15 @@ public class APIv3Config {
         return () -> new V3Config(FaultImpactNameSpaceFieldContext.class, null)
                 .build();
     }
-
+    @Module("assetdepartment")
+    public static Supplier<V3Config> getAssetDepartment(){
+        return () -> new V3Config(V3AssetDepartmentContext.class,null)
+                .create()
+                .list()
+                .update()
+                .delete()
+                .build();
+    }
     @Module("receivable")
     public static Supplier<V3Config> getReceivable() {
         return () -> new V3Config(V3ReceivableContext.class, null)
