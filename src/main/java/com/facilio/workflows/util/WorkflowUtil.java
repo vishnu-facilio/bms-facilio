@@ -1222,10 +1222,13 @@ public class WorkflowUtil {
 				workflow.parseScript();
 			}
 		}
-
-			workflow = getWorkflowContextFromString(workflow.getWorkflowString(),workflow);
-			if(isWithExpParsed) {
-				parseExpression(workflow);
+		if(workflow.getWorkflowString()!=null) {
+			if (!workflow.getWorkflowString().trim().isEmpty()) {
+				workflow = getWorkflowContextFromString(workflow.getWorkflowString(), workflow);
+				if (isWithExpParsed) {
+					parseExpression(workflow);
+				}
+			}
 		}
 		return workflow;
 	}
