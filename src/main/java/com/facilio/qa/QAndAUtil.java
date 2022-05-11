@@ -492,7 +492,7 @@ public class QAndAUtil {
 			}
 		}
 		else {
-			FacilioUtil.throwRunTimeException(response.getExpiryDate() < currentTime, "Survey Expired.");
+			FacilioUtil.throwRunTimeException(response.getExpiryDate() !=null && response.getExpiryDate() < currentTime, "Survey Expired.");
 		}
 	}
 }
