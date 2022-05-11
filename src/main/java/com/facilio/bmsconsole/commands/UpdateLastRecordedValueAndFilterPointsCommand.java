@@ -38,17 +38,17 @@ public class UpdateLastRecordedValueAndFilterPointsCommand extends AgentV2Comman
             String pointName = stringObjectEntry.getKey();
             Object value = stringObjectEntry.getValue();
             Point point = pointRecords.get(pointName);
-            if (value == null || (!isCov && intervalFilterConditions(agent, timeStamp, point)) || value.toString().equalsIgnoreCase("NaN")) {
-                pointsToRemove.add(pointName);
-            } else {
-                //update point last recorded time and value
-                if (point != null) {
+            if (point != null) {
+                if (value == null || (!isCov && intervalFilterConditions(agent, timeStamp, point)) || value.toString().equalsIgnoreCase("NaN")) {
+                    pointsToRemove.add(pointName);
+                } else {
+                    //update point last recorded time and value
                     point.setLastRecordedTime(timeStamp);
                     point.setLastRecordedValue(value.toString());
                     points.add(point);
-                } else {
-                    LOGGER.info("Point name not found for " + pointName);
                 }
+            } else {
+                LOGGER.info("Point name not found for " + pointName);
             }
         }
         PointsAPI.updatePointsValue(points);
