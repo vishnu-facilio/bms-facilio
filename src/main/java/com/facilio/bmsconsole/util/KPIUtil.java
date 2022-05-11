@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.db.criteria.Condition;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -241,6 +242,25 @@ public class KPIUtil {
 			kpi.setWorkflow(null);
 		}
 		if (kpi.getCriteria() != null) {
+			if(kpi.getCriteria() != null)
+			{
+				Criteria kpiCriteria = kpi.getCriteria();
+				if(kpiCriteria.getConditions() != null)
+				{
+					for (String key : kpiCriteria.getConditions().keySet()) {
+						Condition condition = kpiCriteria.getConditions().get(key);
+						if (kpi.getModuleName() != null) {
+							try {
+								ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+								FacilioField field = modBean.getField(condition.getFieldName(), kpi.getModuleName());
+								condition.setField(field);
+							}catch(Exception e){
+								LOGGER.debug("Error in fetching field details in kpi"+ kpi.getModuleName());
+							}
+						}
+					}
+				}
+			}
 			long criteriaId = CriteriaAPI.addCriteria(kpi.getCriteria());
 			kpi.setCriteriaId(criteriaId);
 		}
