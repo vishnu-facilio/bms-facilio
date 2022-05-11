@@ -25,7 +25,9 @@ import com.facilio.qa.context.questions.BaseMCQContext;
 import com.facilio.qa.context.questions.MCQOptionContext;
 import com.facilio.qa.context.questions.RatingQuestionContext;
 import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioStreamUtil;
+import com.facilio.util.FacilioUtil;
 import com.facilio.util.MathUtil;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
@@ -169,7 +171,13 @@ public class QAndAUtil {
         return questions;
     }
 
-    private static void callFetchHandler (Collection<QuestionContext> questions) throws Exception {
+	public static void updateResponseRetakeExpiry(ResponseContext response) throws Exception{
+		FacilioChain chain = QAndATransactionChainFactory.updateResponseRetakeExpiryChain();
+		chain.getContext().put(FacilioConstants.QAndA.RESPONSE,response);
+		chain.execute();
+	}
+
+	private static void callFetchHandler (Collection<QuestionContext> questions) throws Exception {
         FacilioChain c = QAndAReadOnlyChainFactory.callQuestionFetchHandlers();
         c.getContext().put(FacilioConstants.QAndA.Command.QUESTION_LIST, questions);
         c.execute();
@@ -459,13 +467,32 @@ public class QAndAUtil {
         return builder.get();
     }
 
-	public static void executeTemplate (String moduleName, long id, List< ResourceContext> resources,Long ruleId) throws Exception {
+	public static void executeTemplate (String moduleName, JSONObject template, List< ResourceContext> resources,Long ruleId) throws Exception {
 		FacilioChain executeTemplateChain = QAndATransactionChainFactory.executeSurveyTemplateChain();
 		FacilioContext context = executeTemplateChain.getContext();
 		Constants.setModuleName(context,moduleName);
-		Constants.setRecordId(context,id);
+		Constants.setRecordId(context,(Long)template.get("qandaTemplateId"));
 		context.put("ruleId",ruleId);
+		context.put("expiryDate",template.get("expiryDate"));
+		context.put("isRetakeAllowed",template.get("isRetakeAllowed"));
+		context.put("retakeExpiryDuration",template.get("retakeExpiryDuration"));
 		context.put(FacilioConstants.ContextNames.RESOURCE_LIST,resources);
 		executeTemplateChain.execute();
+	}
+
+	public static void validateResponseExpiry(ResponseContext response){
+
+		long currentTime = DateTimeUtil.getCurrenTime();
+		if (response.isRetake()) {
+			if (response.getExpiryDate() == null) {
+				FacilioUtil.throwRunTimeException(response.getRetakeExpiry() != null && response.getRetakeExpiry() < currentTime, "Retake survey expired.");
+			}
+			else {
+				FacilioUtil.throwRunTimeException(response.getExpiryDate() < currentTime, "Survey Expired.");
+			}
+		}
+		else {
+			FacilioUtil.throwRunTimeException(response.getExpiryDate() < currentTime, "Survey Expired.");
+		}
 	}
 }

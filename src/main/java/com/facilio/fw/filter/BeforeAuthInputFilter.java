@@ -70,10 +70,14 @@ public class BeforeAuthInputFilter implements Filter {
             }
             if (FacilioProperties.isProduction() || FacilioProperties.isOnpremise() || exclution.isMatch()) {
                 filterChain.doFilter(servletRequest, servletResponse);
+                return;
             } else {
-                Map<String, String> errorMap = new HashMap<>();
-                errorMap.put("message", "Validation missing for : " + httpServletRequest.getRequestURI());
-                write(errorMap, 400, servletResponse);
+                if (!(FacilioProperties.isProduction() || FacilioProperties.isOnpremise())) {
+                    Map<String, String> errorMap = new HashMap<>();
+                    errorMap.put("message", "Validation missing for : " + httpServletRequest.getRequestURI());
+                    write(errorMap, 400, servletResponse);
+                    return;
+                }
             }
             return;
         }

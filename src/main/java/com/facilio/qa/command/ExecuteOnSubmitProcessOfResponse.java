@@ -36,6 +36,12 @@ public class ExecuteOnSubmitProcessOfResponse extends FacilioCommand {
                 V3Util.throwRestException(oldResponse == null, ErrorCode.VALIDATION_ERROR, MessageFormat.format("Invalid response ID ({0}) is specified for updating", response.getId()));
                 V3Util.throwRestException(response.getParent() != null && response.getParent().getId() > 0 && response.getParent().getId() != oldResponse.getParent().getId(), ErrorCode.VALIDATION_ERROR, MessageFormat.format("Cannot update parent of response : {0}", response.getId()));
                 if (response.getResStatus() != oldResponse.getResStatus() && response.getResStatus() == ResponseContext.ResponseStatus.COMPLETED) {
+
+					QAndAUtil.validateResponseExpiry(response);
+					if(response.isRetake() && response.getRetakeExpiry() == null){
+						QAndAUtil.updateResponseRetakeExpiry(response);
+					}
+
                     FacilioChain onSubmitProcess = QAndATransactionChainFactory.onSubmitProcessOfResponse();
                     onSubmitProcess.getContext().put(FacilioConstants.QAndA.RESPONSE, response);
 

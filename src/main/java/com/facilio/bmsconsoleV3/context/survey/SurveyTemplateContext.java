@@ -58,8 +58,6 @@ public class SurveyTemplateContext extends QAndATemplateContext <SurveyResponseC
     
     private PeopleContext assignedTo;
 
-	@JsonIgnore
-	private Long ruleId;
 
     public Integer getCreationType() { // Everything is wrapper in V3 for null handling
     	if(creationType != null) {
@@ -108,7 +106,6 @@ public class SurveyTemplateContext extends QAndATemplateContext <SurveyResponseC
 				resource = ResourceAPI.getResource(resource.getId());
 				SurveyResponseContext response = newResponseObject();
 				response.setResource(resource);
-				response.setRuleId(this.getRuleId());
 				response.setSiteId(resource.getSiteId());
 				responses.add(response);
 			}

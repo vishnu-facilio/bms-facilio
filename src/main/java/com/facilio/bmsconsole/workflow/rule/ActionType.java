@@ -1678,13 +1678,13 @@ public enum ActionType {
 				
 				Long recordId = null; 
 				if(mailContext.getReferenceMessageId() != null) { // checking w.r.t. In reference message to
-					
+
 					List<String> refferenceMessageIds = new ArrayList<String>();
 					if(mailContext.getReferenceMessageId().contains(",")) {
 						String[] refferenceMessageIdArray = mailContext.getReferenceMessageId().split(",");
-						
+
 						if(ArrayUtils.isNotEmpty(refferenceMessageIdArray)) {
-							
+
 							for(int i=refferenceMessageIdArray.length -1 ; i>=0 ;i--) {
 								refferenceMessageIds.add(refferenceMessageIdArray[i]);
 							}
@@ -1693,9 +1693,9 @@ public enum ActionType {
 					else {
 						refferenceMessageIds.add(mailContext.getReferenceMessageId());
 					}
-					
+
 					for(String refferenceMessageId : refferenceMessageIds) {
-						
+
 						EmailToModuleDataContext emailToModuleData = MailMessageUtil.getEmailToModuleData(refferenceMessageId, module);
 						if(emailToModuleData != null) {
 							recordId = emailToModuleData.getRecordId();
@@ -1706,13 +1706,13 @@ public enum ActionType {
 								recordId = conversation.getRecordId();
 							}
 						}
-						
+
 						if(recordId != null) {
 							break;
 						}
 					}
 				}
-				
+
 				if(recordId == null) {
 					Long localId = MailMessageUtil.getLocalIdFromSubject(mailContext.getSubject());
 					if(localId != null) {
@@ -1794,10 +1794,22 @@ public enum ActionType {
 		@Override
 		public void performAction (JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
 
-			QAndAUtil.executeTemplate (FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_TEMPLATE,(long)obj.get ("qandaTemplateId"),new ArrayList<>(), currentRule.getId());
+			QAndAUtil.executeTemplate (FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_TEMPLATE,obj,new ArrayList<>(), currentRule.getId());
 		}
-	}
-	
+	},
+	CREATE_RECORD(37,true){
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+			ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			String moduleName = (String) obj.get("moduleName");
+			FacilioModule module = moduleBean.getModule(moduleName);
+			if(obj!=null){
+				Map<String,Object> data = (Map<String, Object>) obj.get("data");
+				V3Util.createRecord(module, data,false,null,null,true);
+			}
+		}
+	},
+
 	;
 	
 	
@@ -2124,7 +2136,7 @@ public enum ActionType {
 			fileInfo = fs.getFileInfo(fileId, true);
 			downloadStream = fs.readFile(fileInfo);
 			String tempFileName = "tempFileName";
-			
+
 			if(attachment.getFileFileName() != null) {
 				tempFileName = attachment.getFileFileName();
 			}

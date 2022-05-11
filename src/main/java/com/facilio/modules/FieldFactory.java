@@ -3383,9 +3383,9 @@ public class FieldFactory extends BaseFieldFactory {
 		fields.add(getIdField(module));
 		fields.add(getField("qandaTemplateId", "Q_AND_A_TEMPLATE_ID", module, FieldType.NUMBER));
 		fields.add(getField ("assignedTo","ASSIGNED_TO",module,FieldType.NUMBER));
-		fields.add (getField ("expiryDays","EXPIRY_DAYS",module,FieldType.NUMBER));
-		fields.add (getField ("isRetake","IS_RETAKE",module,FieldType.BOOLEAN));
-		fields.add (getField ("retakeExpiryDays","RETAKE_EXPIRY_DAYS",module,FieldType.NUMBER));
+		fields.add (getField ("expiryDate","EXPIRY_DATE",module,FieldType.NUMBER));
+		fields.add (getField ("isRetakeAllowed","IS_RETAKE",module,FieldType.BOOLEAN));
+		fields.add(getField("retakeExpiryDuration","RETAKE_EXPIRY_DURATION",module,FieldType.NUMBER));
 		return fields;
 	}
 
