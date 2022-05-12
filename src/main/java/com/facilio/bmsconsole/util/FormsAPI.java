@@ -1021,6 +1021,9 @@ public class FormsAPI {
 					fields.addAll(FormFactory.getWoClassifierFields());
 					fields.add(FormFactory.getWoResourceField());
 					fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL, 10, 1));
+					if (AccountUtil.isFeatureEnabled(FeatureLicense.TENANTS)) {
+						fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL, "tenant", 1, 1));
+					}
 					break;
 				// DO NOT add any more modules here
 			}
