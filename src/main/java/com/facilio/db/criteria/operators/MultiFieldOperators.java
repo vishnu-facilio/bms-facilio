@@ -77,11 +77,15 @@ public enum MultiFieldOperators implements Operator<String> {
 		
 		@Override
 		public FacilioModulePredicate getPredicate(String fieldName, String value) {
-			return null;
+			return new FacilioModulePredicate(fieldName, getIsEmptyPridicate());
 		}
 
 		@Override
 		public boolean isValueNeeded () {
+			return false;
+		}
+		@Override
+		public boolean updateFieldNameWithModule() {
 			return false;
 		}
 	},
@@ -93,11 +97,15 @@ public enum MultiFieldOperators implements Operator<String> {
 		
 		@Override
 		public FacilioModulePredicate getPredicate(String fieldName, String value) {
-			return null;
+			return new FacilioModulePredicate(fieldName, PredicateUtils.notPredicate(getIsEmptyPridicate()));
 		}
 
 		@Override
 		public boolean isValueNeeded () {
+			return false;
+		}
+		@Override
+		public boolean updateFieldNameWithModule() {
 			return false;
 		}
 	},
@@ -290,6 +298,36 @@ public enum MultiFieldOperators implements Operator<String> {
 		else {
 			return getContainsPredicate(value);
 		}
+	}
+	
+	private static Predicate getIsEmptyPridicate() {
+		
+		return new Predicate() {
+			@Override
+			public boolean evaluate(Object object) {
+				try {
+					if(object == null) {
+						return true;
+					}
+					else if(object instanceof String) {
+						if(object.equals("[]")) {
+							return true;
+						}
+						if(((String) object).contains(",")) {
+							return false;
+						}
+						return ((String) object).isEmpty();
+					}
+					else if(object instanceof List) {
+						return ((List)object).isEmpty();
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return true;
+			}
+		};
+		
 	}
 	
 	private static Predicate getContainsPredicate(String value) {
