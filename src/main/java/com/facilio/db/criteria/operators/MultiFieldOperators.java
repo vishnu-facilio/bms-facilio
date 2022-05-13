@@ -77,15 +77,21 @@ public enum MultiFieldOperators implements Operator<String> {
 		
 		@Override
 		public FacilioModulePredicate getPredicate(String fieldName, String value) {
-			return new FacilioModulePredicate(fieldName, getIsEmptyPridicate());
+			
+			if(fieldName != null && !fieldName.isEmpty()) {
+				if(fieldName.contains(".")) {
+					String[] module = fieldName.split("\\.");
+					if(module.length > 1) {
+						fieldName = module[1];
+					}
+				}
+				return new FacilioModulePredicate(fieldName, getIsEmptyPridicate());
+			}
+			return null;
 		}
 
 		@Override
 		public boolean isValueNeeded () {
-			return false;
-		}
-		@Override
-		public boolean updateFieldNameWithModule() {
 			return false;
 		}
 	},
@@ -97,15 +103,21 @@ public enum MultiFieldOperators implements Operator<String> {
 		
 		@Override
 		public FacilioModulePredicate getPredicate(String fieldName, String value) {
-			return new FacilioModulePredicate(fieldName, PredicateUtils.notPredicate(getIsEmptyPridicate()));
+			
+			if(fieldName != null && !fieldName.isEmpty()) {
+				if(fieldName.contains(".")) {
+					String[] module = fieldName.split("\\.");
+					if(module.length > 1) {
+						fieldName = module[1];
+					}
+				}
+				return new FacilioModulePredicate(fieldName, PredicateUtils.notPredicate(getIsEmptyPridicate()));
+			}
+			return null;
 		}
 
 		@Override
 		public boolean isValueNeeded () {
-			return false;
-		}
-		@Override
-		public boolean updateFieldNameWithModule() {
 			return false;
 		}
 	},
