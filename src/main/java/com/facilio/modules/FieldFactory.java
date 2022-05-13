@@ -315,7 +315,8 @@ public class FieldFactory extends BaseFieldFactory {
                 "serviceRequest",
                 "noOfNotes",
                 "noOfAttachments",
-                "estimatedEnd"
+                "estimatedEnd",
+                "description"
         }));
 
         public static final List<String> ASSET_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {

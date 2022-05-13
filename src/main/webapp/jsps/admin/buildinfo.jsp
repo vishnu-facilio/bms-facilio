@@ -1,3 +1,4 @@
+<%@page import="com.facilio.workflowv2.bean.FWLRUScriptCache"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
     <%@page import="com.facilio.aws.util.AwsUtil, com.facilio.bmsconsole.actions.AdminAction, com.facilio.accounts.util.AccountUtil"%>
@@ -93,6 +94,13 @@ function init() {
     <br>Secrets Cache = <textarea style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
     out.println(FWLRUCaches.getSecretsCache());
 %></textarea>
+	<br>Script NameSpace Cache = <textarea style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
+    out.println(FWLRUScriptCache.getScriptNameSpaceCache());
+%></textarea>
+	<br>Script Function Cache = <textarea style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
+    out.println(FWLRUScriptCache.getScriptFunctionCache());
+%></textarea>
+
 </div>
 
 <div style="margin-top:30px;">

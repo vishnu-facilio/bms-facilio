@@ -68,9 +68,7 @@ import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestSumm
 import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.receipts.SetSysCreatedTimeAndLocalIdCommand;
 import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivableLookupCommandV3;
-import com.facilio.bmsconsoleV3.commands.receivable.SetPendingPOLineItemCommandV3;
-import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivableLookupCommandV3;
-import com.facilio.bmsconsoleV3.commands.receivable.SetPendingPOLineItemCommandV3;
+import com.facilio.bmsconsoleV3.commands.receivable.SetPOLineItemCommandV3;
 import com.facilio.bmsconsoleV3.commands.service.GetServiceVendorListCommandV3;
 import com.facilio.bmsconsoleV3.commands.service.UpdateStatusCommandV3;
 import com.facilio.bmsconsoleV3.commands.service.UpdateVendorV3;
@@ -113,6 +111,7 @@ import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetDepartmentContext;
 import com.facilio.bmsconsoleV3.context.budget.AccountTypeContext;
 import com.facilio.bmsconsoleV3.context.budget.BudgetContext;
 import com.facilio.bmsconsoleV3.context.budget.ChartOfAccountContext;
@@ -1703,16 +1702,26 @@ public class APIv3Config {
         return () -> new V3Config(FaultImpactNameSpaceFieldContext.class, null)
                 .build();
     }
-
+    @Module("assetdepartment")
+    public static Supplier<V3Config> getAssetDepartment(){
+        return () -> new V3Config(V3AssetDepartmentContext.class,null)
+                .create()
+                .list()
+                .update()
+                .delete()
+                .build();
+    }
     @Module("receivable")
     public static Supplier<V3Config> getReceivable() {
         return () -> new V3Config(V3ReceivableContext.class, null)
                 .create()
+                .update()
                 .list()
                 .beforeFetch(new LoadReceivableLookupCommandV3())
                 .summary()
                 .beforeFetch(new LoadReceivableLookupCommandV3())
-                .afterFetch(new SetPendingPOLineItemCommandV3())
+                .afterFetch(new SetPOLineItemCommandV3())
+                .delete()
                 .build();
     }
 
@@ -1722,9 +1731,11 @@ public class APIv3Config {
                 .create()
                 .beforeSave(new SetSysCreatedTimeAndLocalIdCommand())
                 .afterSave(TransactionChainFactoryV3.getAddOrUpdateReceiptsChain())
+                .update()
                 .list()
                 .beforeFetch(TransactionChainFactoryV3.getReceiptsBeforeFetchListChain())
                 .summary()
+                .delete()
                 .build();
     }
 }
