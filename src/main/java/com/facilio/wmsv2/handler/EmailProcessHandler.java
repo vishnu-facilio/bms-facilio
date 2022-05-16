@@ -58,11 +58,12 @@ public class EmailProcessHandler extends BaseHandler{
         			if(messageMap!=null) {
 						String s3Id = (String) messageMap.get("s3MessageId");
 						emailID = (long) Long.parseLong(messageMap.get("id").toString());
+						String recepient = (String) messageMap.get("recipient");
 						try (S3Object rawEmail = AwsUtil.getAmazonS3Client().getObject(S3_BUCKET_NAME, s3Id); InputStream is = rawEmail.getObjectContent()) {
 							MimeMessage emailMsg = new MimeMessage(null, is);
 							MimeMessageParser parser = new MimeMessageParser(emailMsg);
 							parser.parse();
-							SupportEmailContext supportEmail = getSupportEmail(parser);
+							SupportEmailContext supportEmail = getSupportEmail(recepient);
 							long requestID = -1L;
 							long orgID = -1L;
 							if (supportEmail != null) {
@@ -88,21 +89,22 @@ public class EmailProcessHandler extends BaseHandler{
 		return bean.addRequestFromEmail(emailMsg, parser, supportEmail);
 	}
 
-	private SupportEmailContext getSupportEmail(MimeMessageParser parser) throws Exception {
-		SupportEmailContext supportEmail = getSupportEmail(parser.getTo());
+//	private SupportEmailContext getSupportEmail(MimeMessageParser parser) throws Exception {
+	private SupportEmailContext getSupportEmail(String recepient) throws Exception {
+		SupportEmailContext supportEmail = getSupportEmail(recepient);
 		if (supportEmail != null) {
 			return supportEmail;
 		}
-
-		supportEmail = getSupportEmail(parser.getCc());
-		if (supportEmail != null) {
-			return supportEmail;
-		}
-
-		supportEmail = getSupportEmail(parser.getBcc());
-		if (supportEmail != null) {
-			return supportEmail;
-		}
+//
+//		supportEmail = getSupportEmail(parser.getCc());
+//		if (supportEmail != null) {
+//			return supportEmail;
+//		}
+//
+//		supportEmail = getSupportEmail(parser.getBcc());
+//		if (supportEmail != null) {
+//			return supportEmail;
+//		}
 
 		return null;
 	}

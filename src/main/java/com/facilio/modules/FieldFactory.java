@@ -2853,7 +2853,7 @@ public class FieldFactory extends BaseFieldFactory {
         s3MessageIdField.setColumnName("S3_MESSAGE_ID");
         s3MessageIdField.setModule(module);
         fields.add(s3MessageIdField);
-
+        fields.add(getField("recipient", "RECIPIENT", module, FieldType.STRING));
         fields.add(getField("to", "TO_ADDR", module, FieldType.STRING));
         fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.DATE_TIME));
 

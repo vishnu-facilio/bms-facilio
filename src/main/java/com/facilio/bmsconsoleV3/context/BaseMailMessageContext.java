@@ -46,7 +46,7 @@ public class BaseMailMessageContext extends V3Context {
     private String content;
     private String htmlContent;
     private String textContent;
-    
+    private String recipient;
 //    public void setCc(List<String> ccList) {
 //    	
 //    	if(ccList != null && !ccList.isEmpty()) {
