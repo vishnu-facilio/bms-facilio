@@ -14,6 +14,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
@@ -195,9 +196,9 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		}
 		else {
 			
-			boolean isV3SupportedModule = false;
+			boolean isV3SupportedModule = ChainUtil.isV3Enabled(module);
 			
-			if(isV3SupportedModule) {
+			if(isV3SupportedModule && AccountUtil.isFeatureEnabled(FeatureLicense.SCRIPT_CRUD_FROM_V3)) {
 				
 				List<Map<String, Object>> dataList = new ArrayList<>();
 				
@@ -210,6 +211,10 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 					for(Object insert :insertList) {
 						dataList.add((Map<String, Object>) insert);
 					}
+				}
+				
+				for(Map<String, Object> data : dataList) {
+					CommonCommandUtil.handleLookupFormData(modBean.getAllFields(module.getName()), data);
 				}
 				
 				FacilioContext context = V3Util.createRecord(module, dataList, true, null, null,true);
@@ -295,9 +300,9 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		
 		Map<String, Object> updateMap = (Map<String, Object>)objects.get(2);
 		
-		boolean isV3SupportedModule = false;
+		boolean isV3SupportedModule = ChainUtil.isV3Enabled(module);
 		
-		if(isV3SupportedModule) {
+		if(isV3SupportedModule && AccountUtil.isFeatureEnabled(FeatureLicense.SCRIPT_CRUD_FROM_V3)) {
 			
 			List<FacilioField> fields = Collections.singletonList(FieldFactory.getIdField(module));
 			
@@ -315,6 +320,8 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 					ids.add((Long)prop.get("id"));
 				}
 			}
+			
+			CommonCommandUtil.handleLookupFormData(modBean.getAllFields(module.getName()), updateMap);
 			
 			FacilioContext context = V3Util.updateBulkRecords(module.getName(), updateMap,ids, true);
 		}
@@ -367,9 +374,9 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		}
 		ScriptUtil.fillCriteriaField(criteria, module.getName());
 		
-		boolean isV3SupportedModule = false;
+		boolean isV3SupportedModule = ChainUtil.isV3Enabled(module);
 		
-		if(isV3SupportedModule) {
+		if(isV3SupportedModule && AccountUtil.isFeatureEnabled(FeatureLicense.SCRIPT_CRUD_FROM_V3)) {
 			
 			List<FacilioField> fields = Collections.singletonList(FieldFactory.getIdField(module));
 			
