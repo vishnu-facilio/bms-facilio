@@ -148,7 +148,9 @@ public class InspectionAPI {
 			
 			Map<Long, List<BaseScheduleContext>> baseScheduleIDMap = baseSchedules.stream().collect(Collectors.groupingBy(BaseScheduleContext::getId));
 			
-			triggers.forEach((trigger) -> {trigger.setSchedule(baseScheduleIDMap.get(trigger.getScheduleId()).get(0));});
+			triggers.stream().filter((trigger) -> {
+				return trigger.getType() == InspectionTriggerContext.TriggerType.SCHEDULE.getVal() ? true : false; 
+			}).forEach((trigger) -> {trigger.setSchedule(baseScheduleIDMap.get(trigger.getScheduleId()).get(0));});
 		}
 	}
 
