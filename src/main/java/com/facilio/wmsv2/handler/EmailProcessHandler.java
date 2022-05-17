@@ -91,10 +91,15 @@ public class EmailProcessHandler extends BaseHandler{
 
 //	private SupportEmailContext getSupportEmail(MimeMessageParser parser) throws Exception {
 	private SupportEmailContext getSupportEmail(String recepient) throws Exception {
-		SupportEmailContext supportEmail = getSupportEmail(recepient);
-		if (supportEmail != null) {
-			return supportEmail;
-		}
+		LOGGER.info("Reached getSupport Email");
+		SupportEmailContext supportEmail = SupportEmailAPI.getSupportEmailFromFwdEmail(recepient);
+		LOGGER.info("Support email object : " + supportEmail);
+		return supportEmail;
+//		javax.mail.Address address = recepient;
+//		SupportEmailContext supportEmail = getSupportEmail(recepient);
+//		if (supportEmail != null) {
+//			return supportEmail;
+//		}
 //
 //		supportEmail = getSupportEmail(parser.getCc());
 //		if (supportEmail != null) {
@@ -106,7 +111,7 @@ public class EmailProcessHandler extends BaseHandler{
 //			return supportEmail;
 //		}
 
-		return null;
+//		return null;
 	}
 
 	private SupportEmailContext getSupportEmail(List<Address> toAddresses) throws Exception {
