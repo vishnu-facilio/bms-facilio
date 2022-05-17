@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
@@ -31,7 +32,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
 
 public class AddWorkOrderCommand extends FacilioCommand {
-	
+
 	private static final Logger LOGGER = Logger.getLogger(AddWorkOrderCommand.class.getName());
 
 	@Override
@@ -44,13 +45,13 @@ public class AddWorkOrderCommand extends FacilioCommand {
 			if(workOrder.getRequester() != null && workOrder.getRequester().getId() == -1) {
 				workOrder.setRequester(null);
 			}
-			
+
 			WorkOrderAPI.handleSiteRelations(workOrder);
 			TicketAPI.validateSiteSpecificData(workOrder);
 			if (workOrder.getSiteId() == -1) {
 				throw new IllegalArgumentException("Please select site");
 			}
-			
+
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			workOrder.setCreatedBy(AccountUtil.getCurrentUser());
@@ -72,50 +73,47 @@ public class AddWorkOrderCommand extends FacilioCommand {
 
 			workOrder.setModifiedTime(workOrder.getCreatedTime());
 			workOrder.setApprovalState(ApprovalState.YET_TO_BE_REQUESTED);
-			
+
 			if (workOrder.getPriority() == null || workOrder.getPriority().getId() == -1) {
 				workOrder.setPriority(TicketAPI.getPriority(AccountUtil.getCurrentOrg().getId(), "Low"));
 			}
-			
+
 			if(workOrder.getDuration() != -1) {
 				workOrder.setDueDate(workOrder.getCreatedTime()+(workOrder.getDuration()*1000));
 			}
 			workOrder.setEstimatedEnd(workOrder.getDueDate());
 
 			TicketAPI.updateTicketAssignedBy(workOrder);
-			
+
 			InsertRecordBuilder<WorkOrderContext> builder = new InsertRecordBuilder<WorkOrderContext>()
 																.moduleName(moduleName)
 																.fields(fields)
 																.withChangeSet()
 																.withLocalId()
 																;
-			
+
 			Integer insertLevel = (Integer) context.get(FacilioConstants.ContextNames.INSERT_LEVEL);
 			if(insertLevel != null) {
 				builder.level(insertLevel);
 			}
 
-			if ((AccountUtil.getCurrentOrg().getId() == 146 || AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 393) && workOrder != null) {
-				LOGGER.info("Workorder subject : "+ workOrder.getSubject()+"\n Description : "+workOrder.getDescription());
-			}
-			
 			List<SupplementRecord> supplements = new ArrayList<>();
 			CommonCommandUtil.handleFormDataAndSupplement(fields, workOrder.getData(), supplements);
-			if(!supplements.isEmpty()) {
+			CommonCommandUtil.handleWOEnums(fields, workOrder.getData());
+			if (!supplements.isEmpty()) {
 				builder.insertSupplements(supplements);
 			}
-			
+
 			long workOrderId = builder.insert(workOrder);
 			workOrder.setId(workOrderId);
-			
-			if(context.get(FacilioConstants.ContextNames.EVENT_TYPE) == null) {
+
+			if (context.get(FacilioConstants.ContextNames.EVENT_TYPE) == null) {
 				List<EventType> activities = new ArrayList<>();
 				activities.add(EventType.CREATE);
-				
+
 				//TODO remove single ACTIVITY_TYPE once handled in TicketActivity
 				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
-				
+
 				if (workOrder.getAssignedTo() != null && workOrder.getAssignedTo().getId() > 0) {
 					activities.add(EventType.ASSIGN_TICKET);
 				}
