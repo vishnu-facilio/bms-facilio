@@ -640,6 +640,7 @@ public class FacilioConstants {
 		public static final String READINGS_SOURCE = "readingsSource";
 		public static final String READING_FIELDS = "readingFields";
 		public static final String READING_FIELD = "readingField";
+		public static final String APPEND_MODULE_NAME="appendModuleName";
 		public static final String PHOTOS = "photos";
 		public static final String PHOTO = "photo";
 		public static final String PHOTO_ID = "photoId";

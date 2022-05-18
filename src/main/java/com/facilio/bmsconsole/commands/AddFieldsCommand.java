@@ -50,6 +50,8 @@ public class AddFieldsCommand extends FacilioCommand {
 
 			boolean isSkipCounterfieldAdd = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_SKIP_COUNTER_FIELD_ADD, false);
 
+			boolean appendModuleName = (boolean) context.getOrDefault(ContextNames.APPEND_MODULE_NAME,true);
+
 			for (FacilioModule module : modules) {
 				FacilioModule cloneMod = new FacilioModule(module);
 				if(module != null && CollectionUtils.isNotEmpty(module.getFields())) {
@@ -64,7 +66,7 @@ public class AddFieldsCommand extends FacilioCommand {
 						try {
 							field.setModule(cloneMod);
 							setColumnName(field, existingColumns);
-							constructFieldName(field, module, changeDisplayName, existingNames, cloneMod.getName ());
+							constructFieldName(field, module, changeDisplayName, existingNames, cloneMod.getName (),appendModuleName);
 							long fieldId = modBean.addField(field);
 							field.setFieldId(fieldId);
 							fieldIds.add(fieldId);
@@ -141,25 +143,25 @@ public class AddFieldsCommand extends FacilioCommand {
 		}
 	}
 
-	private void constructFieldName(FacilioField field, FacilioModule module, boolean changeDisplayName, List<String> existingNames, String moduleName) throws Exception {
+	private void constructFieldName(FacilioField field, FacilioModule module, boolean changeDisplayName, List<String> existingNames, String moduleName,boolean appendModuleName) throws Exception {
 		if(field.getName() == null || field.getName().isEmpty()) {
 			if(field.getDisplayName() != null && !field.getDisplayName().isEmpty()) {
-				field.setName(field.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+","")+"_"+moduleName);
+				field.setName(field.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
 				// Will be used while adding a new field from form
-				handleDuplicateField (field, changeDisplayName, existingNames, moduleName);
+				handleDuplicateField (field, changeDisplayName, existingNames, moduleName,appendModuleName);
 			}
 			else {
 				throw new IllegalArgumentException("Invalid name for field of module : "+module.getName());
 			}
 		}else {
-			handleDuplicateField (field, changeDisplayName, existingNames, moduleName);
+			handleDuplicateField (field, changeDisplayName, existingNames, moduleName ,appendModuleName);
 		}
 	}
 
-	private void handleDuplicateField (FacilioField field, boolean changeDisplayName, List< String > existingNames, String moduleName) throws Exception {
+	private void handleDuplicateField (FacilioField field, boolean changeDisplayName, List< String > existingNames, String moduleName,boolean appendModuleName) throws Exception {
 
 		if (changeDisplayName) {
-			setDisplayNameAndFieldName(field, moduleName);
+			setDisplayNameAndFieldName(field, moduleName,appendModuleName);
 		}
 		else if (existingNames != null && existingNames.contains(field.getName())) {
 			throw new FacilioException(TranslationUtil.getString(Error.FIELD_DUPLICATE, field.getDisplayName()));
@@ -167,7 +169,7 @@ public class AddFieldsCommand extends FacilioCommand {
 	}
 
 
-	private void setDisplayNameAndFieldName(FacilioField field, String moduleName) throws Exception {
+	private void setDisplayNameAndFieldName(FacilioField field, String moduleName,boolean appendModuleName) throws Exception {
 
 		List< FacilioField > existingFields = Constants.getModBean ().getAllFields (moduleName);
 		int count = 0;
@@ -176,15 +178,21 @@ public class AddFieldsCommand extends FacilioCommand {
 			if (CollectionUtils.isNotEmpty (filteredFields)) {
 				String fieldName = field.getName ();
 				while ( true ) {
+
+
+					if (!fieldName.equals (field.getName ()) && fieldName.contains ("_")) {
+						count = Integer.parseInt (fieldName.substring (fieldName.lastIndexOf ('_') + 1));
+					}
+					if(!appendModuleName){
+						fieldName = field.getName () + "_" + ++count;
+					}else {
+						fieldName = field.getName ()+"_"+moduleName + "_" + ++count;
+					}
 					String finalDbFieldName = fieldName;
 					FacilioField duplicateField = filteredFields.stream ().filter (f -> f.getName ().equals (finalDbFieldName)).findFirst ().orElse (null);
 					if (duplicateField == null) {
 						break;
 					}
-					if (!fieldName.equals (field.getName ()) && fieldName.contains ("_")) {
-						count = Integer.parseInt (fieldName.substring (fieldName.lastIndexOf ('_') + 1));
-					}
-					fieldName = field.getName () + "_" + ++count;
 				}
 				field.setName(field.getName() +"_"+moduleName + "_" + count);
 				field.setDisplayName(field.getDisplayName() + " " + count);
