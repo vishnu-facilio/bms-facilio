@@ -37,6 +37,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private Connection conn = null;
 	private int recordsPerBatch = -1;
 	private List<SupplementRecord> insertSupplements;
+	private boolean ignore = false;
 
 	// TODO to be removed after everything is moved to v3
 	private boolean ignoreSplNullHandling = false;
@@ -69,6 +70,12 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	@Override
 	public InsertRecordBuilder<E> fields(List<FacilioField> fields) {
 		this.fields = fields;
+		return this;
+	}
+
+	@Override
+	public InsertRecordBuilder<E> ignore() {
+		this.ignore = false;
 		return this;
 	}
 
@@ -310,6 +317,10 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 						.table(currentModule.getTableName())
 						.fields(currentFields);
+
+				if (ignore) {
+					insertBuilder.ignore();
+				}
 
 				if (ignoreSplNullHandling) {
 					insertBuilder.ignoreSplNullHandling();
