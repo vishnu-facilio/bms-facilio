@@ -4,6 +4,7 @@ import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.dto.RoleApp;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.accounts.util.AccountConstants;
@@ -35,10 +36,13 @@ import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 
 public class PeopleAPI {
+	private static Logger log = LogManager.getLogger(PeopleAPI.class.getName());
 
 	public static boolean checkForDuplicatePeople(PeopleContext people) throws Exception {
 		PeopleContext peopleExisiting = getPeople(people.getEmail());
@@ -141,26 +145,30 @@ public class PeopleAPI {
 	
 	
 	public static void addPeopleForRequester(User user) throws Exception {
-		
-		PeopleContext peopleExisiting = getPeople(user.getEmail());
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
-		long pplId = -1;
-		if(peopleExisiting == null) {
-			PeopleContext people = new PeopleContext();
-			people.setEmail(user.getEmail());
-			people.setName(user.getName());
-			people.setActive(true);
-			people.setPhone(user.getMobile());
-			people.setPeopleType(PeopleType.OCCUPANT);
-			people.setIsOccupantPortalAccess(true);
-			
-			people.setLanguage(user.getLanguage());
-			
-			RecordAPI.addRecord(true, Collections.singletonList(people), module, modBean.getAllFields(module.getName()));
-			pplId = people.getId();
-			updatePeopleIdInOrgUsers(pplId, user.getOuid());
-			
+		try {
+			PeopleContext peopleExisiting = getPeople(user.getEmail());
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+			long pplId = -1;
+			if (peopleExisiting == null) {
+				PeopleContext people = new PeopleContext();
+				people.setEmail(user.getEmail());
+				people.setName(user.getName());
+				people.setActive(true);
+				people.setPhone(user.getMobile());
+				people.setPeopleType(PeopleType.OCCUPANT);
+				people.setIsOccupantPortalAccess(true);
+
+				people.setLanguage(user.getLanguage());
+
+				RecordAPI.addRecord(true, Collections.singletonList(people), module, modBean.getAllFields(module.getName()));
+				pplId = people.getId();
+				updatePeopleIdInOrgUsers(pplId, user.getOuid());
+
+			}
+		}
+		catch(Exception e){
+			log.error("Exception " + e);
 		}
 //		else {
 //			PeopleContext emp = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(peopleExisiting), PeopleContext.class);
@@ -174,24 +182,29 @@ public class PeopleAPI {
 	}
 	
 	public static void updatePeopleIdInOrgUsers(long pplId, long ouId) throws Exception {
-		FacilioField peopleId = new FacilioField();
-		peopleId.setName("peopleId");
-		peopleId.setDataType(FieldType.NUMBER);
-		peopleId.setColumnName("PEOPLE_ID");
-		peopleId.setModule(AccountConstants.getAppOrgUserModule());
-		
-		List<FacilioField> fields = new ArrayList<>();
-		fields.add(peopleId);
-		
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(AccountConstants.getAppOrgUserModule().getTableName())
-				.fields(fields);
-		
-		updateBuilder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "ouId", String.valueOf(ouId), NumberOperators.EQUALS));
-		
-		Map<String, Object> props = new HashMap<>();
-		props.put("peopleId", pplId);
-	    updateBuilder.update(props);
+		try {
+			FacilioField peopleId = new FacilioField();
+			peopleId.setName("peopleId");
+			peopleId.setDataType(FieldType.NUMBER);
+			peopleId.setColumnName("PEOPLE_ID");
+			peopleId.setModule(AccountConstants.getAppOrgUserModule());
+
+			List<FacilioField> fields = new ArrayList<>();
+			fields.add(peopleId);
+
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+					.table(AccountConstants.getAppOrgUserModule().getTableName())
+					.fields(fields);
+
+			updateBuilder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "ouId", String.valueOf(ouId), NumberOperators.EQUALS));
+
+			Map<String, Object> props = new HashMap<>();
+			props.put("peopleId", pplId);
+			updateBuilder.update(props);
+		}
+		catch (Exception e){
+			log.error("Exception while inviting user" + e);
+		}
 	
 	}
 	
