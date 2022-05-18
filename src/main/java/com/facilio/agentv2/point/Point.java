@@ -68,6 +68,8 @@ public abstract class Point extends FacilioPoint{
     @Getter
     @Setter
     private int interval;
+    @Getter @Setter
+    private Long controlActionId;
 
     public boolean isAgentWritable() {
         return agentWritable;

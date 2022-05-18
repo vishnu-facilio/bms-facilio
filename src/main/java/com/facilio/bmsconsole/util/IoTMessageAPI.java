@@ -612,7 +612,8 @@ public class IoTMessageAPI {
 				pointControllerMap.put(point.getControllerId(), pointList);
 			}
 			ControlActionCommandContext command = commandMap.get(ReadingsAPI.getRDMKey(point.getResourceId(), point.getFieldId()));
-			point.setValue(command.getValue());
+			point.setValue(command.getConvertedValue() != null ? command.getConvertedValue() : command.getValue());
+			point.setControlActionId(command.getId());
 			pointList.add(point);
 		}
 		

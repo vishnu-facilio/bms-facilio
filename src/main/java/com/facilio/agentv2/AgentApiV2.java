@@ -1,6 +1,7 @@
 package com.facilio.agentv2;
 
 import java.sql.SQLException;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,6 +46,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
@@ -535,8 +537,25 @@ public class AgentApiV2 {
     }
 
     public static void scheduleRestJob(FacilioAgent agent) throws Exception {
-    	long interval = 60 * agent.getInterval();
-    	FacilioTimer.schedulePeriodicJob(agent.getId(), Job.CLOUD_AGENT_JOB_NAME, interval, (int)interval, "facilio");
+    	long interval = agent.getInterval();
+    	
+    	if (interval >= 3) {
+    		ScheduleInfo scheduleInfo = new ScheduleInfo();
+    		scheduleInfo.setFrequencyType(ScheduleInfo.FrequencyType.DAILY);
+    		
+    		long totalMinutesInADay = 60 * 24;
+    		LocalTime time = LocalTime.of(0, 0);
+    		for (long frequency = totalMinutesInADay / interval; frequency > 0; frequency--) {
+    			time = time.plusMinutes(interval);
+    			scheduleInfo.addTime(time);
+    		}
+    		FacilioTimer.scheduleCalendarJob(agent.getId(), Job.CLOUD_AGENT_JOB_NAME, System.currentTimeMillis(), scheduleInfo, "priority");
+    	}
+    	else {
+    		interval *= 60;
+        	FacilioTimer.schedulePeriodicJob(agent.getId(), Job.CLOUD_AGENT_JOB_NAME, interval, (int)interval, "priority");
+    	}
     }
+    
 
 }
