@@ -893,6 +893,7 @@ public class UserBeanImpl implements UserBean {
 			}
 		}
 		catch(AccountException ex) {
+			log.error("Exception while inviting user" + ex);
 			if(ex.getErrorCode() == ErrorCode.USER_ALREADY_EXISTS_IN_ORG_PORTAL) {
 				throw ex;
 			}
@@ -902,11 +903,22 @@ public class UserBeanImpl implements UserBean {
 			if(ex.getErrorCode() == ErrorCode.INVALID_APP_DOMAIN) {
 				throw ex;
 			}
-			IAMUserUtil.rollbackUserAdded(user.getUid(), AccountUtil.getCurrentOrg().getOrgId());
+			try{
+				IAMUserUtil.rollbackUserAdded(user.getUid(), AccountUtil.getCurrentOrg().getOrgId());
+			}
+			catch (Exception exception){
+				log.error("Exception while inviting user" + exception);
+			}
 			throw ex;
 		}
 		catch(Exception e) {
-			IAMUserUtil.rollbackUserAdded(user.getUid(), AccountUtil.getCurrentOrg().getOrgId());
+			log.error("Exception while inviting user" + e);
+			try{
+				IAMUserUtil.rollbackUserAdded(user.getUid(), AccountUtil.getCurrentOrg().getOrgId());
+			}
+			catch (Exception exception){
+				log.error("Exception while inviting user" + exception);
+			}
 			throw e;
 		}
 		return 0L;
