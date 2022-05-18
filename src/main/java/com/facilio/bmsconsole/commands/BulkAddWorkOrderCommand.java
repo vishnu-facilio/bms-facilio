@@ -94,11 +94,10 @@ public class BulkAddWorkOrderCommand extends FacilioCommand {
 
                 workOrder.setEstimatedEnd(workOrder.getDueDate());
                 if (workOrder.getSiteId() > 0) {
-                    workOrder.setClient(RecordAPI.getClientForSite(workOrder.getSiteId()));
-                } else {
-                    workOrder.setClient(null);
-                }
-                CommonCommandUtil.handleWOEnums(fields, workOrder.getData());
+				    workOrder.setClient(RecordAPI.getClientForSite(workOrder.getSiteId()));
+			    } else {
+				    workOrder.setClient(null);
+			    }
             }
             builder.addRecord(workOrder);
         }
