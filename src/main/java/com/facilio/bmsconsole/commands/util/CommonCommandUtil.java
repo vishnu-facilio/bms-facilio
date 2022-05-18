@@ -1058,21 +1058,6 @@ public class CommonCommandUtil {
         handleFormDataAndSupplement(fields, data, new ArrayList<>());
     }
 
-    public static void handleWOEnums(List<FacilioField> fields, Map<String, Object> data) {
-        if (data == null) {
-            return;
-        }
-        for (FacilioField field : fields) {
-            if (data.get(field.getName()) == null || field.getDataTypeEnum() == null) {
-                continue;
-            }
-            if (field.getDataTypeEnum() == FieldType.ENUM) {
-                Map<String, Object> value = (Map<String, Object>) data.get(field.getName());
-                data.put(field.getName(), value.get("id"));
-            }
-        }
-    }
-
     public static void handleFormDataAndSupplement(List<FacilioField> fields, Map<String, Object> data, List<SupplementRecord> supplements) {
         if (data == null) {
             return;
