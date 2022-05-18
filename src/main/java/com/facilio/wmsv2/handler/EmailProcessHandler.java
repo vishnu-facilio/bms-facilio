@@ -95,7 +95,6 @@ public class EmailProcessHandler extends BaseHandler{
 		SupportEmailContext supportEmail = SupportEmailAPI.getSupportEmailFromFwdEmail(recepient);
 		LOGGER.info("Support email object : " + supportEmail);
 		return supportEmail;
-//		javax.mail.Address address = recepient;
 //		SupportEmailContext supportEmail = getSupportEmail(recepient);
 //		if (supportEmail != null) {
 //			return supportEmail;
@@ -114,20 +113,20 @@ public class EmailProcessHandler extends BaseHandler{
 //		return null;
 	}
 
-	private SupportEmailContext getSupportEmail(List<Address> toAddresses) throws Exception {
-		LOGGER.info("Support email addresses : " + toAddresses);
-		if (CollectionUtils.isNotEmpty(toAddresses)) {
-			StringJoiner emails = new StringJoiner(",");
-			for (Address address : toAddresses) {
-				String email = ((InternetAddress) address).getAddress();
-				emails.add(email);
-			}
-			SupportEmailContext supportEmail = SupportEmailAPI.getSupportEmailFromFwdEmail(emails.toString());
-			LOGGER.info("Support email object : " + supportEmail);
-			return supportEmail;
-		}
-		return null;
-	}
+//	private SupportEmailContext getSupportEmail(List<Address> toAddresses) throws Exception {
+//		LOGGER.info("Support email addresses : " + toAddresses);
+//		if (CollectionUtils.isNotEmpty(toAddresses)) {
+//			StringJoiner emails = new StringJoiner(",");
+//			for (Address address : toAddresses) {
+//				String email = ((InternetAddress) address).getAddress();
+//				emails.add(email);
+//			}
+//			SupportEmailContext supportEmail = SupportEmailAPI.getSupportEmailFromFwdEmail(emails.toString());
+//			LOGGER.info("Support email object : " + supportEmail);
+//			return supportEmail;
+//		}
+//		return null;
+//	}
 	
 	private void markAsFailed(long id) throws Exception {
 		Map<String, Object> dataBag = new HashMap<>();
