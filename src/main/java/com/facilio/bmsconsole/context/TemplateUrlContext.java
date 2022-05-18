@@ -25,7 +25,7 @@ public class TemplateUrlContext extends TemplateAttachment {
 	public TemplateAttachmentType getType() {
 		return TemplateAttachmentType.URL;
 	}
-	
+
 	@Override
 	@JsonIgnore
     @JSON(serialize = false)

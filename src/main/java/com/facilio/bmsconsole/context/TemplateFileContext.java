@@ -15,7 +15,7 @@ public class TemplateFileContext extends TemplateAttachment {
 	public TemplateAttachmentType getType() {
 		return TemplateAttachmentType.FILE;
 	}
-	
+
 	@Override
 	protected long fetchFileId(Object record) {
 		return getFileId();

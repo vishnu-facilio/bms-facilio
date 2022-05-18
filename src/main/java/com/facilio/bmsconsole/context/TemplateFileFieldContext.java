@@ -52,4 +52,5 @@ public class TemplateFileFieldContext extends TemplateAttachment {
 	public TemplateAttachmentType getType() {
 		return TemplateAttachmentType.FIELD;
 	}
+
 }
