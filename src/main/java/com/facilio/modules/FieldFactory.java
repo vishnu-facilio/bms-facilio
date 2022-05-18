@@ -9091,6 +9091,7 @@ public class FieldFactory extends BaseFieldFactory {
 
         fields.add(getIdField(module));
         fields.add(getField("name", "NAME", module, FieldType.STRING));
+        fields.add(getField("iconType", "ICON_TYPE", module, FieldType.NUMBER));
         fields.add(getField("applicationId", "APPLICATION_ID", module, FieldType.NUMBER));
         fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
         fields.add(getField("route", "ROUTE", module, FieldType.STRING));
