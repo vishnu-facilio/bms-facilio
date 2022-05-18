@@ -44,7 +44,7 @@ public class StormReadingPostProcessingCommand extends FacilioCommand {
                         FacilioField field = modBean.getField(fieldName, moduleName);
 
                         if(field == null) {//TODO: find the problem and delete this check.
-                            LOGGER.info("field is null. field name : " + fieldName + ",  module : " + moduleName);
+                            LOGGER.info("field is null. field name : " + fieldName + ",  module : " + moduleName + " reading : " + readingContext);
                             continue;
                         }
 

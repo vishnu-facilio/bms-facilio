@@ -37,8 +37,12 @@ public class NameSpaceField {
     int aggregationTypeI;
 
     public void setAggregationTypeI(int aggregationTypeI) {
-        this.aggregationTypeI = aggregationTypeI;
-        this.aggregationType = AggregationType.valueOf(aggregationTypeI);
+        if(aggregationType != null) {
+            this.aggregationTypeI = aggregationType.getIndex();
+        } else {
+            this.aggregationTypeI = aggregationTypeI;
+            this.aggregationType = AggregationType.valueOf(aggregationTypeI);
+        }
     }
 
     AggregationType aggregationType;
@@ -46,6 +50,10 @@ public class NameSpaceField {
     public void setAggregationType(AggregationType typ) {
         this.aggregationType = typ;
         this.aggregationTypeI = typ.getIndex();
+    }
+
+    public AggregationType getAggregation() {
+        return (aggregationType != null) ? aggregationType :  AggregationType.valueOf(aggregationTypeI);
     }
 
     boolean isEnabledCompaction;
