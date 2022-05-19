@@ -138,4 +138,18 @@ public class ReportPivotParamsContext {
 	public void setEndTime(long endTime) {
 		this.endTime = endTime;
 	}
+
+	public void setShowTimelineFilter(Boolean showTimelineFilter) {
+		this.showTimelineFilter = showTimelineFilter;
+	}
+
+	private long drillDown = 0;
+
+	public long getDrillDown() {
+		return drillDown;
+	}
+
+	public void setDrillDown(long drillDown) {
+		this.drillDown = drillDown;
+	}
 }

@@ -1,9 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import com.facilio.db.criteria.operators.*;
 import org.apache.commons.chain.Context;
@@ -54,10 +51,21 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 			}
 			
 			Criteria criteria = new Criteria();
+
+			if(context.containsKey(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN) && context.get(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN) != null){
+				Queue<String> fieldNamesFromFilter = getFieldNamesFromFilter(filters);
+				filterIterator = fieldNamesFromFilter.iterator();
+			}
+
 			while(filterIterator.hasNext())
 			{
 				String fieldName = filterIterator.next();
 				Object fieldJson = filters.get(fieldName);
+
+				if(context.containsKey(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN) && context.get(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN) != null){
+					fieldName = fieldName.split("__")[0];
+				}
+
 				List<Condition> conditionList = new ArrayList<>();
 				if(fieldJson!=null && fieldJson instanceof JSONArray) {
 					JSONArray fieldJsonArr = (JSONArray) fieldJson;
@@ -71,6 +79,10 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 					setConditions(moduleName, fieldName, fieldJsonObj, conditionList);
 				}
 				criteria.groupOrConditions(conditionList);
+			}
+
+			if(context.containsKey(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN) && context.get(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN) != null){
+				criteria.setPattern(context.get(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN).toString());
 			}
 			if (!criteria.isEmpty()) {
 				context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, criteria);
@@ -89,7 +101,22 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 		}
 		return false;
 	}
-	
+	public Queue<String> getFieldNamesFromFilter(JSONObject filter){
+		Queue<String> filedNamesQueue = new LinkedList<>();
+		for (long index = 1; index <= filter.size(); index++){
+			String fieldName = getFieldNameById(index, filter);
+			filedNamesQueue.add(fieldName);
+		}
+		return filedNamesQueue;
+	}
+	public String getFieldNameById(long id, JSONObject filter){
+		for (Object fieldName: filter.keySet()) {
+			JSONObject jsonObject = (JSONObject) filter.get(fieldName);
+			long fieldId = (Long) jsonObject.get("id");
+			if(fieldId == id) return fieldName.toString();
+		}
+		return null;
+	}
 	private void setConditions(String moduleName, String fieldName, JSONObject fieldJson,List<Condition> conditionList) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

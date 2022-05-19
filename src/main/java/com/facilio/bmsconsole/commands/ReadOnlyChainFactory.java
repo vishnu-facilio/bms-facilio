@@ -3013,4 +3013,17 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetSurveyRulesCommand());
 		return chain;
 	}
+
+	public static FacilioChain fetchPivotReportChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new ConstructTabularReportData());
+		chain.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
+		chain.addCommand(new PivotFormulaColumnCommand());
+		chain.addCommand(new PivotColumnFormatCommand());
+		chain.addCommand(new PivotDrillDownCommand());
+		chain.addCommand(new PivotConditionalFormatCommand());
+		chain.addCommand(new PivotThemeCustomizationCommand());
+		return chain;
+	}
 }
