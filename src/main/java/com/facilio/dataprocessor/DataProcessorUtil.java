@@ -137,7 +137,7 @@ public class DataProcessorUtil {
         long start = System.currentTimeMillis();
         try {
             AccountUtil.getCurrentAccount().clearStateVariables();
-            AccountUtil.getCurrentAccount().setRequestUri(String.valueOf(recordId));
+            AccountUtil.getCurrentAccount().setRequestUri(partitionId + "-" + recordId);
             Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.DATA_PROCESSING_LOGGER_LEVEL);
             String loggerLevel = orgInfoMap.get(FacilioConstants.OrgInfoKeys.DATA_PROCESSING_LOGGER_LEVEL);
             try {
