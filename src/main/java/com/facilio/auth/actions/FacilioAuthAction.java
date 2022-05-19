@@ -1409,7 +1409,7 @@ public class FacilioAuthAction extends FacilioAction {
 			}
 		} else{
 			LOGGER.log(Level.INFO, "invalid verification code " + emailFromDigest);
-			throw new IllegalArgumentException("invalid verification code");
+			setJsonresponse("message", "Invalid verification code");
 		}
 
 		return SUCCESS;
