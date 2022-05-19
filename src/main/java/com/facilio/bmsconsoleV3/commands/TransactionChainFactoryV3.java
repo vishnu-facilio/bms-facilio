@@ -7,6 +7,7 @@ import com.facilio.bmsconsoleV3.commands.floorplan.*;
 import com.facilio.bmsconsoleV3.commands.people.UpdateScopingForPeopleCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.spacecategory.ValidateSpaceCategoryDeletionV3;
 import com.facilio.bmsconsoleV3.commands.tasks.AddTaskSectionsV3;
 import com.facilio.bmsconsoleV3.commands.tasks.AddTasksCommandV3;
 import com.facilio.bmsconsoleV3.commands.tasks.ValidateTasksCommandV3;
@@ -1627,6 +1628,12 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getDeleteAssetCategoryChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new ValidateAssetCategoryDeletionV3());
+        return chain;
+    }
+
+    public static FacilioChain getDeleteSpaceCategoryChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new ValidateSpaceCategoryDeletionV3());
         return chain;
     }
 

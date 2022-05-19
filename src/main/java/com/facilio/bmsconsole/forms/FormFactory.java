@@ -107,6 +107,7 @@ public class FormFactory {
 		forms.put("spaceFromFloor", getSpaceFormFromFloor());
 		forms.put("spaceFromSpace", getSpaceFormFromSpace());
 		forms.put("floor", getFloorForm());
+		forms.put("spacecategory", getSpaceCategoryForm());
 		/**** Do not add any forms here... Add in initFormsList() only ******/
 
 		return forms;
@@ -502,6 +503,7 @@ public class FormFactory {
 		List<FacilioForm> inventoryCategoryForm = Arrays.asList(getInventoryCategoryForm());
 		List<FacilioForm> itemFormsList = Arrays.asList(getItemForm());
 		List<FacilioForm> toolFormsList = Arrays.asList(getStockedToolsForm());
+		List<FacilioForm> spaceCategoryForm = Arrays.asList(getSpaceCategoryForm());
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
 				.put(FacilioConstants.ContextNames.ASSET, getFormMap(assetForms))
@@ -511,6 +513,7 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, getFormMap(prForm))
 				.put(FacilioConstants.ContextNames.VISITOR,getFormMap(visitorForms))
 				.put(FacilioConstants.ContextNames.INSURANCE, getFormMap(insuranceForm))
+				.put(FacilioConstants.ContextNames.SPACE_CATEGORY, getFormMap(spaceCategoryForm))
 				.put(FacilioConstants.ContextNames.VENDORS, getFormMap(vendorsForms))
 				.put(FacilioConstants.ContextNames.WATCHLIST, getFormMap(watchListForm))
 				.put(FacilioConstants.ContextNames.VISIT_CUSTOM_RESPONSE, getFormMap(visitResponseLogForm))
@@ -2297,7 +2300,16 @@ public class FormFactory {
 
 		return fields;
 	}
-	
+
+	private static List<FormField> getSpaceCateoryFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.OPTIONAL, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("commonArea", FieldDisplayType.DECISION_BOX, "Is Common Area", Required.OPTIONAL, 3, 1));
+
+		return fields;
+	}
+
 	public static FacilioForm getRentalLeaseContractForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("LEASE/RENTAL CONTRACT");
@@ -2768,6 +2780,17 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.INSURANCE));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getInsuranceFormFields());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
+
+	public static FacilioForm getSpaceCategoryForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Space Category");
+		form.setName("default_spacecategory_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.SPACE_CATEGORY));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getSpaceCateoryFields());
 		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
