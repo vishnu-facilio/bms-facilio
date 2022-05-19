@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.commands;
 import java.util.Collections;
 
 import com.facilio.bmsconsole.commands.AddTasksCommand;
+import com.facilio.bmsconsoleV3.commands.assetDepartment.ValidateAssetDepartmentDeletionV3;
 import com.facilio.bmsconsoleV3.commands.floorplan.*;
 import com.facilio.bmsconsoleV3.commands.people.UpdateScopingForPeopleCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
@@ -1628,6 +1629,11 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getDeleteAssetCategoryChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new ValidateAssetCategoryDeletionV3());
+        return chain;
+    }
+    public static FacilioChain getDeleteAssetDepartmentChain(){
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new ValidateAssetDepartmentDeletionV3());
         return chain;
     }
 

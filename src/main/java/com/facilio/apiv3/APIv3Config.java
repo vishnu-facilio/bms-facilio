@@ -1720,6 +1720,7 @@ public class APIv3Config {
                 .list()
                 .update()
                 .delete()
+                .beforeDelete(TransactionChainFactoryV3.getDeleteAssetDepartmentChain())
                 .build();
     }
     @Module("receivable")
