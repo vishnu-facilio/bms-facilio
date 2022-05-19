@@ -286,11 +286,11 @@ public class V3FloorPlanAPI {
 	 				        	FacilioStatus vacantStatus = TicketAPI.getStatus(module, "Vacant");
 
 	 				        	
-	 							if (parking.getModuleState().getId() == status.getId()) {
+	 							if (status != null && parking.getModuleState().getId() == status.getId()) {
 	 								properties.setIsOccupied(true);
 	 								properties.setZoneBackgroundColor(reservedColor);
 	 							}
-	 							else if (parking.getModuleState().getId() == vacantStatus.getId()) {
+	 							else if (vacantStatus != null && parking.getModuleState().getId() == vacantStatus.getId()) {
 	 								properties.setZoneBackgroundColor(availableColor);
 	 							}
 	 						}

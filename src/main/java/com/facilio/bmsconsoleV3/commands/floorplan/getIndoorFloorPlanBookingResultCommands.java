@@ -56,16 +56,17 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 		if (viewMode == null) {
 			viewMode = FacilioConstants.ContextNames.Floorplan.BOOKING_VIEW;
 		}
-		
+
+		try {
+			Map<String, FacilioForm> froms = FormsAPI.getFormsAsMap(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING, false, false, AccountUtil.getCurrentApp().getId());
+			context.put(FacilioConstants.ContextNames.FORMS, froms);
+		}
+		catch (Exception e) {
+			LOGGER.error("Error while fetching forms", e);
+		}
 		
 		if (CollectionUtils.isNotEmpty(markers)) {
-			try {
-				Map<String, FacilioForm> froms = FormsAPI.getFormsAsMap(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING, false, false, AccountUtil.getCurrentApp().getId());
-				context.put(FacilioConstants.ContextNames.FORMS, froms);
-			}
-			catch (Exception e) {
-				LOGGER.error("Error while fetching forms", e);
-			}
+
 			for (V3MarkerContext marker: markers) {
 		        	Long recordId = (Long) marker.getRecordId();
 		        	Long markerModuleId = (Long) marker.getMarkerModuleId();
