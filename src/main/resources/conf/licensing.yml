@@ -1,0 +1,23 @@
+version: 1.0
+
+
+licenseInfo:
+
+  - name : site
+    type : module
+    handler : com.facilio.bmsconsoleV3.handler.SiteHandler
+
+
+  - name: workorder
+    type: module
+    handler: com.facilio.bmsconsoleV3.handler.WorkOrderHandler
+
+
+  - name: people
+    type: module
+    handler: com.facilio.bmsconsoleV3.handler.PeopleHandler
+
+
+  - name: workflows
+    type: feature
+    handler: com.facilio.bmsconsoleV3.handler.WorkFlowHandler

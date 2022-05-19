@@ -5,6 +5,10 @@ import java.util.Collections;
 import com.facilio.bmsconsole.commands.AddTasksCommand;
 import com.facilio.bmsconsoleV3.commands.assetDepartment.ValidateAssetDepartmentDeletionV3;
 import com.facilio.bmsconsoleV3.commands.floorplan.*;
+import com.facilio.bmsconsoleV3.commands.licensinginfo.AddLicensingInfoCommand;
+import com.facilio.bmsconsoleV3.commands.licensinginfo.DeleteLicensingInfoCommand;
+import com.facilio.bmsconsoleV3.commands.licensinginfo.FetchLicensingInfoCommand;
+import com.facilio.bmsconsoleV3.commands.licensinginfo.UpdateLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.people.UpdateScopingForPeopleCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
@@ -1755,4 +1759,30 @@ public class TransactionChainFactoryV3 {
         return chain;
     }
 
+    public static FacilioChain getAddLicensingInfoChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddLicensingInfoCommand());
+        return c;
+    }
+
+
+    public static FacilioChain getUpdateLicensingInfoChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateLicensingInfoCommand());
+        return c;
+    }
+
+
+    public static FacilioChain getFetchLicensingInfoChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchLicensingInfoCommand());
+        return c;
+    }
+
+
+    public static FacilioChain getDeleteLicensingInfoChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new DeleteLicensingInfoCommand());
+        return c;
+    }
 }

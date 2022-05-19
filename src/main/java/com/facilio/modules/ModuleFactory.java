@@ -4821,6 +4821,18 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getLicensingInfoModule() {
 
+		FacilioModule licensingInfoModule = new FacilioModule();
+
+		licensingInfoModule.setName(ContextNames.LICENSING_INFO);
+
+		licensingInfoModule.setDisplayName("LICENSING INFO");
+
+		licensingInfoModule.setTableName("LicensingInfo");
+
+		return licensingInfoModule;
+
+	}
     //Bundle Related Modules ends
 }

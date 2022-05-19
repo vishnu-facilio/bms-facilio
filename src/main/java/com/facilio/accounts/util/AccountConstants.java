@@ -1441,5 +1441,67 @@ public class AccountConstants {
 		return fields;
 	}
 
+	public static List<FacilioField> getLicensingInfoFields() {
+		FacilioModule module = ModuleFactory.getLicensingInfoModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		FacilioField id = new FacilioField();
+		id.setName("id");
+		id.setColumnName("ID");
+		id.setDataType(FieldType.NUMBER);
+		id.setModule(module);
+		fields.add(id);
+
+		FacilioField licenseType = new FacilioField();
+		licenseType.setName("licensingType");
+		licenseType.setColumnName("LICENSING_TYPE");
+		licenseType.setDataType(FieldType.NUMBER);
+		licenseType.setModule(module);
+		fields.add(licenseType);
+
+		FacilioField name = new FacilioField();
+		name.setName("name");
+		name.setColumnName("NAME");
+		name.setDataType(FieldType.STRING);
+		name.setModule(module);
+		fields.add(name);
+
+		FacilioField allowedLicense = new FacilioField();
+		allowedLicense.setName("allowedLicense");
+		allowedLicense.setColumnName("LICENSE_ALLOWED");
+		allowedLicense.setDataType(FieldType.NUMBER);
+		allowedLicense.setModule(module);
+		fields.add(allowedLicense);
+
+		FacilioField usedLicense = new FacilioField();
+		usedLicense.setName("usedLicense");
+		usedLicense.setColumnName("LICENSE_USED");
+		usedLicense.setDataType(FieldType.NUMBER);
+		usedLicense.setModule(module);
+		fields.add(usedLicense);
+
+		FacilioField aggregatingPeriod = new FacilioField();
+		aggregatingPeriod.setName("aggregatingPeriod");
+		aggregatingPeriod.setColumnName("AGGREGATING_PERIOD");
+		aggregatingPeriod.setDataType(FieldType.NUMBER);
+		aggregatingPeriod.setModule(module);
+		fields.add(aggregatingPeriod);
+
+		FacilioField validFrom = new FacilioField();
+		validFrom.setName("validFrom");
+		validFrom.setColumnName("VALID_FROM");
+		validFrom.setDataType(FieldType.NUMBER);
+		validFrom.setModule(module);
+		fields.add(validFrom);
+
+		FacilioField validTill = new FacilioField();
+		validTill.setName("validTill");
+		validTill.setColumnName("VALID_TILL");
+		validTill.setDataType(FieldType.NUMBER);
+		validTill.setModule(module);
+		fields.add(validTill);
+
+		return fields;
+	}
 
 }

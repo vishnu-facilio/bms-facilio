@@ -196,6 +196,14 @@ public class FacilioConstants {
 		public static final String SERVICE_CATALOG_GROUP = "serviceCatalogGroup";
 		public static final String SERVICE_CATALOG_GROUPS = "serviceCatalogGroups";
 		public static final String SERVICE_CATALOG_GROUP_ORDER_BY = "serviceCatalogGroupOrderBy";
+		public static final String LICENSE_NAME = "licenseName";
+
+		public static final String LICENSE_TYPE = "licenseType";
+
+		public static final String LICENSE_NEW_COUNT= "newCount";
+		public static final String LICENSING_INFO = "licensingInfo";
+
+		public static final String LICENSING_INFO_IDS = "licensingInfoIds";
 
 		public static final String SUB_MODULES = "submodules";
 		public static final String TO_UPDATE_CHILD_MAP = "toUpdateChildMap";

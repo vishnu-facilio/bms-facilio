@@ -775,4 +775,32 @@
 		</action>
 	</package>
 
+    <package name="licensinginfo" namespace="/api/v3/licensinginfo" extends="v3Api">
+
+        <action name="add"
+
+                class="com.facilio.bmsconsoleV3.actions.LicensingInfoAction"
+
+                method="add"></action>
+
+        <action name="list"
+
+                class="com.facilio.bmsconsoleV3.actions.LicensingInfoAction"
+
+                method="list" />
+
+        <action name="delete"
+
+                class="com.facilio.bmsconsoleV3.actions.LicensingInfoAction"
+
+                method="delete"></action>
+
+        <action name="update"
+
+                class="com.facilio.bmsconsoleV3.actions.LicensingInfoAction"
+
+                method="update"></action>
+
+    </package>
+
 </struts>

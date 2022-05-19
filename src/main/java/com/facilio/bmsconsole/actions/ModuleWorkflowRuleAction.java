@@ -5,6 +5,7 @@ import java.util.List;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsoleV3.util.LicensingInfoUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -69,7 +70,6 @@ public class ModuleWorkflowRuleAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
         context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRule);
         chain.execute();
-
         setResult(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRule);
         return SUCCESS;
     }

@@ -3,6 +3,7 @@ package com.facilio.workflows.action;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.bmsconsoleV3.util.LicensingInfoUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Priority;
 
@@ -215,7 +216,7 @@ public class WorkflowAction extends FacilioAction {
 		
 		context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
 		FacilioChain addWorkflowChain =  TransactionChainFactory.getAddWorkflowChain();
-		addWorkflowChain.execute(context);
+			addWorkflowChain.execute(context);
 		setResult(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
 		setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
 		return SUCCESS;

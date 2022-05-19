@@ -657,4 +657,44 @@
             <property name="moduleName" type="string"/>
         </requestbody>
     </request>
+    <request path="/api/v3/licensinginfo/add">
+        <requestbody type="object">
+            <property name="licenseContext" type="object">
+                <property name="name" type="string"/>
+                <property name="allowedLicense" type="number"/>
+                <property name="licensingType" type="number"/>
+                <property name="aggregatingPeriod" type="number"/>
+                <property name="validFrom" type="number"/>
+                <property name="validTill" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v3/licensinginfo/update">
+        <requestbody type="object">
+            <property name="licenseContext" type="object">
+                <property name="name" type="string"/>
+                <property name="allowedLicense" type="number"/>
+                <property name="licensingType" type="number"/>
+                <property name="aggregatingPeriod" type="number"/>
+                <property name="validFrom" type="number"/>
+                <property name="validTill" type="number"/>
+                <property name="id" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v3/licensinginfo/list">
+        <requestbody type="object">
+            <property name="licenseContext" type="object">
+                <property name="ouId" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v3/licensinginfo/delete">
+        <requestbody type="object">
+            <property name="licenseContext" type="object">
+                <property name="ouId" type="number"/>
+                <property name="id" type="array"/>
+            </property>
+        </requestbody>
+    </request>
 </config>
