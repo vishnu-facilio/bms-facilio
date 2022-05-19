@@ -59,10 +59,6 @@ public class SaveCommand extends FacilioCommand {
             FacilioModule module = modBean.getModule(moduleName);
 
             List<FacilioField> fields = modBean.getAllFields(moduleName);
-            if (AccountUtil.getCurrentOrg().getId() == 155 && FacilioConstants.Inspection.INSPECTION_TEMPLATE.equals(moduleName)) {
-                LOGGER.info(MessageFormat.format("Fields of inspection template module : {0}", fields));
-                LOGGER.info(MessageFormat.format("Records to be added : {0}", records));
-            }
 
             InsertRecordBuilder<ModuleBaseWithCustomFields> insertRecordBuilder = new InsertRecordBuilder<>()
                     .module(module)
@@ -83,6 +79,11 @@ public class SaveCommand extends FacilioCommand {
 
             if (CollectionUtils.isEmpty(records)) {
                 throw new IllegalArgumentException("Record cannot be null during addition");
+            }
+            
+            if (AccountUtil.getCurrentOrg().getId() == 172l && FacilioConstants.ContextNames.SERVICE_REQUEST.equals(moduleName)) {
+                LOGGER.info(MessageFormat.format("Fields of SR module : {0}", fields));
+                LOGGER.info(MessageFormat.format("Records to be added : {0}", records));
             }
 
             insertRecordBuilder.addRecords(records);
