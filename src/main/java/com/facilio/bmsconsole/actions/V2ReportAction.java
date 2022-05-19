@@ -2691,6 +2691,7 @@ public class V2ReportAction extends FacilioAction {
         c.addCommand(new ConstructTabularReportData());
         c.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
         c.addCommand(new PivotFormulaColumnCommand());
+        c.addCommand(new PivotCellVisualCommand());
         c.addCommand(new PivotColumnFormatCommand());
         c.addCommand(new PivotConditionalFormatCommand());
         c.addCommand(new PivotThemeCustomizationCommand());
@@ -2708,6 +2709,9 @@ public class V2ReportAction extends FacilioAction {
         setResult(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA,
                 context.get(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA));
         setResult(FacilioConstants.Reports.ROWS, rows);
+        setResult(FacilioConstants.Reports.DATA, data);
+        setResult(FacilioConstants.ContextNames.FORMULA, formula);
+
         return SUCCESS;
     }
 

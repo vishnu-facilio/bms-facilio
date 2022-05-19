@@ -52,14 +52,16 @@ public class TimelineViewUtil {
             mainCriteria.orCriteria(rollOverCriteria);
         }
 
-        Criteria groupCriteria = new Criteria();
-        if (CollectionUtils.isNotEmpty(timelineRequest.getGroupIds())) {
-            groupCriteria.addAndCondition(CriteriaAPI.getCondition(timelineGroupField, StringUtils.join(timelineRequest.getGroupIds(), ","), NumberOperators.EQUALS));
+        if(!getUnscheduledOnly || (getUnscheduledOnly && (timelineRequest.isGetUnGrouped() || CollectionUtils.isNotEmpty(timelineRequest.getGroupIds())))) {
+            Criteria groupCriteria = new Criteria();
+            if (CollectionUtils.isNotEmpty(timelineRequest.getGroupIds())) {
+                groupCriteria.addAndCondition(CriteriaAPI.getCondition(timelineGroupField, StringUtils.join(timelineRequest.getGroupIds(), ","), NumberOperators.EQUALS));
+            }
+            if (timelineRequest.isGetUnGrouped()) {
+                groupCriteria.addOrCondition(CriteriaAPI.getCondition(timelineGroupField, CommonOperators.IS_EMPTY));
+            }
+            mainCriteria.andCriteria(groupCriteria);
         }
-        if (timelineRequest.isGetUnGrouped()) {
-            groupCriteria.addOrCondition(CriteriaAPI.getCondition(timelineGroupField, CommonOperators.IS_EMPTY));
-        }
-        mainCriteria.andCriteria(groupCriteria);
 
         if(viewCriteria != null)
         {

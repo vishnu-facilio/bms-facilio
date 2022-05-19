@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.timelineview.context;
 
 
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.recordcustomization.RecordCustomizationContext;
 import com.facilio.weekends.WeekendContext;
@@ -173,6 +174,40 @@ public class TimelineViewContext extends FacilioView {
     }
     public void setDefaultCalendarView(CalendarViewType defaultCalendarView) {
         this.defaultCalendarView = defaultCalendarView;
+    }
+
+    /*
+    private long nameFieldPatternId;
+    public long getNameFieldPatternId() {
+        return nameFieldPatternId;
+    }
+    public void setNameFieldPatternId(long nameFieldPatternId) {
+        this.nameFieldPatternId = nameFieldPatternId;
+    }
+
+    private FieldDisplayPattern nameFieldPattern;
+    public FieldDisplayPattern getNameFieldPattern() {
+        return nameFieldPattern;
+    }
+    public void setNameFieldPattern(FieldDisplayPattern nameFieldPattern) {
+        this.nameFieldPattern = nameFieldPattern;
+    }
+    */
+
+    private long groupCriteriaId;
+    public long getGroupCriteriaId() {
+        return groupCriteriaId;
+    }
+    public void setGroupCriteriaId(long groupCriteriaId) {
+        this.groupCriteriaId = groupCriteriaId;
+    }
+
+    private Criteria groupCriteria;
+    public Criteria getGroupCriteria() {
+        return groupCriteria;
+    }
+    public void setGroupCriteria(Criteria groupCriteria) {
+        this.groupCriteria = groupCriteria;
     }
 
     public static enum CalendarViewType {

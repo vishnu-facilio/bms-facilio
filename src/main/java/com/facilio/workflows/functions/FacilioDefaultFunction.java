@@ -79,6 +79,7 @@ import com.facilio.service.FacilioHttpUtilsFW;
 import com.facilio.services.FacilioHttpUtils;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
+import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
@@ -1229,6 +1230,33 @@ ADD_INVITE_RECORD_VIA_V3CHAIN (29, "addInviteRecordViaV3Chain") {
 			String res = FacilioHttpUtilsFW.doHttpPost(url, headers, params, null,files,-1);
 			
 			return res;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	
+	FORMULA_HISTORY_CALCULATION(36,"calculateHistoryForFormula") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			FacilioChain historicalCalculation = TransactionChainFactory.historicalFormulaCalculationChain();
+			FacilioContext context = historicalCalculation.getContext();
+			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, (Long) objects[0]);
+			context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange((Long) objects[1], (Long) objects[2]));
+			context.put(FacilioConstants.ContextNames.RESOURCE_LIST, (List<Long>) objects[3]);
+			context.put(FacilioConstants.ContextNames.IS_INCLUDE,(Boolean) objects[4]);
+			context.put(FacilioConstants.OrgInfoKeys.CALCULATE_VM_THROUGH_FORMULA,(Boolean) objects[5]);
+			context.put(FacilioConstants.ContextNames.SKIP_OPTIMISED_WF, (Boolean) objects[6]);
+			
+			historicalCalculation.execute();
+			
+			return "Formula calculation scheduled";
 		};
 		
 		public void checkParam(Object... objects) throws Exception {

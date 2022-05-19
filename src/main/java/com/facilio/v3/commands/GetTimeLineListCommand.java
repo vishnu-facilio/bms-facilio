@@ -31,8 +31,9 @@ public class GetTimeLineListCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         TimelineRequest timelineRequest = (TimelineRequest) context.get(FacilioConstants.ContextNames.TIMELINE_REQUEST);
+        boolean getUnscheduledOnly = (boolean) context.get(FacilioConstants.ContextNames.TIMELINE_GET_UNSCHEDULED_DATA);
 
-        if (!timelineRequest.isGetUnGrouped()) {
+        if (!timelineRequest.isGetUnGrouped() && !getUnscheduledOnly) {
             if(CollectionUtils.isEmpty(timelineRequest.getGroupIds())) {
                 throw new IllegalArgumentException("At least one group id should be passed");
             }
@@ -59,7 +60,6 @@ public class GetTimeLineListCommand extends FacilioCommand {
 
         FacilioField startTimeField = viewObj.getStartDateField();
         Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
-        boolean getUnscheduledOnly = (boolean) context.get(FacilioConstants.ContextNames.TIMELINE_GET_UNSCHEDULED_DATA);
 
         Criteria mainCriteria = TimelineViewUtil.buildMainCriteria(startTimeField, viewObj.getEndDateField(), timelineRequest,
                                                                     viewObj.getGroupByField(), viewObj.getCriteria(),

@@ -316,7 +316,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 					switch (getViewType(viewTypeInt)) {
 						case TIMELINE:
 							view = FieldUtil.getAsBeanFromMap(viewDetail, TimelineViewContext.class);
-							setTimelineFieldObjects((TimelineViewContext) view, modBean);
+							setTimelineFieldObjects((TimelineViewContext) view, modBean, orgId);
 							break;
 						default:
 							view = FieldUtil.getAsBeanFromMap(viewDetail, FacilioView.class);
@@ -339,7 +339,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		return null;
 	}
 
-	public static void setTimelineFieldObjects(TimelineViewContext record,ModuleBean moduleBean) throws Exception{
+	public static void setTimelineFieldObjects(TimelineViewContext record,ModuleBean moduleBean, long orgId) throws Exception{
 		record.setStartDateField(moduleBean.getField(record.getStartDateFieldId()));
 		record.setEndDateField(moduleBean.getField(record.getEndDateFieldId()));
 		record.setGroupByField(moduleBean.getField(record.getGroupByFieldId()));
@@ -348,6 +348,11 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		}
 		if(record.getWeekendId() > 0) {
 			record.setWeekend(WeekendUtil.getWeekend(record.getWeekendId()));
+		}
+		if (record.getGroupCriteriaId() > 0) {
+			Criteria criteria = CriteriaAPI.getCriteria(orgId, record.getGroupCriteriaId());
+			setCriteriaValue(criteria);
+			record.setGroupCriteria(criteria);
 		}
 	}
 
@@ -460,8 +465,12 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
              }
 		}
 	}
-	
+
 	public static void addOrUpdateExtendedViewDetails(FacilioView view, Map<String,Object> viewProp, Boolean isNew) throws Exception{
+		addOrUpdateExtendedViewDetails(view, viewProp, isNew, null);
+	}
+
+	public static void addOrUpdateExtendedViewDetails(FacilioView view, Map<String,Object> viewProp, Boolean isNew, FacilioView oldView) throws Exception{
 		ViewType type = view.getTypeEnum();
 		switch (type){
 			case TIMELINE:
@@ -475,6 +484,11 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 					long recordCustomizationId = RecordCustomizationAPI.addOrUpdateRecordCustomizationValues(((TimelineViewContext) view).getRecordCustomization());
 					viewProp.put("recordCustomizationId", recordCustomizationId);
 				}
+				Criteria criteria = ((TimelineViewContext) view).getGroupCriteria();
+				if(criteria != null) {
+					long criteriaId = CriteriaAPI.addCriteria(criteria, AccountUtil.getCurrentOrg().getOrgId());
+					viewProp.put("groupCriteriaId",criteriaId);
+				}
 
 				if(isNew)
 				{
@@ -483,6 +497,9 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 				else
 				{
 					updateDependentTables(ModuleFactory.getTimelineViewModule(), FieldFactory.getTimelineViewFields(ModuleFactory.getTimelineViewModule()), viewProp);
+					if(oldView != null && ((TimelineViewContext)oldView).getGroupCriteriaId() > 0 ) {
+						CriteriaAPI.deleteCriteria(((TimelineViewContext)oldView).getGroupCriteriaId());
+					}
 				}
 				break;
 			default:
@@ -573,7 +590,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			
 			int count = updateBuilder.update(viewProp);
 			
-			addOrUpdateExtendedViewDetails(view, viewProp, false);
+			addOrUpdateExtendedViewDetails(view, viewProp, false, oldView);
 			
 			if(criteria != null) {
 				CriteriaAPI.deleteCriteria(oldView.getCriteriaId());

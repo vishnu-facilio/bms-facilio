@@ -8514,6 +8514,18 @@ public class FieldFactory extends BaseFieldFactory {
         list.add(getNumberField("weekendId", "WEEKENDID", module));
         list.add(getStringField("configJson", "CONFIG_JSON", module));
         list.add(getNumberField("recordCustomizationId","RECORD_CUSTOMIZATION_ID",module));
+        list.add(getNumberField("groupCriteriaId", "GROUP_BY_CRITERIA_ID", module));
+
+        return list;
+    }
+
+    public static List<FacilioField> getFieldDisplayPatternFields(FacilioModule module){
+        List<FacilioField> list = new ArrayList<>();
+
+        list.add(getIdField("id","ID",module));
+        list.add(getNumberField("fieldid", "FIELDID", module));
+        list.add(getStringField("fields", "FIELDS", module));
+        list.add(getStringField("separators", "SEPARATORS", module));
 
         return list;
     }

@@ -957,6 +957,14 @@ public class LoginAction extends FacilioAction {
 		data.put("orgEnabledPrefs", PreferenceAPI.getEnabledOrgPreferences());
 		data.put("users", users);
 		data.put("userSites", userSites);
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+		List<FacilioStatus> workorderTicketStatuses = TicketAPI.getAllStatus(module, false);
+		data.put("ticketStatus", workorderTicketStatuses);
+
+		data.put("ticketStatus",workorderTicketStatuses);
+
 		account.put("data", data);
 		
 		setResult("account", account);

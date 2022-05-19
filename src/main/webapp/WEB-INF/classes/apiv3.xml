@@ -144,9 +144,6 @@
                 method="count">
         </action>
 
-        <action name="timeline"
-                class="com.facilio.v3.RESTAPIHandler"
-                method="timelineData" />
     </package>
 
     <package name="timelineV3Api" namespace="/api/v3/modules/data/timeline" extends="v3Api">
@@ -279,7 +276,15 @@
             <param name="translationImpl">V3PickListTranslation</param>
         </action>
     </package>
-    
+    <package name="timelineGroupPicklist" namespace="/api/v3/timelineGroupData"
+             extends="v3Api">
+        <action name="fetch"
+                class="com.facilio.bmsconsoleV3.actions.picklist.V3PIckListAction"
+                method="fetchTimelineGroupdata">
+            <param name="translationImpl">V3PickListTranslation</param>
+        </action>
+    </package>
+
     <package name="moduleApiv3" namespace="/api/v3/modules/list" extends="v3Api">
         <action name="all" class="com.facilio.bmsconsoleV3.actions.V3ModuleAction" method="moduleList"></action>
     </package>

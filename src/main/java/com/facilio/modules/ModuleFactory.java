@@ -1320,6 +1320,16 @@ public class ModuleFactory {
 		return module;
 	}
 
+	/*
+	public static FacilioModule getFieldDisplayPatternModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("fieldDisplayPattern");
+		module.setDisplayName("Field Display Pattern");
+		module.setTableName("FieldDisplayPattern");
+		return module;
+	}
+	 */
+
 	public static FacilioModule getWeekendsModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("weekends");

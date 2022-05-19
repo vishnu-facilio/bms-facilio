@@ -61,6 +61,7 @@ public class WorkflowLogContext extends V3Context {
 		MODULE_RULE(3,RuleType.MODULE_RULE),
 		STATE_RULE(4,RuleType.STATE_RULE),
 		WORKFLOW_RULE_EVALUATION(5),
+		Q_AND_A_RULE(6)
 		;
 		
 		WorkflowLogType(int i) {

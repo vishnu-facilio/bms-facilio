@@ -4,6 +4,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.*;
 import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +36,16 @@ public class PivotFormulaColumnContext extends PivotColumnContext {
 
     public void setDataTypeEnum(String dataTypeEnum) {
         this.dataTypeEnum = dataTypeEnum;
+    }
+
+    private JSONObject visualConfig;
+
+    public JSONObject getVisualConfig() {
+        return visualConfig;
+    }
+
+    public void setVisualConfig(JSONObject visualConfig) {
+        this.visualConfig = visualConfig;
     }
 
     @JsonIgnore
