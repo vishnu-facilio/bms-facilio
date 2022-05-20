@@ -6386,6 +6386,12 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getRunWorkflowChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new RunWorkflowCommand());
+		return chain;
+	}
+
 }
 
 

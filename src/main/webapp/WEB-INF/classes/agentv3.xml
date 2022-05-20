@@ -42,6 +42,8 @@
         </action>
         <action name="addConnection" class="com.facilio.agentv2.AgentV3Action" method="addMessageSource">
         </action>
+        <action name="runWorkflow" class="com.facilio.agentv2.AgentV3Action" method="runWorkflow">
+        </action>
         
     </package>
     

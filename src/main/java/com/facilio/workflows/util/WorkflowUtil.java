@@ -1604,7 +1604,17 @@ public class WorkflowUtil {
 	        return workflowContext;
 		}
 	}
-	
+
+	public static WorkflowContext getWorkflowContextFromMap(Map<String,Object>workflowMap) throws Exception{
+		WorkflowContext workflowContext = new WorkflowContext();
+		if(workflowMap.containsKey("workflowV2String")){
+			workflowContext.setWorkflowV2String(String.valueOf(workflowMap.get("workflowV2String")));
+		}
+		if(workflowMap.containsKey("isV2Script")){
+			workflowContext.setIsV2Script((Boolean) workflowMap.get("isV2Script"));
+		}
+		return workflowContext;
+	}
 	
 	private static List<ParameterContext> getParameterListFromWorkflowString(String workflow) throws Exception {
 		

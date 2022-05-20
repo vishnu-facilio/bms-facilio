@@ -47,6 +47,17 @@ public class AgentV3Action extends V3Action {
 		setData(AgentConstants.ID,context.get(AgentConstants.ID));
 		return SUCCESS;
 	}
+
+	public String runWorkflow() throws Exception{
+		FacilioChain chain = TransactionChainFactory.getRunWorkflowChain();
+		FacilioContext context = chain.getContext();
+		context.put(AgentConstants.WORKFLOW,this.getData().get(AgentConstants.WORKFLOW));
+		chain.execute();
+		if (context.containsKey(AgentConstants.WORKFLOW_RESPONSE)) {
+			setData(AgentConstants.WORKFLOW_RESPONSE, context.get(AgentConstants.WORKFLOW_RESPONSE));
+		}
+		return SUCCESS;
+	}
 	
 	
 }
