@@ -55,6 +55,7 @@ public class CreateReadingModulesCommand extends FacilioCommand {
 				List<FacilioModule> modules = splitFields(module, fields,overRideSplit,maxFields);
 				context.put(FacilioConstants.ContextNames.MODULE_LIST, modules);
 			}
+			context.put(FacilioConstants.ContextNames.APPEND_MODULE_NAME,true);
 		}
 		return false;
 	}

@@ -22,6 +22,14 @@ public abstract class TemplateAttachment {
 	protected abstract long fetchFileId(Object record) throws Exception;
 	
 	public abstract TemplateAttachmentType getType();
+
+	public String getTypeString() {
+		return getType().toString();
+	}
+
+	public Integer getTypeInteger() {
+		return getType().getIndex();
+	}
 	
 	public String fetchFileUrl(Object record) throws Exception {
 		long fileId = fetchFileId(record);

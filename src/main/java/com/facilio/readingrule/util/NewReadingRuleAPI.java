@@ -307,10 +307,13 @@ public class NewReadingRuleAPI {
 
     public static Long getPrimaryFieldId(NewReadingRuleContext readingRule) {
         List<NameSpaceField> fields = readingRule.getNs().getFields();
-        for(NameSpaceField field : fields) {
-            if(field.getResourceId() == null || field.getResourceId() == -1) {
-                return field.getFieldId();
+        if(CollectionUtils.isNotEmpty(fields)) {
+            for (NameSpaceField field : fields) {
+                if (field.getResourceId() == null || field.getResourceId() == -1) {
+                    return field.getFieldId();
+                }
             }
+            return fields.get(0).getFieldId(); //As default returns first field id. This is hack for now. Need to define primary field flag for fields.
         }
         return -1L;
     }

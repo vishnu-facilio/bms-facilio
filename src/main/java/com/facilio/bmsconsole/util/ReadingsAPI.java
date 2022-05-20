@@ -1407,6 +1407,25 @@ public class ReadingsAPI {
 		return rdmValuesMap;
 	}
 	
+	public static Map<Long,Map<Integer, String>> getReadingInputValuesMapFromIndex(List<Long> rdmIds) throws Exception {
+		
+		List<Map<String, Object>> props = getReadingInputValueProps(rdmIds);
+		Map<Long,Map<Integer, String>> rdmValuesMap = null;
+		if(props!=null && !props.isEmpty()) {
+			rdmValuesMap = new HashMap<>();
+			for(Map<String, Object> prop: props) {
+				long rdmId = (long) prop.get("rdmId");
+				Map<Integer, String> valueMap = rdmValuesMap.get(rdmId);
+				if (valueMap == null) {
+					valueMap = new HashMap<>();
+					rdmValuesMap.put(rdmId, valueMap);
+				}
+				valueMap.put((int) prop.get("idx"), (String)prop.get("inputValue"));
+			}
+		}
+		return rdmValuesMap;
+	}
+	
 	private static List<Map<String, Object>> getReadingInputValueProps(List<Long> rdmIds) throws Exception {
 		List<FacilioField> fields = FieldFactory.getReadingInputValuesFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);

@@ -1,11 +1,21 @@
 package com.facilio.readingrule.command;
 
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.workflowv2.util.WorkflowV2Util;
+import lombok.NonNull;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
+
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class PrepareReadingRuleCommand extends FacilioCommand {
     @Override
@@ -16,6 +26,7 @@ public class PrepareReadingRuleCommand extends FacilioCommand {
             throw new Exception("Rule (" + newRuleCtx.getId() + ") is not found!");
         }
         constructRuleDetails(newRuleCtx, oldRule);
+        setAssets(oldRule);
         context.put(FacilioConstants.ContextNames.NEW_READING_RULE, oldRule);
         context.put(WorkflowV2Util.WORKFLOW_CONTEXT, newRuleCtx.getWorkflowContext());
         return false;
@@ -49,6 +60,23 @@ public class PrepareReadingRuleCommand extends FacilioCommand {
         }
         if(newCtx.getWorkflowContext() != null) {
             oldRule.setWorkflowContext(newCtx.getWorkflowContext());
+        }
+    }
+
+    private void setAssets(NewReadingRuleContext rule) throws Exception {
+        List<Long> assets = rule.getAssets();
+        if (CollectionUtils.isNotEmpty(assets)) {
+            @NonNull List<AssetContext> assetInfo = AssetsAPI.getAssetInfo(assets);
+
+            for (Long asset : assets) {
+                boolean present = assetInfo.stream().filter(assetCtx -> assetCtx.getId() == asset).findAny().isPresent();
+                if (!present) {
+                    throw new RuntimeException("Asset (" + asset + ") is not found");
+                }
+            }
+
+            Map<Long, ResourceContext> resourcesMap = assetInfo.stream().collect(Collectors.toMap(ResourceContext::getId, Function.identity()));
+            rule.setMatchedResources(resourcesMap);
         }
     }
 

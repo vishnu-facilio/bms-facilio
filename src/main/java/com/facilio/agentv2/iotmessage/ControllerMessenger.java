@@ -123,6 +123,7 @@ public class ControllerMessenger {
 	            		for (Object pointsDatumObject : pointsData) {
 	            			JSONObject pointdatum = (JSONObject) pointsDatumObject;
 	            			pointdatum.put(AgentConstants.VALUE,points.get(pointsData.indexOf(pointdatum)).getValue());
+	            			pointdatum.put("controlId",points.get(pointsData.indexOf(pointdatum)).getControlActionId());
 	            			if(pointdatum.containsKey(AgentConstants.DEVICE_ID)){
 	            				pointdatum.remove(AgentConstants.DEVICE_ID);
 	            			}

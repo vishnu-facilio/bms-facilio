@@ -8,14 +8,16 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ControlActionMode;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.control.ControlGroupContext;
 import com.facilio.control.ControlGroupRoutineContext;
 import com.facilio.control.ControlScheduleContext;
 import com.facilio.control.ControlScheduleExceptionContext;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.V3Context;
-import com.facilio.control.ControlGroupContext;
+
+import lombok.Getter;
+import lombok.Setter;
 
 public class ControlActionCommandContext extends V3Context {
 
@@ -136,6 +138,9 @@ public class ControlActionCommandContext extends V3Context {
 	public void setValue(String value) {
 		this.value = value;
 	}
+	
+	@Getter @Setter
+	private String convertedValue;
 
 	public User getExecutedBy() {
 		return executedBy;
