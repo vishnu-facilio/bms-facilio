@@ -2415,11 +2415,15 @@ public class FacilioAuthAction extends FacilioAction {
 			Map<String, Object> userMap = IAMUserUtil.getUserForUsername(getEmailaddress(), -1, appDomain.getIdentifier());
 			if(MapUtils.isNotEmpty(userMap)) {
 				user = FieldUtil.getAsBeanFromMap(userMap, User.class);
-			} 
-			if (user != null) {
+			}
+
+			if (user != null && user.isUserVerified()) {
 				AccountUtil.getUserBean().sendResetPasswordLinkv2(user, request.getServerName());
 				invitation.put("status", "success");
 			} else {
+				if (user != null && !user.isUserVerified()) {
+					LOGGER.log(Level.SEVERE, "User not verified.");
+				}
 				invitation.put("status", "failed");
 				invitation.put("message", "Invalid user");
 			}
