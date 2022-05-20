@@ -212,7 +212,7 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 		if(!FacilioProperties.isProduction()) {
 			canSendMail = false;
 		}
-		if(!FacilioProperties.isProduction() && !FacilioProperties.isDevelopment() && AccountUtil.getCurrentOrg().getOrgId() == 267l) {
+		if(!FacilioProperties.isProduction() && !FacilioProperties.isDevelopment() && (AccountUtil.getCurrentOrg().getOrgId() == 267l || AccountUtil.getCurrentOrg().getOrgId() == 172l)) {
 			canSendMail = true;
 		}
 		
