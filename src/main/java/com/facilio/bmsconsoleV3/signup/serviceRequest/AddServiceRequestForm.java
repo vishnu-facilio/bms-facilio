@@ -24,8 +24,8 @@ public class AddServiceRequestForm extends SignUpData {
 		FacilioContext context=addform.getContext();
 		
 		// -- DO NOT REMOVE THESE LINES  
-		FacilioModule srattachments = Constants.getModBean().getModule("servicerequestsattachments");
-		Constants.getModBean().getModule(srattachments.getModuleId());
+//		FacilioModule srattachments = Constants.getModBean().getModule("servicerequestsattachments");
+//		Constants.getModBean().getModule(srattachments.getModuleId());
 		// -- DO NOT REMOVE THESE LINES
 		
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, "serviceRequest");
