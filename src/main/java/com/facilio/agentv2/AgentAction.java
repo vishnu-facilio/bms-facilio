@@ -503,18 +503,6 @@ public class AgentAction extends AgentActionV2 {
     public void setRecordIds(List<Long> recordIds) { this.recordIds = recordIds; }
 
     private List<Long> recordIds;
-    public String migrateControllers(){
-        try {
-            SqliteBridge.migrateAndAddControllers(getAgentId(),getRecordIds());
-            setResult(AgentConstants.RESULT,SUCCESS);
-            ok();
-        } catch (Exception e) {
-            LOGGER.info("Exception occurred while migrating controllers ",e);
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
-            internalError();
-        }
-        return SUCCESS;
-    }
 
     public String addClientToPolicy(){
         try{

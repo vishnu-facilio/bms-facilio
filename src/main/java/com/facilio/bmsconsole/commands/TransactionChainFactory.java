@@ -6380,6 +6380,12 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain agentMigrationChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AgentMigrationCommand());
+		return chain;
+	}
+
 }
 
 

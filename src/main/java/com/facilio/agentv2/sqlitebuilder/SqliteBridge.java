@@ -27,11 +27,15 @@ import com.facilio.bmsconsole.context.ControllerType;
 import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.modules.FieldUtil;
 import com.facilio.timeseries.TimeSeriesAPI;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import javax.naming.ldap.Control;
 import java.io.File;
 import java.io.IOException;
 import java.sql.BatchUpdateException;
@@ -39,7 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class SqliteBridge {
+public class SqliteBridge{
 
     private static final Logger LOGGER = LogManager.getLogger(SqliteBridge.class.getName());
 
@@ -59,7 +63,11 @@ public class SqliteBridge {
 
     public static boolean migrateToNewAgent(long agentId) throws Exception {
         LOGGER.info(" migrating to new Agent ");
-        return executeCommand(agentId);
+        FacilioChain agentMigrationChain = TransactionChainFactory.agentMigrationChain();
+        FacilioContext context = new FacilioContext();
+        context.put(AgentConstants.AGENT_ID,agentId);
+        agentMigrationChain.setContext(context);
+        return agentMigrationChain.execute();
     }
 
     public File getSqliteFile(long agentId) throws Exception {
@@ -85,54 +93,23 @@ public class SqliteBridge {
         }
     }
 
-    public static boolean executeCommand(long agentId) throws Exception {
-        com.facilio.agentv2.FacilioAgent newAgent = migrateAgentToV2(agentId);
-        StringBuilder controllerMigrated = new StringBuilder();
-        List<ControllerContext> controllerContexts = migrateControllerToV2(agentId, newAgent);
-        for (ControllerContext controllerContext : controllerContexts) {
-            controllerMigrated.append(controllerContext.getId()+"-");
-        }
-        LOGGER.info(" controllers migrated are "+controllerMigrated.toString());
-        for (ControllerContext controllerContext : controllerContexts) {
-            migratePoints(controllerContext,controllerContext.getAgentId());
-        }
-        return true;
-    }
-
-    private static List<ControllerContext> migrateControllerToV2(long agentId, com.facilio.agentv2.FacilioAgent newAgent) throws Exception {
+    public static List<Pair<Long, ControllerContext>> migrateControllerToV2(long agentId, com.facilio.agentv2.FacilioAgent newAgent) throws Exception {
         List<ControllerContext> controllers = ControllerAPI.getControllers(agentId);
         return migrateAndAddControllers(newAgent, controllers);
     }
 
-    public static boolean migrateAndAddControllers(long newAgentId, List<Long> controllerIds) throws Exception {
-        com.facilio.agentv2.FacilioAgent agent = AgentApiV2.getAgent(newAgentId);
-        Map<Long, ControllerContext> controllersMap = ControllerAPI.getControllersMap(controllerIds);
-//        ControllerContext controller = ControllerAPI.getController(controllerIds);
-        if(controllersMap == null){
-            throw new Exception(" controller null for agent "+newAgentId);
-        }
-        if(agent == null){
-            throw new Exception("Agent can't be null");
-        }
-        List<ControllerContext> controllerContexts = migrateAndAddControllers(agent, new ArrayList<>(controllersMap.values()));
-        StringBuilder controllerMigrated = new StringBuilder();
-        for (ControllerContext controllerContext : controllerContexts) {
-            controllerMigrated.append(controllerContext.getId()+"-");
-        }
-        LOGGER.info(" controllers migrated are "+controllerMigrated.toString());
-        for (ControllerContext controllerContext : controllerContexts) {
-            migratePoints(controllerContext,controllerContext.getAgentId());
-        }
-        return true;
-    }
-
-    private static List<ControllerContext> migrateAndAddControllers(com.facilio.agentv2.FacilioAgent newAgent, List<ControllerContext> controllers) {
-        List<ControllerContext> controllersToMigrate = new ArrayList<>();
+    private static List<Pair<Long, ControllerContext>> migrateAndAddControllers(com.facilio.agentv2.FacilioAgent newAgent, List<ControllerContext> controllers) {
+        List<Pair<Long, ControllerContext>> controllersToMigrate = new ArrayList<>();
         if ((controllers != null) && (!controllers.isEmpty())) {
-            LOGGER.info(" migrating controller "+controllers.size()+" for new-agent "+newAgent);
+            LOGGER.info(" migrating controller " + controllers.size() + " for new-agent " + newAgent);
             for (ControllerContext controller : controllers) {
+                MutablePair<Long, ControllerContext> pair = new MutablePair<>();
+                pair.setRight(controller);
                 Controller newController = null;
                 try {
+                    if (controller.getControllerTypeEnum().getKey() == 10) {
+                        controller.setControllerType(0);
+                    }
                     ControllerType controllerType = controller.getControllerTypeEnum();
                     switch (controllerType) {
                         case BACNET_IP:
@@ -160,8 +137,8 @@ public class SqliteBridge {
 
                             LOGGER.info(" --- migrated controller " + controller.getId() + " to " + newControllerId);
                             if (newControllerId > 0) {
-                                controller.setAgentId(newControllerId); // SET NEW CONTROLLER ID TO CONTROLLER'S AGENT ID
-                                //migratePoints(controller, newControllerId);
+                                pair.setLeft(newControllerId);
+                                controller.setAgentId(newAgent.getId());
                             }
                         } catch (MySQLIntegrityConstraintViolationException | BatchUpdateException e) {
                             LOGGER.info(" duplicate controller present");
@@ -180,13 +157,20 @@ public class SqliteBridge {
                             }
                             LOGGER.info("Controller already migrated "+controller.getId());
                     }
-                        controllersToMigrate.add(controller);
+                        controllersToMigrate.add(pair);
                     }
                 } catch (Exception e) {
                     LOGGER.info(" Exception while migrating controller ",e);
                 }
             }
 
+        }
+        if (!controllersToMigrate.isEmpty()) {
+            StringBuilder controllerMigrated = new StringBuilder();
+            for (Pair<Long,ControllerContext> controllerContext : controllersToMigrate) {
+                controllerMigrated.append(controllerContext.getRight().getId() + "-");
+            }
+            LOGGER.info(" Migrated Controllers are " + controllerMigrated.toString());
         }
         return controllersToMigrate;
     }
@@ -207,7 +191,7 @@ public class SqliteBridge {
 //        //newController.setDeviceId(fieldDevice.getId());
 //    }
 
-    private static void migratePoints(ControllerContext controller, long newControllerId) {
+    public static void migratePoints(ControllerContext controller, long newControllerId) {
         if (controller != null) {
             if (newControllerId > 0) {
                 try {
@@ -216,7 +200,7 @@ public class SqliteBridge {
                     if (!points.isEmpty()) {
                         LOGGER.info("old points size "+points.size());
                         Point newPoint;
-                        StringBuilder pointsFailed = new StringBuilder();
+                        List<Map<String,Object>> newPoints = new ArrayList<>();
                         for (Map<String, Object> point : points) {
                             try {
                                 newPoint = null;
@@ -234,28 +218,26 @@ public class SqliteBridge {
                                         newPoint = toMiscPoint(point);
                                         break;
                                 }
+
                                 if (newPoint != null) {
                                     newPoint.setControllerId(newControllerId);
+                                    newPoint.setAgentId(controller.getAgentId());
+                                    newPoint.setOrgId(controller.getOrgId());
 
-                                    if (PointsAPI.addPoint(newPoint)) {
-                                        if (point.containsKey(AgentConstants.ID)) {
-                                            LOGGER.info(" -- migrated point " + point.get(AgentConstants.ID));
-                                        } else {
-                                            LOGGER.info(" migrated point ");
-                                        }
-                                    } else {
-                                        if(point.containsKey(AgentConstants.ID)){
-                                            pointsFailed.append("-"+point.get(AgentConstants.ID));
-                                        }
-                                        LOGGER.info(" failed to migrate point");
-                                    }
+                                    Map<String, Object> pointMap = FieldUtil.getAsProperties(newPoint.toJSON());
+                                    newPoints.add(pointMap);
                                 }
                             } catch (Exception e) {
-                                pointsFailed.append(point.get("-"+AgentConstants.ID));
                                 LOGGER.info(" Exception while migrating point to v2 ", e);
                             }
                         }
-                        LOGGER.info(controller.getId()+" failed migrating points "+pointsFailed.toString());
+                        FacilioChain addPointsChain = TransactionChainFactory.getAddPointsChain();
+                        FacilioContext context = new FacilioContext();
+                        Controller cont = ControllerApiV2.getControllerFromDb(newControllerId);
+                        context.put(AgentConstants.CONTROLLER,cont);
+                        context.put(AgentConstants.POINTS,newPoints);
+                        addPointsChain.setContext(context);
+                        addPointsChain.execute();
                     }
                 } catch (Exception e) {
                     LOGGER.info("Exception occurred while migrating points", e);
@@ -433,7 +415,7 @@ public class SqliteBridge {
     }
 
 
-    private static com.facilio.agentv2.FacilioAgent migrateAgentToV2(long agentId) throws Exception {
+    public static com.facilio.agentv2.FacilioAgent migrateAgentToV2(long agentId) throws Exception {
         FacilioAgent agent = AgentUtil.getAgentDetails(agentId);
         if (agent != null) {
             com.facilio.agentv2.FacilioAgent agentV2 = new com.facilio.agentv2.FacilioAgent();
@@ -447,7 +429,10 @@ public class SqliteBridge {
                 agentV2.setInterval(15);
             }
             agentV2.setType(agent.getType());
-            agentV2.setAgentType(AgentType.valueOf(agent.getType()).getKey());
+            if (agent.getType() == null) {
+                agentV2.setAgentType(AgentType.valueOf("CUSTOM").getKey());
+            }
+            else { agentV2.setAgentType(AgentType.valueOf(agent.getType()).getKey()); }
             agentV2.setVersion(agent.getVersion());
             if (agent.getLastModifiedTime() != null) {
                 agentV2.setLastModifiedTime(agent.getLastModifiedTime());
@@ -472,7 +457,7 @@ public class SqliteBridge {
             try {
                 agentV2.setId(AgentApiV2.addAgent(agentV2));
             } catch (MySQLIntegrityConstraintViolationException e) {
-                LOGGER.info(" sagent already present and so returning it " + agent.getId());
+                LOGGER.info(" agent already present and so returning it " + agent.getId());
                 com.facilio.agentv2.FacilioAgent newAgent = AgentApiV2.getAgent(agent.getAgentName());
                 if(newAgent != null){
                     return newAgent;
