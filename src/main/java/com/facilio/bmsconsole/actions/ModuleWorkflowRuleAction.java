@@ -1,7 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.List;
-
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
@@ -11,6 +9,11 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ModuleWorkflowRuleAction extends FacilioAction {
 
@@ -49,8 +52,17 @@ public class ModuleWorkflowRuleAction extends FacilioAction {
         constructListContext(context);
         c.execute();
 
-        setResult(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST));
-
+        List<WorkflowRuleContext>workFlowRuleList= (List<WorkflowRuleContext>) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST);
+        List<Map<String,Object>> approvalWorkFlowRuleList = new ArrayList<>();
+        for(WorkflowRuleContext approvalWorkFlowRule:workFlowRuleList){
+            Map<String,Object>approvalWorkflowRuleMap=new HashMap<>();
+            approvalWorkflowRuleMap.put("name",approvalWorkFlowRule.getName());
+            approvalWorkflowRuleMap.put("description",approvalWorkFlowRule.getDescription());
+            approvalWorkflowRuleMap.put("active",approvalWorkFlowRule.getStatus()!=null ? approvalWorkFlowRule.getStatus():false);
+            approvalWorkflowRuleMap.put("id",approvalWorkFlowRule.getId());
+            approvalWorkFlowRuleList.add(approvalWorkflowRuleMap);
+        }
+        setResult(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, approvalWorkFlowRuleList);
         return SUCCESS;
     }
 
