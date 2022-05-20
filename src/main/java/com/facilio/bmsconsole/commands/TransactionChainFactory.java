@@ -6351,6 +6351,11 @@ public class TransactionChainFactory {
 		chain.addCommand(new AddSurveyRuleCommand ());
 		return chain;
 	}
+	public static FacilioChain getAddMessageSourceChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddMessageSourceCommand());
+		return chain;
+	}
 
 	public static FacilioChain updateSurveyRuleChain() {
 		FacilioChain chain = getDefaultChain();
