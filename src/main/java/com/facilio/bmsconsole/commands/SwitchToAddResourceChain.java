@@ -326,7 +326,12 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 					pm.setTitle(woTemplate.getSubject());
 					
 					if (pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE) {
-						pm.setSiteIds(Collections.singletonList(pm.getSiteId()));
+						List<Long> siteIds = (List<Long>) props.get("siteIds");
+						if(siteIds != null && siteIds.size() > 1){
+							pm.setSiteIds(siteIds);
+						}else{
+							pm.setSiteIds(Collections.singletonList(pm.getSiteId()));
+						}
 					}
 					
 					
