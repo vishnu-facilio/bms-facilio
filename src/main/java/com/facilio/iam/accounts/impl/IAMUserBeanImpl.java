@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1023,7 +1024,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return startUserSessionv2(uid, token, ipAddress, userAgent, userType, false);
 	}
 
-	private long startUserSessionv2(long uid, String token, String ipAddress, String userAgent, String userType, boolean isProxySession) throws Exception {
+	private long startUserSessionv2(long uid, String token, String ipAddress, String userAgent, String userType, long endTime, boolean isProxySession) throws Exception {
 		TransactionManager transactionManager = null;
 		try {
 			transactionManager = FacilioTransactionManager.INSTANCE.getTransactionManager();
@@ -1043,6 +1044,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			props.put("sessionType", IAMAccountConstants.SessionType.USER_LOGIN_SESSION.getValue());
 			props.put("token", token);
 			props.put("startTime", System.currentTimeMillis());
+			if (endTime > 0) {
+				props.put("endTime", endTime);
+			}
 			props.put("isActive", true);
 			props.put("ipAddress", ipAddress);
 			props.put("userAgent", userAgent);
@@ -1061,6 +1065,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			LOGGER.info("exception while adding user session transaction ", e);
 		}
 		return -1L;
+	}
+
+	private long startUserSessionv2(long uid, String token, String ipAddress, String userAgent, String userType, boolean isProxySession) throws Exception {
+		return startUserSessionv2(uid, token, ipAddress, userAgent, userType, -1L, isProxySession);
 	}
 
 	@Override
@@ -2204,6 +2212,11 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		for (Map<String, Object> session : sessions) {
 			String sessionToken = (String) session.get("token");
 			if (Objects.equals(sessionToken, token)) {
+				Long endTime = (Long) session.get("endTime");
+				if (endTime != null && System.currentTimeMillis() > endTime) {
+					LOGGER.info("Session expired: " + (long) session.get("id"));
+					return null;
+				}
 				IAMAccount account = getAccountv3((long) session.get("uid"));
 				if(account != null) {
 					account.setUserSessionId((long) session.get("id"));
@@ -2228,13 +2241,20 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		Map<String, Object> props = selectBuilder.fetchFirst();
 		if (MapUtils.isNotEmpty(props)) {
-			sessions.add(props);
 			LRUCache.getUserSessionCache().put(uId, sessions);
 			IAMAccount account = getAccountv3((long) props.get("uid"));
 			if(account != null && account.getUser() != null) {
 				account.setUserSessionId((long)props.get("id"));
 			}
 			LOGGER.info("Verified token from DB entry for : " + uId);
+			sessions.add(props);
+
+			Long endTime = (Long) props.get("endTime");
+			if (endTime != null && System.currentTimeMillis() > endTime) {
+				LOGGER.info("Session expired: " + (long) props.get("id"));
+				return null;
+			}
+			
 			return account;
 		}
 		return null;
@@ -2815,7 +2835,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		String jwt = createJWT("id", "auth0", String.valueOf(user.getUid()),
 				System.currentTimeMillis() + 24 * 60 * 60000);
 
-		long sessionId = startUserSessionv2(uid, jwt, ipAddress, userAgent, userType, isProxySession);
+		long sessionId = startUserSessionv2(uid, jwt, ipAddress, userAgent, userType,
+				Instant.ofEpochMilli(System.currentTimeMillis()).plus(1, ChronoUnit.DAYS).toEpochMilli(), isProxySession);
 
 		Map<String, Object> props = new HashMap<>();
 		props.put("uid", uid);

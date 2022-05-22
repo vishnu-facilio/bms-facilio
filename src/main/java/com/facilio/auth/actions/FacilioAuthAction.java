@@ -533,13 +533,13 @@ public class FacilioAuthAction extends FacilioAction {
 			String email = payload.getEmail();
 			boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
 			if (!emailVerified) {
-				response.sendRedirect(SSOUtil.getCurrentAppURL() + clientPath + "?message="+"email is not verified");
+				response.sendRedirect(SSOUtil.getCurrentAppURL() + clientPath + "?message="+"Email is not verified");
 				return ERROR;
 			}
 
 			boolean inProxyList = IAMUserUtil.isUserInProxyList(email);
 			if (!inProxyList) {
-				response.sendRedirect(SSOUtil.getCurrentAppURL() + clientPath + "?message="+"user is not authorized");
+				response.sendRedirect(SSOUtil.getCurrentAppURL() + clientPath + "?message=You don't have access to proceed. Raise a request to proxy-users@facilio.com.");
 				return ERROR;
 			}
 
@@ -569,8 +569,8 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 
 		if (!IAMUserUtil.isUserInProxyList(email)) {
-			setJsonresponse("errorcode", "1");
-			setJsonresponse("message", "User is not authorized");
+			setJsonresponse("errorcode", "2");
+			setJsonresponse("message", "You don't have access to proceed. Raise a request to proxy-users@facilio.com.");
 			return ERROR;
 		}
 

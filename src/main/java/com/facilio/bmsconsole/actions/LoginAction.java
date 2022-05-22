@@ -941,6 +941,12 @@ public class LoginAction extends FacilioAction {
 			}
 		}
 
+		Long userSessionId = AccountUtil.getCurrentAccount().getUserSessionId();
+		if (userSessionId != null && userSessionId > 0) {
+			Map<String, Object> userSession = IAMUserUtil.getUserSession(userSessionId);
+			account.put("sessionEndTime", userSession.get("endTime"));
+		}
+
 		account.put("timezone",AccountUtil.getCurrentAccount().getTimeZone()); 
 		//should not be sending this.. making it available for now since its used for mobile  
 		account.put("License", AccountUtil.getFeatureLicense().get(AccountUtil.LicenseMapping.GROUP1LICENSE.getLicenseKey()));
