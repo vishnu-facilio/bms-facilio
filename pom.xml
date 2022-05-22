@@ -115,9 +115,25 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>io.opentelemetry</groupId>
+                <artifactId>opentelemetry-bom</artifactId>
+                <version>1.14.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <dependencies>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-extension-annotations</artifactId>
+            <version>1.14.0</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/sh.ory.hydra/hydra-client -->
         <dependency>
             <groupId>sh.ory.hydra</groupId>
@@ -143,7 +159,7 @@
         <dependency>
             <groupId>com.facilio.framework</groupId>
             <artifactId>facilio-framework</artifactId>
-            <version>1.0.502</version>
+            <version>1.0.503</version>
         </dependency>
         <dependency>
             <groupId>com.google.api-client</groupId>

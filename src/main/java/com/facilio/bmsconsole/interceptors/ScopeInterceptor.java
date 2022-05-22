@@ -32,6 +32,11 @@ import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ActionProxy;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.baggage.Baggage;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.extension.annotations.WithSpan;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -63,6 +68,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
     }
 
     @Override
+    @WithSpan
     public String intercept(ActionInvocation arg0) throws Exception {
         long startTime = System.currentTimeMillis();
         HttpServletRequest request = ServletActionContext.getRequest();

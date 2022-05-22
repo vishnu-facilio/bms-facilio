@@ -14,6 +14,9 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.iam.accounts.context.SecurityPolicy;
 import com.facilio.iam.accounts.exceptions.SecurityPolicyException;
 import com.facilio.util.RequestUtil;
+import io.opentelemetry.api.baggage.Baggage;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.extension.annotations.WithSpan;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.Level;
@@ -55,6 +58,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 	}
 
 	@Override
+	@WithSpan
 	public String intercept(ActionInvocation arg0) throws Exception {
 		long time = System.currentTimeMillis();
 		HttpServletRequest request = ServletActionContext.getRequest();
@@ -91,6 +95,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 					return Action.ERROR;
 				} else {
                     request.setAttribute("iamAccount", iamAccount);
+					Span.current().setAttribute("enduser.id", String.valueOf(iamAccount.getUser().getId()));
 				}
 			}
 			else if (!isRemoteScreenMode(request)) {
@@ -119,6 +124,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 					if (iamAccount != null) {
 						checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), MessageFormat.format("Setting IAM account user => {0}", iamAccount.getUser() == null ? -1 : iamAccount.getUser().getId()), request);
 						request.setAttribute("iamAccount", iamAccount);
+						Span.current().setAttribute("enduser.id", String.valueOf(iamAccount.getUser().getId()));
 					}
 					else {
 						return handleLogin("account object missing", null);

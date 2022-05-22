@@ -12,6 +12,8 @@ import com.facilio.service.FacilioService;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.RequestUtil;
 import com.facilio.util.SentryUtil;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.extension.annotations.WithSpan;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Level;
@@ -49,6 +51,11 @@ public class AccessLogFilter implements Filter {
         appender = LOGGER.getAppender(APPENDER_NAME);
     }
 
+    @WithSpan("thread")
+    private void traceThreadName(String threadName) {
+        Span.current().setAttribute("thread", threadName);
+    }
+
 
     public void doFilter ( ServletRequest servletRequest,ServletResponse servletResponse,FilterChain filterChain ) throws IOException, ServletException {
 
@@ -65,6 +72,7 @@ public class AccessLogFilter implements Filter {
 
             long startTime = System.currentTimeMillis();
             thread.setName(String.valueOf(THREAD_ID.getAndIncrement()));
+            traceThreadName(thread.getName());
             filterChain.doFilter(servletRequest,response);
 
             StringBuilder message = new StringBuilder();

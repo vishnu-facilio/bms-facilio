@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.interceptors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import io.opentelemetry.extension.annotations.WithSpan;
 import org.apache.struts2.ServletActionContext;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -18,6 +19,7 @@ public class CacheInterceptor extends AbstractInterceptor {
 	private static final long serialVersionUID = 1L;
 
 	@Override
+	@WithSpan
 	public String intercept(ActionInvocation arg0) throws Exception {
 		long time = System.currentTimeMillis();
 		HttpServletRequest request = ServletActionContext.getRequest();
