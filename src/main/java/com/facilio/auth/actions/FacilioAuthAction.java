@@ -1154,8 +1154,13 @@ public class FacilioAuthAction extends FacilioAction {
 				ipAddress = (ipAddress == null || "".equals(ipAddress.trim())) ? request.getRemoteAddr() : ipAddress;
                 String userType = "web";
 				String deviceType = request.getHeader("X-Device-Type");
+				String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
 				if (!StringUtils.isEmpty(deviceType)
 						&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType) || "webview".equalsIgnoreCase(deviceType))) {
+					userType = "mobile";
+				}
+
+				if ("true".equalsIgnoreCase(isWebView)) {
 					userType = "mobile";
 				}
 
@@ -1956,11 +1961,7 @@ public class FacilioAuthAction extends FacilioAction {
 		FacilioCookie.addOrgDomainCookie(getDomain(), response);
 
 		if (isMobile) {
-			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("token", authtoken);
-			jsonObject.put("homePath", "/app/mobile/login");
-			jsonObject.put("domain", getDomain());
-			jsonObject.put("baseUrl", getBaseUrl());
+			JSONObject jsonObject = getMobileAuthJSON("token", authtoken, "homePath", "/app/mobile/login", "domain", getDomain(), "baseUrl", getBaseUrl());
 			Cookie mobileTokenCookie = new Cookie("fc.mobile.idToken.facilio", new AESEncryption().encrypt(jsonObject.toJSONString()));
 			setTempCookieProperties(mobileTokenCookie, false);
 			response.addCookie(mobileTokenCookie);
@@ -1986,7 +1987,8 @@ public class FacilioAuthAction extends FacilioAction {
 					response.addHeader("Set-Cookie", portalCookie);
 				}
 			}
-		} else if("stage".equals(FacilioProperties.getEnvironment()) && !isMobile) {
+		} else if("stage".equals(FacilioProperties.getEnvironment())) {
+			LOGGER.log(Level.SEVERE, "Stage login");
 			var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
 			response.addHeader("Set-Cookie", cookieString);
 			if (proxyCookie != null) {
@@ -2007,7 +2009,16 @@ public class FacilioAuthAction extends FacilioAction {
 			}
 		}
 	}
-	
+
+	private JSONObject getMobileAuthJSON(String token, String authtoken, String homePath, String value, String domain, String Domain, String baseUrl, String BaseUrl) throws Exception {
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put(token, authtoken);
+		jsonObject.put(homePath, value);
+		jsonObject.put(domain, Domain);
+		jsonObject.put(baseUrl, BaseUrl);
+		return jsonObject;
+	}
+
 	private String checkDcAndGetRedirectUrl(GroupType groupType) throws Exception {
 		Integer dc = IAMUserUtil.lookupUserDC(getUsername(), groupType);
 		if (dc == null) {
