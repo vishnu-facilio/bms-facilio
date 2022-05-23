@@ -1,8 +1,13 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
@@ -15,10 +20,6 @@ public class WorkOrderPlannedItemsModule extends BaseModuleConfig {
         setModuleName(FacilioConstants.ContextNames.WO_PLANNED_ITEMS);
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {
@@ -76,5 +77,35 @@ public class WorkOrderPlannedItemsModule extends BaseModuleConfig {
 
         return allView;
 
+    }
+
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule plannedItemsModule = modBean.getModule(FacilioConstants.ContextNames.WO_PLANNED_ITEMS);
+
+        FacilioForm plannedItemsForm = new FacilioForm();
+        plannedItemsForm.setDisplayName("WORK ORDER PLANNED ITEMS");
+        plannedItemsForm.setName("default_workOrderPlannedItems_web");
+        plannedItemsForm.setModule(plannedItemsModule);
+        plannedItemsForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+        plannedItemsForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+
+        List<FormField> plannedItemsFormFields = new ArrayList<>();
+        plannedItemsFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.NUMBER, "Quantity", FormField.Required.REQUIRED, 1, 2));
+        plannedItemsFormFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.REQUIRED, "storeRoom", 2, 2));
+        plannedItemsFormFields.add(new FormField("reservationType", FacilioField.FieldDisplayType.SELECTBOX, "Reservation Type", FormField.Required.REQUIRED, 3, 3));
+        plannedItemsFormFields.add(new FormField("unitPrice", FacilioField.FieldDisplayType.NUMBER, "Unit Price", FormField.Required.REQUIRED, 4, 2));
+        FormField totalCost = new FormField("totalCost", FacilioField.FieldDisplayType.NUMBER, "Total Cost", FormField.Required.REQUIRED, 5, 3);
+        totalCost.setIsDisabled(true);
+        plannedItemsFormFields.add(totalCost);
+
+//        plannedItemsForm.setFields(plannedItemsFormFields);
+
+        FormSection section = new FormSection("Default", 1, plannedItemsFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        plannedItemsForm.setSections(Collections.singletonList(section));
+
+        return Collections.singletonList(plannedItemsForm);
     }
 }

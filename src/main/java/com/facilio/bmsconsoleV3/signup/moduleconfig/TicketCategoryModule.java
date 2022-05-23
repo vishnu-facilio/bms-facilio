@@ -16,10 +16,6 @@ public class TicketCategoryModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.TICKET_CATEGORY);
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

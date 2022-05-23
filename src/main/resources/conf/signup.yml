@@ -9,6 +9,13 @@ classes:
   # Adding default jobs
   - com.facilio.bmsconsoleV3.signup.jobs.DefaultJobsOnSignUp
 
+  # adding site module
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.SiteModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.FloorModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.BuildingModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.SpaceModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.WorkOrderModule
+
   # security policy
   - com.facilio.bmsconsoleV3.signup.moduleconfig.SecurityPolicy
   # Oauth2
@@ -166,11 +173,9 @@ classes:
   - com.facilio.bmsconsoleV3.signup.scopeVariable.AddValueGenerators
 
   #Adding System Views and Forms
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.LocationModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.BaseSpaceModule
-  - com.facilio.bmsconsoleV3.signup.moduleconfig.SiteModule
-  - com.facilio.bmsconsoleV3.signup.moduleconfig.BuildingModule
-  - com.facilio.bmsconsoleV3.signup.moduleconfig.FloorModule
-  - com.facilio.bmsconsoleV3.signup.moduleconfig.SpaceModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.SpaceCategoryModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.StoreRoomModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.InventoryCategoryModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.VendorsModule
@@ -198,7 +203,6 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.PeopleModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ServiceRequestModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ClientModule
-  - com.facilio.bmsconsoleV3.signup.moduleconfig.WorkOrderModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.WorkOrderRequestModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.TaskModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.NewReadingAlarmModule
@@ -217,6 +221,7 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ToolTransactionsModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.WorkOrderToolsModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.TenantModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.LabourModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.TaxModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.PurchaseRequestModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.TransferRequestModule
@@ -239,14 +244,20 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.RentalLeaseContractsModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.TermsAndConditionModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ReservationModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.DevicesModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.VisitorModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.VisitorInviteModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.VisitorLoggingModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.InviteVisitorModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.VisitorLogModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.VisitCustomResponseModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ContactModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.InsuranceModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.WatchlistModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.TenantSpacesModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.WorkPermitTypeModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.WorkPermitTypeChecklistCategoryModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.WorkPermitTypeChecklistModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.WorkPermitModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.OccupantModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AgentAlarmsModule
@@ -281,13 +292,16 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.TransactionModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.FacilityModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AmenityModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.FacilitySpecialAvailabilityModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.FacilityBookingModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.FacilityBookingExternalAttendeeModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.JobPlanModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ControlScheduleModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ControlGroupModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ControlGroupTenantSharingModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ControlScheduleExceptionTenantSharingModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.ControlActionCommandModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.IndoorFloorPlanModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.DesksModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.MovesModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.LockersModule

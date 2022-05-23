@@ -16,10 +16,7 @@ public class TaskModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.TASK);
     }
 
-    @Override
-    protected void addForms() throws Exception {
 
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

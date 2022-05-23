@@ -15,10 +15,6 @@ public class ModbusTcpControllerModule extends BaseModuleConfig {
         setModuleName("modbustcpcontroller");
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

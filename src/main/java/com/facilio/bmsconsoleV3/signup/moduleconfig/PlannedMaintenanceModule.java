@@ -1,11 +1,16 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -17,11 +22,6 @@ import java.util.*;
 public class PlannedMaintenanceModule extends BaseModuleConfig{
     public PlannedMaintenanceModule() throws Exception{
         setModuleName(FacilioConstants.ContextNames.PLANNEDMAINTENANCE);
-    }
-
-    @Override
-    protected void addForms() throws Exception {
-
     }
 
     @Override
@@ -127,6 +127,41 @@ public class PlannedMaintenanceModule extends BaseModuleConfig{
         open.setValue("false");
 
         return open;
+    }
+
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule plannedMaintenance = modBean.getModule(FacilioConstants.ContextNames.PLANNEDMAINTENANCE);
+
+        FacilioForm defaultPlannedMaintenanceForm = new FacilioForm();
+        defaultPlannedMaintenanceForm.setDisplayName("Planned Maintenance");
+        defaultPlannedMaintenanceForm.setName("default_plannedmaintenance_web");
+        defaultPlannedMaintenanceForm.setModule(plannedMaintenance);
+        defaultPlannedMaintenanceForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        defaultPlannedMaintenanceForm.setShowInWeb(true);
+        defaultPlannedMaintenanceForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+
+        List<FormField> defaultPlannedMaintenanceFormFields = new ArrayList<>();
+        defaultPlannedMaintenanceFormFields.add(new FormField("type", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Maintenance Type", FormField.Required.REQUIRED, "tickettype", 1, 1));
+        defaultPlannedMaintenanceFormFields.add(new FormField("subject", FacilioField.FieldDisplayType.TEXTBOX, "Subject", FormField.Required.REQUIRED, 2, 1));
+        defaultPlannedMaintenanceFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 3, 1));
+        defaultPlannedMaintenanceFormFields.add(new FormField("category", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL, "ticketcategory", 4, 2));
+        defaultPlannedMaintenanceFormFields.add(new FormField("priority", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Priority", FormField.Required.OPTIONAL, "ticketpriority", 5, 3));
+        defaultPlannedMaintenanceFormFields.add(new FormField("dueDuration", FacilioField.FieldDisplayType.DURATION, "Due Duration", FormField.Required.OPTIONAL, "duration", 6, 1));
+        defaultPlannedMaintenanceFormFields.add(new FormField("estimatedWorkDuration", FacilioField.FieldDisplayType.DURATION, "Estimated Duration", FormField.Required.OPTIONAL, "duration", 7, 1));
+        FormField groups = new FormField("groups", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Team", FormField.Required.OPTIONAL, "groups", 8, 1);
+        groups.addToConfig("isFiltersEnabled", true); // groups is special form field without actual field
+        groups.addToConfig("lookupModuleName", "groups");
+        defaultPlannedMaintenanceFormFields.add(groups);
+        defaultPlannedMaintenanceFormFields.add(new FormField("attachedFiles", FacilioField.FieldDisplayType.ATTACHMENT, "Attachments", FormField.Required.OPTIONAL, "attachment", 9, 1));
+        defaultPlannedMaintenanceForm.setFields(defaultPlannedMaintenanceFormFields);
+
+        FormSection section = new FormSection("Default", 1, defaultPlannedMaintenanceFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        defaultPlannedMaintenanceForm.setSections(Collections.singletonList(section));
+
+        return Collections.singletonList(defaultPlannedMaintenanceForm);
     }
 }
 

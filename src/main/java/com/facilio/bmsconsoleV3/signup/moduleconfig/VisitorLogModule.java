@@ -1,5 +1,9 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
@@ -7,6 +11,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.*;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -19,11 +24,6 @@ import java.util.*;
 public class VisitorLogModule extends BaseModuleConfig{
     public VisitorLogModule(){
         setModuleName(FacilioConstants.ContextNames.VISITOR_LOG);
-    }
-
-    @Override
-    protected void addForms() throws Exception {
-
     }
 
     @Override
@@ -200,4 +200,68 @@ public class VisitorLogModule extends BaseModuleConfig{
 
         return condition;
     }
+
+/*    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule visitorLogModule = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
+
+        FacilioForm defaultVisitorLogCheckinForm = new FacilioForm();
+        defaultVisitorLogCheckinForm.setName("default_visitor_log_checkin_form");
+        defaultVisitorLogCheckinForm.setModule(visitorLogModule);
+        defaultVisitorLogCheckinForm.setDisplayName("Visitor Log Form");
+        defaultVisitorLogCheckinForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        defaultVisitorLogCheckinForm.setShowInWeb(true);
+        defaultVisitorLogCheckinForm.setShowInMobile(true);
+        defaultVisitorLogCheckinForm.setHideInList(false);
+        defaultVisitorLogCheckinForm.setAppId(-1);
+
+
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(visitorLogModule.getName()));
+
+        List<FormSection> sections = new ArrayList<FormSection>();
+
+        FormSection configSection1 = new FormSection();
+        configSection1.setName("visitor");
+        configSection1.setSectionType(FormSection.SectionType.FIELDS);
+        configSection1.setShowLabel(false);
+
+        List<FormField> configFields1 = new ArrayList<>();
+
+        int seq = 0;
+
+        configFields1.add(new FormField(fieldMap.get("avatar").getFieldId(), "avatar", FacilioField.FieldDisplayType.IMAGE, "Avatar", FormField.Required.OPTIONAL, ++seq, 1));
+        configFields1.add(new FormField(fieldMap.get("visitorPhone").getFieldId(), "visitorPhone", FacilioField.FieldDisplayType.TEXTBOX, "Visitor Phone", FormField.Required.REQUIRED, ++seq, 1));
+        configFields1.add(new FormField(fieldMap.get("visitorName").getFieldId(), "visitorName", FacilioField.FieldDisplayType.TEXTBOX, "Visitor Name", FormField.Required.REQUIRED, ++seq, 1));
+        configFields1.add(new FormField(fieldMap.get("visitorEmail").getFieldId(), "visitorEmail", FacilioField.FieldDisplayType.TEXTBOX, "Visitor Email", FormField.Required.REQUIRED, ++seq, 1));
+        configFields1.add(new FormField(fieldMap.get("visitedSpace").getFieldId(), "visitorSpace", FacilioField.FieldDisplayType.SPACECHOOSER, "Visited Space", FormField.Required.OPTIONAL, ++seq, 1));
+        configFields1.add(new FormField(fieldMap.get("host").getFieldId(), "host", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Host", FormField.Required.OPTIONAL, ++seq, 1));
+        configFields1.add(new FormField(fieldMap.get("nda").getFieldId(), "nda", FacilioField.FieldDisplayType.IMAGE, "NDA", FormField.Required.OPTIONAL, ++seq, 1));
+
+        configSection1.setFields(configFields1);
+
+        configSection1.setSequenceNumber(1);
+
+
+        FormSection configSection2 = new FormSection();
+        configSection2.setName("summary");
+        configSection2.setSectionType(FormSection.SectionType.FIELDS);
+        configSection2.setShowLabel(false);
+
+        List<FormField> configFields2 = new ArrayList<>();
+        int seq1 = 0;
+
+        configFields2.add(new FormField(fieldMap.get("purposeOfVisit").getFieldId(), "purposeOfVisit", FacilioField.FieldDisplayType.SELECTBOX, "Purpose of Visit", FormField.Required.OPTIONAL, ++seq1, 1));
+
+        configSection2.setFields(configFields2);
+
+        configSection2.setSequenceNumber(1);
+
+        sections.add(configSection1);
+        sections.add(configSection2);
+
+        defaultVisitorLogCheckinForm.setSections(sections);
+
+        return Collections.singletonList(defaultVisitorLogCheckinForm);
+    }*/
 }

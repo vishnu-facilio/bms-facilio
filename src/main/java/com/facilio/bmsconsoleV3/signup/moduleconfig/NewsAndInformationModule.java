@@ -1,23 +1,24 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 
 import java.util.*;
 
 public class NewsAndInformationModule extends BaseModuleConfig{
     public NewsAndInformationModule(){
         setModuleName(FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION);
-    }
-
-    @Override
-    protected void addForms() throws Exception {
-
     }
 
     @Override
@@ -57,5 +58,39 @@ public class NewsAndInformationModule extends BaseModuleConfig{
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
+    }
+
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule newsAndInformationModule = modBean.getModule(FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION);
+
+        FacilioForm newsAndInformationForm = new FacilioForm();
+        newsAndInformationForm.setDisplayName("News and Information");
+        newsAndInformationForm.setName("default_"+ FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION +"_web");
+        newsAndInformationForm.setModule(newsAndInformationModule);
+        newsAndInformationForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+        newsAndInformationForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+
+        List<FormField> newsAndInformationFormFields = new ArrayList<>();
+        newsAndInformationFormFields.add(new FormField("title", FacilioField.FieldDisplayType.TEXTBOX, "Title", FormField.Required.REQUIRED, 1, 1));
+        FormField descField = new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1);
+        descField.addToConfig("richText", true);
+        newsAndInformationFormFields.add(descField);
+        FormField attachment = new FormField("newsandinformationattachments", FacilioField.FieldDisplayType.ATTACHMENT, "Attachments", FormField.Required.OPTIONAL, 3, 1);
+        attachment.addToConfig("fileTypes", "image/*,.pdf,.doc,.docx");
+        newsAndInformationFormFields.add(attachment);
+        newsAndInformationFormFields.add(new FormField("commentsAllowed", FacilioField.FieldDisplayType.DECISION_BOX, "Comments Allowed", FormField.Required.OPTIONAL, 5, 1));
+        FormField field = new FormField("audience", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Audience", FormField.Required.REQUIRED, "audience",6, 1);
+        field.setAllowCreateOptions(true);
+        field.addToConfig("canShowLookupWizard",true);
+        newsAndInformationFormFields.add(field);
+//        newsAndInformationForm.setFields(newsAndInformationFormFields);
+
+        FormSection section = new FormSection("Default", 1, newsAndInformationFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        newsAndInformationForm.setSections(Collections.singletonList(section));
+
+        return Collections.singletonList(newsAndInformationForm);
     }
 }

@@ -187,6 +187,7 @@ public class ModuleFactory {
 		return formModule;
 	}
 
+
 	public static FacilioModule getReadingToolsModule() {
 		FacilioModule formModule = new FacilioModule();
 		formModule.setName("readingTools");
@@ -363,7 +364,7 @@ public class ModuleFactory {
 		fieldModule.setName("lookupField");
 		fieldModule.setDisplayName("Lookup Fields");
 		fieldModule.setTableName("LookupFields");
-		 fieldModule.setExtendModule(getFieldsModule());
+		fieldModule.setExtendModule(getFieldsModule());
 		return fieldModule;
 	}
 

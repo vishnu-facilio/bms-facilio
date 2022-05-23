@@ -1,6 +1,10 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ContractsContext;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
@@ -9,6 +13,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
@@ -19,11 +24,6 @@ import java.util.*;
 public class PurchaseContractsModule extends BaseModuleConfig{
     public PurchaseContractsModule(){
         setModuleName(FacilioConstants.ContextNames.PURCHASE_CONTRACTS);
-    }
-
-    @Override
-    protected void addForms() throws Exception {
-
     }
 
     @Override
@@ -124,4 +124,33 @@ public class PurchaseContractsModule extends BaseModuleConfig{
         return criteria;
     }
 
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule purchaseContractsModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_CONTRACTS);
+
+        FacilioForm purchaseContractsForm = new FacilioForm();
+        purchaseContractsForm.setDisplayName("PURCHASE CONTRACT");
+        purchaseContractsForm.setName("web_default");
+        purchaseContractsForm.setModule(purchaseContractsModule);
+        purchaseContractsForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+        purchaseContractsForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+
+        List<FormField> purchaseContractsFormFields = new ArrayList<>();
+        purchaseContractsFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+        purchaseContractsFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+        purchaseContractsFormFields.add(new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.REQUIRED, "vendors", 3, 2).setAllowCreateOptions(true).setCreateFormName("vendors_form"));
+        purchaseContractsFormFields.add(new FormField("fromDate", FacilioField.FieldDisplayType.DATE, "From Date", FormField.Required.OPTIONAL, 4, 2));
+        purchaseContractsFormFields.add(new FormField("endDate", FacilioField.FieldDisplayType.DATE, "End Date", FormField.Required.OPTIONAL, 4, 3));
+        purchaseContractsFormFields.add(new FormField("renewalDate", FacilioField.FieldDisplayType.DATE, "Renewal Date", FormField.Required.OPTIONAL, 3, 3));
+        purchaseContractsFormFields.add(new FormField("lineItems", FacilioField.FieldDisplayType.LINEITEMS, "LINE ITEMS", FormField.Required.REQUIRED, 5, 1));
+        purchaseContractsFormFields.add(new FormField("payment", FacilioField.FieldDisplayType.SCHEDULER_INFO, "SCHEDULER INFO", FormField.Required.REQUIRED, 6, 1));
+//        purchaseContractsForm.setFields(purchaseContractsFormFields);
+
+        FormSection section = new FormSection("Default", 1, purchaseContractsFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        purchaseContractsForm.setSections(Collections.singletonList(section));
+
+        return Collections.singletonList(purchaseContractsForm);
+    }
 }

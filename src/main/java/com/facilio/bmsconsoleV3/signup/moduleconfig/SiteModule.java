@@ -1,6 +1,9 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -9,6 +12,7 @@ import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
 
 import java.util.*;
 
@@ -111,12 +115,6 @@ public class SiteModule extends BaseModuleConfig {
 //        FacilioModule siteModule = modBean.getModule(FacilioConstants.ContextNames.SITE);
 //        createSiteDefaultForm(modBean, siteModule);
     }
-
-    @Override
-    protected void addForms() throws Exception {
-
-    }
-
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {
         List<Map<String, Object>> groupVsViews = new ArrayList<>();
@@ -149,5 +147,41 @@ public class SiteModule extends BaseModuleConfig {
         allView.setSortFields(sortFields);
 
         return allView;
+    }
+
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule siteModule = modBean.getModule(FacilioConstants.ContextNames.SITE);
+
+        FacilioForm defaultSiteForm = new FacilioForm();
+        defaultSiteForm.setName("default_site_web");
+        defaultSiteForm.setModule(siteModule);
+        defaultSiteForm.setDisplayName("Site");
+        defaultSiteForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        defaultSiteForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        defaultSiteForm.setShowInWeb(true);
+
+        List<FormField> defaultSiteFormFields = new ArrayList<>();
+        defaultSiteFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+        defaultSiteFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+        defaultSiteFormFields.add(new FormField("location", FacilioField.FieldDisplayType.GEO_LOCATION, "Location", FormField.Required.OPTIONAL, 3, 1));
+        defaultSiteFormFields.add(new FormField("managedBy", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Managed By", FormField.Required.OPTIONAL, 4, 2));
+        defaultSiteFormFields.add(new FormField("siteType", FacilioField.FieldDisplayType.SELECTBOX, "Site Type", FormField.Required.OPTIONAL, 4, 3));
+        defaultSiteFormFields.add(new FormField("grossFloorArea", FacilioField.FieldDisplayType.DECIMAL, "Gross Floor Area", FormField.Required.OPTIONAL, 5, 2));
+        defaultSiteFormFields.add(new FormField("area", FacilioField.FieldDisplayType.DECIMAL, "Total Area", FormField.Required.OPTIONAL, 5, 3));
+        defaultSiteFormFields.add(new FormField("cddBaseTemperature", FacilioField.FieldDisplayType.DECIMAL, "CDD Base Temperature", FormField.Required.OPTIONAL, 6, 2));
+        defaultSiteFormFields.add(new FormField("hddBaseTemperature", FacilioField.FieldDisplayType.DECIMAL, "HDD Base Temperature", FormField.Required.OPTIONAL, 6, 3));
+        defaultSiteFormFields.add(new FormField("wddBaseTemperature", FacilioField.FieldDisplayType.DECIMAL, "WDD Base Temperature", FormField.Required.OPTIONAL, 7, 2));
+        defaultSiteFormFields.add(new FormField("timeZone", FacilioField.FieldDisplayType.TIMEZONE, "Time Zone", FormField.Required.OPTIONAL, 8, 3));
+        defaultSiteFormFields.add(new FormField("boundaryRadius", FacilioField.FieldDisplayType.NUMBER, "Boundary Radius", FormField.Required.OPTIONAL, 9, 2));
+        defaultSiteFormFields.add(new FormField("failureClass", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Failure Class", FormField.Required.OPTIONAL, "failureclass",10, 2));
+//        defaultSiteForm.setFields(defaultSiteFormFields);
+
+        FormSection section = new FormSection("Default", 1, defaultSiteFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        defaultSiteForm.setSections(Collections.singletonList(section));
+
+        return Collections.singletonList(defaultSiteForm);
     }
 }

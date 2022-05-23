@@ -1,22 +1,24 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.accounts.dto.AppDomain;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.FacilioField;
 
 import java.util.*;
 
 public class InspectionResponseModule extends BaseModuleConfig{
     public InspectionResponseModule(){
         setModuleName(FacilioConstants.Inspection.INSPECTION_RESPONSE);
-    }
-
-    @Override
-    protected void addForms() throws Exception {
-
     }
 
     @Override
@@ -51,5 +53,46 @@ public class InspectionResponseModule extends BaseModuleConfig{
         appDomains.add(AppDomain.AppDomainType.FACILIO);
 
         return allView;
+    }
+
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule inspectionResponseModule = modBean.getModule(FacilioConstants.Inspection.INSPECTION_RESPONSE);
+
+        FacilioForm inspectionForm = new FacilioForm();
+        inspectionForm.setName("default_"+FacilioConstants.Inspection.INSPECTION_RESPONSE+"_web");
+        inspectionForm.setModule(inspectionResponseModule);
+        inspectionForm.setDisplayName("Standard");
+        inspectionForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        inspectionForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        inspectionForm.setShowInWeb(true);
+
+        List<FormField> inspectionFormFields = new ArrayList<>();
+        int i = 1;
+        inspectionFormFields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.OPTIONAL, i++, 1));
+        inspectionFormFields.add(new FormField("parent", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Parent", FormField.Required.OPTIONAL, i++, 1));
+        inspectionFormFields.add(new FormField("createdTime", FacilioField.FieldDisplayType.DATETIME, "Created Time", FormField.Required.REQUIRED,  "building",i++, 2));
+        inspectionFormFields.add(new FormField("scheduledWorkStart", FacilioField.FieldDisplayType.DATETIME, "Scheduled Start", FormField.Required.OPTIONAL, "site",i++, 3));
+        inspectionFormFields.add(new FormField("scheduledWorkEnd", FacilioField.FieldDisplayType.DATETIME, "Scheduled End", FormField.Required.OPTIONAL, i++, 2));
+        inspectionFormFields.add(new FormField("actualWorkStart", FacilioField.FieldDisplayType.DATETIME, "Actual Start", FormField.Required.OPTIONAL, i++, 3));
+        inspectionFormFields.add(new FormField("actualWorkEnd", FacilioField.FieldDisplayType.DATETIME, "Actual End", FormField.Required.OPTIONAL, i++, 2));
+        inspectionFormFields.add(new FormField("actualWorkDuration", FacilioField.FieldDisplayType.DATETIME, "Actual Duration", FormField.Required.OPTIONAL, i++, 2));
+        inspectionFormFields.add(new FormField("status", FacilioField.FieldDisplayType.DECISION_BOX, "Response Status", FormField.Required.OPTIONAL, i++, 2));
+        inspectionFormFields.add(new FormField("sourceType", FacilioField.FieldDisplayType.DECISION_BOX, "Source", FormField.Required.OPTIONAL, i++, 2));
+        inspectionFormFields.add(new FormField("resource", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Space/Asset", FormField.Required.OPTIONAL, i++, 2));
+        inspectionFormFields.add(new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.OPTIONAL, i++, 2));
+        inspectionFormFields.add(new FormField("tenant", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Tenant", FormField.Required.OPTIONAL, i++, 2));
+        inspectionFormFields.add(new FormField("category", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL, i++, 2));
+        inspectionFormFields.add(new FormField("priority", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Priority", FormField.Required.OPTIONAL, i++, 2));
+        inspectionFormFields.add(new FormField("assignedTo", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Assigned To", FormField.Required.OPTIONAL, i++, 2));
+        inspectionFormFields.add(new FormField("assignmentGroup", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Team", FormField.Required.OPTIONAL, i++, 2));
+//        inspectionForm.setFields(inspectionFormFields);
+
+        FormSection section = new FormSection("Default", 1, inspectionFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        inspectionForm.setSections(Collections.singletonList(section));
+
+        return Collections.singletonList(inspectionForm);
     }
 }

@@ -1,21 +1,17 @@
 package com.facilio.bmsconsoleV3.signup.inspection;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.context.*;
-import com.facilio.modules.fields.*;
+import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
+import com.facilio.modules.*;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.actions.FormRuleAction;
-import com.facilio.bmsconsole.commands.AddSubModulesSystemFieldsCommad;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormActionType;
@@ -47,27 +43,19 @@ import com.facilio.bmsconsoleV3.context.inspection.InspectionCategoryContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionPriorityContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
-import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.EnumOperators;
-import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.ScopeOperator;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStatus.StatusType;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
@@ -86,7 +74,12 @@ import com.facilio.unitconversion.Unit;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 
-public class AddInspectionModules extends SignUpData {
+public class AddInspectionModules extends BaseModuleConfig {
+
+	public AddInspectionModules() throws Exception {
+		setModuleName(FacilioConstants.Inspection.INSPECTION_RESPONSE);
+	}
+
     @Override
     public void addData() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -151,7 +144,7 @@ public class AddInspectionModules extends SignUpData {
         
         
         addActivityModuleForInspectionResponse(inspectionResponseModule);
-    }
+	}
 
 	public void addScopingMaintenanceApp(FacilioModule module,long applicationScopingId) throws Exception {
 		ScopingConfigContext scoping = new ScopingConfigContext();
@@ -306,6 +299,7 @@ public class AddInspectionModules extends SignUpData {
       defaultForm.setDisplayName("Standard");
       defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
       defaultForm.setShowInWeb(true);
+	  defaultForm.setIsSystemForm(true);
       
       Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(inspection.getName()));
       
@@ -521,6 +515,7 @@ public class AddInspectionModules extends SignUpData {
 		defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
 		defaultForm.setShowInWeb(true);
 		defaultForm.setAppId(maintenance.getId());
+		defaultForm.setIsSystemForm(true);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(inspection.getName()));
 		List<FormSection> sections = new ArrayList<FormSection>();
 		FormSection section = new FormSection();
@@ -1397,4 +1392,47 @@ public class AddInspectionModules extends SignUpData {
         
         return statusObj;
     }
+
+/*	@Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule inspectionResponseModule = modBean.getModule(FacilioConstants.Inspection.INSPECTION_RESPONSE);
+
+		FacilioForm inspectionForm = new FacilioForm();
+		inspectionForm.setName("default_"+FacilioConstants.Inspection.INSPECTION_RESPONSE+"_web");
+		inspectionForm.setModule(inspectionResponseModule);
+		inspectionForm.setDisplayName("Standard");
+		inspectionForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+		inspectionForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+		inspectionForm.setShowInWeb(true);
+
+		List<FormField> inspectionFormFields = new ArrayList<>();
+		int i = 1;
+		inspectionFormFields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.OPTIONAL, i++, 1));
+		inspectionFormFields.add(new FormField("parent", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Parent", FormField.Required.OPTIONAL, i++, 1));
+		inspectionFormFields.add(new FormField("createdTime", FacilioField.FieldDisplayType.DATETIME, "Created Time", FormField.Required.REQUIRED,  "building",i++, 2));
+		inspectionFormFields.add(new FormField("scheduledWorkStart", FacilioField.FieldDisplayType.DATETIME, "Scheduled Start", FormField.Required.OPTIONAL, "site",i++, 3));
+		inspectionFormFields.add(new FormField("scheduledWorkEnd", FacilioField.FieldDisplayType.DATETIME, "Scheduled End", FormField.Required.OPTIONAL, i++, 2));
+		inspectionFormFields.add(new FormField("actualWorkStart", FacilioField.FieldDisplayType.DATETIME, "Actual Start", FormField.Required.OPTIONAL, i++, 3));
+		inspectionFormFields.add(new FormField("actualWorkEnd", FacilioField.FieldDisplayType.DATETIME, "Actual End", FormField.Required.OPTIONAL, i++, 2));
+		inspectionFormFields.add(new FormField("actualWorkDuration", FacilioField.FieldDisplayType.DATETIME, "Actual Duration", FormField.Required.OPTIONAL, i++, 2));
+		inspectionFormFields.add(new FormField("status", FacilioField.FieldDisplayType.DECISION_BOX, "Response Status", FormField.Required.OPTIONAL, i++, 2));
+		inspectionFormFields.add(new FormField("sourceType", FacilioField.FieldDisplayType.DECISION_BOX, "Source", FormField.Required.OPTIONAL, i++, 2));
+		inspectionFormFields.add(new FormField("resource", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Space/Asset", FormField.Required.OPTIONAL, i++, 2));
+		inspectionFormFields.add(new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.OPTIONAL, i++, 2));
+		inspectionFormFields.add(new FormField("tenant", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Tenant", FormField.Required.OPTIONAL, i++, 2));
+		inspectionFormFields.add(new FormField("category", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL, i++, 2));
+		inspectionFormFields.add(new FormField("priority", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Priority", FormField.Required.OPTIONAL, i++, 2));
+		inspectionFormFields.add(new FormField("assignedTo", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Assigned To", FormField.Required.OPTIONAL, i++, 2));
+		inspectionFormFields.add(new FormField("assignmentGroup", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Team", FormField.Required.OPTIONAL, i++, 2));
+		inspectionForm.setFields(inspectionFormFields);
+
+		FormSection section = new FormSection("Default", 1, inspectionFormFields, false);
+		section.setSectionType(FormSection.SectionType.FIELDS);
+		inspectionForm.setSections(Collections.singletonList(section));
+
+		return Collections.singletonList(inspectionForm);
+	}
+*/
 }

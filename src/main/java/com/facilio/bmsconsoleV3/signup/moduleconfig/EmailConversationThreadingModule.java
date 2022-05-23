@@ -13,10 +13,6 @@ public class EmailConversationThreadingModule extends BaseModuleConfig{
     public EmailConversationThreadingModule(){
         setModuleName(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME);
     }
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

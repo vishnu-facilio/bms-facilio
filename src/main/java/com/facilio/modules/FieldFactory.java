@@ -509,6 +509,9 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("hideInList", "HIDE_IN_LIST", module, FieldType.BOOLEAN));
         fields.add(getField("stateFlowId", "STATE_FLOW_ID", module, FieldType.NUMBER));
         fields.add(getField("appId", "APP_ID", module, FieldType.NUMBER));
+        fields.add(getField("primaryForm","PRIMARY_FORM",module,FieldType.BOOLEAN));
+        fields.add(getField("isSystemForm","IS_SYSTEM_FORM",module,FieldType.BOOLEAN));
+        fields.add(getField("type","TYPE",module,FieldType.NUMBER));
 
 
         return fields;

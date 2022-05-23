@@ -178,7 +178,7 @@ public class FacilioForm implements Serializable {
 		}
 		return null;
 	}
-	
+
 	private String description;
 	public String getDescription() {
 		return description;
@@ -242,8 +242,51 @@ public class FacilioForm implements Serializable {
 		this.ignoreCustomFields = ignoreCustomFields;
 	}
 
-
-	
+	public int getType() {
+		if (type != null) {
+			return type.getIntVal();
+		}
+		return -1;
+	}
+	public void setType(int val) {
+		this.type = Type.getType(val);
+	}
+	public void setType(Type val) {
+		this.type = val;
+	}
+	public Type getTypeEnum() {
+		return this.type;
+	}
+	private Type type;
+	public enum Type{
+		FORM(1),
+		SUB_FORM(2),
+		APPROVAL_FORM(3),
+		REJECTION_FORM(4),
+		STATEFLOW_FORM(5),
+		CUSTOM_BUTTON_FORM(6);
+		private int intVal;
+		public int getIntVal() {
+			return intVal;
+		}
+		public void setIntVal(int intVal) {
+			this.intVal = intVal;
+		}
+		private Type(int intVal) {
+			this.intVal = intVal;
+		}
+		public static Type getType(int intVal) {
+			return typeMap.get(intVal);
+		}
+		private static final Map<Integer, Type> typeMap = Collections.unmodifiableMap(initTypeMap());
+		private static Map<Integer, Type> initTypeMap() {
+			Map<Integer, Type> typeMap = new HashMap<>();
+			for (Type type: values()) {
+				typeMap.put(type.intVal, type);
+			}
+			return typeMap;
+		}
+	}
 	private LabelPosition labelPosition;
 	
 	public enum LabelPosition {
@@ -298,6 +341,13 @@ public class FacilioForm implements Serializable {
 	public void setAppLinkName(String appLinkName) {
 		this.appLinkName = appLinkName;
 	}
+	private List<String> appLinkNamesForForm;
+	public List<String> getAppLinkNamesForForm() {
+		return appLinkNamesForForm;
+	}
+	public void setAppLinkNamesForForm(List<String> appLinkNamesForForm) {
+		this.appLinkNamesForForm = appLinkNamesForForm;
+	}
 
 	public long getAppId() {
 		return appId;
@@ -305,6 +355,25 @@ public class FacilioForm implements Serializable {
 
 	public void setAppId(long appId) {
 		this.appId = appId;
+	}
+
+	private Boolean primaryForm;
+
+	private Boolean isSystemForm;
+	public Boolean getPrimaryForm() {
+		return primaryForm;
+	}
+
+	public void setPrimaryForm(Boolean primaryForm) {
+		this.primaryForm = primaryForm;
+	}
+
+	public Boolean getIsSystemForm() {
+		return isSystemForm;
+	}
+
+	public void setIsSystemForm(Boolean isSystemForm) {
+		this.isSystemForm = isSystemForm;
 	}
 
 	public enum FormSourceType {

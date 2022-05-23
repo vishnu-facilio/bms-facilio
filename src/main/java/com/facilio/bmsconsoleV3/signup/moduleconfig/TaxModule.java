@@ -18,10 +18,6 @@ public class TaxModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.TAX);
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

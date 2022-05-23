@@ -12,10 +12,6 @@ public class WorkOrderServiceModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.WO_SERVICE);
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

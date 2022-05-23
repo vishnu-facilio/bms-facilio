@@ -1,8 +1,13 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
@@ -13,11 +18,6 @@ import java.util.*;
 public class ToolTypesModule extends BaseModuleConfig{
     public ToolTypesModule(){
         setModuleName(FacilioConstants.ContextNames.TOOL_TYPES);
-    }
-
-    @Override
-    protected void addForms() throws Exception {
-
     }
 
     @Override
@@ -59,4 +59,38 @@ public class ToolTypesModule extends BaseModuleConfig{
 
         return allView;
     }
+
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule toolTypesModule = modBean.getModule(FacilioConstants.ContextNames.TOOL_TYPES);
+
+        FacilioForm toolTypesForm = new FacilioForm();
+        toolTypesForm.setDisplayName("NEW TOOL TYPE");
+        toolTypesForm.setName("default_toolTypes_web");
+        toolTypesForm.setModule(toolTypesModule);
+        toolTypesForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        toolTypesForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+
+        List<FormField> toolTypesFormFields = new ArrayList<>();
+        toolTypesFormFields.add(new FormField("photo", FacilioField.FieldDisplayType.IMAGE, "Photo", FormField.Required.OPTIONAL, 1, 1));
+        toolTypesFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 2, 1));
+        toolTypesFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 3, 1));
+        FormField field = new FormField("category", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL, "inventoryCategory",4, 1);
+        field.setAllowCreateOptions(true);
+        field.addToConfig("canShowLookupWizard",true);
+        toolTypesFormFields.add(field);
+        toolTypesFormFields.add(new FormField("sellingPrice", FacilioField.FieldDisplayType.NUMBER, "Selling Price Per Hour", FormField.Required.OPTIONAL,  5, 2));
+        toolTypesFormFields.add(new FormField("minimumQuantity", FacilioField.FieldDisplayType.NUMBER, "Minimum Quantity", FormField.Required.OPTIONAL, 5, 3));
+        toolTypesFormFields.add(new FormField("isRotating", FacilioField.FieldDisplayType.DECISION_BOX, "Is Rotating", FormField.Required.OPTIONAL, 6, 2));
+        toolTypesFormFields.add(new FormField("isApprovalNeeded", FacilioField.FieldDisplayType.DECISION_BOX, "Approval Needed", FormField.Required.OPTIONAL, 6, 3));
+//        toolTypesForm.setFields(toolTypesFormFields);
+
+        FormSection section = new FormSection("Default", 1, toolTypesFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        toolTypesForm.setSections(Collections.singletonList(section));
+
+        return Collections.singletonList(toolTypesForm);
+    }
+
 }

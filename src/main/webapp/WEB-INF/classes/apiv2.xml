@@ -207,6 +207,10 @@
 			method="mailExportModule">
 		</action>
 
+		<action name="dbforms"
+				class="com.facilio.bmsconsole.actions.FormAction" method="formListFromDB">
+			<param name="translationImpl">FormTranslation</param>
+		</action>
 		<action name="forms"
 			class="com.facilio.bmsconsole.actions.FormAction" method="formList">
 			<param name="translationImpl">FormTranslation</param>
@@ -2155,6 +2159,10 @@
 
 	<package name="formApiv2" namespace="/api/v2/forms"
 		extends="v2Api">
+		<action name="adddbform"
+				class="com.facilio.bmsconsole.actions.FormAction" method="addDBForm">
+			<param name="permission">CREATE</param>
+		</action>
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.FormAction" method="addForm">
 			<param name="permission">CREATE</param>
@@ -2745,6 +2753,9 @@
 	<package name="moduleApiV2" namespace="/api/v2/module" extends="v2Api">
 		<action name="add" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2AddModule">
+		</action>
+		<action name="addDB" class="com.facilio.bmsconsole.actions.ModuleAction"
+				method="v2AddModuleDB">
 		</action>
 		
 		<action name="update" class="com.facilio.bmsconsole.actions.ModuleAction"

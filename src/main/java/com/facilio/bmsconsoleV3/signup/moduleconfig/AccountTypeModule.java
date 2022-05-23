@@ -1,23 +1,23 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
-import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
-import com.facilio.bmsconsoleV3.signup.util.AddModuleViewsAndGroups;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.FacilioField;
 
 import java.util.*;
 
 public class AccountTypeModule extends BaseModuleConfig{
     public AccountTypeModule(){
         setModuleName(FacilioConstants.ContextNames.Budget.ACCOUNT_TYPE);
-    }
-
-    @Override
-    protected void addForms() throws Exception {
-
     }
 
     @Override
@@ -50,5 +50,30 @@ public class AccountTypeModule extends BaseModuleConfig{
         allView.setSortFields(sortFields);
 
         return allView;
+    }
+
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule accountTypeModule = modBean.getModule(FacilioConstants.ContextNames.ACCOUNT_TYPE);
+
+        FacilioForm accountTypeForm = new FacilioForm();
+        accountTypeForm.setDisplayName("Account Type");
+        accountTypeForm.setName("default_" + FacilioConstants.ContextNames.Budget.ACCOUNT_TYPE + "_web");
+        accountTypeForm.setModule(accountTypeModule);
+        accountTypeForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        accountTypeForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+
+        List<FormField> accountTypeFormFields = new ArrayList<>();
+        accountTypeFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+        accountTypeFormFields.add(new FormField("group", FacilioField.FieldDisplayType.SELECTBOX, "Category", FormField.Required.OPTIONAL, 2, 1));
+//        accountTypeForm.setFields(accountTypeFormFields);
+
+        FormSection section = new FormSection("Default", 1, accountTypeFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        accountTypeForm.setSections(Collections.singletonList(section));
+
+        return Collections.singletonList(accountTypeForm);
     }
 }

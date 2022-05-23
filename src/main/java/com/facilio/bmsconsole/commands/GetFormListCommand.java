@@ -95,7 +95,7 @@ public class GetFormListCommand extends FacilioCommand {
 	private List<FacilioForm> getFormsList(String moduleName, Boolean fetchExtendedModuleForms, Boolean fetchDisabledForms,List<String> appLinkNames) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
-		
+
 		Map<String, FacilioForm> forms = new LinkedHashMap<>(FormFactory.getForms(moduleName, appLinkNames));
 		if (!forms.isEmpty()) {
 			for(Map.Entry<String, FacilioForm> entry :forms.entrySet()) {

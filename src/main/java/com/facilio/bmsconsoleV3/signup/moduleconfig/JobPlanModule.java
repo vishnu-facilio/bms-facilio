@@ -1,12 +1,17 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.accounts.dto.AppDomain;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -18,11 +23,6 @@ import java.util.*;
 public class JobPlanModule extends BaseModuleConfig{
     public JobPlanModule(){
         setModuleName(FacilioConstants.ContextNames.JOB_PLAN);
-    }
-
-    @Override
-    protected void addForms() throws Exception {
-
     }
 
     @Override
@@ -121,4 +121,45 @@ public class JobPlanModule extends BaseModuleConfig{
         return condition;
     }
 
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule jobPlanModule = modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN);
+
+        FacilioForm jobPlanModuleForm = new FacilioForm();
+        jobPlanModuleForm.setDisplayName("Job Plan");
+        jobPlanModuleForm.setName("default_jobplan_web");
+        jobPlanModuleForm.setModule(jobPlanModule);
+        jobPlanModuleForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+        jobPlanModuleForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+
+        List<FormField> jobPlanModuleFormDefaultFields = new ArrayList<>();
+        jobPlanModuleFormDefaultFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+        jobPlanModuleFormDefaultFields.add(new FormField("jobPlanCategory", FacilioField.FieldDisplayType.SELECTBOX, "Category", FormField.Required.REQUIRED, 2, 1));
+        jobPlanModuleFormDefaultFields.add(new FormField("assetCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Asset Category", FormField.Required.OPTIONAL, "assetcategory", 3, 1));
+        jobPlanModuleFormDefaultFields.add(new FormField("spaceCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Space Category", FormField.Required.OPTIONAL, "spacecategory", 4, 1));
+
+        List<FormField> taskFields = new ArrayList<>();
+        taskFields.add(new FormField("jobplansection", FacilioField.FieldDisplayType.JP_TASK, "Tasks", FormField.Required.REQUIRED, 5, 1));
+
+        List<FormField> jobPlanModuleFormFields = new ArrayList<>();
+        jobPlanModuleFormFields.addAll(jobPlanModuleFormDefaultFields);
+        jobPlanModuleFormFields.addAll(taskFields);
+
+        jobPlanModuleForm.setFields(jobPlanModuleFormFields);
+
+        FormSection defaultSection = new FormSection("Scope", 1, jobPlanModuleFormDefaultFields, true);
+        defaultSection.setSectionType(FormSection.SectionType.FIELDS);
+
+        FormSection taskSection = new FormSection("TASKS", 2, taskFields, true);
+        taskSection.setSectionType(FormSection.SectionType.FIELDS);
+
+        List<FormSection> sections = new ArrayList<>();
+        sections.add(defaultSection);
+        sections.add(taskSection);
+
+        jobPlanModuleForm.setSections(sections);
+
+        return Collections.singletonList(jobPlanModuleForm);
+    }
 }

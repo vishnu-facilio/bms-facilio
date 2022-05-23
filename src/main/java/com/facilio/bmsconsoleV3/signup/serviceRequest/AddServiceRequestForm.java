@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.signup.serviceRequest;
 
 import java.util.List;
 
+import com.facilio.bmsconsoleV3.commands.AddSignupDataCommandV3;
 import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ApplicationContext;
@@ -18,26 +19,28 @@ public class AddServiceRequestForm extends SignUpData {
 
 	
 	public void addData() throws Exception {
-		ApplicationContext appContext = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
-		
-		FacilioChain addform = TransactionChainFactory.getAddFormCommand();
-		FacilioContext context=addform.getContext();
-		
-		// -- DO NOT REMOVE THESE LINES  
+		if(!AddSignupDataCommandV3.createForms) {
+			ApplicationContext appContext = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+
+			FacilioChain addform = TransactionChainFactory.getAddFormCommand();
+			FacilioContext context = addform.getContext();
+
+			// -- DO NOT REMOVE THESE LINES
 //		FacilioModule srattachments = Constants.getModBean().getModule("servicerequestsattachments");
 //		Constants.getModBean().getModule(srattachments.getModuleId());
-		// -- DO NOT REMOVE THESE LINES
-		
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, "serviceRequest");
-		FacilioForm form = new FacilioForm();
-		form.setAppId(appContext.getId());
-		form.setAppLinkName(appContext.getLinkName());
-		form.setDisplayName("SERVICE REQUEST");
-		form.setId(-1);
-		form.setName("default_serviceRequest_web");
-		form.setStateFlowId(-99);
-		context.put(FacilioConstants.ContextNames.FORM, form);
-		
-		addform.execute();
+			// -- DO NOT REMOVE THESE LINES
+
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, "serviceRequest");
+			FacilioForm form = new FacilioForm();
+			form.setAppId(appContext.getId());
+			form.setAppLinkName(appContext.getLinkName());
+			form.setDisplayName("SERVICE REQUEST");
+			form.setId(-1);
+			form.setName("default_serviceRequest_web");
+			form.setStateFlowId(-99);
+			context.put(FacilioConstants.ContextNames.FORM, form);
+
+			addform.execute();
+		}
 	}
 }

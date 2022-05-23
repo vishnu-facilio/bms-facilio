@@ -103,6 +103,7 @@ public class AddModuleViewsAndGroups {
                         }
 
                         //Add Views
+                        view.setId(-1);
                         view.setAppId(appId);
                         view.setDefault(true);
                         view.setLocked(false);
@@ -130,6 +131,7 @@ public class AddModuleViewsAndGroups {
             }
         } catch (Exception e) {
             LOGGER.info("Error occurred in ORGID - " + orgId + " ModuleId - " + module.getModuleId() + " ModuleName - " + moduleName + " Error - " + e.getMessage());
+            throw e;
         }
 
         if (containsAll){
@@ -162,8 +164,6 @@ public class AddModuleViewsAndGroups {
         List<ViewField> viewFields = ColumnFactory.getColumns(moduleName, view.getName());
         Map<String, FacilioField> fieldMap = fields.stream().collect(Collectors.toMap(FacilioField::getName, Function.identity(),(name1, name2) -> { return name1; }));
 
-        boolean finalNullFlag = false;
-
         if (viewFields != null && !viewFields.isEmpty()) {
             for (ViewField viewField : viewFields) {
                 viewField.setFieldName(viewField.getName());
@@ -180,25 +180,25 @@ public class AddModuleViewsAndGroups {
                     if (fieldMap.get(viewField.getName()) != null) {
                         field = fieldMap.get(viewField.getName());
                     }
+                    if (viewField.getName().equals("id")) {
+                        field = new FacilioField();
+                        field.setFieldId(-1);
+                        field.setName("id");
+                        field.setDisplayName("Id");
+                    }
                     if (viewField.getName().equals("siteId")) {
                         field = new FacilioField();
                         field.setFieldId(-1);
                         field.setName("siteId");
                         field.setDisplayName("Site");
                     }
-                    if (field == null) {
-                        finalNullFlag = true;
-                        LOGGER.info("Error occurred in ViewField in ModuleName - " + moduleName + " ViewName - " + view.getName() + " FieldName - " + viewField.getName());
-                        continue;
-                    }
+
                     viewField.setField(field);
                     viewField.setFieldId(field.getFieldId());
                 }
             }
-            if (!finalNullFlag) {
-                ViewAPI.customizeViewColumns(view.getId(), viewFields);
-                LOGGER.info(String.format("Completed adding ViewColumns for ViewId - %d ViewName - %s",view.getId(), view.getName()));
-            }
+            ViewAPI.customizeViewColumns(view.getId(), viewFields);
+            LOGGER.info(String.format("Completed adding ViewColumns for ViewId - %d ViewName - %s",view.getId(), view.getName()));
         }
 
         // Add Sort Fields

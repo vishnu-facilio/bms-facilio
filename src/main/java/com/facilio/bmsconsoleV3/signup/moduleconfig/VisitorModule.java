@@ -1,18 +1,20 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
 
 import java.util.*;
 
 public class VisitorModule extends BaseModuleConfig{
     public VisitorModule(){
         setModuleName(FacilioConstants.ContextNames.VISITOR);
-    }
-
-    @Override
-    protected void addForms() throws Exception {
-
     }
 
     @Override
@@ -43,4 +45,67 @@ public class VisitorModule extends BaseModuleConfig{
 
         return allView;
     }
+
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule visitorModule = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
+
+        FacilioForm visitorKioskForm = new FacilioForm();
+        visitorKioskForm.setDisplayName("VISITOR");
+        visitorKioskForm.setName("default_visitor_web");
+        visitorKioskForm.setModule(visitorModule);
+        visitorKioskForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+        visitorKioskForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+
+        List<FormField> visitorKioskFormFields = new ArrayList<>();
+        visitorKioskFormFields.add(new FormField("phone", FacilioField.FieldDisplayType.NUMBER, "Enter your mobile number", FormField.Required.REQUIRED, 1, 1));
+        visitorKioskFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Hi,What is your full name?", FormField.Required.REQUIRED, 1, 1));
+        visitorKioskFormFields.add(new FormField("email", FacilioField.FieldDisplayType.EMAIL, "What is your email id?", FormField.Required.OPTIONAL, 2, 1));
+//        visitorKioskForm.setFields(visitorKioskFormFields);
+
+        FormSection visitorKioskFormSection = new FormSection("Default", 1, visitorKioskFormFields, false);
+        visitorKioskFormSection.setSectionType(FormSection.SectionType.FIELDS);
+        visitorKioskForm.setSections(Collections.singletonList(visitorKioskFormSection));
+
+        FacilioForm visitorForm = new FacilioForm();
+        visitorForm.setDisplayName("VISITOR");
+        visitorForm.setName("portal_visitor_web");
+        visitorForm.setModule(visitorModule);
+        visitorForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        visitorForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP));
+
+//        --> THESE FORM FIELD LIST IS COMMON FOR visitorForm AND portalVisitorForm
+        List<FormField> visitorFormFields = new ArrayList<>();
+        visitorFormFields.add(new FormField("avatar", FacilioField.FieldDisplayType.IMAGE,"Visitor Photo", FormField.Required.OPTIONAL,1,1));
+        visitorFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 2, 1));
+        visitorFormFields.add(new FormField("phone", FacilioField.FieldDisplayType.TEXTBOX, "Phone", FormField.Required.REQUIRED, 3, 1));
+        visitorFormFields.add(new FormField("email", FacilioField.FieldDisplayType.TEXTBOX, "Email", FormField.Required.REQUIRED, 4, 1));
+        visitorFormFields.add(new FormField("location", FacilioField.FieldDisplayType.ADDRESS, "Location", FormField.Required.OPTIONAL, 5, 1));
+//        visitorForm.setFields(visitorFormFields);
+
+        FormSection visitorFormSection = new FormSection("Default", 1, visitorFormFields, false);
+        visitorFormSection.setSectionType(FormSection.SectionType.FIELDS);
+        visitorForm.setSections(Collections.singletonList(visitorFormSection));
+
+        FacilioForm portalVisitorForm = new FacilioForm();
+        portalVisitorForm.setDisplayName("VISITOR");
+        portalVisitorForm.setName("default_portal_visitor_web");
+        portalVisitorForm.setModule(visitorModule);
+        portalVisitorForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+//        portalVisitorForm.setFields(visitorFormFields);
+        portalVisitorForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP));
+
+        FormSection portalVisitorFormSection = new FormSection("Default", 1, visitorFormFields, false);
+        portalVisitorFormSection.setSectionType(FormSection.SectionType.FIELDS);
+        portalVisitorForm.setSections(Collections.singletonList(portalVisitorFormSection));
+
+        List<FacilioForm> visitorModuleForms = new ArrayList<>();
+        visitorModuleForms.add(visitorKioskForm);
+        visitorModuleForms.add(visitorForm);
+        visitorModuleForms.add(portalVisitorForm);
+
+        return visitorModuleForms;
+    }
+
 }

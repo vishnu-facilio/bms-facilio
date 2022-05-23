@@ -13,10 +13,6 @@ public class PoLineItemsSerialNumbersModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.PO_LINE_ITEMS_SERIAL_NUMBERS);
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

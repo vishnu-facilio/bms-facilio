@@ -18,10 +18,6 @@ public class ShipmentModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.SHIPMENT);
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

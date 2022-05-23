@@ -19,10 +19,6 @@ public class OperationAlarmModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.OPERATION_ALARM);
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

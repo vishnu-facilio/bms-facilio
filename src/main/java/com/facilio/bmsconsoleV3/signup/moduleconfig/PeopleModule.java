@@ -1,23 +1,24 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 
 import java.util.*;
 
 public class PeopleModule extends BaseModuleConfig{
     public PeopleModule(){
         setModuleName(FacilioConstants.ContextNames.PEOPLE);
-    }
-
-    @Override
-    protected void addForms() throws Exception {
-
     }
 
     @Override
@@ -54,4 +55,30 @@ public class PeopleModule extends BaseModuleConfig{
         return allView;
     }
 
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule peopleModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+
+        FacilioForm peopleForm = new FacilioForm();
+        peopleForm.setDisplayName("NEW PEOPLE");
+        peopleForm.setName("default_people_web");
+        peopleForm.setModule(peopleModule);
+        peopleForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        peopleForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+
+        List<FormField> peopleFormFields = new ArrayList<>();
+        peopleFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+        peopleFormFields.add(new FormField("email", FacilioField.FieldDisplayType.TEXTBOX, "Email", FormField.Required.OPTIONAL, 2, 1));
+        peopleFormFields.add(new FormField("phone", FacilioField.FieldDisplayType.TEXTBOX, "Phone", FormField.Required.OPTIONAL, 3, 1));
+        peopleFormFields.add(new FormField("isOccupantPortalAccess", FacilioField.FieldDisplayType.DECISION_BOX, "Occupant Portal Access", FormField.Required.OPTIONAL, 4, 1));
+        peopleFormFields.add(new FormField("peopleType", FacilioField.FieldDisplayType.SELECTBOX, "People Type", FormField.Required.OPTIONAL, 5, 1));
+//        peopleForm.setFields(peopleFormFields);
+
+        FormSection section = new FormSection("Default", 1, peopleFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        peopleForm.setSections(Collections.singletonList(section));
+
+        return Collections.singletonList(peopleForm);
+    }
 }

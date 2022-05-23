@@ -1,22 +1,24 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.accounts.dto.AppDomain;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.FacilioField;
 
 import java.util.*;
 
 public class AmenityModule extends BaseModuleConfig{
     public AmenityModule(){
         setModuleName(FacilioConstants.ContextNames.FacilityBooking.AMENITY);
-    }
-
-    @Override
-    protected void addForms() throws Exception {
-
     }
 
     @Override
@@ -52,5 +54,31 @@ public class AmenityModule extends BaseModuleConfig{
         appDomains.add(AppDomain.AppDomainType.FACILIO);
 
         return allView;
+    }
+
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule amenityModule = modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.AMENITY);
+
+        FacilioForm amenityForm = new FacilioForm();
+        amenityForm.setDisplayName("Amenity");
+        amenityForm.setName("default_"+ FacilioConstants.ContextNames.FacilityBooking.AMENITY +"_web");
+        amenityForm.setModule(amenityModule);
+        amenityForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        amenityForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+
+        List<FormField> amenityFormFields = new ArrayList<>();
+        amenityFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED,1, 1));
+        amenityFormFields.add(new FormField("category", FacilioField.FieldDisplayType.SELECTBOX, "Category", FormField.Required.OPTIONAL,2, 1));
+        amenityFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL,3, 1));
+        amenityFormFields.add(new FormField("amenityLogo", FacilioField.FieldDisplayType.SELECTBOX, "Amenity Logo", FormField.Required.OPTIONAL,4, 1));
+//        amenityForm.setFields(amenityFormFields);
+
+        FormSection section = new FormSection("Default", 1,amenityFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        amenityForm.setSections(Collections.singletonList(section));
+
+        return  Collections.singletonList(amenityForm);
     }
 }

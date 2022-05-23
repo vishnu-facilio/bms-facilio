@@ -1,14 +1,12 @@
 package com.facilio.bmsconsoleV3.signup.induction;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.context.*;
-import com.facilio.modules.fields.*;
+import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
+import com.facilio.modules.*;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -40,8 +38,6 @@ import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.context.induction.InductionResponseContext;
-import com.facilio.bmsconsoleV3.context.induction.InductionTemplateContext;
-import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -49,10 +45,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.BuildingOperator;
-import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.EnumOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.ScopeOperator;
 import com.facilio.fw.BeanFactory;
@@ -73,9 +66,12 @@ import com.facilio.qa.signup.AddQAndAModules;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 
-public class AddInductionModules extends SignUpData {
+public class AddInductionModules extends BaseModuleConfig {
 
-	
+    public AddInductionModules() throws Exception {
+        setModuleName(FacilioConstants.Induction.INDUCTION_RESPONSE);
+    }
+
 	@Override
     public void addData() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -157,6 +153,7 @@ public class AddInductionModules extends SignUpData {
         defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         defaultForm.setShowInWeb(true);
         defaultForm.setAppId(maintenance.getId());
+        defaultForm.setIsSystemForm(true);
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(Induction.getName()));
         List<FormSection> sections = new ArrayList<FormSection>();
         FormSection configSection = new FormSection();
@@ -295,6 +292,7 @@ public class AddInductionModules extends SignUpData {
       defaultForm.setDisplayName("Standard");
       defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
       defaultForm.setShowInWeb(true);
+      defaultForm.setIsSystemForm(true);
       
       Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(Induction.getName()));
       
@@ -822,4 +820,44 @@ public class AddInductionModules extends SignUpData {
     	
 		return action;
 	}
+
+/*    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule  inductionResponseModule = modBean.getModule(FacilioConstants.Induction.INDUCTION_RESPONSE);
+
+
+        FacilioForm inductionForm = new FacilioForm();
+        inductionForm.setName("default_" + FacilioConstants.Induction.INDUCTION_RESPONSE + "_web");
+        inductionForm.setModule(inductionResponseModule);
+        inductionForm.setDisplayName("Standard");
+        inductionForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        inductionForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        inductionForm.setShowInWeb(true);
+
+        List<FormField> inductionFormFields = new ArrayList<>();
+        int i = 1;
+        inductionFormFields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.OPTIONAL, i++, 1));
+        inductionFormFields.add(new FormField("parent", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Parent", FormField.Required.OPTIONAL, i++, 1));
+        inductionFormFields.add(new FormField("createdTime", FacilioField.FieldDisplayType.DATETIME, "Created Time", FormField.Required.REQUIRED, "building", i++, 2));
+        inductionFormFields.add(new FormField("scheduledWorkStart", FacilioField.FieldDisplayType.DATETIME, "Scheduled Start", FormField.Required.OPTIONAL, "site", i++, 3));
+        inductionFormFields.add(new FormField("scheduledWorkEnd", FacilioField.FieldDisplayType.DATETIME, "Scheduled End", FormField.Required.OPTIONAL, i++, 2));
+        inductionFormFields.add(new FormField("actualWorkStart", FacilioField.FieldDisplayType.DATETIME, "Actual Start", FormField.Required.OPTIONAL, i++, 3));
+        inductionFormFields.add(new FormField("actualWorkEnd", FacilioField.FieldDisplayType.DATETIME, "Actual End", FormField.Required.OPTIONAL, i++, 2));
+        inductionFormFields.add(new FormField("actualWorkDuration", FacilioField.FieldDisplayType.DATETIME, "Actual Duration", FormField.Required.OPTIONAL, i++, 2));
+        inductionFormFields.add(new FormField("status", FacilioField.FieldDisplayType.DECISION_BOX, "Response Status", FormField.Required.OPTIONAL, i++, 2));
+        inductionFormFields.add(new FormField("sourceType", FacilioField.FieldDisplayType.DECISION_BOX, "Source", FormField.Required.OPTIONAL, i++, 2));
+        inductionFormFields.add(new FormField("resource", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Space/Asset", FormField.Required.OPTIONAL, i++, 2));
+        inductionFormFields.add(new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.OPTIONAL, i++, 2));
+        inductionFormFields.add(new FormField("people", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Assigned To", FormField.Required.OPTIONAL, i++, 2));
+        inductionForm.setFields(inductionFormFields);
+
+        FormSection section = new FormSection("Default", 1, inductionFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        inductionForm.setSections(Collections.singletonList(section));
+
+        return Collections.singletonList(inductionForm);
+    }
+*/
 }

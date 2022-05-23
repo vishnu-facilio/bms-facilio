@@ -1,22 +1,24 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.accounts.dto.AppDomain;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.FacilioField;
 
 import java.util.*;
 
 public class LockersModule extends BaseModuleConfig{
     public LockersModule(){
         setModuleName(FacilioConstants.ContextNames.LOCKERS);
-    }
-
-    @Override
-    protected void addForms() throws Exception {
-
     }
 
     @Override
@@ -52,5 +54,48 @@ public class LockersModule extends BaseModuleConfig{
         appDomains.add(AppDomain.AppDomainType.FACILIO);
 
         return allView;
+    }
+
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule lockersModule = modBean.getModule(FacilioConstants.ContextNames.LOCKERS);
+
+        FacilioForm lockersForm = new FacilioForm();
+        lockersForm.setDisplayName("NEW LOCKER");
+        lockersForm.setName("default_lockers_web");
+        lockersForm.setModule(lockersModule);
+        lockersForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+        lockersForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+
+        List<FormField> lockersFormFields = new ArrayList<>();
+        lockersFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+        lockersFormFields.add(new FormField("employee", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Employee", FormField.Required.REQUIRED, "employee", 2, 2));
+        lockersFormFields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED,"site", 5, 2));
+        lockersFormFields.add(new FormField("building", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Building", FormField.Required.OPTIONAL,"building", 6, 3));
+        lockersFormFields.add(new FormField("floor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Floor", FormField.Required.OPTIONAL,"floor", 7, 1));
+        lockersForm.setFields(lockersFormFields);
+
+        FormSection lockersFormSection = new FormSection("Default", 1, lockersFormFields, false);
+        lockersFormSection.setSectionType(FormSection.SectionType.FIELDS);
+        lockersForm.setSections(Collections.singletonList(lockersFormSection));
+
+        FacilioForm lockersPortalForm = new FacilioForm();
+        lockersPortalForm.setDisplayName("NEW LOCKER");
+        lockersPortalForm.setName("default_lockers_portal");
+        lockersPortalForm.setModule(lockersModule);
+        lockersPortalForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+        lockersPortalForm.setFields(lockersFormFields);
+        lockersPortalForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP));
+
+        FormSection lockersPortalFormSection = new FormSection("Default", 1, lockersFormFields, false);
+        lockersPortalFormSection.setSectionType(FormSection.SectionType.FIELDS);
+        lockersPortalForm.setSections(Collections.singletonList(lockersPortalFormSection));
+
+        List<FacilioForm> lockersModuleForms = new ArrayList<>();
+        lockersModuleForms.add(lockersForm);
+        lockersModuleForms.add(lockersPortalForm);
+
+        return lockersModuleForms;
     }
 }

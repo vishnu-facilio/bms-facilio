@@ -16,10 +16,6 @@ public class EventModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.EVENT);
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

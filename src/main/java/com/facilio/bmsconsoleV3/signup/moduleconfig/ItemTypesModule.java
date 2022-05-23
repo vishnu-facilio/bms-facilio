@@ -1,8 +1,13 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
@@ -15,10 +20,6 @@ public class ItemTypesModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.ITEM_TYPES);
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {
@@ -57,5 +58,43 @@ public class ItemTypesModule extends BaseModuleConfig{
         allView.setSortFields(sortFields);
 
         return allView;
+    }
+
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule itemTypesModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TYPES);
+
+        FacilioForm itemTypesForm = new FacilioForm();
+        itemTypesForm.setDisplayName("NEW ITEM TYPE");
+        itemTypesForm.setName("default_itemTypes_web");
+        itemTypesForm.setModule(itemTypesModule);
+        itemTypesForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        itemTypesForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+
+        List<FormField> itemTypesFormFields = new ArrayList<>();
+        itemTypesFormFields.add(new FormField("photo", FacilioField.FieldDisplayType.IMAGE, "Photo", FormField.Required.OPTIONAL, 1, 1));
+        itemTypesFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 2, 1));
+        itemTypesFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 3, 1));
+        FormField field = new FormField("category", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL, "inventoryCategory",4, 2);
+        field.setAllowCreateOptions(true);
+        field.addToConfig("canShowLookupWizard",true);
+        itemTypesFormFields.add(field);
+        itemTypesFormFields.add(new FormField("sellingPrice", FacilioField.FieldDisplayType.NUMBER, "Selling Price", FormField.Required.OPTIONAL,  5, 2));
+        itemTypesFormFields.add(new FormField("minimumQuantity", FacilioField.FieldDisplayType.NUMBER, "Minimum Quantity", FormField.Required.OPTIONAL, 5, 3));
+        itemTypesFormFields.add(new FormField("isRotating", FacilioField.FieldDisplayType.DECISION_BOX, "Is Rotating", FormField.Required.OPTIONAL, 6, 2));
+        itemTypesFormFields.add(new FormField("isApprovalNeeded", FacilioField.FieldDisplayType.DECISION_BOX, "Approval Needed", FormField.Required.OPTIONAL, 7, 3));
+        itemTypesFormFields.add(new FormField("isConsumable", FacilioField.FieldDisplayType.DECISION_BOX, "To Be Issued", FormField.Required.OPTIONAL, 8, 2));
+        FormField currentQuantity = new FormField("currentQuantity", FacilioField.FieldDisplayType.NUMBER, "Current Quantity", FormField.Required.OPTIONAL, 9, 2);
+        currentQuantity.setHideField(true);
+        itemTypesFormFields.add(currentQuantity);
+
+//        itemTypesForm.setFields(itemTypesFormFields);
+
+        FormSection section = new FormSection("Default", 1, itemTypesFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        itemTypesForm.setSections(Collections.singletonList(section));
+
+        return Collections.singletonList(itemTypesForm);
     }
 }

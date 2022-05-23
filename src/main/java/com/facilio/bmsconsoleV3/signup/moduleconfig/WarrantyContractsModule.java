@@ -1,6 +1,10 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ContractsContext;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
@@ -9,6 +13,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
@@ -22,8 +27,33 @@ public class WarrantyContractsModule extends BaseModuleConfig{
     }
 
     @Override
-    protected void addForms() throws Exception {
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule warrantyContractsModule = modBean.getModule(FacilioConstants.ContextNames.WARRANTY_CONTRACTS);
 
+        FacilioForm warrantyContractForm = new FacilioForm();
+        warrantyContractForm.setDisplayName("WARRANTY CONTRACT");
+        warrantyContractForm.setName("warrantyContractForm");
+        warrantyContractForm.setModule(warrantyContractsModule);
+        warrantyContractForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+        warrantyContractForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+
+        List<FormField> warrantyContractFormFields = new ArrayList<>();
+        warrantyContractFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+        warrantyContractFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+        warrantyContractFormFields.add(new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.REQUIRED, "vendors", 3, 2).setAllowCreateOptions(true).setCreateFormName("vendors_form"));
+        warrantyContractFormFields.add(new FormField("renewalDate", FacilioField.FieldDisplayType.DATE, "Renewal Date", FormField.Required.OPTIONAL, 3, 3));
+        warrantyContractFormFields.add(new FormField("fromDate", FacilioField.FieldDisplayType.DATE, "From Date", FormField.Required.OPTIONAL, 4, 2));
+        warrantyContractFormFields.add(new FormField("endDate", FacilioField.FieldDisplayType.DATE, "End Date", FormField.Required.OPTIONAL, 4, 3));
+        warrantyContractFormFields.add(new FormField("lineItems", FacilioField.FieldDisplayType.WARRANTY_LINE_ITEMS, "LINE ITEMS", FormField.Required.REQUIRED, 5, 1));
+        warrantyContractFormFields.add(new FormField("payment", FacilioField.FieldDisplayType.SCHEDULER_INFO, "SCHEDULER INFO", FormField.Required.REQUIRED, 6, 1));
+        warrantyContractForm.setFields(warrantyContractFormFields);
+
+        FormSection section = new FormSection("Default", 1, warrantyContractFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        warrantyContractForm.setSections(Collections.singletonList(section));
+
+        return Collections.singletonList(warrantyContractForm);
     }
 
     @Override

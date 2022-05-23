@@ -1,5 +1,9 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
@@ -7,6 +11,8 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -17,11 +23,6 @@ import java.util.*;
 public class TenantModule extends BaseModuleConfig{
     public TenantModule(){
         setModuleName(FacilioConstants.ContextNames.TENANT);
-    }
-
-    @Override
-    protected void addForms() throws Exception {
-
     }
 
     @Override
@@ -108,5 +109,56 @@ public class TenantModule extends BaseModuleConfig{
         condition.setCriteriaValue(statusCriteria);
 
         return condition;
+    }
+
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule tenantModule = modBean.getModule(FacilioConstants.ContextNames.TENANT);
+
+        FacilioForm tenantForm = new FacilioForm();
+        tenantForm.setDisplayName("Tenant");
+        tenantForm.setName("default_tenant_web");
+        tenantForm.setModule(tenantModule);
+        tenantForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        tenantForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+
+        // -- THESE FIELD LIST IS COMMON FOR tenantForm AND tenantWebForm
+        List<FormField> tenantFormFields = new ArrayList<>();
+        tenantFormFields.add(new FormField("avatar", FacilioField.FieldDisplayType.IMAGE,"Tenant Logo", FormField.Required.OPTIONAL,1,1));
+        tenantFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 2, 1));
+        tenantFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 3, 1));
+        tenantFormFields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, "site", 4, 1));
+        tenantFormFields.add(new FormField("primaryContactName", FacilioField.FieldDisplayType.TEXTBOX, "Primary Contact Name", FormField.Required.REQUIRED, 6, 1));
+        tenantFormFields.add(new FormField("primaryContactEmail", FacilioField.FieldDisplayType.TEXTBOX, "Primary Contact E-mail", FormField.Required.OPTIONAL, 7, 1));
+        tenantFormFields.add(new FormField("primaryContactPhone", FacilioField.FieldDisplayType.TEXTBOX, "Primary Contact Phone", FormField.Required.REQUIRED, 8, 1));
+        tenantFormFields.add(new FormField("tenantType", FacilioField.FieldDisplayType.SELECTBOX, "Tenant Type", FormField.Required.OPTIONAL, 9, 1));
+        tenantFormFields.add(new FormField("inTime", FacilioField.FieldDisplayType.DATE, "Lease Start Date", FormField.Required.OPTIONAL, 10, 1));
+        tenantFormFields.add(new FormField("outTime", FacilioField.FieldDisplayType.DATE, "Lease End Date", FormField.Required.OPTIONAL, 11, 1));
+        tenantFormFields.add(new FormField("address", FacilioField.FieldDisplayType.ADDRESS, "Address", FormField.Required.OPTIONAL, 12, 1));
+        // -- THESE FIELD LIST IS COMMON FOR tenantForm AND tenantWebForm
+//        tenantForm.setFields(tenantFormFields);
+
+        FormSection tenantFormSection = new FormSection("Default", 1, tenantFormFields, false);
+        tenantFormSection.setSectionType(FormSection.SectionType.FIELDS);
+        tenantForm.setSections(Collections.singletonList(tenantFormSection));
+
+        FacilioForm tenantWebForm = new FacilioForm();
+        tenantWebForm.setDisplayName("TENANT");
+        tenantWebForm.setName("web_default");
+        tenantWebForm.setModule(tenantModule);
+        tenantWebForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+//        tenantWebForm.setFields(tenantFormFields);
+        tenantWebForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+
+        FormSection tenantWebFormSection = new FormSection("Default", 1, tenantFormFields, false);
+        tenantWebFormSection.setSectionType(FormSection.SectionType.FIELDS);
+        tenantWebForm.setSections(Collections.singletonList(tenantWebFormSection));
+
+        List<FacilioForm> tenantModuleForms = new ArrayList<>();
+        tenantModuleForms.add(tenantForm);
+        tenantModuleForms.add(tenantWebForm);
+
+        return tenantModuleForms;
     }
 }

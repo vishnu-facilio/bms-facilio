@@ -1,6 +1,10 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -9,6 +13,7 @@ import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
 
 import java.util.*;
 
@@ -98,10 +103,6 @@ public class SpaceModule extends BaseModuleConfig {
             ex.printStackTrace();
         }
     }
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {
@@ -132,5 +133,153 @@ public class SpaceModule extends BaseModuleConfig {
         allView.setSortFields(sortFields);
 
         return allView;
+    }
+
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule spaceModule = modBean.getModule(FacilioConstants.ContextNames.SPACE);
+
+        FacilioForm defaultSpaceWebSiteForm = new FacilioForm();
+        defaultSpaceWebSiteForm.setName("default_space_web_site");
+        defaultSpaceWebSiteForm.setModule(spaceModule);
+        defaultSpaceWebSiteForm.setDisplayName("Standard Form From Site");
+        defaultSpaceWebSiteForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        defaultSpaceWebSiteForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        defaultSpaceWebSiteForm.setShowInWeb(true);
+
+        List<FormField> defaultSpaceWebSiteFormFields = new ArrayList<>();
+        defaultSpaceWebSiteFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+        defaultSpaceWebSiteFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+        defaultSpaceWebSiteFormFields.add(new FormField("spaceCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL,"spacecategory", 3, 1));
+        defaultSpaceWebSiteFormFields.add(new FormField("area", FacilioField.FieldDisplayType.DECIMAL, "Area", FormField.Required.OPTIONAL, 4, 1));
+        defaultSpaceWebSiteFormFields.add(new FormField("site", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site Associated", FormField.Required.REQUIRED,"site", 5, 1,true));
+        defaultSpaceWebSiteFormFields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Maximum Occupancy Count", FormField.Required.OPTIONAL, 6, 1));
+        defaultSpaceWebSiteFormFields.add(new FormField("location", FacilioField.FieldDisplayType.GEO_LOCATION, "Location", FormField.Required.OPTIONAL, 7, 1));
+
+        try {
+            if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.RESOURCE_BOOKING)) {
+                defaultSpaceWebSiteFormFields.add(new FormField("reservable", FacilioField.FieldDisplayType.DECISION_BOX, "Is Reservable", FormField.Required.OPTIONAL, 8, 1));
+                defaultSpaceWebSiteFormFields.add(new FormField("unitReservationCost", FacilioField.FieldDisplayType.TEXTBOX, "Unit Reservation Cost", FormField.Required.OPTIONAL, 9, 1));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+//        defaultSpaceWebSiteForm.setFields(defaultSpaceWebSiteFormFields);
+
+        FormSection defaultSpaceWebSiteFormSection = new FormSection("Default", 1, defaultSpaceWebSiteFormFields, false);
+        defaultSpaceWebSiteFormSection.setSectionType(FormSection.SectionType.FIELDS);
+        defaultSpaceWebSiteForm.setSections(Collections.singletonList(defaultSpaceWebSiteFormSection));
+
+
+        FacilioForm defaultSpaceWebBuildingForm = new FacilioForm();
+        defaultSpaceWebBuildingForm.setName("default_space_web_building");
+        defaultSpaceWebBuildingForm.setModule(spaceModule);
+        defaultSpaceWebBuildingForm.setDisplayName("Standard Form From Building");
+        defaultSpaceWebBuildingForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        defaultSpaceWebBuildingForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        defaultSpaceWebBuildingForm.setShowInWeb(true);
+
+        List<FormField> defaultSpaceWebBuildingFormFields = new ArrayList<>();
+        defaultSpaceWebBuildingFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+        defaultSpaceWebBuildingFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+        defaultSpaceWebBuildingFormFields.add(new FormField("spaceCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL,"spacecategory", 3, 1));
+        defaultSpaceWebBuildingFormFields.add(new FormField("area", FacilioField.FieldDisplayType.DECIMAL, "Area", FormField.Required.OPTIONAL, 4, 1));
+        defaultSpaceWebBuildingFormFields.add(new FormField("building", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Building Associated", FormField.Required.REQUIRED,"building", 5, 1,true));
+        defaultSpaceWebBuildingFormFields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Maximum Occupancy Count", FormField.Required.OPTIONAL, 6, 1));
+        defaultSpaceWebBuildingFormFields.add(new FormField("location", FacilioField.FieldDisplayType.GEO_LOCATION, "Location", FormField.Required.OPTIONAL, 7, 1));
+
+        try {
+            if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.RESOURCE_BOOKING)) {
+                defaultSpaceWebBuildingFormFields.add(new FormField("reservable", FacilioField.FieldDisplayType.DECISION_BOX, "Is Reservable", FormField.Required.OPTIONAL, 8, 1));
+                defaultSpaceWebBuildingFormFields.add(new FormField("unitReservationCost", FacilioField.FieldDisplayType.TEXTBOX, "Unit Reservation Cost", FormField.Required.OPTIONAL, 9, 1));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+//        defaultSpaceWebBuildingForm.setFields(defaultSpaceWebBuildingFormFields);
+
+        FormSection defaultSpaceWebBuildingFormSection = new FormSection("Default", 1, defaultSpaceWebBuildingFormFields, false);
+        defaultSpaceWebBuildingFormSection.setSectionType(FormSection.SectionType.FIELDS);
+        defaultSpaceWebBuildingForm.setSections(Collections.singletonList(defaultSpaceWebBuildingFormSection));
+
+        FacilioForm defaultSpaceWebFloorForm = new FacilioForm();
+        defaultSpaceWebFloorForm.setName("default_space_web_floor");
+        defaultSpaceWebFloorForm.setModule(spaceModule);
+        defaultSpaceWebFloorForm.setDisplayName("Standard Form From Floor");
+        defaultSpaceWebFloorForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        defaultSpaceWebFloorForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        defaultSpaceWebFloorForm.setShowInWeb(true);
+
+        List<FormField> defaultSpaceWebFloorFormFields = new ArrayList<>();
+        defaultSpaceWebFloorFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+        defaultSpaceWebFloorFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+        defaultSpaceWebFloorFormFields.add(new FormField("spaceCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL,"spacecategory", 3, 1));
+        defaultSpaceWebFloorFormFields.add(new FormField("area", FacilioField.FieldDisplayType.DECIMAL, "Area", FormField.Required.OPTIONAL, 4, 1));
+        defaultSpaceWebFloorFormFields.add(new FormField("floor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Floor Associated", FormField.Required.REQUIRED,"floor", 5, 1,true));
+        defaultSpaceWebFloorFormFields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Maximum Occupancy Count", FormField.Required.OPTIONAL, 6, 1));
+        defaultSpaceWebFloorFormFields.add(new FormField("location", FacilioField.FieldDisplayType.GEO_LOCATION, "Location", FormField.Required.OPTIONAL, 7, 1));
+        defaultSpaceWebFloorFormFields.add(new FormField("failureClass", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Failure Class", FormField.Required.OPTIONAL, "failureclass",8, 2));
+        try {
+            if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.RESOURCE_BOOKING)) {
+                defaultSpaceWebFloorFormFields.add(new FormField("reservable", FacilioField.FieldDisplayType.DECISION_BOX, "Is Reservable", FormField.Required.OPTIONAL, 8, 1));
+                defaultSpaceWebFloorFormFields.add(new FormField("unitReservationCost", FacilioField.FieldDisplayType.TEXTBOX, "Unit Reservation Cost", FormField.Required.OPTIONAL, 9, 1));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+//        defaultSpaceWebFloorForm.setFields(defaultSpaceWebFloorFormFields);
+
+        FormSection defaultSpaceWebFloorFormSection = new FormSection("Default", 1, defaultSpaceWebFloorFormFields, false);
+        defaultSpaceWebFloorFormSection.setSectionType(FormSection.SectionType.FIELDS);
+        defaultSpaceWebFloorForm.setSections(Collections.singletonList(defaultSpaceWebFloorFormSection));
+
+        FacilioForm defaultSpaceWebSpaceForm = new FacilioForm();
+        defaultSpaceWebSpaceForm.setName("default_space_web_space");
+        defaultSpaceWebSpaceForm.setModule(spaceModule);
+        defaultSpaceWebSpaceForm.setDisplayName("Standard Form From Space");
+        defaultSpaceWebSpaceForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        defaultSpaceWebSpaceForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        defaultSpaceWebSpaceForm.setShowInWeb(true);
+
+        List<FormField> defaultSpaceWebSpaceFormFields = new ArrayList<>();
+        defaultSpaceWebSpaceFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+        defaultSpaceWebSpaceFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+        defaultSpaceWebSpaceFormFields.add(new FormField("spaceCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL,"spacecategory", 3, 1));
+        defaultSpaceWebSpaceFormFields.add(new FormField("area", FacilioField.FieldDisplayType.DECIMAL, "Area", FormField.Required.OPTIONAL, 4, 1));
+        defaultSpaceWebSpaceFormFields.add(getSpaceAssociatedField());
+        defaultSpaceWebSpaceFormFields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Maximum Occupancy Count", FormField.Required.OPTIONAL, 6, 1));
+        defaultSpaceWebSpaceFormFields.add(new FormField("location", FacilioField.FieldDisplayType.GEO_LOCATION, "Location", FormField.Required.OPTIONAL, 7, 1));
+        defaultSpaceWebSpaceFormFields.add(new FormField("failureClass", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Failure Class", FormField.Required.OPTIONAL, "failureclass",8, 2));
+        try {
+            if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.RESOURCE_BOOKING)) {
+                defaultSpaceWebSpaceFormFields.add(new FormField("reservable", FacilioField.FieldDisplayType.DECISION_BOX, "Is Reservable", FormField.Required.OPTIONAL, 8, 1));
+                defaultSpaceWebSpaceFormFields.add(new FormField("unitReservationCost", FacilioField.FieldDisplayType.TEXTBOX, "Unit Reservation Cost", FormField.Required.OPTIONAL, 9, 1));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+//        defaultSpaceWebSpaceForm.setFields(defaultSpaceWebSpaceFormFields);
+
+        FormSection defaultSpaceWebSpaceFormSection = new FormSection("Default", 1, defaultSpaceWebSpaceFormFields, false);
+        defaultSpaceWebSpaceFormSection.setSectionType(FormSection.SectionType.FIELDS);
+        defaultSpaceWebSpaceForm.setSections(Collections.singletonList(defaultSpaceWebSpaceFormSection));
+
+        List<FacilioForm> spaceModuleForms = new ArrayList<>();
+        spaceModuleForms.add(defaultSpaceWebSiteForm);
+        spaceModuleForms.add(defaultSpaceWebBuildingForm);
+        spaceModuleForms.add(defaultSpaceWebFloorForm);
+        spaceModuleForms.add(defaultSpaceWebSpaceForm);
+
+        return spaceModuleForms;
+    }
+
+    public static FormField getSpaceAssociatedField() {
+        FormField parentSpace = new FormField("parentSpace", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Space Associated", FormField.Required.REQUIRED,"space", 5, 1,true);
+        parentSpace.addToConfig("isFiltersEnabled", true); // Adding this as parent space is a special case with no field object
+        parentSpace.addToConfig("lookupModuleName", "space");
+        return parentSpace;
     }
 }

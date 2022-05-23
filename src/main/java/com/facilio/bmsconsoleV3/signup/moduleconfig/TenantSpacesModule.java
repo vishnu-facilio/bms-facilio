@@ -15,10 +15,6 @@ public class TenantSpacesModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.TENANT_SPACES);
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

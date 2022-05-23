@@ -1,8 +1,13 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
@@ -13,11 +18,6 @@ import java.util.*;
 public class FailureCodeModule extends BaseModuleConfig {
     public FailureCodeModule() throws Exception {
         setModuleName(FacilioConstants.ContextNames.FAILURE_CODE);
-    }
-
-    @Override
-    protected void addForms() throws Exception {
-
     }
 
     @Override
@@ -56,5 +56,29 @@ public class FailureCodeModule extends BaseModuleConfig {
         allView.setSortFields(Arrays.asList(new SortField(id, false)));
 
         return allView;
+    }
+
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule failureCodeModule = modBean.getModule(FacilioConstants.ContextNames.FAILURE_CODE);
+
+        FacilioForm failureCodeModuleForm = new FacilioForm();
+        failureCodeModuleForm.setDisplayName("Failure Code");
+        failureCodeModuleForm.setName("default_failurecode_web");
+        failureCodeModuleForm.setModule(failureCodeModule);
+        failureCodeModuleForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        failureCodeModuleForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+
+        List<FormField> failureCodeModuleFormFields = new ArrayList<>();
+        failureCodeModuleFormFields.add(new FormField("code", FacilioField.FieldDisplayType.TEXTBOX, "Code", FormField.Required.REQUIRED, 1, 1));
+        failureCodeModuleFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+//        failureCodeModuleForm.setFields(failureCodeModuleFormFields);
+
+        FormSection section = new FormSection("Default", 1, failureCodeModuleFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        failureCodeModuleForm.setSections(Collections.singletonList(section));
+
+        return Collections.singletonList(failureCodeModuleForm);
     }
 }

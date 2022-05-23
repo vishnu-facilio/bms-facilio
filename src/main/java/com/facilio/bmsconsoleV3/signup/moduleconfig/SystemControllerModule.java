@@ -15,10 +15,6 @@ public class SystemControllerModule extends BaseModuleConfig {
         setModuleName("systemController");
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

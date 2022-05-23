@@ -19,10 +19,6 @@ public class MlAnomalyAlarmModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.ML_ANOMALY_ALARM);
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

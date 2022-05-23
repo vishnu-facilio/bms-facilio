@@ -12,14 +12,24 @@ import com.facilio.modules.fields.FacilioField;
 
 import java.util.*;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 public class WatchlistModule extends BaseModuleConfig{
     public WatchlistModule(){
         setModuleName(FacilioConstants.ContextNames.WATCHLIST);
-    }
-
-    @Override
-    protected void addForms() throws Exception {
-
     }
 
     @Override
@@ -77,4 +87,36 @@ public class WatchlistModule extends BaseModuleConfig{
 
         return allView;
     }
+
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule watchlistModule = modBean.getModule(FacilioConstants.ContextNames.WATCHLIST);
+
+        FacilioForm watchListForm = new FacilioForm();
+        watchListForm.setDisplayName("WATCH LIST");
+        watchListForm.setName("default_watch_list_web");
+        watchListForm.setModule(watchlistModule);
+        watchListForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        watchListForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+
+        List<FormField> watchListFormFields = new ArrayList<>();
+        watchListFormFields.add(new FormField("avatar", FacilioField.FieldDisplayType.IMAGE,"Visitor Photo", FormField.Required.OPTIONAL,1,1));
+        watchListFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 2, 1));
+        watchListFormFields.add(new FormField("phone", FacilioField.FieldDisplayType.TEXTBOX, "Phone", FormField.Required.REQUIRED, 3, 2));
+        watchListFormFields.add(new FormField("email", FacilioField.FieldDisplayType.TEXTBOX, "Email", FormField.Required.OPTIONAL, 4, 3));
+        watchListFormFields.add(new FormField("aliases", FacilioField.FieldDisplayType.LONG_DESC, "Aliases", FormField.Required.OPTIONAL, 5, 2));
+        watchListFormFields.add(new FormField("physicalDescription", FacilioField.FieldDisplayType.LONG_DESC, "Physical Description", FormField.Required.OPTIONAL, 6, 2));
+        watchListFormFields.add(new FormField("isBlocked", FacilioField.FieldDisplayType.DECISION_BOX, "Blocked Entry", FormField.Required.OPTIONAL, 7, 2));
+        watchListFormFields.add(new FormField("isVip", FacilioField.FieldDisplayType.DECISION_BOX, "VIP", FormField.Required.OPTIONAL, 8, 3));
+        watchListFormFields.add(new FormField("remarks", FacilioField.FieldDisplayType.LONG_DESC, "Remarks", FormField.Required.OPTIONAL, 9, 2));
+//        watchListForm.setFields(watchListFormFields);
+
+        FormSection section = new FormSection("Default", 1, watchListFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        watchListForm.setSections(Collections.singletonList(section));
+
+        return Collections.singletonList(watchListForm);
+    }
+
 }

@@ -1,11 +1,16 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
@@ -21,10 +26,6 @@ public class ItemModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.ITEM);
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {
@@ -151,5 +152,31 @@ public class ItemModule extends BaseModuleConfig{
         Criteria criteria = new Criteria();
         criteria.addAndCondition(staleParts);
         return criteria;
+    }
+
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule itemModule = modBean.getModule(FacilioConstants.ContextNames.ITEM);
+
+        FacilioForm itemForm = new FacilioForm();
+        itemForm.setDisplayName("UPDATE ITEM ATTRIBUTES");
+        itemForm.setName("web_default");
+        itemForm.setModule(itemModule);
+        itemForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        itemForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+
+        List<FormField> itemFormFields = new ArrayList<>();
+        itemFormFields.add(new FormField("itemType", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Item Type", FormField.Required.REQUIRED, "itemTypes", 1, 2));
+        itemFormFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.REQUIRED, "storeRoom", 1, 3));
+        itemFormFields.add(new FormField("minimumQuantity", FacilioField.FieldDisplayType.NUMBER, "Minimum Quantity", FormField.Required.OPTIONAL, 2, 2));
+        itemFormFields.add(new FormField("costType", FacilioField.FieldDisplayType.SELECTBOX, "Cost Type", FormField.Required.OPTIONAL, 2, 3));
+//        itemForm.setFields(itemFormFields);
+
+        FormSection section = new FormSection("Default", 1, itemFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        itemForm.setSections(Collections.singletonList(section));
+
+        return Collections.singletonList(itemForm);
     }
 }

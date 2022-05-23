@@ -1,6 +1,10 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ContractsContext;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
@@ -9,6 +13,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
@@ -21,10 +26,6 @@ public class LabourContractsModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.LABOUR_CONTRACTS);
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {
@@ -124,4 +125,34 @@ public class LabourContractsModule extends BaseModuleConfig{
         return criteria;
     }
 
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule labourContractsModule = modBean.getModule(FacilioConstants.ContextNames.LABOUR_CONTRACTS);
+
+        FacilioForm labourContractsForm = new FacilioForm();
+        labourContractsForm.setDisplayName("LABOUR CONTRACT");
+        labourContractsForm.setName("web_default");
+        labourContractsForm.setModule(labourContractsModule);
+        labourContractsForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+        labourContractsForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+
+        List<FormField> labourContractsFormFields = new ArrayList<>();
+        labourContractsFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+        labourContractsFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+        labourContractsFormFields.add(new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.REQUIRED, "vendors", 3, 1).setAllowCreateOptions(true).setCreateFormName("vendors_form"));
+        labourContractsFormFields.add(new FormField("fromDate", FacilioField.FieldDisplayType.DATE, "From Date", FormField.Required.OPTIONAL, 4, 2));
+        labourContractsFormFields.add(new FormField("endDate", FacilioField.FieldDisplayType.DATE, "End Date", FormField.Required.OPTIONAL, 4, 3));
+        labourContractsFormFields.add(new FormField("totalCost", FacilioField.FieldDisplayType.DECIMAL, "Total Cost", FormField.Required.OPTIONAL, 5, 2));
+        labourContractsFormFields.add(new FormField("renewalDate", FacilioField.FieldDisplayType.DATE, "Renewal Date", FormField.Required.OPTIONAL, 5, 3));
+        labourContractsFormFields.add(new FormField("lineItems", FacilioField.FieldDisplayType.LABOUR_LINE_ITEMS, "LABOUR RECORDS", FormField.Required.REQUIRED, 6, 1));
+        labourContractsFormFields.add(new FormField("payment", FacilioField.FieldDisplayType.SCHEDULER_INFO, "SCHEDULER INFO", FormField.Required.REQUIRED, 7, 1));
+//        labourContractsForm.setFields(labourContractsFormFields);
+
+        FormSection section = new FormSection("Default", 1, labourContractsFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        labourContractsForm.setSections(Collections.singletonList(section));
+
+        return Collections.singletonList(labourContractsForm);
+    }
 }

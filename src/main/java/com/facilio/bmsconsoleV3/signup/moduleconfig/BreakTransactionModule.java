@@ -14,10 +14,6 @@ public class BreakTransactionModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.BREAK_TRANSACTION);
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

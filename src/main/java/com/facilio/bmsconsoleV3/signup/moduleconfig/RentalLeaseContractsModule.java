@@ -1,6 +1,10 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ContractsContext;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
@@ -9,6 +13,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
@@ -19,11 +24,6 @@ import java.util.*;
 public class RentalLeaseContractsModule extends BaseModuleConfig{
     public RentalLeaseContractsModule(){
         setModuleName(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS);
-    }
-
-    @Override
-    protected void addForms() throws Exception {
-
     }
 
     @Override
@@ -124,4 +124,34 @@ public class RentalLeaseContractsModule extends BaseModuleConfig{
         return criteria;
     }
 
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule rentalLeaseContractsModule = modBean.getModule(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS);
+
+        FacilioForm rentalLeaseContractsForm = new FacilioForm();
+        rentalLeaseContractsForm.setDisplayName("LEASE/RENTAL CONTRACT");
+        rentalLeaseContractsForm.setName("default_rentalleasecontracts_web");
+        rentalLeaseContractsForm.setModule(rentalLeaseContractsModule);
+        rentalLeaseContractsForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+        rentalLeaseContractsForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+
+        List<FormField> rentalLeaseContractsFormFields = new ArrayList<>();
+        rentalLeaseContractsFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+        rentalLeaseContractsFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+        rentalLeaseContractsFormFields.add(new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.REQUIRED, "vendors", 3, 2).setAllowCreateOptions(true).setCreateFormName("vendors_form"));
+        rentalLeaseContractsFormFields.add(new FormField("rentalLeaseContractType", FacilioField.FieldDisplayType.SELECTBOX, "Type", FormField.Required.REQUIRED, 3, 3));
+        rentalLeaseContractsFormFields.add(new FormField("renewalDate", FacilioField.FieldDisplayType.DATE, "Renewal Date", FormField.Required.OPTIONAL, 4, 1));
+        rentalLeaseContractsFormFields.add(new FormField("fromDate", FacilioField.FieldDisplayType.DATE, "From Date", FormField.Required.OPTIONAL, 5, 2));
+        rentalLeaseContractsFormFields.add(new FormField("endDate", FacilioField.FieldDisplayType.DATE, "End Date", FormField.Required.OPTIONAL, 5, 3));
+        rentalLeaseContractsFormFields.add(new FormField("lineItems", FacilioField.FieldDisplayType.LINEITEMS, "LINE ITEMS", FormField.Required.REQUIRED, 6, 1));
+        rentalLeaseContractsFormFields.add(new FormField("payment", FacilioField.FieldDisplayType.SCHEDULER_INFO, "SCHEDULER INFO", FormField.Required.REQUIRED, 7, 1));
+//        rentalLeaseContractsForm.setFields(rentalLeaseContractsFormFields);
+
+        FormSection section = new FormSection("Default", 1, rentalLeaseContractsFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        rentalLeaseContractsForm.setSections(Collections.singletonList(section));
+
+        return Collections.singletonList(rentalLeaseContractsForm);
+    }
 }

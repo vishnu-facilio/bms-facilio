@@ -14,10 +14,6 @@ public class SurveyResponseModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.Survey.SURVEY_RESPONSE);
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

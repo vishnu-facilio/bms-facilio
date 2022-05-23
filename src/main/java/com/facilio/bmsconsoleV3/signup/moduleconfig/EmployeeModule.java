@@ -1,12 +1,18 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 
 import java.util.*;
 
@@ -15,10 +21,6 @@ public class EmployeeModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.EMPLOYEE);
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {
@@ -69,6 +71,33 @@ public class EmployeeModule extends BaseModuleConfig{
         allView.setSortFields(sortFields);
 
         return allView;
+    }
+
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule employeeModule = modBean.getModule(FacilioConstants.ContextNames.EMPLOYEE);
+
+        FacilioForm employeeContactForm = new FacilioForm();
+        employeeContactForm.setDisplayName("NEW EMPLOYEE");
+        employeeContactForm.setName("default_employee_web");
+        employeeContactForm.setModule(employeeModule);
+        employeeContactForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+        employeeContactForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+
+        List<FormField> employeeContactFormFields = new ArrayList<>();
+        employeeContactFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+        employeeContactFormFields.add(new FormField("email", FacilioField.FieldDisplayType.TEXTBOX, "Email", FormField.Required.OPTIONAL, 2, 1));
+        employeeContactFormFields.add(new FormField("phone", FacilioField.FieldDisplayType.TEXTBOX, "Phone", FormField.Required.OPTIONAL, 3, 1));
+        employeeContactFormFields.add(new FormField("isAssignable", FacilioField.FieldDisplayType.DECISION_BOX, "Is Assignable", FormField.Required.OPTIONAL, 4, 2));
+        employeeContactFormFields.add(new FormField("isLabour", FacilioField.FieldDisplayType.DECISION_BOX, "Is Labour", FormField.Required.OPTIONAL, 5, 3));
+//        employeeContactForm.setFields(employeeContactFormFields);
+
+        FormSection section = new FormSection("Default", 1, employeeContactFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        employeeContactForm.setSections(Collections.singletonList(section));
+
+        return Collections.singletonList(employeeContactForm);
     }
 
 }

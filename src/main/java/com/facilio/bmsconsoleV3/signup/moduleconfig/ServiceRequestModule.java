@@ -1,11 +1,16 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -20,10 +25,6 @@ public class ServiceRequestModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.SERVICE_REQUEST);
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {
@@ -101,5 +102,36 @@ public class ServiceRequestModule extends BaseModuleConfig{
         myUserCondition.setValue(FacilioConstants.Criteria.LOGGED_IN_USER);
 
         return myUserCondition;
+    }
+
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule serviceRequestModule = modBean.getModule(FacilioConstants.ContextNames.SERVICE_REQUEST);
+
+        FacilioForm serviceRequestForm = new FacilioForm();
+        serviceRequestForm.setDisplayName("SERVICE REQUEST");
+        serviceRequestForm.setName("default_serviceRequest_web");
+        serviceRequestForm.setModule(serviceRequestModule);
+        serviceRequestForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        serviceRequestForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+
+        List<FormField> serviceRequestFormFields = new ArrayList<>();
+        serviceRequestFormFields.add(new FormField("subject", FacilioField.FieldDisplayType.TEXTBOX, "Subject", FormField.Required.REQUIRED, 1, 1));
+        serviceRequestFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+        serviceRequestFormFields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, "site", 3, 1));
+        serviceRequestFormFields.add(new FormField("requester", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Requester", FormField.Required.REQUIRED, "people" , 4, 1));
+        serviceRequestFormFields.add(new FormField("resource", FacilioField.FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", FormField.Required.OPTIONAL, 5, 1));
+        serviceRequestFormFields.add(new FormField("assignment", FacilioField.FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", FormField.Required.OPTIONAL, 6, 1));
+        serviceRequestFormFields.add(new FormField("urgency", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Urgency", FormField.Required.OPTIONAL, "servicerequestpriority", 7, 1));
+        serviceRequestFormFields.add(new FormField("classification", FacilioField.FieldDisplayType.SELECTBOX, "Classification", FormField.Required.OPTIONAL, "classification" , 8, 1));
+        serviceRequestFormFields.add(new FormField("attachedFiles", FacilioField.FieldDisplayType.ATTACHMENT, "Attachments", FormField.Required.OPTIONAL, "attachment", 8, 1));
+        serviceRequestForm.setFields(serviceRequestFormFields);
+
+        FormSection section = new FormSection("Default", 1, serviceRequestFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        serviceRequestForm.setSections(Collections.singletonList(section));
+
+        return Collections.singletonList(serviceRequestForm);
     }
 }

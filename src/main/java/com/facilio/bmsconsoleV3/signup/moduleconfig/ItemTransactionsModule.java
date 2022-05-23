@@ -19,10 +19,6 @@ public class ItemTransactionsModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

@@ -15,10 +15,6 @@ public class PurchasedItemModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.PURCHASED_ITEM);
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

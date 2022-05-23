@@ -20,11 +20,6 @@ public class WorkflowLogModule extends BaseModuleConfig{
     private static final Logger LOGGER = Logger.getLogger(WorkflowLogModule.class.getName());
 
     @Override
-    protected void addForms() throws Exception {
-
-    }
-
-    @Override
     public List<Map<String, Object>> getViewsAndGroups() {
         List<Map<String, Object>> groupVsViews = new ArrayList<>();
         Map<String, Object> groupDetails;

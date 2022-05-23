@@ -1,12 +1,19 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.FacilioField;
 
 import java.util.*;
 
@@ -89,5 +96,37 @@ public class BuildingModule extends BaseModuleConfig {
         allView.setSortFields(sortFields);
 
         return allView;
+    }
+
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule buildingModule = modBean.getModule(FacilioConstants.ContextNames.BUILDING);
+
+        FacilioForm defaultBuildingForm = new FacilioForm();
+        defaultBuildingForm.setName("default_building_web");
+        defaultBuildingForm.setModule(buildingModule);
+        defaultBuildingForm.setDisplayName("Building");
+        defaultBuildingForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        defaultBuildingForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        defaultBuildingForm.setShowInWeb(true);
+
+        List<FormField> defaultBuildingFormfields = new ArrayList<>();
+        defaultBuildingFormfields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+        defaultBuildingFormfields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+        defaultBuildingFormfields.add(new FormField("location", FacilioField.FieldDisplayType.GEO_LOCATION, "Location", FormField.Required.OPTIONAL, 3, 1));
+        defaultBuildingFormfields.add(new FormField("site", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, "site",4, 2));
+        defaultBuildingFormfields.add(new FormField("managedBy", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Managed By", FormField.Required.OPTIONAL, 4, 3));
+        defaultBuildingFormfields.add(new FormField("grossFloorArea", FacilioField.FieldDisplayType.DECIMAL, "Gross Floor Area", FormField.Required.OPTIONAL, 5, 2));
+        defaultBuildingFormfields.add(new FormField("area", FacilioField.FieldDisplayType.DECIMAL, "Total Built Area", FormField.Required.OPTIONAL, 5, 3));
+        defaultBuildingFormfields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Max Occupancy", FormField.Required.OPTIONAL, 6, 2));
+        defaultBuildingFormfields.add(new FormField("failureClass", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Failure Class", FormField.Required.OPTIONAL, "failureclass",7, 2));
+//        defaultBuildingForm.setFields(defaultBuildingFormfields);
+
+        FormSection Section = new FormSection("Default", 1, defaultBuildingFormfields, false);
+        Section.setSectionType(FormSection.SectionType.FIELDS);
+        defaultBuildingForm.setSections(Collections.singletonList(Section));
+
+        return Collections.singletonList(defaultBuildingForm);
     }
 }

@@ -1,6 +1,10 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.reservation.ReservationContext;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
@@ -8,6 +12,8 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.EnumOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
@@ -18,11 +24,6 @@ import java.util.*;
 public class ReservationModule extends BaseModuleConfig{
     public ReservationModule(){
         setModuleName(FacilioConstants.ContextNames.Reservation.RESERVATION);
-    }
-
-    @Override
-    protected void addForms() throws Exception {
-
     }
 
     @Override
@@ -134,4 +135,38 @@ public class ReservationModule extends BaseModuleConfig{
     private static FacilioField getReservationScheduledTimeField() {
         return FieldFactory.getField("scheduledStartTime","Reservations.SCHEDULED_START_TIME", FieldType.DATE_TIME);
     }
+
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule reservationModule = modBean.getModule(FacilioConstants.ContextNames.RESERVATION);
+
+        FacilioForm reservationForm = new FacilioForm();
+        reservationForm.setDisplayName("RESERVATIONS");
+        reservationForm.setName("default_reservation_web");
+        reservationForm.setModule(reservationModule);
+        reservationForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        reservationForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+
+        List<FormField> reservationFormFields = new ArrayList<>();
+        reservationFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+        reservationFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+        reservationFormFields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, "site", 3, 2));
+        reservationFormFields.add(new FormField("space", FacilioField.FieldDisplayType.RESERVABLE_SPACES, "Space", FormField.Required.REQUIRED, 4, 1));
+        reservationFormFields.add(new FormField("durationType", FacilioField.FieldDisplayType.SELECTBOX, "Duration Type", FormField.Required.REQUIRED, 5, 1));
+        reservationFormFields.add(new FormField("scheduledStartTime", FacilioField.FieldDisplayType.DATETIME, "Scheduled Start Time", FormField.Required.REQUIRED, 6, 2));
+        reservationFormFields.add(new FormField("scheduledEndTime", FacilioField.FieldDisplayType.DATETIME, "Scheduled End Time", FormField.Required.OPTIONAL, 6, 3));
+        reservationFormFields.add(new FormField("noOfAttendees", FacilioField.FieldDisplayType.NUMBER, "No. Of Attendees", FormField.Required.OPTIONAL, 7, 1));
+        reservationFormFields.add(new FormField("reservedFor", FacilioField.FieldDisplayType.USER, "Reserved For", FormField.Required.REQUIRED, 8, 1));
+        reservationFormFields.add(new FormField("internalAttendees", FacilioField.FieldDisplayType.MULTI_USER_LIST, "Internal Attendees", FormField.Required.OPTIONAL, 9, 1));
+        reservationFormFields.add(new FormField("externalAttendees", FacilioField.FieldDisplayType.EXTERNAL_ATTENDEES, "External Attendees", FormField.Required.OPTIONAL, 10, 1));
+//        reservationForm.setFields(reservationFormFields);
+
+        FormSection section = new FormSection("Default", 1, reservationFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        reservationForm.setSections(Collections.singletonList(section));
+
+        return Collections.singletonList(reservationForm);
+    }
+
 }

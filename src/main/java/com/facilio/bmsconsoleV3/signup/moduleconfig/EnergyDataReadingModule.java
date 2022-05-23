@@ -10,10 +10,6 @@ public class EnergyDataReadingModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.ENERGY_DATA_READING);
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

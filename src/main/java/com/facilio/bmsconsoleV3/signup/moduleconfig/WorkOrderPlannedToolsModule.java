@@ -1,8 +1,13 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
@@ -15,10 +20,6 @@ public class WorkOrderPlannedToolsModule extends BaseModuleConfig {
         setModuleName(FacilioConstants.ContextNames.WO_PLANNED_TOOLS);
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {
@@ -74,5 +75,35 @@ public class WorkOrderPlannedToolsModule extends BaseModuleConfig {
         allView.setSortFields(sortFields);
 
         return allView;
+    }
+
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule plannedToolsModule = modBean.getModule(FacilioConstants.ContextNames.WO_PLANNED_TOOLS);
+
+        FacilioForm plannedToolsForm = new FacilioForm();
+        plannedToolsForm.setDisplayName("WORK ORDER PLANNED TOOLS");
+        plannedToolsForm.setName("default_workOrderPlannedTools_web");
+        plannedToolsForm.setModule(plannedToolsModule);
+        plannedToolsForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+        plannedToolsForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+
+        List<FormField> plannedToolsFormFields = new ArrayList<>();
+        plannedToolsFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.NUMBER, "Quantity", FormField.Required.REQUIRED, 1, 2));
+        plannedToolsFormFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.REQUIRED, "storeRoom", 2, 2));
+        plannedToolsFormFields.add(new FormField("rate", FacilioField.FieldDisplayType.NUMBER, "Rate", FormField.Required.REQUIRED, 4, 3));
+        plannedToolsFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.NUMBER, "Duration", FormField.Required.REQUIRED, 5, 2));
+        FormField totalCost = new FormField("totalCost", FacilioField.FieldDisplayType.NUMBER, "Total Cost", FormField.Required.REQUIRED, 6, 3);
+        totalCost.setIsDisabled(true);
+        plannedToolsFormFields.add(totalCost);
+
+        plannedToolsForm.setFields(plannedToolsFormFields);
+
+        FormSection section = new FormSection("Default", 1, plannedToolsFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        plannedToolsForm.setSections(Collections.singletonList(section));
+
+        return Collections.singletonList(plannedToolsForm);
     }
 }

@@ -44,8 +44,8 @@ public class GetFormMetaCommand extends FacilioCommand {
 		String formModuleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);	// TODO...needs to be mandatory
 		FacilioModule formModule = null;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		
+
+
 		FacilioForm form = null;
 		ApplicationContext app = appId <= 0 ? AccountUtil.getCurrentApp() : ApplicationApi.getApplicationForId(appId);
 		if(StringUtils.isEmpty(appLinkName) && app != null) {
@@ -94,7 +94,7 @@ public class GetFormMetaCommand extends FacilioCommand {
 					return false;
 				}
 				form.setModule(modBean.getModule(form.getModule().getName()));
-				
+
 				if (formModuleName == null) {
 					List<FormField> fields = new ArrayList<>(form.getFields());
 					form.setFields(fields);
@@ -140,10 +140,10 @@ public class GetFormMetaCommand extends FacilioCommand {
 				}
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	private FacilioForm getChildForm(FacilioModule childModule, String appLinkName) throws Exception {
 		FacilioForm form = null;
 		if (childModule != null && childModule.getExtendModule() != null) {
@@ -157,7 +157,7 @@ public class GetFormMetaCommand extends FacilioCommand {
 		}
 		return form;
 	}
-	
+
 	private void setFields(FacilioForm form, ModuleBean modBean, List<FormField> fields, String moduleName, FacilioModule childModule, int count) throws Exception {
 		FormsAPI.setFieldDetails(modBean, fields, moduleName);
 		if (form.getAppLinkName() != null && form.getAppLinkName() != ApplicationLinkNames.FACILIO_MAIN_APP) {
@@ -180,13 +180,13 @@ public class GetFormMetaCommand extends FacilioCommand {
 			FormsAPI.setFieldDetails(modBean,fields,moduleName);
 		}
 
-		
+
 		if (childModule != null) {
 			if (form.getId() == -1) {
 				List<FacilioField> facilioFields = modBean.getAllFields(childModule.getName());
 				for (FacilioField f: facilioFields) {
 					if ((f.getModule().equals(childModule)) || !f.isDefault()) {
-						fields.add(FormsAPI.getFormFieldFromFacilioField(f, ++count));									
+						fields.add(FormsAPI.getFormFieldFromFacilioField(f, ++count));
 					}
 				}
 			}
@@ -197,8 +197,8 @@ public class GetFormMetaCommand extends FacilioCommand {
 			if (form.getName().equalsIgnoreCase("web_pm") || isMultiSiteForm) { // Temp...showing custom fields in standard form...will be removed once action in pm
 				FacilioForm defaultWoForm = form = FormsAPI.getDefaultFormFromDBOrFactory(modBean.getModule(moduleName), ApplicationLinkNames.FACILIO_MAIN_APP, true);
 				long sitesCount = SpaceAPI.getSitesCount();
-				customFields = defaultWoForm.getFields().stream().filter(field -> 
-					field.getField() != null && !field.getField().isDefault() && 
+				customFields = defaultWoForm.getFields().stream().filter(field ->
+					field.getField() != null && !field.getField().isDefault() &&
 					(!isMultiSiteForm || field.getField().getDataTypeEnum() != FieldType.LOOKUP || sitesCount == 1)
 				).map(field -> field.getField()).collect(Collectors.toList());
 			}
@@ -213,7 +213,7 @@ public class GetFormMetaCommand extends FacilioCommand {
 			}
 		}
 	}
-	
-	
+
+
 
 }

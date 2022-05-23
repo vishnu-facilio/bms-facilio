@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.formFactory.FacilioFormChainFactory;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -275,8 +276,28 @@ public class FormAction extends FacilioAction {
 
 		return SUCCESS;
 	}
-	
-	
+
+	public String formListFromDB() throws Exception {
+		FacilioChain chain = FacilioFormChainFactory.getFormListFromDB();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		if (fetchExtendedModuleForms != null && fetchExtendedModuleForms) {
+			context.put(FacilioConstants.ContextNames.FETCH_EXTENDED_MODULE_FORMS, true);
+		}
+		else {
+			context.put(FacilioConstants.ContextNames.FETCH_EXTENDED_MODULE_FORMS, false);
+		}
+		if (fetchDisabledForms != null && fetchDisabledForms) {
+			context.put(FacilioConstants.ContextNames.FETCH_DISABLED_FORMS, true);
+		}
+		context.put(FacilioConstants.ContextNames.APP_ID, appId);
+
+		chain.execute();
+		setResult("forms",context.get(FacilioConstants.ContextNames.FORMS));
+		setResult(FacilioConstants.ContextNames.STATE_FLOW_LIST, context.get(FacilioConstants.ContextNames.STATE_FLOW_LIST));
+
+		return SUCCESS;
+	}
 	public String formList() throws Exception {
 		Context context=new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
@@ -326,7 +347,21 @@ public class FormAction extends FacilioAction {
 		return SUCCESS;
 	}
 
-	
+	public String addDBForm() throws Exception {
+		FacilioChain chain = FacilioFormChainFactory.getAddFormCommand();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.FORM, form);
+
+		chain.execute();
+
+		setFormName(form.getName());
+
+		formSourceType = FormSourceType.FROM_BUILDER;
+		formDetails();
+
+		return SUCCESS;
+	}
 	public String addForm() throws Exception {
 		Context context=new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
@@ -360,7 +395,25 @@ public class FormAction extends FacilioAction {
 	public void setFormName(String formName) {
 		this.formName = formName;
 	}
-	
+	public String formDetailsFromDB() throws Exception {
+
+		FacilioChain c = FacilioFormChainFactory.getFormMetaChain();
+		FacilioContext context = c.getContext();
+
+		context.put(FacilioConstants.ContextNames.FORM_NAME, formName);
+		context.put(FacilioConstants.ContextNames.FORM_ID, formId);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.FETCH_FORM_RULE_FIELDS, fetchFormRuleFields);
+		context.put(FacilioConstants.ContextNames.FORM_SOURCE, formSourceType);
+		context.put(ContextNames.FOR_CREATE, forCreate);
+
+		c.execute();
+
+		FacilioForm form = (FacilioForm) context.get(FacilioConstants.ContextNames.FORM);
+		setResult(ContextNames.FORM, form);
+
+		return SUCCESS;
+	}
 	public String formDetails() throws Exception {
 		Context context = new FacilioContext();
 		

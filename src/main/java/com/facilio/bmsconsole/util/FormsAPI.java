@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -70,7 +69,6 @@ import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
-import org.json.simple.JSONObject;
 
 public class FormsAPI {
 
@@ -331,7 +329,6 @@ public class FormsAPI {
 		if (form.getShowInWeb() == null) {
 			form.setShowInWeb(true);
 		}
-		
 		if (form.getAppId() < 0) {
 			ApplicationContext app = (form.getAppLinkName() != null) ? ApplicationApi.getApplicationForLinkName(form.getAppLinkName()) : ApplicationApi.getApplicationForLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 			form.setAppId(app.getId());
@@ -688,6 +685,9 @@ public class FormsAPI {
 			Set<Long> stateflowIds = new HashSet<>();
 			List<Long> formIds = new ArrayList<>();
 			for (FacilioForm form : forms) {
+				if(form.getIsSystemForm()!=null && form.getIsSystemForm()){
+					throw new IllegalArgumentException("Default forms cannot be deleted");
+				}
 				stateflowIds.add(form.getStateFlowId());
 				formIds.add(form.getId());
 			}
@@ -846,7 +846,7 @@ public class FormsAPI {
 		if (appId > 0) {
 			app = ApplicationApi.getApplicationForId(appId);
 			List<Long> appIds = Collections.singletonList(app.getId());
-			formListBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), StringUtils.join(appIds, ","), NumberOperators.EQUALS));	
+			formListBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), StringUtils.join(appIds, ","), NumberOperators.EQUALS));
 		}
 	
 		if (MapUtils.isNotEmpty(selectParams)) {
@@ -1180,7 +1180,7 @@ public class FormsAPI {
 	
 	// From factory first. If not (for custom module), then will check in db
 	public static FacilioForm getDefaultForm(String moduleName, String appLinkName, Boolean...onlyFields) throws Exception {
-		FacilioForm defaultForm = FormFactory.getDefaultForm(moduleName, appLinkName, onlyFields);
+		FacilioForm defaultForm = FormFactory.getDefaultForm(moduleName,appLinkName,onlyFields);
 		if (defaultForm == null ) {
 			String linkName = isPortalApp(appLinkName) ? ApplicationLinkNames.OCCUPANT_PORTAL_APP : ApplicationLinkNames.FACILIO_MAIN_APP;
 			defaultForm = FormFactory.getDefaultForm(moduleName, linkName, onlyFields);
@@ -1348,13 +1348,158 @@ public class FormsAPI {
 		builder.update(map);
 	}
 
-	public static String generateSubFormLinkName(FacilioForm form) {
-		String generatedName = null;
-		if (form.getName() == null) {
-			generatedName = form.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+","");
-		} else {
-			generatedName = form.getName().toLowerCase().replaceAll("[^a-zA-Z0-9_]+", "");
+    public static String generateSubFormLinkName(FacilioForm form) {
+        String generatedName = null;
+        if (form.getName() == null) {
+            generatedName = form.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+", "");
+        } else {
+            generatedName = form.getName().toLowerCase().replaceAll("[^a-zA-Z0-9_]+", "");
+        }
+        return ((!generatedName.startsWith(FacilioConstants.LinkNamePrefix.SUB_FORM_PREFIX)) ? (FacilioConstants.LinkNamePrefix.SUB_FORM_PREFIX + generatedName) : generatedName);
+    }
+
+    public static String getDefaultFormName(String moduleName, String appLinkName) {
+        String name = "default_" + moduleName + "_" + (FormsAPI.isPortalApp(appLinkName) ? "portal" : "web");
+        if (moduleName.equals("space")) { // Special temp handling for space forms.
+            name += "_site";
+        }
+        return name;
+    }
+
+    public static FacilioForm getDefaultFormFromDB(String moduleName,String appLinkName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+
+		long moduleId = module.getModuleId();
+		long appId = ApplicationApi.getApplicationIdForLinkName(appLinkName);
+
+		if (moduleId == -1) {
+			return null;
 		}
-		return ((!generatedName.startsWith(FacilioConstants.LinkNamePrefix.SUB_FORM_PREFIX)) ? (FacilioConstants.LinkNamePrefix.SUB_FORM_PREFIX + generatedName) : generatedName);
+		GenericSelectRecordBuilder selectPrimaryFormBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getFormFields())
+				.table(ModuleFactory.getFormModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(moduleId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("PRIMARY_FORM", "primaryForm", String.valueOf(true), BooleanOperators.IS))
+				.andCondition(CriteriaAPI.getCondition("APP_ID", "appId", String.valueOf(appId), NumberOperators.EQUALS));
+
+		FacilioForm defaultForm = FieldUtil.getAsBeanFromMap(selectPrimaryFormBuilder.fetchFirst(), FacilioForm.class);
+		if (defaultForm == null) {
+			return null;
+		}
+		return getDefaultFormFromDB(defaultForm);
+	}
+
+	public static FacilioForm getDefaultFormFromDB (FacilioForm defaultForm) throws Exception {
+
+		if(defaultForm.getSections()!=null){
+			return defaultForm;
+		}
+		long defaultFormId = defaultForm.getId();
+
+		GenericSelectRecordBuilder selectPrimaryFormSectionBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getFormSectionFields())
+				.table(ModuleFactory.getFormSectionModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("FORMID", "formId", String.valueOf(defaultFormId), NumberOperators.EQUALS));
+
+		List<Map<String, Object>> defaultFormSections = selectPrimaryFormSectionBuilder.get();
+		List<FormSection> sections = new ArrayList<>();
+		for (Map<String, Object> section : defaultFormSections) {
+
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFieldFields());
+
+			List<FacilioField> fields = new ArrayList<FacilioField>(FieldFactory.getFormFieldsFields());
+			fields.removeIf(field -> field.getName().equals("name"));
+			fields.add(fieldMap.get("name"));
+
+			GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
+					.table(ModuleFactory.getFieldsModule().getTableName())
+					.select(fields).leftJoin(ModuleFactory.getFormFieldsModule().getTableName())
+					.on(ModuleFactory.getFormFieldsModule().getTableName() + ".FIELDID=" + ModuleFactory.getFieldsModule().getTableName() + ".FIELDID")
+					.andCondition(CriteriaAPI.getCondition("SECTIONID", "sectionId", String.valueOf(section.get("id")), NumberOperators.EQUALS))
+					.orderBy("sequenceNumber");
+
+			List<Map<String, Object>> defaultFormFields = genericSelectRecordBuilder.get();
+			List<FormField> formFields = FieldUtil.getAsBeanListFromMapList(defaultFormFields, FormField.class);
+
+			GenericSelectRecordBuilder formFieldsFieldIdNullBuilder = new GenericSelectRecordBuilder()
+					.table(ModuleFactory.getFormFieldsModule().getTableName())
+					.select(FieldFactory.getFormFieldsFields())
+					.andCondition(CriteriaAPI.getCondition("SECTIONID", "sectionId", String.valueOf(section.get("id")), NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition("FIELDID","fieldId","NULL",CommonOperators.IS_EMPTY))
+					.orderBy("sequenceNumber");
+
+			List<Map<String, Object>> defaultFieldIdNullFormFields = formFieldsFieldIdNullBuilder.get();
+			List<FormField> FieldIdNullFormFields = FieldUtil.getAsBeanListFromMapList(defaultFieldIdNullFormFields, FormField.class);
+			formFields.addAll(FieldIdNullFormFields);
+
+			int i = 1;
+			FormSection defaultFormSection = new FormSection((String) section.get("name"), i++, formFields, section.get("showLabel") != null && (boolean) section.get("showLabel"));
+			sections.add(defaultFormSection);
+		}
+		defaultForm.setSections(sections);
+		return defaultForm;
+	}
+	public static FacilioForm getSpecificFormOfTheModuleFromDB (String formName,String appLinkName) throws Exception {
+
+		long appId = ApplicationApi.getApplicationIdForLinkName(appLinkName);
+
+		GenericSelectRecordBuilder selectSpecificFormBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getFormFields())
+				.table(ModuleFactory.getFormModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("NAME", "name", formName, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition("APP_ID", "appId", String.valueOf(appId), NumberOperators.EQUALS));
+
+		FacilioForm defaultForm = FieldUtil.getAsBeanFromMap(selectSpecificFormBuilder.fetchFirst(), FacilioForm.class);
+		return getDefaultFormFromDB(defaultForm);
+	}
+
+	public static Map<String, FacilioForm> getFormsFromDB(String moduleName, List<String> appLinkNames) throws Exception{
+
+		Map<String, FacilioForm> forms = new HashMap<>();
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+
+		long moduleId = module.getModuleId();
+
+		GenericSelectRecordBuilder selectDbFormBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getFormFields())
+				.table(ModuleFactory.getFormModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(moduleId), NumberOperators.EQUALS));
+
+		List<Map<String, Object>> dbFormList = selectDbFormBuilder.get();
+		if(dbFormList.isEmpty()){
+			return new HashMap<>();
+		}
+		List<FacilioForm> formsList = FieldUtil.getAsBeanListFromMapList(dbFormList, FacilioForm.class);
+		if(appLinkNames.isEmpty()){
+			return formsList.stream().collect(Collectors.toMap(FacilioForm::getName,Function.identity()));
+		}
+		for(FacilioForm form:formsList){
+			if(form.getSections()==null) {
+				getDefaultFormFromDB(form);
+			}
+			if(form.getAppId()== -1){
+				continue;
+			}
+			ApplicationContext app = ApplicationApi.getApplicationForId(form.getAppId());
+			String linkName = app != null ? app.getLinkName() : null;
+			form.setAppLinkName(linkName);
+			if(appLinkNames.contains(form.getAppLinkName())){
+				forms.put(form.getName(),form);
+			}
+		}
+		return forms;
+	}
+	public static FacilioForm getFormsFromDB(String moduleName,String formName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		List<String> appLinkName = new ArrayList<>();
+		Map<String, FacilioForm> formsMap = getFormsFromDB(moduleName, appLinkName);
+		if(formsMap.isEmpty()){
+			return null;
+		}
+		return formsMap.get(formName);
 	}
 }

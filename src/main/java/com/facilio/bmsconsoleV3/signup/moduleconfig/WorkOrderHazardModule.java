@@ -10,10 +10,6 @@ public class WorkOrderHazardModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.WORKORDER_HAZARD);
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

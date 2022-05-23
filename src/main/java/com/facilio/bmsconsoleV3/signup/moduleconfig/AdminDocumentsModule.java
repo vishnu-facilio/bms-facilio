@@ -1,25 +1,24 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
-import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
-import com.facilio.bmsconsoleV3.signup.util.AddModuleViewsAndGroups;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 
 import java.util.*;
 
 public class AdminDocumentsModule extends BaseModuleConfig{
     public AdminDocumentsModule(){
         setModuleName(FacilioConstants.ContextNames.ADMIN_DOCUMENTS);
-    }
-
-    @Override
-    protected void addForms() throws Exception {
-
     }
 
     @Override
@@ -59,5 +58,36 @@ public class AdminDocumentsModule extends BaseModuleConfig{
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
+    }
+
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule adminDocumentsModule = modBean.getModule(FacilioConstants.ContextNames.ADMIN_DOCUMENTS);
+
+        FacilioForm adminDocumentsForm = new FacilioForm();
+        adminDocumentsForm.setDisplayName("Admin Documents");
+        adminDocumentsForm.setName("default_"+ FacilioConstants.ContextNames.Tenant.ADMIN_DOCUMENTS +"_web");
+        adminDocumentsForm.setModule(adminDocumentsModule);
+        adminDocumentsForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+        adminDocumentsForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+
+        List<FormField> adminDocumentsFormFields = new ArrayList<>();
+        adminDocumentsFormFields.add(new FormField("title", FacilioField.FieldDisplayType.TEXTBOX, "Title", FormField.Required.REQUIRED, 1, 1));
+        adminDocumentsFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+        adminDocumentsFormFields.add(new FormField("category", FacilioField.FieldDisplayType.SELECTBOX, "Category", FormField.Required.OPTIONAL, 3, 1));
+        adminDocumentsFormFields.add(new FormField("file", FacilioField.FieldDisplayType.FILE, "File", FormField.Required.REQUIRED, 4, 1));
+        FormField field = new FormField("audience", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Audience", FormField.Required.REQUIRED, "audience",5, 1);
+        field.setAllowCreateOptions(true);
+        field.addToConfig("canShowLookupWizard",true);
+        adminDocumentsFormFields.add(field);
+//        adminDocumentsForm.setFields(adminDocumentsFormFields);
+
+        FormSection section = new FormSection("Default", 1, adminDocumentsFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        adminDocumentsForm.setSections(Collections.singletonList(section));
+
+        return Collections.singletonList(adminDocumentsForm);
     }
 }

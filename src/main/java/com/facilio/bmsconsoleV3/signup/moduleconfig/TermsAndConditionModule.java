@@ -14,10 +14,6 @@ public class TermsAndConditionModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS);
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

@@ -15,10 +15,6 @@ public class OpcXMLDAControllerModule extends BaseModuleConfig {
         setModuleName("opcxmldacontroller");
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

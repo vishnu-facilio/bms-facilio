@@ -14,10 +14,7 @@ public class InspectionCategoryModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.Inspection.INSPECTION_CATEGORY);
     }
 
-    @Override
-    protected void addForms() throws Exception {
 
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

@@ -1,5 +1,9 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
@@ -7,6 +11,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
@@ -14,14 +19,11 @@ import com.facilio.modules.fields.LookupField;
 import java.util.*;
 
 public class InsuranceModule extends BaseModuleConfig{
+
     public InsuranceModule() throws Exception{
         setModuleName(FacilioConstants.ContextNames.INSURANCE);
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {
@@ -171,4 +173,53 @@ public class InsuranceModule extends BaseModuleConfig{
         return criteria;
     }
 
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule insuranceModule = modBean.getModule(FacilioConstants.ContextNames.INSURANCE);
+
+        FacilioForm insuranceForm = new FacilioForm();
+        insuranceForm.setDisplayName("INSURANCE");
+        insuranceForm.setName("default_insurance_web");
+        insuranceForm.setModule(insuranceModule);
+        insuranceForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        insuranceForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+
+        List<FormField> insuranceFormFields = new ArrayList<>();
+        insuranceFormFields.add(new FormField("companyName", FacilioField.FieldDisplayType.TEXTBOX, "Company Name", FormField.Required.REQUIRED, 1, 1));
+        insuranceFormFields.add(new FormField("validFrom", FacilioField.FieldDisplayType.DATE, "Valid From", FormField.Required.OPTIONAL, 2, 1));
+        insuranceFormFields.add(new FormField("validTill", FacilioField.FieldDisplayType.DATE, "Valid Till", FormField.Required.OPTIONAL, 3, 1));
+        FormField vendorField = new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.REQUIRED,"vendors", 3, 2);
+        insuranceFormFields.add(vendorField);
+        insuranceFormFields.add(new FormField("insurance", FacilioField.FieldDisplayType.FILE, "Insurance", FormField.Required.OPTIONAL, 1, 1));
+//        insuranceForm.setFields(insuranceFormFields);
+
+        FormSection insuranceFormSection = new FormSection("Default", 1, insuranceFormFields, false);
+        insuranceFormSection.setSectionType(FormSection.SectionType.FIELDS);
+        insuranceForm.setSections(Collections.singletonList(insuranceFormSection));
+
+        FacilioForm portalInsuranceForm = new FacilioForm();
+        portalInsuranceForm.setDisplayName("INSURANCE");
+        portalInsuranceForm.setName("default_insurance_portal");
+        portalInsuranceForm.setModule(insuranceModule);
+        portalInsuranceForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        portalInsuranceForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP));
+
+        List<FormField> portalInsuranceFormFields = new ArrayList<>();
+        portalInsuranceFormFields.add(new FormField("companyName", FacilioField.FieldDisplayType.TEXTBOX, "Company Name", FormField.Required.REQUIRED, 1, 1));
+        portalInsuranceFormFields.add(new FormField("validFrom", FacilioField.FieldDisplayType.DATE, "Valid From", FormField.Required.OPTIONAL, 2, 1));
+        portalInsuranceFormFields.add(new FormField("validTill", FacilioField.FieldDisplayType.DATE, "Valid Till", FormField.Required.OPTIONAL, 3, 1));
+        portalInsuranceFormFields.add(new FormField("insurance", FacilioField.FieldDisplayType.FILE, "Insurance", FormField.Required.OPTIONAL, 1, 1));
+//        portalInsuranceForm.setFields(portalInsuranceFormFields);
+
+        FormSection portalInsuranceFormSection = new FormSection("Default", 1, portalInsuranceFormFields, false);
+        portalInsuranceFormSection.setSectionType(FormSection.SectionType.FIELDS);
+        portalInsuranceForm.setSections(Collections.singletonList(portalInsuranceFormSection));
+
+        List<FacilioForm> insuranceModuleForms = new ArrayList<>();
+        insuranceModuleForms.add(insuranceForm);
+        insuranceModuleForms.add(portalInsuranceForm);
+
+        return insuranceModuleForms;
+    }
 }

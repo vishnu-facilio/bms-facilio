@@ -1,5 +1,9 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
@@ -7,6 +11,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -18,11 +23,6 @@ import java.util.*;
 public class RequestForQuotationModule extends BaseModuleConfig{
     public RequestForQuotationModule(){
         setModuleName(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION);
-    }
-
-    @Override
-    protected void addForms() throws Exception {
-
     }
 
     @Override
@@ -226,5 +226,60 @@ public class RequestForQuotationModule extends BaseModuleConfig{
         Criteria rfqStatusCriteria = new Criteria();
         rfqStatusCriteria.addAndCondition(discardedCondition);
         return rfqStatusCriteria;
+    }
+
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule requestForQuotationModule = modBean.getModule(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION);
+
+        FacilioForm requestForQuotationModuleForm = new FacilioForm();
+        requestForQuotationModuleForm.setDisplayName("REQUEST FOR QUOTATION");
+        requestForQuotationModuleForm.setName("default_requestForQuotation_web");
+        requestForQuotationModuleForm.setModule(requestForQuotationModule);
+        requestForQuotationModuleForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+        requestForQuotationModuleForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+
+        List<FormField> requestForQuotationModuleFormDefaultFields = new ArrayList<>();
+        requestForQuotationModuleFormDefaultFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+        requestForQuotationModuleFormDefaultFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+        requestForQuotationModuleFormDefaultFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.OPTIONAL, "storeRoom", 3, 2));
+        FormField field = new FormField("vendor", FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Vendors", FormField.Required.OPTIONAL,3, 3);
+        requestForQuotationModuleFormDefaultFields.add(field);
+        requestForQuotationModuleFormDefaultFields.add(new FormField("requestedDate", FacilioField.FieldDisplayType.DATE, "Requested Date", FormField.Required.OPTIONAL, 4, 2));
+        requestForQuotationModuleFormDefaultFields.add(new FormField("requiredDate", FacilioField.FieldDisplayType.DATE, "Required Date", FormField.Required.OPTIONAL, 4, 3));
+        requestForQuotationModuleFormDefaultFields.add(new FormField("expectedReplyDate", FacilioField.FieldDisplayType.DATE, "Expected Reply Date", FormField.Required.OPTIONAL, 5, 2));
+        requestForQuotationModuleFormDefaultFields.add(new FormField("requestedBy", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Requested By", FormField.Required.OPTIONAL, "people", 5, 3));
+        //fields.add(new FormField("billToAddress", FieldDisplayType.SADDRESS, "BILLING ADDRESS", Required.OPTIONAL, 6, 1));
+
+        List<FormField> shippingAddressFields = new ArrayList<>();
+        shippingAddressFields.add(new FormField("shipToAddress", FacilioField.FieldDisplayType.SADDRESS, "SHIPPING ADDRESS", FormField.Required.OPTIONAL, 7, 1));
+
+        List<FormField> lineItemFields = new ArrayList<>();
+        lineItemFields.add(new FormField("requestForQuotationLineItems", FacilioField.FieldDisplayType.LINEITEMS, "LINE ITEMS", FormField.Required.REQUIRED, 8, 1));
+
+        List<FormField> requestForQuotationModuleFormFields = new ArrayList<>();
+        requestForQuotationModuleFormFields.addAll(requestForQuotationModuleFormDefaultFields);
+        requestForQuotationModuleFormFields.addAll(shippingAddressFields);
+        requestForQuotationModuleFormFields.addAll(lineItemFields);
+//        requestForQuotationModuleForm.setFields(requestForQuotationModuleFormFields);
+
+        FormSection defaultSection = new FormSection("Request For Quotation", 1, requestForQuotationModuleFormDefaultFields, true);
+        defaultSection.setSectionType(FormSection.SectionType.FIELDS);
+
+        FormSection shippingSection = new FormSection("Shipping Address", 2, shippingAddressFields, true);
+        shippingSection.setSectionType(FormSection.SectionType.FIELDS);
+
+        FormSection lineItemSection = new FormSection("Line Items", 3, lineItemFields, true);
+        shippingSection.setSectionType(FormSection.SectionType.FIELDS);
+
+        List<FormSection> sections = new ArrayList<>();
+        sections.add(defaultSection);
+        sections.add(shippingSection);
+        sections.add(lineItemSection);
+
+        requestForQuotationModuleForm.setSections(sections);
+
+        return Collections.singletonList(requestForQuotationModuleForm);
     }
 }

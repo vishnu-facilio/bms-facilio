@@ -1,8 +1,13 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
@@ -15,10 +20,6 @@ public class InventoryCategoryModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.INVENTORY_CATEGORY);
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {
@@ -57,5 +58,30 @@ public class InventoryCategoryModule extends BaseModuleConfig{
         allView.setSortFields(sortFields);
 
         return allView;
+    }
+
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule inventoryCategoryModule = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_CATEGORY);
+
+        FacilioForm inventoryCategoryForm = new FacilioForm();
+        inventoryCategoryForm.setDisplayName("NEW CATEGORY");
+        inventoryCategoryForm.setName("web_default");
+        inventoryCategoryForm.setModule(inventoryCategoryModule);
+        inventoryCategoryForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        inventoryCategoryForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+
+        List<FormField> inventoryCategoryFormFields = new ArrayList<>();
+        inventoryCategoryFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+        inventoryCategoryFormFields.add(new FormField("displayName", FacilioField.FieldDisplayType.TEXTBOX, "Display Name", FormField.Required.REQUIRED, 1, 1));
+        inventoryCategoryFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+//        inventoryCategoryForm.setFields(inventoryCategoryFormFields);
+
+        FormSection section = new FormSection("Default", 1, inventoryCategoryFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        inventoryCategoryForm.setSections(Collections.singletonList(section));
+
+        return Collections.singletonList(inventoryCategoryForm);
     }
 }

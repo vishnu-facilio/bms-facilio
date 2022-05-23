@@ -11,11 +11,6 @@ public class HazardPrecautionModule extends BaseModuleConfig{
     }
 
     @Override
-    protected void addForms() throws Exception {
-
-    }
-
-    @Override
     public List<Map<String, Object>> getViewsAndGroups() {
         List<Map<String, Object>> groupVsViews = new ArrayList<>();
         Map<String, Object> groupDetails;

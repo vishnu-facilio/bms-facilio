@@ -19,10 +19,6 @@ public class NewReadingRuleModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.NEW_READING_RULE);
     }
 
-    @Override
-    protected void addForms() throws Exception {
-
-    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

@@ -1,7 +1,12 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.accounts.dto.AppDomain;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
@@ -9,6 +14,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.*;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
@@ -923,5 +929,252 @@ public class WorkOrderModule extends BaseModuleConfig {
         allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
         allView.setDefault(true);
         return allView;
+    }
+
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule workOrderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+
+        FacilioForm serviceWorkOrderForm = new FacilioForm();
+        serviceWorkOrderForm.setDisplayName("Standard");
+        serviceWorkOrderForm.setName("default_workorder_portal");
+        serviceWorkOrderForm.setModule(workOrderModule);
+        serviceWorkOrderForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        serviceWorkOrderForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP));
+
+        List<FormField> serviceWorkOrderFormFields = new ArrayList<>();
+        serviceWorkOrderFormFields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, "site" ,2, 1));
+        serviceWorkOrderFormFields.add(new FormField("subject", FacilioField.FieldDisplayType.TEXTBOX, "Subject", FormField.Required.REQUIRED, 3, 1));
+        serviceWorkOrderFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 4, 1));
+        FormField urgency = new FormField("urgency", FacilioField.FieldDisplayType.URGENCY, "Urgency", FormField.Required.OPTIONAL, 5, 1);
+        urgency.setValueObject(WorkOrderContext.WOUrgency.NOTURGENT.getValue());
+        serviceWorkOrderFormFields.add(urgency);
+        serviceWorkOrderFormFields.add(new FormField("attachedFiles", FacilioField.FieldDisplayType.ATTACHMENT, "Attachment", FormField.Required.OPTIONAL, 6, 1));
+//        serviceWorkOrderForm.setFields(serviceWorkOrderFormFields);
+
+        FormSection serviceWorkOrderFormSection = new FormSection("WORKORDER", 1, serviceWorkOrderFormFields, true);
+        serviceWorkOrderFormSection.setSectionType(FormSection.SectionType.FIELDS);
+        serviceWorkOrderForm.setSections(Collections.singletonList(serviceWorkOrderFormSection));
+
+        FacilioForm approvalForm = new FacilioForm();
+        approvalForm.setDisplayName("Approval");
+        approvalForm.setName("workOrder");
+        approvalForm.setModule(workOrderModule);
+        approvalForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+        approvalForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+
+        List<FormField> approvalFormfields = new ArrayList<>();
+        approvalFormfields.add(new FormField("subject", FacilioField.FieldDisplayType.TEXTBOX, "Subject", FormField.Required.REQUIRED, 1, 1));
+        approvalFormfields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, "site", 2, 1));
+        approvalFormfields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 3, 1));
+        approvalFormfields.add(new FormField("category", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL, "ticketcategory", 4, 2));
+        approvalFormfields.add(new FormField("priority", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Priority", FormField.Required.OPTIONAL, "ticketpriority", 4, 3));
+        approvalFormfields.add(new FormField("type", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Maintenance Type", FormField.Required.OPTIONAL, "tickettype", 5, 1));
+        approvalFormfields.add(new FormField("resource", FacilioField.FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", FormField.Required.OPTIONAL, 6, 1));
+        approvalFormfields.add(new FormField("urgency", FacilioField.FieldDisplayType.URGENCY, "Urgency", FormField.Required.OPTIONAL, 7, 1));
+        approvalFormfields.add(new FormField("assignment", FacilioField.FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", FormField.Required.OPTIONAL, 8, 1));
+        approvalFormfields.add(new FormField("attachedFiles", FacilioField.FieldDisplayType.ATTACHMENT, "Attachments", FormField.Required.OPTIONAL, "attachment", 9, 1));
+//        approvalForm.setFields(approvalFormfields);
+
+        FormSection approvalFormFormSection = new FormSection("WORKORDER", 1, approvalFormfields, true);
+        approvalFormFormSection.setSectionType(FormSection.SectionType.FIELDS);
+        approvalForm.setSections(Collections.singletonList(approvalFormFormSection));
+
+        FacilioForm mobileApprovalForm = new FacilioForm();
+        mobileApprovalForm.setDisplayName("Approval");
+        mobileApprovalForm.setName("mobile_approval");
+        mobileApprovalForm.setModule(workOrderModule);
+        mobileApprovalForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+        mobileApprovalForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+
+        List<FormField> mobileApprovalFormFields = new ArrayList<>();
+        mobileApprovalFormFields.add(new FormField("subject", FacilioField.FieldDisplayType.TEXTBOX, "Subject", FormField.Required.REQUIRED, 1, 1));
+        mobileApprovalFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.REQUIRED, 2, 1));
+        mobileApprovalFormFields.add(new FormField("site", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, "site", 3, 1));
+        mobileApprovalFormFields.add(new FormField("resource", FacilioField.FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", FormField.Required.REQUIRED, 4, 1));
+        mobileApprovalFormFields.add(new FormField("assignment", FacilioField.FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", FormField.Required.REQUIRED, 5, 1));
+        mobileApprovalFormFields.add(new FormField("priority", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Priority", FormField.Required.OPTIONAL, "ticketpriority", 6, 1));
+        mobileApprovalFormFields.add(new FormField("urgency", FacilioField.FieldDisplayType.URGENCY, "Urgency", FormField.Required.OPTIONAL, "urgency" , 7, 1));
+        mobileApprovalFormFields.add(new FormField("attachedFiles", FacilioField.FieldDisplayType.ATTACHMENT, "Attachment", FormField.Required.OPTIONAL, 8, 1));
+//        mobileApprovalForm.setFields(mobileApprovalFormFields);
+
+        FormSection mobileApprovalFormSection = new FormSection("WORKORDER", 1, mobileApprovalFormFields, true);
+        mobileApprovalFormSection.setSectionType(FormSection.SectionType.FIELDS);
+        mobileApprovalForm.setSections(Collections.singletonList(mobileApprovalFormSection));
+
+        FacilioForm mobileMobileWorkOrderForm = new FacilioForm();
+        mobileMobileWorkOrderForm.setDisplayName("SUBMIT WORKORDER");
+        mobileMobileWorkOrderForm.setName("mobile_default");
+        mobileMobileWorkOrderForm.setModule(workOrderModule);
+        mobileMobileWorkOrderForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+        mobileMobileWorkOrderForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+
+        List<FormField> mobileMobileWorkOrderFormFields = new ArrayList<>();
+        mobileMobileWorkOrderFormFields.add(new FormField("subject", FacilioField.FieldDisplayType.TEXTBOX, "Subject", FormField.Required.REQUIRED, 1, 1));
+        mobileMobileWorkOrderFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+        mobileMobileWorkOrderFormFields.add(new FormField("site", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, "site", 3, 1));
+        mobileMobileWorkOrderFormFields.add(new FormField("resource", FacilioField.FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", FormField.Required.OPTIONAL, 4, 1));
+        mobileMobileWorkOrderFormFields.add(new FormField("assignment", FacilioField.FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", FormField.Required.OPTIONAL, 5, 1));
+        mobileMobileWorkOrderFormFields.add(new FormField("category", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL, "ticketcategory", 6, 1));
+        mobileMobileWorkOrderFormFields.add(new FormField("priority", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Priority", FormField.Required.OPTIONAL, "ticketpriority", 7, 1));
+        mobileMobileWorkOrderFormFields.add(new FormField("attachedFiles", FacilioField.FieldDisplayType.ATTACHMENT, "Attachment", FormField.Required.OPTIONAL, 8, 1));
+        mobileMobileWorkOrderFormFields.add(new FormField("sendForApproval", FacilioField.FieldDisplayType.DECISION_BOX, "Send For Approval", FormField.Required.OPTIONAL, 9, 1));
+        mobileMobileWorkOrderFormFields.add(new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.OPTIONAL, 10, 1));
+//        mobileMobileWorkOrderForm.setFields(mobileMobileWorkOrderFormFields);
+
+        FormSection mobileMobileWorkOrderFormSection = new FormSection("WORKORDER", 1, mobileMobileWorkOrderFormFields, true);
+        mobileMobileWorkOrderFormSection.setSectionType(FormSection.SectionType.FIELDS);
+        mobileMobileWorkOrderForm.setSections(Collections.singletonList(mobileMobileWorkOrderFormSection));
+
+        FacilioForm webWorkOrderForm = new FacilioForm();
+        webWorkOrderForm.setDisplayName("Standard");
+        webWorkOrderForm.setName("default_workorder_web");
+        webWorkOrderForm.setModule(workOrderModule);
+        webWorkOrderForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+        webWorkOrderForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+
+        List<FormField> webWorkOrderFormDefaultFields = new ArrayList<>();
+
+        FacilioField srField = null;
+        try {
+            srField = modBean.getField("serviceRequest", FacilioConstants.ContextNames.WORK_ORDER);
+        }
+        catch(Exception e) {
+
+        }
+        webWorkOrderFormDefaultFields.add(new FormField("subject", FacilioField.FieldDisplayType.TEXTBOX, "Subject", FormField.Required.REQUIRED, 1, 1));
+        webWorkOrderFormDefaultFields.add(getSiteField());
+        webWorkOrderFormDefaultFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 3, 1));
+        webWorkOrderFormDefaultFields.addAll(getWoClassifierFields());
+        webWorkOrderFormDefaultFields.add(getWoResourceField());
+        webWorkOrderFormDefaultFields.add(new FormField("assignment", FacilioField.FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", FormField.Required.OPTIONAL, 7, 1));
+        webWorkOrderFormDefaultFields.add(new FormField("attachedFiles", FacilioField.FieldDisplayType.ATTACHMENT, "Attachments", FormField.Required.OPTIONAL, "attachment", 8, 1));
+        webWorkOrderFormDefaultFields.add(new FormField("parentWO", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Parent WorkOrder", FormField.Required.OPTIONAL, 9, 1));
+        webWorkOrderFormDefaultFields.add(new FormField("sendForApproval", FacilioField.FieldDisplayType.DECISION_BOX, "Send For Approval", FormField.Required.OPTIONAL, 10, 1));
+        webWorkOrderFormDefaultFields.add(new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.OPTIONAL, 11, 1));
+        webWorkOrderFormDefaultFields.add(new FormField(srField.getId(), "serviceRequest", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Service Request", FormField.Required.OPTIONAL, 14, 1, true));
+
+        List<FormField> webWorkOrderFormTaskFields = new ArrayList<>();
+        webWorkOrderFormTaskFields.add(new FormField("tasks", FacilioField.FieldDisplayType.TASKS, "TASKS", FormField.Required.OPTIONAL, 13, 1));
+
+        List<FormField> webWorkOrderFormFields = new ArrayList<>();
+        webWorkOrderFormFields.addAll(webWorkOrderFormDefaultFields);
+        webWorkOrderFormFields.addAll(webWorkOrderFormTaskFields);
+
+        FormSection defaultSection = new FormSection("WORKORDER", 1, webWorkOrderFormDefaultFields, true);
+        defaultSection.setSectionType(FormSection.SectionType.FIELDS);
+
+        FormSection tasksSection = new FormSection("TASKS", 2, webWorkOrderFormTaskFields, true);
+        tasksSection.setSectionType(FormSection.SectionType.FIELDS);
+
+        List<FormSection> webWorkOrderFormSections = new ArrayList<>();
+        webWorkOrderFormSections.add(defaultSection);
+        webWorkOrderFormSections.add(tasksSection);
+
+//        webWorkOrderForm.setFields(webWorkOrderFormFields);
+        webWorkOrderForm.setSections(webWorkOrderFormSections);
+
+        FacilioForm alarmWorkOrderForm = new FacilioForm();
+        alarmWorkOrderForm.setDisplayName("Alarm Workorder");
+        alarmWorkOrderForm.setName("alarm_workorder_web");
+        alarmWorkOrderForm.setModule(workOrderModule);
+        alarmWorkOrderForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+        alarmWorkOrderForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        alarmWorkOrderForm.setHideInList(true);
+        alarmWorkOrderForm.setIgnoreCustomFields(true);
+
+        List<FormField> alarmWorkOrderFormFields = new ArrayList<>();
+        alarmWorkOrderFormFields.add(new FormField("category", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL, "ticketcategory", 2, 1));
+        alarmWorkOrderFormFields.add(new FormField("assignment", FacilioField.FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", FormField.Required.OPTIONAL, 3, 1));
+        alarmWorkOrderFormFields.add(new FormField("priority", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Priority", FormField.Required.OPTIONAL, "ticketpriority", 4, 1));
+//        alarmWorkOrderForm.setFields(alarmWorkOrderFormFields);
+
+        FormSection alarmWorkOrderFormSection = new FormSection("WORKORDER", 1, alarmWorkOrderFormFields, true);
+        alarmWorkOrderFormSection.setSectionType(FormSection.SectionType.FIELDS);
+        alarmWorkOrderForm.setSections(Collections.singletonList(alarmWorkOrderFormSection));
+
+        FacilioForm preventiveMaintenanceForm =new FacilioForm();
+        preventiveMaintenanceForm.setDisplayName("PREVENTIVE MAINTENANCE");
+        preventiveMaintenanceForm.setName("web_pm");
+        preventiveMaintenanceForm.setModule(workOrderModule);
+        preventiveMaintenanceForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+        preventiveMaintenanceForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        preventiveMaintenanceForm.setHideInList(true);
+
+        List<FormField> preventiveMaintenanceFormFields = new ArrayList<>();
+        preventiveMaintenanceFormFields.add(new FormField("site", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, "site", 1, 1));
+        preventiveMaintenanceFormFields.add(new FormField("type", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Maintenance Type", FormField.Required.REQUIRED, "tickettype", 2, 1));
+        preventiveMaintenanceFormFields.add(new FormField("subject", FacilioField.FieldDisplayType.TEXTBOX, "Subject", FormField.Required.REQUIRED, 3, 1));
+        preventiveMaintenanceFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 4, 1));
+        preventiveMaintenanceFormFields.add(new FormField("category", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL, "ticketcategory", 5, 2));
+        preventiveMaintenanceFormFields.add(new FormField("priority", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Priority", FormField.Required.OPTIONAL, "ticketpriority", 5, 3));
+        preventiveMaintenanceFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.DURATION, "Due Duration", FormField.Required.OPTIONAL, "duration", 6, 1));
+        preventiveMaintenanceFormFields.add(new FormField("estimatedWorkDuration", FacilioField.FieldDisplayType.DURATION, "Estimated Duration", FormField.Required.OPTIONAL, "duration", 7, 1));
+        preventiveMaintenanceFormFields.add(new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.OPTIONAL, "vendors", 11, 1));
+        FormField groups = new FormField("groups", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Team", FormField.Required.OPTIONAL, "groups", 8, 1);
+        groups.addToConfig("isFiltersEnabled", true); // groups is special form field without actual field
+        groups.addToConfig("lookupModuleName", "groups");
+        preventiveMaintenanceFormFields.add(groups);
+        preventiveMaintenanceFormFields.add(new FormField("attachedFiles", FacilioField.FieldDisplayType.ATTACHMENT, "Attachments", FormField.Required.OPTIONAL, "attachment", 9, 1));
+//        preventiveMaintenanceForm.setFields(preventiveMaintenanceFormFields);
+
+        FormSection preventiveMaintenanceFormSection = new FormSection("WORKORDER", 1, preventiveMaintenanceFormFields, true);
+        preventiveMaintenanceFormSection.setSectionType(FormSection.SectionType.FIELDS);
+        preventiveMaintenanceForm.setSections(Collections.singletonList(preventiveMaintenanceFormSection));
+
+        FacilioForm multiPreventiveMaintenanceForm =new FacilioForm();
+        multiPreventiveMaintenanceForm.setDisplayName("PREVENTIVE MAINTENANCE");
+        multiPreventiveMaintenanceForm.setName("multi_web_pm");
+        multiPreventiveMaintenanceForm.setModule(workOrderModule);
+        multiPreventiveMaintenanceForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+        multiPreventiveMaintenanceForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        multiPreventiveMaintenanceForm.setHideInList(false);
+
+        List<FormField> multiPreventiveMaintenanceFormFields = new ArrayList<>();
+        multiPreventiveMaintenanceFormFields.add(new FormField("type", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Maintenance Type", FormField.Required.REQUIRED, "tickettype", 2, 1));
+        multiPreventiveMaintenanceFormFields.add(new FormField("subject", FacilioField.FieldDisplayType.TEXTBOX, "Subject", FormField.Required.REQUIRED, 3, 1));
+        multiPreventiveMaintenanceFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 4, 1));
+        multiPreventiveMaintenanceFormFields.add(new FormField("category", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL, "ticketcategory", 5, 2));
+        multiPreventiveMaintenanceFormFields.add(new FormField("priority", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Priority", FormField.Required.OPTIONAL, "ticketpriority", 5, 3));
+        multiPreventiveMaintenanceFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.DURATION, "Due Duration", FormField.Required.OPTIONAL, "duration", 6, 1));
+        multiPreventiveMaintenanceFormFields.add(new FormField("estimatedWorkDuration", FacilioField.FieldDisplayType.DURATION, "Estimated Duration", FormField.Required.OPTIONAL, "duration", 7, 1));
+        multiPreventiveMaintenanceFormFields.add(new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.OPTIONAL, "vendors", 11, 1));
+//        FormField group = new FormField("groups", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Team", FormField.Required.OPTIONAL, "groups", 8, 1);
+//        group.addToConfig("isFiltersEnabled", true); // groups is special form field without actual field
+//        group.addToConfig("lookupModuleName", "groups");
+        multiPreventiveMaintenanceFormFields.add(groups);
+        multiPreventiveMaintenanceFormFields.add(new FormField("attachedFiles", FacilioField.FieldDisplayType.ATTACHMENT, "Attachments", FormField.Required.OPTIONAL, "attachment", 9, 1));
+//        multiPreventiveMaintenanceForm.setFields(multiPreventiveMaintenanceFormFields);
+
+        FormSection multiPreventiveMaintenanceFormSection = new FormSection("WORKORDER", 1, multiPreventiveMaintenanceFormFields, true);
+        multiPreventiveMaintenanceFormSection.setSectionType(FormSection.SectionType.FIELDS);
+        multiPreventiveMaintenanceForm.setSections(Collections.singletonList(multiPreventiveMaintenanceFormSection));
+
+        List<FacilioForm> workOrderModuleForms = new ArrayList<>();
+        workOrderModuleForms.add(serviceWorkOrderForm);
+        workOrderModuleForms.add(approvalForm);
+        workOrderModuleForms.add(mobileApprovalForm);
+        workOrderModuleForms.add(mobileMobileWorkOrderForm);
+        workOrderModuleForms.add(webWorkOrderForm);
+        workOrderModuleForms.add(alarmWorkOrderForm);
+        workOrderModuleForms.add(preventiveMaintenanceForm);
+        workOrderModuleForms.add(multiPreventiveMaintenanceForm);
+
+        return workOrderModuleForms;
+    }
+
+    public static FormField getSiteField() {
+        return new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, "site", 2, 1);
+    }
+    public static List<FormField> getWoClassifierFields() {
+        List<FormField> fields = new ArrayList<>();
+        fields.add(new FormField("category", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL, "ticketcategory", 4, 2));
+        fields.add(new FormField("type", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Maintenance Type", FormField.Required.OPTIONAL, "tickettype", 4, 3));
+        fields.add(new FormField("priority", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Priority", FormField.Required.OPTIONAL, "ticketpriority", 5, 1));
+        return fields;
+    }
+    public static FormField getWoResourceField() {
+        return new FormField("resource", FacilioField.FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", FormField.Required.OPTIONAL, 6, 1);
     }
 }
