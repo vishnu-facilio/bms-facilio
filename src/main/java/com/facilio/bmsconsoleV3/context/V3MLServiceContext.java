@@ -31,7 +31,7 @@ public class V3MLServiceContext extends V3Context {
 	private String modelName;
 	private String projectName;
 	private String serviceType;
-	private String inputType;
+	private String inputType="default";
 	private Long parentAssetId;
 	private List<Long> childAssetIds;
 	private JSONObject workflowInfo;
