@@ -24,6 +24,14 @@ public class WebTabContext implements Serializable {
         this.id = id;
     }
 
+    private int iconType = -1;
+    public int getIconType() {
+        return iconType;
+    }
+    public void setIconType(int iconType) {
+        this.iconType = iconType;
+    }
+
     private String name;
     public String getName() {
         return name;

@@ -6351,6 +6351,11 @@ public class TransactionChainFactory {
 		chain.addCommand(new AddSurveyRuleCommand ());
 		return chain;
 	}
+	public static FacilioChain getAddMessageSourceChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddMessageSourceCommand());
+		return chain;
+	}
 
 	public static FacilioChain updateSurveyRuleChain() {
 		FacilioChain chain = getDefaultChain();
@@ -6363,6 +6368,21 @@ public class TransactionChainFactory {
 	public static FacilioChain deleteSurveyRuleChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new DeleteSurveyRulesCommand());
+		return chain;
+	}
+
+	public static FacilioChain addOrUpdatePivotReport(){
+		FacilioChain chain = FacilioChain.getTransactionChain();
+
+		chain.addCommand(ReadOnlyChainFactory.fetchPivotReportChain());
+		chain.addCommand(new AddOrUpdateReportCommand());
+
+		return chain;
+	}
+
+	public static FacilioChain agentMigrationChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AgentMigrationCommand());
 		return chain;
 	}
 

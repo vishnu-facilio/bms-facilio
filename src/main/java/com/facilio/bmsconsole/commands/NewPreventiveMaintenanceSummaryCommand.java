@@ -179,40 +179,25 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
 		if (pmForm != null && pmForm.getFields() != null) {
             for (FormField formField : pmForm.getFields()) {
                 if (formField.getField() != null &&
-                        !formField.getField().isDefault() &&
-                        formField.getField().getDataTypeEnum() == FieldType.LOOKUP) {
+						!formField.getField().isDefault() &&
+						formField.getField().getDataTypeEnum() == FieldType.LOOKUP) {
 
-                    LookupField lookup = (LookupField) formField.getField();
-                    String lookupModuleName = lookup.getLookupModule() != null ? lookup.getLookupModule().getName() : "";
+					LookupField lookup = (LookupField) formField.getField();
+					String lookupModuleName = lookup.getLookupModule() != null ? lookup.getLookupModule().getName() : "";
 
-                    Map<String, Object> data = workorder.getData();
-                    if (data != null && data.containsKey(lookup.getName())) {
-                        long lookupID = FacilioUtil.parseLong(((HashMap<String, Object>) data.get(lookup.getName())).get("id"));
-                        ModuleBaseWithCustomFields record = RecordAPI.getRecord(lookupModuleName, lookupID);
-                        if (record != null) {
-                            Map<String, Object> mapping = FieldUtil.getAsProperties(record);
-                            FacilioField primaryField = modBean.getPrimaryField(lookupModuleName);
-                            mapping.put("primaryValue", mapping.get(primaryField.getName()));
-                            workorder.getData().put(lookup.getName(), mapping);
-                        }
-                    }
-                }
-
-				// handling for picklist
-                if (formField.getField() != null &&
-                        !formField.getField().isDefault() &&
-                        formField.getField().getDataTypeEnum() == FieldType.ENUM) {
-
-                    EnumField enumfield = (EnumField) formField.getField();
-                    
-                    Map<String, Object> data = workorder.getData();
-                    if (data != null && data.containsKey(enumfield.getName())) {
-						Map<String, Object> enumValue = (Map<String, Object>) data.get(enumfield.getName());
-						int enumKey = FacilioUtil.parseInt(enumValue.get("id"));
-						data.put(enumfield.getName(), enumfield.getEnumMap().get(enumKey));
+					Map<String, Object> data = workorder.getData();
+					if (data != null && data.containsKey(lookup.getName())) {
+						long lookupID = FacilioUtil.parseLong(((HashMap<String, Object>) data.get(lookup.getName())).get("id"));
+						ModuleBaseWithCustomFields record = RecordAPI.getRecord(lookupModuleName, lookupID);
+						if (record != null) {
+							Map<String, Object> mapping = FieldUtil.getAsProperties(record);
+							FacilioField primaryField = modBean.getPrimaryField(lookupModuleName);
+							mapping.put("primaryValue", mapping.get(primaryField.getName()));
+							workorder.getData().put(lookup.getName(), mapping);
+						}
 					}
-                }
-            }
+				}
+			}
         }
 
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);

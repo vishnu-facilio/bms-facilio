@@ -733,7 +733,7 @@ public class WorkOrderAction extends FacilioAction {
 						if (buildingId != null && buildingId > 0) {
 							baseSpaceId = buildingId;
 							spaceIds = getIdsFromSpaceContextList(SpaceAPI.getSpaceListOfCategory(baseSpaceId, spaceCategoryId));
-						} else if (this.siteIds  != null && this.siteIds.size() > 0) {
+						} else if (this.siteIds  != null && this.siteIds.size() > 0 && spaceCategoryId != null) {
 							spaceIds = new ArrayList<>();
 							for (long s: this.siteIds) {
 								spaceIds.addAll(getIdsFromSpaceContextList(SpaceAPI.getSpaceListOfCategory(s, spaceCategoryId)));

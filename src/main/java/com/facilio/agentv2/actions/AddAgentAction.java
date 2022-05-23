@@ -75,7 +75,7 @@ public class AddAgentAction extends AgentActionV2
             agent.setAgentType(getAgentType());
             agent.setDisplayName(getDisplayName());
             agent.setWorkflow(getWorkflow());
-            agent.setPartitionId(partitionId);
+//            agent.setPartitionId(partitionId);
             agent.setMessageSourceId(getMessageSourceId());
             agent.setSubscribeTopics(getSubscribeTopics());
             if (agentType != AgentType.CUSTOM.getKey()) {

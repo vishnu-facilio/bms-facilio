@@ -294,13 +294,4 @@ public class FacilioAgent implements Serializable {
         return payload;
     }
 
-    private int partitionId = -1;
-
-    public void setPartitionId(int id) {
-        partitionId = id;
-    }
-
-    public int getPartitionId() {
-        return partitionId;
-    }
 }

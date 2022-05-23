@@ -1683,6 +1683,17 @@ public class APIv3Config {
                 .build();
     }
 
+    @Module("spacecategory")
+    public static Supplier<V3Config> getSpaceCategory() {
+        return () -> new V3Config(V3SpaceCategoryContext.class, null)
+                .create()
+                .list()
+                .update()
+                .delete()
+                .beforeDelete(TransactionChainFactoryV3.getDeleteSpaceCategoryChain())
+                .build();
+    }
+
     @Module(FacilioConstants.FaultImpact.MODULE_NAME)
     public static Supplier<V3Config> getFaultImpact() {
         return () -> new V3Config(FaultImpactContext.class, null)
@@ -1709,6 +1720,7 @@ public class APIv3Config {
                 .list()
                 .update()
                 .delete()
+                .beforeDelete(TransactionChainFactoryV3.getDeleteAssetDepartmentChain())
                 .build();
     }
     @Module("receivable")

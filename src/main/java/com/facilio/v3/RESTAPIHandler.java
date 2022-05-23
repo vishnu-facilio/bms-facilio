@@ -139,6 +139,11 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
             if (filters != null && !filters.isEmpty()) {
                 JSONParser parser = new JSONParser();
                 JSONObject json = (JSONObject) parser.parse(filters);
+                if(json.containsKey("drillDownPattern") && json.get("drillDownPattern") != null) {
+                    String drillDownPattern = json.get("drillDownPattern").toString();
+                    context.put(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN, drillDownPattern);
+                    json.remove("drillDownPattern");
+                }
                 context.put(Constants.FILTERS, json);
 
                 boolean excludeParentFilter = this.getExcludeParentFilter();

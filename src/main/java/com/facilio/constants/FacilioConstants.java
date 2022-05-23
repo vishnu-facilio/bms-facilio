@@ -196,6 +196,14 @@ public class FacilioConstants {
 		public static final String SERVICE_CATALOG_GROUP = "serviceCatalogGroup";
 		public static final String SERVICE_CATALOG_GROUPS = "serviceCatalogGroups";
 		public static final String SERVICE_CATALOG_GROUP_ORDER_BY = "serviceCatalogGroupOrderBy";
+		public static final String LICENSE_NAME = "licenseName";
+
+		public static final String LICENSE_TYPE = "licenseType";
+
+		public static final String LICENSE_NEW_COUNT= "newCount";
+		public static final String LICENSING_INFO = "licensingInfo";
+
+		public static final String LICENSING_INFO_IDS = "licensingInfoIds";
 
 		public static final String SUB_MODULES = "submodules";
 		public static final String TO_UPDATE_CHILD_MAP = "toUpdateChildMap";
@@ -714,6 +722,9 @@ public class FacilioConstants {
 		public static final String SHOW_TIME_LINE_FILTER = "showTimelineFilter";
 		public static final String PIVOT_ALIAS_VS_FIELD = "pivotAliasVsField";
 		public static final String PIVOT_LOOKUP_MAP = "pivotLookupMap";
+		public static final String PIVOT_DRILL_DOWN = "drillDown";
+		public static final String PIVOT_DRILL_DOWN_FIELDS = "pivotDrillDownFields";
+		public static final String PIVOT_DRILL_DOWN_OPERATORS = "pivotDrillDownOperators";
 		public static final String IS_TIMELINE_FILTER_APPLIED = "isTimelineFilterApplied";
 		public static final String IS_EXPORT_REPORT = "isExportReport";
 		public static final String TABLE_ALIAS = "tableAlias";

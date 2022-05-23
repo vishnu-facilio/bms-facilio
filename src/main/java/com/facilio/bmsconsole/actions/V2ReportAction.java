@@ -2672,30 +2672,23 @@ public class V2ReportAction extends FacilioAction {
         this.templateJSON = templateJSON;
     }
 
-    public String fetchTabularReportData() throws Exception {
-        FacilioChain c = FacilioChain.getNonTransactionChain();
-        FacilioContext context = c.getContext();
-        context.put(FacilioConstants.Reports.ROWS, rows);
-        context.put(FacilioConstants.Reports.DATA, data);
-        context.put(FacilioConstants.ContextNames.FORMULA, formula);
-        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-        context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
-        context.put(FacilioConstants.ContextNames.SORTING, sortBy);
-        context.put(FacilioConstants.ContextNames.TEMPLATE_JSON, templateJSON);
-        context.put(FacilioConstants.ContextNames.DATE_FIELD, dateFieldId);
-        context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
-        context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateValue);
-        context.put(FacilioConstants.ContextNames.START_TIME, startTime);
-        context.put(FacilioConstants.ContextNames.END_TIME, endTime);
-        context.put(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER, showTimelineFilter);
-        c.addCommand(new ConstructTabularReportData());
-        c.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
-        c.addCommand(new PivotFormulaColumnCommand());
-        c.addCommand(new PivotCellVisualCommand());
-        c.addCommand(new PivotColumnFormatCommand());
-        c.addCommand(new PivotConditionalFormatCommand());
-        c.addCommand(new PivotThemeCustomizationCommand());
-        c.execute();
+
+    private long drillDown = -1;
+
+    public long getDrillDown() {
+        return drillDown;
+    }
+
+    public void setDrillDown(long drillDown) {
+        this.drillDown = drillDown;
+    }
+
+    public boolean isShowTimelineFilter() {
+        return showTimelineFilter;
+    }
+
+    public void setPivotResult(FacilioContext context){
+
         setResult(FacilioConstants.ContextNames.ROW_HEADERS, context.get(FacilioConstants.ContextNames.ROW_HEADERS));
         setResult(FacilioConstants.ContextNames.DATA_HEADERS, context.get(FacilioConstants.ContextNames.DATA_HEADERS));
         setResult(FacilioConstants.ContextNames.FORMULA_HEADERS,
@@ -2704,20 +2697,34 @@ public class V2ReportAction extends FacilioAction {
         setResult(FacilioConstants.ContextNames.DATA_ALIAS, context.get(FacilioConstants.ContextNames.DATA_ALIAS));
         setResult(FacilioConstants.ContextNames.PIVOT_TABLE_DATA,
                 context.get(FacilioConstants.ContextNames.PIVOT_TABLE_DATA));
+        setResult(FacilioConstants.ContextNames.SORTING, context.get(FacilioConstants.ContextNames.SORTING));
+        setResult(FacilioConstants.ContextNames.CRITERIA, context.get(FacilioConstants.ContextNames.CRITERIA));
+        setResult(FacilioConstants.ContextNames.PIVOT_TEMPLATE_JSON, context.get(FacilioConstants.ContextNames.TEMPLATE_JSON));
+        setResult(FacilioConstants.Reports.ROWS, context.get(FacilioConstants.Reports.ROWS));
+        setResult(FacilioConstants.Reports.DATA, context.get(FacilioConstants.ContextNames.DATA));
+        setResult(FacilioConstants.ContextNames.FORMULA, context.get(FacilioConstants.ContextNames.FORMULA));
+        setResult(FacilioConstants.ContextNames.MODULE_NAME, context.get(FacilioConstants.ContextNames.MODULE_NAME));
+        setResult(FacilioConstants.ContextNames.CRITERIA, context.get(FacilioConstants.ContextNames.CRITERIA));
+        setResult(FacilioConstants.ContextNames.DATE_FIELD, context.get(FacilioConstants.ContextNames.DATE_FIELD));
+        setResult(FacilioConstants.ContextNames.DATE_OPERATOR, context.get(FacilioConstants.ContextNames.DATE_OPERATOR));
+        setResult(FacilioConstants.ContextNames.START_TIME, context.get(FacilioConstants.ContextNames.START_TIME));
+        setResult(FacilioConstants.ContextNames.END_TIME, context.get(FacilioConstants.ContextNames.END_TIME));
+        setResult((String) FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER, context.get(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER));
+        setResult(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, context.get(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE));
         setResult(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD,
                 context.get(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD));
         setResult(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA,
                 context.get(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA));
-        setResult(FacilioConstants.Reports.ROWS, rows);
-        setResult(FacilioConstants.Reports.DATA, data);
-        setResult(FacilioConstants.ContextNames.FORMULA, formula);
 
-        return SUCCESS;
+        setResult(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_FIELDS, context.get(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_FIELDS));
+        setResult(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_OPERATORS, context.get(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_OPERATORS));
+        setResult(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN, context.get(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN));
     }
 
-    public String savePivotReport() throws Exception {
-        FacilioChain chain = FacilioChain.getTransactionChain();
-        FacilioContext context = new FacilioContext();
+    public String fetchTabularReportData() throws Exception {
+        FacilioChain c = ReadOnlyChainFactory.fetchPivotReportChain();
+        FacilioContext context = c.getContext();
+
         context.put(FacilioConstants.Reports.ROWS, rows);
         context.put(FacilioConstants.Reports.DATA, data);
         context.put(FacilioConstants.ContextNames.FORMULA, formula);
@@ -2731,6 +2738,35 @@ public class V2ReportAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.START_TIME, startTime);
         context.put(FacilioConstants.ContextNames.END_TIME, endTime);
         context.put(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER, showTimelineFilter);
+        context.put(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN, drillDown);
+
+        c.execute();
+
+        setResult("report", reportContext);
+        setPivotResult(context);
+
+        return SUCCESS;
+    }
+
+    public String savePivotReport() throws Exception {
+        FacilioChain chain = TransactionChainFactory.addOrUpdatePivotReport();
+        FacilioContext context = new FacilioContext();
+
+        context.put(FacilioConstants.Reports.ROWS, rows);
+        context.put(FacilioConstants.Reports.DATA, data);
+        context.put(FacilioConstants.ContextNames.FORMULA, formula);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
+        context.put(FacilioConstants.ContextNames.SORTING, sortBy);
+        context.put(FacilioConstants.ContextNames.TEMPLATE_JSON, templateJSON);
+        context.put(FacilioConstants.ContextNames.DATE_FIELD, dateFieldId);
+        context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
+        context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateValue);
+        context.put(FacilioConstants.ContextNames.START_TIME, startTime);
+        context.put(FacilioConstants.ContextNames.END_TIME, endTime);
+        context.put(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER, showTimelineFilter);
+        context.put(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN, drillDown);
+
         ReportPivotParamsContext pivotparams = new ReportPivotParamsContext();
         pivotparams.setRows(rows);
         pivotparams.setData(data);
@@ -2744,6 +2780,8 @@ public class V2ReportAction extends FacilioAction {
         pivotparams.setStartTime(startTime);
         pivotparams.setEndTime(endTime);
         pivotparams.setFormula(formula);
+        pivotparams.setDrillDown(drillDown);
+
         pivotparams.setShowTimelineFilter(getShowTimelineFilter());
 
 
@@ -2756,38 +2794,21 @@ public class V2ReportAction extends FacilioAction {
             context.put(FacilioConstants.ContextNames.REPORT_ID, report.getId());
             reportContext.setId(report.getId());
         }
+
         reportContext.setTabularState(FieldUtil.getAsJSON(pivotparams).toJSONString());
         reportContext.setType(ReportType.PIVOT_REPORT);
-
         context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 
-        chain.addCommand(new ConstructTabularReportData());
-        chain.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
-        chain.addCommand(new PivotFormulaColumnCommand());
-        chain.addCommand(new PivotColumnFormatCommand());
-        chain.addCommand(new PivotConditionalFormatCommand());
-        chain.addCommand(new PivotThemeCustomizationCommand());
-        chain.addCommand(new AddOrUpdateReportCommand());
         chain.execute(context);
 
         setResult("message", "Report saved");
         setResult("report", reportContext);
-        setResult(FacilioConstants.ContextNames.ROW_HEADERS, context.get(FacilioConstants.ContextNames.ROW_HEADERS));
-        setResult(FacilioConstants.ContextNames.DATA_HEADERS, context.get(FacilioConstants.ContextNames.DATA_HEADERS));
-        setResult(FacilioConstants.ContextNames.FORMULA_HEADERS,
-                context.get(FacilioConstants.ContextNames.FORMULA_HEADERS));
-        setResult(FacilioConstants.ContextNames.ROW_ALIAS, context.get(FacilioConstants.ContextNames.ROW_ALIAS));
-        setResult(FacilioConstants.ContextNames.DATA_ALIAS, context.get(FacilioConstants.ContextNames.DATA_ALIAS));
-        setResult(FacilioConstants.ContextNames.PIVOT_TABLE_DATA,
-                context.get(FacilioConstants.ContextNames.PIVOT_TABLE_DATA));
-        setResult(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA,
-                context.get(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA));
 
         return SUCCESS;
     }
 
     public String exportPivotReport() throws Exception {
-        FacilioChain c = FacilioChain.getNonTransactionChain();
+        FacilioChain c = ReadOnlyChainFactory.fetchPivotReportChain();
         FacilioContext context = c.getContext();
 
         ReportContext reportContext = ReportUtil.getReport(reportId);
@@ -2813,6 +2834,9 @@ public class V2ReportAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.TEMPLATE_JSON, pivotparams.getTemplateJSON());
         context.put(FacilioConstants.ContextNames.DATE_FIELD, pivotparams.getDateFieldId());
         context.put(FacilioConstants.ContextNames.DATE_OPERATOR, pivotparams.getDateOperator());
+        context.put(FacilioConstants.ContextNames.TIME_FILTER, pivotparams.getShowTimelineFilter());
+        context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, pivotparams.getDateValue());
+        context.put(FacilioConstants.ContextNames.IS_EXPORT_REPORT, true);
 
         if (getStartTime() > 0 && getEndTime() > 0) {
             context.put(FacilioConstants.ContextNames.IS_TIMELINE_FILTER_APPLIED, true);
@@ -2830,24 +2854,14 @@ public class V2ReportAction extends FacilioAction {
             context.put(FacilioConstants.ContextNames.FILTERS, filter);
         }
 
-        context.put(FacilioConstants.ContextNames.TIME_FILTER, pivotparams.getShowTimelineFilter());
-        context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, pivotparams.getDateValue());
-        context.put(FacilioConstants.ContextNames.IS_EXPORT_REPORT, true);
-
-        c.addCommand(new ConstructTabularReportData());
-        c.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
-        c.addCommand(new PivotFormulaColumnCommand());
-        c.addCommand(new PivotColumnFormatCommand());
-        c.addCommand(new PivotConditionalFormatCommand());
-        c.addCommand(new PivotThemeCustomizationCommand());
-        c.addCommand(new ExportPivotReport());
         c.execute();
+
         setResult("fileUrl", context.get(FacilioConstants.ContextNames.FILE_URL));
         return SUCCESS;
     }
 
     public String executePivotReport() throws Exception {
-        FacilioChain chain = FacilioChain.getNonTransactionChain();
+        FacilioChain chain = ReadOnlyChainFactory.fetchPivotReportChain();
         FacilioContext context = new FacilioContext();
 
         ReportContext reportContext = ReportUtil.getReport(reportId);
@@ -2864,7 +2878,6 @@ public class V2ReportAction extends FacilioAction {
                 (JSONObject) parser.parse(reportContext.getTabularState()), ReportPivotParamsContext.class);
 
         if (getFilters() != null) {
-            chain.addCommand(new GenerateCriteriaFromFilterCommand());
             JSONObject filter = (JSONObject) parser.parse(getFilters());
             context.put(FacilioConstants.ContextNames.FILTERS, filter);
         }
@@ -2874,14 +2887,18 @@ public class V2ReportAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.FORMULA, pivotparams.getFormula());
         context.put(FacilioConstants.ContextNames.MODULE_NAME, pivotparams.getModuleName());
         context.put(FacilioConstants.ContextNames.CRITERIA, pivotparams.getCriteria());
+        context.put(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER, pivotparams.getShowTimelineFilter());
+        context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, pivotparams.getDateValue());
+        context.put(FacilioConstants.ContextNames.TEMPLATE_JSON, pivotparams.getTemplateJSON());
+        context.put(FacilioConstants.ContextNames.DATE_FIELD, pivotparams.getDateFieldId());
+        context.put(FacilioConstants.ContextNames.DATE_OPERATOR, pivotparams.getDateOperator());
+        context.put(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN, pivotparams.getDrillDown());
+
         if (sortBy != null) {
             context.put(FacilioConstants.ContextNames.SORTING, sortBy);
         } else {
             context.put(FacilioConstants.ContextNames.SORTING, pivotparams.getSortBy());
         }
-        context.put(FacilioConstants.ContextNames.TEMPLATE_JSON, pivotparams.getTemplateJSON());
-        context.put(FacilioConstants.ContextNames.DATE_FIELD, pivotparams.getDateFieldId());
-        context.put(FacilioConstants.ContextNames.DATE_OPERATOR, pivotparams.getDateOperator());
         if (getStartTime() > 0 && getEndTime() > 0) {
             context.put(FacilioConstants.ContextNames.IS_TIMELINE_FILTER_APPLIED, true);
             context.put(FacilioConstants.ContextNames.START_TIME, getStartTime());
@@ -2891,43 +2908,11 @@ public class V2ReportAction extends FacilioAction {
             context.put(FacilioConstants.ContextNames.START_TIME, pivotparams.getStartTime());
             context.put(FacilioConstants.ContextNames.END_TIME, pivotparams.getEndTime());
         }
-        context.put(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER, pivotparams.getShowTimelineFilter());
-        context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, pivotparams.getDateValue());
 
-        chain.addCommand(new ConstructTabularReportData());
-        chain.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
-        chain.addCommand(new PivotFormulaColumnCommand());
-        chain.addCommand(new PivotColumnFormatCommand());
-        chain.addCommand(new PivotConditionalFormatCommand());
-        chain.addCommand(new PivotThemeCustomizationCommand());
         chain.execute(context);
-        setResult("report", reportContext);
-        setResult(FacilioConstants.ContextNames.ROW_HEADERS, context.get(FacilioConstants.ContextNames.ROW_HEADERS));
-        setResult(FacilioConstants.ContextNames.DATA_HEADERS, context.get(FacilioConstants.ContextNames.DATA_HEADERS));
-        setResult(FacilioConstants.ContextNames.FORMULA_HEADERS,
-                context.get(FacilioConstants.ContextNames.FORMULA_HEADERS));
-        setResult(FacilioConstants.ContextNames.ROW_ALIAS, context.get(FacilioConstants.ContextNames.ROW_ALIAS));
-        setResult(FacilioConstants.ContextNames.DATA_ALIAS, context.get(FacilioConstants.ContextNames.DATA_ALIAS));
-        setResult(FacilioConstants.ContextNames.PIVOT_TABLE_DATA,
-                context.get(FacilioConstants.ContextNames.PIVOT_TABLE_DATA));
-        setResult(FacilioConstants.ContextNames.SORTING, pivotparams.getSortBy());
-        setResult(FacilioConstants.ContextNames.CRITERIA, pivotparams.getCriteria());
-        setResult(FacilioConstants.ContextNames.PIVOT_TEMPLATE_JSON, pivotparams.getTemplateJSON());
 
-        setResult(FacilioConstants.Reports.ROWS, pivotparams.getRows());
-        setResult(FacilioConstants.Reports.DATA, pivotparams.getData());
-        setResult(FacilioConstants.ContextNames.FORMULA, pivotparams.getFormula());
-        setResult(FacilioConstants.ContextNames.MODULE_NAME, pivotparams.getModuleName());
-        setResult(FacilioConstants.ContextNames.DATE_FIELD, pivotparams.getDateFieldId());
-        setResult(FacilioConstants.ContextNames.DATE_OPERATOR, pivotparams.getDateOperator());
-        setResult(FacilioConstants.ContextNames.START_TIME, pivotparams.getStartTime());
-        setResult(FacilioConstants.ContextNames.END_TIME, pivotparams.getEndTime());
-        setResult((String) FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER, pivotparams.getShowTimelineFilter());
-        setResult(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, pivotparams.getDateValue());
-        setResult(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD,
-                context.get(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD));
-        setResult(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA,
-                context.get(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA));
+        setResult("report", reportContext);
+        setPivotResult(context);
 
         return SUCCESS;
     }

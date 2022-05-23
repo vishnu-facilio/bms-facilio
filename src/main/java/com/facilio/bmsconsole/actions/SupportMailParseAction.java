@@ -19,7 +19,7 @@ public class SupportMailParseAction extends ActionSupport {
 	public String execute() throws Exception {
 		// TODO Auto-generated method stub
 		//System.out.println(s3.toJSONString());
-		LOGGER.info("Added to WorkorderEmail table with id : "+WorkOrderRequestAPI.addS3MessageId(s3));
+		LOGGER.info("Added to WorkorderEmail table with id : "+WorkOrderRequestAPI.addS3MessageId(s3,recipient));
 		return SUCCESS;
 	}
 	
@@ -29,6 +29,13 @@ public class SupportMailParseAction extends ActionSupport {
 	}
 	public void setS3(JSONObject s3) {
 		this.s3 = s3;
+	}
+	public String recipient;
+	public String getRecipient() {
+		return recipient;
+	}
+	public void setRecipient(String recipient) {
+		this.recipient = recipient;
 	}
 
 	private long workOrderId;

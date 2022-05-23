@@ -269,10 +269,15 @@ public class ModuleBeanImpl implements ModuleBean {
 			sql = MessageFormat.format(DBConf.getInstance().getQuery("module.submodule.type"), StringUtils.join(parentModule.getExtendedModuleIds(), ","), getTypes(types));
 		}
 		ResultSet rs = null;
+
+		List<Long> childModuleIds = new ArrayList<Long>();
 		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setLong(1, getOrgId());
 			rs = pstmt.executeQuery();
-			return getSubModulesFromRS(rs);
+			
+			while(rs.next()) {
+				childModuleIds.add(rs.getLong("CHILD_MODULE_ID"));
+			}
 		}
 		catch(Exception e) {
 			LOGGER.error("Exception occurred ", e);
@@ -288,6 +293,14 @@ public class ModuleBeanImpl implements ModuleBean {
 				}
 			}
 		}
+		
+		
+		List<FacilioModule> subModules = new ArrayList<>();
+		for(Long childModuleId : childModuleIds) {
+			subModules.add(getMod(childModuleId));
+		}
+		return Collections.unmodifiableList(subModules);
+		
 	}
 
 	@Override

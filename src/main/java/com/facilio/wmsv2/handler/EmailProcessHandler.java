@@ -58,11 +58,12 @@ public class EmailProcessHandler extends BaseHandler{
         			if(messageMap!=null) {
 						String s3Id = (String) messageMap.get("s3MessageId");
 						emailID = (long) Long.parseLong(messageMap.get("id").toString());
+						String recepient = (String) messageMap.get("recipient");
 						try (S3Object rawEmail = AwsUtil.getAmazonS3Client().getObject(S3_BUCKET_NAME, s3Id); InputStream is = rawEmail.getObjectContent()) {
 							MimeMessage emailMsg = new MimeMessage(null, is);
 							MimeMessageParser parser = new MimeMessageParser(emailMsg);
 							parser.parse();
-							SupportEmailContext supportEmail = getSupportEmail(parser);
+							SupportEmailContext supportEmail = getSupportEmail(recepient);
 							long requestID = -1L;
 							long orgID = -1L;
 							if (supportEmail != null) {
@@ -88,39 +89,44 @@ public class EmailProcessHandler extends BaseHandler{
 		return bean.addRequestFromEmail(emailMsg, parser, supportEmail);
 	}
 
-	private SupportEmailContext getSupportEmail(MimeMessageParser parser) throws Exception {
-		SupportEmailContext supportEmail = getSupportEmail(parser.getTo());
-		if (supportEmail != null) {
-			return supportEmail;
-		}
+//	private SupportEmailContext getSupportEmail(MimeMessageParser parser) throws Exception {
+	private SupportEmailContext getSupportEmail(String recepient) throws Exception {
+		LOGGER.info("Reached getSupport Email");
+		SupportEmailContext supportEmail = SupportEmailAPI.getSupportEmailFromFwdEmail(recepient);
+		LOGGER.info("Support email object : " + supportEmail);
+		return supportEmail;
+//		SupportEmailContext supportEmail = getSupportEmail(recepient);
+//		if (supportEmail != null) {
+//			return supportEmail;
+//		}
+//
+//		supportEmail = getSupportEmail(parser.getCc());
+//		if (supportEmail != null) {
+//			return supportEmail;
+//		}
+//
+//		supportEmail = getSupportEmail(parser.getBcc());
+//		if (supportEmail != null) {
+//			return supportEmail;
+//		}
 
-		supportEmail = getSupportEmail(parser.getCc());
-		if (supportEmail != null) {
-			return supportEmail;
-		}
-
-		supportEmail = getSupportEmail(parser.getBcc());
-		if (supportEmail != null) {
-			return supportEmail;
-		}
-
-		return null;
+//		return null;
 	}
 
-	private SupportEmailContext getSupportEmail(List<Address> toAddresses) throws Exception {
-		LOGGER.info("Support email addresses : " + toAddresses);
-		if (CollectionUtils.isNotEmpty(toAddresses)) {
-			StringJoiner emails = new StringJoiner(",");
-			for (Address address : toAddresses) {
-				String email = ((InternetAddress) address).getAddress();
-				emails.add(email);
-			}
-			SupportEmailContext supportEmail = SupportEmailAPI.getSupportEmailFromFwdEmail(emails.toString());
-			LOGGER.info("Support email object : " + supportEmail);
-			return supportEmail;
-		}
-		return null;
-	}
+//	private SupportEmailContext getSupportEmail(List<Address> toAddresses) throws Exception {
+//		LOGGER.info("Support email addresses : " + toAddresses);
+//		if (CollectionUtils.isNotEmpty(toAddresses)) {
+//			StringJoiner emails = new StringJoiner(",");
+//			for (Address address : toAddresses) {
+//				String email = ((InternetAddress) address).getAddress();
+//				emails.add(email);
+//			}
+//			SupportEmailContext supportEmail = SupportEmailAPI.getSupportEmailFromFwdEmail(emails.toString());
+//			LOGGER.info("Support email object : " + supportEmail);
+//			return supportEmail;
+//		}
+//		return null;
+//	}
 	
 	private void markAsFailed(long id) throws Exception {
 		Map<String, Object> dataBag = new HashMap<>();

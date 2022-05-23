@@ -38,7 +38,7 @@ public class V3SpaceCategoryContext extends V3Context {
     }
 
     private Long spaceModuleId;
-    public long getSpaceModuleId() {
+    public Long getSpaceModuleId() {
         return spaceModuleId;
     }
     public void setSpaceModuleId(Long spaceModuleId) {

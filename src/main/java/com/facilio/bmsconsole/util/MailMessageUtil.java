@@ -372,6 +372,7 @@ public class MailMessageUtil {
         BaseMailMessageContext mailMessage = BaseMailMessageContext.instance(rawEmail);
         mailMessage.setParentId(supportMail.getId());
         mailMessage.setSiteId(supportMail.getSiteId());
+        mailMessage.setRecipient(supportMail.getFwdEmail());
         Map<String, List<Map<String, Object>>> attachments = new HashMap<>();
         if (mailMessage.getAttachmentsList().size() > 0) {
             attachments.put("mailAttachments", mailMessage.getAttachmentsList());

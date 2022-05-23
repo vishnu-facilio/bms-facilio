@@ -9,23 +9,29 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
-import com.facilio.command.FacilioCommand;
+import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.util.MailMessageUtil;
+import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsoleV3.context.EmailConversationThreadingContext;
 import com.facilio.bmsconsoleV3.context.EmailToModuleDataContext;
 import com.facilio.bmsconsoleV3.util.V3AttachmentAPI;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.fw.BeanFactory;
+import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.services.email.EmailClient;
 import com.facilio.services.email.EmailFactory;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.AttachmentV3Context;
 
 public class SendEmailForEmailConversationThreadingCommand extends FacilioCommand {
@@ -129,13 +135,15 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 		return message;
 	}
 	
-	private String getMessageForReply(EmailConversationThreadingContext emailConversation, String message) throws Exception {
+	private String getMessageForReply(String to, EmailConversationThreadingContext emailConversation, String message) throws Exception {
 		// TODO Auto-generated method stub
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		String appDomain = getAppDomain(to);
+		
 		if(modBean.getModule(emailConversation.getDataModuleId()).getName().equals(FacilioConstants.ContextNames.SERVICE_REQUEST)) {
 			
-			;
-			String serviceRequestLink = "https://"+AccountUtil.getCurrentOrg().getDomain()+".facilioportal.com/service/my-requests/service-request/all/"+emailConversation.getRecordId()+"/overview";
+			String serviceRequestLink = appDomain+"/service/my-requests/service-request/all/"+emailConversation.getRecordId()+"/overview";
 			
 			String hrefTag = "<a href=\""+serviceRequestLink+"\">[#"+emailConversation.getRecordId()+"]</a>";
 			
@@ -147,9 +155,68 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 		return message;
 	}
 
+	private String getAppDomain(String to) {
+		// TODO Auto-generated method stub
+		
+		String appDomain = "https://"+AccountUtil.getCurrentOrg().getDomain()+".facilioportal.com";
+		
+		try {
+			String firstTo = FacilioUtil.splitByComma(to)[0];
+			String emailAddress = MailMessageUtil.getEmailFromPrettifiedFromAddress.apply(firstTo);
+			PeopleContext people = PeopleAPI.getPeople(emailAddress);
+			
+			LOGGER.info("people -- "+people);
+			if(people != null) {
+				LOGGER.info("people type -- "+people.getPeopleTypeEnum());
+			}
+			
+			if(people != null && people.getPeopleTypeEnum() != null) {
+				List<AppDomain> appDomains = null;
+				switch(people.getPeopleTypeEnum()) {
+				case TENANT_CONTACT: {
+					appDomains = IAMAppUtil.getAppDomain(AppDomainType.TENANT_PORTAL, AccountUtil.getCurrentOrg().getId());
+					break;
+				}
+				case VENDOR_CONTACT: {
+					appDomains = IAMAppUtil.getAppDomain(AppDomainType.VENDOR_PORTAL, AccountUtil.getCurrentOrg().getId());
+					break;
+				}
+				case OCCUPANT: {
+					appDomains = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL, AccountUtil.getCurrentOrg().getId());
+					break;
+				}
+				case CLIENT_CONTACT: {
+					appDomains = IAMAppUtil.getAppDomain(AppDomainType.CLIENT_PORTAL, AccountUtil.getCurrentOrg().getId());
+					break;
+				}
+				default:
+					break;
+				}
+				
+				if(appDomains != null && !appDomains.isEmpty()) {
+					appDomain = "https://"+appDomains.get(0).getDomain();
+				}
+			}
+		}
+		catch(Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+		
+		return appDomain;
+		
+	}
+
 	private String sendMail(EmailConversationThreadingContext emailConversation,String messageId) throws Exception {
 		
+		boolean canSendMail = true;
 		if(!FacilioProperties.isProduction()) {
+			canSendMail = false;
+		}
+		if(!FacilioProperties.isProduction() && !FacilioProperties.isDevelopment() && (AccountUtil.getCurrentOrg().getOrgId() == 267l || AccountUtil.getCurrentOrg().getOrgId() == 172l)) {
+			canSendMail = true;
+		}
+		
+		if(!canSendMail) {
 			return null;
 		}
 		
@@ -157,7 +224,7 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 		
 		String message = emailConversation.getHtmlContent();
 			
-	    message = getMessageForReply(emailConversation,message);
+	    message = getMessageForReply(emailConversation.getTo(),emailConversation,message);
 		
 		mailJson.put(EmailClient.SENDER, emailConversation.getFrom());
 		mailJson.put(EmailClient.TO, emailConversation.getTo());
@@ -180,7 +247,7 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 		
 		LOGGER.error("emailConversation -- "+emailConversation.getId()+" mail JSON --- "+mailJson +" files -- "+files);
 		
-		String returnMessageId = AwsUtil.sendMail(mailJson, files);
+		String returnMessageId = AwsUtil.sendMail(mailJson, files);	// using this method to get messageId back
 		
 		return returnMessageId;
 		

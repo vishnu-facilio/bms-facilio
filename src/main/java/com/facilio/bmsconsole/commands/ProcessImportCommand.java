@@ -510,9 +510,26 @@ public class ProcessImportCommand extends FacilioCommand {
 						} else if (facilioField.getName().equals(FacilioConstants.ContextNames.SITE_ID)) {
 							String cellValueString = cellValue.toString();
 							if (StringUtils.isNotEmpty(cellValueString)) {
-								SiteContext site = SpaceAPI.getSite(cellValueString);
-								if (site != null && site.getId() > 0) {
-									props.put(facilioField.getName(), site.getId());
+								// cellValueString should have Site names in the following format for multi-site - Site 1,Site 2,Site 3
+								String[] siteNames = cellValueString.split(",");
+								if (siteNames.length > 1) {
+									// handling for multi site import
+									List<Long> siteIds = new ArrayList<>();
+									for (String site : siteNames) {
+										if (StringUtils.isNotEmpty(site)) {
+											SiteContext siteContext = SpaceAPI.getSite(site.trim());
+											if (siteContext.getId() > 0) {
+												siteIds.add(siteContext.getId());
+											}
+										}
+									}
+									props.put("siteIds", siteIds);
+									props.put(facilioField.getName(), -1); // adding -1 to siteId field
+								} else {
+									SiteContext site = SpaceAPI.getSite(cellValueString);
+									if (site != null && site.getId() > 0) {
+										props.put(facilioField.getName(), site.getId());
+									}
 								}
 							}
 							isfilledByLookup = true;

@@ -158,7 +158,7 @@ public class InspectionPageFactory extends PageFactory {
 		
 		List<FacilioField> customFields = modBean.getAllCustomFields(module.getName());
 		if(customFields != null) {
-			fieldList.addAll(customFields.stream().map(FacilioField::getName).collect(Collectors.toList()));
+			fieldList.addAll(customFields.stream().filter(f -> !f.getName().equals("formId")).map(FacilioField::getName).collect(Collectors.toList()));
 		}
 		
 		widgetParam.put("fields", fieldList);
@@ -200,7 +200,7 @@ public class InspectionPageFactory extends PageFactory {
 		
 		List<FacilioField> customFields = modBean.getAllCustomFields(inspectionResponse.getName());
 		if(customFields != null) {
-			fieldList.addAll(customFields.stream().map(FacilioField::getName).collect(Collectors.toList()));
+			fieldList.addAll(customFields.stream().filter(f -> !f.getName().equals("formId")).map(FacilioField::getName).collect(Collectors.toList()));
 		}
 		
 		widgetParam.put("fields", fieldList);

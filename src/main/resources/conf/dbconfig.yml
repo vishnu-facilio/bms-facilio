@@ -55,3 +55,71 @@ validators:
   - type: DATE_TIME
     validatorClasses:
       - com.facilio.field.validation.date.DateValidator
+
+publicTables: #Tables without orgId. Error will be thrown if org is not present in thread local for tables not specified here
+  - UserMfaSettings
+  - Users
+  - User_Mobile_Setting
+  - UserSessions
+  - TVPasscodes
+  - DevicePasscodes
+  - ConnectedDevices
+  - server_info
+  - faciliousers
+  - faciliorequestors
+  - SupportEmails
+  - Service
+  - ClientApp
+  - Weather_Stations
+  - Organizations
+  - WorkOrderRequest_EMail
+  - MobileDetails
+  - Account_ORG_Users
+  - OrgMFASettings
+  - Account_Users
+  - ORG_Users
+  - ORG_User_Apps
+  - Screen
+  - Agent_Version
+  - ExceptionQueue
+  - InstantJobQueue
+  - RuleInstantJobQueue
+  - FormulaInstantJobQueue
+  - ReadingDataMigrationInstantJobQueue
+  - Public_Files
+  - Agent_Message_Integration
+  - Agent_VersionLog
+  - Agent_Files_Update_Log
+  - FacilioAuditData
+  - FacilioAuditModuleData
+  - FacilioAuditActionData
+  - FacilioAuditMethodData
+  - FacilioAuditRefererData
+  - Secret_File
+  - Jobs
+  - App_Domain
+  - Org_Weather_Station
+  - Queue_Data_File
+  - Queue_Data_ResizedFile
+  - Account_SSO
+  - Inbound_Connections
+  - Account_Social_Login
+  - MessageTopic
+  - Agent_Disable
+  - Domain_SSO
+  - FacilioAudit
+  - UserPrevPwds
+  - DC_Lookup
+  - SecurityPolicies
+  - ClientApp_Org_Grouping
+  - ClientApp_Org_Grouping_Children
+  - ClientApp
+  - Dev_Client
+  - ProxySessions
+
+commonTables: #Tables for which orgId is optional. -1 will be inserted if no org is thread local
+  - FacilioFile
+  - ResizedFile
+  - Notification_Logger
+  - Instant_Job_Deletion_Props
+

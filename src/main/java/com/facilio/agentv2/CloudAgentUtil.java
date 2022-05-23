@@ -30,6 +30,7 @@ public class CloudAgentUtil {
 		private static final String EDIT_AGENT = "/api/v1/agent/edit";
 		private static final String FETCH_AGENT_DETAILS = "/api/v1/agent/fetch";
 		private static final String FETCH_MESSAGE_SOURCES = "/api/v1/agent/fetchSources";
+		private static final String ADD_MESSAGE_SOURCE = "/api/v1/agent/addSource";
 	}
 	
 	public static void addCloudServiceAgent(FacilioAgent agent) throws Exception {
@@ -57,7 +58,16 @@ public class CloudAgentUtil {
 		}
 		return null;
 	}
-	
+	public static long addMessageSource(Map<String,Object> messageSource) throws Exception{
+		Map<String, Object> data = doPost(Urls.ADD_MESSAGE_SOURCE, "messageSource", messageSource);
+		long id = -1;
+		if(data != null){
+			if(data.containsKey(AgentConstants.ID)){
+				id = (long) data.get("id");
+			}
+		}
+		return id;
+	}
 	
 	
 	/********************* HTTP Util *****************************/

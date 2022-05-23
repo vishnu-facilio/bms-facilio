@@ -40,7 +40,8 @@
         </action>
         <action name="connections" class="com.facilio.agentv2.AgentV3Action" method="getMessageSource">
         </action>
-        
+        <action name="addConnection" class="com.facilio.agentv2.AgentV3Action" method="addMessageSource">
+        </action>
         
     </package>
     
