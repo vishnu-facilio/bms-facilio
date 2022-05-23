@@ -8,7 +8,7 @@ sources:
   - name: local
     type: kafka
     configs:
-      broker: kafka1:9092  #For docker container deployment, refer docker-compose.yml (eg., kafka1:9092). For local deployment, use localhost:9092
+      broker: localhost:9092
 
   - name: facilio # US Region
     type: kafka
