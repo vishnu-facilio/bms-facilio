@@ -37,6 +37,7 @@ public class Constants {
     public static final String QUERY_PARAMS = "queryParams";
     public static final String STATE_FLOWS = "stateFlows";
     public static final String CUSTOM_BUTTONS = "customButtons";
+    public static final String SYSTEM_BUTTONS = "systemButtons";
 
     public static final String FILTER_BY = "filter_by";
     public static String getFilterBy(Context context) {
