@@ -284,5 +284,16 @@ public class V3ServiceRequestContext extends V3Context{
 	public void setRatingVal(int ratingVal) {
 		this.ratingVal = ratingVal;
 	}
+	
+	private boolean emailConversationIsNewRecord;
+	public boolean isEmailConversationIsNewRecord() {
+		return emailConversationIsNewRecord;
+	}
+	public boolean getEmailConversationIsNewRecord() {
+		return emailConversationIsNewRecord;
+	}
+	public void setEmailConversationIsNewRecord(boolean emailConversationIsNewRecord) {
+		this.emailConversationIsNewRecord = emailConversationIsNewRecord;
+	}
 
 }

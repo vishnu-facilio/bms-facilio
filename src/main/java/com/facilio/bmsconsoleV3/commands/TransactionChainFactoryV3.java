@@ -18,6 +18,8 @@ import com.facilio.bmsconsoleV3.commands.requestForQuotation.AutoAwardingPriceCo
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.CreatePurchaseOrdersCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.CreateVendorQuotesCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.SetRequestForQuotationLineItemsCommandV3;
+import com.facilio.bmsconsoleV3.commands.servicerequest.AddRequesterForServiceRequestCommandV3;
+import com.facilio.bmsconsoleV3.commands.servicerequest.SetIsNewForServiceRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.tasks.AddTaskSectionsV3;
 import com.facilio.bmsconsoleV3.commands.tasks.AddTasksCommandV3;
 import com.facilio.bmsconsoleV3.commands.tasks.ValidateTasksCommandV3;
@@ -548,6 +550,13 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddClientUserCommandV3());
         return c;
     }
+    
+    public static FacilioChain getServiceRequestBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddRequesterForServiceRequestCommandV3());
+        c.addCommand(new SetIsNewForServiceRequestCommandV3());
+        return c;
+    }
 
     public static FacilioChain getServiceRequestAfterSaveChain() {
         FacilioChain c = getDefaultChain();
@@ -1000,8 +1009,9 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getAddEmailConversationThreadingAfterSaveChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new SendEmailForEmailConversationThreadingCommand());
-        chain.addCommand(new AddActivityInRelatedModuleFroEmailConversationThreadingCommand());
-        chain.addCommand(new ExecuteWorkflowInRelatedModuleFroEmailConversationThreadingCommand());
+        chain.addCommand(new AddActivityInRelatedModuleForEmailConversationThreadingCommand());
+        chain.addCommand(new ExecuteWorkflowInRelatedModuleForEmailConversationThreadingCommand());
+        chain.addCommand(new DisableIsNewInRelatedModuleForEmailConversationThreadingCommand());
         return chain;
     }
 

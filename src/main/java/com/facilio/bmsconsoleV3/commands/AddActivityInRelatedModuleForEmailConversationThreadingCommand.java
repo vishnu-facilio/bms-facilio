@@ -21,7 +21,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.v3.context.Constants;
 
-public class AddActivityInRelatedModuleFroEmailConversationThreadingCommand extends FacilioCommand {
+public class AddActivityInRelatedModuleForEmailConversationThreadingCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = LogManager.getLogger(SendEmailForEmailConversationThreadingCommand.class.getName());
 	@Override

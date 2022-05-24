@@ -16,7 +16,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.context.Constants;
 
-public class ExecuteWorkflowInRelatedModuleFroEmailConversationThreadingCommand extends FacilioCommand {
+public class ExecuteWorkflowInRelatedModuleForEmailConversationThreadingCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
