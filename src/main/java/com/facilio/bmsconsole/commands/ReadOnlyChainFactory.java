@@ -3019,6 +3019,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new ConstructTabularReportData());
 		chain.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());
+		chain.addCommand(new PivotLookupMapCommand());
 		chain.addCommand(new PivotFormulaColumnCommand());
 		chain.addCommand(new PivotColumnFormatCommand());
 		chain.addCommand(new PivotDrillDownCommand());

@@ -2719,6 +2719,7 @@ public class V2ReportAction extends FacilioAction {
         setResult(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_FIELDS, context.get(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_FIELDS));
         setResult(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_OPERATORS, context.get(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_OPERATORS));
         setResult(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN, context.get(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN));
+        setResult(FacilioConstants.ContextNames.PIVOT_LOOKUP_MAP, context.get(FacilioConstants.ContextNames.PIVOT_LOOKUP_MAP));
     }
 
     public String fetchTabularReportData() throws Exception {
