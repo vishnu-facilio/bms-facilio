@@ -408,11 +408,10 @@ public class ProcessImportCommand extends FacilioCommand {
 				{
 					String siteName = (String) colVal.get(fieldMapping.get(module + "__site"));
 					if (!(importProcessContext.getImportSetting() == ImportSetting.UPDATE.getValue() || importProcessContext.getImportSetting() == ImportSetting.UPDATE_NOT_NULL.getValue())) {
-						List<SiteContext> sites = SpaceAPI.getAllSites();
-						for (SiteContext site : sites) {
-							if (!props.containsKey("siteId") && site.getName().trim().toLowerCase().equals(siteName.trim().toLowerCase())) {
+						if (!props.containsKey("siteId") && siteName != null) {
+							SiteContext site = SpaceAPI.getSite(siteName.trim());
+							if(site != null) {
 								props.put("siteId", site.getId());
-								break;
 							}
 						}
 					}

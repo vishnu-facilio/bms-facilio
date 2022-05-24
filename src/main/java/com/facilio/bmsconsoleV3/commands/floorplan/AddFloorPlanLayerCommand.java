@@ -10,8 +10,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
-import jdk.nashorn.internal.parser.JSONParser;
-import jdk.nashorn.internal.runtime.logging.Logger;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
