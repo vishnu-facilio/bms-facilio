@@ -5,6 +5,7 @@ import java.util.List;
 import com.facilio.bmsconsole.context.IndoorFloorPlanContext;
 import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanGeoJsonContext;
+import com.facilio.bmsconsoleV3.util.V3FloorPlanAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -169,6 +170,67 @@ public class FloorplanAction extends V3Action {
 		chain.execute();
 		
 		setData(FacilioConstants.ContextNames.RECORD_LIST, context.get(FacilioConstants.ContextNames.RECORD_LIST));
+		return SUCCESS;
+	}
+	public String getViewData() throws Exception {
+
+		if (viewMode != null && viewMode.equals(FacilioConstants.ContextNames.Floorplan.ASSIGNMENT_VIEW)) {
+			FacilioChain chain = ReadOnlyChainFactoryV3.getfloorplanViewerObjectChain();
+			FacilioContext context = chain.getContext();
+			context.put(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN_ID, floorplanId);
+			context.put(FacilioConstants.ContextNames.Floorplan.OBJECT_IDS, objectIds);
+			context.put(FacilioConstants.ContextNames.Floorplan.VIEW_MODE, viewMode);
+			chain.execute();
+
+			List<V3IndoorFloorPlanGeoJsonContext> geoMarkers = (List<V3IndoorFloorPlanGeoJsonContext>) context.get("GEO_MARKERS");
+			List<V3IndoorFloorPlanGeoJsonContext> geoZones = (List<V3IndoorFloorPlanGeoJsonContext>) context.get("GEO_ZONES");
+			setData("marker", V3FloorPlanAPI.convertGeoJson(geoMarkers));
+			setData("spaceZone", V3FloorPlanAPI.convertGeoJson(geoZones));
+			setData(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN, context.get(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN));
+			setData(FacilioConstants.ContextNames.Floorplan.FLOORPLAN_CLIENT_LAYER, context.get(FacilioConstants.ContextNames.Floorplan.FLOORPLAN_CLIENT_LAYER));
+
+
+		}
+		else if (viewMode != null && viewMode.equals(FacilioConstants.ContextNames.Floorplan.BOOKING_VIEW)) {
+
+			FacilioChain chain = ReadOnlyChainFactoryV3.getfloorplanBookingObjectChain();
+			FacilioContext context = chain.getContext();
+			context.put(FacilioConstants.ContextNames.START_TIME, startTime);
+			context.put(FacilioConstants.ContextNames.END_TIME, endTime);
+			context.put(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN_ID, floorplanId);
+			context.put(FacilioConstants.ContextNames.Floorplan.OBJECT_IDS, objectIds);
+			context.put(FacilioConstants.ContextNames.Floorplan.VIEW_MODE, viewMode);
+			chain.execute();
+
+			setData(FacilioConstants.ContextNames.FacilityBooking.FACILITY, context.get(FacilioConstants.ContextNames.FacilityBooking.FACILITY));
+			setData(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING, context.get(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING));
+			setData("bookingList", context.get("bookingMap"));
+
+			List<V3IndoorFloorPlanGeoJsonContext> geoMarkers = (List<V3IndoorFloorPlanGeoJsonContext>) context.get("GEO_MARKERS");
+			List<V3IndoorFloorPlanGeoJsonContext> geoZones = (List<V3IndoorFloorPlanGeoJsonContext>) context.get("GEO_ZONES");
+
+			setData("marker", V3FloorPlanAPI.convertGeoJson(geoMarkers));
+			setData("spaceZone", V3FloorPlanAPI.convertGeoJson(geoZones));
+			setData(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN, context.get(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN));
+			setData(FacilioConstants.ContextNames.Floorplan.FLOORPLAN_CLIENT_LAYER, context.get(FacilioConstants.ContextNames.Floorplan.FLOORPLAN_CLIENT_LAYER));
+
+		}
+		else {
+			FacilioChain chain = ReadOnlyChainFactoryV3.getfloorplanViewerObjectChain();
+			FacilioContext context = chain.getContext();
+			context.put(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN_ID, floorplanId);
+			context.put(FacilioConstants.ContextNames.Floorplan.OBJECT_IDS, objectIds);
+			chain.execute();
+
+			List<V3IndoorFloorPlanGeoJsonContext> geoMarkers = (List<V3IndoorFloorPlanGeoJsonContext>) context.get("GEO_MARKERS");
+			List<V3IndoorFloorPlanGeoJsonContext> geoZones = (List<V3IndoorFloorPlanGeoJsonContext>) context.get("GEO_ZONES");
+
+			setData("marker", V3FloorPlanAPI.convertGeoJson(geoMarkers));
+			setData("spaceZone", V3FloorPlanAPI.convertGeoJson(geoZones));
+			setData(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN, context.get(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN));
+			setData(FacilioConstants.ContextNames.Floorplan.FLOORPLAN_CLIENT_LAYER, context.get(FacilioConstants.ContextNames.Floorplan.FLOORPLAN_CLIENT_LAYER));
+
+		}
 		return SUCCESS;
 	}
 	public String getFloorplanViewData() throws Exception {
