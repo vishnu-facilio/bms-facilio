@@ -1042,16 +1042,14 @@ public class ProcessImportCommand extends FacilioCommand {
 		Long spaceId = null;
 
 		if(siteName != null && !siteName.equals("")) {
-			 List<SiteContext> sites = SpaceAPI.getAllSites();
-			 HashMap<String, Long> siteMap = new HashMap();
-			 for(SiteContext siteContext : sites)
+			
+			 SiteContext site = SpaceAPI.getSite(siteName.trim());
+			 
+			 if(site != null)
 			 {
-				 siteMap.put(siteContext.getName().trim().toLowerCase(), siteContext.getId());
-			 }
-			 if(siteMap.containsKey(siteName.trim().toLowerCase()))
-			 {
-				siteId = siteMap.get(siteName.trim().toLowerCase());
-			 } else {
+				siteId = site.getId();
+			 } 
+			 else {
 				 throw new ImportLookupModuleValueNotFoundException(siteName, row_no, fieldMapping.get(moduleName + "__site"), new Exception());
 			 }
 			if (siteId != null) {
