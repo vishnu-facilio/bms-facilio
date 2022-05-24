@@ -14,10 +14,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.context.*;
 import com.facilio.v3.context.Constants;
+import com.facilio.wmsv2.handler.AuditLogHandler;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.chain.Command;
@@ -298,6 +300,22 @@ public class WorkOrderAction extends FacilioAction {
 			setRemindercontex(reminderString);
 		}
 		addPreventiveMaintenance(context);
+		sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("Preventive Maintenance with id #{%d} has been added", preventivemaintenance.getId()),
+				preventivemaintenance.getTitle(),
+				AuditLogHandler.RecordType.SETTING,
+				"PreventiveMaintenance", preventivemaintenance.getId())
+				.setActionType(AuditLogHandler.ActionType.ADD)
+				.setLinkConfig(((Function<Void, String>) o -> {
+					JSONArray array = new JSONArray();
+					JSONObject json = new JSONObject();
+					json.put("id", preventivemaintenance.getId());
+					json.put("moduleName", moduleName);
+					json.put("Created At", preventivemaintenance.getCreatedTime());
+					array.add(json);
+					return array.toJSONString();
+				}).apply(null))
+
+		);
 		return SUCCESS;
 	}
 
@@ -532,6 +550,7 @@ public class WorkOrderAction extends FacilioAction {
 			this.deleteReadingRulesList = convertDeleteReadingRulesListString(deleteReadingRulesListString);
 		}
 		updatePreventiveMaintenance(context);
+
 		return SUCCESS;
 	}
 	
@@ -561,6 +580,22 @@ public class WorkOrderAction extends FacilioAction {
 		}
 
 		updatePreventiveMaintenance(context);
+		sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("Preventive Maintenance with id #{%d} has been updated", preventivemaintenance.getId()),
+				preventivemaintenance.getTitle(),
+				AuditLogHandler.RecordType.SETTING,
+				"PreventiveMaintenance", preventivemaintenance.getId())
+				.setActionType(AuditLogHandler.ActionType.ADD)
+				.setLinkConfig(((Function<Void, String>) o -> {
+					JSONArray array = new JSONArray();
+					JSONObject json = new JSONObject();
+					json.put("id", preventivemaintenance.getId());
+					json.put("moduleName", moduleName);
+					json.put("Created At", preventivemaintenance.getCreatedTime());
+					array.add(json);
+					return array.toJSONString();
+				}).apply(null))
+
+		);
 		return SUCCESS;
 	}
 	
@@ -838,6 +873,7 @@ public class WorkOrderAction extends FacilioAction {
 	}
 
 	private void getScopeValuesForRegularPM() throws Exception {
+
 		List<BaseSpaceContext> buildings = SpaceAPI.getSiteBuildingsWithFloors(siteId);
 		if (buildingId == null || buildingId < -1) {
 			if (CollectionUtils.isNotEmpty(buildings)) {
@@ -1131,7 +1167,14 @@ public class WorkOrderAction extends FacilioAction {
 		FacilioChain deletePM = FacilioChainFactory.getDeletePreventiveMaintenanceChain();
 		deletePM.execute(context);
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
-
+		if(rowsUpdated>0){
+		for(long pmId : id){
+			sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("Preventive Maintenance with id #{%d} has been Deleted",pmId),
+					null,
+					AuditLogHandler.RecordType.SETTING,
+					"PreventiveMaintenance", pmId)
+					.setActionType(AuditLogHandler.ActionType.ADD)
+			);}}
 		return SUCCESS;
 	}
 
@@ -1142,6 +1185,13 @@ public class WorkOrderAction extends FacilioAction {
 		FacilioChain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChain();
 		addTemplate.execute(context);
 
+		for(long pmId : id){
+			sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("Preventive Maintenance with id #{%d} has been DeActivated",pmId),
+					null,
+					AuditLogHandler.RecordType.SETTING,
+					"PreventiveMaintenance", pmId)
+					.setActionType(AuditLogHandler.ActionType.ADD)
+			);}
 		return SUCCESS;
 	}
 
