@@ -74,6 +74,9 @@ public class FilterOperator {
         return valueNeeded != null ? valueNeeded : operator == null ? true : operator.isValueNeeded();
     }
 
+    public boolean isSpecialOperator(){
+        return  operator==null ? false: operator.isSpecialOperator();
+    }
     private String defaultValue;
     public String getDefaultValue() {
         return defaultValue;
