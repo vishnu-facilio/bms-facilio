@@ -186,6 +186,8 @@ public class FloorplanAction extends V3Action {
 			List<V3IndoorFloorPlanGeoJsonContext> geoZones = (List<V3IndoorFloorPlanGeoJsonContext>) context.get("GEO_ZONES");
 			setData("marker", V3FloorPlanAPI.convertGeoJson(geoMarkers));
 			setData("spaceZone", V3FloorPlanAPI.convertGeoJson(geoZones));
+			setData(FacilioConstants.ContextNames.Floorplan.MARKERS, context.get(FacilioConstants.ContextNames.Floorplan.MARKERS));
+			setData(FacilioConstants.ContextNames.Floorplan.ZONES, context.get(FacilioConstants.ContextNames.Floorplan.ZONES));
 			setData(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN, context.get(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN));
 			setData(FacilioConstants.ContextNames.Floorplan.FLOORPLAN_CLIENT_LAYER, context.get(FacilioConstants.ContextNames.Floorplan.FLOORPLAN_CLIENT_LAYER));
 
@@ -211,6 +213,8 @@ public class FloorplanAction extends V3Action {
 
 			setData("marker", V3FloorPlanAPI.convertGeoJson(geoMarkers));
 			setData("spaceZone", V3FloorPlanAPI.convertGeoJson(geoZones));
+			setData(FacilioConstants.ContextNames.Floorplan.MARKERS, context.get(FacilioConstants.ContextNames.Floorplan.MARKERS));
+			setData(FacilioConstants.ContextNames.Floorplan.ZONES, context.get(FacilioConstants.ContextNames.Floorplan.ZONES));
 			setData(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN, context.get(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN));
 			setData(FacilioConstants.ContextNames.Floorplan.FLOORPLAN_CLIENT_LAYER, context.get(FacilioConstants.ContextNames.Floorplan.FLOORPLAN_CLIENT_LAYER));
 
@@ -227,6 +231,8 @@ public class FloorplanAction extends V3Action {
 
 			setData("marker", V3FloorPlanAPI.convertGeoJson(geoMarkers));
 			setData("spaceZone", V3FloorPlanAPI.convertGeoJson(geoZones));
+			setData(FacilioConstants.ContextNames.Floorplan.MARKERS, context.get(FacilioConstants.ContextNames.Floorplan.MARKERS));
+			setData(FacilioConstants.ContextNames.Floorplan.ZONES, context.get(FacilioConstants.ContextNames.Floorplan.ZONES));
 			setData(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN, context.get(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN));
 			setData(FacilioConstants.ContextNames.Floorplan.FLOORPLAN_CLIENT_LAYER, context.get(FacilioConstants.ContextNames.Floorplan.FLOORPLAN_CLIENT_LAYER));
 
