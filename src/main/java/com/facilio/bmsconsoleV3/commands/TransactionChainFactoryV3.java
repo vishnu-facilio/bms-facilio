@@ -13,6 +13,10 @@ import com.facilio.bmsconsoleV3.commands.people.UpdateScopingForPeopleCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.spacecategory.ValidateSpaceCategoryDeletionV3;
+import com.facilio.bmsconsoleV3.commands.requestForQuotation.AutoAwardingPriceCommandV3;
+import com.facilio.bmsconsoleV3.commands.requestForQuotation.CreatePurchaseOrdersCommandV3;
+import com.facilio.bmsconsoleV3.commands.requestForQuotation.CreateVendorQuotesCommandV3;
+import com.facilio.bmsconsoleV3.commands.requestForQuotation.SetRequestForQuotationLineItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.tasks.AddTaskSectionsV3;
 import com.facilio.bmsconsoleV3.commands.tasks.AddTasksCommandV3;
 import com.facilio.bmsconsoleV3.commands.tasks.ValidateTasksCommandV3;
@@ -1738,6 +1742,23 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getCreateVendorQuotesChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CreateVendorQuotesCommandV3());
+        return c;
+    }
+
+    public static FacilioChain getCreatePurchaseOrdersChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CreatePurchaseOrdersCommandV3());
+        return c;
+    }
+    public static FacilioChain getRequestForQuotationLineItemsChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetRequestForQuotationLineItemsCommandV3());
+        c.addCommand(new AutoAwardingPriceCommandV3());
+        return c;
+    }
     public static FacilioChain getPurchaseOrderLineItemQuantityRecievedRollUpChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new PurchaseOrderLineItemQuantityRollUpCommandV3());

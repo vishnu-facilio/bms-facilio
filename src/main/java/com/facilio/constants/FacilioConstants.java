@@ -44,6 +44,11 @@ import com.facilio.bmsconsoleV3.context.purchaserequest.PrAssociatedTermsContext
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestLineItemContext;
 import com.facilio.bmsconsoleV3.context.quotation.*;
+import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
+import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationLineItemsContext;
+import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationVendorsContext;
+import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
+import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesLineItemsContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitChecklistContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
@@ -2015,6 +2020,11 @@ public class FacilioConstants {
 		public static final String TRANSFER_REQUEST_PURCHASED_ITEMS = "transferrequestpurchaseditems";
 		public static final String TRANSFER_REQUEST_SHIPMENT = "transferrequestshipment";
 		public static final String TRANSFER_REQUEST_SHIPMENT_RECEIVABLES = "transferrequestshipmentreceivables";
+		public static final String REQUEST_FOR_QUOTATION = "requestForQuotation";
+		public static final String REQUEST_FOR_QUOTATION_VENDORS="requestForQuotationVendors";
+		public static final String REQUEST_FOR_QUOTATION_LINE_ITEMS = "requestForQuotationLineItems";
+		public static final String VENDOR_QUOTES = "vendorQuotes";
+		public static final String VENDOR_QUOTES_LINE_ITEMS = "vendorQuotesLineItems";
 		public static final String INVITE_ACCEPT_STATUS = "inviteacceptstatus";
 		public static final String SEND_INVITE = "sendinvite";
 		public static final String CONTACT_DIRECTORY = "contactdirectory";
@@ -2554,6 +2564,11 @@ public class FacilioConstants {
 			classMap.put(TRANSFER_REQUEST_PURCHASED_ITEMS, V3TransferRequestPurchasedItems.class);
 			classMap.put(TRANSFER_REQUEST_SHIPMENT, V3TransferRequestShipmentContext.class);
 			classMap.put(TRANSFER_REQUEST_SHIPMENT_RECEIVABLES, V3TransferRequestShipmentReceivablesContext.class);
+			classMap.put(REQUEST_FOR_QUOTATION_VENDORS, V3RequestForQuotationVendorsContext.class);
+			classMap.put(REQUEST_FOR_QUOTATION, V3RequestForQuotationContext.class);
+			classMap.put(REQUEST_FOR_QUOTATION_LINE_ITEMS, V3RequestForQuotationLineItemsContext.class);
+			classMap.put(VENDOR_QUOTES, V3VendorQuotesContext.class);
+			classMap.put(VENDOR_QUOTES_LINE_ITEMS, V3VendorQuotesLineItemsContext.class);
 
 			for (QuestionType type : QuestionType.values()) {
 				classMap.put(type.getSubModuleName(), type.getSubClass());
