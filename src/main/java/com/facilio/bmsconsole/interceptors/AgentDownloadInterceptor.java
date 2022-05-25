@@ -9,6 +9,7 @@ import com.facilio.modules.ModuleFactory;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.Interceptor;
+import io.opentelemetry.extension.annotations.WithSpan;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.dispatcher.HttpParameters;
@@ -57,6 +58,7 @@ public class AgentDownloadInterceptor implements Interceptor {
     }
 
     @Override
+    @WithSpan
     public String intercept(ActionInvocation actionInvocation) throws Exception {
 
         LOGGER.info("Intercept called ");

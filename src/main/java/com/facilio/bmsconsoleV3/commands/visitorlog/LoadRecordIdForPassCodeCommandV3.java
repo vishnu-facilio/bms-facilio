@@ -46,23 +46,34 @@ public class  LoadRecordIdForPassCodeCommandV3 extends FacilioCommand {
         }
         
         if(MapUtils.isNotEmpty(queryParams) && !queryParams.containsKey("id")) {
-        	
+
         	if(queryParams.containsKey("passCode") && queryParams.get("passCode") != null && !queryParams.get("passCode").isEmpty()){
-        		if(StringUtils.isNotEmpty((String)queryParams.get("passCode").get(0))) {	
+        		if(StringUtils.isNotEmpty((String)queryParams.get("passCode").get(0))) {
         			List<BaseVisitContextV3> baseVisits = V3VisitorManagementAPI.getBaseVisit(-1l, (String)queryParams.get("passCode").get(0), false);
         			if(baseVisits != null && !baseVisits.isEmpty()) {
         				BaseVisitContextV3 inviteBaseVisit = null;
         				List<Long> checkInBaseVisitIds = new ArrayList<Long>();
-        				
         				for(BaseVisitContextV3 baseVisit:baseVisits) {
         					if(baseVisit.getChildVisitTypeEnum() == BaseVisitContextV3.ChildVisitType.INVITE) {
         						inviteBaseVisit = baseVisit;
         					}
         					else if(baseVisit.getChildVisitTypeEnum() == BaseVisitContextV3.ChildVisitType.VISIT) {
         						checkInBaseVisitIds.add(baseVisit.getId());
+								if(baseVisit.getModuleState().getStatus().equals("CheckedOut") && queryParams.containsKey("checkOut"))
+								{
+									throw new RESTException(ErrorCode.NO_ACTIVE_CHECK_IN_FOR_INVITE_CODE, "No active check-in found for the invite code");
+								}
+								else if(baseVisit.getModuleState().getStatus().equals("CheckedIn"))
+								{
+									throw new RESTException(ErrorCode.ALREADY_CHECKED_IN, "You are already checked-in using this invite");
+								}
+								else if(baseVisit.getModuleState().getStatus().equals("CheckedOut"))
+								{
+									throw new RESTException(ErrorCode.ALREADY_CHECKED_OUT, "You have already checked-out using this invite");
+								}
         					}
         				}
-        				
+
         				if(!checkInBaseVisitIds.isEmpty()) {
         					context.put(Constants.RECORD_ID_LIST, checkInBaseVisitIds);
         					recordIds = checkInBaseVisitIds;
@@ -75,6 +86,10 @@ public class  LoadRecordIdForPassCodeCommandV3 extends FacilioCommand {
             			recordIdParam.addAll(recordIds);
             			queryParams.put("id", recordIdParam);		
         			}
+					else
+					{
+						throw new RESTException(ErrorCode.INVALID_INVITE_CODE, "Invalid invite code");
+					}
         		}	
         	}
         	else if(queryParams.containsKey("contactNumber") && queryParams.get("contactNumber") != null && !queryParams.get("contactNumber").isEmpty() && queryParams.containsKey("checkOut") && queryParams.get("checkOut") != null && !queryParams.get("checkOut").isEmpty()){

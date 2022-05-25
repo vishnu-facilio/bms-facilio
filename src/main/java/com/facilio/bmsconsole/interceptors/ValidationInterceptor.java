@@ -7,6 +7,7 @@ import com.facilio.security.requestvalidator.NodeError;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+import io.opentelemetry.extension.annotations.WithSpan;
 import lombok.extern.log4j.Log4j;
 import org.apache.struts2.ServletActionContext;
 import org.json.JSONObject;
@@ -22,6 +23,7 @@ import java.util.Map;
 @Log4j
 public class ValidationInterceptor extends AbstractInterceptor {
     @Override
+    @WithSpan
     public String intercept(ActionInvocation invocation) throws Exception {
         HttpServletRequest request = ServletActionContext.getRequest();
         Executor executor = (Executor) request.getAttribute("executor");

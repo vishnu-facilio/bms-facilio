@@ -133,6 +133,7 @@ public class ChainUtil {
             nonTransactionChain.addCommand(new StateFlowListCommand());
         }
         nonTransactionChain.addCommand(new CustomButtonForDataListCommand());
+        nonTransactionChain.addCommand(new SystemButtonForDataListCommand());
 
         addIfNotNull(nonTransactionChain, afterFetchCommand);
         //handling primary value for lookup fields

@@ -542,13 +542,13 @@ public class FacilioAuthAction extends FacilioAction {
 			String email = payload.getEmail();
 			boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
 			if (!emailVerified) {
-				response.sendRedirect(SSOUtil.getCurrentAppURL() + clientPath + "?message="+"email is not verified");
+				response.sendRedirect(SSOUtil.getCurrentAppURL() + clientPath + "?message="+"Email is not verified");
 				return ERROR;
 			}
 
 			boolean inProxyList = IAMUserUtil.isUserInProxyList(email);
 			if (!inProxyList) {
-				response.sendRedirect(SSOUtil.getCurrentAppURL() + clientPath + "?message="+"user is not authorized");
+				response.sendRedirect(SSOUtil.getCurrentAppURL() + clientPath + "?message=You don't have access to proceed. Raise a request to proxy-users@facilio.com.");
 				return ERROR;
 			}
 
@@ -578,8 +578,8 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 
 		if (!IAMUserUtil.isUserInProxyList(email)) {
-			setJsonresponse("errorcode", "1");
-			setJsonresponse("message", "User is not authorized");
+			setJsonresponse("errorcode", "2");
+			setJsonresponse("message", "You don't have access to proceed. Raise a request to proxy-users@facilio.com.");
 			return ERROR;
 		}
 
@@ -1163,8 +1163,13 @@ public class FacilioAuthAction extends FacilioAction {
 				ipAddress = (ipAddress == null || "".equals(ipAddress.trim())) ? request.getRemoteAddr() : ipAddress;
                 String userType = "web";
 				String deviceType = request.getHeader("X-Device-Type");
+				String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
 				if (!StringUtils.isEmpty(deviceType)
 						&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType) || "webview".equalsIgnoreCase(deviceType))) {
+					userType = "mobile";
+				}
+
+				if ("true".equalsIgnoreCase(isWebView)) {
 					userType = "mobile";
 				}
 
@@ -1413,7 +1418,7 @@ public class FacilioAuthAction extends FacilioAction {
 			}
 		} else{
 			LOGGER.log(Level.INFO, "invalid verification code " + emailFromDigest);
-			throw new IllegalArgumentException("invalid verification code");
+			setJsonresponse("message", "Invalid verification code");
 		}
 
 		return SUCCESS;
@@ -1965,11 +1970,7 @@ public class FacilioAuthAction extends FacilioAction {
 		FacilioCookie.addOrgDomainCookie(getDomain(), response);
 
 		if (isMobile) {
-			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("token", authtoken);
-			jsonObject.put("homePath", "/app/mobile/login");
-			jsonObject.put("domain", getDomain());
-			jsonObject.put("baseUrl", getBaseUrl());
+			JSONObject jsonObject = getMobileAuthJSON("token", authtoken, "homePath", "/app/mobile/login", "domain", getDomain(), "baseUrl", getBaseUrl());
 			Cookie mobileTokenCookie = new Cookie("fc.mobile.idToken.facilio", new AESEncryption().encrypt(jsonObject.toJSONString()));
 			setTempCookieProperties(mobileTokenCookie, false);
 			response.addCookie(mobileTokenCookie);
@@ -1995,7 +1996,8 @@ public class FacilioAuthAction extends FacilioAction {
 					response.addHeader("Set-Cookie", portalCookie);
 				}
 			}
-		} else if("stage".equals(FacilioProperties.getEnvironment()) && !isMobile) {
+		} else if("stage".equals(FacilioProperties.getEnvironment())) {
+			LOGGER.log(Level.SEVERE, "Stage login");
 			var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
 			response.addHeader("Set-Cookie", cookieString);
 			if (proxyCookie != null) {
@@ -2016,7 +2018,16 @@ public class FacilioAuthAction extends FacilioAction {
 			}
 		}
 	}
-	
+
+	private JSONObject getMobileAuthJSON(String token, String authtoken, String homePath, String value, String domain, String Domain, String baseUrl, String BaseUrl) throws Exception {
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put(token, authtoken);
+		jsonObject.put(homePath, value);
+		jsonObject.put(domain, Domain);
+		jsonObject.put(baseUrl, BaseUrl);
+		return jsonObject;
+	}
+
 	private String checkDcAndGetRedirectUrl(GroupType groupType) throws Exception {
 		Integer dc = IAMUserUtil.lookupUserDC(getUsername(), groupType);
 		if (dc == null) {
@@ -2413,11 +2424,15 @@ public class FacilioAuthAction extends FacilioAction {
 			Map<String, Object> userMap = IAMUserUtil.getUserForUsername(getEmailaddress(), -1, appDomain.getIdentifier());
 			if(MapUtils.isNotEmpty(userMap)) {
 				user = FieldUtil.getAsBeanFromMap(userMap, User.class);
-			} 
-			if (user != null) {
+			}
+
+			if (user != null && user.isUserVerified()) {
 				AccountUtil.getUserBean().sendResetPasswordLinkv2(user, request.getServerName());
 				invitation.put("status", "success");
 			} else {
+				if (user != null && !user.isUserVerified()) {
+					LOGGER.log(Level.SEVERE, "User not verified.");
+				}
 				invitation.put("status", "failed");
 				invitation.put("message", "Invalid user");
 			}

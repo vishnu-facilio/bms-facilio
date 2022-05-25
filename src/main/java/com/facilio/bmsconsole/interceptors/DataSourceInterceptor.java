@@ -6,6 +6,8 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 
 import com.facilio.aws.util.FacilioProperties;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.extension.annotations.WithSpan;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -35,6 +37,7 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 	}
 
 	@Override
+	@WithSpan
 	public String intercept(ActionInvocation invocation) throws Exception {
 		long time = System.currentTimeMillis();
 		HttpServletRequest request = ServletActionContext.getRequest();
@@ -101,6 +104,7 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 		}
 
 		if (iamAccount != null && iamAccount.getOrg() != null && iamAccount.getUser() != null) {
+			Span.current().setAttribute("enduser.orgid", String.valueOf(iamAccount.getOrg().getOrgId()));
 			boolean sessionExpired = IAMUserUtil.isSessionExpired(iamAccount.getUser().getUid(), iamAccount.getOrg().getOrgId(), iamAccount.getUserSessionId());
 			if (sessionExpired) {
 				return "sessionexpired";

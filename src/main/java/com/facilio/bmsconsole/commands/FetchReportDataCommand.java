@@ -478,6 +478,21 @@ public class FetchReportDataCommand extends FacilioCommand {
                             }
                         }
                     }
+                    if(allCriteria != null && allCriteria.getConditions() != null && allCriteria.getConditions().size() > 0)
+                    {
+                        for (String key : allCriteria.getConditions().keySet()) {
+                            Condition condition = allCriteria.getConditions().get(key);
+                            if (baseModule != null) {
+                                try {
+                                    FacilioField field = modBean.getField(condition.getFieldName(), baseModule.getName());
+                                    condition.setField(field);
+                                }catch(Exception e){
+                                    LOGGER.debug("Error in fetching field details"+baseModule.getName());
+                                }
+                            }
+                        }
+
+                    }
                     newSelectBuilder.andCriteria(allCriteria);
                 }
             } else {

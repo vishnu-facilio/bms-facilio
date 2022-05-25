@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.facilio.workflows.context.WorkflowContext;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
@@ -31,6 +33,7 @@ public class CloudAgentUtil {
 		private static final String FETCH_AGENT_DETAILS = "/api/v1/agent/fetch";
 		private static final String FETCH_MESSAGE_SOURCES = "/api/v1/agent/fetchSources";
 		private static final String ADD_MESSAGE_SOURCE = "/api/v1/agent/addSource";
+		private static final String RUN_WORKFLOW = "/api/v1/agent/runWorkflow";
 	}
 	
 	public static void addCloudServiceAgent(FacilioAgent agent) throws Exception {
@@ -67,6 +70,20 @@ public class CloudAgentUtil {
 			}
 		}
 		return id;
+	}
+
+	public static String runWorkflow(WorkflowContext workflow) throws Exception{
+		Map<String,Object> props = FieldUtil.getAsProperties(workflow);
+		Map<String, Object> data = doPost(Urls.RUN_WORKFLOW,AgentConstants.WORKFLOW,props);
+		if (data != null) {
+			if(data.containsKey(AgentConstants.WORKFLOW_RESPONSE)){
+				return (String) data.get(AgentConstants.WORKFLOW_RESPONSE);
+			}
+			else if(data.containsKey(AgentConstants.WORKFLOW_SYNTAX_ERROR)){
+				return (String) data.get(AgentConstants.WORKFLOW_SYNTAX_ERROR);
+			}
+		}
+		return null;
 	}
 	
 	

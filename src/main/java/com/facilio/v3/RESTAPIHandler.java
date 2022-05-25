@@ -261,6 +261,11 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
                 meta.put(Constants.CUSTOM_BUTTONS, customButtons);
             }
 
+            Collection<WorkflowRuleContext> systemButtons = (Collection<WorkflowRuleContext>) context.get(Constants.SYSTEM_BUTTONS);
+            if (CollectionUtils.isNotEmpty(systemButtons)){
+                meta.put(Constants.SYSTEM_BUTTONS,systemButtons);
+            }
+
             Object supplMap = Constants.getSupplementMap(context);
             if (supplMap != null) {
                 meta.put("supplements", supplMap);

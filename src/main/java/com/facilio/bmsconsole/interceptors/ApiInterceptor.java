@@ -10,6 +10,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.db.builder.DBUtil;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+import io.opentelemetry.extension.annotations.WithSpan;
 
 public class ApiInterceptor  extends AbstractInterceptor {
 
@@ -19,6 +20,7 @@ public class ApiInterceptor  extends AbstractInterceptor {
 	private static final long serialVersionUID = 1L;
 
 	@Override
+	@WithSpan
 	public String intercept(ActionInvocation invocation) throws Exception {
 		// TODO Auto-generated method stub
 		

@@ -99,7 +99,7 @@ public class UpdateWidgetsCommand extends FacilioCommand {
 								.table(ModuleFactory.getWidgetCardModule().getTableName())
 								.fields(FieldFactory.getWidgetCardFields())
 								.andCondition(CriteriaAPI.getIdCondition(updatewidget.getId(), ModuleFactory.getWidgetCardModule()));
-						Map<String,Object> props = FieldUtil.getAsProperties(widgetCardContext);
+						Map<String,Object> props = FieldUtil.getAsProperties(widgetCardContext, true);
 						updateWidgetCard.update(props);
 					}
 				}

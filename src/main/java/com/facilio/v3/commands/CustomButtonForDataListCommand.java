@@ -12,10 +12,7 @@ import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CustomButtonForDataListCommand extends FacilioCommand {
@@ -37,7 +34,7 @@ public class CustomButtonForDataListCommand extends FacilioCommand {
                     List<WorkflowRuleContext> executableCustomButtons = CustomButtonAPI.getExecutableCustomButtons(customButtons, moduleName, record, context);
                     if (CollectionUtils.isNotEmpty(executableCustomButtons)) {
                         evaluatedCustomButtons.addAll(executableCustomButtons);
-                        record.setEvaluatedButtonIds(executableCustomButtons.stream().map(WorkflowRuleContext::getId).collect(Collectors.toList()));
+                        record.addEvaluatedButtonIds(executableCustomButtons.stream().map(WorkflowRuleContext::getId).collect(Collectors.toList()));
                     }
                 }
             }

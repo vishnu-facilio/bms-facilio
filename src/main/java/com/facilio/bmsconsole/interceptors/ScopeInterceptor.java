@@ -24,6 +24,7 @@ import com.facilio.db.util.DBConf;
 import com.facilio.filters.MultiReadServletRequest;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
+import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.server.ServerInfo;
 import com.facilio.service.FacilioService;
@@ -32,6 +33,11 @@ import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ActionProxy;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.baggage.Baggage;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.extension.annotations.WithSpan;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -63,6 +69,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
     }
 
     @Override
+    @WithSpan
     public String intercept(ActionInvocation arg0) throws Exception {
         long startTime = System.currentTimeMillis();
         HttpServletRequest request = ServletActionContext.getRequest();
@@ -175,6 +182,13 @@ public class ScopeInterceptor extends AbstractInterceptor {
                 }
                 Account account = new Account(iamAccount.getOrg(), user);
                 account.setUserSessionId(iamAccount.getUserSessionId());
+                Map<String, Object> userSession = IAMUserUtil.getUserSession(iamAccount.getUserSessionId());
+                Boolean isProxySession = (Boolean) userSession.get("isProxySession");
+                if (isProxySession != null && isProxySession) {
+                    String proxySessionToken = FacilioCookie.getUserCookie(request,"fc.idToken.proxy");
+                    Map<String, Object> proxySession = IAMUserUtil.getProxySession(proxySessionToken);
+                    account.getUser().setProxy((String) proxySession.get("email"));
+                }
                 AccountUtil.cleanCurrentAccount();
                 AccountUtil.setCurrentAccount(account);
                 AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), MessageFormat.format("Setting current account in thread local for normal with orgid => {0} and userid = {1}", DBConf.getInstance().getCurrentOrgId(), DBConf.getInstance().getCurrentUserId()), request);
