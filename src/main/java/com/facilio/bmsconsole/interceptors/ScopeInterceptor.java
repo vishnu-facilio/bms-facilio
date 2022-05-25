@@ -183,8 +183,8 @@ public class ScopeInterceptor extends AbstractInterceptor {
                 Account account = new Account(iamAccount.getOrg(), user);
                 account.setUserSessionId(iamAccount.getUserSessionId());
                 Map<String, Object> userSession = IAMUserUtil.getUserSession(iamAccount.getUserSessionId());
-                Boolean isProxySession = (Boolean) userSession.get("isProxySession");
-                if (isProxySession != null && isProxySession) {
+                boolean isProxySession = userSession == null ? false : (boolean) userSession.getOrDefault("isProxySession", false);
+                if (isProxySession) {
                     String proxySessionToken = FacilioCookie.getUserCookie(request,"fc.idToken.proxy");
                     Map<String, Object> proxySession = IAMUserUtil.getProxySession(proxySessionToken);
                     account.getUser().setProxy((String) proxySession.get("email"));
