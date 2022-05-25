@@ -35,8 +35,6 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /awsprops-scheduler-app.properties
     destination: /home/facilio/deployment-files/
-  - source: /awsprops-kinesis.properties
-    destination: /home/facilio/deployment-files/
   - source: /awsprops-kafka.properties
     destination: /home/facilio/deployment-files/    
   - source: /awsprops-stage.properties
@@ -53,9 +51,9 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /log4j-scheduler.properties
     destination: /home/facilio/deployment-files/
+  - source: /log4j-kafka.properties
+    destination: /home/facilio/deployment-files/    
   - source: /log4j-scheduler-app.properties
-    destination: /home/facilio/deployment-files/
-  - source: /log4j-kinesis.properties
     destination: /home/facilio/deployment-files/
   - source: /log4j-syd-user.properties
     destination: /home/facilio/deployment-files/
@@ -65,15 +63,21 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /log4j-ff-scheduler.properties
     destination: /home/facilio/deployment-files/
+  - source: /log4j-ff-kafka.properties
+    destination: /home/facilio/deployment-files/    
   - source: /log4j-uk-user.properties
     destination: /home/facilio/deployment-files/
   - source: /log4j-uk-scheduler.properties
+    destination: /home/facilio/deployment-files/
+  - source: /log4j-uk-kafka.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-uk-kafka.properties
     destination: /home/facilio/deployment-files/
   - source: /log4j-sp-user.properties
     destination: /home/facilio/deployment-files/
   - source: /log4j-sp-scheduler.properties
+    destination: /home/facilio/deployment-files/
+  - source: /log4j-sp-kafka.properties
     destination: /home/facilio/deployment-files/
   - source: /agentIntegration-production.properties
     destination: /home/facilio/deployment-files/
