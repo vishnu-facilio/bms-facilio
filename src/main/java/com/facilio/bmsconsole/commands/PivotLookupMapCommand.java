@@ -35,9 +35,10 @@ public class PivotLookupMapCommand extends FacilioCommand {
             FacilioField facilioField = getField(row, modBean);
             LookupField lookupField = getLookupField(row, modBean);
             if(facilioField instanceof LookupField) {
+                LookupField newLookupField = (LookupField) facilioField;
                 List<Long> ids = getColumnArray(row.getAlias(), pivotTableData);
-                pivotLookupMap.put(row.getAlias(), getLookUpMap(lookupField.getSpecialType(), lookupField.getLookupModule(), ids));
-            } else if(lookupField != null){
+                pivotLookupMap.put(row.getAlias(), getLookUpMap(newLookupField.getSpecialType(), newLookupField.getLookupModule(), ids));
+            } else if(lookupField != null && facilioField != null){
                 String valueString = getColumnValues(row.getAlias(), pivotTableData);
                 pivotLookupMap.put(row.getAlias(), getLookUpMap(lookupField.getLookupModule(), facilioField, valueString));
             }
@@ -66,7 +67,7 @@ public class PivotLookupMapCommand extends FacilioCommand {
         for (HashMap<String, Object> data: pivotTableData) {
             Map<String, Object> rows = (Map<String, Object>) data.get("rows");
             Object val = rows.get(alias);
-            if (val == null) continue;
+            if (val == null || val.equals("")) continue;
             valueArray.add(val.toString());
         }
 
@@ -80,11 +81,10 @@ public class PivotLookupMapCommand extends FacilioCommand {
 
     private List<Long> getColumnArray(String alias, ArrayList<HashMap<String, Object>> pivotTableData){
         List<Long> idsArray = new ArrayList<>();
-        List<Object> valueArray = new ArrayList<>();
         for (HashMap<String, Object> data: pivotTableData) {
             Map<String, Object> rows = (Map<String, Object>) data.get("rows");
             Object val = rows.get(alias);
-            if (val == null) continue;
+            if (val == null || val.equals("")) continue;
             idsArray.add(Long.parseLong(val.toString()));
         }
 
@@ -105,8 +105,9 @@ public class PivotLookupMapCommand extends FacilioCommand {
                 .select(selectFields)
                 .module(lookupModule);
 
-        builder.andCondition(CriteriaAPI.getCondition(facilioField, data, getOperatorId(facilioField)));
-
+        if(getOperatorId(facilioField) != null) {
+            builder.andCondition(CriteriaAPI.getCondition(facilioField, data, getOperatorId(facilioField)));
+        }
         List<Map<String, Object>> valueProps = builder.getAsProps();
         for (Map<String, Object> row : valueProps){
             lookupMap.put(row.get(facilioField.getName()), Long.parseLong(row.get("id").toString()));
