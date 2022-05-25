@@ -36,24 +36,24 @@ else
 fi
 # sh bin/shutdown.sh
 sh /home/facilio/move_logs.sh
-aws s3 mv $APP_HOME/logs/catalina.out s3://$logsBucket/$logDir/$servername/$ipAddress/$server_type/catalinaout.$today.log
+aws s3 mv $APP_HOME/logs/catalina.out s3://$logsBucket/$logDir/$servername/$server_type/$ipAddress/catalinaout.$today.log
 
 if [ -f $APP_HOME/logs/l4jaccesslog ]; then
 	mv $APP_HOME/logs/l4jaccesslog $APP_HOME/logs/l4jaccesslog.$today 
 	gzip $APP_HOME/logs/l4jaccesslog.$today
-	aws s3 mv $APP_HOME/logs/l4jaccesslog.$today.gz  "s3://$logsBucket/$logDir/$servername/$ipAddress/$server_type/"
+	aws s3 mv $APP_HOME/logs/l4jaccesslog.$today.gz  "s3://$logsBucket/$logDir/$servername/$server_type/$ipAddress/"
 fi
 
 if [ -f $APP_HOME/logs/serverlog.$todayDateOnly ]; then
 	mv $APP_HOME/logs/serverlog.$todayDateOnly $APP_HOME/logs/serverlog.$today 
 	gzip $APP_HOME/logs/serverlog.$today
-	aws s3 mv $APP_HOME/logs/serverlog.$today.gz  "s3://$logsBucket/$logDir/$servername/$ipAddress/$server_type/"
+	aws s3 mv $APP_HOME/logs/serverlog.$today.gz  "s3://$logsBucket/$logDir/$servername/$server_type/$ipAddress/"
 fi
 
 if [ -f $APP_HOME/logs/serverlog ]; then
 	mv $APP_HOME/logs/serverlog $APP_HOME/logs/serverlog.$today 
 	gzip $APP_HOME/logs/serverlog.$today
-	aws s3 mv $APP_HOME/logs/serverlog.$today.gz  "s3://$logsBucket/$logDir/$servername/$ipAddress/$server_type/"
+	aws s3 mv $APP_HOME/logs/serverlog.$today.gz  "s3://$logsBucket/$logDir/$servername/$server_type/$ipAddress/"
 fi
 
 

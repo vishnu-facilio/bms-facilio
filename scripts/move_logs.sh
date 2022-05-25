@@ -31,10 +31,10 @@ do
         if [ $dateString != $today ]; then
             gzip $APP_HOME/logs/$file
             if [ -f $APP_HOME/logs/$file ]; then
-                aws s3 mv $APP_HOME/logs/$file "s3://$logsBucket/$logDir/$servername/$ipAddress/$server_type/"
+                aws s3 mv $APP_HOME/logs/$file "s3://$logsBucket/$logDir/$servername/$server_type/$ipAddress/"
             fi
             if [ -f $APP_HOME/logs/$file".gz" ]; then
-                aws s3 mv $APP_HOME/logs/$file".gz" "s3://$logsBucket/$logDir/$servername/$ipAddress/$server_type/"
+                aws s3 mv $APP_HOME/logs/$file".gz" "s3://$logsBucket/$logDir/$servername/$server_type/$ipAddress/"
             fi
         fi
     fi
