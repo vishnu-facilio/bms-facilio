@@ -2835,7 +2835,7 @@ public class V2ReportAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.TEMPLATE_JSON, pivotparams.getTemplateJSON());
         context.put(FacilioConstants.ContextNames.DATE_FIELD, pivotparams.getDateFieldId());
         context.put(FacilioConstants.ContextNames.DATE_OPERATOR, pivotparams.getDateOperator());
-        context.put(FacilioConstants.ContextNames.TIME_FILTER, pivotparams.getShowTimelineFilter());
+        context.put(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER, pivotparams.getShowTimelineFilter());
         context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, pivotparams.getDateValue());
         context.put(FacilioConstants.ContextNames.IS_EXPORT_REPORT, true);
 

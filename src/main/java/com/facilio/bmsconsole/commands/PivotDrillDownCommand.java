@@ -21,7 +21,9 @@ public class PivotDrillDownCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         List<PivotRowColumnContext> rowColumns= (List<PivotRowColumnContext>) context.get(FacilioConstants.Reports.ROWS);
-        boolean showTimelineFilter = (boolean) context.get(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER);
+        boolean showTimelineFilter = false;
+        if(context.containsKey(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER) && context.get(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER) != null)
+            showTimelineFilter = (boolean) context.get(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER);
         Long dateFieldId = (Long) context.get(FacilioConstants.ContextNames.DATE_FIELD);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
