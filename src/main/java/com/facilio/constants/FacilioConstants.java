@@ -728,6 +728,7 @@ public class FacilioConstants {
 		public static final String PIVOT_ALIAS_VS_FIELD = "pivotAliasVsField";
 		public static final String PIVOT_LOOKUP_MAP = "pivotLookupMap";
 		public static final String PIVOT_DRILL_DOWN = "drillDown";
+		public static final String PIVOT_DRILL_DOWN_PATTERN = "drillDownPattern";
 		public static final String PIVOT_DRILL_DOWN_FIELDS = "pivotDrillDownFields";
 		public static final String PIVOT_DRILL_DOWN_OPERATORS = "pivotDrillDownOperators";
 		public static final String IS_TIMELINE_FILTER_APPLIED = "isTimelineFilterApplied";

@@ -52,7 +52,7 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 			
 			Criteria criteria = new Criteria();
 
-			if(context.containsKey(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN) && context.get(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN) != null){
+			if(context.containsKey(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_PATTERN) && context.get(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_PATTERN) != null){
 				Queue<String> fieldNamesFromFilter = getFieldNamesFromFilter(filters);
 				filterIterator = fieldNamesFromFilter.iterator();
 			}
@@ -62,7 +62,7 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 				String fieldName = filterIterator.next();
 				Object fieldJson = filters.get(fieldName);
 
-				if(context.containsKey(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN) && context.get(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN) != null){
+				if(context.containsKey(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_PATTERN) && context.get(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_PATTERN) != null){
 					fieldName = fieldName.split("__")[0];
 				}
 
@@ -81,8 +81,8 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 				criteria.groupOrConditions(conditionList);
 			}
 
-			if(context.containsKey(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN) && context.get(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN) != null){
-				criteria.setPattern(context.get(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN).toString());
+			if(context.containsKey(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_PATTERN) && context.get(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_PATTERN) != null){
+				criteria.setPattern(context.get(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_PATTERN).toString());
 			}
 			if (!criteria.isEmpty()) {
 				context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, criteria);
