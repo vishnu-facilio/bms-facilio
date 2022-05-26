@@ -6,6 +6,4 @@ public class ConnectedAppsModule extends BaseModuleConfig{
 
     }
 
-    public void migration() throws Exception {
-    }
 }

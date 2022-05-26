@@ -6,6 +6,4 @@ public class PrintersModule extends BaseModuleConfig{
 
     }
 
-    public void migration() throws Exception {
-    }
 }

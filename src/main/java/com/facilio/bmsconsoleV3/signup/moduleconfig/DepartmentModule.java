@@ -6,6 +6,4 @@ public class DepartmentModule extends BaseModuleConfig{
 
     }
 
-    public void migration() throws Exception {
-    }
 }

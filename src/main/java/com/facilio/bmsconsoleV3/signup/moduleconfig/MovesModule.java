@@ -6,6 +6,4 @@ public class MovesModule extends BaseModuleConfig{
 
     }
 
-    public void migration() throws Exception {
-    }
 }

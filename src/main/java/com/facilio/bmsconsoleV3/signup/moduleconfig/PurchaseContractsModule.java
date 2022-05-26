@@ -6,6 +6,4 @@ public class PurchaseContractsModule extends BaseModuleConfig{
 
     }
 
-    public void migration() throws Exception {
-    }
 }

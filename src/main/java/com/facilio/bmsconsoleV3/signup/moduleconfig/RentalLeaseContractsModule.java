@@ -6,6 +6,4 @@ public class RentalLeaseContractsModule extends BaseModuleConfig{
 
     }
 
-    public void migration() throws Exception {
-    }
 }

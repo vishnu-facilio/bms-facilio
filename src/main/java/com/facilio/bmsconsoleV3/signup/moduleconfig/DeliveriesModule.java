@@ -6,6 +6,4 @@ public class DeliveriesModule extends BaseModuleConfig{
 
     }
 
-    public void migration() throws Exception {
-    }
 }

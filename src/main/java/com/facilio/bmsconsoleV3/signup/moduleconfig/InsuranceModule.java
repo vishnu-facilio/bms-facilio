@@ -6,6 +6,4 @@ public class InsuranceModule extends BaseModuleConfig{
 
     }
 
-    public void migration() throws Exception {
-    }
 }

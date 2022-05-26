@@ -6,6 +6,4 @@ public class LocationModule extends BaseModuleConfig{
 
     }
 
-    public void migration() throws Exception {
-    }
 }

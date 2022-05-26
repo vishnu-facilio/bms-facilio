@@ -6,6 +6,4 @@ public class LabourModule extends BaseModuleConfig{
 
     }
 
-    public void migration() throws Exception {
-    }
 }

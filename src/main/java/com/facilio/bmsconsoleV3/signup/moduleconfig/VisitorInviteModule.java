@@ -5,7 +5,4 @@ public class VisitorInviteModule extends BaseModuleConfig{
     protected void addForms() throws Exception {
 
     }
-
-    public void migration() throws Exception {
-    }
 }

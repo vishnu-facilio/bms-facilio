@@ -6,6 +6,4 @@ public class OccupantModule extends BaseModuleConfig{
 
     }
 
-    public void migration() throws Exception {
-    }
 }

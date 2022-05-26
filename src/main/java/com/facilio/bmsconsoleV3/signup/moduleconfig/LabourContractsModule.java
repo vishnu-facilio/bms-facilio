@@ -6,6 +6,4 @@ public class LabourContractsModule extends BaseModuleConfig{
 
     }
 
-    public void migration() throws Exception {
-    }
 }

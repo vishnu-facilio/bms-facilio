@@ -6,6 +6,5 @@ public class ItemTypesModule extends BaseModuleConfig{
 
     }
 
-    public void migration() throws Exception {
-    }
+
 }

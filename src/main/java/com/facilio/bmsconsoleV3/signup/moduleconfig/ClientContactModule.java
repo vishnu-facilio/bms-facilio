@@ -6,6 +6,4 @@ public class ClientContactModule extends BaseModuleConfig{
 
     }
 
-    public void migration() throws Exception {
-    }
 }

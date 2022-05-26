@@ -6,6 +6,4 @@ public class EnergyMeterModule extends BaseModuleConfig{
 
     }
 
-    public void migration() throws Exception {
-    }
 }

@@ -6,6 +6,4 @@ public class PeopleModule extends BaseModuleConfig{
 
     }
 
-    public void migration() throws Exception {
-    }
 }

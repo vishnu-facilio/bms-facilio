@@ -79,5 +79,4 @@ public abstract class BaseModuleConfig extends SignUpData {
         return trigger;
     }
 
-    public abstract void migration() throws Exception;
 }

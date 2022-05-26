@@ -6,6 +6,4 @@ public class DevicesModule extends BaseModuleConfig{
 
     }
 
-    public void migration() throws Exception {
-    }
 }

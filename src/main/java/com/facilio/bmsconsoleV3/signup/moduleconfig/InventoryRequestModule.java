@@ -6,6 +6,4 @@ public class InventoryRequestModule extends BaseModuleConfig{
 
     }
 
-    public void migration() throws Exception {
-    }
 }
