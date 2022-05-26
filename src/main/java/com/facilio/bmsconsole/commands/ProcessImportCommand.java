@@ -408,11 +408,10 @@ public class ProcessImportCommand extends FacilioCommand {
 				{
 					String siteName = (String) colVal.get(fieldMapping.get(module + "__site"));
 					if (!(importProcessContext.getImportSetting() == ImportSetting.UPDATE.getValue() || importProcessContext.getImportSetting() == ImportSetting.UPDATE_NOT_NULL.getValue())) {
-						List<SiteContext> sites = SpaceAPI.getAllSites();
-						for (SiteContext site : sites) {
-							if (!props.containsKey("siteId") && site.getName().trim().toLowerCase().equals(siteName.trim().toLowerCase())) {
+						if (!props.containsKey("siteId") && siteName != null) {
+							SiteContext site = SpaceAPI.getSite(siteName.trim());
+							if(site != null) {
 								props.put("siteId", site.getId());
-								break;
 							}
 						}
 					}
@@ -1042,16 +1041,14 @@ public class ProcessImportCommand extends FacilioCommand {
 		Long spaceId = null;
 
 		if(siteName != null && !siteName.equals("")) {
-			 List<SiteContext> sites = SpaceAPI.getAllSites();
-			 HashMap<String, Long> siteMap = new HashMap();
-			 for(SiteContext siteContext : sites)
+			
+			 SiteContext site = SpaceAPI.getSite(siteName.trim());
+			 
+			 if(site != null)
 			 {
-				 siteMap.put(siteContext.getName().trim().toLowerCase(), siteContext.getId());
-			 }
-			 if(siteMap.containsKey(siteName.trim().toLowerCase()))
-			 {
-				siteId = siteMap.get(siteName.trim().toLowerCase());
-			 } else {
+				siteId = site.getId();
+			 } 
+			 else {
 				 throw new ImportLookupModuleValueNotFoundException(siteName, row_no, fieldMapping.get(moduleName + "__site"), new Exception());
 			 }
 			if (siteId != null) {

@@ -217,19 +217,22 @@ public class InspectionPageFactory extends PageFactory {
 		JSONArray fieldList = new JSONArray();
 		
 		fieldList.add("creationType");
-		fieldList.add("siteId");
 		if(record.getCreationType() == InspectionTemplateContext.CreationType.SINGLE.getIndex()) {
+			fieldList.add("siteId");
 			fieldList.add("resource");
 		}
 		else {
-			fieldList.add("assignmentType");
-			fieldList.add("baseSpace");
+			fieldList.add("sites");
+			fieldList.add("buildings");
+			
 			if(record.getAssignmentTypeEnum() == PMAssignmentType.ASSET_CATEGORY) {
 				fieldList.add("assetCategory");
 			}
 			if(record.getAssignmentTypeEnum() == PMAssignmentType.SPACE_CATEGORY) {
 				fieldList.add("spaceCategory");
 			}
+			
+			fieldList.add("assignmentType");
 		}
 		
 		widgetParam.put("fields", fieldList);

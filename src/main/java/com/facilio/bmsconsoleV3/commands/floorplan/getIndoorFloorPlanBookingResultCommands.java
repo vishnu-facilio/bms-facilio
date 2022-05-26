@@ -50,9 +50,11 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
         Map<Long, SpaceContext> spacesMap =  (Map<Long, SpaceContext>) context.get(FacilioConstants.ContextNames.Floorplan.SPACE_MAP);
 
     	String viewMode = (String) context.get(FacilioConstants.ContextNames.Floorplan.VIEW_MODE);
-    	
-      
-    	
+
+		List<V3IndoorFloorPlanGeoJsonContext> geoMarkers = new ArrayList<>();
+		List<V3IndoorFloorPlanGeoJsonContext> geoZones = new ArrayList<>();
+
+
 		if (viewMode == null) {
 			viewMode = FacilioConstants.ContextNames.Floorplan.BOOKING_VIEW;
 		}
@@ -103,7 +105,7 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 		        	
 		        	
 		        	markerObjectMap.put(marker.getId(), feature);
-		        	
+					geoMarkers.add(feature);
 		        	
 		        	
 		        }
@@ -146,8 +148,7 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 		        	feature.setObjectType(2);
 
 		        	zoneObjectMap.put(zone.getId(), feature);
-		        	
-		        	
+				 	geoZones.add(feature);
 		   
 		        }
 		          
@@ -157,6 +158,8 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
        
         context.put(FacilioConstants.ContextNames.Floorplan.MARKERS, markerObjectMap);
         context.put(FacilioConstants.ContextNames.Floorplan.ZONES, zoneObjectMap);
+		context.put("GEO_MARKERS", geoMarkers);
+		context.put("GEO_ZONES", geoZones);
 
         
 		return false;

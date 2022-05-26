@@ -41,6 +41,12 @@ import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 
 public class V3FloorPlanAPI {
 
+	public static Map<String,JSONObject> convertGeoJson(List<V3IndoorFloorPlanGeoJsonContext> fetaure) throws Exception {
+		JSONObject GeoJson = new JSONObject();
+		GeoJson.put("type", "FeatureCollection");
+		GeoJson.put("features", fetaure);
+		return GeoJson;
+	}
 
 	public static List<V3IndoorFloorPlanContext> getAllFloorPlan() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

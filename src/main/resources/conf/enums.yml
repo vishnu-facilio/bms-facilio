@@ -244,5 +244,8 @@ enums:
   - name: InventoryType
     enumClassName: com.facilio.bmsconsoleV3.context.inventory.V3TransferRequestLineItemContext$InventoryType
 
+  - name: InventoryTypeRfq
+    enumClassName: com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationLineItemsContext$InventoryTypeRfq
+
   - name: AggregationType
     enumClassName: com.facilio.ns.context.AggregationType

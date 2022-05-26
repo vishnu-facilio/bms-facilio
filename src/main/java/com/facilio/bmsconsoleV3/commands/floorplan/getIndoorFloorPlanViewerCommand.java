@@ -78,6 +78,9 @@ public class getIndoorFloorPlanViewerCommand extends FacilioCommand {
         Map<Long, V3IndoorFloorPlanGeoJsonContext> markerObjectMap = new HashMap<Long,V3IndoorFloorPlanGeoJsonContext >();
         Map<Long, V3IndoorFloorPlanGeoJsonContext> zoneObjectMap = new HashMap<Long,V3IndoorFloorPlanGeoJsonContext >();
 
+		List<V3IndoorFloorPlanGeoJsonContext> geoMarkers = new ArrayList<>();
+		List<V3IndoorFloorPlanGeoJsonContext> geoZones = new ArrayList<>();
+
         
         Map<Long, List<Long>> markerIdvsRecordIds = new HashMap<>();
 
@@ -314,8 +317,9 @@ public class getIndoorFloorPlanViewerCommand extends FacilioCommand {
         	
         	
         	markerObjectMap.put(marker.getId(), feature);
-        	
-        	
+
+			geoMarkers.add(feature);
+
         	
         }
         
@@ -352,8 +356,7 @@ public class getIndoorFloorPlanViewerCommand extends FacilioCommand {
         	feature.setObjectType(2);
 
         	zoneObjectMap.put(zone.getId(), feature);
-        	
-        	
+        	geoZones.add(feature);
    
         }
 
@@ -362,8 +365,9 @@ public class getIndoorFloorPlanViewerCommand extends FacilioCommand {
         context.put(FacilioConstants.ContextNames.Floorplan.MARKERS, markerObjectMap);
         context.put(FacilioConstants.ContextNames.Floorplan.ZONES, zoneObjectMap);
         context.put(FacilioConstants.ContextNames.Floorplan.INDOOR_FLOORPLAN, floorplan);
+		context.put("GEO_MARKERS", geoMarkers);
+		context.put("GEO_ZONES", geoZones);
 
-        
 		return false;
 	}
 	

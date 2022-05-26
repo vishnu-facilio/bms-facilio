@@ -443,7 +443,7 @@
         </action>
         <action name="viewerData"
                 class="com.facilio.bmsconsoleV3.actions.FloorplanAction"
-                method="getFloorplanViewData">
+                method="getViewData">
         </action>
          <action name="propertiesdata"
                 class="com.facilio.bmsconsoleV3.actions.FloorplanAction"
