@@ -37,6 +37,8 @@ public class PivotLookupMapCommand extends FacilioCommand {
             if(facilioField instanceof LookupField) {
                 LookupField newLookupField = (LookupField) facilioField;
                 List<Long> ids = getColumnArray(row.getAlias(), pivotTableData);
+                Map<Long, Object> lookupMap = getLookUpMap(newLookupField.getSpecialType(), newLookupField.getLookupModule(), ids);
+                if(lookupMap == null || CollectionUtils.isEmpty(Collections.singleton(lookupMap))) continue;
                 pivotLookupMap.put(row.getAlias(), getLookUpMap(newLookupField.getSpecialType(), newLookupField.getLookupModule(), ids));
             } else if(lookupField != null && facilioField != null){
                 String valueString = getColumnValues(row.getAlias(), pivotTableData);
@@ -142,12 +144,14 @@ public class PivotLookupMapCommand extends FacilioCommand {
     private Map<Long, Object> getLookUpMap(String specialType, FacilioModule lookupModule, List<Long> ids) throws Exception {
         Map<Long, Object> lookupMap;
 
-        String moduleName;
         if (LookupSpecialTypeUtil.isSpecialType(specialType)) {
-            moduleName = specialType;
-        } else {
-            moduleName = lookupModule.getName();
+            List list = LookupSpecialTypeUtil.getObjects(specialType, null);
+            lookupMap = LookupSpecialTypeUtil.getPrimaryFieldValues(specialType, list);
+            return lookupMap;
         }
+
+        String moduleName = lookupModule.getName();
+
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioField mainField = modBean.getPrimaryField(moduleName);
