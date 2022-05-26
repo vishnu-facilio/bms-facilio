@@ -2450,7 +2450,10 @@ public class V2ReportAction extends FacilioAction {
             boolean fetchData = fileFormat != FileFormat.IMAGE && fileFormat != FileFormat.PDF;
             exportChain = TransactionChainFactory.getExportModuleReportFileChain(fetchData);
             context = exportChain.getContext();
-            context.put(FacilioConstants.ContextNames.FILTERS, getFilters());
+            if(getFilters() != null) {
+                JSONParser parser = new JSONParser();
+                context.put(FacilioConstants.ContextNames.FILTERS, (JSONObject) parser.parse(getFilters()));
+            }
             // pass filterJsonString as is, will be set in summary url in export command
             getReport(context);
         } else {

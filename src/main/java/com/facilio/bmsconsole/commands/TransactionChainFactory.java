@@ -1603,6 +1603,7 @@ public class TransactionChainFactory {
 		public static FacilioChain getExportModuleReportFileChain(boolean fetchData) {
 			FacilioChain c = getDefaultChain();
 			if (fetchData) {
+				c.addCommand(new GenerateCriteriaFromFilterCommand());
 				c.addCommand(ReadOnlyChainFactory.newFetchReportDataChain());
 			}
 			c.addCommand(new GetModuleFromReportContextCommand());
