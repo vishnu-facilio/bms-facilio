@@ -447,7 +447,7 @@ public class AdminAction extends ActionSupport {
 				mlServiceData.put("filteringMethod", new JSONParser().parse(request.getParameter("filtermethod")));
 			}
 		}else if (request.getParameter("usecase").equals("ahuoptimization")){
-			mlServiceData.put("serviceType","custom");
+			mlServiceData.put("inputType","custom");
 			if(request.getParameter("model").length() > 2) {
 				mlServiceData.put("modelReadings", new JSONParser().parse(request.getParameter("model")));
 			}

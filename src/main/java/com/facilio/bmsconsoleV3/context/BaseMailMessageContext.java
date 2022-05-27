@@ -80,10 +80,10 @@ public class BaseMailMessageContext extends V3Context {
                 mailContext.sentDate = message.getSentDate().getTime();
             }
             if (message.getRecipients(Message.RecipientType.CC) != null) {
-                mailContext.cc = message.getRecipients(Message.RecipientType.CC).toString();
+                mailContext.cc = InternetAddress.toString(message.getRecipients(Message.RecipientType.CC));
             }
             if (message.getRecipients(Message.RecipientType.BCC) != null) {
-                mailContext.bcc = message.getRecipients(Message.RecipientType.BCC).toString();
+                mailContext.bcc = InternetAddress.toString(message.getRecipients(Message.RecipientType.BCC));
             }
             
             String htmlContentString = MailMessageUtil.getContentFromMessage(message, MailMessageUtil.HTML_CONTENT_TYPE);

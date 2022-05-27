@@ -74,8 +74,8 @@ public class V3FloorPlanAPI {
 				.module(module)
 				.beanClass(V3IndoorFloorPlanLayerContext.class)
 				.select(modBean.getAllFields(module.getName()))
-				.andCondition(CriteriaAPI.getCondition("INDOOR_FLOORPLAN_ID", "indoorfloorplanid",
-						String.valueOf(floorplanId), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition("INDOOR_FLOORPLAN_ID", "indoorfloorplanid", String.valueOf(floorplanId), NumberOperators.EQUALS))
+						 .orderBy("LAYER_TYPE ASC");
 
 		List<V3IndoorFloorPlanLayerContext> layers = builder.get();
 		if(CollectionUtils.isNotEmpty(layers))

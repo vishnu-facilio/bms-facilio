@@ -277,10 +277,9 @@
             <param name="moduleName">setup</param>
             <param name="permission">WORKORDER_SETTINGS</param>
         </action>
-        <action name="*" class="com.facilio.bmsconsole.actions.SurveyRuleAction" method="fetchSurveyRule">
+        <action name="fetch" class="com.facilio.bmsconsole.actions.SurveyRuleAction" method="fetchSurveyRule">
             <param name="moduleName">setup</param>
             <param name="permission">WORKORDER_SETTINGS</param>
-            <param name="workFlowRuleId">{1}</param>
         </action>
     </package>
 

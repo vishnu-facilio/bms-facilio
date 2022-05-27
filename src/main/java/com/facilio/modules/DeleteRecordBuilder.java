@@ -25,6 +25,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.DeleteSupplementHandler;
 import com.facilio.modules.fields.FacilioField;
@@ -232,7 +233,6 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	
 	public int markAsDelete() throws Exception {
 		checkForNullAndSanitize();
-		
 		if (!module.isTrashEnabled()) {
 			throw new IllegalArgumentException("Trash is not enabled for this module and so cannot be marked as delete");
 		}
@@ -251,9 +251,10 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		if (AccountUtil.getCurrentUser() != null) {
 			prop.put(deletedByField.getName(), Collections.singletonMap("id", AccountUtil.getCurrentUser().getId()));
 		}
-
+		List<Long> ids = getIds();
+		Condition idCondition = CriteriaAPI.getCondition(FieldFactory.getIdField(module.getParentModule()),ids, NumberOperators.EQUALS);
 		updateBuilder.fields(fields)
-						.andCustomWhere(where.getWhereClause(),  where.getValues());
+						.andCondition(idCondition);
 		return updateBuilder.updateViaMap(prop);
 	}
 	

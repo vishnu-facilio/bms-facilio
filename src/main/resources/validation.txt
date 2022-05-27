@@ -2672,6 +2672,7 @@
 /api/v2/setup/survey/edit
 /api/v2/setup/survey/delete
 /api/v2/setup/survey/:modulename
+/api/v2/setup/survey/fetch
 /api/auth/login
 /api/auth/signup
 /api/module/metafields
@@ -2714,3 +2715,4 @@
 /api/event/geteventrule
 /api/event/sources
 /api/event/updatesource
+/api/v2/wosurvey
