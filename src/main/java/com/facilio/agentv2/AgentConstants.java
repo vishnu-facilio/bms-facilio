@@ -1,7 +1,6 @@
 package com.facilio.agentv2;
 
 import com.facilio.agent.AgentKeys;
-import org.omg.CORBA.PUBLIC_MEMBER;
 
 public class AgentConstants
 {
