@@ -19,6 +19,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class ExecuteSurveyTemplateCommand extends FacilioCommand{
 	@Override
@@ -42,10 +43,12 @@ public class ExecuteSurveyTemplateCommand extends FacilioCommand{
 		if(CollectionUtils.isNotEmpty(response)){
 			Long ruleId = (Long) context.get("ruleId");
 			Boolean isRetake = (Boolean) context.get("isRetakeAllowed");
-			Integer retakeExpiryDuration = (Integer) context.get("retakeExpiryDuration");
+			Integer retakeExpiryDuration = (Integer) context.get("retakeExpiryDay");
+			Integer expiryDay = (Integer) context.get("expiryDay");
 			for(ResponseContext res : response){
 				res.setRuleId(ruleId);
 				res.setIsRetakeAllowed(isRetake);
+				res.setExpiryDate(System.currentTimeMillis()+ TimeUnit.DAYS.toMillis(expiryDay));
 				res.setRetakeExpiryDuration(retakeExpiryDuration);
 			}
 			QAndAUtil.addRecordViaV3Chain(type.getResponseModule(), response);
