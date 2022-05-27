@@ -1,6 +1,7 @@
 package com.facilio.agentv2;
 
 import com.facilio.agent.AgentKeys;
+import org.omg.CORBA.PUBLIC_MEMBER;
 
 public class AgentConstants
 {
@@ -32,6 +33,7 @@ public class AgentConstants
     public static final String WORKFLOW = "workflow";
     public static final String TRANSFORM_WORKFLOW = "transformWorkflow";
     public static final String COMMAND_WORKFLOW = "commandWorkflow";
+    public static final String IS_ACTIVE_UPDATE_VALUE = "isActiveUpdateValue";
 
     //modbus constants
     public static final String SLAVE_ID = "slaveId";
@@ -145,6 +147,8 @@ public class AgentConstants
     public static final String POINT_IDS = "pointIds";
     public static final String UPDATE_CHILD = "updateChild";
     public static final String RECORD_ID = "recordId";
+    public static final String AGENT_IDS = "agentIds";
+    public static final String JOB_PROPS="jobProps";
 
     public static final String NUMBER_OF_MSGS = "numberOfMessages";
     public static final String SIZE = "size";

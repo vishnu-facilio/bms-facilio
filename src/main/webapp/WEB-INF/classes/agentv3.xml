@@ -44,6 +44,8 @@
         </action>
         <action name="runWorkflow" class="com.facilio.agentv2.AgentV3Action" method="runWorkflow">
         </action>
+        <action name="toggleJob" class="com.facilio.agentv2.AgentV3Action" method="toggleJob">
+        </action>
         
     </package>
     

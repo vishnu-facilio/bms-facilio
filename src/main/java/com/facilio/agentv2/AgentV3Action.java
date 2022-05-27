@@ -58,6 +58,14 @@ public class AgentV3Action extends V3Action {
 		}
 		return SUCCESS;
 	}
-	
+
+	public String toggleJob() throws Exception{
+		FacilioChain chain = TransactionChainFactory.updateJobActiveStatusChain();
+		FacilioContext context = chain.getContext();
+		context.put(AgentConstants.AGENT_IDS,this.getData().get(AgentConstants.AGENT_IDS));
+		context.put(AgentConstants.IS_ACTIVE_UPDATE_VALUE,this.getData().get(AgentConstants.IS_ACTIVE_UPDATE_VALUE));
+		chain.execute();
+		return SUCCESS;
+	}
 	
 }
