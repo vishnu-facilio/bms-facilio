@@ -119,14 +119,6 @@ public abstract class MessageQueue {
 
     private int startProcessor(long orgId, String topic, Map<String, Object> topicDetails, int currentThreadCount) {
         int noOfProcessorsStarted = 0;
-        if (FacilioProperties.isDevelopment()) {
-            try {
-                createQueue(topic);
-                STREAMS.addAll(getTopics());
-            } catch (Exception ex) {
-                LOGGER.error("Exception while creating topic in dev env", ex);
-            }
-        }
         try {
             if (topic != null && STREAMS.contains(topic)) {
 

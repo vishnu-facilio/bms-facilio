@@ -194,7 +194,7 @@ public class DataProcessorUtil {
                     	}
                     	agentMsgId = agentV2.getId();
                         processorVersion = agentV2.getProcessorVersion();
-                        Span.current().addEvent("agent", Attributes.of(AttributeKey.stringKey("agent-name"), agentV2.getName()));
+                        Span.current().setAllAttributes(Attributes.of(AttributeKey.stringKey("agent"), agentV2.getName()));
                     }
                     LOGGER.debug(" checking agent version for agent "+payLoad.get(AgentConstants.AGENT)+"  version "+processorVersion);
                 }else {
@@ -207,7 +207,7 @@ public class DataProcessorUtil {
             switch (processorVersion) {
                 case 1:
 //                    LOGGER.info("PreProcessor for V1 to V2 data");
-                    Span.current().addEvent("Processor V1");
+                    Span.current().setAllAttributes(Attributes.of(AttributeKey.stringKey("processor"), "V1"));
                     AgentMessagePreProcessor preProcessor = new V1ToV2PreProcessor();
                     List<JSONObject> messages = preProcessor.preProcess(payLoad);
                     boolean isEveryMessageProcessed = true;
@@ -218,10 +218,10 @@ public class DataProcessorUtil {
                     return isEveryMessageProcessed;
                 case 2:
 //                    LOGGER.info(" new processor data ");
-                    Span.current().addEvent("Processor V2");
+                    Span.current().setAllAttributes(Attributes.of(AttributeKey.stringKey("processor"), "V2"));
                     return sendToProcessorV2(payLoad, recordId, record.getPartitionKey(), partitionId);
                 default:
-                    Span.current().addEvent("Processor Default");
+                    Span.current().setAllAttributes(Attributes.of(AttributeKey.stringKey("processor"), "Default"));
                     processOldAgentData(record, recordId, payLoad);
             }
         } catch (Exception e) {
@@ -332,7 +332,7 @@ public class DataProcessorUtil {
         if (agent == null) {
             throw new FacilioException("Agent Not Found");
         }
-        Span.current().addEvent("Old Agent", Attributes.of(AttributeKey.stringKey("name"), agent.getName()));
+        Span.current().setAllAttributes(Attributes.of(AttributeKey.stringKey("old-agent"), agent.getName()));
 
         // LOGGER.info("Agent ID : " + agent.getId());
         agentUtil.addAgentMetrics(Math.toIntExact(record.getSize()), agent.getId(), publishType.getKey()); //TODO make size long

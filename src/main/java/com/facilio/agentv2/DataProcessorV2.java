@@ -120,15 +120,16 @@ public class DataProcessorV2
                     processStatus = processDevicePoints(agent, payload);
                     break;
                 case ACK:
-                    processStatus = processAck(agent,payload);
+                    processStatus = processAck(agent, payload);
                     break;
                 case TIMESERIES:
                     JSONObject timeSeriesPayload = (JSONObject) payload.clone();
-                    Controller timeseriesController = getCachedControllerUsingPayload(payload,agent.getId());
-                    Span.current().addEvent("TimeSeries-Controller", Attributes.of(AttributeKey.stringKey("controller-name"), timeseriesController.getName()));
+                    Controller timeseriesController = getCachedControllerUsingPayload(payload, agent.getId());
+
+                    Span.current().setAllAttributes(Attributes.of(AttributeKey.stringKey("controller-name"), timeseriesController.getName()));
                     if (!controllerIdVsLastTimeSeriesTimeStamp.containsKey(timeseriesController.getId()) ||
                             !controllerIdVsLastTimeSeriesTimeStamp.get(timeseriesController.getId()).equals(timeStamp) ||
-                            agent.getAgentType()== AgentType.WATTSENSE.getKey()) {
+                            agent.getAgentType() == AgentType.WATTSENSE.getKey()) {
 
                         controllerIdVsLastTimeSeriesTimeStamp.put(timeseriesController.getId(), timeStamp);
 

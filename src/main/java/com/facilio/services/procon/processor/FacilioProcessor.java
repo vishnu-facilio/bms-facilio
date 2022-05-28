@@ -10,6 +10,8 @@ import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Scope;
+import io.opentelemetry.extension.annotations.WithSpan;
+import lombok.With;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -29,7 +31,7 @@ public abstract class FacilioProcessor implements  Runnable {
     private boolean isRunning;
 
     private static final Logger LOGGER = LogManager.getLogger(FacilioProcessor.class.getName());
-    private static final Tracer TRACER = GlobalOpenTelemetry.getTracer(FacilioProcessor.class.getName());
+    private static final Tracer TRACER = GlobalOpenTelemetry.getTracer(FacilioProcessor.class.getSimpleName());
     private static final Meter SAMPLE_METER =
             GlobalOpenTelemetry.getMeter(FacilioProcessor.class.getName());
     private static final LongCounter COUNTER =
@@ -103,14 +105,15 @@ public abstract class FacilioProcessor implements  Runnable {
         return consumer.getRecords(timeout);
     }
 
+    @WithSpan
     public abstract void processRecords(List<FacilioRecord> records);
 
     public void run() {
         try {
-            Span span = TRACER.spanBuilder(FacilioProcessor.class.getName()).setSpanKind(SpanKind.CONSUMER).startSpan();
             AccountUtil.setCurrentAccount(orgId);
             initialize();
             while (isRunning) {
+                Span span = TRACER.spanBuilder(FacilioProcessor.class.getName()).setSpanKind(SpanKind.CONSUMER).startSpan();
                 try (Scope scope = span.makeCurrent()) {
                     List<FacilioRecord> records = get(5000);
                     processRecords(records);
