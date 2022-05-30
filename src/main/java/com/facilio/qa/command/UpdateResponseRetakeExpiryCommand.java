@@ -38,6 +38,6 @@ public class UpdateResponseRetakeExpiryCommand extends FacilioCommand{
 
 	private long calculateRetakeExpiry(ResponseContext response){
 
-		return DateTimeUtil.getCurrenTime() + TimeUnit.MINUTES.toMillis(response.getRetakeExpiryDuration());
+		return DateTimeUtil.getCurrenTime() + TimeUnit.DAYS.toMillis(response.getRetakeExpiryDuration());
 	}
 }

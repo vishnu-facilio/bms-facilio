@@ -307,6 +307,10 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
                     		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.XML_BUILDER.getName());
                     		isDataTypeSpecificFunction = true;
                     	}
+                    	else if(value.asObject() instanceof Pattern) {
+                    		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.REGEX.getName());
+                    		isDataTypeSpecificFunction = true;
+                    	}
                     	else if (value.asObject() instanceof FacilioSystemFunctionNameSpace) {
                     		wfFunctionContext.setNameSpace(((FacilioSystemFunctionNameSpace)value.asObject()).getName());
                     	}

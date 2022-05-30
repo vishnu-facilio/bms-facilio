@@ -85,4 +85,20 @@
             <property name="moduleName" type="string"/>
         </requestbody>
     </request>
+
+    <request path="/api/v2/custombutton/getAvailableButtons">
+        <requestbody type="object">
+            <property name="id" type="number"/>
+            <property name="moduleName" type="string"/>
+            <property name="positionType" type="number"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/statetransition/getAvailableState">
+        <urlparams>
+            <property name="moduleName" type="string" pattern="^[a-zA-Z_]*$" mandatory="true"/>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+
 </config>

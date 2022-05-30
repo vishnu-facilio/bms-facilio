@@ -1,61 +1,16 @@
 package com.facilio.bmsconsoleV3.actions.picklist;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.timelineview.context.TimelineViewContext;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.bmsconsole.view.FacilioView;
-import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.V3Action;
-
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class V3PIckListAction extends V3Action {
 
-    public String fetchTimelineGroupdata() throws Exception {
-        FacilioChain getViewChain = FacilioChainFactory.getViewDetailsChain();
-        FacilioContext context = getViewChain.getContext();
-        context.put(FacilioConstants.ContextNames.MODULE_NAME, timelineModuleName);
-        context.put(FacilioConstants.ContextNames.CV_NAME, timelineViewName);
-        context.put(FacilioConstants.ContextNames.APP_ID, appId);
-        getViewChain.execute();
-
-        FacilioView viewObj = (FacilioView)context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
-        if(viewObj == null || viewObj.getType() != FacilioView.ViewType.TIMELINE.getIntVal()) {
-            throw new IllegalArgumentException("Invalid View data passed");
-        }
-
-        if(((TimelineViewContext)viewObj).getGroupByField() == null) {
-            throw new IllegalArgumentException("Group field not configured for the view");
-        }
-        moduleName = ((LookupField)(((TimelineViewContext)viewObj).getGroupByField())).getLookupModule().getName();
-        if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
-            setData(FacilioConstants.ContextNames.PICKLIST, PickListUtil.getSpecialModulesPickList(moduleName, page, perPage, search));
-            setMeta("moduleType", FacilioModule.ModuleType.PICK_LIST.name());
-            setMeta("localSearch", !FacilioConstants.ContextNames.USERS.equals(moduleName));
-        }
-        else {
-            FacilioContext pickListContext = new FacilioContext();
-            PickListUtil.populatePicklistContext(pickListContext, getModuleName(), getFilters(), getSearch(), getCriteria(), getClientCriteria(), getDefault(), getViewName(), getPage(), getPerPage());
-            if(((TimelineViewContext)viewObj).getGroupCriteriaId() > 0) {
-                pickListContext.put(FacilioConstants.ContextNames.FILTER_SERVER_CRITERIA, ((TimelineViewContext) viewObj).getGroupCriteria());
-            }
-            pickListContext = PickListUtil.fetchPickListData(pickListContext);
-
-            setData(FacilioConstants.ContextNames.PICKLIST, pickListContext.get(FacilioConstants.ContextNames.PICKLIST));
-            setMeta("moduleType", ((FacilioModule) pickListContext.get(FacilioConstants.ContextNames.MODULE)).getTypeEnum().name());
-            setMeta("localSearch", pickListContext.getOrDefault(FacilioConstants.PickList.LOCAL_SEARCH, true));
-        }
-
-        return SUCCESS;
-    }
     public String pickList() throws Exception {
         if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
 

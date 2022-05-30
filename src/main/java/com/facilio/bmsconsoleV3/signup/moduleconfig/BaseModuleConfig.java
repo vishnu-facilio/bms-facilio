@@ -45,6 +45,17 @@ public abstract class BaseModuleConfig extends SignUpData {
         return module;
     }
 
+    public void addData() throws Exception {
+        addModuleAndFields();
+        addTriggers();
+        addForms();
+        addViews();
+        addMisc();
+    }
+    protected void addModuleAndFields() throws Exception {};
+    protected void addForms() throws Exception {};
+    protected void addViews() throws Exception {};
+    protected void addMisc() throws Exception {};
     protected void addTriggers() throws Exception {
         addTrigger("Create", EventType.CREATE);
         addTrigger("Update", EventType.EDIT);
@@ -68,5 +79,4 @@ public abstract class BaseModuleConfig extends SignUpData {
         return trigger;
     }
 
-    public abstract void migration() throws Exception;
 }

@@ -148,19 +148,19 @@
 
     <package name="timelineV3Api" namespace="/api/v3/modules/data/timeline" extends="v3Api">
         <action name="get"
-                class="com.facilio.v3.RESTAPIHandler"
+                class="com.facilio.bmsconsoleV3.actions.TimelineAction"
                 method="timelineData" />
 
         <action name="list"
-                class="com.facilio.v3.RESTAPIHandler"
+                class="com.facilio.bmsconsoleV3.actions.TimelineAction"
                 method="timelineSelectiveList" />
 
         <action name="update"
-                class="com.facilio.v3.RESTAPIHandler"
+                class="com.facilio.bmsconsoleV3.actions.TimelineAction"
                 method="timelinePatch" />
 
         <action name="unscheduled"
-                class="com.facilio.v3.RESTAPIHandler"
+                class="com.facilio.bmsconsoleV3.actions.TimelineAction"
                 method="timelineUnScheduledList" />
     </package>
 
@@ -279,7 +279,7 @@
     <package name="timelineGroupPicklist" namespace="/api/v3/timelineGroupData"
              extends="v3Api">
         <action name="fetch"
-                class="com.facilio.bmsconsoleV3.actions.picklist.V3PIckListAction"
+                class="com.facilio.bmsconsoleV3.actions.TimelineAction"
                 method="fetchTimelineGroupdata">
             <param name="translationImpl">V3PickListTranslation</param>
         </action>

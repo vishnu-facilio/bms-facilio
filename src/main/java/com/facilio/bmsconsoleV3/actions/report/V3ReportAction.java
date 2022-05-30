@@ -5,12 +5,10 @@ import java.util.function.Function;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.SharingAPI;
-import com.facilio.bmsconsole.commands.ConstructReportData;
-import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ReportInfo;
 import com.facilio.bmsconsole.util.DashboardUtil;
@@ -566,7 +564,10 @@ public class V3ReportAction extends V3Action {
             boolean fetchData = fileFormat != FileInfo.FileFormat.IMAGE && fileFormat != FileInfo.FileFormat.PDF;
             exportChain = TransactionChainFactory.getExportModuleReportFileChain(fetchData);
             context = exportChain.getContext();
-            context.put(FacilioConstants.ContextNames.FILTERS, getFilters());
+            if(getFilters() != null) {
+                JSONParser parser = new JSONParser();
+                context.put(FacilioConstants.ContextNames.FILTERS, (JSONObject) parser.parse(getFilters()));
+            }
             setReportWithDataContext(context);
         }
         else

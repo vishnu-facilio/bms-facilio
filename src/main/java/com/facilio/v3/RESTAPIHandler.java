@@ -12,15 +12,12 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.FileField;
-import com.facilio.timeline.context.TimelineRequest;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.commands.AttachmentCommand;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import com.facilio.v3.util.ChainUtil;
-import com.facilio.v3.util.TimelineViewUtil;
 import com.facilio.v3.util.V3Util;
 import com.facilio.wmsv2.handler.AuditLogHandler;
 import org.apache.commons.collections4.CollectionUtils;
@@ -141,7 +138,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
                 JSONObject json = (JSONObject) parser.parse(filters);
                 if(json.containsKey("drillDownPattern") && json.get("drillDownPattern") != null) {
                     String drillDownPattern = json.get("drillDownPattern").toString();
-                    context.put(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN, drillDownPattern);
+                    context.put(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_PATTERN, drillDownPattern);
                     json.remove("drillDownPattern");
                 }
                 context.put(Constants.FILTERS, json);
@@ -421,7 +418,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         return SUCCESS;
     }
 
-    private void addAuditLog(List<JSONObject> props, String moduleName, String message,
+    protected void addAuditLog(List<JSONObject> props, String moduleName, String message,
                              AuditLogHandler.ActionType actionType, boolean addLinkConfig) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
@@ -589,7 +586,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         }
     }
 
-    private void removeRestrictedFields(Map<String, Object> dataMap, String moduleName, Boolean validatePermissions) throws Exception{
+    protected void removeRestrictedFields(Map<String, Object> dataMap, String moduleName, Boolean validatePermissions) throws Exception{
         FacilioModule module = ChainUtil.getModule(moduleName);
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.FIELD_PERMISSIONS)) {
             List<FacilioField> restrictedFields = FieldUtil.getPermissionRestrictedFields(module,
@@ -604,74 +601,4 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         }
     }
 
-    private TimelineRequest timelineRequest;
-    public TimelineRequest getTimelineRequest() {
-        return timelineRequest;
-    }
-    public void setTimelineRequest(TimelineRequest timelineRequest) {
-        this.timelineRequest = timelineRequest;
-    }
-
-    public String timelineData() throws Exception {
-        FacilioChain chain = ChainUtil.getTimelineChain();
-        FacilioContext context = TimelineViewUtil.getTimelineContext(chain, this.getTimelineRequest());
-        chain.execute();
-        setData(FacilioConstants.ContextNames.TIMELINE_DATA, context.get(FacilioConstants.ContextNames.TIMELINE_DATA));
-        return SUCCESS;
-    }
-
-    public String timelinePatch() throws Exception {
-
-        FacilioChain validationChain = ChainUtil.getTimelinePatchValidationChain();
-        FacilioContext validationContext = validationChain.getContext();
-        validationContext.put(FacilioConstants.ContextNames.CV_NAME, this.getViewName());
-        validationContext.put(FacilioConstants.ContextNames.MODULE_NAME, this.getModuleName());
-        validationContext.put(FacilioConstants.ContextNames.DATA, this.getData());
-        Object oldRecord = V3Util.getRecord(this.getModuleName(), this.getId(), this.getQueryParameters());
-        validationContext.put(FacilioConstants.ContextNames.OLD_RECORD_MAP, oldRecord);
-        validationChain.execute();
-
-        //removing permission restricted fields
-        Map<String, Object> data = this.getData();
-        if (data == null) {
-            data = new HashMap<>();
-        }
-        removeRestrictedFields(data, this.getModuleName(), true);
-
-        JSONObject result = V3Util.processAndUpdateSingleRecord(this.getModuleName(), this.getId(), data, this.getParams(), this.getQueryParameters(), this.getStateTransitionId(), this.getCustomButtonId(), this.getApprovalTransitionId(), this.getQrValue());
-
-        String message = "Record {%s} of module %s has been "
-                        + (validationContext.containsKey(FacilioConstants.ContextNames.TIMELINE_PATCHTYPE) ? validationContext.get(FacilioConstants.ContextNames.TIMELINE_PATCHTYPE): "updated")
-                        +" through TimelineView";
-        addAuditLog(Collections.singletonList((JSONObject)result.get(getModuleName())), getModuleName(), message,
-                AuditLogHandler.ActionType.UPDATE, true);
-
-        if(this.getTimelineRequest() != null) {
-            FacilioChain chain = ChainUtil.getTimelineChain();
-            FacilioContext context = TimelineViewUtil.getTimelineContext(chain, this.getTimelineRequest());
-            chain.execute();
-            setData(new JSONObject());
-            setData(FacilioConstants.ContextNames.TIMELINE_DATA, context.get(FacilioConstants.ContextNames.TIMELINE_DATA));
-        }
-
-        return SUCCESS;
-    }
-
-    public String timelineSelectiveList() throws Exception {
-        FacilioChain chain = ChainUtil.getTimelineListChain();
-        FacilioContext context = TimelineViewUtil.getTimelineContext(chain, this.getTimelineRequest(), true,
-                this.getPage(), this.getPerPage(), false);
-        chain.execute();
-        setData(timelineRequest.getModuleName(), context.get(FacilioConstants.ContextNames.TIMELINE_CUSTOMIZATONDATA_MAP));
-        return SUCCESS;
-    }
-
-    public String timelineUnScheduledList() throws Exception {
-        FacilioChain chain = ChainUtil.getTimelineListChain();
-        FacilioContext context = TimelineViewUtil.getTimelineContext(chain, this.getTimelineRequest(), true,
-                this.getPage(), this.getPerPage(), true);
-        chain.execute();
-        setData(timelineRequest.getModuleName(), context.get(FacilioConstants.ContextNames.TIMELINE_CUSTOMIZATONDATA_MAP));
-        return SUCCESS;
-    }
 }

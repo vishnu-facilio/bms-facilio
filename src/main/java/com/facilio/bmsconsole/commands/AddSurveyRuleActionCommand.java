@@ -51,6 +51,6 @@ public class AddSurveyRuleActionCommand extends FacilioCommand{
 	}
 
 	private void addSurveyRuleActions(List<ActionContext> actions , WorkflowRuleContext rule) throws Exception{
-		ActionAPI.addActions(actions,rule);
+		ActionAPI.addWorkflowRuleActionRel(rule.getId(), ActionAPI.addActions(actions, rule));
 	}
 }

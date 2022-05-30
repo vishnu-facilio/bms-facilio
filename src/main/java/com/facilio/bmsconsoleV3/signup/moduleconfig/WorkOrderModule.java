@@ -14,9 +14,4 @@ public class WorkOrderModule extends BaseModuleConfig {
     public void addData() throws Exception {
         addTriggers();
     }
-
-    @Override
-    public void migration() throws Exception {
-        addTriggers();
-    }
 }

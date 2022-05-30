@@ -11,18 +11,18 @@ public class SatisfactionSurveyTemplate extends Template{
 
 	private long qandaTemplateId;
 	private long assignedTo;
-	private Long expiryDate;
+	private Integer expiryDay;
 	private Boolean isRetakeAllowed;
-	private Integer retakeExpiryDuration; // in minutes
+	private Integer retakeExpiryDay;
 
 	@Override
 	public JSONObject getOriginalTemplate () throws Exception {
 		JSONObject jsonObject = new JSONObject ();
 		jsonObject.put ("qandaTemplateId",qandaTemplateId);
 		jsonObject.put ("assignedTo",assignedTo);
-		jsonObject.put ("expiryDate",getExpiryDate());
+		jsonObject.put ("expiryDay",getExpiryDay());
 		jsonObject.put("isRetake",getIsRetakeAllowed());
-		jsonObject.put("retakeExpiryDuration",getRetakeExpiryDuration());
+		jsonObject.put("retakeExpiryDay",getRetakeExpiryDay());
 
 		return jsonObject;
 	}

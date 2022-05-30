@@ -69,6 +69,7 @@ import com.facilio.scriptengine.systemfunctions.FacilioListFunction;
 import com.facilio.scriptengine.systemfunctions.FacilioMapFunction;
 import com.facilio.scriptengine.systemfunctions.FacilioMathFunction;
 import com.facilio.scriptengine.systemfunctions.FacilioNumberFunctions;
+import com.facilio.scriptengine.systemfunctions.FacilioRegexFunctions;
 import com.facilio.scriptengine.systemfunctions.FacilioStringFunction;
 import com.facilio.scriptengine.systemfunctions.FacilioSystemFunctionNameSpace;
 import com.facilio.scriptengine.systemfunctions.FacilioWorkflowFunctionInterface;
@@ -2230,6 +2231,9 @@ public class WorkflowUtil {
 				case EVENT:
 					facilioWorkflowFunction = FacilioEventFunctions.getFacilioEventFunction(functionName);
 					break;
+				case REGEX:
+					facilioWorkflowFunction = FacilioRegexFunctions.getFacilioRegexFunction(functionName);
+					break;
 			}
 		}
 		return facilioWorkflowFunction;
@@ -2354,6 +2358,9 @@ public class WorkflowUtil {
 					break;
 				case EVENT:
 					facilioWorkflowFunction = new ArrayList<>( FacilioEventFunctions.getAllFunctions().values());
+					break;
+				case REGEX:
+					facilioWorkflowFunction = new ArrayList<>( FacilioRegexFunctions.getAllFunctions().values());
 					break;
 			}
 		}

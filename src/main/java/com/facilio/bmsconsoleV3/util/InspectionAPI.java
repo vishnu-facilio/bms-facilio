@@ -82,14 +82,6 @@ public class InspectionAPI {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		GenericDeleteRecordBuilder delete = new GenericDeleteRecordBuilder()
-				.table(ModuleFactory.getBaseSchedulerModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", modBean.getModule(FacilioConstants.Inspection.INSPECTION_TEMPLATE).getModuleId()+"", NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition("RECORD_ID", "recordId", org.apache.commons.lang3.StringUtils.join(inspectionIds, ","), NumberOperators.EQUALS));
-		
-		
-		delete.delete();
-		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.Inspection.INSPECTION_RESPONSE));
 		
 		DeleteRecordBuilder<InspectionResponseContext> deleteBuilder1 = new DeleteRecordBuilder<InspectionResponseContext>()

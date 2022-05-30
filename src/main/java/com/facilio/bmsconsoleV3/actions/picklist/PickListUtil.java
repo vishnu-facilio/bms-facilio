@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 
-public class PickListUtil extends V3Action {
+public class PickListUtil {
 
     public static List<FieldOption<Long>> getSpecialModulesPickList(String moduleName, int page, int perPage, String search) throws Exception {
         Map<String,Object> paramsData = new HashMap<>();
