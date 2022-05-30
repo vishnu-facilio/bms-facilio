@@ -44,6 +44,13 @@ if [ -f $APP_HOME/logs/l4jaccesslog ]; then
 	aws s3 mv $APP_HOME/logs/l4jaccesslog.$today.gz  "s3://$logsBucket/$logDir/$servername/$server_type/$ipAddress/"
 fi
 
+if [ -f $APP_HOME/logs/accesslog.$todayDateOnly ]; then
+	mv $APP_HOME/logs/accesslog.$todayDateOnly $APP_HOME/logs/accesslog.$today 
+	gzip $APP_HOME/logs/accesslog.$today
+	aws s3 mv $APP_HOME/logs/accesslog.$today.gz  "s3://$logsBucket/$logDir/$servername/$server_type/$ipAddress/"
+fi
+
+
 if [ -f $APP_HOME/logs/serverlog.$todayDateOnly ]; then
 	mv $APP_HOME/logs/serverlog.$todayDateOnly $APP_HOME/logs/serverlog.$today 
 	gzip $APP_HOME/logs/serverlog.$today
