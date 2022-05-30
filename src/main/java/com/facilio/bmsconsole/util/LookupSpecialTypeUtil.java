@@ -16,7 +16,6 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.chain.FacilioContext;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.StringSystemEnumField;
-import javafx.application.Application;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
