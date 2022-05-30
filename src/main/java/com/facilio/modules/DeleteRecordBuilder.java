@@ -252,10 +252,13 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			prop.put(deletedByField.getName(), Collections.singletonMap("id", AccountUtil.getCurrentUser().getId()));
 		}
 		List<Long> ids = getIds();
-		Condition idCondition = CriteriaAPI.getCondition(FieldFactory.getIdField(module.getParentModule()),ids, NumberOperators.EQUALS);
-		updateBuilder.fields(fields)
-						.andCondition(idCondition);
-		return updateBuilder.updateViaMap(prop);
+		if(CollectionUtils.isNotEmpty(ids)) {
+			Condition idCondition = CriteriaAPI.getCondition(FieldFactory.getIdField(module.getParentModule()),ids, NumberOperators.EQUALS);
+			updateBuilder.fields(fields)
+							.andCondition(idCondition);
+			return updateBuilder.updateViaMap(prop);
+		}
+		return 0;
 	}
 	
 	private List<Long> getIds() throws Exception {
