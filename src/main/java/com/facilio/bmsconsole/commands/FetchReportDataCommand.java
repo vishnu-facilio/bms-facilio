@@ -1460,7 +1460,19 @@ public class FetchReportDataCommand extends FacilioCommand {
                 prevModule = poll;
             }
         } else if((Boolean) pivotField.get("isDataField") && !this.baseModule.getExtendedModuleIds().contains(module.getModuleId()) && module.getTypeEnum() != ModuleType.READING) {
-            FacilioField dataField = FieldFactory.getIdField(module).clone();
+            FacilioField dataField = null;
+
+            List<FacilioField> facilioFields = modBean.getAllFields(module.getName());
+            for (FacilioField field : facilioFields) {
+               if (field instanceof LookupField) {
+                   LookupField lookupField = (LookupField) field;
+                    if(baseModule.getExtendedModuleIds().contains(lookupField.getLookupModule().getModuleId())){
+                        dataField = field;
+                        break;
+                    }
+               }
+            }
+
 
             dataField.setTableAlias(getAndSetModuleAlias(dataField.getModule().getName()));
 
