@@ -5,7 +5,7 @@ import java.util.List;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 
 public class Permission {
-	public String getActionName() {
+	public  String getActionName() {
 		return actionName;
 	}
 

@@ -823,6 +823,93 @@ public static enum Approval_Permission implements PermissionInterface {
 		return permissionList;
 	}
 }
+	public static enum IndoorFloorPlan_Permission implements PermissionInterface {
+
+		CREATE (1,"Create"),
+		EDIT(2,"Edit"),
+		VIEW(4,"View"),
+		ASSIGN(8,"Assign"),
+		BOOKING(16,"Booking"),
+		VIEW_ASSIGNMENT(-1,"View Assignment"),
+
+		VIEW_ASSIGNMENT_ALL(32,"All", IndoorFloorPlan_Permission.VIEW_ASSIGNMENT, Permission_Child_Type.RADIO),
+		VIEW_ASSIGNMENT_DEPARTMENT(64,"Department",IndoorFloorPlan_Permission.VIEW_ASSIGNMENT, Permission_Child_Type.RADIO),
+		VIEW_ASSIGNMENT_OWN(128,"Own",IndoorFloorPlan_Permission.VIEW_ASSIGNMENT, Permission_Child_Type.RADIO),
+
+		VIEW_BOOKING(-1,"View Booking"),
+
+		VIEW_BOOKING_ALL(256,"All", IndoorFloorPlan_Permission.VIEW_BOOKING, Permission_Child_Type.RADIO),
+		VIEW_BOOKING_DEPARTMENT(512,"Department",IndoorFloorPlan_Permission.VIEW_BOOKING,Permission_Child_Type.RADIO),
+		VIEW_BOOKING_OWN(1024,"Own",IndoorFloorPlan_Permission.VIEW_BOOKING,Permission_Child_Type.RADIO),
+
+		;
+
+		long permission;
+		String permissionName;
+		String moduleName="indoorfloorplan";
+		String moduleNameDisplayName="IndoorFloorPlan";
+		PermissionInterface parent;
+		List<PermissionInterface> childs;
+		Permission_Child_Type childType;
+
+		IndoorFloorPlan_Permission(long permission,String permissionName) {
+			this.permission = permission;
+			this.permissionName = permissionName;
+		}
+
+		IndoorFloorPlan_Permission(long permission,String permissionName,IndoorFloorPlan_Permission parent,Permission_Child_Type childType) {
+			this.permission = permission;
+			this.permissionName = permissionName;
+			this.parent = parent;
+			this.childType = childType;
+		}
+
+		public long getPermission() {
+			return this.permission;
+		}
+		public String getPermissionName() {
+			return this.permissionName;
+		}
+		public String getModuleName() {
+			return this.moduleName;
+		}
+		public static String getModuleDisplayName() {
+			return "IndoorFloorPlan";
+		}
+		public PermissionInterface getParent() {
+			return parent;
+		}
+		public List<PermissionInterface> getChilds() {
+			return childs;
+		}
+		public Permission_Child_Type getChildType() {
+			return this.childType;
+		}
+		public void addChild(PermissionInterface child) {
+			childs = childs == null ? new ArrayList<>() : childs;
+			childs.add(child);
+		}
+
+		private static final List<PermissionInterface> permissionList = Collections.unmodifiableList(initTypeMap());
+
+		private static List<PermissionInterface> initTypeMap() {
+			List<PermissionInterface> typeMap = new ArrayList<PermissionInterface>();
+
+			for (PermissionInterface type : values()) {
+
+				if(type.getParent() != null) {
+					type.getParent().addChild(type);
+				}
+				else {
+					typeMap.add(type);
+				}
+			}
+			return typeMap;
+		}
+		public static List<PermissionInterface> getAllPermissions() {
+			return permissionList;
+		}
+	}
 
 
 	

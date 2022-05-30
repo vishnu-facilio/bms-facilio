@@ -1,15 +1,20 @@
 package com.facilio.bmsconsoleV3.commands.floorplan;
 
+import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.util.FormsAPI;
+import com.facilio.bmsconsoleV3.context.V3DepartmentContext;
+import com.facilio.bmsconsoleV3.context.V3EmployeeContext;
 import com.facilio.bmsconsoleV3.context.V3ResourceContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.BookingSlotsContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext;
 import com.facilio.bmsconsoleV3.context.floorplan.*;
 import com.facilio.bmsconsoleV3.util.V3FloorPlanAPI;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import lombok.extern.log4j.Log4j;
@@ -17,15 +22,44 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+
+import static com.facilio.bmsconsoleV3.util.V3FloorPlanAPI.checkViewAssignmentPermission;
+import static com.facilio.bmsconsoleV3.util.V3FloorPlanAPI.checkViewAssignmentUserPermission;
+
 @Log4j
 public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
+	public static JSONObject getMarkerPropertiesObject() throws Exception {
+		JSONObject markerObject = new JSONObject();
+		HttpServletRequest request = ServletActionContext.getRequest();
+		String currentTab = request.getHeader("X-Tab-Id");
+		long tabId = Long.valueOf(currentTab);
+		Role role = AccountUtil.getCurrentUser().getRole();
+		long ouid = AccountUtil.getCurrentAccount().getUser().getOuid();
+		String moduleName = "INDOOR_FLOOR_PLAN";
+		V3EmployeeContext employee = V3RecordAPI.getRecord(FacilioConstants.ContextNames.EMPLOYEE, ouid, V3EmployeeContext.class);
+		boolean hasAllAccess = PermissionUtil.userHasPermission(tabId, moduleName, "VIEW_BOOKING", role);
+		boolean hasDepartmentAccess = PermissionUtil.userHasPermission(tabId, moduleName, "VIEW_BOOKING_DEPARTMENT", role);
+		boolean hasOwnAccess = PermissionUtil.userHasPermission(tabId, moduleName, "VIEW_BOOKING_OWN", role);
+		markerObject.put("currentTab", currentTab);
+		markerObject.put("tabId",tabId);
+		markerObject.put("role", role);
+		markerObject.put("ouid",ouid );
+		markerObject.put("hasAllAccess", hasAllAccess);
+		markerObject.put("hasDepartmentAccess", hasDepartmentAccess);
+		markerObject.put("hasOwnAccess", hasOwnAccess);
+		markerObject.put("employee",employee);
+		return markerObject;
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -176,6 +210,8 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 			Map<Long, V3FacilityBookingContext> bookingMap =  (Map<Long, V3FacilityBookingContext>) context.get("bookingMap");
 
         V3IndoorFloorPlanPropertiesContext properties = new V3IndoorFloorPlanPropertiesContext();
+		V3EmployeeContext bookingemployeemarker = null;
+		V3DepartmentContext bookingdeskdepartment = null;
 	   
 	   if (record != null && markerModuleId != null) {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -295,6 +331,8 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 			   //
 
 			   properties.setMarkerId(iconName);
+			   bookingemployeemarker = desk.getEmployee();
+			   bookingdeskdepartment = desk.getDepartment();
 
 		   }
 		   else {
@@ -324,9 +362,77 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 			 
 
 	   }
-	return properties;
+	   return checkUserBookingPermission(properties, bookingemployeemarker, bookingdeskdepartment,context,record);
 	   
   }
+	public static V3IndoorFloorPlanPropertiesContext checkUserBookingPermission(V3IndoorFloorPlanPropertiesContext properties,V3EmployeeContext employeemarker, V3DepartmentContext deskdepartment,Context context,ModuleBaseWithCustomFields record) throws Exception {
+		Role role = AccountUtil.getCurrentUser().getRole();
+		if (role.isPrevileged()) {
+			return properties;
+		}
+		JSONObject mark = (JSONObject) getMarkerPropertiesObject();
+		V3EmployeeContext employee = (V3EmployeeContext)mark.get("employee");
+		V3DeskContext desk = (V3DeskContext) record;
+
+		Map<Long, List<BookingSlotsContext>> facilityBookingsMap = (Map<Long, List<BookingSlotsContext>>) context.get(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
+
+		Map<Long, V3FacilityBookingContext> bookingMap =  (Map<Long, V3FacilityBookingContext>) context.get("bookingMap");
+
+		try {
+			if (desk.getDeskType() == 1) {
+				checkViewAssignmentPermission(properties, employeemarker, deskdepartment, record);
+			} else {
+				if ((Boolean) mark.get("hasAllAccess")) {
+					//
+				} else if ((Boolean) mark.get("hasDepartmentAccess")) {
+					if (employeemarker != null) {
+						if (!(employeemarker.getDepartment().getId() == employee.getDepartment().getId() || deskdepartment.getId() == employee.getDepartment().getId())) {
+							hideMarkerProperties(properties);
+						}
+					} else {
+						if (deskdepartment.getId() != employee.getDepartment().getId()) {
+							hideMarkerProperties(properties);
+						}
+					}
+				} else if ((Boolean) mark.get("hasOwnAccess")) {
+					if (employeemarker != null) {
+						if (employeemarker.getId() != employee.getId()) {
+							hideMarkerProperties(properties);
+						}
+					} 
+					else{
+						if (!CollectionUtils.sizeIsEmpty(facilityBookingsMap)) {
+							List<BookingSlotsContext> facilityBooking = (List<BookingSlotsContext>) facilityBookingsMap.get(desk.getId());
+
+							facilityBooking.forEach(r -> {
+								if (r.getBooking() != null) {
+									V3FacilityBookingContext booking = bookingMap.get(r.getBooking().getId());
+									if (booking.getReservedFor() != null && booking.getReservedFor().getName() != null) {
+										if (booking.getReservedFor().getId() != employee.getId()) {
+											hideMarkerProperties(properties);
+										}
+									}
+								}
+							});
+						}
+					}
+				} else {
+					// hide all properties
+					hideMarkerProperties(properties);
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return properties;
+	}
+
+
+	public static void hideMarkerProperties(V3IndoorFloorPlanPropertiesContext properties) {
+		properties.setCenterLabel("");
+		properties.setSecondaryLabel("");
+	}
 	
 	private static String getSecondaryLabelFromBookingsSlots( List<BookingSlotsContext>  bookingSlots, Map<Long, V3FacilityBookingContext> bookingMap) {
 		
@@ -421,8 +527,57 @@ public static JSONObject getMarkerTooltip(ModuleBaseWithCustomFields record, V3M
 
 		   }
 		
-         return tooltip;
+         return checkBookingPermission(tooltip,record);
      }
+	public static JSONObject checkBookingPermission(JSONObject tooltip,ModuleBaseWithCustomFields record) throws Exception {
+		Role role = AccountUtil.getCurrentUser().getRole();
+		if (role.isPrevileged()) {
+			return tooltip;
+		}
+		V3DeskContext desk = (V3DeskContext) record;
+		JSONObject marktooltip = (JSONObject) getMarkerPropertiesObject();
+		V3EmployeeContext employee = (V3EmployeeContext) marktooltip.get("employee");
+		try {
+			if (desk.getDeskType() == 1) {
+				checkViewAssignmentUserPermission(tooltip,record);
+			}
+			else {
+				if ((Boolean) marktooltip.get("hasAllAccess")) {
+					//
+				} 
+				else if ((Boolean) marktooltip.get("hasDepartmentAccess")) {
+					if (desk.getEmployee() != null) {
+						if (!(desk.getEmployee().getDepartment().getId() == employee.getDepartment().getId() || desk.getDepartment().getId() == employee.getDepartment().getId())) {
+							hideTooltipData(tooltip);
+						}
+					} else {
+						if (!(desk.getDepartment().getId() == employee.getDepartment().getId()) ){
+							hideTooltipData(tooltip);
+						}
+					}
+				} else if ((Boolean) marktooltip.get("hasOwnAccess")) {
+					if (desk.getEmployee() != null) {
+						if (desk.getEmployee().getId() != employee.getId()) {
+							hideTooltipData(tooltip);
+						}
+					}else {
+						hideTooltipData(tooltip);
+					}
+				} else {
+					// hide all properties
+					hideTooltipData(tooltip);
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return tooltip;
+	}
+	public static void hideTooltipData(JSONObject tooltip){
+		tooltip.put("content", "");
+	}
  
 	public static JSONObject getZoneTooltipData(V3MarkerdZonesContext zone, Context context) throws Exception {
 

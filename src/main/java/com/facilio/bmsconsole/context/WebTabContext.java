@@ -120,7 +120,9 @@ public class WebTabContext implements Serializable {
         SETTINGS("Settings",true),
         TIMELINE("Timeline", false),
         PORTAL_OVERVIEW("Portal Overview", false),
-        NOTIFICATION("Notification", false);
+        NOTIFICATION("Notification", false),
+        INDOOR_FLOORPLAN("Indoor Floorplan", false);
+
         ;
 
         private String name;

@@ -105,7 +105,8 @@ public class ModuleGroupFactory {
 		
 		modulePermissionWrappers.add(new ModulePermissionWrapper(1,PermissionFactory.WorkOrder_Permission.getModuleDisplayName(),PermissionFactory.WorkOrder_Permission.getAllPermissions()));
 		modulePermissionWrappers.add(new ModulePermissionWrapper(1,PermissionFactory.Approval_Permission.getModuleDisplayName(),PermissionFactory.Approval_Permission.getAllPermissions()));
-		
+		modulePermissionWrappers.add(new ModulePermissionWrapper(1,PermissionFactory.IndoorFloorPlan_Permission.getModuleDisplayName(),PermissionFactory.IndoorFloorPlan_Permission.getAllPermissions()));
+
 		return modulePermissionWrappers;
 	}
 }
