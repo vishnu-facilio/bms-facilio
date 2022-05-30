@@ -5,12 +5,14 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.CloudAgentUtil;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.service.FacilioService;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -27,6 +29,22 @@ public class UpdateJobActiveStatusCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         List<Long> agentIds = (List<Long>) context.get(AgentConstants.AGENT_IDS);
         List<FacilioAgent> agentList = AgentApiV2.getAgents(agentIds);
+        context.put("agentList",agentList);
+        FacilioService.runAsService(FacilioConstants.Services.JOB_SERVICE,() -> updateActiveStatus(context));
+
+        List<String> agentService = new ArrayList<>();
+        if(context.containsKey("agentServiceAgents")) {
+            agentService = (List<String>) context.get("agentServiceAgents");
+        }
+        if(!agentService.isEmpty()) {
+            Boolean isActiveUpdateValue = (Boolean) context.get(AgentConstants.IS_ACTIVE_UPDATE_VALUE);
+            CloudAgentUtil.toggleJob(agentService, isActiveUpdateValue);
+        }
+        return false;
+    }
+
+    private void updateActiveStatus(Context context) throws Exception {
+        List<FacilioAgent> agentList = (List<FacilioAgent>) context.get("agentList");
         List<String> agentService = new ArrayList<>();
         Boolean isActiveUpdateValue = (Boolean) context.get(AgentConstants.IS_ACTIVE_UPDATE_VALUE);
 
@@ -65,8 +83,7 @@ public class UpdateJobActiveStatusCommand extends FacilioCommand {
             LOGGER.info("Number of rows updated: "+rows);
         }
         if(!agentService.isEmpty()){
-            CloudAgentUtil.toggleJob(agentService, isActiveUpdateValue);
+            context.put("agentServiceAgents",agentService);
         }
-        return false;
     }
 }
