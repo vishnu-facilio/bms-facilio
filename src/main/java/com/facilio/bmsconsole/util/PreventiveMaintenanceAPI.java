@@ -3088,6 +3088,7 @@ public class PreventiveMaintenanceAPI {
 		if (conn != null) {
 			deleteRecordBuilder.useExternalConnection(conn);
 		}
+		deleteRecordBuilder.skipModuleCriteria();
 		deleteRecordBuilder.markAsDelete();
 	}
 
