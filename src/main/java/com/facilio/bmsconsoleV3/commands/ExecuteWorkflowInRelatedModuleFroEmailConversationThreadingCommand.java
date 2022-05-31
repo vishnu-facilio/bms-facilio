@@ -53,10 +53,21 @@ public class ExecuteWorkflowInRelatedModuleFroEmailConversationThreadingCommand 
 		
 		if(conversationEventype == EventType.CREATE) {
 			if(emailConversation.getMessageTypeEnum() == Message_Type.REPLY) {
-				returnEventType = EventType.EMAIL_CONVERSATION_ON_REPLY_RECIEVED;
+				if(emailConversation.getFromType() == EmailConversationThreadingContext.From_Type.ADMIN.getIndex()) {
+					returnEventType = EventType.EMAIL_CONVERSATION_ON_ADMIN_REPLY;
+				}
+				else if(emailConversation.getFromType() == EmailConversationThreadingContext.From_Type.CLIENT.getIndex()) {
+					returnEventType = EventType.EMAIL_CONVERSATION_ON_REPLY_RECIEVED;
+				}
 			}
 			else if(emailConversation.getMessageTypeEnum() == Message_Type.PRIVATE_NOTE || emailConversation.getMessageTypeEnum() == Message_Type.PUBLIC_NOTE) {
-				returnEventType = EventType.EMAIL_CONVERSATION_ON_NOTE_ADDITION;
+				
+				if(emailConversation.getFromType() == EmailConversationThreadingContext.From_Type.ADMIN.getIndex()) {
+					returnEventType = EventType.EMAIL_CONVERSATION_ON_ADMIN_NOTE_ADDITION;
+				}
+				else if(emailConversation.getFromType() == EmailConversationThreadingContext.From_Type.CLIENT.getIndex()) {
+					returnEventType = EventType.EMAIL_CONVERSATION_ON_NOTE_ADDITION;
+				}
 			}
 		}
 		else if (conversationEventype == EventType.EDIT) {

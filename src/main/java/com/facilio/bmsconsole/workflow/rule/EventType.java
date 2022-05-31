@@ -296,7 +296,19 @@ public enum EventType {
 		public String getMessage(JSONObject json) {
 			return null;
 		}
-	}
+	},
+	EMAIL_CONVERSATION_ON_ADMIN_REPLY(68719476736l) {
+		@Override
+		public String getMessage(JSONObject json) {
+			return null;
+		}
+	},
+	EMAIL_CONVERSATION_ON_ADMIN_NOTE_ADDITION(137438953472l) {
+		@Override
+		public String getMessage(JSONObject json) {
+			return null;
+		}
+	},
 	;
 
     private long eventType;
