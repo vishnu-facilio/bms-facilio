@@ -6404,6 +6404,7 @@ public class TransactionChainFactory {
 	public static FacilioChain updateJobActiveStatusChain(){
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new UpdateJobActiveStatusCommand());
+		chain.addCommand(new UpdateAgentConnectedStatusCommand());
 		return chain;
 	}
 
