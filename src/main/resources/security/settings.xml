@@ -697,4 +697,18 @@
             </property>
         </requestbody>
     </request>
+
+    <request path="/api/v3/internal/dc/getDevicePasscode">
+        <urlparams>
+            <property name="deviceCode" type="string" mandatory="true" maxLength="10"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/deviceclient/validatecode">
+        <urlparams>
+            <property name="code" type="string" mandatory="true" maxLength="10"/>
+        </urlparams>
+    </request>
+
+
 </config>
