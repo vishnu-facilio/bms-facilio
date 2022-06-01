@@ -36,18 +36,20 @@ public class UpdatePeoplePrimaryContactCommandV3 extends FacilioCommand {
                         V3PeopleAPI.rollUpModulePrimarycontactFields(parentId, FacilioConstants.ContextNames.TENANT, people.getName(), people.getEmail(), people.getPhone());
                     }
                     else{
-                        List<V3TenantContactContext> tenantContacts = V3PeopleAPI.getTenantContacts(parentId, false, false);
-                        if(CollectionUtils.isNotEmpty(tenantContacts)){
-                            if(tenantContacts.size() <= 1) {
-                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Cannot mark contact as non primary");
-                            }
-                            else{
-                                for(V3TenantContactContext tenantContact : tenantContacts){
-                                    if(tenantContact.getId() != people.getId()){
-                                        V3PeopleAPI.unMarkPrimaryContact(tenantContact, parentId);
-                                        V3PeopleAPI.markPrimaryContact(tenantContact);
-                                        V3PeopleAPI.rollUpModulePrimarycontactFields(parentId, FacilioConstants.ContextNames.TENANT, tenantContact.getName(), tenantContact.getEmail(), tenantContact.getPhone());
-                                        break;
+                        List<V3TenantContactContext> primaryContact = V3PeopleAPI.getTenantContacts(parentId, true,false);
+                        if(CollectionUtils.isEmpty(primaryContact)) {
+                            List<V3TenantContactContext> tenantContacts = V3PeopleAPI.getTenantContacts(parentId, false, false);
+                            if (CollectionUtils.isNotEmpty(tenantContacts)) {
+                                if (tenantContacts.size() <= 1) {
+                                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Cannot mark contact as non primary");
+                                } else {
+                                    for (V3TenantContactContext tenantContact : tenantContacts) {
+                                        if (tenantContact.getId() != people.getId()) {
+                                            V3PeopleAPI.unMarkPrimaryContact(tenantContact, parentId);
+                                            V3PeopleAPI.markPrimaryContact(tenantContact);
+                                            V3PeopleAPI.rollUpModulePrimarycontactFields(parentId, FacilioConstants.ContextNames.TENANT, tenantContact.getName(), tenantContact.getEmail(), tenantContact.getPhone());
+                                            break;
+                                        }
                                     }
                                 }
                             }
@@ -61,18 +63,20 @@ public class UpdatePeoplePrimaryContactCommandV3 extends FacilioCommand {
                         V3PeopleAPI.rollUpModulePrimarycontactFields(parentId, FacilioConstants.ContextNames.VENDORS, people.getName(), people.getEmail(), people.getPhone());
                     }
                     else{
-                        List<V3VendorContactContext> vendorContacts = V3PeopleAPI.getVendorContacts(parentId, false);
-                        if(CollectionUtils.isNotEmpty(vendorContacts)){
-                            if(vendorContacts.size() <= 1) {
-                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Cannot mark contact as non primary");
-                            }
-                            else{
-                                for(V3VendorContactContext vendorContact : vendorContacts){
-                                    if(vendorContact.getId() != people.getId()){
-                                        V3PeopleAPI.unMarkPrimaryContact(vendorContact, parentId);
-                                        V3PeopleAPI.markPrimaryContact(vendorContact);
-                                        V3PeopleAPI.rollUpModulePrimarycontactFields(parentId, FacilioConstants.ContextNames.VENDORS, vendorContact.getName(), vendorContact.getEmail(), vendorContact.getPhone());
-                                        break;
+                        List<V3VendorContactContext> primaryContact = V3PeopleAPI.getVendorContacts(parentId, true);
+                        if(CollectionUtils.isEmpty(primaryContact)) {
+                            List<V3VendorContactContext> vendorContacts = V3PeopleAPI.getVendorContacts(parentId, false);
+                            if (CollectionUtils.isNotEmpty(vendorContacts)) {
+                                if (vendorContacts.size() <= 1) {
+                                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Cannot mark contact as non primary");
+                                } else {
+                                    for (V3VendorContactContext vendorContact : vendorContacts) {
+                                        if (vendorContact.getId() != people.getId()) {
+                                            V3PeopleAPI.unMarkPrimaryContact(vendorContact, parentId);
+                                            V3PeopleAPI.markPrimaryContact(vendorContact);
+                                            V3PeopleAPI.rollUpModulePrimarycontactFields(parentId, FacilioConstants.ContextNames.VENDORS, vendorContact.getName(), vendorContact.getEmail(), vendorContact.getPhone());
+                                            break;
+                                        }
                                     }
                                 }
                             }
