@@ -39,6 +39,9 @@ import com.facilio.util.AckUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
+import io.opentelemetry.api.common.AttributeKey;
+import io.opentelemetry.api.common.Attributes;
+import io.opentelemetry.api.trace.Span;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -71,11 +74,6 @@ public class DataProcessorV2
     public boolean processRecord(JSONObject payload, String partitionKey, EventUtil eventUtil, FacilioAgent agent) {
         boolean processStatus = false;
         try {
-            if (payload.containsKey("clearAgentCache")) {
-                agentUtil.getAgentMap().clear();
-                LOGGER.info(" agent cache cleared ->" + agentUtil.getAgentMap());
-                return true;
-            }
 
 
             Long timeStamp = System.currentTimeMillis();
@@ -122,14 +120,16 @@ public class DataProcessorV2
                     processStatus = processDevicePoints(agent, payload);
                     break;
                 case ACK:
-                    processStatus = processAck(agent,payload);
+                    processStatus = processAck(agent, payload);
                     break;
                 case TIMESERIES:
                     JSONObject timeSeriesPayload = (JSONObject) payload.clone();
-                    Controller timeseriesController = getCachedControllerUsingPayload(payload,agent.getId());
+                    Controller timeseriesController = getCachedControllerUsingPayload(payload, agent.getId());
+
+                    Span.current().setAllAttributes(Attributes.of(AttributeKey.stringKey("controller-name"), timeseriesController.getName()));
                     if (!controllerIdVsLastTimeSeriesTimeStamp.containsKey(timeseriesController.getId()) ||
                             !controllerIdVsLastTimeSeriesTimeStamp.get(timeseriesController.getId()).equals(timeStamp) ||
-                            agent.getAgentType()== AgentType.WATTSENSE.getKey()) {
+                            agent.getAgentType() == AgentType.WATTSENSE.getKey()) {
 
                         controllerIdVsLastTimeSeriesTimeStamp.put(timeseriesController.getId(), timeStamp);
 

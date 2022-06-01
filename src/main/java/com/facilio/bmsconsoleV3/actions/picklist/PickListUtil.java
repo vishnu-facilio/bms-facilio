@@ -23,11 +23,17 @@ import java.util.stream.Collectors;
 public class PickListUtil {
 
     public static List<FieldOption<Long>> getSpecialModulesPickList(String moduleName, int page, int perPage, String search) throws Exception {
+        return getSpecialModulesPickList(moduleName,page,perPage,search,null);
+    }
+    public static List<FieldOption<Long>> getSpecialModulesPickList(String moduleName, int page, int perPage, String search,String filters) throws Exception {
         Map<String,Object> paramsData = new HashMap<>();
         paramsData.put("page", page);
         paramsData.put("perPage", perPage);
         paramsData.put("search" , search);
-
+        if (StringUtils.isNotEmpty(filters)) {
+            JSONObject filter = FacilioUtil.parseJson(filters);
+            paramsData.put("filters",filter);
+        }
         return LookupSpecialTypeUtil.getNewPickList(moduleName, paramsData);
     }
 

@@ -7,7 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.commands.SchedulePMWorkOrderGenerationCommand;
+import com.facilio.fw.FacilioException;
 import com.google.api.client.json.Json;
+import io.opentelemetry.api.common.AttributeKey;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.common.Attributes;
+import io.opentelemetry.extension.annotations.WithSpan;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -133,6 +139,8 @@ public class DataProcessorUtil {
     public boolean processRecord(FacilioRecord record) {
         long recordId = record.getId();
         int partitionId = record.getPartition();
+        Attributes entryEvent = Attributes.of(AttributeKey.longKey("recordId"), recordId, AttributeKey.longKey("partitionId"), (long) partitionId);
+        Span.current().addEvent("Record Entry", entryEvent);
         long agentMsgId = -1L;
         long start = System.currentTimeMillis();
         try {
@@ -167,23 +175,26 @@ public class DataProcessorUtil {
             if (ruleList != null) {
                 eventRules = ruleList;
             }
+            com.facilio.agentv2.FacilioAgent agentV2;
             int processorVersion = 0;
             try {
-                if(payLoad.containsKey(AgentConstants.AGENT) && ( payLoad.get(AgentConstants.AGENT) != null ) ){
-                    com.facilio.agentv2.FacilioAgent agentV2 = AgentApiV2.getAgent((String) payLoad.get(AgentConstants.AGENT));
-                    if(agentV2 != null){
-                    	if(isStage) {
-                    		Boolean agentStatus = agentV2.getIsDisable();
-                    		if(payLoad.containsKey(AgentConstants.PUBLISH_TYPE)&& (PublishType.agentAction.getKey() == (Long) payLoad.get(AgentConstants.PUBLISH_TYPE))) {
-                    			makeEnableOrDisable(recordId, payLoad, agentV2);
-                    			return false;
-                    		}
-                    		if (agentStatus != null && agentStatus) {
-                    			return false;
-                    		}  
+                if(payLoad.containsKey(AgentConstants.AGENT) && ( payLoad.get(AgentConstants.AGENT) != null ) ) {
+                    String agentName = (String) payLoad.get(AgentConstants.AGENT);
+                    agentV2 = AgentApiV2.getAgent(agentName);
+                    if (agentV2 != null) {
+                        if (isStage) {
+                            Boolean agentStatus = agentV2.getIsDisable();
+                            if (payLoad.containsKey(AgentConstants.PUBLISH_TYPE) && (PublishType.agentAction.getKey() == (Long) payLoad.get(AgentConstants.PUBLISH_TYPE))) {
+                                makeEnableOrDisable(recordId, payLoad, agentV2);
+                                return false;
+                            }
+                            if (agentStatus != null && agentStatus) {
+                                return false;
+                            }
                     	}
                     	agentMsgId = agentV2.getId();
-                    	processorVersion = agentV2.getProcessorVersion();
+                        processorVersion = agentV2.getProcessorVersion();
+                        Span.current().setAllAttributes(Attributes.of(AttributeKey.stringKey("agent"), agentV2.getName()));
                     }
                     LOGGER.debug(" checking agent version for agent "+payLoad.get(AgentConstants.AGENT)+"  version "+processorVersion);
                 }else {
@@ -196,6 +207,7 @@ public class DataProcessorUtil {
             switch (processorVersion) {
                 case 1:
 //                    LOGGER.info("PreProcessor for V1 to V2 data");
+                    Span.current().setAllAttributes(Attributes.of(AttributeKey.stringKey("processor"), "V1"));
                     AgentMessagePreProcessor preProcessor = new V1ToV2PreProcessor();
                     List<JSONObject> messages = preProcessor.preProcess(payLoad);
                     boolean isEveryMessageProcessed = true;
@@ -206,137 +218,12 @@ public class DataProcessorUtil {
                     return isEveryMessageProcessed;
                 case 2:
 //                    LOGGER.info(" new processor data ");
+                    Span.current().setAllAttributes(Attributes.of(AttributeKey.stringKey("processor"), "V2"));
                     return sendToProcessorV2(payLoad, recordId, record.getPartitionKey(), partitionId);
-                case 3:
-                    AgentMessagePreProcessor wattSensePreProcessor = new WattsenseToV2();
-                    List<JSONObject> msgs = wattSensePreProcessor.preProcess(payLoad);
-                    isEveryMessageProcessed = true;
-                    for (JSONObject msg :
-                            msgs) {
-                        isEveryMessageProcessed = isEveryMessageProcessed && sendToProcessorV2(msg, recordId, record.getPartitionKey(), partitionId);
-                    }
-                    return isEveryMessageProcessed;
                 default:
-//                    LOGGER.info(" old processor data ");
-                    // will divert to another class in future.
+                    Span.current().setAllAttributes(Attributes.of(AttributeKey.stringKey("processor"), "Default"));
+                    processOldAgentData(record, recordId, payLoad);
             }
-
-
-           /* try {
-                if (payLoad.containsKey(AgentConstants.VERSION)) {
-                    Object version = payLoad.get(AgentConstants.VERSION);
-                    if (version instanceof String) {
-                        if (("2#".equalsIgnoreCase((String) version))) {
-
-                        } else {
-                            LOGGER.info(" version not V2 -> " + version);
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                LOGGER.info("Exception occurred while processing new agent's message", e);
-            }*/
-
-            String dataType = PublishType.event.getValue();
-            if (payLoad.containsKey(EventUtil.DATA_TYPE)) {
-                dataType = (String) payLoad.remove(EventUtil.DATA_TYPE);
-            }
-
-            // Temp fix - bug: Publish_Type wrongly set to "agents"
-            if ("agents".equals(dataType)) {
-                dataType = PublishType.agent.getValue();
-            }
-            //Temp fix  - bug: Publish_Type wrongly set to "agents"
-            PublishType publishType = PublishType.valueOf(dataType);
-            String agentName = orgDomainName.trim(); // trim missing
-            if (payLoad.containsKey(PublishType.agent.getValue())) {
-                agentName = (String) payLoad.get(PublishType.agent.getValue()); // trim missing
-            }
-
-            String deviceId = orgDomainName;
-            if (payLoad.containsKey(AgentKeys.DEVICE_ID)) {
-                deviceId = (String) payLoad.remove(AgentKeys.DEVICE_ID);
-            }
-
-            long lastMessageReceivedTime = System.currentTimeMillis();
-            if (payLoad.containsKey(AgentKeys.TIMESTAMP)) {
-                Object lastTime = payLoad.get(AgentKeys.TIMESTAMP);
-                if (payLoad.containsKey("actual_timestamp")){
-                    lastTime = payLoad.get("actual_timestamp");
-                }
-                lastMessageReceivedTime = lastTime instanceof Long ? (Long) lastTime : Long.parseLong(lastTime.toString());
-            }
-
-            FacilioAgent agent = agentUtil.getFacilioAgent(agentName, null);
-
-            if (agent == null) {
-                agent = getFacilioAgent(agentName);
-                long agentId = agentUtil.addAgent(agent);
-                if (agentId < 1L) {
-                    LOGGER.info(" Error in AgentId generation ");
-                    return false;
-                }
-                if(agentMsgId == -1L) {
-                	agentMsgId = agent.getId();
-                }
-                agent.setId(agentId);
-            }
-
-            // LOGGER.info("Agent ID : " + agent.getId());
-            agentUtil.addAgentMetrics(Math.toIntExact(record.getSize()), agent.getId(), publishType.getKey()); //TODO make size long
-
-
-            long i = 0;
-            HashMap<String, Long> publishTypeVsLastMessageTime = deviceVsPublishTypeVsMessageTime.getOrDefault(deviceId, new HashMap<>());
-            long deviceLastMessageTime = publishTypeVsLastMessageTime.getOrDefault(dataType, 0L);
-
-            if (deviceLastMessageTime != lastMessageReceivedTime) {
-                switch (publishType) {
-                	case custom:
-                		
-                		break;
-                    case timeseries:
-                        processTimeSeries(record, payLoad, true); //NC
-                        // updateDeviceTable(record.getPartitionKey());
-                        break;
-                    case cov:
-                        processTimeSeries(record, payLoad, false);//NC
-                        // updateDeviceTable(record.getPartitionKey());
-                        break;
-                    case agent:
-                        i = agentUtil.processAgent(payLoad, agentName);
-                        processLog(payLoad, agent.getId());
-                        break;
-                    case devicepoints:
-                        devicePointsUtil.processDevicePoints(payLoad, orgId, agent.getId());
-                        break;
-                    case ack:
-                        ackUtil.processAck(payLoad, agentName, orgId);
-                        processLog(payLoad, agent.getId());
-                        break;
-                    case event:
-                        boolean alarmCreated = eventUtil.processEvents(record.getTimeStamp(), payLoad, record.getPartitionKey(), orgId, eventRules);
-                        if (alarmCreated) {
-
-                            /*processRecordsInput.getCheckpointer().checkpoint(record);
-                             */
-                        }
-                        break;
-
-                }
-
-                publishTypeVsLastMessageTime.put(dataType, lastMessageReceivedTime);
-                deviceVsPublishTypeVsMessageTime.put(deviceId, publishTypeVsLastMessageTime);
-            } else {
-                LOGGER.info("Duplicate message for device " + deviceId + " and type " + dataType + " data : " + record.getData());
-            }
-            if (i == 0) {
-                FacilioChain updateAgentTable = TransactionChainFactory.updateAgentTable();
-                FacilioContext context = updateAgentTable.getContext();
-                context.put(AgentConstants.ID,agent.getId());
-                updateAgentTable.execute(context);
-            }
-            markMessageProcessed(recordId);
         } catch (Exception e) {
             LOGGER.info("Exception while processing record",e);
             try {
@@ -402,8 +289,8 @@ public class DataProcessorUtil {
                 	prop.put(AgentConstants.PUBLIC_DELETE_QUERIES_TIME, account.getPublicDeleteQueriesTime());
                 	prop.put(AgentConstants.PUBLIC_REDIS_GET_TIME, account.getPublicRedisGetTime());
                 	prop.put(AgentConstants.PUBLIC_REDIS_PUT_TIME, account.getPublicRedisPutTime());
-                	prop.put(AgentConstants.PUBLIC_REDIS_DELETE_TIME, account.getPublicRedisDeleteTime());
-                	prop.put(AgentConstants.AGENT_ID, agentMsgId);
+                prop.put(AgentConstants.PUBLIC_REDIS_DELETE_TIME, account.getPublicRedisDeleteTime());
+                prop.put(AgentConstants.AGENT_ID, agentMsgId);
 //                	updateAgentMsg(prop,recordId);
             } catch (Exception e) {
                 LOGGER.error("record: " + recordId);
@@ -412,17 +299,109 @@ public class DataProcessorUtil {
         // LOGGER.info(" processing successful");
         return true;
     }
-	private void makeEnableOrDisable(long recordId, JSONObject payLoad, com.facilio.agentv2.FacilioAgent agentV2)
-			throws SQLException, Exception {
-		LOGGER.info("Agent Control called -- Data ProcessorUtil -- agent :"+ payLoad.get(AgentConstants.AGENT));
-		boolean disable =  (boolean) payLoad.get(AgentConstants.MESSAGE);
-		AgentControl object = new AgentControl();
-		if(disable) {
-				 object.setAction(disable);
-				 object.setAgentId(agentV2.getId());
-				 object.setOrgId(orgId);
-				 if(agentV2 != null) {
-					 object.updateAgent(recordId);
+
+    private void processOldAgentData(FacilioRecord record, long recordId, JSONObject payLoad) throws Exception {
+        String dataType = PublishType.event.getValue();
+
+        // Temp fix - bug: Publish_Type wrongly set to "agents"
+        if ("agents".equals(dataType)) {
+            dataType = PublishType.agent.getValue();
+        }
+        //Temp fix  - bug: Publish_Type wrongly set to "agents"
+        PublishType publishType = PublishType.valueOf(dataType);
+        String agentName = orgDomainName.trim(); // trim missing
+        if (payLoad.containsKey(PublishType.agent.getValue())) {
+            agentName = (String) payLoad.get(PublishType.agent.getValue()); // trim missing
+        }
+
+        String deviceId = orgDomainName;
+        if (payLoad.containsKey(AgentKeys.DEVICE_ID)) {
+            deviceId = (String) payLoad.remove(AgentKeys.DEVICE_ID);
+        }
+
+        long lastMessageReceivedTime = System.currentTimeMillis();
+        if (payLoad.containsKey(AgentKeys.TIMESTAMP)) {
+            Object lastTime = payLoad.get(AgentKeys.TIMESTAMP);
+            if (payLoad.containsKey("actual_timestamp")) {
+                lastTime = payLoad.get("actual_timestamp");
+            }
+            lastMessageReceivedTime = lastTime instanceof Long ? (Long) lastTime : Long.parseLong(lastTime.toString());
+        }
+
+        FacilioAgent agent = agentUtil.getFacilioAgent(agentName, null);
+        if (agent == null) {
+            throw new FacilioException("Agent Not Found");
+        }
+        Span.current().setAllAttributes(Attributes.of(AttributeKey.stringKey("old-agent"), agent.getName()));
+
+        // LOGGER.info("Agent ID : " + agent.getId());
+        agentUtil.addAgentMetrics(Math.toIntExact(record.getSize()), agent.getId(), publishType.getKey()); //TODO make size long
+
+
+        long i = 0;
+        HashMap<String, Long> publishTypeVsLastMessageTime = deviceVsPublishTypeVsMessageTime.getOrDefault(deviceId, new HashMap<>());
+        long deviceLastMessageTime = publishTypeVsLastMessageTime.getOrDefault(dataType, 0L);
+
+        if (deviceLastMessageTime != lastMessageReceivedTime) {
+            switch (publishType) {
+                case custom:
+
+                    break;
+                case timeseries:
+                    processTimeSeries(record, payLoad, true); //NC
+                    // updateDeviceTable(record.getPartitionKey());
+                    break;
+                case cov:
+                    processTimeSeries(record, payLoad, false);//NC
+                    // updateDeviceTable(record.getPartitionKey());
+                    break;
+                case agent:
+                    i = agentUtil.processAgent(payLoad, agentName);
+                    processLog(payLoad, agent.getId());
+                    break;
+                case devicepoints:
+                    devicePointsUtil.processDevicePoints(payLoad, orgId, agent.getId());
+                    break;
+                case ack:
+                    ackUtil.processAck(payLoad, agentName, orgId);
+                    processLog(payLoad, agent.getId());
+                    break;
+                case event:
+                    boolean alarmCreated = eventUtil.processEvents(record.getTimeStamp(), payLoad, record.getPartitionKey(), orgId, eventRules);
+                    if (alarmCreated) {
+
+                        /*processRecordsInput.getCheckpointer().checkpoint(record);
+                         */
+                    }
+                    break;
+
+            }
+
+            publishTypeVsLastMessageTime.put(dataType, lastMessageReceivedTime);
+            deviceVsPublishTypeVsMessageTime.put(deviceId, publishTypeVsLastMessageTime);
+        } else {
+            LOGGER.info("Duplicate message for device " + deviceId + " and type " + dataType + " data : " + record.getData());
+        }
+        if (i == 0) {
+            FacilioChain updateAgentTable = TransactionChainFactory.updateAgentTable();
+            FacilioContext context = updateAgentTable.getContext();
+            context.put(AgentConstants.ID, agent.getId());
+            updateAgentTable.execute(context);
+        }
+        markMessageProcessed(recordId);
+    }
+
+    private void makeEnableOrDisable(long recordId, JSONObject payLoad, com.facilio.agentv2.FacilioAgent agentV2)
+            throws SQLException, Exception {
+        LOGGER.info("Agent Control called -- Data ProcessorUtil -- agent :" + payLoad.get(AgentConstants.AGENT));
+        boolean disable = (boolean) payLoad.get(AgentConstants.MESSAGE);
+        AgentControl object = new AgentControl();
+        if (disable) {
+            object.setAction(disable);
+            object.setAgentId(agentV2.getId());
+            object.setOrgId(orgId);
+            if (agentV2 != null) {
+                object.updateAgent(recordId);
 				 }
 				FacilioService.runAsService(FacilioConstants.Services.AGENT_SERVICE,()-> object.insertAgentDisable(recordId));
 		 }else{
@@ -446,7 +425,7 @@ public class DataProcessorUtil {
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(fields).get(AgentKeys.RECORD_ID), String.valueOf(recordId), NumberOperators.EQUALS))
 				.update(prop);
 		if(count == 0) {
-			LOGGER.error("Cann't able to update log count in Agent Message Table ");
+            LOGGER.error("Can't update log count in Agent Message Table ");
 		}
     }
 
@@ -457,18 +436,7 @@ public class DataProcessorUtil {
                 com.facilio.agentv2.FacilioAgent agent = getFacilioAgentV2FromPayload(payload);
                 //preprocess the JSON data if necessary
                 if (agent.getTransformWorkflowId() > 0) {
-                    WorkflowContext transformWorkflow = WorkflowUtil.getWorkflowContext(agent.getTransformWorkflowId());
-                    FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
-                    FacilioContext context = chain.getContext();
-                    context.put(WorkflowV2Util.WORKFLOW_CONTEXT, transformWorkflow);
-                    List params = new ArrayList<>();
-                    params.add(payload);
-                    params.add(FieldUtil.getAsProperties(agent));
-                    context.put(WorkflowV2Util.WORKFLOW_PARAMS, params);
-                    long workflowStartTime = System.currentTimeMillis();
-                    chain.execute();
-                    List<Map<String, Object>> resultsFromPreProcessor = (List<Map<String, Object>>) transformWorkflow.getReturnValue();
-                    LOGGER.debug("Time taken to transform payload : " + (System.currentTimeMillis() - workflowStartTime) + " ms");
+                    List<Map<String, Object>> resultsFromPreProcessor = getResultsFromPreProcessor(payload, agent);
                     for (Map<String, Object> item : resultsFromPreProcessor) {
                         payload = (JSONObject) new JSONParser().parse(JSONObject.toJSONString(item));
                         payloads.add(payload);
@@ -492,6 +460,23 @@ public class DataProcessorUtil {
             LOGGER.info(" DATAPROCESSOR object is null ");
             return false;
         }
+    }
+
+    @WithSpan("AgentScriptPreProcessor")
+    private List<Map<String, Object>> getResultsFromPreProcessor(JSONObject payload, com.facilio.agentv2.FacilioAgent agent) throws Exception {
+        WorkflowContext transformWorkflow = WorkflowUtil.getWorkflowContext(agent.getTransformWorkflowId());
+        FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
+        FacilioContext context = chain.getContext();
+        context.put(WorkflowV2Util.WORKFLOW_CONTEXT, transformWorkflow);
+        List params = new ArrayList<>();
+        params.add(payload);
+        params.add(FieldUtil.getAsProperties(agent));
+        context.put(WorkflowV2Util.WORKFLOW_PARAMS, params);
+        long workflowStartTime = System.currentTimeMillis();
+        chain.execute();
+        List<Map<String, Object>> resultsFromPreProcessor = (List<Map<String, Object>>) transformWorkflow.getReturnValue();
+        LOGGER.debug("Time taken to transform payload : " + (System.currentTimeMillis() - workflowStartTime) + " ms");
+        return resultsFromPreProcessor;
     }
 
     /**

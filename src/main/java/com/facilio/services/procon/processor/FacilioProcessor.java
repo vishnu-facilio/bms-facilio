@@ -2,6 +2,16 @@ package com.facilio.services.procon.processor;
 
 import java.util.List;
 
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.metrics.LongCounter;
+import io.opentelemetry.api.metrics.Meter;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.SpanKind;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.Scope;
+import io.opentelemetry.extension.annotations.WithSpan;
+import lombok.With;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -21,8 +31,17 @@ public abstract class FacilioProcessor implements  Runnable {
     private boolean isRunning;
 
     private static final Logger LOGGER = LogManager.getLogger(FacilioProcessor.class.getName());
+    private static final Tracer TRACER = GlobalOpenTelemetry.getTracer(FacilioProcessor.class.getSimpleName());
+    private static final Meter SAMPLE_METER =
+            GlobalOpenTelemetry.getMeter(FacilioProcessor.class.getName());
+    private static final LongCounter COUNTER =
+            SAMPLE_METER
+                    .counterBuilder("directories_search_count")
+                    .setDescription("Counts directories accessed while searching for files.")
+                    .setUnit("unit")
+                    .build();
 
-    public FacilioProcessor(long orgId, String orgDomainName){
+    public FacilioProcessor(long orgId, String orgDomainName) {
         this.orgId = orgId;
         this.orgDomainName = orgDomainName;
         this.topic = orgDomainName;
@@ -86,23 +105,27 @@ public abstract class FacilioProcessor implements  Runnable {
         return consumer.getRecords(timeout);
     }
 
+    @WithSpan
     public abstract void processRecords(List<FacilioRecord> records);
 
     public void run() {
         try {
-        		AccountUtil.setCurrentAccount(orgId);
+            AccountUtil.setCurrentAccount(orgId);
             initialize();
             while (isRunning) {
-                try {
+                Span span = TRACER.spanBuilder(FacilioProcessor.class.getName()).setSpanKind(SpanKind.CONSUMER).startSpan();
+                try (Scope scope = span.makeCurrent()) {
                     List<FacilioRecord> records = get(5000);
                     processRecords(records);
                 } catch (Exception e) {
-                	LOGGER.error("Error occurred during processing of records", e);
+                    LOGGER.error("Error occurred during processing of records", e);
                     try {
                         Thread.sleep(5000L);
                     } catch (InterruptedException in) {
                         LOGGER.error("Interrupted exception ", in);
                     }
+                } finally {
+                    span.end();
                 }
             }
         } catch (Exception e) {

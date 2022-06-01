@@ -121,13 +121,13 @@ public abstract class MessageQueue {
         int noOfProcessorsStarted = 0;
         try {
             if (topic != null && STREAMS.contains(topic)) {
-            	
-            	 int maxConsumers = (Integer) topicDetails.get(AgentConstants.MAX_CONSUMERS);
-                 int maxConsumersPerInstance = (Integer) topicDetails.get(AgentConstants.MAX_CONSUMERS_PER_INSTANCE);
-                 
-                 String consumerGroup = getConsumerGroup(topic);
-                 int numberOfConsumersOnline = getConsumersOnlineCount(consumerGroup);
-                 int consumersLeftToStart = maxConsumers - numberOfConsumersOnline;
+
+                int maxConsumers = (Integer) topicDetails.get(AgentConstants.MAX_CONSUMERS);
+                int maxConsumersPerInstance = (Integer) topicDetails.get(AgentConstants.MAX_CONSUMERS_PER_INSTANCE);
+
+                String consumerGroup = getConsumerGroup(topic);
+                int numberOfConsumersOnline = getConsumersOnlineCount(consumerGroup);
+                int consumersLeftToStart = maxConsumers - numberOfConsumersOnline;
                  
                  while (consumersLeftToStart > 0 && noOfProcessorsStarted < maxConsumersPerInstance && currentThreadCount < FacilioProperties.getMaxProcessorThreads()) {
                 	 initiateProcessFactory(orgId, topic, consumerGroup, noOfProcessorsStarted);

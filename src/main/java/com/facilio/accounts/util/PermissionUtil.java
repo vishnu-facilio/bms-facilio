@@ -484,6 +484,19 @@ public class PermissionUtil {
 		}
 		return false;
 	}
+	public static boolean userHasPermission(long tabId, String moduleName, String action, Role role) {
+
+		try {
+			long rolePermissionVal = ApplicationApi.getRolesPermissionValForTab(tabId, role.getRoleId());
+					boolean hasPerm =  hasPermission(rolePermissionVal, action, tabId);
+					return hasPerm;
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
 
 	private static boolean hasPermission(Permissions perm, long permission) {
 		if (perm.getPermission() == 0) {

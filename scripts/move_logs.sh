@@ -26,7 +26,7 @@ today=`date +%F`
 logDir=`date +%Y/%m/%d`
 for file in `ls $APP_HOME/logs`
 do
-    if [ "$file" != "catalina.out" -a "$file" != "serverlog.$today" -a "$file" != "serverlog" -a "$file" != "resultset" -a "$file" != "l4jaccesslog" ]; then
+    if [ "$file" != "catalina.out" -a "$file" != "serverlog.$today"  -a "$file" != "accesslog.$today" -a "$file" != "serverlog" -a "$file" != "resultset" -a "$file" != "l4jaccesslog" ]; then
         dateString=`echo $file | cut -d '.' -f 2 | cut -d '_' -f 1`
         if [ $dateString != $today ]; then
             gzip $APP_HOME/logs/$file

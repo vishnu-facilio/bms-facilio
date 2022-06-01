@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import com.facilio.accounts.util.PermissionUtil;
+import com.facilio.bmsconsoleV3.util.V3FloorPlanAPI;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -45,6 +48,7 @@ import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.db.criteria.operators.StringOperators;
 
+import static com.facilio.bmsconsoleV3.util.V3FloorPlanAPI.getMarkerObject;
 
 
 public class FloorplanDetailsListCommand extends FacilioCommand {
@@ -56,6 +60,7 @@ public class FloorplanDetailsListCommand extends FacilioCommand {
 		String search = (String) context.get(FacilioConstants.ContextNames.SEARCH);
 		long floorId =  (long) context.get(FacilioConstants.ContextNames.FLOOR);
 		long floorplanId =  (long) context.get(FacilioConstants.ContextNames.FLOOR_PLAN_ID);
+		JSONObject mark = (JSONObject) getMarkerObject();
 		Criteria filterCriteria = (Criteria) context.get(Constants.FILTER_CRITERIA);
 		List<JSONObject> moduleDataList = new ArrayList<>();
 		List<String> modules = new ArrayList<>();
@@ -63,13 +68,15 @@ public class FloorplanDetailsListCommand extends FacilioCommand {
 		if(moduleName != null && StringUtils.isNotEmpty((String) moduleName)) {
 			modules.add(moduleName);
 		} else {
-			modules.add(FacilioConstants.ContextNames.EMPLOYEE);
+			if ((Boolean) mark.get("hasAllAccess")) {
+				modules.add(FacilioConstants.ContextNames.EMPLOYEE);
+			}
 			modules.add(FacilioConstants.ContextNames.Floorplan.DESKS);
 			modules.add(FacilioConstants.ContextNames.SPACE);
 			modules.add(FacilioConstants.ContextNames.LOCKERS);
 			modules.add(FacilioConstants.ContextNames.PARKING_STALL);
 		}
-		
+
 		for(String module : modules) {
 			FacilioModule moduleObj = modBean.getModule(module);
 			List<FacilioField> fieldsList = new ArrayList<>();

@@ -28,6 +28,8 @@ public class NewPermissionUtil {
     private static Map<String, Long> settingsTabType = Collections.unmodifiableMap(initSettingsMap());
     private static Map<String, Integer> portalOverviewType = Collections.unmodifiableMap(initportalOverviewMap());
     private static Map<String, Integer> notificationType = Collections.unmodifiableMap(initNotificationMap());
+    private static Map<String, Integer> indoorFloorplanTabType = Collections.unmodifiableMap(initIndoorFloorplanMap());
+
 
     private static Map<String, Integer> initModuleMap() {
         moduleTabType = new HashMap<>();
@@ -164,6 +166,23 @@ public class NewPermissionUtil {
         notificationType = new HashMap<>();
         notificationType.put("READ", 1);
         return notificationType;
+    }
+    private static Map<String, Integer> initIndoorFloorplanMap() {
+        indoorFloorplanTabType = new HashMap<>();
+        indoorFloorplanTabType.put("CREATE", 1);
+        indoorFloorplanTabType.put("EDIT", 2);
+        indoorFloorplanTabType.put("VIEW", 4);
+        indoorFloorplanTabType.put("ASSIGN", 8);
+        indoorFloorplanTabType.put("BOOKING", 16);
+        indoorFloorplanTabType.put("VIEW_ASSIGNMENT", 32);
+        indoorFloorplanTabType.put("VIEW_ASSIGNMENT_DEPARTMENT", 64);
+        indoorFloorplanTabType.put("VIEW_ASSIGNMENT_OWN", 128);
+        indoorFloorplanTabType.put("VIEW_BOOKING", 256);
+        indoorFloorplanTabType.put("VIEW_BOOKING_DEPARTMENT",512) ;
+        indoorFloorplanTabType.put("VIEW_BOOKING_OWN", 1024);
+
+
+        return indoorFloorplanTabType;
     }
 
 
@@ -391,6 +410,29 @@ public class NewPermissionUtil {
         permissions.add(new Permission("READ", "Read", notificationType.get("READ"), null));
         permissionMap.put("*", permissions);
         permissionList.put(Type.NOTIFICATION.getIndex(), permissionMap);
+
+
+        permissions = new ArrayList<>();
+        permissionMap = new HashMap<>();
+        permissions.add(new Permission("CREATE", "Create", indoorFloorplanTabType.get("CREATE"), null));
+        permissions.add(new Permission("EDIT", "Edit", indoorFloorplanTabType.get("EDIT"), null));
+        permissions.add(new Permission("VIEW", "View", indoorFloorplanTabType.get("VIEW"), null));
+        permissions.add(new Permission("ASSIGN", "Assign", indoorFloorplanTabType.get("ASSIGN"), null));
+        permissions.add(new Permission("BOOKING", "Booking", indoorFloorplanTabType.get("BOOKING"), null));
+
+        List<Permission> view_assignment = new ArrayList<>();
+        view_assignment.add(new Permission("VIEW_ASSIGNMENT", "All", indoorFloorplanTabType.get("VIEW_ASSIGNMENT"), null));
+        view_assignment.add(new Permission("VIEW_ASSIGNMENT_DEPARTMENT", "Department", indoorFloorplanTabType.get("VIEW_ASSIGNMENT_DEPARTMENT"), null));
+        view_assignment.add(new Permission("VIEW_ASSIGNMENT_OWN", "Own", indoorFloorplanTabType.get("VIEW_ASSIGNMENT_OWN"), null));
+        permissions.add(new PermissionGroup("view assignment",view_assignment ));
+        List<Permission> view_booking = new ArrayList<>();
+        view_booking.add(new Permission("VIEW_BOOKING", "All", indoorFloorplanTabType.get("VIEW_BOOKING"), null));
+        view_booking.add(new Permission("VIEW_BOOKING_DEPARTMENT", "Department", indoorFloorplanTabType.get("VIEW_BOOKING_DEPARTMENT"), null));
+        view_booking.add(new Permission("VIEW_BOOKING_OWN", "Own", indoorFloorplanTabType.get("VIEW_BOOKING_OWN"), null));
+
+        permissions.add(new PermissionGroup("view booking", view_booking));
+        permissionMap.put("*", permissions);
+        permissionList.put(Type.INDOOR_FLOORPLAN.getIndex(), permissionMap);
     }
 
     public static List<Permission> getPermissions(int tabType, String moduleName) {
@@ -408,7 +450,8 @@ public class NewPermissionUtil {
     public static List<Permission> getPermissionFromConfig(int tabType, JSONObject configJSON) {
 		Map<String, List<Permission>> stringListMap = permissionList.get(tabType);
     	String configType = String.valueOf(configJSON.get("type"));
-    	if(configType!=null && !configType.equals("") && !configType.equalsIgnoreCase("null")) {
+    	if(configType!=null
+                && !configType.equals("") && !configType.equalsIgnoreCase("null")) {
     		if(stringListMap.containsKey(configType)) {
     			return stringListMap.get(configType);
 			}
@@ -464,6 +507,8 @@ public class NewPermissionUtil {
                 return settingsTabType.containsKey(action) ? settingsTabType.getOrDefault(action,  -1L) : -1;
             case 12:
                 return portalOverviewType.getOrDefault(action, -1);
+            case 14:
+                return indoorFloorplanTabType.getOrDefault(action, -1);
             default:
                 return -1;
         }

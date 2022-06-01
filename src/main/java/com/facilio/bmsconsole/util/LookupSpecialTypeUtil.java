@@ -46,6 +46,7 @@ import com.facilio.modules.fields.FieldOption;
 import com.facilio.modules.fields.SystemEnumField;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
+import org.json.simple.JSONObject;
 
 public class LookupSpecialTypeUtil {
 	public static boolean isSpecialType(String specialType) {
@@ -149,15 +150,29 @@ public class LookupSpecialTypeUtil {
 			return groupList;
 		}
 		else if (FacilioConstants.ContextNames.ROLE.equals(specialType)) {
-			List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getId()).getRolesForApps(Collections.singletonList(AccountUtil.getCurrentApp().getId()));
+			List<Long> appIds = Collections.singletonList(AccountUtil.getCurrentApp().getId());
+			if (paramsMap.containsKey("filters")) {
+				JSONObject filter = (JSONObject) paramsMap.get("filters");
+				if (filter != null && filter.containsKey("appLinkNames")) {
+					List<String> appLinkNames = (List<String>) filter.get("appLinkNames");
+					if (CollectionUtils.isNotEmpty(appLinkNames)) {
+						List<ApplicationContext> apps = ApplicationApi.getApplicationForLinkNames(appLinkNames);
+						if (CollectionUtils.isNotEmpty(apps)) {
+							appIds = apps.stream().map(ApplicationContext::getId).collect(Collectors.toList());
+						}
+					}
+				}
+			}
+			List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getId()).getRolesForApps(appIds);
 			List<FieldOption<Long>> roleList = null;
 			if (CollectionUtils.isNotEmpty(roles)) {
 				roleList = roles.stream()
-								.map(role -> new FieldOption<>(role.getId(), role.getName()))
-								.collect(Collectors.toList());
+						.map(role -> new FieldOption<>(role.getId(), role.getName()))
+						.collect(Collectors.toList());
 			}
 			return roleList;
 		}
+
 		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)){
 			List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getAllWorkflowRuleContextOfType(WorkflowRuleContext.RuleType.READING_RULE, false,false);
 			return getRulePickList(workflowRules);

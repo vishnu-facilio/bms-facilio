@@ -118,16 +118,16 @@ class KafkaMessageQueue extends MessageQueue {
     public void createQueue(String queueName) {
         LOGGER.info(" creating kafka stream "+queueName);
         try {
-            CreateTopicsResult result =getKafkaClient().createTopics(Collections.singletonList(new NewTopic(queueName, 1, (short)3)));
+            CreateTopicsResult result = getKafkaClient().createTopics(Collections.singletonList(new NewTopic(queueName, 1, (short) 3)));
             result.values().get(queueName).get(10, TimeUnit.SECONDS);
-            LOGGER.info("Stream created : " + queueName );
-            
+            LOGGER.info("Stream created : " + queueName);
+
             if (!FacilioProperties.isMessageProcessor()) {
-            	// Topic would be created in user server and client is not needed anymore
-            	getKafkaClient().close();
-            	kafkaClient = null;
+                // Topic would be created in user server and client is not needed anymore
+                getKafkaClient().close();
+                kafkaClient = null;
             }
-            
+
         } catch (Exception ex){
             LOGGER.info(" Exception occurred while adding " + queueName +" - "+ ex.getMessage());
         }

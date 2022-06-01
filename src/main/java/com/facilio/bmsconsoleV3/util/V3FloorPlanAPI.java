@@ -2,25 +2,31 @@ package com.facilio.bmsconsoleV3.util;
 
 import java.util.*;
 
+import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.bmsconsole.context.EmployeeContext;
+import com.facilio.bmsconsole.context.Permission;
+import com.facilio.bmsconsole.context.PermissionGroup;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsoleV3.context.V3EmployeeContext;
+import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.facilitybooking.BookingSlotsContext;
 import com.facilio.bmsconsoleV3.context.floorplan.*;
+import com.google.api.client.json.Json;
+import com.opensymphony.xwork2.ActionContext;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.text.StringSubstitutor;
+import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.dispatcher.Parameter;
+import org.json.JSONString;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
-import com.facilio.bmsconsoleV3.context.V3LockersContext;
-import com.facilio.bmsconsoleV3.context.V3ParkingStallContext;
-import com.facilio.bmsconsoleV3.context.V3ResourceContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -37,6 +43,13 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import org.json.simple.parser.JSONParser;
+
+import javax.servlet.http.HttpServletRequest;
+
+import static com.facilio.constants.FacilioConstants.ContextNames.INDOOR_FLOOR_PLAN;
+import static java.util.Objects.isNull;
+import static nl.basjes.shaded.org.springframework.util.ObjectUtils.isEmpty;
 
 
 public class V3FloorPlanAPI {
@@ -47,6 +60,31 @@ public class V3FloorPlanAPI {
 		GeoJson.put("features", fetaure);
 		return GeoJson;
 	}
+	public static JSONObject getMarkerObject() throws Exception {
+		JSONObject markerObject = new JSONObject();
+		HttpServletRequest	 request = ServletActionContext.getRequest();
+		String currentTab = request.getHeader("X-Tab-Id");
+		long tabId = Long.valueOf(currentTab);
+		Role role = AccountUtil.getCurrentUser().getRole();
+		long ouid = AccountUtil.getCurrentAccount().getUser().getOuid();
+		String moduleName = "INDOOR_FLOOR_PLAN";
+		V3EmployeeContext emp = V3RecordAPI.getRecord(FacilioConstants.ContextNames.EMPLOYEE,ouid,V3EmployeeContext.class);
+		boolean hasAllAccess = PermissionUtil.userHasPermission(tabId, moduleName, "VIEW_ASSIGNMENT", role);
+		boolean hasDepartmentAccess = PermissionUtil.userHasPermission(tabId, moduleName, "VIEW_ASSIGNMENT_DEPARTMENT", role);
+		boolean hasOwnAccess = PermissionUtil.userHasPermission(tabId, moduleName, "VIEW_ASSIGNMENT_OWN", role);
+		boolean hasViewAccess = PermissionUtil.userHasPermission(tabId,moduleName,"VIEW",role);
+		markerObject.put("currentTab", currentTab);
+		markerObject.put("tabId",tabId);
+		markerObject.put("role", role);
+		markerObject.put("ouid",ouid );
+		markerObject.put("hasAllAccess", hasAllAccess);
+		markerObject.put("hasDepartmentAccess", hasDepartmentAccess);
+		markerObject.put("hasOwnAccess", hasOwnAccess);
+		markerObject.put("hasViewAccess",hasViewAccess);
+		markerObject.put("employee",emp);
+		return markerObject;
+	}
+
 
 	public static List<V3IndoorFloorPlanContext> getAllFloorPlan() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -133,7 +171,7 @@ public class V3FloorPlanAPI {
 
 		 JSONObject tooltip = new JSONObject();
 		 JSONObject tooltipCoreData = new JSONObject();
-		 List <JSONObject> tooltipConent = new ArrayList<>(); 
+		 List <JSONObject> tooltipConent = new ArrayList<>();
 		 
 		 
 		   if (record != null) {
@@ -143,13 +181,13 @@ public class V3FloorPlanAPI {
 			   if(module.getName().equals(FacilioConstants.ContextNames.Floorplan.DESKS)) {
 				   
 				   V3DeskContext desk = (V3DeskContext) record;
-				   
-				   
-				   	// title record
+
+
+				  	// title record
 					 tooltipCoreData.put("icon", "office_desk");
 					 tooltipCoreData.put("label", desk.getName());
 					 tooltip.put("title", tooltipCoreData);
-					 
+
 					 tooltipCoreData = new JSONObject();
 					 tooltipCoreData.put("icon", "desk_type");
 					 tooltipCoreData.put("label", desk.getDeskTypeName());
@@ -198,13 +236,67 @@ public class V3FloorPlanAPI {
 				 tooltip.put("content", tooltipConent);
 
 		   }
-		
-         return tooltip;
+         return checkViewAssignmentUserPermission(tooltip,record);
      }
 
-	 	   
-	 	  public static V3IndoorFloorPlanPropertiesContext getZoneProperties(ModuleBaseWithCustomFields record, V3MarkerdZonesContext zone, Context context, String viewMode,Long markerModuleId) throws Exception {
+	public static JSONObject checkViewAssignmentUserPermission(JSONObject tooltip,ModuleBaseWithCustomFields record) throws Exception {
+		Role role = AccountUtil.getCurrentUser().getRole();
+		if (role.isPrevileged()) {
+			return tooltip;
+		}
 
+			V3DeskContext desk = (V3DeskContext) record;
+			JSONObject marktooltip = (JSONObject) getMarkerObject();
+			V3EmployeeContext employee = (V3EmployeeContext) marktooltip.get("employee");
+			try {
+				if (!((Boolean) marktooltip.get("hasViewAccess"))) {
+					hideTooltipDefaultProperties(tooltip);
+				} else {
+					if ((Boolean) marktooltip.get("hasAllAccess")) {
+						//
+					} else if ((Boolean) marktooltip.get("hasDepartmentAccess")) {
+						if (desk.getEmployee() != null) {
+							if (!(desk.getEmployee().getDepartment().getId() == employee.getDepartment().getId() || desk.getDepartment().getId() == employee.getDepartment().getId())) {
+								hideTooltipProperties(tooltip);
+							}
+						} else {
+							if (!(desk.getDepartment().getId() == employee.getDepartment().getId())) {
+								hideTooltipProperties(tooltip);
+							}
+						}
+					} else if ((Boolean) marktooltip.get("hasOwnAccess")) {
+						if (desk.getEmployee() != null) {
+							if (desk.getEmployee().getId() != employee.getId()) {
+								hideTooltipProperties(tooltip);
+							}
+						} else {
+							hideTooltipProperties(tooltip);
+						}
+					} else {
+						// hide all properties
+						hideTooltipDefaultProperties(tooltip);
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		return tooltip;
+	}
+	public static void hideTooltipProperties(JSONObject tooltip){
+
+		List<JSONObject> toolTipList = (List<JSONObject>) tooltip.get("content");
+		for (JSONObject toolTipElement : toolTipList){
+			if (toolTipElement.get("icon").equals("employee")){
+				toolTipElement.put("label", "occupied by someone");
+			}
+		}
+	}
+	public static void hideTooltipDefaultProperties(JSONObject tooltip){
+		tooltip.put("content","");
+	}
+
+			 public static V3IndoorFloorPlanPropertiesContext getZoneProperties(ModuleBaseWithCustomFields record, V3MarkerdZonesContext zone, Context context, String viewMode,Long markerModuleId) throws Exception {
 			  Map<Long, List<BookingSlotsContext>> facilityBookingsMap = (Map<Long, List<BookingSlotsContext>>) context.get(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
 
 			  V3IndoorFloorPlanPropertiesContext properties = new V3IndoorFloorPlanPropertiesContext();
@@ -334,14 +426,16 @@ public class V3FloorPlanAPI {
 	 		   
 	 	   }
 
-	
+
 	   public static V3IndoorFloorPlanPropertiesContext getMarkerProperties(ModuleBaseWithCustomFields record, V3MarkerContext marker,Long markerModuleId, String viewMode, Context context) throws Exception {
-	    
-	          V3IndoorFloorPlanPropertiesContext properties = new V3IndoorFloorPlanPropertiesContext();
-		   
+
+		   V3IndoorFloorPlanPropertiesContext properties = new V3IndoorFloorPlanPropertiesContext();
+
+		   V3EmployeeContext employeemarker = null;
+		   V3DepartmentContext deskdepartment = null;
 		   if (record != null && markerModuleId != null) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-	          FacilioModule module = modBean.getModule(markerModuleId);
+			   ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			   FacilioModule module = modBean.getModule(markerModuleId);
 			   V3ResourceContext recordData = (V3ResourceContext) record;
 			   properties.setLabel(recordData.getName());
 			   properties.setObjectId(marker.getId());
@@ -349,16 +443,16 @@ public class V3FloorPlanAPI {
 			   properties.setMarkerModuleId(marker.getMarkerModuleId());
 			   properties.setMarkerModuleName(module.getName());
 
-			   
+
 			   properties.setActive(true);
-			   
+
 			   if (marker.getMarkerType() != null) {
 				   properties.setMarkerId(String.valueOf(marker.getMarkerType().getName()));
 			   }
-			   
-			   if(module.getName().equals(FacilioConstants.ContextNames.Floorplan.DESKS)) {
+
+			   if (module.getName().equals(FacilioConstants.ContextNames.Floorplan.DESKS)) {
 				   // to handle desk details here
-				   
+
 				   V3DeskContext desk = (V3DeskContext) record;
 				   V3FloorplanCustomizationContext assignCustomization = (V3FloorplanCustomizationContext) context.get("FLOORPLAN_ASSIGNMENT_CUSTOMIZATION");
 				   String iconName = "desk";
@@ -368,124 +462,187 @@ public class V3FloorPlanAPI {
 				   properties.setLabel(assignCustomization.getDeskSecondaryLabel().getLabelType().format(desk));
 				   properties.setSecondaryLabel(assignCustomization.getDeskPrimaryLabel().getLabelType().format(desk));
 				   properties.setIsCustom(true); // need to change based on the desktype
-				   
+
 
 				   if (viewMode.equals(FacilioConstants.ContextNames.Floorplan.ASSIGNMENT_VIEW)) {
-					if (desk.getDeskType() == 1) {
-					   properties.setActive(true);
-				   }
-				   else {
-					   properties.setActive(false);
+					   if (desk.getDeskType() == 1) {
+						   properties.setActive(true);
+					   } 
+					   else {
+						   properties.setActive(false);
 
-				   }
-
-				   if (desk.getDepartment() != null) {
-					   properties.setDepartmentId(desk.getDepartment().getId());
-				   }
-				   
-				   if (desk.getEmployee() != null) {
-					   properties.setEmployeeId(desk.getEmployee().getId());
-					   properties.setCenterLabel(getCenterLabel(desk.getEmployee().getName()));
-					   properties.setIconName(iconName);
-					
-						iconName = iconName.concat("_" + desk.getDeskTypeName());
-
+					   }
 
 					   if (desk.getDepartment() != null) {
-						   iconName = iconName.concat("_" + desk.getDepartment().getName());
+						   properties.setDepartmentId(desk.getDepartment().getId());
 					   }
-					   
-				   }
-				   
-				   }
+
+					   if (desk.getEmployee() != null) {
+						   properties.setEmployeeId(desk.getEmployee().getId());
+						   properties.setCenterLabel(getCenterLabel(desk.getEmployee().getName()));
+						   properties.setIconName(iconName);
+
+						   iconName = iconName.concat("_" + desk.getDeskTypeName());
+
+
+						   if (desk.getDepartment() != null) {
+							   iconName = iconName.concat("_" + desk.getDepartment().getName());
+						   }
+
+					   }
+					   employeemarker = desk.getEmployee();
+					   deskdepartment = desk.getDepartment();
+				   } 
 				   else if (viewMode.equals(FacilioConstants.ContextNames.Floorplan.BOOKING_VIEW)) {
-					if (desk.getDeskType() == 3) {
-					   properties.setActive(true);
-				   }
-				   else {
-					   properties.setActive(false);
+					   if (desk.getDeskType() == 3) {
+						   properties.setActive(true);
+					   } 
+					   else {
+						   properties.setActive(false);
 
-				   }
-
-				   if (desk.getDepartment() != null) {
-					   properties.setDepartmentId(desk.getDepartment().getId());
-				   }
-				   
-				   if (desk.getEmployee() != null) {
-					   properties.setEmployeeId(desk.getEmployee().getId());
-					   properties.setIconName(iconName);
-					   properties.setSecondaryLabel(desk.getEmployee().getName());
-					   // set booking desk icon name
-
-				   }
-
-				  // properties.setBookingFormId(getBookingFormIdFromModule);
-				   
-				   }
-				   else {
-					      if (desk.getDepartment() != null) {
-					   properties.setDepartmentId(desk.getDepartment().getId());
-				   }
-				   
-				   if (desk.getEmployee() != null) {
-					   properties.setEmployeeId(desk.getEmployee().getId());
-					   properties.setSecondaryLabel(desk.getEmployee().getName());
-					   properties.setIconName(iconName);
-					
-						iconName = iconName.concat("_" + desk.getDeskTypeName());
-
+					   }
 
 					   if (desk.getDepartment() != null) {
-						   iconName = iconName.concat("_" + desk.getDepartment().getName());
+						   properties.setDepartmentId(desk.getDepartment().getId());
 					   }
-					   
+
+					   if (desk.getEmployee() != null) {
+						   properties.setEmployeeId(desk.getEmployee().getId());
+						   properties.setIconName(iconName);
+						   properties.setSecondaryLabel(desk.getEmployee().getName());
+						   // set booking desk icon name
+
+					   }
+
+					   // properties.setBookingFormId(getBookingFormIdFromModule);
+
+				   } 
+				   else {
+					   if (desk.getDepartment() != null) {
+						   properties.setDepartmentId(desk.getDepartment().getId());
+					   }
+
+					   if (desk.getEmployee() != null) {
+						   properties.setEmployeeId(desk.getEmployee().getId());
+						   properties.setSecondaryLabel(desk.getEmployee().getName());
+						   properties.setIconName(iconName);
+
+						   iconName = iconName.concat("_" + desk.getDeskTypeName());
+
+
+						   if (desk.getDepartment() != null) {
+							   iconName = iconName.concat("_" + desk.getDepartment().getName());
+						   }
+
+					   }
 				   }
-				   }
-				   
-				   
+
 				   // set icon state class
-				   
+
 				   iconName = iconName.replaceAll("\\s", ""); //  itw ill remove the space names
 				   properties.setActiveClass(iconName.concat("_active"));
 				   properties.setNormalClass(iconName);
 				   properties.setHoverClass(iconName.concat("_hover"));
-			      
+
 				   //
 
 				   properties.setMarkerId(iconName);
-
-			   }
-			   else {
+			   } else {
 				   properties.setIsCustom(false);
 
 			   }
 
-			   
+
 		   }
-		   else {
+		    else {
 			   properties.setActive(true);
 			   properties.setLabel(marker.getLabel());
-			   	properties.setObjectId(marker.getId());
+			   properties.setObjectId(marker.getId());
 			   properties.setRecordId(marker.getRecordId());
 			   properties.setMarkerModuleId(null);
 			   properties.setMarkerModuleName(null);
 			   properties.setIsCustom(false);
 
-  			if (marker.getMarkerType() != null) {
-				  String markerId = marker.getMarkerType().getName();
+			   if (marker.getMarkerType() != null) {
+				   String markerId = marker.getMarkerType().getName();
 				   properties.setMarkerId(String.valueOf(markerId));
 				   properties.setActiveClass(String.valueOf(markerId));
 				   properties.setNormalClass(String.valueOf(markerId));
 				   properties.setHoverClass(String.valueOf(markerId));
 
 			   }
-				 
+
 
 		   }
+
+		   return checkViewAssignmentPermission(properties, employeemarker, deskdepartment,record);
+
+	   }
+
+	public static V3IndoorFloorPlanPropertiesContext checkViewAssignmentPermission(V3IndoorFloorPlanPropertiesContext properties,V3EmployeeContext employeemarker, V3DepartmentContext deskdepartment, ModuleBaseWithCustomFields record) throws Exception {
+		Role role = AccountUtil.getCurrentUser().getRole();
+		if (role.isPrevileged()) {
+			return properties;
+		}
+		JSONObject mark = (JSONObject) getMarkerObject();
+		V3EmployeeContext employee = (V3EmployeeContext)mark.get("employee");
+		V3DeskContext desk = (V3DeskContext) record;
+		try {
+			if (!((Boolean) mark.get("hasViewAccess"))) {
+				hideProperties(properties);
+			}
+			else{
+			if (desk.getDeskType() == 3) {
+				hideProperties(properties);
+			} else {
+
+				if ((Boolean) mark.get("hasAllAccess")) {
+					//
+				} else if ((Boolean) mark.get("hasDepartmentAccess")) {
+					if (employeemarker != null) {
+						if (!(employeemarker.getDepartment().getId() == employee.getDepartment().getId() || deskdepartment.getId() == employee.getDepartment().getId())) {
+							hideProperties(properties);
+						}
+					} else {
+						if ((deskdepartment.getId() != employee.getDepartment().getId())) {
+							hideProperties(properties);
+						}
+					}
+				} else if ((Boolean) mark.get("hasOwnAccess")) {
+					if (employeemarker != null) {
+						if (employeemarker.getId() != employee.getId()) {
+							hideProperties(properties);
+						}
+					}
+
+					else {
+							hideProperties(properties);
+						}
+					}
+
+				 else {
+					// hide all properties
+					hideProperties(properties);
+				}
+			}
+
+
+				}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 		return properties;
-		   
-	    }
-	   
+	}
+	public static void hideProperties(V3IndoorFloorPlanPropertiesContext properties){
+
+		properties.setActive(false);
+		properties.setCenterLabel("");
+		properties.setSecondaryLabel("");
+		properties.setOpenDialog(false);
+
+	}
+
 	   public static String getCenterLabel(String name) {
 		   String result = "";
 		   

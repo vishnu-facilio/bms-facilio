@@ -274,7 +274,14 @@ public String getMarkerModuleName() {
 public void setMarkerModuleName(String markerModuleName) {
 	this.markerModuleName = markerModuleName;
 }
+private Boolean isOpenDialog= true;
+	public Boolean getOpenDialog() {
+		return isOpenDialog;
+	}
+
+	public void setOpenDialog(Boolean openDialog) {
+		isOpenDialog = openDialog;
+	}
 
 
-    
 }
