@@ -5,6 +5,8 @@ import java.util.List;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.constants.FacilioConstants.ContextNames.SpaceCategory;
+import com.facilio.ns.context.NameSpaceContext;
+import com.facilio.rule.AbstractRuleInterface;
 import com.facilio.v3.context.V3Context;
 import com.facilio.workflows.context.WorkflowContext;
 
@@ -12,7 +14,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class FaultImpactContext extends V3Context {
+public class FaultImpactContext extends V3Context implements AbstractRuleInterface {
 
 	/**
 	 * 
@@ -29,6 +31,8 @@ public class FaultImpactContext extends V3Context {
 	WorkflowContext workflow;
 	
 	List<FaultImpactNameSpaceFieldContext> fields;
+
+	NameSpaceContext ns;
 	
 	public PreventiveMaintenance.PMAssignmentType getTypeEnum() {
 		return type;
@@ -39,6 +43,7 @@ public class FaultImpactContext extends V3Context {
 		}
 		return -1;
 	}
+
 	public void setType(Integer type) {
 		this.type = PreventiveMaintenance.PMAssignmentType.valueOf(type);
 	}

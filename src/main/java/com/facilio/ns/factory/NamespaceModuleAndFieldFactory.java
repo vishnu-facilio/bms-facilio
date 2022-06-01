@@ -37,7 +37,8 @@ public class NamespaceModuleAndFieldFactory extends FieldFactory {
         fields.add(getNumberField("resourceId", "RESOURCE_ID", module));
         fields.add(getNumberField("fieldId", "FIELD_ID", module));
         fields.add(getNumberField("dataInterval", "DATA_INTERVAL", module));
-        fields.add(getField("aggregationTypeI", "AGGREGATION_TYPE", module, FieldType.NUMBER));
+        fields.add(getNumberField("aggregationTypeI", "AGGREGATION_TYPE", module));
+        fields.add(getBooleanField("primary", "IS_PRIMARY", module));
         return fields;
     }
 

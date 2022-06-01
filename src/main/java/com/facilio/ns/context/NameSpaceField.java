@@ -72,6 +72,8 @@ public class NameSpaceField {
         return "NS" + nsId + "_R" + resourceId + "_FLD" + fieldId + "_" + aggregationType;
     }
 
+    Boolean primary;
+
     public String toString() {
         return new HashMap<String, Object>() {
             {

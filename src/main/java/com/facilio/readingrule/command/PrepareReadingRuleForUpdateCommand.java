@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class PrepareReadingRuleCommand extends FacilioCommand {
+public class PrepareReadingRuleForUpdateCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         NewReadingRuleContext newRuleCtx = (NewReadingRuleContext) context.get(FacilioConstants.ContextNames.NEW_READING_RULE);
@@ -25,14 +25,14 @@ public class PrepareReadingRuleCommand extends FacilioCommand {
         if (oldRule == null) {
             throw new Exception("Rule (" + newRuleCtx.getId() + ") is not found!");
         }
-        constructRuleDetails(newRuleCtx, oldRule);
+        constructRuleDetails(context, newRuleCtx, oldRule);
         setAssets(oldRule);
         context.put(FacilioConstants.ContextNames.NEW_READING_RULE, oldRule);
         context.put(WorkflowV2Util.WORKFLOW_CONTEXT, newRuleCtx.getWorkflowContext());
         return false;
     }
 
-    private void constructRuleDetails(NewReadingRuleContext newCtx, NewReadingRuleContext oldRule) {
+    private void constructRuleDetails(Context ctx, NewReadingRuleContext newCtx, NewReadingRuleContext oldRule) {
         if (newCtx.getName() != null) {
             oldRule.setName(newCtx.getName());
         }
@@ -58,8 +58,14 @@ public class PrepareReadingRuleCommand extends FacilioCommand {
             newCtx.getNs().setId(oldRule.getNs().getId());
             oldRule.setNs(newCtx.getNs());
         }
-        if(newCtx.getWorkflowContext() != null) {
+        if (newCtx.getWorkflowContext() != null) {
             oldRule.setWorkflowContext(newCtx.getWorkflowContext());
+        }
+        if (newCtx.getImpact() != null) {
+            oldRule.setImpact(newCtx.getImpact());
+        }
+        if (oldRule.getImpact() != null && newCtx.getImpact() == null) {
+            ctx.put("canDeleteFaultImpact", true);
         }
     }
 

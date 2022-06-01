@@ -23,7 +23,7 @@ public class NameSpaceContext {
         fields = new ArrayList<>();
     }
     
-    public NameSpaceContext(NSType type,Long parentRuleId,Long execInterval) {
+    public NameSpaceContext(NSType type,Long parentRuleId, Long execInterval) {
     	this.type = type;
     	this.parentRuleId = parentRuleId;
     	this.execInterval = execInterval;

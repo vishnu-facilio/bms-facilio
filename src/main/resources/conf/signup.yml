@@ -106,6 +106,7 @@ classes:
   - com.facilio.bmsconsoleV3.signup.scoping.SurveyResponseScopingConfig
   - com.facilio.bmsconsoleV3.signup.workflowlog.WorkFlowLogModules
   - com.facilio.bmsconsoleV3.signup.serviceRequest.AddServiceRequestForm
+  - com.facilio.bmsconsoleV3.signup.inspection.AddFaultImpactModules
 
     # Adding default ML params
   - com.facilio.modules.signup.AddMLModelParams

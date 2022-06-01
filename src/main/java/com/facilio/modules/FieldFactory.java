@@ -2023,17 +2023,13 @@ public class FieldFactory extends BaseFieldFactory {
         FacilioModule module = ModuleFactory.getNewReadingRuleModule();
         fields.add(getIdField(module));
 
-        FacilioField moduleFld = getModuleIdField(module);
-        moduleFld.setDefault(true);
-        fields.add(moduleFld);
-
         fields.add(getDefaultField("name", "Name", "NAME", module, FieldType.STRING, true));
         fields.add(getDefaultField("description", "Description", "DESCRIPTION", module, FieldType.STRING));
         fields.add(getDefaultField("alarmType", "Applied To", "ALARM_APPLIED_TO", module, FieldType.NUMBER));
         fields.add(getDefaultField("createdTime", "Created Time", "CREATED_TIME", module, FieldType.NUMBER));
         fields.add(getDefaultField("status", "Status","STATUS", module, FieldType.BOOLEAN));
-
-        fields.add(getDefaultField("fieldId", "Field Id", "READING_FIELD_ID", module, FieldType.NUMBER));
+        fields.add(getDefaultField("readingModuleId", "Reading Module Id", "READING_MODULE_ID", module, FieldType.NUMBER));
+        fields.add(getDefaultField("readingFieldId", "Reading Field Id", "READING_FIELD_ID", module, FieldType.NUMBER));
         fields.add(getDefaultField("createdBy","Created By", "CREATED_BY", module, FieldType.NUMBER));
         fields.add(getDefaultField("assetCategoryId", "Asset Category Id", "ASSET_CATEGORY_ID", module, FieldType.NUMBER));
         fields.add(getDefaultField("workflowId","Workflow ID", "WORKFLOW_ID", module, FieldType.NUMBER));

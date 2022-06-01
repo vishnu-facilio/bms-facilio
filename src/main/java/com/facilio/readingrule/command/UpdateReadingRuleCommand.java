@@ -27,7 +27,6 @@ public class UpdateReadingRuleCommand extends FacilioCommand {
 
         updateReadingRule();
         updateAlarmDetails();
-//        updateRuleBuilder();
         updateNamespace();
         updateNamespaceFields();
 
@@ -51,16 +50,6 @@ public class UpdateReadingRuleCommand extends FacilioCommand {
             updateBuilder.update(FieldUtil.getAsProperties(rule.getAlarmDetails()));
         }
     }
-
-//    private void updateRuleBuilder() throws Exception {
-//        if(rule.getCondition() != null) {
-//            GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-//                    .fields(FieldFactory.getRuleBuilderConfigFields())
-//                    .table(ModuleFactory.getRuleBuilderConfigModule().getTableName())
-//                    .andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(rule.getCondition().getId()), NumberOperators.EQUALS));
-//            updateBuilder.update(FieldUtil.getAsProperties(rule.getCondition()));
-//        }
-//    }
 
     private void updateNamespace() throws Exception {
         NameSpaceContext ns = rule.getNs();

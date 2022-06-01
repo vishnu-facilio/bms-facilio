@@ -4,8 +4,8 @@ import com.facilio.modules.FacilioIntEnum;
 
 public enum NSType implements FacilioIntEnum {
     READING_RULE("Reading Rule"),
-    IMPACT_RULE("Impact Rule"),
-    KPI("KPI");
+    FAULT_IMPACT_RULE("Fault Impact Rule"),
+    KPI_RULE("KPI");
 
     private String name;
 

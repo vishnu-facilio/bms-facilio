@@ -55,8 +55,9 @@ import com.facilio.modules.fields.relations.CalculateDependencyCommand;
 import com.facilio.mv.command.*;
 import com.facilio.ns.command.AddNamespaceCommand;
 import com.facilio.ns.command.AddNamespaceFieldsCommand;
-import com.facilio.ns.command.DeleteNamespaceCommand;
+import com.facilio.ns.command.DeleteRuleNamespacesCommand;
 import com.facilio.readingrule.command.*;
+import com.facilio.readingrule.faultimpact.command.DeleteFaultImpactFromReadingRuleCommand;
 import com.facilio.trigger.context.TriggerType;
 import com.facilio.weekends.*;
 import com.facilio.workflows.command.*;
@@ -787,7 +788,7 @@ public class TransactionChainFactory {
 		public static FacilioChain deleteReadingRuleChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new DeleteReadingRuleCommand());
-			c.addCommand(new DeleteNamespaceCommand());
+			c.addCommand(new DeleteRuleNamespacesCommand());
 			c.addCommand(new DeleteWorkflowCommand());
             c.addCommand(new DeleteReadingRuleActionsCommand());
 			return c;
@@ -795,7 +796,8 @@ public class TransactionChainFactory {
 
 		public static FacilioChain updateReadingRuleChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new PrepareReadingRuleCommand());
+			c.addCommand(new PrepareReadingRuleForUpdateCommand());
+			c.addCommand(addOrDeleteFaultImpactChain());
 			c.addCommand(new UpdateReadingRuleCommand());
 			c.addCommand(new UpdateWorkflowCommand());
 			c.addCommand(new AddRCARulesCommand());
@@ -813,6 +815,13 @@ public class TransactionChainFactory {
 			c.addCommand(new AddControlGroupCommand());
 			c.addCommand(new AddControlGroupSpaceCommand());
 			c.addCommand(new AddControlGroupInclExclCommand());
+			return c;
+		}
+
+		public static FacilioChain addOrDeleteFaultImpactChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new DeleteFaultImpactFromReadingRuleCommand());
+			c.addCommand(new AddFaultImpactRelationCommand());
 			return c;
 		}
 
