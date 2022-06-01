@@ -18,10 +18,8 @@ import com.facilio.bmsconsoleV3.commands.building.AddOrUpdateBuildingLocation;
 import com.facilio.bmsconsoleV3.commands.building.BuildingFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.building.CreateBuildingAfterSave;
 import com.facilio.bmsconsoleV3.commands.building.SetBuildingRelatedContextCommand;
-import com.facilio.bmsconsoleV3.commands.client.AddAddressForClientLocationCommandV3;
-import com.facilio.bmsconsoleV3.commands.client.LoadClientLookupCommandV3;
-import com.facilio.bmsconsoleV3.commands.client.UpdateAddressForClientLocationCommandV3;
-import com.facilio.bmsconsoleV3.commands.client.UpdateClientIdInSiteCommandV3;
+import com.facilio.bmsconsoleV3.commands.client.*;
+import com.facilio.bmsconsoleV3.commands.client.DisassociateClientFromSiteCommand;
 import com.facilio.bmsconsoleV3.commands.clientcontact.LoadClientContactLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.FillAudienceSharingInfoCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.LoadAudienceLookupCommandV3;
@@ -551,12 +549,12 @@ public class APIv3Config {
                 .beforeSave(new AddAddressForClientLocationCommandV3())
                 .afterSave(TransactionChainFactoryV3.getAddClientsAfterSaveChain())
                 .update()
-                .beforeSave(new UpdateAddressForClientLocationCommandV3())
-                .afterSave(new UpdateClientIdInSiteCommandV3())
+                .beforeSave(new AssociateClientFromSite(),new DisassociateClientFromSiteCommand(), new UpdateAddressForClientLocationCommandV3())
                 .list()
                 .beforeFetch(new LoadClientLookupCommandV3())
                 .summary()
                 .beforeFetch(new LoadClientLookupCommandV3())
+                .delete()
                 .build();
     }
 
