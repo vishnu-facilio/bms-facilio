@@ -156,6 +156,12 @@ public class FacilioProperties {
     @Getter
     private static String serviceaccountuser;
 
+    @Getter
+    private static String proxyUrl;
+
+    @Getter
+    private static String portalProxyUserUrl;
+
     static {
         loadProperties();
     }
@@ -314,6 +320,9 @@ public class FacilioProperties {
             esIndex = PROPERTIES.getProperty("es.index");
 
             wmsBroadcaster = PROPERTIES.getProperty("wms.broadcaster");
+
+            proxyUrl = PROPERTIES.getProperty("proxyUrl");
+            portalProxyUserUrl = PROPERTIES.getProperty("portalProxyUrl");
 
             if (PROPERTIES.containsKey("iot.endpoint.port")) {
                 try {
