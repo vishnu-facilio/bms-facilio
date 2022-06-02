@@ -9,28 +9,37 @@ import com.facilio.bmsconsoleV3.util.LicensingInfoUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import lombok.Getter;
+import lombok.Setter;
 
 public class ModuleWorkflowRuleAction extends FacilioAction {
 
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private String moduleName;
+     *
+     */
+    private static final long serialVersionUID = 1L;
+    private String moduleName;
+
     public String getModuleName() {
         return moduleName;
     }
+
     public void setModuleName(String moduleName) {
         this.moduleName = moduleName;
     }
 
     private int ruleType;
+
     public int getRuleType() {
         return ruleType;
     }
     public void setRuleType(int ruleType) {
         this.ruleType = ruleType;
     }
+
+    @Getter
+    @Setter
+    private int ruleId;
 
     public String fetchWorkflowRules() throws Exception {
         FacilioChain c = ReadOnlyChainFactory.getCustomModuleWorkflowRulesChain();
@@ -45,6 +54,16 @@ public class ModuleWorkflowRuleAction extends FacilioAction {
         return SUCCESS;
     }
 
+    public String fetchWorkflowRule() throws Exception {
+        FacilioChain c = ReadOnlyChainFactory.getModuleWorkflowRuleChain();
+        FacilioContext context = c.getContext();
+        context.put(FacilioConstants.ContextNames.ID, getRuleId());
+        c.execute();
+
+        setResult(FacilioConstants.ContextNames.WORKFLOW_RULE, context.get(FacilioConstants.ContextNames.WORKFLOW_RULE));
+
+        return SUCCESS;
+    }
     public String getCountForWorkFlowRules() throws Exception{
         FacilioChain chain = ReadOnlyChainFactory.getCountForWorkflowRuleChain();
         FacilioContext context = chain.getContext();

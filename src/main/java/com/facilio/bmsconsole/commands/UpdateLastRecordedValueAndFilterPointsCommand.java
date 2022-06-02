@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class UpdateLastRecordedValueAndFilterPointsCommand extends AgentV2Command {
     private static final Logger LOGGER = LogManager.getLogger(UpdateLastRecordedValueAndFilterPointsCommand.class.getName());
-    private static final long TOLERANCE_MS = 30000; //30secs tolerance
+    private static final long TOLERANCE_MS = 0; //0secs tolerance
 
     @Override
     public boolean executeCommand(Context context) throws Exception {

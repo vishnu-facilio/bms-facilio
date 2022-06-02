@@ -15,7 +15,9 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.PeopleContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
@@ -27,11 +29,13 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMAppUtil;
+import com.facilio.modules.FacilioModule;
 import com.facilio.services.email.EmailClient;
 import com.facilio.services.email.EmailFactory;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.util.FacilioUtil;
+import com.facilio.util.PortalUtil;
 import com.facilio.v3.context.AttachmentV3Context;
 
 public class SendEmailForEmailConversationThreadingCommand extends FacilioCommand {
@@ -139,26 +143,21 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 		// TODO Auto-generated method stub
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		String appDomain = getAppDomain(to);
+		FacilioModule module = modBean.getModule(emailConversation.getDataModuleId());
 		
-		if(modBean.getModule(emailConversation.getDataModuleId()).getName().equals(FacilioConstants.ContextNames.SERVICE_REQUEST)) {
-			
-			String serviceRequestLink = appDomain+"/service/my-requests/service-request/all/"+emailConversation.getRecordId()+"/overview";
-			
-			String hrefTag = "<a href=\""+serviceRequestLink+"\">[#"+emailConversation.getRecordId()+"]</a>";
-			
-			String newMessage = "Hi,<br><br>"+AccountUtil.getCurrentUser().getName() +" added a "+emailConversation.getMessageTypeEnum().getName()+" to "+hrefTag+"<br><br>"+message;
-			
-			return newMessage;
-		}
+		String summaryLink = getRecordSummaryLink(to,module,emailConversation.getRecordId());
 		
-		return message;
+		String hrefTag = "<a href=\""+summaryLink+"\">[#"+emailConversation.getRecordId()+"]</a>";
+		
+		String newMessage = "Hi,<br><br>"+AccountUtil.getCurrentUser().getName() +" added a "+emailConversation.getMessageTypeEnum().getName()+" to "+hrefTag+"<br><br>"+message;
+		
+		return newMessage;
 	}
 
-	private String getAppDomain(String to) {
+	private String getRecordSummaryLink(String to, FacilioModule module, Long recordId) {
 		// TODO Auto-generated method stub
 		
-		String appDomain = "https://"+AccountUtil.getCurrentOrg().getDomain()+".facilioportal.com";
+		String summaryLink = "https://"+AccountUtil.getCurrentOrg().getDomain()+".facilioportal.com/service/my-requests/service-request/all/"+recordId+"/overview";;
 		
 		try {
 			String firstTo = FacilioUtil.splitByComma(to)[0];
@@ -194,7 +193,13 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 				}
 				
 				if(appDomains != null && !appDomains.isEmpty()) {
-					appDomain = "https://"+appDomains.get(0).getDomain();
+					
+					ApplicationContext application = ApplicationApi.getApplicationForId(ApplicationApi.getApplicationIdForApp(appDomains.get(0)));
+					application.setAppDomain(appDomains.get(0));
+					String newSummaryLink = PortalUtil.getPortalRecordSummaryLink(application, module.getName(), recordId);
+					if(newSummaryLink != null) {
+						summaryLink = newSummaryLink;
+					}
 				}
 			}
 		}
@@ -202,7 +207,7 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 			LOGGER.error(e.getMessage(), e);
 		}
 		
-		return appDomain;
+		return summaryLink;
 		
 	}
 

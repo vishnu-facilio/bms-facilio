@@ -10,6 +10,8 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.json.annotations.JSON;
@@ -90,6 +92,9 @@ public class CustomButtonRuleContext extends ApproverWorkflowRuleContext impleme
     }
 
     private ButtonType buttonType;
+    @Getter
+    @Setter
+    private int iconType=-1;
     public int getButtonType() {
         if (buttonType != null) {
             return buttonType.getIndex();

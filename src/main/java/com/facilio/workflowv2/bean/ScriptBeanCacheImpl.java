@@ -123,6 +123,12 @@ public class ScriptBeanCacheImpl extends ScriptBeanImpl implements ScriptBean {
 		// TODO Auto-generated method stub
 		FacilioCache<String, WorkflowUserFunctionContext> functionCache = LRUScriptCache.getScriptFunctionCache();
         String key = LRUScriptCache.CacheKeys.SCRIPT_FUNCTION_KEY(getOrgId(), nameSpaceName, functionName);
-        return FWLRUCaches.Util.genericGetFromCacheAndHandleMissLogic(functionCache, key, () ->super.getFunction(nameSpaceName,functionName));
+        WorkflowUserFunctionContext workflowContext = FWLRUCaches.Util.genericGetFromCacheAndHandleMissLogic(functionCache, key, () ->super.getFunction(nameSpaceName,functionName));
+        
+        workflowContext.setReturnValue(null);
+        workflowContext.setParams(null);
+        workflowContext.setParameters(null);
+        
+        return workflowContext;
 	}
 }

@@ -4893,6 +4893,8 @@
 	</package>
 
 	<package name="moduleWorkflowRule" namespace="/api/v2/modules/rules" extends="v2Api">
+		<action name="getRule" class="com.facilio.bmsconsole.actions.ModuleWorkflowRuleAction"
+				method="fetchWorkflowRule" />
 		<action name="list" class="com.facilio.bmsconsole.actions.ModuleWorkflowRuleAction"
 				method="fetchWorkflowRules" />
 		<action name="add" class="com.facilio.bmsconsole.actions.ModuleWorkflowRuleAction"

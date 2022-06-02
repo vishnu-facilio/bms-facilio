@@ -85,7 +85,11 @@
             <property name="moduleName" type="string"/>
         </requestbody>
     </request>
-
+    <request path="/api/v2/modules/rules/getRule">
+        <urlparams>
+            <property name="ruleId" type="number"  mandatory="true"/>
+        </urlparams>
+    </request>
     <request path="/api/v2/custombutton/getAvailableButtons">
         <requestbody type="object">
             <property name="id" type="number"/>

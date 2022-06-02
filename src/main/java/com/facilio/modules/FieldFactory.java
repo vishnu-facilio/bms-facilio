@@ -8401,6 +8401,7 @@ public class FieldFactory extends BaseFieldFactory {
         list.add(getField("allApprovalRequired", "ALL_APPROVAL_REQUIRED", module, FieldType.BOOLEAN));
         list.add(getField("approvalOrder", "APPROVAL_ORDER", module, FieldType.NUMBER));
         list.add(getField("configStr", "CONFIG", module, FieldType.STRING));
+        list.add(getField("iconType","ICON_TYPE",module,FieldType.NUMBER));
 
         return list;
     }
