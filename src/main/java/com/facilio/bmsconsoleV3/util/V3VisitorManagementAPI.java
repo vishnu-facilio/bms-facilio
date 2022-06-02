@@ -816,11 +816,16 @@ public class V3VisitorManagementAPI {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOG);
             List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+            FacilioStatus checkedOutStatus = TicketAPI.getStatus(module, "CheckedOut");
 
             Map<String, Object> updateMap = new HashMap<>();
             if(!isCheckIn) {
                 FacilioField checkOutTimeField = modBean.getField("checkOutTime", module.getName());
                 updateMap.put("checkOutTime", time);
+
+                FacilioField statusField = modBean.getField("moduleState", module.getName());
+                updateMap.put("moduleState", FieldUtil.getAsProperties(checkedOutStatus));
+                updatedfields.add(statusField);
                 
                 FacilioField overStayField = modBean.getField("isOverStay", module.getName());
                 boolean isOverStay = false;
@@ -2933,28 +2938,41 @@ public class V3VisitorManagementAPI {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOG);
         List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_LOG);
-
         FacilioStatus checkedInStatus = TicketAPI.getStatus(module, "CheckedIn");
-        FacilioStatus checkedOutStatus = TicketAPI.getStatus(module, "CheckedOut");
 
-        List<FacilioField> updatedfields = new ArrayList<FacilioField>();
-
-        UpdateRecordBuilder<VisitorLogContextV3> updateBuilder = new UpdateRecordBuilder<VisitorLogContextV3>()
+        SelectRecordsBuilder<VisitorLogContextV3> builder = new SelectRecordsBuilder<VisitorLogContextV3>()
                 .module(module)
-                .fields(updatedfields)
-                .andCondition(CriteriaAPI.getCondition("MODULE_STATE", "moduleState", String.valueOf(checkedInStatus.getId()), NumberOperators.EQUALS))
-                ;
-        Map<String, Object> updateMap = new HashMap<>();
-        FacilioField statusField = modBean.getField("moduleState", module.getName());
-        FacilioField checkOutField = modBean.getField("checkOutTime", module.getName());
+                .beanClass(VisitorLogContextV3.class)
+                .select(fields)
+                .andCondition(CriteriaAPI.getCondition("MODULE_STATE", "moduleState", String.valueOf(checkedInStatus.getId()), NumberOperators.EQUALS));
 
-        updateMap.put("moduleState", FieldUtil.getAsProperties(checkedOutStatus));
-        updateMap.put("checkOutTime", System.currentTimeMillis());
+                    List<VisitorLogContextV3> visitorLogs = builder.get();
+                    for(VisitorLogContextV3 vlog : visitorLogs) {
+                        updateVisitorLogCheckInCheckoutTime(vlog,false,System.currentTimeMillis());
+                    }
+    }
 
-        updatedfields.add(statusField);
-        updatedfields.add(checkOutField);
+    public static void updateInviteVisitorHasCheckInState(InviteVisitorContextV3 vLog) throws Exception {
+        if(vLog.getId() > 0) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR);
+            List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+            FacilioStatus hasCheckedInStatus = TicketAPI.getStatus(module, "hasCheckedIn");
 
-        updateBuilder.updateViaMap(updateMap);
+            Map<String, Object> updateMap = new HashMap<>();
+            if (vLog.hasCheckedIn()) {
+                FacilioField statusField = modBean.getField("moduleState", module.getName());
+                updateMap.put("moduleState", FieldUtil.getAsProperties(hasCheckedInStatus));
+                updatedfields.add(statusField);
+                UpdateRecordBuilder<InviteVisitorContextV3> updateBuilder = new UpdateRecordBuilder<InviteVisitorContextV3>()
+                        .module(module)
+                        .fields(updatedfields)
+                        .andCondition(CriteriaAPI.getIdCondition(vLog.getId(), module))
+                        ;
+                updateBuilder.ignoreSplNullHandling();
+                updateBuilder.updateViaMap(updateMap);
+            }
+        }
     }
 
 

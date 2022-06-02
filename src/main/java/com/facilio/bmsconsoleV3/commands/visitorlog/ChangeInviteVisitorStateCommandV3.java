@@ -23,6 +23,8 @@ import com.facilio.modules.UpdateChangeSet;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
 
+import static com.facilio.bmsconsoleV3.util.V3VisitorManagementAPI.updateInviteVisitorHasCheckInState;
+
 public class ChangeInviteVisitorStateCommandV3 extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -47,13 +49,13 @@ public class ChangeInviteVisitorStateCommandV3 extends FacilioCommand {
 		if (MapUtils.isNotEmpty(changeSet)) {
 			if (CollectionUtils.isNotEmpty(records)) {
 				long time = System.currentTimeMillis();
-				for (InviteVisitorContextV3 record : records) {		
+				for (InviteVisitorContextV3 record : records) {
+					updateInviteVisitorHasCheckInState(record);
 					InviteVisitorContextV3 oldInvite = oldInvitesMap.get(record.getId());
 					if (oldInvite.hasCheckedIn() && !isInviteEdit) {
 						VisitorLogContextV3 vLogToBeAdded = FieldUtil.cloneBean(record, VisitorLogContextV3.class);
 						VisitorLogContextV3 oldVLogToBeAdded = FieldUtil.cloneBean(oldRecords.get(0),
 								VisitorLogContextV3.class);
-
 						if (vLogToBeAdded.getCheckInTime() == null || vLogToBeAdded.getCheckInTime() <= 0) {
 							V3VisitorManagementAPI.updateVisitorLogCheckInCheckoutTimeFromInviteVisitor(vLogToBeAdded,
 									true, time, record);
