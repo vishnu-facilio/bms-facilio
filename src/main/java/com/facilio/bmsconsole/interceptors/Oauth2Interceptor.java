@@ -29,7 +29,7 @@ public class Oauth2Interceptor extends AbstractInterceptor {
             LOGGER.error("Authorization header missing");
             return Action.LOGIN;
         }
-        String bearerToken = authorization.replace("Bearer oauth2", "");
+        String bearerToken = authorization.replace("Bearer oauth2", "").trim();
         String clientIdForToken = new HydraClient().getClientIdForToken(bearerToken);
 
         if (StringUtils.isEmpty(clientIdForToken)) {
