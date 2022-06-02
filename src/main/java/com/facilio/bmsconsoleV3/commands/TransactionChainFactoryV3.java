@@ -4,6 +4,7 @@ import java.util.Collections;
 
 import com.facilio.bmsconsole.commands.AddTasksCommand;
 import com.facilio.bmsconsoleV3.commands.assetDepartment.ValidateAssetDepartmentDeletionV3;
+import com.facilio.bmsconsoleV3.commands.dashboard.CloneDashboardCommand;
 import com.facilio.bmsconsoleV3.commands.floorplan.*;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.AddLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.DeleteLicensingInfoCommand;
@@ -1806,4 +1807,10 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new DeleteLicensingInfoCommand());
         return c;
     }
+    public static FacilioChain getCloneDashboardChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CloneDashboardCommand());
+        return c;
+    }
+
 }

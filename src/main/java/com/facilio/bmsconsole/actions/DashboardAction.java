@@ -6450,6 +6450,7 @@ public class DashboardAction extends FacilioAction {
 		
 		if(dashboardFolderContext != null) {
 			dashboardFolderContext.setOrgId(AccountUtil.getCurrentOrg().getId());
+			dashboardFolderContext.setAppId(AccountUtil.getCurrentApp().getId());
 			
 			if(moduleName != null) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
