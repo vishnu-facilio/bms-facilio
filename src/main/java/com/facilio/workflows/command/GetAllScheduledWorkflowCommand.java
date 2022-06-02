@@ -27,6 +27,9 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
+import lombok.extern.log4j.Log4j;
+
+@Log4j
 public class GetAllScheduledWorkflowCommand extends FacilioCommand {
 
 	@Override
@@ -48,6 +51,8 @@ public class GetAllScheduledWorkflowCommand extends FacilioCommand {
 				ScheduledWorkflowContext scheduledWorkflowContext = FieldUtil.getAsBeanFromMap(prop, ScheduledWorkflowContext.class);
 				
 				JobContext job = JobStore.getJob(AccountUtil.getCurrentOrg().getId(), scheduledWorkflowContext.getId(), "ScheduledWorkflow");
+				
+				LOGGER.error("job ---- "+job);
 				
 				if(job != null) {
 					long nextExecutionTime = job.getExecutionTime()*1000;
