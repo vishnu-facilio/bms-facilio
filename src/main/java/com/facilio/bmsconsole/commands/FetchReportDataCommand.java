@@ -1467,7 +1467,7 @@ public class FetchReportDataCommand extends FacilioCommand {
                if (field instanceof LookupField) {
                    LookupField lookupField = (LookupField) field;
                     if(baseModule.getExtendedModuleIds().contains(lookupField.getLookupModule().getModuleId())){
-                        dataField = field;
+                        dataField = field.clone();
                         break;
                     }
                }
