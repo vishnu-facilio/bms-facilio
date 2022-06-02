@@ -256,11 +256,8 @@ public class V3FloorPlanAPI {
 						//
 					} else if ((Boolean) marktooltip.get("hasDepartmentAccess")) {
 						if (desk.getEmployee() != null) {
-							if (!(desk.getEmployee().getDepartment().getId() == employee.getDepartment().getId() || desk.getDepartment().getId() == employee.getDepartment().getId())) {
-								hideTooltipProperties(tooltip);
-							}
-						} else {
-							if (!(desk.getDepartment().getId() == employee.getDepartment().getId())) {
+							if (desk.getEmployee().getDepartment().getId() != employee.getDepartment().getId() ){
+
 								hideTooltipProperties(tooltip);
 							}
 						}
@@ -269,8 +266,6 @@ public class V3FloorPlanAPI {
 							if (desk.getEmployee().getId() != employee.getId()) {
 								hideTooltipProperties(tooltip);
 							}
-						} else {
-							hideTooltipProperties(tooltip);
 						}
 					} else {
 						// hide all properties
@@ -600,24 +595,16 @@ public class V3FloorPlanAPI {
 					//
 				} else if ((Boolean) mark.get("hasDepartmentAccess")) {
 					if (employeemarker != null) {
-						if (!(employeemarker.getDepartment().getId() == employee.getDepartment().getId() || deskdepartment.getId() == employee.getDepartment().getId())) {
-							hideProperties(properties);
-						}
-					} else {
-						if ((deskdepartment.getId() != employee.getDepartment().getId())) {
+						if(properties.getDepartmentId()!=employee.getDepartment().getId()){
 							hideProperties(properties);
 						}
 					}
 				} else if ((Boolean) mark.get("hasOwnAccess")) {
 					if (employeemarker != null) {
-						if (employeemarker.getId() != employee.getId()) {
+						if(properties.getEmployeeId()!=employee.getId()){
 							hideProperties(properties);
 						}
 					}
-
-					else {
-							hideProperties(properties);
-						}
 					}
 
 				 else {
