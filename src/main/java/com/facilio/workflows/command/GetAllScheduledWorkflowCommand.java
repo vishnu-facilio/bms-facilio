@@ -21,6 +21,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.taskengine.job.JobContext;
 import com.facilio.taskengine.job.JobStore;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.workflows.context.ScheduledWorkflowContext;
 import com.facilio.workflows.context.WorkflowContext;
@@ -50,9 +51,9 @@ public class GetAllScheduledWorkflowCommand extends FacilioCommand {
 			for(Map<String, Object> prop :props) {
 				ScheduledWorkflowContext scheduledWorkflowContext = FieldUtil.getAsBeanFromMap(prop, ScheduledWorkflowContext.class);
 				
-				JobContext job = JobStore.getJob(AccountUtil.getCurrentOrg().getId(), scheduledWorkflowContext.getId(), "ScheduledWorkflow");
+				JobContext job = FacilioTimer.getJob(scheduledWorkflowContext.getId(), "ScheduledWorkflow");
 				
-				LOGGER.error("job ---- "+job);
+				LOGGER.error("job ---- "+job);	// remove this after debug
 				
 				if(job != null) {
 					long nextExecutionTime = job.getExecutionTime()*1000;
