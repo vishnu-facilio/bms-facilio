@@ -6374,11 +6374,6 @@ public class TransactionChainFactory {
 		chain.addCommand(new AddSurveyRuleActionCommand());
 		return chain;
 	}
-	public static FacilioChain getCommissionedChainCommnad(){
-		FacilioChain chain = getDefaultChain();
-		chain.addCommand(new GetCommissionedChainCommand());
-		return chain;
-	}
 	public static FacilioChain deleteSurveyRuleChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new DeleteSurveyRulesCommand());
