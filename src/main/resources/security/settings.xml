@@ -705,5 +705,16 @@
         </urlparams>
     </request>
 
+    <request path="/api/basespace">
+        <urlparams>
+            <property name="filters" type="string" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+            <property name="orderBy" type="string" mandatory="false"/>
+            <property name="orderType" type="string" mandatory="false"/>
+            <property name="spaceType" type="number" mandatory="false"/>
+            <property name="spaceId" type="number" mandatory="false"/>
+            <property name="isZone" type="boolean" mandatory="false"/>
+        </urlparams>
+    </request>
 
 </config>
