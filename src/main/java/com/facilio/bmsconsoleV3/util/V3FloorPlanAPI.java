@@ -66,9 +66,9 @@ public class V3FloorPlanAPI {
 		String currentTab = request.getHeader("X-Tab-Id");
 		long tabId = Long.valueOf(currentTab);
 		Role role = AccountUtil.getCurrentUser().getRole();
-		long ouid = AccountUtil.getCurrentAccount().getUser().getOuid();
+		long id = AccountUtil.getCurrentUser().getUid();
 		String moduleName = "INDOOR_FLOOR_PLAN";
-		V3EmployeeContext emp = V3RecordAPI.getRecord(FacilioConstants.ContextNames.EMPLOYEE,ouid,V3EmployeeContext.class);
+		V3EmployeeContext emp = V3RecordAPI.getRecord(FacilioConstants.ContextNames.EMPLOYEE,id,V3EmployeeContext.class);
 		boolean hasAllAccess = PermissionUtil.userHasPermission(tabId, moduleName, "VIEW_ASSIGNMENT", role);
 		boolean hasDepartmentAccess = PermissionUtil.userHasPermission(tabId, moduleName, "VIEW_ASSIGNMENT_DEPARTMENT", role);
 		boolean hasOwnAccess = PermissionUtil.userHasPermission(tabId, moduleName, "VIEW_ASSIGNMENT_OWN", role);
@@ -76,7 +76,7 @@ public class V3FloorPlanAPI {
 		markerObject.put("currentTab", currentTab);
 		markerObject.put("tabId",tabId);
 		markerObject.put("role", role);
-		markerObject.put("ouid",ouid );
+		markerObject.put("userId",id );
 		markerObject.put("hasAllAccess", hasAllAccess);
 		markerObject.put("hasDepartmentAccess", hasDepartmentAccess);
 		markerObject.put("hasOwnAccess", hasOwnAccess);
