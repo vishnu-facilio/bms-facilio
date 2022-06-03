@@ -683,11 +683,6 @@
         </requestbody>
     </request>
     <request path="/api/v3/licensinginfo/list">
-        <requestbody type="object">
-            <property name="licenseContext" type="object">
-                <property name="ouId" type="number"/>
-            </property>
-        </requestbody>
     </request>
     <request path="/api/v3/licensinginfo/delete">
         <requestbody type="object">
