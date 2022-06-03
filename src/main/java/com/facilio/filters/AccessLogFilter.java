@@ -144,6 +144,9 @@ public class AccessLogFilter implements Filter {
             } else {
                 event.setProperty("isInputValidated", "true");
             }
+            String otelTraceId = Span.current().getSpanContext().getTraceId();
+            event.setProperty("otel-trace", "https://signoz.facilio.in/trace/" + otelTraceId);
+            event.setProperty("repeatQueries", "https://appsmith.facilio.in/app/signoz-traces/page1-629721b92b5ae55d651869c0?traceId="+ otelTraceId);
             long timeTaken = System.currentTimeMillis() - startTime;
             String responseCode = String.valueOf(response.getStatus());
             event.setProperty(RESPONSE_CODE,String.valueOf(response.getStatus()));
