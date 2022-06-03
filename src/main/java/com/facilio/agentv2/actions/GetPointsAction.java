@@ -3,8 +3,11 @@ package com.facilio.agentv2.actions;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.CommissioningLogContext;
 import com.facilio.bmsconsole.util.CommissioningApi;
+import com.facilio.chain.FacilioChain;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.unitconversion.Unit;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -83,14 +86,13 @@ public class GetPointsAction extends AgentActionV2 {
 		try {
 			List<Map<String,Object>> data= getPointsData(PointStatus.valueOf(status));
 			if(status.equals("COMMISSIONED")){
-				Set<Long> resourceIdSet =data.stream().map(x->(Long)x.get("resourceId")).collect(Collectors.toSet());
-				Set<Long>fieldIdSet =data.stream().map(x->(Long)x.get("fieldId")).collect(Collectors.toSet());
-				Map<Long, String> resourceMap = CommissioningApi.getResources(resourceIdSet);
-				Map<Long, Map<String, Object>> fieldMap = CommissioningApi.getFields(fieldIdSet);
-				Map<Integer, String> unitMap = unitMap(data);
-				setResult("resourceMap", resourceMap);
-				setResult("fieldMap", fieldMap);
-				setResult("unitMap",unitMap);
+				FacilioChain chain = TransactionChainFactory.getCommissionedChainCommand();
+				FacilioContext context = chain.getContext();
+				context.put("data",data);
+				chain.execute();
+				setResult("resourceMap", context.get("resourceMap"));
+				setResult("fieldMap", context.get("fieldMap"));
+				setResult("unitMap",context.get("unitMap"));
 			}
 			setResult(AgentConstants.DATA, data);
 			ok();
@@ -201,20 +203,5 @@ public class GetPointsAction extends AgentActionV2 {
 		req.setControllerId(0L);
 		return req.getPointCount(null) > 0;
 	}
-	public static Map<Integer, String> unitMap(List<Map<String,Object>> points){
-		Map<Integer, String> unitMap = new HashMap<>();
-		for(int i = 0, size = points.size(); i < size; i++){
-			Map<String, Object> point = (Map<String, Object>) points.get(i);
-			if (point.get("unit") != null && !unitMap.containsKey(point.get("unit"))) {
-				int unitId = Integer.parseInt(point.get("unit").toString());
-				if (unitId > 0) {
-					Unit unit = Unit.valueOf(unitId);
-					unitMap.put(unitId, unit.getSymbol());
-				} else {
-					point.put("unit", null);
-				}
-			}
-		}
-		return unitMap;
-	}
+
 }
