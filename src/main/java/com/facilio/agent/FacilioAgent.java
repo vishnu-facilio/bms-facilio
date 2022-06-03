@@ -1,6 +1,5 @@
 package com.facilio.agent;
 
-import com.facilio.agent.integration.AgentIntegrationKeys;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.constants.FacilioConstants;
 import org.apache.log4j.LogManager;
@@ -113,21 +112,11 @@ public class FacilioAgent implements Serializable
 
 
     public static String getCertFileName(String type) {
-        if(AgentType.WATTSENSE.getLabel().equalsIgnoreCase(type)){
-            return AgentIntegrationKeys.WATT_FEDGE_ZIP;
-        }
-        else {
-            return FacilioConstants.ContextNames.FEDGE_ZIP;
-        }
+        return FacilioConstants.ContextNames.FEDGE_ZIP;
     }
 
     public static String getCertFileId(String type) {
-        if(AgentType.WATTSENSE.getLabel().equalsIgnoreCase(type)){
-            return AgentIntegrationKeys.WATT_FEDGE_FILE_ID;
-        }
-        else {
-            return FacilioConstants.ContextNames.FEDGE_CERT_FILE_ID;
-        }
+        return FacilioConstants.ContextNames.FEDGE_CERT_FILE_ID;
     }
 
 

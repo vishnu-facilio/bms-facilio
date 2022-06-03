@@ -23,11 +23,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentUtil;
 import com.facilio.agent.FacilioAgent;
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;

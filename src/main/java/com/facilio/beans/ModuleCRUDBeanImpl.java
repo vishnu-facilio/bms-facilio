@@ -760,10 +760,6 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
 				.table(AgentKeys.AGENT_TABLE).select(FieldFactory.getAgentDataFields());
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(agentDataModule))
-		if(!AgentType.WATTSENSE.equals(type)) {
-				genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getDeletedTimeField(agentDataModule), "NULL", CommonOperators.IS_EMPTY));
-
-		}
 		if (agentName != null)
 		{
 			genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentNameField(agentDataModule),agentName,StringOperators.IS)).get();
@@ -835,16 +831,6 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		}
 		return new ArrayList<>();
     }
-
-	/*@Override
-	public List<Map<String, Object>> getIntegration() throws Exception {
-		FacilioModule integrationModule = ModuleFactory.getAgentIntegrationModule();
-		GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
-				.table(WattsenseKeys.INTEGRATION_TABLE_NAME)
-				.select(FieldFactory.getAgentIntegrationFields())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(integrationModule));
-		return genericSelectRecordBuilder.get();
-	}*/
 
 	public Long addAgentMessage(Map<String,Object> map)throws Exception{ // transaction done
 		FacilioModule messageModule = ModuleFactory.getAgentMessageModule();

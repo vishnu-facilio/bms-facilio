@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.chain.FacilioContext;
 import com.facilio.modules.*;
@@ -24,7 +25,6 @@ import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.sensor.SensorRuleContext;
 import com.facilio.bmsconsole.context.sensor.SensorRuleUtil;
@@ -317,7 +317,8 @@ public class LookupSpecialTypeUtil {
 		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
 			return WorkflowRuleAPI.getWorkflowRule(id, false, false);
 		}else if (ContextNames.AGENT_DATA.equals(specialType) || ContextNames.AGENT.equals(specialType)){
-			return AgentApiV2.getAgent(id);
+			AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+			return agentBean.getAgent(id);
 		}
 		else if (FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)) {
 			return SensorRuleUtil.getSensorRuleByIds(Collections.singletonList(id));

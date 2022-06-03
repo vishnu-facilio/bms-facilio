@@ -6,7 +6,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.rdm.RdmControllerContext;
+import com.facilio.fw.BeanFactory;
 import com.facilio.wms.message.Message;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -15,7 +17,6 @@ import org.json.simple.JSONObject;
 
 import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agent.protocol.ProtocolUtil;
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
@@ -88,7 +89,8 @@ public class ControllerMessenger {
         }
         IotData iotData = new IotData();
         long agentId = controller.getAgentId();
-        FacilioAgent agent = AgentApiV2.getAgent(agentId);
+        AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+        FacilioAgent agent = agentBean.getAgent(agentId);
         if (agent != null) {
             if( ! agent.getConnected()){
                 throw new Exception("Agent is not connected");

@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.agentv2.cacheimpl.AgentBean;
+import com.facilio.fw.BeanFactory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.AgentUtilV2;
 import com.facilio.agentv2.FacilioAgent;
@@ -222,7 +223,8 @@ public class AgentIdAction extends AgentActionV2 {
 
     public String getAgentUsingId() {
         try {
-        	FacilioAgent agent = AgentApiV2.getAgent(getAgentId());
+            AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+            FacilioAgent agent = agentBean.getAgent(getAgentId());
             if (agent != null) {
                 setResult(AgentConstants.RESULT, SUCCESS);
                 setResult(AgentConstants.DATA, agent.toJSON());

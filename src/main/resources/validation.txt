@@ -579,9 +579,6 @@
 /api/v2/setup/agent/logCount
 /api/v2/setup/agent/fetchMessage
 /api/v2/setup/agent/metrics
-/api/v2/setup/agent/integration/wattsense/add
-/api/v2/setup/agent/integration/wattsense/list
-/api/v2/setup/agent/integration/wattsense/delete
 /api/v2/setup/controller/list
 /api/v2/setup/controller/edit
 /api/v2/setup/importpoints/:moduleName
@@ -773,8 +770,6 @@
 /api/v2/agent/test/getPolicyGist
 /api/v2/agent/integration/altair/getIntegrationList
 /api/v2/agent/integration/altair/addIntegration
-/api/v2/agent/wattsense/getDevices
-/api/v2/agent/wattsense/discoverPoints
 /api/v2/agent/inboundConnections/add
 /api/agent/inbound/wegot/events
 /api/v3/iot/data/push

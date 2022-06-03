@@ -31,6 +31,7 @@ public class LRUCache {
 	private static FacilioCache<String, Object> userSecurityPolicyPS = new PubSubLRUCache<>("userSecurityPolicyPS", 2000);
 	private static FacilioCache<String, Map<String, Map<String, Object>>> globalVariable = new PubSubLRUCache<>("globalVariable", 2000);
 	private static FacilioCache<String, Boolean> proxyUsersPS = new PubSubLRUCache<>("proxyUsers", 1000);
+	private static FacilioCache<String, Object> agentCache = new PubSubLRUCache<>("agentCache", 1000);
 
 	public static void purgeAllCache() {
 		RedisManager.purgeAllCache();
@@ -83,4 +84,6 @@ public class LRUCache {
 	public static FacilioCache<String,Object> getRoleNameCachePs(){
 		return roleNameCachePs;
 	}
+
+	public static FacilioCache<String, Object> getAgentCache() {return agentCache;}
 }

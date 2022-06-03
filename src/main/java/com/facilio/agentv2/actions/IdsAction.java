@@ -1,17 +1,19 @@
 package com.facilio.agentv2.actions;
 
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.bmsconsole.instant.jobs.BulkPointDiscoverJob;
 import com.facilio.chain.FacilioContext;
+import com.facilio.fw.BeanFactory;
 import com.facilio.taskengine.InstantJobScheduler;
 import com.facilio.taskengine.job.InstantJob;
 import com.facilio.tasker.FacilioTimer;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import sun.management.resources.agent;
 
 import javax.validation.constraints.NotNull;
 import java.net.HttpURLConnection;
@@ -84,15 +86,18 @@ public class IdsAction extends AgentActionV2
         try {
             List<Long> agentIds = getRecordIds();
             if (!agentIds.isEmpty()) {
-                boolean isdeleted = AgentApiV2.deleteAgent(agentIds);
+                AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+                boolean isdeleted = agentBean.deleteAgent(agentIds);
                 if (isdeleted) {
                     setResult(AgentConstants.RESULT, SUCCESS);
                     setResponseCode(HttpURLConnection.HTTP_OK);
                     return SUCCESS;
                 }
-                setResponseCode(HttpURLConnection.HTTP_NOT_MODIFIED);
-                setResult(AgentConstants.RESULT, ERROR);
-                return SUCCESS;
+                else {
+                    setResult(AgentConstants.RESULT,ERROR);
+                    setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+                    return ERROR;
+                }
             } else {
                 setResult(AgentConstants.EXCEPTION, "agentIds can't be empty");
                 setResult(AgentConstants.RESULT, ERROR);

@@ -48,51 +48,6 @@ public class DownloadCertFile {
         return null;
     }
 
-    public static String downloadCertificate(String policyName, String type) {
-        try {
-            return downloadCertificateCommand(policyName, type);
-        } catch (Exception e) {
-            LOGGER.info("Exception while downloadCertificate for poilcy name ->" + policyName + " for type->" + type+" ",e);
-        }
-        return null;
-    }
-
-    private static String downloadCertificateCommand(String policyName, String type) throws Exception {
-        Objects.requireNonNull(policyName, "policy name can't be null");
-        LOGGER.info("policy name " + policyName);
-        String certFileId = FacilioAgent.getCertFileId(type);
-        LOGGER.info("certFileId " + certFileId);
-        long orgId = Objects.requireNonNull(AccountUtil.getCurrentOrg()).getOrgId();
-        String url = null;
-        Map<String, Object> orgInfo = CommonCommandUtil.getOrgInfo(orgId, certFileId);
-        if (orgInfo != null) {
-            long fileId = Long.parseLong((String) orgInfo.get("value"));
-            FileStore fs = FacilioFactory.getFileStore();
-            url = fs.getPrivateUrl(fileId);
-        }
-        if (url == null) {
-            LOGGER.info(" url not present ");
-            String orgDomainName = AccountUtil.getCurrentAccount().getOrg().getDomain();
-            CreateKeysAndCertificateResult certificateResult = AwsUtil.createIotToKafkaLink(policyName, orgDomainName, type);
-            String directoryName = "facilio/";
-            String outFileName = FacilioAgent.getCertFileName(type);
-            File file = new File(System.getProperty("user.home") + outFileName);
-            try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file))) {
-                addToZip(out, directoryName + "facilio.crt", certificateResult.getCertificatePem());
-                addToZip(out, directoryName + "facilio-private.key", certificateResult.getKeyPair().getPrivateKey());
-                // addToZip(out, directoryName + "facilio.config", getFacilioConfig(orgDomainName, orgDomainName));
-                out.finish();
-                out.flush();
-                FileStore fs = FacilioFactory.getFileStore();
-                long id = fs.addFile(file.getName(), file, "application/octet-stream");
-                url = fs.getPrivateUrl(id);
-                CommonCommandUtil.insertOrgInfo(certFileId, String.valueOf(id));
-                file.delete();
-            }
-        }
-        return url;
-    }
-
     public static long addCertificate(String policyName, String type) throws Exception {
         long fileId = -1;
         CreateKeysAndCertificateResult certificateResult = AwsUtil.createIotToKafkaLink(policyName, policyName, type);

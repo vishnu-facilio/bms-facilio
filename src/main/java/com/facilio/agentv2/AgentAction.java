@@ -19,6 +19,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.facilio.agent.AgentType;
+import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
@@ -105,8 +106,9 @@ public class AgentAction extends AgentActionV2 {
         try {
             FacilioContext context = new FacilioContext();
             constructListContext(context);
-            List<Map<String, Object>> agentListData = AgentApiV2.getAgentListData(false);
-            // AgentApiV2.listFacilioAgents(context);
+            AgentBean agentBean = getAgentBean();
+            List<Map<String, Object>> agentListData = agentBean.getAgentListData(false);
+            // agentBean.listFacilioAgents(context);
             int offLineAgents = 0;
             Set<Long> siteCount = new HashSet<>();
             for (Map<String, Object> agentListDatum : agentListData) {
@@ -134,7 +136,8 @@ public class AgentAction extends AgentActionV2 {
 
     public String getAgentCount() {
         try {
-            setResult(AgentConstants.DATA, AgentApiV2.getAgentCount());
+            AgentBean agentBean = getAgentBean();
+            setResult(AgentConstants.DATA, agentBean.getAgentCount());
             ok();
         } catch (Exception e) {
             LOGGER.info("Exception while getting agentCount->", e);
@@ -342,7 +345,8 @@ public class AgentAction extends AgentActionV2 {
 
     public String getAgentFilter() {
         try {
-            List<Map<String, Object>> agentFilter = AgentApiV2.getAgentFilter();
+            AgentBean agentBean = getAgentBean();
+            List<Map<String, Object>> agentFilter = agentBean.getAgentFilter();
             setResult(AgentConstants.DATA, agentFilter);
             ok();
         } catch (Exception e) {
@@ -420,7 +424,8 @@ public class AgentAction extends AgentActionV2 {
 	public String downloadCertificate() {
 		try {
 			Organization currentOrg = AccountUtil.getCurrentOrg();
-			com.facilio.agentv2.FacilioAgent agent = AgentApiV2.getAgent(agentId);
+            AgentBean agentBean = getAgentBean();
+			com.facilio.agentv2.FacilioAgent agent = agentBean.getAgent(agentId);
 			Objects.requireNonNull(agent, "no such agent");
 			String certFileId = FacilioAgent.getCertFileId("facilio");
 			LOGGER.info("certFileId " + certFileId);
@@ -460,7 +465,8 @@ public class AgentAction extends AgentActionV2 {
 	}
 
     public String downloadConfig() throws Exception {
-        com.facilio.agentv2.FacilioAgent agent = AgentApiV2.getAgent(agentId);
+        AgentBean agentBean = getAgentBean();
+        com.facilio.agentv2.FacilioAgent agent = agentBean.getAgent(agentId);
         String dirPath = System.getProperties().getProperty("java.io.tmpdir") + File.separator + AccountUtil.getCurrentOrg().getOrgId() + File.separator + "agentconfig";
         String path = dirPath + File.separator + agent.getName() + ".config";
         File file = new File(path);
@@ -742,5 +748,8 @@ public class AgentAction extends AgentActionV2 {
 	    return SUCCESS;
     }
 
+    public AgentBean getAgentBean() throws InstantiationException, IllegalAccessException {
+        return (AgentBean) BeanFactory.lookup("AgentBean");
+    }
 
 }

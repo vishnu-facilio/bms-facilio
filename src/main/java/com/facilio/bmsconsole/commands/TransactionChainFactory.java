@@ -8,8 +8,6 @@ import com.facilio.agent.DeleteAgentCommand;
 import com.facilio.agent.commands.*;
 import com.facilio.agent.integration.AddIntegrationCommand;
 import com.facilio.agent.integration.UpdateIntegrationCommand;
-import com.facilio.agent.integration.wattsense.AgentIntegrationDeleteCommand;
-import com.facilio.agentv2.UpdateAgentCommand;
 import com.facilio.agentv2.commands.*;
 import com.facilio.agentv2.iotmessage.AddAndSendIotMessageCommand;
 import com.facilio.agentv2.point.AddPointCommand;
@@ -657,11 +655,6 @@ public class TransactionChainFactory {
 		public static FacilioChain updateWattStatusChain(){
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new UpdateIntegrationCommand());
-		return c;
-		}
-		public static FacilioChain deleteWattsenseChain(){
-		FacilioChain c = getDefaultChain();
-		c.addCommand(new AgentIntegrationDeleteCommand());
 		return c;
 		}
 
@@ -4933,13 +4926,6 @@ public class TransactionChainFactory {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new DeleteServiceCatalogGroupCommand());
 		return chain;
-	}
-
-
-	public static FacilioChain getAgentUpdateChain() {
-		FacilioChain chain = getDefaultChain();
-		chain.addCommand(new UpdateAgentCommand());
-		return  chain;
 	}
 
 	public static FacilioChain getAckProcessorChain() {

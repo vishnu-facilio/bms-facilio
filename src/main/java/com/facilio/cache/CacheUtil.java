@@ -35,6 +35,8 @@ public class CacheUtil {
 
 	public static final String ROLE_NAME = "roleName";
 
+	public static final String AGENT_NAME = "agentName";
+
 	public static final String ROLE_ID_KEY ( long orgId,long roleId ) {
 		return ORG_KEY(orgId) + KEY_SEPARATOR + ROLE_ID + KEY_SEPARATOR + roleId;
 	}
@@ -109,6 +111,10 @@ public class CacheUtil {
 	public static String RESPONSE_KEY(long orgId, long userId, String uri, String hashedParam) {
 		return ORG_KEY(orgId) + KEY_SEPARATOR + USER_KEY(userId) + KEY_SEPARATOR + uri + KEY_SEPARATOR + hashedParam;
 	}
+
+	public static String AGENT_KEY(long orgId, String actualAgentName) {
+		return ORG_KEY(orgId) + KEY_SEPARATOR + AGENT_NAME + KEY_SEPARATOR + actualAgentName;
+	};
 
 	public static boolean isCacheEnabled() {
 		// return RedisManager.getInstance().isRedisEnabled();

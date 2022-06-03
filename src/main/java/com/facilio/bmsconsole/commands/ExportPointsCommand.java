@@ -11,13 +11,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.facilio.agentv2.cacheimpl.AgentBean;
+import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.agent.AgentType;
 import com.facilio.agent.controller.FacilioControllerType;
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.point.GetPointRequest;
@@ -53,7 +54,8 @@ public class ExportPointsCommand extends FacilioCommand {
 		
 		FileFormat fileFormat = (FileFormat) context.get(FacilioConstants.ContextNames.FILE_FORMAT);
 		long agentId = (long) context.get(AgentConstants.AGENT_ID);
-		FacilioAgent agent = AgentApiV2.getAgent(agentId);
+		AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+		FacilioAgent agent = agentBean.getAgent(agentId);
 		isNiagara = agent.getAgentType() == AgentType.NIAGARA.getKey();
 		
 		String fileUrl = null;

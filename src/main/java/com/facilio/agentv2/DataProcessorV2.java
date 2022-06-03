@@ -6,6 +6,7 @@ import com.facilio.agent.alarms.AgentEvent;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agent.fw.constants.PublishType;
+import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.ControllerUtilV2;
@@ -88,7 +89,8 @@ public class DataProcessorV2
             }
             if (agent.getAgentType() != AgentType.CLOUD.getKey()) {
                 agent.setLastDataReceivedTime(timeStamp);
-                AgentApiV2.updateAgentLastDataRevievedTime(agent);
+                AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+                agentBean.updateAgentLastDataReceivedTime(agent);
             }
 
             controllerUtil = getControllerUtil(agent.getId());
@@ -128,8 +130,7 @@ public class DataProcessorV2
 
                     Span.current().setAllAttributes(Attributes.of(AttributeKey.stringKey("controller-name"), timeseriesController.getName()));
                     if (!controllerIdVsLastTimeSeriesTimeStamp.containsKey(timeseriesController.getId()) ||
-                            !controllerIdVsLastTimeSeriesTimeStamp.get(timeseriesController.getId()).equals(timeStamp) ||
-                            agent.getAgentType() == AgentType.WATTSENSE.getKey()) {
+                            !controllerIdVsLastTimeSeriesTimeStamp.get(timeseriesController.getId()).equals(timeStamp)) {
 
                         controllerIdVsLastTimeSeriesTimeStamp.put(timeseriesController.getId(), timeStamp);
 
@@ -316,7 +317,8 @@ public class DataProcessorV2
                         if (controller != null) {
                             return controller;
                         } else {
-                            FacilioAgent agent = AgentApiV2.getAgent(agentId);
+                            AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+                            FacilioAgent agent = agentBean.getAgent(agentId);
                             if (agent.getAgentTypeEnum().allowAutoAddition()) {
                                 MiscControllerContext miscControllerContext = new MiscControllerContext(agent.getId(), AccountUtil.getCurrentOrg().getOrgId());
                                 miscControllerContext.setName(((JSONObject) (payload.get(AgentConstants.CONTROLLER))).get(AgentConstants.NAME).toString());

@@ -4,7 +4,6 @@ package com.facilio.agent.integration.queue;
  */
 public enum AgentMessageIntegrationProcessorType {
 
-    WATTSENSE(1,"Wattsense"),
     ALTAIR(2,"Altair");
 
     private int key;
