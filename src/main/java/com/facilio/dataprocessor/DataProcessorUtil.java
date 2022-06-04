@@ -303,6 +303,9 @@ public class DataProcessorUtil {
 
     private void processOldAgentData(FacilioRecord record, long recordId, JSONObject payLoad) throws Exception {
         String dataType = PublishType.event.getValue();
+        if (payLoad.containsKey(EventUtil.DATA_TYPE)) {
+            dataType = (String) payLoad.remove(EventUtil.DATA_TYPE);
+        }
 
         // Temp fix - bug: Publish_Type wrongly set to "agents"
         if ("agents".equals(dataType)) {
