@@ -13810,6 +13810,8 @@ CREATE TABLE IF NOT EXISTS WorkOrders
     CLIENT_ID                      BIGINT,
     DEVIATION_TASK_UNIQUE_ID       VARCHAR(50),
     JOB_PLAN_ID                    BIGINT,
+    FULL_SCORE                     DOUBLE,
+    TOTAL_SCORE                    DOUBLE,
     STRING_CF1                     VARCHAR(255),
     STRING_CF2                     VARCHAR(255),
     STRING_CF3                     VARCHAR(255),

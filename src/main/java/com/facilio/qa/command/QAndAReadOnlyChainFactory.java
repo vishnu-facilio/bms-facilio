@@ -104,4 +104,11 @@ public class QAndAReadOnlyChainFactory {
 
         return c;
     }
+
+	public static FacilioChain fetchSurveyListChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new SupplySurveyCriteriaCommand());
+		c.addCommand(new SurveySupplementSupplyCommand());
+		return c;
+	}
 }

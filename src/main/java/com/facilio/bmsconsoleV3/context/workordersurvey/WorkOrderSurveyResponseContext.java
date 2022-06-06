@@ -15,7 +15,7 @@ import lombok.extern.log4j.Log4j;
 @JsonTypeInfo (use = JsonTypeInfo.Id.NONE)
 public class WorkOrderSurveyResponseContext extends SurveyResponseContext {
 
-	private WorkOrderContext workOrderContext;
+	private WorkOrderContext parentId;
 
 	public WorkOrderSurveyResponseContext(Long id){
 		super(id);

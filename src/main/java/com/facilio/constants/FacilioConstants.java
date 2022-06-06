@@ -423,7 +423,8 @@ public class FacilioConstants {
 		public static final String WORK_ORDER_SITE_ID = "siteId";
 		public static final String TOP_N_TECHNICIAN = "topNTechnician";
 		public static final String WORKORDER_INFO_BY_SITE = "workOrderInfoBySite";
-			
+		public static final String WORKORDER_ID ="workOrderId";
+
 		public static final String PERMALINK_FOR_URL = "permalinkForUrl";
 		public static final String PERMALINK_TOKEN_FOR_URL = "permalinkTokenForUrl";
 		public static final String USER_EMAIL = "userEmail";
@@ -2651,7 +2652,8 @@ public class FacilioConstants {
 
 		public static final String EXECUTE_CREATE_ACTIONS = "executeCreateActions";
 		public static final String EXECUTE_RESPONSE_ACTIONS ="executeResponseActions";
-		
+
+		public static final String IS_RESULT_SURVEY ="isResultSurvey";
 	}
 
 	public static class WorkOrderSurvey {

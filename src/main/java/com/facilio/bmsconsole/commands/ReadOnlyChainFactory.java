@@ -3033,4 +3033,11 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new PivotThemeCustomizationCommand());
 		return chain;
 	}
+
+	public static FacilioChain fetchWorkOrderSurveyChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new fetchWorkOrderSurveyCommand());
+		return chain;
+	}
+
 }

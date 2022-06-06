@@ -20,11 +20,7 @@ import com.facilio.bmsconsoleV3.context.workordersurvey.WorkOrderSurveyResponseC
 import com.facilio.bmsconsoleV3.context.workordersurvey.WorkOrderSurveyTemplateContext;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount50;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.qa.command.InductionSupplementSupplyCommand;
-import com.facilio.qa.command.InspectionSupplementSupplyCommand;
-import com.facilio.qa.command.QAndAReadOnlyChainFactory;
-import com.facilio.qa.command.QAndATransactionChainFactory;
-import com.facilio.qa.command.SurveySupplementSupplyCommand;
+import com.facilio.qa.command.*;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
@@ -228,7 +224,7 @@ public class ExtendedQAndAV3Config {
 				.beforeSave(QAndATransactionChainFactory.commonBeforeQAndAResponseUpdate())
 				.afterTransaction(new AddActivitiesCommandV3())
 				.list()
-				.beforeFetch(new SurveySupplementSupplyCommand())
+		        .beforeFetch(QAndAReadOnlyChainFactory.fetchSurveyListChain())
 				.summary()
 				.beforeFetch(new SurveySupplementSupplyCommand())
 				.afterFetch(QAndAReadOnlyChainFactory.commonAfterQAndAResponseFetch())

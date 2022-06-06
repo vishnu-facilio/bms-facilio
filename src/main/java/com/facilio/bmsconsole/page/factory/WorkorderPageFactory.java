@@ -199,8 +199,17 @@ public class WorkorderPageFactory extends PageFactory {
         Page.Tab metricandTimelogTab = page.new Tab("timelog");
         page.addTab(metricandTimelogTab);
 
+		// add survey response section
+		Page.Section surveyTimeLogSection = page.new Section();
+		metricandTimelogTab.addSection(surveyTimeLogSection);
+
         Page.Section metrictimelogSection = page.new Section();
         metricandTimelogTab.addSection(metrictimelogSection);
+
+		// survey response widget
+		PageWidget surveyTimelogWidget = new PageWidget(PageWidget.WidgetType.SURVEY_RESPONSE_WIDGET);
+		surveyTimelogWidget.addToLayoutParams(metrictimelogSection, 24, 8);
+		surveyTimeLogSection.addWidget(surveyTimelogWidget);
 
         // metric and timelog widget
         PageWidget stateTransitionTimelogWidget = new PageWidget(PageWidget.WidgetType.STATE_TRANSITION_TIME_LOG);
