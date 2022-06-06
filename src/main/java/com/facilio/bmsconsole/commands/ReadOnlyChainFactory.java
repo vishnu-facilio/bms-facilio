@@ -3055,4 +3055,9 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getCommissionedChainCommand(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetCommissionedChainCommand());
+		return chain;
+	}
 }

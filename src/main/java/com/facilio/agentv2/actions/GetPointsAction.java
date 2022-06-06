@@ -3,6 +3,7 @@ package com.facilio.agentv2.actions;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.CommissioningLogContext;
 import com.facilio.bmsconsole.util.CommissioningApi;
@@ -86,7 +87,7 @@ public class GetPointsAction extends AgentActionV2 {
 		try {
 			List<Map<String,Object>> data= getPointsData(PointStatus.valueOf(status));
 			if(status.equals("COMMISSIONED")){
-				FacilioChain chain = TransactionChainFactory.getCommissionedChainCommand();
+				FacilioChain chain = ReadOnlyChainFactory.getCommissionedChainCommand();
 				FacilioContext context = chain.getContext();
 				context.put("data",data);
 				chain.execute();
