@@ -1147,6 +1147,8 @@ public class FacilioConstants {
 		public static final String RULES = "rules";
 		public static final String RULE_ID = "ruleId";
 		public static final String PARENT_RULE_ID = "parentRuleId";
+		public static final String FAULT_IMPACT_TEMPLATE_ID = "faultImpactTemplateId";
+		public static final String FAULT_IMPACT_OBJECT = "faultImpactObject";
 		public static final String ALARM_RULE = "alarmRule";
 		public static final String RULE_TYPE = "ruleType";
 		public static final String IS_SUMMARY ="isSummary";

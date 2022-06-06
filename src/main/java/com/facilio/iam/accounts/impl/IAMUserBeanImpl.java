@@ -1076,7 +1076,6 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return endUserSessionv2(uid, (Criteria) null);
 	}
 
-
 	@Override
 	public boolean endUserSessionv2(long uid, Criteria criteria) throws Exception {
 		boolean status = false;
@@ -1553,13 +1552,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return null;
 	}
 
-
-	@Override
-	public boolean removeUserMobileSetting(String mobileInstanceId, boolean isPortal) throws Exception {
-		// TODO Auto-generated method stub
-
-		String appLinkName = AccountUtil.getCurrentApp().getLinkName() == null ? FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP : AccountUtil.getCurrentApp().getLinkName();
-
+	public boolean removeUserMobileSetting(String mobileInstanceId, String appLinkName) throws Exception {
 		List<FacilioField> fields = IAMAccountConstants.getUserMobileSettingFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
@@ -1572,6 +1565,14 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			return true;
 		}
 		return false;
+	}
+
+
+	@Override
+	public boolean removeUserMobileSetting(String mobileInstanceId, boolean isPortal) throws Exception {
+		// TODO Auto-generated method stub
+		String appLinkName = AccountUtil.getCurrentApp().getLinkName() == null ? FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP : AccountUtil.getCurrentApp().getLinkName();
+		return removeUserMobileSetting(mobileInstanceId, appLinkName);
 	}
 
 	@Override
@@ -2836,7 +2837,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				System.currentTimeMillis() + 24 * 60 * 60000);
 
 		long sessionId = startUserSessionv2(uid, jwt, ipAddress, userAgent, userType,
-				Instant.ofEpochMilli(System.currentTimeMillis()).plus(1, ChronoUnit.DAYS).toEpochMilli(), isProxySession);
+				Instant.ofEpochMilli(System.currentTimeMillis()).plus(1, ChronoUnit.HOURS).toEpochMilli(), isProxySession);
 
 		Map<String, Object> props = new HashMap<>();
 		props.put("uid", uid);

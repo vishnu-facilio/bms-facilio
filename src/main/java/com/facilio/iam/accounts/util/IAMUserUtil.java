@@ -274,6 +274,10 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().removeUserMobileSetting(mobileInstanceId, isFromPortal));
 	}
 
+	public static boolean removeUserMobileSetting(String mobileInstanceId, String appLinkName) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().removeUserMobileSetting(mobileInstanceId, appLinkName));
+	}
+
 	public static List<UserMobileSetting> getUserMobileSettingInstanceIds(List<Long> uIds, String appLinkName) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getMobileInstanceIds(uIds,appLinkName));
 	}

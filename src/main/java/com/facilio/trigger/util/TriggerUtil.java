@@ -1,7 +1,7 @@
 package com.facilio.trigger.util;
 
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.FacilioAgent;
+import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.triggers.PostTimeseriesTriggerContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
@@ -13,6 +13,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.taskengine.ScheduleInfo;
@@ -174,7 +175,8 @@ public class TriggerUtil {
     	if (fetchExtendedLookups) {
     		criteriaMap = CriteriaAPI.getCriteriaAsMap(criteriaIds);
     	}
-    	Map<Long, FacilioAgent> agentMap = AgentApiV2.getAgentMap(agentIds, !fetchExtendedLookups);
+		AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+    	Map<Long, FacilioAgent> agentMap = agentBean.getAgentMap(agentIds, !fetchExtendedLookups);
     	for(PostTimeseriesTriggerContext trigger : triggers) {
     		if (criteriaMap != null) {
     			trigger.setCriteria(criteriaMap.get(trigger.getCriteriaId()));

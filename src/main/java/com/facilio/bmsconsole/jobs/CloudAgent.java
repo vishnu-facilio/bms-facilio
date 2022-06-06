@@ -6,13 +6,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.agentv2.cacheimpl.AgentBean;
+import com.facilio.fw.BeanFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.fw.constants.PublishType;
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentUtilV2;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -32,11 +33,14 @@ import com.facilio.workflowv2.util.WorkflowV2Util;
 
 public class CloudAgent extends FacilioJob {
 	private static final Logger LOGGER = LogManager.getLogger(CloudAgent.class.getName());
+	private AgentBean agentBean;
+
 	@Override
 	public void execute(JobContext jc) throws Exception {
 		try {
 			long jobId = jc.getJobId();
-			FacilioAgent agent = AgentApiV2.getAgent(jobId);
+			agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+			FacilioAgent agent = agentBean.getAgent(jobId);
 			if (agent.getWorkflowId() != -1) {
 				getPayloadsFromWorkflowAndPushToMessageQueue(agent);
 
@@ -74,12 +78,12 @@ public class CloudAgent extends FacilioJob {
 			pushToMessageQueue(agent, results);
 		}
 
-		updateLastRecievedTime(agent, toTime);
+		updateLastReceivedTime(agent, toTime);
 	}
 
-	private void updateLastRecievedTime(FacilioAgent agent, long lastDataReceivedTime) {
+	private void updateLastReceivedTime(FacilioAgent agent, long lastDataReceivedTime) throws InstantiationException, IllegalAccessException {
 		agent.setLastDataReceivedTime(lastDataReceivedTime);
-		AgentApiV2.updateAgentLastDataRevievedTime(agent);
+		agentBean.updateAgentLastDataReceivedTime(agent);
 	}
 
 	private List<JSONObject> runWorkflow(long workflowId, long fromTime, long toTime, FacilioAgent agent) throws Exception {

@@ -386,17 +386,13 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 					//
 				} else if ((Boolean) mark.get("hasDepartmentAccess")) {
 					if (employeemarker != null) {
-						if (!(employeemarker.getDepartment().getId() == employee.getDepartment().getId() || deskdepartment.getId() == employee.getDepartment().getId())) {
-							hideMarkerProperties(properties);
-						}
-					} else {
-						if (deskdepartment.getId() != employee.getDepartment().getId()) {
+						if(properties.getDepartmentId()!=employee.getDepartment().getId()){
 							hideMarkerProperties(properties);
 						}
 					}
 				} else if ((Boolean) mark.get("hasOwnAccess")) {
 					if (employeemarker != null) {
-						if (employeemarker.getId() != employee.getId()) {
+						if(properties.getEmployeeId()!=employee.getId()){
 							hideMarkerProperties(properties);
 						}
 					} 
@@ -547,11 +543,7 @@ public static JSONObject getMarkerTooltip(ModuleBaseWithCustomFields record, V3M
 				} 
 				else if ((Boolean) marktooltip.get("hasDepartmentAccess")) {
 					if (desk.getEmployee() != null) {
-						if (!(desk.getEmployee().getDepartment().getId() == employee.getDepartment().getId() || desk.getDepartment().getId() == employee.getDepartment().getId())) {
-							hideTooltipData(tooltip);
-						}
-					} else {
-						if (!(desk.getDepartment().getId() == employee.getDepartment().getId()) ){
+						if (desk.getEmployee().getDepartment().getId() != employee.getDepartment().getId() ){
 							hideTooltipData(tooltip);
 						}
 					}
@@ -560,8 +552,6 @@ public static JSONObject getMarkerTooltip(ModuleBaseWithCustomFields record, V3M
 						if (desk.getEmployee().getId() != employee.getId()) {
 							hideTooltipData(tooltip);
 						}
-					}else {
-						hideTooltipData(tooltip);
 					}
 				} else {
 					// hide all properties

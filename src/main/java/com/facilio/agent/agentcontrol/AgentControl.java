@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.agentv2.cacheimpl.AgentBean;
+import com.facilio.fw.BeanFactory;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.log4j.LogManager;
@@ -14,7 +16,6 @@ import org.json.simple.JSONObject;
 import com.facilio.agent.PublishType;
 import com.facilio.agent.module.AgentFieldFactory;
 import com.facilio.agent.module.AgentModuleFactory;
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.AgentUtilV2;
 import com.facilio.agentv2.FacilioAgent;
@@ -65,7 +66,8 @@ public class AgentControl extends AgentActionV2 {
 	
 	private void constructData() throws Exception{
 		String topicName = getTopic();
-		FacilioAgent agent = AgentApiV2.getAgent(agentName);
+		AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+		FacilioAgent agent = agentBean.getAgent(agentName);
 		KafkaMessageSource source = (KafkaMessageSource) AgentUtilV2.getMessageSource(agent);
 		long recordId = -1;
 		Object meta = AgentUtilV2.publishToQueue(topicName, agentName, createRecord(), source);

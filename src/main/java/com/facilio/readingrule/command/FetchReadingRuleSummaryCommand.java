@@ -9,6 +9,7 @@ import com.facilio.util.FacilioUtil;
 import lombok.NonNull;
 import org.apache.commons.chain.Context;
 
+import java.util.List;
 import java.util.Map;
 
 public class FetchReadingRuleSummaryCommand extends FacilioCommand {
@@ -19,8 +20,10 @@ public class FetchReadingRuleSummaryCommand extends FacilioCommand {
         NewReadingRuleContext rule = NewReadingRuleAPI.getRule(id);
         FacilioUtil.throwRunTimeException(rule == null, "Rule (" + id + ") is not found!!");
 
+        Map<String, Object> resourcesWithCount = NewReadingRuleAPI.getMatchedResourcesWithCount(rule);
+        rule.setAssets((List<Long>) resourcesWithCount.get("resourceIds"));
+
         AlarmRuleContext alarmRule = new AlarmRuleContext(rule);
-        Map<String, Object> resourcesWithCount = NewReadingRuleAPI.getMatchedResourcesWithCount((NewReadingRuleContext) alarmRule.getAlarmTriggerRule());
         context.put(FacilioConstants.ContextNames.RULE_ASSET_COUNT, resourcesWithCount.get("count"));
         context.put(FacilioConstants.ContextNames.ASSET_LIST, resourcesWithCount.get("resourceIds"));
         alarmRule.addAlarmRCARules(NewReadingRuleAPI.getRCARulesForReadingRule(id));

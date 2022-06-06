@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.facilio.agent.AgentKeys;
-import com.facilio.agent.integration.AgentIntegrationKeys;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -253,15 +252,6 @@ public class ModuleFactory {
 		controllerReadingsModule.setTableName("Controller_Readings");
 		
 		return controllerReadingsModule;
-	}
-	
-	
-	public static FacilioModule getWattsenseIntegrationModule() {
-		FacilioModule integrationModule = new FacilioModule();
-		integrationModule.setName(AgentIntegrationKeys.TABLE_NAME);
-		integrationModule.setDisplayName(AgentIntegrationKeys.TABLE_NAME);
-		integrationModule.setTableName(AgentIntegrationKeys.TABLE_NAME);
-		return integrationModule;
 	}
 
 	public static FacilioModule getAgentLogModule() {

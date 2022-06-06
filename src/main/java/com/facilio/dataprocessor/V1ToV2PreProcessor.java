@@ -4,13 +4,14 @@ import com.facilio.agent.AgentType;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.PublishType;
 import com.facilio.agent.integration.queue.preprocessor.AgentMessagePreProcessor;
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
+import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.niagara.NiagaraControllerContext;
+import com.facilio.fw.BeanFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -83,7 +84,8 @@ public class V1ToV2PreProcessor implements AgentMessagePreProcessor {
             msg.put(AgentConstants.TIMESTAMP,System.currentTimeMillis());
         }
         if (payload.containsKey(AgentConstants.AGENT) && payload.get(AgentConstants.AGENT) != null) {
-            FacilioAgent agent = AgentApiV2.getAgent(payload.get(AgentConstants.AGENT).toString());
+            AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+            FacilioAgent agent = agentBean.getAgent(payload.get(AgentConstants.AGENT).toString());
             if (agent != null) {
                 msg.put(AgentConstants.AGENT, agent.getName());
 
@@ -146,7 +148,8 @@ public class V1ToV2PreProcessor implements AgentMessagePreProcessor {
         }
         payload.put("deviceId",deviceId);
         if (payload.containsKey(AgentConstants.AGENT) && payload.get(AgentConstants.AGENT) != null) {
-            agent = AgentApiV2.getAgent(payload.get(AgentConstants.AGENT).toString());
+            AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+            agent = agentBean.getAgent(payload.get(AgentConstants.AGENT).toString());
             if (agent !=null) {
                 msg.put(AgentConstants.AGENT, payload.get(AgentConstants.AGENT).toString());
                 if (isCov) {

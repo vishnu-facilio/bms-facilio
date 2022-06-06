@@ -6,8 +6,10 @@ import java.util.Map;
 
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.WorkflowTemplate;
+import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
@@ -17,11 +19,18 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.taskengine.job.JobContext;
+import com.facilio.taskengine.job.JobStore;
+import com.facilio.tasker.FacilioTimer;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.workflows.context.ScheduledWorkflowContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
+import lombok.extern.log4j.Log4j;
+
+@Log4j
 public class GetAllScheduledWorkflowCommand extends FacilioCommand {
 
 	@Override
@@ -41,6 +50,18 @@ public class GetAllScheduledWorkflowCommand extends FacilioCommand {
 		if(props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop :props) {
 				ScheduledWorkflowContext scheduledWorkflowContext = FieldUtil.getAsBeanFromMap(prop, ScheduledWorkflowContext.class);
+				
+				JobContext job = FacilioTimer.getJob(scheduledWorkflowContext.getId(), "ScheduledWorkflow");
+				
+				LOGGER.error("job ---- "+job);	// remove this after debug
+				
+				if(job != null) {
+					long nextExecutionTime = job.getExecutionTime()*1000;
+					if(nextExecutionTime > DateTimeUtil.getCurrenTime()) {
+						scheduledWorkflowContext.setNextExecutionTime(nextExecutionTime);
+					}
+				}
+				
 				workflowIds.add(scheduledWorkflowContext.getWorkflowId());
 				scheduledWorkflowContexts.add(scheduledWorkflowContext);
 			}

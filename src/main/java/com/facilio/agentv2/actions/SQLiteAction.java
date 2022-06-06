@@ -1,7 +1,6 @@
 package com.facilio.agentv2.actions;
 
 import com.facilio.agent.controller.FacilioControllerType;
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.point.Point;

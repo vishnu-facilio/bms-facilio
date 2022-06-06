@@ -1,8 +1,9 @@
 package com.facilio.agentv2.actions;
 
 import com.facilio.agentv2.AgentAction;
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.cacheimpl.AgentBean;
+import com.facilio.fw.BeanFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -29,7 +30,8 @@ public class UpdateAgentAction extends AgentAction {
 
     public String edit() {
         try {
-            if (AgentApiV2.editAgent(AgentApiV2.getAgent(getAgentId()), getToUpdate(), false)) {
+            AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+            if (agentBean.editAgent(agentBean.getAgent(getAgentId()), getToUpdate(), false)) {
                 setResult(AgentConstants.RESULT, SUCCESS);
                 setResponseCode(HttpURLConnection.HTTP_OK);
             }else {

@@ -683,11 +683,6 @@
         </requestbody>
     </request>
     <request path="/api/v3/licensinginfo/list">
-        <requestbody type="object">
-            <property name="licenseContext" type="object">
-                <property name="ouId" type="number"/>
-            </property>
-        </requestbody>
     </request>
     <request path="/api/v3/licensinginfo/delete">
         <requestbody type="object">
@@ -697,4 +692,29 @@
             </property>
         </requestbody>
     </request>
+
+    <request path="/api/v3/internal/dc/getDevicePasscode">
+        <urlparams>
+            <property name="deviceCode" type="string" mandatory="true" maxLength="10"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/deviceclient/validatecode">
+        <urlparams>
+            <property name="code" type="string" mandatory="true" maxLength="10"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/basespace">
+        <urlparams>
+            <property name="filters" type="string" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+            <property name="orderBy" type="string" mandatory="false"/>
+            <property name="orderType" type="string" mandatory="false"/>
+            <property name="spaceType" type="number" mandatory="false"/>
+            <property name="spaceId" type="number" mandatory="false"/>
+            <property name="isZone" type="boolean" mandatory="false"/>
+        </urlparams>
+    </request>
+
 </config>

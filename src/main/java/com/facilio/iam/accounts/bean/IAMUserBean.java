@@ -84,6 +84,8 @@ public interface IAMUserBean {
 	
 	public boolean removeUserMobileSetting(String mobileInstanceId, boolean isPortal) throws Exception;
 
+	public boolean removeUserMobileSetting(String mobileInstanceId, String appLinkName) throws Exception;
+
 	public List<UserMobileSetting> getMobileInstanceIds(List<Long> uIds, String appLinkName) throws Exception;
 
 	public Object getPermalinkDetails(String token) throws Exception;

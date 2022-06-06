@@ -10,7 +10,6 @@ public enum AgentType {
     NIAGARA(2, "niagara", false, false, true),
     CLOUD(3, "cloud", true, false, false),
     REST(4, "rest", true, false, false),
-    WATTSENSE(5, "wattsense"),
     RDM(6, "RDM", false, true, false),
     CLOUD_ON_SERVICE(7, "cloud-on-service", true, true, false),
     MQTT(8, "mqtt", true, true, false);

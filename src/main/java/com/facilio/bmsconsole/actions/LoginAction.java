@@ -33,6 +33,8 @@ import com.facilio.wms.endpoints.LiveSession.LiveSessionSource;
 import com.facilio.wms.endpoints.LiveSession.LiveSessionType;
 import com.facilio.wms.util.WmsApi;
 import com.opensymphony.xwork2.ActionContext;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -157,6 +159,10 @@ public class LoginAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	@Getter
+	@Setter
+	private String appLinkName;
+
 	public String apiLogout() throws Exception {
 
 		HttpServletRequest request = ServletActionContext.getRequest();
@@ -198,37 +204,35 @@ public class LoginAction extends FacilioAction {
 			}
 
 			if (org.apache.commons.lang3.StringUtils.isNotEmpty(facilioToken)) {
-				User currentUser = AccountUtil.getCurrentUser();
-				if (currentUser != null) {
-					if(IAMUserUtil.logOut(currentUser.getUid(), facilioToken)) {
-						HttpSession session = request.getSession();
-						session.invalidate();
-						FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilio", null);
-						FacilioCookie.eraseUserCookie(request, response, "fc.idToken.proxy", null);
-						if(portalUser) {
-							FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilioportal", null);
-						}
+				IAMAccount iamAccount = IAMUserUtil.verifiyFacilioTokenv3(facilioToken, false, null);
+				if(iamAccount != null && IAMUserUtil.logOut(iamAccount.getUser().getUid(), facilioToken)) {
+					HttpSession session = request.getSession();
+					session.invalidate();
+					FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilio", null);
+					FacilioCookie.eraseUserCookie(request, response, "fc.idToken.proxy", null);
+					if(portalUser) {
+						FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilioportal", null);
+					}
 
-						//deleting .facilio.com cookie(temp handling)
-						FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.com");
-						FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.in");
-						FacilioCookie.eraseUserCookie(request, response, "fc.idToken.proxy", "facilio.com");
-						FacilioCookie.eraseUserCookie(request, response, "fc.idToken.proxy", "facilio.in");
+					//deleting .facilio.com cookie(temp handling)
+					FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.com");
+					FacilioCookie.eraseUserCookie(request, response,"fc.idToken.facilio","facilio.in");
+					FacilioCookie.eraseUserCookie(request, response, "fc.idToken.proxy", "facilio.com");
+					FacilioCookie.eraseUserCookie(request, response, "fc.idToken.proxy", "facilio.in");
 
-						FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
-						FacilioCookie.eraseUserCookie(request, response, "fc.currentOrg", null);
-						
-						if(mobileInstanceId != null) {
-							AccountUtil.getUserBean().removeUserMobileSetting(mobileInstanceId);
-						}
+					FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
+					FacilioCookie.eraseUserCookie(request, response, "fc.currentOrg", null);
 
-						if (!isMobile) {
-							boolean isSSOEnabled = IAMAppUtil.isSSoEnabled(request.getServerName(), AccountUtil.getCurrentOrg().getOrgId());
-							if (isSSOEnabled) {
-								String ssoLogoutRequestURL = SSOUtil.getSSOLogoutRequestURL();
-								if (ssoLogoutRequestURL != null) {
-									response.sendRedirect(ssoLogoutRequestURL);
-								}
+					if(mobileInstanceId != null) {
+						IAMUserUtil.removeUserMobileSetting(mobileInstanceId, appLinkName);
+					}
+
+					if (!isMobile) {
+						boolean isSSOEnabled = IAMAppUtil.isSSoEnabled(request.getServerName(), AccountUtil.getCurrentOrg().getOrgId());
+						if (isSSOEnabled) {
+							String ssoLogoutRequestURL = SSOUtil.getSSOLogoutRequestURL();
+							if (ssoLogoutRequestURL != null) {
+								response.sendRedirect(ssoLogoutRequestURL);
 							}
 						}
 					}
@@ -371,6 +375,13 @@ public class LoginAction extends FacilioAction {
 					}
 				}
 			}
+		}
+
+		Long userSessionId = AccountUtil.getCurrentAccount().getUserSessionId();
+		if (userSessionId != null && userSessionId > 0) {
+			Map<String, Object> userSession = IAMUserUtil.getUserSession(userSessionId);
+			account.put("sessionEndTime", userSession.get("endTime"));
+			account.put("proxyLoginUrl", FacilioProperties.getPortalProxyUserUrl());
 		}
 
 		data.put("users", users);
@@ -945,6 +956,7 @@ public class LoginAction extends FacilioAction {
 		if (userSessionId != null && userSessionId > 0) {
 			Map<String, Object> userSession = IAMUserUtil.getUserSession(userSessionId);
 			account.put("sessionEndTime", userSession.get("endTime"));
+			account.put("proxyLoginUrl", FacilioProperties.getProxyUrl());
 		}
 
 		account.put("timezone",AccountUtil.getCurrentAccount().getTimeZone()); 

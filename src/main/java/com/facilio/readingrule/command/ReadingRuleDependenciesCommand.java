@@ -12,6 +12,8 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.ns.context.NSType;
 import com.facilio.readingrule.context.NewReadingRuleContext;
+import com.facilio.readingrule.faultimpact.FaultImpactAPI;
+import com.facilio.readingrule.faultimpact.FaultImpactContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 import lombok.NonNull;
@@ -37,34 +39,34 @@ public class ReadingRuleDependenciesCommand extends FacilioCommand {
 
         ctx.put(FacilioConstants.ContextNames.READING_NAME, rule.getName());
         ctx.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, NewReadingRuleAPI.READING_RULE_FIELD_TABLE_NAME);
-        FacilioField ruleField = FieldFactory.getField(null, rule.getName(), null, null, FieldType.BOOLEAN);
-        FacilioField addtnMsgField = FieldFactory.getField(null, "INFO", null, null, FieldType.BIG_STRING);
-        ruleField.setDefault(false);
-        addtnMsgField.setDefault(false);
-        
-        ArrayList<FacilioField> fieldList = new ArrayList<FacilioField>();
-        
-        fieldList.add(ruleField);
-        fieldList.add(addtnMsgField);
 
-        if(rule.getImpact() != null) {
-        	
-        	FacilioField energyImpactField = FieldFactory.getField("energyImpact", "Energy Impact", "ENERGY_IMPACT", null, FieldType.DECIMAL);
-            FacilioField costImpactField = FieldFactory.getField("costImpact", "Cost Impact", "COST_IMPACT", null, FieldType.DECIMAL);
-            
-            fieldList.add(energyImpactField);
-            fieldList.add(costImpactField);
-        }
+        ArrayList<FacilioField> fieldList = new ArrayList<FacilioField>() {
+            {
+                add(FieldFactory.getField(NewReadingRuleAPI.RuleReadingsConstant.RULE_READING_RESULT, rule.getName(), null, null, FieldType.BOOLEAN));
+                add(FieldFactory.getField(NewReadingRuleAPI.RuleReadingsConstant.RULE_READING_ENERGY_IMPACT, "Energy Impact", "ENERGY_IMPACT", null, FieldType.DECIMAL));
+                add(FieldFactory.getField(NewReadingRuleAPI.RuleReadingsConstant.RULE_READING_COST_IMPACT, "Cost Impact", "COST_IMPACT", null, FieldType.DECIMAL));
+                add(FieldFactory.getField(NewReadingRuleAPI.RuleReadingsConstant.RULE_READING_INFO, "Sys Info", "SYS_INFO", null, FieldType.BIG_STRING));
+            }
+        };
 
-        ctx.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST,fieldList);
-        
+
+        ctx.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fieldList);
         ctx.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
         ctx.put(WorkflowV2Util.WORKFLOW_CONTEXT, rule.getWorkflowContext());
 
         setReadingParent(ctx);
         setAssets();
+        setFaultImpactObject();
 
         return false;
+    }
+
+    private void setFaultImpactObject() throws Exception {
+        Long faultImpactId = this.rule.getImpactId();
+        if(faultImpactId != null && faultImpactId > 0) {
+            FaultImpactContext faultImpactContext = FaultImpactAPI.getFaultImpactContext(faultImpactId);
+            this.rule.setImpact(faultImpactContext);
+        }
     }
 
     private void setAssets() throws Exception {

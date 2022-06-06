@@ -21,6 +21,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class ScheduledWorkflowContext {
 
+	private long nextExecutionTime = -1l;		//for client purpose
+	
 	private long id = -1l;
 	public long getId() {
 		return id;
@@ -174,5 +176,11 @@ public class ScheduledWorkflowContext {
 	}
 	public void setSourceBundle(long sourceBundle) {
 		this.sourceBundle = sourceBundle;
+	}
+	public long getNextExecutionTime() {
+		return nextExecutionTime;
+	}
+	public void setNextExecutionTime(long nextExecutionTime) {
+		this.nextExecutionTime = nextExecutionTime;
 	}
 }

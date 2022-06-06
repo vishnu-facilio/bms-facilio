@@ -3,6 +3,7 @@ package com.facilio.agentv2.controller;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.agentv2.misc.MiscControllerContext;
 import com.facilio.agentv2.rdm.RdmControllerContext;
@@ -17,7 +18,6 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.FacilioCommand;
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.actions.GetPointsAction;
@@ -70,7 +70,8 @@ public class ControllerApiV2 {
         try {
             long agentId = controller.getAgentId();
             if (agentId > 0) {
-                FacilioAgent agent = AgentApiV2.getAgent(agentId);
+                AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+                FacilioAgent agent = agentBean.getAgent(agentId);
                 if (agent != null) {
                     return addController(controller, agent);
                 } else {

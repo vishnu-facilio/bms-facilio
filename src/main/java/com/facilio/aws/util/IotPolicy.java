@@ -103,13 +103,6 @@ public class IotPolicy
         return topicAndPublishTypeMap;
     }
 
-    public String getSql(String topic,String publishType) {
-        if(AgentType.WATTSENSE.getLabel().equalsIgnoreCase(type) && ( publishType != null ) ){
-            return "SELECT * as data , '" + publishType +"' as "+ EventUtil.DATA_TYPE +" FROM '" + topic + "'";
-        }
-        return "SELECT * FROM '" + topic + "'";
-    }
-
     public JSONObject getPolicyDocument() {
       return policyDocument;
     }

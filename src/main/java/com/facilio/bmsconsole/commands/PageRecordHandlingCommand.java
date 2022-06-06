@@ -1,23 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.command.FacilioCommand;
-import org.apache.commons.chain.Context;
-
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
-import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.templates.DefaultTemplate;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.chain.FacilioChain;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
-import com.facilio.fw.BeanFactory;
 import com.facilio.mv.context.MVProjectWrapper;
 import com.facilio.mv.util.MVUtil;
+import org.apache.commons.chain.Context;
 
 public class PageRecordHandlingCommand extends FacilioCommand {
 
@@ -48,7 +44,7 @@ public class PageRecordHandlingCommand extends FacilioCommand {
 			case ContextNames.NEW_READING_ALARM:	
 				BaseAlarmContext readingAlarm = NewAlarmAPI.getAlarm(recordId);
 				AlarmOccurrenceContext latestAlarmOccurance = NewAlarmAPI.getLatestAlarmOccurance(readingAlarm);
-				((ReadingAlarm)readingAlarm).setReadingFieldName(((ModuleBean)BeanFactory.lookup("ModuleBean")).getField(((ReadingAlarm)readingAlarm).getReadingFieldId()).getDisplayName());
+//				((ReadingAlarm)readingAlarm).setReadingFieldName(((ModuleBean)BeanFactory.lookup("ModuleBean")).getField(((ReadingAlarm)readingAlarm).getReadingFieldId()).getDisplayName());
 				readingAlarm.setLastOccurrence(latestAlarmOccurance);
 				context.put(ContextNames.RECORD, readingAlarm);
 				break;

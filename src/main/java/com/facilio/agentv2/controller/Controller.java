@@ -1,9 +1,9 @@
 package com.facilio.agentv2.controller;
 
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.JsonUtil;
+import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.db.criteria.Condition;
@@ -359,7 +359,8 @@ public abstract class Controller extends AssetContext {
     @JsonIgnore
     public FacilioAgent getAgent() throws Exception {
         if (getAgentId() > 0) {
-            FacilioAgent agent = AgentApiV2.getAgent(getAgentId());
+            AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+            FacilioAgent agent = agentBean.getAgent(getAgentId());
             if (agent != null) {
                 return agent;
             } else {

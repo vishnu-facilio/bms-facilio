@@ -27,17 +27,20 @@ public class UpdateWorkflowCommand extends FacilioCommand {
 		if(workflow == null) {
 			workflow = (WorkflowUserFunctionContext) context.get(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT);
 		}
-		
-		workflow.setSysModifiedBy(AccountUtil.getCurrentUser().getOuid());
-		workflow.setSysModifiedTime(DateTimeUtil.getCurrenTime());
-			
-		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder();
-		update.table(ModuleFactory.getWorkflowModule().getTableName());
-		update.fields(FieldFactory.getWorkflowFields())
-		.andCondition(CriteriaAPI.getIdCondition(workflow.getId(), ModuleFactory.getWorkflowModule()));
-		
-		Map<String, Object> prop = FieldUtil.getAsProperties(workflow);
-		update.update(prop);
+
+		if (workflow != null) {
+
+			workflow.setSysModifiedBy(AccountUtil.getCurrentUser().getOuid());
+			workflow.setSysModifiedTime(DateTimeUtil.getCurrenTime());
+
+			GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder();
+			update.table(ModuleFactory.getWorkflowModule().getTableName());
+			update.fields(FieldFactory.getWorkflowFields())
+					.andCondition(CriteriaAPI.getIdCondition(workflow.getId(), ModuleFactory.getWorkflowModule()));
+
+			Map<String, Object> prop = FieldUtil.getAsProperties(workflow);
+			update.update(prop);
+		}
 		
 		return false;
 	}

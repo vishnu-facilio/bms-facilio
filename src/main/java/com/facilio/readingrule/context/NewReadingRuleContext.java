@@ -1,12 +1,16 @@
 package com.facilio.readingrule.context;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleInterface;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.readingrule.faultimpact.FaultImpactContext;
+import com.facilio.readingrule.util.NewReadingRuleAPI;
+import com.facilio.rule.AbstractRuleInterface;
 import com.facilio.workflows.context.WorkflowContext;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,19 +21,13 @@ import java.util.Map;
 
 @Setter
 @Getter
-public class NewReadingRuleContext implements ReadingRuleInterface, Cloneable {
+public class NewReadingRuleContext implements ReadingRuleInterface, AbstractRuleInterface, Cloneable {
 
     private static final long serialVersionUID = 1L;
 
     long id;
 
-    Long orgId;
-
-    Long moduleId;
-
-    FacilioModule module;
-
-    Long fieldId;
+    long orgId;
 
     Long assetCategoryId;
 
@@ -48,8 +46,6 @@ public class NewReadingRuleContext implements ReadingRuleInterface, Cloneable {
     Map<Long, ResourceContext> matchedResources;
 
     RuleAlarmDetails alarmDetails;
-
-    Long nsId;
 
     NameSpaceContext ns;
 
@@ -90,17 +86,27 @@ public class NewReadingRuleContext implements ReadingRuleInterface, Cloneable {
 
     List<ActionContext> actions;
 
+    Long readingModuleId;
+
+    Long readingFieldId;
+
     public String toString() {
         return "id: " + id + ", name : " + name;
     }
 
     public void setNullForResponse() {
         setMatchedResources(null);
-        setModule(null);
         setReadingField(null);
         if (alarmDetails != null) {
             alarmDetails.setNullForResponse();
         }
+    }
+
+    public FacilioField fetchRuleReadingResultField() throws Exception {
+        ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = bean.getModule(getReadingModuleId());
+        FacilioField field = bean.getField(NewReadingRuleAPI.RuleReadingsConstant.RULE_READING_RESULT, module.getName());
+        return field;
     }
 
     public enum ResourceType {

@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.facilio.agentv2.cacheimpl.AgentBean;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
@@ -24,7 +25,6 @@ import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agent.module.AgentFieldFactory;
 import com.facilio.agent.module.AgentModuleFactory;
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.JsonUtil;
 import com.facilio.agentv2.bacnet.BacnetIpPointContext;
@@ -859,11 +859,12 @@ public class PointsAPI {
 
 
     private static List<MiscPoint> getControllerPointsSuperficial(List<Long> controllerIds) throws Exception {
+        AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
         FacilioModule pointModule = ModuleFactory.getPointModule();
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(pointModule.getTableName())
                 .select(FieldFactory.getPointFields())
-                .andCondition(AgentApiV2.getDeletedTimeNullCondition(pointModule));
+                .andCondition(agentBean.getDeletedTimeNullCondition(pointModule));
         if( ! controllerIds.isEmpty()){
             builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(pointModule), controllerIds, NumberOperators.EQUALS));
         }

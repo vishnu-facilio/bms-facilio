@@ -683,16 +683,41 @@ public class AccountUtil {
 	}
 
 	public static Boolean applyDBScoping(FacilioModule module) {
-    	try {
-			if (AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) && AccountUtil.getCurrentApp() != null && (!AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP) || (AccountUtil.getCurrentOrg().getOrgId() == 398l && module.getName().equals("custom_client")) || (AccountUtil.isFeatureEnabled(FeatureLicense.CUSTOM_MODULE_SCOPING) && module.isCustom()) || (AccountUtil.getCurrentOrg().getOrgId() == 10l && (module.getName().equals("storeRoom") || module.getName().equals("item") || module.getName().equals("tool"))) ||(AccountUtil.getCurrentOrg().getOrgId() == 429l && (module.getName().equals("floor"))) || (AccountUtil.getCurrentOrg().getOrgId() == 583l && (module.getName().equals("storeRoom") || module.getName().equals("item") || module.getName().equals("tool"))) || (AccountUtil.getCurrentOrg().getOrgId() == 28l && module.getName().equals("vendors")) || (AccountUtil.getCurrentOrg().getOrgId() == 183l && (module.getName().equals("storeRoom") || module.getName().equals("item") || module.getName().equals("tool"))) || (AccountUtil.getCurrentOrg().getOrgId() == 274l && (module.getName().equals(FacilioConstants.ContextNames.PURCHASE_ORDER) || module.getName().equals(FacilioConstants.ContextNames.PURCHASE_REQUEST)|| module.getName().equals(ContextNames.RECEIVABLE))) || module.getName().equals(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME) || module.getName().equals(FacilioConstants.Inspection.INSPECTION_TEMPLATE) ||  module.getName().equals(FacilioConstants.Induction.INDUCTION_TEMPLATE) || module.getName().equals(FacilioConstants.Survey.SURVEY_TEMPLATE) ||
-					(AccountUtil.getCurrentOrg().getOrgId() == 418l && (module.getName().equals(ContextNames.VENDORS) || module.getName().equals(ContextNames.VISITOR_LOG) || module.getName().equals(ContextNames.INVITE_VISITOR) || module.getName().equals(ContextNames.BASE_VISIT)  || module.getName().equals("custom_vendormapping") || module.getName().equals("custom_utilityaccounts") || module.getName().equals("custom_utilityconnections") || module.getName().equals("custom_utilitybill") || module.getName().equals("custom_utilitybilllineitems") || module.getName().equals("custom_incidentmanagement_1") || module.getName().equals("custom_quoteselectionform")  || module.getName().equals("custom_supplierquotation") || module.getName().equals("custom_supplierquote") || module.getName().equals(ContextNames.VENDOR_CONTACT))))) {
-				return true;
+		try {
+			if (AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING)) {
+				if(AccountUtil.getCurrentApp() != null && !AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)){
+					return true;
+				}
+				if(module.getName().equals(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME)
+						|| module.getName().equals(FacilioConstants.Inspection.INSPECTION_TEMPLATE)
+						|| module.getName().equals(FacilioConstants.Induction.INDUCTION_TEMPLATE)
+						|| module.getName().equals(FacilioConstants.Survey.SURVEY_TEMPLATE)) {
+					return true;
+				}
+				if(AccountUtil.isFeatureEnabled(FeatureLicense.CUSTOM_MODULE_SCOPING) && module.isCustom()) {
+					return true;
+				}
+				if (
+						AccountUtil.getCurrentOrg() != null &&
+								(
+										(AccountUtil.getCurrentOrg().getOrgId() == 398l && module.getName().equals("custom_client"))
+										|| (AccountUtil.getCurrentOrg().getOrgId() == 10l && (module.getName().equals("storeRoom") || module.getName().equals("item") || module.getName().equals("tool")))
+										|| (AccountUtil.getCurrentOrg().getOrgId() == 429l && (module.getName().equals("floor")))
+										|| (AccountUtil.getCurrentOrg().getOrgId() == 583l && (module.getName().equals("storeRoom") || module.getName().equals("item") || module.getName().equals("tool")))
+										|| (AccountUtil.getCurrentOrg().getOrgId() == 28l && module.getName().equals("vendors"))
+										|| (AccountUtil.getCurrentOrg().getOrgId() == 183l && (module.getName().equals("storeRoom") || module.getName().equals("item") || module.getName().equals("tool")))
+										|| (AccountUtil.getCurrentOrg().getOrgId() == 274l && (module.getName().equals(FacilioConstants.ContextNames.PURCHASE_ORDER) || module.getName().equals(FacilioConstants.ContextNames.PURCHASE_REQUEST) || module.getName().equals(ContextNames.RECEIVABLE)))
+										|| (AccountUtil.getCurrentOrg().getOrgId() == 418l && (module.getName().equals(ContextNames.VENDORS) || module.getName().equals(ContextNames.VISITOR_LOG) || module.getName().equals(ContextNames.INVITE_VISITOR) || module.getName().equals(ContextNames.BASE_VISIT) || module.getName().equals("custom_vendormapping") || module.getName().equals("custom_utilityaccounts") || module.getName().equals("custom_utilityconnections") || module.getName().equals("custom_utilitybill") || module.getName().equals("custom_utilitybilllineitems") || module.getName().equals("custom_incidentmanagement_1") || module.getName().equals("custom_quoteselectionform") || module.getName().equals("custom_supplierquotation") || module.getName().equals("custom_supplierquote") || module.getName().equals(ContextNames.VENDOR_CONTACT)))
+								)
+				) {
+					return true;
+				}
 			}
 		}
-    	catch (Exception e){
-    		e.printStackTrace();
+		catch (Exception e){
+			e.printStackTrace();
 		}
-    	return false;
+		return false;
 	}
 	
 }

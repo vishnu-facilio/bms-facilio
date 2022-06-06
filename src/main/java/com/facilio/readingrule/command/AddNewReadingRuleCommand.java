@@ -7,7 +7,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.ns.NamespaceConstants;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
-import com.facilio.workflowv2.util.WorkflowV2Util;
 import org.apache.commons.chain.Context;
 
 public class AddNewReadingRuleCommand extends FacilioCommand {
@@ -19,7 +18,8 @@ public class AddNewReadingRuleCommand extends FacilioCommand {
         readingRule.setOrgId(currentUser.getOrgId());
         readingRule.setCreatedBy(currentUser.getId());
         readingRule.setCreatedTime(System.currentTimeMillis());
-        readingRule.setModuleId((Long)context.get(FacilioConstants.ContextNames.MODULE_ID));
+        readingRule.setReadingModuleId((Long)context.get(FacilioConstants.ContextNames.MODULE_ID));
+        readingRule.setReadingFieldId(readingRule.fetchRuleReadingResultField().getFieldId());
         readingRule.setWorkflowId(readingRule.getWorkflowContext().getId());
         if(readingRule.getImpact() != null) {
         	 readingRule.setImpactId(readingRule.getImpact().getId());

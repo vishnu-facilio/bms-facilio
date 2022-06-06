@@ -3,8 +3,10 @@ package com.facilio.agent;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentUtilV2;
+import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.cache.CacheUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -17,8 +19,11 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.db.util.DBConf;
 import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.fw.BeanFactory;
+import com.facilio.fw.cache.FacilioCache;
+import com.facilio.fw.cache.LRUCache;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -29,6 +34,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
+import sun.management.Agent;
 
 import java.security.SecureRandom;
 import java.sql.SQLException;
@@ -44,21 +50,9 @@ public class AgentUtil {
     private String orgDomainName;
     private static final long DEFAULT_TIME = 10L;
 
+    private Map<String, FacilioAgent> agentMap = new HashMap<>();
     private static final SecureRandom secureRandom = new SecureRandom(); //threadsafe
     private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder(); //threadsafe
-
-
-    private Map<String, FacilioAgent> agentMap = new HashMap<>();
-
-    public Map<String, FacilioAgent> getAgentMap() {
-        return agentMap;
-    }
-
-    public int getAgentCount() {
-        return agentMap.size();
-    }
-
-    private int agentCount;
 
     private static final Logger LOGGER = LogManager.getLogger(AgentUtil.class.getName());
 
@@ -245,11 +239,12 @@ public class AgentUtil {
                 }
                 if (jsonObject.containsKey(AgentKeys.STATUS)) {
                     int status = Integer.parseInt(jsonObject.get(AgentKeys.STATUS).toString());
+                    AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
                     if (status == 0) {
                         AgentUtilV2.raiseAgentAlarm(AgentApiV2.getAgent(agent.getName()));
                     }
                     if (status == 1) {
-                        AgentUtilV2.dropAgentAlarm(AgentApiV2.getAgent(agent.getName()));
+                        AgentUtilV2.dropAgentAlarm(agentBean.getAgent(agent.getName()));
                     }
                 }
 
@@ -404,8 +399,7 @@ public class AgentUtil {
         return 0L;
     }
 
-
-    private String getVersion(Object payload) {
+        private String getVersion(Object payload) {
         JSONObject jsonObject2 = (JSONObject) payload;
         return jsonObject2.get(AgentKeys.FACILIO_MQTT_VERSION).toString();
     }

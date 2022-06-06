@@ -8,8 +8,6 @@ import com.facilio.agent.DeleteAgentCommand;
 import com.facilio.agent.commands.*;
 import com.facilio.agent.integration.AddIntegrationCommand;
 import com.facilio.agent.integration.UpdateIntegrationCommand;
-import com.facilio.agent.integration.wattsense.AgentIntegrationDeleteCommand;
-import com.facilio.agentv2.UpdateAgentCommand;
 import com.facilio.agentv2.commands.*;
 import com.facilio.agentv2.iotmessage.AddAndSendIotMessageCommand;
 import com.facilio.agentv2.point.AddPointCommand;
@@ -55,8 +53,9 @@ import com.facilio.modules.fields.relations.CalculateDependencyCommand;
 import com.facilio.mv.command.*;
 import com.facilio.ns.command.AddNamespaceCommand;
 import com.facilio.ns.command.AddNamespaceFieldsCommand;
-import com.facilio.ns.command.DeleteNamespaceCommand;
+import com.facilio.ns.command.DeleteRuleNamespacesCommand;
 import com.facilio.readingrule.command.*;
+import com.facilio.readingrule.faultimpact.command.DeleteFaultImpactFromReadingRuleCommand;
 import com.facilio.trigger.context.TriggerType;
 import com.facilio.weekends.*;
 import com.facilio.workflows.command.*;
@@ -658,11 +657,6 @@ public class TransactionChainFactory {
 		c.addCommand(new UpdateIntegrationCommand());
 		return c;
 		}
-		public static FacilioChain deleteWattsenseChain(){
-		FacilioChain c = getDefaultChain();
-		c.addCommand(new AgentIntegrationDeleteCommand());
-		return c;
-		}
 
 		public static FacilioChain controllerEdit(){
 			FacilioChain c = getDefaultChain();
@@ -787,7 +781,7 @@ public class TransactionChainFactory {
 		public static FacilioChain deleteReadingRuleChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new DeleteReadingRuleCommand());
-			c.addCommand(new DeleteNamespaceCommand());
+			c.addCommand(new DeleteRuleNamespacesCommand());
 			c.addCommand(new DeleteWorkflowCommand());
             c.addCommand(new DeleteReadingRuleActionsCommand());
 			return c;
@@ -795,7 +789,8 @@ public class TransactionChainFactory {
 
 		public static FacilioChain updateReadingRuleChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new PrepareReadingRuleCommand());
+			c.addCommand(new PrepareReadingRuleForUpdateCommand());
+			c.addCommand(addOrDeleteFaultImpactChain());
 			c.addCommand(new UpdateReadingRuleCommand());
 			c.addCommand(new UpdateWorkflowCommand());
 			c.addCommand(new AddRCARulesCommand());
@@ -813,6 +808,13 @@ public class TransactionChainFactory {
 			c.addCommand(new AddControlGroupCommand());
 			c.addCommand(new AddControlGroupSpaceCommand());
 			c.addCommand(new AddControlGroupInclExclCommand());
+			return c;
+		}
+
+		public static FacilioChain addOrDeleteFaultImpactChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new DeleteFaultImpactFromReadingRuleCommand());
+			c.addCommand(new AddFaultImpactRelationCommand());
 			return c;
 		}
 
@@ -4924,13 +4926,6 @@ public class TransactionChainFactory {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new DeleteServiceCatalogGroupCommand());
 		return chain;
-	}
-
-
-	public static FacilioChain getAgentUpdateChain() {
-		FacilioChain chain = getDefaultChain();
-		chain.addCommand(new UpdateAgentCommand());
-		return  chain;
 	}
 
 	public static FacilioChain getAckProcessorChain() {

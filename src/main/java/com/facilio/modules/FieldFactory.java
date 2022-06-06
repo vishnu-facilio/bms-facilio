@@ -4,7 +4,6 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.agent.AgentKeys;
-import com.facilio.agent.integration.AgentIntegrationKeys;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
@@ -897,20 +896,6 @@ public class FieldFactory extends BaseFieldFactory {
         field.setDataType(FieldType.NUMBER);
         field.setColumnName("count(Controller.ID)");
         return field;
-    }
-
-    public static List<FacilioField> getWattsenseIntegrationField() {
-        List<FacilioField> fields = new ArrayList<>();
-        FacilioModule module = ModuleFactory.getWattsenseIntegrationModule();
-        fields.add(getIdField(module));
-        fields.add(getField(AgentIntegrationKeys.NAME, "NAME", module, FieldType.STRING));
-        fields.add(getField(AgentIntegrationKeys.CLIENT_ID,"CLIENT_ID",module,FieldType.STRING));
-        fields.add(getField(AgentIntegrationKeys.MQTT_ID,"MQTT_CONN_ID",module,FieldType.STRING));
-        fields.add(getField(AgentIntegrationKeys.CERTIFICATE_STORE_ID,"CERT_STORE_ID",module,FieldType.STRING));
-        fields.add(getField(AgentIntegrationKeys.AUTH_STRING_ENC,"AUTH_STR_ENC",module,FieldType.STRING));
-        fields.add(getField(AgentIntegrationKeys.INTEGRATION_STATUS,"INTEGRATION_STATUS",module,FieldType.NUMBER));
-        fields.add(getDeletedTimeField(module));
-        return fields;
     }
 
     public static FacilioField getCreatedTime(FacilioModule module) {
@@ -2023,17 +2008,13 @@ public class FieldFactory extends BaseFieldFactory {
         FacilioModule module = ModuleFactory.getNewReadingRuleModule();
         fields.add(getIdField(module));
 
-        FacilioField moduleFld = getModuleIdField(module);
-        moduleFld.setDefault(true);
-        fields.add(moduleFld);
-
         fields.add(getDefaultField("name", "Name", "NAME", module, FieldType.STRING, true));
         fields.add(getDefaultField("description", "Description", "DESCRIPTION", module, FieldType.STRING));
         fields.add(getDefaultField("alarmType", "Applied To", "ALARM_APPLIED_TO", module, FieldType.NUMBER));
         fields.add(getDefaultField("createdTime", "Created Time", "CREATED_TIME", module, FieldType.NUMBER));
         fields.add(getDefaultField("status", "Status","STATUS", module, FieldType.BOOLEAN));
-
-        fields.add(getDefaultField("fieldId", "Field Id", "READING_FIELD_ID", module, FieldType.NUMBER));
+        fields.add(getDefaultField("readingModuleId", "Reading Module Id", "READING_MODULE_ID", module, FieldType.NUMBER));
+        fields.add(getDefaultField("readingFieldId", "Reading Field Id", "READING_FIELD_ID", module, FieldType.NUMBER));
         fields.add(getDefaultField("createdBy","Created By", "CREATED_BY", module, FieldType.NUMBER));
         fields.add(getDefaultField("assetCategoryId", "Asset Category Id", "ASSET_CATEGORY_ID", module, FieldType.NUMBER));
         fields.add(getDefaultField("workflowId","Workflow ID", "WORKFLOW_ID", module, FieldType.NUMBER));

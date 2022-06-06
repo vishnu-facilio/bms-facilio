@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsoleV3.context.V3ClientContactContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContactContext;
 import com.facilio.v3.context.V3Context;
+import org.apache.xpath.operations.Bool;
 
 import java.io.File;
 import java.util.List;
@@ -136,4 +137,21 @@ public class V3ClientContext extends V3Context {
     public void setPeopleClientContacts(List<V3ClientContactContext> ClientContacts) {
         this.peopleClientContacts = ClientContacts;
     }
+
+
+    public Boolean isAssociateSites() {
+        return isAssociateSites;
+    }
+    public void setAssociateSites(boolean associateSites) {
+        isAssociateSites = associateSites;
+    }
+    private boolean isAssociateSites;
+
+    public boolean isDisassociateSites() {
+        return isDisassociateSites;
+    }
+    public void setDisassociateSites(boolean disassociateSites) {
+        isDisassociateSites = disassociateSites;
+    }
+    private boolean isDisassociateSites;
 }

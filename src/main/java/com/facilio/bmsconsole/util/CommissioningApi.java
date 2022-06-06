@@ -10,13 +10,13 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.agentv2.cacheimpl.AgentBean;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.point.Point;
@@ -108,7 +108,8 @@ public class CommissioningApi {
 				}
 				
 				Map<Long, List<Map<String, Object>>> controllerMap = getCommissionedControllers(logIds);
-				Map<Long, FacilioAgent> agentMap = AgentApiV2.getAgentMap(agentIds);
+				AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+				Map<Long, FacilioAgent> agentMap = agentBean.getAgentMap(agentIds);
 				
 				for(CommissioningLogContext log: logs) {
 					List<Map<String, Object>> controllers = controllerMap.get(log.getId());
