@@ -30,7 +30,6 @@ public class EmailConversationThreadingContext extends BaseMailMessageContext {
 	String noteNotifyTo;
 	From_Type fromType;
 	Message_Type messageType;
-	Email_Status_Type statusType;
 	
 	
 	public enum Email_Status_Type implements FacilioIntEnum {
@@ -116,6 +115,10 @@ public class EmailConversationThreadingContext extends BaseMailMessageContext {
 	
 	public Message_Type getMessageTypeEnum() {
 		return messageType;
+	}
+	
+	public From_Type getFromTypeEnum() {
+		return fromType;
 	}
 
 	public int getFromType() {

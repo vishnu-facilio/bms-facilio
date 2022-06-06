@@ -1011,7 +1011,7 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new SendEmailForEmailConversationThreadingCommand());
         chain.addCommand(new AddActivityInRelatedModuleForEmailConversationThreadingCommand());
         chain.addCommand(new ExecuteWorkflowInRelatedModuleForEmailConversationThreadingCommand());
-        chain.addCommand(new DisableIsNewInRelatedModuleForEmailConversationThreadingCommand());
+        chain.addCommand(new SetModeInRelatedModuleForEmailConversationThreadingCommand());
         return chain;
     }
 

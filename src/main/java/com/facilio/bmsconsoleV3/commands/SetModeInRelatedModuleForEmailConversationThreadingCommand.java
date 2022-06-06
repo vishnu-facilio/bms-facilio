@@ -22,9 +22,8 @@ import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 
-public class DisableIsNewInRelatedModuleForEmailConversationThreadingCommand extends FacilioCommand {
+public class SetModeInRelatedModuleForEmailConversationThreadingCommand extends FacilioCommand {
 
-//	private static final String EMAIL_CONVERSATION_IS_NEW_FIELD_NAME = "emailConversationIsNewRecord";  
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -39,43 +38,43 @@ public class DisableIsNewInRelatedModuleForEmailConversationThreadingCommand ext
 
 		for(EmailConversationThreadingContext emailConversation : emailConversations) {
 			
-			if(emailConversation.getFromType() == EmailConversationThreadingContext.From_Type.ADMIN.getIndex()) {
+			if(emailConversation.getFromTypeEnum() == EmailConversationThreadingContext.From_Type.ADMIN) {
 				if(emailConversation.getMessageTypeEnum() != EmailConversationThreadingContext.Message_Type.PRIVATE_NOTE) {
 
-					List<Map<Long,Email_Status_Type>> recordIds = moduleVsRecordList.getOrDefault(emailConversation.getDataModuleId(), new ArrayList<Map<Long,Email_Status_Type>>());
-					recordIds.add(new HashMap() {{
+					List<Map<Long,Email_Status_Type>> recordVsModeList = moduleVsRecordList.getOrDefault(emailConversation.getDataModuleId(), new ArrayList<Map<Long,Email_Status_Type>>());
+					recordVsModeList.add(new HashMap() {{
 						put(emailConversation.getRecordId(),Email_Status_Type.AGENT_REPLIED);
 					}});
 				
-					moduleVsRecordList.put(emailConversation.getDataModuleId(), recordIds);
+					moduleVsRecordList.put(emailConversation.getDataModuleId(), recordVsModeList);
 			 }
 			}
-			if(emailConversation.getFromType() == EmailConversationThreadingContext.From_Type.CLIENT.getIndex()) {
+			else if(emailConversation.getFromTypeEnum() == EmailConversationThreadingContext.From_Type.CLIENT) {
 				if(emailConversation.getMessageTypeEnum() != EmailConversationThreadingContext.Message_Type.PRIVATE_NOTE) {
 
-					List<Map<Long,Email_Status_Type>> recordIds = moduleVsRecordList.getOrDefault(emailConversation.getDataModuleId(), new ArrayList<Map<Long,Email_Status_Type>>());
-					recordIds.add(new HashMap() {{
+					List<Map<Long,Email_Status_Type>> recordVsModeList = moduleVsRecordList.getOrDefault(emailConversation.getDataModuleId(), new ArrayList<Map<Long,Email_Status_Type>>());
+					recordVsModeList.add(new HashMap() {{
 						put(emailConversation.getRecordId(),Email_Status_Type.CUSTOMER_REPLIED);
 					}});
 				
-					moduleVsRecordList.put(emailConversation.getDataModuleId(), recordIds);
+					moduleVsRecordList.put(emailConversation.getDataModuleId(), recordVsModeList);
 			 }
 			}	
 		}
 
-		for(Long moduleId : moduleVsRecordList.keySet()) {
+		for(Map.Entry<Long,List<Map<Long,Email_Status_Type>>> moduleVsRecordMap : moduleVsRecordList.entrySet()) {
 			
-			FacilioModule recordModule = modBean.getModule(moduleId);
+			FacilioModule recordModule = modBean.getModule(moduleVsRecordMap.getKey());
 			FacilioField mode = modBean.getField("mode", recordModule.getName());
 			if(mode != null) {
-				for(Map<Long,Email_Status_Type> record : moduleVsRecordList.get(moduleId)){
-					for (Map.Entry<Long, Email_Status_Type> recordMap : record.entrySet()) {
+				for(Map<Long,Email_Status_Type> recordVsMode : moduleVsRecordMap.getValue()){
+					for (Map.Entry<Long, Email_Status_Type> recordVsModeMap : recordVsMode.entrySet()) {
 							UpdateRecordBuilder<ModuleBaseWithCustomFields> update = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
 									.module(recordModule)
 									.fields(modBean.getAllFields(recordModule.getName()))
-									.andCondition(CriteriaAPI.getIdCondition(recordMap.getKey(), recordModule));		
+									.andCondition(CriteriaAPI.getIdCondition(recordVsModeMap.getKey(), recordModule));		
 													
-								props.put("mode",recordMap.getValue().getTypeId());
+								props.put("mode",recordVsModeMap.getValue().getTypeId());
 							
 							update.updateViaMap(props);
 						}

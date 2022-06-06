@@ -9,6 +9,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ServiceRequestPriorityContext;
+import com.facilio.bmsconsoleV3.context.EmailConversationThreadingContext.Email_Status_Type;
 import com.facilio.bmsconsole.context.ServiceRequestContext.Classification;
 import com.facilio.bmsconsole.context.ServiceRequestContext.ServiceRequestType;
 import com.facilio.bmsconsole.context.ServiceRequestContext.SourceType;
@@ -285,12 +286,15 @@ public class V3ServiceRequestContext extends V3Context{
 		this.ratingVal = ratingVal;
 	}
 	
-	private int mode;
+	private Email_Status_Type mode;
 	public int getMode() {
-		return mode;
+		if(mode!=null) {
+			return mode.getIndex();
+		}
+		return -1;
 	}
 	public void setMode(int mode) {
-		this.mode = mode;
+		this.mode = Email_Status_Type.statusTypeMap.get(mode);
 	}
 
 }

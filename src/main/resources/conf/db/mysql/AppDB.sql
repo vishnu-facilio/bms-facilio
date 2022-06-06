@@ -10537,7 +10537,7 @@ CREATE TABLE IF NOT EXISTS Service_Requests
     RESOURCE_ID         BIGINT,
     REQUEST_TYPE        INT,
     RATING_VAL          INT,
-    MODE              TINYINT,
+    MODE              	INT,
     STRING_CF1          VARCHAR(255),
     STRING_CF2          VARCHAR(255),
     STRING_CF3          VARCHAR(255),
