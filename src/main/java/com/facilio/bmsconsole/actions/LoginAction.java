@@ -377,6 +377,13 @@ public class LoginAction extends FacilioAction {
 			}
 		}
 
+		Long userSessionId = AccountUtil.getCurrentAccount().getUserSessionId();
+		if (userSessionId != null && userSessionId > 0) {
+			Map<String, Object> userSession = IAMUserUtil.getUserSession(userSessionId);
+			account.put("sessionEndTime", userSession.get("endTime"));
+			account.put("proxyLoginUrl", FacilioProperties.getPortalProxyUserUrl());
+		}
+
 		data.put("users", users);
 		data.put("ticketStatus", TicketAPI.getAllStatus(false));
 		data.put("ticketType", TicketAPI.getTypes(AccountUtil.getCurrentOrg().getOrgId()));
@@ -949,6 +956,7 @@ public class LoginAction extends FacilioAction {
 		if (userSessionId != null && userSessionId > 0) {
 			Map<String, Object> userSession = IAMUserUtil.getUserSession(userSessionId);
 			account.put("sessionEndTime", userSession.get("endTime"));
+			account.put("proxyLoginUrl", FacilioProperties.getProxyUrl());
 		}
 
 		account.put("timezone",AccountUtil.getCurrentAccount().getTimeZone()); 

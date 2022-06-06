@@ -802,5 +802,10 @@
                 method="update"></action>
 
     </package>
+    <package name="v3Dashboard" namespace="/api/v3/dashboard" extends="v3Api">
+        <action name="clone"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
+                method="clone_dashboard"/>
+    </package>
 
 </struts>

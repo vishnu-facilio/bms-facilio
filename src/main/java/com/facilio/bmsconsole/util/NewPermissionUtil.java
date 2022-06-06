@@ -424,13 +424,13 @@ public class NewPermissionUtil {
         view_assignment.add(new Permission("VIEW_ASSIGNMENT", "All", indoorFloorplanTabType.get("VIEW_ASSIGNMENT"), null));
         view_assignment.add(new Permission("VIEW_ASSIGNMENT_DEPARTMENT", "Department", indoorFloorplanTabType.get("VIEW_ASSIGNMENT_DEPARTMENT"), null));
         view_assignment.add(new Permission("VIEW_ASSIGNMENT_OWN", "Own", indoorFloorplanTabType.get("VIEW_ASSIGNMENT_OWN"), null));
-        permissions.add(new PermissionGroup("view assignment",view_assignment ));
+        permissions.add(new PermissionGroup("View assignments",view_assignment ));
         List<Permission> view_booking = new ArrayList<>();
         view_booking.add(new Permission("VIEW_BOOKING", "All", indoorFloorplanTabType.get("VIEW_BOOKING"), null));
         view_booking.add(new Permission("VIEW_BOOKING_DEPARTMENT", "Department", indoorFloorplanTabType.get("VIEW_BOOKING_DEPARTMENT"), null));
         view_booking.add(new Permission("VIEW_BOOKING_OWN", "Own", indoorFloorplanTabType.get("VIEW_BOOKING_OWN"), null));
 
-        permissions.add(new PermissionGroup("view booking", view_booking));
+        permissions.add(new PermissionGroup("View bookings", view_booking));
         permissionMap.put("*", permissions);
         permissionList.put(Type.INDOOR_FLOORPLAN.getIndex(), permissionMap);
     }

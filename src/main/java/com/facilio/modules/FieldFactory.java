@@ -4,7 +4,6 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.agent.AgentKeys;
-import com.facilio.agent.integration.AgentIntegrationKeys;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
@@ -897,20 +896,6 @@ public class FieldFactory extends BaseFieldFactory {
         field.setDataType(FieldType.NUMBER);
         field.setColumnName("count(Controller.ID)");
         return field;
-    }
-
-    public static List<FacilioField> getWattsenseIntegrationField() {
-        List<FacilioField> fields = new ArrayList<>();
-        FacilioModule module = ModuleFactory.getWattsenseIntegrationModule();
-        fields.add(getIdField(module));
-        fields.add(getField(AgentIntegrationKeys.NAME, "NAME", module, FieldType.STRING));
-        fields.add(getField(AgentIntegrationKeys.CLIENT_ID,"CLIENT_ID",module,FieldType.STRING));
-        fields.add(getField(AgentIntegrationKeys.MQTT_ID,"MQTT_CONN_ID",module,FieldType.STRING));
-        fields.add(getField(AgentIntegrationKeys.CERTIFICATE_STORE_ID,"CERT_STORE_ID",module,FieldType.STRING));
-        fields.add(getField(AgentIntegrationKeys.AUTH_STRING_ENC,"AUTH_STR_ENC",module,FieldType.STRING));
-        fields.add(getField(AgentIntegrationKeys.INTEGRATION_STATUS,"INTEGRATION_STATUS",module,FieldType.NUMBER));
-        fields.add(getDeletedTimeField(module));
-        return fields;
     }
 
     public static FacilioField getCreatedTime(FacilioModule module) {

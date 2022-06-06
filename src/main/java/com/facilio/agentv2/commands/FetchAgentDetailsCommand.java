@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.agentv2.cacheimpl.AgentBean;
+import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.facilio.agent.AgentType;
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.CloudAgentUtil;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.command.FacilioCommand;
@@ -23,7 +24,8 @@ public class FetchAgentDetailsCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 
 		long id = (long) context.get(ContextNames.ID);
-		FacilioAgent agent = AgentApiV2.getAgent(id);
+		AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+		FacilioAgent agent = agentBean.getAgent(id);
 		
 		setWorkflows(agent);
 

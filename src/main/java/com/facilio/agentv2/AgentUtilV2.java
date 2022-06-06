@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import com.facilio.agentv2.cacheimpl.AgentBean;
+import com.facilio.fw.BeanFactory;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -53,7 +55,6 @@ public class AgentUtilV2
     private long orgId ;
     private String orgDomainName;
 
-    private Map<String, FacilioAgent> agentMap = new HashMap<>();
     private Map<Long, FacilioAgent> idVsAgentMap = new HashMap<>();
     private static final String CONFIGURED_STATUS = "3";
     private static final List<FacilioField> POINT_FIELDS = FieldFactory.getPointFields();
@@ -69,7 +70,8 @@ public class AgentUtilV2
                 idsNotInMap.add(id);
             }
         }
-        List<FacilioAgent> agentsFromDb = AgentApiV2.getAgents(idsNotInMap);
+        AgentBean agentBean = getAgentBean();
+        List<FacilioAgent> agentsFromDb = agentBean.getAgents(idsNotInMap);
         for (FacilioAgent agent :
                 agentsFromDb) {
             idVsAgentMap.put(agent.getId(),agent);
@@ -78,9 +80,10 @@ public class AgentUtilV2
         return map;
     }
 
-    public static JSONObject getOverview() {
+    public static JSONObject getOverview() throws Exception {
         JSONObject overiewData = new JSONObject();
-        JSONObject agentDetails = AgentApiV2.getAgentCountDetails();
+        AgentBean agentBean = getAgentBean();
+        JSONObject agentDetails = agentBean.getAgentCountDetails();
         if(agentDetails == null ||agentDetails.isEmpty()) {
         	return new JSONObject();
         }
@@ -116,7 +119,8 @@ public class AgentUtilV2
     public static JSONObject getAgentOverView(long agentId){
         JSONObject overiewData = new JSONObject();
         try {
-            FacilioAgent agent = AgentApiV2.getAgent(agentId);
+            AgentBean agentBean = getAgentBean();
+            FacilioAgent agent = agentBean.getAgent(agentId);
             if(agent != null) {
                 overiewData.putAll(FieldUtil.getAsJSON(agent));
                 overiewData.put(AgentConstants.CONTROLLER, ControllerApiV2.getControllerCountData(agentId));
@@ -133,14 +137,6 @@ public class AgentUtilV2
         overiewData.put("chartParams",MetricsApi.getMetricsGraphData(agentId));
         return overiewData;
     }
-
-    public Map<String, FacilioAgent> getAgentMap() { return agentMap; }
-
-    public int getAgentCount() {
-        return agentMap.size();
-    }
-    private int agentCount;
-
 
     public AgentUtilV2(long orgId, String orgDomainName)  {
         this.orgId = orgId;
@@ -301,30 +297,21 @@ public class AgentUtilV2
 
     private boolean updateAgent(FacilioAgent agent, JSONObject jsonObject) throws Exception {
     	refreshAgent(agent);
-        boolean isDone = AgentApiV2.editAgent(agent, jsonObject, true);
-        if (isDone) {
-            agentMap.replace(agent.getName(), agent);
-        }
-        return isDone;
+        AgentBean agentBean = getAgentBean();
+        return agentBean.editAgent(agent, jsonObject, true);
     }
     
     private void refreshAgent(FacilioAgent agent) throws Exception {
-
-        FacilioAgent agentFromDb = AgentApiV2.getAgent(agent.getName());
+        AgentBean agentBean = getAgentBean();
+        FacilioAgent agentFromDb = agentBean.getAgent(agent.getName());
         if (agentFromDb!=null) {
             agent.setProcessorVersion(agentFromDb.getProcessorVersion());
         }
 }
 
     public FacilioAgent getFacilioAgent(String agentName) throws Exception {
-        FacilioAgent agent = agentMap.get(agentName);
-        if (agent == null) {
-            LOGGER.info(" creating new agent ");
-            agent = AgentApiV2.getAgent(agentName);
-            if (agent != null) {
-                agentMap.put(agentName, agent);
-            }
-        }
+        AgentBean agentBean = getAgentBean();
+        FacilioAgent agent = agentBean.getAgent(agentName);
         return agent;
     }
 
@@ -338,12 +325,13 @@ public class AgentUtilV2
        return UUID.randomUUID().toString().replace("-","");
     }
 
-    static int getAgentOfflineStatus( Map<String,Object> map) throws Exception {
+    public static int getAgentOfflineStatus( Map<String,Object> map) throws Exception {
         boolean connected = (boolean)map.get(AgentConstants.CONNECTED);
         return connected ? 0 : 1;
     }
 
     private static boolean isConfiguredPointExist(long agentId) throws Exception {
+        AgentBean agentBean = getAgentBean();
         Set<Long> controllerIds = ControllerApiV2.getControllerIds(Collections.singletonList(agentId));
         if(controllerIds.isEmpty()){
             return false;
@@ -351,7 +339,7 @@ public class AgentUtilV2
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(POINT_MODULE.getTableName())
                 .select(POINT_FIELDS)
-                .andCondition(AgentApiV2.getDeletedTimeNullCondition(POINT_MODULE))
+                .andCondition(agentBean.getDeletedTimeNullCondition(POINT_MODULE))
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(POINT_MODULE), controllerIds, NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(POINT_MAP.get(AgentConstants.CONFIGURE_STATUS), CONFIGURED_STATUS, NumberOperators.EQUALS))
                 .limit(1);
@@ -359,10 +347,11 @@ public class AgentUtilV2
         return (map!= null && !map.isEmpty()) ;
     }
     
-    public static MessageSource getMessageSource(long agentId){
+    public static MessageSource getMessageSource(long agentId) throws Exception {
     	FacilioAgent agent = null;
-    	try {
-    		agent = AgentApiV2.getAgent(agentId);
+        AgentBean agentBean = getAgentBean();
+        try {
+    		agent = agentBean.getAgent(agentId);
 		} catch (Exception e) {
 			LOGGER.error("Error while fetching agent", e); 
 		}
@@ -406,5 +395,10 @@ public class AgentUtilV2
 			LOGGER.info("Exception while put record ", e);
 		}
     	return null;
+    }
+
+    public static AgentBean getAgentBean() throws Exception {
+        AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+        return agentBean;
     }
 }

@@ -1,13 +1,10 @@
 package com.facilio.bmsconsoleV3.commands.communityFeatures.announcement;
 
-import com.facilio.agent.integration.AgentIntegrationKeys;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LargeTextField;
 import com.facilio.modules.fields.LookupField;

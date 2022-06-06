@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.facilio.agentv2.cacheimpl.AgentBean;
+import com.facilio.fw.BeanFactory;
 import com.facilio.queue.source.MessageSourceUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -14,7 +16,6 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentType;
 import com.facilio.agent.integration.DownloadCertFile;
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.AgentUtilV2;
 import com.facilio.agentv2.CloudAgentUtil;
@@ -45,7 +46,8 @@ public class CreateAgentCommand extends AgentV2Command {
                     }
             }
             AgentType agentType = AgentType.valueOf(agent.getAgentType());
-            long agentId = AgentApiV2.addAgent(agent);
+            AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+            long agentId = agentBean.addAgent(agent);
             agent.setId(agentId);
             Organization currentOrg = AccountUtil.getCurrentOrg();
             createMessageTopic(currentOrg);
@@ -53,7 +55,7 @@ public class CreateAgentCommand extends AgentV2Command {
                 createPolicy(agent, currentOrg, currentOrg.getDomain());
             }
             if (agentType == AgentType.CLOUD) {
-                AgentApiV2.scheduleRestJob(agent);
+                agentBean.scheduleRestJob(agent);
             }
             if (agentType.isAgentService()) {
                 CloudAgentUtil.addCloudServiceAgent(agent);

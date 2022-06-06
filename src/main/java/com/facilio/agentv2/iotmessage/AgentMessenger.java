@@ -3,9 +3,9 @@ package com.facilio.agentv2.iotmessage;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agent.fw.constants.PublishType;
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
+import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.modbusrtu.ModbusRtuControllerContext;
 import com.facilio.agentv2.modbusrtu.RtuNetworkContext;
@@ -15,6 +15,7 @@ import com.facilio.agentv2.opcxmlda.OpcXmlDaControllerContext;
 import com.facilio.agentv2.rdm.RdmControllerContext;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.chain.FacilioContext;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -34,7 +35,8 @@ public class AgentMessenger {
 
 
     private static IotData constructNewIotAgentMessage(long agentId, FacilioCommand command, FacilioContext extraMsgContent, FacilioControllerType type) throws Exception {
-        FacilioAgent agent = AgentApiV2.getAgent(agentId);
+        AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+        FacilioAgent agent = agentBean.getAgent(agentId);
 
         Objects.requireNonNull(agent, "Agent can't be null");
         return constructNewIotAgentMessage(command, agent, extraMsgContent, type);
@@ -253,7 +255,8 @@ public class AgentMessenger {
     private static IotData getIotDataForControllerContext(Controller controllerContext) throws Exception {
         Objects.requireNonNull(controllerContext, "controller cant be null");
         long agentId = controllerContext.getAgentId();
-        FacilioAgent agent = AgentApiV2.getAgent(agentId);
+        AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+        FacilioAgent agent = agentBean.getAgent(agentId);
         return getIotDataForControllerContext(Collections.singletonList(controllerContext), agent);
     }
 

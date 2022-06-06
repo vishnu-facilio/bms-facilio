@@ -6,10 +6,10 @@ import com.facilio.agent.AgentUtil;
 import com.facilio.agent.FacilioAgent;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.controller.FacilioDataType;
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
 import com.facilio.agentv2.bacnet.BacnetIpPointContext;
+import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.GetControllerRequest;
@@ -20,13 +20,13 @@ import com.facilio.agentv2.misc.MiscPoint;
 import com.facilio.agentv2.niagara.NiagaraControllerContext;
 import com.facilio.agentv2.niagara.NiagaraPointContext;
 import com.facilio.agentv2.point.Point;
-import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.ControllerType;
 import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.timeseries.TimeSeriesAPI;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
@@ -35,7 +35,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import javax.naming.ldap.Control;
 import java.io.File;
 import java.io.IOException;
 import java.sql.BatchUpdateException;
@@ -417,6 +416,7 @@ public class SqliteBridge{
 
     public static com.facilio.agentv2.FacilioAgent migrateAgentToV2(long agentId) throws Exception {
         FacilioAgent agent = AgentUtil.getAgentDetails(agentId);
+        AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
         if (agent != null) {
             com.facilio.agentv2.FacilioAgent agentV2 = new com.facilio.agentv2.FacilioAgent();
             agentV2.setDeviceDetails(agent.getDeviceDetails());
@@ -455,10 +455,10 @@ public class SqliteBridge{
                 agentV2.setDeletedTime(agent.getDeletedTime());
             }
             try {
-                agentV2.setId(AgentApiV2.addAgent(agentV2));
+                agentV2.setId(agentBean.addAgent(agentV2));
             } catch (MySQLIntegrityConstraintViolationException e) {
                 LOGGER.info(" agent already present and so returning it " + agent.getId());
-                com.facilio.agentv2.FacilioAgent newAgent = AgentApiV2.getAgent(agent.getAgentName());
+                com.facilio.agentv2.FacilioAgent newAgent = agentBean.getAgent(agent.getAgentName());
                 if(newAgent != null){
                     return newAgent;
                 }else {
@@ -467,7 +467,7 @@ public class SqliteBridge{
             }catch (BatchUpdateException e){
                 if(e.getMessage().contains("Duplicate entry")){
                     LOGGER.info(" agent already present ");
-                    com.facilio.agentv2.FacilioAgent newAgent = AgentApiV2.getAgent(agent.getAgentName());
+                    com.facilio.agentv2.FacilioAgent newAgent = agentBean.getAgent(agent.getAgentName());
                     if (newAgent != null) {
                         return newAgent;
                     }else {

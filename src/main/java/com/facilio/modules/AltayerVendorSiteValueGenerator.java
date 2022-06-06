@@ -3,6 +3,7 @@ package com.facilio.modules;
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.VendorContactContext;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
@@ -43,6 +44,7 @@ public class AltayerVendorSiteValueGenerator extends ValueGenerator {
     }
 
     public List<Long> getSiteIdsFromVendorMappingData(long vendorID, long pplId) throws Exception {
+        List<VendorContactContext> vendorContact = PeopleAPI.getVendorContacts(pplId,false);
         List<Long> siteIds = new ArrayList<>();
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule("custom_vendormapping");
@@ -53,10 +55,15 @@ public class AltayerVendorSiteValueGenerator extends ValueGenerator {
                 .select(modBean.getAllFields(module.getName()))
                 .fetchSupplement((LookupField) fieldMap.get("building"))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("vendor"), String.valueOf(vendorID), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleState"), "26327", NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("contacts"), String.valueOf(pplId), PickListOperators.IS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleState"), "26327", NumberOperators.EQUALS));
 
-                ;
+        if(CollectionUtils.isNotEmpty(vendorContact)){
+            VendorContactContext contact = vendorContact.get(0);
+            if(contact != null && !contact.isPrimaryContact()){
+                builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("contacts"), String.valueOf(pplId), PickListOperators.IS));
+            }
+        }
+
         builder.skipScopeCriteria();
         List<Map<String, Object>> props = builder.getAsProps();
         if(CollectionUtils.isNotEmpty(props)) {

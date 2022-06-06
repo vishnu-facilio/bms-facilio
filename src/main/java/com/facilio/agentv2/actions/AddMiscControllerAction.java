@@ -2,9 +2,10 @@ package com.facilio.agentv2.actions;
 
 import java.net.HttpURLConnection;
 
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.FacilioAgent;
+import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.misc.MiscControllerContext;
+import com.facilio.fw.BeanFactory;
 import com.facilio.fw.FacilioException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -20,7 +21,8 @@ public class AddMiscControllerAction extends AgentIdAction{
 	public String addMiscController() {
 		
 		try {
-            FacilioAgent agent = AgentApiV2.getAgent(getAgentId());
+            AgentBean bean = (AgentBean) BeanFactory.lookup("AgentBean");
+            FacilioAgent agent = bean.getAgent(getAgentId());
             if (agent != null) {
                 Long controllerId = null;
                 // if (deviceId != null && deviceId > 0) {

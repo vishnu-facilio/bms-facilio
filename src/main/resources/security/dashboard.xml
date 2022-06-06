@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <request path="/api/v3/dashboard/clone">
+        <requestbody type="object">
+            <property name="data" type="object">
+                <property name="dashboard_link_name" type="string" mandatory="true"></property>
+                <property name="cloned_dashboard_name" type="string" mandatory="true"></property>
+            </property>
+        </requestbody>
+    </request>
+</config>

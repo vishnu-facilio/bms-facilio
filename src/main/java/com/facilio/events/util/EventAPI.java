@@ -2,9 +2,9 @@ package com.facilio.events.util;
 
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
+import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -252,7 +252,8 @@ public class EventAPI {
 	}
 
 	public static long getAgent(String agentKey) throws Exception {
-		FacilioAgent agent = AgentApiV2.getAgent(agentKey);
+		AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+		FacilioAgent agent = agentBean.getAgent(agentKey);
 		if(agent != null) {
 			return agent.getId();
 		}

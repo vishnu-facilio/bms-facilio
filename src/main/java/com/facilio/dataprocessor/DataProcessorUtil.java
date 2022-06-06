@@ -9,6 +9,7 @@ import java.util.Map;
 
 import com.facilio.bmsconsole.commands.SchedulePMWorkOrderGenerationCommand;
 import com.facilio.fw.FacilioException;
+import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.google.api.client.json.Json;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.trace.Span;
@@ -29,7 +30,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.*;
 import com.facilio.agent.agentcontrol.AgentControl;
 import com.facilio.agent.integration.queue.preprocessor.AgentMessagePreProcessor;
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.AgentUtilV2;
 import com.facilio.agentv2.DataProcessorV2;
@@ -180,7 +180,8 @@ public class DataProcessorUtil {
             try {
                 if(payLoad.containsKey(AgentConstants.AGENT) && ( payLoad.get(AgentConstants.AGENT) != null ) ) {
                     String agentName = (String) payLoad.get(AgentConstants.AGENT);
-                    agentV2 = AgentApiV2.getAgent(agentName);
+                    AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+                    agentV2 = agentBean.getAgent(agentName);
                     if (agentV2 != null) {
                         if (isStage) {
                             Boolean agentStatus = agentV2.getIsDisable();
@@ -289,8 +290,8 @@ public class DataProcessorUtil {
                 	prop.put(AgentConstants.PUBLIC_DELETE_QUERIES_TIME, account.getPublicDeleteQueriesTime());
                 	prop.put(AgentConstants.PUBLIC_REDIS_GET_TIME, account.getPublicRedisGetTime());
                 	prop.put(AgentConstants.PUBLIC_REDIS_PUT_TIME, account.getPublicRedisPutTime());
-                prop.put(AgentConstants.PUBLIC_REDIS_DELETE_TIME, account.getPublicRedisDeleteTime());
-                prop.put(AgentConstants.AGENT_ID, agentMsgId);
+                    prop.put(AgentConstants.PUBLIC_REDIS_DELETE_TIME, account.getPublicRedisDeleteTime());
+                    prop.put(AgentConstants.AGENT_ID, agentMsgId);
 //                	updateAgentMsg(prop,recordId);
             } catch (Exception e) {
                 LOGGER.error("record: " + recordId);
@@ -302,6 +303,9 @@ public class DataProcessorUtil {
 
     private void processOldAgentData(FacilioRecord record, long recordId, JSONObject payLoad) throws Exception {
         String dataType = PublishType.event.getValue();
+        if (payLoad.containsKey(EventUtil.DATA_TYPE)) {
+            dataType = (String) payLoad.remove(EventUtil.DATA_TYPE);
+        }
 
         // Temp fix - bug: Publish_Type wrongly set to "agents"
         if ("agents".equals(dataType)) {

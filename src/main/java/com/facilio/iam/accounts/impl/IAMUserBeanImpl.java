@@ -2837,7 +2837,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				System.currentTimeMillis() + 24 * 60 * 60000);
 
 		long sessionId = startUserSessionv2(uid, jwt, ipAddress, userAgent, userType,
-				Instant.ofEpochMilli(System.currentTimeMillis()).plus(1, ChronoUnit.DAYS).toEpochMilli(), isProxySession);
+				Instant.ofEpochMilli(System.currentTimeMillis()).plus(1, ChronoUnit.HOURS).toEpochMilli(), isProxySession);
 
 		Map<String, Object> props = new HashMap<>();
 		props.put("uid", uid);
