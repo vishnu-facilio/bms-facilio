@@ -285,15 +285,12 @@ public class V3ServiceRequestContext extends V3Context{
 		this.ratingVal = ratingVal;
 	}
 	
-	private boolean emailConversationIsNewRecord;
-	public boolean isEmailConversationIsNewRecord() {
-		return emailConversationIsNewRecord;
+	private int mode;
+	public int getMode() {
+		return mode;
 	}
-	public boolean getEmailConversationIsNewRecord() {
-		return emailConversationIsNewRecord;
-	}
-	public void setEmailConversationIsNewRecord(boolean emailConversationIsNewRecord) {
-		this.emailConversationIsNewRecord = emailConversationIsNewRecord;
+	public void setMode(int mode) {
+		this.mode = mode;
 	}
 
 }

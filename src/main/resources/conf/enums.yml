@@ -226,6 +226,9 @@ enums:
   - name: EmailConversationMessageType
     enumClassName: com.facilio.bmsconsoleV3.context.EmailConversationThreadingContext$Message_Type 
 
+  - name: EmailStatusType
+    enumClassName: com.facilio.bmsconsoleV3.context.EmailConversationThreadingContext$Email_Status_Type 
+    
   - name: EmailFromAddressSourceType
     enumClassName: com.facilio.bmsconsoleV3.context.EmailFromAddress$SourceType
 

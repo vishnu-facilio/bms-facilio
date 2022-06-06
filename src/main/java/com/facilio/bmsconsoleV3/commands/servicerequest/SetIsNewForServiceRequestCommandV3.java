@@ -6,6 +6,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsoleV3.context.V3ServiceRequestContext;
+import com.facilio.bmsconsoleV3.context.EmailConversationThreadingContext.Email_Status_Type;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.v3.context.Constants;
@@ -16,7 +17,7 @@ public class SetIsNewForServiceRequestCommandV3 extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		List<V3ServiceRequestContext> requests = Constants.getRecordList((FacilioContext) context);
 		
-		requests.stream().forEach(request -> request.setEmailConversationIsNewRecord(Boolean.TRUE));
+		requests.stream().forEach(request -> request.setMode(Email_Status_Type.ISNEW.getTypeId()));
 
 		return false;
 	}

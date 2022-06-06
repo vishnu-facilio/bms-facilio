@@ -10,6 +10,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.EmailConversationThreadingContext;
+import com.facilio.bmsconsoleV3.context.EmailConversationThreadingContext.Email_Status_Type;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
@@ -23,7 +24,7 @@ import com.facilio.v3.context.Constants;
 
 public class DisableIsNewInRelatedModuleForEmailConversationThreadingCommand extends FacilioCommand {
 
-	private static final String EMAIL_CONVERSATION_IS_NEW_FIELD_NAME = "emailConversationIsNewRecord";  
+//	private static final String EMAIL_CONVERSATION_IS_NEW_FIELD_NAME = "emailConversationIsNewRecord";  
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -32,42 +33,56 @@ public class DisableIsNewInRelatedModuleForEmailConversationThreadingCommand ext
 		
 		List<EmailConversationThreadingContext> emailConversations = Constants.getRecordList((FacilioContext) context);
 		
-		Map<Long,List<Long>> moduleVsRecordList = new HashMap<Long, List<Long>>(); 
+		Map<Long,List<Map<Long,Email_Status_Type>>> moduleVsRecordList = new HashMap<Long, List<Map<Long,Email_Status_Type>>>(); 
 		
-		
+		Map<String,Object> props = new HashMap<String, Object>();
+
 		for(EmailConversationThreadingContext emailConversation : emailConversations) {
 			
 			if(emailConversation.getFromType() == EmailConversationThreadingContext.From_Type.ADMIN.getIndex()) {
 				if(emailConversation.getMessageTypeEnum() != EmailConversationThreadingContext.Message_Type.PRIVATE_NOTE) {
-					
-					List<Long> recordIds = moduleVsRecordList.getOrDefault(emailConversation.getDataModuleId(), new ArrayList<Long>());
-					recordIds.add(emailConversation.getRecordId());
-					
+
+					List<Map<Long,Email_Status_Type>> recordIds = moduleVsRecordList.getOrDefault(emailConversation.getDataModuleId(), new ArrayList<Map<Long,Email_Status_Type>>());
+					recordIds.add(new HashMap() {{
+						put(emailConversation.getRecordId(),Email_Status_Type.AGENT_REPLIED);
+					}});
+				
 					moduleVsRecordList.put(emailConversation.getDataModuleId(), recordIds);
-				}
+			 }
 			}
-			
+			if(emailConversation.getFromType() == EmailConversationThreadingContext.From_Type.CLIENT.getIndex()) {
+				if(emailConversation.getMessageTypeEnum() != EmailConversationThreadingContext.Message_Type.PRIVATE_NOTE) {
+
+					List<Map<Long,Email_Status_Type>> recordIds = moduleVsRecordList.getOrDefault(emailConversation.getDataModuleId(), new ArrayList<Map<Long,Email_Status_Type>>());
+					recordIds.add(new HashMap() {{
+						put(emailConversation.getRecordId(),Email_Status_Type.CUSTOMER_REPLIED);
+					}});
+				
+					moduleVsRecordList.put(emailConversation.getDataModuleId(), recordIds);
+			 }
+			}	
 		}
 
 		for(Long moduleId : moduleVsRecordList.keySet()) {
 			
 			FacilioModule recordModule = modBean.getModule(moduleId);
-			FacilioField isNewfield = modBean.getField(EMAIL_CONVERSATION_IS_NEW_FIELD_NAME, recordModule.getName());
-			if(isNewfield != null) {
-				UpdateRecordBuilder<ModuleBaseWithCustomFields> update = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
-						.module(recordModule)
-						.fields(modBean.getAllFields(recordModule.getName()))
-						.andCondition(CriteriaAPI.getIdCondition(moduleVsRecordList.get(moduleId), recordModule));
-				
-				Map<String,Object> props = new HashMap<String, Object>();
-				
-				props.put(EMAIL_CONVERSATION_IS_NEW_FIELD_NAME, Boolean.FALSE);
-				
-				update.updateViaMap(props);
+			FacilioField mode = modBean.getField("mode", recordModule.getName());
+			if(mode != null) {
+				for(Map<Long,Email_Status_Type> record : moduleVsRecordList.get(moduleId)){
+					for (Map.Entry<Long, Email_Status_Type> recordMap : record.entrySet()) {
+							UpdateRecordBuilder<ModuleBaseWithCustomFields> update = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
+									.module(recordModule)
+									.fields(modBean.getAllFields(recordModule.getName()))
+									.andCondition(CriteriaAPI.getIdCondition(recordMap.getKey(), recordModule));		
+													
+								props.put("mode",recordMap.getValue().getTypeId());
+							
+							update.updateViaMap(props);
+						}
+					}
+				}
 			}
-		}
 		return false;
 	}
-	
 }
 		
