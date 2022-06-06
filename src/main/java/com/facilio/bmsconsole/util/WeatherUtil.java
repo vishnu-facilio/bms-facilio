@@ -18,6 +18,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
+import com.facilio.util.ServiceHttpUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.log4j.Level;
@@ -65,7 +66,6 @@ public class WeatherUtil {
 	private static String weatherParams = "?units=si&exclude=flags,alerts";
 
 	private static String[] apiKeys = FacilioProperties.getConfig("weather.key").trim().split(",");
-
 	private static int currentKey = 0;
 	private static int apiCallCount = 0;
 
@@ -153,6 +153,18 @@ public class WeatherUtil {
 	}
 
 	public static String getForecastURL(double lat, double longitude, Long time) {
+		StringBuilder url = new StringBuilder(weatherURL);
+		url.append("?lat=");
+		url.append(lat);
+		url.append("&lng=");
+		url.append(longitude);
+		if (time != null) {
+			url.append("&ttime=" + time);
+		}
+		LOGGER.log(Level.INFO, "Weather url is : " + url);
+		return url.toString();
+	}
+	public static String getForecastURLOrig(double lat, double longitude, Long time) {
 
 		StringBuilder url = new StringBuilder(weatherURL);
 		url.append(getAPIKey());
@@ -168,6 +180,11 @@ public class WeatherUtil {
 		return url.toString();
 	}
 
+	public static String doGet(String url) throws Exception {
+		String response = ServiceHttpUtils.doHttpGet(FacilioProperties.getRegion(), FacilioConstants.Services.WEATHER_SERVICE, url, null, null);
+		return response;
+	}
+
 	@SuppressWarnings("unchecked")
 	public static Map<String, Object> getWeatherData(SiteContext site, Long time) throws Exception {
 
@@ -181,17 +198,18 @@ public class WeatherUtil {
 			return null;
 		}
 		String weatherURL = WeatherUtil.getForecastURL(lat, lng, time);
-		HttpURLConnection connection = WeatherUtil.getHttpURLConnection(weatherURL);
-		String response = WeatherUtil.getResponse(connection);
+//		HttpURLConnection connection = WeatherUtil.getHttpURLConnection(weatherURL);
+//		String response = WeatherUtil.getResponse(connection);
+		String response = WeatherUtil.doGet(weatherURL);
 		if (response == null) {
 			LOGGER.log(Level.INFO, "The response is null from the weather server");
 			return null;
 		}
 		JSONObject weatherData = null;
 		JSONParser parser = new JSONParser();
-
 		try {
-			weatherData = (JSONObject) parser.parse(response);
+			JSONObject jsonResponse = (JSONObject) parser.parse(response);
+			weatherData = (JSONObject) jsonResponse.get("data");
 		} catch (Exception e) {
 			throw new Exception(response, e);
 		}
@@ -208,8 +226,9 @@ public class WeatherUtil {
 			return null;
 		}
 		String weatherURL = WeatherUtil.getForecastURL(lat, lng, time);
-		HttpURLConnection connection = WeatherUtil.getHttpURLConnection(weatherURL);
-		String response = WeatherUtil.getResponse(connection);
+//		HttpURLConnection connection = WeatherUtil.getHttpURLConnection(weatherURL);
+//		String response = WeatherUtil.getResponse(connection);
+		String response = WeatherUtil.doGet(weatherURL);
 		if (response == null) {
 			LOGGER.log(Level.INFO, "The response is null from the weather server");
 			return null;
@@ -217,7 +236,8 @@ public class WeatherUtil {
 		JSONObject weatherData = null;
 		JSONParser parser = new JSONParser();
 		try {
-			weatherData = (JSONObject) parser.parse(response);
+			JSONObject jsonResponse = (JSONObject) parser.parse(response);
+			weatherData = (JSONObject) jsonResponse.get("data");
 		} catch (Exception e) {
 			throw new Exception(response, e);
 		}
