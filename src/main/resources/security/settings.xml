@@ -17,6 +17,12 @@
         <requestbody type="v3fields" />
     </request>
 
+    <request path="/api/v3/modules/data/bulkget">
+        <requestbody type="object">
+            <property name="moduleName" type="string" />
+        </requestbody>
+    </request>
+
     <request path="/api/v2/statetransition/timelog">
         <requestbody type="object">
             <property name="moduleName" type="string"/>

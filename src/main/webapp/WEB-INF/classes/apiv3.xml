@@ -129,6 +129,10 @@
                 method="bulkPatch">
         </action>
 
+        <action name="bulkget"
+                class="com.facilio.v3.RESTAPIHandler"
+                method="bulkGet" />
+
         <action name="delete"
                 class="com.facilio.v3.RESTAPIHandler"
                 method="delete">
