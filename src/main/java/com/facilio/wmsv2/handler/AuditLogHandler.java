@@ -301,6 +301,7 @@ public class AuditLogHandler extends BaseHandler {
         ADD("Add"),
         UPDATE("Update"),
         DELETE("Delete"),
+        MISCELLANEOUS("miscellaneous")
         ;
 
         private String name;
