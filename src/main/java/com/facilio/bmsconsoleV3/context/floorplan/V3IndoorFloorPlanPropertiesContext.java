@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.context.floorplan;
 
 import com.facilio.v3.context.V3Context;
+import org.json.simple.JSONObject;
 
 public class V3IndoorFloorPlanPropertiesContext extends V3Context {
 
@@ -48,6 +49,16 @@ private Boolean isOccupied;
 
 private Long bookingFormId;
 
+
+
+	private JSONObject markerPermission;
+	public JSONObject getMarkerPermission() {
+		return markerPermission;
+	}
+
+	public void setMarkerPermission(JSONObject markerPermission) {
+		this.markerPermission = markerPermission;
+	}
 
 public Boolean getIsOccupied() {
 	if(isOccupied != null) {

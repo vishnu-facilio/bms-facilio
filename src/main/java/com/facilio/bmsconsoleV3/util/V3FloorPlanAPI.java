@@ -595,7 +595,10 @@ public class V3FloorPlanAPI {
 					//
 				} else if ((Boolean) mark.get("hasDepartmentAccess")) {
 					if (employeemarker != null) {
+						mark.put("makerDepartment", properties.getDepartmentId());
+						mark.put("employeeDepartment", employee.getDepartment().getId());
 						if(properties.getDepartmentId()!=employee.getDepartment().getId()){
+							mark.put("hideDepartment", true);
 							hideProperties(properties);
 						}
 					}
@@ -619,6 +622,7 @@ public class V3FloorPlanAPI {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+		properties.setMarkerPermission(mark);
 		return properties;
 	}
 	public static void hideProperties(V3IndoorFloorPlanPropertiesContext properties){
