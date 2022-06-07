@@ -7,8 +7,11 @@ import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.context.VendorContactContext;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.VendorsAPI;
+import com.facilio.bmsconsoleV3.context.V3VendorContactContext;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
@@ -73,7 +76,7 @@ public class AltayerBuildingValueGenerator extends ValueGenerator{
     }
 
     public List<Long> getBuildingIdsFromVendorMappingData(long vendorID, long pplId) throws Exception {
-        List<VendorContactContext> vendorContact = PeopleAPI.getVendorContacts(pplId,false);
+        V3VendorContactContext vendorContact = V3RecordAPI.getRecord(FacilioConstants.ContextNames.VENDOR_CONTACT,pplId);
         List<Long> buildingIds = new ArrayList<>();
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule("custom_vendormapping");
@@ -85,11 +88,8 @@ public class AltayerBuildingValueGenerator extends ValueGenerator{
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("vendor"), String.valueOf(vendorID), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleState"), "26327", NumberOperators.EQUALS));
 
-        if(CollectionUtils.isNotEmpty(vendorContact)){
-            VendorContactContext contact = vendorContact.get(0);
-            if(contact != null && !contact.isPrimaryContact()){
-                builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("contacts"), String.valueOf(pplId), PickListOperators.IS));
-            }
+        if(vendorContact != null && !vendorContact.isPrimaryContact()){
+            builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("contacts"), String.valueOf(pplId), PickListOperators.IS));
         }
 
         builder.skipScopeCriteria();
