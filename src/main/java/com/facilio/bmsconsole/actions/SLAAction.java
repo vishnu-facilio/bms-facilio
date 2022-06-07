@@ -10,7 +10,10 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SLAAction extends FacilioAction {
 
@@ -152,8 +155,18 @@ public class SLAAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.SORTING_QUERY, "EXECUTION_ORDER ASC");
         chain.execute();
 
-        setResult(FacilioConstants.ContextNames.SLA_POLICY_LIST, context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST));
-
+        List<WorkflowRuleContext> workFlowRuleList= (List<WorkflowRuleContext>)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST);
+        List<Map<String,Object>> slaWorkFlowRuleList = new ArrayList<>();
+        for(WorkflowRuleContext slaWorkFlowRule:workFlowRuleList){
+            Map<String,Object>slaWorkFlowRuleMap=new HashMap<>();
+            slaWorkFlowRuleMap.put("name",slaWorkFlowRule.getName());
+            slaWorkFlowRuleMap.put("description",slaWorkFlowRule.getDescription());
+            slaWorkFlowRuleMap.put("status",slaWorkFlowRule.getStatus());
+            slaWorkFlowRuleMap.put("active",slaWorkFlowRule.isActive());
+            slaWorkFlowRuleMap.put("id",slaWorkFlowRule.getId());
+            slaWorkFlowRuleList.add(slaWorkFlowRuleMap);
+        }
+        setResult(FacilioConstants.ContextNames.SLA_POLICY_LIST, slaWorkFlowRuleList);
         return SUCCESS;
     }
 

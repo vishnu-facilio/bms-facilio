@@ -1,13 +1,8 @@
 package com.facilio.bmsconsoleV3.signup.scoping;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.floorplan.V3FloorplanMarkersContext;
-import com.facilio.bmsconsoleV3.context.floorplan.V3IndoorFloorPlanLayerContext;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
@@ -16,6 +11,9 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class FloorPlanScopingConfig extends SignUpData {
