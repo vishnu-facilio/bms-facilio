@@ -76,7 +76,7 @@ public class AltayerBuildingValueGenerator extends ValueGenerator{
     }
 
     public List<Long> getBuildingIdsFromVendorMappingData(long vendorID, long pplId) throws Exception {
-        V3VendorContactContext vendorContact = V3RecordAPI.getRecord(FacilioConstants.ContextNames.VENDOR_CONTACT,pplId);
+        V3VendorContactContext vendorContact = V3RecordAPI.getRecord(FacilioConstants.ContextNames.VENDOR_CONTACT,pplId,V3VendorContactContext.class,true);
         List<Long> buildingIds = new ArrayList<>();
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule("custom_vendormapping");

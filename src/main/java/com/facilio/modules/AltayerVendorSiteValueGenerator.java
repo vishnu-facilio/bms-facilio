@@ -46,7 +46,7 @@ public class AltayerVendorSiteValueGenerator extends ValueGenerator {
     }
 
     public List<Long> getSiteIdsFromVendorMappingData(long vendorID, long pplId) throws Exception {
-        V3VendorContactContext vendorContact = V3RecordAPI.getRecord(FacilioConstants.ContextNames.VENDOR_CONTACT,pplId);
+        V3VendorContactContext vendorContact = V3RecordAPI.getRecord(FacilioConstants.ContextNames.VENDOR_CONTACT,pplId,V3VendorContactContext.class,true);
 
         PeopleAPI.getVendorContacts(pplId,false);
         List<Long> siteIds = new ArrayList<>();
