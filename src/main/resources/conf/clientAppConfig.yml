@@ -3,6 +3,3 @@ clientapps:
   - name: default
     baseUrl: https://static.facilio.com
     stageBaseUrl: https://static.facilio.com/dev
-  - name: auth
-    baseUrl: https://static.facilio.com/auth
-    stageBaseUrl: https://static.facilio.com/dev
