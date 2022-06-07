@@ -289,7 +289,7 @@ public class V3ServiceRequestContext extends V3Context{
 	private Email_Status_Type mode;
 	public int getMode() {
 		if(mode!=null) {
-			return mode.getIndex();
+			return mode.getTypeId();
 		}
 		return -1;
 	}
