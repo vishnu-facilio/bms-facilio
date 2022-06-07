@@ -1614,7 +1614,6 @@
 /api/v2/workorders/getNextWorkOrderTime
 /api/v2/workorders/add
 /api/v2/workorders/bulkAdd
-/api/v2/workorders/activity
 /api/v2/workorders/update
 /api/v2/workorders/assign
 /api/v2/workorders/resolve
@@ -1699,7 +1698,6 @@
 /api/v2/businesshours/list
 /api/v2/businesshours/updateresource
 /api/v2/businesshours/:v2getBusinessHoursList
-/api/v2/tasks/updatestatus
 /api/v2/tasks/deleteTaskAttachment
 /api/v2/tasks/closeAllTask
 /api/v2/tasks/closeResourceTasks
@@ -2204,7 +2202,6 @@
 /api/v2/modules/fields/getFieldForms
 /api/v2/modules/fields/changeFieldTo
 /api/v2/modules/fields/canChangeField
-/api/v2/modules/meta/:v2metadata
 /api/v2/modules/rules/list
 /api/v2/modules/rules/add
 /api/v2/modules/rules/update
