@@ -33,8 +33,10 @@ public class UpdateJobActiveStatusCommand extends FacilioCommand {
         FacilioService.runAsService(FacilioConstants.Services.JOB_SERVICE,() -> updateActiveStatus(context));
 
         List<String> agentService = new ArrayList<>();
-        if(context.containsKey("agentServiceAgents")) {
-            agentService = (List<String>) context.get("agentServiceAgents");
+        for(FacilioAgent agent : agentList){
+            if(agent.getAgentTypeEnum().isAgentService()){
+                agentService.add(agent.getName());
+            }
         }
         if(!agentService.isEmpty()) {
             Boolean isActiveUpdateValue = (Boolean) context.get(AgentConstants.IS_ACTIVE_UPDATE_VALUE);
@@ -45,7 +47,6 @@ public class UpdateJobActiveStatusCommand extends FacilioCommand {
 
     private void updateActiveStatus(Context context) throws Exception {
         List<FacilioAgent> agentList = (List<FacilioAgent>) context.get("agentList");
-        List<String> agentService = new ArrayList<>();
         Boolean isActiveUpdateValue = (Boolean) context.get(AgentConstants.IS_ACTIVE_UPDATE_VALUE);
 
         if(!agentList.isEmpty()){
@@ -68,10 +69,7 @@ public class UpdateJobActiveStatusCommand extends FacilioCommand {
             List<GenericUpdateRecordBuilder.BatchUpdateContext> batchUpdateList = new ArrayList<>();
 
             for (FacilioAgent agent : agentList) {
-                if(agent.getAgentTypeEnum().isAgentService()){
-                    agentService.add(agent.getName());
-                }
-                else {
+                if(!agent.getAgentTypeEnum().isAgentService()) {
                     GenericUpdateRecordBuilder.BatchUpdateContext batchUpdate = new GenericUpdateRecordBuilder.BatchUpdateContext();
                     batchUpdate.setUpdateValue(props);
                     batchUpdate.addWhereValue("jobId", agent.getId());
@@ -81,9 +79,6 @@ public class UpdateJobActiveStatusCommand extends FacilioCommand {
             }
             int rows = builder.batchUpdate(whereFields, batchUpdateList);
             LOGGER.info("Number of rows updated: "+rows);
-        }
-        if(!agentService.isEmpty()){
-            context.put("agentServiceAgents",agentService);
         }
     }
 }
