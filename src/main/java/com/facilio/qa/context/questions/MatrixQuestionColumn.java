@@ -1,5 +1,8 @@
 package com.facilio.qa.context.questions;
 
+import org.json.simple.JSONObject;
+
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.V3Context;
 
@@ -18,4 +21,8 @@ public class MatrixQuestionColumn extends V3Context{
 	FacilioField field;
 	Boolean mandatory;
 	String meta;
+	
+	public void setFieldJSON(JSONObject fieldJson) throws Exception {
+		field = FieldUtil.parseFieldJson(fieldJson);
+	}
 }
