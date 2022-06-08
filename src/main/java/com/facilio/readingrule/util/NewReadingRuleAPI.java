@@ -190,21 +190,7 @@ public class NewReadingRuleAPI {
 
     public static Map<String, Object> getMatchedResourcesWithCount(NewReadingRuleContext readingRule) throws Exception {
         Map<String, Object> resourcesWithCount = new HashMap<>();
-        Map<Long, ResourceContext> matchedResources = new HashMap<>();
-
         List<Long> matchedResourceIds = NamespaceAPI.fetchMatchedResourceIds(readingRule.getNs().getId());
-        if (matchedResourceIds.isEmpty()) {
-            List<AssetContext> categoryAssets = AssetsAPI.getAssetListOfCategory(readingRule.getAssetCategoryId());
-            if (categoryAssets != null && !categoryAssets.isEmpty()) {
-                for (AssetContext asset : categoryAssets) {
-                    if (CollectionUtils.isEmpty(readingRule.getAssets()) || readingRule.getAssets().contains(asset.getId())) {
-                        matchedResources.put(asset.getId(), asset);
-                        matchedResourceIds.add(asset.getId());
-                    }
-                }
-            }
-        }
-
         resourcesWithCount.put("count", matchedResourceIds.size());
         resourcesWithCount.put("resourceIds", matchedResourceIds);
 
