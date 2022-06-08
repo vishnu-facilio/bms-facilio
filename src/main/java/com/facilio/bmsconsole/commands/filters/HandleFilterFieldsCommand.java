@@ -72,7 +72,8 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
         if (module.getModuleId() > 1) { // Ignoring spl modules if at all this is used for those things
             fields.add(FieldFactory.getIdField(module));
         }
-        return filterScopeFields(module, fields);
+        return fields;
+       // return filterScopeFields(module, fields);
     }
 
     private List<FacilioField> filterScopeFields (FacilioModule module, List<FacilioField> fields) {
