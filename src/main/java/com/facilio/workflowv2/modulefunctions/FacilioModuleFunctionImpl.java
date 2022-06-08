@@ -398,7 +398,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			JSONObject deleteObj = new JSONObject();
 			deleteObj.put(module.getName(), ids);
 			
-			FacilioContext context = V3Util.deleteRecords(module.getName(), deleteObj, null,true);
+			FacilioContext context = V3Util.deleteRecords(module.getName(), deleteObj, null,null, true);
 		}
 		else {
 			DeleteRecordBuilder<ModuleBaseWithCustomFields> delete = new DeleteRecordBuilder<>()
