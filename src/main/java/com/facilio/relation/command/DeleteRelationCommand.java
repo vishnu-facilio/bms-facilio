@@ -24,6 +24,12 @@ public class DeleteRelationCommand extends FacilioCommand {
             throw new IllegalArgumentException("Invalid relation");
         }
 
+        FacilioModule module = ModuleFactory.getRelationModule();
+        GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+                .table(module.getTableName())
+                .andCondition(CriteriaAPI.getIdCondition(id, module));
+        builder.delete();
+
         // check whether data are there, and delete them as well
         DeleteRecordBuilder deleteRecordBuilder = new DeleteRecordBuilder()
                 .module(relation.getRelationModule());
@@ -32,11 +38,7 @@ public class DeleteRelationCommand extends FacilioCommand {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         modBean.deleteModule(relation.getRelationModule().getName());
 
-        FacilioModule module = ModuleFactory.getRelationModule();
-        GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-                .table(module.getTableName())
-                .andCondition(CriteriaAPI.getIdCondition(id, module));
-        builder.delete();
+
         return false;
     }
 }
