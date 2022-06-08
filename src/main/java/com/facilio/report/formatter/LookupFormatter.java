@@ -32,7 +32,7 @@ public class LookupFormatter extends Formatter {
 
     @Override
     public Object format(Object value) {
-        if(value != null && lookupMap.containsKey(value)){
+        if(value != null && lookupMap != null && lookupMap.containsKey(value)){
             return lookupMap.get(value);
         }
         return value;

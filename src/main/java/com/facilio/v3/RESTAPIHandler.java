@@ -15,6 +15,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.commands.AttachmentCommand;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.context.V3Context;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import com.facilio.v3.util.ChainUtil;
@@ -470,6 +471,19 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
     public String bulkPatch() throws Exception {
     		bulkPatchHandler(this.getData(), this.getModuleName(), this.getParams());
 
+        return SUCCESS;
+    }
+
+    public String bulkGet() throws Exception {
+        String moduleName = getModuleName();
+        JSONObject data = getData();
+        List<Long> ids = (List<Long>) data.get(moduleName);
+        FacilioContext summaryContext = V3Util.getSummary(moduleName, ids);
+
+        List<ModuleBaseWithCustomFields> records = Constants.getRecordListFromContext(summaryContext, moduleName);
+        JSONObject result = new JSONObject();
+        result.put(moduleName, FieldUtil.getAsJSONArray(records, V3Context.class));
+        this.setData(result);
         return SUCCESS;
     }
 

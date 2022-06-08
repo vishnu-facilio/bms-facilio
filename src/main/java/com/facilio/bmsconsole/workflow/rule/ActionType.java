@@ -1793,7 +1793,8 @@ public enum ActionType {
 	CREATE_SATISFACTION_SURVEY(36){
 		@Override
 		public void performAction (JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
-
+				WorkOrderContext wocontext = (WorkOrderContext) context.get("record");
+				obj.put("parentId",wocontext.getId());
 			QAndAUtil.executeTemplate (FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_TEMPLATE,obj,new ArrayList<>(), currentRule.getId());
 		}
 	},
