@@ -23,13 +23,12 @@ import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesComman
 import com.facilio.bmsconsole.commands.reservation.CreateInternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.ValidateAndSetReservationPropCommand;
 import com.facilio.bmsconsole.localization.translation.AddOrUpdateTranslationCommand;
-import com.facilio.bmsconsoleV3.commands.inventoryrequest.UseInventoryRequestLineItemsCommandV3;
-import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsole.workflow.rule.impact.AddOrUpdateAlarmImpactCommand;
 import com.facilio.bmsconsole.workflow.rule.impact.util.AlarmImpactAPI;
 import com.facilio.bmsconsoleV3.commands.AddSignupDataCommandV3;
 import com.facilio.bmsconsoleV3.commands.imap.SaveMailMessageCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.UseInventoryRequestLineItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksForWoCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.BulkAddJobPlanTasksCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.AssociateQuotationTermsCommand;
@@ -37,6 +36,7 @@ import com.facilio.bmsconsoleV3.commands.quotation.DisAssociateQuotationTermsCom
 import com.facilio.bmsconsoleV3.commands.quotation.SendQuotationMailCommand;
 import com.facilio.cb.command.*;
 import com.facilio.chain.FacilioChain;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.commands.*;
 import com.facilio.delegate.command.AddOrUpdateDelegateCommand;
@@ -55,6 +55,8 @@ import com.facilio.ns.command.AddNamespaceCommand;
 import com.facilio.ns.command.AddNamespaceFieldsCommand;
 import com.facilio.ns.command.DeleteRuleNamespacesCommand;
 import com.facilio.readingrule.command.*;
+import com.facilio.relation.command.AddOrUpdateRelationCommand;
+import com.facilio.relation.command.DeleteRelationCommand;
 import com.facilio.readingrule.faultimpact.command.DeleteFaultImpactFromReadingRuleCommand;
 import com.facilio.trigger.context.TriggerType;
 import com.facilio.weekends.*;
@@ -5280,6 +5282,18 @@ public class TransactionChainFactory {
 	public static FacilioChain getDeleteUserDelegationChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new DeleteUserDelegationCommand());
+		return chain;
+	}
+
+	public static FacilioChain getAddOrUpdateRelationChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddOrUpdateRelationCommand());
+		return chain;
+	}
+
+	public static FacilioChain getDeleteRelationChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new DeleteRelationCommand());
 		return chain;
 	}
 

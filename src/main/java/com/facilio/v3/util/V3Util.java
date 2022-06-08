@@ -87,7 +87,7 @@ public class V3Util {
 
         Class beanClass = ChainUtil.getBeanClass(v3Config, module);
         contextNew.put(Constants.BEAN_CLASS, beanClass);
-        
+
         contextNew.put(FacilioConstants.ContextNames.ONLY_PERMITTED_ACTIONS, restrictredAction);
 
         createRecordChain.execute();
@@ -110,7 +110,7 @@ public class V3Util {
         }
         return createRecord(module, recordList, true, bodyParams, queryParams,false);
     }
-    
+
     public static FacilioContext updateBulkRecords(String moduleName,Map<String, Object> rawRecord,List<Long> ids,boolean restrictredAction) throws Exception {
 
     	FacilioContext summaryContext = V3Util.getSummary(moduleName, ids);
@@ -119,27 +119,27 @@ public class V3Util {
         List<Map<String, Object>> values = new ArrayList<>();
         JSONObject jsonObject;
 		for (ModuleBaseWithCustomFields record: moduleBaseWithCustomFields) {
-            
+
 			jsonObject =  FieldUtil.getAsJSON(record);
-            
+
 			Set<String> keys = rawRecord.keySet();
             for (String key : keys) {
                 jsonObject.put(key, rawRecord.get(key));
             }
-            
+
             values.add(jsonObject);
         }
-        
+
         FacilioModule module = ChainUtil.getModule(moduleName);
         V3Config v3Config = ChainUtil.getV3Config(moduleName);
         FacilioContext context = V3Util.updateBulkRecords(module, v3Config, moduleBaseWithCustomFields, values,
                 ids, null, null, null,
                 null, null,null,restrictredAction);
-		
+
         return context;
     }
-    		
-    
+
+
     public static FacilioContext updateBulkRecords(FacilioModule module, V3Config v3Config,
                                                    List<ModuleBaseWithCustomFields> oldRecords,
                                                    List<Map<String, Object>> recordList, List<Long> ids,
@@ -356,7 +356,8 @@ public class V3Util {
      * @return
      * @throws Exception
      */
-    public static FacilioContext deleteRecords(String moduleName, Map<String, Object> deleteObj, Map<String, Object> bodyParams,boolean restrictredAction) throws Exception {
+    public static FacilioContext deleteRecords(String moduleName, Map<String, Object> deleteObj,
+                                               Map<String, Object> bodyParams, Map<String, List<Object>> queryParams, boolean restrictredAction) throws Exception {
         FacilioChain deleteChain = ChainUtil.getDeleteChain(moduleName);
 
         FacilioContext context = deleteChain.getContext();
@@ -366,9 +367,10 @@ public class V3Util {
         Constants.setModuleName(context, moduleName);
         Constants.setRawInput(context, deleteObj);
         Constants.setBodyParams(context, bodyParams);
-        
+        context.put(Constants.QUERY_PARAMS, queryParams);
+
         context.put(FacilioConstants.ContextNames.ONLY_PERMITTED_ACTIONS, restrictredAction);
-        
+
         deleteChain.execute();
 
         return context;

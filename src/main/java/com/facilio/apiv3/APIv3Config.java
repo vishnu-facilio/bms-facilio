@@ -154,6 +154,7 @@ import com.facilio.elasticsearch.command.PushDataToESCommand;
 import com.facilio.modules.FacilioModule;
 import com.facilio.readingrule.faultimpact.FaultImpactContext;
 import com.facilio.readingrule.faultimpact.FaultImpactNameSpaceFieldContext;
+import com.facilio.relation.context.RelationDataContext;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
@@ -210,6 +211,25 @@ public class APIv3Config {
                 .afterSave(TransactionChainFactoryV3.getEmailFromAddressAfterSaveChain())
                 .update()
                 .beforeSave(new EmailFromAddressValidateCommand())
+                .build();
+    }
+
+    @ModuleType(type = FacilioModule.ModuleType.CUSTOM)
+    public static Supplier<V3Config> getRelationHandler() {
+	    return () -> new V3Config(RelationDataContext.class, null)
+                .list()
+                .beforeFetch(ReadOnlyChainFactoryV3.getRelationDataListChain())
+                .create()
+                .beforeSave(TransactionChainFactoryV3.getRelationDataAddBeforeSaveChain())
+                .update()
+                .beforeSave(new FacilioCommand() {
+                    @Override
+                    public boolean executeCommand(Context context) throws Exception {
+                        throw new IllegalArgumentException("Update is not supported");
+                    }
+                })
+                .delete()
+                .beforeDelete(TransactionChainFactoryV3.getRelationDataBeforeDeleteChain())
                 .build();
     }
 
@@ -428,9 +448,9 @@ public class APIv3Config {
          * Bulk Add is Supported
          * Only single update is Supported (For Bulk update maintain old record id vs
          * new record id map)
-         * 
+         *
          * Tax Group Update => Sets current group as inactive and creates a new group
-         * 
+         *
          * Tax Individual Update => 1. Current tax is set as Inactive,
          * 2. List of All Groups with the updating tax as child will be set as inactive
          * and new Tax

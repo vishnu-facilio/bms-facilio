@@ -28,6 +28,8 @@ import com.facilio.bmsconsoleV3.commands.visitorlogging.LoadVisitorLoggingLookup
 import com.facilio.bmsconsoleV3.commands.visitorlogging.SetInviteConditionForVisitsListCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
 import com.facilio.chain.FacilioChain;
+import com.facilio.relation.command.AppendRelationFilterCommand;
+import com.facilio.relation.command.ValidateRelationParamCommand;
 
 public class ReadOnlyChainFactoryV3 {
     private static FacilioChain getDefaultChain() {
@@ -199,6 +201,13 @@ public class ReadOnlyChainFactoryV3 {
         FacilioChain c = getDefaultChain();
 		c.addCommand(FacilioChainFactory.getFieldsByAccessType());
         c.addCommand(new GetSortableFieldsCommand());
+        return c;
+    }
+
+    public static FacilioChain getRelationDataListChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ValidateRelationParamCommand());
+        c.addCommand(new AppendRelationFilterCommand());
         return c;
     }
     

@@ -2957,6 +2957,34 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getRelationFields() {
+        FacilioModule module = ModuleFactory.getRelationModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        fields.add(getIdField(module));
+        fields.add(getStringField("name", "NAME", module));
+        fields.add(getStringField("linkName", "LINK_NAME", module));
+        fields.add(getStringField("description", "DESCRIPTION", module));
+        fields.add(getNumberField("relationModuleId", "RELATION_MODULE_ID", module));
+
+        return fields;
+    }
+
+    public static List<FacilioField> getRelationMappingFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getRelationMappingModule();
+
+        fields.add(getIdField(module));
+        fields.add(getNumberField("relationId", "RELATION_ID", module));
+        fields.add(getNumberField("fromModuleId", "FROM_MODULE_ID", module));
+        fields.add(getNumberField("toModuleId", "TO_MODULE_ID", module));
+        fields.add(getStringField("relationName", "RELATION_NAME", module));
+        fields.add(getNumberField("relationType", "RELATION_TYPE", module));
+        fields.add(getNumberField("position", "POSITION", module));
+
+        return fields;
+    }
+
     public static List<FacilioField> getTemplateFields() {
         FacilioModule module = ModuleFactory.getTemplatesModule();
 
