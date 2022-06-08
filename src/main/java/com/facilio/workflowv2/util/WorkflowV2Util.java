@@ -1,6 +1,5 @@
 package com.facilio.workflowv2.util;
 
-import java.io.File;
 import java.io.FileReader;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -11,51 +10,25 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.reflections.Reflections;
-import org.reflections.scanners.FieldAnnotationsScanner;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.yaml.snakeyaml.Yaml;
 
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.db.criteria.Condition;
-import com.facilio.db.criteria.Criteria;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.scriptengine.autogens.WorkflowV2Parser.ExprContext;
-import com.facilio.scriptengine.autogens.WorkflowV2Parser.Recursive_expressionContext;
-import com.facilio.scriptengine.context.DBParamContext;
+import com.facilio.scriptengine.annotation.ScriptModule;
 import com.facilio.scriptengine.context.Value;
-import com.facilio.v3.annotation.Module;
-import com.facilio.workflowv2.Visitor.WorkflowFunctionVisitor;
-import com.facilio.workflowv2.annotation.ScriptModule;
 
 public class WorkflowV2Util {
 
-	public static Map<String, Object> MODULE_OBJECT_CACHE = new HashMap<>();
-	
 	private static final String DEFAULT_WORKFLOW_FILE_NAME = "conf/defaultWorkflows.json";
 	
 	private static final String DEFAULT_WORKFLOW_YML_FILE_NAME = "conf/workflowscript/defaultWorkflows.yml";
 	
 	private static final String WORKFLOW_TEMPLATE_FILE_NAME = "conf/workflowTemplates.json";
-	
-	public static final String MODULE_CRUD_CLASS_NAME = "com.facilio.workflowv2.modulefunctions.FacilioModuleFunctionImpl";
-	
-	public static final String MODULE_CRUD_PACKAGE_NAME = "com.facilio.workflowv2.modulefunctions";
-	
-	public static final String CRUD_MODULE_KEY = "default_module";
 	
 	public static final Integer SELECT_DEFAULT_LIMIT = 5000;
 	
@@ -104,31 +77,10 @@ public class WorkflowV2Util {
 		}
 	}
 	
-	public static Object getInstanceOf(FacilioModule module) throws Exception {
-		
-		if(MODULE_OBJECT_CACHE.containsKey(module.getName())) {
-			return MODULE_OBJECT_CACHE.get(module.getName());
-		}
-		return MODULE_OBJECT_CACHE.get(CRUD_MODULE_KEY);
-	}
-
 	private static void initWorkflowResource() throws Exception {
 		
 		ClassLoader classLoader = WorkflowV2Util.class.getClassLoader();
 		
-		Set<Class<?>> classes = new Reflections(MODULE_CRUD_PACKAGE_NAME).getTypesAnnotatedWith(ScriptModule.class);
-		
-		for(Class<?> class1 : classes) {
-			ScriptModule module = class1.getAnnotation(ScriptModule.class);
-			
-			MODULE_OBJECT_CACHE.put(module.moduleName(), class1.getDeclaredConstructor().newInstance());
-		}
-		
-		Class<?> moduleFunctionClass = classLoader.loadClass(MODULE_CRUD_CLASS_NAME);
-        Object moduleFunctionObject = moduleFunctionClass.getDeclaredConstructor().newInstance();
-        MODULE_OBJECT_CACHE.put(CRUD_MODULE_KEY, moduleFunctionObject);
-        
-        
         // reading defaultWorkflow.json file       
         JSONParser jsonParser = new JSONParser();
         

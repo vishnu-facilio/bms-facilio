@@ -12,7 +12,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
-import com.facilio.workflowv2.annotation.ScriptModule;
+import com.facilio.scriptengine.annotation.ScriptModule;
 
 @ScriptModule(moduleName = FacilioConstants.ContextNames.ITEM_TRANSACTIONS)
 public class FacilioItemTransactionFunctions extends FacilioModuleFunctionImpl {

@@ -17,8 +17,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.qa.command.QAndATransactionChainFactory;
+import com.facilio.scriptengine.annotation.ScriptModule;
 import com.facilio.v3.context.Constants;
-import com.facilio.workflowv2.annotation.ScriptModule;
 
 @ScriptModule(moduleName = FacilioConstants.Inspection.INSPECTION_TEMPLATE)
 public class FacilioInspectionTemplateModuleFunctions extends FacilioModuleFunctionImpl {

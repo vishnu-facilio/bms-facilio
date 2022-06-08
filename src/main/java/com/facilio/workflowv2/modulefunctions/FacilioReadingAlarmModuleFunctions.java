@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
-import com.facilio.workflowv2.annotation.ScriptModule;
+import com.facilio.scriptengine.annotation.ScriptModule;
 
 @ScriptModule(moduleName = FacilioConstants.ContextNames.READING_ALARM_OCCURRENCE)
 public class FacilioReadingAlarmModuleFunctions extends FacilioAlarmModuleFunctions {

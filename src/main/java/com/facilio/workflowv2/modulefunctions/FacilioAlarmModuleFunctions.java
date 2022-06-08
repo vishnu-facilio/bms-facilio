@@ -17,7 +17,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.workflowv2.annotation.ScriptModule;
+import com.facilio.scriptengine.annotation.ScriptModule;
 
 @ScriptModule(moduleName = FacilioConstants.ContextNames.ALARM_OCCURRENCE)
 public class FacilioAlarmModuleFunctions extends FacilioModuleFunctionImpl {

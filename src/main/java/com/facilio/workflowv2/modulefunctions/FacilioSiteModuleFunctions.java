@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.constants.FacilioConstants;
-import com.facilio.workflowv2.annotation.ScriptModule;
+import com.facilio.scriptengine.annotation.ScriptModule;
 
 @ScriptModule(moduleName = FacilioConstants.ContextNames.SITE)
 public class FacilioSiteModuleFunctions extends FacilioModuleFunctionImpl {

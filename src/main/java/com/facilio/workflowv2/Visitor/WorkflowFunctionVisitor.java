@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BusinessHoursContext;
 import com.facilio.bmsconsole.context.ConnectionContext;
@@ -24,6 +25,7 @@ import com.facilio.db.criteria.operators.FieldOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.scriptengine.autogens.WorkflowV2Parser;
@@ -83,7 +85,7 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
 	public Workflow_Scope getScope() {
 		return scope;
 	}
-
+	
     @Override 
     public Value visitRecursive_expr(WorkflowV2Parser.Recursive_exprContext ctx) {
     	try {
@@ -196,7 +198,7 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
     				if (value.asObject() instanceof FacilioModule) {									// module Functions
         				FacilioModule module = (FacilioModule) value.asObject();
         				
-        				Object moduleFunctionObject = WorkflowV2Util.getInstanceOf(module);
+        				Object moduleFunctionObject = ScriptUtil.getModuleInstanceOf(module);
             			Method method = moduleFunctionObject.getClass().getMethod(functionName, Map.class,List.class);
             			
             			List<Object> params = ScriptUtil.getParamList(functionCall,true,this,value);
@@ -216,7 +218,7 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
     					
     					FacilioModule module = moduleDataContext.getModule();
         				
-        				Object moduleFunctionObject = WorkflowV2Util.getInstanceOf(module);
+        				Object moduleFunctionObject = ScriptUtil.getModuleInstanceOf(module);
             			Method method = moduleFunctionObject.getClass().getMethod(functionName, Map.class,List.class);
             			
             			Object result = method.invoke(moduleFunctionObject, getGlobalParam(),params);
