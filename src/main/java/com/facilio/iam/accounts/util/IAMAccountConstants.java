@@ -347,6 +347,13 @@ public class IAMAccountConstants {
 			language.setModule(module);
 			fields.add(language);
 
+			FacilioField groupName = new FacilioField();
+			groupName.setName("groupName");
+			groupName.setDataType(FieldType.STRING);
+			groupName.setColumnName("GROUP_NAME");
+			groupName.setModule(module);
+			fields.add(groupName);
+
 			return fields;
 		}
 
