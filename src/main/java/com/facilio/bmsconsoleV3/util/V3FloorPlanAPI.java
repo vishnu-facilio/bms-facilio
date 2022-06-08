@@ -55,33 +55,16 @@ import static nl.basjes.shaded.org.springframework.util.ObjectUtils.isEmpty;
 public class V3FloorPlanAPI {
 
 	public static V3EmployeeContext getEmployeeFromUserId () throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
 
-		String email = AccountUtil.getCurrentUser().getEmail();
-		if (email != null) {
-			SelectRecordsBuilder<V3PeopleContext> builder = new SelectRecordsBuilder<V3PeopleContext>()
-					.module(module)
-					.beanClass(V3PeopleContext.class)
-					.select(modBean.getAllFields(module.getName()))
-					.andCustomWhere("EMAIL = ?", email)
-					.limit(1);
+		Long peopleId = AccountUtil.getCurrentUser().getPeopleId();
 
-			if(builder != null) {
-				List<V3PeopleContext> peoples = builder.get();
-				if(CollectionUtils.isNotEmpty(peoples))
-				{
-					V3PeopleContext people =  peoples.get(0);
+		if (peopleId != null) {
+			V3EmployeeContext employee = V3RecordAPI.getRecord(FacilioConstants.ContextNames.EMPLOYEE, peopleId, V3EmployeeContext.class);
 
-					V3EmployeeContext employee = V3RecordAPI.getRecord(FacilioConstants.ContextNames.EMPLOYEE, people.getId(), V3EmployeeContext.class);
-
-					if (employee != null) {
-						return employee;
-					}
-				}
+			if (employee != null) {
+				return employee;
 			}
 		}
-
 		return null;
 	}
 
