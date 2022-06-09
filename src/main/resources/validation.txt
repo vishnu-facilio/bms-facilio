@@ -2208,6 +2208,7 @@
 /api/v2/modules/rules/delete
 /api/v2/modules/rules/replacePlaceHolders
 /api/v2/modules/rules/getCount
+/api/v2/modules/meta/:moduleName
 /api/v2/basespaces/:basespaceDetailsWithHierarchy
 /api/v2/basespaces/children/:basespaceWithChildren
 /api/v2/jobplans/list
