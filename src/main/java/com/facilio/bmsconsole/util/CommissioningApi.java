@@ -53,8 +53,7 @@ public class CommissioningApi {
 	}
 	
 	public static List<CommissioningLogContext> commissioniongList(List<Long> ids, boolean fetchControllers, JSONObject pagination) throws Exception {
-		String status = null;
-		return commissioniongList(ids,fetchControllers,pagination,status);
+		return commissioniongList(ids,fetchControllers,pagination,null);
 	}
 	public static List<CommissioningLogContext> commissioniongList(List<Long> ids, boolean fetchControllers, JSONObject pagination,String status) throws Exception {
 		FacilioModule module = ModuleFactory.getCommissioningLogModule();
