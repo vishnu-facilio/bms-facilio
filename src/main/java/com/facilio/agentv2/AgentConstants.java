@@ -96,6 +96,7 @@ public class AgentConstants
     public static final String AGENT_ID = "agentId";
     public static final String AGENT_NAME = "agentName";
     public static final String AGENT_PARAMS = "agentParams";
+    public static final String AGENT_LIST = "agentList";
 
 
 
