@@ -77,7 +77,8 @@ public enum QuestionType implements FacilioStringEnum {
             MCQSingleContext.class,
             new MCQSingleAnswerHandler(MCQSingleAnswerContext.class),
             new MCQHandler<MCQSingleContext>(FacilioConstants.QAndA.Questions.MCQ_SINGLE_OPTIONS),
-            MCQRuleHandler.SINGLE
+            MCQRuleHandler.SINGLE,
+            FieldType.ENUM
     ),
     MULTIPLE_CHOICE_MANY (
             FacilioConstants.QAndA.Questions.MCQ_MULTI,

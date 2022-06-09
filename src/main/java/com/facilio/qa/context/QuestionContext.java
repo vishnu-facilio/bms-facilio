@@ -11,6 +11,8 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.util.List;
 
@@ -59,7 +61,9 @@ public class QuestionContext extends V3Context {
     private Object summary;
     private Double fullScore, score;
     private Float scorePercent;
-
+    
+    private JSONArray displayLogicMeta;
+    
     public boolean mandatory() {
         return mandatory == null ? false : mandatory.booleanValue();
     }

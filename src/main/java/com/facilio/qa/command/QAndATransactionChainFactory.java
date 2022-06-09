@@ -251,8 +251,9 @@ public class QAndATransactionChainFactory {
 	public static FacilioChain executeDisplayLogicChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new ValidateResponseStatus());
-        c.addCommand(new PrepareAnswersForDisplayLogicExecution());
+        c.addCommand(new PrepareQuestionForDisplayLogicExecution());
         c.addCommand(new FetchDisplayLogicForExecution());
+        c.addCommand(new PrepareAnswersForDisplayLogicExecution());
         c.addCommand(new ExecuteDisplayLogicRules());
         return c;
 	}

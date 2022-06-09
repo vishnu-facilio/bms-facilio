@@ -2,6 +2,8 @@ package com.facilio.qa.command;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
@@ -9,11 +11,15 @@ import org.json.simple.JSONArray;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.qa.context.PageContext;
+import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.displaylogic.context.DisplayLogicAction;
 import com.facilio.qa.displaylogic.context.DisplayLogicContext;
 import com.facilio.qa.displaylogic.util.DisplayLogicUtil;
+import com.facilio.v3.context.Constants;
 
 public class ExecuteDisplayLogicRules extends FacilioCommand {
 
@@ -27,24 +33,40 @@ public class ExecuteDisplayLogicRules extends FacilioCommand {
 		
 		context.put(DisplayLogicUtil.DISPLAY_LOGIC_RULE_RESULT_JSON,new JSONArray());
 		
-		for(DisplayLogicContext displayLogic : displayLogics) {
+		Boolean isDisplyLogicExecutionOnPageLoad = (Boolean) context.getOrDefault(DisplayLogicUtil.IS_DISPLAY_LOGIC_EXECUTION_ON_PAGE_LOAD, false);
+		
+		Map<Long, QuestionContext> questionMap = null;
+		if(isDisplyLogicExecutionOnPageLoad) {
 			
-			Criteria criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getId(), displayLogic.getCriteriaId());
+			List<PageContext> pages = Constants.getRecordList((FacilioContext) context);
 			
-			context.put(DisplayLogicUtil.QUESTION_ID, displayLogic.getQuestionId());
-			if(criteria != null && mainRecordMap != null) {
-				Boolean criteriaFlag = criteria.computePredicate(mainRecordMap).evaluate(mainRecordMap);
+			questionMap = pages.stream().map(PageContext::getQuestions).flatMap(List::stream).collect(Collectors.toMap(QuestionContext::getId, Function.identity()));
+		}
+		
+		if(displayLogics != null) {
+			for(DisplayLogicContext displayLogic : displayLogics) {
 				
-				for(DisplayLogicAction displayLogicAction :displayLogic.getActions()) {
+				Criteria criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getId(), displayLogic.getCriteriaId());
+				
+				context.put(DisplayLogicUtil.QUESTION_ID, displayLogic.getQuestionId());
+				if(questionMap != null) {
+					context.put(DisplayLogicUtil.QUESTION_CONTEXT, questionMap.get(displayLogic.getQuestionId()));
+				}
+				
+				if(criteria != null && mainRecordMap != null) {
+					Boolean criteriaFlag = criteria.computePredicate(mainRecordMap).evaluate(mainRecordMap);
 					
-					context.put(DisplayLogicUtil.DISPLAY_LOGIC_ACTION_CONTEXT, displayLogicAction);
-					
-					if(criteriaFlag) {
-						displayLogicAction.getActionTypeEnum().performAction((FacilioContext)context);
-					}
-					else {
-						if(displayLogicAction.getActionTypeEnum().getInverseType() != null) {
-							displayLogicAction.getActionTypeEnum().getInverseType().performAction((FacilioContext)context);
+					for(DisplayLogicAction displayLogicAction :displayLogic.getActions()) {
+						
+						context.put(DisplayLogicUtil.DISPLAY_LOGIC_ACTION_CONTEXT, displayLogicAction);
+						
+						if(criteriaFlag) {
+							displayLogicAction.getActionTypeEnum().performAction((FacilioContext)context);
+						}
+						else {
+							if(displayLogicAction.getActionTypeEnum().getInverseType() != null) {
+								displayLogicAction.getActionTypeEnum().getInverseType().performAction((FacilioContext)context);
+							}
 						}
 					}
 				}

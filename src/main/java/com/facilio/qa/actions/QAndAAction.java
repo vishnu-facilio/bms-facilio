@@ -1,5 +1,6 @@
 package com.facilio.qa.actions;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -9,6 +10,7 @@ import com.facilio.qa.command.QAndAReadOnlyChainFactory;
 import com.facilio.qa.command.QAndATransactionChainFactory;
 import com.facilio.qa.context.ClientAnswerContext;
 import com.facilio.qa.context.PageContext;
+import com.facilio.qa.displaylogic.util.DisplayLogicUtil;
 import com.facilio.time.DateRange;
 import com.facilio.v3.RESTAPIHandler;
 import com.facilio.v3.context.Constants;
@@ -35,7 +37,18 @@ public class QAndAAction extends RESTAPIHandler {
         if (CollectionUtils.isNotEmpty(errors)) {
             this.setData("errors", errors);
         }
-
+        else {		// IF THERE IS SOME ERROR DURING SAVE THEN DISPLAYLOGIC WILL NOT GET EXECTED
+        	
+        	if(AccountUtil.getCurrentOrg().getOrgId() == 173l || AccountUtil.getCurrentOrg().getOrgId() == 267l) {
+        		FacilioChain addChain = QAndATransactionChainFactory.executeDisplayLogicChain();
+          		 
+        		addChain.getContext().put(FacilioConstants.QAndA.Command.ANSWER_DATA, this.getData());
+        	
+        		addChain.execute();
+        		 
+        		setData("displayLogicResult", addChain.getContext().get(DisplayLogicUtil.DISPLAY_LOGIC_RULE_RESULT_JSON));
+        	}
+        }
         return SUCCESS;
     }
 

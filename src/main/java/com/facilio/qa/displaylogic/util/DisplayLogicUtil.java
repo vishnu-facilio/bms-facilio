@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.forms.FormActionType;
-import com.facilio.bmsconsole.forms.FormRuleContext;
+import com.facilio.chain.FacilioContext;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -17,6 +17,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.displaylogic.context.DisplayLogicAction;
 import com.facilio.qa.displaylogic.context.DisplayLogicActionType;
 import com.facilio.qa.displaylogic.context.DisplayLogicContext;
@@ -29,12 +30,15 @@ public class DisplayLogicUtil {
 	public static final String DISPLAY_LOGIC_CONTEXTS = "displayLogicContexts";
 	public static final String ANSWER_MAP = "answerMap";
 	public static final String TRIGGER_QUESTION_IDS = "triggerQuestionIds";
+	public static final String ACTION_QUESTION_IDS = "actionQuestionIds";
 	public static final String QUESTION_ID = "questionId";
+	public static final String QUESTION_CONTEXT = "questionContext";
 	public static final String PAGE_ID = "pageId";
 	public static final String JSON_RESULT_VALUE_STRING = "value";
 	public static final String JSON_RESULT_ACTION_NAME_STRING = "action";
 	public static final String JSON_RESULT_QUESTION_ID_STRING = "questionId";
 	public static final String DISPLAY_LOGIC_RULE_RESULT_JSON = "resultJsonArray";
+	public static final String IS_DISPLAY_LOGIC_EXECUTION_ON_PAGE_LOAD = "isDisplyLogicExecutionOnPageLoad";
 	
 
 	public static JSONObject getActionJson(Long questionId,DisplayLogicActionType actionType,Object value) {
@@ -133,4 +137,20 @@ public class DisplayLogicUtil {
 		}
 		return triggerQuestion.stream().collect(Collectors.groupingBy(DisplayLogicTriggerQuestions::getDisplayLogicId));
 	}
+
+	public static void addDisplyLogicJsonToResult(FacilioContext facilioContext,JSONObject json) {
+
+		JSONArray resultJson = (JSONArray) facilioContext.get(DisplayLogicUtil.DISPLAY_LOGIC_RULE_RESULT_JSON);
+		resultJson.add(json);
+		
+		
+		QuestionContext questionContext = (QuestionContext)facilioContext.get(DisplayLogicUtil.QUESTION_CONTEXT);
+		if(questionContext != null) {
+			JSONArray displayLogicMeta = questionContext.getDisplayLogicMeta();
+			displayLogicMeta = displayLogicMeta == null ? new JSONArray() : displayLogicMeta; 
+			displayLogicMeta.add(json);
+			questionContext.setDisplayLogicMeta(displayLogicMeta);
+		}
+	}
+
 }

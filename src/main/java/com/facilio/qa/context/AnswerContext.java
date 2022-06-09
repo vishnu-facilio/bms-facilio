@@ -65,4 +65,8 @@ public class AnswerContext extends V3Context {
     public void setAnswerContext(QuestionContext question) throws Exception {
         answerContext = QAndAUtil.serializedAnswer(question,this);
     }
+    
+    public Long getQuestionId() {
+    	return question == null? null : question.getId(); 
+    }
 }

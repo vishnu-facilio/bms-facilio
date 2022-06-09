@@ -73,6 +73,13 @@ public class PrepareDisplayLogicforAddOrUpdate extends FacilioCommand {
 		}
 		
 		if(displaylogic.getCriteria() != null) {
+			for(String key : displaylogic.getCriteria().getConditions().keySet()) {
+				Condition condition = displaylogic.getCriteria().getConditions().get(key);
+				condition.setColumnName("dummy");												// setting this since there will not be any module associated with this condition.
+			}
+		}
+		
+		if(displaylogic.getCriteria() != null) {
 			long criteriaId = CriteriaAPI.addCriteria(displaylogic.getCriteria());
 			displaylogic.setCriteriaId(criteriaId);
 			
