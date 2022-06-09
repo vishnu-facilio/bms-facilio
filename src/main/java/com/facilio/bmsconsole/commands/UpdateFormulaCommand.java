@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang.BooleanUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
@@ -47,6 +48,7 @@ public class UpdateFormulaCommand extends FacilioCommand {
 
 		validateUpdate(newFormula);
 		FormulaFieldContext oldFormula = FormulaFieldAPI.getFormulaField(newFormula.getId());
+		newFormula.setWorkflowId(oldFormula.getWorkflowId());
 		context.put(FacilioConstants.ContextNames.READING_FIELD_ID,oldFormula.getReadingFieldId());
 		if (newFormula.getWorkflow().isV2Script() && newFormula.getWorkflow() != null && hasCyclicDependency(newFormula.getWorkflow(), oldFormula.getReadingField(), oldFormula.getTriggerTypeEnum())) {
 			throw new IllegalArgumentException("Formula has cyclic dependency and so cannot be updated");
@@ -88,10 +90,19 @@ public class UpdateFormulaCommand extends FacilioCommand {
 			modBean.updateModule(module);
 		}
 		
-		if (newFormula.getWorkflow() != null && !newFormula.getWorkflow().getIsV2Script()) {
+		if (newFormula.getWorkflow() != null && BooleanUtils.isFalse(newFormula.getWorkflow().getIsV2Script())) {
 			long workflowId = WorkflowUtil.addWorkflow(newFormula.getWorkflow());
 			newFormula.setWorkflowId(workflowId);
 		}
+		else{
+			FacilioModule workflowModule = ModuleFactory.getWorkflowModule();
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+					.table(workflowModule.getTableName())
+					.fields(FieldFactory.getWorkflowFields())
+					.andCondition(CriteriaAPI.getIdCondition(newFormula.getWorkflowId(), workflowModule));
+			updateBuilder.update(FieldUtil.getAsProperties(newFormula.getWorkflow()));
+		}
+
 		if (newFormula.getTarget() != -1 && oldFormula.getTarget() != -1) {
 			if (oldFormula.getTarget() != newFormula.getTarget()) {
 				updateTarget(newFormula, oldFormula);
@@ -120,7 +131,7 @@ public class UpdateFormulaCommand extends FacilioCommand {
 														.andCondition(CriteriaAPI.getIdCondition(newFormula.getId(), formulaModule));
 		updateBuilder.update(FieldUtil.getAsProperties(newFormula));
 		
-		if (newFormula.getWorkflow() != null && !newFormula.getWorkflow().getIsV2Script()) {
+		if (newFormula.getWorkflow() != null && BooleanUtils.isFalse(newFormula.getWorkflow().getIsV2Script())) {
 			WorkflowUtil.deleteWorkflow(oldFormula.getWorkflowId());
 			
 			DateRange dateRange = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
