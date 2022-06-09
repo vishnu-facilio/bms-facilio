@@ -88,11 +88,10 @@ public class UpdateFormulaCommand extends FacilioCommand {
 			modBean.updateModule(module);
 		}
 		
-		if (newFormula.getWorkflow() != null) {
+		if (newFormula.getWorkflow() != null && !newFormula.getWorkflow().getIsV2Script()) {
 			long workflowId = WorkflowUtil.addWorkflow(newFormula.getWorkflow());
 			newFormula.setWorkflowId(workflowId);
 		}
-		
 		if (newFormula.getTarget() != -1 && oldFormula.getTarget() != -1) {
 			if (oldFormula.getTarget() != newFormula.getTarget()) {
 				updateTarget(newFormula, oldFormula);
@@ -121,7 +120,7 @@ public class UpdateFormulaCommand extends FacilioCommand {
 														.andCondition(CriteriaAPI.getIdCondition(newFormula.getId(), formulaModule));
 		updateBuilder.update(FieldUtil.getAsProperties(newFormula));
 		
-		if (newFormula.getWorkflow() != null) {
+		if (newFormula.getWorkflow() != null && !newFormula.getWorkflow().getIsV2Script()) {
 			WorkflowUtil.deleteWorkflow(oldFormula.getWorkflowId());
 			
 			DateRange dateRange = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
