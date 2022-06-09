@@ -493,6 +493,32 @@ public class WorkOrderAction extends FacilioAction {
 		FacilioContext context = executePMs(Collections.singletonList(pmId));
 		if (context != null) {
 			workorder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+
+			// Adding Audit Log to show up when PM is Executed manually. It shows PM ID and number of resources that's executed.
+			List<PreventiveMaintenance> preventiveMaintenanceList = (List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST);
+			if(preventiveMaintenanceList != null && preventiveMaintenanceList.size() > 0 && preventiveMaintenanceList.get(0) !=null) {
+
+				int numberOfResourcesExecuted = (preventiveMaintenanceList.get(0).getPmIncludeExcludeResourceContexts()!= null
+						&& preventiveMaintenanceList.get(0).getPmIncludeExcludeResourceContexts().size()>0) ?
+						preventiveMaintenanceList.get(0).getPmIncludeExcludeResourceContexts().size() : 0;
+
+				sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("Preventive Maintenance with id #{%d} has been executed with #{%d} number of resources", preventiveMaintenanceList.get(0).getId(), numberOfResourcesExecuted),
+						preventiveMaintenanceList.get(0).getTitle(),
+						AuditLogHandler.RecordType.SETTING,
+						"PreventiveMaintenance", preventiveMaintenanceList.get(0).getId())
+						.setActionType(AuditLogHandler.ActionType.MISCELLANEOUS)
+						.setLinkConfig(((Function<Void, String>) o -> {
+							JSONArray array = new JSONArray();
+							JSONObject json = new JSONObject();
+							json.put("id", preventiveMaintenanceList.get(0).getId());
+							json.put("moduleName", moduleName);
+							json.put("Created At", preventiveMaintenanceList.get(0).getCreatedTime());
+							array.add(json);
+							return array.toJSONString();
+						}).apply(null))
+
+				);
+			}
 		}
 		return SUCCESS;
 	}

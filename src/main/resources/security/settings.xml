@@ -723,4 +723,32 @@
         </urlparams>
     </request>
 
+    <request path="/api/v2/modules/meta/:moduleName">
+        <urlparams>
+            <property name="moduleName" type="string"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/tasks/updatestatus">
+        <requestbody type="object">
+            <property name="id" type="array">
+                <items type="number"/>
+            </property>
+            <property name="task" type="object">
+                <property name="id" type="number"/>
+                <property name="parentTicketId" type="number"/>
+                <property name="status" type="object">
+                    <property name="id" type="number"/>
+                    <property name="type" type="string"/>
+                </property>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/workorders/activity">
+        <requestbody type="object">
+            <property name="workOrderId" type="number"/>
+        </requestbody>
+    </request>
+
 </config>
