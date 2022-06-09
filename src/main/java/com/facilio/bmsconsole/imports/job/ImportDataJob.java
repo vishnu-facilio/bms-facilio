@@ -26,59 +26,13 @@ public class ImportDataJob extends FacilioJob {
 
     @Override
     public void execute(JobContext jobContext) throws Exception {
-        ImportProcessContext importProcessContext = null;
         try {
-            importProcessContext = ImportAPI.getImportProcessContext(jobContext.getJobId());
-
-            FacilioModule module = importProcessContext.getModule();
-            FacilioChain chain = ImportChainUtil.getImportChain(module.getName());
-            FacilioContext context = chain.getContext();
-            context.put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcessContext);
-            context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
-            chain.execute();
-
-
-            // update the status of as imported
-            importProcessContext.setStatus(ImportProcessContext.ImportStatus.IMPORTED.getValue());
-            LOGGER.info("importProcessContext -- " + importProcessContext);
-            ImportAPI.updateImportProcess(importProcessContext);
-        } catch (Exception exception) {
-            String exceptionMessage;
-            boolean sendExceptionMail = false;
-            if (exception instanceof ImportParseException) {
-                ImportParseException importParseException = (ImportParseException) exception;
-                exceptionMessage = importParseException.getClientMessage();
-            } else if (exception instanceof ImportFieldValueMissingException) {
-                ImportFieldValueMissingException importFieldValueMissingException = (ImportFieldValueMissingException) exception;
-                exceptionMessage = importFieldValueMissingException.getClientMessage();
-            } else if (exception instanceof ImportMandatoryFieldsException) {
-                ImportMandatoryFieldsException importAssetMandExp = (ImportMandatoryFieldsException) exception;
-                exceptionMessage = importAssetMandExp.getClientMessage();
-            } else if (exception instanceof ImportLookupModuleValueNotFoundException) {
-                ImportLookupModuleValueNotFoundException importModMissing = (ImportLookupModuleValueNotFoundException) exception;
-                exceptionMessage = importModMissing.getClientMessage();
-            } else {
-                sendExceptionMail = true;
-                exceptionMessage = exception.getMessage();
-            }
-            LOGGER.severe("Import Data Error Catch -- " + jobContext.getJobId() + " " + exceptionMessage);
-
-            if (importProcessContext != null) {
-                importProcessContext.setStatus(ImportProcessContext.ImportStatus.FAILED.getValue());
-                JSONObject meta = importProcessContext.getImportJobMetaJson();
-                if (meta == null) {
-                    meta = new JSONObject();
-                }
-                meta.put("importError", exceptionMessage);
-                importProcessContext.setImportJobMeta(meta.toJSONString());
-                ImportAPI.updateImportProcess(importProcessContext);
-            }
-
-            if (sendExceptionMail) {
-                CommonCommandUtil.emailException(getClass().getSimpleName(),
-                        "Import failed - orgid -- " + AccountUtil.getCurrentOrg().getId(), exception);
-            }
-            throw exception;
+            FacilioChain importChain = ImportChainUtil.getImportChain();
+            FacilioContext context = importChain.getContext();
+            context.put(FacilioConstants.ContextNames.ID, jobContext.getJobId());
+            importChain.execute();
+        } catch (Exception ex) {
+            LOGGER.severe("Error Occured in ImportData Job -- " + ex);
         }
     }
 }

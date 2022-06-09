@@ -41,6 +41,7 @@ public class V3ProcessImportCommand extends FacilioCommand {
 
     private static final Logger LOGGER = Logger.getLogger(V3ProcessImportCommand.class.getName());
 
+    // TODO skip records if any of the value cannot be resolved.. like lookup name cannot be resolved to id
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
@@ -62,10 +63,11 @@ public class V3ProcessImportCommand extends FacilioCommand {
 
         List<Map<String, Object>> allRows = ImportAPI.getValidatedRows(importProcessContext.getId());
 
+        // TODO change this behaviour since it will take only 5k sites
         List<SiteContext> sites = SpaceAPI.getAllSites();
         Map<String, SiteContext> sitesMap = null;
         if (CollectionUtils.isNotEmpty(sites)) {
-            sitesMap = sites.stream().collect(Collectors.toMap(site -> site.getName().trim(), Function.identity()));
+            sitesMap = sites.stream().collect(Collectors.toMap(site -> site.getName().trim(), Function.identity(), (a,b) -> a));
         }
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -118,7 +120,7 @@ public class V3ProcessImportCommand extends FacilioCommand {
 
                 Object cellValue = rowVal.get(fieldMapping.get(key));
                 if (isEmpty(cellValue)) {
-                    // The value of row is empty. Set it as null.
+                    // The value of row is empty. Set it as null. // todo check this flow
                     props.put(field.getName(), null);
                     continue;
                 }

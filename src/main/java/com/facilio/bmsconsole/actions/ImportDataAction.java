@@ -116,7 +116,7 @@ public class ImportDataAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.IMPORT_PROCESS_CONTEXT ,importProcessContext);
 		return SUCCESS;
 	}
-	
+
 	public String checkModule() throws Exception{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
