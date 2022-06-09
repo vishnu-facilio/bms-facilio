@@ -33,9 +33,15 @@ public class PrepareQuestionForDisplayLogicExecution extends FacilioCommand {
 
 			List<PageContext> pages = Constants.getRecordList((FacilioContext) context);
 			
-			List<Long> actionQuestionIds = pages.stream().map(PageContext::getQuestions).flatMap(List::stream).map(QuestionContext::getId).collect(Collectors.toList());
+			if(CollectionUtils.isNotEmpty(pages)) {
+				List<Long> actionQuestionIds = pages.stream()
+						.filter(page -> CollectionUtils.isNotEmpty(page.getQuestions()))
+						.map(PageContext::getQuestions).flatMap(List::stream)
+						.map(QuestionContext::getId).collect(Collectors.toList());
+				
+				context.put(DisplayLogicUtil.ACTION_QUESTION_IDS, actionQuestionIds);
+			}
 			
-			context.put(DisplayLogicUtil.ACTION_QUESTION_IDS, actionQuestionIds);
 		}
 		else {
 			

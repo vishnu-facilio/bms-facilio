@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.owasp.esapi.util.CollectionsUtil;
 
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -30,17 +31,21 @@ public class FetchDisplayLogicForExecution extends FacilioCommand {
 			
 			List<Long> actionQuestionIds = (List<Long>) context.get(DisplayLogicUtil.ACTION_QUESTION_IDS);
 			
-			List<DisplayLogicContext> displyLogicByQuestion = DisplayLogicUtil.fetchDisplayLogic(CriteriaAPI.getCondition(FieldFactory.filterField(FieldFactory.getQAndADisplayLogicFields(), "questionId"), actionQuestionIds, NumberOperators.EQUALS));
-			if(CollectionUtils.isNotEmpty(displyLogicByQuestion)) {
-				displayLogicIds = displyLogicByQuestion.stream().map(DisplayLogicContext::getId).collect(Collectors.toList());
+			if(CollectionUtils.isNotEmpty(actionQuestionIds)) {
+				List<DisplayLogicContext> displyLogicByQuestion = DisplayLogicUtil.fetchDisplayLogic(CriteriaAPI.getCondition(FieldFactory.filterField(FieldFactory.getQAndADisplayLogicFields(), "questionId"), actionQuestionIds, NumberOperators.EQUALS));
+				if(CollectionUtils.isNotEmpty(displyLogicByQuestion)) {
+					displayLogicIds = displyLogicByQuestion.stream().map(DisplayLogicContext::getId).collect(Collectors.toList());
+				}
 			}
 		}
 		else {
 			List<Long> triggerQuestionIds = (List<Long>) context.get(DisplayLogicUtil.TRIGGER_QUESTION_IDS);
 			
-			List<DisplayLogicTriggerQuestions> triggerQuestions = DisplayLogicUtil.fetchDisplayLogicTriggerQuestion(triggerQuestionIds);
-			
-			displayLogicIds = triggerQuestions.stream().map(DisplayLogicTriggerQuestions::getDisplayLogicId).collect(Collectors.toList());
+			if(CollectionUtils.isNotEmpty(triggerQuestionIds)) {
+				List<DisplayLogicTriggerQuestions> triggerQuestions = DisplayLogicUtil.fetchDisplayLogicTriggerQuestion(triggerQuestionIds);
+				
+				displayLogicIds = triggerQuestions.stream().map(DisplayLogicTriggerQuestions::getDisplayLogicId).collect(Collectors.toList());
+			}
 		}
 		
 		if(CollectionUtils.isNotEmpty(displayLogicIds)) {

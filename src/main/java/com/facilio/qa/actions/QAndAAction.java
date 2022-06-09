@@ -39,7 +39,7 @@ public class QAndAAction extends RESTAPIHandler {
         }
         else {		// IF THERE IS SOME ERROR DURING SAVE THEN DISPLAYLOGIC WILL NOT GET EXECTED
         	
-        	if(AccountUtil.getCurrentOrg().getOrgId() == 173l || AccountUtil.getCurrentOrg().getOrgId() == 267l) {
+        	if(AccountUtil.getCurrentOrg().getOrgId() == 173l || AccountUtil.getCurrentOrg().getOrgId() == 267l || AccountUtil.getCurrentOrg().getOrgId() == 1l) {
         		FacilioChain addChain = QAndATransactionChainFactory.executeDisplayLogicChain();
           		 
         		addChain.getContext().put(FacilioConstants.QAndA.Command.ANSWER_DATA, this.getData());
