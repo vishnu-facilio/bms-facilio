@@ -2,10 +2,10 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
-import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.StoreroomApi;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -54,6 +54,19 @@ public class GetImportHistoryListCommand extends FacilioCommand {
 			selectRecordBuilder.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", moduleId.toString(), NumberOperators.EQUALS));
 		} else if (module != null && StringUtils.isNotEmpty(module.getName())) {
 			selectRecordBuilder.andCondition(CriteriaAPI.getCondition("MODULE_NAME", "moduleName", module.getName(), StringOperators.IS));
+		}
+		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+		if (pagination != null) {
+			int page = (int) pagination.get("page");
+			int perPage = (int) pagination.get("perPage");
+
+			int offset = ((page - 1) * perPage);
+			if (offset < 0) {
+				offset = 0;
+			}
+
+			selectRecordBuilder.offset(offset);
+			selectRecordBuilder.limit(perPage);
 		}
 		List<Map<String, Object>> props = selectRecordBuilder.get();
 		
