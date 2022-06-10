@@ -65,14 +65,16 @@ public class CommissioningApi {
 
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
 
-			builder.table(module.getTableName())
-					.select(fields)
-					.orderBy(fieldMap.get("sysCreatedTime").getColumnName() + " desc");
+		builder.table(module.getTableName())
+				.select(fields)
+				.orderBy(fieldMap.get("sysCreatedTime").getColumnName() + " desc");
+				if (status != null) {
 					if (status.equals("draft")) {
-						builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("publishedTime"),CommonOperators.IS_EMPTY));
+						builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("publishedTime"), CommonOperators.IS_EMPTY));
 					} else if (status.equals("published")) {
-						builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("publishedTime"),CommonOperators.IS_NOT_EMPTY));
+						builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("publishedTime"), CommonOperators.IS_NOT_EMPTY));
 					}
+				}
 
 		if (ids != null) {
 			builder.andCondition(CriteriaAPI.getIdCondition(ids, module));
