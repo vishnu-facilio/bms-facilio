@@ -34,6 +34,7 @@ public class V3PageAction extends V3Action {
 		context.put(ContextNames.ID, id);
 		context.put(ContextNames.FORM_ID, formId);
 		context.put(ContextNames.WIDGET_ID, widgetId);
+		context.put(ContextNames.FETCH_LOOKUPS, true);
 		context.put(FacilioConstants.ContextNames.WIDGET_PARAMJSON, widgetParams); // Remove once page db support
 		chain.execute();
 		
