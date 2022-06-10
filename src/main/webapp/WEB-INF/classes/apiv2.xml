@@ -525,6 +525,17 @@
 				class="com.facilio.emailtemplate.action.EMailTemplateAction" method="deleteEmailStructure" />
 	</package>
 
+	<package name="relation" namespace="/api/v2/relation" extends="v2Api">
+		<action name="addOrUpdate"
+				class="com.facilio.relation.action.RelationAction" method="addOrUpdateRelation" />
+		<action name="view"
+				class="com.facilio.relation.action.RelationAction" method="viewRelation" />
+		<action name="list"
+				class="com.facilio.relation.action.RelationAction" method="list" />
+		<action name="delete"
+				class="com.facilio.relation.action.RelationAction" method="delete" />
+	</package>
+
 	<package name="stateTransition"
 		namespace="/api/v2/statetransition" extends="v2Api">
 		<action name="update"

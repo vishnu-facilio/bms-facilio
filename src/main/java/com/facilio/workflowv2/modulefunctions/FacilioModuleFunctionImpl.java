@@ -65,6 +65,7 @@ import com.facilio.modules.fields.MultiEnumField;
 import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.scriptengine.context.DBParamContext;
+import com.facilio.scriptengine.modulefunctions.FacilioModuleFunction;
 import com.facilio.scriptengine.util.ScriptUtil;
 import com.facilio.scriptengine.util.WorkflowGlobalParamUtil;
 import com.facilio.time.DateTimeUtil;
@@ -398,7 +399,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			JSONObject deleteObj = new JSONObject();
 			deleteObj.put(module.getName(), ids);
 			
-			FacilioContext context = V3Util.deleteRecords(module.getName(), deleteObj, null,true);
+			FacilioContext context = V3Util.deleteRecords(module.getName(), deleteObj, null,null, true);
 		}
 		else {
 			DeleteRecordBuilder<ModuleBaseWithCustomFields> delete = new DeleteRecordBuilder<>()

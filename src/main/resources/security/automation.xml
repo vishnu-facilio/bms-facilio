@@ -85,6 +85,37 @@
             <property name="moduleName" type="string"/>
         </requestbody>
     </request>
+
+    <!-- Relation - start -->
+    <request path="/api/v2/relation/addOrUpdate">
+        <requestbody type="object">
+            <property name="relation" type="object">
+                <property name="name" type="string" />
+                <property name="relationType" type="number" />
+                <property name="fromModuleId" type="number" />
+                <property name="toModuleId" type="number" />
+                <property name="relationName" type="string" />
+                <property name="reverseRelationName" type="string" />
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v2/relation/view">
+        <requestbody type="object">
+            <property name="id" type="number" />
+            <property name="moduleName" type="string" />
+        </requestbody>
+    </request>
+    <request path="/api/v2/relation/list">
+        <requestbody type="object">
+            <property name="moduleName" type="string" />
+        </requestbody>
+    </request>
+    <request path="/api/v2/relation/delete">
+        <requestbody type="object">
+            <property name="id" type="number" />
+        </requestbody>
+    </request>
+    <!-- Relation - end -->
     <request path="/api/v2/modules/rules/getRule">
         <urlparams>
             <property name="ruleId" type="number"  mandatory="true"/>

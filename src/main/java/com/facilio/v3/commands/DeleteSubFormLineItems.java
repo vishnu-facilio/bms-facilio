@@ -87,7 +87,7 @@ public class DeleteSubFormLineItems extends ProcessSubFormLineItemsCommand {
 
             Map<String, Object> deleteObj = new HashMap<>();
             deleteObj.put(module.getName(), recordIds);
-            FacilioContext context = V3Util.deleteRecords(module.getName(), deleteObj, null,false);
+            FacilioContext context = V3Util.deleteRecords(module.getName(), deleteObj, null, null, false);
             Map<String, Integer> countMap = Constants.getCountMap(context);
             if (countMap.containsKey(module.getName())) {
                 return countMap.get(module.getName());

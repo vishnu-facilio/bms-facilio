@@ -17,7 +17,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.modules.FieldUtil;
-import com.facilio.workflowv2.annotation.ScriptModule;
+import com.facilio.scriptengine.annotation.ScriptModule;
 
 @ScriptModule(moduleName = FacilioConstants.ContextNames.USERS)
 public class FacilioUserModuleFunctions extends FacilioModuleFunctionImpl {

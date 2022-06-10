@@ -505,7 +505,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
     }
 
     public String delete() throws Exception {
-        FacilioContext context = V3Util.deleteRecords(getModuleName(), getData(), getParams(),false);
+        FacilioContext context = V3Util.deleteRecords(getModuleName(), getData(), getParams(), getQueryParameters(), false);
         Map<String, Integer> countMap = Constants.getCountMap(context);
         if (MapUtils.isEmpty(countMap)) {
             throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND);

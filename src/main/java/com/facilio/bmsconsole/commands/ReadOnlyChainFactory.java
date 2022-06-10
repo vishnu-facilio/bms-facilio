@@ -36,6 +36,9 @@ import com.facilio.energystar.command.*;
 import com.facilio.mv.command.FetchMVWidgetResultCommand;
 import com.facilio.readingrule.command.FetchReadingRuleSummaryCommand;
 import com.facilio.readingrule.command.GetNewReadingRulesCommand;
+import com.facilio.readingrule.command.GetReadingRulesCommand;
+import com.facilio.relation.command.GetAllRelationCommand;
+import com.facilio.relation.command.ViewRelationCommand;
 import com.facilio.storm.command.StormReadingPostProcessingCommand;
 import com.facilio.trigger.context.TriggerType;
 import com.facilio.v3.commands.AddCustomLookupInSupplementCommand;
@@ -1803,7 +1806,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetCountForWorkflowRuleCommand());
 		return chain;
 	}
-	
+
 	public static FacilioChain fetchAnomalyMetricsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetAnomalyMetricsCommand());
@@ -2337,6 +2340,18 @@ public class ReadOnlyChainFactory {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GenerateCriteriaFromFilterForNonModulesCommand());
 		chain.addCommand(new GetAllMyDelegationCommand());
+		return chain;
+	}
+
+	public static FacilioChain getRelationListChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetAllRelationCommand());
+		return chain;
+	}
+
+	public static FacilioChain getViewRelationChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new ViewRelationCommand());
 		return chain;
 	}
 

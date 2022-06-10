@@ -6,7 +6,8 @@ import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
-import com.facilio.workflowv2.annotation.ScriptModule;
+import com.facilio.scriptengine.annotation.ScriptModule;
+
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.Collections;

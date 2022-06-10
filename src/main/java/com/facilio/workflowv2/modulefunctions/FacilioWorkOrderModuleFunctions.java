@@ -31,8 +31,8 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.scriptengine.annotation.ScriptModule;
 import com.facilio.util.FacilioUtil;
-import com.facilio.workflowv2.annotation.ScriptModule;
 
 @ScriptModule(moduleName = FacilioConstants.ContextNames.WORK_ORDER)
 public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {

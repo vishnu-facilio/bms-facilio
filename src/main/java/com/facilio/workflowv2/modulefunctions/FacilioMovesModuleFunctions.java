@@ -9,8 +9,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.scriptengine.annotation.ScriptModule;
 import com.facilio.v3.util.V3Util;
-import com.facilio.workflowv2.annotation.ScriptModule;
 
 @ScriptModule(moduleName = FacilioConstants.ContextNames.MOVES)
 public class FacilioMovesModuleFunctions extends FacilioModuleFunctionImpl {

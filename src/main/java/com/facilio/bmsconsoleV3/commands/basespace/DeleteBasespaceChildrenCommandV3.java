@@ -55,7 +55,7 @@ public class DeleteBasespaceChildrenCommandV3 extends FacilioCommand {
                     if(CollectionUtils.isNotEmpty(assets))  {
                         Map<String, Object> deleteObj = new HashMap<>();
                         deleteObj.put(ModuleFactory.getAssetsModule().getName(), assets.stream().map(V3AssetContext::getId).collect(Collectors.toList()));
-                        V3Util.deleteRecords(ModuleFactory.getAssetsModule().getName(), deleteObj, null,false);
+                        V3Util.deleteRecords(ModuleFactory.getAssetsModule().getName(), deleteObj, null, null,false);
                     }
                     //V3RecordAPI.deleteRecords(FacilioConstants.ContextNames.ASSET,assetDeleteCriteria,true);
                 }

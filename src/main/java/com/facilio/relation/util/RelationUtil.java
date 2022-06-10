@@ -1,0 +1,141 @@
+package com.facilio.relation.util;
+
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.relation.context.RelationContext;
+import com.facilio.relation.context.RelationMappingContext;
+import com.facilio.relation.context.RelationRequestContext;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.*;
+
+public class RelationUtil {
+
+    public static RelationContext getRelation(long id, boolean fetchRelations) throws Exception {
+        FacilioModule module = ModuleFactory.getRelationModule();
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(module.getTableName())
+                .select(FieldFactory.getRelationFields())
+                .andCondition(CriteriaAPI.getIdCondition(id, module));
+
+        RelationContext relation = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), RelationContext.class);
+        if (relation != null) {
+            if (fetchRelations) {
+                fillRelation(Collections.singletonList(relation));
+            }
+        }
+        return relation;
+    }
+
+    public static RelationContext getRelation(FacilioModule relationModule, boolean fetchRelations) throws Exception {
+        FacilioModule module = ModuleFactory.getRelationModule();
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(module.getTableName())
+                .select(FieldFactory.getRelationFields())
+                .andCondition(CriteriaAPI.getCondition("RELATION_MODULE_ID", "relationModuleId", String.valueOf(relationModule.getModuleId()), NumberOperators.EQUALS));
+
+        RelationContext relation = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), RelationContext.class);
+        if (relation != null && fetchRelations) {
+            fillRelation(Collections.singletonList(relation));
+        }
+        return relation;
+    }
+
+    public static void fillRelation(List<RelationContext> relations) throws Exception {
+        if (CollectionUtils.isEmpty(relations)) {
+            return;
+        }
+
+        Map<Long, List<RelationContext>> map = new HashMap<>();
+        for (RelationContext relation : relations) {
+            List<RelationContext> relationContexts = map.get(relation.getId());
+            if (relationContexts == null) {
+                relationContexts = new ArrayList<>();
+                map.put(relation.getId(), relationContexts);
+            }
+            relationContexts.add(relation);
+        }
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getRelationMappingModule().getTableName())
+                .select(FieldFactory.getRelationMappingFields())
+                .andCondition(CriteriaAPI.getCondition("RELATION_ID", "relationId", StringUtils.join(map.keySet(), ","), NumberOperators.EQUALS));
+        List<RelationMappingContext> mappingList = FieldUtil.getAsBeanListFromMapList(builder.get(), RelationMappingContext.class);
+        if (CollectionUtils.isNotEmpty(mappingList)) {
+            for (RelationMappingContext mapping : mappingList) {
+                for (RelationContext relation : map.get(mapping.getRelationId())) {
+                    mapping.setRelationContext(relation);
+                    relation.addMapping(mapping);
+                }
+            }
+        }
+    }
+
+    public static RelationRequestContext convertToRelationRequest(RelationContext relation, long moduleId) throws Exception {
+        return convertToRelationRequest(Collections.singletonList(relation), moduleId).get(0);
+    }
+
+    public static List<RelationRequestContext> convertToRelationRequest(List<RelationContext> relations, long moduleId) throws Exception {
+        List<RelationRequestContext> requests = new ArrayList<>();
+        for (RelationContext relation : relations) {
+            RelationRequestContext request = new RelationRequestContext();
+
+            request.setId(relation.getId());
+            request.setName(relation.getName());
+            request.setDescription(relation.getDescription());
+            request.setLinkName(relation.getLinkName());
+            request.setRelationModule(relation.getRelationModule());
+
+            for (RelationMappingContext mapping : relation.getMappings()) {
+                if (mapping.getFromModuleId() == moduleId) { // this will get mapping for current module
+                    request.setFromModuleId(mapping.getFromModuleId());
+                    request.setToModuleId(mapping.getToModuleId());
+                    request.setRelationName(mapping.getRelationName());
+                    request.setRelationType(mapping.getRelationTypeEnum());
+                    request.setPosition(mapping.getPositionEnum());
+                } else { // this will fetch reverse mapping
+                    request.setReverseRelationName(mapping.getRelationName());
+                }
+            }
+            requests.add(request);
+        }
+
+        return requests;
+    }
+
+    public static RelationContext convertToRelationContext(RelationRequestContext relationRequest) {
+        RelationContext relationContext = new RelationContext();
+        relationContext.setId(relationRequest.getId());
+        relationContext.setName(relationRequest.getName());
+        relationContext.setDescription(relationRequest.getDescription());
+        relationContext.setLinkName(relationRequest.getLinkName());
+
+        relationContext.addMapping(getRelationMapping(relationContext, relationRequest.getRelationName(),
+                relationRequest.getRelationTypeEnum(), relationRequest.getFromModuleId(), relationRequest.getToModuleId(), RelationMappingContext.Position.LEFT));
+        relationContext.addMapping(getRelationMapping(relationContext, relationRequest.getReverseRelationName(),
+                relationRequest.getRelationTypeEnum().getReverseRelationType(), relationRequest.getToModuleId(), relationRequest.getFromModuleId(), RelationMappingContext.Position.RIGHT));
+        return relationContext;
+    }
+
+    private static RelationMappingContext getRelationMapping(RelationContext relationContext,
+                                                             String relationName,
+                                                             RelationRequestContext.RelationType relationType,
+                                                             long fromModuleId, long toModuleId,
+                                                             RelationMappingContext.Position position) {
+        RelationMappingContext mapping = new RelationMappingContext();
+        mapping.setRelationId(relationContext.getId());
+        mapping.setRelationContext(relationContext);
+        mapping.setRelationName(relationName);
+        mapping.setRelationType(relationType);
+        mapping.setFromModuleId(fromModuleId);
+        mapping.setToModuleId(toModuleId);
+        mapping.setPosition(position);
+        return mapping;
+    }
+}

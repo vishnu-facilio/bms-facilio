@@ -1047,6 +1047,14 @@ public class ModuleFactory {
 		return constructModule("cbsessionparams", "Chat Bot Session Params", "CB_Session_Params");
 	}
 
+	public static FacilioModule getRelationModule() {
+		return constructModule("relation", "Relation", "Relation");
+	}
+
+	public static FacilioModule getRelationMappingModule() {
+		return constructModule("relationMapping", "Relation Mapping", "Relation_Mapping");
+	}
+
 	public static FacilioModule getTemplatesModule() {
 		FacilioModule templatesModule = new FacilioModule();
 		templatesModule.setName("templates");
