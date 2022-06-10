@@ -84,6 +84,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddEmployeeTypePeopleForUserAdditionCommand());
 			c.addCommand(new AddDefaultBundleCommand());
 			c.addCommand(new AddDefaultWoTimelineCommand());
+			c.addCommand(new AddMaintenanceAppConfigCommand());
 			return c;
 		}
 

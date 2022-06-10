@@ -278,7 +278,10 @@ public class UserBeanImpl implements UserBean {
 		props.put("orgId", user.getOrgId());
 		props.put("roleId", user.getRoleId());
 		ScopingContext defaultScoping = ApplicationApi.getDefaultScopingForApp(user.getApplicationId());
-		if(defaultScoping != null) {
+		if(user.getScoping() != null){
+			props.put("scopingId", user.getScoping().getId());
+		}
+		else if(defaultScoping != null) {
 			props.put("scopingId", defaultScoping.getId());
 		}
 

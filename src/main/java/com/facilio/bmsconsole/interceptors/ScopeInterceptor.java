@@ -217,6 +217,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
 //						}
                         if (currentAccount != null) {
                             List<Long> sites = CommonCommandUtil.getMySiteIds();
+                            AccountUtil.setValueGenerator(new HashMap<>());
                             if (sites != null && sites.size() == 1) {
                                AccountUtil.setCurrentSiteId(sites.get(0));
 //								if (accessibleSpace == null) {

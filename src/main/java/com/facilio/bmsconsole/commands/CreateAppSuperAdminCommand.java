@@ -1,6 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ScopingConfigContext;
+import com.facilio.bmsconsole.context.ScopingContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.ScopeOperator;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Context;
 
@@ -12,6 +21,10 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.constants.FacilioConstants;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class CreateAppSuperAdminCommand extends FacilioCommand {
 
@@ -50,6 +63,19 @@ public class CreateAppSuperAdminCommand extends FacilioCommand {
 		//adding super admin to maintenance app
 		long cafmAppId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
 		if(cafmAppId > 0) {
+			Role cafmAdminRole = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(),FacilioConstants.DefaultRoleNames.MAINTENANCE_ADMIN);
+			clonedUser.setRole(cafmAdminRole);
+			clonedUser.setRoleId(cafmAdminRole.getRoleId());
+			//admin scoping
+			ScopingContext scoping = new ScopingContext();
+			scoping.setScopeName("Default scoping for app - " + cafmAppId + " admin");
+			scoping.setDescription("Default scoping for app - " + cafmAppId + " admin");
+			scoping.setApplicationId(cafmAppId);
+			scoping.setIsDefault(false);
+			long scopingId = ApplicationApi.addScoping(scoping);
+			context.put(FacilioConstants.ContextNames.Maintenance.MAINTENANCE_ADMIN_SCOPING_ID,scopingId);
+			ScopingContext adminScoping = ApplicationApi.getScoping(scopingId);
+			clonedUser.setScoping(adminScoping);
 			clonedUser.setApplicationId(cafmAppId);
 			AccountUtil.getUserBean().addToORGUsersApps(clonedUser, false);
 		}
@@ -57,6 +83,4 @@ public class CreateAppSuperAdminCommand extends FacilioCommand {
 		context.put(FacilioConstants.ContextNames.USER, user);
 		return false;
 	}
-
-
 }

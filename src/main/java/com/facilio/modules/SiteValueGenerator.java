@@ -157,6 +157,7 @@ public class SiteValueGenerator extends ValueGenerator {
 			SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
 					.select(fields)
 					.module(module)
+					.skipScopeCriteria()
 					.beanClass(BaseSpaceContext.class)
 					.andCondition(CriteriaAPI.getCondition("SPACE_TYPE", "spaceType", String.valueOf(SpaceType.SITE.getIntVal()), NumberOperators.EQUALS));
 			

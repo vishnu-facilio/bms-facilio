@@ -44,6 +44,18 @@ public class ServiceRequestScopingConfig extends SignUpData {
             tenant_scoping.setModuleId(module.getModuleId());
             tenant_scoping.setCriteria(criteria_tenant);
             ApplicationApi.addScopingConfigForApp(Collections.singletonList(tenant_scoping));
+
+            //adding site scope in Maintenance
+            long maintenanceScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+            ScopingConfigContext maintenance_scoping = new ScopingConfigContext();
+            Criteria maintenance_criteria = new Criteria();
+            Condition maintenance_condition = CriteriaAPI.getCondition("siteId", "com.facilio.modules.SiteValueGenerator", ScopeOperator.SCOPING_IS);
+            maintenance_condition.setModuleName(module.getName());
+            maintenance_criteria.addAndCondition(maintenance_condition);
+            maintenance_scoping.setScopingId(maintenanceScopingId);
+            maintenance_scoping.setModuleId(module.getModuleId());
+            maintenance_scoping.setCriteria(maintenance_criteria);
+            ApplicationApi.addScopingConfigForApp(Collections.singletonList(maintenance_scoping));
         }
         catch(Exception e){
             e.printStackTrace();

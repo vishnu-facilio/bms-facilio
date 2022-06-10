@@ -2041,6 +2041,9 @@ public class FacilioConstants {
 		public static final String SCOPING_CONTEXT = "scopingContext";
 		public static final String SCOPING_CONTEXT_LIST = "scopingContextList";
 		public static final String SCOPING_ID = "scopingId";
+		public static class Maintenance{
+			public static final String MAINTENANCE_ADMIN_SCOPING_ID = "maintenanceadminscopingid";
+		}
 		public static final String VALUE_GENERATORS = "valueGenerators";
 		public static final String RCA_RULE_IDS = "rca_rule_ids";
 		public static final String CALL_FROM_STORM = "req_from_storm_service";
@@ -2067,6 +2070,8 @@ public class FacilioConstants {
 			public static final String USER = "Is Current User";
 			public static final String CONTAINS_USER = "Contains Current User";
 			public static final String CONTAINS_SITE = "Contains Current User Sites";
+			public static final String SITE_TENANT = "Tenants Of Current User Sites";
+			public static final String BASESPACE_HAVING = "Space Available in User Accessible Spaces";
 
 		}
 
