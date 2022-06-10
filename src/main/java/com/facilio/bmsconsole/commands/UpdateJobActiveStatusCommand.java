@@ -31,52 +31,50 @@ public class UpdateJobActiveStatusCommand extends FacilioCommand {
         List<FacilioAgent> agentList = AgentApiV2.getAgents(agentIds);
         context.put(AgentConstants.AGENT_LIST,agentList);
         Boolean isActiveUpdateValue = (Boolean) context.get(AgentConstants.IS_ACTIVE_UPDATE_VALUE);
-        FacilioService.runAsService(FacilioConstants.Services.JOB_SERVICE,() -> updateActiveStatus(agentList,isActiveUpdateValue));
 
         List<String> agentService = new ArrayList<>();
         for(FacilioAgent agent : agentList){
             if(agent.getAgentTypeEnum().isAgentService()){
                 agentService.add(agent.getName());
+                agentIds.remove(agent.getId());
             }
         }
         if(!agentService.isEmpty()) {
             CloudAgentUtil.toggleJob(agentService, isActiveUpdateValue);
         }
-        return false;
+        if(!agentIds.isEmpty()){
+            FacilioService.runAsService(FacilioConstants.Services.JOB_SERVICE,() -> updateActiveStatus(agentIds,isActiveUpdateValue));
+        }
+         return false;
     }
 
-    private void updateActiveStatus(List<FacilioAgent>agentList,Boolean isActiveUpdateValue) throws Exception {
-        if(!agentList.isEmpty()){
-            FacilioModule jobsModule = ModuleFactory.getJobsModule();
+    private void updateActiveStatus(List<Long>idList,Boolean isActiveUpdateValue) throws Exception {
+        FacilioModule jobsModule = ModuleFactory.getJobsModule();
+        FacilioField isActiveField = FieldFactory.getField("active", "IS_ACTIVE", ModuleFactory.getJobsModule(), FieldType.BOOLEAN);
+        FacilioField jobidField = FieldFactory.getField("jobId", "JOBID", ModuleFactory.getJobsModule(), FieldType.ID);
+        FacilioField jobNameField = FieldFactory.getField("jobName", "JOBNAME", ModuleFactory.getJobsModule(), FieldType.STRING);
 
-            FacilioField isActiveField = FieldFactory.getField("active", "IS_ACTIVE", ModuleFactory.getJobsModule(), FieldType.BOOLEAN);
-            FacilioField jobidField = FieldFactory.getField("jobId", "JOBID", ModuleFactory.getJobsModule(), FieldType.ID);
-            FacilioField jobNameField = FieldFactory.getField("jobName", "JOBNAME", ModuleFactory.getJobsModule(), FieldType.STRING);
+        GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+                .table(jobsModule.getTableName())
+                .fields(Collections.singletonList(isActiveField))
+                ;
 
-            GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-                    .table(jobsModule.getTableName())
-                    .fields(Collections.singletonList(isActiveField))
-                    ;
+        List<FacilioField> whereFields = new ArrayList<>();
+        whereFields.add(jobidField);
+        whereFields.add(jobNameField);
 
-            List<FacilioField> whereFields = new ArrayList<>();
-            whereFields.add(jobidField);
-            whereFields.add(jobNameField);
+        List<GenericUpdateRecordBuilder.BatchUpdateContext> batchUpdateList = new ArrayList<>();
 
-            List<GenericUpdateRecordBuilder.BatchUpdateContext> batchUpdateList = new ArrayList<>();
-
-            for (FacilioAgent agent : agentList) {
-                if(!agent.getAgentTypeEnum().isAgentService()) {
-                    GenericUpdateRecordBuilder.BatchUpdateContext batchUpdate = new GenericUpdateRecordBuilder.BatchUpdateContext();
-                    batchUpdate.addUpdateValue("active", isActiveUpdateValue);
-                    batchUpdate.addWhereValue("jobId", agent.getId());
-                    batchUpdate.addWhereValue("jobName", "CloudAgent");
-                    batchUpdateList.add(batchUpdate);
-                }
-            }
-            if(batchUpdateList!= null &&!batchUpdateList.isEmpty()) {
-                int rows = builder.batchUpdate(whereFields, batchUpdateList);
-                LOGGER.info("Number of rows updated: "+rows);
-            }
+        for (Long id : idList) {
+                GenericUpdateRecordBuilder.BatchUpdateContext batchUpdate = new GenericUpdateRecordBuilder.BatchUpdateContext();
+                batchUpdate.addUpdateValue("active", isActiveUpdateValue);
+                batchUpdate.addWhereValue("jobId", id);
+                batchUpdate.addWhereValue("jobName", "CloudAgent");
+                batchUpdateList.add(batchUpdate);
+        }
+        if(batchUpdateList!= null &&!batchUpdateList.isEmpty()) {
+            int rows = builder.batchUpdate(whereFields, batchUpdateList);
+            LOGGER.info("Number of rows updated: "+rows);
         }
     }
 }
