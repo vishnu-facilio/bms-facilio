@@ -68,7 +68,6 @@ publicTables: #Tables without orgId. Error will be thrown if org is not present 
   - faciliousers
   - faciliorequestors
   - SupportEmails
-  - Service
   - ClientApp
   - Weather_Stations
   - Organizations
