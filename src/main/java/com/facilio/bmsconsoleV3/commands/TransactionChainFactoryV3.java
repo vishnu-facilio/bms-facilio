@@ -13,6 +13,9 @@ import com.facilio.bmsconsoleV3.commands.licensinginfo.UpdateLicensingInfoComman
 import com.facilio.bmsconsoleV3.commands.people.UpdateScopingForPeopleCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.readingimportapp.AddReadingImportAppDataCommand;
+import com.facilio.bmsconsoleV3.commands.readingimportapp.DeleteReadingImportDataCommand;
+import com.facilio.bmsconsoleV3.commands.readingimportapp.UpdateReadingImportDataCommand;
 import com.facilio.bmsconsoleV3.commands.spacecategory.ValidateSpaceCategoryDeletionV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.AutoAwardingPriceCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.CreatePurchaseOrdersCommandV3;
@@ -1721,5 +1724,24 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new CloneDashboardCommand());
         return c;
     }
+
+    public static FacilioChain getReadingImportAppChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddReadingImportAppDataCommand());
+        return c;
+    }
+
+    public static FacilioChain updateReadingImportChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateReadingImportDataCommand());
+        return c;
+    }
+    public static FacilioChain deleteReadingImportChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new DeleteReadingImportDataCommand());
+        return c;
+    }
+
+
 
 }

@@ -751,4 +751,106 @@
         </requestbody>
     </request>
 
+    <request path="/api/v3/readingimport/addData">
+        <requestbody type="object">
+            <property name="readingImportData" type="object">
+                <property name="id" type="number"/>
+                <property name="fileId" type="number"/>
+                <property name="orgId" type="number"/>
+                <property name="validatedFiledId" type="number"/>
+                <property name="status" type="number"/>
+                <property name="orgId" type="number"/>
+                <property name="columnHeading" type="string"/>
+                <property name="resourceMapping" type="string"/>
+                <property name="createdTime" type="number"/>
+                <property name="modifiedTime" type="number"/>
+                <property name="importStartTime" type="number"/>
+                <property name="importEndTime" type="number"/>
+                <property name="totalRows" type="number"/>
+                <property name="validatedRows" type="number"/>
+                <property name="createdBy" type="number"/>
+                <property name="modifiedBy" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/readingimport/getData">
+        <requestbody type="object">
+            <property name="readingImportData" type="object">
+                <property name="id" type="number"/>
+                <property name="fileId" type="number"/>
+                <property name="orgId" type="number"/>
+                <property name="validatedFiledId" type="number"/>
+                <property name="status" type="number"/>
+                <property name="orgId" type="number"/>
+                <property name="columnHeading" type="string"/>
+                <property name="resourceMapping" type="string"/>
+                <property name="createdTime" type="number"/>
+                <property name="modifiedTime" type="number"/>
+                <property name="importStartTime" type="number"/>
+                <property name="importEndTime" type="number"/>
+                <property name="totalRows" type="number"/>
+                <property name="validatedRows" type="number"/>
+                <property name="createdBy" type="number"/>
+                <property name="modifiedBy" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v3/readingimport/getAllData">
+        <requestbody type="object">
+            <property name="readingImportData" type="object">
+                <property name="id" type="number"/>
+                <property name="fileId" type="number"/>
+                <property name="orgId" type="number"/>
+                <property name="validatedFiledId" type="number"/>
+                <property name="status" type="number"/>
+                <property name="orgId" type="number"/>
+                <property name="columnHeading" type="string"/>
+                <property name="resourceMapping" type="string"/>
+                <property name="createdTime" type="number"/>
+                <property name="modifiedTime" type="number"/>
+                <property name="importStartTime" type="number"/>
+                <property name="importEndTime" type="number"/>
+                <property name="totalRows" type="number"/>
+                <property name="validatedRows" type="number"/>
+                <property name="createdBy" type="number"/>
+                <property name="modifiedBy" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/readingimport/update">
+        <requestbody type="object">
+            <property name="readingImportData" type="object">
+                <property name="id" type="number"/>
+                <property name="fileId" type="number"/>
+                <property name="orgId" type="number"/>
+                <property name="validatedFiledId" type="number"/>
+                <property name="status" type="number"/>
+                <property name="orgId" type="number"/>
+                <property name="columnHeading" type="string"/>
+                <property name="resourceMapping" type="string"/>
+                <property name="createdTime" type="number"/>
+                <property name="modifiedTime" type="number"/>
+                <property name="importStartTime" type="number"/>
+                <property name="importEndTime" type="number"/>
+                <property name="totalRows" type="number"/>
+                <property name="validatedRows" type="number"/>
+                <property name="createdBy" type="number"/>
+                <property name="modifiedBy" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/readingimport/delete">
+        <requestbody type="object">
+            <property name="readingImportData" type="object">
+                <property name="id" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+
+
+
+
 </config>

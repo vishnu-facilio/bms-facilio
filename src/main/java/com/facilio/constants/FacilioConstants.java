@@ -179,6 +179,9 @@ public class FacilioConstants {
 	}
 
 	public static class ContextNames {
+
+		public static final String READING_IMPORT_APP = "readingImportApp";
+
 		public static final String VERIFY_USER = "verifyUser";
 		public static final String RULE_LOG_MODULE_DATA = "ruleLogModuleData";
 		public static final String RULE_LOG_MODULE_DATA_LIST = "ruleLogModuleDataList";

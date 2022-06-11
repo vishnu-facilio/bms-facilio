@@ -10236,6 +10236,27 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getReadingImportFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getReadingImportAPPModule();
+        fields.add(getIdField(module));
+        fields.add(getField("fileId", "FILEID", module, FieldType.NUMBER));
+        fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
+        fields.add(getField("fieldMapping", "FIELD_MAPPING", module, FieldType.STRING));
+        fields.add(getField("columnHeading", "COLUMN_HEADING", module, FieldType.STRING));
+        fields.add(getField("resourceMapping", "RESOURCE_MAPPING", module, FieldType.STRING));
+        fields.add(getField("validatedFiledId", "VALIDATED_FILEID", module, FieldType.NUMBER));
+        fields.add(getCreatedTime(module));
+        fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("importStartTime", "IMPORT_START_TIME", module, FieldType.NUMBER));
+        fields.add(getField("importEndTime", "IMPORT_END_TIME", module, FieldType.NUMBER));
+        fields.add(getField("totalRows", "TOTAL_ROWS", module, FieldType.NUMBER));
+        fields.add(getField("validatedRows", "VALIDATED_ROWS", module, FieldType.NUMBER));
+        fields.add(getField("createdBy", "CREATED_BY", module, FieldType.LOOKUP));
+        fields.add(getField("modifiedBy", "MODIFIED_BY", module, FieldType.LOOKUP));
+        return fields;
+    }
+
     public  static List<FacilioField> getScatterGraphMetaFields(){
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getScatterGraphLineModule();
