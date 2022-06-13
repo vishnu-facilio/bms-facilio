@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ApprovalRuleMetaContext;
@@ -7,9 +8,15 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.wmsv2.handler.AuditLogHandler;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.util.List;
+import java.util.function.Function;
 
 public class ApprovalAction extends FacilioAction {
 
@@ -62,9 +69,30 @@ public class ApprovalAction extends FacilioAction {
 		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.APPROVAL_RULE, approvalRule);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		boolean add  = approvalRule.getId() <= 0;
 		chain.execute();
 
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+
 		setResult(FacilioConstants.ContextNames.APPROVAL_RULE, context.get(FacilioConstants.ContextNames.APPROVAL_RULE));
+		sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("Approval Process {%s} for %s has been %s.", approvalRule.getName(),module.getDisplayName(), (add ? "added" : "updated")),
+				approvalRule.description,
+				AuditLogHandler.RecordType.SETTING,
+				"Approval Process", approvalRule.getId())
+				.setActionType(add ? AuditLogHandler.ActionType.ADD : AuditLogHandler.ActionType.UPDATE)
+				.setLinkConfig(((Function<Void, String>) o -> {
+					JSONArray array = new JSONArray();
+					JSONObject json = new JSONObject();
+					json.put("id", approvalRule.getId());
+					json.put("moduleName", moduleName);
+					json.put("navigateTo", "ApprovalProcess");
+
+					array.add(json);
+					return array.toJSONString();
+				}).apply(null))
+		);
+
 		return SUCCESS;
 	}
 

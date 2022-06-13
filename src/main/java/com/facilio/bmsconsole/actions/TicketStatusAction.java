@@ -1,9 +1,13 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.List;
+import java.util.function.Function;
 
+import com.facilio.modules.FacilioModule;
+import com.facilio.wmsv2.handler.AuditLogHandler;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
@@ -77,19 +81,57 @@ public class TicketStatusAction extends FacilioAction {
 		
 		FacilioChain chain = TransactionChainFactory.getAddOrUpdateTicketStatusChain();
 		chain.execute(context);
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(parentModuleName);
 		
 		setResult("status", context.get(FacilioConstants.ContextNames.TICKET_STATUS));
+		sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("State {%s} of %s has been added.", facilioStatus.getDisplayName(),module.getDisplayName()),
+				null,
+				AuditLogHandler.RecordType.SETTING,
+				"State", facilioStatus.getId())
+				.setActionType(AuditLogHandler.ActionType.ADD)
+				.setLinkConfig(((Function<Void, String>) o -> {
+					JSONArray array = new JSONArray();
+					JSONObject json = new JSONObject();
+					json.put("id", facilioStatus.getId());
+					json.put("moduleName",parentModuleName);
+					json.put("navigateTo", "states");
+
+					array.add(json);
+					return array.toJSONString();
+				}).apply(null))
+		);
 		return SUCCESS;
 	}
 	
 	public String v2UpdateStatus() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TICKET_STATUS, facilioStatus);
-		
+		context.put(FacilioConstants.ContextNames.PARENT_MODULE, parentModuleName);
 		FacilioChain chain = TransactionChainFactory.getAddOrUpdateTicketStatusChain();
 		chain.execute(context);
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(parentModuleName);
 		
 		setResult("status", context.get(FacilioConstants.ContextNames.TICKET_STATUS));
+		sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("State {%s} of %s has been updated.", facilioStatus.getDisplayName(),module.getDisplayName()),
+				null,
+				AuditLogHandler.RecordType.SETTING,
+				"State", facilioStatus.getId())
+				.setActionType(AuditLogHandler.ActionType.UPDATE)
+				.setLinkConfig(((Function<Void, String>) o -> {
+					JSONArray array = new JSONArray();
+					JSONObject json = new JSONObject();
+					json.put("id", facilioStatus.getId());
+					json.put("moduleName",parentModuleName);
+					json.put("navigateTo","states");
+
+					array.add(json);
+					return array.toJSONString();
+				}).apply(null))
+		);
 		return SUCCESS;
 	}
 	
