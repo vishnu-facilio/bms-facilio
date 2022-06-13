@@ -94,7 +94,9 @@ public class AddInductionModules extends SignUpData {
         addModuleChain.execute();
         
         addScoping(induction);
-        
+        long applicationScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        addScopingForMaintenanceApp(induction,applicationScopingId);
+
         addInductionResponseRollUpToTemplate(Constants.getModBean(), InductionResponseModule);
         
         
@@ -128,7 +130,24 @@ public class AddInductionModules extends SignUpData {
         
 //        addDefaultScheduleJobs();
     }
-	
+
+    public void addScopingForMaintenanceApp(FacilioModule module,long applicationScopingId) throws Exception {
+        ScopingConfigContext scoping = new ScopingConfigContext();
+        Criteria criteria = new Criteria();
+        Condition condition = CriteriaAPI.getCondition(module.getName()+".sites", "com.facilio.modules.ContainsSiteValueGenerator", ScopeOperator.SCOPING_IS);
+        condition.setColumnName("sites");  			// setting dummy column Name
+        condition.setModuleName(module.getName());
+        Condition condition1 = CriteriaAPI.getCondition(module.getName()+".siteApplyTo", Boolean.TRUE.toString(), BooleanOperators.IS);
+        condition1.setColumnName("SITE_APPLY_TO");
+        condition1.setModuleName(module.getName());
+        criteria.addAndCondition(condition);
+        criteria.addOrCondition(condition1);
+        scoping.setScopingId(applicationScopingId);
+        scoping.setModuleId(module.getModuleId());
+        scoping.setCriteria(criteria);
+        ApplicationApi.addScopingConfigForApp(Collections.singletonList(scoping));
+    }
+
 	public void addScoping(FacilioModule module) throws Exception {
 		
 		long applicationScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);

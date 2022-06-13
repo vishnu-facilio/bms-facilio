@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.facilio.command.FacilioCommand;
@@ -16,10 +17,11 @@ public class GetCommissioningLogsCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
-		
-		List<CommissioningLogContext> commissioniongList = CommissioningApi.commissioniongList(null, true, pagination);
-		context.put("logs", commissioniongList);
-		
+		String status = (String) context.get("status");
+
+		List<CommissioningLogContext> commissioningList = CommissioningApi.commissioniongList(null, true, pagination,status);
+		context.put("logs", commissioningList);
+
 		return false;
 	}
 

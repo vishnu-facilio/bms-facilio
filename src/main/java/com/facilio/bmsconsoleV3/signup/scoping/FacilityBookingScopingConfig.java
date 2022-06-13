@@ -12,6 +12,7 @@ import com.facilio.db.criteria.operators.ScopeOperator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 public class FacilityBookingScopingConfig extends SignUpData {
@@ -31,7 +32,19 @@ public class FacilityBookingScopingConfig extends SignUpData {
             scoping.setScopingId(applicationScopingId);
             scoping.setModuleId(resourceModule.getModuleId());
             scoping.setCriteria(criteria);
-            ApplicationApi.addScopingConfigForApp(Collections.singletonList(scoping));
+
+            //adding site scope in Maintenance
+            long maintenanceScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+            ScopingConfigContext maintenance_scoping = new ScopingConfigContext();
+            Criteria maintenance_criteria = new Criteria();
+            Condition maintenance_condition = CriteriaAPI.getCondition("siteId", "com.facilio.modules.SiteValueGenerator", ScopeOperator.SCOPING_IS);
+            maintenance_condition.setModuleName(resourceModule.getName());
+            maintenance_criteria.addAndCondition(maintenance_condition);
+            maintenance_scoping.setScopingId(maintenanceScopingId);
+            maintenance_scoping.setModuleId(resourceModule.getModuleId());
+            maintenance_scoping.setCriteria(maintenance_criteria);
+            ApplicationApi.addScopingConfigForApp(Arrays.asList(scoping,maintenance_scoping));
+
         }
         catch(Exception e){
             e.printStackTrace();

@@ -812,4 +812,23 @@
                 method="clone_dashboard"/>
     </package>
 
+    <package name="readingImportApp" namespace="/api/v3/readingimport" extends="v3Api">
+        <action name="addData"
+                class="com.facilio.bmsconsoleV3.actions.readingimportapp.ReadingImportAction"
+                method="addImportMeta"/>
+        <action name="getData"
+                class="com.facilio.bmsconsoleV3.actions.readingimportapp.ReadingImportAction"
+                method="getImportMetaById"/>
+        <action name="getAllData"
+                class="com.facilio.bmsconsoleV3.actions.readingimportapp.ReadingImportAction"
+                method="getImportMetaList"/>
+        <action name="update"
+                class="com.facilio.bmsconsoleV3.actions.readingimportapp.ReadingImportAction"
+                method="updateReadingImportData"/>
+        <action name="delete"
+                class="com.facilio.bmsconsoleV3.actions.readingimportapp.ReadingImportAction"
+                method="deleteReadingImportData"/>
+    </package>
+
+
 </struts>

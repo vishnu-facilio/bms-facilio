@@ -118,7 +118,9 @@ public class AddInspectionModules extends SignUpData {
         addModuleChain.execute();
         
         addScoping(inspection);
-        
+		long applicationScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+		addScopingMaintenanceApp(inspection,applicationScopingId);
+
         SignupUtil.addNotesAndAttachmentModule(inspectionResponseModule);
         
         addInspectionResponseRollUpToTemplate(Constants.getModBean(), inspectionResponseModule);
@@ -154,6 +156,22 @@ public class AddInspectionModules extends SignUpData {
         addActivityModuleForInspectionResponse(inspectionResponseModule);
     }
 
+	public void addScopingMaintenanceApp(FacilioModule module,long applicationScopingId) throws Exception {
+		ScopingConfigContext scoping = new ScopingConfigContext();
+		Criteria criteria = new Criteria();
+		Condition condition = CriteriaAPI.getCondition(module.getName()+".siteId", "com.facilio.modules.SiteValueGenerator", ScopeOperator.SCOPING_IS);
+		condition.setColumnName(Constants.getModBean().getField("siteId", module.getName()).getCompleteColumnName());
+		condition.setModuleName(module.getName());
+		Condition condition1 = CriteriaAPI.getCondition(module.getName()+".sites", "com.facilio.modules.ContainsSiteValueGenerator", ScopeOperator.SCOPING_IS);
+		condition1.setColumnName("sites");  			// setting dummy column Name
+		condition1.setModuleName(module.getName());
+		criteria.addAndCondition(condition);
+		criteria.addOrCondition(condition1);
+		scoping.setScopingId(applicationScopingId);
+		scoping.setModuleId(module.getModuleId());
+		scoping.setCriteria(criteria);
+		ApplicationApi.addScopingConfigForApp(Collections.singletonList(scoping));
+	}
 
 	public void addScoping(FacilioModule module) throws Exception {
 		

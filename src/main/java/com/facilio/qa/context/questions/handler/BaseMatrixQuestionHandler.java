@@ -57,7 +57,7 @@ public class BaseMatrixQuestionHandler {
                 "Q_And_A_Matrix_Answers",
                 FacilioModule.ModuleType.SUB_ENTITY);
 
-        List<FacilioField> answerFields = getAnswerDefaultField();
+   	    List<FacilioField> answerFields = new ArrayList<FacilioField>();
 
         if(question.getColumns() != null) {
        	 for(MatrixQuestionColumn column : question.getColumns()) {
@@ -76,9 +76,17 @@ public class BaseMatrixQuestionHandler {
         addModuleChain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
         addModuleChain.getContext().put(ContextNames.ALLOW_SAME_FIELD_DISPLAY_NAME, true);
         addModuleChain.getContext().put(FacilioConstants.Module.SKIP_EXISTING_MODULE_WITH_SAME_NAME_CHECK, false);
+        addModuleChain.getContext().put(ContextNames.APPEND_MODULE_NAME, false);
         addModuleChain.execute();
         
         question.setAnswerModuleId(answerModule.getModuleId());
+        
+        answerFields = getAnswerDefaultField();
+        
+        for(FacilioField answerSystemField : answerFields) {
+        	answerSystemField.setModule(answerModule);
+        	Constants.getModBean().addField(answerSystemField);
+        }
         
         if(question.getColumns() != null) {
        	 for(MatrixQuestionColumn column : question.getColumns()) {

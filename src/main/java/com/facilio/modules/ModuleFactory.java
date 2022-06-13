@@ -4834,5 +4834,14 @@ public class ModuleFactory {
 		return licensingInfoModule;
 
 	}
-    //Bundle Related Modules ends
+	//Bundle Related Modules ends
+
+
+	public static FacilioModule getReadingImportAPPModule() {
+		FacilioModule readingImportModule = new FacilioModule();
+		readingImportModule.setName(ContextNames.READING_IMPORT_APP);
+		readingImportModule.setDisplayName("Reading Import APP");
+		readingImportModule.setTableName("Reading_Import_APP");
+		return readingImportModule;
+	}
 }

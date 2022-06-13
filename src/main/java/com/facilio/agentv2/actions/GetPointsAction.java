@@ -1,10 +1,15 @@
 package com.facilio.agentv2.actions;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.CommissioningLogContext;
+import com.facilio.bmsconsole.util.CommissioningApi;
+import com.facilio.chain.FacilioChain;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.unitconversion.Unit;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -80,7 +85,17 @@ public class GetPointsAction extends AgentActionV2 {
 	 */
 	public String getPoints() {
 		try {
-			setResult(AgentConstants.DATA, getPointsData(PointStatus.valueOf(status)));
+			List<Map<String,Object>> data= getPointsData(PointStatus.valueOf(status));
+			if(status.equals("COMMISSIONED")){
+				FacilioChain chain = ReadOnlyChainFactory.getCommissionedChainCommand();
+				FacilioContext context = chain.getContext();
+				context.put("data",data);
+				chain.execute();
+				setResult("resourceMap", context.get("resourceMap"));
+				setResult("fieldMap", context.get("fieldMap"));
+				setResult("unitMap",context.get("unitMap"));
+			}
+			setResult(AgentConstants.DATA, data);
 			ok();
 		} catch (Exception e) {
 			LOGGER.error("Exception  occurred while getting points ", e);
@@ -89,7 +104,6 @@ public class GetPointsAction extends AgentActionV2 {
 		}
 		return SUCCESS;
 	}
-
 	private List<Map<String, Object>> getPointsData(PointStatus status) throws Exception {
 		GetPointRequest point = new GetPointRequest();
 		sanityCheck(point);
@@ -190,4 +204,5 @@ public class GetPointsAction extends AgentActionV2 {
 		req.setControllerId(0L);
 		return req.getPointCount(null) > 0;
 	}
+
 }

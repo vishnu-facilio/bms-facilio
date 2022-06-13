@@ -1,12 +1,6 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -59,21 +53,33 @@ public class CommissioningApi {
 	}
 	
 	public static List<CommissioningLogContext> commissioniongList(List<Long> ids, boolean fetchControllers, JSONObject pagination) throws Exception {
+		return commissioniongList(ids,fetchControllers,pagination,null);
+	}
+	public static List<CommissioningLogContext> commissioniongList(List<Long> ids, boolean fetchControllers, JSONObject pagination,String status) throws Exception {
 		FacilioModule module = ModuleFactory.getCommissioningLogModule();
 		List<FacilioField> fields = FieldFactory.getCommissioningLogFields();
 		if (ids == null || ids.size() > 1) {
 			fields.removeIf(field -> field.getName().equals("pointJsonStr") || field.getName().equals("clientMetaStr"));
 		}
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.table(module.getTableName())
+
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
+
+		builder.table(module.getTableName())
 				.select(fields)
 				.orderBy(fieldMap.get("sysCreatedTime").getColumnName() + " desc");
+				if (status != null) {
+					if (status.equals("draft")) {
+						builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("publishedTime"), CommonOperators.IS_EMPTY));
+					} else if (status.equals("published")) {
+						builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("publishedTime"), CommonOperators.IS_NOT_EMPTY));
+					}
+				}
+
 		if (ids != null) {
 			builder.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		}
-		
+
 		if (pagination != null) {
 			int page = (int) pagination.get("page");
 			int perPage = (int) pagination.get("perPage");
@@ -88,7 +94,7 @@ public class CommissioningApi {
 				builder.limit(perPage);
 			}
 		}
-		
+
 		List<Map<String, Object>> props = builder.get();
 		if (CollectionUtils.isNotEmpty(props)) {
 			List<CommissioningLogContext> logs = FieldUtil.getAsBeanListFromMapList(props, CommissioningLogContext.class);
@@ -106,11 +112,11 @@ public class CommissioningApi {
 					logIds.add(log.getId());
 					agentIds.add(log.getAgentId());
 				}
-				
+
 				Map<Long, List<Map<String, Object>>> controllerMap = getCommissionedControllers(logIds);
 				AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
 				Map<Long, FacilioAgent> agentMap = agentBean.getAgentMap(agentIds);
-				
+
 				for(CommissioningLogContext log: logs) {
 					List<Map<String, Object>> controllers = controllerMap.get(log.getId());
 					if (controllers != null) {
@@ -119,10 +125,10 @@ public class CommissioningApi {
 					log.setAgent(agentMap.get(log.getAgentId()));
 				}
 			}
-			
+
 			return logs;
 		}
-		
+
 		return null;
 	}
 	

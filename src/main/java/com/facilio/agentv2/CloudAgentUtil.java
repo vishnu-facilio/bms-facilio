@@ -34,6 +34,7 @@ public class CloudAgentUtil {
 		private static final String FETCH_MESSAGE_SOURCES = "/api/v1/agent/fetchSources";
 		private static final String ADD_MESSAGE_SOURCE = "/api/v1/agent/addSource";
 		private static final String RUN_WORKFLOW = "/api/v1/agent/runWorkflow";
+		private static final String TOGGLE_JOB = "/api/v1/agent/toggleJob";
 	}
 	
 	public static void addCloudServiceAgent(FacilioAgent agent) throws Exception {
@@ -84,6 +85,13 @@ public class CloudAgentUtil {
 			}
 		}
 		return null;
+	}
+
+	public static void toggleJob(List<String>agents,boolean isActiveUpdateValue) throws Exception{
+		Map<String,Object> props = new HashMap<>();
+		props.put("agents",agents);
+		props.put(AgentConstants.IS_ACTIVE_UPDATE_VALUE,isActiveUpdateValue);
+		doPost(Urls.TOGGLE_JOB,AgentConstants.JOB_PROPS,props);
 	}
 	
 	

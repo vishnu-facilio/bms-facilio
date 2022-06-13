@@ -76,16 +76,24 @@ public class CommissionAction extends FacilioAction{
 	public void setId(long id) {
 		this.id = id;
 	}
-	
+	private String status;
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
 	public String logList() throws Exception {
-		FacilioChain chain = ReadOnlyChainFactory.getCommissioningLogsChain();
-		FacilioContext context = chain.getContext();
-		constructListContext(context);
-		
-		chain.execute();
-		setResult("logs", context.get("logs"));
-		
-		return SUCCESS;
+			FacilioChain chain = ReadOnlyChainFactory.getCommissioningLogsChain();
+			FacilioContext context = chain.getContext();
+			context.put("status",status);
+			constructListContext(context);
+
+			chain.execute();
+			setResult("logs", context.get("logs"));
+
+			return SUCCESS;
 	}
 	
 	public String logDetails() throws Exception {

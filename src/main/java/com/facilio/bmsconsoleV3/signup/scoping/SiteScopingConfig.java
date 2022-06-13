@@ -13,6 +13,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SiteScopingConfig extends SignUpData {
@@ -45,6 +46,7 @@ public class SiteScopingConfig extends SignUpData {
             maintenanceScoping.setModuleId(module.getModuleId());
             maintenanceScoping.setCriteria(criteria_maintenance);
             maintenanceScoping.setModuleId(module.getModuleId());
+            ApplicationApi.addScopingConfigForApp(Arrays.asList(maintenanceScoping));
 
             //adding site scope in tenant portal
             long tenantPortalScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
@@ -74,7 +76,6 @@ public class SiteScopingConfig extends SignUpData {
             scopingConfig.add(scoping);
             scopingConfig.add(tenantScoping);
             scopingConfig.add(occupantScoping);
-            scopingConfig.add(maintenanceScoping);
 
             ApplicationApi.addScopingConfigForApp(scopingConfig);
         }

@@ -1,8 +1,13 @@
 package com.facilio.bmsconsoleV3.context;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.facilio.bmsconsole.activity.EmailConversationThreadingActivityType;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.modules.FacilioIntEnum;
+import com.facilio.workflowlog.context.WorkflowLogContext.WorkflowLogType;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -25,6 +30,46 @@ public class EmailConversationThreadingContext extends BaseMailMessageContext {
 	String noteNotifyTo;
 	From_Type fromType;
 	Message_Type messageType;
+	
+	
+	public enum Email_Status_Type implements FacilioIntEnum {
+		ISNEW(1,"emailConversationIsNewRecord"),
+		CUSTOMER_REPLIED(2,"emailConversationCustomerReplied"),
+		AGENT_REPLIED(3,"emailConversationAgentReplied");
+
+		public int typeId;
+		private String status;
+		
+		public int getTypeId() {
+			return typeId;
+		}
+
+		public void setTypeId(int typeId) {
+			this.typeId = typeId;
+		}
+
+		public String getStatus() {
+			return status;
+		}
+
+		public void setStatus(String status) {
+			this.status = status;
+		}
+		
+		Email_Status_Type(int typeId, String status) {
+			this.typeId = typeId;
+			this.status = status;
+		}
+		public static final Map<Integer, Email_Status_Type> statusTypeMap = Collections.unmodifiableMap(initTypeMap());
+		private static Map<Integer, Email_Status_Type> initTypeMap() {
+			Map<Integer, Email_Status_Type> typeMap = new HashMap<>();
+			
+			for(Email_Status_Type type : values()) {
+				typeMap.put(type.getTypeId(), type);
+			}		
+		return typeMap;
+	}
+	}
 	
 	public enum From_Type implements FacilioIntEnum {
 		CLIENT,
@@ -71,6 +116,10 @@ public class EmailConversationThreadingContext extends BaseMailMessageContext {
 	public Message_Type getMessageTypeEnum() {
 		return messageType;
 	}
+	
+	public From_Type getFromTypeEnum() {
+		return fromType;
+	}
 
 	public int getFromType() {
 		if(fromType != null) {
@@ -93,4 +142,6 @@ public class EmailConversationThreadingContext extends BaseMailMessageContext {
 	public void setMessageType(int messageType) {
 		this.messageType = Message_Type.valueOf(messageType);
 	}
+
+
 }

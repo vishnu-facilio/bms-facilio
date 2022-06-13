@@ -4,13 +4,15 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.InsertImportDataIntoLogCommand;
 import com.facilio.bmsconsole.imports.annotations.ImportModule;
 import com.facilio.bmsconsole.imports.annotations.RowFunction;
-import com.facilio.bmsconsole.imports.command.FilterImportDataCommand;
-import com.facilio.bmsconsole.imports.command.ImportUploadFileCommand;
-import com.facilio.bmsconsole.imports.command.ParseImportFileCommand;
-import com.facilio.bmsconsole.imports.command.V3ProcessImportCommand;
+import com.facilio.bmsconsole.imports.command.*;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.command.FacilioCommand;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.ChainUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -181,6 +183,12 @@ public class ImportChainUtil {
         context.put(ImportAPI.ImportProcessConstants.BEFORE_IMPORT_FUNCTION, beforeImportFunction);
         context.put(ImportAPI.ImportProcessConstants.AFTER_IMPORT_FUNCTION, afterImportFunction);
 
+        return chain;
+    }
+
+    public static FacilioChain getImportChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new ImportProcessCommand());
         return chain;
     }
 

@@ -1,5 +1,6 @@
 package com.facilio.qa.command;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.chain.FacilioChain;
 
 public class QAndAReadOnlyChainFactory {
@@ -19,6 +20,10 @@ public class QAndAReadOnlyChainFactory {
         c.addCommand(new FetchQuestionsFromPagesCommand());
         c.addCommand(new FetchAnswersForQuestionsCommand());
         c.addCommand(new FetchAnswerSummaryForQuestionsCommand());
+        if(AccountUtil.getCurrentOrg().getOrgId() == 173l || AccountUtil.getCurrentOrg().getOrgId() == 267l || AccountUtil.getCurrentOrg().getOrgId() == 1l) {
+        	c.addCommand(new PrepareDataForDisplayLogicExecutionCommand());				// always keep these 2 commands at the end.
+            c.addCommand(QAndATransactionChainFactory.executeDisplayLogicChain());
+        }
         return c;
     }
 
@@ -82,6 +87,7 @@ public class QAndAReadOnlyChainFactory {
     public static FacilioChain afterAnswerFetchChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchAnswerAttachmentsCommand());
+        c.addCommand(new FetchRelatedRecordsFormMatrixQuestionCommand());
         c.addCommand(new SerializeAnswersCommand());
         return c;
     }

@@ -1,20 +1,15 @@
 package com.facilio.qa.command;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
 
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FieldUtil;
 import com.facilio.qa.QAndAUtil;
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.AnswerHandler;
@@ -39,41 +34,28 @@ public class PrepareAnswersForDisplayLogicExecution extends FacilioCommand {
 		Long templateId = Objects.requireNonNull(response, "Response cannot be null for on submit process").getParent().getId();
 		
 		Map<Long, QuestionContext> questionMap = QAndAUtil.getQuestionsFromTemplate(templateId).stream().collect(Collectors.toMap(QuestionContext::getId, Function.identity()));
-		List<AnswerContext> otherAnswers = QAndAUtil.getAnswersFromTemplateAndResponse(templateId, response.getId());
+		Map<Long, AnswerContext> otherAnswers = QAndAUtil.getAnswersFromTemplateAndResponse(templateId, response.getId()).stream().collect(Collectors.toMap(AnswerContext::getQuestionId, Function.identity()));
 		
 		Map<String,Object> mainRecordMap = new HashMap<String, Object>();
 		
-		for(AnswerContext otherAnswer : otherAnswers) {
+		for(Long questionId : questionMap.keySet()) {
 			
-			AnswerHandler handler = questionMap.get(otherAnswer.getQuestion().getId()).getQuestionType().getAnswerHandler();
+			AnswerContext otherAnswer = otherAnswers.get(questionId);
 			
-			ClientAnswerContext clientAnswer = handler.serialize(otherAnswer);
+			Object answer = null;
 			
-			mainRecordMap.put(otherAnswer.getQuestion().getId()+"", clientAnswer.getActualAnswerObject());
+			if(otherAnswer != null) {
+				AnswerHandler handler = questionMap.get(otherAnswer.getQuestion().getId()).getQuestionType().getAnswerHandler();
+				
+				ClientAnswerContext clientAnswer = handler.serialize(otherAnswer);
+				
+				answer = clientAnswer.getActualAnswerObject();
+			}
+			
+			mainRecordMap.put(String.valueOf(questionId),answer);
 		}
 		
-		
-		JSONObject answerData = (JSONObject) context.get(FacilioConstants.QAndA.Command.ANSWER_DATA);
-		
-        List<Map<String, Object>> answers = answerData == null ? null : (List<Map<String, Object>>) answerData.get("answers");
-        
-        V3Util.throwRestException(CollectionUtils.isEmpty(answers), ErrorCode.VALIDATION_ERROR, "Answers cannot be empty for display logic execution");
-
-        List<Long> triggerQuestionIds = new ArrayList<Long>();
-        for (Map<String, Object> prop : answers) {
-            
-        	Long questionId = (Long) prop.get("question");
-        	
-        	triggerQuestionIds.add(questionId);
-            QuestionContext question = questionMap.get(questionId);
-            AnswerHandler handler = question.getQuestionType().getAnswerHandler();
-            ClientAnswerContext answer = FieldUtil.<ClientAnswerContext>getAsBeanFromMap(prop, handler.getAnswerClass());
-            
-            mainRecordMap.put(questionId+"", answer.getActualAnswerObject());
-        }
-        
         context.put(DisplayLogicUtil.ANSWER_MAP, mainRecordMap);
-        context.put(DisplayLogicUtil.TRIGGER_QUESTION_IDS, triggerQuestionIds);
         
 		return false;
 	}

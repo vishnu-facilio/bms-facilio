@@ -101,6 +101,7 @@ public class AccountUtil {
 	public static void setCurrentSiteId(long siteId) throws Exception {
 		getCurrentAccount().setCurrentSiteId(siteId);
 		setScopingMap(getCurrentAccount());
+		setSwitchScopingFieldValue("siteId", siteId);
 	}
 	
 	public static Account getCurrentAccount() {

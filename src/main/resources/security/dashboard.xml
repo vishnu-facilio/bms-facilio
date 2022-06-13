@@ -8,4 +8,313 @@
             </property>
         </requestbody>
     </request>
+    <request path="/api/v2/dashboard/cards/getCardData">
+        <requestbody type="object">
+            <property name="cardId" type="number"/>
+            <property name="cardFilters" type="string"/>
+            <property name="cardContext" type="object">
+                <property name="cardLayout" type="string"/>
+                <property name="customScriptId" type="number"/>
+                <property name="scriptModeInt" type="number"/>
+            <property name="cardParams" type="object">
+                <property name="floorId" type="number"/>
+                <property name="connectedAppWidgetId" type="number"/>
+                <property name="pmId" type="number"/>
+                <property name="siteId" type="number"/>
+                <property name="imageId" type="number"/>
+                <property name="assetCategoryId" type="number"/>
+                <property name="buildingId" type="number"/>
+                <property name="limit" type="number"/>
+                <property name="floorPlanId" type="number"/>
+                <property name="baseSpaceId" type="number"/>
+                <property name="imageSpaceId" type="number"/>
+                <property name="multiplier" type="number"/>
+                <property name="baseline" type="string"/>
+                <property name="title" type="string"/>
+                <property name="type" type="string"/>
+                <property name="url" type="string"/>
+                <property name="viewMode" type="string"/>
+                <property name="dateRange" type="string"/>
+                <property name="moduleName" type="string"/>
+                <property name="kpiType" type="string"/>
+                <property name="subText" type="string"/>
+                <property name="subText" type="string"/>
+                <property name="attachmentModule" type="string"/>
+                <property name="displayMode" type="boolean"/>
+                <property name="controllable" type="boolean"/>
+                <property name="excludeEmptyReadings" type="boolean"/>
+                <property name="page" type="number"/>
+                <property name="perPage" type="number"/>
+                <property name="maxSafeLimitConstant" type="string"/>
+                <property name="maxSafeLimitType" type="string"/>
+                <property name="minSafeLimitConstant" type="string"/>
+                <property name="minSafeLimitType" type="string"/>
+                <property name="maxSafeLimitReading" type="object">
+                    <property name="dataType" type="number"/>
+                    <property name="fieldId" type="number"/>
+                    <property name="parentId" type="number"/>
+                    <property name="fieldName" type="string"/>
+                    <property name="moduleName" type="string"/>
+                    <property name="parentName" type="string"/>
+                    <property name="parentType" type="string"/>
+                    <property name="yAggr" type="string"/>
+                </property>
+                <property name="minSafeLimitReading" type="object">
+                    <property name="dataType" type="number"/>
+                    <property name="fieldId" type="number"/>
+                    <property name="parentId" type="number"/>
+                    <property name="fieldName" type="string"/>
+                    <property name="moduleName" type="string"/>
+                    <property name="parentName" type="string"/>
+                    <property name="parentType" type="string"/>
+                    <property name="yAggr" type="string"/>
+                </property>
+                <property name="kpi" type="object">
+                    <property name="kpiId" type="number"/>
+                    <property name="id" type="number"/>
+                </property>
+                <property name="viewParams" type="object">
+                    <property name="assetCategoryId" type="number"/>
+                    <property name="readingFieldName" type="string"/>
+                    <property name="readingModule" type="string"/>
+                </property>
+                <property name="reading" type="object">
+                    <property name="yAggr" type="string"/>
+                </property>
+                <property name="trend" type="object">
+                    <property name="yAggr" type="number"/>
+                    <property name="xAggr" type="number"/>
+                </property>
+                <property name="criteria" type="object">
+                    <property name="pattern" type="string"/>
+                    <property name="resourceOperator" type="boolean"/>
+                    <property name="conditions" type="object">
+                        <property name="1" type="object">
+                            <property name="operatorsDataType" type="object">
+                                <property name="dataType" type="string"/>
+                                <property name="displayType" type="string"/>
+                            </property>
+                            <property name="fieldName" type="string"/>
+                            <property name="operatorLabel" type="string"/>
+                            <property name="value" type="string"/>
+                            <property name="parseLabel" type="string"/>
+                            <property name="active" type="boolean"/>
+                            <property name="isSpacePicker" type="boolean"/>
+                            <property name="isResourceOperator" type="boolean"/>
+                            <property name="operatorId" type="number"/>
+                            <property name="columnName" type="string"/>
+                        </property>
+                    </property>
+                </property>
+                <property name="filterCriteria" type="object">
+                    <property name="pattern" type="string"/>
+                    <property name="resourceOperator" type="boolean"/>
+                    <property name="conditions" type="object">
+                        <property name="1" type="object">
+                            <property name="operatorsDataType" type="object">
+                                <property name="dataType" type="string"/>
+                                <property name="displayType" type="string"/>
+                            </property>
+                            <property name="fieldName" type="string"/>
+                            <property name="operatorLabel" type="string"/>
+                            <property name="value" type="string"/>
+                            <property name="parseLabel" type="string"/>
+                            <property name="active" type="boolean"/>
+                            <property name="isSpacePicker" type="boolean"/>
+                            <property name="isResourceOperator" type="boolean"/>
+                            <property name="operatorId" type="number"/>
+                            <property name="columnName" type="string"/>
+                            <property name="valueArray" type="array">
+                                <items type="string"/>
+                            </property>
+                        </property>
+                    </property>
+                </property>
+                <property name="sorting" type="object">
+                    <property name="fieldName" type="string"/>
+                    <property name="order" type="string"/>
+                </property>
+                <property name="columns" type="array">
+                    <items type="object">
+                        <property name="fieldName" type="string"/>
+                        <property name="label" type="string"/>
+                        <property name="moduleName" type="string"/>
+                        <property name="type" type="string"/>
+                        <property name="width" type="string"/>
+                        <property name="operatorId" type="number"/>
+                    </items>
+                </property>
+                <property name="readings" type="array">
+                    <items type="object">
+                        <property name="icon" type="string"/>
+                        <property name="label" type="string"/>
+                        <property name="reading" type="object">
+                            <property name="parentName" type="string"/>
+                            <property name="yAggr" type="string"/>
+                            <property name="fieldName" type="string"/>
+                            <property name="moduleName" type="string"/>
+                            <property name="parentType" type="string"/>
+                            <property name="parentId" type="number"/>
+                        </property>
+                    </items>
+                </property>
+            </property>
+
+                <property name="cardDrilldown" type="object">
+                    <property name="default" type="object">
+                        <property name="actionType" type="string"/>
+                        <property name="actionName" type="string"/>
+                        <property name="data" type="object">
+                            <property name="target" type="string"/>
+                            <property name="view" type="string"/>
+                        </property>
+                    </property>
+                    <property name="set-reading-button" type="object">
+                        <property name="actionType" type="string"/>
+                        <property name="actionName" type="string"/>
+                        <property name="data" type="object">
+                            <property name="target" type="string"/>
+                            <property name="view" type="string"/>
+                            <property name="buttonLabel" type="string"/>
+                            <property name="controlType" type="string"/>
+                            <property name="controlGroupId" type="number"/>
+                            <property name="controlPointId" type="number"/>
+                        </property>
+                    </property>
+                </property>
+
+                <property name="cardState" type="object">
+                    <property name="heatmap" type="object">
+                        <property name="colorIndex" type="number"/>
+                        <property name="opacity" type="number"/>
+                        <property name="radius" type="number"/>
+                        <property name="gradient" type="array">
+                            <items type="string"/>
+                        </property>
+                    </property>
+                    <property name="layers" type="array">
+                        <items type="string"/>
+                    </property>
+                    <property name="marker" type="object">
+                        <property name="styles" type="object">
+                        <property name="color" type="string"/>
+                        </property>
+                    </property>
+                    <property name="styles" type="object">
+                        <property name="theme" type="string"/>
+                        <property name="headerColor" type="string"/>
+                        <property name="hideHeader" type="boolean"/>
+                        <property name="showSecondaryText" type="boolean"/>
+                        <property name="backgroundColor" type="string"/>
+                        <property name="primaryColor" type="string"/>
+                        <property name="secondaryColor" type="string"/>
+                        <property name="secondaryTextColor" type="string"/>
+                        <property name="arrowDownColor" type="string"/>
+                        <property name="arrowUpColor" type="string"/>
+                        <property name="decimalPlace" type="string"/>
+                        <property name="group_row_fieldName" type="string"/>
+                        <property name="showCriteria" type="boolean"/>
+                        <property name="columnAction" type="number"/>
+                        <property name="unitConfig" type="object">
+                            <property name="unit" type="string"/>
+                            <property name="position" type="number"/>
+                        </property>
+                    </property>
+                    <property name="modulekpi" type="object">
+                        <property name="moduleName" type="string"/>
+                        <property name="kpiId" type="number"/>
+                    </property>
+                    <property name="expression" type="object">
+                        <property name="aggr" type="number"/>
+                        <property name="dateFieldId" type="number"/>
+                        <property name="dateOperator" type="number"/>
+                        <property name="metricId" type="number"/>
+                        <property name="siteId" type="number"/>
+                        <property name="dateValue" type="string"/>
+                        <property name="moduleName" type="string"/>
+                        <property name="name" type="string"/>
+                        <property name="criteria" type="object">
+                            <property name="pattern" type="string"/>
+                            <property name="resourceOperator" type="boolean"/>
+                            <property name="conditions" type="object">
+                                <property name="1" type="object">
+                                    <property name="operatorsDataType" type="object">
+                                        <property name="dataType" type="string"/>
+                                        <property name="displayType" type="string"/>
+                                    </property>
+                                    <property name="fieldName" type="string"/>
+                                    <property name="operatorLabel" type="string"/>
+                                    <property name="value" type="string"/>
+                                    <property name="active" type="boolean"/>
+                                    <property name="isSpacePicker" type="boolean"/>
+                                    <property name="operatorId" type="number"/>
+                                    <property name="columnName" type="string"/>
+                                </property>
+                            </property>
+                        </property>
+                    </property>
+                    <property name="configuration" type="object">
+                        <property name="arrow" type="string"/>
+                        <property name="backgroundColor" type="string"/>
+                        <property name="mode" type="string"/>
+                        <property name="overflow" type="string"/>
+                        <property name="trigger" type="string"/>
+                        <property name="type" type="string"/>
+                        <property name="autoplay" type="boolean"/>
+                        <property name="hideHeader" type="boolean"/>
+                        <property name="loop" type="boolean"/>
+                        <property name="showDetails" type="boolean"/>
+                        <property name="cols" type="number"/>
+                        <property name="interval" type="number"/>
+                        <property name="rows" type="number"/>
+                    </property>
+                    <property name="canResize" type="boolean"/>
+                </property>
+
+                <property name="conditionalFormatting" type="object">
+                    <property name="conditionalFormatting" type="array">
+                        <items type="object">
+                        <property name="criteria" type="object">
+                            <property name="pattern" type="string"/>
+                            <property name="resourceOperator" type="boolean"/>
+                            <property name="conditions" type="object">
+                                <property name="1" type="object">
+                                    <property name="operatorsDataType" type="object">
+                                        <property name="dataType" type="string"/>
+                                        <property name="displayType" type="string"/>
+                                    </property>
+                                    <property name="fieldName" type="string"/>
+                                    <property name="operatorLabel" type="string"/>
+                                    <property name="value" type="string"/>
+                                    <property name="active" type="boolean"/>
+                                    <property name="isSpacePicker" type="boolean"/>
+                                    <property name="isResourceOperator" type="boolean"/>
+                                    <property name="operatorId" type="number"/>
+                                    <property name="columnName" type="string"/>
+                                    <property name="value" type="string"/>
+                                    <property name="parseLabel" type="string"/>
+                                    <property name="valueArray" type="array">
+                                        <items type="string"/>
+                                    </property>
+
+                                </property>
+
+                            </property>
+                        </property>
+                            <property name="styles" type="object">
+                                <property name="backgroundColor" type="string"/>
+                                <property name="primaryColor" type="string"/>
+                                <property name="secondaryColor" type="string"/>
+                                <property name="arrowDownColor" type="string"/>
+                                <property name="arrowUpColor" type="string"/>
+                                <property name="displayValue" type="string"/>
+                                <property name="blink" type="boolean"/>
+                            </property>
+                        </items>
+                    </property>
+                </property>
+
+            </property>
+        </requestbody>
+    </request>
 </config>

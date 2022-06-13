@@ -292,7 +292,7 @@ public class APIv3Config {
                 .afterSave(TransactionChainFactoryV3.getAddEmailConversationThreadingAfterSaveChain())
                 .afterTransaction(new AddActivitiesCommandV3())
                 .update()
-                .afterSave(new ExecuteWorkflowInRelatedModuleFroEmailConversationThreadingCommand())
+                .afterSave(new ExecuteWorkflowInRelatedModuleForEmailConversationThreadingCommand())
                 .list()
                 .beforeFetch(TransactionChainFactoryV3.getEmailConversationThreadingBeforeListChain())
                 .afterFetch(TransactionChainFactoryV3.getEmailConversationThreadingAfterListChain())
@@ -462,7 +462,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getServiceRequest() {
         return () -> new V3Config(V3ServiceRequestContext.class, new ModuleCustomFieldCount50())
                 .create()
-                .beforeSave(new AddRequesterForServiceRequestCommandV3())
+                .beforeSave(TransactionChainFactoryV3.getServiceRequestBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getServiceRequestAfterSaveChain())
                 .update()
                 .beforeSave(TransactionChainFactoryV3.getServiceRequestBeforeUpdateChain())

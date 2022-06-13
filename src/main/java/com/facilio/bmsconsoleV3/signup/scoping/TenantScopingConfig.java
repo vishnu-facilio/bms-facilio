@@ -26,18 +26,32 @@ public class TenantScopingConfig extends SignUpData {
             long applicationScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
             ScopingConfigContext scoping = new ScopingConfigContext();
             Criteria criteria = new Criteria();
-            criteria.addAndCondition(CriteriaAPI.getCondition("siteId", "com.facilio.modules.SiteValueGenerator", ScopeOperator.SCOPING_IS));
+            Condition condition = CriteriaAPI.getCondition("siteId", "com.facilio.modules.SiteValueGenerator", ScopeOperator.SCOPING_IS);
+            condition.setModuleName(module.getName());
+            criteria.addAndCondition(condition);
             scoping.setScopingId(applicationScopingId);
             scoping.setModuleId(module.getModuleId());
             scoping.setCriteria(criteria);
+
+            //adding site scope in maintenance application
+            long maintenanceScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+            ScopingConfigContext maintenanceScoping = new ScopingConfigContext();
+            Criteria criteria_maintenance = new Criteria();
+            Condition maintenance_condition = CriteriaAPI.getCondition("siteId", "com.facilio.modules.SiteValueGenerator", ScopeOperator.SCOPING_IS);
+            maintenance_condition.setModuleName(module.getName());
+            criteria_maintenance.addAndCondition(maintenance_condition);
+            maintenanceScoping.setScopingId(maintenanceScopingId);
+            maintenanceScoping.setModuleId(module.getModuleId());
+            maintenanceScoping.setCriteria(criteria_maintenance);
+            maintenanceScoping.setModuleId(module.getModuleId());
 
             //adding tenant scope in tenant portal
             long tenantPortalScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
             ScopingConfigContext tenantScoping = new ScopingConfigContext();
             Criteria criteria_tenant = new Criteria();
-            Condition condition = CriteriaAPI.getCondition("siteId", "com.facilio.modules.SiteValueGenerator", ScopeOperator.SCOPING_IS);
-            condition.setModuleName(module.getName());
-            criteria.addAndCondition(condition);
+            Condition condition_tenant = CriteriaAPI.getCondition("siteId", "com.facilio.modules.SiteValueGenerator", ScopeOperator.SCOPING_IS);
+            condition_tenant.setModuleName(module.getName());
+            criteria_tenant.addAndCondition(condition_tenant);
             tenantScoping.setScopingId(tenantPortalScopingId);
             tenantScoping.setModuleId(module.getModuleId());
             tenantScoping.setCriteria(criteria_tenant);
@@ -45,6 +59,7 @@ public class TenantScopingConfig extends SignUpData {
             List<ScopingConfigContext> scopingConfig = new ArrayList<>();
             scopingConfig.add(scoping);
             scopingConfig.add(tenantScoping);
+            scopingConfig.add(maintenanceScoping);
 
             ApplicationApi.addScopingConfigForApp(scopingConfig);
         }

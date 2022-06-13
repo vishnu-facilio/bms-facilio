@@ -84,6 +84,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddEmployeeTypePeopleForUserAdditionCommand());
 			c.addCommand(new AddDefaultBundleCommand());
 			c.addCommand(new AddDefaultWoTimelineCommand());
+			c.addCommand(new AddMaintenanceAppConfigCommand());
 			return c;
 		}
 
@@ -6374,7 +6375,6 @@ public class TransactionChainFactory {
 		chain.addCommand(new AddSurveyRuleActionCommand());
 		return chain;
 	}
-
 	public static FacilioChain deleteSurveyRuleChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new DeleteSurveyRulesCommand());
@@ -6399,6 +6399,13 @@ public class TransactionChainFactory {
 	public static FacilioChain getRunWorkflowChain(){
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new RunWorkflowCommand());
+		return chain;
+	}
+
+	public static FacilioChain updateJobActiveStatusChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new UpdateJobActiveStatusCommand());
+		chain.addCommand(new UpdateAgentConnectedStatusCommand());
 		return chain;
 	}
 
