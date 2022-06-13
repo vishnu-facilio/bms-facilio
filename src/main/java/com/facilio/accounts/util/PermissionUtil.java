@@ -100,7 +100,9 @@ public class PermissionUtil {
 				if (moduleName.equals("planned")) {
 					condition.setColumnName("Workorder_Template.RESOURCE_ID");
 				}
-				else {
+				else if (moduleName.equals("workorder")) {
+					condition.setColumnName("Tickets.RESOURCE_ID");
+				} else {
 					condition.setColumnName("RESOURCE_ID");
 				}
 				condition.setFieldName("resourceId");
