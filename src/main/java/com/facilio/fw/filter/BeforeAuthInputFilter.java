@@ -80,7 +80,7 @@ public class BeforeAuthInputFilter implements Filter {
         SecurityRequestWrapper securityRequestWrapper = new SecurityRequestWrapper((HttpServletRequest) servletRequest);
         RequestContext requestContext = new RequestContext(securityRequestWrapper, matcher.getMatchMap());
         String matchedPattern = matcher.getMatchedPattern();
-        RequestConfig requestConfig = config.getRequestConfig(matchedPattern);
+        RequestConfig requestConfig = config.getRequestConfig(requestContext.getMethod(), matchedPattern);
         Executor executor = new Executor(requestConfig, requestContext);
         try {
             NodeError nodeError = executor.validatePreAuth();
