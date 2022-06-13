@@ -95,14 +95,14 @@ public class V3InsuranceContext extends V3Context {
         this.insuranceUrl = insuranceUrl;
     }
 
-    private File insurance;
-    public File getInsurance() {
-        return insurance;
-    }
-
-    public void setInsurance(File insurance) {
-        this.insurance = insurance;
-    }
+//    private File insurance;
+//    public File getInsurance() {
+//        return insurance;
+//    }
+//
+//    public void setInsurance(File insurance) {
+//        this.insurance = insurance;
+//    }
 
     private String insuranceFileName;
     public String getInsuranceFileName() {

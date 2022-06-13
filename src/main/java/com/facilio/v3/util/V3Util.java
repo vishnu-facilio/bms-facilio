@@ -244,7 +244,7 @@ public class V3Util {
         Set<String> keys = patchObj.keySet();
         for (String key: keys) {
             FacilioField fileField = fileFields.get(key);
-            if (fileField != null && !fileField.isDefault() && patchObj.get(key) == null) {
+            if (fileField != null && patchObj.get(key) == null) {
                 summaryRecord.put(fileField.getName(), patchObj.get(key));
             }
             summaryRecord.put(key, patchObj.get(key));
