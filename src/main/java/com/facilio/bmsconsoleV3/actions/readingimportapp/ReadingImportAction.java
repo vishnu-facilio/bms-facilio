@@ -48,6 +48,9 @@ public class ReadingImportAction{
         context.put("READING_IMPORT_CONTEXT", getReadingImportData());
         chain.execute();
 
+        setData("readingImportData", context.get("READING_IMPORT_CONTEXT"));
+
+
         return V3Action.SUCCESS;
     }
 
