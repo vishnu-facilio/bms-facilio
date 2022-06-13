@@ -2813,6 +2813,8 @@ public class V2ReportAction extends FacilioAction {
 
     public String exportPivotReport() throws Exception {
         FacilioChain c = ReadOnlyChainFactory.fetchPivotReportChain();
+        c.addCommand(new ExportPivotReport());
+
         FacilioContext context = c.getContext();
 
         ReportContext reportContext = ReportUtil.getReport(reportId);

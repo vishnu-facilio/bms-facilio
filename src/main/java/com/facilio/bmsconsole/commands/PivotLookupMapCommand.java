@@ -48,6 +48,7 @@ public class PivotLookupMapCommand extends FacilioCommand {
                 pivotLookupMap.put(row.getAlias(), lookupMap);
             }else if(lookupField != null && facilioField != null){
                 String valueString = getColumnValues(row.getAlias(), pivotTableData);
+                if(valueString.equals("")) continue;
                 pivotLookupMap.put(row.getAlias(), getLookUpMap(lookupField.getLookupModule(), facilioField, valueString));
             }
         }
