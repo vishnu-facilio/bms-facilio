@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 import com.facilio.db.criteria.Condition;
 import com.facilio.delegate.context.DelegationType;
 import com.facilio.delegate.util.DelegationUtil;
+import com.facilio.modules.*;
+import com.facilio.modules.fields.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -78,19 +80,6 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioStatus;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateChangeSet;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.MultiEnumField;
-import com.facilio.modules.fields.MultiLookupField;
-import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.queue.FacilioQueueException;
 import com.facilio.services.email.EmailClient;
 import com.facilio.services.factory.FacilioFactory;
@@ -1072,6 +1061,10 @@ public class CommonCommandUtil {
                         }
                     }
                     break;
+					case URL_FIELD:{
+						supplements.add((SupplementRecord) field);
+					}
+					break;
                     case MULTI_LOOKUP:
                         if (!(data.get(field.getName()) instanceof List)) {
                             String val = data.get(field.getName()).toString();
