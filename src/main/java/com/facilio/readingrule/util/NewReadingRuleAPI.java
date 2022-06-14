@@ -251,26 +251,11 @@ public class NewReadingRuleAPI {
     }
 
     private static void deleteFieldsIfAlreadyExists(Long nsId) throws Exception {
-
-        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-                .select(NamespaceModuleAndFieldFactory.getNamespaceFieldFields())
-                .table(NamespaceModuleAndFieldFactory.getNamespaceFieldsModule().getTableName())
-                .andCondition(CriteriaAPI.getCondition("NAMESPACE_ID", "nsId", String.valueOf(nsId), NumberOperators.EQUALS));
-        List<Map<String, Object>> resList = selectBuilder.get();
-
-        List<Long> nsFlds = new ArrayList<>();
-        if (resList != null) {
-            for (Map<String, Object> m : resList) {
-                nsFlds.add((Long) m.get("id"));
-            }
-        }
-
-        if (CollectionUtils.isNotEmpty(nsFlds)) {
-            GenericDeleteRecordBuilder delBuilder = new GenericDeleteRecordBuilder()
+        GenericDeleteRecordBuilder delBuilder = new GenericDeleteRecordBuilder()
                     .table(NamespaceModuleAndFieldFactory.getNamespaceFieldsModule().getTableName())
-                    .andCondition(CriteriaAPI.getIdCondition(nsFlds, NamespaceModuleAndFieldFactory.getNamespaceFieldsModule()));
+                    .andCondition(CriteriaAPI.getCondition("NAMESPACE_ID", "nsId", String.valueOf(nsId), NumberOperators.EQUALS));
             delBuilder.delete();
-        }
+
     }
 
     private static void prepareNSField(NameSpaceField fld, long nsId, long resourceId, boolean isPrimary) throws Exception {
