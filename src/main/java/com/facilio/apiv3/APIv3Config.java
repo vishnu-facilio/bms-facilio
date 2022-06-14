@@ -18,6 +18,7 @@ import com.facilio.bmsconsoleV3.commands.building.CreateBuildingAfterSave;
 import com.facilio.bmsconsoleV3.commands.building.SetBuildingRelatedContextCommand;
 import com.facilio.bmsconsoleV3.commands.client.*;
 import com.facilio.bmsconsoleV3.commands.client.DisassociateClientFromSiteCommand;
+import com.facilio.bmsconsoleV3.commands.clientcontact.DeleteClientContactPeopleUsersCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.LoadClientContactLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.FillAudienceSharingInfoCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.LoadAudienceLookupCommandV3;
@@ -1029,10 +1030,13 @@ public class APIv3Config {
                 .afterSave(TransactionChainFactoryV3.getClientContactAfterSaveChain())
                 .list()
                 .beforeFetch(new LoadClientContactLookupCommandV3())
-                .afterFetch(new FetchRolesForPeopleCommandV3())
+                .afterFetch(ReadOnlyChainFactoryV3.getPeopleRoleAndScopingCommand())
                 .summary()
                 .beforeFetch(new LoadClientContactLookupCommandV3())
-                .afterFetch(new FetchRolesForPeopleCommandV3())
+                .afterFetch(ReadOnlyChainFactoryV3.getPeopleRoleAndScopingCommand())
+                .delete()
+                .beforeDelete(new ValidateContactsBeforeDeleteCommandV3())
+                .afterDelete(new MarkRandomContactAsPrimaryCommandV3(), new DeleteClientContactPeopleUsersCommandV3())
                 .build();
     }
 

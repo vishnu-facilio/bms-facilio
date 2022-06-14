@@ -535,6 +535,7 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getClientContactBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new CheckforPeopleDuplicationCommandV3());
         c.addCommand(new CheckForMandatoryClientIdCommandV3());
         return c;
@@ -544,6 +545,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdatePeoplePrimaryContactCommandV3());
         c.addCommand(new UpdateClientAppPortalAccessCommandV3());
+        c.addCommand(new UpdateScopingForPeopleCommandV3());
         return c;
     }
 

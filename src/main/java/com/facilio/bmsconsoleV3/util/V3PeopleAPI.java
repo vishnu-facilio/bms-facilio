@@ -282,6 +282,13 @@ public class V3PeopleAPI {
             FacilioField primaryContactField = fieldMap.get("isPrimaryContact");
             updatedfields.add(primaryContactField);
         }
+        else if(person instanceof V3ClientContactContext) {
+            module = modBean.getModule(FacilioConstants.ContextNames.CLIENT_CONTACT);
+            fields.addAll(modBean.getAllFields(FacilioConstants.ContextNames.CLIENT_CONTACT));
+            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+            FacilioField primaryContactField = fieldMap.get("isPrimaryContact");
+            updatedfields.add(primaryContactField);
+        }
         GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
                 .table(module.getTableName())
                 .fields(updatedfields)
@@ -292,6 +299,20 @@ public class V3PeopleAPI {
         int count = updateBuilder.update(value);
         return count;
 
+    }
+
+    public static void deletePeopleUsers(long peopleId) throws Exception {
+        List<FacilioField> fields = AccountConstants.getAppOrgUserFields();
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(fields)
+                .table("ORG_Users")
+                ;
+        selectBuilder.andCondition(CriteriaAPI.getCondition("PEOPLE_ID", "peopleId", String.valueOf(peopleId), NumberOperators.EQUALS));
+
+        List<Map<String, Object>> list = selectBuilder.get();
+        if(CollectionUtils.isNotEmpty(list)) {
+            AccountUtil.getUserBean().deleteUser((long)list.get(0).get("ouid"), false);
+        }
     }
 
     public static int unMarkPrimaryContact(V3PeopleContext person, long parentId) throws Exception{
