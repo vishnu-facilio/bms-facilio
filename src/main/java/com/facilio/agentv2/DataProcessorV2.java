@@ -37,22 +37,19 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.trigger.context.TriggerType;
 import com.facilio.util.AckUtil;
-import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflows.util.WorkflowUtil;
-import com.facilio.workflowv2.util.WorkflowV2Util;
+import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
+import io.opentelemetry.api.metrics.*;
 import io.opentelemetry.api.trace.Span;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import java.util.*;
 
-public class DataProcessorV2
-{
+public class DataProcessorV2 {
 
     private long orgId;
     private String orgDomainName;
@@ -61,6 +58,12 @@ public class DataProcessorV2
     private Map<Long, ControllerUtilV2> agentIdControllerUtilMap = new HashMap<>();
     private Map<Long, Long> controllerIdVsLastTimeSeriesTimeStamp = new HashMap<>();
 
+    private static final Meter OTEL_METER = GlobalOpenTelemetry.getMeter(DataProcessorV2.class.getSimpleName());
+
+    private static final LongHistogram MESSAGE_COUNT_HISTOGRAM = OTEL_METER
+            .histogramBuilder("AgentIncomingMessageMetrics")
+            .setDescription("Reports the incoming message count")
+            .setUnit("count").ofLongs().build();
 
 
     private static final Logger LOGGER = LogManager.getLogger(DataProcessorV2.class.getName());
@@ -75,7 +78,6 @@ public class DataProcessorV2
     public boolean processRecord(JSONObject payload, String partitionKey, EventUtil eventUtil, FacilioAgent agent) {
         boolean processStatus = false;
         try {
-
 
             Long timeStamp = System.currentTimeMillis();
             if(payload.containsKey(AgentConstants.TIMESTAMP)){
@@ -99,19 +101,19 @@ public class DataProcessorV2
                 return false;
             }
             PublishType publishType = PublishType.valueOf(JsonUtil.getInt((payload.get(AgentConstants.PUBLISH_TYPE)))); // change it to Type
-            if(publishType == null){
-                throw new Exception(" publish type cant be null "+JsonUtil.getInt((payload.get(AgentConstants.PUBLISH_TYPE))));
+            if (publishType == null) {
+                throw new Exception(" publish type cant be null " + JsonUtil.getInt((payload.get(AgentConstants.PUBLISH_TYPE))));
             }
-            markMetrices(agent,payload);
 
-            if ((1628237705265L < timeStamp && timeStamp < 1628259305049L) && orgId == 393) {
-                return true;
-            }
+
+            MESSAGE_COUNT_HISTOGRAM.record(1, Attributes.of(AttributeKey.stringKey("agent"), agent.getName()));
+
+            markMetrices(agent, payload);
             switch (publishType) {
-            	case CUSTOM:
+                case CUSTOM:
                     JSONObject customPayload = (JSONObject) payload.clone();
-                    processStatus = processCustom(agent,customPayload);
-            		break;
+                    processStatus = processCustom(agent, customPayload);
+                    break;
                 case AGENT:
                     processStatus = processAgent(payload, agent);
                     break;

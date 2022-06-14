@@ -110,7 +110,6 @@ public class DataProcessorUtil {
     }
 
     private DataProcessorV2 dataProcessorV2;
-    private List<EventRuleContext> eventRules = new ArrayList<>();
 
     public DataProcessorUtil(long orgId, String orgDomainName, MessageSource source) {
         LOGGER.info(" initializing dataprocessorutil ");
@@ -169,11 +168,6 @@ public class DataProcessorUtil {
                 LOGGER.info(" Empty or null message received " + recordId);
                 updateAgentMessage(recordId, partitionId, MessageStatus.DATA_EMPTY);
                 return false;
-            }
-            ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-            List<EventRuleContext> ruleList = bean.getActiveEventRules();
-            if (ruleList != null) {
-                eventRules = ruleList;
             }
             com.facilio.agentv2.FacilioAgent agentV2;
             int processorVersion = 0;
@@ -371,7 +365,9 @@ public class DataProcessorUtil {
                     processLog(payLoad, agent.getId());
                     break;
                 case event:
-                    boolean alarmCreated = eventUtil.processEvents(record.getTimeStamp(), payLoad, record.getPartitionKey(), orgId, eventRules);
+                    ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+                    List<EventRuleContext> ruleList = bean.getActiveEventRules();
+                    boolean alarmCreated = eventUtil.processEvents(record.getTimeStamp(), payLoad, record.getPartitionKey(), orgId, ruleList);
                     if (alarmCreated) {
 
                         /*processRecordsInput.getCheckpointer().checkpoint(record);
