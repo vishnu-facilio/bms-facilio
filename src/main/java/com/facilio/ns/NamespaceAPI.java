@@ -20,10 +20,7 @@ import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.rule.AbstractRuleInterface;
 import org.apache.commons.collections.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class NamespaceAPI {
 
@@ -138,14 +135,15 @@ public class NamespaceAPI {
             field.setModule(modBean.getModule(facilioField.getModuleId()));
             fields.add(field);
         }
-        nsCtx.addField(fields.toArray(new NameSpaceField[fields.size()]));
+        nsCtx.setFields(fields);
 
         return nsCtx;
     }
 
     private static boolean alreadyExistsInList(List<NameSpaceField> fields, NameSpaceField field) {
         for (NameSpaceField fld : fields) {
-            if (fld.getPrimary() && fld.getFieldId().equals(field.getFieldId())) {
+            if (fld.getPrimary() && fld.getFieldId().equals(field.getFieldId()) &&
+                    fld.getAggregationType() == field.getAggregationType()) {
                 return true;
             }
         }
