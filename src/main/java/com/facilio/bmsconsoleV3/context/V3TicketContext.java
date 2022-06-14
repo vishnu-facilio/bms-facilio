@@ -465,7 +465,8 @@ public class V3TicketContext extends V3Context {
         WORKFLOW_RULE(11, "Workflow Rule"),
         ML_ALARM(12, "Prediction Alarm"),
         TASK_DEVIATION(13, "Task Deviation"),
-        IMPORT(14, "Import")
+        IMPORT(14, "Import"),
+        PM_TEMPLATE(15, "PMTemplate")
         ;
 
         private int intVal;
