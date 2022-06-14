@@ -252,16 +252,13 @@ public class CommissioningApi {
 		Map<Long, Point> dbPointMap = dbPoints.stream().collect(Collectors.toMap(Point::getId, Function.identity()));
 		
 		List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
-		JSONArray finalPoints = new JSONArray();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		List<String> mappedDetials = new ArrayList<>(); 
 		
 		for(Point point: points) {
-			Long categoryId = point.getCategoryId();
 			Long resourceId = point.getResourceId();
 			Long fieldId = point.getFieldId();
-			int unit = point.getUnit();
 			
 			Point dbPoint = dbPointMap.get(point.getId());
 			Long dbResourceId = dbPoint.getResourceId();
@@ -276,36 +273,18 @@ public class CommissioningApi {
 					throw new IllegalArgumentException(builder.toString());
 				}
 				mappedDetials.add(key);
-			}
-			
-			if (dbResourceId != null && dbFieldId != null) {
-				if (resourceId == null || fieldId == null) {
-					// TODO Change rdm type
+				
+				if (dbResourceId != null && dbFieldId != null) {
+					if (!dbResourceId.equals(resourceId) || !dbFieldId.equals(fieldId)) {
+						rdmPairs.add(Pair.of(resourceId, modBean.getField(fieldId)));
+					}
 				}
-				else if (!dbResourceId.equals(resourceId) || !dbFieldId.equals(fieldId)) {
+				// New mapping
+				else {
 					rdmPairs.add(Pair.of(resourceId, modBean.getField(fieldId)));
 				}
 			}
-			else if (resourceId != null && fieldId != null) {		// New mapping
-				rdmPairs.add(Pair.of(resourceId, modBean.getField(fieldId)));
-			}
-			
-			/*if ((dbResourceId != null && (resourceId == null || !dbResourceId.equals(resourceId))) || 
-					(dbFieldId != null && (fieldId == null || !dbFieldId.equals(fieldId))) ) {
-				// TODO Change rdm type
-//				finalPoints.add(point);
-				if (resourceId != null && fieldId != null) {	// Both values are changed here
-					rdmPairs.add(Pair.of(resourceId, modBean.getField(fieldId)));
-				}
-			}
-			else if (resourceId != null && fieldId != null) {		// New mapping
-				rdmPairs.add(Pair.of(resourceId, modBean.getField(fieldId)));
-			}*/
-			/*else if (resourceId != null || fieldId != null || categoryId != null || dbPoint.getUnit() != unit) {
-				finalPoints.add(point);
-			}*/
-		}
-//		log.setPoints(finalPoints);
+		}			
 		
 		if (!rdmPairs.isEmpty()) {
 			return checkRDMType(rdmPairs);

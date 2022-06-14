@@ -62,7 +62,8 @@ public class MigrateReadingDataCommand extends FacilioCommand {
 		
 		boolean unitOnlyChanged = false;
 		if (oldFieldId == -1) {
-			if (unit != null) {	// Only unit is being changed in commissioning
+			unitOnlyChanged =  (boolean) context.get("unitOnlyChanged");
+			if (unitOnlyChanged) { // Only unit is being changed in commissioning
 				oldFieldId= fieldId;
 				oldAssetId = parentId;
 				unitOnlyChanged = true;
