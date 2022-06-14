@@ -5,6 +5,7 @@
             <property name="data" type="object">
                 <property name="dashboard_link_name" type="string" mandatory="true"></property>
                 <property name="cloned_dashboard_name" type="string" mandatory="true"></property>
+                <property name="folder_id" type="number"></property>
             </property>
         </requestbody>
     </request>
@@ -314,6 +315,14 @@
                     </property>
                 </property>
 
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v3/dashboard/moveto">
+        <requestbody type="object">
+            <property name="data" type="object">
+                <property name="dashboard_link" type="string" mandatory="true"></property>
+                <property name="folder_id" type="number" mandatory="true"></property>
             </property>
         </requestbody>
     </request>
