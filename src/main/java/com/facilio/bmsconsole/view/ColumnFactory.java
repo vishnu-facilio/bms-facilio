@@ -1173,7 +1173,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("phone", "Phone"));
 		columns.add(new ViewField("visitorType", "Type"));
 		columns.add(new ViewField("lastVisitedTime", "Last Visited Time"));
-		columns.add(new ViewField("lastVisitedHost", "Last Visited Host"));
+		columns.add(new ViewField("lastVisitedPeople", "Last Visited Host"));
 		return columns;
 	}
 

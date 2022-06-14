@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.visitor;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsoleV3.context.V3VisitorContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -13,6 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.facilio.v3.context.Constants.getQueryParams;
+import static com.facilio.v3.context.Constants.setResult;
+
 public class LoadVisitorLookUpCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -22,12 +26,12 @@ public class LoadVisitorLookUpCommandV3 extends FacilioCommand {
         List<FacilioField> fields = modBean.getAllFields(moduleName);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         List<LookupField> additionaLookups = new ArrayList<LookupField>();
-        LookupField hostField = (LookupField) fieldsAsMap.get("lastVisitedHost");
+        LookupField peopleField = (LookupField) fieldsAsMap.get("lastVisitedPeople");
         LookupField spaceField = (LookupField) fieldsAsMap.get("lastVisitedSpace");
         LookupField locationField = (LookupField) fieldsAsMap.get("location");
         LookupField visitorTypefield = (LookupField) fieldsAsMap.get("visitorType");
 
-        additionaLookups.add(hostField);
+        additionaLookups.add(peopleField);
         additionaLookups.add(spaceField);
         additionaLookups.add(locationField);
         additionaLookups.add(visitorTypefield);
