@@ -237,7 +237,7 @@ public class ViewAction extends FacilioAction {
 			}
 			moduleName = "workorder";
 		}
-		
+
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());

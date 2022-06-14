@@ -3967,6 +3967,20 @@ public class FieldFactory extends BaseFieldFactory {
 
         fields.add(getField("primary", "ISPRIMARY", module, FieldType.BOOLEAN));
 
+        FacilioField createdBy = new FacilioField();
+        createdBy.setName("ownerId");
+        createdBy.setDataType(FieldType.NUMBER);
+        createdBy.setColumnName("OWNER_ID");
+        createdBy.setModule(module);
+        fields.add(createdBy);
+
+        FacilioField isLocked = new FacilioField();
+        isLocked.setName("isLocked");
+        isLocked.setDataType(FieldType.BOOLEAN);
+        isLocked.setColumnName("IS_LOCKED");
+        isLocked.setModule(module);
+        fields.add(isLocked);
+
         return fields;
 
     }

@@ -1408,6 +1408,7 @@ public class FacilioChainFactory {
 	
 	public static FacilioChain getAddViewChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new SetViewDefaultParameters());
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new AddCVCommand());

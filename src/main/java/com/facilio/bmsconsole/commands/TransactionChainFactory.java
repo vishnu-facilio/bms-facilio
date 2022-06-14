@@ -86,6 +86,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddDefaultBundleCommand());
 			c.addCommand(new AddDefaultWoTimelineCommand());
 			c.addCommand(new AddMaintenanceAppConfigCommand());
+			//c.addCommand(new AddDefaultWoTimelineCommand());
 			return c;
 		}
 
@@ -747,7 +748,8 @@ public class TransactionChainFactory {
 
 		public static FacilioChain editViewChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new LoadViewCommand());
+			c.addCommand(new GetDBViewCommand());
+			c.addCommand(new CheckEditAccessCommand());
 			c.addCommand(new GenerateCriteriaFromFilterCommand());
 			c.addCommand(new AddCVCommand());
 			c.addCommand(new CustomizeViewColumnCommand());
@@ -755,6 +757,8 @@ public class TransactionChainFactory {
 		}
 		public static FacilioChain deleteViewChain() {
 			FacilioChain c = getDefaultChain();
+			c.addCommand(new GetDBViewCommand());
+			c.addCommand(new CheckEditAccessCommand());
 			c.addCommand(new DeleteViewCommand());
 			return c;
 		}
