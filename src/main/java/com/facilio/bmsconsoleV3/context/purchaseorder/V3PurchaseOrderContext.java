@@ -9,6 +9,7 @@ import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestLineItemContext;
+import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
 import com.facilio.modules.FacilioIntEnum;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -39,6 +40,7 @@ public class V3PurchaseOrderContext extends BaseLineItemsParentModuleContext {
 	private Long completedTime;
 	private ContractsContext contract;
 	private List<V3PoAssociatedTermsContext> termsAssociated;
+	private V3RequestForQuotationContext requestForQuotation;
 
 
 	public void setName(String name) {
@@ -47,7 +49,7 @@ public class V3PurchaseOrderContext extends BaseLineItemsParentModuleContext {
 	public String getName() {
 		return name;
 	}
-	
+
 	public String getDescription() {
 		return description;
 	}
@@ -346,5 +348,13 @@ public class V3PurchaseOrderContext extends BaseLineItemsParentModuleContext {
 
 	public void setPrIds(List<Long> prIds) {
 		this.prIds = prIds;
+	}
+
+	public V3RequestForQuotationContext getRequestForQuotation() {
+		return requestForQuotation;
+	}
+
+	public void setRequestForQuotation(V3RequestForQuotationContext requestForQuotation) {
+		this.requestForQuotation = requestForQuotation;
 	}
 }

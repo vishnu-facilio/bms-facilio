@@ -497,6 +497,7 @@ public class AccountUtil {
 		POINT_FILTER(71, 128, LicenseMapping.GROUP2LICENSE),//2^7
 		FETCH_SCRIPT_FROM_CACHE(72, 256, LicenseMapping.GROUP2LICENSE),
 		SCRIPT_CRUD_FROM_V3(73, 512, LicenseMapping.GROUP2LICENSE),
+		REQUEST_FOR_QUOTATION(74, 1024, LicenseMapping.GROUP2LICENSE),
 		;
 
 		public int featureId;

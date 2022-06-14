@@ -24,6 +24,8 @@ import com.facilio.bmsconsoleV3.commands.requestForQuotation.CreateVendorQuotesC
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.SetRequestForQuotationLineItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.servicerequest.AddRequesterForServiceRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.servicerequest.SetIsNewForServiceRequestCommandV3;
+import com.facilio.bmsconsoleV3.commands.requestForQuotation.*;
+import com.facilio.bmsconsoleV3.commands.spacecategory.ValidateSpaceCategoryDeletionV3;
 import com.facilio.bmsconsoleV3.commands.tasks.AddTaskSectionsV3;
 import com.facilio.bmsconsoleV3.commands.tasks.AddTasksCommandV3;
 import com.facilio.bmsconsoleV3.commands.tasks.ValidateTasksCommandV3;
@@ -1669,10 +1671,35 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new CreatePurchaseOrdersCommandV3());
         return c;
     }
+    public static FacilioChain getAwardVendorsChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AwardVendorsCommandV3());
+        return c;
+    }
     public static FacilioChain getRequestForQuotationLineItemsChainV3() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetRequestForQuotationLineItemsCommandV3());
         c.addCommand(new AutoAwardingPriceCommandV3());
+        return c;
+    }
+    public static FacilioChain getRfqBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CreateRfqFromPrCommandV3());
+        c.addCommand(new SetLocalIdCommandV3());
+        c.addCommand(new RfqBeforeCreateOrUpdateCommandV3());
+        return c;
+    }
+    public static FacilioChain getRfqBeforeUpdateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetLocalIdCommandV3());
+        c.addCommand(new RfqBeforeCreateOrUpdateCommandV3());
+        c.addCommand(new SetRequestForQuotationBooleanFieldsCommandV3());
+        return c;
+    }
+    public static FacilioChain getRfqAfterUpdateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateRequestForQuotationCommandV3());
+        c.addCommand(new UpdateRequestForQuotationLineItemsCommandV3());
         return c;
     }
     public static FacilioChain getPurchaseOrderLineItemQuantityRecievedRollUpChain() {

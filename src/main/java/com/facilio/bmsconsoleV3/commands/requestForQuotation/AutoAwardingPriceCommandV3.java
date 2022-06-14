@@ -13,6 +13,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.LookupFieldMeta;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.CommandUtil;
@@ -28,11 +29,13 @@ public class AutoAwardingPriceCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
+        long id = Constants.getRecordIds(context).get(0);
+        V3RequestForQuotationContext requestForQuotation = (V3RequestForQuotationContext) CommandUtil.getModuleData(context, FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION, id);
+        List<V3RequestForQuotationLineItemsContext> requestForQuotationLineItems = requestForQuotation.getRequestForQuotationLineItems();
+
         Object awardQuote = Constants.getQueryParam(context, "awardQuote");
-        if(awardQuote!=null && FacilioUtil.parseBoolean(Constants.getQueryParam(context, "awardQuote"))){
-            long id = Constants.getRecordIds(context).get(0);
-            V3RequestForQuotationContext requestForQuotation = (V3RequestForQuotationContext) CommandUtil.getModuleData(context, FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION, id);
-            List<V3RequestForQuotationLineItemsContext> requestForQuotationLineItems = requestForQuotation.getRequestForQuotationLineItems();
+
+        if(awardQuote!=null && FacilioUtil.parseBoolean(Constants.getQueryParam(context, "awardQuote")) && requestForQuotation.getIsQuoteReceived()){
 
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             String lineItemModuleName = FacilioConstants.ContextNames.VENDOR_QUOTES_LINE_ITEMS;
@@ -42,6 +45,10 @@ public class AutoAwardingPriceCommandV3 extends FacilioCommand {
             FacilioField counterPrice = fieldMap.get("counterPrice");
             FacilioField vendorQuotes = fieldMap.get("vendorQuotes");
             fields.add(vendorQuotes);
+
+            LookupFieldMeta vendorQuotesLookup = new LookupFieldMeta((LookupField) fieldMap.get("vendorQuotes"));
+            LookupField vendorLookup =(LookupField) modBean.getField("vendor", FacilioConstants.ContextNames.VENDOR_QUOTES);
+            vendorQuotesLookup.addChildSupplement(vendorLookup);
 
             for(V3RequestForQuotationLineItemsContext requestForQuotationLineItem : requestForQuotationLineItems){
                 SelectRecordsBuilder<V3VendorQuotesLineItemsContext> recordsBuilder = new SelectRecordsBuilder<V3VendorQuotesLineItemsContext>()
@@ -60,7 +67,7 @@ public class AutoAwardingPriceCommandV3 extends FacilioCommand {
                         .beanClass(V3VendorQuotesLineItemsContext.class)
                         .andCondition(CriteriaAPI.getCondition("RFQ_LINE_ITEM_ID", "requestForQuotationLineItem", String.valueOf(requestForQuotationLineItem.getId()), NumberOperators.EQUALS))
                         .andCondition(CriteriaAPI.getCondition("COUNTER_PRICE", "counterPrice", String.valueOf(counterPriceValue), NumberOperators.EQUALS))
-                        .fetchSupplements(Arrays.asList((LookupField) vendorQuotes));
+                        .fetchSupplements(Arrays.asList((LookupField) vendorQuotesLookup));
 
                 List<V3VendorQuotesLineItemsContext> list = builder.get();
                 requestForQuotationLineItem.setAwardedPrice(counterPriceValue);

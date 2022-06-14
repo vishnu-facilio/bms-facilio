@@ -66,9 +66,7 @@ import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.receipts.SetSysCreatedTimeAndLocalIdCommand;
 import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivableLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.receivable.SetPOLineItemCommandV3;
-import com.facilio.bmsconsoleV3.commands.requestForQuotation.SetRequestForQuotationBooleanFieldsCommandV3;
-import com.facilio.bmsconsoleV3.commands.requestForQuotation.SetRequestForQuotationLineItemsCommandV3;
-import com.facilio.bmsconsoleV3.commands.requestForQuotation.UpdateRequestForQuotationCommandV3;
+import com.facilio.bmsconsoleV3.commands.requestForQuotation.*;
 import com.facilio.bmsconsoleV3.commands.service.GetServiceVendorListCommandV3;
 import com.facilio.bmsconsoleV3.commands.service.UpdateStatusCommandV3;
 import com.facilio.bmsconsoleV3.commands.service.UpdateVendorV3;
@@ -96,6 +94,8 @@ import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.transferRequest.*;
 import com.facilio.bmsconsoleV3.commands.vendor.AddOrUpdateLocationForVendorCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.LoadVendorLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.vendorQuotes.LoadVendorQuoteLineItemsCommandV3;
+import com.facilio.bmsconsoleV3.commands.vendorQuotes.LoadVendorQuotesLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.SetVendorQuotesLineItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorcontact.LoadVendorContactLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitor.LoadVisitorLookUpCommandV3;
@@ -134,6 +134,7 @@ import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
+import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesLineItemsContext;
 import com.facilio.bmsconsoleV3.context.workpermit.V3WorkPermitContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
@@ -697,11 +698,15 @@ public class APIv3Config {
     public static Supplier<V3Config> getRequestForQuotation() {
         return () -> new V3Config(V3RequestForQuotationContext.class, new ModuleCustomFieldCount30())
                 .create()
+                .beforeSave(TransactionChainFactoryV3.getRfqBeforeSaveChain())
+                .afterSave(new UpdateRfqIdInPrCommandV3())
                 .update()
-                .beforeSave(new SetRequestForQuotationBooleanFieldsCommandV3())
-                .afterSave(new UpdateRequestForQuotationCommandV3())
+                .beforeSave(TransactionChainFactoryV3.getRfqBeforeUpdateChain())
+                .afterSave(TransactionChainFactoryV3.getRfqAfterUpdateChain())
                 .list()
+                .beforeFetch(new LoadRequestForQuotationLookupCommandV3())
                 .summary()
+                .beforeFetch(new LoadRequestForQuotationLookupCommandV3())
                 .afterFetch(TransactionChainFactoryV3.getRequestForQuotationLineItemsChainV3())
                 .delete()
                 .build();
@@ -713,9 +718,18 @@ public class APIv3Config {
                 .create()
                 .update()
                 .list()
+                .beforeFetch(new LoadVendorQuotesLookupCommandV3())
                 .summary()
+                .beforeFetch(new LoadVendorQuotesLookupCommandV3())
                 .afterFetch(new SetVendorQuotesLineItemsCommandV3())
                 .delete()
+                .build();
+    }
+    @Module("vendorQuotesLineItems")
+    public static Supplier<V3Config> getVendorQuotesLineItems() {
+        return () -> new V3Config(V3VendorQuotesLineItemsContext.class, null)
+                .list()
+                .beforeFetch(new LoadVendorQuoteLineItemsCommandV3())
                 .build();
     }
 

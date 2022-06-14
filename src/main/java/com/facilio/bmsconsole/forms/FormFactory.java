@@ -183,6 +183,41 @@ public class FormFactory {
 				
 //				form.setFields(null);
 			}
+			else if (moduleName.equals(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION)) {
+				List<FormSection> sections = new ArrayList<>();
+
+				List<FormField> defaultFields = new ArrayList<>();
+				List<FormField> lineItemFields = new ArrayList<>();
+//				List<FormField> billingAddressFields = new ArrayList<>();
+				List<FormField> shippingAddressFields = new ArrayList<>();
+
+				form.setSections(sections);
+				FormSection defaultSection = new FormSection("Request For Quotation", 1, defaultFields, true);
+				//FormSection billingSection = new FormSection("Billing Address", 2, billingAddressFields, true);
+				FormSection shippingSection = new FormSection("Shipping Address", 3, shippingAddressFields, true);
+				FormSection lineItemSection = new FormSection("Line Items", 4, lineItemFields, true);
+
+
+				form.getFields().forEach(field -> {
+					if (field.getDisplayTypeEnum() == FieldDisplayType.LINEITEMS) {
+						lineItemFields.add(field);
+					}
+//					else if (field.getDisplayTypeEnum() == FieldDisplayType.SADDRESS && field.getDisplayName().equals("BILLING ADDRESS")) {
+//						billingAddressFields.add(field);
+//					}
+					else if (field.getDisplayTypeEnum() == FieldDisplayType.SADDRESS && field.getDisplayName().equals("SHIPPING ADDRESS")) {
+						shippingAddressFields.add(field);
+					}
+					else {
+						defaultFields.add(field);
+					}
+				});
+
+				sections.add(defaultSection);
+//				sections.add(billingSection);
+				sections.add(shippingSection);
+				sections.add(lineItemSection);
+			}
 			else if (moduleName.equals(FacilioConstants.ContextNames.PURCHASE_ORDER)) {
 				List<FormSection> sections = new ArrayList<>();
 				
@@ -504,6 +539,8 @@ public class FormFactory {
 		List<FacilioForm> itemFormsList = Arrays.asList(getItemForm());
 		List<FacilioForm> toolFormsList = Arrays.asList(getStockedToolsForm());
 		List<FacilioForm> spaceCategoryForm = Arrays.asList(getSpaceCategoryForm());
+		List<FacilioForm> rfqForm = Arrays.asList(getRequestForQuotationForm());
+		List<FacilioForm> vendorQuotesForm = Arrays.asList(getVendorQuotesForm());
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
 				.put(FacilioConstants.ContextNames.ASSET, getFormMap(assetForms))
@@ -580,6 +617,8 @@ public class FormFactory {
 				.put(ContextNames.INVENTORY_CATEGORY,getFormMap(inventoryCategoryForm))
 				.put(ContextNames.ITEM,getFormMap(itemFormsList))
 				.put(ContextNames.TOOL,getFormMap(toolFormsList))
+				.put(ContextNames.REQUEST_FOR_QUOTATION,getFormMap(rfqForm))
+				.put(ContextNames.VENDOR_QUOTES,getFormMap(vendorQuotesForm))
 				.build();
 	}
 	
@@ -2040,11 +2079,30 @@ public class FormFactory {
 		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
-
+	public static FacilioForm getRequestForQuotationForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("REQUEST FOR QUOTATION");
+		form.setName("default_requestForQuotation_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getRequestForQuotationFormFields());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
+	public static FacilioForm getVendorQuotesForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("VENDOR QUOTES");
+		form.setName("default_vendorQuotes_web");
+		form.setModule(ModuleFactory.getModule(ContextNames.VENDOR_QUOTES));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getVendorQuoteFormFields());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
 	public static FacilioForm getTransferRequestForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("TRANSFER REQUEST");
-		form.setName("default_inventoryrequest_web");
+		form.setName("default_transferrequest_web");
 		form.setModule(ModuleFactory.getModule(ContextNames.TRANSFER_REQUEST));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getTransferRequestFormFields());
@@ -2155,6 +2213,28 @@ public class FormFactory {
 		fields.add(new FormField("shipToAddress", FieldDisplayType.SADDRESS, "SHIPPING ADDRESS", Required.OPTIONAL, 7, 1));
 		//	fields.add(new FormField("status", FieldDisplayType.SELECTBOX, "Status", Required.REQUIRED, 7, 1));
 		//fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 2, 1));
+		return fields;
+	}
+	private static List<FormField> getRequestForQuotationFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+	    fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", Required.REQUIRED, "storeRoom", 3, 1));
+		fields.add(new FormField("requestedDate", FieldDisplayType.DATE, "Requested Date", Required.OPTIONAL, 4, 2));
+		fields.add(new FormField("requiredDate", FieldDisplayType.DATE, "Required Date", Required.OPTIONAL, 4, 3));
+		fields.add(new FormField("requestedBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "people", 5, 1));
+		//fields.add(new FormField("billToAddress", FieldDisplayType.SADDRESS, "BILLING ADDRESS", Required.OPTIONAL, 6, 1));
+		fields.add(new FormField("shipToAddress", FieldDisplayType.SADDRESS, "SHIPPING ADDRESS", Required.OPTIONAL, 7, 1));
+		fields.add(new FormField("requestForQuotationLineItems", FieldDisplayType.LINEITEMS, "LINE ITEMS", Required.REQUIRED, 8, 1));
+
+		return fields;
+	}
+	private static List<FormField> getVendorQuoteFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.REQUIRED, "vendors", 1, 1).setAllowCreateOptions(true).setCreateFormName("vendors_form");
+		vendorField.setIsDisabled(true);
+		fields.add(vendorField);
+		fields.add(new FormField("replyDate", FieldDisplayType.DATE, "Reply Date", Required.OPTIONAL, 2, 1));
 		return fields;
 	}
 	private static List<FormField> getTransferRequestFormFields() {

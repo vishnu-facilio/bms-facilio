@@ -6,6 +6,7 @@ import com.facilio.bmsconsoleV3.context.BaseLineItemsParentModuleContext;
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
+import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +29,7 @@ public class V3PurchaseRequestContext extends BaseLineItemsParentModuleContext {
 	private User requestedBy;
 	private Boolean isPoCreated;
 	private List<PrAssociatedTermsContext> termsAssociated;
-
+	private V3RequestForQuotationContext requestForQuotation;
 
 	public List<PrAssociatedTermsContext> getTermsAssociated() {
 		return termsAssociated;
@@ -177,4 +178,11 @@ public class V3PurchaseRequestContext extends BaseLineItemsParentModuleContext {
 		return false;
 	}
 
+	public V3RequestForQuotationContext getRequestForQuotation() {
+		return requestForQuotation;
+	}
+
+	public void setRequestForQuotation(V3RequestForQuotationContext requestForQuotation) {
+		this.requestForQuotation = requestForQuotation;
+	}
 }
