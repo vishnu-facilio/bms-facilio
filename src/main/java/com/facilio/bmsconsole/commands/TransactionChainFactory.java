@@ -58,6 +58,7 @@ import com.facilio.readingrule.command.*;
 import com.facilio.relation.command.AddOrUpdateRelationCommand;
 import com.facilio.relation.command.DeleteRelationCommand;
 import com.facilio.readingrule.faultimpact.command.DeleteFaultImpactFromReadingRuleCommand;
+import com.facilio.storm.command.StormHistoricalProxyCommand;
 import com.facilio.trigger.context.TriggerType;
 import com.facilio.weekends.*;
 import com.facilio.workflows.command.*;
@@ -180,8 +181,16 @@ public class TransactionChainFactory {
 		}
 
 		public static FacilioChain runThroughHistoricalRuleChain() {
+			return runThroughHistoricalRuleChain(false);
+		}
+
+		public static FacilioChain runThroughHistoricalRuleChain(boolean isNewReadingRule) {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new RunThroughHistoricalRuleCommand());
+			if(isNewReadingRule) {
+				c.addCommand(new StormHistoricalProxyCommand());
+			} else {
+				c.addCommand(new RunThroughHistoricalRuleCommand());
+			}
 			return c;
 		}
 

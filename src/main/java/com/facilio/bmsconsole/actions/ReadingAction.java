@@ -58,6 +58,8 @@ import com.facilio.timeseries.TimeSeriesAPI;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
+import static com.facilio.accounts.util.AccountUtil.FeatureLicense.NEW_READING_RULE;
+
 public class ReadingAction extends FacilioAction {
 	
 	/**
@@ -1268,8 +1270,8 @@ public class ReadingAction extends FacilioAction {
 	}
 
 	public String runThroughRule() throws Exception {	
-		try {	
-			FacilioChain runThroughRuleChain = TransactionChainFactory.runThroughHistoricalRuleChain();
+		try {
+			FacilioChain runThroughRuleChain = TransactionChainFactory.runThroughHistoricalRuleChain(AccountUtil.isFeatureEnabled(NEW_READING_RULE));
 			FacilioContext context = runThroughRuleChain.getContext();
 			
 			if(getLoggerInfo() == null) {
@@ -1282,7 +1284,7 @@ public class ReadingAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.RULE_JOB_TYPE, getRuleJobType());
 			context.put(FacilioConstants.ContextNames.HISTORICAL_RULE_LOGGER_PROPS, getLoggerInfo());
 			context.put(FacilioConstants.ContextNames.IS_INCLUDE, isInclude);
-			context.put(JobConstants.LOGGER_LEVEL, 2); //debug
+//			context.put(JobConstants.LOGGER_LEVEL, 2); //debug
 			runThroughRuleChain.execute();
 			
 			setResult("success", "Rule evaluation for the readings in the given period has been started");	
