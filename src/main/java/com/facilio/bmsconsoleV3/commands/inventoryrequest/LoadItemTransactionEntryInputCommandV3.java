@@ -28,11 +28,8 @@ public class LoadItemTransactionEntryInputCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         // TODO Auto-generated method stub
+        List<V3InventoryRequestContext> requests= (List<V3InventoryRequestContext>) context.get(FacilioConstants.ContextNames.INVENTORY_REQUEST);
 
-        String moduleName = Constants.getModuleName(context);
-        Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
-        List<V3InventoryRequestContext> requests = recordMap.get(moduleName);
-        //V3InventoryRequestContext requests = (V3InventoryRequestContext)context.get(FacilioConstants.ContextNames.RECORD);
         if (CollectionUtils.isNotEmpty(requests)){
             for (V3InventoryRequestContext request : requests) {
                     //V3InventoryRequestContext inv = (V3InventoryRequestContext) RecordAPI.getRecord(FacilioConstants.ContextNames.INVENTORY_REQUEST, request.getId());
