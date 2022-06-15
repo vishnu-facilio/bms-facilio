@@ -3,7 +3,10 @@ package com.facilio.bmsconsole.jobs;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.db.transaction.FacilioTransactionManager;
+import com.facilio.services.email.EmailClient;
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -39,6 +42,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.taskengine.job.FacilioJob;
 import com.facilio.taskengine.job.JobContext;
+import org.json.simple.JSONObject;
 
 public class PMNewScheduler extends FacilioJob {
 
@@ -54,16 +58,15 @@ public class PMNewScheduler extends FacilioJob {
 			List<FacilioField> pmFields = FieldFactory.getPreventiveMaintenanceFields();
 			Map<String, FacilioField> pmFieldsMap = FieldFactory.getAsMap(pmFields);
 			fields.addAll(pmFields);
-			
+
 			GenericSelectRecordBuilder pmTriggerBuilder = new GenericSelectRecordBuilder()
-																.select(fields)
-																.table(pmTriggerModule.getTableName())
-																.innerJoin(pmModule.getTableName())
-																.on(pmTriggerModule.getTableName()+".PM_ID = "+pmModule.getTableName()+".ID")
+					.select(fields)
+					.table(pmTriggerModule.getTableName())
+					.innerJoin(pmModule.getTableName())
+					.on(pmTriggerModule.getTableName() + ".PM_ID = " + pmModule.getTableName() + ".ID")
 //																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(pmTriggerModule))
-																.andCondition(CriteriaAPI.getCondition(pmFieldsMap.get("triggerType"), String.valueOf(TriggerType.ONLY_SCHEDULE_TRIGGER.getVal()), NumberOperators.EQUALS))
-																.andCondition(CriteriaAPI.getCondition(pmFieldsMap.get("status"), String.valueOf(true), BooleanOperators.IS))
-																;
+					.andCondition(CriteriaAPI.getCondition(pmFieldsMap.get("triggerType"), String.valueOf(TriggerType.ONLY_SCHEDULE_TRIGGER.getVal()), NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(pmFieldsMap.get("status"), String.valueOf(true), BooleanOperators.IS));
 			
 			List<Map<String, Object>> triggerProps = pmTriggerBuilder.get();
 			Map<Long,PMTriggerContext> triggerMap = new HashMap<>();
@@ -88,20 +91,18 @@ public class PMNewScheduler extends FacilioJob {
 				
 				List<PreventiveMaintenance> pmList = groupPmAndTriggers(pms,triggers);
 				List<BulkWorkOrderContext> bulkWorkOrderContexts = new ArrayList<>();
-				if (pmList != null && !pmList.isEmpty()) {
-					PreventiveMaintenanceAPI.logIf(92L,"No of pms " + pmList.size());
-				}
 
 				for(PreventiveMaintenance pm : pmList) {
 					try{
-						// PreventiveMaintenanceAPI.logIf(92L,"pm: " + i + " Executing pm: "  + pm.getId());
 						List<BulkWorkOrderContext> bulkWo = createPMJobs(pm, triggerMap);
 						if (!bulkWo.isEmpty()) {
 							bulkWorkOrderContexts.addAll(bulkWo);
 						}
 					} catch (Exception e) {
-						LOGGER.error("Exception occurred in PM Scheduler Job ID - "+jc.getJobId(), e);
-						CommonCommandUtil.emailException("PMScheduler", "Exception occurred in generating Schedule - orgId: "+jc.getJobId() + " pmId " + pm.getId(), e);
+						String msg = "Exception: " + e.getMessage() + "PM ID: " + pm.getId() + "; ORG ID" + pm.getOrgId();
+						SendEmailAlert(msg, pm.getOrgId());
+						LOGGER.error("Exception occurred in PM Scheduler Job ID - " + jc.getJobId(), e);
+						CommonCommandUtil.emailException("PMScheduler", "Exception occurred in generating Schedule - orgId: " + jc.getJobId() + " pmId " + pm.getId(), e);
 					}
 				}
 
@@ -116,19 +117,32 @@ public class PMNewScheduler extends FacilioJob {
 					addWOChain.execute(context);
 				}
 
-				for(PreventiveMaintenance pm : pmList) {
+				for (PreventiveMaintenance pm : pmList) {
 					PreventiveMaintenanceAPI.incrementGenerationTime(pm.getId(), getEndTime(pm));
 				}
 			}
 		} catch (Exception e) {
+			String msg = "Exception: " + e.getMessage() + "Job ID: " + jc.getJobId();
+			SendEmailAlert(msg, jc.getOrgId());
+
 			FacilioTransactionManager.INSTANCE.getTransactionManager().setRollbackOnly();
-			LOGGER.error("Exception occurred in PM Scheduler Job ID - "+jc.getJobId(), e);
-			CommonCommandUtil.emailException("PMScheduler", "Exception occurred in PM Scheduler Job - "+jc.getJobId(), e);
+			LOGGER.error("Exception occurred in PM Scheduler Job ID - " + jc.getJobId(), e);
+			CommonCommandUtil.emailException("PMScheduler", "Exception occurred in PM Scheduler Job - " + jc.getJobId(), e);
 		}
 	}
-	
-	private List<BulkWorkOrderContext>  createPMJobs(PreventiveMaintenance pm, Map<Long,PMTriggerContext> triggerMap) throws Exception {
-	    List<BulkWorkOrderContext> bulkWorkOrderContexts = new ArrayList<>();
+
+	private void SendEmailAlert(String message, long orgID) throws Exception {
+		EMailTemplate template = new EMailTemplate();
+		template.setFrom(EmailClient.getFromEmail("alert"));
+		template.setTo("pm-issues@facilio.com");
+		template.setMessage(message);
+		template.setSubject("Nightly Scheduler (PMNewScheduler) Alert | ORG " + orgID);
+		JSONObject emailJSON = template.getOriginalTemplate();
+		FacilioFactory.getEmailClient().sendEmail(emailJSON);
+	}
+
+	private List<BulkWorkOrderContext> createPMJobs(PreventiveMaintenance pm, Map<Long, PMTriggerContext> triggerMap) throws Exception {
+		List<BulkWorkOrderContext> bulkWorkOrderContexts = new ArrayList<>();
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RESOURCE_MAP, new HashMap<Long, ResourceContext>());
 		context.put(FacilioConstants.ContextNames.STATUS_MAP, new HashMap<FacilioStatus.StatusType, FacilioStatus>());
