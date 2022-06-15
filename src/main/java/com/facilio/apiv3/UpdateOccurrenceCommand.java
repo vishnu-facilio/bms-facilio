@@ -21,6 +21,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -39,10 +40,9 @@ public class UpdateOccurrenceCommand extends FacilioCommand {
         alarmOccurrence.setAcknowledged((Boolean) rawInput.get("acknowledged"));
         Long severityId = (Long) ((HashMap) rawInput.get("severity")).get("id");
         String severityName = AlarmAPI.getAlarmSeverity(severityId).getSeverity();
-        LOGGER.info("AVCheck: outside recordId check  " + rawInput);
-        LOGGER.info("AVCheck: inside acknowledged " + alarmOccurrence.isAcknowledged());
-        LOGGER.info("AVCheck: outside recordId check  acknowledged" + " Severity " + severityName);
-        LOGGER.info("AVCheck: outside recordId check  acknowledged" + " recordIds " + recordIds);
+        ObjectMapper mapper = new ObjectMapper();
+        AlarmSeverityContext alarmSeverityContext = mapper.convertValue(rawInput.get("severity"), AlarmSeverityContext.class);
+        alarmOccurrence.setSeverity(alarmSeverityContext);
 
         if (CollectionUtils.isNotEmpty(recordIds) && alarmOccurrence != null) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -71,7 +71,6 @@ public class UpdateOccurrenceCommand extends FacilioCommand {
             }
             if (severityName.equals("Clear")) {
                 alarmOccurrence.setClearedTime(currentTimeMillis);
-                LOGGER.info("AVCheck: inside clear check");
                 info.put("field", "Severity");
                 info.put("newValue", AlarmAPI.getAlarmSeverity("Clear").getDisplayName());
                 info.put("clearedBy", AccountUtil.getCurrentUser().getId());
@@ -84,8 +83,6 @@ public class UpdateOccurrenceCommand extends FacilioCommand {
                     .fields(updateOnlyOccurrenceFields)
                     .andCondition(alarmCondition);
             occurrenceUpdateBuilder.update(alarmOccurrence);
-            LOGGER.info("AVCheck: occurrenceUpdateBuilder " + occurrenceUpdateBuilder);
-
         }
         FacilioChain c = TransactionChainFactory.getV2UpdateAlarmChain();
         c.execute(context);
