@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.beans.ModuleBean;
@@ -1347,33 +1348,46 @@ public class PreventiveMaintenanceAPI {
 	 * replaced with PM_ID equals from matching data from PM_Triggers table; */
 	private static Criteria UpdateFrequencyFilterCriteria(Criteria criteria) throws Exception {
 		Criteria newCriteria = new Criteria();
-
-		Optional<String> frequencyCriteriaKey = Optional.empty();
-		Optional<String> frequencyCriteriaValue = Optional.empty();
+		// 'haveFrequencyCriteria' is a flag to keep a track, if criteria has a frequency field
+		boolean haveFrequencyCriteria = false;
 		for (Map.Entry<String, Condition> cond : criteria.getConditions().entrySet()) {
-			if (cond.getValue().getFieldName().equals("frequency")) {
-				frequencyCriteriaKey = Optional.of(cond.getKey());
-				frequencyCriteriaValue = Optional.of(cond.getValue().getValue());
-			} else {
-				newCriteria.addAndCondition(cond.getValue());
+			if (cond.getValue() != null && cond.getValue().getFieldName().equals("frequency")) {
+				haveFrequencyCriteria = true;
+				break;
 			}
 		}
 
-		if (frequencyCriteriaKey.isPresent()) {
-			FacilioField pmIDField = FieldFactory.getField("PM_ID", "PM_ID", FieldType.NUMBER);
-			FacilioField frequencyField = FieldFactory.getField("FREQUENCY", "FREQUENCY", FieldType.NUMBER);
+		if(haveFrequencyCriteria) {
+			Optional<String> frequencyCriteriaKey = Optional.empty();
+			Optional<String> frequencyCriteriaValue = Optional.empty();
+			for (Map.Entry<String, Condition> cond : criteria.getConditions().entrySet()) {
+				if (cond.getValue() != null &&  cond.getValue().getFieldName().equals("frequency")) {
+					frequencyCriteriaKey = Optional.of(cond.getKey());
+					frequencyCriteriaValue = Optional.of(cond.getValue().getValue());
+				} else {
+					// need to add a check if the condition has OR, or NOT conditions.
+					newCriteria.addAndCondition(cond.getValue());
+				}
+			}
 
-			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-					.select(Collections.singletonList(pmIDField))
-					.table(ModuleFactory.getPMTriggersModule().getTableName())
-					.andCondition(CriteriaAPI.getCondition(frequencyField, frequencyCriteriaValue.get(), NumberOperators.EQUALS));
+			if (frequencyCriteriaKey.isPresent()) {
+				FacilioField pmIDField = FieldFactory.getField("PM_ID", "PM_ID", FieldType.NUMBER);
+				FacilioField frequencyField = FieldFactory.getField("FREQUENCY", "FREQUENCY", FieldType.NUMBER);
 
-			List<Map<String, Object>> resultSet = selectBuilder.get();
-			List<Long> pmsWithGivenFreq = new ArrayList<>();
-			resultSet.forEach(record -> pmsWithGivenFreq.add(FacilioUtil.parseLong(record.get("PM_ID"))));
-			newCriteria.addAndCondition(CriteriaAPI.getIdCondition(pmsWithGivenFreq, ModuleFactory.getPreventiveMaintenanceModule()));
+				GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+						.select(Collections.singletonList(pmIDField))
+						.table(ModuleFactory.getPMTriggersModule().getTableName())
+						.andCondition(CriteriaAPI.getCondition(frequencyField, frequencyCriteriaValue.get(), NumberOperators.EQUALS));
+
+				List<Map<String, Object>> resultSet = selectBuilder.get();
+				List<Long> pmsWithGivenFreq = new ArrayList<>();
+				resultSet.forEach(record -> pmsWithGivenFreq.add(FacilioUtil.parseLong(record.get("PM_ID"))));
+				newCriteria.addAndCondition(CriteriaAPI.getIdCondition(pmsWithGivenFreq, ModuleFactory.getPreventiveMaintenanceModule()));
+			}
+			return newCriteria;
+		}else{
+			return criteria;
 		}
-		return newCriteria;
 	}
 
 
@@ -1437,7 +1451,18 @@ public class PreventiveMaintenanceAPI {
 			FacilioModule woTemplateModule = ModuleFactory.getWorkOrderTemplateModule();
 			selectBuilder.innerJoin(woTemplateModule.getTableName()).on(module.getTableName()+".TEMPLATE_ID = "+woTemplateModule.getTableName()+".ID");
 		}
-		
+
+		// Add accessible spaces criteria for Multisite PMs
+		User user = AccountUtil.getCurrentUser();
+		if(user != null) {
+			List<Long> accessibleSpace = user.getAccessibleSpace();
+			if(accessibleSpace !=null && accessibleSpace.size() > 0) {
+				selectBuilder.andCustomWhere("( Preventive_Maintenance.ID IN ( select PM_ID from PM_Sites p1 where SITE_ID in ("
+						+ StringUtils.join(accessibleSpace, ",")
+						+") group by PM_ID having count(PM_ID) = (select COUNT(PM_ID) from PM_Sites p2 where p1.PM_ID = p2.PM_ID group by PM_ID)))");
+			}
+		}
+
 		List<Map<String, Object>> pmProps = selectBuilder.get();
 		
 		List<Long> resourceIds = new ArrayList<>();
