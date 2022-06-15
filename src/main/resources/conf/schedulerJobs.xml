@@ -5,31 +5,51 @@
 	<job classname='test.Test2' />
 	 <job name='DeviceDataExtractor' classname='com.facilio.tasker.tasks.DeviceDataExtractorJob' />
 	 <job name='IotConnector' classname='com.facilio.tasker.tasks.IotConnectorJob' /> -->
-	 <job name='WorkOrderRequestEmailParser' classname='com.facilio.bmsconsole.jobs.WorkOrderRequestEmailParser' transactionTimeout='300000'/>
-	 <job name='PMNewScheduler' classname='com.facilio.bmsconsole.jobs.PMNewScheduler' transactionTimeout='900000'/>
-	 <job name='ScheduleWOStatusChange' classname='com.facilio.bmsconsole.jobs.ScheduleWOStatusChange' transactionTimeout='900000'/>
-	 <job name='OpenScheduledWO' classname='com.facilio.bmsconsole.jobs.OpenScheduledWO' transactionTimeout='300000'/>
-	 <job name='VirtualMeterCalculation' classname = 'com.facilio.bmsconsole.jobs.VirtualMeterEnergyDataCalculator' transactionTimeout='300000'/>
-	 <job name='HistoricalVMCalculation' classname = 'com.facilio.bmsconsole.jobs.HistoricalVMEnergyDataCalculatorJob' transactionTimeout='900000'/>
-	 <job name='PrePMReminder' classname = 'com.facilio.bmsconsole.jobs.PrePMReminderJob' transactionTimeout='300000'/>
-	 <job name='PostPMReminder' classname = 'com.facilio.bmsconsole.jobs.PostPMReminderJob' transactionTimeout='300000'/>
-	 <job name='TestVMCalculation' classname = 'com.facilio.bmsconsole.jobs.DummyVMCalculator' transactionTimeout='300000'/>
-	 <job name='ReportEmailScheduler' classname = 'com.facilio.bmsconsole.jobs.ReportEmailScheduler' transactionTimeout='300000'/>
-	 <job name='ViewEmailScheduler' classname = 'com.facilio.bmsconsole.jobs.ViewEmailScheduler' transactionTimeout='300000'/>
-	 <job name='FormulaLeafTriggerer' classname = 'com.facilio.bmsconsole.jobs.FormulaLeafTriggerJob' transactionTimeout='300000'/>
-	 <job name='ScheduledFormulaCalculator' classname = 'com.facilio.bmsconsole.jobs.ScheduledFormulaCalculatorJob' transactionTimeout='300000'/>
-	 <job name='SingleResourceHistoricalFormulaFieldCalculator' classname = 'com.facilio.bmsconsole.jobs.SingleResourceHistoricalFormulaCalculatorJob' transactionTimeout='900000'/>
-	 <job name='LiveEventsToAlarmProcessingJob' classname = 'com.facilio.bmsconsole.jobs.LiveEventsToAlarmProcessingJob' transactionTimeout='300000'/>
+	<job name='WorkOrderRequestEmailParser' classname='com.facilio.bmsconsole.jobs.WorkOrderRequestEmailParser'
+		 transactionTimeout='300000'/>
+	<job name='PMNewScheduler' classname='com.facilio.bmsconsole.jobs.PMNewScheduler' transactionTimeout='900000'/>
+	<job name='ScheduleWOStatusChange' classname='com.facilio.bmsconsole.jobs.ScheduleWOStatusChange'
+		 transactionTimeout='900000'/>
+	<job name='OpenScheduledWO' classname='com.facilio.bmsconsole.jobs.OpenScheduledWO' transactionTimeout='300000'/>
+	<job name='VirtualMeterCalculation' classname='com.facilio.bmsconsole.jobs.VirtualMeterEnergyDataCalculator'
+		 transactionTimeout='300000'/>
+	<job name='HistoricalVMCalculation' classname='com.facilio.bmsconsole.jobs.HistoricalVMEnergyDataCalculatorJob'
+		 transactionTimeout='900000'/>
+	<job name='PrePMReminder' classname='com.facilio.bmsconsole.jobs.PrePMReminderJob' transactionTimeout='300000'/>
+	<job name='PostPMReminder' classname='com.facilio.bmsconsole.jobs.PostPMReminderJob' transactionTimeout='300000'/>
+	<job name='TestVMCalculation' classname='com.facilio.bmsconsole.jobs.DummyVMCalculator'
+		 transactionTimeout='300000'/>
+	<job name='ReportEmailScheduler' classname='com.facilio.bmsconsole.jobs.ReportEmailScheduler'
+		 transactionTimeout='300000'/>
+	<job name='ViewEmailScheduler' classname='com.facilio.bmsconsole.jobs.ViewEmailScheduler'
+		 transactionTimeout='300000'/>
+	<job name='FormulaLeafTriggerer' classname='com.facilio.bmsconsole.jobs.FormulaLeafTriggerJob'
+		 transactionTimeout='300000'/>
+	<job name='ScheduledFormulaCalculator' classname='com.facilio.bmsconsole.jobs.ScheduledFormulaCalculatorJob'
+		 transactionTimeout='300000'/>
+	<job name='SingleResourceHistoricalFormulaFieldCalculator'
+		 classname='com.facilio.bmsconsole.jobs.SingleResourceHistoricalFormulaCalculatorJob'
+		 transactionTimeout='900000'/>
+	<job name='LiveEventsToAlarmProcessingJob' classname='com.facilio.bmsconsole.jobs.LiveEventsToAlarmProcessingJob'
+		 transactionTimeout='300000'/>
+	<job name='PreOpenWoObservation' classname='com.facilio.bmsconsole.jobs.PreOpenWoObservation'
+		 transactionTimeout='900000'/>
 
 	<!-- Weather Data Job -->
-	 <job name='WeatherData' classname = 'com.facilio.bmsconsole.jobs.WeatherDataJob' transactionTimeout='300000'/>
-	 <job name='DailyWeatherData' classname = 'com.facilio.bmsconsole.jobs.DailyWeatherDataJob' transactionTimeout='300000'/>
-	 <job name='DailyWeatherStationJob' classname ='com.facilio.bmsconsole.jobs.DailyWeatherStationJob' transactionTimeout='300000'/>
-	 <job name='HourlyWeatherStationJob' classname = 'com.facilio.bmsconsole.jobs.HourlyWeatherStationJob' transactionTimeout='300000'/>
+	<job name='WeatherData' classname='com.facilio.bmsconsole.jobs.WeatherDataJob' transactionTimeout='300000'/>
+	<job name='DailyWeatherData' classname='com.facilio.bmsconsole.jobs.DailyWeatherDataJob'
+		 transactionTimeout='300000'/>
+	<job name='DailyWeatherStationJob' classname='com.facilio.bmsconsole.jobs.DailyWeatherStationJob'
+		 transactionTimeout='300000'/>
+	<job name='HourlyWeatherStationJob' classname='com.facilio.bmsconsole.jobs.HourlyWeatherStationJob'
+		 transactionTimeout='300000'/>
 
-	 <job name='DegreeDaysCalculator' classname = 'com.facilio.bmsconsole.jobs.DegreeDaysCalculatorJob' transactionTimeout='300000'/>
-	 <job name='V1AnomalyDetector' classname = 'com.facilio.bmsconsole.jobs.V1AnomalyDetectorJob' transactionTimeout='1800000'/>
-	 <job name='V1RefreshAnomalyModel' classname = 'com.facilio.bmsconsole.jobs.V1RefreshAnomalyModelJob' transactionTimeout='14400000'/>
+	<job name='DegreeDaysCalculator' classname='com.facilio.bmsconsole.jobs.DegreeDaysCalculatorJob'
+		 transactionTimeout='300000'/>
+	<job name='V1AnomalyDetector' classname='com.facilio.bmsconsole.jobs.V1AnomalyDetectorJob'
+		 transactionTimeout='1800000'/>
+	<job name='V1RefreshAnomalyModel' classname='com.facilio.bmsconsole.jobs.V1RefreshAnomalyModelJob'
+		 transactionTimeout='14400000'/>
 	 <job name='AnomalyDetector' classname = 'com.facilio.bmsconsole.jobs.AnomalyDetectorJob' transactionTimeout='1800000'/>
 	 <job name='RefreshAnomalyModel' classname = 'com.facilio.bmsconsole.jobs.RefreshAnomalyModelJob' transactionTimeout='14400000'/>
 	 <!--  job name='HVACPressurePredictor' classname = 'com.facilio.bmsconsole.jobs.HVACPressurePredictorJob' transactionTimeout='1800000'/-->
@@ -153,14 +173,14 @@
 	<job name = 'DemoRollUpYearlyOneTimeJob' classname = 'com.facilio.bmsconsole.jobs.DemoRollUpOneTimeJob' transactionTimeout = '1500000'></job>
 	<job name = 'DemoSingleRollUpYearlyJob' classname='com.facilio.bmsconsole.jobs.DemoSingleRollUpYearlyJob' transactionTimeout='39600000'/>
 	<job name = 'DemoAlarmPropagationJob' classname = 'com.facilio.bmsconsole.jobs.DemoAlarmPropagationJob' transactionTimeout = '600000'></job>
-	
+
 	<!--  OperationAlarm -->
 	<job name = 'OperationAlarmJob' classname = 'com.facilio.bmsconsole.jobs.OperationAlarmJob' transactionTimeout = '7200000'></job>
 	<job name='HistoricalOperationAlarmEventJob' classname = 'com.facilio.bmsconsole.jobs.HistoricalOperationAlarmEventJob' transactionTimeout='900000'/>
 	<job name='HistoricalOperationalAlarmProcessingJob' classname = 'com.facilio.bmsconsole.jobs.HistoricalOperationalAlarmProcessingJob' transactionTimeout='900000'/>
-	
+
 	<!--  energy star jobs -->
-	
+
 	<job name='EnergyStarPushData' classname = 'com.facilio.bmsconsole.jobs.EnergyStarPushData' transactionTimeout='900000'/>
 	<job name='EnergyStarPushHistoricalData' classname = 'com.facilio.bmsconsole.jobs.EnergyStarPushHistoricalData' transactionTimeout='900000'/>
 	<job name='EnergyStarFetchData' classname = 'com.facilio.bmsconsole.jobs.EnergyStarFetchDataJob' transactionTimeout='900000'/>
@@ -180,8 +200,8 @@
 	<!-- Agent Data Missing Job-->
 	<job name="AgentDataMissing" classname="com.facilio.bmsconsole.jobs.DataProcessingAlertJob" transactionTimeout="420000"/>
 	<job name="AgentDataPending" classname="com.facilio.bmsconsole.jobs.DataPendingAlertJob" transactionTimeout="420000"/>
-	
-	
+
+
 	<job name='ControlScheduleSlotCreationDailyJob' classname= 'com.facilio.bmsconsole.jobs.ControlScheduleSlotCreationDailyJob' transactionTimeout='600000'/>
 	<job name='ControlScheduleSlotCreationJob' classname= 'com.facilio.bmsconsole.jobs.ControlScheduleSlotCreationJob' transactionTimeout='600000'/>
 	<job name='controlCommandExecutionCreateScheduleJob' classname= 'com.facilio.bmsconsole.jobs.ControlCommandExecutionCreateScheduleJob' transactionTimeout='600000'/>
@@ -189,10 +209,10 @@
 
 	<!--Delete Job Records	-->
 	<job name="DeleteJobRecords" classname="com.facilio.bmsconsole.jobs.DeleteJobRecords" transactionTimeout="600000"/>
-	
+
 	<job name='ScheduleInspectionStatusChange' classname='com.facilio.bmsconsole.jobs.ScheduleInspectionStatusChangeJob' transactionTimeout='900000'/>
 	<job name='OpenScheduledInspection' classname='com.facilio.bmsconsole.jobs.OpenScheduledInspection' transactionTimeout='900000'/>
-	
-	
+
+
 	<job name='getVerifiedEmailAddressFromAWS' classname='com.facilio.bmsconsole.jobs.GetVerifiedEmailAddressFromAWSJob' transactionTimeout='900000'/>
 </scheduler>
