@@ -18,7 +18,8 @@ public class JobPlanContext extends V3Context {
         CURRENT_ASSET("Current Asset"),
         SPECIFIC_ASSET("Specific Asset"),
         ALL_BUILDINGS("All Buildings"),
-        ALL_SITES("All Sites")
+        ALL_SITES("All Sites"),
+        SPECIFIC_SPACES("Specific Spaces")
         ;
         private String name;
 

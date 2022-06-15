@@ -1,9 +1,10 @@
 package com.facilio.bmsconsoleV3.context.jobplan;
 
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsoleV3.context.V3TaskContext;
 import com.facilio.modules.FacilioIntEnum;
 
-public class JobPlanTasksContext extends TaskContext {
+public class JobPlanTasksContext extends V3TaskContext {
 
     private JobPlanTaskSectionContext taskSection;
 

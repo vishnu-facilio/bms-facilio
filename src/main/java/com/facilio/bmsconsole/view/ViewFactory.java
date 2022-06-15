@@ -927,6 +927,11 @@ public class ViewFactory {
 
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("all", getAllJobPlanView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.JOB_PLAN, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
 		views.put("all", getAllVendorQuotesView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.VENDOR_QUOTES, views);
 
@@ -8328,6 +8333,25 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Request For Quotations");
+		allView.setModuleName(module.getName());
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
+
+	private static FacilioView getAllJobPlanView() {
+
+		FacilioModule module = ModuleFactory.getJobPlanModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), false));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Job Plans");
 		allView.setModuleName(module.getName());
 		allView.setSortFields(sortFields);
 
