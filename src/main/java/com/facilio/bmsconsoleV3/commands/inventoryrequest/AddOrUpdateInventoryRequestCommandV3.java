@@ -3,14 +3,10 @@ package com.facilio.bmsconsoleV3.commands.inventoryrequest;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.InventoryRequestContext;
-import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
 import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.util.RecordAPI;
-import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestLineItemContext;
-import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -21,9 +17,6 @@ import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.v3.context.Constants;
-import com.facilio.v3.exception.ErrorCode;
-import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -34,9 +27,9 @@ import java.util.Map;
 public class AddOrUpdateInventoryRequestCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        String moduleName = Constants.getModuleName(context);
-        Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
-        List<V3InventoryRequestContext> inventoryRequestContext = recordMap.get(moduleName);
+        List<V3InventoryRequestContext> inventoryRequestContext= (List<V3InventoryRequestContext>) context.get(FacilioConstants.ContextNames.INVENTORY_REQUEST);
+
+        String moduleName = FacilioConstants.ContextNames.INVENTORY_REQUEST;
         if (CollectionUtils.isNotEmpty(inventoryRequestContext)) {
             for (V3InventoryRequestContext inventoryRequestContexts : inventoryRequestContext) {
                 if (inventoryRequestContexts != null) {
