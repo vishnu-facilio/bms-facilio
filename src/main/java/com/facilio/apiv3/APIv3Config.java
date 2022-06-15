@@ -63,7 +63,7 @@ import com.facilio.bmsconsoleV3.commands.purchaserequest.FetchPurchaseRequestDet
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestSummaryLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
-import com.facilio.bmsconsoleV3.commands.receipts.SetSysCreatedTimeAndLocalIdCommand;
+import com.facilio.bmsconsoleV3.commands.receipts.SetReceiptTimeAndLocalIdCommand;
 import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivableLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.receivable.SetPOLineItemCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.*;
@@ -1807,7 +1807,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getReceipts() {
         return () -> new V3Config(V3ReceiptContext.class, null)
                 .create()
-                .beforeSave(new SetSysCreatedTimeAndLocalIdCommand())
+                .beforeSave(new SetReceiptTimeAndLocalIdCommand())
                 .afterSave(TransactionChainFactoryV3.getAddOrUpdateReceiptsChain())
                 .update()
                 .list()

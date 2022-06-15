@@ -30,6 +30,8 @@ public class LoadReceivableLookupCommandV3 extends FacilioCommand {
         additionaLookups.add((LookupField) fieldsAsMap.get("poId"));
         additionaLookups.add((LookupField) fieldsAsMap.get("vendor"));
         additionaLookups.add((LookupField) fieldsAsMap.get("storeRoom"));
+        additionaLookups.add((LookupField) fieldsAsMap.get("sysCreatedBy"));
+        additionaLookups.add((LookupField) fieldsAsMap.get("sysModifiedBy"));
 
         for (FacilioField field : fields) {
             if (!field.isDefault() && field.getDataTypeEnum() == FieldType.LOOKUP) {
