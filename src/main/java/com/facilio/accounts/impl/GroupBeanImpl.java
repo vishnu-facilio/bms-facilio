@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
+import com.facilio.db.criteria.operators.StringOperators;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
 
@@ -390,9 +391,14 @@ public class GroupBeanImpl implements GroupBean {
 	public List<Group> getOrgGroups(long orgId, boolean status) throws Exception {
 		return getOrgGroups(orgId, status, true);
 	}
-	
+
 	@Override
 	public List<Group> getOrgGroups(long orgId, boolean status, boolean fetchMembers) throws Exception {
+		return getOrgGroups(orgId,status,fetchMembers,-1,-1,null);
+	}
+
+	@Override
+	public List<Group> getOrgGroups(long orgId, boolean status, boolean fetchMembers,int offset, int perPage,String searchQuery) throws Exception {
 		
 		List<Group> groups = new ArrayList<>();
 		
@@ -422,6 +428,21 @@ public class GroupBeanImpl implements GroupBean {
 				.table(AccountConstants.getGroupModule().getTableName())
 				.andCustomWhere("ORGID = ? AND IS_ACTIVE = true"+siteCondition, orgId);
 		
+		if(perPage > 0 && offset >= 0) {
+			selectBuilder.offset(offset);
+			selectBuilder.limit(perPage);
+		}
+		if(!StringUtils.isEmpty(searchQuery))
+		{
+			Criteria criteria = new Criteria();
+			Condition condition_name = new Condition();
+			condition_name.setColumnName("FacilioGroups.GROUP_NAME");
+			condition_name.setFieldName("groupName");
+			condition_name.setOperator(StringOperators.CONTAINS);
+			condition_name.setValue(searchQuery);
+			criteria.addOrCondition(condition_name);
+			selectBuilder.andCriteria(criteria);
+		}
 		List<Map<String, Object>> props = selectBuilder.get();
 		List<Long> ouids = new ArrayList<>();
 		if (props != null && !props.isEmpty()) {
