@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.context;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.v3.context.V3Context;
 import org.apache.struts2.json.annotations.JSON;
 
 import com.facilio.accounts.dto.User;
@@ -12,7 +13,7 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.time.DateTimeUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class BaseAlarmContext extends ModuleBaseWithCustomFields {
+public class BaseAlarmContext extends V3Context {
 	private static final long serialVersionUID = 1L;
 
 	private String subject;

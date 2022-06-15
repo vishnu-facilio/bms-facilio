@@ -14,15 +14,19 @@ public class DeleteStateFlowTransition extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		Long stateFlowId = (Long) context.get(FacilioConstants.ContextNames.STATE_FLOW_ID);
 		Long transitionId = (Long) context.get(FacilioConstants.ContextNames.TRANSITION_ID);
-		
+
+		WorkflowRuleContext stateTransition = null;
 		if (stateFlowId != null && transitionId != null) {
-			WorkflowRuleContext stateTransition = StateFlowRulesAPI.getStateTransition(stateFlowId, transitionId);
+			stateTransition = StateFlowRulesAPI.getStateTransition(stateFlowId, transitionId);
 			if (stateTransition == null) {
 				throw new IllegalArgumentException("Invalid state transition");
 			}
 			WorkflowRuleAPI.deleteWorkflowRule(stateTransition.getId());
 		}
-		
+		else {
+			throw new IllegalArgumentException("stateFlowId and transitionId are mandatory");
+		}
+		context.put("workFlowRuleContext",stateTransition);
 		return false;
 	}
 

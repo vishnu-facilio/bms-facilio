@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
@@ -12,6 +13,9 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
 import com.facilio.wmsv2.handler.AuditLogHandler;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.ServletActionContext;
@@ -175,8 +179,33 @@ public class StateFlowAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.ID, stateFlowId);
 		chain.execute();
 
-		setResult(FacilioConstants.ContextNames.STATE_FLOW, context.get(FacilioConstants.ContextNames.STATE_FLOW));
+		StateFlowRuleContext stateFlow = (StateFlowRuleContext) context.get(FacilioConstants.ContextNames.RECORD);
+		StateFlowRuleContext oldStateFlow =  (StateFlowRuleContext) context.get(FacilioConstants.ContextNames.OLD_STATE_FLOW);
 
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(stateFlow.getModuleName());
+
+		setResult(FacilioConstants.ContextNames.STATE_FLOW, context.get(FacilioConstants.ContextNames.STATE_FLOW));
+		sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("Stateflow %s of %s has been cloned to {%s}.",oldStateFlow.getName(),module.getDisplayName(),stateFlow.getName()),
+				null,
+				AuditLogHandler.RecordType.SETTING,
+				"StateFlow", stateFlow.getId())
+				.setActionType(AuditLogHandler.ActionType.ADD)
+				.setLinkConfig(((Function<Void, String>) o -> {
+					JSONArray array = new JSONArray();
+					JSONObject json = new JSONObject();
+					json.put("id", stateFlow.getId());
+					try {
+						json.put("moduleName", stateFlow.getModuleName());
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					json.put("navigateTo", "StateFlow");
+
+					array.add(json);
+					return array.toJSONString();
+				}).apply(null))
+		);
 		return SUCCESS;
 	}
 
@@ -205,12 +234,23 @@ public class StateFlowAction extends FacilioAction {
 	}
 
 	public String deleteStateTransition() throws Exception {
-		FacilioContext context = new FacilioContext();
-		
+		FacilioChain chain = TransactionChainFactory.getDeleteStateFlowTransition();
+
+		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.STATE_FLOW_ID, stateFlowId);
 		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
-		FacilioChain chain = TransactionChainFactory.getDeleteStateFlowTransition();
-		chain.execute(context);
+		context.put(FacilioConstants.ContextNames.TRANSITION, stateTransition);
+
+		chain.execute();
+
+		WorkflowRuleContext workflowRuleContext = (WorkflowRuleContext) context.get("workFlowRuleContext");
+
+		sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("State transition %s has been deleted.",workflowRuleContext.getName()),
+				null,
+				AuditLogHandler.RecordType.SETTING,
+				"StateTransition",stateTransitionId)
+				.setActionType(AuditLogHandler.ActionType.DELETE)
+		);
 		return SUCCESS;
 	}
 	
@@ -260,12 +300,36 @@ public class StateFlowAction extends FacilioAction {
 	
 	public String addOrUpdateStateFlow() throws Exception {
 		FacilioContext context = new FacilioContext();
-		
+
+		boolean add = stateFlow.getId() <= 0;
 		context.put(FacilioConstants.ContextNames.RECORD, stateFlow);
 		FacilioChain chain = TransactionChainFactory.getAddOrUpdateStateFlow();
 		chain.execute(context);
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(stateFlow.getModuleName());
 		
 		setResult(FacilioConstants.ContextNames.STATE_FLOW, stateFlow);
+		sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("Stateflow {%s} of %s has been %s.", stateFlow.getName(), module.getDisplayName(), (add ? "added" : "updated")),
+				null,
+				AuditLogHandler.RecordType.SETTING,
+				"StateFlow", stateFlow.getId())
+				.setActionType(stateFlow.getId() < 0 ? AuditLogHandler.ActionType.ADD : AuditLogHandler.ActionType.UPDATE)
+				.setLinkConfig(((Function<Void, String>) o -> {
+					JSONArray array = new JSONArray();
+					JSONObject json = new JSONObject();
+					json.put("id", stateFlow.getId());
+					try {
+						json.put("moduleName", stateFlow.getModuleName());
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					json.put("navigateTo", "StateFlow");
+
+					array.add(json);
+					return array.toJSONString();
+				}).apply(null))
+		);
 		return SUCCESS;
 	}
 	
@@ -330,6 +394,28 @@ public class StateFlowAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 
 		chain.execute();
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+
+		WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(workFlow.getId(),false,false);
+
+		sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("StateFlow {%s} of %s status changed to %s.", rule.getName(),module.getDisplayName(), ((status==true)?"Active":"Inactive")),
+				null,
+				AuditLogHandler.RecordType.SETTING,
+				"Change Status", workFlow.getId())
+				.setActionType(AuditLogHandler.ActionType.UPDATE)
+				.setLinkConfig(((Function<Void, String>) o -> {
+					JSONArray array = new JSONArray();
+					JSONObject json = new JSONObject();
+					json.put("stateFlowId", workFlow.getId());
+					json.put("moduleName", moduleName);
+					json.put("navigateTo", "stateFlow");
+
+					array.add(json);
+					return array.toJSONString();
+				}).apply(null))
+		);
 
 		return SUCCESS;
 	}

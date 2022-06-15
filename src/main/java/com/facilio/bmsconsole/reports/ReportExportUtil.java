@@ -77,7 +77,12 @@ public class ReportExportUtil {
 		if(fileFormat == FileFormat.IMAGE) {
 			url.append("&showOnlyImage=true");
 		}
-		String filterJsonString=(String)context.get(FacilioConstants.ContextNames.FILTERS);
+		String  filterJsonString = null;
+		if(context.get(FacilioConstants.ContextNames.FILTERS) instanceof String){
+			filterJsonString=(String)context.get(FacilioConstants.ContextNames.FILTERS);
+		}else if(context.get(FacilioConstants.ContextNames.FILTERS) instanceof JSONObject){
+			filterJsonString=context.get(FacilioConstants.ContextNames.FILTERS).toString();
+		}
 		if(filterJsonString!=null)
 		{
 			url.append("&filters="+ReportsUtil.encodeURIComponent(filterJsonString));

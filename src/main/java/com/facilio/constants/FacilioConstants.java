@@ -184,6 +184,8 @@ public class FacilioConstants {
 
 		public static final String VERIFY_USER = "verifyUser";
 		public static final String RULE_LOG_MODULE_DATA = "ruleLogModuleData";
+
+		public static final String  OLD_STATE_FLOW ="oldstateflow";
 		public static final String RULE_LOG_MODULE_DATA_LIST = "ruleLogModuleDataList";
 		public static final String FIELD_ACCESS_TYPE = "fieldAccessType";
 		public static final String OPERATION_ALARM = "operationalarm";

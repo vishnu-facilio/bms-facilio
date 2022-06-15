@@ -3647,7 +3647,6 @@ public class TransactionChainFactory {
 
 	public static FacilioChain getV2UpdateAlarmChain() {
 		FacilioChain c = getDefaultChain();
-		c.addCommand(new UpdateAlarmOccurrenceCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.REPORT_DOWNTIME_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.READING_ALARM_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.MODULE_RULE));

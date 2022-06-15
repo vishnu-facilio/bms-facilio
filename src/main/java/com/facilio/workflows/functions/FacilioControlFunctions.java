@@ -103,7 +103,9 @@ public enum FacilioControlFunctions implements FacilioWorkflowFunctionInterface 
 			ControlActionCommandContext controlActionCommand = new ControlActionCommandContext();
 			controlActionCommand.setResource(resourceContext);
 			controlActionCommand.setFieldId((long) Double.parseDouble(value.get("fieldId").toString()));
-			controlActionCommand.setValue(value.get("value").toString());
+			if (value.get("value") != null) {
+				controlActionCommand.setValue(value.get("value").toString());
+			}
 			commands.add(controlActionCommand);
 		}
 		

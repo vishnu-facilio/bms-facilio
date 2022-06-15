@@ -29,7 +29,9 @@ public class AddReadingImportAppDataCommand extends FacilioCommand {
         insertBuilder.addRecord(props);
         insertBuilder.save();
 
-        long groupId = (Long) props.get("id");
+        long importId = (Long) props.get("id");
+        readingImportContext.setId(importId);
+        context.put("READING_IMPORT_CONTEXT", readingImportContext);
 
         return false;
     }

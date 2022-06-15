@@ -88,7 +88,8 @@ public class GetAllModulesCommand extends FacilioCommand {
 			ContextNames.SAFETY_PLAN,
 			ContextNames.HAZARD,
 			ContextNames.PRECAUTION,
-			ContextNames.SITE
+			ContextNames.SITE,
+			ContextNames.NEW_READING_ALARM
     });
 
 	@Override
