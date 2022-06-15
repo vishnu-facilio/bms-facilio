@@ -8,9 +8,10 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class OpcUaPointContext extends Point {
+public class OpcUaPointContext extends Point  implements Serializable {
 
     private static final Logger LOGGER = LogManager.getLogger(OpcUaPointContext.class.getName());
 

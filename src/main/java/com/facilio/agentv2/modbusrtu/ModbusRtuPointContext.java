@@ -8,9 +8,10 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class ModbusRtuPointContext extends Point {
+public class ModbusRtuPointContext extends Point  implements Serializable {
 
     private static final Logger LOGGER = LogManager.getLogger(ModbusRtuPointContext.class.getName());
 

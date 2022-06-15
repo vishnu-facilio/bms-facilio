@@ -1,12 +1,5 @@
 package com.facilio.agentv2.point;
 
-import java.util.Map;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.struts2.json.annotations.JSON;
-import org.json.simple.JSONObject;
-
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.controller.FacilioDataType;
 import com.facilio.agent.controller.FacilioPoint;
@@ -15,11 +8,17 @@ import com.facilio.agentv2.JsonUtil;
 import com.facilio.util.FacilioUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.struts2.json.annotations.JSON;
+import org.json.simple.JSONObject;
 
-public abstract class Point extends FacilioPoint{
+import java.io.Serializable;
+import java.util.Map;
+
+public abstract class Point extends FacilioPoint implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

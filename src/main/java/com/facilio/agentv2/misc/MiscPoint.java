@@ -6,9 +6,10 @@ import com.facilio.agentv2.JsonUtil;
 import com.facilio.agentv2.point.Point;
 import org.json.simple.JSONObject;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class MiscPoint extends Point {
+public class MiscPoint extends Point  implements Serializable {
 
     private String path;
     public MiscPoint(long agentId){
