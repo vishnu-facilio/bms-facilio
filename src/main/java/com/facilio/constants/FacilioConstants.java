@@ -2589,6 +2589,7 @@ public class FacilioConstants {
 			classMap.put(REQUEST_FOR_QUOTATION_LINE_ITEMS, V3RequestForQuotationLineItemsContext.class);
 			classMap.put(VENDOR_QUOTES, V3VendorQuotesContext.class);
 			classMap.put(VENDOR_QUOTES_LINE_ITEMS, V3VendorQuotesLineItemsContext.class);
+			classMap.put(JOB_PLAN_ACTIVITY, ActivityContext.class);
 
 			for (QuestionType type : QuestionType.values()) {
 				classMap.put(type.getSubModuleName(), type.getSubClass());

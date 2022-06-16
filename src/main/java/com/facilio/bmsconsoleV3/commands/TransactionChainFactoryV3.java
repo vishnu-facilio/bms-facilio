@@ -968,8 +968,8 @@ public class TransactionChainFactoryV3 {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new AddJobPlanTasksCommand());
        // chain.addCommand(new AddJobPlanPMsInContextCommand());
-       // chain.addCommand(new ConstructUpdateCustomActivityCommandV3());
-        //chain.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.JOB_PLAN_ACTIVITY));
+        chain.addCommand(new ConstructUpdateCustomActivityCommandV3());
+        chain.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.JOB_PLAN_ACTIVITY));
 
         return chain;
     }
@@ -1783,8 +1783,8 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getCreateJobPlanChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddJobPlanTasksCommand());
-      //  c.addCommand(new ConstructUpdateCustomActivityCommandV3());
-      //  c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.JOB_PLAN_ACTIVITY));
+        c.addCommand(new ConstructUpdateCustomActivityCommandV3());
+        c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.JOB_PLAN_ACTIVITY));
         return c;
     }
 
