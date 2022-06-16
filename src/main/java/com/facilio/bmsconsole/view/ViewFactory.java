@@ -922,6 +922,16 @@ public class ViewFactory {
 
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("all", getAllRequestForQuotationView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllVendorQuotesView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.VENDOR_QUOTES, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
 		views.put("all", getAllChartOfAccountView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.Budget.CHART_OF_ACCOUNT, views);
 		
@@ -8300,6 +8310,42 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Budgets");
+		allView.setModuleName(module.getName());
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
+	private static FacilioView getAllRequestForQuotationView() {
+
+		FacilioModule module = ModuleFactory.getRequestForQuotationModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), false));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Request For Quotations");
+		allView.setModuleName(module.getName());
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
+	private static FacilioView getAllVendorQuotesView() {
+
+		FacilioModule module = ModuleFactory.getVendorQuotesModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), false));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Vendor Quotes");
 		allView.setModuleName(module.getName());
 		allView.setSortFields(sortFields);
 

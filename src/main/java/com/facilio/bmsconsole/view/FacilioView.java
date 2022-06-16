@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @JsonSubTypes.Type(value = TimelineViewContext.class, name = "2"),
 })
 public class FacilioView {
-	
+
 	public FacilioView() {}
 
 	// Add all properties here as it will be used for cloning
@@ -59,8 +59,47 @@ public class FacilioView {
 		this.primary = view.primary;
 		this.fieldDisplayNames = view.fieldDisplayNames;
 		this.appId = view.appId;
+		this.ownerId = view.ownerId;
+		this.isLocked = view.isLocked;
+		this.isEditable = view.isEditable;
 	}
-	
+	private Long ownerId = -1L;
+	public Long getOwnerId() { return ownerId;}
+	public void setOwnerId(Long ownerId) {
+		this.ownerId = ownerId;
+	}
+
+	private Boolean isLocked;
+	public void setLocked(Boolean isLocked) {
+		this.isLocked = isLocked;
+	}
+	public boolean isLocked(){
+		if (isLocked != null){
+			return isLocked.booleanValue();
+		}
+		return false;
+	}
+	public Boolean getIsLocked() {
+		return isLocked;
+	}
+
+	private Boolean isEditable;
+
+	public Boolean getIsEditable() {
+		return isEditable;
+	}
+
+	public void setEditable(Boolean isEditable) {
+		this.isEditable = isEditable;
+	}
+
+	public boolean isEditable(){
+		if (isEditable != null){
+			return isEditable.booleanValue();
+		}
+		return false;
+	}
+
 	private long appId = -1;
 	
 	

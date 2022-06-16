@@ -39,7 +39,7 @@ public class SetVendorQuotesLineItemsCommandV3 extends FacilioCommand {
                 .select(fields)
                 .beanClass(V3VendorQuotesLineItemsContext.class)
                 .andCondition(CriteriaAPI.getCondition("VENDOR_QUOTE_ID", "vendorQuotes", String.valueOf(id), NumberOperators.EQUALS))
-                .fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("itemType"), (LookupField) fieldsAsMap.get("toolType"), (LookupField) fieldsAsMap.get("service")));
+                .fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("itemType"), (LookupField) fieldsAsMap.get("toolType"), (LookupField) fieldsAsMap.get("service"),(LookupField) fieldsAsMap.get("requestForQuotationLineItem")));
         List<V3VendorQuotesLineItemsContext> list = builder.get();
         vendorQuotes.setVendorQuotesLineItems(list);
 

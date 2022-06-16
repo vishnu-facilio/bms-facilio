@@ -18,6 +18,7 @@ public class V3RequestForQuotationLineItemsContext extends V3Context {
     private String description;
     private Double unitPrice;
     private Double quantity;
+    private Long unitOfMeasure;
     private Double awardedPrice;
     private V3VendorContext awardedTo;
     private String remarks;
@@ -121,6 +122,14 @@ public class V3RequestForQuotationLineItemsContext extends V3Context {
 
     public void setQuantity(Double quantity) {
         this.quantity = quantity;
+    }
+
+    public Long getUnitOfMeasure() {
+        return unitOfMeasure;
+    }
+
+    public void setUnitOfMeasure(Long unitOfMeasure) {
+        this.unitOfMeasure = unitOfMeasure;
     }
 
     public Double getAwardedPrice() {

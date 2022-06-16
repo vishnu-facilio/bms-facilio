@@ -810,6 +810,9 @@
         <action name="clone"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
                 method="clone_dashboard"/>
+        <action name="moveto"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
+                method="move_dashboard"/>
     </package>
 
     <package name="readingImportApp" namespace="/api/v3/readingimport" extends="v3Api">

@@ -16,6 +16,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3ReceivableContext;
+import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
+import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -257,6 +259,12 @@ public class PageFactory {
 				return ToolPageFactory.getToolPage((ToolContext) record, module);
 			case ContextNames.RECEIVABLE:
 				return ReceivablePageFactory.getReceivablePage((ReceivableContext) record, module);
+			case ContextNames.REQUEST_FOR_QUOTATION:
+				return RequestForQuotationPageFactory.getRequestForQuotationPage((V3RequestForQuotationContext) record, module);
+			case ContextNames.VENDOR_QUOTES:
+				return VendorQuotesPageFactory.getVendorQuotesPage((V3VendorQuotesContext) record, module);
+
+
 		}
 		if (module.getExtendModule() == null) {	// temp
 			// etisalat changes will be changed to standard method

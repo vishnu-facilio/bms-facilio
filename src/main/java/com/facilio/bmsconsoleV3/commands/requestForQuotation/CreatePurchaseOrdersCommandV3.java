@@ -85,6 +85,7 @@ public class CreatePurchaseOrdersCommandV3 extends FacilioCommand {
     private V3PurchaseOrderContext setPurchaseOrder(V3RequestForQuotationContext requestForQuotation, List<V3PurchaseOrderLineItemContext> purchaseOrderLineItems, V3VendorContext vendor){
         V3PurchaseOrderContext purchaseOrder = new V3PurchaseOrderContext();
         purchaseOrder.setName(requestForQuotation.getName());
+        purchaseOrder.setRequestForQuotation(requestForQuotation);
         if(requestForQuotation.getDescription()!=null){
             purchaseOrder.setDescription(requestForQuotation.getDescription());
         }

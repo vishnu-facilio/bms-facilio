@@ -1171,7 +1171,7 @@ public class V3VisitorManagementAPI {
             Map<String, Object> updateMap = new HashMap<>();
             FacilioField lastVisitDuration = modBean.getField("lastVisitDuration", module.getName());
 
-            long workDuration = visitorLog.getCheckOutTime() - visitorLog.getCheckInTime();
+            long workDuration = (visitorLog.getCheckOutTime() - visitorLog.getCheckInTime())/1000;
             updateMap.put("lastVisitDuration", workDuration);
 
             List<FacilioField> updatedfields = new ArrayList<FacilioField>();

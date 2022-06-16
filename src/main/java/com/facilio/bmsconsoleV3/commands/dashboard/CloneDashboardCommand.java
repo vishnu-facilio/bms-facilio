@@ -24,7 +24,7 @@ public class CloneDashboardCommand extends FacilioCommand {
     {
         String dashboard_link_name  = (String) context.get("dashboard_link_name");
         String cloned_dashboard_name  = (String) context.get("cloned_dashboard_name");
-        Long dashboard_folder_id  = null;
+        Long dashboard_folder_id  = (Long) context.get("folder_id");
         if(dashboard_link_name != null && !"".equals(dashboard_link_name))
         {
             DashboardContext dashboard = DashboardUtil.getDashboardWithWidgets(dashboard_link_name, null);

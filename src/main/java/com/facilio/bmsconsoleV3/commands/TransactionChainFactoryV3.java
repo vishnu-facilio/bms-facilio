@@ -5,6 +5,7 @@ import java.util.Collections;
 import com.facilio.bmsconsole.commands.AddTasksCommand;
 import com.facilio.bmsconsoleV3.commands.assetDepartment.ValidateAssetDepartmentDeletionV3;
 import com.facilio.bmsconsoleV3.commands.dashboard.CloneDashboardCommand;
+import com.facilio.bmsconsoleV3.commands.dashboard.MoveToDashboardCommand;
 import com.facilio.bmsconsoleV3.commands.floorplan.*;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.AddLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.DeleteLicensingInfoCommand;
@@ -23,6 +24,8 @@ import com.facilio.bmsconsoleV3.commands.requestForQuotation.CreateVendorQuotesC
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.SetRequestForQuotationLineItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.servicerequest.AddRequesterForServiceRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.servicerequest.SetIsNewForServiceRequestCommandV3;
+import com.facilio.bmsconsoleV3.commands.requestForQuotation.*;
+import com.facilio.bmsconsoleV3.commands.spacecategory.ValidateSpaceCategoryDeletionV3;
 import com.facilio.bmsconsoleV3.commands.tasks.AddTaskSectionsV3;
 import com.facilio.bmsconsoleV3.commands.tasks.AddTasksCommandV3;
 import com.facilio.bmsconsoleV3.commands.tasks.ValidateTasksCommandV3;
@@ -535,6 +538,7 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getClientContactBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new CheckforPeopleDuplicationCommandV3());
         c.addCommand(new CheckForMandatoryClientIdCommandV3());
         return c;
@@ -544,6 +548,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdatePeoplePrimaryContactCommandV3());
         c.addCommand(new UpdateClientAppPortalAccessCommandV3());
+        c.addCommand(new UpdateScopingForPeopleCommandV3());
         return c;
     }
 
@@ -1666,10 +1671,35 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new CreatePurchaseOrdersCommandV3());
         return c;
     }
+    public static FacilioChain getAwardVendorsChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AwardVendorsCommandV3());
+        return c;
+    }
     public static FacilioChain getRequestForQuotationLineItemsChainV3() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetRequestForQuotationLineItemsCommandV3());
         c.addCommand(new AutoAwardingPriceCommandV3());
+        return c;
+    }
+    public static FacilioChain getRfqBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CreateRfqFromPrCommandV3());
+        c.addCommand(new SetLocalIdCommandV3());
+        c.addCommand(new RfqBeforeCreateOrUpdateCommandV3());
+        return c;
+    }
+    public static FacilioChain getRfqBeforeUpdateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetLocalIdCommandV3());
+        c.addCommand(new RfqBeforeCreateOrUpdateCommandV3());
+        c.addCommand(new SetRequestForQuotationBooleanFieldsCommandV3());
+        return c;
+    }
+    public static FacilioChain getRfqAfterUpdateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateRequestForQuotationCommandV3());
+        c.addCommand(new UpdateRequestForQuotationLineItemsCommandV3());
         return c;
     }
     public static FacilioChain getPurchaseOrderLineItemQuantityRecievedRollUpChain() {
@@ -1722,6 +1752,11 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getCloneDashboardChain(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new CloneDashboardCommand());
+        return c;
+    }
+    public static FacilioChain getMoveToDashboardChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new MoveToDashboardCommand());
         return c;
     }
 

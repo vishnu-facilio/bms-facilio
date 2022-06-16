@@ -33,6 +33,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder.BatchUpdateByIdContext;
 import com.facilio.db.criteria.Criteria;
@@ -40,7 +41,9 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
@@ -69,6 +72,7 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 		
 		List<ReadingDataMeta> rdmList = new ArrayList<>();
 		Set<Long> connectedAssetIds = new HashSet<>();
+		Set<Long> unmappedAssetIds = new HashSet<>();
 		
 		Map<String, List<Map<String, Object>>> inputValuePoints = new HashMap<>();
 		List<Pair<Long, FacilioField>> remainingRdmPairs = new ArrayList<>();
@@ -103,6 +107,7 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 			Long unitId = (Long) point.get(AgentConstants.UNIT);
 			Unit unit = null;
 			
+			boolean isCommissioned = dbPoint != null && dbResourceId != null && dbResourceId > 0 && dbFieldId != null && dbFieldId > 0;
 			boolean resourceAvailable = resourceId != null && resourceId > 0;
 			boolean fieldAvailable = fieldId != null && fieldId > 0;
 			boolean unitAvailable = false;
@@ -113,18 +118,23 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 			}
 			boolean unitChanged = unitAvailable;
 			
+			boolean  mappingChanged = true;
 			if ((categoryId != null && categoryId > 0 ) || resourceAvailable || fieldAvailable || unitAvailable) {
 				
-				boolean  mappingChanged = true;
+				// Case 1: point is already mapped
 				if (fieldAvailable && resourceAvailable) {
-					if (dbPoint != null && dbResourceId != null && dbResourceId > 0 && dbFieldId != null && dbFieldId > 0) {
+					if (isCommissioned) {
+						
+						// Case 1a: If point is remapped
 						if (!dbResourceId.equals(resourceId) || !dbFieldId.equals(fieldId)) {
 							point.put(ContextNames.PREV_FIELD_ID, dbFieldId);
 							point.put(ContextNames.PREV_PARENT_ID, dbResourceId);
 						}
+						// Case 1b: If only unit or input value has been changed
 						else {
 							mappingChanged = false;
 						}
+						
 						Integer dbUnitInt = (Integer) dbPoint.get(AgentConstants.UNIT);
 						if (unitAvailable && dbUnitInt != null && dbUnitInt > 0) {
 							Unit dbUnit = Unit.valueOf(dbUnitInt);
@@ -156,35 +166,44 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 						if (writable) {
 							meta.setReadingType(ReadingType.WRITE);
 						}
+						meta.setValue("-1");
 						rdmList.add(meta);
 						
 						migrationPoints.add(point);
 						if (mappingChanged) {
 							connectedAssetIds.add(resourceId);
 						}
+						
+						point.put("unitOnlyChanged", !mappingChanged);
 					}
 					
 				}
 				
+				// Case 2: New commissioning (or recommissioning)
 				if(mappingChanged || unitChanged) {
 					addPointToBatchUpdateProp(point, batchUpdateList, publishTime);
 				}
 			}
 			
+			// Changing the input type in rdm if field or asset removed/changed from mapping
+			if (isCommissioned && (!resourceAvailable || !fieldAvailable || mappingChanged)) {
+				unmappedAssetIds.add(dbResourceId);
+				removeMapping(rdmList, dbResourceId, dbFieldId);
+			}
 		}
+		
 		
 		updatePoint(batchUpdateList);
 		
 		if (!rdmList.isEmpty()) {
-			List<String> fields = Arrays.asList("unit", "inputType", "readingType");
+			List<String> fields = Arrays.asList("unit", "inputType", "readingType", "value", "readingDataId");
 			ReadingsAPI.updateReadingDataMetaList(rdmList, fields);
 		}
-		if (!inputValuePoints.isEmpty()) {
+		if (!inputValuePoints.isEmpty()) { // for boolean and enum readings, option mapping is added
 			addInputValueMapping(inputValuePoints, remainingRdmPairs);
 		}
-		if (!connectedAssetIds.isEmpty()) {
-			AssetsAPI.updateAssetConnectionStatus(connectedAssetIds, true);
-		}
+		
+		handleAssetConnectionStatus(connectedAssetIds, unmappedAssetIds);
 		
 		updateLog(publishTime, id);
 		
@@ -277,6 +296,19 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 		// TODO set count of mapped points
 	}
 	
+	private void removeMapping(List<ReadingDataMeta> rdmList, long resourceId, long fieldId) {
+		// TODO Check if user confirmed to remove data and add to migration point list
+		
+		ReadingDataMeta meta = new ReadingDataMeta();
+		meta.setResourceId(resourceId);
+		meta.setFieldId(fieldId);
+		meta.setInputType(ReadingInputType.WEB);
+		meta.setReadingType(ReadingType.READ);
+		meta.setValue("-1");
+
+		rdmList.add(meta);
+	}
+	
 	private void addInputValueMapping(Map<String, List<Map<String, Object>>> values, List<Pair<Long, FacilioField>> remainingRdmPairs) throws Exception {
 		List<FacilioField> fields = FieldFactory.getReadingInputValuesFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -313,6 +345,37 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 		insertBuilder.save();
 	}
 	
+	private void handleAssetConnectionStatus(Set<Long> connectedAssetIds, Set<Long> unmappedAssetIds) throws Exception {
+		
+		if (!connectedAssetIds.isEmpty()) {
+			AssetsAPI.updateAssetConnectionStatus(connectedAssetIds, true);
+		}
+		
+		unmappedAssetIds.removeAll(connectedAssetIds);
+		if (!unmappedAssetIds.isEmpty()) {
+			FacilioModule module = ModuleFactory.getReadingDataMetaModule();
+			List<FacilioField> fields = FieldFactory.getReadingDataMetaFields();
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+			FacilioField resourceIdField = fieldMap.get("resourceId");
+			
+			
+			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+														.table(module.getTableName())
+														.select(Collections.EMPTY_LIST)
+														.aggregate(BmsAggregateOperators.CommonAggregateOperator.DISTINCT, resourceIdField)
+														.andCondition(CriteriaAPI.getCondition(resourceIdField, unmappedAssetIds, PickListOperators.IS))
+														.andCondition(CriteriaAPI.getCondition(fieldMap.get("inputType"), String.valueOf(ReadingInputType.CONTROLLER_MAPPED.getValue()), PickListOperators.IS))
+														;
+			List<Map<String, Object>> props = builder.get();
+			if (CollectionUtils.isNotEmpty(props)) {
+				List<Long> mappedAssetIds = props.stream().map(prop -> (long) prop.get("resourceId")).collect(Collectors.toList());
+				unmappedAssetIds.removeAll(mappedAssetIds);
+			}
+			if (!unmappedAssetIds.isEmpty()) {
+				AssetsAPI.updateAssetConnectionStatus(unmappedAssetIds, false);
+			}
+		}
+	}
 	
 
 	@Override
@@ -328,14 +391,13 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 					context.put(ContextNames.PREV_PARENT_ID, point.get(ContextNames.PREV_PARENT_ID));
 				}
 				context.put("prevUnit", point.get("prevUnit"));
+				context.put("unitOnlyChanged", point.get("unitOnlyChanged"));
 				
 				context.put("id", point.get("id"));
 				context.put(ContextNames.FIELD_ID, point.get(AgentConstants.FIELD_ID));
 				context.put(ContextNames.PARENT_ID, point.get(AgentConstants.RESOURCE_ID));
 				context.put(ContextNames.UNIT, point.get(AgentConstants.UNIT));
-				if(AccountUtil.getCurrentOrg().getId() != 78l) {
-					FacilioTimer.scheduleInstantJob("datamigration","MigrateReadingData", context);
-				}
+				FacilioTimer.scheduleInstantJob("datamigration","MigrateReadingData", context);
 			}
 		}
 		

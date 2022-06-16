@@ -58,6 +58,7 @@ import com.facilio.readingrule.command.*;
 import com.facilio.relation.command.AddOrUpdateRelationCommand;
 import com.facilio.relation.command.DeleteRelationCommand;
 import com.facilio.readingrule.faultimpact.command.DeleteFaultImpactFromReadingRuleCommand;
+import com.facilio.storm.command.StormHistoricalProxyCommand;
 import com.facilio.trigger.context.TriggerType;
 import com.facilio.weekends.*;
 import com.facilio.workflows.command.*;
@@ -85,6 +86,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddDefaultBundleCommand());
 			c.addCommand(new AddDefaultWoTimelineCommand());
 			c.addCommand(new AddMaintenanceAppConfigCommand());
+			//c.addCommand(new AddDefaultWoTimelineCommand());
 			return c;
 		}
 
@@ -180,8 +182,16 @@ public class TransactionChainFactory {
 		}
 
 		public static FacilioChain runThroughHistoricalRuleChain() {
+			return runThroughHistoricalRuleChain(false);
+		}
+
+		public static FacilioChain runThroughHistoricalRuleChain(boolean isNewReadingRule) {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new RunThroughHistoricalRuleCommand());
+			if(isNewReadingRule) {
+				c.addCommand(new StormHistoricalProxyCommand());
+			} else {
+				c.addCommand(new RunThroughHistoricalRuleCommand());
+			}
 			return c;
 		}
 
@@ -738,7 +748,8 @@ public class TransactionChainFactory {
 
 		public static FacilioChain editViewChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new LoadViewCommand());
+			c.addCommand(new GetDBViewCommand());
+			c.addCommand(new CheckEditAccessCommand());
 			c.addCommand(new GenerateCriteriaFromFilterCommand());
 			c.addCommand(new AddCVCommand());
 			c.addCommand(new CustomizeViewColumnCommand());
@@ -746,6 +757,8 @@ public class TransactionChainFactory {
 		}
 		public static FacilioChain deleteViewChain() {
 			FacilioChain c = getDefaultChain();
+			c.addCommand(new GetDBViewCommand());
+			c.addCommand(new CheckEditAccessCommand());
 			c.addCommand(new DeleteViewCommand());
 			return c;
 		}

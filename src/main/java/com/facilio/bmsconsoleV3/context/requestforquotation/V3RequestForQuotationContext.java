@@ -24,6 +24,7 @@ public class V3RequestForQuotationContext extends V3Context {
     private Boolean isQuoteReceived;
     private Boolean isAwarded;
     private Boolean isPoCreated;
+    private List<Long> recordIds;
 
     public String getName() {
         return name;
@@ -147,5 +148,13 @@ public class V3RequestForQuotationContext extends V3Context {
 
     public void setIsPoCreated(Boolean poCreated) {
         isPoCreated = poCreated;
+    }
+
+    public List<Long> getRecordIds() {
+        return recordIds;
+    }
+
+    public void setRecordIds(List<Long> recordIds) {
+        this.recordIds = recordIds;
     }
 }

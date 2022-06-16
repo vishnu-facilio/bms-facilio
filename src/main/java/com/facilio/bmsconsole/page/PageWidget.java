@@ -318,6 +318,8 @@ public class PageWidget {
 		// Purchase Module Widgets
 		PR_PREVIEW("prPreview"),
 		PO_PREVIEW("poPreview"),
+		RFQ_PREVIEW("rfqPreview"),
+		VENDOR_QUOTES_LINE_ITEMS("vendorQuotesLineItems"),
 
 		// Facility Module Widgets
 		FACILITY_PHOTOS("facilityPhotos"),

@@ -45,7 +45,6 @@ public class GetViewListCommand extends FacilioCommand {
 		
 		FacilioView.ViewType viewType= FacilioView.ViewType.getViewType(viewTypeVal);
 		ViewGroups.ViewGroupType groupType = ViewGroups.ViewGroupType.getGroupType(groupTypeVal);
-		boolean restrictPermissions = (boolean) context.getOrDefault(FacilioConstants.ContextNames.RESTRICT_PERMISSIONS, false);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule moduleObj = modBean.getModule(moduleName);
 		ApplicationContext currentApp = AccountUtil.getCurrentApp();
@@ -87,53 +86,39 @@ public class GetViewListCommand extends FacilioCommand {
 		
 		
 		Map<Long, SharingContext<SingleSharingContext>> sharingMap = SharingAPI.getSharingMap(ModuleFactory.getViewSharingModule(), SingleSharingContext.class);
+
 		if (!dbViews.isEmpty() && dbViews != null) {
 			for(FacilioView view: dbViews) {
 					viewMap.put(view.getName(), view);
-					if (sharingMap != null && sharingMap.containsKey(view.getId())) {
+				if (sharingMap != null && sharingMap.containsKey(view.getId())) {
 						view.setViewSharing(sharingMap.get(view.getId()));
 					}
 			}
 		}
-		
 			viewMap.entrySet().removeIf(enrty -> {
 				try {
-					return (enrty.getValue().isHidden() || 
-							(enrty.getValue().getViewSharing() != null && !enrty.getValue().getViewSharing().isAllowed(AccountUtil.getCurrentUser(),DelegationType.LIST_VIEWS) && !restrictPermissions));
+					return (enrty.getValue().isHidden() ||
+							(enrty.getValue().getViewSharing() != null && !enrty.getValue().getViewSharing().isAllowed(AccountUtil.getCurrentUser(),DelegationType.LIST_VIEWS)));
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				return false;
 			});
-		
-		
+
+		dbViews = filterAccessibleViews(dbViews);
+
 		if (!dbViews.isEmpty() && !viewGroups.isEmpty() && dbViews != null && viewGroups != null) {
 			for(ViewGroups viewGroup : viewGroups) {
 				List<FacilioView> groupBasedViews = dbViews.stream().filter(view -> view.getGroupId() == viewGroup.getId()).collect(Collectors.toList());
 				if (groupBasedViews != null && groupBasedViews.size() > 0) {
-				for(FacilioView view: groupBasedViews) {
-						if (sharingMap != null && sharingMap.containsKey(view.getId())) {
-							view.setViewSharing(sharingMap.get(view.getId()));
+					groupBasedViews.sort(Comparator.comparing(FacilioView::getSequenceNumber, (s1, s2) -> {
+						if(s1 == s2){
+							return 0;
 						}
-				}
-					groupBasedViews.removeIf(view -> {
-						try {
-							return (view.isHidden() || 
-									(view.getViewSharing() != null && !view.getViewSharing().isAllowed(AccountUtil.getCurrentUser(),DelegationType.LIST_VIEWS) && !restrictPermissions));
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						return false;
-					});
-				groupBasedViews.sort(Comparator.comparing(FacilioView::getSequenceNumber, (s1, s2) -> {
-					if(s1 == s2){
-						return 0;
+						return s1 < s2 ? -1 : 1;
+					}));
 					}
-					return s1 < s2 ? -1 : 1;
-				}));
-				}
 				viewGroup.setViews(groupBasedViews);
 			}
 		}
@@ -404,6 +389,35 @@ public class GetViewListCommand extends FacilioCommand {
 			viewGroups.addAll(ViewAPI.getAllGroups(alarmModule.getModuleId(), -1, moduleName, groupType));
 		}
 		
+	}
+
+	private FacilioView addEditableAccess(FacilioView view, Boolean isSuperAdmin, Long currentUserId, Long ownerId) {
+
+		Boolean isLocked = view.getIsLocked() != null ? view.getIsLocked() : false;
+
+		view.setEditable(isSuperAdmin || !isLocked || (isLocked && (ownerId == currentUserId)));
+
+		return view;
+	}
+
+	public List<FacilioView> filterAccessibleViews(List<FacilioView> dbViews) throws Exception {
+		List<FacilioView> resultViews = new ArrayList<>();
+
+		Boolean isSuperAdmin = AccountUtil.getCurrentUser().isSuperAdmin();
+		long currentUserId = AccountUtil.getCurrentUser().getId();
+		long superAdminUserId = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId()).getOuid();
+
+		for (FacilioView view : dbViews){
+			long ownerId = view.getOwnerId() != -1 ? view.getOwnerId() : superAdminUserId;
+			if (isSuperAdmin || (ownerId == currentUserId)){
+				resultViews.add(addEditableAccess(view, isSuperAdmin, currentUserId, ownerId));
+			} else if (view.isHidden() || (view.getViewSharing() != null && !view.getViewSharing().isAllowed(AccountUtil.getCurrentUser(), DelegationType.LIST_VIEWS))) {
+				continue;
+			} else {
+				resultViews.add(addEditableAccess(view, isSuperAdmin, currentUserId, ownerId));
+			}
+		}
+		return resultViews;
 	}
 	
 }

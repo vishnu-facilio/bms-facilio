@@ -748,16 +748,24 @@
            <artifactId>commonmark-ext-gfm-strikethrough</artifactId>
            <version>0.18.0</version>
        </dependency>
-       <dependency>
-          <groupId>org.commonmark</groupId>
-          <artifactId>commonmark-ext-gfm-tables</artifactId>
-          <version>0.18.0</version>
-      </dependency>
-      <dependency>
-         <groupId>org.commonmark</groupId>
-         <artifactId>commonmark-ext-ins</artifactId>
-         <version>0.18.0</version>
-      </dependency>
+        <dependency>
+            <groupId>org.commonmark</groupId>
+            <artifactId>commonmark-ext-gfm-tables</artifactId>
+            <version>0.18.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.commonmark</groupId>
+            <artifactId>commonmark-ext-ins</artifactId>
+            <version>0.18.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/io.opentelemetry/opentelemetry-api-metrics -->
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-api-metrics</artifactId>
+            <version>1.10.0-alpha-rc.1</version>
+            <scope>runtime</scope>
+        </dependency>
+
 
     </dependencies>
     <build>

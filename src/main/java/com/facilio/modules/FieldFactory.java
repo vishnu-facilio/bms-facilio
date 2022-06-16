@@ -3498,6 +3498,18 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getClientContactFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getClientContactModule();
+        fields.add(getIdField(module));
+        FacilioField clientField = new FacilioField();
+        clientField.setName("client");
+        clientField.setDataType(FieldType.NUMBER);
+        clientField.setColumnName("CLIENT_ID");
+        clientField.setModule(module);
+        fields.add(clientField);
+        return fields;
+    }
     public static List<FacilioField> getWorkOrderTemplateFields(){
         List<FacilioField> woTemplateFields = getWOrderTemplateFields();
         LookupField vendorField = (LookupField) getField("vendorId", "VENDOR_ID", ModuleFactory.getWorkOrderTemplateModule(), FieldType.LOOKUP);
@@ -3954,6 +3966,20 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("appId", "APP_ID", module, FieldType.NUMBER));
 
         fields.add(getField("primary", "ISPRIMARY", module, FieldType.BOOLEAN));
+
+        FacilioField createdBy = new FacilioField();
+        createdBy.setName("ownerId");
+        createdBy.setDataType(FieldType.NUMBER);
+        createdBy.setColumnName("OWNER_ID");
+        createdBy.setModule(module);
+        fields.add(createdBy);
+
+        FacilioField isLocked = new FacilioField();
+        isLocked.setName("isLocked");
+        isLocked.setDataType(FieldType.BOOLEAN);
+        isLocked.setColumnName("IS_LOCKED");
+        isLocked.setModule(module);
+        fields.add(isLocked);
 
         return fields;
 
@@ -6459,6 +6485,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("rdmId", "RDMID", module, FieldType.NUMBER));
         /*fields.add(getOrgIdField(module));*/
         fields.add(getField("idx", "IDX", module, FieldType.NUMBER));
+        fields.add(getField("pointId", "POINT_ID", module, FieldType.NUMBER));
         fields.add(getField("inputValue", "INPUT_VALUE", module, FieldType.STRING));
 
         return fields;

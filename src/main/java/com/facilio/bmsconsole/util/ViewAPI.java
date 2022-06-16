@@ -327,6 +327,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 							break;
 					}
 				}
+				view.setViewType(view.getType());
 				if (view.getCriteriaId() != -1) {
 					Criteria criteria = CriteriaAPI.getCriteria(orgId, view.getCriteriaId());
 					setCriteriaValue(criteria);
@@ -715,8 +716,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 
 	}
 	
-	public static int deleteView(long id) throws Exception {
-		FacilioView viewDetail = getView(id);
+	public static int deleteView(FacilioView viewDetail) throws Exception {
 		//Deleting dependencies
 		switch (getViewType(viewDetail.getType())) {
 			case TIMELINE:
@@ -731,7 +731,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 				.table(ModuleFactory.getViewsModule().getTableName())
-				.andCustomWhere("Views.ID = ?", id);
+				.andCustomWhere("Views.ID = ?", viewDetail.getId());
 		return builder.delete();
 
 	}

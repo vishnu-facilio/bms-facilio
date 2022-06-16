@@ -113,10 +113,16 @@ public abstract class FacilioProcessor implements  Runnable {
             AccountUtil.setCurrentAccount(orgId);
             initialize();
             while (isRunning) {
-                Span span = TRACER.spanBuilder(FacilioProcessor.class.getName()).setSpanKind(SpanKind.CONSUMER).startSpan();
-                try (Scope scope = span.makeCurrent()) {
+                try {
                     List<FacilioRecord> records = get(5000);
-                    processRecords(records);
+                    if (records != null && !records.isEmpty()) {
+                        Span span = TRACER.spanBuilder(FacilioProcessor.class.getSimpleName()).setSpanKind(SpanKind.CONSUMER).startSpan();
+                        try (Scope scope = span.makeCurrent()) {
+                            processRecords(records);
+                        } finally {
+                            span.end();
+                        }
+                    }
                 } catch (Exception e) {
                     LOGGER.error("Error occurred during processing of records", e);
                     try {
@@ -124,8 +130,6 @@ public abstract class FacilioProcessor implements  Runnable {
                     } catch (InterruptedException in) {
                         LOGGER.error("Interrupted exception ", in);
                     }
-                } finally {
-                    span.end();
                 }
             }
         } catch (Exception e) {

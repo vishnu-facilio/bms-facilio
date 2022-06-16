@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.people;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsoleV3.context.V3ClientContactContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContactContext;
 import com.facilio.bmsconsoleV3.context.V3VendorContactContext;
@@ -62,6 +63,24 @@ public class ValidateContactsBeforeDeleteCommandV3 extends FacilioCommand {
                             criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getVendorContactFields()).get("vendor"), String.valueOf(parentId), NumberOperators.EQUALS));
                             FacilioField aggregateField = FieldFactory.getIdField(modBean.getModule(moduleName));
                             List<Map<String, Object>> props = V3RecordAPI.getRecordsAggregateValue(moduleName, null, V3VendorContactContext.class,criteria, BmsAggregateOperators.CommonAggregateOperator.COUNT, aggregateField, null);
+                            if(props != null) {
+                                Long count = (Long) props.get(0).get(aggregateField.getName());
+                                if (count != null && count <= 1) {
+                                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Cannot delete contact");
+                                }
+                            }
+                        }
+                    }
+
+                    else if (people.getPeopleType() == V3PeopleContext.PeopleType.CLIENT_CONTACT.getIndex()) {
+                        V3ClientContactContext clientContact = V3RecordAPI.getRecord(moduleName,people.getId(), V3ClientContactContext.class);
+                        extendedModuleDataList.add((V3ClientContactContext) clientContact);
+                        if(clientContact != null && clientContact.getClient() != null){
+                            parentId = clientContact.getClient().getId();
+                            Criteria criteria = new Criteria();
+                            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getClientContactFields()).get("client"), String.valueOf(parentId), NumberOperators.EQUALS));
+                            FacilioField aggregateField = FieldFactory.getIdField(modBean.getModule(moduleName));
+                            List<Map<String, Object>> props = V3RecordAPI.getRecordsAggregateValue(moduleName, null, V3ClientContactContext.class,criteria, BmsAggregateOperators.CommonAggregateOperator.COUNT, aggregateField, null);
                             if(props != null) {
                                 Long count = (Long) props.get(0).get(aggregateField.getName());
                                 if (count != null && count <= 1) {

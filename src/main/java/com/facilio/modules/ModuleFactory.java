@@ -143,6 +143,8 @@ public class ModuleFactory {
 		moduleMap.put(ContextNames.TRANSFER_REQUEST, getTransferRequestModule());
 		moduleMap.put(ContextNames.TRANSFER_REQUEST_SHIPMENT, getTransferRequestShipmentModule());
 		moduleMap.put(ContextNames.NEW_READING_RULE_MODULE, getNewReadingRuleModule());
+		moduleMap.put(ContextNames.REQUEST_FOR_QUOTATION, getRequestForQuotationModule());
+		moduleMap.put(ContextNames.VENDOR_QUOTES, getVendorQuotesModule());
 		return moduleMap;
 	}
 	
@@ -4645,6 +4647,22 @@ public class ModuleFactory {
 		module.setName(ContextNames.TRANSFER_REQUEST_SHIPMENT);
 		module.setDisplayName("Transfer Request Shipment");
 		module.setTableName("Transfer_Request_Shipment");
+		return module;
+	}
+	public static FacilioModule getRequestForQuotationModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName(ContextNames.REQUEST_FOR_QUOTATION);
+		module.setDisplayName("Request For Quotation");
+		module.setTableName("Request_For_Quotation");
+		return module;
+	}
+	public static FacilioModule getVendorQuotesModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName(ContextNames.VENDOR_QUOTES);
+		module.setDisplayName("Vendor Quotes");
+		module.setTableName("Vendor_Quotes");
 		return module;
 	}
 	public static FacilioModule getTriggerModule()
