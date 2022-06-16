@@ -46,52 +46,54 @@ public class  LoadRecordIdForPassCodeCommandV3 extends FacilioCommand {
         }
         
         if(MapUtils.isNotEmpty(queryParams) && !queryParams.containsKey("id")) {
-
         	if(queryParams.containsKey("passCode") && queryParams.get("passCode") != null && !queryParams.get("passCode").isEmpty()){
         		if(StringUtils.isNotEmpty((String)queryParams.get("passCode").get(0))) {
-        			List<BaseVisitContextV3> baseVisits = V3VisitorManagementAPI.getBaseVisit(-1l, (String)queryParams.get("passCode").get(0), false);
-        			if(baseVisits != null && !baseVisits.isEmpty()) {
-        				BaseVisitContextV3 inviteBaseVisit = null;
-        				List<Long> checkInBaseVisitIds = new ArrayList<Long>();
-						List<BaseVisitContextV3> visitorLogList=new ArrayList<BaseVisitContextV3>();
-        				for(BaseVisitContextV3 baseVisit:baseVisits) {
-        					if(baseVisit.getChildVisitTypeEnum() == BaseVisitContextV3.ChildVisitType.INVITE) {
-        						inviteBaseVisit = baseVisit;
-        					}
-        					else if(baseVisit.getChildVisitTypeEnum() == BaseVisitContextV3.ChildVisitType.VISIT){
-								visitorLogList.add(baseVisit);
-        					}
-        				}
-						if(!visitorLogList.isEmpty()) {
-							BaseVisitContextV3 lastVistiorlog = visitorLogList.get(visitorLogList.size() - 1);
-							checkInBaseVisitIds.add(lastVistiorlog.getId());
-							if (lastVistiorlog.getModuleState().getStatus().equals("CheckedOut") && queryParams.containsKey("checkOut")) {
-								throw new RESTException(ErrorCode.NO_ACTIVE_CHECK_IN_FOR_INVITE_CODE, "No active check-in found for the invite code");
-							} else if (lastVistiorlog.getModuleState().getStatus().equals("CheckedIn") && !queryParams.containsKey("checkOut")) {
-								throw new RESTException(ErrorCode.ALREADY_CHECKED_IN, "You are already checked-in using this invite");
+					String passCode= ((String) queryParams.get("passCode").get(0)).replaceAll("[^0-9.]","");
+					if(passCode != null && !passCode.isEmpty()) {
+						List<BaseVisitContextV3> baseVisits = V3VisitorManagementAPI.getBaseVisit(-1l, passCode, false);
+						if (baseVisits != null && !baseVisits.isEmpty()) {
+							BaseVisitContextV3 inviteBaseVisit = null;
+							List<Long> checkInBaseVisitIds = new ArrayList<Long>();
+							List<BaseVisitContextV3> visitorLogList = new ArrayList<BaseVisitContextV3>();
+							for (BaseVisitContextV3 baseVisit : baseVisits) {
+								if (baseVisit.getChildVisitTypeEnum() == BaseVisitContextV3.ChildVisitType.INVITE) {
+									inviteBaseVisit = baseVisit;
+								} else if (baseVisit.getChildVisitTypeEnum() == BaseVisitContextV3.ChildVisitType.VISIT) {
+									visitorLogList.add(baseVisit);
+								}
 							}
-							else if(lastVistiorlog.getModuleState().getStatus().equals("CheckedOut") && inviteBaseVisit == null)
-							{
-								throw new RESTException(ErrorCode.INVITE_EXPIRED, "Not a valid invite code");
+							if (!visitorLogList.isEmpty()) {
+								BaseVisitContextV3 lastVistiorlog = visitorLogList.get(visitorLogList.size() - 1);
+								checkInBaseVisitIds.add(lastVistiorlog.getId());
+								if (lastVistiorlog.getModuleState().getStatus().equals("CheckedOut") && queryParams.containsKey("checkOut")) {
+									throw new RESTException(ErrorCode.NO_ACTIVE_CHECK_IN_FOR_INVITE_CODE, "No active check-in found for the invite code");
+								} else if (lastVistiorlog.getModuleState().getStatus().equals("CheckedIn") && !queryParams.containsKey("checkOut")) {
+									throw new RESTException(ErrorCode.ALREADY_CHECKED_IN, "You are already checked-in using this invite");
+								} else if (lastVistiorlog.getModuleState().getStatus().equals("CheckedOut") && inviteBaseVisit == null) {
+									throw new RESTException(ErrorCode.INVITE_EXPIRED, "Not a valid invite code");
+								}
 							}
+							if (!checkInBaseVisitIds.isEmpty() && queryParams.containsKey("checkOut")) {
+								context.put(Constants.RECORD_ID_LIST, checkInBaseVisitIds);
+								recordIds = checkInBaseVisitIds;
+							} else if (inviteBaseVisit != null) {
+								context.put(Constants.RECORD_ID_LIST, Collections.singletonList(inviteBaseVisit.getId()));
+								recordIds = Collections.singletonList(inviteBaseVisit.getId());
+							}
+							List<Object> recordIdParam = new ArrayList<Object>();
+							recordIdParam.addAll(recordIds);
+							queryParams.put("id", recordIdParam);
 						}
-						if(!checkInBaseVisitIds.isEmpty() && queryParams.containsKey("checkOut")) {
-							context.put(Constants.RECORD_ID_LIST, checkInBaseVisitIds);
-							recordIds = checkInBaseVisitIds;
+						else
+						{
+							throw new RESTException(ErrorCode.INVALID_INVITE_CODE, "Invalid invite code");
 						}
-						else if(inviteBaseVisit != null) {
-							context.put(Constants.RECORD_ID_LIST, Collections.singletonList(inviteBaseVisit.getId()));
-							recordIds = Collections.singletonList(inviteBaseVisit.getId());
-						}
-            			List<Object> recordIdParam = new ArrayList<Object>();
-            			recordIdParam.addAll(recordIds);
-            			queryParams.put("id", recordIdParam);		
-        			}
+					}
 					else
 					{
 						throw new RESTException(ErrorCode.INVALID_INVITE_CODE, "Invalid invite code");
 					}
-        		}	
+        		}
         	}
         	else if(queryParams.containsKey("contactNumber") && queryParams.get("contactNumber") != null && !queryParams.get("contactNumber").isEmpty() && queryParams.containsKey("checkOut") && queryParams.get("checkOut") != null && !queryParams.get("checkOut").isEmpty()){
         		if(StringUtils.isNotEmpty((String)queryParams.get("contactNumber").get(0)) && moduleName.equals(FacilioConstants.ContextNames.VISITOR_LOG) && StringUtils.isNotEmpty((String)queryParams.get("checkOut").get(0)) && Boolean.parseBoolean((String)queryParams.get("checkOut").get(0))) {	
