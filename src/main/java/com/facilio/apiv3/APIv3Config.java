@@ -932,6 +932,8 @@ public class APIv3Config {
                 .summary()
                 .beforeFetch(new LoadVendorLookupCommandV3())
                 .afterFetch(new LookUpPrimaryFieldHandlingCommandV3())
+                .delete()
+                .afterDelete(new PeopleUserDeletionV3())
                 .build();
     }
 
@@ -951,6 +953,7 @@ public class APIv3Config {
                 .afterFetch(ReadOnlyChainFactoryV3.getTenantsAfterFetchOnSummaryChain())
                 .delete()
                 .beforeDelete(new CheckOccupyingTenantUnitsForTenantCommandV3())
+                .afterDelete(new PeopleUserDeletionV3())
                 .build();
     }
 
@@ -989,7 +992,7 @@ public class APIv3Config {
                 .afterFetch(ReadOnlyChainFactoryV3.getPeopleRoleAndScopingCommand())
                 .delete()
                 .beforeDelete(new ValidateContactsBeforeDeleteCommandV3())
-                .afterDelete(new MarkRandomContactAsPrimaryCommandV3())
+                .afterDelete(new MarkRandomContactAsPrimaryCommandV3(), new DeletePeopleUserPortalAccessV3())
                 .build();
     }
 
@@ -1010,7 +1013,7 @@ public class APIv3Config {
                 .afterFetch(ReadOnlyChainFactoryV3.getPeopleRoleAndScopingCommand())
                 .delete()
                 .beforeDelete(new ValidateContactsBeforeDeleteCommandV3())
-                .afterDelete(new MarkRandomContactAsPrimaryCommandV3())
+                .afterDelete(new MarkRandomContactAsPrimaryCommandV3(), new DeletePeopleUserPortalAccessV3())
                 .build();
     }
 
@@ -1029,7 +1032,8 @@ public class APIv3Config {
                 .summary()
                 .beforeFetch(new LoadEmployeeLookupCommandV3())
                 .afterFetch(new FetchRolesForPeopleCommandV3())
-
+                .delete()
+                .afterDelete(new PeopleUserDeletionV3())
                 .build();
     }
 
