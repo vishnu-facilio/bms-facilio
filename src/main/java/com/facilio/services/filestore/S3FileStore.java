@@ -203,8 +203,15 @@ public class S3FileStore extends FileStore {
 		}
 		LOGGER.debug("filePath: " + getBucketName() + "" + fileInfo.getFilePath());
 		LOGGER.debug("fileUrl: " + AwsUtil.getAmazonS3Client().getUrl(getBucketName(), fileInfo.getFilePath()));
-		S3Object so = AwsUtil.getAmazonS3Client().getObject(getBucketName(), fileInfo.getFilePath());
-		return so.getObjectContent();
+
+		try {
+			S3Object so = AwsUtil.getAmazonS3Client().getObject(getBucketName(), fileInfo.getFilePath());
+			return so.getObjectContent();
+		}
+		catch (Exception e) {
+			LOGGER.error("Error occurred while getting file : "+String.valueOf(fileInfo.getFilePath()), e);
+			throw e;
+		}
 	}
 
 	@Override
