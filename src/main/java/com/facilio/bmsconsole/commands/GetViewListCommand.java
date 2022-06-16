@@ -395,7 +395,7 @@ public class GetViewListCommand extends FacilioCommand {
 
 		Boolean isLocked = view.getIsLocked() != null ? view.getIsLocked() : false;
 
-		view.setEditable(isSuperAdmin || !isLocked || (isLocked && (ownerId == currentUserId)));
+		view.setEditable(isSuperAdmin || !isLocked || (isLocked && (ownerId.equals(currentUserId))));
 
 		return view;
 	}
