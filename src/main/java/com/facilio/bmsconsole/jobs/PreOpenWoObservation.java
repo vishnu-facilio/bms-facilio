@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.jobs;
 
 import com.amazonaws.util.CollectionUtils;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
@@ -61,16 +62,14 @@ public class PreOpenWoObservation extends FacilioJob {
         List<V3WorkOrderContext> wos = selectRecordsBuilder.get();
 
         if (CollectionUtils.isNullOrEmpty(wos)) {
-            LOGGER.info("All Workorders intact; no anomalies");
+            LOGGER.info("pre-open observation :: all workorders intact, no anomalies");
             return;
         }
-
-        LOGGER.warn("Erroneous WOs:");
 
         StringBuilder bdr = new StringBuilder();
         for (V3WorkOrderContext wo : wos) {
             bdr.append("ORG ID:" + wo.getOrgId() + "; WO ID: " + wo.getId() + "; PM ID: " + wo.getPm() + "\n");
-            LOGGER.warn("ORG ID:" + wo.getOrgId() + "; WO ID: " + wo.getId() + "; PM ID: " + wo.getPm());
+            LOGGER.warn("pre-open observation :: erroneous WO - ORG ID:" + wo.getOrgId() + "; WO ID: " + wo.getId() + "; PM ID: " + wo.getPm().getId());
         }
 
         try {
@@ -82,6 +81,11 @@ public class PreOpenWoObservation extends FacilioJob {
     }
 
     private void SendEmailAlert(String message, long orgID) throws Exception {
+        if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PM_OBSERVATION)) {
+            LOGGER.info("skipping email");
+            return;
+        }
+        LOGGER.info("sending email");
         EMailTemplate template = new EMailTemplate();
         template.setFrom(EmailClient.getFromEmail("alert"));
         template.setTo("pm-issues@facilio.com");

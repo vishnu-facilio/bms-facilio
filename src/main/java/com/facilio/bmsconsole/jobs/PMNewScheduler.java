@@ -3,10 +3,12 @@ package com.facilio.bmsconsole.jobs;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.db.transaction.FacilioTransactionManager;
 import com.facilio.services.email.EmailClient;
 import com.facilio.services.factory.FacilioFactory;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -43,6 +45,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.taskengine.job.FacilioJob;
 import com.facilio.taskengine.job.JobContext;
 import org.json.simple.JSONObject;
+import org.owasp.validator.html.util.ErrorMessageUtil;
 
 public class PMNewScheduler extends FacilioJob {
 
@@ -100,9 +103,11 @@ public class PMNewScheduler extends FacilioJob {
 						}
 					} catch (Exception e) {
 						String msg = "Exception: " + e.getMessage() + "PM ID: " + pm.getId() + "; ORG ID" + pm.getOrgId();
+						msg += "\n";
+						msg += ExceptionUtils.getStackTrace(e);
+
 						SendEmailAlert(msg, pm.getOrgId());
 						LOGGER.error("Exception occurred in PM Scheduler Job ID - " + jc.getJobId(), e);
-						CommonCommandUtil.emailException("PMScheduler", "Exception occurred in generating Schedule - orgId: " + jc.getJobId() + " pmId " + pm.getId(), e);
 					}
 				}
 
@@ -123,15 +128,23 @@ public class PMNewScheduler extends FacilioJob {
 			}
 		} catch (Exception e) {
 			String msg = "Exception: " + e.getMessage() + "Job ID: " + jc.getJobId();
+
+			msg += "\n";
+			msg += ExceptionUtils.getStackTrace(e);
+
 			SendEmailAlert(msg, jc.getOrgId());
 
 			FacilioTransactionManager.INSTANCE.getTransactionManager().setRollbackOnly();
-			LOGGER.error("Exception occurred in PM Scheduler Job ID - " + jc.getJobId(), e);
-			CommonCommandUtil.emailException("PMScheduler", "Exception occurred in PM Scheduler Job - " + jc.getJobId(), e);
+			LOGGER.error("Exception in PM Scheduler Job ID - " + jc.getJobId(), e);
 		}
 	}
 
 	private void SendEmailAlert(String message, long orgID) throws Exception {
+		if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PM_OBSERVATION)) {
+			LOGGER.info("skipping email");
+			return;
+		}
+		LOGGER.info("sending email");
 		EMailTemplate template = new EMailTemplate();
 		template.setFrom(EmailClient.getFromEmail("alert"));
 		template.setTo("pm-issues@facilio.com");

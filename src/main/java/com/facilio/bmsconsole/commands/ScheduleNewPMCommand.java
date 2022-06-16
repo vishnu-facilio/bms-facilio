@@ -5,6 +5,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.services.email.EmailClient;
 import com.facilio.services.factory.FacilioFactory;
@@ -100,6 +101,11 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
     }
 
     private void SendEmailAlert(String message, long orgID) throws Exception {
+        if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PM_OBSERVATION)) {
+            LOGGER.info("skipping email");
+            return;
+        }
+        LOGGER.info("sending email");
         EMailTemplate template = new EMailTemplate();
         template.setFrom(EmailClient.getFromEmail("alert"));
         template.setTo("pm-issues@facilio.com");
