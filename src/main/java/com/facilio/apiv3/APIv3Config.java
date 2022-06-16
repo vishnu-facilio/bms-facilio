@@ -53,6 +53,8 @@ import com.facilio.bmsconsoleV3.commands.item.LoadItemLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.FillJobPlanDetailsCommand;
+import com.facilio.bmsconsoleV3.commands.labour.GetLabourListCommandV3;
+import com.facilio.bmsconsoleV3.commands.labour.SetLocationCommandV3;
 import com.facilio.bmsconsoleV3.commands.moves.UpdateEmployeeInDesksCommandV3;
 import com.facilio.bmsconsoleV3.commands.moves.ValidateMovesCommand;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
@@ -123,6 +125,7 @@ import com.facilio.bmsconsoleV3.context.facilitybooking.*;
 import com.facilio.bmsconsoleV3.context.floorplan.*;
 import com.facilio.bmsconsoleV3.context.inventory.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
+import com.facilio.bmsconsoleV3.context.labour.LabourContextV3;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3ReceiptContext;
@@ -574,6 +577,19 @@ public class APIv3Config {
                 .beforeFetch(new LoadClientLookupCommandV3())
                 .summary()
                 .beforeFetch(new LoadClientLookupCommandV3())
+                .delete()
+                .build();
+    }
+
+    @Module("labour")
+    public static Supplier<V3Config> getLabour() {
+        return () -> new V3Config(LabourContextV3.class, new ModuleCustomFieldCount30())
+                .create()
+                .beforeSave(new SetLocationCommandV3(),new SetLocalIdCommandV3())
+                .list()
+                .beforeFetch(new GetLabourListCommandV3())
+                .update()
+                .beforeSave(new SetLocationCommandV3())
                 .delete()
                 .build();
     }
