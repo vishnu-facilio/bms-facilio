@@ -178,7 +178,7 @@ public class OrgBeanImpl implements OrgBean {
 				.innerJoin("People")
 				.on("People.ID = ORG_Users.PEOPLE_ID");
 
-		if(teamId != null){
+		if(CollectionUtils.isNotEmpty(teamId)){
 			selectBuilder.innerJoin("FacilioGroupMembers").on("FacilioGroupMembers.ORG_USERID = ORG_Users.ORG_USERID");
 			selectBuilder.andCondition(CriteriaAPI.getCondition("FacilioGroupMembers.GROUPID", "groupId", StringUtils.join(teamId, ','), NumberOperators.EQUALS));
 		}
