@@ -246,6 +246,23 @@ public class getIndoorFloorPlanBookingViewerCommand extends FacilioCommand {
            	      	zonevsRecordObjectMap.put(zoneModuleId, recordVsRecordMap);
                 	 
                  }
+				else if(module.getName().equals(FacilioConstants.ContextNames.PARKING_STALL)) {
+
+					Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
+
+					Collection<SupplementRecord>lookUpfields = new ArrayList<>();
+					List<FacilioField> fields = modBean.getAllFields(module.getName());
+					Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+					lookUpfields.add((LookupField) fieldMap.get("employee"));
+					lookUpfields.add((LookupField) fieldMap.get(FacilioConstants.ContextNames.SPACE_CATEGORY_FIELD));
+
+					zoneIdvsModuleListData.put(module.getName(), V3RecordAPI.getRecordsListWithSupplements(module.getName(), recordIds, beanClassName, lookUpfields));
+					Map<Long, ModuleBaseWithCustomFields> recordVsRecordMap = zoneIdvsModuleListData.get(module.getName()).stream().collect(
+							Collectors.toMap(r -> r.getId(), r -> r));
+
+					zonevsRecordObjectMap.put(zoneModuleId, recordVsRecordMap);
+
+				}
                  else {
                 	 
                 		Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);

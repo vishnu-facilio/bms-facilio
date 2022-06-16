@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.V3BaseSpaceContext;
 import com.facilio.bmsconsoleV3.context.V3BuildingContext;
 import com.facilio.bmsconsoleV3.context.V3SiteContext;
+import com.facilio.bmsconsoleV3.context.V3SpaceCategoryContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -44,6 +45,29 @@ public class V3SpaceAPI {
         LookupField location = (LookupField) fieldsAsMap.get("location");
         selectBuilder.fetchSupplement(location);
         List<V3SiteContext> spaces = selectBuilder.get();
+
+        if(spaces != null && !spaces.isEmpty()) {
+            return spaces.get(0);
+        }
+        return null;
+    }
+    public static V3SpaceCategoryContext getSpaceCategoryBySpaceModule(String moduleName) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE_CATEGORY);
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SPACE_CATEGORY);
+        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+        FacilioModule spaceModule = modBean.getModule(moduleName);
+
+
+        SelectRecordsBuilder<V3SpaceCategoryContext> selectBuilder = new SelectRecordsBuilder<V3SpaceCategoryContext>()
+                .select(fields)
+                .table(module.getTableName())
+                .moduleName(module.getName())
+                .beanClass(V3SpaceCategoryContext.class)
+                .andCondition(CriteriaAPI.getCondition("SPACE_MODULE_ID", "spaceModuleId", String.valueOf(spaceModule.getModuleId()), NumberOperators.EQUALS))
+                .limit(1);
+
+        List<V3SpaceCategoryContext> spaces = selectBuilder.get();
 
         if(spaces != null && !spaces.isEmpty()) {
             return spaces.get(0);

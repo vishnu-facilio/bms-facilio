@@ -3,8 +3,13 @@ package com.facilio.bmsconsoleV3.commands;
 import java.util.HashMap;
 import java.util.List;
 
+import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsoleV3.context.V3FloorContext;
+import com.facilio.bmsconsoleV3.context.V3SpaceCategoryContext;
 import com.facilio.bmsconsoleV3.context.V3SpaceContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
+import com.facilio.bmsconsoleV3.util.V3SpaceAPI;
+import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
 
 import com.facilio.command.FacilioCommand;
@@ -20,11 +25,14 @@ public class AddParkingStallSpaceCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		HashMap record = (HashMap)context.get("recordMap");
+
+		V3SpaceCategoryContext spaceCategory = V3SpaceAPI.getSpaceCategoryBySpaceModule(FacilioConstants.ContextNames.PARKING_STALL);
 		
 		List<V3ParkingStallContext> spaces = (List<V3ParkingStallContext>)record.get("parkingstall");
 		
 		if (spaces != null && !spaces.isEmpty()) {
 			for (V3ParkingStallContext space : spaces) {
+				space.setSpaceCategoryId(spaceCategory.getId());
 				space.setSpaceType(SpaceType.SPACE);
 				updateSiteAndBuildingId(space);
 			}

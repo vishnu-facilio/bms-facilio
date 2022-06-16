@@ -66,7 +66,11 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 		List<V3IndoorFloorPlanGeoJsonContext> geoMarkers = new ArrayList<>();
 		List<V3IndoorFloorPlanGeoJsonContext> geoZones = new ArrayList<>();
 
-		context.put("bookingMarkerObject", (JSONObject)V3FloorPlanAPI.getBookingMarkerProperties());
+		Role role = AccountUtil.getCurrentUser().getRole();
+		if (!role.isPrevileged()) {
+			context.put("bookingMarkerObject", (JSONObject)V3FloorPlanAPI.getBookingMarkerProperties());
+		}
+
 
 
 		if (viewMode == null) {
@@ -247,7 +251,7 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 						   List<BookingSlotsContext> facilityBooking = (List<BookingSlotsContext>) facilityBookingsMap.get(desk.getId());
 
 					 if (facilityBooking != null && facilityBooking.size() > 0) {
-						   properties.setSecondaryLabel(getSecondaryLabelFromBookingsSlots(facilityBooking, bookingMap));
+						   properties.setSecondaryLabel(V3FloorPlanAPI.getSecondaryLabelFromBookingsSlots(facilityBooking, bookingMap));
 						   properties.setCenterLabel("");
 						   iconName = iconName.concat("_booked");
 						   properties.setIsBooked(true);
@@ -408,23 +412,6 @@ public class getIndoorFloorPlanBookingResultCommands extends FacilioCommand {
 	public static void hideMarkerProperties(V3IndoorFloorPlanPropertiesContext properties) {
 		properties.setCenterLabel("");
 		properties.setSecondaryLabel("");
-	}
-	
-	private static String getSecondaryLabelFromBookingsSlots( List<BookingSlotsContext>  bookingSlots, Map<Long, V3FacilityBookingContext> bookingMap) {
-		
-		Map<Long, String> bookingRequester = new HashMap<>();
-		
-
-		bookingSlots.forEach(r -> {
-			if(r.getBooking() != null) {
-				V3FacilityBookingContext booking = bookingMap.get(r.getBooking().getId());
-				if (booking.getReservedFor() != null && booking.getReservedFor().getName() != null) {
-					bookingRequester.put(booking.getReservedFor().getId(), booking.getReservedFor().getName());
-				}
-			}
-		});
-				
-		return String.join(", ",bookingRequester.values());
 	}
 	
 
