@@ -1,8 +1,11 @@
 package com.facilio.bmsconsoleV3.util;
 
 import java.util.*;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.bmsconsole.context.EmployeeContext;
@@ -17,6 +20,8 @@ import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext
 import com.facilio.bmsconsoleV3.context.floorplan.*;
 import com.google.api.client.json.Json;
 import com.opensymphony.xwork2.ActionContext;
+import lombok.extern.log4j.Log4j;
+import org.apache.logging.log4j.util.Strings;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -52,8 +57,9 @@ import static com.facilio.constants.FacilioConstants.ContextNames.INDOOR_FLOOR_P
 import static java.util.Objects.isNull;
 import static nl.basjes.shaded.org.springframework.util.ObjectUtils.isEmpty;
 
-
+@Log4j
 public class V3FloorPlanAPI {
+	private static Logger log = LogManager.getLogger(UserBeanImpl.class.getName());
 
 	public static String getSecondaryLabelFromBookingsSlots( List<BookingSlotsContext>  bookingSlots, Map<Long, V3FacilityBookingContext> bookingMap) {
 
@@ -357,10 +363,21 @@ public class V3FloorPlanAPI {
 		String availableColor = bookingCustomization.getBookingState().getAvailableColor();
 		String nonReservableColor = bookingCustomization.getBookingState().getNonReservableColor();
 		String partiallyAvailableColor = bookingCustomization.getBookingState().getPartiallyAvailableColor();
-		String assignedSpaceColor = assignCustomization.getAssignmentState().getAssignedColor();
-		String unAssignedSpaceColor = assignCustomization.getAssignmentState().getUnAssignedColor();
-		Double assignedSpaceOpacity = assignCustomization.getAssignmentState().getAssignedOpacity();
-		Double unassignedSpaceOpacity = assignCustomization.getAssignmentState().getUnAssignedOpacity();
+		String assignedSpaceColor = "rgba(255, 0, 0,0.3)";
+		String unAssignedSpaceColor = "rgba(0, 0, 0,0.3)";
+		Double assignedSpaceOpacity = 0.3;
+		Double unassignedSpaceOpacity = 0.3;
+
+		try {
+			 assignedSpaceColor = assignCustomization.getAssignmentState().getAssignedColor();
+			 unAssignedSpaceColor = assignCustomization.getAssignmentState().getUnAssignedColor();
+			 assignedSpaceOpacity = assignCustomization.getAssignmentState().getAssignedOpacity();
+			 unassignedSpaceOpacity = assignCustomization.getAssignmentState().getUnAssignedOpacity();
+		}
+		catch(Exception e) {
+			log.error("Exception while get the SpaceColor " + e);
+		}
+
 
 		   properties.setObjectId(zone.getId());
 		   properties.setRecordId(zone.getRecordId());
