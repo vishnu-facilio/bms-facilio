@@ -1,18 +1,18 @@
 package com.facilio.agentv2.lonWorks;
 
-import java.util.Map;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.point.Point;
 import com.facilio.modules.FieldUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
-public class LonWorksPointContext extends Point {
+import java.io.Serializable;
+import java.util.Map;
+
+public class LonWorksPointContext extends Point  implements Serializable {
 
     private static final Logger LOGGER = LogManager.getLogger(LonWorksPointContext.class.getName());
 

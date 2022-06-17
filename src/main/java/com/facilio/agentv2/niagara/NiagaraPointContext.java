@@ -6,9 +6,10 @@ import com.facilio.agentv2.point.Point;
 import com.facilio.modules.FieldUtil;
 import org.json.simple.JSONObject;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class NiagaraPointContext extends Point {
+public class NiagaraPointContext extends Point  implements Serializable {
 
     private String path;
 

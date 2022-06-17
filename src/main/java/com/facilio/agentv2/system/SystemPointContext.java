@@ -6,9 +6,10 @@ import com.facilio.agentv2.point.Point;
 import com.facilio.modules.FieldUtil;
 import org.json.simple.JSONObject;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class SystemPointContext extends Point {
+public class SystemPointContext extends Point  implements Serializable {
 
     public SystemPointContext(long agentId) {
         super(agentId);

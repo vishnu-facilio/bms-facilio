@@ -584,7 +584,6 @@
 /api/v2/setup/importpoints/:moduleName
 /api/v2/setup/importpoints/processImport
 /api/v2/setup/importpoints/checkImport
-/api/v2/dashboard/cards/getCardData
 /api/v2/setup/copyassetreadings/:moduleName
 /api/v2/setup/removedemoduplicatereadings/:moduleName
 /sso/:moduleName
@@ -1929,7 +1928,6 @@
 /api/v2/filter/advanced/operators/:fetchOperators
 /api/v2/assets/view/:assetList
 /api/v2/assets/cards/:fetchModuleCards
-/api/v2/dashboard/cards/getCardData
 /api/v2/files/preview/:previewFile
 /api/v2/assets/attachment/:previewAttachment
 /api/v3/files/preview/app

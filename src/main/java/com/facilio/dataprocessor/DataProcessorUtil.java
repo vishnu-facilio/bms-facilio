@@ -161,8 +161,10 @@ public class DataProcessorUtil {
                 return false;
             }
             JSONObject payLoad = record.getData();
-            if(record.getPartitionKey()!=null && !record.getPartitionKey().equals("")){
-                payLoad.put("agent",record.getPartitionKey());
+            if (!payLoad.containsKey(AgentConstants.AGENT)) {
+                if(record.getPartitionKey()!=null && !record.getPartitionKey().equals("")){
+                    payLoad.put(AgentConstants.AGENT,record.getPartitionKey());
+                }
             }
             if ((payLoad != null) && (payLoad.isEmpty())) {
                 LOGGER.info(" Empty or null message received " + recordId);
@@ -189,7 +191,7 @@ public class DataProcessorUtil {
                     	}
                     	agentMsgId = agentV2.getId();
                         processorVersion = agentV2.getProcessorVersion();
-                        Span.current().setAllAttributes(Attributes.of(AttributeKey.stringKey("agent"), agentV2.getName()));
+                        Span.current().setAllAttributes(Attributes.of(AttributeKey.stringKey(AgentConstants.AGENT), agentV2.getName()));
                     }
                     LOGGER.debug(" checking agent version for agent "+payLoad.get(AgentConstants.AGENT)+"  version "+processorVersion);
                 }else {

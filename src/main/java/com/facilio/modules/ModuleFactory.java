@@ -3338,9 +3338,9 @@ public class ModuleFactory {
 
 	public static FacilioModule getJobPlanModule() {
 		FacilioModule module = new FacilioModule();
-		module.setName("jobPlan");
+		module.setName("jobplan");
 		module.setDisplayName("Job Plan");
-		module.setTableName("Job_Plan");
+		module.setTableName("JobPlan");
 		return module;
 	}
 

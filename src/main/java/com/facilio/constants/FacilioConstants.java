@@ -1978,6 +1978,8 @@ public class FacilioConstants {
 		public static final String QUOTE_PDF_URL = "quotePdfUrl";
 		public static final String QUOTE_ACTIVITY = "quoteactivity";
 
+		public static final String JOB_PLAN_ACTIVITY = "jobplanactivity";
+
 
 		public static final String FETCH_MY_APPS = "fetchMyApps";
 		public static final String APP_DOMAIN = "applicationDomain";

@@ -9,9 +9,10 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.Map;
 
-public class ModbusTcpPointContext extends Point {
+public class ModbusTcpPointContext extends Point  implements Serializable {
 
     private static final Logger LOGGER = LogManager.getLogger(ModbusTcpPointContext.class.getName());
 

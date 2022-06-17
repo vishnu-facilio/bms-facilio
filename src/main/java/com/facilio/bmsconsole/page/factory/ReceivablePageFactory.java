@@ -20,13 +20,9 @@ public class ReceivablePageFactory extends PageFactory{
         tab1.addSection(tab1Sec1);
         addSecondaryDetailsWidget(tab1Sec1);
 
-        Page.Section tab1Sec2 = page.new Section();
-        tab1.addSection(tab1Sec2);
-        addReceivableReceipts(tab1Sec2);
+        addReceivableReceipts(tab1Sec1);
 
-        Page.Section tab1Sec3 = page.new Section();
-        tab1.addSection(tab1Sec3);
-        addNotesAttachmentsModule(tab1Sec3);
+        addNotesAttachmentsModule(tab1Sec1);
 
         return page;
     }

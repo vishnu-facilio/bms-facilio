@@ -10,6 +10,7 @@ import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
+import com.facilio.agentv2.misc.MiscControllerContext;
 import com.facilio.agentv2.niagara.NiagaraControllerContext;
 import com.facilio.fw.BeanFactory;
 import org.apache.log4j.LogManager;
@@ -157,8 +158,13 @@ public class V1ToV2PreProcessor implements AgentMessagePreProcessor {
                 } else {
                     msg.put(AgentConstants.PUBLISH_TYPE, PublishType.TIMESERIES.asInt());
                 }
-                if (payload.containsKey(AgentConstants.TIMESTAMP) && payload.containsKey("deviceId")) {
-                    msg.put(AgentConstants.TIMESTAMP, payload.get(AgentConstants.TIMESTAMP));
+                if (payload.containsKey("deviceId")) {
+                    if(payload.containsKey(AgentConstants.TIMESTAMP)) {
+                        msg.put(AgentConstants.TIMESTAMP, payload.get(AgentConstants.TIMESTAMP));
+                    } else {
+                        long currTime = System.currentTimeMillis();
+                        msg.put(AgentConstants.TIMESTAMP, currTime);
+                    }
                     if (payload.containsKey(deviceId)) {
                         JSONObject points = (JSONObject) payload.get(deviceId);
                         Controller controller = ControllerApiV2.getControllerByName(agent.getId(), deviceId);
@@ -176,9 +182,15 @@ public class V1ToV2PreProcessor implements AgentMessagePreProcessor {
                                     NiagaraControllerContext niagaraController = (NiagaraControllerContext) controller;
                                     msg.put(AgentConstants.CONTROLLER,niagaraController.getChildJSON());
                                     break;
+                                case MISC:
+                                    LOGGER.info("Misc controller");
+                                    MiscControllerContext miscController = (MiscControllerContext) controller;
+                                    msg.put(AgentConstants.CONTROLLER, miscController.getChildJSON());
+                                    break;
                                 default:
                                     LOGGER.info("Unsupported controller");
                             }
+
                             JSONArray data = new JSONArray();
                             data.add(points);
                             msg.put(AgentConstants.DATA, data);

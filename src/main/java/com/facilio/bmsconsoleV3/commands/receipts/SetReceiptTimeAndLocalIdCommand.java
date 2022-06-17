@@ -11,10 +11,10 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.List;
 import java.util.Map;
 
-public class SetSysCreatedTimeAndLocalIdCommand extends FacilioCommand {
+public class SetReceiptTimeAndLocalIdCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        //SysCreatedTime
+        //ReceiptTime
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3ReceiptContext> receipts = recordMap.get(moduleName);

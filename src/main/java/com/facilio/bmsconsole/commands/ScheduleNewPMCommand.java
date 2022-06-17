@@ -5,6 +5,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.templates.EMailTemplate;
+import com.facilio.services.email.EmailClient;
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
@@ -66,8 +69,11 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
                 try {
                     schedulePM(pm, context, action, endTime);
                 } catch (Exception e) {
+                    String msg = "Exception: " + e.getMessage() + "PM ID: " + pm.getId() + "; ORG ID" + pm.getOrgId();
+                    SendEmailAlert(msg, pm.getOrgId());
+
                     LOGGER.log(Level.SEVERE, "Exception scheduling " + pm.getId());
-                    CommonCommandUtil.emailException("Exception scheduling ", "PM ID "+pm.getId(), e);
+                    CommonCommandUtil.emailException("Exception scheduling ", "PM ID " + pm.getId(), e);
                     throw e;
                 }
             }
@@ -84,13 +90,23 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
                         woList = new ArrayList<>();
                     }
                     woList.add(w);
-                    resourceTriggerWoMap.put(""+w.getResource().getId()+w.getTrigger().getId(), woList);
+                    resourceTriggerWoMap.put("" + w.getResource().getId() + w.getTrigger().getId(), woList);
                 }
             }
         }
 
         PreventiveMaintenanceAPI.scheduleReminders(resourceTriggerWoMap, pms);
         return false;
+    }
+
+    private void SendEmailAlert(String message, long orgID) throws Exception {
+        EMailTemplate template = new EMailTemplate();
+        template.setFrom(EmailClient.getFromEmail("alert"));
+        template.setTo("pm-issues@facilio.com");
+        template.setMessage(message);
+        template.setSubject("New PM Scheduler (ScheduleNewPMCommand) Alert | ORG " + orgID);
+        JSONObject emailJSON = template.getOriginalTemplate();
+        FacilioFactory.getEmailClient().sendEmail(emailJSON);
     }
 
     private void schedulePM(PreventiveMaintenance pm, Context context, PreventiveMaintenanceAPI.ScheduleActions action, long endTimeFromProp) throws Exception {
