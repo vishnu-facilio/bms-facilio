@@ -465,6 +465,10 @@ public class V3FloorPlanAPI {
 								properties.setZoneOpacity(unassignedSpaceOpacity);
 							}
 						}
+						else {
+							properties.setZoneBackgroundColor(unAssignedSpaceColor);
+							properties.setZoneOpacity(unassignedSpaceOpacity);
+						}
 					}
 					else if (parking.getParkingMode() > 1) {
 						Map<Long, V3FacilityBookingContext> bookingMap =  (Map<Long, V3FacilityBookingContext>) context.get("bookingMap");
