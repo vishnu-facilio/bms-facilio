@@ -452,7 +452,7 @@ public class V3FloorPlanAPI {
 					// special handle for parking module
 					if (parking.getParkingMode() == 1) {
 						V3EmployeeContext parkingEmployee = parking.getEmployee();
-						if (parkingEmployee.getName() != null) {
+						if (parkingEmployee != null && parkingEmployee.getName() != null) {
 							properties.setIsOccupied(true);
 							properties.setEmployeeId(parking.getEmployee().getId());
 							properties.setSecondaryLabel(parkingEmployee.getName());
