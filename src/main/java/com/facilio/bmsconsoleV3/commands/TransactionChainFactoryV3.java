@@ -44,6 +44,7 @@ import com.facilio.bmsconsoleV3.commands.people.UpdateScopingForPeopleCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.receipts.*;
+import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import com.facilio.accounts.util.AccountUtil;
@@ -787,6 +788,8 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdateTransactionEventTypeV3Command());
         c.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
                 .addCommand(new ExecuteAllWorkflowsCommand(RuleType.TRANSACTION_RULE)));
+        c.addCommand(new ConstructAddCustomActivityCommandV3());
+        c.addCommand(new AddActivitiesCommandV3(FacilioConstants.ContextNames.PURCHASE_ORDER_ACTIVITY));
         return c;
     }
 
@@ -1292,6 +1295,8 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdateTransactionEventTypeV3Command());
         c.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
                 .addCommand(new ExecuteAllWorkflowsCommand(RuleType.TRANSACTION_RULE)));
+        c.addCommand(new ConstructUpdateCustomActivityCommandV3());
+        c.addCommand(new AddActivitiesCommandV3(FacilioConstants.ContextNames.PURCHASE_ORDER_ACTIVITY));
         return c;
     }
 

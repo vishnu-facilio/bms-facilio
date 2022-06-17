@@ -59,6 +59,15 @@ public class PurchaseModulesPageFactory extends PageFactory {
         addAssociatedTermsWidget(tab3Sec1,FacilioConstants.ContextNames.PR_ASSOCIATED_TERMS);
         addRelatedList(tab3Sec1, record.getModuleId());
 
+        Page.Tab tab4 = page.new Tab("History");
+        page.addTab(tab4);
+        Page.Section tab4Sec1 = page.new Section();
+        tab4.addSection(tab4Sec1);
+        PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
+        activityWidget.addToLayoutParams(tab4Sec1, 24, 3);
+        activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.PURCHASE_REQUEST_ACTIVITY);
+        tab4Sec1.addWidget(activityWidget);
+
         return page;
     }
 
@@ -105,6 +114,15 @@ public class PurchaseModulesPageFactory extends PageFactory {
         addAssociatedTermsWidget(tab3Sec1,FacilioConstants.ContextNames.PO_ASSOCIATED_TERMS);
         addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.PURCHASE_REQUEST, module.getModuleId());
         addRelatedList(tab3Sec1, record.getModuleId());
+
+        Page.Tab tab4 = page.new Tab("History");
+        page.addTab(tab4);
+        Page.Section tab4Sec1 = page.new Section();
+        tab4.addSection(tab4Sec1);
+        PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
+        activityWidget.addToLayoutParams(tab4Sec1, 24, 3);
+        activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.PURCHASE_ORDER_ACTIVITY);
+        tab4Sec1.addWidget(activityWidget);
 
         return page;
     }

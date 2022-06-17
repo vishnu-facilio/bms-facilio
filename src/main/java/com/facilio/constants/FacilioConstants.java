@@ -1560,6 +1560,11 @@ public class FacilioConstants {
 
 		public static final String PURCHASE_ORDER = "purchaseorder";
 		public static final String PURCHASE_ORDERS = "purchaseorders";
+
+		public static final String PURCHASE_ORDER_ACTIVITY = "poactivity";
+
+		public static final String PURCHASE_REQUEST_ACTIVITY = "practivity";
+
 		public static final String PURCHASE_ORDER_LINE_ITEMS = "purchaseorderlineitems";
 		
 		public static final String RECEIPT = "receipt";
@@ -2472,6 +2477,9 @@ public class FacilioConstants {
 			classMap.put(QUOTE_ASSOCIATED_TERMS, QuotationAssociatedTermsContext.class);
 			classMap.put(PO_ASSOCIATED_TERMS, V3PoAssociatedTermsContext.class);
 			classMap.put(PR_ASSOCIATED_TERMS, PrAssociatedTermsContext.class);
+
+			classMap.put(PURCHASE_ORDER_ACTIVITY, ActivityContext.class);
+			classMap.put(PURCHASE_REQUEST_ACTIVITY, ActivityContext.class);
 			classMap.put(QUOTE_ACTIVITY, ActivityContext.class);
 
 			classMap.put(WorkPermit.WORKPERMIT, WorkPermitContext.class);
