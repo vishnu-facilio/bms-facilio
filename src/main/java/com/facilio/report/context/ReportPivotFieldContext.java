@@ -47,4 +47,14 @@ public class ReportPivotFieldContext {
 	public void setAggr(int aggr) {
 		this.aggr = AggregateOperator.getAggregateOperator(aggr);
 	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	private String displayName;
 }
