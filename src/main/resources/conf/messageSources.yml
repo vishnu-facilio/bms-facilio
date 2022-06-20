@@ -55,3 +55,11 @@ sources:
     configs:
       broker: b-1.eu-kafka.x8fngk.c6.kafka.eu-central-1.amazonaws.com:9096,b-3.eu-kafka.x8fngk.c6.kafka.eu-central-1.amazonaws.com:9096,b-2.eu-kafka.x8fngk.c6.kafka.eu-central-1.amazonaws.com:9096
       auth: true
+
+  - name: msk-sg #Singapore Region
+    type: kafka
+    configs:
+      broker: b-2.sgkafka.p03ug2.c3.kafka.ap-southeast-1.amazonaws.com:9096,b-3.sgkafka.p03ug2.c3.kafka.ap-southeast-1.amazonaws.com:9096,b-4.sgkafka.p03ug2.c3.kafka.ap-southeast-1.amazonaws.com:9096
+      auth: true
+      
+      
