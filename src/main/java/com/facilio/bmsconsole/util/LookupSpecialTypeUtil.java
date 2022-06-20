@@ -140,7 +140,19 @@ public class LookupSpecialTypeUtil {
 			return getUserPickList(users);
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
-			List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getOrgId(), true);
+			int page = 0,perPage = 5000,offset = 0;
+			String search = null;
+			if(!paramsMap.isEmpty()){
+				page = (int) paramsMap.get("page");
+				perPage = (int) paramsMap.get("perPage");
+				search = (String) paramsMap.get("search");
+				offset = ((page - 1) * perPage);
+				if (offset < 0) {
+					offset = 0;
+				}
+			}
+			List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getOrgId(), true,true,
+					offset,perPage,search);
 			List<FieldOption<Long>> groupList = null;
 			if (CollectionUtils.isNotEmpty(groups)) {
 				groupList = groups.stream()

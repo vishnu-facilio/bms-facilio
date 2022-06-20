@@ -20,8 +20,18 @@ public class DefaultJobsOnSignUp extends SignUpData {
     private ScheduleInfo constructDailyScheduleInfoWithHourlyTime(int minuteVal) {
         ScheduleInfo scheduleInfo = new ScheduleInfo();
         scheduleInfo.setFrequencyType(ScheduleInfo.FrequencyType.DAILY);
-        for (int i = 0; i< 24; i++) {
+        for (int i = 0; i < 24; i++) {
             scheduleInfo.addTime(LocalTime.of(i, minuteVal));
+        }
+
+        return scheduleInfo;
+    }
+
+    private ScheduleInfo constructDailyScheduleInfoWithQuarterPastHourlyTime() {
+        ScheduleInfo scheduleInfo = new ScheduleInfo();
+        scheduleInfo.setFrequencyType(ScheduleInfo.FrequencyType.DAILY);
+        for (int i = 0; i < 24; i++) {
+            scheduleInfo.addTime(LocalTime.of(i, 15));
         }
 
         return scheduleInfo;
@@ -30,7 +40,7 @@ public class DefaultJobsOnSignUp extends SignUpData {
     private ScheduleInfo constructDailyScheduleInfoWithHalfHourlyTime() {
         ScheduleInfo scheduleInfo = new ScheduleInfo();
         scheduleInfo.setFrequencyType(ScheduleInfo.FrequencyType.DAILY);
-        for (int i = 0; i< 24; i++) {
+        for (int i = 0; i < 24; i++) {
             scheduleInfo.addTime(LocalTime.of(i, 0));
             scheduleInfo.addTime(LocalTime.of(i, 30));
         }
@@ -97,7 +107,7 @@ public class DefaultJobsOnSignUp extends SignUpData {
         FacilioTimer.scheduleCalendarJob(orgId, "ControlScheduleSlotCreationDailyJob", System.currentTimeMillis(), constructDailyScheduleInfoWithOneTime("00:00"), "facilio");
 
         // INSERT INTO ${publicDb}.Jobs (JOBID, ORGID, JOBNAME, IS_ACTIVE, IS_PERIODIC, SCHEDULE_INFO, NEXT_EXECUTION_TIME, EXECUTOR_NAME, STATUS, JOB_SERVER_ID, TRANSACTION_TIMEOUT, CURRENT_EXECUTION_TIME)
-        // VALUES (${orgId}, ${orgId}, 'ImapJob', true, true, '{"times":["00:00","01:00","02:00","03:00","04:00","05:00","06:00","07:00","08:00","08:30","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00","21:00","22:00","23:00"],"frequencyType":1,"frequencyTypeEnum":"DAILY"}', UNIX_TIMESTAMP()+30,'facilio', 3, 0, 300000, UNIX_TIMESTAMP()*1000);
+        // VALUES (${orgId}, ${orgId}, 'ImapJob', true, true, '{"times":["00:15","01:15","02:15","03:15","04:15","05:15","06:15","07:15","08:15","08:30","09:15","10:15","11:15","12:15","13:15","14:15","15:15","16:15","17:15","18:15","19:15","20:15","21:15","22:15","23:15"],"frequencyType":1,"frequencyTypeEnum":"DAILY"}', UNIX_TIMESTAMP()+30,'facilio', 3, 0, 300000, UNIX_TIMESTAMP()*1000);
         FacilioTimer.scheduleCalendarJob(orgId, "ImapJob", System.currentTimeMillis(), constructDailyScheduleInfoWithHourlyTime(0), "facilio");
 
         // INSERT INTO ${publicDb}.Jobs (JOBID, ORGID, JOBNAME, IS_ACTIVE, IS_PERIODIC, SCHEDULE_INFO, NEXT_EXECUTION_TIME, EXECUTOR_NAME, STATUS, JOB_SERVER_ID, TRANSACTION_TIMEOUT, CURRENT_EXECUTION_TIME)
@@ -106,6 +116,6 @@ public class DefaultJobsOnSignUp extends SignUpData {
 
         // INSERT INTO Jobs (JOBID, ORGID, JOBNAME, IS_ACTIVE, IS_PERIODIC, SCHEDULE_INFO, NEXT_EXECUTION_TIME, EXECUTOR_NAME, STATUS, JOB_SERVER_ID, TRANSACTION_TIMEOUT, CURRENT_EXECUTION_TIME)
         // VALUES (1, 1, 'PreOpenWoObservation', true, true, '{"times":["00:00","00:30","01:00","01:30","02:00","02:30","03:00","03:30","04:00","04:30","05:00","05:30","06:00","06:30","07:00","07:30","08:00","08:30","09:00","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30","18:00","18:30","19:00","19:30","20:00","20:30","21:00","21:30","22:00","22:30","23:00","23:30"],"frequencyType":1,"frequencyTypeEnum":"DAILY"}', UNIX_TIMESTAMP()+30,'facilio', 3, 0, 900000, UNIX_TIMESTAMP()*1000);
-        FacilioTimer.scheduleCalendarJob(orgId, "PreOpenWoObservation", System.currentTimeMillis(), constructDailyScheduleInfoWithHalfHourlyTime(), "facilio");
+        FacilioTimer.scheduleCalendarJob(orgId, "PreOpenWoObservation", System.currentTimeMillis(), constructDailyScheduleInfoWithQuarterPastHourlyTime(), "facilio");
     }
 }

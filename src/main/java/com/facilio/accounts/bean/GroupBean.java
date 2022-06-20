@@ -45,4 +45,6 @@ public interface GroupBean {
 	public List<Group> getOrgGroups(long orgId, boolean status) throws Exception;
 	
 	public List<Group> getMyGroups(long ouid) throws Exception;
+
+	public List<Group> getOrgGroups(long orgId, boolean status, boolean fetchMembers,int offset, int perPage,String searchQuery) throws Exception;
 }

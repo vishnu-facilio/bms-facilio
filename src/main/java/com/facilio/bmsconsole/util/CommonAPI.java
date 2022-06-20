@@ -4,6 +4,8 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.db.transaction.NewTransactionService;
+import lombok.extern.log4j.Log4j;
 import org.json.simple.JSONObject;
 
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -12,6 +14,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.time.DateTimeUtil;
 
+@Log4j
 public class CommonAPI {
 
     public static long getActualLastRecordedTime(FacilioModule module) {
@@ -28,7 +31,16 @@ public class CommonAPI {
 		}
 	}
 
-	public static void addNotificationLogger (NotificationType type, String to, JSONObject info) throws Exception {
+	public static void addNotificationLogger (NotificationType type, String to, JSONObject info) {
+		try {
+			NewTransactionService.newTransaction(() -> addNotificationLoggerInDB(type, to, info));
+		}
+		catch (Exception e) {
+			LOGGER.error("Error occurred while logging notification in DB => "+type + "::" + to + "info");
+		}
+	}
+
+	private static void addNotificationLoggerInDB  (NotificationType type, String to, JSONObject info) throws Exception {
 		Map<String, Object> props = new HashMap<>();
 		props.put("type", type.getValue());
 		props.put("to", to);

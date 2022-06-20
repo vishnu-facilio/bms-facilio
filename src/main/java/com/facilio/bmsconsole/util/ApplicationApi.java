@@ -1808,6 +1808,7 @@ public class ApplicationApi {
      }
      public static List<User> getUsersList(Map<String,Object> paramsMap) throws Exception {
          int page = 0,perPage = 5000,offset = 0;
+         List<Long> teamIds = new ArrayList<>();
          String search = null;
          if(!paramsMap.isEmpty()){
              page = (int) paramsMap.get("page");
@@ -1817,8 +1818,17 @@ public class ApplicationApi {
              if (offset < 0) {
                  offset = 0;
              }
+             if(paramsMap.containsKey("filters")){
+                 JSONObject filters = (JSONObject)paramsMap.get("filters");
+                 if(filters.containsKey("teamId")){
+                     JSONObject values = (JSONObject) filters.get("teamId");
+                     if(values.containsKey("value")){
+                         teamIds = (List<Long>) values.get("value");
+                     }
+                 }
+             }
          }
-         List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP), -1, false, false, offset, perPage, search, true,true);
+         List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP), -1, false, false, offset, perPage, search, true,true,teamIds);
          if(CollectionUtils.isNotEmpty(users)){
              return users;
          }

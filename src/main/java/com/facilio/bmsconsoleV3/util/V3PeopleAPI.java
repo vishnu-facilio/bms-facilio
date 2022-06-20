@@ -49,8 +49,11 @@ public class V3PeopleAPI {
 
     private static final Logger LOGGER = org.apache.log4j.Logger.getLogger(V3PeopleAPI.class);
 
-
     public static List<V3VendorContactContext> getVendorContacts(long vendorId, boolean fetchPrimaryContact) throws Exception {
+        return getVendorContacts(vendorId, fetchPrimaryContact, false);
+    }
+
+    public static List<V3VendorContactContext> getVendorContacts(long vendorId, boolean fetchPrimaryContact,boolean fetchDeleted) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VENDOR_CONTACT);
         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.VENDOR_CONTACT);
@@ -64,11 +67,20 @@ public class V3PeopleAPI {
         if (fetchPrimaryContact) {
             builder.andCondition(CriteriaAPI.getCondition("IS_PRIMARY_CONTACT", "isPrimaryContact", "true", BooleanOperators.IS));
         }
-        List<V3VendorContactContext> records = builder.get();
+        List<V3VendorContactContext> records;
+        if(fetchDeleted){
+            records = builder.fetchDeleted().get();
+        }
+        else {
+            records = builder.get();
+        }
         return records;
     }
 
-        public static List<V3TenantContactContext> getTenantContacts(Long tenantId, boolean fetchOnlyPrimaryContact, boolean fetchOnlyWithAccess) throws Exception {
+    public static List<V3TenantContactContext> getTenantContacts(Long tenantId, boolean fetchOnlyPrimaryContact, boolean fetchOnlyWithAccess) throws Exception {
+        return getTenantContacts(tenantId, fetchOnlyPrimaryContact, fetchOnlyWithAccess, false);
+    }
+        public static List<V3TenantContactContext> getTenantContacts(Long tenantId, boolean fetchOnlyPrimaryContact, boolean fetchOnlyWithAccess,boolean fetchDeleted) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT_CONTACT);
         List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.TENANT_CONTACT);
@@ -78,7 +90,7 @@ public class V3PeopleAPI {
                 .beanClass(V3TenantContactContext.class)
                 .select(fields)
                 .andCondition(CriteriaAPI.getCondition("TENANT_ID", "tenant", String.valueOf(tenantId), NumberOperators.EQUALS));
-        ;
+
         if(fetchOnlyPrimaryContact) {
             builder.andCondition(CriteriaAPI.getCondition("IS_PRIMARY_CONTACT", "isPrimaryContact", "true", BooleanOperators.IS));
         }
@@ -86,7 +98,13 @@ public class V3PeopleAPI {
         if(fetchOnlyWithAccess) {
             builder.andCondition(CriteriaAPI.getCondition("TENANT_PORTAL_ACCESS", "isTenantPortalAccess", "true", BooleanOperators.IS));
         }
-        List<V3TenantContactContext> records = builder.get();
+        List<V3TenantContactContext> records;
+        if(fetchDeleted){
+            records = builder.fetchDeleted().get();
+        }
+        else{
+            records = builder.get();
+        }
         return records;
 
     }
@@ -301,20 +319,6 @@ public class V3PeopleAPI {
 
     }
 
-    public static void deletePeopleUsers(long peopleId) throws Exception {
-        List<FacilioField> fields = AccountConstants.getAppOrgUserFields();
-        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-                .select(fields)
-                .table("ORG_Users")
-                ;
-        selectBuilder.andCondition(CriteriaAPI.getCondition("PEOPLE_ID", "peopleId", String.valueOf(peopleId), NumberOperators.EQUALS));
-
-        List<Map<String, Object>> list = selectBuilder.get();
-        if(CollectionUtils.isNotEmpty(list)) {
-            AccountUtil.getUserBean().deleteUser((long)list.get(0).get("ouid"), false);
-        }
-    }
-
     public static int unMarkPrimaryContact(V3PeopleContext person, long parentId) throws Exception{
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -365,6 +369,22 @@ public class V3PeopleAPI {
         int count = updateBuilder.update(value);
         return count;
 
+    }
+
+    public static void deletePeopleUsers(long peopleId) throws Exception {
+        List<FacilioField> fields = AccountConstants.getAppOrgUserFields();
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(fields)
+                .table("ORG_Users")
+                ;
+        selectBuilder.andCondition(CriteriaAPI.getCondition("PEOPLE_ID", "peopleId", String.valueOf(peopleId), NumberOperators.EQUALS));
+
+        List<Map<String, Object>> list = selectBuilder.get();
+        if(CollectionUtils.isNotEmpty(list)) {
+            for(int i=0;i < list.size(); i++){
+                AccountUtil.getUserBean().deleteUser((long)list.get(i).get("ouid"), false);
+            }
+        }
     }
 
     public static long getPeopleIdForUser(long ouId) throws Exception {

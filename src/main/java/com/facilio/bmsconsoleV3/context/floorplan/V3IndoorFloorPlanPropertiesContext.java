@@ -1,6 +1,8 @@
 package com.facilio.bmsconsoleV3.context.floorplan;
 
 import com.facilio.v3.context.V3Context;
+import lombok.Getter;
+import lombok.Setter;
 import org.json.simple.JSONObject;
 
 public class V3IndoorFloorPlanPropertiesContext extends V3Context {
@@ -49,7 +51,8 @@ private Boolean isOccupied;
 
 private Long bookingFormId;
 
-
+@Getter @Setter
+private Double zoneOpacity = 0.3;
 
 	private JSONObject markerPermission;
 	public JSONObject getMarkerPermission() {

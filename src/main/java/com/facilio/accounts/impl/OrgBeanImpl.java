@@ -121,9 +121,13 @@ public class OrgBeanImpl implements OrgBean {
 		return getAppUsers(orgId,appId,ouId,checkAccessibleSites,fetchNonAppUsers,offset,perPage,null,null);
 	}
 
-	@Override
 	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,Boolean inviteAcceptStatus,boolean status) throws Exception {
-		List<User> users = getAppUsers( orgId,  appId,  ouId,  checkAccessibleSites,  fetchNonAppUsers,  -1,  -1, searchQuery, inviteAcceptStatus);
+		return getAppUsers( orgId,  appId,  ouId,  checkAccessibleSites,  fetchNonAppUsers,  offset,  perPage, searchQuery, inviteAcceptStatus, status,null);
+	}
+
+	@Override
+	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,Boolean inviteAcceptStatus,boolean status,List<Long> teamId) throws Exception {
+		List<User> users = getAppUsers( orgId,  appId,  ouId,  checkAccessibleSites,  fetchNonAppUsers,  -1,  -1, searchQuery, inviteAcceptStatus, teamId);
 		List<User> finalList = new ArrayList<>();
 		int recordsAdded = 0,actualRecordsSkipped = 0;
 		if(CollectionUtils.isNotEmpty(users)) {
@@ -148,8 +152,12 @@ public class OrgBeanImpl implements OrgBean {
 		return null;
 	}
 
-	@Override
 	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,Boolean inviteAcceptStatus) throws Exception {
+		return getAppUsers(orgId, appId, ouId, checkAccessibleSites, fetchNonAppUsers, offset, perPage,searchQuery,inviteAcceptStatus,null);
+	}
+
+	@Override
+	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,Boolean inviteAcceptStatus,List<Long> teamId) throws Exception {
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
 			return null;
@@ -168,8 +176,13 @@ public class OrgBeanImpl implements OrgBean {
 				.innerJoin("ORG_User_Apps")
 				.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
 				.innerJoin("People")
-				.on("People.ID = ORG_Users.PEOPLE_ID")
-				.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+				.on("People.ID = ORG_Users.PEOPLE_ID");
+
+		if(CollectionUtils.isNotEmpty(teamId)){
+			selectBuilder.innerJoin("FacilioGroupMembers").on("FacilioGroupMembers.ORG_USERID = ORG_Users.ORG_USERID");
+			selectBuilder.andCondition(CriteriaAPI.getCondition("FacilioGroupMembers.GROUPID", "groupId", StringUtils.join(teamId, ','), NumberOperators.EQUALS));
+		}
+		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		if(ouId > 0) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.ORG_USERID", "orgUserId", String.valueOf(ouId), NumberOperators.EQUALS));
 		}

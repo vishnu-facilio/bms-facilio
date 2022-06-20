@@ -1,6 +1,8 @@
 package com.facilio.bmsconsoleV3.context;
 
 import com.facilio.modules.FacilioIntEnum;
+import lombok.Getter;
+import lombok.Setter;
 
 public class V3ParkingStallContext  extends V3SpaceContext {
 	
@@ -9,8 +11,11 @@ public class V3ParkingStallContext  extends V3SpaceContext {
 	private Integer parkingType;
 
     private Integer parkingMode;
-	
-	public Integer getParkingType() {
+
+    @Getter @Setter
+    private V3EmployeeContext employee;
+
+    public Integer getParkingType() {
         return parkingType;
     }
 

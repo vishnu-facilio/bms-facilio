@@ -282,7 +282,7 @@ public class ImportDataAction extends FacilioAction {
 		chain.getContext().put(FacilioConstants.ContextNames.COUNT, count);
 		chain.getContext().put(FacilioConstants.ContextNames.IMPORT_MODE, importMode);
 		chain.getContext().put(ImportAPI.ImportProcessConstants.CHOOSEN_MODULE, moduleName);
-		
+		constructListContext(chain.getContext());
 		chain.execute();
 		List<ImportProcessContext> historyDetailsList;
 		historyDetailsList = (List<ImportProcessContext>) chain.getContext().get(FacilioConstants.ContextNames.RECORD_LIST);

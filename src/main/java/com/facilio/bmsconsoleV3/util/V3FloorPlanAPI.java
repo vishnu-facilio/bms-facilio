@@ -1,8 +1,11 @@
 package com.facilio.bmsconsoleV3.util;
 
 import java.util.*;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.bmsconsole.context.EmployeeContext;
@@ -13,9 +16,12 @@ import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.facilitybooking.BookingSlotsContext;
+import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext;
 import com.facilio.bmsconsoleV3.context.floorplan.*;
 import com.google.api.client.json.Json;
 import com.opensymphony.xwork2.ActionContext;
+import lombok.extern.log4j.Log4j;
+import org.apache.logging.log4j.util.Strings;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -51,8 +57,26 @@ import static com.facilio.constants.FacilioConstants.ContextNames.INDOOR_FLOOR_P
 import static java.util.Objects.isNull;
 import static nl.basjes.shaded.org.springframework.util.ObjectUtils.isEmpty;
 
-
+@Log4j
 public class V3FloorPlanAPI {
+	private static Logger log = LogManager.getLogger(UserBeanImpl.class.getName());
+
+	public static String getSecondaryLabelFromBookingsSlots( List<BookingSlotsContext>  bookingSlots, Map<Long, V3FacilityBookingContext> bookingMap) {
+
+		Map<Long, String> bookingRequester = new HashMap<>();
+
+
+		bookingSlots.forEach(r -> {
+			if(r.getBooking() != null) {
+				V3FacilityBookingContext booking = bookingMap.get(r.getBooking().getId());
+				if (booking.getReservedFor() != null && booking.getReservedFor().getName() != null) {
+					bookingRequester.put(booking.getReservedFor().getId(), booking.getReservedFor().getName());
+				}
+			}
+		});
+
+		return String.join(", ",bookingRequester.values());
+	}
 
 	public static V3EmployeeContext getEmployeeFromUserId () throws Exception {
 
@@ -328,135 +352,192 @@ public class V3FloorPlanAPI {
 		tooltip.put("content","");
 	}
 
-			 public static V3IndoorFloorPlanPropertiesContext getZoneProperties(ModuleBaseWithCustomFields record, V3MarkerdZonesContext zone, Context context, String viewMode,Long markerModuleId) throws Exception {
-			  Map<Long, List<BookingSlotsContext>> facilityBookingsMap = (Map<Long, List<BookingSlotsContext>>) context.get(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
+	public static V3IndoorFloorPlanPropertiesContext getZoneProperties(ModuleBaseWithCustomFields record, V3MarkerdZonesContext zone, Context context, String viewMode,Long markerModuleId) throws Exception {
+		Map<Long, List<BookingSlotsContext>> facilityBookingsMap = (Map<Long, List<BookingSlotsContext>>) context.get(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
 
-			  V3IndoorFloorPlanPropertiesContext properties = new V3IndoorFloorPlanPropertiesContext();
-			  V3FloorplanCustomizationContext assignCustomization = (V3FloorplanCustomizationContext) context.get("FLOORPLAN_ASSIGNMENT_CUSTOMIZATION");
-			  V3FloorplanCustomizationContext bookingCustomization = (V3FloorplanCustomizationContext) context.get("FLOORPLAN_BOOKING_CUSTOMIZATION");
-			  String spaceColor = assignCustomization.getSpaceBookingState().getNonReservableColor();
-			  String reservedColor = bookingCustomization.getBookingState().getNotAvailableColor();
-			  String availableColor = bookingCustomization.getBookingState().getAvailableColor();
-			  String nonReservableColor = bookingCustomization.getBookingState().getNonReservableColor();
-			  String partiallyAvailableColor = bookingCustomization.getBookingState().getPartiallyAvailableColor();
+		V3IndoorFloorPlanPropertiesContext properties = new V3IndoorFloorPlanPropertiesContext();
+		V3FloorplanCustomizationContext assignCustomization = (V3FloorplanCustomizationContext) context.get("FLOORPLAN_ASSIGNMENT_CUSTOMIZATION");
+		V3FloorplanCustomizationContext bookingCustomization = (V3FloorplanCustomizationContext) context.get("FLOORPLAN_BOOKING_CUSTOMIZATION");
+		String spaceColor = assignCustomization.getSpaceBookingState().getNonReservableColor();
+		String reservedColor = bookingCustomization.getBookingState().getNotAvailableColor();
+		String availableColor = bookingCustomization.getBookingState().getAvailableColor();
+		String nonReservableColor = bookingCustomization.getBookingState().getNonReservableColor();
+		String partiallyAvailableColor = bookingCustomization.getBookingState().getPartiallyAvailableColor();
+		String assignedSpaceColor = "rgba(255, 0, 0,0.3)";
+		String unAssignedSpaceColor = "rgba(0, 0, 0,0.3)";
+		Double assignedSpaceOpacity = 0.3;
+		Double unassignedSpaceOpacity = 0.3;
 
-	 			   properties.setObjectId(zone.getId());
-	 			   properties.setRecordId(zone.getRecordId());
-	 			if (zone.getSpace() != null) {
-	 				properties.setSpaceId(zone.getSpace().getId());
-					if (viewMode.equals(FacilioConstants.ContextNames.Floorplan.ASSIGNMENT_VIEW)) {
-						properties.setLabel(assignCustomization.getSpacePrimaryLabel().getLabelType().format(zone.getSpace()));
-						properties.setSecondaryLabel(assignCustomization.getSpaceSecondaryLabel().getLabelType().format(zone.getSpace()));
-						properties.setZoneBackgroundColor(spaceColor);
+		try {
+			 assignedSpaceColor = assignCustomization.getAssignmentState().getAssignedColor();
+			 unAssignedSpaceColor = assignCustomization.getAssignmentState().getUnAssignedColor();
+			 assignedSpaceOpacity = assignCustomization.getAssignmentState().getAssignedOpacity();
+			 unassignedSpaceOpacity = assignCustomization.getAssignmentState().getUnAssignedOpacity();
+		}
+		catch(Exception e) {
+			log.error("Exception while get the SpaceColor " + e);
+		}
+
+
+		   properties.setObjectId(zone.getId());
+		   properties.setRecordId(zone.getRecordId());
+			properties.setZoneOpacity(0.3);
+		if (zone.getSpace() != null) {
+			properties.setSpaceId(zone.getSpace().getId());
+			if (viewMode.equals(FacilioConstants.ContextNames.Floorplan.ASSIGNMENT_VIEW)) {
+				properties.setLabel(assignCustomization.getSpacePrimaryLabel().getLabelType().format(zone.getSpace()));
+				properties.setSecondaryLabel(assignCustomization.getSpaceSecondaryLabel().getLabelType().format(zone.getSpace()));
+				properties.setZoneBackgroundColor(spaceColor);
+			}
+			else if(viewMode.equals(FacilioConstants.ContextNames.Floorplan.BOOKING_VIEW))
+			{
+				properties.setLabel(bookingCustomization.getSpacePrimaryLabel().getLabelType().format(zone.getSpace()));
+				properties.setSecondaryLabel(bookingCustomization.getSpaceSecondaryLabel().getLabelType().format(zone.getSpace()));
+				properties.setZoneBackgroundColor(nonReservableColor);
+			}
+
+			if (zone.getSpace().getSpaceCategory() != null && zone.getSpace().getSpaceCategory().getName() != null) {
+				properties.setSpaceCategory(zone.getSpace().getSpaceCategory().getName());
+
+			}
+
+			properties.setIsOccupied(false);
+
+			Map<String, FacilioForm> forms = (Map<String, FacilioForm>) context.get(FacilioConstants.ContextNames.FORMS);
+
+			if (forms != null && CollectionUtils.isNotEmpty(Collections.singleton(forms))) {
+				FacilioForm parkingBooking = forms.get("default_parkingbooking_web");
+				FacilioForm spaceBookingform = forms.get("default_facilitybooking_web");
+				String SpaceCategory = "Parking Stall";
+				if (properties.getSpaceCategory().equals(SpaceCategory)) {
+					if (parkingBooking != null) {
+						properties.setBookingFormId(parkingBooking.getId());
 					}
-					else if(viewMode.equals(FacilioConstants.ContextNames.Floorplan.BOOKING_VIEW))
-					{
-						properties.setLabel(bookingCustomization.getSpacePrimaryLabel().getLabelType().format(zone.getSpace()));
-						properties.setSecondaryLabel(bookingCustomization.getSpaceSecondaryLabel().getLabelType().format(zone.getSpace()));
-						properties.setZoneBackgroundColor(nonReservableColor);
+				}
+				else {
+					if (spaceBookingform != null) {
+						properties.setBookingFormId(spaceBookingform.getId());
+					}
+				}
+
+			}
+
+
+			if (markerModuleId != null && record != null) {
+
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(markerModuleId);
+			   properties.setMarkerModuleId(zone.getZoneModuleId());
+				properties.setMarkerModuleName(module.getName());
+
+				if (module.getName().equals(FacilioConstants.ContextNames.LOCKERS)) {
+
+					V3LockersContext locker = (V3LockersContext) record;
+
+					if (locker.getEmployee() != null) {
+						properties.setIsOccupied(true);
+						properties.setEmployeeId(locker.getEmployee().getId());
+						properties.setZoneBackgroundColor(reservedColor);
+					}
+					else {
+						properties.setZoneBackgroundColor(availableColor);
 					}
 
-	 				if (zone.getSpace().getSpaceCategory() != null && zone.getSpace().getSpaceCategory().getName() != null) {
-	 					properties.setSpaceCategory(zone.getSpace().getSpaceCategory().getName());
 
-	 				}
 
-	 				properties.setIsOccupied(false);
+				}
+				else if (module.getName().equals(FacilioConstants.ContextNames.PARKING_STALL)) {
+					V3ParkingStallContext parking = (V3ParkingStallContext) record;
 
-					Map<String, FacilioForm> forms = (Map<String, FacilioForm>) context.get(FacilioConstants.ContextNames.FORMS);
-
-					if (forms != null && CollectionUtils.isNotEmpty(Collections.singleton(forms))) {
-						FacilioForm parkingBooking = forms.get("default_parkingbooking_web");
-						FacilioForm spaceBookingform = forms.get("default_facilitybooking_web");
-						String SpaceCategory = "Parking Stall";
-						if (properties.getSpaceCategory().equals(SpaceCategory)) {
-							if (parkingBooking != null) {
-								properties.setBookingFormId(parkingBooking.getId());
+					// special handle for parking module
+					if (parking.getParkingMode() == 1) {
+						V3EmployeeContext parkingEmployee = parking.getEmployee();
+						if (parkingEmployee != null && parkingEmployee.getName() != null) {
+							properties.setIsOccupied(true);
+							properties.setEmployeeId(parking.getEmployee().getId());
+							properties.setSecondaryLabel(parkingEmployee.getName());
+							if (assignedSpaceColor != null && viewMode.equals(FacilioConstants.ContextNames.Floorplan.ASSIGNMENT_VIEW)) {
+								properties.setZoneBackgroundColor(assignedSpaceColor);
+								properties.setZoneOpacity(assignedSpaceOpacity);
+							}
+							else if (unAssignedSpaceColor != null && viewMode.equals(FacilioConstants.ContextNames.Floorplan.ASSIGNMENT_VIEW)) {
+								properties.setZoneBackgroundColor(unAssignedSpaceColor);
+								properties.setZoneOpacity(unassignedSpaceOpacity);
 							}
 						}
 						else {
-							if (spaceBookingform != null) {
-								properties.setBookingFormId(spaceBookingform.getId());
+							properties.setZoneBackgroundColor(unAssignedSpaceColor);
+							properties.setZoneOpacity(unassignedSpaceOpacity);
+						}
+					}
+					else if (parking.getParkingMode() > 1) {
+						Map<Long, V3FacilityBookingContext> bookingMap =  (Map<Long, V3FacilityBookingContext>) context.get("bookingMap");
+						if (!CollectionUtils.sizeIsEmpty(facilityBookingsMap)) {
+							List<BookingSlotsContext> facilityBooking = (List<BookingSlotsContext>) facilityBookingsMap.get(parking.getId());
+
+							if (facilityBooking != null && facilityBooking.size() > 0) {
+								properties.setSecondaryLabel(getSecondaryLabelFromBookingsSlots(facilityBooking, bookingMap));
+								properties.setIsBooked(true);
 							}
+							else {
+								properties.setSecondaryLabel("");
+								properties.setIsBooked(false);
+							}
+
+						}
+						else {
+							properties.setSecondaryLabel("");
+							properties.setIsBooked(false);
 						}
 
 					}
-	 				
-	 			
-	 				if (markerModuleId != null && record != null) {
-	 					
-	 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-	 			        FacilioModule module = modBean.getModule(markerModuleId);
-	 	 			   properties.setMarkerModuleId(zone.getZoneModuleId());
-	 			        properties.setMarkerModuleName(module.getName());
-	 					
-	 					if (module.getName().equals(FacilioConstants.ContextNames.LOCKERS)) {
-	 						
-	 						V3LockersContext locker = (V3LockersContext) record;
-	 						
-	 						if (locker.getEmployee() != null) {
-	 							properties.setIsOccupied(true);
-	 							properties.setEmployeeId(locker.getEmployee().getId());
-	 							properties.setZoneBackgroundColor(reservedColor);
-	 						}
-	 						else {
-	 							properties.setZoneBackgroundColor(availableColor);
-	 						}
-	 						
-	 						
-	 						
-	 					}
-	 					else if (module.getName().equals(FacilioConstants.ContextNames.PARKING_STALL)) {
-	 						V3ParkingStallContext parking = (V3ParkingStallContext) record;
-	 						
 
-	 						
-	 						if (parking.getModuleState() != null) {
-	 				        	FacilioStatus status = TicketAPI.getStatus(module, "Occupied");
-	 				        	FacilioStatus vacantStatus = TicketAPI.getStatus(module, "Vacant");
+					// if (parking.getModuleState() != null) {
+					// 	FacilioStatus status = TicketAPI.getStatus(module, "Occupied");
+					// 	FacilioStatus vacantStatus = TicketAPI.getStatus(module, "Vacant");
 
-	 				        	
-	 							if (status != null && parking.getModuleState().getId() == status.getId()) {
-	 								properties.setIsOccupied(true);
-	 								properties.setZoneBackgroundColor(reservedColor);
-	 							}
-	 							else if (vacantStatus != null && parking.getModuleState().getId() == vacantStatus.getId()) {
-	 								properties.setZoneBackgroundColor(availableColor);
-	 							}
-	 						}
-	 						
-	 					}
-	 					
-	 				    if (viewMode.equals(FacilioConstants.ContextNames.Floorplan.BOOKING_VIEW)) {
-	 				    	if (zone.isIsReservable()) {
-		 						properties.setZoneBackgroundColor(availableColor);
-		 					}
 
-							if (MapUtils.isNotEmpty(facilityBookingsMap) && zone.getSpace().getId() > 0) {
-								List<BookingSlotsContext> facilityBooking = (List<BookingSlotsContext>) facilityBookingsMap.get(zone.getSpace().getId());
+					// 	if (status != null && parking.getModuleState().getId() == status.getId()) {
+					// 		properties.setIsOccupied(true);
+					// 		properties.setZoneBackgroundColor(reservedColor);
+					// 	}
+					// 	else if (vacantStatus != null && parking.getModuleState().getId() == vacantStatus.getId()) {
+					// 		properties.setZoneBackgroundColor(availableColor);
+					// 	}
+					// }
 
-								if (CollectionUtils.isNotEmpty(facilityBooking)) {
-									properties.setZoneBackgroundColor(reservedColor);
-									properties.setIsBooked(true);
-								}
+				}
 
-							}
-	 				   }
-	 					
-	 					
-	 					
-	 				}			
-	 			
-	 				
-	 			}
-	 			else {
-	 			    properties.setLabel(zone.getLabel());
+				if (viewMode.equals(FacilioConstants.ContextNames.Floorplan.BOOKING_VIEW)) {
+					if (zone.isIsReservable()) {
+						properties.setZoneBackgroundColor(availableColor);
+					}
 
-	 			}
+					if (MapUtils.isNotEmpty(facilityBookingsMap) && zone.getSpace().getId() > 0) {
+						List<BookingSlotsContext> facilityBooking = (List<BookingSlotsContext>) facilityBookingsMap.get(zone.getSpace().getId());
 
-	 			return properties;
-	 		   
-	 	   }
+						if (CollectionUtils.isNotEmpty(facilityBooking)) {
+							properties.setZoneBackgroundColor(reservedColor);
+							properties.setIsBooked(true);
+						}
+
+					}
+			   }
+
+
+
+			}
+
+
+		}
+		else {
+			properties.setLabel(zone.getLabel());
+
+		}
+
+		return properties;
+
+	}
 
 
 	   public static V3IndoorFloorPlanPropertiesContext getMarkerProperties(ModuleBaseWithCustomFields record, V3MarkerContext marker,Long markerModuleId, String viewMode, Context context) throws Exception {

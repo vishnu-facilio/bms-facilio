@@ -4,6 +4,8 @@ import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsoleV3.context.V3EmployeeContext;
 import com.facilio.constants.FacilioConstants;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -13,6 +15,8 @@ public class V3FloorplanCustomizationContext {
     private DeskLabel deskPrimaryLabel;
     private DeskLabel deskSecondaryLabel;
     private BookingStateColor deskBookingState;
+    @Setter @Getter
+    private AssignmentStateColor spaceAssignmentStateColor;
 
     private SpaceLabel spacePrimaryLabel;
     private SpaceLabel spaceSecondaryLabel;
@@ -36,6 +40,9 @@ public class V3FloorplanCustomizationContext {
     }
 
     private BookingStateColor bookingState;
+
+    @Getter @Setter
+    private AssignmentStateColor assignmentState;
 
     public boolean isCompactView() {
         return compactView;
@@ -166,6 +173,22 @@ public class V3FloorplanCustomizationContext {
 
     public void setSpaceBookingState(BookingStateColor spaceBookingState) {
         this.spaceBookingState = spaceBookingState;
+    }
+
+  public class AssignmentStateColor {
+
+       @Getter @Setter
+       private String unAssignedColor = "rgba(0, 0, 0,0.3)";
+
+      @Getter @Setter
+      private String assignedColor = "rgba(255, 0, 0,0.3)";
+
+
+      @Getter @Setter
+      private double unAssignedOpacity=0.3;
+      @Getter @Setter
+      private double assignedOpacity=0.3;
+
     }
 
     public class BookingStateColor {

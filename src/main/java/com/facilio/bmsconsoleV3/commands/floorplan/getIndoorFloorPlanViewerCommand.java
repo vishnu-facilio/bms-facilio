@@ -1,5 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.floorplan;
 
+import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FloorPlanContext;
 import com.facilio.bmsconsole.context.SpaceContext;
@@ -38,7 +40,10 @@ public class getIndoorFloorPlanViewerCommand extends FacilioCommand {
 		List<String> deskSecondaryLabelList = new ArrayList<>();
 		List<String> spaceSecondaryLabelList = new ArrayList<>();
 
-		context.put("markerObject", (JSONObject)V3FloorPlanAPI.getMarkerObject());
+		Role role = AccountUtil.getCurrentUser().getRole();
+		if (!role.isPrevileged()) {
+			context.put("markerObject", (JSONObject)V3FloorPlanAPI.getMarkerObject());
+		}
 
 
 		// to get the floorplandata
@@ -259,6 +264,23 @@ public class getIndoorFloorPlanViewerCommand extends FacilioCommand {
            	      	zonevsRecordObjectMap.put(zoneModuleId, recordVsRecordMap);
                 	 
                  }
+				 else if(module.getName().equals(FacilioConstants.ContextNames.PARKING_STALL)) {
+
+					 Class lockerbeanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
+
+					 Collection<SupplementRecord>lookUpfields = new ArrayList<>();
+					 List<FacilioField> fields = modBean.getAllFields(module.getName());
+					 Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+					 lookUpfields.add((LookupField) fieldMap.get("employee"));
+					 lookUpfields.add((LookupField) fieldMap.get(FacilioConstants.ContextNames.SPACE_CATEGORY_FIELD));
+
+					 zoneIdvsModuleListData.put(module.getName(), V3RecordAPI.getRecordsListWithSupplements(module.getName(), recordIds, lockerbeanClassName, lookUpfields));
+					 Map<Long, ModuleBaseWithCustomFields> recordVsRecordMap = zoneIdvsModuleListData.get(module.getName()).stream().collect(
+							 Collectors.toMap(r -> r.getId(), r -> r));
+
+					 zonevsRecordObjectMap.put(zoneModuleId, recordVsRecordMap);
+
+				 }
                  else {
                 	 
                 		Class spaceCatbeanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
@@ -331,11 +353,13 @@ public class getIndoorFloorPlanViewerCommand extends FacilioCommand {
         	Long markerModuleId = (Long) zone.getZoneModuleId();
         	
         	zone.setSpace((SpaceContext)spacesMap.get(zone.getSpace().getId()));
-        	
-        	V3IndoorFloorPlanGeoJsonContext feature = new V3IndoorFloorPlanGeoJsonContext();
+
+			V3IndoorFloorPlanGeoJsonContext feature = new V3IndoorFloorPlanGeoJsonContext();
             
         	feature.setObjectId(String.valueOf(zone.getId()));
-        	String geometryStr = zone.getGeometry();
+			feature.setIsReservable(zone.isIsReservable());
+
+			String geometryStr = zone.getGeometry();
         	
         	if (geometryStr != null && !geometryStr.trim().isEmpty()) {
     			JSONObject geometry = (JSONObject) new JSONParser().parse(geometryStr);
