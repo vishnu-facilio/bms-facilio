@@ -146,7 +146,10 @@ public class PurchasedItemsQuantityRollUpCommand extends FacilioCommand {
 				FieldType.DECIMAL));
 		fields.add(FieldFactory.getField("adjustments_decrease", "sum(case WHEN TRANSACTION_STATE = 8 THEN QUANTITY ELSE 0 END)",
 				FieldType.DECIMAL));
-		
+		fields.add(FieldFactory.getField("transferredFrom", "sum(case WHEN TRANSACTION_STATE = 9 THEN QUANTITY ELSE 0 END)",
+				FieldType.DECIMAL));
+		fields.add(FieldFactory.getField("transferredTo", "sum(case WHEN TRANSACTION_STATE = 10 THEN QUANTITY ELSE 0 END)",
+				FieldType.DECIMAL));
 	
 		builder.select(fields);
 
@@ -155,16 +158,19 @@ public class PurchasedItemsQuantityRollUpCommand extends FacilioCommand {
 
 		List<Map<String, Object>> rs = builder.get();
 		if (rs != null && rs.size() > 0) {
-			double addition = 0, issues = 0, returns = 0, used = 0 , adjustments_decrease = 0 , adjustments_increase = 0;
+			double addition = 0, issues = 0, returns = 0, used = 0 , adjustments_decrease = 0 , adjustments_increase = 0, transferredFrom=0, transferredTo=0;
 			addition = rs.get(0).get("addition") != null ? (double) rs.get(0).get("addition") : 0;
 			issues = rs.get(0).get("issues") != null ? (double) rs.get(0).get("issues") : 0;
 			returns = rs.get(0).get("returns") != null ? (double) rs.get(0).get("returns") : 0;
 			used = rs.get(0).get("used") != null ? (double) rs.get(0).get("used") : 0;
 			adjustments_decrease = rs.get(0).get("adjustments_decrease") != null ? (double) rs.get(0).get("adjustments_decrease") : 0;
 			adjustments_increase = rs.get(0).get("adjustments_increase") != null ? (double) rs.get(0).get("adjustments_increase") : 0;
+			transferredFrom= rs.get(0).get("transferredFrom") != null ? (double) rs.get(0).get("transferredFrom") : 0;
+			transferredTo= rs.get(0).get("transferredTo") != null ? (double) rs.get(0).get("transferredTo") : 0;
 			issues += used;
+			issues +=transferredFrom;
 			
-			return ((addition + returns + adjustments_increase) - issues - adjustments_decrease);
+			return ((addition + returns + adjustments_increase + transferredTo) - issues - adjustments_decrease);
 		}
 		return 0d;
 	}
