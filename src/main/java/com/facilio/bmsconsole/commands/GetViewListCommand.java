@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
@@ -391,11 +393,11 @@ public class GetViewListCommand extends FacilioCommand {
 		
 	}
 
-	private FacilioView addEditableAccess(FacilioView view, Boolean isSuperAdmin, Long currentUserId, Long ownerId) {
+	private FacilioView addEditableAccess(FacilioView view, Boolean isSuperAdmin, Long currentUserId, Long ownerId, Long adminRoleId, Long currentUserRoleId) {
 
 		Boolean isLocked = view.getIsLocked() != null ? view.getIsLocked() : false;
 
-		view.setEditable(isSuperAdmin || !isLocked || (isLocked && (ownerId.equals(currentUserId))));
+		view.setEditable(isSuperAdmin || !isLocked || (isLocked && (ownerId.equals(currentUserId) || adminRoleId.equals(currentUserRoleId))));
 
 		return view;
 	}
@@ -404,17 +406,23 @@ public class GetViewListCommand extends FacilioCommand {
 		List<FacilioView> resultViews = new ArrayList<>();
 
 		Boolean isSuperAdmin = AccountUtil.getCurrentUser().isSuperAdmin();
-		long currentUserId = AccountUtil.getCurrentUser().getId();
-		long superAdminUserId = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId()).getOuid();
+		Long currentUserId = AccountUtil.getCurrentUser().getId();
+		Long currentUserRoleId = AccountUtil.getCurrentUser().getRoleId();
+		Long superAdminUserId = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId()).getOuid();
+
+		Role adminRole = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), AccountConstants.DefaultSuperAdmin.ADMINISTRATOR);
+		Long adminRoleId = adminRole.getId();
 
 		for (FacilioView view : dbViews){
-			long ownerId = view.getOwnerId() != -1 ? view.getOwnerId() : superAdminUserId;
-			if (isSuperAdmin || (ownerId == currentUserId)){
-				resultViews.add(addEditableAccess(view, isSuperAdmin, currentUserId, ownerId));
-			} else if (view.isHidden() || (view.getViewSharing() != null && !view.getViewSharing().isAllowed(AccountUtil.getCurrentUser(), DelegationType.LIST_VIEWS))) {
+			Long ownerId = view.getOwnerId() != -1 ? view.getOwnerId() : superAdminUserId;
+			if (view.isHidden()){
+				continue;
+			} else if (isSuperAdmin || (ownerId.equals(currentUserId)) || (adminRoleId.equals(currentUserRoleId))){
+				resultViews.add(addEditableAccess(view, isSuperAdmin, currentUserId, ownerId, adminRoleId, currentUserRoleId));
+			} else if (view.getViewSharing() != null && !view.getViewSharing().isAllowed(AccountUtil.getCurrentUser(), DelegationType.LIST_VIEWS)) {
 				continue;
 			} else {
-				resultViews.add(addEditableAccess(view, isSuperAdmin, currentUserId, ownerId));
+				resultViews.add(addEditableAccess(view, isSuperAdmin, currentUserId, ownerId, adminRoleId, currentUserRoleId));
 			}
 		}
 		return resultViews;
