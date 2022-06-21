@@ -25,6 +25,7 @@ import com.facilio.modules.fields.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -516,10 +517,14 @@ public class CommonCommandUtil {
         }
     }
 
+    public static List<BaseSpaceContext> getMySites() throws Exception{
+        return getMySites(null,null);
+    }
+
     //will be removed soon..so please dont use this further
-    public static List<BaseSpaceContext> getMySites() throws Exception {
+    public static List<BaseSpaceContext> getMySites(JSONObject pagination,String search) throws Exception {
         if (AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) && AccountUtil.getCurrentApp() != null && !AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
-            List<SiteContext> sites = SpaceAPI.getAllSites(false);
+            List<SiteContext> sites = SpaceAPI.getAllSites(false,pagination,search);
             if (CollectionUtils.isNotEmpty(sites)) {
                 List<BaseSpaceContext> bsList = new ArrayList<BaseSpaceContext>();
                 for (SiteContext site : sites) {
@@ -557,25 +562,36 @@ public class CommonCommandUtil {
                     }
                 }
             }
-
             SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
                     .select(fields)
                     .module(module)
                     .beanClass(BaseSpaceContext.class)
                     .andCondition(CriteriaAPI.getCondition("SPACE_TYPE", "spaceType", String.valueOf(SpaceType.SITE.getIntVal()), NumberOperators.EQUALS))
                     .orderBy("NAME");
+            if(StringUtils.isNotEmpty(search)) {
+                selectBuilder
+                        .andCondition(CriteriaAPI.getCondition("NAME", "name", search, StringOperators.CONTAINS));
+            }
 
+            if (pagination != null) {
+                int page = (int) pagination.get("page");
+                int perPage = (int) pagination.get("perPage");
+                int offset = ((page - 1) * perPage);
+                if (offset < 0) {
+                    offset = 0;
+                }
+                selectBuilder.offset(offset);
+                selectBuilder.limit(perPage);
+            }
             List<BaseSpaceContext> accessibleBaseSpace;
             if (siteIds.isEmpty()) {
                 accessibleBaseSpace = selectBuilder.get();
             } else {
                 accessibleBaseSpace = selectBuilder.andCondition(CriteriaAPI.getIdCondition(siteIds, module)).get();
             }
-
             if (accessibleBaseSpace == null || accessibleBaseSpace.isEmpty()) {
                 return Collections.emptyList();
             }
-
             return accessibleBaseSpace;
         }
     }

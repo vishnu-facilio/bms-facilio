@@ -1122,8 +1122,12 @@ public class SpaceAPI {
 		List<SpaceContext> spaces = selectBuilder.get();
 		return spaces;
 	}
-	
-	public static List<SiteContext> getAllSites(boolean fetchLocation) throws Exception {
+
+	public static List<SiteContext> getAllSites(boolean fetchLocation) throws Exception{
+		return getAllSites(fetchLocation,null,null);
+	}
+
+	public static List<SiteContext> getAllSites(boolean fetchLocation,JSONObject pagination,String search) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SITE);
@@ -1135,6 +1139,19 @@ public class SpaceAPI {
 																	.beanClass(SiteContext.class);
 		if (fetchLocation) {
 			selectBuilder.fetchSupplement((SupplementRecord) FieldFactory.getAsMap(fields).get("location"));
+		}
+		if(StringUtils.isNotEmpty(search)){
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Site.NAME", "name", search, StringOperators.CONTAINS));
+		}
+		if (pagination != null) {
+			int page = (int) pagination.get("page");
+			int perPage = (int) pagination.get("perPage");
+			int offset = ((page - 1) * perPage);
+			if (offset < 0) {
+				offset = 0;
+			}
+			selectBuilder.offset(offset);
+			selectBuilder.limit(perPage);
 		}
 		List<SiteContext> sites = selectBuilder.get();
 		return sites;

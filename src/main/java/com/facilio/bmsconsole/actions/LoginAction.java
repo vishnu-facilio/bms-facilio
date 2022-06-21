@@ -159,6 +159,14 @@ public class LoginAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	private String search;
+	public void setSearch(String search) {
+		this.search = search;
+	}
+	public String getSearch() {
+		return this.search;
+	}
+
 	@Getter
 	@Setter
 	private String appLinkName;
@@ -996,7 +1004,18 @@ public class LoginAction extends FacilioAction {
 	}
 	
 	public String getMySiteList() throws Exception {
-		setResult("site", CommonCommandUtil.getMySites());
+		JSONObject pagination = new JSONObject();
+		pagination.put("page", getPage());
+		pagination.put("perPage", getPerPage());
+		if (getPerPage() < 0) {
+			pagination.put("perPage", 5000);
+		}
+		if (getSearch() != null) {
+			setResult("site", CommonCommandUtil.getMySites(pagination, getSearch()));
+		} else {
+			setResult("site", CommonCommandUtil.getMySites(pagination, null));
+		}
+
 		return SUCCESS;
 	}
 	
