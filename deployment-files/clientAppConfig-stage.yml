@@ -6,3 +6,6 @@ clientapps:
   - name: auth
     baseUrl: https://static.facilio.in/auth
     stageBaseUrl: https://static.facilio.in/dev
+  - name: stateflow
+    baseUrl: https://static.facilio.in/stateflow
+    stageBaseUrl: https://static.facilio.in/dev
