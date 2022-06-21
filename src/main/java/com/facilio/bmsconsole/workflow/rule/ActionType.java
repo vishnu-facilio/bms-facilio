@@ -7,6 +7,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.facilio.accounts.dto.IAMAccount;
+import com.facilio.accounts.dto.IAMUser;
 import com.facilio.apiv3.QAndAV3Config;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.*;
@@ -22,6 +24,10 @@ import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.util.V3AttachmentAPI;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fs.FileInfo;
+import com.facilio.iam.accounts.bean.IAMOrgBean;
+import com.facilio.iam.accounts.bean.IAMUserBean;
+import com.facilio.iam.accounts.util.IAMAccountConstants;
+import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.fields.FileField;
 import com.facilio.qa.QAndAUtil;
 import com.facilio.qa.context.QAndATemplateContext;
@@ -1793,9 +1799,33 @@ public enum ActionType {
 	CREATE_SATISFACTION_SURVEY(36){
 		@Override
 		public void performAction (JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
-				WorkOrderContext wocontext = (WorkOrderContext) context.get("record");
-				obj.put("parentId",wocontext.getId());
-			QAndAUtil.executeTemplate (FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_TEMPLATE,obj,new ArrayList<>(), currentRule.getId());
+
+			WorkOrderContext wocontext = (WorkOrderContext) context.get("workorder");
+			obj.put("parentId", wocontext.getId());
+
+			Long userId = (Long) obj.get("userId");
+			Long fieldId = (Long) obj.get("fieldId");
+			if(userId != null){
+				Long peopleId = PeopleAPI.getPeopleForId(userId).getId();
+				if(peopleId == null){
+					IAMUserUtil.getFacilioUser(AccountUtil.getCurrentOrg().getId(), userId).getUid();
+				}
+				obj.put("assignedTo", peopleId);
+			}else if(fieldId != null){
+				ModuleBean bean = Constants.getModBean();
+				List<FacilioField> fields = bean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
+				FacilioField field = fields.stream().filter(p -> p.getFieldId() == fieldId).collect(Collectors.toList()).get(0);
+				Map<String, Object> props = FieldUtil.getAsProperties(wocontext);
+				Map<String, Object> userObject = (Map<String, Object>) props.get(field.getName());
+				if(userObject !=null && !userObject.isEmpty()){
+					PeopleContext peopleContext = PeopleAPI.getPeopleForId((Long) userObject.get("peopleId"));
+					if(peopleContext != null) {
+						obj.put("assignedTo", peopleContext.getId());
+					}
+				}
+			}
+
+			QAndAUtil.executeTemplate(FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_TEMPLATE, obj, new ArrayList<>(), currentRule.getId());
 		}
 	},
 	CREATE_RECORD(37,true){
