@@ -75,6 +75,7 @@ public class ExtendedQAndAV3Config {
                 .afterTransaction(new AddActivitiesCommandV3())
         		.list()
         		.beforeFetch(new InspectionSupplementSupplyCommand())
+        		.afterFetch(QAndAReadOnlyChainFactory.commonAfterQAndAResponseListFetch())
         		.summary()
         		.beforeFetch(new InspectionSupplementSupplyCommand())
                 .afterFetch(QAndAReadOnlyChainFactory.commonAfterQAndAResponseFetch())

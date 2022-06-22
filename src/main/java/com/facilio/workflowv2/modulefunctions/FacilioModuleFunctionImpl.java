@@ -78,9 +78,11 @@ import com.facilio.v3.util.V3Util;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
+import lombok.extern.log4j.Log4j;
+
+@Log4j
 public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 
-	private static final Logger LOGGER = Logger.getLogger(FacilioModuleFunctionImpl.class.getName());
 	private static final String RESULT_STRING = "result";
 	
 	@Override
@@ -705,8 +707,8 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 				}
 			}
 		}
-		LOGGER.fine("selectBuilder -- "+selectBuilder);
-		LOGGER.fine("selectBuilder result -- "+props);
+		LOGGER.info("selectBuilder -- "+selectBuilder);
+		LOGGER.debug("selectBuilder result -- "+props);
 		
 		if(props != null && !props.isEmpty()) {
 			
@@ -756,7 +758,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 				}
 			}
 		}
-		LOGGER.fine("EXP -- "+toString()+" RESULT -- "+result);
+		LOGGER.debug("EXP -- "+toString()+" RESULT -- "+result);
 		return result;
 	}
 	

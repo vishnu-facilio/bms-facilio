@@ -1,5 +1,7 @@
 package com.facilio.qa.command;
 
+import org.apache.commons.chain.Command;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.chain.FacilioChain;
 
@@ -35,9 +37,16 @@ public class QAndAReadOnlyChainFactory {
 
     public static FacilioChain commonAfterQAndAResponseFetch() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchTemplateFromResponseCommand());
         c.addCommand(new FetchPagesFromResponseCommand());
         return c;
     }
+    
+    public static FacilioChain commonAfterQAndAResponseListFetch() {
+		 FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchTemplateFromResponseCommand());
+        return c;
+	}
     
     public static FacilioChain commonBeforeInspectionTemplateFetch() {
         FacilioChain c = getDefaultChain();

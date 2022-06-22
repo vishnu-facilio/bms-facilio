@@ -32,7 +32,7 @@ public class ValidateResponseStatus extends FacilioCommand {
 
 		QAndAUtil.validateResponseExpiry(response);
 
-        QAndATemplateContext parent = V3RecordAPI.getRecord(response.getQAndAType().getTemplateModule(), response.getParent().getId());
+        QAndATemplateContext parent = V3RecordAPI.getRecord(response.getQAndAType().getTemplateModule(), response.getParent().getId(),null,true);
         V3Util.throwRestException(parent == null, ErrorCode.VALIDATION_ERROR, "Cannot add/ update answer when the template is deleted");
         context.put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(response));
         context.put(FacilioConstants.QAndA.RESPONSE, response);
