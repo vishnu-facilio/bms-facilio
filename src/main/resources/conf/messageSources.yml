@@ -47,7 +47,7 @@ sources:
   - name: msk-sp #Singapore Region
     type: kafka
     configs:
-      broker: b-2.sp-kafka.89tf4q.c2.kafka.ap-southeast-1.amazonaws.com:9096,b-3.sp-kafka.89tf4q.c2.kafka.ap-southeast-1.amazonaws.com:9096,b-4.sp-kafka.89tf4q.c2.kafka.ap-southeast-1.amazonaws.com:9096
+      broker: b-2.sgkafka.p03ug2.c3.kafka.ap-southeast-1.amazonaws.com:9096,b-3.sgkafka.p03ug2.c3.kafka.ap-southeast-1.amazonaws.com:9096,b-4.sgkafka.p03ug2.c3.kafka.ap-southeast-1.amazonaws.com:9096
       auth: true
       
   - name: msk-eu #eu region
