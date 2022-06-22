@@ -102,7 +102,6 @@ public class AddTasksCommandV3 extends FacilioCommand implements PostTransaction
                         task.setFailed(false);
                     }
                 }
-                task.setInputType(V3TaskContext.InputType.NONE.getVal());
                 task.setCreatedBy(AccountUtil.getCurrentUser());
                 builder.addRecord(task);
             }

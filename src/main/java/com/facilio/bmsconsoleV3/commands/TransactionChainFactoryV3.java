@@ -26,9 +26,7 @@ import com.facilio.bmsconsoleV3.commands.servicerequest.AddRequesterForServiceRe
 import com.facilio.bmsconsoleV3.commands.servicerequest.SetIsNewForServiceRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.*;
 import com.facilio.bmsconsoleV3.commands.spacecategory.ValidateSpaceCategoryDeletionV3;
-import com.facilio.bmsconsoleV3.commands.tasks.AddTaskSectionsV3;
-import com.facilio.bmsconsoleV3.commands.tasks.AddTasksCommandV3;
-import com.facilio.bmsconsoleV3.commands.tasks.ValidateTasksCommandV3;
+import com.facilio.bmsconsoleV3.commands.tasks.*;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
 import com.facilio.bmsconsoleV3.commands.tool.AddBulkToolStockTransactionsCommandV3;
 import com.facilio.bmsconsoleV3.commands.tool.ToolQuantityRollUpCommandV3;
@@ -436,6 +434,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ValidateTasksCommandV3());
         c.addCommand(new AddTaskSectionsV3());
         c.addCommand(new AddTasksCommandV3());
+        c.addCommand(new AddTaskOptions());
         c.addCommand(new FillContextAfterWorkorderAddCommandV3());
         c.addCommand(new AddWorkorderHazardsFromSafetyPlanCommandV3());
         c.addCommand(new GetRecordIdsFromRecordMapCommandV3());
