@@ -23,6 +23,7 @@ public class AddViewGroupCommand extends FacilioCommand {
 			
 			viewGroup.setId(groupId);
 			context.put(FacilioConstants.ContextNames.VIEW_GROUP, viewGroup);
+
 		}
 		return false;
 	}

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReportsChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -8,6 +9,7 @@ import com.facilio.bmsconsole.context.ReportInfo;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.context.ViewGroups;
 import com.facilio.bmsconsole.templates.EMailTemplate;
+import com.facilio.bmsconsole.util.AuditLogUtil;
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.FacilioView.ViewType;
@@ -16,16 +18,25 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.taskengine.ScheduleInfo;
+import com.facilio.wmsv2.handler.AuditLogHandler;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 public class ViewAction extends FacilioAction {
-	
+
+	private static Logger log = LogManager.getLogger(ViewAPI.class.getName());
 	/**
 	 * 
 	 */
@@ -277,7 +288,8 @@ public class ViewAction extends FacilioAction {
 			viewName = viewObj.getName();
 			customizeSortColumns();
 		}
-		
+
+		addViewAuditLog(viewObj, "created");
 		return SUCCESS;
 	}
 	
@@ -288,9 +300,10 @@ public class ViewAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.VIEW_GROUP, viewGroup);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		chain.execute();
-		
-		
+
 		setResult("viewGroup", context.get(FacilioConstants.ContextNames.VIEW_GROUP));
+
+		addGroupAuditLog(viewGroup, "created");
 		return SUCCESS;
 	}
 	
@@ -303,19 +316,23 @@ public class ViewAction extends FacilioAction {
 		
 		
 		setResult("viewGroup", context.get(FacilioConstants.ContextNames.VIEW_GROUP));
+
+		addGroupAuditLog(viewGroup, "updated");
 		return SUCCESS;
 	}
 
 	public String v2deleteGroup() throws Exception {
-	
-	FacilioChain chain = TransactionChainFactory.deleteViewGroupChain();
-	Context context = chain.getContext();
-	context.put(FacilioConstants.ContextNames.VIEW_GROUP, viewGroup);
-	chain.execute();
-	
-	
-	setResult("viewGroup", context.get(FacilioConstants.ContextNames.VIEW_GROUP));
-	return SUCCESS;
+
+		FacilioChain chain = TransactionChainFactory.deleteViewGroupChain();
+		Context context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.VIEW_GROUP_ID, viewGroup.getId());
+		chain.execute();
+
+		ViewGroups viewGroup = (ViewGroups) context.get(FacilioConstants.ContextNames.VIEW_GROUP);
+		setResult("viewGroup", viewGroup);
+
+		addGroupAuditLog(viewGroup, "deleted");
+		return SUCCESS;
 }
 	
 	public String v2customizeViewGroups() throws Exception {
@@ -386,6 +403,8 @@ public String v2customizeView() throws Exception {
 		}
 		getViewDetail();
 		setResult("view", viewObj);
+
+		addViewAuditLog(viewObj, "updated");
 		return SUCCESS;
 	}
 		
@@ -394,6 +413,9 @@ public String v2customizeView() throws Exception {
 		context.put(FacilioConstants.ContextNames.VIEWID, id);
 		FacilioChain deleteView = TransactionChainFactory.deleteViewChain();
 		deleteView.execute(context);
+
+		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.EXISTING_CV);
+		addViewAuditLog(view, "deleted");
 		return SUCCESS;
 		
 	}
@@ -403,6 +425,9 @@ public String v2customizeView() throws Exception {
 		context.put(FacilioConstants.ContextNames.VIEWID, id);
 		FacilioChain deleteView = TransactionChainFactory.deleteViewChain();
 		deleteView.execute(context);
+
+		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.EXISTING_CV);
+		addViewAuditLog(view, "deleted");
 		return SUCCESS;	
 		
 	}
@@ -606,5 +631,49 @@ public String v2customizeView() throws Exception {
 	private String orderType;
 	
 	private List<SortField> sortFields;
+
+	public static void addViewAuditLog(FacilioView view, String action){
+		try {
+			ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule moduleRecord = moduleBean.getModule(view.getModuleId());
+			String message = String.format("View {%s} of module '%s' has been %s", view.getDisplayName(), moduleRecord.getDisplayName(), action);
+			AuditLogHandler.AuditLogContext auditLogContext = new AuditLogHandler.AuditLogContext(message, null,
+					AuditLogHandler.RecordType.SETTING, FacilioConstants.AuditLogRecordTypes.VIEW, view.getId());
+			auditLogContext.setLinkConfig(((Function<Void, String>) o -> {
+				JSONArray array = new JSONArray();
+				JSONObject json = new JSONObject();
+				json.put("moduleName", moduleRecord.getName());
+				json.put("id", view.getId());
+				json.put("navigateTo", "viewmanager");
+				array.add(json);
+				return array.toJSONString();
+			}).apply(null));
+			AuditLogUtil.sendAuditLogs(auditLogContext);
+		} catch (Exception e){
+			log.log(Level.INFO, "Exception while adding auditlog" , e);
+		}
+	}
+
+	public static void addGroupAuditLog(ViewGroups viewGroup, String action){
+		try {
+			ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule moduleRecord = moduleBean.getModule(viewGroup.getModuleId());
+			String message = String.format("ViewFolder {%s} of module '%s' has been %s", viewGroup.getDisplayName(), moduleRecord.getDisplayName(), action);
+			AuditLogHandler.AuditLogContext auditLogContext = new AuditLogHandler.AuditLogContext(message, null,
+					AuditLogHandler.RecordType.SETTING, FacilioConstants.AuditLogRecordTypes.VIEW_FOLDER, viewGroup.getId());
+			auditLogContext.setLinkConfig(((Function<Void, String>) o -> {
+				JSONArray array = new JSONArray();
+				JSONObject json = new JSONObject();
+				json.put("moduleName", moduleRecord.getName());
+				json.put("id", viewGroup.getId());
+				json.put("navigateTo", "viewmanager");
+				array.add(json);
+				return array.toJSONString();
+			}).apply(null));
+			AuditLogUtil.sendAuditLogs(auditLogContext);
+		} catch (Exception e){
+			log.log(Level.INFO, "Exception while adding auditlog" , e);
+		}
+	}
 	
 }

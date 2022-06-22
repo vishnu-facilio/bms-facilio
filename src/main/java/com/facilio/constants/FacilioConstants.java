@@ -1229,6 +1229,8 @@ public class FacilioConstants {
 		public static final String VIEWID = "viewId";
 		public static final String VIEW_LIST = "views";
 		public static final String VIEW_GROUP = "viewGroup";
+
+		public static final String VIEW_GROUP_ID = "viewGroupId";
 		public static final String CUSTOM_FILTER = "customFilter";
 		public static final String CUSTOM_FILTER_CONTEXT = "customFilterContext";
 		public static final String CUSTOM_FILTERS_LIST = "customFiltersList";
@@ -3369,5 +3371,10 @@ public class FacilioConstants {
 			return null;
 		}
 	    
+	}
+
+	public static class AuditLogRecordTypes{
+		public static final String VIEW_FOLDER = "ViewFolder";
+		public static final String VIEW = "View";
 	}
 }

@@ -24,11 +24,7 @@ import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.recordcustomization.RecordCustomizationAPI;
@@ -599,7 +595,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			if (view.getFields() != null) {
 			customizeViewColumns(view.getId(), view.getFields());
 			}
-			
+
 			// TODO update sort fields and view columns
 			
 			/*ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -735,7 +731,6 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 		return builder.delete();
 
 	}
-	
 	public static int deleteViewSortColumns(long viewId) throws Exception {
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 				.table(ModuleFactory.getViewSortColumnsModule().getTableName())
@@ -951,5 +946,21 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 				}
 			}
 		}
+	}
+
+	public static ViewGroups getGroup(Long groupId) throws Exception{
+		ViewGroups viewGroup = null;
+		GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getViewGroupsModule().getTableName())
+				.select(FieldFactory.getViewGroupFields())
+				.andCondition(CriteriaAPI.getIdCondition(groupId, ModuleFactory.getViewGroupsModule()));
+
+		List<Map<String, Object>> groupRecord = genericSelectRecordBuilder.get();
+
+		if (groupRecord != null && groupRecord.size() > 0) {
+			viewGroup = FieldUtil.getAsBeanFromMap(groupRecord.get(0), ViewGroups.class);
+		}
+
+		return viewGroup;
 	}
 }
