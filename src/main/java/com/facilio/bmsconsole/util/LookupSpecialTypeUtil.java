@@ -14,9 +14,10 @@ import java.util.stream.Collectors;
 
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.chain.FacilioContext;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.StringSystemEnumField;
+import com.facilio.readingrule.context.NewReadingRuleContext;
+import com.facilio.readingrule.util.NewReadingRuleAPI;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
@@ -126,6 +127,16 @@ public class LookupSpecialTypeUtil {
 		return ruleList;
 	}
 
+	private static List<FieldOption<Long>> getNewRulePickList (List<NewReadingRuleContext> rules) {
+		List<FieldOption<Long>> ruleList = null;
+		if (CollectionUtils.isNotEmpty(rules)) {
+			ruleList = rules.stream()
+					.map(rule -> new FieldOption<>(rule.getId(), rule.getName()))
+					.collect(Collectors.toList());
+		}
+		return ruleList;
+	}
+
 		public static List<FieldOption<Long>> getNewPickList(String specialType,Map<String,Object> paramsMap) throws Exception {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType)) {
 			List<User> users = ApplicationApi.getUsersList(paramsMap);
@@ -186,8 +197,13 @@ public class LookupSpecialTypeUtil {
 		}
 
 		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)){
-			List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getAllWorkflowRuleContextOfType(WorkflowRuleContext.RuleType.READING_RULE, false,false);
-			return getRulePickList(workflowRules);
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
+				List<NewReadingRuleContext> readingRules = NewReadingRuleAPI.getRules();
+				return getNewRulePickList(readingRules);
+			}else{
+				List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getAllWorkflowRuleContextOfType(WorkflowRuleContext.RuleType.READING_RULE, false,false);
+				return getRulePickList(workflowRules);
+			}
 		}
 		else if (ContextNames.SLA_RULE_MODULE.equals(specialType)) {
 			List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getAllWorkflowRuleContextOfType(WorkflowRuleContext.RuleType.SLA_RULE, false,false);
@@ -375,7 +391,11 @@ public class LookupSpecialTypeUtil {
 			return EventAPI.getEvent(criteria);
 		}
         else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
-        	return ReadingRuleAPI.getReadingRules(criteria);
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
+				return NewReadingRuleAPI.getRules();
+			}else{
+				return ReadingRuleAPI.getReadingRules(criteria);
+			}
         }
         else if (FacilioConstants.ContextNames.WORKFLOW_RULE_MODULE.equals(specialType)) {
             return WorkflowRuleAPI.getWorkflowRules(WorkflowRuleContext.RuleType.READING_RULE, true ,criteria, null, null);
@@ -790,15 +810,30 @@ public class LookupSpecialTypeUtil {
 				}
 			}
 		}
-        else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType) || ContextNames.SLA_RULE_MODULE.equals(specialType)) {
+        else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
             for(Object obj:listObjects) {
-
-                WorkflowRuleContext workflowRule = (WorkflowRuleContext) obj;
-                if (workflowRule != null) {
-                    idVsKey.put(workflowRule.getId(), workflowRule.getName());
-                }
+				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
+					NewReadingRuleContext newReadingRule = (NewReadingRuleContext) obj;
+					if (newReadingRule != null) {
+						idVsKey.put(newReadingRule.getId(), newReadingRule.getName());
+					}
+				}else{
+					WorkflowRuleContext workflowRule = (WorkflowRuleContext) obj;
+					if (workflowRule != null) {
+						idVsKey.put(workflowRule.getId(), workflowRule.getName());
+					}
+				}
             }
         }
+		else if (ContextNames.SLA_RULE_MODULE.equals(specialType)) {
+			for(Object obj:listObjects) {
+
+				WorkflowRuleContext workflowRule = (WorkflowRuleContext) obj;
+				if (workflowRule != null) {
+					idVsKey.put(workflowRule.getId(), workflowRule.getName());
+				}
+			}
+		}
         else if (FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)) {
             for(Object obj:listObjects) {
 

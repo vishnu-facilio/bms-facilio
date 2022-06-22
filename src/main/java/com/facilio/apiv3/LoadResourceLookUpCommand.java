@@ -24,6 +24,7 @@ public class LoadResourceLookUpCommand extends FacilioCommand {
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         List<SupplementRecord> fetchLookupsList = new ArrayList<>();
         fetchLookupsList.add((SupplementRecord)fieldsAsMap.get("resource"));
+        fetchLookupsList.add((SupplementRecord)fieldsAsMap.get("severity"));
         fetchLookupsList.add((SupplementRecord)fieldsAsMap.get("rule"));
         fetchLookupsList.add((SupplementRecord)fieldsAsMap.get("readingAlarmCategory"));
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);

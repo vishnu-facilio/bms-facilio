@@ -1848,6 +1848,7 @@ public class APIv3Config {
                 .afterSave(new UpdateOccurrenceCommand())
                 .list()
                 .beforeFetch(new LoadResourceLookUpCommand())
+                .afterFetch(new HandleV2AlarmListLookupCommand())
                 .summary()
                 .beforeFetch(new LoadResourceLookUpCommand())
                 .delete()
