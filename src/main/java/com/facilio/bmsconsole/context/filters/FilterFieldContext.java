@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context.filters;
 
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -9,6 +10,7 @@ import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.json.annotations.JSON;
+import org.apache.xpath.operations.Bool;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
@@ -21,6 +23,21 @@ public class FilterFieldContext {
     }
 
     private FacilioField field;
+
+    private Boolean isSpecialType;
+
+   public Boolean getIsSpecialType() {
+       if (this.field != null && this.field instanceof BaseLookupField){
+           String specialType = ((BaseLookupField)this.field).getSpecialType();
+           this.isSpecialType = specialType != null ? true : false;
+       }
+       return this.isSpecialType;
+   }
+
+    public void setSpecialType(Boolean specialType) {
+        isSpecialType = specialType;
+    }
+
     private JSONObject lookupFilters;
     public FilterFieldContext(FacilioField field) {
         this (field, null, null, null);

@@ -1,15 +1,28 @@
 package com.facilio.bmsconsole.page.factory;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.RoleFactory;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsoleV3.context.workordersurvey.WorkOrderSurveyResponseContext;
 import com.facilio.bmsconsoleV3.util.QuotationAPI;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.context.Constants;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
+import java.util.List;
+import java.util.Map;
 
 public class WorkorderPageFactory extends PageFactory {
     private static final Logger LOGGER = LogManager.getLogger(WorkorderPageFactory.class.getName());
@@ -195,30 +208,54 @@ public class WorkorderPageFactory extends PageFactory {
         addRelatedListWidgets(relatedRecordsSection, module.getModuleId());
     }
     
-    private static void addMetricandTimelogTab(Page page) throws Exception {
+    private static void addMetricandTimelogTab(Page page, long workOrderId) throws Exception {
         Page.Tab metricandTimelogTab = page.new Tab("timelog");
         page.addTab(metricandTimelogTab);
 
-		// add survey response section
-//		Page.Section surveyTimeLogSection = page.new Section();
-//		metricandTimelogTab.addSection(surveyTimeLogSection);
+		addWorkOrderSurveyPageWidget(page, metricandTimelogTab,workOrderId);
 
         Page.Section metrictimelogSection = page.new Section();
         metricandTimelogTab.addSection(metrictimelogSection);
 
-		// survey response widget
-//		PageWidget surveyTimelogWidget = new PageWidget(PageWidget.WidgetType.SURVEY_RESPONSE_WIDGET);
-//		surveyTimelogWidget.addToLayoutParams(metrictimelogSection, 24, 8);
-//		surveyTimeLogSection.addWidget(surveyTimelogWidget);
-
-        // metric and timelog widget
+		// metric and timelog widget
         PageWidget stateTransitionTimelogWidget = new PageWidget(PageWidget.WidgetType.STATE_TRANSITION_TIME_LOG);
         stateTransitionTimelogWidget.addToLayoutParams(metrictimelogSection, 24, 8);
 		metrictimelogSection.addWidget(stateTransitionTimelogWidget);
 
     }
 
-    private static void addTasksTab(Page page) {
+	private static void addWorkOrderSurveyPageWidget(Page page, Page.Tab metricandTimelogTab, long workOrderId) throws Exception{
+
+		if(isSurveyAvailable(workOrderId) && AccountUtil.getCurrentUser().getRole().getName().equals(RoleFactory.Role.SUPER_ADMIN.getName())){
+
+			Page.Section surveyTimeLogSection = page.new Section();
+			metricandTimelogTab.addSection(surveyTimeLogSection);
+
+			PageWidget surveyTimelogWidget = new PageWidget(PageWidget.WidgetType.SURVEY_RESPONSE_WIDGET);
+			surveyTimelogWidget.addToLayoutParams(surveyTimeLogSection, 24, 8);
+			surveyTimeLogSection.addWidget(surveyTimelogWidget);
+		}
+	}
+
+	private static boolean isSurveyAvailable(long workOrderId) throws Exception{
+
+		ModuleBean bean = Constants.getModBean();
+		FacilioModule module = bean.getModule(FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_RESPONSE);
+		List<FacilioField> fields  = bean.getAllFields(module.getName());
+
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+		SelectRecordsBuilder<WorkOrderSurveyResponseContext> builder = new SelectRecordsBuilder<WorkOrderSurveyResponseContext>()
+																			   .select(fields)
+																			   .moduleName(module.getName())
+																			   .beanClass(WorkOrderSurveyResponseContext.class)
+																			   .andCondition(CriteriaAPI.getCondition(module.getTableName()+".PARENT_ID",module.getTableName()+".parentId",String.valueOf(workOrderId), StringOperators.IS))
+																			   .andCondition(CriteriaAPI.getCondition(fieldMap.get("assignedTo"),String.valueOf(AccountUtil.getCurrentUser().getPeopleId()), NumberOperators.EQUALS));
+
+		return builder.get().size() > 0;
+	}
+
+	private static void addTasksTab(Page page) {
         Page.Tab tasksTab = page.new Tab("tasks");
         page.addTab(tasksTab);
 
@@ -300,7 +337,7 @@ public class WorkorderPageFactory extends PageFactory {
             addInventoryTab(page);
         }
         addRelatedRecordsTab(page, workorder.getModuleId());
-        addMetricandTimelogTab(page);
+        addMetricandTimelogTab(page,workorder.getId());
         addHistoryTab(page);
         return page;
     }
