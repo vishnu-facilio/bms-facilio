@@ -46,7 +46,7 @@ public class SupplySurveyCriteriaCommand extends FacilioCommand{
 
 		if(CollectionUtils.isNotEmpty(viewSurveyParams)) {
 			boolean isViewResultSurvey = Boolean.parseBoolean((String) viewSurveyParams.get(0));
-			if(isViewResultSurvey && AccountUtil.getCurrentUser().getRole().getName().equals(RoleFactory.Role.SUPER_ADMIN.getName())){
+			if(isViewResultSurvey){
 				criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("responseStatus"), String.valueOf(ResponseContext.ResponseStatus.COMPLETED.getIndex()), NumberOperators.EQUALS));
 			}
 		}
@@ -57,7 +57,9 @@ public class SupplySurveyCriteriaCommand extends FacilioCommand{
 			boolean isViewAllSurvey = Boolean.parseBoolean((String) viewAllSurveyParams.get(0));
 			if(isViewAllSurvey){
 				criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("responseStatus"), String.valueOf(ResponseContext.ResponseStatus.DISABLED.getIndex()), NumberOperators.NOT_EQUALS));
-				criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("assignedTo"),String.valueOf(AccountUtil.getCurrentUser().getPeopleId()),NumberOperators.EQUALS));
+				if(!AccountUtil.getCurrentUser().isSuperAdmin()){
+					criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("assignedTo"),String.valueOf(AccountUtil.getCurrentUser().getPeopleId()),NumberOperators.EQUALS));
+				}
 			}
 		}
 

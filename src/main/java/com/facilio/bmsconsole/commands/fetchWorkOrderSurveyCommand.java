@@ -34,6 +34,8 @@ public class fetchWorkOrderSurveyCommand extends FacilioCommand{
 		FacilioModule module = bean.getModule(FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_RESPONSE);
 		List<FacilioField> fields  = bean.getAllFields(module.getName());
 
+		boolean superAdmin = AccountUtil.getCurrentUser().isSuperAdmin();
+
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 
 		SelectRecordsBuilder<WorkOrderSurveyResponseContext> builder = new SelectRecordsBuilder<WorkOrderSurveyResponseContext>()
@@ -41,7 +43,7 @@ public class fetchWorkOrderSurveyCommand extends FacilioCommand{
 				.moduleName(module.getName())
 				.beanClass(WorkOrderSurveyResponseContext.class)
 				.andCondition(CriteriaAPI.getCondition(module.getTableName()+".PARENT_ID",module.getTableName()+".parentId",String.valueOf(workOrderId), StringOperators.IS));
-				if(!AccountUtil.getCurrentUser().isSuperAdmin()){
+				if(!superAdmin){
 					builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("assignedTo"),String.valueOf(AccountUtil.getCurrentUser().getPeopleId()),NumberOperators.EQUALS));
 				}
 
@@ -53,8 +55,8 @@ public class fetchWorkOrderSurveyCommand extends FacilioCommand{
 			long assignedTo = response.get(0).getAssignedTo().getId();
 			long currentUser = Objects.requireNonNull(AccountUtil.getCurrentUser()).getPeopleId();
 
-			context.put("isSurveyAvailable", (assignedTo == currentUser));
-			context.put("isSuperAdmin", AccountUtil.getCurrentUser().isSuperAdmin());
+			context.put("isSurveyAvailable", superAdmin || (assignedTo == currentUser));
+			context.put("isSuperAdmin", superAdmin);
 			context.put("isViewAllSurvey",  response.size() > 1);
 			context.put("response", response);
 		}
