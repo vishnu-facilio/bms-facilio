@@ -33,8 +33,7 @@ public class PreFillAddPurchaseRequestCommand extends FacilioCommand {
     			if(purchaseRequestContext.getRequestedTime() == null) {
 					purchaseRequestContext.setRequestedTime(System.currentTimeMillis());
 				}
-    			
-				purchaseRequestContext.setStatus(V3PurchaseRequestContext.Status.REQUESTED);
+
     			purchaseRequestContext.setShipToAddress(LocationAPI.getPoPrLocation(purchaseRequestContext.getStoreRoom(), purchaseRequestContext.getShipToAddress(), "SHIP_TO_Location", true, true));
                 purchaseRequestContext.setBillToAddress(LocationAPI.getPoPrLocation(purchaseRequestContext.getVendor(), purchaseRequestContext.getBillToAddress(), "BILL_TO_Location", false, true));
 

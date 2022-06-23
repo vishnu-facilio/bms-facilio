@@ -68,11 +68,9 @@ public class PurchaseOrderQuantityRecievedRollUpCommand extends FacilioCommand {
 					Map<String, Object> map = FieldUtil.getAsProperties(po);
 					po.setQuantityReceived(entry.getValue());
 					if (entry.getValue() < po.getTotalQuantity()) {
-						po.setStatus(Status.PARTIALLY_RECEIVED.getValue());
 						po.setReceivableStatus(V3PurchaseOrderContext.ReceivableStatus.PARTIALLY_RECEIVED.getIndex());
 						receivable.setStatus(com.facilio.bmsconsole.context.ReceivableContext.Status.PARTIALLY_RECEIVED);
 					} else if (entry.getValue() >= po.getTotalQuantity()) {
-						po.setStatus(Status.RECEIVED.getValue());
 						po.setCompletedTime(System.currentTimeMillis());
 						receivable.setStatus(com.facilio.bmsconsole.context.ReceivableContext.Status.RECEIVED);
 						po.setReceivableStatus(V3PurchaseOrderContext.ReceivableStatus.RECEIVED.getIndex());

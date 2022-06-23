@@ -49,7 +49,6 @@ public class POBeforeCreateOrEditV3Command extends FacilioCommand {
                     if (purchaseOrderContext.getOrderedTime() == null) {
                         purchaseOrderContext.setOrderedTime(System.currentTimeMillis());
                     }
-                    purchaseOrderContext.setStatus(V3PurchaseOrderContext.Status.REQUESTED);
                     if(purchaseOrderContext.getQuantityReceived() == null || purchaseOrderContext.getQuantityReceived() <= 0){
                         purchaseOrderContext.setReceivableStatus(V3PurchaseOrderContext.ReceivableStatus.YET_TO_RECEIVE.getIndex());
                     }
