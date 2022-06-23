@@ -40,8 +40,11 @@ public class fetchWorkOrderSurveyCommand extends FacilioCommand{
 				.select(fields)
 				.moduleName(module.getName())
 				.beanClass(WorkOrderSurveyResponseContext.class)
-				.andCondition(CriteriaAPI.getCondition(module.getTableName()+".PARENT_ID",module.getTableName()+".parentId",String.valueOf(workOrderId), StringOperators.IS))
-		        .andCondition(CriteriaAPI.getCondition(fieldMap.get("assignedTo"),String.valueOf(AccountUtil.getCurrentUser().getPeopleId()),NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition(module.getTableName()+".PARENT_ID",module.getTableName()+".parentId",String.valueOf(workOrderId), StringOperators.IS));
+				if(!AccountUtil.getCurrentUser().isSuperAdmin()){
+					builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("assignedTo"),String.valueOf(AccountUtil.getCurrentUser().getPeopleId()),NumberOperators.EQUALS));
+				}
+
 
 		List<WorkOrderSurveyResponseContext> response = builder.get();
 
@@ -50,14 +53,9 @@ public class fetchWorkOrderSurveyCommand extends FacilioCommand{
 			long assignedTo = response.get(0).getAssignedTo().getId();
 			long currentUser = Objects.requireNonNull(AccountUtil.getCurrentUser()).getPeopleId();
 
-			boolean isSurveyAvailable = assignedTo == currentUser;
-			boolean isSuperAdmin = AccountUtil.getCurrentUser().getRole().getName().equals(RoleFactory.Role.SUPER_ADMIN.getName());
-			boolean isViewAllSurvey = response.size() > 1;
-
-
-			context.put("isSurveyAvailable", isSurveyAvailable);
-			context.put("isSuperAdmin", isSuperAdmin);
-			context.put("isViewAllSurvey", isViewAllSurvey);
+			context.put("isSurveyAvailable", (assignedTo == currentUser));
+			context.put("isSuperAdmin", AccountUtil.getCurrentUser().isSuperAdmin());
+			context.put("isViewAllSurvey",  response.size() > 1);
 			context.put("response", response);
 		}
 
