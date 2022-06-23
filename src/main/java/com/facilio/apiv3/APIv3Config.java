@@ -217,7 +217,7 @@ public class APIv3Config {
                 .build();
     }
 
-    @ModuleType(type = FacilioModule.ModuleType.CUSTOM)
+    @ModuleType(type = FacilioModule.ModuleType.RELATION_DATA)
     public static Supplier<V3Config> getRelationHandler() {
 	    return () -> new V3Config(RelationDataContext.class, null)
                 .list()

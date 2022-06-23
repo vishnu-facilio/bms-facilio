@@ -17,6 +17,8 @@ public class RelationRequestContext implements Serializable {
     private String linkName;
     private long fromModuleId = -1;
     private long toModuleId = -1;
+    private String fromModuleName;
+    private String toModuleName;
     private String relationName;
     private String reverseRelationName;
     private FacilioModule relationModule;

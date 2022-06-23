@@ -146,13 +146,17 @@ public class ListCommand extends FacilioCommand {
         context.put(Constants.RECORD_MAP, recordMap);
     }
 
-    private SelectRecordsBuilder getSelectRecordsBuilder(Context context) {
+    private SelectRecordsBuilder getSelectRecordsBuilder(Context context) throws Exception{
         Class beanClass = (Class) context.get(Constants.BEAN_CLASS);
 
         SelectRecordsBuilder<ModuleBaseWithCustomFields> selectRecordsBuilder = new SelectRecordsBuilder<>()
                 .module(module)
                 .beanClass(beanClass);
 
+        List<JoinContext> joins = (List<JoinContext>) context.getOrDefault(Constants.JOINS, null);
+        if(CollectionUtils.isNotEmpty(joins)) {
+            addJoinsToSelectBuilder(selectRecordsBuilder, joins);
+        }
         Criteria filterCriteria = (Criteria) context.get(Constants.FILTER_CRITERIA);
         boolean excludeParentCriteria = (boolean) context.getOrDefault(Constants.EXCLUDE_PARENT_CRITERIA, false);
 
@@ -199,4 +203,21 @@ public class ListCommand extends FacilioCommand {
 
         return selectRecordsBuilder;
     }
+
+    private void addJoinsToSelectBuilder(SelectRecordsBuilder selectRecordsBuilder, List<JoinContext> joins) throws Exception{
+        for(JoinContext join : joins) {
+            switch (join.getJoinType()) {
+                case LEFT_JOIN:
+                    selectRecordsBuilder.leftJoin(join.getJoinModule().getTableName()).on(join.getJoinField().getCompleteColumnName() + "=" + join.getParentTableField().getCompleteColumnName());
+                    break;
+                case RIGHT_JOIN:
+                    selectRecordsBuilder.rightJoin(join.getJoinModule().getTableName()).on(join.getJoinField().getCompleteColumnName() + "=" + join.getParentTableField().getCompleteColumnName());
+                    break;
+                default:
+                    selectRecordsBuilder.innerJoin(join.getJoinModule().getTableName()).on(join.getJoinField().getCompleteColumnName() + "=" + join.getParentTableField().getCompleteColumnName());
+                    break;
+            }
+        }
+    }
+
 }

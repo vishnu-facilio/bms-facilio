@@ -90,7 +90,7 @@ public class AddOrUpdateRelationCommand extends FacilioCommand {
         FacilioModule module = new FacilioModule();
         module.setName("__relation_module_" + relation.getId());
         module.setDisplayName("Relation Module for " + relation.getId());
-        module.setType(FacilioModule.ModuleType.CUSTOM);
+        module.setType(FacilioModule.ModuleType.RELATION_DATA);
         module.setTableName("Custom_Relation");
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         long relationModuleId = modBean.addModule(module);
