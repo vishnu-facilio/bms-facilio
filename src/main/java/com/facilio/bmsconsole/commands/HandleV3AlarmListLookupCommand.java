@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
@@ -14,26 +15,27 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class HandleV2AlarmListLookupCommand extends FacilioCommand {
+public class HandleV3AlarmListLookupCommand extends FacilioCommand {
 
 
-    private static final Logger LOGGER = Logger.getLogger(HandleV2AlarmListLookupCommand.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(HandleV3AlarmListLookupCommand.class.getName());
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        List<BaseAlarmContext> alarms = (List<BaseAlarmContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
-
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+        HashMap alarmData = (HashMap) context.get(FacilioConstants.ContextNames.RECORD_MAP);
+        List<BaseAlarmContext> alarms = (List<BaseAlarmContext>) alarmData.get(moduleName);
+
 
         List<ReadingAlarm> readingAlarms = new ArrayList<>();
         List<ReadingAlarm> newReadingAlarms = new ArrayList<>();
         List<Long> oldRuleIds = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(alarms)) {
-            context.put(FacilioConstants.ContextNames.RECORD_LIST, alarms);
 
             NewAlarmAPI.loadAlarmLookups(alarms);
             if (moduleName.equals(FacilioConstants.ContextNames.AGENT_ALARM)) {
@@ -90,6 +92,9 @@ public class HandleV2AlarmListLookupCommand extends FacilioCommand {
 
 
         }
+        Map<String, List<? extends ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
+        recordMap.put(moduleName, alarms);
+        context.put(FacilioConstants.ContextNames.RECORD_MAP,  recordMap);
         return false;
     }
 
