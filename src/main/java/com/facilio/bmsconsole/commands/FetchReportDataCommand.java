@@ -40,6 +40,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
@@ -463,6 +465,21 @@ public class FetchReportDataCommand extends FacilioCommand {
             if (xValues == null || report.getTypeEnum() == ReportType.PIVOT_REPORT) {
                 if (dp.getAllCriteria() != null) {
                     Criteria allCriteria = dp.getAllCriteria();
+                    if(allCriteria != null){
+                        Map<String,Condition> conditions = (Map<String, Condition>) allCriteria.getConditions();
+                        for (String key : allCriteria.getConditions().keySet()) {
+                            Condition condition = conditions.get(key);
+                            Pattern pattern = Pattern.compile("(?<=\\{).+?(?=\\})");
+                            Matcher matcher = pattern.matcher(condition.getValue());
+                            if(matcher.find()){
+                                String moduleAndFieldName = matcher.group(0);
+                                String moduleName = moduleAndFieldName.split("\\.")[0];
+                                String fieldName = moduleAndFieldName.split("\\.")[1];
+                                FacilioField field = modBean.getField(fieldName, moduleName);
+                                dp.getAllCriteria().getConditions().get(key).setValue(field.getCompleteColumnName());
+                            }
+                        }
+                    }
                     if(!baseModule.getExtendedModuleIds().contains((dp.getyAxis().getModule().getModuleId()))){
                         Map<String,Condition> conditions = (Map<String, Condition>) allCriteria.getConditions();
                         for (String key : allCriteria.getConditions().keySet()) {
