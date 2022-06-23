@@ -32,16 +32,16 @@ public class DeleteOldSurveyRuleActionCommand extends FacilioCommand{
 			}
 		}
 
-		long createRuleId = responseRule.getExecuteCreateRuleId();
-		if(createRuleId > 0){
+		Long createRuleId = responseRule.getExecuteCreateRuleId();
+		if(createRuleId != null && createRuleId > 0){
 			if(CollectionUtils.isNotEmpty(createActions)){
 				context.put("createRuleId", createRuleId);
 				ActionAPI.deleteAllActionsFromWorkflowRules(Collections.singletonList(createRuleId));
 			}
 		}
 
-		long submitRuleId = responseRule.getExecuteSubmitRuleId();
-			if(submitRuleId > 0){
+		Long submitRuleId = responseRule.getExecuteSubmitRuleId();
+			if(submitRuleId != null && submitRuleId > 0){
 				if(CollectionUtils.isNotEmpty(responseActions)){
 					context.put("submitRuleId",submitRuleId);
 					ActionAPI.deleteAllActionsFromWorkflowRules(Collections.singletonList(submitRuleId));
