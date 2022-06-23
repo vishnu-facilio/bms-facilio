@@ -249,8 +249,11 @@ public class WorkorderPageFactory extends PageFactory {
 																			   .select(fields)
 																			   .moduleName(module.getName())
 																			   .beanClass(WorkOrderSurveyResponseContext.class)
-																			   .andCondition(CriteriaAPI.getCondition(module.getTableName()+".PARENT_ID",module.getTableName()+".parentId",String.valueOf(workOrderId), StringOperators.IS))
-																			   .andCondition(CriteriaAPI.getCondition(fieldMap.get("assignedTo"),String.valueOf(AccountUtil.getCurrentUser().getPeopleId()), NumberOperators.EQUALS));
+																			   .andCondition(CriteriaAPI.getCondition(module.getTableName()+".PARENT_ID",module.getTableName()+".parentId",String.valueOf(workOrderId), StringOperators.IS));
+		if(!AccountUtil.getCurrentUser().isSuperAdmin()){
+			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("assignedTo"),String.valueOf(AccountUtil.getCurrentUser().getPeopleId()), NumberOperators.EQUALS));
+		}
+
 
 		return builder.get().size() > 0;
 	}
