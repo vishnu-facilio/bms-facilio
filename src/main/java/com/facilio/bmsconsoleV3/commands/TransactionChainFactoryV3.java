@@ -22,6 +22,7 @@ import com.facilio.bmsconsoleV3.commands.requestForQuotation.AutoAwardingPriceCo
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.CreatePurchaseOrdersCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.CreateVendorQuotesCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.SetRequestForQuotationLineItemsCommandV3;
+import com.facilio.bmsconsoleV3.commands.servicerequest.AddActivityForServiceRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.servicerequest.AddRequesterForServiceRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.servicerequest.SetIsNewForServiceRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.*;
@@ -569,6 +570,7 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getServiceRequestAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         // c.addCommand(new UpdateAttachmentsParentIdCommandV3());
+        c.addCommand(new AddActivityForServiceRequestCommandV3());
         c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
         return c;
     }
