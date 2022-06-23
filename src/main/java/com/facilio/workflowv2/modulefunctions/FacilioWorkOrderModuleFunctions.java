@@ -6,6 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import com.facilio.fw.BeanFactory;
+import com.facilio.v3.util.V3Util;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -37,39 +43,40 @@ import com.facilio.util.FacilioUtil;
 @ScriptModule(moduleName = FacilioConstants.ContextNames.WORK_ORDER)
 public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 
-	public List<Map<String,Object>> getAvgResolutionTime(Map<String,Object> globalParams,List<Object> objects) throws Exception {
-		return WorkOrderAPI.getTopNCategoryOnAvgCompletionTime(String.valueOf(objects.get(0).toString()),Long.valueOf(objects.get(1).toString()),Long.valueOf(objects.get(2).toString()));
+	private static final Logger LOGGER = LogManager.getLogger(FacilioWorkOrderModuleFunctions.class.getName());
+
+	public List<Map<String, Object>> getAvgResolutionTime(Map<String, Object> globalParams, List<Object> objects) throws Exception {
+		return WorkOrderAPI.getTopNCategoryOnAvgCompletionTime(String.valueOf(objects.get(0).toString()), Long.valueOf(objects.get(1).toString()), Long.valueOf(objects.get(2).toString()));
 	}
-	
-	public List<Map<String,Object>> getWorkOrdersByCompletionTime(Map<String,Object> globalParams,List<Object> objects) throws Exception {
-		return WorkOrderAPI.getWorkOrderStatusPercentageForWorkflow(String.valueOf(objects.get(0)),Long.valueOf(objects.get(1).toString()),Long.valueOf(objects.get(2).toString()));
+
+	public List<Map<String, Object>> getWorkOrdersByCompletionTime(Map<String, Object> globalParams, List<Object> objects) throws Exception {
+		return WorkOrderAPI.getWorkOrderStatusPercentageForWorkflow(String.valueOf(objects.get(0)), Long.valueOf(objects.get(1).toString()), Long.valueOf(objects.get(2).toString()));
 	}
-	
-	public List<Map<String, Object>> getTopNTechnicians(Map<String,Object> globalParams,List<Object> objects) throws Exception{
+
+	public List<Map<String, Object>> getTopNTechnicians(Map<String, Object> globalParams, List<Object> objects) throws Exception {
 		return WorkOrderAPI.getTopNTechnicians(objects.get(0).toString(), Long.valueOf(objects.get(1).toString()), Long.valueOf(objects.get(2).toString()));
 	}
-	
-	public List<Map<String, Object>> getTopNBuildings(Map<String,Object> globalParams,List<Object> objects) throws Exception{
+
+	public List<Map<String, Object>> getTopNBuildings(Map<String, Object> globalParams, List<Object> objects) throws Exception {
 		return WorkOrderAPI.getTopNBuildings(Integer.parseInt(objects.get(1).toString()), Long.valueOf(objects.get(2).toString()), Long.valueOf(objects.get(3).toString()), Long.valueOf(objects.get(4).toString()));
 	}
-	
+
 	@Override
-	public void add(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+	public void add(Map<String, Object> globalParams, List<Object> objects) throws Exception {
 
 		Object insertObject = objects.get(1);
-		
-		if(insertObject instanceof Map) {
+
+		if (insertObject instanceof Map) {
 			Map<String, Object> woMap = (Map<String, Object>) insertObject;
 			WorkOrderContext wo = FieldUtil.getAsBeanFromMap(woMap, WorkOrderContext.class);
-			
+
 			long id = addWorkOrderContext(wo);
 			woMap.put("id", id);
-		}
-		else if (insertObject instanceof Collection) {
-			
-			List<Object> insertList = (List<Object>)insertObject;
-			
-			for(Object insert :insertList) {
+		} else if (insertObject instanceof Collection) {
+
+			List<Object> insertList = (List<Object>) insertObject;
+
+			for (Object insert : insertList) {
 				Map<String, Object> woMap = (Map<String, Object>) insert;
 				WorkOrderContext wo = FieldUtil.getAsBeanFromMap(woMap, WorkOrderContext.class);
 				long id = addWorkOrderContext(wo);
@@ -80,11 +87,21 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 	}
 	
 	public long addWorkOrderContext(WorkOrderContext workorder) throws Exception {
-		
+
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WOV3_BETA)) {
+			LOGGER.info("creating WO with v3");
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+			FacilioContext ctx = V3Util.createRecord(woModule, FieldUtil.getAsJSON(workorder));
+			return ((V3WorkOrderContext) ctx.get("workorder")).getId();
+		}
+
+		LOGGER.info("creating WO with v2");
+
 		if (workorder.getSourceTypeEnum() == null) {
 			workorder.setSourceType(TicketContext.SourceType.WEB_ORDER);
 		}
-		
+
 		FacilioChain addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
 		FacilioContext context = addWorkOrder.getContext();
 
@@ -92,9 +109,8 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 		if (AccountUtil.getCurrentUser() == null) {
 			context.put(FacilioConstants.ContextNames.IS_PUBLIC_REQUEST, true);
 		}
-		
+
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
-		
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
 
 		addWorkOrder.execute();
