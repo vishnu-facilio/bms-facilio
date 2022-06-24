@@ -52,6 +52,9 @@ public class V3fields extends ValidatorBase {
         if (StringUtils.isEmpty(moduleName)) {
             moduleName = (String) val.get("moduleName");
         }
+        if (StringUtils.isEmpty(moduleName)) {
+            moduleName = (String) requestContext.getGlobalValueMap().get("moduleName");
+        }
 
         Map data = (Map) val.get("data");
         Set set = data.keySet();

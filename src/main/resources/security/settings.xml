@@ -663,6 +663,42 @@
             <property name="moduleName" type="string"/>
         </requestbody>
     </request>
+    <request path="/api/v3/modules/:moduleName" method="POST">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+        <requestbody type="v3fields"/>
+    </request>
+    <request path="/api/v3/modules/:moduleName/view/:viewName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="viewName" type="string" mandatory="true"/>
+            <property name="page" type="number"/>
+            <property name="filters" type="string"/>
+            <property name="includeParentFilter" type="boolean"/>
+            <property name="withCount" type="boolean"/>
+            <property name="perPage" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/modules/:moduleName/:id" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/modules/:moduleName/:id" method="PATCH">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+        <requestbody type="v3fields"/>
+    </request>
+    <request path="/api/v3/modules/:moduleName/:id" method="DELETE">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
     <request path="/api/v3/licensinginfo/add">
         <requestbody type="object">
             <property name="licenseContext" type="object">
