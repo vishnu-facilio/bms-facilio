@@ -42,7 +42,7 @@ public class AddSurveyRuleCommand extends FacilioCommand {
 		// OnSubmit rule for survey
 		List<ActionContext> executeOnSubmitActions = (List<ActionContext>) context.get("executeResponseActions");
 
-		if(surveyResponseRule.getExecuteCreateRuleId() > 0 && CollectionUtils.isNotEmpty(executeOnSubmitActions)){
+		if(CollectionUtils.isNotEmpty(executeOnSubmitActions)){
 			surveyResponseRule.setActions(executeOnSubmitActions);
 			surveyResponseRule.setActivityType(EventType.EDIT);
 
