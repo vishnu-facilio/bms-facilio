@@ -211,7 +211,7 @@ public class FacilioConstants {
 
 		public static final String LICENSE_NEW_COUNT= "newCount";
 		public static final String LICENSING_INFO = "licensingInfo";
-
+		public static final String RESERVATION = "reservation";
 		public static final String LICENSING_INFO_IDS = "licensingInfoIds";
 
 		public static final String SUB_MODULES = "submodules";
@@ -2958,6 +2958,8 @@ public class FacilioConstants {
 		public static final String ADMIN = "Administrator";
 		public static final String MAINTENANCE_ADMIN = "CAFM Admin";
 		public static final String DEV_ADMIN = "Dev Admin";
+		public static final String MAINTENANCE_MANAGER = "CAFM Manager";
+		public static final String MAINTENANCE_TECHNICIAN = "CAFM Technician";
 	}
 
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.facilio.bmsconsoleV3.util.V3ModuleAPI;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -101,7 +102,7 @@ public class GetAllModulesCommand extends FacilioCommand {
 		List<JSONObject> systemModules = new ArrayList<JSONObject>();
 		List<JSONObject> customModules = new ArrayList<JSONObject>();
 		
-		for(String moduleName: MODULES) {
+		for(String moduleName: V3ModuleAPI.getSystemModuleNames()) {
 			if (AccountUtil.isModuleLicenseEnabled(moduleName)) {
 				FacilioModule module = modBean.getModule(moduleName);
 				systemModules.add(getModuleJson(module));

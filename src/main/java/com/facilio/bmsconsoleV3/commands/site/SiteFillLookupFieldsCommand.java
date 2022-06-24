@@ -24,7 +24,7 @@ public class SiteFillLookupFieldsCommand extends FacilioCommand {
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         List<LookupField> fetchLookupsList = new ArrayList<LookupField>();
         fetchLookupsList.add((LookupField) fieldsAsMap.get("location"));
-
+        fetchLookupsList.add((LookupField) fieldsAsMap.get("client"));
 
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);

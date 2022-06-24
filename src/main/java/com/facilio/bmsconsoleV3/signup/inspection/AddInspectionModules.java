@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.*;
 import com.facilio.modules.fields.*;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
@@ -16,11 +17,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.FormRuleAction;
 import com.facilio.bmsconsole.commands.AddSubModulesSystemFieldsCommad;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.BaseScheduleContext;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.context.RollUpField;
-import com.facilio.bmsconsole.context.ScopingConfigContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormActionType;
 import com.facilio.bmsconsole.forms.FormField;
@@ -507,7 +503,64 @@ public class AddInspectionModules extends SignUpData {
 			
 		  chain.execute();
 	}
-	
+
+	public void addDefaultFormForInspectionTemplateMaintenanceApp(FacilioModule inspection) throws Exception {
+		// TODO Auto-generated method stub
+		ApplicationContext maintenance = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioForm defaultForm = new FacilioForm();
+		defaultForm.setName("standard_maintenance");
+		defaultForm.setModule(inspection);
+		defaultForm.setDisplayName("Standard");
+		defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+		defaultForm.setShowInWeb(true);
+		defaultForm.setAppId(maintenance.getId());
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(inspection.getName()));
+		List<FormSection> sections = new ArrayList<FormSection>();
+		FormSection section = new FormSection();
+		section.setName("Configuration");
+		section.setSectionType(FormSection.SectionType.FIELDS);
+		section.setShowLabel(true);
+		List<FormField> fields = new ArrayList<>();
+		int seq = 0;
+		fields.add(new FormField(fieldMap.get("creationType").getFieldId(), "creationType", FacilioField.FieldDisplayType.SELECTBOX, "Scope", FormField.Required.REQUIRED, ++seq, 1));
+		fields.add(new FormField(fieldMap.get("siteId").getFieldId(), "site", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, ++seq, 1));
+		fields.add(new FormField(fieldMap.get("sites").getFieldId(), "sites", FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Sites", FormField.Required.OPTIONAL, ++seq, 1,Boolean.TRUE));
+		fields.add(new FormField(fieldMap.get("buildings").getFieldId(), "buildings", FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Buildings", FormField.Required.OPTIONAL, ++seq, 1,Boolean.TRUE));
+		fields.add(new FormField(fieldMap.get("assignmentType").getFieldId(), "assignmentType", FacilioField.FieldDisplayType.SELECTBOX, "Scope Category", FormField.Required.OPTIONAL, ++seq, 1,Boolean.TRUE));
+		fields.add(new FormField(fieldMap.get("assetCategory").getFieldId(), "assetCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Asset Category", FormField.Required.OPTIONAL, ++seq, 1,Boolean.TRUE));
+		fields.add(new FormField(fieldMap.get("spaceCategory").getFieldId(), "spaceCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Space Category", FormField.Required.OPTIONAL, ++seq, 1,Boolean.TRUE));
+		fields.add(new FormField(fieldMap.get("resource").getFieldId(), "resource", FacilioField.FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", FormField.Required.OPTIONAL, ++seq, 1,Boolean.TRUE));
+		section.setFields(fields);
+		section.setSequenceNumber(1);
+		sections.add(section);
+		FormSection configSection = new FormSection();
+		configSection.setName("Inspection Details");
+		configSection.setSectionType(FormSection.SectionType.FIELDS);
+		configSection.setShowLabel(true);
+		List<FormField> configFields = new ArrayList<>();
+		seq = 0;
+		configFields.add(new FormField(fieldMap.get("name").getFieldId(), "name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, ++seq, 1));
+		configFields.add(new FormField(fieldMap.get("description").getFieldId(), "description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, ++seq, 1));
+		configFields.add(new FormField(fieldMap.get("category").getFieldId(), "category", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL, ++seq, 1));
+		configFields.add(new FormField(fieldMap.get("priority").getFieldId(), "priority", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Priority", FormField.Required.OPTIONAL, ++seq, 1));
+		configFields.add(new FormField(-1, "assignment", FacilioField.FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", FormField.Required.OPTIONAL, ++seq, 1));
+		configSection.setFields(configFields);
+		configSection.setSequenceNumber(2);
+		sections.add(configSection);
+		defaultForm.setSections(sections);
+		FormsAPI.createForm(defaultForm, inspection);
+		Map<Long, FormField> formFieldMap = defaultForm.getSections().stream().map(FormSection::getFields).flatMap(List::stream).collect(Collectors.toMap(FormField::getFieldId, Function.identity()));
+		addSingleAssetSelectRule(defaultForm, fieldMap, formFieldMap);
+		addMultipleAssetSelectRule(defaultForm, fieldMap, formFieldMap);
+		addBuildingFilteringWithSiteRule(defaultForm, fieldMap, formFieldMap);
+		addAssetCategoryShowRule(defaultForm, fieldMap, formFieldMap);
+		addAssetCategoryHideRule(defaultForm, fieldMap, formFieldMap);
+		addSpaceCategoryShowRule(defaultForm, fieldMap, formFieldMap);
+		addSpaceCategoryHideRule(defaultForm, fieldMap, formFieldMap);
+		addOnLoadRule(defaultForm, fieldMap, formFieldMap);
+	}
+
 	private void addAssetCategoryHideRule(FacilioForm defaultForm, Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception {
 		
 		FormRuleContext singleRule = new FormRuleContext();

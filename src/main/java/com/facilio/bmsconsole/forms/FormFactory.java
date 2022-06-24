@@ -541,6 +541,8 @@ public class FormFactory {
 		List<FacilioForm> spaceCategoryForm = Arrays.asList(getSpaceCategoryForm());
 		List<FacilioForm> rfqForm = Arrays.asList(getRequestForQuotationForm());
 		List<FacilioForm> vendorQuotesForm = Arrays.asList(getVendorQuotesForm());
+		List<FacilioForm> labourForm = Arrays.asList(getLabourForm());
+
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
 				.put(FacilioConstants.ContextNames.ASSET, getFormMap(assetForms))
@@ -619,6 +621,7 @@ public class FormFactory {
 				.put(ContextNames.TOOL,getFormMap(toolFormsList))
 				.put(ContextNames.REQUEST_FOR_QUOTATION,getFormMap(rfqForm))
 				.put(ContextNames.VENDOR_QUOTES,getFormMap(vendorQuotesForm))
+				.put(ContextNames.LABOUR,getFormMap(labourForm))
 				.build();
 	}
 	

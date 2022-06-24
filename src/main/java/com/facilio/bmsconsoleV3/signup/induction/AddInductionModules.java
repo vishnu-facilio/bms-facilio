@@ -7,16 +7,13 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.*;
 import com.facilio.modules.fields.*;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.context.RollUpField;
-import com.facilio.bmsconsole.context.ScopingConfigContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormActionType;
 import com.facilio.bmsconsole.forms.FormField;
@@ -143,6 +140,39 @@ public class AddInductionModules extends SignUpData {
         ApplicationApi.addScopingConfigForApp(Collections.singletonList(scoping));
     }
 
+    public void addDefaultFormForInductionTemplateMaintenanceApp(FacilioModule Induction) throws Exception {
+        // TODO Auto-generated method stub
+        ApplicationContext maintenance = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioForm defaultForm = new FacilioForm();
+        defaultForm.setName("standard_maintenance");
+        defaultForm.setModule(Induction);
+        defaultForm.setDisplayName("Standard");
+        defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        defaultForm.setShowInWeb(true);
+        defaultForm.setAppId(maintenance.getId());
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(Induction.getName()));
+        List<FormSection> sections = new ArrayList<FormSection>();
+        FormSection configSection = new FormSection();
+        configSection.setName("Induction Details");
+        configSection.setSectionType(FormSection.SectionType.FIELDS);
+        configSection.setShowLabel(true);
+        List<FormField> configFields = new ArrayList<>();
+        int seq = 0;
+        FormField field = new FormField(fieldMap.get("siteApplyTo").getFieldId(), "siteApplyTo", FacilioField.FieldDisplayType.RADIO, "Apply To", FormField.Required.REQUIRED, ++seq, 1);
+        field.setValue(Boolean.TRUE.toString());
+        configFields.add(field);
+        configFields.add(new FormField(fieldMap.get("sites").getFieldId(), "sites", FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Sites", FormField.Required.OPTIONAL, ++seq, 1,Boolean.TRUE));
+        configFields.add(new FormField(fieldMap.get("name").getFieldId(), "name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, ++seq, 1));
+        configFields.add(new FormField(fieldMap.get("description").getFieldId(), "description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, ++seq, 1));
+        configSection.setFields(configFields);
+        configSection.setSequenceNumber(1);
+        sections.add(configSection);
+        defaultForm.setSections(sections);
+        FormsAPI.createForm(defaultForm, Induction);
+        Map<Long, FormField> formFieldMap = defaultForm.getSections().stream().map(FormSection::getFields).flatMap(List::stream).collect(Collectors.toMap(FormField::getFieldId, Function.identity()));
+        addApplyToSiteRule(defaultForm, fieldMap, formFieldMap);
+    }
 	public void addScoping(FacilioModule module) throws Exception {
 		
 		long applicationScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);

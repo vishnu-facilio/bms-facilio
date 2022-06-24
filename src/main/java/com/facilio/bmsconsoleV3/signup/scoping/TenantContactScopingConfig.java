@@ -50,7 +50,7 @@ public class TenantContactScopingConfig extends SignUpData {
             List<ScopingConfigContext> scopingConfig = new ArrayList<>();
             //scopingConfig.add(scoping);
             scopingConfig.add(maintenanceScoping);
-            ApplicationApi.addScopingConfigForApp(scopingConfig);
+            //ApplicationApi.addScopingConfigForApp(scopingConfig);
 
         }
         catch(Exception e){

@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import com.facilio.accounts.dto.*;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsoleV3.signup.maintenanceApp.DefaultTabsAndTabGroups;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -14,6 +15,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.modules.*;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -39,9 +41,9 @@ import org.json.simple.JSONObject;
 import org.reflections.Reflections;
 
 public class ApplicationApi {
-	
-	private static final Logger LOGGER = org.apache.log4j.Logger.getLogger(ApplicationApi.class);
-	
+
+    private static final Logger LOGGER = org.apache.log4j.Logger.getLogger(ApplicationApi.class);
+
     public static long addApplicationApi(ApplicationContext application) throws Exception {
         long appId = 0;
         if (application != null) {
@@ -91,13 +93,13 @@ public class ApplicationApi {
         else if (appLinkName.equals("agent")) {
             appLinkName = FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP;
         }
-        
+
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getApplicationModule().getTableName()).select(FieldFactory.getApplicationFields())
                 .andCondition(CriteriaAPI.getCondition("LINK_NAME", "linkName", appLinkName, StringOperators.IS));
         List<ApplicationContext> applications = FieldUtil.getAsBeanListFromMapList(builder.get(),
                 ApplicationContext.class);
-        
+
         if (applications != null && !applications.isEmpty()) {
             return applications.get(0);
         }
@@ -125,9 +127,9 @@ public class ApplicationApi {
         }
         return -1;
     }
-    
+
     public static List<ApplicationContext> getApplicationForLinkNames(List<String> appLinkNames) throws Exception {
-    	List<ApplicationContext> applications = new ArrayList<ApplicationContext>();
+        List<ApplicationContext> applications = new ArrayList<ApplicationContext>();
         if (appLinkNames != null && !appLinkNames.isEmpty()) {
             GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                     .table(ModuleFactory.getApplicationModule().getTableName()).select(FieldFactory.getApplicationFields())
@@ -335,13 +337,13 @@ public class ApplicationApi {
     }
 
     public static void addUserInApp(User user, boolean shouldThrowError) throws Exception {
-    	addUserInApp(user,shouldThrowError,true);
+        addUserInApp(user,shouldThrowError,true);
     }
-  
+
     public static void addUserInApp(User user, boolean shouldThrowError,boolean isEmailVerificationNeeded) throws Exception {
-    	OrgUserApp userExisitsInApp = checkIfUserAlreadyPresentInApp(user.getUid(), user.getApplicationId(), user.getOrgId());
-    	if (userExisitsInApp == null) {
-    		AccountUtil.getUserBean().addToORGUsersApps(user, isEmailVerificationNeeded);
+        OrgUserApp userExisitsInApp = checkIfUserAlreadyPresentInApp(user.getUid(), user.getApplicationId(), user.getOrgId());
+        if (userExisitsInApp == null) {
+            AccountUtil.getUserBean().addToORGUsersApps(user, isEmailVerificationNeeded);
         } else {
             if (shouldThrowError) {
                 throw new IllegalArgumentException("User already exists in app");
@@ -403,6 +405,7 @@ public class ApplicationApi {
         ApplicationContext facilioAgentApplication = new ApplicationContext(orgId, "Agent", false, facilioApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Agent App", ApplicationContext.AppCategory.WORK_CENTERS.getIndex());
 
         ApplicationContext maintenanceApplication = new ApplicationContext(orgId, "Maintenance", false, facilioApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Maintenance App", ApplicationContext.AppCategory.WORK_CENTERS.getIndex());
+        maintenanceApplication.setConfig(FacilioUtil.parseJson("{\"canShowSitesSwitch\":true}"));
 
         List<ApplicationContext> applicationsDefault = new ArrayList<ApplicationContext>();
         applicationsDefault.add(facilioApplication);
@@ -464,7 +467,10 @@ public class ApplicationApi {
             Role maintenanceAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.DefaultRoleNames.MAINTENANCE_ADMIN);
             addAppRoleMapping(maintenanceAdmin.getRoleId(), maintenance.getId());
 
-
+            Role maintenanceManager = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.DefaultRoleNames.MAINTENANCE_MANAGER);
+            addAppRoleMapping(maintenanceManager.getRoleId(), maintenance.getId());
+            Role maintenanceTechnician = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.DefaultRoleNames.MAINTENANCE_TECHNICIAN);
+            addAppRoleMapping(maintenanceTechnician.getRoleId(), maintenance.getId());
         }
 
         ApplicationContext servicePortal = getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
@@ -814,14 +820,17 @@ public class ApplicationApi {
             webTabs = new ArrayList<>();
 
             webTabs.add(new WebTabContext("Dashboard", "dashboard", WebTabContext.Type.DASHBOARD, null, appId, null));
-            webTabs.add(new WebTabContext("Work Order", "workorder", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("workorder").getModuleId()), appId, null));
-
+            WebTabContext woTab = new WebTabContext("Work Order", "workorder", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("workorder").getModuleId()), appId, null);
+            woTab.setFeatureLicense(1);
+            webTabs.add(woTab);
             groupNameVsWebTabsMap.put("favorite", webTabs);
 
             webTabGroups.add(new WebTabGroupContext("Assets", "asset", layout.getId(), 202, groupOrder++));
             webTabs = new ArrayList<>();
-            webTabs.add(new WebTabContext("Assets", "asset", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("asset").getModuleId()), appId, null));
-
+            WebTabContext assetTab = new WebTabContext("Assets", "asset", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("asset").getModuleId()), appId, null);
+            assetTab.setFeatureLicense(4);
+            webTabs.add(assetTab);            
+            
             groupNameVsWebTabsMap.put("asset", webTabs);
 
 
@@ -858,6 +867,62 @@ public class ApplicationApi {
             e.printStackTrace();
         }
 
+    }
+public static void addMaintenancePortalWebGroupsForWebLayout(ApplicationLayoutContext layout) {
+        try {
+            long webGroupId = 0l;
+            FacilioChain chain;
+            FacilioContext chainContext;
+            DefaultTabsAndTabGroups defaultTabsAndTabGroups = new DefaultTabsAndTabGroups(layout.getApplicationId(),layout.getId());
+            for (WebTabGroupContext webTabGroupContext : defaultTabsAndTabGroups.getWebTabGroups()) {
+                if(!webTabGroupContext.getName().equals("ONLY_TABS")) {
+                    chain = TransactionChainFactory.getAddOrUpdateTabGroup();
+                    chainContext = chain.getContext();
+                    chainContext.put(FacilioConstants.ContextNames.WEB_TAB_GROUP, webTabGroupContext);
+                    chain.execute();
+                    webGroupId = (long) chainContext.get(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID);
+                }
+                webTabGroupContext.setId(webGroupId);
+                List<WebTabContext> tabs = defaultTabsAndTabGroups.getGroupNameVsTabsMap().get(webTabGroupContext.getRoute());
+                for (WebTabContext webTabContext : tabs) {
+                    WebTabContext webtab = getWebTabForApplication(layout.getApplicationId(), webTabContext.getRoute());
+                    long tabId = 0l;
+                    if(webtab != null){
+                        tabId = webtab.getId();
+                    }else{
+                        chain = TransactionChainFactory.getAddOrUpdateTabChain();
+                        chainContext = chain.getContext();
+                        chainContext.put(FacilioConstants.ContextNames.WEB_TAB, webTabContext);
+                        chain.execute();
+                        tabId = (long) chainContext.get(FacilioConstants.ContextNames.WEB_TAB_ID);
+                    }
+                    webTabContext.setId(tabId);
+                }
+                if(CollectionUtils.isNotEmpty(tabs) && !webTabGroupContext.getName().equals("ONLY_TABS")){
+                    chain = TransactionChainFactory.getCreateAndAssociateTabGroupChain();
+                    chainContext = chain.getContext();
+                    chainContext.put(FacilioConstants.ContextNames.WEB_TABS, tabs);
+                    chainContext.put(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID, webGroupId);
+                    chain.execute();
+                }
+            }
+        } catch (InstantiationException e) {
+            throw new RuntimeException("Error");
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Error");
+        } catch (Exception e) {
+            throw new RuntimeException("Error" + e);
+        }
+    }
+
+    public static long getAddApplicationLayout(ApplicationLayoutContext layout) throws Exception {
+        List<FacilioField> fields = FieldFactory.getApplicationLayoutFields();
+        GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+                .table(ModuleFactory.getApplicationLayoutModule().getTableName())
+                .fields(fields);
+        Map<String, Object> props = FieldUtil.getAsProperties(layout);
+        long id = insertBuilder.insert(props);
+        return id;
     }
 
     public static void addVendorPortalWebTabs(ApplicationLayoutContext layout) {
@@ -1340,7 +1405,7 @@ public class ApplicationApi {
 
     }
 
-   public static List<ApplicationContext> getAllApplications() throws Exception {
+    public static List<ApplicationContext> getAllApplications() throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getApplicationModule().getTableName())
                 .select(FieldFactory.getApplicationFields());
@@ -1367,7 +1432,7 @@ public class ApplicationApi {
             }
         }
         if(roleId <= 0) {
-          roleId = getPrivelegedRoleForApp(app.getId());
+            roleId = getPrivelegedRoleForApp(app.getId());
         }
         if(scopingId <= 0) {
             scoping = getDefaultScopingForApp(app.getId());
@@ -1397,7 +1462,7 @@ public class ApplicationApi {
     }
 
     private static long getPrivelegedRoleForApp(Long appId) throws Exception {
-       //handle after handling roles and app mapping
+        //handle after handling roles and app mapping
         return -1;
 
     }
@@ -1550,7 +1615,7 @@ public class ApplicationApi {
         builder.update(map);
     }
 
-        public static List<OrgUserApp> getScopingsForUser(Long ouid,Long appId) throws Exception {
+    public static List<OrgUserApp> getScopingsForUser(Long ouid,Long appId) throws Exception {
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .select(AccountConstants.getOrgUserAppsFields())
                 .table(AccountConstants.getOrgUserAppsModule().getTableName())
@@ -1571,15 +1636,15 @@ public class ApplicationApi {
                 .table(ModuleFactory.getScopingConfigModule().getTableName())
                 .andCondition(CriteriaAPI.getCondition("SCOPING_ID", "scopingId", String.valueOf(scopingId), NumberOperators.EQUALS));
         int rows = builder.delete()
-        ;
+                ;
     }
 
     public static void deleteScoping(long scopingId) throws Exception {
-       GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+        GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
                 .table(ModuleFactory.getScopingModule().getTableName())
                 .andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(scopingId), NumberOperators.EQUALS))
                 ;
-       int rows = builder.delete();
+        int rows = builder.delete();
 
     }
 
@@ -1591,8 +1656,8 @@ public class ApplicationApi {
 
         Map<String, Object> props = FieldUtil.getAsProperties(layout);
 
-       long id = insertBuilder.insert(props);
-       layout.setId(id);
+        long id = insertBuilder.insert(props);
+        layout.setId(id);
 
     }
 
@@ -1612,12 +1677,12 @@ public class ApplicationApi {
 
     }
 
-    private static WebTabContext getWebTabForApplication(long appId, String route) throws Exception {
+    public static WebTabContext getWebTabForApplication(long appId, String route) throws Exception {
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                    .table(ModuleFactory.getWebTabModule().getTableName()).select(FieldFactory.getWebTabFields())
-                    .andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", String.valueOf(appId), NumberOperators.EQUALS))
-                    .andCondition(CriteriaAPI.getCondition("ROUTE", "route", route, StringOperators.IS));
+                .table(ModuleFactory.getWebTabModule().getTableName()).select(FieldFactory.getWebTabFields())
+                .andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", String.valueOf(appId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("ROUTE", "route", route, StringOperators.IS));
 
         List<WebTabContext> webTabs = FieldUtil.getAsBeanListFromMapList(builder.get(), WebTabContext.class);
         if(CollectionUtils.isNotEmpty(webTabs)) {
@@ -1637,26 +1702,48 @@ public class ApplicationApi {
     }
 
     public static List<ApplicationContext> getApplicationsContainsModule(String moduleName) throws Exception {
-    	
-    	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule moduleObj = modBean.getModule(moduleName);
-    	
+
+        List<String> moduleNamesList = Arrays.asList(FacilioConstants.ContextNames.SITE,FacilioConstants.ContextNames.BUILDING,FacilioConstants.ContextNames.FLOOR,FacilioConstants.ContextNames.SPACE);
+        GenericSelectRecordBuilder tabBuilder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getWebTabModule().getTableName())
+                .select(FieldFactory.getWebTabFields())
+                .andCondition(CriteriaAPI.getCondition("TYPE", "type", String.valueOf(WebTabContext.Type.CUSTOM.getIndex()), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("CONFIG", "config", String.valueOf("portfolio"), StringOperators.CONTAINS));
+        List<Map<String,Object>> tabs = new ArrayList<>();
+        if(moduleNamesList.contains(moduleName)){
+            tabs = tabBuilder.get();
+        }
+
+        List<Long> appIdsList = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(tabs)) {
+            List<WebTabContext> webTabs = FieldUtil.getAsBeanListFromMapList(tabs, WebTabContext.class);
+            appIdsList = webTabs.stream().map(WebTabContext::getApplicationId).collect(Collectors.toList());
+        }
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule moduleObj = modBean.getModule(moduleName);
+
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getTabIdAppIdMappingModule().getTableName())
                 .select(FieldFactory.getTabIdAppIdMappingFields())
                 .andCondition(CriteriaAPI.getCondition("MODULE_ID", "moduleId", String.valueOf(moduleObj.getModuleId()), NumberOperators.EQUALS));
 
         List<TabIdAppIdMappingContext> list = FieldUtil.getAsBeanListFromMapList(builder.get(), TabIdAppIdMappingContext.class);
-        
+
         GenericSelectRecordBuilder appbuilder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getApplicationModule().getTableName())
                 .select(FieldFactory.getApplicationFields())
                 ;
-        
-        if(CollectionUtils.isNotEmpty(list)) {   	
-        	Set<Long> appIdList = list.stream().map(TabIdAppIdMappingContext::getAppId).collect(Collectors.toSet());  
-        	appbuilder.andCondition(CriteriaAPI.getIdCondition(appIdList, ModuleFactory.getApplicationModule()));
-	        
+
+        if(CollectionUtils.isNotEmpty(list) || CollectionUtils.isNotEmpty(appIdsList)) {
+            Set<Long> appIdList = new HashSet<>();
+            if(CollectionUtils.isNotEmpty(list)) {
+                appIdList = list.stream().map(TabIdAppIdMappingContext::getAppId).collect(Collectors.toSet());
+            }
+            if(CollectionUtils.isNotEmpty(appIdsList)) {
+                appIdList.addAll(appIdsList);
+            }
+            appbuilder.andCondition(CriteriaAPI.getIdCondition(appIdList, ModuleFactory.getApplicationModule()));
+
         }
         appbuilder.orCondition(CriteriaAPI.getCondition("Application.APPLICATION_NAME", "name", "Facilio", StringOperators.IS));
         return FieldUtil.getAsBeanListFromMapList(appbuilder.get(), ApplicationContext.class);
@@ -1724,7 +1811,7 @@ public class ApplicationApi {
         }
     }
 
-     public static void migrateUserScoping() throws Exception {
+    public static void migrateUserScoping() throws Exception {
         try {
             List<ApplicationContext> applications = ApplicationApi.getAllApplications();
             if (CollectionUtils.isNotEmpty(applications)) {
@@ -1766,9 +1853,9 @@ public class ApplicationApi {
         catch(Exception e) {
             LogManager.getLogger(ApplicationApi.class.getName()).error("Error occurred while running migration.", e);
         }
-     }
+    }
 
-     public static Map<Long, List<ScopingConfigContext>> getDelegatedUsersScopingMap(List<User> users) {
+    public static Map<Long, List<ScopingConfigContext>> getDelegatedUsersScopingMap(List<User> users) {
         Map<Long, List<ScopingConfigContext>> scopingMap = new HashMap<>();
         try {
             for (User user : users) {
@@ -1789,9 +1876,9 @@ public class ApplicationApi {
             e.printStackTrace();
         }
         return null;
-     }
+    }
 
-     public static Map<String, String> evaluateValueGenerators() throws Exception {
+    public static Map<String, String> evaluateValueGenerators() throws Exception {
 
         Map<String, String> valueGeneratorMap = new HashMap<>();
          Reflections reflections = new Reflections("com.facilio.modules");

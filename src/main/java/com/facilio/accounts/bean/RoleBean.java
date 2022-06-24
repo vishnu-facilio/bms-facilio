@@ -41,6 +41,8 @@ public interface RoleBean {
 	
 	public boolean addNewPermission(long roleId, NewPermission permissions) throws Exception;
 
+	public void addNewPermission(NewPermission permissions) throws Exception;
+
 	public List<NewPermission> getNewPermission(long roleId) throws Exception;
 
 	public void addRolesAppsMapping(List<RoleApp> rolesApps) throws Exception;
