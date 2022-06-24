@@ -52,6 +52,7 @@ import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
 import com.facilio.bmsconsoleV3.commands.item.LoadItemLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksCommand;
+import com.facilio.bmsconsoleV3.commands.jobplan.FetchJobPlanLookupCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.FillJobPlanDetailsCommand;
 import com.facilio.bmsconsoleV3.commands.labour.GetLabourListCommandV3;
 import com.facilio.bmsconsoleV3.commands.labour.SetLocationCommandV3;
@@ -1426,7 +1427,9 @@ public class APIv3Config {
                 .afterSave(TransactionChainFactoryV3.getUpdateJobPlanChain())
                 .delete()
                 .list()
+                .beforeFetch(new FetchJobPlanLookupCommand())
                 .summary()
+                .beforeFetch(new FetchJobPlanLookupCommand())
                 .afterFetch(new FillJobPlanDetailsCommand())
                 .delete()
 

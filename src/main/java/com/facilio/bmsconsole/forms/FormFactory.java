@@ -542,6 +542,7 @@ public class FormFactory {
 		List<FacilioForm> rfqForm = Arrays.asList(getRequestForQuotationForm());
 		List<FacilioForm> vendorQuotesForm = Arrays.asList(getVendorQuotesForm());
 		List<FacilioForm> labourForm = Arrays.asList(getLabourForm());
+		List<FacilioForm> jobPlanForm = Arrays.asList(getJobPlanForm());
 
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
@@ -622,6 +623,8 @@ public class FormFactory {
 				.put(ContextNames.REQUEST_FOR_QUOTATION,getFormMap(rfqForm))
 				.put(ContextNames.VENDOR_QUOTES,getFormMap(vendorQuotesForm))
 				.put(ContextNames.LABOUR,getFormMap(labourForm))
+				.put(ContextNames.JOB_PLAN,getFormMap(jobPlanForm))
+
 				.build();
 	}
 	
@@ -2094,6 +2097,18 @@ public class FormFactory {
 		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
+
+	public static FacilioForm getJobPlanForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Job Plan");
+		form.setName("default_jobplan_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getRequestForQuotationFormFields());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
+
 	public static FacilioForm getVendorQuotesForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("VENDOR QUOTES");
@@ -2231,6 +2246,16 @@ public class FormFactory {
 		//fields.add(new FormField("billToAddress", FieldDisplayType.SADDRESS, "BILLING ADDRESS", Required.OPTIONAL, 6, 1));
 		fields.add(new FormField("shipToAddress", FieldDisplayType.SADDRESS, "SHIPPING ADDRESS", Required.OPTIONAL, 7, 1));
 		fields.add(new FormField("requestForQuotationLineItems", FieldDisplayType.LINEITEMS, "LINE ITEMS", Required.REQUIRED, 8, 1));
+
+		return fields;
+	}
+	private static List<FormField> getJobPlanFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("jobPlanCategory", FieldDisplayType.TEXTAREA, "Category", Required.REQUIRED, 2, 1));
+		fields.add(new FormField("assetCategoryId", FieldDisplayType.LOOKUP_SIMPLE, "Asset Category", Required.OPTIONAL, "assetCategory", 3, 1));
+		fields.add(new FormField("spaceCategoryId", FieldDisplayType.LOOKUP_SIMPLE, "Space Category", Required.OPTIONAL, "spaceCategory", 4, 1));
+		fields.add(new FormField("taskSectionList", FieldDisplayType.JP_TASKS, "Tasks", Required.REQUIRED, 5, 1));
 
 		return fields;
 	}
