@@ -2255,7 +2255,7 @@ public class FormFactory {
 		fields.add(new FormField("jobPlanCategory", FieldDisplayType.TEXTAREA, "Category", Required.REQUIRED, 2, 1));
 		fields.add(new FormField("assetCategoryId", FieldDisplayType.LOOKUP_SIMPLE, "Asset Category", Required.OPTIONAL, "assetCategory", 3, 1));
 		fields.add(new FormField("spaceCategoryId", FieldDisplayType.LOOKUP_SIMPLE, "Space Category", Required.OPTIONAL, "spaceCategory", 4, 1));
-		fields.add(new FormField("taskSectionList", FieldDisplayType.JP_TASKS, "Tasks", Required.REQUIRED, 5, 1));
+		fields.add(new FormField("taskSectionList", FieldDisplayType.JP_TASK, "Tasks", Required.REQUIRED, 5, 1));
 
 		return fields;
 	}
