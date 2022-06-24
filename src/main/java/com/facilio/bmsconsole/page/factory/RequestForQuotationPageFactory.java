@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.WidgetGroup;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
@@ -47,6 +48,20 @@ public class RequestForQuotationPageFactory extends PageFactory{
         addRelatedListWidget(tab3Sec1,"vendorQuotes",module.getModuleId());
         addRelatedListWidget(tab3Sec1,"purchaseorder", module.getModuleId());
         addRelatedListWidget(tab3Sec1,"purchaserequest", module.getModuleId());
+
+        Page.Tab tab4 = page.new Tab("History");
+        page.addTab(tab4);
+        Page.Section tab4Sec1 = page.new Section();
+
+        tab4.addSection(tab4Sec1);
+
+        PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
+
+        activityWidget.addToLayoutParams(tab4Sec1, 24, 3);
+
+        activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION_ACTIVITY);
+
+        tab4Sec1.addWidget(activityWidget);
 
         return page;
     }

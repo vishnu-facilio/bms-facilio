@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.requestForQuotation;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.ServiceContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
@@ -9,12 +10,14 @@ import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderLineItemContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationLineItemsContext;
+import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -53,6 +56,11 @@ public class CreatePurchaseOrdersCommandV3 extends FacilioCommand {
         }
         List<V3PurchaseOrderContext> purchaseOrderRecords = new ArrayList<V3PurchaseOrderContext> (vendorToPurchaseOrderMap.values());
         V3Util.createRecordList(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER),FieldUtil.getAsMapList(purchaseOrderRecords, V3PurchaseOrderContext.class),null,null);
+
+        // History handling
+        JSONObject info = new JSONObject();
+        info.put(FacilioConstants.ContextNames.USER , requestForQuotation.getSysModifiedBy().getName());
+        CommonCommandUtil.addActivityToContext(requestForQuotation.getId(), -1, RequestForQuotationActivityType.PO_CREATED, info, (FacilioContext) context.get(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION_CONTEXT));
 
         return false;
     }

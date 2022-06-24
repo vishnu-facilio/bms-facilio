@@ -83,6 +83,9 @@ public class GetAutomationModulesCommand extends FacilioCommand {
             modules.add(modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING));
         }
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PURCHASE) && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.REQUEST_FOR_QUOTATION)) {
+            modules.add(modBean.getModule(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION));
+        }
 
         if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
             modules.add(modBean.getModule(FacilioConstants.ContextNames.NEW_READING_ALARM));
