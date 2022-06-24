@@ -1421,7 +1421,6 @@ public class APIv3Config {
     public static Supplier<V3Config> getJobPlan() {
         return () -> new V3Config(JobPlanContext.class, new ModuleCustomFieldCount30())
                 .create()
-                .beforeSave(new SetLocalIdCommandV3())
                 .afterSave(TransactionChainFactoryV3.getCreateJobPlanChain())
                 .update()
                 .afterSave(TransactionChainFactoryV3.getUpdateJobPlanChain())

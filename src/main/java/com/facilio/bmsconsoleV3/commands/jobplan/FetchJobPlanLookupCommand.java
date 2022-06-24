@@ -25,7 +25,7 @@ public class FetchJobPlanLookupCommand extends FacilioCommand {
         additionaLookups.add((LookupField) fieldsAsMap.get("assetCategory"));
         additionaLookups.add((LookupField) fieldsAsMap.get("spaceCategory"));
 
-        if(CollectionUtils.isEmpty(additionaLookups)) {
+        if(CollectionUtils.isNotEmpty(additionaLookups)) {
             context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, additionaLookups);
         }
         return false;

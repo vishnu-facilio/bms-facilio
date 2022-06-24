@@ -2102,9 +2102,9 @@ public class FormFactory {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("Job Plan");
 		form.setName("default_jobplan_web");
-		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION));
+		form.setModule(ModuleFactory.getModule(ContextNames.JOB_PLAN));
 		form.setLabelPosition(LabelPosition.LEFT);
-		form.setFields(getRequestForQuotationFormFields());
+		form.setFields(getJobPlanFormFields());
 		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
