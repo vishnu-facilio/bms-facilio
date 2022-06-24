@@ -4481,7 +4481,7 @@ public class TransactionChainFactory {
 	    public static FacilioChain updateViewGroupChain()
 	    {
 	    	FacilioChain c=getDefaultChain();
-	    	c.addCommand(new editViewGroupCommand());
+	    	c.addCommand(new EditViewGroupCommand());
 	    	return c;
 	    }
 
