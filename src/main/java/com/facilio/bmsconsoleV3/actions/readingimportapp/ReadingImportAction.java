@@ -15,12 +15,13 @@ import org.json.simple.JSONObject;
 
 @Log4j
 @Setter @Getter
-public class ReadingImportAction{
+public class ReadingImportAction extends V3Action{
 
     @Setter @Getter
     V3ReadingImportAppContext readingImportData;
 
-    Long id;
+    @Setter @Getter
+    long id;
 
     private JSONObject data;
 
@@ -48,7 +49,7 @@ public class ReadingImportAction{
         context.put("READING_IMPORT_CONTEXT", getReadingImportData());
         chain.execute();
 
-        setData("readingImportData", context.get("READING_IMPORT_CONTEXT"));
+        setData("readingimport", context.get("READING_IMPORT_CONTEXT"));
 
 
         return V3Action.SUCCESS;
@@ -62,7 +63,7 @@ public class ReadingImportAction{
         context.put("READING_IMPORT_CONTEXT", getReadingImportData());
         chain.execute();
 
-        setData("readingImportData", context.get("READING_IMPORT_DATA"));
+        setData("readingimport", context.get("READING_IMPORT_DATA"));
 
         return V3Action.SUCCESS;
     }
@@ -73,7 +74,7 @@ public class ReadingImportAction{
         FacilioContext context = chain.getContext();
         chain.execute();
 
-        setData("readingImportDataList", context.get("READING_IMPORT_DATA_LIST"));
+        setData("readingimport", context.get("READING_IMPORT_DATA_LIST"));
 
         return V3Action.SUCCESS;
     }
@@ -86,7 +87,7 @@ public class ReadingImportAction{
         context.put("READING_IMPORT_CONTEXT", getReadingImportData());
         chain.execute();
 
-        setData("readingImportData", context.get("READING_IMPORT_DATA"));
+        setData("readingimport", context.get("READING_IMPORT_DATA"));
 
         return V3Action.SUCCESS;
     }

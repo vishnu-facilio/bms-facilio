@@ -830,13 +830,13 @@
     </package>
 
     <package name="readingImportApp" namespace="/api/v3/readingimport" extends="v3Api">
-        <action name="addData"
+        <action name="create"
                 class="com.facilio.bmsconsoleV3.actions.readingimportapp.ReadingImportAction"
                 method="addImportMeta"/>
-        <action name="getData"
+        <action name="summary"
                 class="com.facilio.bmsconsoleV3.actions.readingimportapp.ReadingImportAction"
                 method="getImportMetaById"/>
-        <action name="getAllData"
+        <action name="list"
                 class="com.facilio.bmsconsoleV3.actions.readingimportapp.ReadingImportAction"
                 method="getImportMetaList"/>
         <action name="update"

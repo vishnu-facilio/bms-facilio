@@ -787,9 +787,9 @@
         </requestbody>
     </request>
 
-    <request path="/api/v3/readingimport/addData">
+    <request path="/api/v3/readingimport/create">
         <requestbody type="object">
-            <property name="readingImportData" type="object">
+            <property name="readingimport" type="object">
                 <property name="id" type="number"/>
                 <property name="fileId" type="number"/>
                 <property name="orgId" type="number"/>
@@ -810,9 +810,9 @@
         </requestbody>
     </request>
 
-    <request path="/api/v3/readingimport/getData">
+    <request path="/api/v3/readingimport/summary">
         <requestbody type="object">
-            <property name="readingImportData" type="object">
+            <property name="readingimport" type="object">
                 <property name="id" type="number"/>
                 <property name="fileId" type="number"/>
                 <property name="orgId" type="number"/>
@@ -832,9 +832,9 @@
             </property>
         </requestbody>
     </request>
-    <request path="/api/v3/readingimport/getAllData">
+    <request path="/api/v3/readingimport/list">
         <requestbody type="object">
-            <property name="readingImportData" type="object">
+            <property name="readingimport" type="object">
                 <property name="id" type="number"/>
                 <property name="fileId" type="number"/>
                 <property name="orgId" type="number"/>
@@ -857,7 +857,7 @@
 
     <request path="/api/v3/readingimport/update">
         <requestbody type="object">
-            <property name="readingImportData" type="object">
+            <property name="readingimport" type="object">
                 <property name="id" type="number"/>
                 <property name="fileId" type="number"/>
                 <property name="orgId" type="number"/>
@@ -880,7 +880,7 @@
 
     <request path="/api/v3/readingimport/delete">
         <requestbody type="object">
-            <property name="readingImportData" type="object">
+            <property name="readingimport" type="object">
                 <property name="id" type="number"/>
             </property>
         </requestbody>
