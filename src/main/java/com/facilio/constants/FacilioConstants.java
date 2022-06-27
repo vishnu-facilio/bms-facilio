@@ -158,7 +158,8 @@ public class FacilioConstants {
 		public static final String FEEDBACK_TYPE_CATALOG_MAPPING = "feedbackTypeCatalogMapping";
 		public static final String RULE_TEMPLATE_MODULE ="ruletemplate";
 		public static final String SPACE="space";
-		
+		public static final String WEATHER_SERVICE = "weatherservice";
+		public static final String WEATHER_STATION = "weatherstation";
 
 	}
 
@@ -1364,7 +1365,9 @@ public class FacilioConstants {
 		public static final String PUBLICKEYFILENAME = "publicKeyFileName";
 		public static final String PUBLICKEYFILETYPE = "publicKeyFileNameType";
 		public static final String MARKED_READINGS = "markedReadings";
+
 		public static final String WEATHER_READING = "weather";
+		public static final String NEW_WEATHER_READING = "newWeather";
 		public static final String WEATHER_DAILY_READING = "weatherDaily";
 		public static final String WEATHER_DAILY_FORECAST_READING = "weatherDailyForecast";
 		public static final String WEATHER_HOURLY_FORECAST_READING = "weatherHourlyForecast";
@@ -1373,6 +1376,7 @@ public class FacilioConstants {
 		public static final String WDD_READING="wdd";
 		
 		public static final String PSYCHROMETRIC_READING = "psychrometric";
+		public static final String NEW_PSYCHROMETRIC_READING = "newpsychrometric";
 		public static final String WET_BULB_TEMPERATURE="wetBulbTemperature";
 		public static final String MODULE_NAMES = "moduleNames";
 		public static final String SORT_FIELDS = "sortFields";

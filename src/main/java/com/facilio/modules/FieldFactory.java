@@ -3988,83 +3988,50 @@ public class FieldFactory extends BaseFieldFactory {
     }
 
     public static List<FacilioField> getDefaultReadingFields(FacilioModule module) {
-
         List<FacilioField> fields = new ArrayList<>();
 
-        FacilioField actualTtime = getField("actualTtime", "Actual Timestamp", "ACTUAL_TTIME", module, FieldType.DATE_TIME);
-        actualTtime.setDefault(true);
+        FacilioField actualTtime = getDefaultField("actualTtime", "Actual Timestamp", "ACTUAL_TTIME", FieldType.DATE_TIME);
+        actualTtime.setModule(module);
         fields.add(actualTtime);
 
-        FacilioField ttime = new FacilioField();
-        ttime.setName("ttime");
-        ttime.setDisplayName("Timestamp");
-        ttime.setDataType(FieldType.DATE_TIME);
-        ttime.setColumnName("TTIME");
+        FacilioField ttime = getDefaultField("ttime", "Timestamp", "TTIME", FieldType.DATE_TIME);
         ttime.setModule(module);
-        ttime.setDefault(true);
         fields.add(ttime);
 
-        FacilioField ttimeDate = new FacilioField();
-        ttimeDate.setName("date");
-        ttimeDate.setDisplayName("Date");
-        ttimeDate.setDataType(FieldType.STRING);
-        ttimeDate.setColumnName("TTIME_DATE");
+        FacilioField ttimeDate = getDefaultField("date", "Date", "TTIME_DATE", FieldType.STRING);
         ttimeDate.setModule(module);
-        ttimeDate.setDefault(true);
         fields.add(ttimeDate);
 
-        FacilioField ttimeMonth = new FacilioField();
-        ttimeMonth.setName("month");
-        ttimeMonth.setDisplayName("Month");
-        ttimeMonth.setDataType(FieldType.NUMBER);
-        ttimeMonth.setColumnName("TTIME_MONTH");
+        FacilioField ttimeMonth = getDefaultField("month", "Month", "TTIME_MONTH", FieldType.NUMBER);
         ttimeMonth.setModule(module);
-        ttimeMonth.setDefault(true);
         fields.add(ttimeMonth);
 
-        FacilioField ttimeWeek = new FacilioField();
-        ttimeWeek.setName("week");
-        ttimeWeek.setDisplayName("Week");
-        ttimeWeek.setDataType(FieldType.NUMBER);
-        ttimeWeek.setColumnName("TTIME_WEEK");
+        FacilioField ttimeWeek = getDefaultField("week", "Week", "TTIME_WEEK", FieldType.NUMBER);
         ttimeWeek.setModule(module);
-        ttimeWeek.setDefault(true);
         fields.add(ttimeWeek);
 
-        FacilioField ttimeDay = new FacilioField();
-        ttimeDay.setName("day");
-        ttimeDay.setDisplayName("Day");
-        ttimeDay.setDataType(FieldType.NUMBER);
-        ttimeDay.setColumnName("TTIME_DAY");
+        FacilioField ttimeDay = getDefaultField("day", "Day", "TTIME_DAY", FieldType.NUMBER);
         ttimeDay.setModule(module);
-        ttimeDay.setDefault(true);
         fields.add(ttimeDay);
 
-        FacilioField ttimeHour = new FacilioField();
-        ttimeHour.setName("hour");
-        ttimeHour.setDisplayName("Hour");
-        ttimeHour.setDataType(FieldType.NUMBER);
-        ttimeHour.setColumnName("TTIME_HOUR");
+        FacilioField ttimeHour = getDefaultField("hour", "Hour", "TTIME_HOUR", FieldType.NUMBER);
         ttimeHour.setModule(module);
-        ttimeHour.setDefault(true);
         fields.add(ttimeHour);
 
-        FacilioField parent = new FacilioField();
-        parent.setName("parentId");
-        parent.setDisplayName("Parent");
+        FacilioField parent = getDefaultField("parentId", "Parent", "PARENT_ID", FieldType.NUMBER);
         parent.setDataType(FieldType.NUMBER);
-        parent.setColumnName("PARENT_ID");
-        parent.setDefault(true);
         parent.setModule(module);
         fields.add(parent);
-        
-        SystemEnumField sourceTypeField = (SystemEnumField) getField("sourceType", "Source Type", "SOURCE_TYPE", module, FieldType.SYSTEM_ENUM);
-        sourceTypeField.setEnumName("SourceType");
-        sourceTypeField.setDefault(true);
-        fields.add(sourceTypeField);
-        FacilioField sourceIdField = getField("sourceId", "Source Id", "SOURCE_ID", module, FieldType.NUMBER);
-        sourceIdField.setDefault(true);
-        fields.add(sourceIdField);
+
+        SystemEnumField sourceType = FieldFactory.getDefaultField("sourceType", "Source Type", "SOURCE_TYPE", FieldType.SYSTEM_ENUM);
+        sourceType.setEnumName("SourceType");
+        sourceType.setModule(module);
+        fields.add(sourceType);
+
+        FacilioField sourceId = getDefaultField("sourceId", "Source Id", "SOURCE_ID", FieldType.NUMBER);
+        sourceId.setModule(module);
+        fields.add(sourceId);
+
 //		fields.add(getField("sysCreatedTime", "CREATED_TIME", FieldType.DATE_TIME));
 
         return fields;

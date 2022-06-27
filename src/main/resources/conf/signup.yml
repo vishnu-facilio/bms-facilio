@@ -121,3 +121,6 @@ classes:
 
     #Adding stateflow
   - com.facilio.bmsconsoleV3.signup.requestForQuotation.RequestForQuotationDefaultStateflow
+
+    #Adding Weather service modules
+  - com.facilio.bmsconsoleV3.signup.weather.AddWeatherModules

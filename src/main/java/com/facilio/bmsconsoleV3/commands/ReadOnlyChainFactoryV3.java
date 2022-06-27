@@ -256,5 +256,10 @@ public class ReadOnlyChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getWeatherStationChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchWeatherStationCommand());
+        return c;
+    }
 
 }
