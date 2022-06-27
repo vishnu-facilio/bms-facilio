@@ -11,7 +11,9 @@ import com.facilio.bmsconsole.commands.ExecuteStateFlowCommand;
 import com.facilio.bmsconsole.commands.ExecuteStateTransitionsCommand;
 import com.facilio.bmsconsole.commands.SetTableNamesCommand;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -158,6 +160,10 @@ public class V3PeopleAPI {
                     return;
                 }
                 else {
+                    FacilioForm defaultform = FormsAPI.getDefaultForm(module.getName(),AccountUtil.getCurrentApp().getLinkName(),false);
+                    if(defaultform != null){
+                        tc.setFormId(defaultform.getId());
+                    }
                     addPeopleRecord(tc, module, fields, parentId);
                     return;
                 }
@@ -169,6 +175,10 @@ public class V3PeopleAPI {
             }
         }
         else {
+            FacilioForm defaultform = FormsAPI.getFormFromDB("default_" + module.getName() + "_web_" + AccountUtil.getCurrentApp().getLinkName(),module);
+            if(defaultform != null){
+                tc.setFormId(defaultform.getId());
+            }
             if(StringUtils.isNotEmpty(tc.getEmail())) {
                 addPeopleRecord(tc, module, fields, parentId);
                 return;

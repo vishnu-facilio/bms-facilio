@@ -18,6 +18,8 @@ import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3ReceivableContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
+import com.facilio.relation.context.RelationRequestContext;
+import com.facilio.relation.util.RelationUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -415,8 +417,12 @@ public class PageFactory {
 	protected static void addRelatedListWidgets(Section section, long moduleId) throws Exception {
 		addRelatedListWidgets(section, moduleId, null, false);
 	}
-	
+
 	protected static void addRelatedListWidgets(Section section, long moduleId, List<String> relatedModules, boolean include) throws Exception {
+		addRelatedListWidgets(section, moduleId, null, false, true);
+	}
+
+	protected static void addRelatedListWidgets(Section section, long moduleId, List<String> relatedModules, boolean include, boolean addRelations) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioModule> subModules =
 				modBean.getSubModules(moduleId, FacilioModule.ModuleType.BASE_ENTITY);
@@ -446,10 +452,23 @@ public class PageFactory {
 				}
 			}
 		}
+
+		if(addRelations) {
+			List<RelationRequestContext> relations = RelationUtil.getAllRelations(modBean.getModule(moduleId));
+			if (CollectionUtils.isNotEmpty(relations)) {
+				for (RelationRequestContext relation : relations) {
+					PageWidget relationWidget = new PageWidget(WidgetType.RELATIONSHIP_WIDGET);
+					relationWidget.setRelation(relation);
+					relationWidget.addToLayoutParams(section, 24, 8);
+					section.addWidget(relationWidget);
+				}
+			}
+		}
+
 	}
 
 	public static void getRelatedListMeta(Section section, long moduleId, List<String> relatedModules, boolean include) throws Exception {
-		addRelatedListWidgets(section, moduleId, relatedModules, include);
+		addRelatedListWidgets(section, moduleId, relatedModules, include, false);
 	}
 
 	static void addSubModuleRelatedListWidget(Page.Section section, String moduleName, long parenModuleId) throws Exception {

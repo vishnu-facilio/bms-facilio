@@ -118,3 +118,6 @@ classes:
 
     #WorkOrder survey Modules
   - com.facilio.bmsconsoleV3.signup.workordersurvey.AddWorkOrderSurveyModules
+
+    #Adding stateflow
+  - com.facilio.bmsconsoleV3.signup.requestForQuotation.RequestForQuotationDefaultStateflow

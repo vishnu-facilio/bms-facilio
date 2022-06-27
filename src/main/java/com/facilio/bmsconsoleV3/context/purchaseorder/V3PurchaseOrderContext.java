@@ -27,7 +27,6 @@ public class V3PurchaseOrderContext extends BaseLineItemsParentModuleContext {
 	private String description;
 	private V3VendorContext vendor;
 	private V3StoreRoomContext storeRoom;
-	private Status status;
 	private User requestedBy;
 	private List<V3PurchaseOrderLineItemContext> lineItems;
 	private V3ReceivableContext receivableContext;
@@ -56,10 +55,6 @@ public class V3PurchaseOrderContext extends BaseLineItemsParentModuleContext {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
-	public Status getStatusEnum() {
-		return status;
-	}
 	
 	public User getRequestedBy() {
 		return requestedBy;
@@ -69,19 +64,6 @@ public class V3PurchaseOrderContext extends BaseLineItemsParentModuleContext {
 		this.requestedBy = requestedBy;
 	}
 
-	public Integer getStatus() {
-		if (status != null) {
-			return status.getValue();
-		}
-		return null;
-	}
-	public void setStatus(Status status) {
-		this.status = status;
-	}
-	public void setStatus(int status) {
-		this.status = Status.valueOf(status);
-	}
-	
 	public static V3PurchaseOrderContext fromPurchaseRequest(List<V3PurchaseRequestContext> list) throws Exception {
 		V3PurchaseOrderContext purchaseOrderContext = new V3PurchaseOrderContext();
 		if(!CollectionUtils.isEmpty(list)) {
@@ -187,27 +169,6 @@ public class V3PurchaseOrderContext extends BaseLineItemsParentModuleContext {
 			this.lineItems = new ArrayList<V3PurchaseOrderLineItemContext>();
 		}
 		this.lineItems.addAll(lineItems);
-	}
-
-	public static enum Status {
-		REQUESTED(),
-		APPROVED(),
-		REJECTED(),
-		ORDERED(),
-		PARTIALLY_RECEIVED(),
-		RECEIVED,
-		COMPLETED();
-		
-		public int getValue() {
-			return ordinal()+1;
-		}
-
-		public static Status valueOf(int value) {
-			if (value > 0 && value <= values().length) {
-				return values()[value - 1];
-			}
-			return null;
-		}
 	}
 
 	public LocationContext getShipToAddress() {

@@ -14,6 +14,7 @@ import com.facilio.agentv2.point.AddPointCommand;
 import com.facilio.agentv2.point.ConfigurePointCommand;
 import com.facilio.agentv2.point.EditPointCommand;
 import com.facilio.agentv2.sqlitebuilder.AgentSqliteMakerCommand;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.banner.commands.CloseBannerCommand;
 import com.facilio.bmsconsole.actions.GetModuleFromReportContextCommand;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
@@ -34,6 +35,10 @@ import com.facilio.bmsconsoleV3.commands.jobplan.BulkAddJobPlanTasksCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.AssociateQuotationTermsCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.DisAssociateQuotationTermsCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.SendQuotationMailCommand;
+import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddDefaultRolesMaintenanceApp;
+import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddMaintenanceApplicationDefaultForms;
+import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddMaintenanceApplicationDefaultViews;
+import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddMaintenanceApplicationLayout;
 import com.facilio.cb.command.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.command.FacilioCommand;
@@ -87,6 +92,10 @@ public class TransactionChainFactory {
 			c.addCommand(new AddDefaultWoTimelineCommand());
 			c.addCommand(new AddMaintenanceAppConfigCommand());
 			//c.addCommand(new AddDefaultWoTimelineCommand());
+			c.addCommand(new AddMaintenanceApplicationLayout());
+			c.addCommand(new AddMaintenanceApplicationDefaultViews());
+			c.addCommand(new AddMaintenanceApplicationDefaultForms());
+			c.addCommand(new AddDefaultRolesMaintenanceApp());
 			return c;
 		}
 

@@ -29,6 +29,7 @@ public class Constants {
     public static final String RECORD_MAP = "recordMap";
     public static final String EXCLUDE_PARENT_CRITERIA = "excludeParentCriteria";
     public static final String FILTER_CRITERIA = "filterCriteria";
+    public static final String JOINS = "joins";
     public static final String BEFORE_FETCH_CRITERIA = "beforeFetchCriteria";
     public static final String WITH_COUNT = "withCount";
     public static final String BEAN_CLASS = "beanClass";

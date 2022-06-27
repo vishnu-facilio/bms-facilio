@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
-import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext.Status;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderLineItemContext;
 import com.facilio.modules.*;
 import org.apache.commons.chain.Context;
@@ -105,7 +104,6 @@ public class PurchaseOrderCompleteCommand extends FacilioCommand {
 							}
 						}
 					}
-				purchaseOrder.setStatus(Status.COMPLETED);
 				purchaseOrder.setCompletedTime(System.currentTimeMillis());
 					UpdateRecordBuilder<V3PurchaseOrderContext> updateBuilder = new UpdateRecordBuilder<V3PurchaseOrderContext>()
 							.module(pomodule).fields(modBean.getAllFields(pomodule.getName()))

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.relation.context.RelationRequestContext;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -190,6 +191,14 @@ public class PageWidget {
 			widgets = new ArrayList<PageWidget>();
 		}
 		widgets.add(widget);
+	}
+
+	private RelationRequestContext relation;
+	public void setRelation(RelationRequestContext relation) {
+		this.relation = relation;
+	}
+	public RelationRequestContext getRelation() {
+		return relation;
 	}
 
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
@@ -430,7 +439,9 @@ public class PageWidget {
 		TENANT_UNIT_WORKORDER("tenantunitworkorder"),
 		TENANT_UNIT_LOCATION("tenantunitlocation"),
 		TENANT_UNIT_PHOTO("tenantunitphoto"),
-		RECEIVABLE_RECEIPTS("receivablereceipts");
+		RECEIVABLE_RECEIPTS("receivablereceipts"),
+
+		RELATIONSHIP_WIDGET("relationshipwidget");
 
 		private String name;
 

@@ -663,6 +663,42 @@
             <property name="moduleName" type="string"/>
         </requestbody>
     </request>
+    <request path="/api/v3/modules/:moduleName" method="POST">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+        <requestbody type="v3fields"/>
+    </request>
+    <request path="/api/v3/modules/:moduleName/view/:viewName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="viewName" type="string" mandatory="true"/>
+            <property name="page" type="number"/>
+            <property name="filters" type="string"/>
+            <property name="includeParentFilter" type="boolean"/>
+            <property name="withCount" type="boolean"/>
+            <property name="perPage" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/modules/:moduleName/:id" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/modules/:moduleName/:id" method="PATCH">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+        <requestbody type="v3fields"/>
+    </request>
+    <request path="/api/v3/modules/:moduleName/:id" method="DELETE">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
     <request path="/api/v3/licensinginfo/add">
         <requestbody type="object">
             <property name="licenseContext" type="object">
@@ -751,9 +787,9 @@
         </requestbody>
     </request>
 
-    <request path="/api/v3/readingimport/addData">
+    <request path="/api/v3/readingimport/create">
         <requestbody type="object">
-            <property name="readingImportData" type="object">
+            <property name="readingimport" type="object">
                 <property name="id" type="number"/>
                 <property name="fileId" type="number"/>
                 <property name="orgId" type="number"/>
@@ -774,9 +810,9 @@
         </requestbody>
     </request>
 
-    <request path="/api/v3/readingimport/getData">
+    <request path="/api/v3/readingimport/summary">
         <requestbody type="object">
-            <property name="readingImportData" type="object">
+            <property name="readingimport" type="object">
                 <property name="id" type="number"/>
                 <property name="fileId" type="number"/>
                 <property name="orgId" type="number"/>
@@ -796,9 +832,9 @@
             </property>
         </requestbody>
     </request>
-    <request path="/api/v3/readingimport/getAllData">
+    <request path="/api/v3/readingimport/list">
         <requestbody type="object">
-            <property name="readingImportData" type="object">
+            <property name="readingimport" type="object">
                 <property name="id" type="number"/>
                 <property name="fileId" type="number"/>
                 <property name="orgId" type="number"/>
@@ -821,7 +857,7 @@
 
     <request path="/api/v3/readingimport/update">
         <requestbody type="object">
-            <property name="readingImportData" type="object">
+            <property name="readingimport" type="object">
                 <property name="id" type="number"/>
                 <property name="fileId" type="number"/>
                 <property name="orgId" type="number"/>
@@ -844,7 +880,7 @@
 
     <request path="/api/v3/readingimport/delete">
         <requestbody type="object">
-            <property name="readingImportData" type="object">
+            <property name="readingimport" type="object">
                 <property name="id" type="number"/>
             </property>
         </requestbody>

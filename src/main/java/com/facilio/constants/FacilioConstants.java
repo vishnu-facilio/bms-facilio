@@ -180,7 +180,7 @@ public class FacilioConstants {
 
 	public static class ContextNames {
 
-		public static final String READING_IMPORT_APP = "readingImportApp";
+		public static final String READING_IMPORT_APP = "readingimport";
 
 		public static final String VERIFY_USER = "verifyUser";
 		public static final String RULE_LOG_MODULE_DATA = "ruleLogModuleData";
@@ -211,7 +211,7 @@ public class FacilioConstants {
 
 		public static final String LICENSE_NEW_COUNT= "newCount";
 		public static final String LICENSING_INFO = "licensingInfo";
-
+		public static final String RESERVATION = "reservation";
 		public static final String LICENSING_INFO_IDS = "licensingInfoIds";
 
 		public static final String SUB_MODULES = "submodules";
@@ -2045,8 +2045,10 @@ public class FacilioConstants {
 		public static final String REQUEST_FOR_QUOTATION = "requestForQuotation";
 		public static final String REQUEST_FOR_QUOTATION_VENDORS="requestForQuotationVendors";
 		public static final String REQUEST_FOR_QUOTATION_LINE_ITEMS = "requestForQuotationLineItems";
+		public static final String REQUEST_FOR_QUOTATION_CONTEXT = "requestForQuotationContext";
 		public static final String VENDOR_QUOTES = "vendorQuotes";
 		public static final String VENDOR_QUOTES_LINE_ITEMS = "vendorQuotesLineItems";
+		public static final String REQUEST_FOR_QUOTATION_ACTIVITY = "requestForQuotationActivity";
 		public static final String INVITE_ACCEPT_STATUS = "inviteacceptstatus";
 		public static final String SEND_INVITE = "sendinvite";
 		public static final String CONTACT_DIRECTORY = "contactdirectory";
@@ -2597,6 +2599,7 @@ public class FacilioConstants {
 			classMap.put(REQUEST_FOR_QUOTATION_VENDORS, V3RequestForQuotationVendorsContext.class);
 			classMap.put(REQUEST_FOR_QUOTATION, V3RequestForQuotationContext.class);
 			classMap.put(REQUEST_FOR_QUOTATION_LINE_ITEMS, V3RequestForQuotationLineItemsContext.class);
+			classMap.put(REQUEST_FOR_QUOTATION_ACTIVITY,ActivityContext.class);
 			classMap.put(VENDOR_QUOTES, V3VendorQuotesContext.class);
 			classMap.put(VENDOR_QUOTES_LINE_ITEMS, V3VendorQuotesLineItemsContext.class);
 			classMap.put(JOB_PLAN_ACTIVITY, ActivityContext.class);
@@ -2958,6 +2961,8 @@ public class FacilioConstants {
 		public static final String ADMIN = "Administrator";
 		public static final String MAINTENANCE_ADMIN = "CAFM Admin";
 		public static final String DEV_ADMIN = "Dev Admin";
+		public static final String MAINTENANCE_MANAGER = "CAFM Manager";
+		public static final String MAINTENANCE_TECHNICIAN = "CAFM Technician";
 	}
 
 

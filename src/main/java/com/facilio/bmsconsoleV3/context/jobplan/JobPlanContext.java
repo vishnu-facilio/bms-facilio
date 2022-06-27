@@ -1,5 +1,7 @@
 package com.facilio.bmsconsoleV3.context.jobplan;
 
+import com.facilio.bmsconsoleV3.context.V3SpaceCategoryContext;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 
@@ -79,25 +81,23 @@ public class JobPlanContext extends V3Context {
         this.taskSectionList = taskSectionList;
     }
 
-    private Long assetCategoryId;
+    private V3AssetCategoryContext assetCategory;
 
-    public Long getAssetCategoryId() {
-        return assetCategoryId;
+    public V3SpaceCategoryContext spaceCategory;
+
+    public V3AssetCategoryContext getAssetCategory() {
+        return assetCategory;
     }
 
-    public void setAssetCategoryId(Long assetCategoryId) {
-        this.assetCategoryId = assetCategoryId;
+    public void setAssetCategory(V3AssetCategoryContext assetCategory) {
+        this.assetCategory = assetCategory;
     }
 
-    public Long getSpaceCategoryId() {
-        return spaceCategoryId;
+    public V3SpaceCategoryContext getSpaceCategory() {
+        return spaceCategory;
     }
 
-    public void setSpaceCategoryId(Long spaceCategoryId) {
-        this.spaceCategoryId = spaceCategoryId;
+    public void setSpaceCategory(V3SpaceCategoryContext spaceCategory) {
+        this.spaceCategory = spaceCategory;
     }
-
-    private Long spaceCategoryId;
-
-
 }

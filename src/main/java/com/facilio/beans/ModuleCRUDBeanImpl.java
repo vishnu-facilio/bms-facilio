@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.jobs.DataPendingAlertJob;
 import com.facilio.bmsconsole.jobs.DataProcessingAlertJob;
 import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.modules.*;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.util.V3Util;
@@ -166,10 +167,20 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
 			if (attachedFiles != null && !attachedFiles.isEmpty() && attachedFileNames != null && !attachedFileNames.isEmpty() && attachedFilesContentType != null && !attachedFilesContentType.isEmpty()) {
 				context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, attachedFiles);
-		 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, attachedFileNames);
-		 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, attachedFilesContentType);
-		 		context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
+				context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, attachedFileNames);
+				context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, attachedFilesContentType);
+				context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
 			}
+
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WOV3_BETA)) {
+				LOGGER.info("creating WO with v3");
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+				FacilioContext ctx = V3Util.createRecord(woModule, FieldUtil.getAsJSON(workOrder));
+				return ((V3WorkOrderContext) ctx.get("workorder")).getId();
+			}
+
+			LOGGER.info("creating WO with v2");
 
 			Command addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
 			addWorkOrder.execute(context);

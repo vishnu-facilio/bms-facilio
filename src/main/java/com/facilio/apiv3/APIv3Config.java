@@ -52,6 +52,7 @@ import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
 import com.facilio.bmsconsoleV3.commands.item.LoadItemLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksCommand;
+import com.facilio.bmsconsoleV3.commands.jobplan.FetchJobPlanLookupCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.FillJobPlanDetailsCommand;
 import com.facilio.bmsconsoleV3.commands.labour.GetLabourListCommandV3;
 import com.facilio.bmsconsoleV3.commands.labour.SetLocationCommandV3;
@@ -217,7 +218,7 @@ public class APIv3Config {
                 .build();
     }
 
-    @ModuleType(type = FacilioModule.ModuleType.CUSTOM)
+    @ModuleType(type = FacilioModule.ModuleType.RELATION_DATA)
     public static Supplier<V3Config> getRelationHandler() {
 	    return () -> new V3Config(RelationDataContext.class, null)
                 .list()
@@ -717,10 +718,12 @@ public class APIv3Config {
         return () -> new V3Config(V3RequestForQuotationContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getRfqBeforeSaveChain())
-                .afterSave(new UpdateRfqIdInPrCommandV3())
+                .afterSave(new UpdateRfqIdInPrCommandV3(), new ConstructAddCustomActivityCommandV3())
+                .afterTransaction(new AddActivitiesCommandV3(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION_ACTIVITY))
                 .update()
                 .beforeSave(TransactionChainFactoryV3.getRfqBeforeUpdateChain())
-                .afterSave(TransactionChainFactoryV3.getRfqAfterUpdateChain())
+                .afterSave(TransactionChainFactoryV3.getRfqAfterUpdateChain(), new ConstructUpdateCustomActivityCommandV3())
+                .afterTransaction(new AddActivitiesCommandV3(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION_ACTIVITY))
                 .list()
                 .beforeFetch(new LoadRequestForQuotationLookupCommandV3())
                 .summary()
@@ -1420,13 +1423,14 @@ public class APIv3Config {
     public static Supplier<V3Config> getJobPlan() {
         return () -> new V3Config(JobPlanContext.class, new ModuleCustomFieldCount30())
                 .create()
-                .beforeSave(new SetLocalIdCommandV3())
                 .afterSave(TransactionChainFactoryV3.getCreateJobPlanChain())
                 .update()
                 .afterSave(TransactionChainFactoryV3.getUpdateJobPlanChain())
                 .delete()
                 .list()
+                .beforeFetch(new FetchJobPlanLookupCommand())
                 .summary()
+                .beforeFetch(new FetchJobPlanLookupCommand())
                 .afterFetch(new FillJobPlanDetailsCommand())
                 .delete()
 

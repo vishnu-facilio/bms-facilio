@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
@@ -21,13 +23,20 @@ public class CheckEditAccessCommand extends FacilioCommand {
             return false;
         }
 
-        long currentUserId = AccountUtil.getCurrentUser().getId();
+        Long currentUserRoleId = AccountUtil.getCurrentUser().getRoleId();
+        Role adminRole = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), AccountConstants.DefaultSuperAdmin.ADMINISTRATOR);
+        Long adminRoleId = adminRole.getId();
+        if (adminRoleId.equals(currentUserRoleId)){
+            return false;
+        }
+
+        Long currentUserId = AccountUtil.getCurrentUser().getId();
         Long ownerId = view.getOwnerId();
         if (ownerId == -1){
             User user = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
             ownerId = user.getOuid();
         }
-        if (ownerId == currentUserId) {
+        if (ownerId.equals(currentUserId)) {
             return false;
         }
 

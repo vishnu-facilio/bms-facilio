@@ -22,13 +22,12 @@ import com.facilio.bmsconsoleV3.commands.requestForQuotation.AutoAwardingPriceCo
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.CreatePurchaseOrdersCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.CreateVendorQuotesCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.SetRequestForQuotationLineItemsCommandV3;
+import com.facilio.bmsconsoleV3.commands.servicerequest.AddActivityForServiceRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.servicerequest.AddRequesterForServiceRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.servicerequest.SetIsNewForServiceRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.*;
 import com.facilio.bmsconsoleV3.commands.spacecategory.ValidateSpaceCategoryDeletionV3;
-import com.facilio.bmsconsoleV3.commands.tasks.AddTaskSectionsV3;
-import com.facilio.bmsconsoleV3.commands.tasks.AddTasksCommandV3;
-import com.facilio.bmsconsoleV3.commands.tasks.ValidateTasksCommandV3;
+import com.facilio.bmsconsoleV3.commands.tasks.*;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
 import com.facilio.bmsconsoleV3.commands.tool.AddBulkToolStockTransactionsCommandV3;
 import com.facilio.bmsconsoleV3.commands.tool.ToolQuantityRollUpCommandV3;
@@ -45,6 +44,10 @@ import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.receipts.*;
 import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
+import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddDefaultRolesMaintenanceApp;
+import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddMaintenanceApplicationDefaultForms;
+import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddMaintenanceApplicationDefaultViews;
+import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddMaintenanceApplicationLayout;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import com.facilio.accounts.util.AccountUtil;
@@ -436,6 +439,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ValidateTasksCommandV3());
         c.addCommand(new AddTaskSectionsV3());
         c.addCommand(new AddTasksCommandV3());
+        c.addCommand(new AddTaskOptions());
         c.addCommand(new FillContextAfterWorkorderAddCommandV3());
         c.addCommand(new AddWorkorderHazardsFromSafetyPlanCommandV3());
         c.addCommand(new GetRecordIdsFromRecordMapCommandV3());
@@ -570,6 +574,7 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getServiceRequestAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         // c.addCommand(new UpdateAttachmentsParentIdCommandV3());
+        c.addCommand(new AddActivityForServiceRequestCommandV3());
         c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
         return c;
     }

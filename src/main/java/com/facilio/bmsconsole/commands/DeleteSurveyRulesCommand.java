@@ -22,13 +22,13 @@ public class DeleteSurveyRulesCommand extends FacilioCommand{
 		if(CollectionUtils.isNotEmpty(ruleIds)){
 			SurveyResponseRuleContext surveyResponseRuleContext = SurveyUtil.fetchChildRuleId(ruleIds);
 			if(surveyResponseRuleContext != null){
-				long createRuleId = surveyResponseRuleContext.getExecuteCreateRuleId();
-				long submitRuleId = surveyResponseRuleContext.getExecuteSubmitRuleId();
+				Long createRuleId = surveyResponseRuleContext.getExecuteCreateRuleId();
+				Long submitRuleId = surveyResponseRuleContext.getExecuteSubmitRuleId();
 
-				if(createRuleId > 0){
+				if(createRuleId != null && createRuleId > 0){
 					WorkflowRuleAPI.deleteWorkFlowRules(Collections.singletonList(createRuleId));
 				}
-				if(submitRuleId > 0){
+				if(submitRuleId !=null && submitRuleId > 0){
 					WorkflowRuleAPI.deleteWorkFlowRules(Collections.singletonList(submitRuleId));
 				}
 			}

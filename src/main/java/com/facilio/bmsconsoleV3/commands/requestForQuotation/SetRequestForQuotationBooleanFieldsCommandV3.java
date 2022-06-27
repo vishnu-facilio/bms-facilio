@@ -20,10 +20,10 @@ public class SetRequestForQuotationBooleanFieldsCommandV3 extends FacilioCommand
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3RequestForQuotationContext> requestForQuotations = recordMap.get(moduleName);
 
-        if (CollectionUtils.isNotEmpty(requestForQuotations) && MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("vendorSelected") && (boolean) bodyParams.get("vendorSelected")){
-            requestForQuotations.get(0).setIsVendorSelected(true);
-        }
-        else if (CollectionUtils.isNotEmpty(requestForQuotations) && MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("awardQuotes") && (boolean) bodyParams.get("awardQuotes")){
+//        if (CollectionUtils.isNotEmpty(requestForQuotations) && MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("vendorSelected") && (boolean) bodyParams.get("vendorSelected")){
+//            requestForQuotations.get(0).setIsVendorSelected(true);
+//        }
+        if (CollectionUtils.isNotEmpty(requestForQuotations) && MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("awardQuotes") && (boolean) bodyParams.get("awardQuotes")){
             requestForQuotations.get(0).setIsAwarded(true);
         }
         else if (CollectionUtils.isNotEmpty(requestForQuotations) && MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("createPo") && (boolean) bodyParams.get("createPo")){

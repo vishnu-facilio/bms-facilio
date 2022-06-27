@@ -381,6 +381,12 @@ public class RoleBeanImpl implements RoleBean {
 		return false;
 	}
 
+	public void addNewPermission(NewPermission permissions) throws Exception {
+		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getNewPermissionModule().getTableName())
+				.fields(FieldFactory.getNewPermissionFields());
+		builder.insert(FieldUtil.getAsProperties(permissions));
+	}
 
 	@Override
 	public List<NewPermission> getNewPermission(long roleId) throws Exception {

@@ -138,7 +138,7 @@ public class ValidateTasksCommandV3 extends FacilioCommand {
                             break;
 //						case CHECKBOX:
                         case RADIO:
-                            if (task.getReadingFieldId() != -1) {
+                            if (task.getReadingFieldId() != null && task.getReadingFieldId() != -1) {
                                 task.setReadingField(modBean.getField(task.getReadingFieldId()));
                                 if (task.getReadingField() != null && ((EnumField) task.getReadingField()).getValues().size() < 2) {
                                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Minimum two options has to be added for CHECKBOX/ RADIO task");

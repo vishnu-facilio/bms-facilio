@@ -20,7 +20,6 @@ public class V3PurchaseRequestContext extends BaseLineItemsParentModuleContext {
 	private V3VendorContext vendor;
 	private V3PurchaseOrderContext purchaseOrder;
 	private V3StoreRoomContext storeRoom;
-	private Status status;
 	private List<V3PurchaseRequestLineItemContext> lineItems;
 	private Long requestedTime;
 	private Long requiredTime;
@@ -54,42 +53,8 @@ public class V3PurchaseRequestContext extends BaseLineItemsParentModuleContext {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public Status getStatusEnum() {
-		return status;
-	}
-	public Integer getStatus() {
-		if (status != null) {
-			return status.getValue();
-		}
-		return null;
-	}
-	public void setStatus(Status status) {
-		this.status = status;
-	}
-
-	public void setStatus(int status) {
-		this.status = Status.valueOf(status);
-	}
-
-	public static enum Status {
-		REQUESTED(),
-		APPROVED(),
-		REJECTED(),
-		COMPLETED()
-		;
 
 
-		public int getValue() {
-			return ordinal()+1;
-		}
-		public static Status valueOf(int value) {
-			if (value > 0 && value <= values().length) {
-				return values()[value - 1];
-			}
-			return null;
-		}
-
-	}
 
 	public LocationContext getShipToAddress() {
 		return shipToAddress;

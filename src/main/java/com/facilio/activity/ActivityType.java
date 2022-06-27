@@ -1,6 +1,7 @@
 package com.facilio.activity;
 
 import com.facilio.bmsconsole.activity.*;
+import com.facilio.bmsconsoleV3.commands.requestForQuotation.RequestForQuotationActivityType;
 import com.facilio.collections.UniqueMap;
 import org.json.simple.JSONObject;
 
@@ -50,7 +51,10 @@ public interface ActivityType {
 		for (ActivityType type: QAndAActivityType.values()) {
 			activityMap.put(type.getValue(), type);
 		}
-		// Max number = 113
+		for (ActivityType type: RequestForQuotationActivityType.values()) {
+			activityMap.put(type.getValue(), type);
+		}
+		// Last number = 115
 
 		return activityMap;
 	}

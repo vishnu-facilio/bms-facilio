@@ -29,16 +29,7 @@ public class GetAllRelationCommand extends FacilioCommand {
             throw new IllegalArgumentException("Invalid module");
         }
 
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(ModuleFactory.getRelationModule().getTableName())
-                .innerJoin(ModuleFactory.getRelationMappingModule().getTableName())
-                .on(ModuleFactory.getRelationModule().getTableName() + ".ID = " + ModuleFactory.getRelationMappingModule().getTableName() + ".RELATION_ID")
-                .select(FieldFactory.getRelationFields())
-                .andCondition(CriteriaAPI.getCondition("FROM_MODULE_ID", "fromModuleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
-        List<RelationContext> relationList = FieldUtil.getAsBeanListFromMapList(builder.get(), RelationContext.class);
-        RelationUtil.fillRelation(relationList);
-
-        List<RelationRequestContext> relationRequests = RelationUtil.convertToRelationRequest(relationList, module.getModuleId());
+        List<RelationRequestContext> relationRequests = RelationUtil.getAllRelations(module);
         context.put(FacilioConstants.ContextNames.RELATION_LIST, relationRequests);
 
         return false;

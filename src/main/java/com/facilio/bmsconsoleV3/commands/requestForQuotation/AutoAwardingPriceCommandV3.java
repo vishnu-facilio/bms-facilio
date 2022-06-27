@@ -16,9 +16,12 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.LookupFieldMeta;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import com.facilio.v3.util.CommandUtil;
 import org.apache.commons.chain.Context;
 import com.facilio.command.FacilioCommand;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,19 +62,23 @@ public class AutoAwardingPriceCommandV3 extends FacilioCommand {
                 recordsBuilder.aggregate(BmsAggregateOperators.NumberAggregateOperator.MIN,  counterPrice);
 
                 List<V3VendorQuotesLineItemsContext> recordList = recordsBuilder.get();
-                double counterPriceValue = recordList.get(0).getCounterPrice();
+                if(CollectionUtils.isNotEmpty(recordList)){
+                    double counterPriceValue = recordList.get(0).getCounterPrice();
+                    SelectRecordsBuilder<V3VendorQuotesLineItemsContext> builder = new SelectRecordsBuilder<V3VendorQuotesLineItemsContext>()
+                            .moduleName(lineItemModuleName)
+                            .select(fields)
+                            .beanClass(V3VendorQuotesLineItemsContext.class)
+                            .andCondition(CriteriaAPI.getCondition("RFQ_LINE_ITEM_ID", "requestForQuotationLineItem", String.valueOf(requestForQuotationLineItem.getId()), NumberOperators.EQUALS))
+                            .andCondition(CriteriaAPI.getCondition("COUNTER_PRICE", "counterPrice", String.valueOf(counterPriceValue), NumberOperators.EQUALS))
+                            .fetchSupplements(Arrays.asList((LookupField) vendorQuotesLookup));
 
-                SelectRecordsBuilder<V3VendorQuotesLineItemsContext> builder = new SelectRecordsBuilder<V3VendorQuotesLineItemsContext>()
-                        .moduleName(lineItemModuleName)
-                        .select(fields)
-                        .beanClass(V3VendorQuotesLineItemsContext.class)
-                        .andCondition(CriteriaAPI.getCondition("RFQ_LINE_ITEM_ID", "requestForQuotationLineItem", String.valueOf(requestForQuotationLineItem.getId()), NumberOperators.EQUALS))
-                        .andCondition(CriteriaAPI.getCondition("COUNTER_PRICE", "counterPrice", String.valueOf(counterPriceValue), NumberOperators.EQUALS))
-                        .fetchSupplements(Arrays.asList((LookupField) vendorQuotesLookup));
-
-                List<V3VendorQuotesLineItemsContext> list = builder.get();
-                requestForQuotationLineItem.setAwardedPrice(counterPriceValue);
-                requestForQuotationLineItem.setAwardedTo(list.get(0).getVendorQuotes().getVendor());
+                    List<V3VendorQuotesLineItemsContext> list = builder.get();
+                    requestForQuotationLineItem.setAwardedPrice(counterPriceValue);
+                    requestForQuotationLineItem.setAwardedTo(list.get(0).getVendorQuotes().getVendor());
+                }
+                else{
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "No Vendors have given their counter prices");
+                }
             }
         }
 
