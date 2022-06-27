@@ -206,6 +206,7 @@ public class FacilioConstants {
 		public static final String SERVICE_CATALOG_GROUPS = "serviceCatalogGroups";
 		public static final String SERVICE_CATALOG_GROUP_ORDER_BY = "serviceCatalogGroupOrderBy";
 		public static final String LICENSE_NAME = "licenseName";
+		public static final String AHU_READINGS_GENERAL = "ahureadinggeneral";
 
 		public static final String LICENSE_TYPE = "licenseType";
 

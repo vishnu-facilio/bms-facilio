@@ -55,6 +55,7 @@ public class MLServiceUtil {
 	public static final String MLSERVICE_CONTEXT = "MLSERVICE_CONTEXT";
 	public static final String ML_CONTEXT = "ML_CONTEXT";
 	public static final Object IS_UPDATE = "IS_UPDATE";
+	public static final Long PRESSURE_PREDICTION_TRAINING_SAMPLING_PERIOD = 14 * DAYS_IN_MILLISECONDS;
 
 	private static final Logger LOGGER = Logger.getLogger(MLServiceUtil.class.getName());
 //	public static long addMLService(Map<String, Object> row) throws Exception {
@@ -173,6 +174,7 @@ public class MLServiceUtil {
 	public static void validateDateRange(V3MLServiceContext mlServiceContext) throws Exception {
 		Long startTime = mlServiceContext.getStartTime();
 		Long endTime = mlServiceContext.getEndTime();
+		String useCaseName  = mlServiceContext.getModelName();
 		Long currentTime = MLServiceUtil.convertToStartTime(DateTimeUtil.getCurrenTime());
 		LOGGER.info("Initial MLService startTime = " + startTime+", endTime = "+endTime);
 
@@ -193,7 +195,13 @@ public class MLServiceUtil {
 
 
 		long trainingSamplingPeriod = endTime - startTime;
-		if(trainingSamplingPeriod < MLServiceUtil.TRAINING_SAMPLING_PERIOD) {
+		if(useCaseName.equals("pressureprediction")) {
+			if (trainingSamplingPeriod < MLServiceUtil.PRESSURE_PREDICTION_TRAINING_SAMPLING_PERIOD) {
+				String errorMsg = "Training Data date range can't be less than 14 days";
+				throw new RESTException(ErrorCode.VALIDATION_ERROR, errorMsg);
+			}
+		}
+		else if(trainingSamplingPeriod < MLServiceUtil.TRAINING_SAMPLING_PERIOD) {
 			String errorMsg = "Training Data date range can't be less than "+ MLServiceUtil.MIN_TRAINING_DAYS+" days";
 			throw new RESTException(ErrorCode.VALIDATION_ERROR, errorMsg);
 		}

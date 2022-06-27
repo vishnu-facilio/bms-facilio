@@ -248,8 +248,8 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 		eventList.add(event);
 		FacilioContext context = new FacilioContext();
 		context.put(EventConstants.EventContextNames.EVENT_LIST,eventList);
-		Boolean isHistoric  = mlContext.isHistoric();
-		FacilioChain chain = TransactionChainFactory.getV2AddEventChain(isHistoric);
+		context.put(EventConstants.EventContextNames.IS_HISTORICAL_EVENT,mlContext.isHistoric());
+		FacilioChain chain = TransactionChainFactory.getV2AddEventChain(mlContext.isHistoric());
 		chain.execute(context);
 	}
 	

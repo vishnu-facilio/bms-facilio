@@ -2231,9 +2231,11 @@ public class FacilioChainFactory {
 		c.addCommand(new AddAhuOptimizationCommand());
 		return c;
 	}
-
-
-
+	public static FacilioChain addPressurePredictionchain() {
+		FacilioChain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(new AddPressurePredictionCommand());
+		return c;
+	}
 	public static FacilioChain getNewInventoryChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForInventory());

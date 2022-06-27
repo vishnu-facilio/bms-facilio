@@ -8289,6 +8289,25 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getPressurePredictionLogReadingFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getMLLogReadingModule();
+        fields.add(getField("predicted", "Predicted Bag Filter Pressure Log", "DECIMAL_CF1", module, FieldType.DECIMAL));
+        fields.add(getField("predictedTime", "PREDICTED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("mlRunning", "ML_RUNNING", module, FieldType.BOOLEAN));
+        fields.add(getField("errorCode", "ERROR_CODE", module, FieldType.NUMBER));
+        return fields;
+    }
+
+    public static List<FacilioField> getPressurePredictionReadingFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getMLLogReadingModule();
+        fields.add(getField("predicted", "Predicted Bag Pressure", "DECIMAL_CF1", module, FieldType.DECIMAL));
+        fields.add(getField("mlRunning", "ML_RUNNING", module, FieldType.BOOLEAN));
+        fields.add(getField("errorCode", "ERROR_CODE", module, FieldType.NUMBER));
+        return fields;
+    }
+
     public static List<FacilioField> getNotificationLoggerFields() {
         FacilioModule module = ModuleFactory.getNotificationLoggerModule();
         List<FacilioField> fields = new ArrayList<>();

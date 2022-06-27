@@ -30,6 +30,7 @@ public class TriggerMLServiceJobCommand extends FacilioCommand implements Serial
 			switch(mlServiceContext.getModelName()){
 				case "energyprediction":
 				case "ahuoptimization":
+				case "pressureprediction":
 				case "loadprediction": {
 					triggerSingleHistoricJob(mlServiceContext);
 					break;
