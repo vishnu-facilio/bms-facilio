@@ -2,7 +2,6 @@ package com.facilio.constants;
 
 import com.facilio.activity.ActivityContext;
 import com.facilio.agent.alarms.AgentAlarmContext;
-import com.facilio.agent.alarms.ControllerAlarmContext;
 import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.lonWorks.LonWorksControllerContext;
@@ -488,8 +487,6 @@ public class FacilioConstants {
 		public static final String LATEST_ALARM_OCCURRENCE = "latestAlarmOccurrence";
 		public static final String AGENT_ALARM = "agentAlarm";
 		public static final String AGENT_ALARM_OCCURRENCE = "agentAlarmOccurrence";
-		public static final String CONTROLLER_ALARM = "controllerAlarm";
-		public static final String CONTROLLER_ALARM_OCCURRENCE = "controllerAlarmOccurrence";
 		public static final String BASE_ALARM = "basealarm";
 		public static final String BASE_EVENT = "baseevent";
 		public static final String NEW_READING_ALARM = "newreadingalarm";
@@ -2402,7 +2399,6 @@ public class FacilioConstants {
 			classMap.put(PRE_EVENT, PreEventContext.class);
 			classMap.put(READING_ALARM_CATEGORY, ReadingAlarmCategoryContext.class);
 			classMap.put(AGENT_ALARM, AgentAlarmContext.class);
-			classMap.put(CONTROLLER_ALARM, ControllerAlarmContext.class);
 			classMap.put(OPERATION_ALARM, OperationAlarmContext.class);
 			classMap.put(OPERATION_OCCURRENCE, OperationAlarmOccurenceContext.class);
 			classMap.put(RULE_ROLLUP_EVENT, RuleRollUpEvent.class);
@@ -2911,6 +2907,7 @@ public class FacilioConstants {
 		public static final String DIGEST_JOB_NAME = "ScheduledActionExecution";
 		public static final String AUTO_CHECKOUT_JOB_NAME = "AutoCheckOutVisitors";
 		public static final String CLOUD_AGENT_JOB_NAME = "CloudAgent";
+		public static final String POINTS_DATA_MISSING_ALARM_JOB_NAME = "PointsDataMissingAlarmJob";
 
 	}
 	public static class Ticket{

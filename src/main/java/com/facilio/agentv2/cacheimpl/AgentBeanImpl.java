@@ -485,5 +485,21 @@ public class AgentBeanImpl implements AgentBean {
         }
     }
 
+    @Override
+    public void schedulePointsDataMissingJob(FacilioAgent agent) throws Exception {
+        long interval = 30;
+
+        ScheduleInfo scheduleInfo = new ScheduleInfo();
+        scheduleInfo.setFrequencyType(ScheduleInfo.FrequencyType.DAILY);
+
+        long totalMinutesInADay = 60 * 24;
+        LocalTime time = LocalTime.of(0, 0);
+        for (long frequency = totalMinutesInADay / interval; frequency > 0; frequency--) {
+            time = time.plusMinutes(interval);
+            scheduleInfo.addTime(time);
+        }
+        FacilioTimer.scheduleCalendarJob(agent.getId(), FacilioConstants.Job.POINTS_DATA_MISSING_ALARM_JOB_NAME, System.currentTimeMillis(), scheduleInfo, "facilio");
+    }
+
 }
 

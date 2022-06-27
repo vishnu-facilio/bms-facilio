@@ -1,17 +1,5 @@
 package com.facilio.agentv2.commands;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import com.facilio.agentv2.cacheimpl.AgentBean;
-import com.facilio.fw.BeanFactory;
-import com.facilio.queue.source.MessageSourceUtil;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.log4j.LogManager;
-
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentType;
@@ -20,14 +8,25 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.AgentUtilV2;
 import com.facilio.agentv2.CloudAgentUtil;
 import com.facilio.agentv2.FacilioAgent;
+import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.queue.source.MessageSource;
+import com.facilio.queue.source.MessageSourceUtil;
 import com.facilio.service.FacilioService;
 import com.facilio.services.messageQueue.MessageQueueFactory;
 import com.facilio.services.messageQueue.MessageQueueTopic;
 import com.facilio.workflows.util.WorkflowUtil;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.LogManager;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class CreateAgentCommand extends AgentV2Command {
 
@@ -57,6 +56,8 @@ public class CreateAgentCommand extends AgentV2Command {
             if (agentType == AgentType.CLOUD) {
                 agentBean.scheduleRestJob(agent);
             }
+            agentBean.schedulePointsDataMissingJob(agent);
+
             if (agentType.isAgentService()) {
                 CloudAgentUtil.addCloudServiceAgent(agent);
                 createMessageTopic(currentOrg);

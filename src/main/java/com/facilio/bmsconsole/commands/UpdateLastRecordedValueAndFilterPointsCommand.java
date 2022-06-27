@@ -22,6 +22,7 @@ public class UpdateLastRecordedValueAndFilterPointsCommand extends AgentV2Comman
     @Override
     public boolean executeCommand(Context context) throws Exception {
         boolean isCov = false;
+        boolean updatePointDataMissing = false;
         if (context.containsKey(FacilioConstants.ContextNames.ADJUST_READING_TTIME)) {
             isCov = !(Boolean) context.get(FacilioConstants.ContextNames.ADJUST_READING_TTIME);
         }
@@ -42,6 +43,11 @@ public class UpdateLastRecordedValueAndFilterPointsCommand extends AgentV2Comman
                 if (value == null || (!isCov && intervalFilterConditions(agent, timeStamp, point)) || value.toString().equalsIgnoreCase("NaN")) {
                     pointsToRemove.add(pointName);
                 } else {
+                    // set data missing as false
+                    if (point.getDataMissing()) {
+                        point.setDataMissing(false);
+                        updatePointDataMissing = true;
+                    }
                     //update point last recorded time and value
                     point.setLastRecordedTime(timeStamp);
                     point.setLastRecordedValue(value.toString());
@@ -51,7 +57,7 @@ public class UpdateLastRecordedValueAndFilterPointsCommand extends AgentV2Comman
                 LOGGER.info("Point name not found for " + pointName);
             }
         }
-        PointsAPI.updatePointsValue(points);
+        PointsAPI.updatePointsValue(points, updatePointDataMissing);
 
         for (String pointName : pointsToRemove) {
             snapshot.remove(pointName);

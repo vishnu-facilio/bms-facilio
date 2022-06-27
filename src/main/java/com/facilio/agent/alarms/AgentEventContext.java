@@ -2,9 +2,9 @@ package com.facilio.agent.alarms;
 
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.bmsconsole.context.*;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.fields.FacilioField;
+import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext;
+import com.facilio.bmsconsole.context.BaseEventContext;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.chain.Context;
 
@@ -14,6 +14,7 @@ public class AgentEventContext extends BaseEventContext {
     private FacilioAgent agent;
     private AgentAlarmContext.AgentAlarmType agentAlarmType;
     private List<Controller> controllersList;
+    private long pointsDataMissingCount;
 
 
     public List<Controller> getControllersList() {
@@ -58,6 +59,7 @@ public class AgentEventContext extends BaseEventContext {
         AgentAlarmOccurrenceContext agentAlarmOccurrenceContext = (AgentAlarmOccurrenceContext) alarmOccurrence;
         agentAlarmOccurrenceContext.setAgent(getAgent());
         agentAlarmOccurrenceContext.setAgentAlarmType(getAgentAlarmType());
+        agentAlarmOccurrenceContext.setPointsDataMissingCount(getPointsDataMissingCount());
         return super.updateAlarmOccurrenceContext(alarmOccurrence, context, add);
     }
 
@@ -72,6 +74,7 @@ public class AgentEventContext extends BaseEventContext {
         alarm.setAgent(getAgent());
         alarm.setControllersList(getControllersList());
         alarm.setAgentAlarmType(getAgentAlarmType());
+        alarm.setPointsDataMissingCount(getPointsDataMissingCount());
         return baseAlarm;
     }
 
@@ -82,4 +85,8 @@ public class AgentEventContext extends BaseEventContext {
     public FacilioAgent getAgent() {
         return agent;
     }
+
+    public void setPointsDataMissingCount(long missingCount) { this.pointsDataMissingCount = missingCount; }
+
+    public Long getPointsDataMissingCount() { return pointsDataMissingCount; }
 }

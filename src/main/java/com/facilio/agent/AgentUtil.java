@@ -1,7 +1,6 @@
 package com.facilio.agent;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentUtilV2;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.beans.ModuleCRUDBean;
@@ -236,7 +235,7 @@ public class AgentUtil {
                     int status = Integer.parseInt(jsonObject.get(AgentKeys.STATUS).toString());
                     AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
                     if (status == 0) {
-                        AgentUtilV2.raiseAgentAlarm(AgentApiV2.getAgent(agent.getName()));
+                        AgentUtilV2.raiseAgentAlarm(agentBean.getAgent(agent.getName()));
                     }
                     if (status == 1) {
                         AgentUtilV2.dropAgentAlarm(agentBean.getAgent(agent.getName()));

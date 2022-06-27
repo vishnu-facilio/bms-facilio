@@ -1,26 +1,11 @@
 package com.facilio.agentv2;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-
-import com.facilio.agentv2.cacheimpl.AgentBean;
-import com.facilio.fw.BeanFactory;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.alarms.AgentAlarmContext;
 import com.facilio.agent.alarms.AgentEventContext;
 import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agent.fw.constants.Status;
+import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.metrics.MetricsApi;
@@ -36,6 +21,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.events.constants.EventConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -48,6 +34,13 @@ import com.facilio.services.messageQueue.MessageQueue;
 import com.facilio.services.messageQueue.MessageQueueFactory;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.AckUtil;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.util.*;
 
 public class AgentUtilV2
 {
@@ -249,6 +242,41 @@ public class AgentUtilV2
 
     }
 
+    public static void raisePointAlarm(FacilioAgent agent, long points) throws Exception {
+        long currentTime = System.currentTimeMillis();
+        AgentEventContext event = getDataMissingEventContext(agent, currentTime, FacilioConstants.Alarm.CRITICAL_SEVERITY, points);
+        addEventToDB(event);
+        LOGGER.info("Added Point Alarm for Agent : " + agent.getName() + " ( ID :" + agent.getId() + ")");
+    }
+
+    public static void clearPointAlarm(FacilioAgent agent) throws Exception {
+        long currentTime = System.currentTimeMillis();
+        AgentEventContext event = getDataMissingEventContext(agent, currentTime, FacilioConstants.Alarm.CLEAR_SEVERITY, 0);
+        addEventToDB(event);
+        LOGGER.info("Cleared Point Alarm for Agent : " + agent.getName() + " ( ID :" + agent.getId()+ ")");
+    }
+
+    private static AgentEventContext getDataMissingEventContext(FacilioAgent agent, long currentTime, String severity, long pointsDataMissingSize) {
+        AgentEventContext event = new AgentEventContext();
+        String description = null;
+        String message = "Data missing in agent " + agent.getName();
+        if (severity.equals(FacilioConstants.Alarm.CRITICAL_SEVERITY)) {
+            description = "Data missing for "+ pointsDataMissingSize + " points in agent "+ agent.getName();
+        } else if (severity.equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
+            description = "Data arriving for all points in agent "+agent.getName();
+        }
+        event.setMessage(message);
+        event.setDescription(description);
+        event.setSeverityString(severity);
+        event.setPointsDataMissingCount(pointsDataMissingSize);
+        event.setCreatedTime(currentTime);
+        event.setSiteId(AccountUtil.getCurrentSiteId());
+        event.setAgent(agent);
+        event.setAgentAlarmType(AgentAlarmContext.AgentAlarmType.POINT.getIndex());
+        return event;
+    }
+
+
     private AgentEventContext getControllerEventContext(FacilioAgent agent, long currentTime, String severity, List<Controller> controllers) {
         AgentEventContext event = new AgentEventContext();
         if (severity.equals(FacilioConstants.Alarm.CRITICAL_SEVERITY)){
@@ -280,7 +308,7 @@ public class AgentUtilV2
             description = "Agent " + agent.getName() + " has lost connection with the facilio cloud on" + DateTimeUtil.getFormattedTime(currentTime);
             message = "agent "+agent.getName() +" connection lost ";
         } else if (severity.equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
-            description = "Agent " + agent.getName() + " has lost connection with the facilio cloud on" + DateTimeUtil.getFormattedTime(currentTime);
+            description = "Agent " + agent.getName() + " has reestablished the connection with the facilio cloud on" + DateTimeUtil.getFormattedTime(currentTime);
             message = "agent "+agent.getName() +" connection reestablished";
         }
         event.setMessage(message);

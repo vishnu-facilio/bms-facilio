@@ -149,6 +149,7 @@ public class AgentConstants
     public static final String RECORD_ID = "recordId";
     public static final String AGENT_IDS = "agentIds";
     public static final String JOB_PROPS="jobProps";
+    public static final String DATA_MISSING = "dataMissing";
 
     public static final String NUMBER_OF_MSGS = "numberOfMessages";
     public static final String SIZE = "size";

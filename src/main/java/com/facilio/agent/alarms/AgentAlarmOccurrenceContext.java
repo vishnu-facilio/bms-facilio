@@ -9,6 +9,8 @@ public class AgentAlarmOccurrenceContext extends AlarmOccurrenceContext {
 
     private AgentAlarmContext.AgentAlarmType agentAlarmType;
 
+    private long pointsDataMissingCount;
+
     public int getAgentAlarmType() {
         if  (agentAlarmType!=null) {
             return agentAlarmType.getIndex();
@@ -16,10 +18,13 @@ public class AgentAlarmOccurrenceContext extends AlarmOccurrenceContext {
             return -1;
         }
     }
+
     public AgentAlarmContext.AgentAlarmType getAgentAlarmTypeEnum(){return agentAlarmType;}
+
     public void setAgentAlarmType(int agentAlarmType) {
         this.agentAlarmType = AgentAlarmContext.AgentAlarmType.valueOf(agentAlarmType);
     }
+
     @Override
     public Type getTypeEnum() {
         return Type.AGENT;
@@ -32,4 +37,13 @@ public class AgentAlarmOccurrenceContext extends AlarmOccurrenceContext {
     public FacilioAgent getAgent() {
         return agent;
     }
+
+    public void setPointsDataMissingCount(long missingCount) {
+        this.pointsDataMissingCount = missingCount;
+    }
+
+    public Long getPointsDataMissingCount() {
+        return pointsDataMissingCount;
+    }
+
 }
