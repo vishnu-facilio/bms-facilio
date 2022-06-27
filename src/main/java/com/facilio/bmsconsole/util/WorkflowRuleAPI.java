@@ -1167,6 +1167,9 @@ public class WorkflowRuleAPI {
 		if (shouldExecute) {
 			if(result) {
 				workflowRule.executeTrueActions(record, context, rulePlaceHolders);
+				if(StringUtils.isNotEmpty(moduleName) && moduleName.equals(FacilioConstants.ContextNames.TASK)){//temp fix to check whether task workflow rule action executed
+					context.put(FacilioConstants.ContextNames.IS_TASK_ACTION_EXECUTED,true);
+				}
 			}
 			else {
 				workflowRule.executeFalseActions(record, context, rulePlaceHolders);

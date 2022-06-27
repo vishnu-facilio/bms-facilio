@@ -553,6 +553,8 @@ public class FacilioConstants {
 		public static final String INVENTORY_CATEGORY = "inventoryCategory";
 		
 		public static final String TASK = "task";
+
+		public static final String IS_TASK_ACTION_EXECUTED = "isTaskActionExecuted";
 		public static final String TASK_ERRORS = "taskErrors";
 		public static final String REQUIRES_REMARKS = "requiresRemarks";
 		public static final String REQUIRES_ATTACHMENT = "requiresAttachment";
