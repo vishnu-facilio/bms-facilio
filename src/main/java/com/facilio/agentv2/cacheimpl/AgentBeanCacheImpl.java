@@ -35,7 +35,7 @@ public class AgentBeanCacheImpl extends AgentBeanImpl implements AgentBean{
             agent = super.getAgent(agentName);
             agentCache.put(CacheUtil.AGENT_KEY(AccountUtil.getCurrentOrg().getOrgId(), agentName), agent);
 
-            LOGGER.debug("getAgent result from DB for agent: "+ agentName);
+            LOGGER.info("getAgent result from DB for agent: "+ agentName);
         }
         // Cache Hit - getAgent results From Cache
         return agent;
@@ -48,6 +48,7 @@ public class AgentBeanCacheImpl extends AgentBeanImpl implements AgentBean{
             String agentName = super.getAgents(Collections.singleton(id)).get(0).getName();
             status = super.deleteAgent(Collections.singletonList(id));
             if (status) {
+                LOGGER.info("Agent Deleted: "+ agentName);
                 dropAgentFromCache(agentName);
             }
         }
@@ -57,6 +58,7 @@ public class AgentBeanCacheImpl extends AgentBeanImpl implements AgentBean{
     public boolean editAgent(FacilioAgent agent, JSONObject jsonObject, boolean updateLastDataReceivedTime) throws Exception {
         boolean status = super.editAgent(agent, jsonObject, updateLastDataReceivedTime);
         if (status) {
+            LOGGER.info("Edited Agent: "+ agent.getName());
             dropAgentFromCache(agent.getName());
         }
         return status;
@@ -65,7 +67,8 @@ public class AgentBeanCacheImpl extends AgentBeanImpl implements AgentBean{
     public void dropAgentFromCache(String agentName) {
         FacilioCache<String, Object> cache = LRUCache.getAgentCache();
         if (cache.get(CacheUtil.AGENT_KEY(AccountUtil.getCurrentOrg().getOrgId(), agentName)) != null) {
-        cache.remove(CacheUtil.AGENT_KEY(AccountUtil.getCurrentOrg().getOrgId(), agentName));
+            cache.remove(CacheUtil.AGENT_KEY(AccountUtil.getCurrentOrg().getOrgId(), agentName));
+            LOGGER.info("Invalidated Agent Cache for " + agentName);
         }
     }
 
