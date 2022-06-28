@@ -466,41 +466,45 @@ public class FetchReportDataCommand extends FacilioCommand {
                 if (dp.getAllCriteria() != null && dp.getAllCriteria().getConditions() != null && dp.getAllCriteria().getConditions().size() > 0) {
                     try {
                         Criteria allCriteria = dp.getAllCriteria();
-                        Map<String, Condition> conditionsMap = (Map<String, Condition>) allCriteria.getConditions();
-                        for (String key : allCriteria.getConditions().keySet()) {
-                            Condition condition = conditionsMap.get(key);
-                            Pattern pattern = Pattern.compile("(?<=\\{).+?(?=\\})");
-                            if (condition == null || condition.getValue() == null) continue;
-                            Matcher matcher = pattern.matcher(condition.getValue());
-                            if (matcher.find()) {
-                                String moduleAndFieldName = matcher.group(0);
-                                String moduleName = moduleAndFieldName.split("\\.")[0];
-                                String fieldName = moduleAndFieldName.split("\\.")[1];
-                                FacilioField field = modBean.getField(fieldName, moduleName);
-                                dp.getAllCriteria().getConditions().get(key).setValue(field.getCompleteColumnName());
-                            }
-                        }
 
                         for (String key : allCriteria.getConditions().keySet()) {
                             Condition condition = allCriteria.getConditions().get(key);
                             if (baseModule == null || condition == null || condition.getFieldName() == null) continue;
-
                             FacilioField field = modBean.getField(condition.getFieldName(), baseModule.getName());
                             condition.setField(field);
                         }
 
-                        if (!baseModule.getExtendedModuleIds().contains((dp.getyAxis().getModule().getModuleId()))) {
-                            Map<String, Condition> conditions = (Map<String, Condition>) allCriteria.getConditions();
+                        if (report.getTypeEnum() == ReportType.PIVOT_REPORT) {
+                            Map<String, Condition> conditionsMap = (Map<String, Condition>) allCriteria.getConditions();
                             for (String key : allCriteria.getConditions().keySet()) {
-                                Condition condition = conditions.get(key);
-                                if (condition.getColumnName() != null && dp.getCriteria() != null && dp.getCriteria().getConditions().containsValue(condition)) {
-                                    String tableNameAndColumnName = condition.getColumnName();
-                                    String columnName = tableNameAndColumnName;
-                                    if (columnName.split("\\.").length > 1) {
-                                        columnName = columnName.split("\\.")[1];
+                                Condition condition = conditionsMap.get(key);
+                                Pattern pattern = Pattern.compile("(?<=\\{).+?(?=\\})");
+                                if (condition == null || condition.getValue() == null) continue;
+                                Matcher matcher = pattern.matcher(condition.getValue());
+                                if (matcher.find()) {
+                                    String moduleAndFieldName = matcher.group(0);
+                                    if (moduleAndFieldName.split("\\.").length >= 2) {
+                                        String moduleName = moduleAndFieldName.split("\\.")[0];
+                                        String fieldName = moduleAndFieldName.split("\\.")[1];
+                                        FacilioField field = modBean.getField(fieldName, moduleName);
+                                        dp.getAllCriteria().getConditions().get(key).setValue(field.getCompleteColumnName());
                                     }
-                                    tableNameAndColumnName = getAndSetModuleAlias(dp.getyAxis().getModuleName()) + "." + columnName;
-                                    dp.getAllCriteria().getConditions().get(key).setColumnName(tableNameAndColumnName);
+                                }
+                            }
+
+                            if (!baseModule.getExtendedModuleIds().contains((dp.getyAxis().getModule().getModuleId()))) {
+                                Map<String, Condition> conditions = (Map<String, Condition>) allCriteria.getConditions();
+                                for (String key : allCriteria.getConditions().keySet()) {
+                                    Condition condition = conditions.get(key);
+                                    if (condition.getColumnName() != null && dp.getCriteria() != null && dp.getCriteria().getConditions().containsValue(condition)) {
+                                        String tableNameAndColumnName = condition.getColumnName();
+                                        String columnName = tableNameAndColumnName;
+                                        if (columnName.split("\\.").length > 1) {
+                                            columnName = columnName.split("\\.")[1];
+                                        }
+                                        tableNameAndColumnName = getAndSetModuleAlias(dp.getyAxis().getModuleName()) + "." + columnName;
+                                        dp.getAllCriteria().getConditions().get(key).setColumnName(tableNameAndColumnName);
+                                    }
                                 }
                             }
                         }
