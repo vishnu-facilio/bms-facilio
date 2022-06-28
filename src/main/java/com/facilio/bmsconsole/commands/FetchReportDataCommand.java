@@ -463,15 +463,16 @@ public class FetchReportDataCommand extends FacilioCommand {
             }
         } else {
             if (xValues == null || report.getTypeEnum() == ReportType.PIVOT_REPORT) {
-                if (dp.getAllCriteria() != null) {
-                    Criteria allCriteria = dp.getAllCriteria();
-                    if(allCriteria != null){
-                        Map<String,Condition> conditions = (Map<String, Condition>) allCriteria.getConditions();
+                if (dp.getAllCriteria() != null && dp.getAllCriteria().getConditions() != null && dp.getAllCriteria().getConditions().size() > 0) {
+                    try {
+                        Criteria allCriteria = dp.getAllCriteria();
+                        Map<String, Condition> conditionsMap = (Map<String, Condition>) allCriteria.getConditions();
                         for (String key : allCriteria.getConditions().keySet()) {
-                            Condition condition = conditions.get(key);
+                            Condition condition = conditionsMap.get(key);
                             Pattern pattern = Pattern.compile("(?<=\\{).+?(?=\\})");
+                            if (condition == null || condition.getValue() == null) continue;
                             Matcher matcher = pattern.matcher(condition.getValue());
-                            if(matcher.find()){
+                            if (matcher.find()) {
                                 String moduleAndFieldName = matcher.group(0);
                                 String moduleName = moduleAndFieldName.split("\\.")[0];
                                 String fieldName = moduleAndFieldName.split("\\.")[1];
@@ -479,38 +480,35 @@ public class FetchReportDataCommand extends FacilioCommand {
                                 dp.getAllCriteria().getConditions().get(key).setValue(field.getCompleteColumnName());
                             }
                         }
-                    }
-                    if(!baseModule.getExtendedModuleIds().contains((dp.getyAxis().getModule().getModuleId()))){
-                        Map<String,Condition> conditions = (Map<String, Condition>) allCriteria.getConditions();
-                        for (String key : allCriteria.getConditions().keySet()) {
-                            Condition condition = conditions.get(key);
-                            if(dp.getCriteria() != null && dp.getCriteria().getConditions().containsValue(condition)) {
-                                String tableNameAndColumnName = condition.getColumnName();
-                                String columnName = tableNameAndColumnName;
-                                if(columnName.split("\\.").length > 1){
-                                    columnName = columnName.split("\\.")[1];
-                                }
-                                tableNameAndColumnName = getAndSetModuleAlias(dp.getyAxis().getModuleName()) + "." + columnName;
-                                dp.getAllCriteria().getConditions().get(key).setColumnName(tableNameAndColumnName);
-                            }
-                        }
-                    }
-                    if(allCriteria != null && allCriteria.getConditions() != null && allCriteria.getConditions().size() > 0)
-                    {
+
                         for (String key : allCriteria.getConditions().keySet()) {
                             Condition condition = allCriteria.getConditions().get(key);
-                            if (baseModule != null) {
-                                try {
-                                    FacilioField field = modBean.getField(condition.getFieldName(), baseModule.getName());
-                                    condition.setField(field);
-                                }catch(Exception e){
-                                    LOGGER.debug("Error in fetching field details"+baseModule.getName());
+                            if (baseModule == null || condition == null || condition.getFieldName() == null) continue;
+
+                            FacilioField field = modBean.getField(condition.getFieldName(), baseModule.getName());
+                            condition.setField(field);
+                        }
+
+                        if (!baseModule.getExtendedModuleIds().contains((dp.getyAxis().getModule().getModuleId()))) {
+                            Map<String, Condition> conditions = (Map<String, Condition>) allCriteria.getConditions();
+                            for (String key : allCriteria.getConditions().keySet()) {
+                                Condition condition = conditions.get(key);
+                                if (condition.getColumnName() != null && dp.getCriteria() != null && dp.getCriteria().getConditions().containsValue(condition)) {
+                                    String tableNameAndColumnName = condition.getColumnName();
+                                    String columnName = tableNameAndColumnName;
+                                    if (columnName.split("\\.").length > 1) {
+                                        columnName = columnName.split("\\.")[1];
+                                    }
+                                    tableNameAndColumnName = getAndSetModuleAlias(dp.getyAxis().getModuleName()) + "." + columnName;
+                                    dp.getAllCriteria().getConditions().get(key).setColumnName(tableNameAndColumnName);
                                 }
                             }
                         }
 
+                        newSelectBuilder.andCriteria(allCriteria);
+                    } catch (Exception e){
+                        LOGGER.debug("Error in applying criteria - pivot " + e.toString());
                     }
-                    newSelectBuilder.andCriteria(allCriteria);
                 }
             } else {
                 newSelectBuilder.andCondition(CriteriaAPI.getEqualsCondition(xAggrField, xValues));
