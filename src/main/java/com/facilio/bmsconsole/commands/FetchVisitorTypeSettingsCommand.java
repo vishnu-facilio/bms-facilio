@@ -52,7 +52,7 @@ public class FetchVisitorTypeSettingsCommand extends FacilioCommand {
 		VisitorSettingsContext visitorSettingsContext=FieldUtil.getAsBeanFromMap(visitorSetting, VisitorSettingsContext.class);
 		//get and fill visitortypeCtx in Visitor Setting context
 
-		ApplicationContext app = ApplicationApi.getApplicationForLinkName(AccountUtil.getCurrentApp().getLinkName());
+		ApplicationContext app = ApplicationApi.getApplicationForLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		long appId = app.getId();
 		if(AccountUtil.getCurrentApp() != null && AccountUtil.getCurrentApp().getId() > 0) {
 			appId = AccountUtil.getCurrentApp().getId();
