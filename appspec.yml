@@ -59,6 +59,10 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /log4j-syd-scheduler.properties
     destination: /home/facilio/deployment-files/
+  - source: /log4j-syd-user-critical.properties
+    destination: /home/facilio/deployment-files/
+  - source: /log4j-syd-scheduler-critical.properties
+    destination: /home/facilio/deployment-files/
   - source: /log4j-ff-user.properties
     destination: /home/facilio/deployment-files/
   - source: /log4j-ff-scheduler.properties
@@ -93,6 +97,10 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /awsprops-syd-user.properties
     destination: /home/facilio/deployment-files/
+  - source: /awsprops-syd-scheduler-critical.properties
+    destination: /home/facilio/deployment-files/
+  - source: /awsprops-syd-user-critical.properties
+    destination: /home/facilio/deployment-files/
   - source: /awsprops-ff-scheduler.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-ff-kafka.properties
@@ -101,11 +109,19 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /executors-org.xml
     destination: /home/facilio/deployment-files/
+  - source: /executors-org-au.xml
+    destination: /home/facilio/deployment-files/
   - source: /executors-production.xml
+    destination: /home/facilio/deployment-files/
+  - source: /executors-production-au.xml
     destination: /home/facilio/deployment-files/
   - source: /instantjobexecutors-org.yml
     destination: /home/facilio/deployment-files/
+  - source: /instantjobexecutors-org-au.yml
+    destination: /home/facilio/deployment-files/
   - source: /instantjobexecutors-production.yml
+    destination: /home/facilio/deployment-files/
+  - source: /instantjobexecutors-production-au.yml
     destination: /home/facilio/deployment-files/
   - source: /service-stage.yml
     destination: /home/facilio/deployment-files/
@@ -114,6 +130,8 @@ files:
   - source: /service-sp.yml
     destination: /home/facilio/deployment-files/
   - source: /service-syd.yml
+    destination: /home/facilio/deployment-files/
+  - source: /service-syd-critical.yml
     destination: /home/facilio/deployment-files/
   - source: /service-uk.yml
     destination: /home/facilio/deployment-files/
