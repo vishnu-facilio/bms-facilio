@@ -1,7 +1,9 @@
 package com.facilio.bmsconsoleV3.commands.requestForQuotation;
 
 
+import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsoleV3.context.V3ServiceContext;
+import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ToolTypesContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
@@ -12,6 +14,8 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
@@ -34,6 +38,8 @@ public class CreateRfqFromPrCommandV3 extends FacilioCommand {
 
                 List<V3PurchaseRequestContext> purchaseRequests = new ArrayList<>();
                 Long storeId = -1l;
+                V3StoreRoomContext storeRoom = new V3StoreRoomContext();
+                LocationContext shipToAddress = null;
                 String description = "";
                 for (Long prId: requestForQuotationContexts.get(0).getRecordIds()) {
 
@@ -41,12 +47,16 @@ public class CreateRfqFromPrCommandV3 extends FacilioCommand {
                     V3PurchaseRequestContext purchaseRequest= (V3PurchaseRequestContext) V3Util.getRecord(prModuleName,prId,null);
                     if(storeId==-1l && purchaseRequest.getStoreRoom() != null){
                         storeId=purchaseRequest.getStoreRoom().getId();
+                        storeRoom = purchaseRequest.getStoreRoom();
                     }
-                    if(purchaseRequest.getStoreRoom()==null){
-                        throw new IllegalArgumentException("Storeroom cannot be empty");
+                    if(shipToAddress==null && purchaseRequest.getShipToAddress()!=null && purchaseRequest.getShipToAddress().getId()>0){
+                        shipToAddress=purchaseRequest.getShipToAddress();
                     }
-                    if(purchaseRequest.getStoreRoom()!=null && purchaseRequest.getStoreRoom().getId()!=storeId){
-                        throw new IllegalArgumentException("Cannot create single RFQ for multiple storeroom items");
+//                    if(purchaseRequest.getStoreRoom()==null){
+//                        throw new IllegalArgumentException("Storeroom cannot be empty");
+//                    }
+                    if(purchaseRequest.getStoreRoom()!=null && purchaseRequest.getStoreRoom().getId()!=storeId && storeId!=-1l){
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Cannot create single RFQ for multiple storeroom items");
                     }
                     if(purchaseRequest.getDescription()!=null){
                         description = description.concat("#PR ").concat(purchaseRequest.getId() + ". ").concat(purchaseRequest.getDescription()).concat("\n");
@@ -55,7 +65,7 @@ public class CreateRfqFromPrCommandV3 extends FacilioCommand {
 
                 }
                 String name =requestForQuotationContexts.get(0).getName();
-                V3RequestForQuotationContext requestForQuotation = setRequestForQuotation(purchaseRequests.get(0),name,description);
+                V3RequestForQuotationContext requestForQuotation = setRequestForQuotation(storeRoom,shipToAddress,name,description);
 
                 List<V3RequestForQuotationLineItemsContext> rfqLineItemsToBeAdded = new ArrayList<>();
 
@@ -121,21 +131,20 @@ public class CreateRfqFromPrCommandV3 extends FacilioCommand {
             subform.put("description",rfqLineItem.getDescription()!=null ? rfqLineItem.getDescription() : null);
             subform.put("itemType",rfqLineItem.getInventoryType()==V3RequestForQuotationLineItemsContext.InventoryTypeRfq.ITEM.getIndex() ? rfqLineItem.getItemType() : null);
             subform.put("toolType",rfqLineItem.getInventoryType()==V3RequestForQuotationLineItemsContext.InventoryTypeRfq.TOOL.getIndex() ? rfqLineItem.getToolType() : null);
-            subform.put("service",rfqLineItem.getInventoryType()==V3RequestForQuotationLineItemsContext.InventoryTypeRfq.SERVICE.getIndex() ? rfqLineItem.getService() : null);
+            //subform.put("service",rfqLineItem.getInventoryType()==V3RequestForQuotationLineItemsContext.InventoryTypeRfq.SERVICE.getIndex() ? rfqLineItem.getService() : null);
             subformList.add(subform);
         }
         return subformList;
     }
-    private V3RequestForQuotationContext setRequestForQuotation(V3PurchaseRequestContext purchaseRequest, String name, String description){
+    private V3RequestForQuotationContext setRequestForQuotation(V3StoreRoomContext storeRoom,LocationContext shipToAddress, String name, String description){
         V3RequestForQuotationContext requestForQuotation = new V3RequestForQuotationContext();
         requestForQuotation.setName(name);
         if(description!=null){
             requestForQuotation.setDescription(description);
         }
-        requestForQuotation.setStoreRoom(purchaseRequest.getStoreRoom());
-        if(purchaseRequest.getShipToAddress()!=null){
-            requestForQuotation.setShipToAddress(purchaseRequest.getShipToAddress());
-        }
+        requestForQuotation.setStoreRoom(storeRoom);
+        requestForQuotation.setShipToAddress(shipToAddress);
+
         return requestForQuotation;
     }
     private List<V3RequestForQuotationLineItemsContext> setRequestForQuotationLineItems(List<V3PurchaseRequestLineItemContext> purchaseRequestLineItems) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
@@ -156,11 +165,11 @@ public class CreateRfqFromPrCommandV3 extends FacilioCommand {
                 V3ToolTypesContext toolType = FieldUtil.getAsBeanFromMap(map, V3ToolTypesContext.class);
                 rfqLineItem.setToolType(toolType);
             }
-            else if(prLineItem.getInventoryType()==V3RequestForQuotationLineItemsContext.InventoryTypeRfq.SERVICE.getIndex()){
-                Map<String, Object> map = FieldUtil.getAsProperties(prLineItem.getService());
-                V3ServiceContext service = FieldUtil.getAsBeanFromMap(map, V3ServiceContext.class);
-                rfqLineItem.setService(service);
-            }
+//            else if(prLineItem.getInventoryType()==V3RequestForQuotationLineItemsContext.InventoryTypeRfq.SERVICE.getIndex()){
+//                Map<String, Object> map = FieldUtil.getAsProperties(prLineItem.getService());
+//                V3ServiceContext service = FieldUtil.getAsBeanFromMap(map, V3ServiceContext.class);
+//                rfqLineItem.setService(service);
+//            }
             if(prLineItem.getDescription()!=null){
                 rfqLineItem.setDescription(prLineItem.getDescription());
             }
