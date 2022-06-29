@@ -33,7 +33,11 @@ public class AddSurveyRuleActionCommand extends FacilioCommand{
 		SurveyResponseRuleContext surveyResponseRule = new SurveyResponseRuleContext();
 
 		if(CollectionUtils.isNotEmpty(createActions)){
-			Long createRuleId = (long) context.getOrDefault("createRuleId",null);
+
+			Long createRuleId = null;
+			if(context != null && context.containsKey("createRuleId")){
+				createRuleId = (long) context.getOrDefault("createRuleId",null);
+			}
 
 			if(createRuleId != null && createRuleId > 0L){
 				addSurveyRuleActions(validateBeforeAddActions(createActions), WorkflowRuleAPI.getWorkflowRule(createRuleId));
@@ -51,7 +55,12 @@ public class AddSurveyRuleActionCommand extends FacilioCommand{
 
 		if(CollectionUtils.isNotEmpty(responseActions)){
 
-			Long submitRuleId = (long) context.getOrDefault("submitRuleId", null);
+			Long submitRuleId = null;
+
+			if(context != null && context.containsKey("submitRuleId")){
+				submitRuleId = (long) context.getOrDefault("submitRuleId",null);
+			}
+
 			if(submitRuleId != null && submitRuleId > 0L){
 				addSurveyRuleActions(validateBeforeAddActions(responseActions), WorkflowRuleAPI.getWorkflowRule(submitRuleId));
 			}else{
