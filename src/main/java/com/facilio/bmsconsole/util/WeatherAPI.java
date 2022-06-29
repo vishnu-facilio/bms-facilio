@@ -165,10 +165,11 @@ public class WeatherAPI {
 	}
 
 	public static String doGet(String url) throws Exception {
-		if(!(FacilioProperties.getRegion().equals("us-west-2") || FacilioProperties.getRegion().equals("dev"))) {
-			return null;
+		String weatherServiceRegion = "us-west-2";
+		if(FacilioProperties.getRegion().equals("dev")) {
+			weatherServiceRegion = "dev";
 		}
-		String response = ServiceHttpUtils.doHttpGet(FacilioProperties.getRegion(), FacilioConstants.Services.WEATHER_SERVICE, url, null, null);
+		String response = ServiceHttpUtils.doHttpGet(weatherServiceRegion, FacilioConstants.Services.WEATHER_SERVICE, url, null, null);
 		return response;
 	}
 
