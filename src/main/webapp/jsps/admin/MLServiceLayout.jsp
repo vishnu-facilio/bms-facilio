@@ -172,6 +172,7 @@
         		<option value="energyprediction"<%=(request.getParameter("usecase") != null && request.getParameter("usecase").equals("energyprediction")) ? "selected" : " "%>>Energy Prediction</option>
         		<option value="loadprediction"<%=(request.getParameter("usecase") != null && request.getParameter("usecase").equals("loadprediction")) ? "selected" : " "%>>Load Prediction</option>
             	<option value="ahuoptimization"<%=(request.getParameter("usecase") != null && request.getParameter("usecase").equals("ahuoptimization")) ? "selected" : " "%>>AHU Start time Optimization</option>
+            	<option value="pressureprediction"<%=(request.getParameter("usecase") != null && request.getParameter("usecase").equals("pressureprediction")) ? "selected" : " "%>>Bag Filter Prediction</option>
             	<option value="multivariateanomaly"<%=(request.getParameter("usecase") != null && request.getParameter("usecase").equals("multivariateanomaly")) ? "selected" : " "%>>Multivariate Anomaly</option>
             	
             </select>

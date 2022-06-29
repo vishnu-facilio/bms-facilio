@@ -252,3 +252,12 @@ enums:
 
   - name: AggregationType
     enumClassName: com.facilio.ns.context.AggregationType
+
+  - name: PMScopeAssigmentType
+    enumClassName: com.facilio.bmsconsole.context.PlannedMaintenance$PMScopeAssigmentType
+
+  - name: PMTriggerType
+    enumClassName: com.facilio.bmsconsole.context.PMTriggerV2$PMTriggerType
+
+  - name: PMTriggerFrequency
+    enumClassName: com.facilio.bmsconsole.context.PMTriggerV2$PMTriggerFrequency

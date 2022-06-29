@@ -1797,5 +1797,12 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.JOB_PLAN_ACTIVITY));
         return c;
     }
+    
+    public static FacilioChain addReadingDataMetaForReadingModule() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new FetchReadingsModuleFieldsCommand());
+        chain.addCommand(new InsertReadingDataMetaForNewResourceCommand());
+        return chain;
+    }
 
 }

@@ -8,7 +8,7 @@ sources:
   - name: local
     type: kafka
     configs:
-      broker: localhost:9093
+      broker: localhost:9092
 
   - name: facilio # US Region
     type: kafka

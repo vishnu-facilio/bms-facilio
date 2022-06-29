@@ -196,7 +196,12 @@ public class PreventiveMaintenanceAPI {
 
 		List<Long> resourceIds;
 		if (pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTI_SITE) {
-			resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),pm.getSiteIds(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts(), true);
+			if(pm.getAssignmentTypeEnum() == PMAssignmentType.SPACE_CATEGORY && pm.getSiteIds().size() == 1) {
+				// When single site is selected we select 1 building.
+				resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(), pm.getBaseSpaceId(), pm.getSpaceCategoryId(), pm.getAssetCategoryId(), null, pm.getPmIncludeExcludeResourceContexts(), true);
+			}else {
+				resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(), pm.getSiteIds(), pm.getSpaceCategoryId(), pm.getAssetCategoryId(), null, pm.getPmIncludeExcludeResourceContexts(), true);
+			}
 		} else {
 			resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),baseSpaceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts(), false);
 		}

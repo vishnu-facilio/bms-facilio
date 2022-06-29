@@ -99,6 +99,17 @@ public class ActivateMLServiceCommand extends FacilioCommand implements Serializ
 					chain.execute();
 					break;
 				}
+				case "pressureprediction":{
+					FacilioChain chain = FacilioChainFactory.addPressurePredictionchain();
+					FacilioContext context = chain.getContext();
+					context.put("assetId", mlServiceContext.getParentAssetId());
+					context.put("mlModelVariables", mlServiceContext.getMlModelVariables());
+					context.put("mlVariables", mlServiceContext.getTrainingSamplingJson());
+					context.put("modelPath", mlServiceContext.getMlResponseList().get(0).getModuleInfo().get(0).getModelPath());
+					context.put(FacilioConstants.ContextNames.ML_SERVICE_DATA, mlServiceContext);
+					chain.execute();
+					break;
+				}
 				default: {
 					String errMsg = "Given modelname is not available";
 					throw MLServiceUtil.throwError(mlServiceContext, ErrorCode.VALIDATION_ERROR, errMsg);

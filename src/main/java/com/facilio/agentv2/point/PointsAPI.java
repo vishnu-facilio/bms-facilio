@@ -1,25 +1,5 @@
 package com.facilio.agentv2.point;
 
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import com.facilio.agentv2.cacheimpl.AgentBean;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.FacilioCommand;
@@ -28,6 +8,7 @@ import com.facilio.agent.module.AgentModuleFactory;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.JsonUtil;
 import com.facilio.agentv2.bacnet.BacnetIpPointContext;
+import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
@@ -54,13 +35,18 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.BmsAggregateOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class PointsAPI {
     private static final Logger LOGGER = LogManager.getLogger(PointsAPI.class.getName());
@@ -1004,7 +990,7 @@ public class PointsAPI {
         return getPointRequest.getPoints();
     }
 
-    public static void updatePointsValue(List<Point> points) throws Exception {
+    public static void updatePointsValue(List<Point> points, boolean updateDataMissing) throws Exception {
 
         List<GenericUpdateRecordBuilder.BatchUpdateByIdContext> batchUpdateList = new ArrayList<>();
 
@@ -1013,6 +999,9 @@ public class PointsAPI {
             batchValue.setWhereId(point.getId());
             batchValue.addUpdateValue(AgentConstants.LAST_RECORDED_VALUE, point.getLastRecordedValue());
             batchValue.addUpdateValue(AgentConstants.LAST_RECORDED_TIME, point.getLastRecordedTime());
+            if(!point.getDataMissing()) {
+                batchValue.addUpdateValue(AgentConstants.DATA_MISSING, point.getDataMissing());
+            }
             batchUpdateList.add(batchValue);
         }
 
@@ -1020,6 +1009,9 @@ public class PointsAPI {
         List<FacilioField> updateFields = new ArrayList<>();
         updateFields.add(fieldMap.get(AgentConstants.LAST_RECORDED_VALUE));
         updateFields.add(fieldMap.get(AgentConstants.LAST_RECORDED_TIME));
+        if(updateDataMissing) {
+            updateFields.add(fieldMap.get(AgentConstants.DATA_MISSING));
+        }
 
 
         GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()

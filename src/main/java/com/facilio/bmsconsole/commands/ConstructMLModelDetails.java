@@ -1,7 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.MLServiceUtil;
 import com.facilio.bmsconsoleV3.context.V3MLServiceContext;
@@ -62,6 +64,14 @@ public class ConstructMLModelDetails extends FacilioCommand implements Serializa
 						model.add(getTemperatureReading(assetContext.getSiteId()));
 						models.add(model);
 					}
+					break;
+				}
+				case "pressureprediction": {
+					long assetId = mlServiceContext.getParentAssetId();
+					AssetContext assetContext = AssetsAPI.getAssetInfo(assetId);
+					List<Map<String, Object>> model = new ArrayList<Map<String, Object>>();
+					model.add(getPressureReading(assetContext.getId()));
+					models.add(model);
 					break;
 				}
 				default: {
@@ -128,7 +138,14 @@ public class ConstructMLModelDetails extends FacilioCommand implements Serializa
 		temperatureReading.put("name", temperatureField.getName());
 		temperatureReading.put("fieldId", temperatureField.getFieldId());
 		return temperatureReading;
-
 	}
-
+	private Map<String, Object> getPressureReading(long assetId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioField pressureField = modBean.getField("bagFilterDifferentialPressure", FacilioConstants.ContextNames.AHU_READINGS_GENERAL);
+		Map<String, Object> pressureReading = new HashMap<>();
+		pressureReading.put("parentId", assetId);
+		pressureReading.put("name", pressureField.getName());
+		pressureReading.put("fieldId", pressureField.getFieldId());
+		return pressureReading;
+	}
 }

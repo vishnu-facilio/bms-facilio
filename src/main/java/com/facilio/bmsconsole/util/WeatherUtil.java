@@ -1,33 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.Inflater;
-import java.util.zip.InflaterInputStream;
-
-import com.facilio.util.ServiceHttpUtils;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
@@ -47,16 +19,33 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.weather.context.WeatherStationContext;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.time.ZonedDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.Inflater;
+import java.util.zip.InflaterInputStream;
 
 ;
 
@@ -148,22 +137,9 @@ public class WeatherUtil {
 	}
 
 	public static String getForecastURL(double lat, double longitude) {
-
-		return getForecastURL(lat, longitude, null);
+		return getForecastURLOrig(lat, longitude, null);
 	}
 
-	public static String getForecastURL(double lat, double longitude, Long time) {
-		StringBuilder url = new StringBuilder(weatherURL);
-		url.append("?lat=");
-		url.append(lat);
-		url.append("&lng=");
-		url.append(longitude);
-		if (time != null) {
-			url.append("&ttime=" + time);
-		}
-		LOGGER.log(Level.INFO, "Weather url is : " + url);
-		return url.toString();
-	}
 	public static String getForecastURLOrig(double lat, double longitude, Long time) {
 
 		StringBuilder url = new StringBuilder(weatherURL);
@@ -180,10 +156,6 @@ public class WeatherUtil {
 		return url.toString();
 	}
 
-	public static String doGet(String url) throws Exception {
-		String response = ServiceHttpUtils.doHttpGet(FacilioProperties.getRegion(), FacilioConstants.Services.WEATHER_SERVICE, url, null, null);
-		return response;
-	}
 
 	@SuppressWarnings("unchecked")
 	public static Map<String, Object> getWeatherData(SiteContext site, Long time) throws Exception {
@@ -197,10 +169,10 @@ public class WeatherUtil {
 		if (lat == null || lng == null) {
 			return null;
 		}
-		String weatherURL = WeatherUtil.getForecastURL(lat, lng, time);
+		String weatherURL = WeatherAPI.getWeatherURL(lat, lng, time);
 //		HttpURLConnection connection = WeatherUtil.getHttpURLConnection(weatherURL);
 //		String response = WeatherUtil.getResponse(connection);
-		String response = WeatherUtil.doGet(weatherURL);
+		String response = WeatherAPI.doGet(weatherURL);
 		if (response == null) {
 			LOGGER.log(Level.INFO, "The response is null from the weather server");
 			return null;
@@ -225,10 +197,10 @@ public class WeatherUtil {
 		if (lat == null || lng == null) {
 			return null;
 		}
-		String weatherURL = WeatherUtil.getForecastURL(lat, lng, time);
+		String weatherURL = WeatherAPI.getWeatherURL(lat, lng, time);
 //		HttpURLConnection connection = WeatherUtil.getHttpURLConnection(weatherURL);
 //		String response = WeatherUtil.getResponse(connection);
-		String response = WeatherUtil.doGet(weatherURL);
+		String response = WeatherAPI.doGet(weatherURL);
 		if (response == null) {
 			LOGGER.log(Level.INFO, "The response is null from the weather server");
 			return null;
@@ -378,9 +350,9 @@ public class WeatherUtil {
 		return readingsMap;
 	}
 
-	private static Map<Long, ReadingContext> getWeatherReadingForSite(String moduleName, long siteId,
+	private static Map<Long, ReadingContext> getWeatherReadingForSite(String moduleName, long parentId,
 			List<ReadingContext> readingList) throws Exception {
-		Condition parentCondition = CriteriaAPI.getCondition("PARENT_ID", "parentId", String.valueOf(siteId),
+		Condition parentCondition = CriteriaAPI.getCondition("PARENT_ID", "parentId", String.valueOf(parentId),
 				NumberOperators.EQUALS);
 		Condition ttimeCondition = CriteriaAPI.getCondition("TTIME", "ttime", getTtimeList(readingList),
 				NumberOperators.EQUALS);
@@ -554,7 +526,7 @@ public class WeatherUtil {
 		return (EnumField) moduleBean.getField("precipitationType", moduleName);
 	}
 
-	public static ReadingContext getHourlyReadingOld(long siteId, String moduleName, Map<String, Object> hourlyWeather)
+	public static ReadingContext getHourlyReadingOld(long parentId, String moduleName, Map<String, Object> hourlyWeather)
 			throws Exception {
 
 		if (hourlyWeather == null) {
@@ -562,7 +534,7 @@ public class WeatherUtil {
 		}
 
 		ReadingContext reading = new ReadingContext();
-		reading.setParentId(siteId);
+		reading.setParentId(parentId);
 		reading.addReading("temperature", hourlyWeather.get("temperature"));
 
 		Object icon = hourlyWeather.get("icon");
@@ -786,10 +758,10 @@ public class WeatherUtil {
 		return time != null ? (Long) time * 1000 : null;
 	}
 
-	public static ReadingContext getPsychrometricReading(long siteId, Map<String, Object> weatherData) {
+	public static ReadingContext getPsychrometricReading(long parentId, Map<String, Object> weatherData) {
 
 		ReadingContext reading = new ReadingContext();
-		reading.setParentId(siteId);
+		reading.setParentId(parentId);
 		try {
 			Double wetBulbTemperature = PsychrometricUtil.getWetBulbTemperatureFromRelativeHumidity(weatherData);
 			Double dewPointTemperature = PsychrometricUtil.getDewPointTemperatureFromRelativeHumudity(weatherData);

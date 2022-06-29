@@ -14,6 +14,7 @@ public class AgentAlarmContext extends BaseAlarmContext {
     private AgentAlarmType agentAlarmType;
     private List<Controller> controllersList;
     private boolean notified;
+    private long pointsDataMissingCount;
 
     public void setAgentAlarmType(AgentAlarmType agentAlarmType) {
         this.agentAlarmType = agentAlarmType;
@@ -58,6 +59,11 @@ public class AgentAlarmContext extends BaseAlarmContext {
     public void setControllersList(List<Controller> controllersList) {
         this.controllersList = controllersList;
     }
+
+    public void setPointsDataMissingCount(long missingCount) { this.pointsDataMissingCount = missingCount; }
+
+    public Long getPointsDataMissingCount() { return pointsDataMissingCount; }
+
     public static enum AgentAlarmType implements FacilioIntEnum {
         AGENT,CONTROLLER,POINT;
 

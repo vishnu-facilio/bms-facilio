@@ -569,12 +569,6 @@ public class ViewFactory {
 
 		order = 1;
 		views = new LinkedHashMap<>();
-		views.put("controllerAll", getControllerAlarmOccurrenceViews().setOrder(order++));
-		viewsMap.put(FacilioConstants.ContextNames.CONTROLLER_ALARM, views);
-
-
-		order = 1;
-		views = new LinkedHashMap<>();
 		views.put("all", getAllTermsAndConditionView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS, views);
 
@@ -6002,25 +5996,6 @@ public class ViewFactory {
 		allView.setName("mlmvaAlarms");
 		allView.setDisplayName("All Alarms");
 		allView.setModuleName("multivariateanomalyalarm");
-		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
-		allView.setDefault(true);
-
-		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
-
-		return allView;
-	}
-	
-	private static FacilioView getControllerAlarmOccurrenceViews() {
-		FacilioField createdTime = new FacilioField();
-		createdTime.setName("lastOccurredTime");
-		createdTime.setDataType(FieldType.DATE_TIME);
-		createdTime.setColumnName("LAST_OCCURRED_TIME");
-		createdTime.setModule(ModuleFactory.getBaseAlarmModule());
-
-		FacilioView allView = new FacilioView();
-		allView.setName("controllerAll");
-		allView.setDisplayName("All Controller Alarms");
-		allView.setModuleName("controllerAlarm");
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		allView.setDefault(true);
 

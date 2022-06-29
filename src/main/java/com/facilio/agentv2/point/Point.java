@@ -70,6 +70,8 @@ public abstract class Point extends FacilioPoint implements Serializable {
     @Getter @Setter
     private Long controlActionId;
 
+    private boolean dataMissing;
+
     public boolean isAgentWritable() {
         return agentWritable;
     }
@@ -223,6 +225,10 @@ public abstract class Point extends FacilioPoint implements Serializable {
         this.lastRecordedValue = lastRecordedValue;
     }
 
+    public boolean getDataMissing() { return dataMissing; };
+
+    public void setDataMissing(boolean status) { this.dataMissing = status; };
+
     public int getConfigureStatus() {
         return configureStatus.getIndex();
     }
@@ -325,6 +331,9 @@ public abstract class Point extends FacilioPoint implements Serializable {
         }
         if(row.containsKey(AgentConstants.DATA_INTERVAL)){
             setInterval(FacilioUtil.parseInt(row.get(AgentConstants.DATA_INTERVAL)));
+        }
+        if(row.containsKey(AgentConstants.DATA_MISSING)){
+            setDataMissing((boolean) row.get(AgentConstants.DATA_MISSING));
         }
         return this;
     }

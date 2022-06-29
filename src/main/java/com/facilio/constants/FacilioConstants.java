@@ -2,7 +2,6 @@ package com.facilio.constants;
 
 import com.facilio.activity.ActivityContext;
 import com.facilio.agent.alarms.AgentAlarmContext;
-import com.facilio.agent.alarms.ControllerAlarmContext;
 import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.lonWorks.LonWorksControllerContext;
@@ -158,7 +157,8 @@ public class FacilioConstants {
 		public static final String FEEDBACK_TYPE_CATALOG_MAPPING = "feedbackTypeCatalogMapping";
 		public static final String RULE_TEMPLATE_MODULE ="ruletemplate";
 		public static final String SPACE="space";
-		
+		public static final String WEATHER_SERVICE = "weatherservice";
+		public static final String WEATHER_STATION = "weatherstation";
 
 	}
 
@@ -206,6 +206,7 @@ public class FacilioConstants {
 		public static final String SERVICE_CATALOG_GROUPS = "serviceCatalogGroups";
 		public static final String SERVICE_CATALOG_GROUP_ORDER_BY = "serviceCatalogGroupOrderBy";
 		public static final String LICENSE_NAME = "licenseName";
+		public static final String AHU_READINGS_GENERAL = "ahureadinggeneral";
 
 		public static final String LICENSE_TYPE = "licenseType";
 
@@ -486,8 +487,6 @@ public class FacilioConstants {
 		public static final String LATEST_ALARM_OCCURRENCE = "latestAlarmOccurrence";
 		public static final String AGENT_ALARM = "agentAlarm";
 		public static final String AGENT_ALARM_OCCURRENCE = "agentAlarmOccurrence";
-		public static final String CONTROLLER_ALARM = "controllerAlarm";
-		public static final String CONTROLLER_ALARM_OCCURRENCE = "controllerAlarmOccurrence";
 		public static final String BASE_ALARM = "basealarm";
 		public static final String BASE_EVENT = "baseevent";
 		public static final String NEW_READING_ALARM = "newreadingalarm";
@@ -552,6 +551,8 @@ public class FacilioConstants {
 		public static final String INVENTORY_CATEGORY = "inventoryCategory";
 		
 		public static final String TASK = "task";
+
+		public static final String IS_TASK_ACTION_EXECUTED = "isTaskActionExecuted";
 		public static final String TASK_ERRORS = "taskErrors";
 		public static final String REQUIRES_REMARKS = "requiresRemarks";
 		public static final String REQUIRES_ATTACHMENT = "requiresAttachment";
@@ -1361,7 +1362,9 @@ public class FacilioConstants {
 		public static final String PUBLICKEYFILENAME = "publicKeyFileName";
 		public static final String PUBLICKEYFILETYPE = "publicKeyFileNameType";
 		public static final String MARKED_READINGS = "markedReadings";
+
 		public static final String WEATHER_READING = "weather";
+		public static final String NEW_WEATHER_READING = "newWeather";
 		public static final String WEATHER_DAILY_READING = "weatherDaily";
 		public static final String WEATHER_DAILY_FORECAST_READING = "weatherDailyForecast";
 		public static final String WEATHER_HOURLY_FORECAST_READING = "weatherHourlyForecast";
@@ -1370,6 +1373,7 @@ public class FacilioConstants {
 		public static final String WDD_READING="wdd";
 		
 		public static final String PSYCHROMETRIC_READING = "psychrometric";
+		public static final String NEW_PSYCHROMETRIC_READING = "newpsychrometric";
 		public static final String WET_BULB_TEMPERATURE="wetBulbTemperature";
 		public static final String MODULE_NAMES = "moduleNames";
 		public static final String SORT_FIELDS = "sortFields";
@@ -2395,7 +2399,6 @@ public class FacilioConstants {
 			classMap.put(PRE_EVENT, PreEventContext.class);
 			classMap.put(READING_ALARM_CATEGORY, ReadingAlarmCategoryContext.class);
 			classMap.put(AGENT_ALARM, AgentAlarmContext.class);
-			classMap.put(CONTROLLER_ALARM, ControllerAlarmContext.class);
 			classMap.put(OPERATION_ALARM, OperationAlarmContext.class);
 			classMap.put(OPERATION_OCCURRENCE, OperationAlarmOccurenceContext.class);
 			classMap.put(RULE_ROLLUP_EVENT, RuleRollUpEvent.class);
@@ -2904,6 +2907,7 @@ public class FacilioConstants {
 		public static final String DIGEST_JOB_NAME = "ScheduledActionExecution";
 		public static final String AUTO_CHECKOUT_JOB_NAME = "AutoCheckOutVisitors";
 		public static final String CLOUD_AGENT_JOB_NAME = "CloudAgent";
+		public static final String POINTS_DATA_MISSING_ALARM_JOB_NAME = "PointsDataMissingAlarmJob";
 
 	}
 	public static class Ticket{

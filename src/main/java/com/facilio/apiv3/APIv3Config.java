@@ -139,6 +139,8 @@ import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesLineItemsContext;
+import com.facilio.bmsconsoleV3.context.weather.V3WeatherServiceContext;
+import com.facilio.bmsconsoleV3.context.weather.V3WeatherStationContext;
 import com.facilio.bmsconsoleV3.context.workpermit.V3WorkPermitContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
@@ -1603,7 +1605,8 @@ public class APIv3Config {
                 .beforeSave(new AddOrUpdateSiteLocationCommand(), new SetSiteRelatedContextCommand())
                 .afterSave(new CreateSiteAfterSave(), getSpaceReadingsChain(),
                         new InsertReadingDataMetaForNewResourceCommand(), new ConstructAddCustomActivityCommandV3(),
-                        new AddActivitiesCommand(FacilioConstants.ContextNames.SITE_ACTIVITY))
+                        new AddActivitiesCommand(FacilioConstants.ContextNames.SITE_ACTIVITY),
+                        new AddWeatherStationCommand())
                 .update()
                 .beforeSave(new AddOrUpdateSiteLocationCommand())
                 .afterSave(new ConstructUpdateCustomActivityCommandV3(),
@@ -1855,6 +1858,36 @@ public class APIv3Config {
                 .afterFetch(new HandleV3AlarmListLookupCommand())
                 .summary()
                 .beforeFetch(new LoadResourceLookUpCommand())
+                .delete()
+                .build();
+    }
+
+    @Module(FacilioConstants.ModuleNames.WEATHER_SERVICE)
+    public static Supplier<V3Config> getWeatherService() {
+        return () -> new V3Config(V3WeatherServiceContext.class, null)
+                .create()
+                .beforeSave(new ValidateWeatherServiceCommand())
+                .afterSave(new AddWeatherServiceJobCommand())
+                .update()
+                .beforeSave(new ValidateWeatherServiceCommand())
+                .afterSave(new AddWeatherServiceJobCommand())
+                .list()
+                .summary()
+                .delete()
+                .beforeDelete(new DeleteWeatherServiceJobCommand())
+                .build();
+    }
+
+    @Module(FacilioConstants.ModuleNames.WEATHER_STATION)
+    public static Supplier<V3Config> getWeatherStation() {
+        return () -> new V3Config(V3WeatherStationContext.class, null)
+                .create()
+                .beforeSave(new ValidateWeatherStationCommand())
+                .afterSave(TransactionChainFactoryV3.addReadingDataMetaForReadingModule())
+                .update()
+                .beforeSave(new ValidateWeatherStationCommand())
+                .list()
+                .summary()
                 .delete()
                 .build();
     }

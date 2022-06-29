@@ -792,8 +792,7 @@ public class TransactionChainFactory {
 		public static FacilioChain addReadingRuleChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new ReadingRuleDependenciesCommand());
-			c.addCommand(new GetCategoryResourcesCommand());
-			c.addCommand(addResourceReadingChain());
+			c.addCommand(getAddCategoryReadingChain());
 			c.addCommand(new AddWorkflowCommand());
 			c.addCommand(new AddNewReadingRuleCommand());
 			c.addCommand(new AddNamespaceCommand());

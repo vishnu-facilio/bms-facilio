@@ -218,7 +218,8 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
 		context.put(FacilioConstants.ContextNames.READINGS, readings);
 		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.ML);
-		context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
+		Boolean rdmupdate = module.getName().equalsIgnoreCase("pressurepredictionnmllogreadingsnew") ? true :false;
+		context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS,rdmupdate);
 		chain.execute();
 	}
 

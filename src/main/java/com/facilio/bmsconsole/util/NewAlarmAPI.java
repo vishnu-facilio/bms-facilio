@@ -1,51 +1,42 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.function.Function;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AlarmActivityType;
-import com.facilio.agent.alarms.*;
+import com.facilio.agent.alarms.AgentAlarmContext;
+import com.facilio.agent.alarms.AgentAlarmOccurrenceContext;
 import com.facilio.agentv2.AgentUtilV2;
 import com.facilio.agentv2.FacilioAgent;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.chain.FacilioContext;
-import com.facilio.db.criteria.operators.*;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.context.sensor.SensorAlarmContext;
 import com.facilio.bmsconsole.context.sensor.SensorAlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
 import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmOccurrenceContext;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.BmsAggregateOperators;
-import com.facilio.modules.DeleteRecordBuilder;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
+
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.function.Function;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class NewAlarmAPI {
 
@@ -124,8 +115,6 @@ public class NewAlarmAPI {
 				return ViolationAlarmOccurrenceContext.class;
 			case AGENT:
 				return AgentAlarmOccurrenceContext.class;
-			case CONTROLLER:
-				return ControllerOccurrenceContext.class;
 			case PRE_OCCURRENCE:
 				return PreAlarmOccurrenceContext.class;
 			case OPERATION_OCCURRENCE:
@@ -199,8 +188,6 @@ public class NewAlarmAPI {
 				return ViolationAlarmContext.class;
 			case AGENT_ALARM:
 				return AgentAlarmContext.class;
-			case CONTROLLER_ALARM:
-				return ControllerAlarmContext.class;
 			case PRE_ALARM:
 				return PreAlarmContext.class;
 			case OPERATION_ALARM:
@@ -277,8 +264,6 @@ public class NewAlarmAPI {
 				return "violationalarm";
 			case AGENT_ALARM:
 				return "agentAlarm";
-			case CONTROLLER_ALARM:
-				return "controllerAlarm";
 			case PRE_ALARM:
 				return "prealarm";
 			case OPERATION_ALARM:

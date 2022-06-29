@@ -1,14 +1,12 @@
 package com.facilio.bmsconsole.util;
 
 import com.facilio.agent.alarms.AgentEventContext;
-import com.facilio.agent.alarms.ControllerEventContext;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.context.sensor.SensorEventContext;
 import com.facilio.bmsconsole.context.sensor.SensorRollUpEventContext;
-import com.facilio.bmsconsole.enums.RuleJobType;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
@@ -21,7 +19,6 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
@@ -56,8 +53,6 @@ public class NewEventAPI {
 
 			case AGENT_ALARM:
 				return AgentEventContext.class;
-			case CONTROLLER_ALARM:
-				return ControllerEventContext.class;
 			case PRE_ALARM:
 				return PreEventContext.class;
 			case OPERATION_ALARM:
