@@ -112,6 +112,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 
 		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(user.getUid()), NumberOperators.EQUALS));
+
+		validateUsername(user, fields);
 		
 		Map<String, Object> props = FieldUtil.getAsProperties(user);
 		int updatedRows = updateBuilder.update(props);
@@ -1718,6 +1720,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				.table(IAMAccountConstants.getAccountsUserModule().getTableName())
 				.fields(fields);
 
+		validateUsername(user, fields);
+
 		Map<String, Object> props = FieldUtil.getAsProperties(user);
 
 		insertBuilder.addRecord(props);
@@ -1729,6 +1733,15 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			initialiseUserMfaSettings(userId);
 		}
 		return userId;
+	}
+
+	private void validateUsername(IAMUser user, List<FacilioField> fields) throws IAMUserException {
+		Map<String, FacilioField> asMap = FieldFactory.getAsMap(fields);
+		if (asMap.containsKey("userName")) {
+			if (StringUtils.isNotEmpty(user.getUserName()) && StringUtils.containsWhitespace(user.getUserName())) {
+				throw new IAMUserException(IAMUserException.ErrorCode.USERNAME_HAS_WHITESPACE, "Username contains space.");
+			}
+		}
 	}
 
 	private boolean isUserMfaSettingsExists(long userId) throws Exception{

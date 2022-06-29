@@ -46,7 +46,8 @@ public class AccountException extends FacilioException {
 		INVALID_ORG_DOMAIN,
 		DUPLICATE_USER,
 		DC_LOOKUP_FAILURE,
-		INVALID_PROXY_SESSION
+		INVALID_PROXY_SESSION,
+		USERNAME_HAS_WHITESPACE
 		;
 	}
 }

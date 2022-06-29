@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -11,8 +12,10 @@ import javax.servlet.http.HttpServletRequest;
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.iam.accounts.util.IAMUserException;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FieldUtil;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -407,7 +410,13 @@ public class UserAction extends FacilioAction {
 					addFieldError("error", "User already exists in app.");
 					return ERROR;
 				}
-			} 
+			} else if (e.getCause() != null && e.getCause() instanceof IAMUserException) {
+				IAMUserException ame = (IAMUserException) e.getCause();
+				if(ame.getErrorCode().equals(IAMUserException.ErrorCode.USERNAME_HAS_WHITESPACE)){
+					addFieldError("error", ame.getMessage());
+					return ERROR;
+				}
+			}
 			log.info("Exception occurred ", e);
 			addFieldError("error", e.getMessage());
 			
