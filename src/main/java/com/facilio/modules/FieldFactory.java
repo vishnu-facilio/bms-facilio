@@ -10270,6 +10270,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("validatedRows", "VALIDATED_ROWS", module, FieldType.NUMBER));
         fields.add(getField("createdBy", "CREATED_BY", module, FieldType.LOOKUP));
         fields.add(getField("modifiedBy", "MODIFIED_BY", module, FieldType.LOOKUP));
+        fields.add(getField("name", "NAME", module, FieldType.STRING));
+        fields.add(getField("fileSize", "FILE_SIZE", module, FieldType.NUMBER));
         return fields;
     }
 
