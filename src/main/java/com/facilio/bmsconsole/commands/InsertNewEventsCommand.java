@@ -1,9 +1,25 @@
 package com.facilio.bmsconsole.commands;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.util.DBConf;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -17,6 +33,7 @@ import com.facilio.events.context.EventContext;
 import com.facilio.events.util.EventAPI;
 import com.facilio.time.DateTimeUtil;
 
+@Log4j
 public class InsertNewEventsCommand extends FacilioCommand {
 
 	@Override
@@ -60,6 +77,10 @@ public class InsertNewEventsCommand extends FacilioCommand {
 			if(((BMSEventContext)baseEvent).getSources() != null && !(((BMSEventContext)baseEvent).getSources().isEmpty())){
 				EventAPI.addBulkSources(((BMSEventContext)baseEvent).getSources(),((BMSEventContext)baseEvent).getAgentId());
 			}
+
+			Map<String, Object> customFields = getCustomFieldsFromData(baseEvent);
+			baseEvent.getData().keySet().removeAll(customFields.keySet());
+			baseEvent.setCustomFields(customFields);
 		}
 		
 		if (baseEvent.shouldIgnore()) {
@@ -69,6 +90,48 @@ public class InsertNewEventsCommand extends FacilioCommand {
 		else if (!baseEvent.isSuperCalled()) {
 			throw new IllegalArgumentException("method shouldIgnore of BaseEvent is never called");
 		}
+	}
+
+	public List<Map<String, Object>> getCustomFieldsOfModule(String moduleName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
+				.table("Fields")
+				.select(FieldFactory.getSelectFieldFields())
+				.andCondition(CriteriaAPI.getOrgIdCondition(DBConf.getInstance().getCurrentOrgId(), ModuleFactory.getFieldsModule()))
+				.andCondition(CriteriaAPI.getCondition("IS_DEFAULT", "isDefault", String.valueOf(0), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
+
+		try {
+			return genericSelectRecordBuilder.get();
+		} catch (Exception e) {
+			LOGGER.info("Exception occured ", e);
+		}
+		return new ArrayList<>();
+	}
+
+	public ArrayList<String> getCustomFieldNames(List<Map<String, Object>> customFields){
+		ArrayList customFieldNames = new ArrayList();
+		for(Map<String, Object> customField : customFields){
+			customFieldNames.add(customField.get("name"));
+		}
+		return customFieldNames;
+	}
+
+	public Map<String, Object> getCustomFieldsFromData(BaseEventContext baseEventContext) throws Exception {
+		Map<String, Object> customFields = new HashMap<>();
+		Map<String, Object> data = baseEventContext.getData(); //additional info
+		List<String> incomingFieldNames = new ArrayList<>();
+		ArrayList<String> customFieldsNames = getCustomFieldNames(getCustomFieldsOfModule(FacilioConstants.ContextNames.BMS_EVENT));
+
+		for(String key: data.keySet()){
+			incomingFieldNames.add(key);
+		}
+		incomingFieldNames.retainAll(customFieldsNames);
+		for(String incomingFieldName: incomingFieldNames){
+			customFields.put(incomingFieldName, data.get(incomingFieldName));
+		}
+		return customFields;
 	}
 
 }
