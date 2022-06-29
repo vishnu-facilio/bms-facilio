@@ -15,6 +15,7 @@ import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.context.*;
+import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3ReceivableContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
@@ -265,6 +266,8 @@ public class PageFactory {
 				return RequestForQuotationPageFactory.getRequestForQuotationPage((V3RequestForQuotationContext) record, module);
 			case ContextNames.VENDOR_QUOTES:
 				return VendorQuotesPageFactory.getVendorQuotesPage((V3VendorQuotesContext) record, module);
+			case ContextNames.JOB_PLAN:
+				return JobPlanPageFactory.getJobPlanPage((JobPlanContext) record, module);
 
 
 		}

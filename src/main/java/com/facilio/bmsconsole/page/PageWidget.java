@@ -441,7 +441,9 @@ public class PageWidget {
 		TENANT_UNIT_PHOTO("tenantunitphoto"),
 		RECEIVABLE_RECEIPTS("receivablereceipts"),
 
-		RELATIONSHIP_WIDGET("relationshipwidget");
+		RELATIONSHIP_WIDGET("relationshipwidget"),
+		JOBPLAN_FIELDS_WIDGET("jobPlanFieldDetails"),
+		JOBPLAN_TASKS_WIDGET("jobPlanTasks");
 
 		private String name;
 

@@ -449,6 +449,29 @@ public class FormFactory {
 				sections.add(defaultSection);
 				sections.add(lineItemSection);
 			}
+			else if (moduleName.equals(ContextNames.JOB_PLAN)) {
+				List<FormSection> sections = new ArrayList<>();
+
+				List<FormField> defaultFields = new ArrayList<>();
+				List<FormField> taskFields = new ArrayList<>();
+
+				form.setSections(sections);
+				FormSection defaultSection = new FormSection("Scope", 1, defaultFields, true);
+				FormSection taskSection = new FormSection("Tasks", 2, taskFields, true);
+
+
+				form.getFields().forEach(field -> {
+					if (field.getDisplayTypeEnum() == FieldDisplayType.JP_TASK) {
+						taskFields.add(field);
+					}
+					else {
+						defaultFields.add(field);
+					}
+				});
+
+				sections.add(defaultSection);
+				sections.add(taskSection);
+			}
 			else if (form.getSections() == null && form.getFields() != null) {
 				FormSection section = new FormSection("Default", 1, form.getFields(), false);
 				form.setSections(Collections.singletonList(section));
@@ -2253,9 +2276,9 @@ public class FormFactory {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("jobPlanCategory", FieldDisplayType.SELECTBOX, "Category", Required.REQUIRED, 2, 1));
-		fields.add(new FormField("assetCategoryId", FieldDisplayType.LOOKUP_SIMPLE, "Asset Category", Required.OPTIONAL, "assetCategory", 3, 1));
-		fields.add(new FormField("spaceCategoryId", FieldDisplayType.LOOKUP_SIMPLE, "Space Category", Required.OPTIONAL, "spaceCategory", 4, 1));
-		fields.add(new FormField("taskSectionList", FieldDisplayType.JP_TASK, "Tasks", Required.REQUIRED, 5, 1));
+		fields.add(new FormField("assetCategoryId", FieldDisplayType.LOOKUP_SIMPLE, "Asset Category", Required.OPTIONAL, "assetcategory", 3, 1));
+		fields.add(new FormField("spaceCategoryId", FieldDisplayType.LOOKUP_SIMPLE, "Space Category", Required.OPTIONAL, "spacecategory", 4, 1));
+		fields.add(new FormField("jobplansection", FieldDisplayType.JP_TASK, "Tasks", Required.REQUIRED, 5, 1));
 
 		return fields;
 	}
