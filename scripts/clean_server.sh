@@ -35,7 +35,12 @@ else
     kill -9 $pid
 fi
 # sh bin/shutdown.sh
-sh /home/facilio/move_logs.sh
+
+curSerLog=`ls -t  tomcat/logs/serverlog* | head -n 1 | cut -f3 -d "/"`
+
+sh /home/facilio/move_logs.sh  1
+
+
 aws s3 mv $APP_HOME/logs/catalina.out s3://$logsBucket/$logDir/$servername/$server_type/$ipAddress/catalinaout.$today.log
 
 if [ -f $APP_HOME/logs/l4jaccesslog ]; then
@@ -51,8 +56,8 @@ if [ -f $APP_HOME/logs/accesslog.$todayDateOnly ]; then
 fi
 
 
-if [ -f $APP_HOME/logs/serverlog.$todayDateOnly ]; then
-	mv $APP_HOME/logs/serverlog.$todayDateOnly $APP_HOME/logs/serverlog.$today 
+if [ -f $APP_HOME/logs/curSerLog ]; then
+	mv $APP_HOME/logs/curSerLog $APP_HOME/logs/serverlog.$today 
 	gzip $APP_HOME/logs/serverlog.$today
 	aws s3 mv $APP_HOME/logs/serverlog.$today.gz  "s3://$logsBucket/$logDir/$servername/$server_type/$ipAddress/"
 fi
