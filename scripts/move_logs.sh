@@ -22,13 +22,19 @@ else
 fi
 
 curSerLog=`ls -t  tomcat/logs/serverlog* | head -n 1 | cut -f3 -d "/"`
+isCleanLog=0
+totalArg=$#
+if test $totalArg -ge 1; then
+        isCleanLog=$1
+fi
+
 today=`date +%F`
 logDir=`date +%Y/%m/%d`
 for file in `ls $APP_HOME/logs`
 do
     if [ "$file" != "catalina.out" -a "$file" != "$curSerLog"  -a "$file" != "accesslog.$today" -a "$file" != "serverlog" -a "$file" != "resultset" -a "$file" != "l4jaccesslog"  -a "$file" != "useraccesslog"  -a "$file" != "clientlog"  -a "$file" != "userlogin"  -a "$file" != "sqlitelog" ]; then
         dateString=`echo $file | cut -d '.' -f 2 | cut -d '_' -f 1`
-        if [ $dateString != $today ]; then
+        if test $isCleanLog -eq 1 ||  test $dateString != $today; then
             gzip $APP_HOME/logs/$file
             if [ -f $APP_HOME/logs/$file ]; then
                 aws s3 mv $APP_HOME/logs/$file "s3://$logsBucket/$logDir/$servername/$server_type/$ipAddress/"
