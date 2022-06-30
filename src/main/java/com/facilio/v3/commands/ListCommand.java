@@ -170,6 +170,11 @@ public class ListCommand extends FacilioCommand {
             selectRecordsBuilder.andCriteria(filterCriteria);
         }
 
+        Criteria clientCriteria= (Criteria) context.get(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA);
+        if(clientCriteria!=null){
+            selectRecordsBuilder.andCriteria(clientCriteria);
+        }
+
         FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
         if (!excludeParentCriteria && view != null && view.getCriteria() != null && !view.getCriteria().isEmpty()) {
             selectRecordsBuilder.andCriteria(view.getCriteria());
