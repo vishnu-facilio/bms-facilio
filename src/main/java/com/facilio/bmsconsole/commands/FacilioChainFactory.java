@@ -384,6 +384,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AddTaskCommand());
 		c.addCommand(new AddTaskOptionsCommand());
 		c.addCommand(new UpdateReadingDataMetaCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 //		c.setPostTransactionChain(TransactionChainFactory.getUpdateTaskCountChain());
 		c.addCommand(new AddActivitiesCommand());
 		return c;
