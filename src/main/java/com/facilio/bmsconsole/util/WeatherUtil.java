@@ -27,6 +27,7 @@ import com.facilio.time.DateTimeUtil;
 import com.facilio.weather.context.WeatherStationContext;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -173,7 +174,7 @@ public class WeatherUtil {
 //		HttpURLConnection connection = WeatherUtil.getHttpURLConnection(weatherURL);
 //		String response = WeatherUtil.getResponse(connection);
 		String response = WeatherAPI.doGet(weatherURL);
-		if (response == null) {
+		if (StringUtils.isEmpty(response)) {
 			LOGGER.log(Level.INFO, "The response is null from the weather server");
 			return null;
 		}
@@ -183,7 +184,8 @@ public class WeatherUtil {
 			JSONObject jsonResponse = (JSONObject) parser.parse(response);
 			weatherData = (JSONObject) jsonResponse.get("data");
 		} catch (Exception e) {
-			throw new Exception(response, e);
+			LOGGER.error("Parsing failed in WeatherDataJob ::"+response, e);
+//			throw new Exception(response, e);
 		}
 		return weatherData;
 

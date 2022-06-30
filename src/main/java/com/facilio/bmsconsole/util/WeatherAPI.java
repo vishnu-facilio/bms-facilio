@@ -20,6 +20,7 @@ import com.facilio.util.ServiceHttpUtils;
 import com.facilio.v3.context.Constants;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -81,11 +82,6 @@ public class WeatherAPI {
 		return selectBuilder.get();
 	}
 
-	public static V3WeatherServiceContext getWeatherService() {
-
-		return null;
-	}
-
 	public static String getStationURL(double lat, double lng) {
 		StringBuilder url = new StringBuilder(weatherURL);
 		url.append("/stationcode?lat=");
@@ -140,7 +136,7 @@ public class WeatherAPI {
 
 	private static JSONObject hitExternalWeatherService(String url) throws Exception {
 		String response = WeatherAPI.doGet(url);
-		if (response == null || response.equals("")) {
+		if (StringUtils.isEmpty(response)) {
 			LOGGER.log(Level.INFO, "The response is null from the weather server");
 			return null;
 		}
