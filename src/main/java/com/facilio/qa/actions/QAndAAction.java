@@ -16,6 +16,8 @@ import com.facilio.v3.RESTAPIHandler;
 import com.facilio.v3.context.Constants;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.log4j.Log4j;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
@@ -24,6 +26,7 @@ import java.util.Map;
 
 @Getter
 @Setter
+@Log4j
 public class QAndAAction extends RESTAPIHandler {
     public String addOrUpdateAnswers() throws Exception {
         FacilioChain addOrUpdateAnswersChain = QAndATransactionChainFactory.addOrUpdateAnswersChain();
@@ -39,7 +42,7 @@ public class QAndAAction extends RESTAPIHandler {
         }
         else {		// IF THERE IS SOME ERROR DURING SAVE THEN DISPLAYLOGIC WILL NOT GET EXECTED
         	
-        	if(AccountUtil.getCurrentOrg().getOrgId() == 173l || AccountUtil.getCurrentOrg().getOrgId() == 267l || AccountUtil.getCurrentOrg().getOrgId() == 1l) {
+        	try {
         		FacilioChain addChain = QAndATransactionChainFactory.executeDisplayLogicChain();
           		 
         		addChain.getContext().put(FacilioConstants.QAndA.Command.ANSWER_DATA, this.getData());
@@ -48,6 +51,9 @@ public class QAndAAction extends RESTAPIHandler {
         		 
         		setData("displayLogicResult", addChain.getContext().get(DisplayLogicUtil.DISPLAY_LOGIC_RULE_RESULT_JSON));
         	}
+        	catch (Exception e) {
+        		LOGGER.error(e.getMessage(), e);
+			}
         }
         return SUCCESS;
     }
