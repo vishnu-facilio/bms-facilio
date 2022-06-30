@@ -137,7 +137,7 @@
         placeHolderParams.put("googleAuthEnable", Boolean.toString(googleAuthEnable));
         placeHolderParams.put("googleAuthClientId", googleAuthClientId);
         placeHolderParams.put("dataDogClientId", datadogClientID);
-        placeHolderParams.put("isGoogleAnalytics", isGoogleAnalytics);
+        placeHolderParams.put("isGoogleAnalytics", Boolean.toString(isGoogleAnalytics));
 
 
         /* Fetch index.html from s3 and replace placeholders. For index.html contents refer
