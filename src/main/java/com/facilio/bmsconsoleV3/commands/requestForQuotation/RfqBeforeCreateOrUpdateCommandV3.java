@@ -33,8 +33,8 @@ public class RfqBeforeCreateOrUpdateCommandV3 extends FacilioCommand {
                     if (requestForQuotationContext.getId() <= 0 && CollectionUtils.isEmpty(requestForQuotationContext.getRequestForQuotationLineItems())) {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Line items cannot be empty");
                     }
-//                    //storeroom validation
-//                    checkForStoreRoom(requestForQuotationContext, requestForQuotationContext.getRequestForQuotationLineItems());
+                    //storeroom validation
+                    checkForStoreRoom(requestForQuotationContext, requestForQuotationContext.getRequestForQuotationLineItems());
 
                    // to set addresses
                     requestForQuotationContext.setShipToAddress(LocationAPI.getPoPrLocation(requestForQuotationContext.getStoreRoom(), requestForQuotationContext.getShipToAddress(), "SHIP_TO_Location", true, true));

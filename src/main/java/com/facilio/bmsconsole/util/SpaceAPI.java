@@ -1141,7 +1141,7 @@ public class SpaceAPI {
 			selectBuilder.fetchSupplement((SupplementRecord) FieldFactory.getAsMap(fields).get("location"));
 		}
 		if(StringUtils.isNotEmpty(search)){
-			selectBuilder.andCondition(CriteriaAPI.getCondition("Site.NAME", "name", search, StringOperators.CONTAINS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition("NAME", "name", search, StringOperators.CONTAINS));
 		}
 		if (pagination != null) {
 			int page = (int) pagination.get("page");
