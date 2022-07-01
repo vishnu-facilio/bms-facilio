@@ -451,6 +451,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateStateForModuleDataCommand());
 			c.addCommand(new SendNotificationCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SURVEY_ACTION_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));

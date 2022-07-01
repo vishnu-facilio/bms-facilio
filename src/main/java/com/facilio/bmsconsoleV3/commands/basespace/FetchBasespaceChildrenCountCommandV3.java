@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PMResourcePlannerContext;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsoleV3.context.V3BaseSpaceContext;
+import com.facilio.bmsconsoleV3.context.V3TenantUnitSpaceContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.bmsconsoleV3.util.V3ResourceAPI;
@@ -11,14 +12,13 @@ import com.facilio.bmsconsoleV3.util.V3SpaceAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.BmsAggregateOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
@@ -57,6 +57,7 @@ public class FetchBasespaceChildrenCountCommandV3 extends FacilioCommand {
                         basespaceIds = basespaces.stream().map(V3BaseSpaceContext::getId).collect(Collectors.toList());
                     }
                     basespaceIds.add(id);
+                    Long tenantCount = getTenantUnitCount(basespaceIds);
                     List<V3AssetContext> assets = V3ResourceAPI.getAssetsForSpaces(basespaceIds);
                     if(CollectionUtils.isNotEmpty(assets))  {
                         assetIds = assets.stream().map(V3AssetContext::getId).collect(Collectors.toList());
@@ -66,7 +67,7 @@ public class FetchBasespaceChildrenCountCommandV3 extends FacilioCommand {
 
                     List<PMResourcePlannerContext> pms = PreventiveMaintenanceAPI.getPMForResources(allResourceIds);
                     Long spaceUsageInAccessibleSpaces = getAccessibleSpaceUsageCount(basespaceIds);
-                    if (spaceUsageInAccessibleSpaces != null && spaceUsageInAccessibleSpaces > 0 || CollectionUtils.isNotEmpty(pms)) {
+                    if (spaceUsageInAccessibleSpaces != null && spaceUsageInAccessibleSpaces > 0 || CollectionUtils.isNotEmpty(pms) ||  tenantCount != null && tenantCount > 0) {
                         JSONObject errorObject = new JSONObject();
                         if(CollectionUtils.isNotEmpty(pms)){
                             pms = pms.stream().filter(distinctByKey(PMResourcePlannerContext::getPmId)).collect(Collectors.toList());
@@ -74,6 +75,9 @@ public class FetchBasespaceChildrenCountCommandV3 extends FacilioCommand {
                         }
                         if(spaceUsageInAccessibleSpaces != null && spaceUsageInAccessibleSpaces > 0){
                             errorObject.put("Accessible Space" + (spaceUsageInAccessibleSpaces > 1 ? "s" : ""),spaceUsageInAccessibleSpaces);
+                        }
+                        if(tenantCount > 0){
+                            errorObject.put("Tenant Units with Tenant associated",tenantCount);
                         }
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, errorObject.toString());
                     }
@@ -105,6 +109,19 @@ public class FetchBasespaceChildrenCountCommandV3 extends FacilioCommand {
         }
         return null;
     }
+
+    private Long getTenantUnitCount(List<Long> basespaceIds) throws Exception {
+        Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(FieldFactory.getTenantUnitFields());
+        Criteria tenantUnitCriteria = new Criteria();
+        Condition condition = CriteriaAPI.getCondition(fieldsMap.get("tenant"), CommonOperators.IS_NOT_EMPTY);
+        tenantUnitCriteria.addAndCondition(condition);
+        List<Map<String, Object>> tenantUnitProps = V3RecordAPI.getRecordsAggregateValue("tenantunit", basespaceIds, V3TenantUnitSpaceContext.class,tenantUnitCriteria,BmsAggregateOperators.CommonAggregateOperator.COUNT, fieldsMap.get("id"), null);
+        if(CollectionUtils.isNotEmpty(tenantUnitProps)){
+            return (long) tenantUnitProps.get(0).get("id");
+        }
+        return null;
+    }
+
     private JSONObject constructSpaceWarningMessage(List<V3BaseSpaceContext> basespaces,String moduleName) {
         Long buildingCount = 0l,floorCount = 0l,spaceCount = 0l,independentSpaceCount = 0l;
         JSONObject warnMessage = new JSONObject();

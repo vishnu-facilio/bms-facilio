@@ -225,6 +225,17 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
         this.comment = comment;
     }
 
+    private Map<String, Object> customFields;
+
+    public Map<String, Object> getCustomFields() {
+        return customFields;
+    }
+
+    public void setCustomFields(Map<String, Object> customFields) {
+        this.customFields = customFields;
+    }
+
+
     private Type type;
 
     @JsonInclude

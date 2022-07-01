@@ -12,6 +12,7 @@
 <%@page import="com.facilio.util.FacilioIndexJsp" %>
 <%@ page import="com.facilio.client.app.pojo.ClientAppInfo" %>
 <%@ page import="com.facilio.client.app.util.ClientAppUtil" %>
+<%@ page import="com.facilio.aws.util.FacilioProperties" %>
 <%@page contentType="text/html; charset=UTF-8" %>
 
 <%! static Map<String, String> indexHtmls = new ConcurrentHashMap<>(); %> <%-- Maybe change this to LRU Cache later --%>
@@ -32,6 +33,12 @@
         boolean googleAuthEnable = "true".equalsIgnoreCase(com.facilio.aws.util.FacilioProperties.getConfig("google.auth"));
         String googleAuthClientId = com.facilio.aws.util.FacilioProperties.getConfig("google.auth.clientid");
         String datadogClientID = com.facilio.aws.util.FacilioProperties.getDatadogClientID();
+        boolean isGoogleAnalytics = false;
+        boolean isProductionEnabled = FacilioProperties.isProduction();
+        boolean isOnpremise = FacilioProperties.isOnpremise();
+        if(isProductionEnabled == true && isOnpremise == false){
+        isGoogleAnalytics = true;
+        }
 
         // set csrf token cookie
         FacilioCookie.setCSRFTokenCookie(request, response, false);
@@ -130,6 +137,8 @@
         placeHolderParams.put("googleAuthEnable", Boolean.toString(googleAuthEnable));
         placeHolderParams.put("googleAuthClientId", googleAuthClientId);
         placeHolderParams.put("dataDogClientId", datadogClientID);
+        placeHolderParams.put("isGoogleAnalytics", isGoogleAnalytics);
+
 
         /* Fetch index.html from s3 and replace placeholders. For index.html contents refer
            index.hbs in client repo

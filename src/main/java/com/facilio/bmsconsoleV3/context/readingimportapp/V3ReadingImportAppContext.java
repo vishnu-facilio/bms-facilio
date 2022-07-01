@@ -23,6 +23,8 @@ public class V3ReadingImportAppContext {
     Long validatedRows;
     Long createdBy;
     Long modifiedBy;
+    Long fileSize;
+    String name;
 
 
     public enum status {

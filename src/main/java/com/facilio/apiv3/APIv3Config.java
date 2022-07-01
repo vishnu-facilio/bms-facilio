@@ -88,6 +88,7 @@ import com.facilio.bmsconsoleV3.commands.tenant.ValidateTenantSpaceCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.LoadTenantcontactLookupsCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantspaces.LoadTenantSpacesLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantunit.AddSpaceCommandV3;
+import com.facilio.bmsconsoleV3.commands.tenantunit.CheckForTenantBeforeDeletionCommand;
 import com.facilio.bmsconsoleV3.commands.tenantunit.LoadTenantUnitLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.termsandconditions.CheckForPublishedCommand;
 import com.facilio.bmsconsoleV3.commands.termsandconditions.LoadTermsLookupCommandV3;
@@ -496,6 +497,7 @@ public class APIv3Config {
                 .beforeFetch(new LoadTenantUnitLookupCommandV3())
                 .summary().beforeFetch(new LoadTenantUnitLookupCommandV3())
                 .delete()
+                .beforeDelete(new CheckForTenantBeforeDeletionCommand())
                 .build();
     }
 
