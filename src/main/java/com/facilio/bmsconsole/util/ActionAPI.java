@@ -572,7 +572,7 @@ public class ActionAPI {
 		emailTemplate.setType(Type.EMAIL);
 
 		if (action.getTemplateJson().containsKey("emailStructureId")) {
-			emailTemplate.setEmailStructureId((Long) action.getTemplateJson().get("emailStructureId"));
+			emailTemplate.setEmailStructureId(((Number) action.getTemplateJson().get("emailStructureId")).longValue());
 		}
 				
 		if (action.getTemplateJson().containsKey("sendAsSeparateMail")) {
