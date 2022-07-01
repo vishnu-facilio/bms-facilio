@@ -16,6 +16,8 @@ import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+@Getter
+@Setter
 public class ReadingEventContext extends BaseEventContext {
     private static final long serialVersionUID = 1L;
 
@@ -83,20 +85,8 @@ public class ReadingEventContext extends BaseEventContext {
 
     private ReadingAlarmCategoryContext readingAlarmCategory;
 
-    public ReadingAlarmCategoryContext getReadingAlarmCategory() {
-        return readingAlarmCategory;
-    }
-
-    public void setReadingAlarmCategory(ReadingAlarmCategoryContext readingAlarmCategory) {
-        this.readingAlarmCategory = readingAlarmCategory;
-    }
-
     @JsonDeserialize(as = ReadingRuleContext.class)
     private ReadingRuleInterface rule;
-
-    public ReadingRuleInterface getRule() {
-        return rule;
-    }
 
     public void setRule(ReadingRuleInterface rule) throws Exception {
         if (isNewReadingRule) {
@@ -110,10 +100,6 @@ public class ReadingEventContext extends BaseEventContext {
 
     @JsonDeserialize(as = ReadingRuleContext.class)
     private ReadingRuleInterface subRule;
-
-    public ReadingRuleInterface getSubRule() {
-        return subRule;
-    }
 
     public void setSubRule(ReadingRuleInterface subRule) throws Exception {
         if(subRule == null) {
@@ -130,14 +116,6 @@ public class ReadingEventContext extends BaseEventContext {
     }
 
     private long readingFieldId = -1;
-
-    public long getReadingFieldId() {
-        return readingFieldId;
-    }
-
-    public void setReadingFieldId(long readingFieldId) {
-        this.readingFieldId = readingFieldId;
-    }
 
     private FaultType faultType;
 
@@ -211,5 +189,9 @@ public class ReadingEventContext extends BaseEventContext {
     public boolean getIsNewReadingRule() {
         return isNewReadingRule;
     }
+
+    private double energyImpact;
+
+    private double costImpact;
 
 }

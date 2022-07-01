@@ -1353,6 +1353,9 @@ public class AssetsAPI {
 		List<FacilioField> fieldDetailList = modBean.getFields(fieldIds);
 		fieldMap =new HashMap<>();
 		for(FacilioField field: fieldDetailList) {
+			if(canSkipField(field)) {
+				continue;
+			}
 			Map<String, Object> details = getFieldDefaultProp(field);
 			fieldMap.put(field.getFieldId(), details);
 		}
@@ -1363,7 +1366,12 @@ public class AssetsAPI {
 			}
 			
 			Long fieldId = (Long) asset.getData().get("fieldId");
-			
+
+			FacilioField field = modBean.getField(fieldId);
+			if(field.getName().equals("info") && field.getColumnName().equals("SYS_INFO")) {
+				continue;
+			}
+
 			List<Long> assetFieldIds;
 			Map<Long, List<Long>> categoryAssets;
 			if (!categoryVsAssets.containsKey(asset.getCategory().getId())) {
@@ -1412,7 +1420,11 @@ public class AssetsAPI {
 		data.put("fields", fieldMap);
 		return data;
 	}
-	
+
+	private static boolean canSkipField(FacilioField field) {
+		return field.getName().equals("info") && field.getColumnName().equals("SYS_INFO");
+	}
+
 	public static JSONObject getAssetsWithReadings(List<Long> buildingIds, List<Long> categoryIds, List<Long> assetIds,
 			List<Long> fieldIds, String searchText, JSONObject pagination, boolean fetchOnlyAssets,
 			boolean fetchOnlyReadings, boolean fetchOnlyAssetReadingMap, boolean count,boolean fetchOnlyAlarmPoints) throws Exception {

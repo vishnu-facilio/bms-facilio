@@ -42,10 +42,10 @@ public class ReadingRuleDependenciesCommand extends FacilioCommand {
 
         ArrayList<FacilioField> fieldList = new ArrayList<FacilioField>() {
             {
-                add(FieldFactory.getField(NewReadingRuleAPI.RuleReadingsConstant.RULE_READING_RESULT, rule.getName(), null, null, FieldType.BOOLEAN));
-                add(FieldFactory.getField(NewReadingRuleAPI.RuleReadingsConstant.RULE_READING_ENERGY_IMPACT, "Energy Impact", "ENERGY_IMPACT", null, FieldType.DECIMAL));
-                add(FieldFactory.getField(NewReadingRuleAPI.RuleReadingsConstant.RULE_READING_COST_IMPACT, "Cost Impact", "COST_IMPACT", null, FieldType.DECIMAL));
-                add(FieldFactory.getField(NewReadingRuleAPI.RuleReadingsConstant.RULE_READING_INFO, "Sys Info", "SYS_INFO", null, FieldType.BIG_STRING));
+                add(FieldFactory.getField(NewReadingRuleAPI.RuleReadingsConstant.RULE_READING_RESULT, rule.getName(), "BOOLEAN_CF1", null, FieldType.BOOLEAN));
+                add(FieldFactory.getField(NewReadingRuleAPI.RuleReadingsConstant.RULE_READING_ENERGY_IMPACT, rule.getName() + " - Energy Impact", "ENERGY_IMPACT", null, FieldType.DECIMAL));
+                add(FieldFactory.getField(NewReadingRuleAPI.RuleReadingsConstant.RULE_READING_COST_IMPACT, rule.getName() + " - Cost Impact", "COST_IMPACT", null, FieldType.DECIMAL));
+                add(FieldFactory.getField(NewReadingRuleAPI.RuleReadingsConstant.RULE_READING_INFO, rule.getName() + " - Sys Info", "SYS_INFO", null, FieldType.BIG_STRING));
             }
         };
 
@@ -63,7 +63,7 @@ public class ReadingRuleDependenciesCommand extends FacilioCommand {
 
     private void setFaultImpactObject() throws Exception {
         Long faultImpactId = this.rule.getImpactId();
-        if(faultImpactId != null && faultImpactId > 0) {
+        if (faultImpactId != null && faultImpactId > 0) {
             FaultImpactContext faultImpactContext = FaultImpactAPI.getFaultImpactContext(faultImpactId);
             this.rule.setImpact(faultImpactContext);
         }

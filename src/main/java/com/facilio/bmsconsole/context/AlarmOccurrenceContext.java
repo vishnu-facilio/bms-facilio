@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.time.DateTimeUtil;
+import lombok.Getter;
+import lombok.Setter;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -10,6 +12,8 @@ import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+@Getter
+@Setter
 public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
 
@@ -17,60 +21,19 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 	}
 
 	private String subject;					// for client,alarm bar handling
-	public String getSubject() {
-		return subject;
-	}
-	public void setSubject(String subject) {
-		this.subject = subject;
-	}
-	
+
 	private AlarmSeverityContext severity;
-	public AlarmSeverityContext getSeverity() {
-		return severity;
-	}
-	public void setSeverity(AlarmSeverityContext severity) {
-		this.severity = severity;
-	}
-	
+
 	private String condition;
-	public String getCondition() {
-		return condition;
-	}
-	public void setCondition(String condition) {
-		this.condition = condition;
-	}
-	
+
 	private String source;
-	public String getSource() {
-		return source;
-	}
-	public void setSource(String source) {
-		this.source = source;
-	}
-	
+
 	private BaseAlarmContext alarm;
-	public BaseAlarmContext getAlarm() {
-		return alarm;
-	}
-	public void setAlarm(BaseAlarmContext alarm) {
-		this.alarm = alarm;
-	}
-	
+
 	private AlarmSeverityContext previousSeverity;
-	public AlarmSeverityContext getPreviousSeverity() {
-		return previousSeverity;
-	}
-	public void setPreviousSeverity(AlarmSeverityContext previousSeverity) {
-		this.previousSeverity = previousSeverity;
-	}
-	
+
 	private Boolean acknowledged;
-	public Boolean getAcknowledged() {
-		return acknowledged;
-	}
-	public void setAcknowledged(Boolean acknowledged) {
-		this.acknowledged = acknowledged;
-	}
+
 	public Boolean isAcknowledged() {
 		if (acknowledged == null) {
 			return false;
@@ -79,56 +42,29 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 	}
 	
 	private User acknowledgedBy;
-	public User getAcknowledgedBy() {
-		return acknowledgedBy;
-	}
-	public void setAcknowledgedBy(User acknowledgedBy) {
-		this.acknowledgedBy = acknowledgedBy;
-	}
-	
+
 	private long acknowledgedTime = -1;
-	public long getAcknowledgedTime() {
-		return acknowledgedTime;
-	}
-	public void setAcknowledgedTime(long acknowledgedTime) {
-		this.acknowledgedTime = acknowledgedTime;
-	}
-	
+
 	private long createdTime = -1;
-	public String getLastOccurredTimeString(){
-		if(lastOccurredTime != -1) {
-			return DateTimeUtil.getZonedDateTime(lastOccurredTime).format(DateTimeUtil.READABLE_DATE_FORMAT);
-		}
-		return null;
-	}
+
 	public String getCreatedTimeString() {
 		if(createdTime != -1) {
 			return DateTimeUtil.getZonedDateTime(createdTime).format(DateTimeUtil.READABLE_DATE_FORMAT);
 		}
 		return null;
 	}
-	public long getCreatedTime() {
-		return createdTime;
-	}
 
-	public void setCreatedTime(long createdTime) {
-		this.createdTime = createdTime;
-	}
 	private long lastOccurredTime = -1;
-	public long getLastOccurredTime() {
-		return lastOccurredTime;
+
+	public String getLastOccurredTimeString(){
+		if(lastOccurredTime != -1) {
+			return DateTimeUtil.getZonedDateTime(lastOccurredTime).format(DateTimeUtil.READABLE_DATE_FORMAT);
+		}
+		return null;
 	}
 
-	public void setLastOccurredTime(long lastOccurredTime) {
-		this.lastOccurredTime = lastOccurredTime;
-	}
 	private long clearedTime = -1;
-	public long getClearedTime() {
-		return clearedTime;
-	}
-	public void setClearedTime(long clearedTime) {
-		this.clearedTime = clearedTime;
-	}
+
 	@JsonInclude
 	public long getDuration() {
 		if (clearedTime != -1) {
@@ -139,54 +75,16 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 	
 	private long timeBetweeenOccurrence = -1;
 
-	public long getTimeBetweeenOccurrence() {
-		return timeBetweeenOccurrence;
-	}
-
-	public void setTimeBetweeenOccurrence(long timeBetweeenOccurrence) {
-		this.timeBetweeenOccurrence = timeBetweeenOccurrence;
-	}
-
 	private long woId = -1;
-	public long getWoId() {
-		return woId;
-	}
-	public void setWoId(long woId) {
-		this.woId = woId;
-	}
-	
+
 	private String problem;
-	public String getProblem() {
-		return problem;
-	}
-	public void setProblem(String problem) {
-		this.problem = problem;
-	}
-	
+
 	private String possibleCauses;
-	public String getPossibleCauses() {
-		return possibleCauses;
-	}
-	public void setPossibleCauses(String possibleCauses) {
-		this.possibleCauses = possibleCauses;
-	}
-	
+
 	private String recommendation;
-	public String getRecommendation() {
-		return recommendation;
-	}
-	public void setRecommendation(String recommendation) {
-		this.recommendation = recommendation;
-	}
-	
+
 	private long noOfEvents = -1;
-	public long getNoOfEvents() {
-		return noOfEvents;
-	}
-	public void setNoOfEvents(long noOfEvents) {
-		this.noOfEvents = noOfEvents;
-	}
-	
+
 	private Boolean autoClear;
 	public Boolean getAutoClear() {
 		if (autoClear == null) {
@@ -194,25 +92,11 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 		}
 		return autoClear;
 	}
-	public void setAutoClear(Boolean autoClear) {
-		this.autoClear = autoClear;
-	}
 	
 	private ResourceContext resource;
-	public ResourceContext getResource() {
-		return resource;
-	}
-	public void setResource(ResourceContext resource) {
-		this.resource = resource;
-	}
 
 	public JSONObject additionInfo;
-	public JSONObject getAdditionInfo() {
-		return additionInfo;
-	}
-	public void setAdditionInfo(JSONObject additionInfo) {
-		this.additionInfo = additionInfo;
-	}
+
 	public void addAdditionInfo(String key, Object value) {
 		if(this.additionInfo == null) {
 			this.additionInfo =  new JSONObject();
@@ -286,7 +170,7 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 		}
 	}
 
-	private boolean isNewReadingRule;
+	public boolean isNewReadingRule;
 
     public void setNewReadingRule(boolean isNewReadingRule) {
         this.isNewReadingRule = isNewReadingRule;

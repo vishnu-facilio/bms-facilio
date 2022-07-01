@@ -5,17 +5,15 @@ import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleInterface;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class ReadingAlarm extends BaseAlarmContext {
     private static final long serialVersionUID = 1L;
 
     private ReadingAlarmCategoryContext readingAlarmCategory;
-    public ReadingAlarmCategoryContext getReadingAlarmCategory() {
-        return readingAlarmCategory;
-    }
-    public void setReadingAlarmCategory(ReadingAlarmCategoryContext readingAlarmCategory) {
-        this.readingAlarmCategory = readingAlarmCategory;
-    }
 
     @JsonDeserialize(as = ReadingRuleContext.class)
     private ReadingRuleInterface rule;
@@ -54,19 +52,8 @@ public class ReadingAlarm extends BaseAlarmContext {
     }
 
     private long readingFieldId;
-    public long getReadingFieldId() {
-        return readingFieldId;
-    }
-    public void setReadingFieldId(long readingFieldId) {
-        this.readingFieldId = readingFieldId;
-    }
+
     private String readingFieldName;
-    public String getReadingFieldName() {
-        return readingFieldName;
-    }
-    public void setReadingFieldName(String readingFieldName) {
-        this.readingFieldName = readingFieldName;
-    }
 
     private FaultType faultType;
     public int getFaultType() {
@@ -84,5 +71,9 @@ public class ReadingAlarm extends BaseAlarmContext {
     public void setFaultType(int faultType) {
         this.faultType = FaultType.valueOf(faultType);
     }
+
+    private double energyImpact;
+
+    private double costImpact;
 
 }

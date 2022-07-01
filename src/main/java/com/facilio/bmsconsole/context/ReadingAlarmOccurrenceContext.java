@@ -5,7 +5,11 @@ import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleInterface;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class ReadingAlarmOccurrenceContext extends AlarmOccurrenceContext {
 
     /**
@@ -13,14 +17,6 @@ public class ReadingAlarmOccurrenceContext extends AlarmOccurrenceContext {
      */
     private static final long serialVersionUID = 1L;
     private ReadingAlarmCategoryContext readingAlarmCategory;
-
-    public ReadingAlarmCategoryContext getReadingAlarmCategory() {
-        return readingAlarmCategory;
-    }
-
-    public void setReadingAlarmCategory(ReadingAlarmCategoryContext readingAlarmCategory) {
-        this.readingAlarmCategory = readingAlarmCategory;
-    }
 
     @JsonDeserialize(as = ReadingRuleContext.class)
     private ReadingRuleInterface rule;
@@ -30,7 +26,7 @@ public class ReadingAlarmOccurrenceContext extends AlarmOccurrenceContext {
     }
 
     public void setRule(ReadingRuleInterface rule) throws Exception {
-        if (getIsNewReadingRule()) {
+        if (isNewReadingRule) {
             NewReadingRuleContext ruleContext = new NewReadingRuleContext();
             ruleContext.setId(rule.getId());
             this.rule = ruleContext;
@@ -41,10 +37,6 @@ public class ReadingAlarmOccurrenceContext extends AlarmOccurrenceContext {
 
     @JsonDeserialize(as = ReadingRuleContext.class)
     private ReadingRuleInterface subRule;
-
-    public ReadingRuleInterface getSubRule() {
-        return subRule;
-    }
 
     public void setSubRule(ReadingRuleInterface subRule) throws Exception {
         if(subRule == null) {
@@ -60,14 +52,6 @@ public class ReadingAlarmOccurrenceContext extends AlarmOccurrenceContext {
     }
 
     private long readingFieldId;
-
-    public long getReadingFieldId() {
-        return readingFieldId;
-    }
-
-    public void setReadingFieldId(long readingFieldId) {
-        this.readingFieldId = readingFieldId;
-    }
 
     private FaultType faultType;
 
@@ -94,5 +78,9 @@ public class ReadingAlarmOccurrenceContext extends AlarmOccurrenceContext {
     public Type getTypeEnum() {
         return Type.READING;
     }
+
+    private double energyImpact;
+
+    private double costImpact;
 
 }

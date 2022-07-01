@@ -21,6 +21,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,40 +30,17 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+@Getter
+@Setter
 public class BaseEventContext extends ModuleBaseWithCustomFields {
     private static final long serialVersionUID = 1L;
 
     private double cost;
 
-    public double getCost() {
-        return cost;
-    }
-
-    public void setCost(double cost) {
-        this.cost = cost;
-    }
-
-
     private String description;
     private boolean superCalled = false;
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     private String eventMessage;
-
-    public String getEventMessage() {
-        return eventMessage;
-    }
-
-    public void setEventMessage(String eventMessage) {
-        this.eventMessage = eventMessage;
-    }
 
     public String getMessage() {
         return eventMessage;
@@ -73,48 +52,15 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
 
     private ResourceContext resource;
 
-    public ResourceContext getResource() {
-        return resource;
-    }
-
-    public void setResource(ResourceContext resource) {
-        this.resource = resource;
-    }
-
     private AlarmOccurrenceContext alarmOccurrence;
 
-    public AlarmOccurrenceContext getAlarmOccurrence() {
-        return alarmOccurrence;
-    }
-
-    public void setAlarmOccurrence(AlarmOccurrenceContext alarmOccurrence) {
-        this.alarmOccurrence = alarmOccurrence;
-    }
-
     private BaseAlarmContext baseAlarm;
-
-    public BaseAlarmContext getBaseAlarm() {
-        return baseAlarm;
-    }
-
-    public void setBaseAlarm(BaseAlarmContext baseAlarm) {
-        this.baseAlarm = baseAlarm;
-    }
 
     private String messageKey;
 
     public String getMessageKey() {
-        if (StringUtils.isEmpty(messageKey)) {
-            messageKey = constructMessageKey();
-        }
-        return messageKey;
+        return StringUtils.isEmpty(messageKey) ? constructMessageKey() : messageKey;
     }
-
-    public void setMessageKey(String messageKey) {
-        this.messageKey = messageKey;
-    }
-
-    ;
 
     public String constructMessageKey() {
         return null;
@@ -123,10 +69,7 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
     private EventState eventState;
 
     public int getEventState() {
-        if (eventState != null) {
-            return eventState.getIntVal();
-        }
-        return -1;
+        return eventState == null ? -1 : eventState.getIntVal();
     }
 
     public void setEventState(int eventState) {
@@ -165,10 +108,7 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
     private long createdTime = -1;
 
     public long getCreatedTime() {
-        if (createdTime == -1) {
-            return DateTimeUtil.getCurrenTime();
-        }
-        return createdTime;
+        return (createdTime == -1) ? DateTimeUtil.getCurrenTime() : createdTime;
     }
 
     public void setCreatedTime(long createdTime) {
@@ -177,64 +117,15 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
 
     private String state;
 
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
     private String priority;
-
-    public String getPriority() {
-        return priority;
-    }
-
-    public void setPriority(String priority) {
-        this.priority = priority;
-    }
 
     private String severityString;
 
-    public String getSeverityString() {
-        return severityString;
-    }
-
-    public void setSeverityString(String severityString) {
-        this.severityString = severityString;
-    }
-
     private AlarmSeverityContext severity;
-
-    public AlarmSeverityContext getSeverity() {
-        return severity;
-    }
-
-    public void setSeverity(AlarmSeverityContext severity) {
-        this.severity = severity;
-    }
 
     private String comment;
 
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
     private Map<String, Object> customFields;
-
-    public Map<String, Object> getCustomFields() {
-        return customFields;
-    }
-
-    public void setCustomFields(Map<String, Object> customFields) {
-        this.customFields = customFields;
-    }
-
 
     private Type type;
 
@@ -260,35 +151,12 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
     private Boolean autoClear;
 
     public Boolean getAutoClear() {
-        if (autoClear == null) {
-            return false;
-        }
-        return autoClear;
-    }
-
-    public void setAutoClear(Boolean autoClear) {
-        this.autoClear = autoClear;
+        return (autoClear == null) ? false : autoClear;
     }
 
     private String possibleCause;
 
-    public String getPossibleCause() {
-        return possibleCause;
-    }
-
-    public void setPossibleCause(String possibleCause) {
-        this.possibleCause = possibleCause;
-    }
-
     private String recommendation;
-
-    public String getRecommendation() {
-        return recommendation;
-    }
-
-    public void setRecommendation(String recommendation) {
-        this.recommendation = recommendation;
-    }
 
     private JSONObject additionInfo;
 
@@ -310,10 +178,7 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
     }
 
     public String getAdditionalInfoJsonStr() {
-        if (additionInfo != null) {
-            return additionInfo.toJSONString();
-        }
-        return null;
+        return (additionInfo != null) ? additionInfo.toJSONString() : null;
     }
 
     public void setAdditionalInfoJsonStr(String jsonStr) throws ParseException {
@@ -525,7 +390,7 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
 
         int intVal;
 
-        private EventProcessingStatus(int intVal) {
+        EventProcessingStatus(int intVal) {
             this.intVal = intVal;
         }
 
