@@ -18,7 +18,7 @@ public class FillJobPlanDetailsCommand extends FacilioCommand {
         List<JobPlanContext> jobPlans = recordMap.get(moduleName);
         if(CollectionUtils.isNotEmpty(jobPlans)){
             for(JobPlanContext jp : jobPlans){
-                jp.setTaskSectionList(JobPlanAPI.setJobPlanDetails(jp.getId()));
+                jp.setJobplansection(JobPlanAPI.setJobPlanDetails(jp.getId()));
             }
         }
 
