@@ -11759,7 +11759,7 @@ CREATE TABLE IF NOT EXISTS CustomModuleData
     ORGID             BIGINT NOT NULL,
     SITE_ID           BIGINT,
     MODULEID          BIGINT NOT NULL,
-    NAME              VARCHAR(100),
+    NAME              VARCHAR(255),
     FORM_ID           BIGINT,
     PHOTO_ID          BIGINT,
     LOCAL_ID          BIGINT,
