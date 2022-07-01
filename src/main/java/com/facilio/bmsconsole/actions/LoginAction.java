@@ -1004,6 +1004,12 @@ public class LoginAction extends FacilioAction {
 	}
 	
 	public String getMySiteList() throws Exception {
+		boolean omitBasespaceAPI = Boolean.valueOf(CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.OMIT_BASESPACE_API, Boolean.FALSE));
+		if (omitBasespaceAPI) {
+			List<BaseSpaceContext> mySites = new ArrayList<>();
+			setResult("site", mySites);
+			return SUCCESS;
+		}
 		JSONObject pagination = new JSONObject();
 		pagination.put("page", getPage());
 		pagination.put("perPage", getPerPage());
@@ -1044,6 +1050,12 @@ public class LoginAction extends FacilioAction {
 	}
 	
 	public String getAllBuildings() throws Exception {
+		boolean omitBasespaceAPI = Boolean.valueOf(CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.OMIT_BASESPACE_API, Boolean.FALSE));
+		if (omitBasespaceAPI) {
+			List<BuildingContext> buildings = new ArrayList<>();
+			setResult("buildings", buildings);
+			return SUCCESS;
+		}
 		setResult("buildings", SpaceAPI.getAllBuildings());
 		return SUCCESS;
 	}

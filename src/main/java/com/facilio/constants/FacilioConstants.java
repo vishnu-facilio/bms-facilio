@@ -2802,6 +2802,7 @@ public class FacilioConstants {
 		public static final String MAX_AGENT_PARTITION = "maxAgentPartition";		
 		public static final String MESSAGE_QUEUE_SOURCE = "messageQueueSource";
 		public static final String CAN_EXECUTE_FROM_STORM = "canExecuteStorm";
+		public static final String OMIT_BASESPACE_API = "omitBasespaceAPI";
 	}
 
 	public static class Services{
