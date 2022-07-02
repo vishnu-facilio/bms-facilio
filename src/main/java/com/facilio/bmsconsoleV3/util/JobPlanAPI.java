@@ -97,7 +97,7 @@ public class JobPlanAPI {
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
         JobPlanContext jp = (JobPlanContext) V3RecordAPI.getRecord(module.getName(), id, JobPlanContext.class);
         List<JobPlanTaskSectionContext> taskSections = setJobPlanDetails(jp.getId());
-        jp.setTaskSectionList(taskSections);
+//        jp.setTaskSectionList(taskSections);
         return jp;
     }
 
@@ -304,7 +304,8 @@ public class JobPlanAPI {
         JobPlanContext jobPlan = getJobPlanForWorkOrder(workOrder);
         Map<String, List<TaskContext>> taskMap = new HashMap<>();
         if (jobPlan != null) {
-            List<JobPlanTaskSectionContext> taskSections = jobPlan.getTaskSectionList();
+            List<JobPlanTaskSectionContext> taskSections = null;
+            // List<JobPlanTaskSectionContext> taskSections = jobPlan.getTaskSectionList();
             if (CollectionUtils.isNotEmpty(taskSections)) {
                 Map<String, List<TaskContext>> jobPlanTasks = JobPlanAPI.getTaskMapFromJobPlan(taskSections, workOrder.getResource().getId());
                 taskMap.putAll(jobPlanTasks);
