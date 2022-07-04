@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.communityFeatures.announcement;
 
+import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.CommunitySharingInfoContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.NewsAndInformationSharingContext;
@@ -23,8 +24,8 @@ public class AnnouncementFillDetailsCommandV3 extends FacilioCommand {
                 AnnouncementContext announcement = (AnnouncementContext) CommandUtil.getModuleData(context, FacilioConstants.ContextNames.Tenant.ANNOUNCEMENT, recId);
                 if (announcement != null) {
                     List<CommunitySharingInfoContext> list = null;
-                    if(announcement.getAudience() != null){
-                       list = CommunityFeaturesAPI.setAudienceSharingInfo(announcement.getAudience());
+                    if(CollectionUtils.isNotEmpty(announcement.getAudience())){
+                        list = CommunityFeaturesAPI.setAudienceSharingInfo(announcement.getAudience());
                     }
                     else {
                         list = (List<CommunitySharingInfoContext>) CommunityFeaturesAPI.getSharingInfo(announcement, FacilioConstants.ContextNames.Tenant.ANNOUNCEMENTS_SHARING_INFO, "announcement");

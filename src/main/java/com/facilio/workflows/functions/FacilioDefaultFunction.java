@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 
+import com.facilio.bmsconsoleV3.util.CommunityFeaturesAPI;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
@@ -1265,7 +1266,40 @@ ADD_INVITE_RECORD_VIA_V3CHAIN (29, "addInviteRecordViaV3Chain") {
 			}
 		}
 	},
-    
+	GET_AUDIENCES_PEOPLE(37,"getAudiencePeople") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+
+			checkParam(objects);
+			Object ids = objects[0];
+			List<Long> audienceIds = new ArrayList<>();
+			if(ids instanceof Long) {
+				audienceIds.add((Long) ids);
+			}
+			else{
+				audienceIds = (List<Long>) objects[0];
+			}
+			Long page = (Long) objects[1];
+			Long perPage = (Long) objects[2];
+
+			if(CollectionUtils.isNotEmpty(audienceIds)){
+				List<V3PeopleContext> peopleList = CommunityFeaturesAPI.getAudienceSharing(audienceIds,page,perPage);
+				if(CollectionUtils.isNotEmpty(peopleList)) {
+					List<Map<String, Object>> recMapList = FieldUtil.getAsMapList(peopleList, V3PeopleContext.class);
+					if (CollectionUtils.isNotEmpty(recMapList)) {
+						return recMapList;
+					}
+				}
+			}
+			return "No People";
+		};
+
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
 
 	;
 	private Integer value;

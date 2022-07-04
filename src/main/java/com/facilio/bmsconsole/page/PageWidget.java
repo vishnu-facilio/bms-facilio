@@ -316,6 +316,7 @@ public class PageWidget {
 		DEALS_DETAILS_WIDGET("dealsDetailsWidget"),
 		NEIGHBOURHOOD_DEALS("neighbourhoodDeals"),
 		NEWS_AND_INFORMATION("newsAndInformationWidget"),
+		AUDIENCE_INFO("publishedAudienceInfo"),
 
 		// Budget Widgets
 		TOTAL_BUDGET("totalBudget"),

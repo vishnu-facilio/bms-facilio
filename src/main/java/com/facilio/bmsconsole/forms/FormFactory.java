@@ -3259,7 +3259,7 @@ public class FormFactory {
 		attachment.addToConfig("fileTypes", "image/*,.pdf,.doc,.docx");
 		fields.add(attachment);
 		//fields.add(new FormField("announcementsharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 6, 1));
-		FormField field = new FormField("audience", FieldDisplayType.LOOKUP_SIMPLE, "Audience", Required.REQUIRED, "audience",5, 1);
+		FormField field = new FormField("audience", FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Audience", Required.OPTIONAL,14, 1);
 		field.setAllowCreateOptions(true);
 		field.addToConfig("canShowLookupWizard",true);
 		fields.add(field);

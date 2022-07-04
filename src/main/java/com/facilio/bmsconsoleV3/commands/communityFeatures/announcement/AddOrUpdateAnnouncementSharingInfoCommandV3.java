@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.communityFeatures.announcement;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.util.CommunityFeaturesAPI;
@@ -28,17 +29,21 @@ public class AddOrUpdateAnnouncementSharingInfoCommandV3 extends FacilioCommand 
                     announcement.setSiteId(AccountUtil.getCurrentSiteId());
                 }
                 Map<String, List<Map<String, Object>>> subforms = announcement.getSubForm();
-                if(announcement.getAudience() != null && MapUtils.isNotEmpty(subforms) && subforms.containsKey(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENTS_SHARING_INFO)){
+                if(CollectionUtils.isEmpty(announcement.getAudience()) && MapUtils.isNotEmpty(subforms) && subforms.containsKey(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENTS_SHARING_INFO)){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid Sharing Information. Can be  either audience or list of sharing info'");
                 }
-                else if(announcement.getAudience() == null && (MapUtils.isEmpty(subforms) || !subforms.containsKey(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENTS_SHARING_INFO))){
+                else if(CollectionUtils.isEmpty(announcement.getAudience()) && (MapUtils.isEmpty(subforms) || !subforms.containsKey(FacilioConstants.ContextNames.Tenant.ANNOUNCEMENTS_SHARING_INFO))){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Sharing Information cannot be empty");
                 }
-                else if(announcement.getAudience() != null && announcement.getAudience().getId() > 0){
+                else if(CollectionUtils.isNotEmpty(announcement.getAudience())){
                     continue;
                 }
-                else if(announcement.getAudience() != null && CollectionUtils.isNotEmpty(announcement.getAudience().getAudienceSharing())){
-                    CommunityFeaturesAPI.addAudience(announcement.getAudience());
+                else if(CollectionUtils.isNotEmpty(announcement.getAudience())){
+                    for(AudienceContext audience : announcement.getAudience()){
+                        if(CollectionUtils.isNotEmpty(audience.getAudienceSharing())){
+                            CommunityFeaturesAPI.addAudience(audience);
+                        }
+                    }
                     announcement.setAudience(announcement.getAudience());
                 }
             }

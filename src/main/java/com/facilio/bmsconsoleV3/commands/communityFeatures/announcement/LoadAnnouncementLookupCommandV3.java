@@ -5,11 +5,12 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.*;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -25,14 +26,17 @@ public class LoadAnnouncementLookupCommandV3 extends FacilioCommand {
             fields = modBean.getAllFields(moduleName);
         }
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-        List<LookupField> additionaLookups = new ArrayList<LookupField>();
+        List<SupplementRecord> additionaLookups = new ArrayList<SupplementRecord>();
         LookupField sysCreatedBy = (LookupField) FieldFactory.getSystemField("sysCreatedBy", modBean.getModule(moduleName));
         additionaLookups.add(sysCreatedBy);
         LookupField sysModifiedBy = (LookupField) FieldFactory.getSystemField("sysModifiedBy", modBean.getModule(moduleName));
         additionaLookups.add(sysModifiedBy);
         
-        additionaLookups.add((LookupField) fieldsAsMap.get("audience"));
+        MultiLookupMeta audienceField = new MultiLookupMeta((MultiLookupField) fieldsAsMap.get("audience"));
 
+        FacilioField nameField = FieldFactory.getField("name", "NAME", modBean.getModule(FacilioConstants.ContextNames.AUDIENCE), FieldType.STRING);
+        audienceField.setSelectFields(Collections.singletonList(nameField));
+        additionaLookups.add(audienceField);
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,additionaLookups);
 
         return false;

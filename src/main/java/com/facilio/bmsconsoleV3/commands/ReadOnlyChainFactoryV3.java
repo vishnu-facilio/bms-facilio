@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.commands.module.GetSortableFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.asset.AssetSupplementsSupplyCommand;
 import com.facilio.bmsconsoleV3.commands.asset.CheckPMForAssetsCommandV3;
 import com.facilio.bmsconsoleV3.commands.building.BuildingFillLookupFieldsCommand;
+import com.facilio.bmsconsoleV3.commands.employee.LoadEmployeeLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.floorplan.*;
 import com.facilio.bmsconsole.commands.page.GetSummaryFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.facility.GetFacilityAvailabilityCommandV3;
@@ -23,8 +24,10 @@ import com.facilio.bmsconsoleV3.commands.readingimportapp.FetchReadingImportData
 import com.facilio.bmsconsoleV3.commands.site.SiteFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.LoadTenantLookUpsCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenant.SetTenantSpaceAndContactsCommandV3;
+import com.facilio.bmsconsoleV3.commands.tenantcontact.LoadTenantcontactLookupsCommandV3;
 import com.facilio.bmsconsoleV3.commands.usernotification.AddUserCriteriaMyNotification;
 import com.facilio.bmsconsoleV3.commands.usernotification.FetchUnSeenNotificationCommand;
+import com.facilio.bmsconsoleV3.commands.vendorcontact.LoadVendorContactLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.LoadRecordIdForPassCodeCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.SetInviteStatusConditionForVisitsListCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.LoadVisitorLoggingLookupCommandV3;
@@ -224,6 +227,7 @@ public class ReadOnlyChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchRolesForPeopleCommandV3());
         c.addCommand(new FetchScopingForPeopleCommandV3());
+        c.addCommand(new AddSpaceDetailsToTenantContact());
         return c;
     }
 
@@ -268,5 +272,22 @@ public class ReadOnlyChainFactoryV3 {
         c.addCommand(new FetchWeatherStationCommand());
         return c;
     }
-
+    public static FacilioChain getTenantContactBeforeFetchChain(){
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new JoinAndFetchAnnouncementPeopleCommandV3());
+        chain.addCommand(new LoadTenantcontactLookupsCommandV3());
+        return chain;
+    }
+    public static FacilioChain getVendorContactBeforeFetchChain(){
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new JoinAndFetchAnnouncementPeopleCommandV3());
+        chain.addCommand(new LoadVendorContactLookupCommandV3());
+        return chain;
+    }
+    public static FacilioChain getEmployeeBeforeFetchChain(){
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new JoinAndFetchAnnouncementPeopleCommandV3());
+        chain.addCommand(new LoadEmployeeLookupCommandV3());
+        return chain;
+    }
 }
