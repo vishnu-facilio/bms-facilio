@@ -14,9 +14,7 @@ import com.facilio.bmsconsoleV3.context.inventory.*;
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
-import com.facilio.bmsconsoleV3.context.purchaseorder.V3ReceivableContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
 import com.facilio.relation.context.RelationRequestContext;
@@ -25,8 +23,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.dto.AppDomain;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
@@ -37,7 +33,6 @@ import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.HazardContext;
 import com.facilio.bmsconsole.context.InsuranceContext;
-import com.facilio.bmsconsole.context.InventoryRequestContext;
 import com.facilio.bmsconsole.context.MultiVariateAnomalyAlarm;
 import com.facilio.bmsconsole.context.OperationAlarmContext;
 import com.facilio.bmsconsole.context.PrecautionContext;
@@ -133,6 +128,9 @@ public class PageFactory {
 			case ContextNames.READING_ALARM:
 			case ContextNames.NEW_READING_ALARM:
 				return  ReadingAlarmPageFactory.getReadingAlarmPage((ReadingAlarm) record, module);
+			case ContextNames.BMS_ALARM:
+				return  BMSAlarmPageFactory.getBmsAlarmPage((BMSAlarmContext) record, module);
+
 			case ContextNames.SENSOR_ROLLUP_ALARM:
 				return  SensorAlarmPageFactory.getSensorAlarmPage((SensorRollUpAlarmContext) record, module);
 			case ContextNames.MULTIVARIATE_ANOMALY_ALARM:

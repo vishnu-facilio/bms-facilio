@@ -90,8 +90,10 @@ public class GetAllModulesCommand extends FacilioCommand {
 			ContextNames.HAZARD,
 			ContextNames.PRECAUTION,
 			ContextNames.SITE,
-			ContextNames.NEW_READING_ALARM
-    });
+			ContextNames.NEW_READING_ALARM,
+			ContextNames.BMS_ALARM
+
+	});
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

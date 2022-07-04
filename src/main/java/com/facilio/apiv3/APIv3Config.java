@@ -51,7 +51,6 @@ import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
 import com.facilio.bmsconsoleV3.commands.item.LoadItemLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
-import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.FetchJobPlanLookupCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.FillJobPlanDetailsCommand;
 import com.facilio.bmsconsoleV3.commands.labour.GetLabourListCommandV3;
@@ -73,7 +72,6 @@ import com.facilio.bmsconsoleV3.commands.requestForQuotation.*;
 import com.facilio.bmsconsoleV3.commands.service.GetServiceVendorListCommandV3;
 import com.facilio.bmsconsoleV3.commands.service.UpdateStatusCommandV3;
 import com.facilio.bmsconsoleV3.commands.service.UpdateVendorV3;
-import com.facilio.bmsconsoleV3.commands.servicerequest.AddRequesterForServiceRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.servicerequest.LoadServiceRequestLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.site.AddOrUpdateSiteLocationCommand;
 import com.facilio.bmsconsoleV3.commands.site.CreateSiteAfterSave;
@@ -1856,10 +1854,10 @@ public class APIv3Config {
                 .update()
                 .afterSave(new UpdateOccurrenceCommand())
                 .list()
-                .beforeFetch(new LoadResourceLookUpCommand())
+                .beforeFetch(new LoadSupplementsForFaultsCommand())
                 .afterFetch(new HandleV3AlarmListLookupCommand())
                 .summary()
-                .beforeFetch(new LoadResourceLookUpCommand())
+                .beforeFetch(new LoadSupplementsForFaultsCommand())
                 .delete()
                 .build();
     }
@@ -1890,6 +1888,18 @@ public class APIv3Config {
                 .beforeSave(new ValidateWeatherStationCommand())
                 .list()
                 .summary()
+                .delete()
+                .build();
+    }
+    @Module("bmsalarm")
+    public static Supplier<V3Config> getBmsAlarm() {
+        return () -> new V3Config(ReadingAlarm.class, null)
+                .update()
+                .afterSave(new UpdateOccurrenceCommand())
+                .list()
+                .beforeFetch(new LoadSupplementsForBMSAlarmCommand())
+                .summary()
+                .beforeFetch(new LoadSupplementsForBMSAlarmCommand())
                 .delete()
                 .build();
     }
