@@ -784,8 +784,10 @@ public class FacilioConstants {
 		public static final String DATA_KEY = "data";
 		public static final String FORMULA = "formula";
 		public static final String FORMULA_HEADERS = "formulaHeaders";
+
 		public static final String VALUES = "values";
 		public static final String IS_BUILDER_V2 = "isBuilderV2";
+		public static final String PIVOT_EXTENDED_MODULE_IDS = "pivotExtendedModuleIds";
 
 		public static final String LABEL_MAP = "labelMap";
 
