@@ -4837,6 +4837,13 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public  static FacilioModule getHomePageFactoryModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("homePage");
+		module.setTableName("Home_Page");
+		return module;
+	}
+
 	public static FacilioModule getLicensingInfoModule() {
 
 		FacilioModule licensingInfoModule = new FacilioModule();

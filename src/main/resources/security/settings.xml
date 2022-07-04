@@ -892,5 +892,26 @@
             <property name="lng" type="number"/>
         </requestbody>
     </request>
+     <request path="/api/v3/homepage/add">
+        <requestbody type="object">
+            <property name="homepage" type="object">
+                <property name="displayName" type="string"/>
+                <property name="linkName" type="string"/>
+                <property name="id" type="number"/>
+                <property name="orgId" type="number"/>
+                <property name="appId" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/homepage/list">
+        <urlparams>
+            <property name="page" type="string"/>
+        </urlparams>
+    </request>
+
+
+
+
 
 </config>

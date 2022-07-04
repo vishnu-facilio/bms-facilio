@@ -182,6 +182,9 @@ public class FacilioConstants {
 
 		public static final String READING_IMPORT_APP = "readingimport";
 
+		public static class HomePage {
+			public static final String HOME_PAGE = "homepage";
+		}
 		public static final String VERIFY_USER = "verifyUser";
 		public static final String RULE_LOG_MODULE_DATA = "ruleLogModuleData";
 
@@ -1443,6 +1446,8 @@ public class FacilioConstants {
 		public static final String IDS_TO_UPDATE_COUNT = "ids_to_update_count";
 
 		public static final String PAGE = "page";
+
+		public static final String HOME_PAGE = "homepage";
 		public static final String RELATED_LIST_META = "relatedListMeta";
 		public static final String CURRENT_CALENDAR_VIEW = "currentCalendarView";
 		public static final String ML_FORECASTING = "ml_forecasting";

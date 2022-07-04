@@ -1804,5 +1804,4 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new InsertReadingDataMetaForNewResourceCommand());
         return chain;
     }
-
 }

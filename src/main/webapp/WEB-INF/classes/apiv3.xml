@@ -849,6 +849,13 @@
 
     <package name="weather" namespace="/api/v3/weather" extends="v3Api">
         <action name="stationcode" class="com.facilio.bmsconsoleV3.actions.WeatherAction" method="getStationCode"/>
+        </package>
+
+    <package name="homePageFactory" namespace="/api/v3/homepage" extends="v3Api">
+        <action name="list"
+                class="com.facilio.bmsconsoleV3.actions.homepagefactory.HomePageFactoryAction"
+                method="getHomePage">
+        </action>
     </package>
 
 </struts>
