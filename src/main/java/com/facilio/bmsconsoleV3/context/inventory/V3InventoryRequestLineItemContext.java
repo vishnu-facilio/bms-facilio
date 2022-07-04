@@ -9,6 +9,8 @@ import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.bmsconsoleV3.context.V3ToolTransactionContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
+import com.facilio.bmsconsoleV3.util.V3ItemsApi;
+import com.facilio.bmsconsoleV3.util.V3ToolsApi;
 import com.facilio.modules.FieldUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -204,12 +206,12 @@ public class V3InventoryRequestLineItemContext extends BaseLineItemContext {
         return woTool;
     }
 
-    public ToolTransactionContext contructManualToolTransactionContext(User requestedFor) throws Exception {
-        ToolTransactionContext transaction = new ToolTransactionContext();
+    public V3ToolTransactionContext contructManualToolTransactionContext(User requestedFor) throws Exception {
+        V3ToolTransactionContext transaction = new V3ToolTransactionContext();
         if (this.getStoreRoom() == null) {
             throw new IllegalArgumentException("No appropriate Tool found");
         }
-        ToolContext tool = ToolsApi.getToolsForTypeAndStore(this.getStoreRoom().getId(), this.getToolType().getId());
+        V3ToolContext tool = V3ToolsApi.getToolsForTypeAndStore(this.getStoreRoom().getId(), this.getToolType().getId());
         transaction.setTool(tool);
         transaction.setIssuedTo(requestedFor);
         transaction.setParentId(requestedFor.getOuid());
@@ -225,12 +227,12 @@ public class V3InventoryRequestLineItemContext extends BaseLineItemContext {
 
     }
 
-        public ItemTransactionsContext contructManualItemTransactionContext(User requestedFor) throws Exception {
-        ItemTransactionsContext transaction = new ItemTransactionsContext();
+        public V3ItemTransactionsContext contructManualItemTransactionContext(User requestedFor) throws Exception {
+            V3ItemTransactionsContext transaction = new V3ItemTransactionsContext();
         if(this.getStoreRoom() == null) {
             throw new IllegalArgumentException("No appropriate Item found");
         }
-        ItemContext item = ItemsApi.getItemsForTypeAndStore(this.getStoreRoom().getId(), this.getItemType().getId());
+        V3ItemContext item = V3ItemsApi.getItemsForTypeAndStore(this.getStoreRoom().getId(), this.getItemType().getId());
         transaction.setItem(item);
         transaction.setIssuedTo(requestedFor);
         transaction.setParentId(requestedFor.getOuid());

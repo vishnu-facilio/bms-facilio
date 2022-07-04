@@ -1505,6 +1505,8 @@ public class FacilioConstants {
 
 		public static final String WORKORDER_ITEMS = "workorderItem";
 		public static final String ITEM_TRANSACTIONS = "itemTransactions";
+		public static final String ITEM_TRANSACTIONS_PARAMS = "itemTransactionsParams";
+
 
 		public static final String TOOL_LIST = "toolList";
 		public static final String TOOL = "tool";

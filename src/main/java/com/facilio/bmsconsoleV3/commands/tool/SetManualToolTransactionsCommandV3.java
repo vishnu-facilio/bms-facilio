@@ -1,89 +1,68 @@
-package com.facilio.bmsconsoleV3.commands.inventoryrequest;
-
-
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
-import com.facilio.bmsconsoleV3.context.V3ToolTransactionContext;
-import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
-import com.facilio.bmsconsoleV3.context.inventory.V3ToolContext;
-import com.facilio.bmsconsoleV3.context.inventory.V3ToolTypesContext;
-import com.facilio.bmsconsoleV3.util.V3AssetAPI;
-import com.facilio.command.FacilioCommand;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
+package com.facilio.bmsconsoleV3.commands.tool;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.ShipmentContext;
-import com.facilio.bmsconsole.context.StoreRoomContext;
-import com.facilio.bmsconsole.context.ToolContext;
-import com.facilio.bmsconsole.context.ToolTransactionContext;
-import com.facilio.bmsconsole.context.ToolTypesContext;
-import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
+import com.facilio.bmsconsoleV3.context.V3ToolTransactionContext;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ToolContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ToolTypesContext;
+import com.facilio.bmsconsoleV3.util.V3AssetAPI;
 import com.facilio.chain.FacilioContext;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.v3.context.Constants;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.json.simple.JSONObject;
 
-;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
-public class AddOrUpdateManualToolTransactionsCommandV3 extends FacilioCommand {
+public class SetManualToolTransactionsCommandV3  extends FacilioCommand {
+
 
     @SuppressWarnings("unchecked")
     @Override
     public boolean executeCommand(Context context) throws Exception {
         // TODO Auto-generated method stub
+        String moduleName = Constants.getModuleName(context);
+        Map<String, Object> bodyParams = Constants.getBodyParams(context);
+        Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
+        List<V3ToolTransactionContext> toolTransactions = recordMap.get(moduleName);
+        if(CollectionUtils.isNotEmpty(toolTransactions) && MapUtils.isNotEmpty(bodyParams) && ((bodyParams.containsKey("issue") && (boolean) bodyParams.get("issue")) || (bodyParams.containsKey("return") && (boolean) bodyParams.get("return")))) {
 
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule toolTransactionsModule = modBean.getModule(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
-        List<FacilioField> toolTransactionsFields = modBean
-                .getAllFields(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
-        Map<String, FacilioField> toolTransactionsFieldsMap = FieldFactory.getAsMap(toolTransactionsFields);
-        List<LookupField>lookUpfields = new ArrayList<>();
-        lookUpfields.add((LookupField) toolTransactionsFieldsMap.get("tool"));
-        List<V3ToolTransactionContext> toolTransactions = (List<V3ToolTransactionContext>) context
-                .get(FacilioConstants.ContextNames.RECORD_LIST);
-        List<V3ToolTransactionContext> toolTransactionslist = new ArrayList<>();
-        List<V3ToolTransactionContext> toolTransactionsToBeAdded = new ArrayList<>();
-        long toolTypesId = -1;
-        if (toolTransactions != null && !toolTransactions.isEmpty()) {
-            for (V3ToolTransactionContext toolTransaction : toolTransactions) {
-                V3ToolContext tool = getTool(toolTransaction.getTool().getId());
-                V3ToolTypesContext toolTypes = getToolType(tool.getToolType().getId());
-                toolTypesId = toolTypes.getId();
-                V3StoreRoomContext storeRoom = tool.getStoreRoom();
-                if (toolTransaction.getId() > 0) {
-                    SelectRecordsBuilder<V3ToolTransactionContext> selectBuilder = new SelectRecordsBuilder<V3ToolTransactionContext>()
-                            .select(toolTransactionsFields).table(toolTransactionsModule.getTableName())
-                            .moduleName(toolTransactionsModule.getName()).beanClass(V3ToolTransactionContext.class)
-                            .andCondition(CriteriaAPI.getIdCondition(toolTransaction.getId(), toolTransactionsModule))
-                            .fetchSupplements(lookUpfields);
-                    ;
-                    List<V3ToolTransactionContext> woIt = selectBuilder.get();
-                    if (woIt != null) {
-                        V3ToolTransactionContext wTool = woIt.get(0);
-                        if (toolTransaction.getTransactionStateEnum() == TransactionState.ISSUE
-                                && (wTool.getQuantity() + wTool.getTool().getCurrentQuantity()) < toolTransaction
-                                .getQuantity()) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule toolTransactionsModule = modBean.getModule(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
+            List<FacilioField> toolTransactionsFields = modBean
+                    .getAllFields(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
+            Map<String, FacilioField> toolTransactionsFieldsMap = FieldFactory.getAsMap(toolTransactionsFields);
+            List<LookupField> lookUpfields = new ArrayList<>();
+            lookUpfields.add((LookupField) toolTransactionsFieldsMap.get("tool"));
+            List<V3ToolTransactionContext> toolTransactionslist = new ArrayList<>();
+            List<V3ToolTransactionContext> toolTransactionsToBeAdded = new ArrayList<>();
+            long toolTypesId = -1;
+            if (toolTransactions != null && !toolTransactions.isEmpty()) {
+                for (V3ToolTransactionContext toolTransaction : toolTransactions) {
+                    V3ToolContext tool = getTool(toolTransaction.getTool().getId());
+                    V3ToolTypesContext toolTypes = getToolType(tool.getToolType().getId());
+                    toolTypesId = toolTypes.getId();
+
+                    if (toolTransaction.getTransactionStateEnum() == TransactionState.ISSUE
+                                && tool.getCurrentQuantity() < toolTransaction.getQuantity()) {
                             throw new IllegalArgumentException("Insufficient quantity in inventory!");
                         } else {
                             ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
@@ -91,88 +70,69 @@ public class AddOrUpdateManualToolTransactionsCommandV3 extends FacilioCommand {
                                 approvalState = ApprovalState.APPROVED;
                             }
 
-                            wTool = setWorkorderItemObj(toolTransaction.getQuantity(), tool, toolTransaction,
-                                    toolTypes, approvalState, null, context);
-                            // update
-                            wTool.setId(toolTransaction.getId());
-                            toolTransactionslist.add(wTool);
-                            updateWorkorderTools(toolTransactionsModule, toolTransactionsFields, wTool);
-                        }
-                    }
-                } else {
-                    if (toolTransaction.getTransactionStateEnum() == TransactionState.ISSUE
-                            && tool.getCurrentQuantity() < toolTransaction.getQuantity()) {
-                        throw new IllegalArgumentException("Insufficient quantity in inventory!");
-                    } else {
-                        ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
-                        if (toolTransaction.getRequestedLineItem() != null && toolTransaction.getRequestedLineItem().getId() > 0) {
-                            approvalState = ApprovalState.APPROVED;
-                        }
+                            if (toolTypes.isRotating()) {
+                                List<Long> assetIds = toolTransaction.getAssetIds();
+                                List<V3AssetContext> assets = getAssetsList(assetIds);
+                                if (assets != null) {
+                                    for (V3AssetContext asset : assets) {
+                                        if (toolTransaction.getTransactionStateEnum() == TransactionState.ISSUE
+                                                && asset.isUsed()) {
+                                            throw new IllegalArgumentException("Insufficient quantity in inventory!");
+                                        }
+                                        V3ToolTransactionContext woTool = new V3ToolTransactionContext();
 
-                        if (toolTypes.isRotating()) {
-                            List<Long> assetIds = toolTransaction.getAssetIds();
-                            List<V3AssetContext> assets = getAssetsList(assetIds);
-                            if (assets != null) {
-                                for (V3AssetContext asset : assets) {
-                                    if (toolTransaction.getTransactionStateEnum() == TransactionState.ISSUE
-                                            && asset.isUsed()) {
-                                        throw new IllegalArgumentException("Insufficient quantity in inventory!");
+                                        if (toolTransaction.getTransactionStateEnum() == TransactionState.RETURN) {
+                                            asset.setIsUsed(false);
+                                            approvalState = ApprovalState.YET_TO_BE_REQUESTED;
+                                        } else if (toolTransaction
+                                                .getTransactionStateEnum() == TransactionState.ISSUE) {
+                                            asset.setIsUsed(true);
+                                        }
+
+                                        // if(toolTransaction.getTransactionStateEnum()
+                                        // == TransactionState.RETURN){
+                                        // pTool.setIsUsed(false);
+                                        // } else if
+                                        // (toolTransaction.getTransactionStateEnum()
+                                        // == TransactionState.ISSUE) {
+                                        // pTool.setIsUsed(true);
+                                        // }
+                                        woTool = setWorkorderItemObj(1, tool, toolTransaction, toolTypes,
+                                                approvalState, asset, context);
+                                        updateAsset(asset);
+                                        toolTransactionslist.add(woTool);
+                                        toolTransactionsToBeAdded.add(woTool);
                                     }
-                                    V3ToolTransactionContext woTool = new V3ToolTransactionContext();
-
-                                    if (toolTransaction.getTransactionStateEnum() == TransactionState.RETURN) {
-                                        asset.setIsUsed(false);
-                                        approvalState = ApprovalState.YET_TO_BE_REQUESTED;
-                                    } else if (toolTransaction
-                                            .getTransactionStateEnum() == TransactionState.ISSUE) {
-                                        asset.setIsUsed(true);
-                                    }
-
-                                    // if(toolTransaction.getTransactionStateEnum()
-                                    // == TransactionState.RETURN){
-                                    // pTool.setIsUsed(false);
-                                    // } else if
-                                    // (toolTransaction.getTransactionStateEnum()
-                                    // == TransactionState.ISSUE) {
-                                    // pTool.setIsUsed(true);
-                                    // }
-                                    woTool = setWorkorderItemObj(1, tool, toolTransaction, toolTypes,
-                                            approvalState, asset, context);
-                                    updateAsset(asset);
-                                    toolTransactionslist.add(woTool);
-                                    toolTransactionsToBeAdded.add(woTool);
                                 }
+                            } else {
+                                V3ToolTransactionContext woTool = new V3ToolTransactionContext();
+                                woTool = setWorkorderItemObj(toolTransaction.getQuantity(), tool, toolTransaction,
+                                        toolTypes, approvalState, null, context);
+                                toolTransactionslist.add(woTool);
+                                toolTransactionsToBeAdded.add(woTool);
                             }
-                        } else {
-                            V3ToolTransactionContext woTool = new V3ToolTransactionContext();
-                            woTool = setWorkorderItemObj(toolTransaction.getQuantity(), tool, toolTransaction,
-                                    toolTypes, approvalState, null, context);
-                            toolTransactionslist.add(woTool);
-                            toolTransactionsToBeAdded.add(woTool);
                         }
-                    }
                 }
-            }
-            if (toolTransactionsToBeAdded != null && !toolTransactionsToBeAdded.isEmpty()) {
-                addWorkorderTools(toolTransactionsModule, toolTransactionsFields, toolTransactionsToBeAdded);
-            }
-            context.put(FacilioConstants.ContextNames.PARENT_ID, toolTransactions.get(0).getParentId());
-            context.put(FacilioConstants.ContextNames.TOOL_ID, toolTransactions.get(0).getTool().getId());
-            context.put(FacilioConstants.ContextNames.TOOL_IDS,
-                    Collections.singletonList(toolTransactions.get(0).getTool().getId()));
-            context.put(FacilioConstants.ContextNames.RECORD_LIST, toolTransactionslist);
-            context.put(FacilioConstants.ContextNames.TOOL_TYPES_ID, toolTypesId);
-            context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS, Collections.singletonList(toolTypesId));
-            context.put(FacilioConstants.ContextNames.TRANSACTION_STATE,
-                    toolTransactions.get(0).getTransactionStateEnum());
-        }
 
+                recordMap.put(moduleName, toolTransactionsToBeAdded);
+
+                context.put(FacilioConstants.ContextNames.PARENT_ID, toolTransactions.get(0).getParentId());
+                context.put(FacilioConstants.ContextNames.TOOL_ID, toolTransactions.get(0).getTool().getId());
+                context.put(FacilioConstants.ContextNames.TOOL_IDS,
+                        Collections.singletonList(toolTransactions.get(0).getTool().getId()));
+                context.put(FacilioConstants.ContextNames.RECORD_LIST, toolTransactionslist);
+                context.put(FacilioConstants.ContextNames.TOOL_TYPES_ID, toolTypesId);
+                context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS, Collections.singletonList(toolTypesId));
+                context.put(FacilioConstants.ContextNames.TRANSACTION_STATE,
+                        toolTransactions.get(0).getTransactionStateEnum());
+            }
+        }
         return false;
     }
 
     private V3ToolTransactionContext setWorkorderItemObj(double quantity,
-                                                       V3ToolContext tool, V3ToolTransactionContext toolTransaction, V3ToolTypesContext toolTypes,
-                                                       ApprovalState approvalState, V3AssetContext asset, Context context) throws Exception {
+                                                         V3ToolContext tool, V3ToolTransactionContext toolTransaction, V3ToolTypesContext toolTypes,
+                                                         ApprovalState approvalState, V3AssetContext asset, Context context) throws Exception {
         V3ToolTransactionContext woTool = new V3ToolTransactionContext();
 
         woTool.setTransactionType(TransactionType.MANUAL.getValue());

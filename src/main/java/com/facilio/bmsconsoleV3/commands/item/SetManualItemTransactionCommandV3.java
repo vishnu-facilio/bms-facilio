@@ -1,118 +1,65 @@
-package com.facilio.bmsconsoleV3.commands.inventoryrequest;
-
-
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
-import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
-import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
-import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
-import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
-import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
-import com.facilio.bmsconsoleV3.util.V3AssetAPI;
-import com.facilio.command.FacilioCommand;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
+package com.facilio.bmsconsoleV3.commands.item;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.ItemContext.CostType;
-import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
+import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
+import com.facilio.bmsconsoleV3.util.V3AssetAPI;
 import com.facilio.chain.FacilioContext;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.v3.context.Constants;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.json.simple.JSONObject;
 
-;
+import java.util.*;
 
-public class AddOrUpdateManualItemTransactionCommandV3 extends FacilioCommand {
+public class SetManualItemTransactionCommandV3  extends FacilioCommand {
 
     @SuppressWarnings("unchecked")
     @Override
     public boolean executeCommand(Context context) throws Exception {
         // TODO Auto-generated method stub
 
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule itemTransactionsModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
-        List<FacilioField> itemTransactionsFields = modBean
-                .getAllFields(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
+        String moduleName = Constants.getModuleName(context);
+        Map<String, Object> bodyParams = Constants.getBodyParams(context);
+        Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
+        List<V3ItemTransactionsContext> itemTransactions = recordMap.get(moduleName);
+        if(CollectionUtils.isNotEmpty(itemTransactions) && MapUtils.isNotEmpty(bodyParams) && ((bodyParams.containsKey("issue") && (boolean) bodyParams.get("issue")) || (bodyParams.containsKey("return") && (boolean) bodyParams.get("return")))) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
+            FacilioModule purchasedItemModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_ITEM);
+            List<FacilioField> purchasedItemFields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_ITEM);
 
-        FacilioModule purchasedItemModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_ITEM);
-        List<FacilioField> purchasedItemFields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_ITEM);
+            List<V3ItemTransactionsContext> itemTransactionsList = new ArrayList<>();
+            List<V3ItemTransactionsContext> itemTransactionsToBeAdded = new ArrayList<>();
+            long itemTypeId = -1;
+            ApprovalState approvalState = null;
+            if (itemTransactions != null && !itemTransactions.isEmpty()) {
+                for (V3ItemTransactionsContext itemTransaction : itemTransactions) {
+                    V3ItemContext item = getItem(itemTransaction.getItem().getId());
+                    itemTypeId = item.getItemType().getId();
+                    V3ItemTypesContext itemType = getItemType(itemTypeId);
+                    long parentId = itemTransaction.getParentId();
 
-        List<V3ItemTransactionsContext> itemTransactions = (List<V3ItemTransactionsContext>) context
-                .get(FacilioConstants.ContextNames.RECORD_LIST);
-        List<V3ItemTransactionsContext> itemTransactionsList = new ArrayList<>();
-        List<V3ItemTransactionsContext> itemTransactiosnToBeAdded = new ArrayList<>();
-        long itemTypeId = -1;
-        ApprovalState approvalState = null;
-        if (itemTransactions != null && !itemTransactions.isEmpty()) {
-            for (V3ItemTransactionsContext itemTransaction : itemTransactions) {
-                V3ItemContext item = getItem(itemTransaction.getItem().getId());
-                itemTypeId = item.getItemType().getId();
-                V3ItemTypesContext itemType = getItemType(itemTypeId);
-                V3StoreRoomContext storeRoom = item.getStoreRoom();
-                long parentId = itemTransaction.getParentId();
-
-                if (itemTransaction.getId() > 0) {
-                    SelectRecordsBuilder<V3ItemTransactionsContext> selectBuilder = new SelectRecordsBuilder<V3ItemTransactionsContext>()
-                            .select(itemTransactionsFields).table(itemTransactionsModule.getTableName())
-                            .moduleName(itemTransactionsModule.getName()).beanClass(V3ItemTransactionsContext.class)
-                            .andCondition(CriteriaAPI.getIdCondition(itemTransaction.getId(), itemTransactionsModule));
-                    List<V3ItemTransactionsContext> woIt = selectBuilder.get();
-                    if (woIt != null) {
-                        V3ItemTransactionsContext wItem = woIt.get(0);
-                        SelectRecordsBuilder<V3PurchasedItemContext> purchasedItemSelectBuilder = new SelectRecordsBuilder<V3PurchasedItemContext>()
-                                .select(purchasedItemFields).table(purchasedItemModule.getTableName())
-                                .moduleName(purchasedItemModule.getName()).beanClass(V3PurchasedItemContext.class)
-                                .andCondition(CriteriaAPI.getIdCondition(wItem.getPurchasedItem().getId(),
-                                        purchasedItemModule));
-                        List<V3PurchasedItemContext> purchasedItemsList = purchasedItemSelectBuilder.get();
-                        if (purchasedItemsList != null && !purchasedItemsList.isEmpty()) {
-                            V3PurchasedItemContext purchaseditem = purchasedItemsList.get(0);
-                            double q = wItem.getQuantity();
-                            if (itemTransaction.getTransactionStateEnum() == TransactionState.ISSUE
-                                    && (q + purchaseditem.getCurrentQuantity() < itemTransaction.getQuantity())) {
-                                throw new IllegalArgumentException("Insufficient quantity in inventory!");
-                            } else {
-                                approvalState = ApprovalState.YET_TO_BE_REQUESTED;
-                                if (itemTransaction.getRequestedLineItem() != null && itemTransaction.getRequestedLineItem().getId() > 0) {
-                                    approvalState = ApprovalState.APPROVED;
-                                }
-                                if (itemType.isRotating()) {
-                                    wItem = setWorkorderItemObj(purchaseditem, 1, item, parentId, itemTransaction,
-                                            itemType, approvalState, wItem.getAsset(), context);
-                                } else {
-                                    wItem = setWorkorderItemObj(purchaseditem, itemTransaction.getQuantity(), item,
-                                            parentId, itemTransaction, itemType, approvalState, null, context);
-                                }
-                                //updatePurchasedItem(purchaseditem);
-                                wItem.setId(itemTransaction.getId());
-                                itemTransactionsList.add(wItem);
-                                updateWorkorderItems(itemTransactionsModule, itemTransactionsFields, wItem);
-                            }
-                        }
-                    }
-                } else {
                     if (itemTransaction.getTransactionStateEnum() == TransactionState.ISSUE
                             && item.getQuantity() < itemTransaction.getQuantity()) {
                         throw new IllegalArgumentException("Insufficient quantity in inventory!");
@@ -143,19 +90,19 @@ public class AddOrUpdateManualItemTransactionCommandV3 extends FacilioCommand {
                                             approvalState, asset, context);
                                     updatePurchasedItem(asset);
                                     itemTransactionsList.add(woItem);
-                                    itemTransactiosnToBeAdded.add(woItem);
+                                    itemTransactionsToBeAdded.add(woItem);
                                 }
                             }
                         } else {
                             List<V3PurchasedItemContext> purchasedItem = new ArrayList<>();
 
-                            if (item.getCostTypeEnum() == null || item.getCostType() <=0
+                            if (item.getCostTypeEnum() == null || item.getCostType() <= 0
                                     || item.getCostType().equals(V3ItemContext.CostType.FIFO.getIndex())) {
                                 purchasedItem = getPurchasedItemList(item.getId(), " asc", purchasedItemModule,
-                                        purchasedItemFields);
+                                        purchasedItemFields,bodyParams);
                             } else if (item.getCostType().equals(V3ItemContext.CostType.LIFO.getIndex())) {
                                 purchasedItem = getPurchasedItemList(item.getId(), " desc", purchasedItemModule,
-                                        purchasedItemFields);
+                                        purchasedItemFields,bodyParams);
                             }
 
                             if (purchasedItem != null && !purchasedItem.isEmpty()) {
@@ -165,7 +112,7 @@ public class AddOrUpdateManualItemTransactionCommandV3 extends FacilioCommand {
                                     woItem = setWorkorderItemObj(pItem, itemTransaction.getQuantity(), item, parentId,
                                             itemTransaction, itemType, approvalState, null, context);
                                     itemTransactionsList.add(woItem);
-                                    itemTransactiosnToBeAdded.add(woItem);
+                                    itemTransactionsToBeAdded.add(woItem);
                                 } else {
                                     double requiredQuantity = itemTransaction.getQuantity();
                                     for (V3PurchasedItemContext purchaseitem : purchasedItem) {
@@ -173,14 +120,18 @@ public class AddOrUpdateManualItemTransactionCommandV3 extends FacilioCommand {
                                         double quantityUsedForTheCost = 0;
                                         if (requiredQuantity <= purchaseitem.getCurrentQuantity()) {
                                             quantityUsedForTheCost = requiredQuantity;
-                                        } else {
+                                        }
+                                        else if(purchaseitem.getCurrentQuantity()==0 && itemTransaction.getTransactionState()==TransactionState.RETURN.getValue()){
+                                            quantityUsedForTheCost = requiredQuantity;
+                                        }
+                                        else {
                                             quantityUsedForTheCost = purchaseitem.getCurrentQuantity();
                                         }
                                         woItem = setWorkorderItemObj(purchaseitem, quantityUsedForTheCost, item,
                                                 parentId, itemTransaction, itemType, approvalState, null, context);
                                         requiredQuantity -= quantityUsedForTheCost;
                                         itemTransactionsList.add(woItem);
-                                        itemTransactiosnToBeAdded.add(woItem);
+                                        itemTransactionsToBeAdded.add(woItem);
                                         if (requiredQuantity <= 0) {
                                             break;
                                         }
@@ -189,23 +140,22 @@ public class AddOrUpdateManualItemTransactionCommandV3 extends FacilioCommand {
                             }
                         }
                     }
+
                 }
 
+                if(CollectionUtils.isNotEmpty(itemTransactionsToBeAdded)){
+                    recordMap.put(moduleName, itemTransactionsToBeAdded);
+                }
+                context.put(FacilioConstants.ContextNames.PARENT_ID, itemTransactions.get(0).getParentId());
+                context.put(FacilioConstants.ContextNames.ITEM_ID, itemTransactions.get(0).getItem().getId());
+                context.put(FacilioConstants.ContextNames.ITEM_IDS,
+                        Collections.singletonList(itemTransactions.get(0).getItem().getId()));
+                context.put(FacilioConstants.ContextNames.RECORD_LIST, itemTransactionsList);
+                context.put(FacilioConstants.ContextNames.ITEM_TYPES_ID, itemTypeId);
+                context.put(FacilioConstants.ContextNames.ITEM_TYPES_IDS, Collections.singletonList(itemTypeId));
+                context.put(FacilioConstants.ContextNames.TRANSACTION_STATE,
+                        itemTransactions.get(0).getTransactionStateEnum());
             }
-
-
-            if (itemTransactiosnToBeAdded != null && !itemTransactiosnToBeAdded.isEmpty()) {
-                addWorkorderParts(itemTransactionsModule, itemTransactionsFields, itemTransactiosnToBeAdded);
-            }
-            context.put(FacilioConstants.ContextNames.PARENT_ID, itemTransactions.get(0).getParentId());
-            context.put(FacilioConstants.ContextNames.ITEM_ID, itemTransactions.get(0).getItem().getId());
-            context.put(FacilioConstants.ContextNames.ITEM_IDS,
-                    Collections.singletonList(itemTransactions.get(0).getItem().getId()));
-            context.put(FacilioConstants.ContextNames.RECORD_LIST, itemTransactionsList);
-            context.put(FacilioConstants.ContextNames.ITEM_TYPES_ID, itemTypeId);
-            context.put(FacilioConstants.ContextNames.ITEM_TYPES_IDS, Collections.singletonList(itemTypeId));
-            context.put(FacilioConstants.ContextNames.TRANSACTION_STATE,
-                    itemTransactions.get(0).getTransactionStateEnum());
         }
         return false;
     }
@@ -230,7 +180,7 @@ public class AddOrUpdateManualItemTransactionCommandV3 extends FacilioCommand {
             woItem.setAsset(asset);
         }
         woItem.setQuantity(quantity);
-        if(itemTransactions.getResource() != null && itemTransactions.getResource().getResourceType() != ResourceType.USER.getValue()) {
+        if(itemTransactions.getResource() != null && itemTransactions.getResource().getResourceType() != ResourceContext.ResourceType.USER.getValue()) {
             woItem.setTransactionCost(quantity* purchasedItem.getUnitcost());
         }
         woItem.setItem(item);
@@ -241,7 +191,7 @@ public class AddOrUpdateManualItemTransactionCommandV3 extends FacilioCommand {
         woItem.setParentTransactionId(itemTransactions.getParentTransactionId());
         woItem.setApprovedState(approvalState);
         if (itemTransactions.getTransactionStateEnum() == TransactionState.ISSUE) {
-            if(itemTransactions.getTransactionType() == TransactionType.MANUAL.getValue() && (itemTransactions.getResource() == null || (itemTransactions.getResource() != null && itemTransactions.getResource().getResourceType() == ResourceType.USER.getValue()) )) {
+            if(itemTransactions.getTransactionType() == TransactionType.MANUAL.getValue() && (itemTransactions.getResource() == null || (itemTransactions.getResource() != null && itemTransactions.getResource().getResourceType() == ResourceContext.ResourceType.USER.getValue()) )) {
                 woItem.setRemainingQuantity(quantity);
             }
             else
@@ -294,24 +244,6 @@ public class AddOrUpdateManualItemTransactionCommandV3 extends FacilioCommand {
         }
 
         return woItem;
-    }
-
-    private void addWorkorderParts(FacilioModule module, List<FacilioField> fields, List<V3ItemTransactionsContext> parts)
-            throws Exception {
-        InsertRecordBuilder<V3ItemTransactionsContext> readingBuilder = new InsertRecordBuilder<V3ItemTransactionsContext>()
-                .module(module).fields(fields).addRecords(parts);
-        readingBuilder.save();
-    }
-
-    private void updateWorkorderItems(FacilioModule module, List<FacilioField> fields, V3ItemTransactionsContext item)
-            throws Exception {
-
-        UpdateRecordBuilder<V3ItemTransactionsContext> updateBuilder = new UpdateRecordBuilder<V3ItemTransactionsContext>()
-                .module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(item.getId(), module));
-        updateBuilder.update(item);
-
-        System.err.println(Thread.currentThread().getName() + "Exiting updateReadings in  AddorUpdateCommand#######  ");
-
     }
 
     public static V3ItemContext getItem(long id) throws Exception {
@@ -379,18 +311,18 @@ public class AddOrUpdateManualItemTransactionCommandV3 extends FacilioCommand {
     }
 
     public static List<V3PurchasedItemContext> getPurchasedItemList(long id, String orderByType, FacilioModule module,
-                                                                  List<FacilioField> fields) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                                                                    List<FacilioField> fields,Map<String, Object> bodyParams) throws Exception {
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
         SelectRecordsBuilder<V3PurchasedItemContext> selectBuilder = new SelectRecordsBuilder<V3PurchasedItemContext>()
                 .select(fields).table(module.getTableName()).moduleName(module.getName())
                 .beanClass(V3PurchasedItemContext.class)
                 .andCondition(
                         CriteriaAPI.getCondition(fieldMap.get("item"), String.valueOf(id), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("currentQuantity"), String.valueOf(0),
-                        NumberOperators.GREATER_THAN))
                 .orderBy(fieldMap.get("costDate").getColumnName() + orderByType);
-
+        if(bodyParams.containsKey("issue") && (boolean) bodyParams.get("issue")){
+            selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("currentQuantity"), String.valueOf(0),
+                    NumberOperators.GREATER_THAN));
+        }
         List<V3PurchasedItemContext> purchasedItemlist = selectBuilder.get();
 
         if (purchasedItemlist != null && !purchasedItemlist.isEmpty()) {
@@ -415,5 +347,3 @@ public class AddOrUpdateManualItemTransactionCommandV3 extends FacilioCommand {
         return null;
     }
 }
-
-
