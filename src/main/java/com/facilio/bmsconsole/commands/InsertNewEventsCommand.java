@@ -79,7 +79,9 @@ public class InsertNewEventsCommand extends FacilioCommand {
 			}
 
 			Map<String, Object> customFields = getCustomFieldsFromData(baseEvent);
-			baseEvent.getData().keySet().removeAll(customFields.keySet());
+			if(baseEvent.getData() != null) {
+				baseEvent.getData().keySet().removeAll(customFields.keySet());
+			}
 			baseEvent.setCustomFields(customFields);
 		}
 		
@@ -99,15 +101,10 @@ public class InsertNewEventsCommand extends FacilioCommand {
 				.table("Fields")
 				.select(FieldFactory.getSelectFieldFields())
 				.andCondition(CriteriaAPI.getOrgIdCondition(DBConf.getInstance().getCurrentOrgId(), ModuleFactory.getFieldsModule()))
-				.andCondition(CriteriaAPI.getCondition("IS_DEFAULT", "isDefault", String.valueOf(0), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("IS_DEFAULT", "isDefault", String.valueOf(1), NumberOperators.NOT_EQUALS))
 				.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
 
-		try {
 			return genericSelectRecordBuilder.get();
-		} catch (Exception e) {
-			LOGGER.info("Exception occured ", e);
-		}
-		return new ArrayList<>();
 	}
 
 	public ArrayList<String> getCustomFieldNames(List<Map<String, Object>> customFields){
@@ -124,8 +121,10 @@ public class InsertNewEventsCommand extends FacilioCommand {
 		List<String> incomingFieldNames = new ArrayList<>();
 		ArrayList<String> customFieldsNames = getCustomFieldNames(getCustomFieldsOfModule(FacilioConstants.ContextNames.BMS_EVENT));
 
-		for(String key: data.keySet()){
-			incomingFieldNames.add(key);
+		if(data != null) {
+			for (String key : data.keySet()) {
+				incomingFieldNames.add(key);
+			}
 		}
 		incomingFieldNames.retainAll(customFieldsNames);
 		for(String incomingFieldName: incomingFieldNames){
