@@ -80,7 +80,9 @@ public class InsertNewEventsCommand extends FacilioCommand {
 			}
 
 			Map<String, Object> customFields = getCustomFieldsFromData(baseEvent);
-			baseEvent.getData().keySet().removeAll(customFields.keySet());
+			if(baseEvent.getData() != null) {
+				baseEvent.getData().keySet().removeAll(customFields.keySet());
+			}
 			baseEvent.setCustomFields(customFields);
 		}
 		
@@ -102,9 +104,10 @@ public class InsertNewEventsCommand extends FacilioCommand {
 		for(FacilioField customField: customFields){
 			customFieldsNames.add(customField.getName());
 		}
-
-		for(String key: data.keySet()){
-			incomingFieldNames.add(key);
+		if(data != null) {
+			for (String key : data.keySet()) {
+				incomingFieldNames.add(key);
+			}
 		}
 		incomingFieldNames.retainAll(customFieldsNames);
 		Map<String, Object> customFieldsMap = new HashMap<>();
