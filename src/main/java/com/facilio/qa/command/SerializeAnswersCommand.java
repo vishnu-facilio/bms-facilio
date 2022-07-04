@@ -1,7 +1,7 @@
 package com.facilio.qa.command;
 
-import com.facilio.command.FacilioCommand;
 import com.facilio.chain.FacilioContext;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 import com.facilio.qa.QAndAUtil;
@@ -13,13 +13,11 @@ import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j;
-
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.text.MessageFormat;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

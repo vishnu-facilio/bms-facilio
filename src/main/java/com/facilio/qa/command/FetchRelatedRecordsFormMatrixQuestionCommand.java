@@ -48,6 +48,8 @@ public class FetchRelatedRecordsFormMatrixQuestionCommand extends FacilioCommand
         		QuestionContext question = answer.getQuestion();
         		
         		question = questionMap.get(question.getId());
+
+				question.getQuestionType().getAnswerHandler().populateRelatedRecordsForAnswer(answer);
     			
     			if(question.getQuestionType() == QuestionType.MATRIX || question.getQuestionType() == QuestionType.MULTI_QUESTION) {
     				
