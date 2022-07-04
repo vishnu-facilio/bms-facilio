@@ -23,23 +23,30 @@ public class AssetCategoryAdditionInExtendModuleCommand extends FacilioCommand {
         List<ModuleBaseWithCustomFields> assetList = (List<ModuleBaseWithCustomFields>) (recordMap.get("asset"));
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(((V3AssetContext)(assetList.get(0))).getCategory().getId());
-        long assetModuleID = assetCategory.getAssetModuleID();
-        FacilioModule module = modBean.getModule(assetModuleID);
         Set<String> extendedModules = new HashSet<>();
-        extendedModules.add(module.getName());
-        recordMap.put(module.getName(), assetList);
-        Constants.setRecordMap(context, recordMap);
-        Constants.setExtendedModules(context, extendedModules);
-        long categoryId=-1;
-        if(assetCategory!=null && assetCategory.getId() != 0) {
-            categoryId=assetCategory.getId();
+        for (ModuleBaseWithCustomFields asset : assetList) {
+            AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(((V3AssetContext) (asset)).getCategory().getId());
+            long assetModuleID = assetCategory.getAssetModuleID();
+            FacilioModule module = modBean.getModule(assetModuleID);
+            if(extendedModules.contains(module.getName())){
+                List<ModuleBaseWithCustomFields> list = recordMap.get(module.getName());
+                list.add(asset);
+                recordMap.put(module.getName(),list);
+            }else{
+                extendedModules.add(module.getName());
+                recordMap.put(module.getName(), new ArrayList(Arrays.asList(asset)));
+            }
+            Constants.setRecordMap(context, recordMap);
+            long categoryId = -1;
+            if (assetCategory != null && assetCategory.getId() != 0) {
+                categoryId = assetCategory.getId();
+            }
+            context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+            context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
+            context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
+            context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
         }
-        context.put(FacilioConstants.ContextNames.MODULE_NAME,module.getName());
-        context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
-        context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
-        context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
-
+        Constants.setExtendedModules(context, extendedModules);
         List<V3AssetContext> v3assetList = (List<V3AssetContext>) (((Map<String,Object>)context.get(FacilioConstants.ContextNames.RECORD_MAP)).get(FacilioConstants.ContextNames.ASSET));
         for(V3AssetContext asset : v3assetList){
             if (asset.getSpace() == null || asset.getSpace().getId() < 0) {
