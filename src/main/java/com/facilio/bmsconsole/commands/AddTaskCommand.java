@@ -49,6 +49,7 @@ public class AddTaskCommand extends FacilioCommand implements PostTransactionCom
 			task.setId(taskId);
 //			JSONObject info = new JSONObject();
 			context.put(FacilioConstants.ContextNames.RECORD_ID, taskId);
+			context.put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(task));
 //			context.put(FacilioConstants.ContextNames.IDS_TO_UPDATE_TASK_COUNT, Collections.singletonList(task.getParentTicketId()));
 			
 			idsToUpdateTaskCount = Collections.singletonList(task.getParentTicketId());

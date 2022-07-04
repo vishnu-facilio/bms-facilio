@@ -2651,9 +2651,30 @@ public class V2ReportAction extends FacilioAction {
         return formula;
     }
 
+    public List<PivotValueColumnContext> getValues() {
+        return values;
+    }
+
+    public void setValues(List<PivotValueColumnContext> values) {
+        this.values = values;
+    }
+
+    public List<PivotValueColumnContext> values = new ArrayList<>();
+
     public void setFormula(List<PivotFormulaColumnContext> formula) {
         this.formula = formula;
     }
+
+
+    public boolean isBuilderV2() {
+        return builderV2;
+    }
+
+    public void setBuilderV2(boolean builderV2) {
+        this.builderV2 = builderV2;
+    }
+
+    private boolean builderV2;
 
     private JSONObject sortBy;
 
@@ -2686,12 +2707,7 @@ public class V2ReportAction extends FacilioAction {
         this.drillDown = drillDown;
     }
 
-    public boolean isShowTimelineFilter() {
-        return showTimelineFilter;
-    }
-
     public void setPivotResult(FacilioContext context){
-
         setResult(FacilioConstants.ContextNames.ROW_HEADERS, context.get(FacilioConstants.ContextNames.ROW_HEADERS));
         setResult(FacilioConstants.ContextNames.DATA_HEADERS, context.get(FacilioConstants.ContextNames.DATA_HEADERS));
         setResult(FacilioConstants.ContextNames.FORMULA_HEADERS,
@@ -2705,6 +2721,7 @@ public class V2ReportAction extends FacilioAction {
         setResult(FacilioConstants.ContextNames.PIVOT_TEMPLATE_JSON, context.get(FacilioConstants.ContextNames.TEMPLATE_JSON));
         setResult(FacilioConstants.Reports.ROWS, context.get(FacilioConstants.Reports.ROWS));
         setResult(FacilioConstants.Reports.DATA, context.get(FacilioConstants.ContextNames.DATA));
+        setResult(FacilioConstants.ContextNames.VALUES, context.get(FacilioConstants.ContextNames.VALUES));
         setResult(FacilioConstants.ContextNames.FORMULA, context.get(FacilioConstants.ContextNames.FORMULA));
         setResult(FacilioConstants.ContextNames.MODULE_NAME, context.get(FacilioConstants.ContextNames.MODULE_NAME));
         setResult(FacilioConstants.ContextNames.CRITERIA, context.get(FacilioConstants.ContextNames.CRITERIA));
@@ -2743,7 +2760,8 @@ public class V2ReportAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.END_TIME, endTime);
         context.put(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER, showTimelineFilter);
         context.put(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN, drillDown);
-
+        context.put(FacilioConstants.ContextNames.VALUES, values);
+        context.put(FacilioConstants.ContextNames.IS_BUILDER_V2, isBuilderV2());
         c.execute();
 
         setResult("report", reportContext);
@@ -2758,6 +2776,7 @@ public class V2ReportAction extends FacilioAction {
 
         context.put(FacilioConstants.Reports.ROWS, rows);
         context.put(FacilioConstants.Reports.DATA, data);
+        context.put(FacilioConstants.ContextNames.VALUES, values);
         context.put(FacilioConstants.ContextNames.FORMULA, formula);
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
         context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
@@ -2770,10 +2789,12 @@ public class V2ReportAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.END_TIME, endTime);
         context.put(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER, showTimelineFilter);
         context.put(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN, drillDown);
+        context.put(FacilioConstants.ContextNames.IS_BUILDER_V2, isBuilderV2());
 
         ReportPivotParamsContext pivotparams = new ReportPivotParamsContext();
         pivotparams.setRows(rows);
         pivotparams.setData(data);
+        pivotparams.setValues(values);
         pivotparams.setModuleName(moduleName);
         pivotparams.setCriteria(criteria);
         pivotparams.setSortBy(sortBy);
@@ -2785,7 +2806,7 @@ public class V2ReportAction extends FacilioAction {
         pivotparams.setEndTime(endTime);
         pivotparams.setFormula(formula);
         pivotparams.setDrillDown(drillDown);
-
+        pivotparams.setBuilderV2(isBuilderV2());
         pivotparams.setShowTimelineFilter(getShowTimelineFilter());
 
 
@@ -2833,6 +2854,7 @@ public class V2ReportAction extends FacilioAction {
                 (JSONObject) parser.parse(reportContext.getTabularState()), ReportPivotParamsContext.class);
         context.put(FacilioConstants.Reports.ROWS, pivotparams.getRows());
         context.put(FacilioConstants.Reports.DATA, pivotparams.getData());
+        context.put(FacilioConstants.ContextNames.VALUES, pivotparams.getValues());
         context.put(FacilioConstants.ContextNames.FORMULA, pivotparams.getFormula());
         context.put(FacilioConstants.ContextNames.MODULE_NAME, pivotparams.getModuleName());
         context.put(FacilioConstants.ContextNames.CRITERIA, pivotparams.getCriteria());
@@ -2843,6 +2865,7 @@ public class V2ReportAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER, pivotparams.getShowTimelineFilter());
         context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, pivotparams.getDateValue());
         context.put(FacilioConstants.ContextNames.IS_EXPORT_REPORT, true);
+        context.put(FacilioConstants.ContextNames.IS_BUILDER_V2, pivotparams.isBuilderV2());
 
         if (getStartTime() > 0 && getEndTime() > 0) {
             context.put(FacilioConstants.ContextNames.IS_TIMELINE_FILTER_APPLIED, true);
@@ -2890,6 +2913,7 @@ public class V2ReportAction extends FacilioAction {
 
         context.put(FacilioConstants.Reports.ROWS, pivotparams.getRows());
         context.put(FacilioConstants.Reports.DATA, pivotparams.getData());
+        context.put(FacilioConstants.ContextNames.VALUES, pivotparams.getValues());
         context.put(FacilioConstants.ContextNames.FORMULA, pivotparams.getFormula());
         context.put(FacilioConstants.ContextNames.MODULE_NAME, pivotparams.getModuleName());
         context.put(FacilioConstants.ContextNames.CRITERIA, pivotparams.getCriteria());
@@ -2899,6 +2923,7 @@ public class V2ReportAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.DATE_FIELD, pivotparams.getDateFieldId());
         context.put(FacilioConstants.ContextNames.DATE_OPERATOR, pivotparams.getDateOperator());
         context.put(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN, pivotparams.getDrillDown());
+        context.put(FacilioConstants.ContextNames.IS_BUILDER_V2, pivotparams.isBuilderV2());
 
         if (sortBy != null) {
             context.put(FacilioConstants.ContextNames.SORTING, sortBy);

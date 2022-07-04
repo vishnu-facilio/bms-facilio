@@ -1449,6 +1449,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		else if (orgBean.isFeatureEnabled(FeatureLicense.SERVICE_REQUEST)) {
 			ServiceRequestContext serviceRequestContext = new ServiceRequestContext();
 			PeopleContext requester = new PeopleContext();
+			LOGGER.info("Getting from address from parser and setting it to requester : " + parser.getFrom() );
 			requester.setEmail(parser.getFrom());
 			serviceRequestContext.setSubject(parser.getSubject());
 			if (parser.getPlainContent() != null) {

@@ -26,7 +26,6 @@ public class EmailStructureUtil {
             eMailStructure.setMessage(IOUtils.toString(body));
         } catch (Exception e) {
             LOGGER.log(Level.INFO, "Exception occurred ", e);
-            throw e;
         }
 
         return eMailStructure;

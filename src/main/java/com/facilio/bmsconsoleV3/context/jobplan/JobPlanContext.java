@@ -71,14 +71,14 @@ public class JobPlanContext extends V3Context {
         this.name = name;
     }
 
-    private List<JobPlanTaskSectionContext> taskSectionList;
+    private List<JobPlanTaskSectionContext> jobplansection;
 
-    public List<JobPlanTaskSectionContext> getTaskSectionList() {
-        return taskSectionList;
+    public List<JobPlanTaskSectionContext> getJobplansection() {
+        return jobplansection;
     }
 
-    public void setTaskSectionList(List<JobPlanTaskSectionContext> taskSectionList) {
-        this.taskSectionList = taskSectionList;
+    public void setJobplansection(List<JobPlanTaskSectionContext> jobplansection) {
+        this.jobplansection = jobplansection;
     }
 
     private V3AssetCategoryContext assetCategory;

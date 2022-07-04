@@ -63,7 +63,8 @@ public class PMJobPlanContextV3 implements Serializable {
 
     public List<TaskSectionTemplate> prepareAndGetJobPlanSections() throws Exception {
 
-        List<JobPlanTaskSectionContext> sections = jobPlanContext.getTaskSectionList();
+        List<JobPlanTaskSectionContext> sections = null;
+        // List<JobPlanTaskSectionContext> sections = jobPlanContext.getTaskSectionList();
         List<TaskSectionTemplate> secTemplateList = new ArrayList<>();
 
        if(CollectionUtils.isNotEmpty(sections)) {

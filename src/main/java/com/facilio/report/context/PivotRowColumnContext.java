@@ -42,6 +42,15 @@ public class PivotRowColumnContext extends PivotColumnContext {
 		this.sortField = sortField;
 	}
 
+	public String getFieldDisplayName() {
+		return fieldDisplayName;
+	}
+
+	public void setFieldDisplayName(String fieldDisplayName) {
+		this.fieldDisplayName = fieldDisplayName;
+	}
+
+	private String fieldDisplayName;
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub

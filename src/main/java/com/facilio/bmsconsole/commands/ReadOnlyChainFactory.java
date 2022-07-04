@@ -3037,6 +3037,8 @@ public class ReadOnlyChainFactory {
 
 	public static FacilioChain fetchPivotReportChain(){
 		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new PivotValueColumnToDataAndFormulaColumn());
+		chain.addCommand(new PivotDataAndFormulaColumnToValueColumn());
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new ConstructTabularReportData());
 		chain.addCommand(ReadOnlyChainFactory.constructAndFetchTabularReportDataChain());

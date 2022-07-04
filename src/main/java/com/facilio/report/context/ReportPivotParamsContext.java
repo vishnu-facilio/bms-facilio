@@ -152,4 +152,24 @@ public class ReportPivotParamsContext {
 	public void setDrillDown(long drillDown) {
 		this.drillDown = drillDown;
 	}
+
+	public boolean isBuilderV2() {
+		return isBuilderV2;
+	}
+
+	public void setBuilderV2(boolean builderV2) {
+		isBuilderV2 = builderV2;
+	}
+
+	private boolean isBuilderV2 = false;
+
+	public List<PivotValueColumnContext> getValues() {
+		return values;
+	}
+
+	public void setValues(List<PivotValueColumnContext> values) {
+		this.values = values;
+	}
+
+	private List<PivotValueColumnContext> values = new ArrayList<>();
 }

@@ -71,6 +71,13 @@ public class TaskAction extends FacilioAction {
 
 	private String beforeAttachmentFileName;
 
+	private Boolean isTaskActionExecuted = false;
+	public Boolean isTaskActionExecuted() {
+		return isTaskActionExecuted;
+	}
+	public void setTaskActionExecuted(Boolean taskActionExecuted) {
+		isTaskActionExecuted = taskActionExecuted;
+	}
 
 	//New Task Props
 	public String newTask() throws Exception {
@@ -173,12 +180,15 @@ public class TaskAction extends FacilioAction {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TASK, task);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
 	    context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
 		FacilioChain addTask = FacilioChainFactory.getAddTaskChain();
 		addTask.execute(context);
-		
+
 		setTaskId(task.getId());
+		setResult(FacilioConstants.ContextNames.TASK, task.getId());
+		setTaskActionExecuted(context);
 		}
 		catch (Exception e) {
 			JSONObject inComingDetails = new JSONObject();
@@ -303,6 +313,8 @@ public class TaskAction extends FacilioAction {
 			if (context.get(FacilioConstants.ContextNames.REQUIRES_ATTACHMENT) != null && (boolean) context.get(FacilioConstants.ContextNames.REQUIRES_ATTACHMENT)) {
 				setResult(FacilioConstants.ContextNames.REQUIRES_ATTACHMENT, true);
 			}
+
+			setTaskActionExecuted(context);
 			
 		} catch (ReadingValidationException ex) {
 			Map<String, String> msgMap = new HashMap<>();
@@ -329,6 +341,19 @@ public class TaskAction extends FacilioAction {
 		}
 		return SUCCESS;
 	}
+
+	/**
+	 * setTaskActionExecuted() checks if IS_TASK_ACTION_EXECUTED is true and sets the value for JSON response.
+	 * @param context
+	 */
+	private void setTaskActionExecuted(FacilioContext context){
+		Boolean isTaskActionExecuted = (Boolean) context.get(FacilioConstants.ContextNames.IS_TASK_ACTION_EXECUTED);
+		if(isTaskActionExecuted !=null && isTaskActionExecuted){
+			setTaskActionExecuted(true);
+			setResult(FacilioConstants.ContextNames.IS_TASK_ACTION_EXECUTED, isTaskActionExecuted());
+		}
+	}
+
 	List<TaskContext> taskContextList;
 	public List<TaskContext> getTaskContextList() {
 		return taskContextList;
@@ -555,6 +580,8 @@ public class TaskAction extends FacilioAction {
 				if (context.get(FacilioConstants.ContextNames.REQUIRES_ATTACHMENT) != null && (boolean) context.get(FacilioConstants.ContextNames.REQUIRES_ATTACHMENT)) {
 					setResult(FacilioConstants.ContextNames.REQUIRES_ATTACHMENT, true);
 				}
+
+				setTaskActionExecuted(context);
 
 			} catch (ReadingValidationException ex) {
 				Map<String, String> msgMap = new HashMap<>();

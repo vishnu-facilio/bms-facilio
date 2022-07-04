@@ -23,6 +23,9 @@ import com.facilio.modules.fields.NumberField;
 import com.facilio.util.FacilioUtil;
 import com.udojava.evalex.Expression;
 
+import lombok.extern.log4j.Log4j;
+
+@Log4j
 public class UnitsUtil {
 
 	public final static String FORMULA_SI_PLACE_HOLDER_STRING = "si";
@@ -50,36 +53,43 @@ public class UnitsUtil {
 	}
 	
 	public static Double convert(Object value,Unit from,Unit to) {
-		if(value == null ) {
-			return null;
+		try {
+			if(value == null ) {
+				return null;
+			}
+			if(from.getMetric().getMetricId() == Metric.CURRENCY.getMetricId()) {
+				return Double.parseDouble(value.toString());
+			}
+			if(from.equals(to)) {
+				return Double.parseDouble(value.toString());
+			}
+			
+			if(!from.isSiUnit()) {
+				String toSiUnitFormula = from.getToSiUnit();
+				toSiUnitFormula = toSiUnitFormula.replaceAll(FORMULA_THIS_PLACE_HOLDER_STRING, value.toString());
+				Expression expression = new Expression(toSiUnitFormula).setPrecision(8);
+				value = expression.eval();
+			}
+			
+			if(!to.isSiUnit()) {
+				String fromSiUnitFormula = to.getFromSiUnit();
+				fromSiUnitFormula = fromSiUnitFormula.replaceAll(FORMULA_SI_PLACE_HOLDER_STRING, value.toString());
+				Expression expression = new Expression(fromSiUnitFormula).setPrecision(8);
+				value = expression.eval();
+			}
+			double returnValue =  Double.valueOf(value.toString());
+			
+			if(to.isRoundOffNeeded()) {
+				returnValue = Double.valueOf(String.valueOf(Math.round(returnValue)));
+			}
+			
+			return returnValue;
 		}
-		if(from.getMetric().getMetricId() == Metric.CURRENCY.getMetricId()) {
-			return Double.parseDouble(value.toString());
+		catch(Exception e) {
+			LOGGER.error("value -- "+value + " from -- "+from +" to -- "+to);
+			LOGGER.error(e.getMessage(), e);
+			throw e;
 		}
-		if(from.equals(to)) {
-			return Double.parseDouble(value.toString());
-		}
-		
-		if(!from.isSiUnit()) {
-			String toSiUnitFormula = from.getToSiUnit();
-			toSiUnitFormula = toSiUnitFormula.replaceAll(FORMULA_THIS_PLACE_HOLDER_STRING, value.toString());
-			Expression expression = new Expression(toSiUnitFormula).setPrecision(8);
-			value = expression.eval();
-		}
-		
-		if(!to.isSiUnit()) {
-			String fromSiUnitFormula = to.getFromSiUnit();
-			fromSiUnitFormula = fromSiUnitFormula.replaceAll(FORMULA_SI_PLACE_HOLDER_STRING, value.toString());
-			Expression expression = new Expression(fromSiUnitFormula).setPrecision(8);
-			value = expression.eval();
-		}
-		double returnValue =  Double.valueOf(value.toString());
-		
-		if(to.isRoundOffNeeded()) {
-			returnValue = Double.valueOf(String.valueOf(Math.round(returnValue)));
-		}
-		
-		return returnValue;
 	}
 	
 	public static Double convert(Object value,int from,int to) {

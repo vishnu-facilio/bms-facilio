@@ -16,20 +16,33 @@ import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.wmsv2.handler.EmailProcessHandler;
 
+import lombok.extern.log4j.Log4j;
+
+@Log4j
 public class AddRequesterForServiceRequestCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
+		
 		List<ServiceRequestContext> request = (List<ServiceRequestContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+		
+		LOGGER.info("Entered AddRequesterForServiceRequestCommand");
 		
 		if (request != null && !request.isEmpty()) {
 			
+			LOGGER.info("REQUEST IS NOT EMPTY");
+			
 			for (ServiceRequestContext serviceRequestContext : request) {
-				
+					
 				PeopleContext requester = serviceRequestContext.getRequester();
 				
 				if (requester != null && requester.getEmail() != null && !"".equals(requester.getEmail()) && requester.getId() <= 0) {
+					
+					LOGGER.info("REQUESTER EMAIL- "+ requester.getEmail());
+					
+					LOGGER.info("REQUESTER ID- "+ requester.getId());
 					
 					PeopleContext people = PeopleAPI.getPeople(requester.getEmail());
 					
@@ -52,6 +65,7 @@ public class AddRequesterForServiceRequestCommand extends FacilioCommand {
 					}
 				}
 				else {
+					LOGGER.info("ENTERED ELSE TO GET CURRENT USER - "+ AccountUtil.getCurrentUser().getPeopleId());
 					requester = PeopleAPI.getPeopleForId(AccountUtil.getCurrentUser().getPeopleId());
 					serviceRequestContext.setRequester(requester);
 				}
