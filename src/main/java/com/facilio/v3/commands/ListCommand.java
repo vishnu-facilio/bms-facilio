@@ -171,7 +171,7 @@ public class ListCommand extends FacilioCommand {
         }
 
         Criteria clientCriteria= (Criteria) context.get(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA);
-        if(clientCriteria!=null){
+        if(clientCriteria!=null && !clientCriteria.isEmpty()){
             selectRecordsBuilder.andCriteria(clientCriteria);
         }
 
