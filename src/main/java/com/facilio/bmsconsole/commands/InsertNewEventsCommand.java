@@ -33,6 +33,7 @@ import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.util.EventAPI;
 import com.facilio.time.DateTimeUtil;
+import org.apache.commons.collections4.MapUtils;
 
 @Log4j
 public class InsertNewEventsCommand extends FacilioCommand {
@@ -80,7 +81,7 @@ public class InsertNewEventsCommand extends FacilioCommand {
 			}
 
 			Map<String, Object> customFields = getCustomFieldsFromData(baseEvent);
-			if(baseEvent.getData() != null) {
+			if(MapUtils.isNotEmpty(baseEvent.getData())) {
 				baseEvent.getData().keySet().removeAll(customFields.keySet());
 			}
 			baseEvent.setCustomFields(customFields);
@@ -101,10 +102,12 @@ public class InsertNewEventsCommand extends FacilioCommand {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> customFields = modBean.getAllCustomFields(FacilioConstants.ContextNames.BMS_EVENT);
 		ArrayList<String> customFieldsNames = new ArrayList();
-		for(FacilioField customField: customFields){
-			customFieldsNames.add(customField.getName());
+		if(CollectionUtils.isNotEmpty(customFields)) {
+			for (FacilioField customField : customFields) {
+				customFieldsNames.add(customField.getName());
+			}
 		}
-		if(data != null) {
+		if(MapUtils.isNotEmpty(data)) {
 			for (String key : data.keySet()) {
 				incomingFieldNames.add(key);
 			}
