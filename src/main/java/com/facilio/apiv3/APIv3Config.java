@@ -1920,7 +1920,7 @@ public class APIv3Config {
     }
     @Module("bmsalarm")
     public static Supplier<V3Config> getBmsAlarm() {
-        return () -> new V3Config(ReadingAlarm.class, null)
+        return () -> new V3Config(BMSAlarmContext.class, new ModuleCustomFieldCount30())
                 .update()
                 .afterSave(new UpdateOccurrenceCommand())
                 .list()
