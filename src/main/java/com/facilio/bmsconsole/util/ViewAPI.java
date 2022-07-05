@@ -44,8 +44,8 @@ public class ViewAPI {
 
 	private static Logger log = LogManager.getLogger(ViewAPI.class.getName());
 	
-	public static List<FacilioView> getAllViews(String moduleName,ViewType type, boolean getOnlyBasicViewDetails) throws Exception {
-		return getAllViews(-1,type, getOnlyBasicViewDetails, moduleName);
+	public static List<FacilioView> getAllViews(Long appId, String moduleName,ViewType type, boolean getOnlyBasicViewDetails) throws Exception {
+		return getAllViews(appId, -1,type, getOnlyBasicViewDetails, moduleName);
 	}
 	
 	public static long addViewGroup(ViewGroups viewGroup, long orgId, String moduleName) throws Exception {
@@ -146,7 +146,7 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 	
 	}
 
-		public static List<FacilioView> getAllViews(long moduleId, ViewType type, boolean getOnlyBasicValues, String... moduleName) throws Exception {
+		public static List<FacilioView> getAllViews(Long appId, long moduleId, ViewType type, boolean getOnlyBasicValues, String... moduleName) throws Exception {
 		//List<FacilioView> views = new ArrayList<>();
 		Map<Long, FacilioView> viewMap = new HashMap<>();
 		List<Long> viewIds = new ArrayList<>();
@@ -167,6 +167,13 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			}
 			else {
 				builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("moduleName"), moduleName[0], StringOperators.IS));
+			}
+			ApplicationContext app = appId <= 0 ? AccountUtil.getCurrentApp() : ApplicationApi.getApplicationForId(appId);
+			if (app == null) {
+				app = ApplicationApi.getApplicationForLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+			}
+			if (app != null) {
+				builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("appId"), String.valueOf(app.getId()), NumberOperators.EQUALS));
 			}
 			
 			List<Map<String, Object>> viewProps = builder.get();

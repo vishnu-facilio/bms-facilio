@@ -75,14 +75,14 @@ public class GetViewListCommand extends FacilioCommand {
 		List<FacilioView> dbViews = new ArrayList<>();	
 
 		if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
-			dbViews = ViewAPI.getAllViews(moduleName,viewType, getOnlyBasicViewDetails);
+			dbViews = ViewAPI.getAllViews(appId, moduleName,viewType, getOnlyBasicViewDetails);
 		} else {
 			if (!moduleName.equals("approval")) {
-				dbViews = ViewAPI.getAllViews(moduleObj.getModuleId(), viewType, getOnlyBasicViewDetails);
+				dbViews = ViewAPI.getAllViews(appId, moduleObj.getModuleId(), viewType, getOnlyBasicViewDetails);
 			}
 			// Temp...till mobile alarm module is split
 			if (AccountUtil.getCurrentAccount().isFromMobile() && moduleName.equals(ContextNames.NEW_READING_ALARM)) {
-				addMobilelarmViews(modBean, dbViews, viewMap, viewGroups,viewType,groupType, getOnlyBasicViewDetails);
+				addMobilelarmViews(appId, modBean, dbViews, viewMap, viewGroups,viewType,groupType, getOnlyBasicViewDetails);
 			}
 		}
 		
@@ -91,10 +91,9 @@ public class GetViewListCommand extends FacilioCommand {
 
 		if (!dbViews.isEmpty() && dbViews != null) {
 			for(FacilioView view: dbViews) {
-					viewMap.put(view.getName(), view);
 				if (sharingMap != null && sharingMap.containsKey(view.getId())) {
-						view.setViewSharing(sharingMap.get(view.getId()));
-					}
+					view.setViewSharing(sharingMap.get(view.getId()));
+				}
 			}
 		}
 			viewMap.entrySet().removeIf(enrty -> {
@@ -152,7 +151,7 @@ public class GetViewListCommand extends FacilioCommand {
 			
 				if (!groupViews.isEmpty()) {
 						
-					addChildModuleViews(moduleName, groupViews, customViews,viewType, getOnlyBasicViewDetails);
+					addChildModuleViews(appId, moduleName, groupViews, customViews,viewType, getOnlyBasicViewDetails);
 					
 					// Temp handling for qualityfm
 					if (moduleName.equals("workorder") && (AccountUtil.getCurrentOrg().getOrgId() == 320 || FacilioProperties.isDevelopment())) {
@@ -327,7 +326,7 @@ public class GetViewListCommand extends FacilioCommand {
 		.orElse(-1);
 	}
 	
-	private void addChildModuleViews(String moduleName, List<Map<String, Object>> groupViews, List<FacilioView> customViews, FacilioView.ViewType viewType, boolean getOnlyBasicViewDetails) throws Exception {
+	private void addChildModuleViews(Long appId, String moduleName, List<Map<String, Object>> groupViews, List<FacilioView> customViews, FacilioView.ViewType viewType, boolean getOnlyBasicViewDetails) throws Exception {
 		if (moduleName.equals("asset")) {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			List<FacilioModule> modules = bean.getChildModules(bean.getModule(moduleName));
@@ -342,7 +341,7 @@ public class GetViewListCommand extends FacilioCommand {
 				childViewMap = new HashMap<>();
 				childViewMap.put(childView.getName(), childView);
 
-				List<FacilioView> childDbViews = ViewAPI.getAllViews(childModule.getModuleId(),viewType, getOnlyBasicViewDetails);
+				List<FacilioView> childDbViews = ViewAPI.getAllViews(appId, childModule.getModuleId(),viewType, getOnlyBasicViewDetails);
 				if (childDbViews != null) {
 					for(FacilioView view: childDbViews) {
 						childViewMap.put(view.getName(), view);
@@ -380,11 +379,11 @@ public class GetViewListCommand extends FacilioCommand {
 		}
 	}
 	
-	private void addMobilelarmViews(ModuleBean modBean, List<FacilioView> dbViews, Map<String,FacilioView> viewMap, List<ViewGroups> viewGroups, FacilioView.ViewType viewType, ViewGroups.ViewGroupType groupType, boolean getOnlyBasicViewDetails) throws Exception {
+	private void addMobilelarmViews(Long appId, ModuleBean modBean, List<FacilioView> dbViews, Map<String,FacilioView> viewMap, List<ViewGroups> viewGroups, FacilioView.ViewType viewType, ViewGroups.ViewGroupType groupType, boolean getOnlyBasicViewDetails) throws Exception {
 		List<String> alarmModules = Arrays.asList(new String[] {ContextNames.BMS_ALARM, ContextNames.AGENT_ALARM, ContextNames.SENSOR_ROLLUP_ALARM});
 		for(String moduleName: alarmModules) {
 			FacilioModule alarmModule = modBean.getModule(moduleName);
-			dbViews.addAll(ViewAPI.getAllViews(alarmModule.getModuleId(), viewType, getOnlyBasicViewDetails));
+			dbViews.addAll(ViewAPI.getAllViews(appId, alarmModule.getModuleId(), viewType, getOnlyBasicViewDetails));
 			
 			viewMap.putAll(ViewFactory.getModuleViews(moduleName, alarmModule));
 			
