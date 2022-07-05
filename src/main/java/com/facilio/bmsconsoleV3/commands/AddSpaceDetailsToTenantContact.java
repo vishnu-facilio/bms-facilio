@@ -27,10 +27,10 @@ import java.util.*;
 public class AddSpaceDetailsToTenantContact extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        String moduleName = Constants.getModuleName(context);
         boolean fetchAnnouncementPeople = FacilioUtil.parseBoolean(Constants.getQueryParam(context, "fetchAnnouncementPeople"));
-        if(fetchAnnouncementPeople) {
+        if(fetchAnnouncementPeople && moduleName.equals(FacilioConstants.ContextNames.TENANT_CONTACT)) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            String moduleName = Constants.getModuleName(context);
             Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
 
             Map<Long, Set> tenantVsUnit = new HashMap<>();
