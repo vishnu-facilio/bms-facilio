@@ -187,12 +187,16 @@ public class EMailTemplate extends Template {
 	
 	private Boolean html;
 	public Boolean getHtml() {
+		if (emailStructure != null){
+			return emailStructure.getHtml();
+		}
 		return html;
 	}
 	public void setHtml(Boolean html) {
 		this.html = html;
 	}
 	public boolean isHtml() {
+		Boolean html = getHtml();
 		if (html != null) {
 			return html.booleanValue();
 		}

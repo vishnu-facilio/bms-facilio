@@ -21,12 +21,24 @@ public class EMailTemplateAction extends FacilioAction {
         this.moduleName = moduleName;
     }
 
+    private Boolean fetchAll;
+
+    public Boolean getFetchAll() {
+        return fetchAll;
+    }
+
+    public void setFetchAll(Boolean fetchAll) {
+        this.fetchAll = fetchAll;
+    }
+
     public String list() throws Exception {
         FacilioChain chain = ReadOnlyChainFactory.getAllEmailStructureChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        context.put(FacilioConstants.ContextNames.FETCH_ALL,fetchAll);
 
         chain.execute();
+
         setResult(FacilioConstants.ContextNames.EMAIL_STRUCTURES, context.get(FacilioConstants.ContextNames.EMAIL_STRUCTURES));
         return SUCCESS;
     }
@@ -86,6 +98,16 @@ public class EMailTemplateAction extends FacilioAction {
 
         chain.execute();
         setResult("message", "Email Template is deleted successfully");
+        return SUCCESS;
+    }
+
+    public String publishEmailStructure() throws Exception{
+        FacilioChain chain = TransactionChainFactory.getPublishEmailStructureChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.ID,id);
+
+        chain.execute();
+        setResult(FacilioConstants.ContextNames.PUBLISH_SUCCESS,"Email Template published successfully");
         return SUCCESS;
     }
 }

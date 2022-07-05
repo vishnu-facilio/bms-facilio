@@ -3128,6 +3128,12 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getNumberField("moduleId", "MODULE_ID", module));
         fields.add(getStringField("subject", "SUBJECT", module));
         fields.add(getNumberField("bodyId", "BODY_ID", module));
+        fields.add(getBooleanField("draft","DRAFT",module));
+        fields.add(getSystemField("sysCreatedTime", module));
+        fields.add(getSystemField("sysModifiedTime", module));
+        fields.add(getSystemField("sysCreatedBy", module));
+        fields.add(getSystemField("sysModifiedBy", module));
+        fields.add(getBooleanField("html","IS_HTML",module));
 
         return fields;
     }

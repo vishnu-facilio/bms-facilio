@@ -9,12 +9,14 @@ import com.facilio.bmsconsole.util.TemplateAttachmentUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.emailtemplate.context.EMailStructure;
+import com.facilio.emailtemplate.util.EmailStructureUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.services.factory.FacilioFactory;
+import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -41,6 +43,9 @@ public class AddOrUpdateEmailStructureCommand extends FacilioCommand {
 
         validateEmailStructure(emailStructure);
 
+        emailStructure.setSysModifiedTime(DateTimeUtil.getCurrenTime());
+        emailStructure.setSysModifiedBy(AccountUtil.getCurrentUser().getOuid());
+
         if (emailStructure.getId() > 0) {
             // delete old message file
 
@@ -51,6 +56,7 @@ public class AddOrUpdateEmailStructureCommand extends FacilioCommand {
             TemplateAttachmentUtil.deleteAttachments(emailStructure.getId());
             TemplateAPI.deleteDefaultProps(oldEmailStructure);
 
+            emailStructure.setDraft(null);
             // add Default Props
             TemplateAPI.addDefaultProps(emailStructure);
 
@@ -64,6 +70,11 @@ public class AddOrUpdateEmailStructureCommand extends FacilioCommand {
                 TemplateAttachmentUtil.addAttachments(oldEmailStructure.getId(), emailStructure.getAttachments());
             }
         } else {
+            if (emailStructure.getDraft() == null){
+                emailStructure.setDraft(false);
+            }
+            emailStructure.setSysCreatedBy(AccountUtil.getCurrentUser().getOuid());
+            emailStructure.setSysCreatedTime(DateTimeUtil.getCurrenTime());
             TemplateAPI.addTemplate(emailStructure);
         }
 

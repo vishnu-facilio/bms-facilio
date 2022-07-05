@@ -13,6 +13,7 @@
                 <property name="name" type="string" />
                 <property name="subject" type="string" />
                 <property name="message" type="string" />
+                <property name="draft" type="boolean"/>
             </property>
         </requestbody>
     </request>
@@ -24,6 +25,11 @@
     <request path="/api/v2/template/email/delete">
         <requestbody type="object">
             <requestbody type="number" />
+        </requestbody>
+    </request>
+    <request path="/api/v2/template/email/publish">
+        <requestbody type="object">
+            <property name="id" type="number"/>
         </requestbody>
     </request>
     <!--    Email Template - end -->

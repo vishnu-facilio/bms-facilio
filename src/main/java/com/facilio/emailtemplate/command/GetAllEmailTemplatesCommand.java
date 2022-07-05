@@ -5,6 +5,7 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.emailtemplate.context.EMailStructure;
 import com.facilio.fw.BeanFactory;
@@ -23,6 +24,7 @@ public class GetAllEmailTemplatesCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+        Boolean fetchAll = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_ALL);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
@@ -40,6 +42,10 @@ public class GetAllEmailTemplatesCommand extends FacilioCommand {
                     .on(ModuleFactory.getEMailStructureModule().getTableName() + ".ID = " + ModuleFactory.getTemplatesModule().getTableName() + ".ID")
                 .select(fields)
                 .andCondition(CriteriaAPI.getCondition("MODULE_ID", "moduleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
+
+        if (fetchAll == null || fetchAll.equals(false)){
+            builder.andCondition(CriteriaAPI.getCondition("DRAFT","draft", String.valueOf(false), BooleanOperators.IS));
+        }
 
         List<EMailStructure> emailTemplates = FieldUtil.getAsBeanListFromMapList(builder.get(), EMailStructure.class);
 

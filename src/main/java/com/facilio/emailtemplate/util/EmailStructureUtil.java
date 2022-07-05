@@ -3,8 +3,12 @@ package com.facilio.emailtemplate.util;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.templates.Template;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.emailtemplate.context.EMailStructure;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.io.IOUtils;
 
@@ -29,5 +33,16 @@ public class EmailStructureUtil {
         }
 
         return eMailStructure;
+    }
+
+    public static boolean getDraft(long id) throws Exception {
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getEMailStructureModule().getTableName())
+                .select(FieldFactory.getEMailStructureFields())
+                .andCondition(CriteriaAPI.getIdCondition(id,ModuleFactory.getEMailStructureModule()));
+
+        EMailStructure eMailStructure = FieldUtil.getAsBeanFromMap(selectRecordBuilder.fetchFirst(),EMailStructure.class);
+        boolean draft = eMailStructure.isDraft();
+        return draft;
     }
 }
