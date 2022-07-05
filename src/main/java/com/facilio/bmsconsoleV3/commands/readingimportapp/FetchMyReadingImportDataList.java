@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.readingimportapp;
 
+import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsoleV3.context.readingimportapp.V3ReadingImportAppContext;
 import com.facilio.command.FacilioCommand;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class FetchReadingImportDataList extends FacilioCommand {
+public class FetchMyReadingImportDataList extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -25,7 +26,9 @@ public class FetchReadingImportDataList extends FacilioCommand {
                 .select(FieldFactory.getReadingImportFields())
                 .table(ModuleFactory.getReadingImportAPPModule().getTableName());
 
+        selectBuilder.andCondition(CriteriaAPI.getCondition("Reading_Import_APP.CREATED_BY", "createdBy", String.valueOf(AccountUtil.getCurrentUser().getOuid()), NumberOperators.EQUALS));
         selectBuilder.orderBy("CREATED_TIME  desc");
+
 
         Map<Long, User> orgUsers = AccountUtil.getOrgBean().getOrgUsersAsMap(AccountUtil.getCurrentOrg().getOrgId());
 

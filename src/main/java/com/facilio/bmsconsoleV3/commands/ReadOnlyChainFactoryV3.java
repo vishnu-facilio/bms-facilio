@@ -19,6 +19,7 @@ import com.facilio.bmsconsoleV3.commands.homepage.getHomePageCommand;
 import com.facilio.bmsconsoleV3.commands.people.FetchScopingForPeopleCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.AddDefaultCriteriaForQuoteFetchCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.QuotationFillLookupFields;
+import com.facilio.bmsconsoleV3.commands.readingimportapp.FetchMyReadingImportDataList;
 import com.facilio.bmsconsoleV3.commands.readingimportapp.FetchReadingImportDataById;
 import com.facilio.bmsconsoleV3.commands.readingimportapp.FetchReadingImportDataList;
 import com.facilio.bmsconsoleV3.commands.site.SiteFillLookupFieldsCommand;
@@ -258,6 +259,11 @@ public class ReadOnlyChainFactoryV3 {
     public static FacilioChain getReadingImportDataList() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchReadingImportDataList());
+        return c;
+    }
+    public static FacilioChain getMyReadingImportDataList() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchMyReadingImportDataList());
         return c;
     }
     public static FacilioChain getHomepageChain() {

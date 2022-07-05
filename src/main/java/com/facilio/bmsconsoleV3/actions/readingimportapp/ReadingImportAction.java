@@ -78,6 +78,16 @@ public class ReadingImportAction extends V3Action{
 
         return V3Action.SUCCESS;
     }
+    public String getMyImportMetaList() throws Exception {
+
+        FacilioChain chain = ReadOnlyChainFactoryV3.getMyReadingImportDataList();
+        FacilioContext context = chain.getContext();
+        chain.execute();
+
+        setData("readingimport", context.get("READING_IMPORT_DATA_LIST"));
+
+        return V3Action.SUCCESS;
+    }
 
     public String updateReadingImportData() throws Exception {
 

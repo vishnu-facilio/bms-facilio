@@ -854,6 +854,8 @@
             </property>
         </requestbody>
     </request>
+    <request path="/api/v3/readingimport/mylist">
+    </request>
 
     <request path="/api/v3/readingimport/update">
         <requestbody type="object">

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.readingimportapp;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsoleV3.context.readingimportapp.V3ReadingImportAppContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -20,6 +21,9 @@ public class UpdateReadingImportDataCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         V3ReadingImportAppContext readingImportContext = (V3ReadingImportAppContext) context.get("READING_IMPORT_CONTEXT");
         FacilioUtil.throwIllegalArgumentException(readingImportContext == null, "Reading import context should not be null");
+
+        readingImportContext.setModifiedBy(AccountUtil.getCurrentUser().getOuid());
+        readingImportContext.setModifiedTime(System.currentTimeMillis());
 
         GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
                 .fields(FieldFactory.getReadingImportFields())

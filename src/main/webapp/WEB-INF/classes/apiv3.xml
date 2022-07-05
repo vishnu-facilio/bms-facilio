@@ -839,6 +839,9 @@
         <action name="list"
                 class="com.facilio.bmsconsoleV3.actions.readingimportapp.ReadingImportAction"
                 method="getImportMetaList"/>
+        <action name="mylist"
+                class="com.facilio.bmsconsoleV3.actions.readingimportapp.ReadingImportAction"
+                method="getMyImportMetaList"/>
         <action name="update"
                 class="com.facilio.bmsconsoleV3.actions.readingimportapp.ReadingImportAction"
                 method="updateReadingImportData"/>
