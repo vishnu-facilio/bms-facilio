@@ -1818,11 +1818,32 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.JOB_PLAN_ACTIVITY));
         return c;
     }
-    
+
     public static FacilioChain addReadingDataMetaForReadingModule() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new FetchReadingsModuleFieldsCommand());
         chain.addCommand(new InsertReadingDataMetaForNewResourceCommand());
         return chain;
     }
+
+    public static FacilioChain getPMExecuteNowChain() {
+        FacilioChain chain = getDefaultChain();
+        //        chain.addCommand(new FetchReadingsModuleFieldsCommand());
+
+        //  cmd 1 - create wo and persit to db
+        // cmd 2 - fill tasks and prerequisites from 3 JP objects
+        return chain;
+    }
+
+    // getPreOpenToDefaultChain convertes preopen wo to open wo
+    public static FacilioChain getPreOpenToDefaultChain() {
+        FacilioChain chain = getDefaultChain();
+        //        chain.addCommand(new FetchReadingsModuleFieldsCommand());
+
+
+        //  cmd 1 - change wo state from preopen to open
+        // cmd 2 - fill tasks and prerequisites from 3 JP objects
+        return chain;
+    }
+    
 }
