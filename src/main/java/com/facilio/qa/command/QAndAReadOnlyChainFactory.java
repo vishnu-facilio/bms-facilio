@@ -96,10 +96,16 @@ public class QAndAReadOnlyChainFactory {
     public static FacilioChain afterAnswerFetchChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchAnswerAttachmentsCommand());
-        c.addCommand(new FetchRelatedRecordsFormMatrixQuestionCommand());
+		c.addCommand(new FetchRelatedRecordsFormQandAQuestionsCommand());
         c.addCommand(new SerializeAnswersCommand());
         return c;
     }
+
+	public static FacilioChain fetchMatrixRelatedRecordChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new FetchRelatedRecordsFormMatrixQuestionCommand());
+		return c;
+	}
 
     public static FacilioChain fetchAnswersOfQuestion() {
         FacilioChain c = getDefaultChain();
