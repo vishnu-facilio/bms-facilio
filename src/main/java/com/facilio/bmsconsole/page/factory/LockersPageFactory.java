@@ -31,11 +31,12 @@ public class LockersPageFactory extends PageFactory {
         addSecondaryDetailsWidget(tab1Sec1);
         addCommonSubModuleWidget(tab1Sec1, module, lockersContext);
 
-        Tab tab2 = page.new Tab("related list");
-		Section tab2Sec1 = page.new Section();
+        Tab tab2 = page.new Tab("Related");
+        boolean isRelationshipAdded = addRelationshipSection(page, tab2, module.getModuleId());
+        Section tab2Sec1 = page.new Section();
 		tab2.addSection(tab2Sec1);
 		addRelatedListWidgets(tab2Sec1, module.getModuleId());
-		if(CollectionUtils.isNotEmpty(tab2Sec1.getWidgets())) {
+		if(CollectionUtils.isNotEmpty(tab2Sec1.getWidgets()) || isRelationshipAdded) {
 			page.addTab(tab2);
 		}
         

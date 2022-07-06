@@ -31,12 +31,12 @@ public class ParkingStallPageFactory extends PageFactory {
         addSecondaryDetailsWidget(tab1Sec1);
         addCommonSubModuleWidget(tab1Sec1, module, parkingstallContext);
 
-        Tab tab2 = page.new Tab("related list");
-
+        Tab tab2 = page.new Tab("Related");
+        boolean isRelationshipNeeded = addRelationshipSection(page, tab2, module.getModuleId());
 		Section tab2Sec1 = page.new Section();
 		tab2.addSection(tab2Sec1);
 		addRelatedListWidgets(tab2Sec1, module.getModuleId());
-		if(CollectionUtils.isNotEmpty(tab2Sec1.getWidgets())) {
+		if(CollectionUtils.isNotEmpty(tab2Sec1.getWidgets()) || isRelationshipNeeded) {
 			page.addTab(tab2);
 		}
         

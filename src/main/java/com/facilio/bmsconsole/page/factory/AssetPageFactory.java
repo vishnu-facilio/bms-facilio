@@ -258,12 +258,14 @@ public class AssetPageFactory extends PageFactory {
 
 
 
-			Tab tab11 = page.new Tab("related records");
+			Tab tab11 = page.new Tab("Related");
+			boolean isRelationshipAdded = addRelationshipSection(page, tab11, assetModule.getModuleId());
+
 			Section tab11Sec1 = page.new Section();
 			tab11.addSection(tab11Sec1);
 
 			addRelatedListWidgets(tab11Sec1, assetModule.getModuleId());
-			if (tab11Sec1.getWidgets() != null && !tab11Sec1.getWidgets().isEmpty()) {
+			if ((tab11Sec1.getWidgets() != null && !tab11Sec1.getWidgets().isEmpty()) || isRelationshipAdded) {
 				page.addTab(tab11);
 			}
 

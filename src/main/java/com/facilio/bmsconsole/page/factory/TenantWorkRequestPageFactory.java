@@ -40,8 +40,10 @@ public class TenantWorkRequestPageFactory extends PageFactory {
 
 		if (requestFromMainApp()) {
 
-			Tab relatedRecordsTab = page.new Tab("related records");
+			Tab relatedRecordsTab = page.new Tab("Related");
 			page.addTab(relatedRecordsTab);
+
+            addRelationshipSection(page, relatedRecordsTab, module.getModuleId());
 
 			Page.Section relatedRecordsSection = page.new Section();
 			relatedRecordsTab.addSection(relatedRecordsSection);

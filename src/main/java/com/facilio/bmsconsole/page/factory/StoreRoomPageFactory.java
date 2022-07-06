@@ -87,8 +87,9 @@ public class StoreRoomPageFactory extends PageFactory{
 //		addRelatedListWidgets(tab3Sec1, storeroom.getModuleId());
 //        page.addTab(tab3);
 //        
-        Page.Tab tab3 = page.new Tab("Related Records");
+        Page.Tab tab3 = page.new Tab("Related");
         page.addTab(tab3);
+        addRelationshipSection(page, tab3, module.getModuleId());
         Page.Section tab3Sec1 = page.new Section();
         tab3.addSection(tab3Sec1);
         

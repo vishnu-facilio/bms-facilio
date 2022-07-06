@@ -80,9 +80,10 @@ public class TenantUnitSpacePageFactory extends PageFactory {
             addNotesAttachmentsModule(tab2Sec1);
         }
 
-        Page.Tab tab3 = page.new Tab("related records");
+        Page.Tab tab3 = page.new Tab("Related");
         page.addTab(tab3);
 
+        addRelationshipSection(page, tab3, module.getModuleId());
         Page.Section tab3Sec1 = page.new Section();
         tab3.addSection(tab3Sec1);
         addRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.ASSET, baseSpaceModule.getModuleId(), "Assets");

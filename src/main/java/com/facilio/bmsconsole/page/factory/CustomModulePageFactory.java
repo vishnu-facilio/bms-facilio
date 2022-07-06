@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
@@ -44,10 +45,17 @@ public class CustomModulePageFactory extends PageFactory {
 			return page;
 		}
 
-		Tab tab2 = page.new Tab("related list");
+		Tab tab2 = page.new Tab("Related");
 
-		Section tab2Sec1 = page.new Section();
-		tab2.addSection(tab2Sec1);
+		boolean isRelationshipAdded = addRelationshipSection(page, tab2, record.getModuleId());
+
+		Section tab2Sec1;
+		if (FacilioProperties.isDevelopment()) {
+			tab2Sec1 = page.new Section("Related List", "List of all related records across modules");
+		}
+		else {
+			tab2Sec1 = page.new Section();
+		}
 		addRelatedListWidgets(tab2Sec1, record.getModuleId(), formSubModules, false);
 		
 		// Temp - to add seperate pagefactory for employee module
@@ -68,8 +76,10 @@ public class CustomModulePageFactory extends PageFactory {
             tab2Sec1.addWidget(relatedListWidget);
         
         }
-		
 		if(CollectionUtils.isNotEmpty(tab2Sec1.getWidgets())) {
+			tab2.addSection(tab2Sec1);
+		}
+		if(CollectionUtils.isNotEmpty(tab2Sec1.getWidgets()) || isRelationshipAdded) {
 			page.addTab(tab2);
 		}
 

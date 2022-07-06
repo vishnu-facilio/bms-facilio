@@ -39,8 +39,8 @@ public class PeopleModulesPageFactory extends PageFactory {
 			return page;
 		}
 
-		Tab tab2 = page.new Tab("related list");
-
+		Tab tab2 = page.new Tab("Related");
+		boolean isRelationshipNeeded = addRelationshipSection(page, tab2, record.getModuleId());
 		Section tab2Sec1 = page.new Section();
 		tab2.addSection(tab2Sec1);
 		addRelatedListWidgets(tab2Sec1, record.getModuleId(), formSubModules, false);
@@ -64,7 +64,7 @@ public class PeopleModulesPageFactory extends PageFactory {
         
         }
 		
-		if(CollectionUtils.isNotEmpty(tab2Sec1.getWidgets())) {
+		if((CollectionUtils.isNotEmpty(tab2Sec1.getWidgets())) || isRelationshipNeeded) {
 			page.addTab(tab2);
 		}
 		addCommonSubModuleWidget(tab1Sec1, module, record, null,false);

@@ -187,14 +187,14 @@ public class VendorPageFactory extends PageFactory{
 			subModuleGroup.addToWidget(notesWidget);
 			
 			
-			Tab tab2 = page.new Tab("related list");
+			Tab tab2 = page.new Tab("Related");
 			//page.addTab(tab2);
-			
+			boolean isRelationshipAdded = addRelationshipSection(page, tab2, vendor.getModuleId());
 			Section tab2Sec1 = page.new Section();
 			tab2.addSection(tab2Sec1);
 			addRelatedListWidgets(tab2Sec1, vendor.getModuleId());
 			addRelatedListWidget(tab2Sec1, "vendorDocuments", vendor.getModuleId());
-			if(CollectionUtils.isNotEmpty(tab2Sec1.getWidgets())) {
+			if(CollectionUtils.isNotEmpty(tab2Sec1.getWidgets()) || isRelationshipAdded) {
 				page.addTab(tab2);
 			}
 

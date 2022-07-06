@@ -230,6 +230,7 @@ public class APIv3Config {
 	    return () -> new V3Config(RelationDataContext.class, null)
                 .list()
                 .beforeFetch(ReadOnlyChainFactoryV3.getRelationDataListChain())
+                .afterFetch(ReadOnlyChainFactoryV3.updateRelationSupplementsChain())
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getRelationDataAddBeforeSaveChain())
                 .update()

@@ -199,11 +199,12 @@ public class InductionPageFactory extends PageFactory {
             page.addTab(notesAndAttachmentTab);
             
             
-            Tab relatedList = page.new Tab("Related Records");
+            Tab relatedList = page.new Tab("Related");
+            boolean isRelationshipNeeded = addRelationshipSection(page, relatedList, module.getModuleId());
     		Section relatedListSec = page.new Section();
     		addRelatedListWidgets(relatedListSec, module.getModuleId());
     		relatedList.addSection(relatedListSec);
-    		if(CollectionUtils.isNotEmpty(relatedListSec.getWidgets())) {
+    		if(CollectionUtils.isNotEmpty(relatedListSec.getWidgets()) || isRelationshipNeeded) {
     			page.addTab(relatedList);
     		}
         }

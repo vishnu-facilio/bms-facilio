@@ -36,6 +36,7 @@ import com.facilio.bmsconsoleV3.commands.visitorlogging.SetInviteConditionForVis
 import com.facilio.bmsconsoleV3.commands.workorder.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.relation.command.AppendRelationFilterCommand;
+import com.facilio.relation.command.UpdateRelationSupplementsCommand;
 import com.facilio.relation.command.ValidateRelationParamCommand;
 
 public class ReadOnlyChainFactoryV3 {
@@ -215,6 +216,12 @@ public class ReadOnlyChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ValidateRelationParamCommand());
         c.addCommand(new AppendRelationFilterCommand());
+        return c;
+    }
+
+    public static FacilioChain updateRelationSupplementsChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateRelationSupplementsCommand());
         return c;
     }
     
