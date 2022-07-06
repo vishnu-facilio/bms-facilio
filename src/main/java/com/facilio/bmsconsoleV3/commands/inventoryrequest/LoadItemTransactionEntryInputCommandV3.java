@@ -34,8 +34,8 @@ public class LoadItemTransactionEntryInputCommandV3 extends FacilioCommand {
             for (V3InventoryRequestContext request : requests) {
                     //V3InventoryRequestContext inv = (V3InventoryRequestContext) RecordAPI.getRecord(FacilioConstants.ContextNames.INVENTORY_REQUEST, request.getId());
                     if (request.getApprovalFlowId() <= 0) {
-                        List<ItemTransactionsContext> itemTransactions = new ArrayList<ItemTransactionsContext>();
-                        List<ToolTransactionContext> toolTransactions = new ArrayList<ToolTransactionContext>();
+                        List<V3ItemTransactionsContext> itemTransactions = new ArrayList<V3ItemTransactionsContext>();
+                        List<V3ToolTransactionContext> toolTransactions = new ArrayList<V3ToolTransactionContext>();
 
                         for (V3InventoryRequestLineItemContext lineItem : request.getInventoryrequestlineitems()) {
                             if (lineItem.getInventoryType() == InventoryType.ITEM.getValue()) {

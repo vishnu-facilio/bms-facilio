@@ -10296,6 +10296,20 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getHomePageFactoryFields() {
+        List<FacilioField> fields = new ArrayList<>();
+
+        FacilioModule module = ModuleFactory.getHomePageFactoryModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("appId", "APP_ID", module, FieldType.NUMBER));
+        fields.add(getCreatedTime(module));
+        fields.add(getField("linkName", "LINK_NAME", module, FieldType.STRING));
+        fields.add(getField("displayName", "DISPLAY_NAME", module, FieldType.STRING));
+        return fields;
+    }
+
+
     protected static <F extends FacilioField> F  getNewFieldObject(FieldType type) {
         switch (type) {
             case LOOKUP:

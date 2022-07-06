@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
@@ -31,7 +31,7 @@ public class ItemTransactionRemainingQuantityRollupCommandV3 extends FacilioComm
                 .get(FacilioConstants.ContextNames.TRANSACTION_STATE);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         EventType event = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
-        List<ItemTransactionsContext> itemTransactions = (List<ItemTransactionsContext>) context
+        List<V3ItemTransactionsContext> itemTransactions = (List<V3ItemTransactionsContext>) context
                 .get(FacilioConstants.ContextNames.RECORD_LIST);
         FacilioModule itemTransactionsModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
         List<FacilioField> itemTransactionsFields = modBean
@@ -39,22 +39,22 @@ public class ItemTransactionRemainingQuantityRollupCommandV3 extends FacilioComm
         Map<String, FacilioField> itemTransactionsFieldsMap = FieldFactory.getAsMap(itemTransactionsFields);
         if (itemTransactions != null && !itemTransactions.isEmpty()) {
             if (itemTransactions.get(0).getTransactionStateEnum() == TransactionState.RETURN) {
-                for (ItemTransactionsContext transaction : itemTransactions) {
-                    ItemTransactionsContext itemTransaction = getItemTransaction(transaction.getParentTransactionId(),
+                for (V3ItemTransactionsContext transaction : itemTransactions) {
+                    V3ItemTransactionsContext itemTransaction = getItemTransaction(transaction.getParentTransactionId(),
                             itemTransactionsModule, itemTransactionsFields, itemTransactionsFieldsMap);
                     double totalReturnQuantity = getTotalReturnQuantity(transaction.getParentTransactionId(),
                             itemTransactionsModule, itemTransactionsFieldsMap, transactionState);
                     double totalRemainingQuantity = itemTransaction.getQuantity() - totalReturnQuantity;
                     itemTransaction.setRemainingQuantity(totalRemainingQuantity);
 
-                    UpdateRecordBuilder<ItemTransactionsContext> updateBuilder = new UpdateRecordBuilder<ItemTransactionsContext>()
+                    UpdateRecordBuilder<V3ItemTransactionsContext> updateBuilder = new UpdateRecordBuilder<V3ItemTransactionsContext>()
                             .module(itemTransactionsModule).fields(itemTransactionsFields).andCondition(CriteriaAPI
                                     .getIdCondition(transaction.getParentTransactionId(), itemTransactionsModule));
                     updateBuilder.update(itemTransaction);
                 }
             } else if (itemTransactions.get(0).getTransactionStateEnum() == TransactionState.USE && itemTransactions.get(0).getParentTransactionId() > 0) {
-                for (ItemTransactionsContext transaction : itemTransactions) {
-                    ItemTransactionsContext itemTransaction = getItemTransaction(transaction.getParentTransactionId(),
+                for (V3ItemTransactionsContext transaction : itemTransactions) {
+                    V3ItemTransactionsContext itemTransaction = getItemTransaction(transaction.getParentTransactionId(),
                             itemTransactionsModule, itemTransactionsFields, itemTransactionsFieldsMap);
                     double totalRemainingQuantity = 0;
                     totalRemainingQuantity = itemTransaction.getQuantity() - getTotalRemainingQuantityQuantity(transaction.getParentTransactionId(),
@@ -62,7 +62,7 @@ public class ItemTransactionRemainingQuantityRollupCommandV3 extends FacilioComm
 
                     itemTransaction.setRemainingQuantity(totalRemainingQuantity);
 
-                    UpdateRecordBuilder<ItemTransactionsContext> updateBuilder = new UpdateRecordBuilder<ItemTransactionsContext>()
+                    UpdateRecordBuilder<V3ItemTransactionsContext> updateBuilder = new UpdateRecordBuilder<V3ItemTransactionsContext>()
                             .module(itemTransactionsModule).fields(itemTransactionsFields).andCondition(CriteriaAPI
                                     .getIdCondition(transaction.getParentTransactionId(), itemTransactionsModule));
                     updateBuilder.update(itemTransaction);
@@ -82,7 +82,7 @@ public class ItemTransactionRemainingQuantityRollupCommandV3 extends FacilioComm
         List<FacilioField> field = new ArrayList<>();
         field.add(FieldFactory.getField("totalRemainingQuantity", "sum(QUANTITY)", FieldType.DECIMAL));
 
-        SelectRecordsBuilder<ItemTransactionsContext> builder = new SelectRecordsBuilder<ItemTransactionsContext>()
+        SelectRecordsBuilder<V3ItemTransactionsContext> builder = new SelectRecordsBuilder<V3ItemTransactionsContext>()
                 .select(field).moduleName(module.getName())
                 .andCondition(CriteriaAPI.getCondition(fieldsMap.get("parentTransactionId"),
                         String.valueOf(parentTransactionId), NumberOperators.EQUALS))
@@ -110,7 +110,7 @@ public class ItemTransactionRemainingQuantityRollupCommandV3 extends FacilioComm
         List<FacilioField> field = new ArrayList<>();
         field.add(FieldFactory.getField("totalRemainingQuantity", "sum(QUANTITY)", FieldType.DECIMAL));
 
-        SelectRecordsBuilder<ItemTransactionsContext> builder = new SelectRecordsBuilder<ItemTransactionsContext>()
+        SelectRecordsBuilder<V3ItemTransactionsContext> builder = new SelectRecordsBuilder<V3ItemTransactionsContext>()
                 .select(field).moduleName(module.getName())
                 .andCondition(CriteriaAPI.getCondition(fieldsMap.get("parentTransactionId"),
                         String.valueOf(parentTransactionId), NumberOperators.EQUALS))
@@ -128,18 +128,18 @@ public class ItemTransactionRemainingQuantityRollupCommandV3 extends FacilioComm
         return 0d;
     }
 
-    private ItemTransactionsContext getItemTransaction(long parentTransactionId, FacilioModule module,
+    private V3ItemTransactionsContext getItemTransaction(long parentTransactionId, FacilioModule module,
                                                        List<FacilioField> fields, Map<String, FacilioField> fieldsMap) throws Exception {
 
         if (parentTransactionId <= 0) {
             return null;
         }
 
-        SelectRecordsBuilder<ItemTransactionsContext> builder = new SelectRecordsBuilder<ItemTransactionsContext>()
-                .select(fields).moduleName(module.getName()).beanClass(ItemTransactionsContext.class)
+        SelectRecordsBuilder<V3ItemTransactionsContext> builder = new SelectRecordsBuilder<V3ItemTransactionsContext>()
+                .select(fields).moduleName(module.getName()).beanClass(V3ItemTransactionsContext.class)
                 .andCondition(CriteriaAPI.getIdCondition(parentTransactionId, module));
 
-        List<ItemTransactionsContext> itemTransactions = builder.get();
+        List<V3ItemTransactionsContext> itemTransactions = builder.get();
         if (itemTransactions != null && !itemTransactions.isEmpty()) {
             return itemTransactions.get(0);
         }

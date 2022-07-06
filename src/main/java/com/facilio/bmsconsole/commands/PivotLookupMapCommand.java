@@ -40,7 +40,7 @@ public class PivotLookupMapCommand extends FacilioCommand {
                 Map<Long, Object> lookupMap = getLookUpMap(newLookupField.getSpecialType(), newLookupField.getLookupModule(), ids);
                 if(lookupMap == null || CollectionUtils.isEmpty(Collections.singleton(lookupMap))) continue;
                 pivotLookupMap.put(row.getAlias(), lookupMap);
-            } if(facilioField != null && facilioField.getName().equals("siteId")){
+            } else if(facilioField != null && facilioField.getName().equals("siteId")){
                 List<Long> ids = getColumnArray(row.getAlias(), pivotTableData);
                 FacilioModule module = modBean.getModule("site");
                 Map<Long, Object> lookupMap = getLookUpMap(null, module, ids);
@@ -102,7 +102,7 @@ public class PivotLookupMapCommand extends FacilioCommand {
         return idsArray;
     }
 
-    private Map<Object, Long>getLookUpMap(FacilioModule lookupModule, FacilioField facilioField, String data) throws Exception {
+    private Map<Object, Long> getLookUpMap(FacilioModule lookupModule, FacilioField facilioField, String data) throws Exception {
         Map<Object, Long> lookupMap = new HashMap<>();
 
         List<FacilioField> selectFields = new ArrayList<>();

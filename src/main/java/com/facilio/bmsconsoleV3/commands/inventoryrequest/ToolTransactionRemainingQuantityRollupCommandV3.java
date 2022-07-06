@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsoleV3.context.V3ToolTransactionContext;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
@@ -29,7 +30,7 @@ public class ToolTransactionRemainingQuantityRollupCommandV3 extends FacilioComm
         TransactionState transactionState = (TransactionState) context
                 .get(FacilioConstants.ContextNames.TRANSACTION_STATE);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        List<ToolTransactionContext> toolTransactions = (List<ToolTransactionContext>) context
+        List<V3ToolTransactionContext> toolTransactions = (List<V3ToolTransactionContext>) context
                 .get(FacilioConstants.ContextNames.RECORD_LIST);
         FacilioModule toolTransactionsModule = modBean.getModule(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
         List<FacilioField> toolTransactionsFields = modBean
@@ -37,15 +38,15 @@ public class ToolTransactionRemainingQuantityRollupCommandV3 extends FacilioComm
         Map<String, FacilioField> toolTransactionsFieldsMap = FieldFactory.getAsMap(toolTransactionsFields);
         if (toolTransactions != null && !toolTransactions.isEmpty()) {
             if (toolTransactions.get(0).getTransactionStateEnum() == TransactionState.RETURN) {
-                for (ToolTransactionContext transaction : toolTransactions) {
-                    ToolTransactionContext toolTransaction = getToolTransaction(transaction.getParentTransactionId(),
+                for (V3ToolTransactionContext transaction : toolTransactions) {
+                    V3ToolTransactionContext toolTransaction = getToolTransaction(transaction.getParentTransactionId(),
                             toolTransactionsModule, toolTransactionsFields, toolTransactionsFieldsMap);
                     double totalReturnQuantity = getTotalReturnQuantity(transaction.getParentTransactionId(), toolTransactionsModule,
                             toolTransactionsFieldsMap);
                     double totalRemainingQuantity = toolTransaction.getQuantity() - totalReturnQuantity;
                     toolTransaction.setRemainingQuantity(totalRemainingQuantity);
 
-                    UpdateRecordBuilder<ToolTransactionContext> updateBuilder = new UpdateRecordBuilder<ToolTransactionContext>()
+                    UpdateRecordBuilder<V3ToolTransactionContext> updateBuilder = new UpdateRecordBuilder<V3ToolTransactionContext>()
                             .module(toolTransactionsModule).fields(toolTransactionsFields)
                             .andCondition(CriteriaAPI.getIdCondition(transaction.getParentTransactionId(), toolTransactionsModule));
                     updateBuilder.update(toolTransaction);
@@ -65,7 +66,7 @@ public class ToolTransactionRemainingQuantityRollupCommandV3 extends FacilioComm
         List<FacilioField> field = new ArrayList<>();
         field.add(FieldFactory.getField("totalRemainingQuantity", "sum(QUANTITY)", FieldType.DECIMAL));
 
-        SelectRecordsBuilder<ToolTransactionContext> builder = new SelectRecordsBuilder<ToolTransactionContext>()
+        SelectRecordsBuilder<V3ToolTransactionContext> builder = new SelectRecordsBuilder<V3ToolTransactionContext>()
                 .select(field).moduleName(module.getName())
                 .andCondition(CriteriaAPI.getCondition(fieldsMap.get("parentTransactionId"),
                         String.valueOf(parentTransactionId), NumberOperators.EQUALS))
@@ -83,18 +84,18 @@ public class ToolTransactionRemainingQuantityRollupCommandV3 extends FacilioComm
         return 0d;
     }
 
-    private ToolTransactionContext getToolTransaction(long parentTransactionId, FacilioModule module,
+    private V3ToolTransactionContext getToolTransaction(long parentTransactionId, FacilioModule module,
                                                       List<FacilioField> fields, Map<String, FacilioField> fieldsMap) throws Exception {
 
         if (parentTransactionId <= 0) {
             return null;
         }
 
-        SelectRecordsBuilder<ToolTransactionContext> builder = new SelectRecordsBuilder<ToolTransactionContext>()
-                .select(fields).moduleName(module.getName()).beanClass(ToolTransactionContext.class)
+        SelectRecordsBuilder<V3ToolTransactionContext> builder = new SelectRecordsBuilder<V3ToolTransactionContext>()
+                .select(fields).moduleName(module.getName()).beanClass(V3ToolTransactionContext.class)
                 .andCondition(CriteriaAPI.getIdCondition(parentTransactionId, module));
 
-        List<ToolTransactionContext> toolTransactions = builder.get();
+        List<V3ToolTransactionContext> toolTransactions = builder.get();
         if (toolTransactions != null && !toolTransactions.isEmpty()) {
             return toolTransactions.get(0);
         }

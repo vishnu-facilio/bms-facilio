@@ -182,6 +182,9 @@ public class FacilioConstants {
 
 		public static final String READING_IMPORT_APP = "readingimport";
 
+		public static class HomePage {
+			public static final String HOME_PAGE = "homepage";
+		}
 		public static final String VERIFY_USER = "verifyUser";
 		public static final String RULE_LOG_MODULE_DATA = "ruleLogModuleData";
 
@@ -781,8 +784,10 @@ public class FacilioConstants {
 		public static final String DATA_KEY = "data";
 		public static final String FORMULA = "formula";
 		public static final String FORMULA_HEADERS = "formulaHeaders";
+
 		public static final String VALUES = "values";
 		public static final String IS_BUILDER_V2 = "isBuilderV2";
+		public static final String PIVOT_EXTENDED_MODULE_IDS = "pivotExtendedModuleIds";
 
 		public static final String LABEL_MAP = "labelMap";
 
@@ -1443,6 +1448,8 @@ public class FacilioConstants {
 		public static final String IDS_TO_UPDATE_COUNT = "ids_to_update_count";
 
 		public static final String PAGE = "page";
+
+		public static final String HOME_PAGE = "homepage";
 		public static final String RELATED_LIST_META = "relatedListMeta";
 		public static final String CURRENT_CALENDAR_VIEW = "currentCalendarView";
 		public static final String ML_FORECASTING = "ml_forecasting";
@@ -1498,6 +1505,8 @@ public class FacilioConstants {
 
 		public static final String WORKORDER_ITEMS = "workorderItem";
 		public static final String ITEM_TRANSACTIONS = "itemTransactions";
+		public static final String ITEM_TRANSACTIONS_PARAMS = "itemTransactionsParams";
+
 
 		public static final String TOOL_LIST = "toolList";
 		public static final String TOOL = "tool";

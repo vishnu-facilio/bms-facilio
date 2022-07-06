@@ -7,16 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
+import com.facilio.bmsconsoleV3.util.V3ItemsApi;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ItemContext;
-import com.facilio.bmsconsole.context.ItemTransactionsContext;
-import com.facilio.bmsconsole.context.PurchasedItemContext;
-import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -54,14 +53,14 @@ public class PurchasedItemsQuantityRollUpCommandV3 extends FacilioCommand {
         totalQuantityConsumedField.setColumnName("sum(" + itemTransactionsFieldMap.get("quantityConsumed") + ")");
         fields.add(totalQuantityConsumedField);
 
-        List<? extends ItemTransactionsContext> itemTransactions = (List<ItemTransactionsContext>) context
+        List<? extends V3ItemTransactionsContext> itemTransactions = (List<V3ItemTransactionsContext>) context
                 .get(FacilioConstants.ContextNames.RECORD_LIST);
         Set<Long> uniquepurchasedItemsIds = new HashSet<Long>();
         Set<Long> uniqueAssetId = new HashSet<Long>();
         Set<Long> uniqueItemIds = new HashSet<Long>();
         int totalQuantityConsumed = 0;
         if (itemTransactions != null && !itemTransactions.isEmpty()) {
-            for (ItemTransactionsContext consumable : itemTransactions) {
+            for (V3ItemTransactionsContext consumable : itemTransactions) {
                 if(consumable.getTransactionStateEnum() != TransactionState.USE || consumable.getParentTransactionId() <= 0) {
                     if (consumable.getPurchasedItem() != null) {
                         uniquepurchasedItemsIds.add(consumable.getPurchasedItem().getId());
@@ -78,16 +77,16 @@ public class PurchasedItemsQuantityRollUpCommandV3 extends FacilioCommand {
             List<FacilioField> purchasedItemFields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_ITEM);
             for (Long id : uniquepurchasedItemsIds) {
                 double totalConsumed = getTotalQuantityConsumed(id, "purchasedItem");
-                PurchasedItemContext purchasedItem = new PurchasedItemContext();
-                SelectRecordsBuilder<PurchasedItemContext> selectBuilder = new SelectRecordsBuilder<PurchasedItemContext>()
+                V3PurchasedItemContext purchasedItem = new V3PurchasedItemContext();
+                SelectRecordsBuilder<V3PurchasedItemContext> selectBuilder = new SelectRecordsBuilder<V3PurchasedItemContext>()
                         .select(purchasedItemFields).table(purchasedItemsModule.getTableName())
-                        .moduleName(purchasedItemsModule.getName()).beanClass(PurchasedItemContext.class)
+                        .moduleName(purchasedItemsModule.getName()).beanClass(V3PurchasedItemContext.class)
                         .andCondition(CriteriaAPI.getIdCondition(id, purchasedItemsModule));
-                List<PurchasedItemContext> purchasedItems = selectBuilder.get();
+                List<V3PurchasedItemContext> purchasedItems = selectBuilder.get();
                 if (purchasedItems != null && !purchasedItems.isEmpty()) {
                     purchasedItem = purchasedItems.get(0);
                     purchasedItem.setCurrentQuantity(totalConsumed);
-                    UpdateRecordBuilder<PurchasedItemContext> updateBuilder = new UpdateRecordBuilder<PurchasedItemContext>()
+                    UpdateRecordBuilder<V3PurchasedItemContext> updateBuilder = new UpdateRecordBuilder<V3PurchasedItemContext>()
                             .module(purchasedItemsModule).fields(modBean.getAllFields(purchasedItemsModule.getName()))
                             .andCondition(CriteriaAPI.getIdCondition(id, purchasedItemsModule));
                     updateBuilder.update(purchasedItem);
@@ -102,9 +101,9 @@ public class PurchasedItemsQuantityRollUpCommandV3 extends FacilioCommand {
             FacilioModule itemModule = modBean.getModule(FacilioConstants.ContextNames.ITEM);
             for (Long id : uniqueItemIds) {
                 double totalConsumed = getTotalQuantityConsumed(id, "item");
-                ItemContext item = ItemsApi.getItems(id);
+                V3ItemContext item = V3ItemsApi.getItems(id);
                 item.setQuantity(totalConsumed);
-                UpdateRecordBuilder<ItemContext> updateBuilder = new UpdateRecordBuilder<ItemContext>()
+                UpdateRecordBuilder<V3ItemContext> updateBuilder = new UpdateRecordBuilder<V3ItemContext>()
                         .module(itemModule).fields(modBean.getAllFields(itemModule.getName()))
                         .andCondition(CriteriaAPI.getIdCondition(id, itemModule));
                 updateBuilder.update(item);

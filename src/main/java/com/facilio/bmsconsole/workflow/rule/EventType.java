@@ -309,6 +309,12 @@ public enum EventType {
 			return null;
 		}
 	},
+	ANNOUNCEMENT_PUBLISH(274877906944l) {
+		@Override
+		public String getMessage(JSONObject json) {
+			return null;
+		}
+	},
 	;
 
     private long eventType;

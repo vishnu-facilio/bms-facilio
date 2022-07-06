@@ -184,6 +184,7 @@ public class FetchReportDataCommand extends FacilioCommand {
         }
 
         context.put(FacilioConstants.ContextNames.REPORT_DATA, reportData);
+        context.put(FacilioConstants.ContextNames.PIVOT_EXTENDED_MODULE_IDS, baseModule.getExtendedModuleIds());
         return false;
     }
 

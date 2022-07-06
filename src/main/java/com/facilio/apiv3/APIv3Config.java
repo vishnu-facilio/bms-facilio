@@ -49,9 +49,11 @@ import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
+import com.facilio.bmsconsoleV3.commands.item.AdjustmentItemTransactionCommandV3;
 import com.facilio.bmsconsoleV3.commands.item.LoadItemLookUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.item.SetManualItemTransactionCommandV3;
+import com.facilio.bmsconsoleV3.commands.item.UpdateItemTransactionsCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
-import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.FetchJobPlanLookupCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.FillJobPlanDetailsCommand;
 import com.facilio.bmsconsoleV3.commands.labour.GetLabourListCommandV3;
@@ -73,7 +75,6 @@ import com.facilio.bmsconsoleV3.commands.requestForQuotation.*;
 import com.facilio.bmsconsoleV3.commands.service.GetServiceVendorListCommandV3;
 import com.facilio.bmsconsoleV3.commands.service.UpdateStatusCommandV3;
 import com.facilio.bmsconsoleV3.commands.service.UpdateVendorV3;
-import com.facilio.bmsconsoleV3.commands.servicerequest.AddRequesterForServiceRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.servicerequest.LoadServiceRequestLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.site.AddOrUpdateSiteLocationCommand;
 import com.facilio.bmsconsoleV3.commands.site.CreateSiteAfterSave;
@@ -93,7 +94,9 @@ import com.facilio.bmsconsoleV3.commands.tenantunit.LoadTenantUnitLookupCommandV
 import com.facilio.bmsconsoleV3.commands.termsandconditions.CheckForPublishedCommand;
 import com.facilio.bmsconsoleV3.commands.termsandconditions.LoadTermsLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.tool.LoadToolLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.tool.SetManualToolTransactionsCommandV3;
 import com.facilio.bmsconsoleV3.commands.tool.StockOrUpdateToolsCommandV3;
+import com.facilio.bmsconsoleV3.commands.tool.UpdateToolTransactionsCommandV3;
 import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.transferRequest.*;
 import com.facilio.bmsconsoleV3.commands.vendor.AddOrUpdateLocationForVendorCommandV3;
@@ -117,6 +120,7 @@ import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetDepartmentContext;
+import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
 import com.facilio.bmsconsoleV3.context.budget.AccountTypeContext;
 import com.facilio.bmsconsoleV3.context.budget.BudgetContext;
 import com.facilio.bmsconsoleV3.context.budget.ChartOfAccountContext;
@@ -783,7 +787,28 @@ public class APIv3Config {
                 .beforeFetch(new LoadItemLookUpCommandV3())
                 .build();
     }
-
+    @Module("itemTransactions")
+    public static Supplier<V3Config> getItemTransactions() {
+        return () -> new V3Config(V3ItemTransactionsContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .beforeSave(new SetManualItemTransactionCommandV3(),new AdjustmentItemTransactionCommandV3())
+                .afterSave(new UpdateItemTransactionsCommandV3())
+                .update()
+                .list()
+                .summary()
+                .build();
+    }
+    @Module("toolTransactions")
+    public static Supplier<V3Config> getToolTransactions() {
+        return () -> new V3Config(V3ToolTransactionContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .beforeSave(new SetManualToolTransactionsCommandV3())
+                .afterSave(new UpdateToolTransactionsCommandV3())
+                .update()
+                .list()
+                .summary()
+                .build();
+    }
     @Module("toolTypes")
     public static Supplier<V3Config> getToolTypes() {
         return () -> new V3Config(V3ToolTypesContext.class, new ModuleCustomFieldCount30())
@@ -1010,7 +1035,7 @@ public class APIv3Config {
                 .beforeSave(new CheckforPeopleDuplicationCommandV3())
                 .afterSave(TransactionChainFactoryV3.getTenantContactAfterSaveChain())
                 .list()
-                .beforeFetch(new LoadTenantcontactLookupsCommandV3())
+                .beforeFetch(ReadOnlyChainFactoryV3.getTenantContactBeforeFetchChain())
                 .afterFetch(ReadOnlyChainFactoryV3.getPeopleRoleAndScopingCommand())
                 .summary()
                 .beforeFetch(new LoadTenantcontactLookupsCommandV3())
@@ -1031,7 +1056,7 @@ public class APIv3Config {
                 .beforeSave(new CheckforPeopleDuplicationCommandV3())
                 .afterSave(TransactionChainFactoryV3.getVendorContactAfterSaveChain())
                 .list()
-                .beforeFetch(new LoadVendorContactLookupCommandV3())
+                .beforeFetch(ReadOnlyChainFactoryV3.getVendorContactBeforeFetchChain())
                 .afterFetch(ReadOnlyChainFactoryV3.getPeopleRoleAndScopingCommand())
                 .summary()
                 .beforeFetch(new LoadVendorContactLookupCommandV3())
@@ -1052,7 +1077,7 @@ public class APIv3Config {
                 .beforeSave(new CheckforPeopleDuplicationCommandV3())
                 .afterSave(TransactionChainFactoryV3.getUpdateEmployeeAfterUpdateChain())
                 .list()
-                .beforeFetch(new LoadEmployeeLookupCommandV3())
+                .beforeFetch(ReadOnlyChainFactoryV3.getEmployeeBeforeFetchChain())
                 .afterFetch(new FetchRolesForPeopleCommandV3())
                 .summary()
                 .beforeFetch(new LoadEmployeeLookupCommandV3())
@@ -1856,10 +1881,10 @@ public class APIv3Config {
                 .update()
                 .afterSave(new UpdateOccurrenceCommand())
                 .list()
-                .beforeFetch(new LoadResourceLookUpCommand())
+                .beforeFetch(new LoadSupplementsForFaultsCommand())
                 .afterFetch(new HandleV3AlarmListLookupCommand())
                 .summary()
-                .beforeFetch(new LoadResourceLookUpCommand())
+                .beforeFetch(new LoadSupplementsForFaultsCommand())
                 .delete()
                 .build();
     }
@@ -1890,6 +1915,18 @@ public class APIv3Config {
                 .beforeSave(new ValidateWeatherStationCommand())
                 .list()
                 .summary()
+                .delete()
+                .build();
+    }
+    @Module("bmsalarm")
+    public static Supplier<V3Config> getBmsAlarm() {
+        return () -> new V3Config(ReadingAlarm.class, null)
+                .update()
+                .afterSave(new UpdateOccurrenceCommand())
+                .list()
+                .beforeFetch(new LoadSupplementsForBMSAlarmCommand())
+                .summary()
+                .beforeFetch(new LoadSupplementsForBMSAlarmCommand())
                 .delete()
                 .build();
     }

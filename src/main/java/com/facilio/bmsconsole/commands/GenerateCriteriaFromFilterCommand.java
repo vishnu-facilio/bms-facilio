@@ -63,7 +63,7 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 				Object fieldJson = filters.get(fieldName);
 
 				if(context.containsKey(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_PATTERN) && context.get(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_PATTERN) != null){
-					fieldName = fieldName.split("__")[0];
+					fieldName = fieldName.split("----")[0];
 				}
 
 				List<Condition> conditionList = new ArrayList<>();

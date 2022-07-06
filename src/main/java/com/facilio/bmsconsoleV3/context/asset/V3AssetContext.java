@@ -315,14 +315,19 @@ public class V3AssetContext extends V3ResourceContext {
         this.purchaseOrder = purchaseOrder;
     }
 
-    public Boolean getUsed() {
+    public Boolean getIsUsed() {
         return isUsed;
     }
 
-    public void setUsed(Boolean used) {
+    public void setIsUsed(Boolean used) {
         isUsed = used;
     }
-
+    public boolean isUsed() {
+        if(isUsed != null) {
+            return isUsed.booleanValue();
+        }
+        return false;
+    }
     public Boolean getConnected() {
         return connected;
     }

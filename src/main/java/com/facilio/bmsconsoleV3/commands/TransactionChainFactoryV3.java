@@ -7,6 +7,7 @@ import com.facilio.bmsconsoleV3.commands.assetDepartment.ValidateAssetDepartment
 import com.facilio.bmsconsoleV3.commands.dashboard.CloneDashboardCommand;
 import com.facilio.bmsconsoleV3.commands.dashboard.MoveToDashboardCommand;
 import com.facilio.bmsconsoleV3.commands.floorplan.*;
+import com.facilio.bmsconsoleV3.commands.item.AdjustmentItemTransactionCommandV3;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.AddLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.DeleteLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.FetchLicensingInfoCommand;
@@ -602,6 +603,8 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdateAttachmentsParentIdCommandV3());
         c.addCommand(new PublishAnnouncementCommandV3());
         c.addCommand(new CancelParentChildAnnouncementsCommandV3());
+        c.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
+                .addCommand(new ExecuteAllWorkflowsCommand()));
         return c;
 
     }
@@ -1242,6 +1245,29 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getItemTransactionsAfterSaveChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(getItemTransactionRemainingQuantityRollupChainV3());
+        c.addCommand(new PurchasedItemsQuantityRollUpCommandV3());
+        c.addCommand(getUpdateItemQuantityRollupChain());
+        c.addCommand(new UpdateRequestedItemIssuedQuantityCommandV3());
+
+        return c;
+    }
+    public static FacilioChain getAdjustmentItemTransactionsChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new PurchasedItemsQuantityRollUpCommandV3());
+        c.addCommand(getUpdateItemQuantityRollupChain());
+        return c;
+    }
+
+    public static FacilioChain getToolTransactionsAfterSaveChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(getToolTransactionRemainingQuantityRollupChainV3());
+        c.addCommand(getUpdatetoolQuantityRollupChainV3());
+        c.addCommand(new UpdateRequestedToolIssuedQuantityCommandV3());
+        return c;
+    }
     public static FacilioChain getAddOrUpdateItemTransactionsChainV3() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddOrUpdateManualItemTransactionCommandV3());
@@ -1255,27 +1281,22 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getItemTransactionRemainingQuantityRollupChainV3() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(SetTableNamesCommand.getForItemTransactions());
         c.addCommand(new ItemTransactionRemainingQuantityRollupCommandV3());
         return c;
     }
 
     public static FacilioChain getAddOrUdpateToolTransactionsChainV3() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(SetTableNamesCommand.getForToolTranaction());
         c.addCommand(new AddOrUpdateManualToolTransactionsCommandV3());
         c.addCommand(getToolTransactionRemainingQuantityRollupChainV3());
-        c.addCommand(new ExecuteAllWorkflowsCommand());
         c.addCommand(getUpdatetoolQuantityRollupChain());
         c.addCommand(new UpdateRequestedToolIssuedQuantityCommandV3());
-        c.addCommand(new AddActivitiesCommand());
 
         return c;
     }
 
     public static FacilioChain getToolTransactionRemainingQuantityRollupChainV3() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(SetTableNamesCommand.getForToolTranaction());
         c.addCommand(new ToolTransactionRemainingQuantityRollupCommandV3());
         return c;
     }
@@ -1804,5 +1825,4 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new InsertReadingDataMetaForNewResourceCommand());
         return chain;
     }
-
 }

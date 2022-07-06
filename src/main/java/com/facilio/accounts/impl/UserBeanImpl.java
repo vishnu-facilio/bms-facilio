@@ -17,11 +17,9 @@ import com.facilio.accounts.dto.*;
 import com.facilio.auth.actions.PasswordHashUtil;
 import com.facilio.bmsconsole.context.ScopingContext;
 import com.facilio.db.criteria.operators.EnumOperators;
-import com.facilio.iam.accounts.util.IAMAccountConstants;
+import com.facilio.iam.accounts.util.*;
 import com.facilio.delegate.context.DelegationType;
 import com.facilio.delegate.util.DelegationUtil;
-import com.facilio.iam.accounts.util.IAMAppUtil;
-import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import lombok.extern.log4j.Log4j;
@@ -65,7 +63,6 @@ import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
-import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -180,6 +177,8 @@ public class UserBeanImpl implements UserBean {
 				throw e;
 			} else if (e instanceof InvocationTargetException && ((InvocationTargetException) e).getTargetException() instanceof AccountException) {
 				throw (AccountException) ((InvocationTargetException) e).getTargetException();
+			} else if (e instanceof InvocationTargetException && ((InvocationTargetException) e).getTargetException() instanceof IAMUserException) {
+				throw (IAMUserException) ((InvocationTargetException) e).getTargetException();
 			}
 			log.error("Exception occurred while creating user ", e);
 			IAMUserUtil.rollbackUserAdded(user.getUid(), AccountUtil.getCurrentOrg().getOrgId());
@@ -918,9 +917,17 @@ public class UserBeanImpl implements UserBean {
 			log.error("Exception while inviting user" + e);
 			try{
 				IAMUserUtil.rollbackUserAdded(user.getUid(), AccountUtil.getCurrentOrg().getOrgId());
+				if (e instanceof IAMUserException) {
+					log.error("Exception while inviting user", e);
+					throw e;
+				}
 			}
 			catch (Exception exception){
-				log.error("Exception while inviting user" + exception);
+				log.error("Exception while inviting user", exception);
+				if (e instanceof IAMUserException) {
+					log.error("Exception while inviting user",e);
+					throw e;
+				}
 			}
 			throw e;
 		}

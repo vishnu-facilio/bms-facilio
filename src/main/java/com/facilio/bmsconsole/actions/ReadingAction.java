@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.taskengine.common.JobConstants;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -66,6 +68,21 @@ public class ReadingAction extends FacilioAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	@Getter @Setter
+	private Map<String, List<ReadingContext>> readingMap;
+
+	public String addHistoryReadingData() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.HISTORY_READINGS,true);
+		context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS,false);
+		context.put(FacilioConstants.ContextNames.READINGS_MAP , getReadingMap());
+		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.IMPORT);
+		context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
+		FacilioChain importDataChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+		importDataChain.execute(context);
+		return SUCCESS;
+	}
 
 
 	public String addReading() throws Exception {

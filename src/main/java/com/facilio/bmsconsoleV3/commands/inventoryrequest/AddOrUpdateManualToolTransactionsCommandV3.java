@@ -7,6 +7,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
+import com.facilio.bmsconsoleV3.context.V3ToolTransactionContext;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ToolContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ToolTypesContext;
+import com.facilio.bmsconsoleV3.util.V3AssetAPI;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
@@ -48,34 +54,33 @@ public class AddOrUpdateManualToolTransactionsCommandV3 extends FacilioCommand {
         // TODO Auto-generated method stub
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        ShipmentContext shipment = (ShipmentContext)context.get(FacilioConstants.ContextNames.SHIPMENT);
         FacilioModule toolTransactionsModule = modBean.getModule(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
         List<FacilioField> toolTransactionsFields = modBean
                 .getAllFields(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
         Map<String, FacilioField> toolTransactionsFieldsMap = FieldFactory.getAsMap(toolTransactionsFields);
         List<LookupField>lookUpfields = new ArrayList<>();
         lookUpfields.add((LookupField) toolTransactionsFieldsMap.get("tool"));
-        List<ToolTransactionContext> toolTransactions = (List<ToolTransactionContext>) context
+        List<V3ToolTransactionContext> toolTransactions = (List<V3ToolTransactionContext>) context
                 .get(FacilioConstants.ContextNames.RECORD_LIST);
-        List<ToolTransactionContext> toolTransactionslist = new ArrayList<>();
-        List<ToolTransactionContext> toolTransactionsToBeAdded = new ArrayList<>();
+        List<V3ToolTransactionContext> toolTransactionslist = new ArrayList<>();
+        List<V3ToolTransactionContext> toolTransactionsToBeAdded = new ArrayList<>();
         long toolTypesId = -1;
         if (toolTransactions != null && !toolTransactions.isEmpty()) {
-            for (ToolTransactionContext toolTransaction : toolTransactions) {
-                ToolContext tool = getTool(toolTransaction.getTool().getId());
-                ToolTypesContext toolTypes = getToolType(tool.getToolType().getId());
+            for (V3ToolTransactionContext toolTransaction : toolTransactions) {
+                V3ToolContext tool = getTool(toolTransaction.getTool().getId());
+                V3ToolTypesContext toolTypes = getToolType(tool.getToolType().getId());
                 toolTypesId = toolTypes.getId();
-                StoreRoomContext storeRoom = tool.getStoreRoom();
+                V3StoreRoomContext storeRoom = tool.getStoreRoom();
                 if (toolTransaction.getId() > 0) {
-                    SelectRecordsBuilder<ToolTransactionContext> selectBuilder = new SelectRecordsBuilder<ToolTransactionContext>()
+                    SelectRecordsBuilder<V3ToolTransactionContext> selectBuilder = new SelectRecordsBuilder<V3ToolTransactionContext>()
                             .select(toolTransactionsFields).table(toolTransactionsModule.getTableName())
-                            .moduleName(toolTransactionsModule.getName()).beanClass(ToolTransactionContext.class)
+                            .moduleName(toolTransactionsModule.getName()).beanClass(V3ToolTransactionContext.class)
                             .andCondition(CriteriaAPI.getIdCondition(toolTransaction.getId(), toolTransactionsModule))
                             .fetchSupplements(lookUpfields);
                     ;
-                    List<ToolTransactionContext> woIt = selectBuilder.get();
+                    List<V3ToolTransactionContext> woIt = selectBuilder.get();
                     if (woIt != null) {
-                        ToolTransactionContext wTool = woIt.get(0);
+                        V3ToolTransactionContext wTool = woIt.get(0);
                         if (toolTransaction.getTransactionStateEnum() == TransactionState.ISSUE
                                 && (wTool.getQuantity() + wTool.getTool().getCurrentQuantity()) < toolTransaction
                                 .getQuantity()) {
@@ -87,7 +92,7 @@ public class AddOrUpdateManualToolTransactionsCommandV3 extends FacilioCommand {
                             }
 
                             wTool = setWorkorderItemObj(toolTransaction.getQuantity(), tool, toolTransaction,
-                                    toolTypes, approvalState, null, shipment, context);
+                                    toolTypes, approvalState, null, context);
                             // update
                             wTool.setId(toolTransaction.getId());
                             toolTransactionslist.add(wTool);
@@ -106,14 +111,14 @@ public class AddOrUpdateManualToolTransactionsCommandV3 extends FacilioCommand {
 
                         if (toolTypes.isRotating()) {
                             List<Long> assetIds = toolTransaction.getAssetIds();
-                            List<AssetContext> assets = getAssetsList(assetIds);
+                            List<V3AssetContext> assets = getAssetsList(assetIds);
                             if (assets != null) {
-                                for (AssetContext asset : assets) {
+                                for (V3AssetContext asset : assets) {
                                     if (toolTransaction.getTransactionStateEnum() == TransactionState.ISSUE
                                             && asset.isUsed()) {
                                         throw new IllegalArgumentException("Insufficient quantity in inventory!");
                                     }
-                                    ToolTransactionContext woTool = new ToolTransactionContext();
+                                    V3ToolTransactionContext woTool = new V3ToolTransactionContext();
 
                                     if (toolTransaction.getTransactionStateEnum() == TransactionState.RETURN) {
                                         asset.setIsUsed(false);
@@ -132,16 +137,16 @@ public class AddOrUpdateManualToolTransactionsCommandV3 extends FacilioCommand {
                                     // pTool.setIsUsed(true);
                                     // }
                                     woTool = setWorkorderItemObj(1, tool, toolTransaction, toolTypes,
-                                            approvalState, asset, shipment, context);
+                                            approvalState, asset, context);
                                     updateAsset(asset);
                                     toolTransactionslist.add(woTool);
                                     toolTransactionsToBeAdded.add(woTool);
                                 }
                             }
                         } else {
-                            ToolTransactionContext woTool = new ToolTransactionContext();
+                            V3ToolTransactionContext woTool = new V3ToolTransactionContext();
                             woTool = setWorkorderItemObj(toolTransaction.getQuantity(), tool, toolTransaction,
-                                    toolTypes, approvalState, null, shipment, context);
+                                    toolTypes, approvalState, null, context);
                             toolTransactionslist.add(woTool);
                             toolTransactionsToBeAdded.add(woTool);
                         }
@@ -165,18 +170,13 @@ public class AddOrUpdateManualToolTransactionsCommandV3 extends FacilioCommand {
         return false;
     }
 
-    private ToolTransactionContext setWorkorderItemObj(double quantity,
-                                                       ToolContext tool, ToolTransactionContext toolTransaction, ToolTypesContext toolTypes,
-                                                       ApprovalState approvalState, AssetContext asset, ShipmentContext shipment, Context context) throws Exception {
-        ToolTransactionContext woTool = new ToolTransactionContext();
+    private V3ToolTransactionContext setWorkorderItemObj(double quantity,
+                                                       V3ToolContext tool, V3ToolTransactionContext toolTransaction, V3ToolTypesContext toolTypes,
+                                                       ApprovalState approvalState, V3AssetContext asset, Context context) throws Exception {
+        V3ToolTransactionContext woTool = new V3ToolTransactionContext();
 
-        if(shipment == null) {
-            woTool.setTransactionType(TransactionType.MANUAL.getValue());
-        }
-        else {
-            woTool.setTransactionType(TransactionType.SHIPMENT_STOCK.getValue());
-            woTool.setShipment(shipment.getId());
-        }
+        woTool.setTransactionType(TransactionType.MANUAL.getValue());
+
         woTool.setTransactionState(toolTransaction.getTransactionStateEnum());
         woTool.setStoreRoom(tool.getStoreRoom());
         woTool.setIsReturnable(true);
@@ -209,7 +209,7 @@ public class AddOrUpdateManualToolTransactionsCommandV3 extends FacilioCommand {
                 asset.setLastIssuedToWo(woTool.getWorkorder().getId());
             }
             asset.setLastIssuedTime(System.currentTimeMillis());
-            AssetsAPI.updateAsset(asset, asset.getId());
+            V3AssetAPI.updateAsset(asset, asset.getId());
 
 
             if(woTool.getTransactionTypeEnum() == TransactionType.MANUAL) {
@@ -224,9 +224,9 @@ public class AddOrUpdateManualToolTransactionsCommandV3 extends FacilioCommand {
             User user = new User();
             user.setId(-99);
             asset.setLastIssuedToUser(user);
-            asset.setLastIssuedToWo(-99);
-            asset.setLastIssuedTime(-99);
-            AssetsAPI.updateAsset(asset, asset.getId());
+            asset.setLastIssuedToWo(-99l);
+            asset.setLastIssuedTime(-99l);
+            V3AssetAPI.updateAsset(asset, asset.getId());
 
             if(woTool.getTransactionTypeEnum() == TransactionType.MANUAL) {
                 user = AccountUtil.getUserBean().getUser(woTool.getParentId(), true);
@@ -241,18 +241,18 @@ public class AddOrUpdateManualToolTransactionsCommandV3 extends FacilioCommand {
         return woTool;
     }
 
-    public static ToolContext getTool(long id) throws Exception {
+    public static V3ToolContext getTool(long id) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL);
         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
         List<LookupField>lookUpfields = new ArrayList<>();
         lookUpfields.add((LookupField) fieldMap.get("storeRoom"));
-        SelectRecordsBuilder<ToolContext> selectBuilder = new SelectRecordsBuilder<ToolContext>().select(fields)
-                .table(module.getTableName()).moduleName(module.getName()).beanClass(ToolContext.class)
+        SelectRecordsBuilder<V3ToolContext> selectBuilder = new SelectRecordsBuilder<V3ToolContext>().select(fields)
+                .table(module.getTableName()).moduleName(module.getName()).beanClass(V3ToolContext.class)
                 .andCustomWhere(module.getTableName() + ".ID = ?", id).fetchSupplements(lookUpfields);
 
-        List<ToolContext> stockedTools = selectBuilder.get();
+        List<V3ToolContext> stockedTools = selectBuilder.get();
 
         if (stockedTools != null && !stockedTools.isEmpty()) {
             return stockedTools.get(0);
@@ -260,17 +260,17 @@ public class AddOrUpdateManualToolTransactionsCommandV3 extends FacilioCommand {
         return null;
     }
 
-    private void addWorkorderTools(FacilioModule module, List<FacilioField> fields, List<ToolTransactionContext> tools)
+    private void addWorkorderTools(FacilioModule module, List<FacilioField> fields, List<V3ToolTransactionContext> tools)
             throws Exception {
-        InsertRecordBuilder<ToolTransactionContext> readingBuilder = new InsertRecordBuilder<ToolTransactionContext>()
+        InsertRecordBuilder<V3ToolTransactionContext> readingBuilder = new InsertRecordBuilder<V3ToolTransactionContext>()
                 .module(module).fields(fields).addRecords(tools);
         readingBuilder.save();
     }
 
-    private void updateWorkorderTools(FacilioModule module, List<FacilioField> fields, ToolTransactionContext tool)
+    private void updateWorkorderTools(FacilioModule module, List<FacilioField> fields, V3ToolTransactionContext tool)
             throws Exception {
 
-        UpdateRecordBuilder<ToolTransactionContext> updateBuilder = new UpdateRecordBuilder<ToolTransactionContext>()
+        UpdateRecordBuilder<V3ToolTransactionContext> updateBuilder = new UpdateRecordBuilder<V3ToolTransactionContext>()
                 .module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(tool.getId(), module));
         updateBuilder.update(tool);
 
@@ -287,31 +287,31 @@ public class AddOrUpdateManualToolTransactionsCommandV3 extends FacilioCommand {
         return hours;
     }
 
-    public static ToolTypesContext getToolType(long id) throws Exception {
+    public static V3ToolTypesContext getToolType(long id) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule itemTypesModule = modBean.getModule(FacilioConstants.ContextNames.TOOL_TYPES);
         List<FacilioField> itemTypesFields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL_TYPES);
 
-        SelectRecordsBuilder<ToolTypesContext> itemTypesselectBuilder = new SelectRecordsBuilder<ToolTypesContext>()
+        SelectRecordsBuilder<V3ToolTypesContext> itemTypesselectBuilder = new SelectRecordsBuilder<V3ToolTypesContext>()
                 .select(itemTypesFields).table(itemTypesModule.getTableName()).moduleName(itemTypesModule.getName())
-                .beanClass(ToolTypesContext.class).andCondition(CriteriaAPI.getIdCondition(id, itemTypesModule));
+                .beanClass(V3ToolTypesContext.class).andCondition(CriteriaAPI.getIdCondition(id, itemTypesModule));
 
-        List<ToolTypesContext> toolTypes = itemTypesselectBuilder.get();
+        List<V3ToolTypesContext> toolTypes = itemTypesselectBuilder.get();
         if (toolTypes != null && !toolTypes.isEmpty()) {
             return toolTypes.get(0);
         }
         return null;
     }
 
-    public static List<AssetContext> getAssetsList(List<Long> id) throws Exception {
+    public static List<V3AssetContext> getAssetsList(List<Long> id) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
-        SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>()
+        SelectRecordsBuilder<V3AssetContext> selectBuilder = new SelectRecordsBuilder<V3AssetContext>()
                 .select(fields).table(module.getTableName()).moduleName(module.getName())
-                .beanClass(AssetContext.class).andCondition(CriteriaAPI.getIdCondition(id, module));
+                .beanClass(V3AssetContext.class).andCondition(CriteriaAPI.getIdCondition(id, module));
 
-        List<AssetContext> assetList = selectBuilder.get();
+        List<V3AssetContext> assetList = selectBuilder.get();
 
         if (assetList != null && !assetList.isEmpty()) {
             return assetList;
@@ -319,11 +319,11 @@ public class AddOrUpdateManualToolTransactionsCommandV3 extends FacilioCommand {
         return null;
     }
 
-    private void updateAsset(AssetContext asset) throws Exception {
+    private void updateAsset(V3AssetContext asset) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
-        UpdateRecordBuilder<AssetContext> updateBuilder = new UpdateRecordBuilder<AssetContext>()
+        UpdateRecordBuilder<V3AssetContext> updateBuilder = new UpdateRecordBuilder<V3AssetContext>()
                 .module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(asset.getId(), module));
         updateBuilder.update(asset);
 

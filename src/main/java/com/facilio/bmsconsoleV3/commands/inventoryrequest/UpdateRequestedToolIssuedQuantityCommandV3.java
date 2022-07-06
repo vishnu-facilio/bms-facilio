@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsoleV3.context.V3ToolTransactionContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestLineItemContext;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
@@ -28,7 +29,7 @@ public class UpdateRequestedToolIssuedQuantityCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         // TODO Auto-generated method stub
-        List<ToolTransactionContext> toolTransactions = (List<ToolTransactionContext>) context
+        List<V3ToolTransactionContext> toolTransactions = (List<V3ToolTransactionContext>) context
                 .get(FacilioConstants.ContextNames.RECORD_LIST);
         if (CollectionUtils.isNotEmpty(toolTransactions) && toolTransactions.get(0).getRequestedLineItem() != null && toolTransactions.get(0).getRequestedLineItem().getId() > 0) {
             V3InventoryRequestLineItemContext lineItem = InventoryRequestAPI.getLineItemV3(toolTransactions.get(0).getRequestedLineItem().getId());

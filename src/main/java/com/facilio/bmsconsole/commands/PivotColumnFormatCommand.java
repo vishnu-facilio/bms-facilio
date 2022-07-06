@@ -305,10 +305,17 @@ public class PivotColumnFormatCommand extends FacilioCommand {
             }
             for (String actualKey : aliasVsDisplayNameData.keySet()) {
                 Map<String, Object> tempMap = new HashMap<>();
+                JSONObject columnFormatMap = getColumnFormatMap(actualKey);
+
                 tempMap.put("value", data.get(actualKey));
                 Formatter formatter = formatterMap.get(actualKey);
                 if (formatter != null && data.get(actualKey) != null && !data.get(actualKey).equals("")) {
                     tempMap.put("formattedValue", formatter.format(data.get(actualKey)));
+                } else if(columnFormatMap != null &&
+                        columnFormatMap.containsKey("customNullValue") &&
+                        columnFormatMap.get("customNullValue") != null &&
+                        data.get(actualKey) == null) {
+                    tempMap.put("formattedValue", columnFormatMap.get("customNullValue"));
                 } else {
                     tempMap.put("formattedValue", data.get(actualKey));
                 }
