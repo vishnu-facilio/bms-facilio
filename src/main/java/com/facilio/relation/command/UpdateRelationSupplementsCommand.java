@@ -25,7 +25,6 @@ public class UpdateRelationSupplementsCommand extends FacilioCommand {
         String relationModuleName = Constants.getModuleName(context);
 
         RelationMappingContext relationMapping = (RelationMappingContext) context.get(FacilioConstants.ContextNames.RELATION_MAPPING);
-        relationMapping.getReversePosition().getFieldName();
         Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(context);
 
         if(!recordMap.isEmpty() && recordMap.containsKey(relationModuleName)) {
@@ -35,7 +34,7 @@ public class UpdateRelationSupplementsCommand extends FacilioCommand {
                 List<Long> recordIds = new ArrayList();
                 for(ModuleBaseWithCustomFields record : recordList) {
                     RelationDataContext relationData = (RelationDataContext) record;
-                    ModuleBaseWithCustomFields recordData = ( relationMapping.getReversePosition().equals(RelationMappingContext.Position.LEFT)) ? relationData.getLeft() : relationData.getRight();
+                    ModuleBaseWithCustomFields recordData = ( relationMapping.getReversePosition(relationMapping.getPositionEnum()).equals(RelationMappingContext.Position.LEFT)) ? relationData.getLeft() : relationData.getRight();
                     recordIds.add(recordData.getId());
                 }
 
@@ -53,7 +52,7 @@ public class UpdateRelationSupplementsCommand extends FacilioCommand {
             if(!idVsRecordMap.isEmpty()) {
                 for(ModuleBaseWithCustomFields record : recordList) {
                     RelationDataContext relationData = (RelationDataContext) record;
-                    if( relationMapping.getReversePosition().equals(RelationMappingContext.Position.LEFT)) {
+                    if( relationMapping.getReversePosition(relationMapping.getPositionEnum()).equals(RelationMappingContext.Position.LEFT)) {
                         relationData.setLeft(idVsRecordMap.get(relationData.getLeft().getId()));
                     } else {
                         relationData.setRight(idVsRecordMap.get(relationData.getRight().getId()));
