@@ -1493,6 +1493,7 @@ public class FetchReportDataCommand extends FacilioCommand {
                }
             }
 
+            if(dataField == null) return;
 
             dataField.setTableAlias(getAndSetModuleAlias(dataField.getModule().getName()));
 
@@ -1503,11 +1504,15 @@ public class FetchReportDataCommand extends FacilioCommand {
             FacilioModule prevModule = null;
             FacilioModule subModule = module;
 
+            if(module.isCustom()) {
+                submoduleJoinOn += " AND " + dataField.getTableAlias() + ".MODULEID = " + module.getModuleId();
+            }
+
             while (subModule != null) {
                 if (subModule.equals(lookupFieldModule)) {
                     prevModule = subModule;
                     String tableName = module.getTableName() + " " + getAndSetModuleAlias(module.getName());
-                    selectBuilder.leftJoin(tableName).on(submoduleJoinOn);
+                    selectBuilder.innerJoin(tableName).on(submoduleJoinOn);
                     break;
                 }
                 stack.push(subModule);
