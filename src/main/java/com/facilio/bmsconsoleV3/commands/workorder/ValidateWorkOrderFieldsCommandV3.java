@@ -47,10 +47,7 @@ public class ValidateWorkOrderFieldsCommandV3 extends FacilioCommand {
                 woContext.setDescription(woContext.getDescription().trim());
             }
 
-            if(woContext.getDueDate() == null) {
-                Calendar cal = Calendar.getInstance();
-                woContext.setDueDate((cal.getTimeInMillis())+ TicketContext.DEFAULT_DURATION);
-            }
+
 
             if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS) && AccountUtil.getCurrentUser() != null) {
                 long currentUserId = AccountUtil.getCurrentUser().getOuid();
