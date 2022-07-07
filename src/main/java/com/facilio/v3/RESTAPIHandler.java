@@ -7,11 +7,13 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.commands.AttachmentCommand;
 import com.facilio.v3.context.Constants;
@@ -146,6 +148,13 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
 
                 boolean excludeParentFilter = this.getExcludeParentFilter();
                 context.put(Constants.EXCLUDE_PARENT_CRITERIA, excludeParentFilter);
+            }
+
+            String clientCriteria=this.getClientFilterCriteria();
+            if(StringUtils.isNotEmpty(clientCriteria)){
+                JSONObject json = FacilioUtil.parseJson(clientCriteria);
+                Criteria newCriteria = FieldUtil.getAsBeanFromJson(json, Criteria.class);
+                context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, newCriteria);
             }
             Object orderBy = this.getOrderBy();
             Object orderByType = this.getOrderType();

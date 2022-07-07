@@ -5,27 +5,21 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.util.AuditLogUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
-
 import com.facilio.wmsv2.handler.AuditLogHandler;
+import com.opensymphony.xwork2.ActionSupport;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.ServletResponseAware;
 import org.json.simple.JSONObject;
 
-import com.opensymphony.xwork2.ActionSupport;
-
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
 
 @Log4j
 public class V3Action extends ActionSupport implements ServletResponseAware {
@@ -106,6 +100,16 @@ public class V3Action extends ActionSupport implements ServletResponseAware {
 
 	public void setFilters(String filters) {
 		this.filters = filters;
+	}
+
+	private  String clientFilterCriteria;
+
+	public String getClientFilterCriteria() {
+		return clientFilterCriteria;
+	}
+
+	public void setClientFilterCriteria(String clientFilterCriteria) {
+		this.clientFilterCriteria = clientFilterCriteria;
 	}
 
 	private String viewName;
