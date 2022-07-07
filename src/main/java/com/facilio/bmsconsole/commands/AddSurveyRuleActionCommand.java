@@ -6,14 +6,17 @@ import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.SurveyResponseRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsoleV3.context.survey.SurveyUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class AddSurveyRuleActionCommand extends FacilioCommand{
@@ -30,46 +33,31 @@ public class AddSurveyRuleActionCommand extends FacilioCommand{
 			addSurveyRuleActions(validateBeforeAddActions(ruleAction), WorkflowRuleAPI.getWorkflowRule(rule.getId()));
 		}
 
-		SurveyResponseRuleContext surveyResponseRule = new SurveyResponseRuleContext();
+		List<SurveyResponseRuleContext> responseRule = SurveyUtil.fetchChildRuleId(Collections.singletonList(rule.getId()));
 
-		if(CollectionUtils.isNotEmpty(createActions)){
+		boolean onCreateFlag = false;
+		boolean onSubmitFlag = false;
 
-			Long createRuleId = null;
-			if(context != null && context.containsKey("createRuleId")){
-				createRuleId = (long) context.getOrDefault("createRuleId",null);
-			}
-
-			if(createRuleId != null && createRuleId > 0L){
-				addSurveyRuleActions(validateBeforeAddActions(createActions), WorkflowRuleAPI.getWorkflowRule(createRuleId));
-			}else{
-					surveyResponseRule.setRuleId(rule.getId());
-					surveyResponseRule.setModuleName(FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_RESPONSE);
-					surveyResponseRule.setRuleType(WorkflowRuleContext.RuleType.SURVEY_ACTION_RULE);
-					surveyResponseRule.setActivityType(EventType.CREATE);
-					surveyResponseRule.setActions(createActions);
-					surveyResponseRule.setName(rule.getName() + "_" + rule.getId());
-
-					addRule(surveyResponseRule);
+		if(CollectionUtils.isNotEmpty(responseRule)){
+			for(SurveyResponseRuleContext ruleContext : responseRule){
+				switch(ruleContext.getActionType()){
+					case ON_CREATE:
+						addSurveyRuleActions(validateBeforeAddActions(createActions), WorkflowRuleAPI.getWorkflowRule(ruleContext.getId()));
+						onCreateFlag = true;
+						break;
+					case ON_SUBMIT:
+						addSurveyRuleActions(validateBeforeAddActions(responseActions), WorkflowRuleAPI.getWorkflowRule(ruleContext.getId()));
+						onSubmitFlag = true;
+						break;
+				}
 			}
 		}
+		if(!onCreateFlag ){
+			SurveyUtil.addSurveyRuleActions(rule, createActions, new ArrayList<>());
+		}
 
-		if(CollectionUtils.isNotEmpty(responseActions)){
-
-			Long submitRuleId = null;
-
-			if(context != null && context.containsKey("submitRuleId")){
-				submitRuleId = (long) context.getOrDefault("submitRuleId",null);
-			}
-
-			if(submitRuleId != null && submitRuleId > 0L){
-				addSurveyRuleActions(validateBeforeAddActions(responseActions), WorkflowRuleAPI.getWorkflowRule(submitRuleId));
-			}else{
-				surveyResponseRule.setActions(responseActions);
-				surveyResponseRule.setActivityType(EventType.EDIT);
-
-				addRule(surveyResponseRule);
-			}
-
+		if(!onSubmitFlag){
+			SurveyUtil.addSurveyRuleActions(rule, new ArrayList<>(),responseActions);
 		}
 
 		return false;
@@ -90,11 +78,4 @@ public class AddSurveyRuleActionCommand extends FacilioCommand{
 		ActionAPI.addWorkflowRuleActionRel(rule.getId(), ActionAPI.addActions(actions, rule));
 	}
 
-	private void addRule(WorkflowRuleContext workflowRule) throws Exception{
-
-		FacilioChain chain = TransactionChainFactory.addWorkflowRuleChain();
-		FacilioContext facilioContext = chain.getContext();
-		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRule);
-		chain.execute();
-	}
 }

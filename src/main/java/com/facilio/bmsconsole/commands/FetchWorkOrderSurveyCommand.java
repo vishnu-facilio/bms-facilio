@@ -1,13 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.accounts.util.RoleFactory;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.workordersurvey.WorkOrderSurveyResponseContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
@@ -23,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class fetchWorkOrderSurveyCommand extends FacilioCommand{
+public class FetchWorkOrderSurveyCommand extends FacilioCommand{
 	@Override
 	public boolean executeCommand(Context context) throws Exception{
 

@@ -1800,7 +1800,7 @@ public enum ActionType {
 		@Override
 		public void performAction (JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
 
-			WorkOrderContext wocontext = (WorkOrderContext) context.get("workorder");
+			WorkOrderContext wocontext = (WorkOrderContext) currentRecord;
 			obj.put("parentId", wocontext.getId());
 
 			Long userId = (Long) obj.get("userId");

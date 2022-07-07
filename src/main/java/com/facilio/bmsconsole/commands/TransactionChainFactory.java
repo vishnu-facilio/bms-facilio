@@ -54,6 +54,7 @@ import com.facilio.energystar.command.*;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand;
 import com.facilio.events.commands.NewExecuteEventRulesCommand;
 import com.facilio.events.constants.EventConstants;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.relations.CalculateDependencyCommand;
 import com.facilio.mv.command.*;
 import com.facilio.ns.command.AddNamespaceCommand;
@@ -451,6 +452,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateStateForModuleDataCommand());
 			c.addCommand(new SendNotificationCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SATISFACTION_SURVEY_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SURVEY_ACTION_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
@@ -6405,6 +6407,12 @@ public class TransactionChainFactory {
 	public static FacilioChain deleteSurveyRuleChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new DeleteSurveyRulesCommand());
+		return chain;
+	}
+
+	public static FacilioChain updateSurveyMarkAsDeleteChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new UpdateSurveyMarkAsDeleteCommand());
 		return chain;
 	}
 

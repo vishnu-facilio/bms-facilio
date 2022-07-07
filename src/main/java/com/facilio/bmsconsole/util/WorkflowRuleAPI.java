@@ -204,21 +204,7 @@ public class WorkflowRuleAPI {
 				addExtendedProps(ModuleFactory.getSatisfactionSurveyRuleModule (), FieldFactory.getSatisfactionSurveyRuleFields (), ruleProps);
 				break;
 			case SURVEY_ACTION_RULE:
-				SurveyResponseRuleContext surveyResponseRuleContext = (SurveyResponseRuleContext) rule;
-				long createRuleId = surveyResponseRuleContext.getExecuteCreateRuleId();
-				long ruleId = rule.getId();
-				long parentRuleId = surveyResponseRuleContext.getRuleId();
-
-				if(createRuleId <= 0L){
-					rule.setId(parentRuleId);
-					((SurveyResponseRuleContext) rule).setExecuteCreateRuleId(ruleId);
-					addExtendedProps(ModuleFactory.getSurveyResponseRuleModule(),FieldFactory.getSurveyResponseRuleFields(),FieldUtil.getAsProperties(rule));
-
-				}else {
-					((SurveyResponseRuleContext) rule).setExecuteSubmitRuleId(ruleId);
-					updateSurveyResponseRule(parentRuleId,FieldUtil.getAsProperties(rule));
-				}
-				rule.setId(ruleId);
+				addExtendedProps(ModuleFactory.getSurveyResponseRuleModule(),FieldFactory.getSurveyResponseRuleFields(),ruleProps);
 				break;
 			default:
 				break;
@@ -944,9 +930,8 @@ public class WorkflowRuleAPI {
 							rule = FieldUtil.getAsBeanFromMap (prop, SatisfactionSurveyRuleContext.class);
 							break;
 						case SURVEY_ACTION_RULE:
-//							prop.putAll (typeWiseExtendedProps.get (ruleType).get (prop.get ("id")));
+							prop.putAll (typeWiseExtendedProps.get (ruleType).get (prop.get ("id")));
 							rule = FieldUtil.getAsBeanFromMap (prop, SurveyResponseRuleContext.class);
-							((SurveyResponseRuleContext) rule).setRuleId(getSurveyParentRule(rule.getId()));;
 							break;
 						default:
 							rule = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleContext.class);
