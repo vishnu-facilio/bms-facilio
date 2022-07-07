@@ -32,7 +32,7 @@ public class AddOrUpdateUserSignatureCommand extends FacilioCommand{
 	public boolean executeCommand(Context context) throws Exception {
 			String signatureContent = (String)context.get(FacilioConstants.ContextNames.SIGNATURE_CONTENT);
 			Map<String,Object> signature =new HashMap<String, Object>();
-
+			Long oldfileId = null;
 			if(signatureContent == null) {
 				throw new IllegalArgumentException("Signature Content is empty for User ID - "+ AccountUtil.getCurrentUser().getId() +" and in ORG ID - "+AccountUtil.getCurrentOrg().getId());
 			}
@@ -44,8 +44,9 @@ public class AddOrUpdateUserSignatureCommand extends FacilioCommand{
 				  
 			Map<String,Object> select = selectBuilder.fetchFirst();
 			
-			Long oldfileId= (Long) select.get("signatureFileId");
-			
+			if(select.containsKey(FacilioConstants.ContextNames.SIGNATURE_FILE_ID)) {
+				oldfileId= (Long) select.get(FacilioConstants.ContextNames.SIGNATURE_FILE_ID);
+			}
 			User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
 			Long signatureFileId = FacilioFactory.getFileStore(superAdmin.getId()).addFile("Signature_"+AccountUtil.getCurrentOrg().getOrgId()+"_"+AccountUtil.getCurrentUser().getId(), signatureContent, "text/plain");
 			FileInfo test= FacilioFactory.getFileStore().getFileInfo(signatureFileId);  //TODO be removed after testing

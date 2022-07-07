@@ -27,6 +27,7 @@ public class GetUserSignatureCommand extends FacilioCommand{
 	@Override
 	public boolean executeCommand(Context context) throws Exception{
 		
+		Long signatureFileId =null;
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getOrgUserModule().getTableName())
 				.select(AccountConstants.getAppOrgUserFields())
@@ -35,8 +36,9 @@ public class GetUserSignatureCommand extends FacilioCommand{
 			  
 		Map<String,Object> select = selectBuilder.fetchFirst();
 		
-		Long signatureFileId= (Long) select.get("signatureFileId");
-		
+		if(select.containsKey(FacilioConstants.ContextNames.SIGNATURE_FILE_ID)) {
+			 signatureFileId= (Long) select.get(FacilioConstants.ContextNames.SIGNATURE_FILE_ID);
+		}
 		if(signatureFileId!=null) {
 			String signatureContent = new String();
 			User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
