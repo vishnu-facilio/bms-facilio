@@ -6130,6 +6130,10 @@
 		<action name="summary" class="com.facilio.bmsconsole.actions.ApplicationAction"
 				method="getApplicationUserDetails">
 		</action>
+		<action name="addOrUpdateSignature" class="com.facilio.bmsconsole.actions.ApplicationAction" method="addOrUpdateUserSignature">
+		</action>
+		<action name="getSignature" class="com.facilio.bmsconsole.actions.ApplicationAction" method="getUserSignature">
+		</action>
 	</package>
 	
 	<package name="fetchApplicationDetails" namespace="/api/v2/application/fetchDetails"

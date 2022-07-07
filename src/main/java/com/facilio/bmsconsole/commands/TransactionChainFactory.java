@@ -16,6 +16,8 @@ import com.facilio.agentv2.point.EditPointCommand;
 import com.facilio.agentv2.sqlitebuilder.AgentSqliteMakerCommand;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.banner.commands.CloseBannerCommand;
+import com.facilio.bmsconsole.commands.AddOrUpdateUserSignatureCommand;
+import com.facilio.bmsconsole.commands.GetUserSignatureCommand;
 import com.facilio.bmsconsole.actions.GetModuleFromReportContextCommand;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
@@ -5973,6 +5975,19 @@ public class TransactionChainFactory {
 	public static FacilioChain deleteApplicationUsersChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new DeleteApplicationUsersCommand());
+
+		return c;
+	}
+	
+	public static FacilioChain addorUpdateUserSignatureChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AddOrUpdateUserSignatureCommand());
+
+		return c;
+	}
+	public static FacilioChain getUserSignatureChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetUserSignatureCommand());
 
 		return c;
 	}

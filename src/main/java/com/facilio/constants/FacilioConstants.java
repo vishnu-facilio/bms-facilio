@@ -240,6 +240,10 @@ public class FacilioConstants {
 		public static final String VISITOR_FACES = "visitorFaces";
 		public static final String VISITOR_PHOTO = "visitorPhoto";
 
+		public static final String SIGNATURE_CONTENT = "signatureContent";
+		public static final String SIGNATURE_FILE_ID = "signatureFileId";
+		public static final String SIGNATURE = "signature";
+		
 		public static final String APPLICATION = "application";
 		public static final String APPLICATION_LAYOUT = "applicationLayout";
 		public static final String APPLICATION_ID = "applicationId";

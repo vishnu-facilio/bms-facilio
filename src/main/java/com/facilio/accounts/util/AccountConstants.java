@@ -910,6 +910,12 @@ public class AccountConstants {
 		iamOrgUserId.setModule(module);
 		fields.add(iamOrgUserId);
 	
+		FacilioField signatureFileId = new FacilioField();
+		signatureFileId.setName("signatureFileId");
+		signatureFileId.setDataType(FieldType.NUMBER);
+		signatureFileId.setColumnName("SIGNATURE_FILE_ID");
+		signatureFileId.setModule(module);
+        fields.add(signatureFileId);
 		
 		return fields;
 	}

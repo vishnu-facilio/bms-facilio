@@ -2597,6 +2597,8 @@ public class FieldFactory extends BaseFieldFactory {
     }
 
     public static List<FacilioField> getOrgUserFields() {
+    	
+    	//NOT USED - Refer Account Constants getAppOrgUserFields
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getOrgUserModule();
 
