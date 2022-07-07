@@ -101,7 +101,7 @@ public class FacilioTimer {
 	}
 
 	public static void scheduleOneTimeJobWithDelay(long jobId, String jobName, int delayInSec, String executorName) throws Exception {
-		scheduleOneTimeJobWithTimestampInSec(jobId, jobName, delayInSec, executorName);
+		scheduleOneTimeJobWithDelay(jobId, jobName, delayInSec, executorName, -1);
 	}
 
 	public static void scheduleOneTimeJobWithDelay(long jobId, String jobName, int delayInSec, String executorName, int loggerLevel) throws Exception {
