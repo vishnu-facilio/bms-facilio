@@ -5743,6 +5743,12 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getPublishEmailStructureChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new PublishEmailStructureCommand());
+		return chain;
+	}
+
 	public static FacilioChain updateControllableTypeForSpace() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new UpdateControllableTypeForSpace());

@@ -23,6 +23,7 @@ import com.amazonaws.HttpMethod;
 import com.facilio.bmsconsole.context.ConnectionContext;
 import com.facilio.bmsconsole.util.ConnectionUtil;
 import com.facilio.fs.FileInfo;
+import com.facilio.modules.FieldUtil;
 import com.facilio.scriptengine.exceptions.FunctionParamException;
 
 public enum FacilioConnectionFunctions implements FacilioWorkflowFunctionInterface {
@@ -102,7 +103,7 @@ public enum FacilioConnectionFunctions implements FacilioWorkflowFunctionInterfa
 			}
 		}
 	},
-	POSTWITHFILES(2,"postWithFiles") {
+	POSTWITHFILES(3,"postWithFiles") {
 		@Override
 		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
@@ -154,7 +155,7 @@ public enum FacilioConnectionFunctions implements FacilioWorkflowFunctionInterfa
 			}
 		}
 	},
-	GET_ACCESS_TOKEN(3,"getAccessToken") {
+	GET_ACCESS_TOKEN(4,"getAccessToken") {
 		@Override
 		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
@@ -166,6 +167,26 @@ public enum FacilioConnectionFunctions implements FacilioWorkflowFunctionInterfa
 			ConnectionContext connectionContext = (ConnectionContext)objects[0];
 			
 			return connectionContext.getAccessToken();
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	AS_MAP(5,"asMap") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			if(objects[0] == null) {
+				return null;
+			}
+			ConnectionContext connectionContext = (ConnectionContext)objects[0];
+			
+			return FieldUtil.getAsProperties(connectionContext);
 		};
 		
 		public void checkParam(Object... objects) throws Exception {

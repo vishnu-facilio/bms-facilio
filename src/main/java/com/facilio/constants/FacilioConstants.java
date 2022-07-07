@@ -292,6 +292,7 @@ public class FacilioConstants {
         public static final String FACILIO_BANNER = "facilioBanner";
         public static final String FACILIO_BANNERS = "facilioBanners";
         public static final String EMAIL_STRUCTURES = "emailStructures";
+
         public static final String EMAIL_STRUCTURE = "emailStructure";
 		public static final String WITH_QRURL="withQrUrl";
 
@@ -389,7 +390,8 @@ public class FacilioConstants {
 		public static final String BUSINESS_HOUR_IDS = "businesshourids";
 		public static final String BUSINESS_HOUR = "businesshours";
 		public static final String BUSINESS_HOUR_LIST="businesshourlist";
-		
+
+		public static final String DRAFT = "draft";
 		public static final String ID = "Id";
 		public static final String STARTING_NUMBER = "startingNumber";
 		public static final String LINK_NAME = "linkName";
@@ -1436,7 +1438,7 @@ public class FacilioConstants {
 		public static final String MAP_QR = "mapqr";
 		
 		public static final String PUBLISH_DATA = "publishData";
-		public static final String PUBLISH_SUCCESS = "publishSucsess";
+		public static final String PUBLISH_SUCCESS = "publishSuccess";
 		public static final String PUBLISH_FAILURE = "publishFailure";
 		public static final String ORGUNITS_LIST = "orgUnitsList";
 		public static final String ALL_METRICS = "allMetrics";

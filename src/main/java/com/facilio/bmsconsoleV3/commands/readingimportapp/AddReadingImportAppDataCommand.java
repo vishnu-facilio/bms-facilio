@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.readingimportapp;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsoleV3.context.readingimportapp.V3ReadingImportAppContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -19,6 +20,9 @@ public class AddReadingImportAppDataCommand extends FacilioCommand {
         V3ReadingImportAppContext readingImportContext = (V3ReadingImportAppContext) context.get("READING_IMPORT_CONTEXT");
 
         FacilioUtil.throwIllegalArgumentException(readingImportContext == null, "Reading import context should not be null");
+
+        readingImportContext.setCreatedBy(AccountUtil.getCurrentUser().getOuid());
+        readingImportContext.setCreatedTime(System.currentTimeMillis());
 
         GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
                 .table(ModuleFactory.getReadingImportAPPModule().getTableName())

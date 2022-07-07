@@ -31,12 +31,78 @@ public class EMailStructure extends Template {
         this.bodyId = bodyId;
     }
 
+    private long sysCreatedTime = -1;
+    public void setSysCreatedTime(long sysCreatedTime) {
+        this.sysCreatedTime = sysCreatedTime;
+    }
+    public long getSysCreatedTime() {
+        return sysCreatedTime;
+    }
+
+    private long sysModifiedTime = -1;
+    public void setSysModifiedTime(long sysModifiedTime) {
+        this.sysModifiedTime = sysModifiedTime;
+    }
+    public long getSysModifiedTime() {
+        return sysModifiedTime;
+    }
+
+    private long sysCreatedBy ;
+
+    public void setSysCreatedBy(long sysCreatedBy) {
+        this.sysCreatedBy = sysCreatedBy;
+    }
+
+    public long getSysCreatedBy() {
+        return sysCreatedBy;
+    }
+
+    private long sysModifiedBy;
+
+    public void setSysModifiedBy(long sysModifiedBy) {
+        this.sysModifiedBy = sysModifiedBy;
+    }
+
+    public long getSysModifiedBy() {
+        return sysModifiedBy;
+    }
+
+    private Boolean draft;
+
+    public Boolean isDraft(){
+        if(draft == null){
+            return false;
+        }
+        return draft;
+    }
+    public Boolean getDraft() {
+        return draft;
+    }
+
+    public void setDraft(Boolean draft) {
+        this.draft = draft;
+    }
+
     private String message;
     public String getMessage() {
         return message;
     }
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    private Boolean html;
+    public Boolean getHtml() {
+        return html;
+    }
+    public void setHtml(Boolean html) {
+        this.html = html;
+    }
+    public Boolean isHtml() {
+        if (html != null) {
+            return html.booleanValue();
+        }
+        return false;
     }
 
     @Override

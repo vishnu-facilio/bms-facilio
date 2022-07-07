@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.context.readingimportapp;
 
+import com.facilio.accounts.dto.User;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,6 +26,9 @@ public class V3ReadingImportAppContext {
     Long modifiedBy;
     Long fileSize;
     String name;
+
+    User createdUser;
+    User modifiedUser;
 
 
     public enum status {
