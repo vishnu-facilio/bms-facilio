@@ -751,14 +751,14 @@ public class V3WorkOrderContext extends V3TicketContext {
     @Setter
     private Long prerequisitesJobPlanID;
 
-    private JobPlanContext jobPlanContext;
+    private JobPlanContext jobPlan;
 
     public JobPlanContext getJobPlan() {
-        return jobPlanContext;
+        return jobPlan;
     }
 
     public void setJobPlan(JobPlanContext jobPlan) {
-        this.jobPlanContext = jobPlan;
+        this.jobPlan = jobPlan;
     }
 
     public Map<String, List<V3TaskContext>> getTasksString() {
