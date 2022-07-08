@@ -197,6 +197,6 @@ public class AudienceValueGenerator extends ValueGenerator{
 
     @Override
     public Integer getOperatorId() {
-        return 36;
+        return 90;
     }
 }

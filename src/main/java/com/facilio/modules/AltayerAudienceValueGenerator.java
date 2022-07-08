@@ -18,6 +18,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -26,18 +27,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Log4j
 public class AltayerAudienceValueGenerator extends ValueGenerator{
     @Override
     public Object generateValueForCondition(int appType) {
         try {
             List<Long> tuIds = new ArrayList<Long>();
             List<Long> buildingIds = new ArrayList<Long>();
-
             Criteria criteria = new Criteria();
 
             if (appType == AppDomain.AppDomainType.TENANT_PORTAL.getIndex()) {
                 List<Long> ids = AltayerTenantSiteValueGenerator.getTenantContactForUser(AccountUtil.getCurrentUser().getId());
-                    if (CollectionUtils.isNotEmpty(ids)) {
+                if (CollectionUtils.isNotEmpty(ids)) {
                         List<TenantUnitSpaceContext> tenantUnits = TenantsAPI.getTenantUnitsForTenantList(ids);
                         if (CollectionUtils.isNotEmpty(tenantUnits)) {
                             for (TenantUnitSpaceContext ts : tenantUnits) {
@@ -92,6 +93,7 @@ public class AltayerAudienceValueGenerator extends ValueGenerator{
                 builderCategory.fetchSupplements(supplements);
 
                 List<AudienceSharingInfoContext> list = builderCategory.get();
+
                 if(CollectionUtils.isNotEmpty(list)){
                     List<Long> ids = new ArrayList<>();
                     List<Long> filterAppliedAudience = new ArrayList<>();
@@ -119,7 +121,6 @@ public class AltayerAudienceValueGenerator extends ValueGenerator{
 
                         ids.add(sh.getAudienceId().getId());
                     }
-
                     return StringUtils.join(ids, ",");
                 }
             }
@@ -178,6 +179,6 @@ public class AltayerAudienceValueGenerator extends ValueGenerator{
 
     @Override
     public Integer getOperatorId() {
-        return 36;
+        return 90;
     }
 }

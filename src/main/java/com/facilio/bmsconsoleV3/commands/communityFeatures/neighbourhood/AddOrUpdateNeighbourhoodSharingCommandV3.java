@@ -1,6 +1,8 @@
 package com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.communityfeatures.DealsAndOffersContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.NeighbourhoodContext;
@@ -22,24 +24,27 @@ public class AddOrUpdateNeighbourhoodSharingCommandV3 extends FacilioCommand {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<NeighbourhoodContext> neighbourhoods = recordMap.get(moduleName);
-
         if(CollectionUtils.isNotEmpty(neighbourhoods)) {
             for(NeighbourhoodContext neighbourhood : neighbourhoods){
                 if(AccountUtil.getCurrentSiteId() != -1) {
                     neighbourhood.setSiteId(AccountUtil.getCurrentSiteId());
                 }
                 Map<String, List<Map<String, Object>>> subforms = neighbourhood.getSubForm();
-                if(neighbourhood.getAudience() != null && MapUtils.isNotEmpty(subforms) && subforms.containsKey(FacilioConstants.ContextNames.Tenant.NEIGHBOURHOOD_SHARING)){
+                if(CollectionUtils.isEmpty(neighbourhood.getAudience()) && MapUtils.isNotEmpty(subforms) && subforms.containsKey(FacilioConstants.ContextNames.Tenant.NEIGHBOURHOOD_SHARING)){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid Sharing Information. Can be  either audience or list of sharing info'");
                 }
-                else if(neighbourhood.getAudience() == null && (MapUtils.isEmpty(subforms) || !subforms.containsKey(FacilioConstants.ContextNames.Tenant.NEIGHBOURHOOD_SHARING))){
+                else if(CollectionUtils.isEmpty(neighbourhood.getAudience()) && (MapUtils.isEmpty(subforms) || !subforms.containsKey(FacilioConstants.ContextNames.Tenant.NEIGHBOURHOOD_SHARING))){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Sharing Information cannot be empty");
                 }
-                else if(neighbourhood.getAudience() != null && neighbourhood.getAudience().getId() > 0){
+                else if(CollectionUtils.isNotEmpty(neighbourhood.getAudience())){
                     continue;
                 }
-                else if(neighbourhood.getAudience() != null && CollectionUtils.isNotEmpty(neighbourhood.getAudience().getAudienceSharing())){
-                    CommunityFeaturesAPI.addAudience(neighbourhood.getAudience());
+                else if(CollectionUtils.isNotEmpty(neighbourhood.getAudience())){
+                    for(AudienceContext audience : neighbourhood.getAudience()){
+                        if(CollectionUtils.isNotEmpty(audience.getAudienceSharing())){
+                            CommunityFeaturesAPI.addAudience(audience);
+                        }
+                    }
                     neighbourhood.setAudience(neighbourhood.getAudience());
                 }
             }

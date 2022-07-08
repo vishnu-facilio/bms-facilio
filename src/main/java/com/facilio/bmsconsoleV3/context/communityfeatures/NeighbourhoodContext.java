@@ -64,13 +64,13 @@ public class NeighbourhoodContext extends V3Context {
         this.category = category;
     }
 
-    private AudienceContext audience;
+    private List<AudienceContext> audience;
 
-    public AudienceContext getAudience() {
+    public List<AudienceContext> getAudience() {
         return audience;
     }
 
-    public void setAudience(AudienceContext audience) {
+    public void setAudience(List<AudienceContext> audience) {
         this.audience = audience;
     }
 

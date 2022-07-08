@@ -1,6 +1,8 @@
 package com.facilio.bmsconsoleV3.commands.communityFeatures.admindocuments;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.ContactDirectoryContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AdminDocumentsContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
@@ -29,17 +31,21 @@ public class AddOrUpdateAdminDocumentsSharingCommandV3 extends FacilioCommand {
                     doc.setSiteId(AccountUtil.getCurrentSiteId());
                 }
                 Map<String, List<Map<String, Object>>> subforms = doc.getSubForm();
-                if(doc.getAudience() != null && MapUtils.isNotEmpty(subforms) && subforms.containsKey(FacilioConstants.ContextNames.Tenant.ADMIN_DOCUMENTS_SHARING)){
+                if(CollectionUtils.isEmpty(doc.getAudience()) && MapUtils.isNotEmpty(subforms) && subforms.containsKey(FacilioConstants.ContextNames.Tenant.ADMIN_DOCUMENTS_SHARING)){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid Sharing Information. Can be  either audience or list of sharing info'");
                 }
-                else if(doc.getAudience() == null && (MapUtils.isEmpty(subforms) || !subforms.containsKey(FacilioConstants.ContextNames.Tenant.ADMIN_DOCUMENTS_SHARING))){
+                else if(CollectionUtils.isEmpty(doc.getAudience()) && (MapUtils.isEmpty(subforms) || !subforms.containsKey(FacilioConstants.ContextNames.Tenant.ADMIN_DOCUMENTS_SHARING))){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Sharing Information cannot be empty");
                 }
-                else if(doc.getAudience() != null && doc.getAudience().getId() > 0){
+                else if(CollectionUtils.isNotEmpty(doc.getAudience())){
                     continue;
                 }
-                else if(doc.getAudience() != null && CollectionUtils.isNotEmpty(doc.getAudience().getAudienceSharing())){
-                    CommunityFeaturesAPI.addAudience(doc.getAudience());
+                else if(CollectionUtils.isNotEmpty(doc.getAudience())){
+                    for(AudienceContext audience : doc.getAudience()){
+                        if(CollectionUtils.isNotEmpty(audience.getAudienceSharing())){
+                            CommunityFeaturesAPI.addAudience(audience);
+                        }
+                    }
                     doc.setAudience(doc.getAudience());
                 }
             }
