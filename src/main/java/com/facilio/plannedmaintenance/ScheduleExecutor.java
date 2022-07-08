@@ -1,6 +1,12 @@
 package com.facilio.plannedmaintenance;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PMTriggerV2;
+import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldUtil;
 import com.facilio.taskengine.ScheduleInfo;
 import org.apache.commons.chain.Context;
@@ -9,9 +15,31 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ScheduleExecutor extends ExecutorBase {
+    @Override
+    protected FacilioStatus getStatus(Context context) throws Exception {
+        Map<FacilioStatus.StatusType, FacilioStatus> statusMap = (Map<FacilioStatus.StatusType, FacilioStatus>) context.get(FacilioConstants.ContextNames.STATUS_MAP);
+        if (statusMap == null) {
+            statusMap = new HashMap<>();
+            context.put(FacilioConstants.ContextNames.STATUS_MAP, statusMap);
+        }
+
+        FacilioStatus result = statusMap.get(FacilioStatus.StatusType.PRE_OPEN);
+        if (result == null) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule workorderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+            List<FacilioStatus> statusOfStatusType = TicketAPI.getStatusOfStatusType(workorderModule, FacilioStatus.StatusType.PRE_OPEN);
+            result = statusOfStatusType.get(0);
+            statusMap.put(FacilioStatus.StatusType.PRE_OPEN, result);
+        }
+
+        return result;
+    }
+
     @Override
     protected List<Long> getNextExecutionTimes(Context context) throws Exception {
         PMTriggerV2 trigger = (PMTriggerV2) context.get("trigger");

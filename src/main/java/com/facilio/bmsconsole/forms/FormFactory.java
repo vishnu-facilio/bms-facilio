@@ -107,6 +107,7 @@ public class FormFactory {
 		forms.put("spaceFromFloor", getSpaceFormFromFloor());
 		forms.put("spaceFromSpace", getSpaceFormFromSpace());
 		forms.put("floor", getFloorForm());
+		forms.put("plannedmaintenance", getPlannedMaintenanceForm());
 		forms.put("spacecategory", getSpaceCategoryForm());
 		/**** Do not add any forms here... Add in initFormsList() only ******/
 
@@ -566,6 +567,7 @@ public class FormFactory {
 		List<FacilioForm> vendorQuotesForm = Arrays.asList(getVendorQuotesForm());
 		List<FacilioForm> labourForm = Arrays.asList(getLabourForm());
 		List<FacilioForm> jobPlanForm = Arrays.asList(getJobPlanForm());
+		List<FacilioForm> plannedmaintenance = Arrays.asList(getPlannedMaintenanceForm());
 
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
@@ -647,7 +649,7 @@ public class FormFactory {
 				.put(ContextNames.VENDOR_QUOTES,getFormMap(vendorQuotesForm))
 				.put(ContextNames.LABOUR,getFormMap(labourForm))
 				.put(ContextNames.JOB_PLAN,getFormMap(jobPlanForm))
-
+				.put(ContextNames.PLANNEDMAINTENANCE, getFormMap(plannedmaintenance))
 				.build();
 	}
 	
@@ -798,6 +800,40 @@ public class FormFactory {
 		fields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Max Occupancy", FormField.Required.OPTIONAL, 4, 3));
 		fields.add(new FormField("floorlevel", FacilioField.FieldDisplayType.NUMBER, "Floor Level", FormField.Required.OPTIONAL, 5, 2));
 
+		defaultForm.setFields(fields);
+		return defaultForm;
+	}
+
+	public static FacilioForm getPlannedMaintenanceForm() {
+		FacilioModule plannedMaintenance = null;
+		try {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			plannedMaintenance = modBean.getModule("plannedMaintenance");
+		}
+		catch (Exception e) {
+		}
+
+		FacilioForm defaultForm = new FacilioForm();
+		defaultForm.setDisplayName("Planned Maintenance");
+		defaultForm.setName("default_planned_maintenance_web");
+		defaultForm.setModule(plannedMaintenance);
+		defaultForm.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+		defaultForm.setShowInWeb(true);
+
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("type",FieldDisplayType.LOOKUP_SIMPLE,"Maintenance Type", Required.REQUIRED, "tickettype", 1, 1));
+		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 2, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "ticketcategory", 4, 2));
+		fields.add(new FormField("priority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 5, 3));
+		fields.add(new FormField("duration", FieldDisplayType.DURATION, "Due Duration", Required.OPTIONAL, "duration", 6, 1));
+		fields.add(new FormField("estimatedWorkDuration", FieldDisplayType.DURATION, "Estimated Duration", Required.OPTIONAL, "duration", 7, 1));
+		FormField groups = new FormField("groups",FieldDisplayType.LOOKUP_SIMPLE,"Team", Required.OPTIONAL, "groups", 8, 1);
+		groups.addToConfig("isFiltersEnabled", true); // groups is special form field without actual field
+		groups.addToConfig("lookupModuleName", "groups");
+		fields.add(groups);
+		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "attachment", 9, 1));
 		defaultForm.setFields(fields);
 		return defaultForm;
 	}

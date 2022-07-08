@@ -17347,7 +17347,7 @@ VALUES ((SELECT LAST_INSERT_ID()),${orgId},@PM_SITE_MODULE_ID,1);
 -- adding pmTrigger module
 
 INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, MODULE_TYPE, IS_TRASH_ENABLED)
-VALUES (${orgId}, 'pmTrigger', '${common.planned_maintenance_trigger}', 'PM_V2_Trigger', @BASE_ENTITY_MODULE_TYPE, true);
+VALUES (${orgId}, 'pmTriggerV2', '${common.planned_maintenance_trigger}', 'PM_V2_Trigger', @BASE_ENTITY_MODULE_TYPE, true);
 SET @PM_TRIGGER_MODULE_ID := (SELECT LAST_INSERT_ID());
 
 INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT)
@@ -17355,7 +17355,7 @@ VALUES (${orgId}, @PM_TRIGGER_MODULE_ID, 'pmId', '${fields.pmId}', 1, 'PM_ID', 2
 INSERT INTO NumberFields (FIELDID, ORGID) VALUES ((SELECT LAST_INSERT_ID()), ${orgId});
 
 INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT, IS_MAIN_FIELD)
-VALUES (${orgId}, @PM_TRIGGER_MODULE_ID, 'scheduleInfo', '${fields.scheduleInfo}', 1, 'SCHEDULE_INFO', 1, false, false, true, true);
+VALUES (${orgId}, @PM_TRIGGER_MODULE_ID, 'schedule', '${fields.scheduleInfo}', 1, 'SCHEDULE_INFO', 1, false, false, true, true);
 INSERT INTO StringFields (FIELDID , ORGID) VALUES ((SELECT LAST_INSERT_ID()), ${orgId});
 
 INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT)
@@ -17363,11 +17363,15 @@ VALUES (${orgId}, @PM_TRIGGER_MODULE_ID, 'frequency', '${fields.frequency}', 1, 
 INSERT INTO SystemEnumFields (FIELDID, ORGID, ENUM_NAME) VALUES ((SELECT LAST_INSERT_ID()), ${orgId}, 'PMTriggerFrequency');
 
 INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT)
-VALUES (${orgId}, @PM_TRIGGER_MODULE_ID, 'triggerType', '${fields.triggerType}', 1, 'TRIGGER_TYPE', 12, false, false, true);
+VALUES (${orgId}, @PM_TRIGGER_MODULE_ID, 'type', '${fields.triggerType}', 1, 'TRIGGER_TYPE', 12, false, false, true);
 INSERT INTO SystemEnumFields (FIELDID, ORGID, ENUM_NAME) VALUES ((SELECT LAST_INSERT_ID()), ${orgId}, 'PMTriggerType');
 
 INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT)
-VALUES (${orgId}, @PM_TRIGGER_MODULE_ID, 'triggerStartTime', '${fields.triggerStartTime}', 1, 'TRIGGER_START_TIME', 2, false, false, true);
+VALUES (${orgId}, @PM_TRIGGER_MODULE_ID, 'startTime', '${fields.triggerStartTime}', 1, 'TRIGGER_START_TIME', 2, false, false, true);
+INSERT INTO NumberFields (FIELDID, ORGID) VALUES ((SELECT LAST_INSERT_ID()), ${orgId});
+
+INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT)
+VALUES (${orgId}, @PM_TRIGGER_MODULE_ID, 'endTime', '${fields.triggerEndTime}', 1, 'TRIGGER_END_TIME', 2, false, false, true);
 INSERT INTO NumberFields (FIELDID, ORGID) VALUES ((SELECT LAST_INSERT_ID()), ${orgId});
 
 

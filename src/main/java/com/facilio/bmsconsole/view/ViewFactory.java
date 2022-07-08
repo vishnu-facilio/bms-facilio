@@ -677,6 +677,13 @@ public class ViewFactory {
 
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("all", getAllPlannedMaintenanceView().setOrder(order++));
+		views.put("active", getActivePlannedMaintenanceView().setOrder(order++));
+		views.put("inactive", getInActivePlannedMaintenanceView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.PLANNEDMAINTENANCE, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
 		views.put("all", getAllWorkPermitView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.WorkPermit.WORKPERMIT, views);
 
@@ -6857,6 +6864,76 @@ public class ViewFactory {
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return allView;
+	}
+
+	private static FacilioView getAllPlannedMaintenanceView() {
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Planned Maintenance");
+
+		List<AppDomain.AppDomainType> appdomains = new ArrayList<>();
+		appdomains.add(AppDomain.AppDomainType.FACILIO);
+
+		allView.setViewSharing(getSharingContext(appdomains));
+		return allView;
+	}
+
+	private static FacilioView getInActivePlannedMaintenanceView() {
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(getActivePlannedMaintenanceCondition());
+		FacilioModule plannedMaintenanceModule = ModuleFactory.getPlannedMaintenanceModule();
+		FacilioField idField = FieldFactory.getIdField();
+		idField.setModule(plannedMaintenanceModule);
+		FacilioView allView = new FacilioView();
+		allView.setName("plannedMaintenanceActive");
+		allView.setDisplayName("Active");
+		allView.setCriteria(criteria);
+		return allView;
+	}
+
+	private static FacilioView getActivePlannedMaintenanceView() {
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(getActivePlannedMaintenanceCondition());
+		FacilioModule plannedMaintenanceModule = ModuleFactory.getPlannedMaintenanceModule();
+		FacilioField idField = FieldFactory.getIdField();
+		idField.setModule(plannedMaintenanceModule);
+		FacilioView allView = new FacilioView();
+		allView.setName("plannedMaintenanceActive");
+		allView.setDisplayName("Active");
+		allView.setCriteria(criteria);
+		return allView;
+	}
+
+	public static Condition getInActivePlannedMaintenanceCondition() {
+		FacilioModule module = ModuleFactory.getPlannedMaintenanceModule();
+		FacilioField booleanField = new FacilioField();
+		booleanField.setName("isActive");
+		booleanField.setColumnName("IS_ACTIVE");
+		booleanField.setDataType(FieldType.BOOLEAN);
+		booleanField.setModule(module);
+
+		Condition open = new Condition();
+		open.setField(booleanField);
+		open.setOperator(BooleanOperators.IS);
+		open.setValue("false");
+
+		return open;
+	}
+
+	public static Condition getActivePlannedMaintenanceCondition() {
+		FacilioModule module = ModuleFactory.getPlannedMaintenanceModule();
+		FacilioField booleanField = new FacilioField();
+		booleanField.setName("isActive");
+		booleanField.setColumnName("IS_ACTIVE");
+		booleanField.setDataType(FieldType.BOOLEAN);
+		booleanField.setModule(module);
+
+		Condition open = new Condition();
+		open.setField(booleanField);
+		open.setOperator(BooleanOperators.IS);
+		open.setValue("true");
+
+		return open;
 	}
 	
 	private static FacilioView getAllInsuranceView() {

@@ -1988,7 +1988,7 @@ public class FacilioAuthAction extends FacilioAction {
 					response.addHeader("Set-Cookie", portalCookie);
 				}
 			}
-		} else if("stage".equals(FacilioProperties.getEnvironment())) {
+		} else if("stage".equals(FacilioProperties.getEnvironment()) || "stage2".equals(FacilioProperties.getEnvironment())) {
 			LOGGER.log(Level.SEVERE, "Stage login");
 			var cookieString = "fc.idToken.facilio="+authtoken+"; Max-Age=604800; Path=/; Secure; HttpOnly; SameSite=None";
 			response.addHeader("Set-Cookie", cookieString);
