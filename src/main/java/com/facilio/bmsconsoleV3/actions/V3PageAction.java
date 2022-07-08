@@ -25,6 +25,7 @@ public class V3PageAction extends V3Action {
 	private long widgetId = -1;
 	private long formId = -1;
 	private Map<String, Object> widgetParams;
+	private boolean fetchMainFields;
 	
 	public String fetchSummaryFields() throws Exception {
 		
@@ -35,6 +36,7 @@ public class V3PageAction extends V3Action {
 		context.put(ContextNames.FORM_ID, formId);
 		context.put(ContextNames.WIDGET_ID, widgetId);
 		context.put(ContextNames.FETCH_LOOKUPS, true);
+		context.put(ContextNames.FETCH_MAIN_FIELDS, fetchMainFields);
 		context.put(FacilioConstants.ContextNames.WIDGET_PARAMJSON, widgetParams); // Remove once page db support
 		chain.execute();
 		

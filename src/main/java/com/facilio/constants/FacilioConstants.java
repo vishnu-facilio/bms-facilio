@@ -824,6 +824,7 @@ public class FacilioConstants {
 		public static final String PREV_FIELD_ID = "prevFieldId";
 		public static final String LOOKUP_FIELD_META_LIST = "lookupFieldMetaList";
 		public static final String FETCH_LOOKUPS = "fetchLookups";
+		public static final String FETCH_MAIN_FIELDS = "fetchMainFields";
 		public static final String FETCH_CUSTOM_LOOKUPS = "fetchCustomLookups";
 		public static final String FETCH_FIELD_DISPLAY_NAMES = "fetchFieldDisplayNames";
 		public static final String ALLOW_SAME_FIELD_DISPLAY_NAME = "changeFieldDisplayName";
