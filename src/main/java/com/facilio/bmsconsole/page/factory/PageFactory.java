@@ -420,10 +420,6 @@ public class PageFactory {
 	}
 
 	protected static void addRelatedListWidgets(Section section, long moduleId, List<String> relatedModules, boolean include) throws Exception {
-		addRelatedListWidgets(section, moduleId, null, false, true);
-	}
-
-	protected static void addRelatedListWidgets(Section section, long moduleId, List<String> relatedModules, boolean include, boolean addRelations) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioModule> subModules =
 				modBean.getSubModules(moduleId, FacilioModule.ModuleType.BASE_ENTITY);
@@ -454,22 +450,27 @@ public class PageFactory {
 			}
 		}
 
-		if(addRelations) {
-			List<RelationRequestContext> relations = RelationUtil.getAllRelations(modBean.getModule(moduleId));
-			if (CollectionUtils.isNotEmpty(relations)) {
-				for (RelationRequestContext relation : relations) {
-					PageWidget relationWidget = new PageWidget(WidgetType.RELATIONSHIP_WIDGET);
-					relationWidget.setRelation(relation);
-					relationWidget.addToLayoutParams(section, 24, 8);
-					section.addWidget(relationWidget);
-				}
-			}
-		}
+	}
 
+	protected static boolean addRelationshipSection(Page page, Page.Tab tab, long moduleId) throws Exception{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<RelationRequestContext> relations = RelationUtil.getAllRelations(modBean.getModule(moduleId));
+		if (CollectionUtils.isEmpty(relations)) {
+			return false;
+		}
+		Section relationshipSection = page.new Section("Relationships", "List of relationships and types between records across modules");
+		for (RelationRequestContext relation : relations) {
+			PageWidget relationWidget = new PageWidget(WidgetType.RELATIONSHIP_WIDGET);
+			relationWidget.setRelation(relation);
+			relationWidget.addToLayoutParams(relationshipSection, 24, 8);
+			relationshipSection.addWidget(relationWidget);
+		}
+		tab.addSection(relationshipSection);
+		return true;
 	}
 
 	public static void getRelatedListMeta(Section section, long moduleId, List<String> relatedModules, boolean include) throws Exception {
-		addRelatedListWidgets(section, moduleId, relatedModules, include, false);
+		addRelatedListWidgets(section, moduleId, relatedModules, include);
 	}
 
 	static void addSubModuleRelatedListWidget(Page.Section section, String moduleName, long parenModuleId) throws Exception {

@@ -191,7 +191,8 @@ public class WorkorderPageFactory extends PageFactory {
     }
 
     private static void addRelatedRecordsTab(Page page, long workorderModuleID) throws Exception {
-        Page.Tab relatedRecordsTab = page.new Tab("related records");
+        Page.Tab relatedRecordsTab = page.new Tab("Related");
+        addRelationshipSection(page, relatedRecordsTab, workorderModuleID);
         page.addTab(relatedRecordsTab);
 
         Page.Section relatedRecordsSection = page.new Section();

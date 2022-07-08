@@ -20,12 +20,18 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
 
+import lombok.extern.log4j.Log4j;
+@Log4j
 public class AddRequesterForServiceRequestCommandV3 extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		List<V3ServiceRequestContext> request = Constants.getRecordList((FacilioContext) context);
+		
+		LOGGER.info("Entered AddRequesterForServiceRequestCommand");
+
 		if (request != null && !request.isEmpty()) {
+			LOGGER.info("REQUEST IS NOT EMPTY");
 			for (V3ServiceRequestContext serviceRequestContext : request) {
 				
 				if(serviceRequestContext.getDescription() != null && serviceRequestContext.getDescription().length() > V3ServiceRequestContext.DESCIPTION_LENGTH) {
@@ -33,6 +39,9 @@ public class AddRequesterForServiceRequestCommandV3 extends FacilioCommand {
 				}
 				
 				PeopleContext requester = serviceRequestContext.getRequester();
+				
+				LOGGER.info("REQUESTER EMAIL- "+ ((requester != null) ? (requester.getEmail()+"::"+requester.getId()) : "requester is null"));
+				
 				
 				if (requester != null && requester.getEmail() != null && !"".equals(requester.getEmail()) && requester.getId() <= 0) {
 					

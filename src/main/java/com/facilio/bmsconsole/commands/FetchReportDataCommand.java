@@ -472,6 +472,7 @@ public class FetchReportDataCommand extends FacilioCommand {
                             Condition condition = allCriteria.getConditions().get(key);
                             if (baseModule == null || condition == null || condition.getFieldName() == null) continue;
                             FacilioField field = modBean.getField(condition.getFieldName(), baseModule.getName());
+                            if(field == null) continue;
                             condition.setField(field);
                         }
 
@@ -706,7 +707,10 @@ public class FetchReportDataCommand extends FacilioCommand {
                 if (reportType == ReportType.PIVOT_REPORT) {
                     if (groupByField.getLookupFieldId() > 0) {
                         gField = modBean.getField(groupByField.getLookupFieldId()).clone();
-                        handlePivotFields(groupByField.getField(), (LookupField) gField, false, groupByField.getModule(), false);
+                        FacilioField facilioField = modBean.getField(groupByField.getFieldId()).clone();
+                        String alias = handlePivotFields(groupByField.getField(), (LookupField) gField, false, groupByField.getModule(), false);
+                        facilioField.setTableAlias(alias);
+                        gField = facilioField;
                     } else {
                         gField = groupByField.getField().clone();
                         handlePivotFields(groupByField.getField(), null, false, groupByField.getModule(), false);
@@ -717,15 +721,15 @@ public class FetchReportDataCommand extends FacilioCommand {
                 if (groupByField.getAggrEnum() != null) {
                     if (groupByField.getAggrEnum() instanceof SpaceAggregateOperator && !groupByField.getAggrEnum().getStringValue().equalsIgnoreCase(baseModule.getName())) {
                         gField = applySpaceAggregation(dp, groupByField.getAggrEnum(), selectBuilder, addedModules, groupByField.getField());
-                    } else {
+                    } else if(groupByField.getLookupFieldId() < 0 || reportType != ReportType.PIVOT_REPORT){
                         gField = groupByField.getAggrEnum().getSelectField(gField);
                     }
                 }
-                if (gField.getModule() != null && (gField.getModule().isCustom() && !baseModule.equals(gField.getModule()))) {
-                    gField.setTableAlias(getAndSetModuleAlias(gField.getModule().getName()));
-                } else if (gField.getModule() != null && groupByField.getAlias() != null && reportType == ReportType.PIVOT_REPORT) {
+                if ((groupByField.getLookupFieldId() < 0 || reportType != ReportType.PIVOT_REPORT) && gField.getModule() != null &&
+                        ((gField.getModule().isCustom() && !baseModule.equals(gField.getModule())) || groupByField.getAlias() != null && reportType == ReportType.PIVOT_REPORT)) {
                     gField.setTableAlias(getAndSetModuleAlias(gField.getModule().getName()));
                 }
+
                 fields.add(gField);
                 if (reportType == ReportType.PIVOT_REPORT && gField.getModule() != null && gField.getModule().equals(baseModule) && !gField.getCompleteColumnName().endsWith("null")) {
                     groupBy.add(gField.getCompleteColumnName());
@@ -1570,8 +1574,7 @@ public class FetchReportDataCommand extends FacilioCommand {
         return true;
     }
 
-    private void handlePivotFields(FacilioField field, LookupField lookupField, boolean isDataField, FacilioModule module, boolean firstRow) throws Exception {
-
+    private String handlePivotFields(FacilioField field, LookupField lookupField, boolean isDataField, FacilioModule module, boolean firstRow) throws Exception {
         Map<String, Object> tempMap = new HashMap<>();
         field = field.clone();
         if (firstRow) {
@@ -1644,6 +1647,7 @@ public class FetchReportDataCommand extends FacilioCommand {
         tempMap.put("module", module);
         tempMap.put("extendedModules", tempModulesList);
         pivotFieldsList.add(tempMap);
+        return field.getTableAlias();
     }
     private List<Condition> constructTTimeFilters(JSONObject conditionJson, ReportDataPointContext dataPoint) throws Exception
     {

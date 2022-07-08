@@ -7,8 +7,14 @@ import lombok.Data;
 @Data
 public class PMTriggerV2 extends V3Context {
     private long pmId;
-    private String scheduleInfo;
+    private String schedule;
     private PMTriggerFrequency frequency;
+
+    private long startTime;
+    private long planEndTime;
+    private long endTime;
+
+    private long cutOffTime;
 
     public PMTriggerFrequency getFrequencyEnum() {
         return frequency;
@@ -33,27 +39,27 @@ public class PMTriggerV2 extends V3Context {
         }
     }
 
-    private PMTriggerType triggerType;
+    private PMTriggerType type;
 
-    public void setTriggerTypeEnum(PMTriggerType triggerType) {
-        this.triggerType = triggerType;
+    public void setTypeEnum(PMTriggerType triggerType) {
+        this.type = triggerType;
     }
 
-    public PMTriggerType getTriggerTypeEnum() {
-        return triggerType;
+    public PMTriggerType getTypeEnum() {
+        return type;
     }
 
-    public void setTriggerType(Integer triggerType) {
-        if (triggerType != null) {
-            this.triggerType = PMTriggerType.valueOf(triggerType);
+    public void setType(Integer type) {
+        if (type != null) {
+            this.type = PMTriggerType.valueOf(type);
         } else {
-            this.triggerType = null;
+            this.type = null;
         }
     }
 
-    public Integer getTriggerType() {
-        if (this.triggerType != null) {
-            return this.triggerType.getIndex();
+    public Integer getType() {
+        if (this.type != null) {
+            return this.type.getIndex();
         }
         return null;
     }

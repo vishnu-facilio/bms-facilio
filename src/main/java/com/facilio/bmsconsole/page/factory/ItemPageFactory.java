@@ -68,13 +68,14 @@ public class ItemPageFactory extends PageFactory{
         addSecondaryDetailsWidget(tab2Sec1);
         addNotesAttachmentsModule(tab2Sec1);
 
-        Page.Tab tab3 = page.new Tab("Related Records");
+        Page.Tab tab3 = page.new Tab("Related");
+        boolean isRelationshipNeeded = addRelationshipSection(page, tab3, module.getModuleId());
         Page.Section tab3Sec1 = page.new Section();
         tab3.addSection(tab3Sec1);
 
         addRelatedListWidgets(tab3Sec1, module.getModuleId());
 
-        if (tab3Sec1.getWidgets() != null && !tab3Sec1.getWidgets().isEmpty()) {
+        if ((tab3Sec1.getWidgets() != null && !tab3Sec1.getWidgets().isEmpty()) || isRelationshipNeeded) {
             page.addTab(tab3);
         }
 

@@ -146,6 +146,11 @@ public class Page {
 		public Section(String name) {
 			this.name = name;
 		}
+
+		public Section(String name, String description) {
+			this.name = name;
+			this.description = description;
+		}
 		
 		private long orgId = -1;
 		public long getOrgId() {
@@ -169,6 +174,14 @@ public class Page {
 		}
 		public void setName(String name) {
 			this.name = name;
+		}
+
+		private String description;
+		public String getDescription() {
+			return description;
+		}
+		public void setDescription(String description) {
+			this.description = description;
 		}
 
 		private String displayName;

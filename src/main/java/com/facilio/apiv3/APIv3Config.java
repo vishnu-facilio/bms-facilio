@@ -230,6 +230,7 @@ public class APIv3Config {
 	    return () -> new V3Config(RelationDataContext.class, null)
                 .list()
                 .beforeFetch(ReadOnlyChainFactoryV3.getRelationDataListChain())
+                .afterFetch(ReadOnlyChainFactoryV3.updateRelationSupplementsChain())
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getRelationDataAddBeforeSaveChain())
                 .update()
@@ -1920,7 +1921,7 @@ public class APIv3Config {
     }
     @Module("bmsalarm")
     public static Supplier<V3Config> getBmsAlarm() {
-        return () -> new V3Config(BMSAlarmContext.class, new ModuleCustomFieldCount30())
+        return () -> new V3Config(BaseAlarmContext.class, new ModuleCustomFieldCount30())
                 .update()
                 .afterSave(new UpdateOccurrenceCommand())
                 .list()

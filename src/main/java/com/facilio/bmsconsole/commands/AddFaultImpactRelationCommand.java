@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.ns.context.AggregationType;
+import io.jsonwebtoken.lang.Collections;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -37,15 +38,15 @@ public class AddFaultImpactRelationCommand extends FacilioCommand {
 
             List<NameSpaceField> fields = new ArrayList<NameSpaceField>();
 
-            for (FaultImpactNameSpaceFieldContext faultImpactField : impact.getFields()) {
-                NameSpaceField field = faultImpactField.getNameSpaceField();
-                field.setNsId(impactNameSpaceId);
-                fields.add(field);
+            if(!Collections.isEmpty(impact.getFields())){
+                for (FaultImpactNameSpaceFieldContext faultImpactField : impact.getFields()) {
+                    NameSpaceField field = faultImpactField.getNameSpaceField();
+                    field.setNsId(impactNameSpaceId);
+                    fields.add(field);
+                }
             }
 
-            if(!fields.isEmpty()) {
-                fields.add(constructRuleNsFld(readingRule));
-            }
+            fields.add(constructRuleNsFld(readingRule));
 
             NewReadingRuleAPI.addNamespaceFields(impactNameSpaceId, assetsMap, fields);
             readingRule.setImpactId(impact.getId());

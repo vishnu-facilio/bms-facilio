@@ -8,6 +8,8 @@ import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.time.DateTimeUtil;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -729,7 +731,7 @@ public class V3WorkOrderContext extends V3TicketContext {
     }
 
     public Boolean isQuotationApproved() {
-        if(isQuotationApproved != null) {
+        if (isQuotationApproved != null) {
             return isQuotationApproved.booleanValue();
         }
         return false;
@@ -737,15 +739,17 @@ public class V3WorkOrderContext extends V3TicketContext {
 
     private Boolean isQuotationApproved;
 
-    private com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext jobPlan;
+    @Getter
+    @Setter
+    private Long jobPlanID;
 
-    public com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext getJobPlan() {
-        return jobPlan;
-    }
+    @Getter
+    @Setter
+    private Long adHocTasksJobPlanID;
 
-    public void setJobPlan(JobPlanContext jobPlan) {
-        this.jobPlan = jobPlan;
-    }
+    @Getter
+    @Setter
+    private Long prerequisitesJobPlanID;
 
     public Map<String, List<V3TaskContext>> getTasksString() {
         return tasksString;
@@ -756,4 +760,12 @@ public class V3WorkOrderContext extends V3TicketContext {
     }
 
     private Map<String, List<V3TaskContext>> tasksString;
+
+    @Getter
+    @Setter
+    private long pmId;
+
+    @Getter
+    @Setter
+    private long triggerId;
 }

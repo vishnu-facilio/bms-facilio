@@ -5,7 +5,6 @@ import com.facilio.bmsconsoleV3.context.V3SiteContext;
 import com.facilio.bmsconsoleV3.context.V3SpaceCategoryContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
-import com.facilio.db.criteria.manager.NamedCondition;
 import com.facilio.modules.FacilioIntEnum;
 import lombok.Data;
 
