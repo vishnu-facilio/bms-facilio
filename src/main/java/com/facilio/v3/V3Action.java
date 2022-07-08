@@ -102,14 +102,14 @@ public class V3Action extends ActionSupport implements ServletResponseAware {
 		this.filters = filters;
 	}
 
-	private  String clientFilterCriteria;
+	private String clientCriteria;
 
-	public String getClientFilterCriteria() {
-		return clientFilterCriteria;
+	public void setClientCriteria(String clientCriteria) {
+		this.clientCriteria = clientCriteria;
 	}
 
-	public void setClientFilterCriteria(String clientFilterCriteria) {
-		this.clientFilterCriteria = clientFilterCriteria;
+	public String getClientCriteria() {
+		return clientCriteria;
 	}
 
 	private String viewName;

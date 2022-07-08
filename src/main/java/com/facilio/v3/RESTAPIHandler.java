@@ -150,7 +150,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
                 context.put(Constants.EXCLUDE_PARENT_CRITERIA, excludeParentFilter);
             }
 
-            String clientCriteria=this.getClientFilterCriteria();
+            String clientCriteria=this.getClientCriteria();
             if(StringUtils.isNotEmpty(clientCriteria)){
                 JSONObject json = FacilioUtil.parseJson(clientCriteria);
                 Criteria newCriteria = FieldUtil.getAsBeanFromJson(json, Criteria.class);
