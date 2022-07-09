@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class FetchRelatedRecordsFormQandAQuestionsCommand extends FacilioCommand{
+public class FetchRelatedRecordsForAnswersCommand extends FacilioCommand{
 	@Override
 	public boolean executeCommand(Context context) throws Exception{
 

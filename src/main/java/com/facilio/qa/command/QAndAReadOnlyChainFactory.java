@@ -94,7 +94,7 @@ public class QAndAReadOnlyChainFactory {
     public static FacilioChain afterAnswerFetchChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchAnswerAttachmentsCommand());
-		c.addCommand(new FetchRelatedRecordsFormQandAQuestionsCommand());
+		c.addCommand(new FetchRelatedRecordsForAnswersCommand());
         c.addCommand(new SerializeAnswersCommand());
         return c;
     }
@@ -103,7 +103,7 @@ public class QAndAReadOnlyChainFactory {
 
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new FetchAnswersFromTemplateAndResponseCommand());
-		c.addCommand(new FetchRelatedRecordsFormQandAQuestionsCommand());
+		c.addCommand(new FetchRelatedRecordsForAnswersCommand());
 
 		return c;
 	}
