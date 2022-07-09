@@ -172,9 +172,9 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			if (app == null) {
 				app = ApplicationApi.getApplicationForLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 			}
-			if (app != null) {
+			/*if (app != null) {
 				builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("appId"), String.valueOf(app.getId()), NumberOperators.EQUALS));
-			}
+			}*/
 			
 			List<Map<String, Object>> viewProps = builder.get();
 			List<FacilioView> views = getAllViewDetails(viewProps, module.getOrgId(), getOnlyBasicValues);
