@@ -48,11 +48,12 @@ public class MatrixAnswerHandler extends AnswerHandler<MatrixAnswerContext> {
 	}
 
 	@Override
-	public void populateRelatedRecordsForAnswer(AnswerContext answer) throws Exception{
+	public void populateRelatedRecordsForAnswer(AnswerContext answer,QuestionContext question) throws Exception{
 
 		FacilioChain chain = QAndAReadOnlyChainFactory.fetchMatrixRelatedRecordChain();
 		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.QAndA.ANSWER,answer);
+		context.put(FacilioConstants.QAndA.QUESTION,question);
 		chain.execute();
 
 	}

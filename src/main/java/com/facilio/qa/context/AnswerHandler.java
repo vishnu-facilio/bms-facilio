@@ -19,7 +19,7 @@ public abstract class AnswerHandler<A extends ClientAnswerContext> implements Se
 
     private Class<A> answerClass;
 
-	public void populateRelatedRecordsForAnswer (AnswerContext answer) throws Exception {
+	public void populateRelatedRecordsForAnswer (AnswerContext answer,QuestionContext question) throws Exception {
 
 	}
 

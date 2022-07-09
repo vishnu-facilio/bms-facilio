@@ -2793,6 +2793,7 @@ public class FacilioConstants {
 			public static final String ANSWER_RANGE = "answerRange";
             public static final String IS_SINGLE_RESPONSE = "isSingleResponse";
             public static final String OTHER_RESPONSES = "otherResponses";
+			public static final String RESPONSE_ID = "responseId";
         }
 	}
 	public static class LicenseKeys{

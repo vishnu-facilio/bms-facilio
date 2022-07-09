@@ -26,7 +26,7 @@ public class FetchRelatedRecordsFormQandAQuestionsCommand extends FacilioCommand
 
 				question = questionMap.get(question.getId());
 
-				question.getQuestionType().getAnswerHandler().populateRelatedRecordsForAnswer(answer);
+				question.getQuestionType().getAnswerHandler().populateRelatedRecordsForAnswer(answer,question);
 
 			}
 		}

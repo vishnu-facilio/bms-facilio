@@ -1,11 +1,9 @@
 package com.facilio.qa.command;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
@@ -13,7 +11,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -22,7 +19,6 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.qa.QAndAUtil;
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.QuestionType;
@@ -36,16 +32,17 @@ import com.facilio.qa.context.questions.MatrixQuestionRow;
 import com.facilio.qa.context.questions.MultiQuestionContext;
 import com.facilio.v3.context.Constants;
 
-public class FetchRelatedRecordsFormMatrixQuestionCommand extends FacilioCommand{
+public class FetchRelatedRecordsForMatrixQuestionCommand extends FacilioCommand{
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception{
 		// TODO Auto-generated method stub
 
 		AnswerContext answer = (AnswerContext) context.get(FacilioConstants.QAndA.ANSWER);
-		if(answer != null){
+		QuestionContext question = (QuestionContext) context.get(FacilioConstants.QAndA.QUESTION);
 
-			QuestionContext question = answer.getQuestion();
+		if(answer != null && question != null){
+
 			BaseMatrixQuestionContext matrixQuestion = (BaseMatrixQuestionContext) question;
 
 			ModuleBean modBean = Constants.getModBean();
