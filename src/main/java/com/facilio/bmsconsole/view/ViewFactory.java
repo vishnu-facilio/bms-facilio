@@ -8587,7 +8587,7 @@ public class ViewFactory {
 		
 		historyStatusInt.add(ControlActionCommandContext.Status.SUCCESS.getIntVal());
 		historyStatusInt.add(ControlActionCommandContext.Status.ERROR.getIntVal());
-		historyStatusInt.add(ControlActionCommandContext.Status.PENDING.getIntVal());
+		historyStatusInt.add(ControlActionCommandContext.Status.SENT.getIntVal());
 		
 		Criteria criteria = new Criteria();
 		

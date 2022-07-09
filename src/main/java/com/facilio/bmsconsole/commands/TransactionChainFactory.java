@@ -70,6 +70,7 @@ import com.facilio.storm.command.StormHistoricalProxyCommand;
 import com.facilio.trigger.context.TriggerType;
 import com.facilio.weekends.*;
 import com.facilio.workflows.command.*;
+import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import java.util.Collections;
@@ -1450,6 +1451,7 @@ public class TransactionChainFactory {
 
 	public static FacilioChain getTimeSeriesProcessChainV2() throws Exception {
 		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new UpdateDataCommandStatus());
 		chain.addCommand(new ProcessDataCommandV2());
 		chain.addCommand(new UpdateLastRecordedValueAndFilterPointsCommand());
 		chain.addCommand(new ModeledDataCommandV2());
