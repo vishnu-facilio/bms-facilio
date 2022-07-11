@@ -283,7 +283,7 @@ public class ColumnFactory {
 		columnMap.put("preventivemaintenance-default", getPreventiveMaintenanceColumns());
 		columnMap.put("inventoryCategory-default", getInventoryCategoryColumns());
 
-
+		columnMap.put(FacilioConstants.ContextNames.PLANNEDMAINTENANCE + "-default", getDefaultPlannedMaintenanceViewColumns());
 		return columnMap;
 	}
 	
@@ -364,6 +364,18 @@ public class ColumnFactory {
 		columns.add(new ViewField("grossFloorArea", "Floor Area"));
 		columns.add(new ViewField("area", "Total Area"));
 		
+		return columns;
+	}
+
+	private static List<ViewField> getDefaultPlannedMaintenanceViewColumns() {
+		List<ViewField> columns = new ArrayList<>();
+
+		columns.add(new ViewField("subject", "Subject"));
+		columns.add(new ViewField("category", "Category"));
+		columns.add(new ViewField("priority", "Priority"));
+		columns.add(new ViewField("assignmentType", "Assignment Type"));
+		columns.add(new ViewField("spaceCategory", "Space Category"));
+		columns.add(new ViewField("assetCategory", "Asset Category"));
 		return columns;
 	}
 	
