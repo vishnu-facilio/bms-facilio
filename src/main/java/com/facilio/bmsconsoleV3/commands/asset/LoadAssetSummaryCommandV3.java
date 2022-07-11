@@ -34,47 +34,64 @@ public class LoadAssetSummaryCommandV3  extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         List<V3AssetContext> assetList = (List<V3AssetContext>) (((Map<String,Object>)context.get(FacilioConstants.ContextNames.RECORD_MAP)).get("asset"));
         List<ModuleBaseWithCustomFields> recordList = new ArrayList<>();
-        if(CollectionUtils.isNotEmpty(assetList)){
+        if(CollectionUtils.isNotEmpty(assetList)) {
 
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(assetList.get(0).getCategory().getId());
-            long assetModuleID = assetCategory.getAssetModuleID();
-            FacilioModule module = modBean.getModule(assetModuleID);
-            String moduleName = module.getName();
-
-            List<FacilioField> fields = modBean.getAllFields(moduleName);
-
-            V3Config v3Config = ChainUtil.getV3Config(moduleName);
-            Class beanClassName = ChainUtil.getBeanClass(v3Config, module);
-            if (beanClassName == null) {
-                beanClassName = ModuleBaseWithCustomFields.class;
-            }
-
-            List<SupplementRecord> supplementFields = (List<SupplementRecord>) context.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);
-
-            for(V3AssetContext asset :assetList){
-                SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
-                        .module(module)
-                        .beanClass(beanClassName)
-                        .select(fields)
-                        .andCondition(CriteriaAPI.getIdCondition(asset.getId(), module))
-                        ;
-
-                if (CollectionUtils.isNotEmpty(supplementFields)) {
-                    builder.fetchSupplements(supplementFields);
-                }
-
-                List<ModuleBaseWithCustomFields> records = builder.get();
-                if(records.size() > 0) {
-                    ResourceAPI.loadModuleResources(records, fields);
-                    V3AssetContext assetRec = (V3AssetContext) records.get(0);
-                    LOGGER.info("Asset Summary Record ===>"+assetRec);
-                    assetRec.setCategoryModuleName(moduleName);
-                    this.getAssetLocation(assetRec);
-                    recordList.add(assetRec);
+            HashMap<Long, ArrayList<Long>> assetCat = new HashMap<>();
+            for (V3AssetContext asset : assetList) {
+                Long catId = asset.getCategory().getId();
+                if (assetCat.containsKey(catId)) {
+                    ArrayList<Long> list = assetCat.get(catId);
+                    list.add(asset.getId());
+                    assetCat.put(catId, list);
+                } else {
+                    ArrayList<Long> list = new ArrayList<Long>();
+                    list.add(asset.getId());
+                    assetCat.put(catId, list);
                 }
             }
 
+            for (Map.Entry<Long, ArrayList<Long>> entry : assetCat.entrySet()) {
+                AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(entry.getKey());
+                long assetModuleID = assetCategory.getAssetModuleID();
+                FacilioModule module = modBean.getModule(assetModuleID);
+                String moduleName = module.getName();
+                List<FacilioField> fields = modBean.getAllFields(moduleName);
+
+                V3Config v3Config = ChainUtil.getV3Config(moduleName);
+                Class beanClassName = ChainUtil.getBeanClass(v3Config, module);
+                if (beanClassName == null) {
+                    beanClassName = ModuleBaseWithCustomFields.class;
+                }
+
+                List<SupplementRecord> supplementFields = (List<SupplementRecord>) context.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);
+
+                    SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
+                            .module(module)
+                            .beanClass(beanClassName)
+                            .select(fields);
+                if(entry.getValue().size() > 1){
+                    builder.andCondition(CriteriaAPI.getIdCondition(entry.getValue(), module));
+                }
+                else{
+                    builder.andCondition(CriteriaAPI.getIdCondition(entry.getValue().get(0), module));
+                }
+                    if (CollectionUtils.isNotEmpty(supplementFields)) {
+                        builder.fetchSupplements(supplementFields);
+                    }
+
+                    List<ModuleBaseWithCustomFields> records = builder.get();
+                    if (records.size() > 0) {
+                        ResourceAPI.loadModuleResources(records, fields);
+                        for(ModuleBaseWithCustomFields assetContext : records){
+                            V3AssetContext assetRec = (V3AssetContext) assetContext;
+                            LOGGER.info("Asset Summary Record ===>" + assetRec);
+                            assetRec.setCategoryModuleName(moduleName);
+                            this.getAssetLocation(assetRec);
+                            recordList.add(assetRec);
+                        }
+                    }
+        }
             Map<String,Object> recordMap = new HashMap<String, Object>();
 
             recordMap.put("asset", recordList);

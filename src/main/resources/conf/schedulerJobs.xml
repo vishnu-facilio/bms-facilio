@@ -216,4 +216,6 @@
 
 
 	<job name='getVerifiedEmailAddressFromAWS' classname='com.facilio.bmsconsole.jobs.GetVerifiedEmailAddressFromAWSJob' transactionTimeout='900000'/>
+
+    <job name="DeleteUnAnsweredSurvey" classname="com.facilio.bmsconsole.jobs.DeleteUnAnsweredSurveyJob" transactionTimeout="300000"/>
 </scheduler>

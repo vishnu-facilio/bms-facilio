@@ -1,6 +1,8 @@
 package com.facilio.bmsconsoleV3.commands.communityFeatures.contactdirectory;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.DealsAndOffersContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AdminDocumentsContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.ContactDirectoryContext;
@@ -29,17 +31,21 @@ public class AddOrUpdateContactDirectorySharingCommandV3 extends FacilioCommand 
                     contact.setSiteId(AccountUtil.getCurrentSiteId());
                 }
                 Map<String, List<Map<String, Object>>> subforms = contact.getSubForm();
-                if(contact.getAudience() != null && MapUtils.isNotEmpty(subforms) && subforms.containsKey(FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY_SHARING)){
+                if(CollectionUtils.isEmpty(contact.getAudience()) && MapUtils.isNotEmpty(subforms) && subforms.containsKey(FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY_SHARING)){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid Sharing Information. Can be  either audience or list of sharing info'");
                 }
-                else if(contact.getAudience() == null && (MapUtils.isEmpty(subforms) || !subforms.containsKey(FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY_SHARING))){
+                else if(CollectionUtils.isEmpty(contact.getAudience()) && (MapUtils.isEmpty(subforms) || !subforms.containsKey(FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY_SHARING))){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Sharing Information cannot be empty");
                 }
-                else if(contact.getAudience() != null && contact.getAudience().getId() > 0){
+                else if(CollectionUtils.isNotEmpty(contact.getAudience())){
                     continue;
                 }
-                else if(contact.getAudience() != null && CollectionUtils.isNotEmpty(contact.getAudience().getAudienceSharing())){
-                    CommunityFeaturesAPI.addAudience(contact.getAudience());
+                else if(CollectionUtils.isNotEmpty(contact.getAudience())){
+                    for(AudienceContext audience : contact.getAudience()){
+                        if(CollectionUtils.isNotEmpty(audience.getAudienceSharing())){
+                            CommunityFeaturesAPI.addAudience(audience);
+                        }
+                    }
                     contact.setAudience(contact.getAudience());
                 }
             }

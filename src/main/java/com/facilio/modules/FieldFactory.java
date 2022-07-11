@@ -2597,6 +2597,8 @@ public class FieldFactory extends BaseFieldFactory {
     }
 
     public static List<FacilioField> getOrgUserFields() {
+    	
+    	//NOT USED - Refer Account Constants getAppOrgUserFields
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getOrgUserModule();
 
@@ -3412,8 +3414,6 @@ public class FieldFactory extends BaseFieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 
 		fields.add(getIdField(module));
-		fields.add(getField("emailTemplateId", "EMAIL_TEMPLATE_ID", module, FieldType.NUMBER));
-		fields.add(getField ("smsTemplateId","SMS_TEMPLATE_ID",module,FieldType.NUMBER));
 
 		return fields;
 	}
@@ -3424,9 +3424,8 @@ public class FieldFactory extends BaseFieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 
 		fields.add(getIdField(module));
-		fields.add(getField("isResponseSubmitted", "IS_RESPONSE_SUBMITTED", module, FieldType.BOOLEAN));
-		fields.add(getField ("executeCreateRuleId","EXECUTE_CREATE_RULE_ID",module,FieldType.NUMBER));
-		fields.add(getField("executeSubmitRuleId","EXECUTE_SUBMIT_RULE_ID",module,FieldType.NUMBER));
+		fields.add(getField("surveyParentRuleId","PARENT_RULE_ID",module,FieldType.NUMBER));
+		fields.add(getField("actionType","SURVEY_ACTION_TYPE",module,FieldType.STRING));
 
 		return fields;
 	}

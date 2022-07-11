@@ -9,6 +9,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ControlActionMode;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
 import com.facilio.control.ControlGroupContext;
 import com.facilio.control.ControlGroupRoutineContext;
 import com.facilio.control.ControlScheduleContext;
@@ -250,10 +252,12 @@ public class ControlActionCommandContext extends V3Context {
 	public enum Status {
 		
 		SUCCESS(1, "Success"),
-		PENDING(2, "Pending"),
+		SENT(2, "Sent"),
 		ERROR(3, "Error"),
 		SCHEDULED(4, "Scheduled"),
 		SCHEDULED_WITH_NO_PERMISSION(5, "Scheduled without permission"),
+		FAILED(6,"Failed"),
+		RETRYING(7,"Retrying")
 		;
 
 		int intVal;

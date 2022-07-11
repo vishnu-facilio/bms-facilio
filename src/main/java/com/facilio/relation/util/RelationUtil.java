@@ -110,10 +110,14 @@ public class RelationUtil {
 
             for (RelationMappingContext mapping : relation.getMappings()) {
                 if (mapping.getFromModuleId() == moduleId) { // this will get mapping for current module
+                    FacilioModule fromModule = modBean.getModule(mapping.getFromModuleId());
+                    request.setFromModule(fromModule);
                     request.setFromModuleId(mapping.getFromModuleId());
-                    request.setFromModuleName(modBean.getModule(mapping.getFromModuleId()).getName());
+                    request.setFromModuleName(fromModule.getName());
+                    FacilioModule toModule = modBean.getModule(mapping.getToModuleId());
+                    request.setToModule(toModule);
                     request.setToModuleId(mapping.getToModuleId());
-                    request.setToModuleName(modBean.getModule(mapping.getToModuleId()).getName());
+                    request.setToModuleName(toModule.getName());
                     request.setRelationName(mapping.getRelationName());
                     request.setRelationType(mapping.getRelationTypeEnum());
                     request.setPosition(mapping.getPositionEnum());

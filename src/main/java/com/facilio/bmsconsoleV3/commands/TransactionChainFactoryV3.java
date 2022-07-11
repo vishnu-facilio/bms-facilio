@@ -1828,6 +1828,7 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getPMExecuteNowChain() {
         FacilioChain chain = getDefaultChain();
+        chain.addCommand(new PMExecuteNowContextCommand());
         //        chain.addCommand(new FetchReadingsModuleFieldsCommand());
 
         //  cmd 1 - create wo and persit to db

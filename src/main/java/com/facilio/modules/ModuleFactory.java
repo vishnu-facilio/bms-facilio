@@ -3043,6 +3043,14 @@ public class ModuleFactory {
 		return contract;
 	}
 
+	public static FacilioModule getPlannedMaintenanceModule() {
+		FacilioModule contract = new FacilioModule();
+		contract.setName("plannedmaintenance");
+		contract.setDisplayName("PlannedMaintenance");
+		contract.setTableName("PM_V2");
+		return contract;
+	}
+
 	public static FacilioModule getPurchaseContractModule() {
 		FacilioModule purchasecontract = new FacilioModule();
 		purchasecontract.setName("purchasecontracts");

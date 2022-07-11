@@ -217,8 +217,8 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		}
 
 		timeLogModuleEntry(module, record, oldState, facilioStatus);
-		checkAutomatedCondition(facilioStatus, module, record, context);
 		addScheduledJobIfAny(facilioStatus.getId(), module.getName(), record, (FacilioContext) context);
+		checkAutomatedCondition(facilioStatus, module, record, context);
 	}
 
 	private static void checkAutomatedCondition(FacilioStatus facilioStatus, FacilioModule module, ModuleBaseWithCustomFields record, Context context) throws Exception {

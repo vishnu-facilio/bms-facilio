@@ -50,9 +50,7 @@ public abstract class ExecutorBase implements Executor {
         return result;
     }
 
-    private FacilioStatus getStatus(Context context) {
-        return (FacilioStatus) context.get("status");
-    }
+    protected abstract FacilioStatus getStatus(Context context) throws Exception;
 
     protected abstract List<Long> getNextExecutionTimes(Context context) throws Exception;
 }

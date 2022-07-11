@@ -11,6 +11,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Log4j
 public class DeleteSurveyRulesCommand extends FacilioCommand{
@@ -19,18 +20,11 @@ public class DeleteSurveyRulesCommand extends FacilioCommand{
 
 		List<Long> ruleIds = (List<Long>) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
 
-		if(CollectionUtils.isNotEmpty(ruleIds)){
-			SurveyResponseRuleContext surveyResponseRuleContext = SurveyUtil.fetchChildRuleId(ruleIds);
-			if(surveyResponseRuleContext != null){
-				Long createRuleId = surveyResponseRuleContext.getExecuteCreateRuleId();
-				Long submitRuleId = surveyResponseRuleContext.getExecuteSubmitRuleId();
-
-				if(createRuleId != null && createRuleId > 0){
-					WorkflowRuleAPI.deleteWorkFlowRules(Collections.singletonList(createRuleId));
-				}
-				if(submitRuleId !=null && submitRuleId > 0){
-					WorkflowRuleAPI.deleteWorkFlowRules(Collections.singletonList(submitRuleId));
-				}
+		if(CollectionUtils.isNotEmpty(ruleIds)) {
+			List<SurveyResponseRuleContext> surveyResponseRuleContext = SurveyUtil.fetchChildRuleId(ruleIds);
+			List<Long> actionRuleIds = surveyResponseRuleContext.stream().map(SurveyResponseRuleContext::getId).collect(Collectors.toList());
+			if(CollectionUtils.isNotEmpty(actionRuleIds)){
+				WorkflowRuleAPI.deleteWorkFlowRules(actionRuleIds);
 			}
 			WorkflowRuleAPI.deleteWorkFlowRules(ruleIds);
 		}

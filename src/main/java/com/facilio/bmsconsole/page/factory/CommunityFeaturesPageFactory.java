@@ -36,7 +36,7 @@ public class CommunityFeaturesPageFactory extends PageFactory {
         tab1Sec1.addWidget(secDetailsWidget);
 
         if(AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.FACILIO) {
-            PageWidget publishToWidget = new PageWidget(PageWidget.WidgetType.PUBLISH_TO_INFO);
+            PageWidget publishToWidget = new PageWidget(PageWidget.WidgetType.AUDIENCE_INFO);
             publishToWidget.addToLayoutParams(tab1Sec1, 24, 6);
             publishToWidget.setTitle("Published To");
             publishToWidget.addToWidgetParams("sharingInfoModuleName", FacilioConstants.ContextNames.Tenant.NEIGHBOURHOOD_SHARING);
@@ -76,7 +76,7 @@ public class CommunityFeaturesPageFactory extends PageFactory {
         tab1Sec1.addWidget(secDetailsWidget);
 
         if(AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.FACILIO) {
-            PageWidget publishToWidget = new PageWidget(PageWidget.WidgetType.PUBLISH_TO_INFO);
+            PageWidget publishToWidget = new PageWidget(PageWidget.WidgetType.AUDIENCE_INFO);
             publishToWidget.addToLayoutParams(tab1Sec1, 24, 6);
             publishToWidget.setTitle("Published To");
             publishToWidget.addToWidgetParams("sharingInfoModuleName", FacilioConstants.ContextNames.Tenant.DEALS_AND_OFFERS_SHARING);
@@ -107,7 +107,7 @@ public class CommunityFeaturesPageFactory extends PageFactory {
         tab1Sec1.addWidget(secDetailsWidget);
 
         if(AccountUtil.getCurrentUser().getAppDomain() != null && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.FACILIO) {
-            PageWidget publishToWidget = new PageWidget(PageWidget.WidgetType.PUBLISH_TO_INFO);
+            PageWidget publishToWidget = new PageWidget(PageWidget.WidgetType.AUDIENCE_INFO);
             publishToWidget.addToLayoutParams(tab1Sec1, 24, 6);
             publishToWidget.setTitle("Published To");
             publishToWidget.addToWidgetParams("sharingInfoModuleName", FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION_SHARING);
@@ -153,7 +153,7 @@ public class CommunityFeaturesPageFactory extends PageFactory {
         tab1Sec1.addWidget(secDetailsWidget);
 
 
-        PageWidget publishToWidget = new PageWidget(PageWidget.WidgetType.PUBLISH_TO_INFO);
+        PageWidget publishToWidget = new PageWidget(PageWidget.WidgetType.AUDIENCE_INFO);
         publishToWidget.addToLayoutParams(tab1Sec1, 24, 6);
         publishToWidget.setTitle("Published To");
         publishToWidget.addToWidgetParams("sharingInfoModuleName", FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY_SHARING);
@@ -183,7 +183,7 @@ public class CommunityFeaturesPageFactory extends PageFactory {
         tab1Sec1.addWidget(secDetailsWidget);
 
 
-        PageWidget publishToWidget = new PageWidget(PageWidget.WidgetType.PUBLISH_TO_INFO);
+        PageWidget publishToWidget = new PageWidget(PageWidget.WidgetType.AUDIENCE_INFO);
         publishToWidget.addToLayoutParams(tab1Sec1, 24, 6);
         publishToWidget.setTitle("Published To");
         publishToWidget.addToWidgetParams("sharingInfoModuleName", FacilioConstants.ContextNames.Tenant.ADMIN_DOCUMENTS_SHARING);

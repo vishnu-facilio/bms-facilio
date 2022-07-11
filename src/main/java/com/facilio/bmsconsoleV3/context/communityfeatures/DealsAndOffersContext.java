@@ -88,13 +88,13 @@ public class DealsAndOffersContext extends V3Context {
         this.dealer = dealer;
     }
 
-    private AudienceContext audience;
+    private List<AudienceContext> audience;
 
-    public AudienceContext getAudience() {
+    public List<AudienceContext> getAudience() {
         return audience;
     }
 
-    public void setAudience(AudienceContext audience) {
+    public void setAudience(List<AudienceContext> audience) {
         this.audience = audience;
     }
 }

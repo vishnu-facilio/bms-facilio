@@ -15,16 +15,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class DeleteOldSurveyRuleActionCommand extends FacilioCommand{
 	@Override
 	public boolean executeCommand(Context context) throws Exception{
 
 		WorkflowRuleContext workFlowRule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
-		List<ActionContext> createActions = (List<ActionContext>) context.get(FacilioConstants.Survey.EXECUTE_CREATE_ACTIONS);
-		List<ActionContext> responseActions = (List<ActionContext>) context.get(FacilioConstants.Survey.EXECUTE_RESPONSE_ACTIONS);
 
-		SurveyResponseRuleContext responseRule = SurveyUtil.fetchChildRuleId(Collections.singletonList(workFlowRule.getId()));
+		List<SurveyResponseRuleContext> responseRule = (List<SurveyResponseRuleContext>) SurveyUtil.fetchChildRuleId(Collections.singletonList(workFlowRule.getId()));
 
 		if(workFlowRule !=null && workFlowRule.getId() > 0) {
 			if(CollectionUtils.isNotEmpty(workFlowRule.getActions())){
@@ -32,23 +31,12 @@ public class DeleteOldSurveyRuleActionCommand extends FacilioCommand{
 			}
 		}
 
-		if(responseRule != null){
-			Long createRuleId = responseRule.getExecuteCreateRuleId();
-			if(createRuleId != null && createRuleId > 0){
-				if(CollectionUtils.isNotEmpty(createActions)){
-					context.put("createRuleId", createRuleId);
-					ActionAPI.deleteAllActionsFromWorkflowRules(Collections.singletonList(createRuleId));
-				}
-			}
+		List<Long> ruleIds = responseRule.stream().map(SurveyResponseRuleContext::getId).collect(Collectors.toList());
 
-			Long submitRuleId = responseRule.getExecuteSubmitRuleId();
-			if(submitRuleId != null && submitRuleId > 0){
-				if(CollectionUtils.isNotEmpty(responseActions)){
-					context.put("submitRuleId", submitRuleId);
-					ActionAPI.deleteAllActionsFromWorkflowRules(Collections.singletonList(submitRuleId));
-				}
-			}
+		if(CollectionUtils.isNotEmpty(ruleIds)){
+			ActionAPI.deleteAllActionsFromWorkflowRules(ruleIds);
 		}
+
 
 		return false;
 	}

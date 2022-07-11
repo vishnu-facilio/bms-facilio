@@ -7,21 +7,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.bmsconsole.commands.SchedulePMWorkOrderGenerationCommand;
+import com.facilio.beans.ModuleBean;
+import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.fw.FacilioException;
 import com.facilio.agentv2.cacheimpl.AgentBean;
-import com.google.api.client.json.Json;
+import com.facilio.modules.*;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.extension.annotations.WithSpan;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -51,10 +52,6 @@ import com.facilio.devicepoints.DevicePointsUtil;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.queue.source.MessageSource;
 import com.facilio.service.FacilioService;
@@ -65,21 +62,6 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
-import org.json.simple.JSONObject;
-
-import java.sql.SQLException;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class DataProcessorUtil {
 
@@ -200,7 +182,6 @@ public class DataProcessorUtil {
             }catch (Exception e){
                 LOGGER.info(" Exception occurred while checking agent version ",e);
             }
-
             switch (processorVersion) {
                 case 1:
 //                    LOGGER.info("PreProcessor for V1 to V2 data");
@@ -792,5 +773,4 @@ public class DataProcessorUtil {
         }
         return status;
     }
-
 }

@@ -36,7 +36,6 @@ import com.facilio.energystar.command.*;
 import com.facilio.mv.command.FetchMVWidgetResultCommand;
 import com.facilio.readingrule.command.FetchReadingRuleSummaryCommand;
 import com.facilio.readingrule.command.GetNewReadingRulesCommand;
-import com.facilio.readingrule.command.GetReadingRulesCommand;
 import com.facilio.relation.command.GetAllRelationCommand;
 import com.facilio.relation.command.ViewRelationCommand;
 import com.facilio.storm.command.StormReadingPostProcessingCommand;
@@ -3053,7 +3052,7 @@ public class ReadOnlyChainFactory {
 
 	public static FacilioChain fetchWorkOrderSurveyChain() {
 		FacilioChain chain = getDefaultChain();
-		chain.addCommand(new fetchWorkOrderSurveyCommand());
+		chain.addCommand(new FetchWorkOrderSurveyCommand());
 		return chain;
 	}
 

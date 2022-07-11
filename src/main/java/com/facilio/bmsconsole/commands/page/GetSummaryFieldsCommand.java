@@ -58,6 +58,7 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 
 		moduleName = (String) context.get(ContextNames.MODULE_NAME);
+		Boolean fetchMainFields = (Boolean) context.getOrDefault(ContextNames.FETCH_MAIN_FIELDS, false);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		module = modBean.getModule(moduleName);
 
@@ -95,20 +96,20 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 
 			FacilioForm form = fetchForm(formId);
 			if (form == null) {
-				formFields = getFieldsAsFormFields(modBean);
+				formFields = getFieldsAsFormFields(modBean, fetchMainFields);
 			}
 			else if (orderType == SummaryOrderType.FORM_SECTION) {
 				formFields = new ArrayList<>();
 				for (FormField formField: form.getFields()) {
 					if (formField.getSectionId() == formSectionId &&
-							showField(formField) && !formField.isFieldHidden()) {
+							showField(formField, fetchMainFields) && !formField.isFieldHidden()) {
 						formFields.add(formField);
 					}
 				}
 			}
 			else {
 				formFields = form.getFields().stream().filter(formField -> ( 
-						showField(formField)  &&
+						showField(formField, fetchMainFields)  &&
 						(!formField.isFieldHidden() || isValPresent(formField.getField())) 
 						)).collect(Collectors.toList());
 			}
@@ -145,8 +146,8 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		return false;
 	}
 	
-	private boolean showField(FormField formField) {
-		return formField.getField() != null  && !formField.getField().isMainField() && 
+	private boolean showField(FormField formField, Boolean fetchMainFields) {
+		return formField.getField() != null  && (fetchMainFields  || (!fetchMainFields && !formField.getField().isMainField())) &&
 				formField.getDisplayTypeEnum() != FieldDisplayType.IMAGE;
 	}
 
@@ -187,11 +188,11 @@ public class GetSummaryFieldsCommand extends FacilioCommand {
 		return name;
 	}
 
-	private List<FormField> getFieldsAsFormFields(ModuleBean modBean) throws Exception {
+	private List<FormField> getFieldsAsFormFields(ModuleBean modBean, Boolean fetchMainFields) throws Exception {
 		List<FormField> fields = new ArrayList<>();
 		int count = 0;
 		for(FacilioField field: allFields) {
-			if (!field.isMainField()) {
+			if (fetchMainFields || (Boolean.FALSE.equals(fetchMainFields) && !field.isMainField())) {
 				fields.add(FormsAPI.getFormFieldFromFacilioField(field, ++count));
 			}
 		}

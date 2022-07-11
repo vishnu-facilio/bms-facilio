@@ -5,10 +5,12 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.*;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +32,11 @@ public class DealsAndOffersFillLookupFields extends FacilioCommand {
         fetchLookupsList.add(sysCreatedBy);
         LookupField sysModifiedBy = (LookupField) FieldFactory.getSystemField("sysModifiedBy", modBean.getModule(moduleName));
         fetchLookupsList.add(sysModifiedBy);
-        fetchLookupsList.add((LookupField) fieldsAsMap.get("audience"));
+        MultiLookupMeta audienceField = new MultiLookupMeta((MultiLookupField) fieldsAsMap.get("audience"));
+
+        FacilioField nameField = FieldFactory.getField("name", "NAME", modBean.getModule(FacilioConstants.ContextNames.AUDIENCE), FieldType.STRING);
+        audienceField.setSelectFields(Collections.singletonList(nameField));
+        fetchLookupsList.add(audienceField);
         fetchLookupsList.add((LargeTextField)fieldsAsMap.get("description"));
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);

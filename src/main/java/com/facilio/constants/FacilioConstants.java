@@ -240,6 +240,10 @@ public class FacilioConstants {
 		public static final String VISITOR_FACES = "visitorFaces";
 		public static final String VISITOR_PHOTO = "visitorPhoto";
 
+		public static final String SIGNATURE_CONTENT = "signatureContent";
+		public static final String SIGNATURE_FILE_ID = "signatureFileId";
+		public static final String SIGNATURE = "signature";
+		
 		public static final String APPLICATION = "application";
 		public static final String APPLICATION_LAYOUT = "applicationLayout";
 		public static final String APPLICATION_ID = "applicationId";
@@ -820,6 +824,7 @@ public class FacilioConstants {
 		public static final String PREV_FIELD_ID = "prevFieldId";
 		public static final String LOOKUP_FIELD_META_LIST = "lookupFieldMetaList";
 		public static final String FETCH_LOOKUPS = "fetchLookups";
+		public static final String FETCH_MAIN_FIELDS = "fetchMainFields";
 		public static final String FETCH_CUSTOM_LOOKUPS = "fetchCustomLookups";
 		public static final String FETCH_FIELD_DISPLAY_NAMES = "fetchFieldDisplayNames";
 		public static final String ALLOW_SAME_FIELD_DISPLAY_NAME = "changeFieldDisplayName";
@@ -2080,6 +2085,8 @@ public class FacilioConstants {
 		public static final String VALUE_GENERATORS = "valueGenerators";
 		public static final String RCA_RULE_IDS = "rca_rule_ids";
 		public static final String CALL_FROM_STORM = "req_from_storm_service";
+
+		public static final String PLANNEDMAINTENANCE = "plannedmaintenance";
 		public static class WorkPermit {
 			public static final String WORK_PERMIT_TYPE_CHECKLIST = "workpermittypechecklist";
 			public static final String WORK_PERMIT_TYPE_CHECKLIST_CATEGORY = "workpermittypechecklistcategory";
@@ -2786,6 +2793,7 @@ public class FacilioConstants {
 			public static final String ANSWER_RANGE = "answerRange";
             public static final String IS_SINGLE_RESPONSE = "isSingleResponse";
             public static final String OTHER_RESPONSES = "otherResponses";
+			public static final String RESPONSE_ID = "responseId";
         }
 	}
 	public static class LicenseKeys{

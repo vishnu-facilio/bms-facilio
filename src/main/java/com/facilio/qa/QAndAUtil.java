@@ -248,29 +248,15 @@ public class QAndAUtil {
     }
 
     public static List<AnswerContext> getAnswersFromTemplateAndResponse (long templateId, long responseId) throws Exception {
-        ModuleBean modBean = Constants.getModBean();
-        FacilioModule module = modBean.getModule(FacilioConstants.QAndA.ANSWER);
-        List<FacilioField> fields = modBean.getAllFields(module.getName());
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-        FacilioField parentField = fieldMap.get("parent");
-        FacilioField responseField = fieldMap.get("response");
 
-        SelectRecordsBuilder<AnswerContext> builder = new SelectRecordsBuilder<AnswerContext>()
-                .select(fields)
-                .module(module)
-                .beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
-                .andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(templateId), PickListOperators.IS))
-                .andCondition(CriteriaAPI.getCondition(responseField, String.valueOf(responseId), PickListOperators.IS))
-                ;
+		FacilioChain chain = QAndAReadOnlyChainFactory.fetchAnswersFromTemplateAndResponseChain();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.QAndA.Command.TEMPLATE_ID,templateId);
+		context.put(FacilioConstants.QAndA.Command.RESPONSE_ID,responseId);
 
-        builder.fetchSupplements(fields.stream()
-                .filter(f -> f.getDataTypeEnum().isRelRecordField())
-                .map(SupplementRecord.class::cast)
-                .collect(Collectors.toList()));
+		chain.execute();
 
-        List<AnswerContext> answers = builder.get();
-
-        return answers;
+		return (List<AnswerContext>) context.get(FacilioConstants.QAndA.Command.ANSWER_LIST);
     }
 
     public static void populateMCQSummary (List<Map<String, Object>> props, Map<Long, QuestionContext> questionMap, FacilioField questionField, FacilioField enumField, FacilioField idField) throws Exception {

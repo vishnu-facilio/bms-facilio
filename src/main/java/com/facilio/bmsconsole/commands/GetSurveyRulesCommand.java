@@ -10,6 +10,7 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,27 +21,26 @@ public class GetSurveyRulesCommand extends FacilioCommand{
 	@Override
 	public boolean executeCommand(Context context) throws Exception{
 
-		Long ruleId = (Long) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
+		Long parentRuleId = (Long) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
 		List<ActionContext> executeCreateActions = new ArrayList<>();
 		List<ActionContext> executeSubmitActions = new ArrayList<>();
 		WorkflowRuleContext workflowRule = null;
 
-		if(ruleId > 0){
-			workflowRule = WorkflowRuleAPI.getWorkflowRule(ruleId);
-			long workFlowRuleId = workflowRule.getId();
+		if(parentRuleId != null && parentRuleId > 0){
+			workflowRule = WorkflowRuleAPI.getWorkflowRule(parentRuleId);
+			Long workFlowRuleId = workflowRule.getId();
 
 			if(workflowRule != null && workFlowRuleId > 0){
 				workflowRule.setActions(ActionAPI.getActiveActionsFromWorkflowRule(workFlowRuleId));
-				SurveyResponseRuleContext surveyResponseRule = SurveyUtil.fetchChildRuleId(Collections.singletonList(workFlowRuleId));
-				if(surveyResponseRule != null){
-					long createRuleId = surveyResponseRule.getExecuteCreateRuleId();
-					long submitRuleId = surveyResponseRule.getExecuteSubmitRuleId();
-					LOGGER.info("Create rule Id : "+ createRuleId);
-					if(createRuleId > 0){
-						executeCreateActions = ActionAPI.getActiveActionsFromWorkflowRule(createRuleId);
-					}
-					if(submitRuleId > 0){
-						executeSubmitActions = ActionAPI.getActiveActionsFromWorkflowRule(submitRuleId);
+				List<SurveyResponseRuleContext> surveyResponseRule = SurveyUtil.fetchChildRuleId(Collections.singletonList(workFlowRuleId));
+				if(CollectionUtils.isNotEmpty(surveyResponseRule)){
+					for(SurveyResponseRuleContext rule : surveyResponseRule){
+						if(rule.getActionType().equals(SurveyResponseRuleContext.SurveyActionType.ON_CREATE)){
+							executeCreateActions = ActionAPI.getActiveActionsFromWorkflowRule(rule.getId());
+						}else {
+							executeSubmitActions = ActionAPI.getActiveActionsFromWorkflowRule(rule.getId());
+						}
+
 					}
 				}
 			}

@@ -169,6 +169,16 @@ public class ApplicationAction extends FacilioAction {
 	public void setInviteAcceptStatus(Boolean inviteAcceptStatus) {
 		this.inviteAcceptStatus = inviteAcceptStatus;
 	}
+	
+	private String signatureContent;
+
+	public String getSignatureContent() {
+		return signatureContent;
+	}
+
+	public void setSignatureContent(String signatureContent) {
+		this.signatureContent = signatureContent;
+	}
 
 	public String addOrUpdateApplication() throws Exception {
 		FacilioChain chain = TransactionChainFactory.getAddOrUpdateApplication();
@@ -326,6 +336,28 @@ public class ApplicationAction extends FacilioAction {
 		FacilioContext context = chain.getContext();
 		chain.execute();
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
+
+		return SUCCESS;
+
+	}
+	
+	public String addOrUpdateUserSignature() throws Exception {
+		FacilioChain chain = TransactionChainFactory.addorUpdateUserSignatureChain();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.SIGNATURE_CONTENT,signatureContent);
+
+		chain.execute();
+		setResult(FacilioConstants.ContextNames.SIGNATURE, context.get(FacilioConstants.ContextNames.SIGNATURE));
+
+		return SUCCESS;
+
+	}
+	
+	public String getUserSignature() throws Exception {
+		FacilioChain chain = TransactionChainFactory.getUserSignatureChain();
+		FacilioContext context = chain.getContext();
+		chain.execute();
+		setResult(FacilioConstants.ContextNames.SIGNATURE, context.get(FacilioConstants.ContextNames.SIGNATURE));
 
 		return SUCCESS;
 

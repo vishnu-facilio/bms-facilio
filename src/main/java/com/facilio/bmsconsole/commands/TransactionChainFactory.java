@@ -16,6 +16,8 @@ import com.facilio.agentv2.point.EditPointCommand;
 import com.facilio.agentv2.sqlitebuilder.AgentSqliteMakerCommand;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.banner.commands.CloseBannerCommand;
+import com.facilio.bmsconsole.commands.AddOrUpdateUserSignatureCommand;
+import com.facilio.bmsconsole.commands.GetUserSignatureCommand;
 import com.facilio.bmsconsole.actions.GetModuleFromReportContextCommand;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
@@ -54,6 +56,7 @@ import com.facilio.energystar.command.*;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand;
 import com.facilio.events.commands.NewExecuteEventRulesCommand;
 import com.facilio.events.constants.EventConstants;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.relations.CalculateDependencyCommand;
 import com.facilio.mv.command.*;
 import com.facilio.ns.command.AddNamespaceCommand;
@@ -67,6 +70,7 @@ import com.facilio.storm.command.StormHistoricalProxyCommand;
 import com.facilio.trigger.context.TriggerType;
 import com.facilio.weekends.*;
 import com.facilio.workflows.command.*;
+import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import java.util.Collections;
@@ -451,6 +455,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateStateForModuleDataCommand());
 			c.addCommand(new SendNotificationCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SATISFACTION_SURVEY_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SURVEY_ACTION_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
@@ -1446,6 +1451,7 @@ public class TransactionChainFactory {
 
 	public static FacilioChain getTimeSeriesProcessChainV2() throws Exception {
 		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new UpdateDataCommandStatus());
 		chain.addCommand(new ProcessDataCommandV2());
 		chain.addCommand(new UpdateLastRecordedValueAndFilterPointsCommand());
 		chain.addCommand(new ModeledDataCommandV2());
@@ -5974,6 +5980,19 @@ public class TransactionChainFactory {
 
 		return c;
 	}
+	
+	public static FacilioChain addorUpdateUserSignatureChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AddOrUpdateUserSignatureCommand());
+
+		return c;
+	}
+	public static FacilioChain getUserSignatureChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetUserSignatureCommand());
+
+		return c;
+	}
 
 	public static FacilioChain enableEnergyStarChain() {
 		FacilioChain c = getDefaultChain();
@@ -6405,6 +6424,12 @@ public class TransactionChainFactory {
 	public static FacilioChain deleteSurveyRuleChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new DeleteSurveyRulesCommand());
+		return chain;
+	}
+
+	public static FacilioChain updateSurveyMarkAsDeleteChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new UpdateSurveyMarkAsDeleteCommand());
 		return chain;
 	}
 
