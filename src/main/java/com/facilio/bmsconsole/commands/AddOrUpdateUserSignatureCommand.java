@@ -40,7 +40,7 @@ public class AddOrUpdateUserSignatureCommand extends FacilioCommand{
 					.table(ModuleFactory.getOrgUserModule().getTableName())
 					.select(AccountConstants.getAppOrgUserFields())
 					.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition("USERID", "uid", String.valueOf(AccountUtil.getCurrentUser().getId()), NumberOperators.EQUALS));
+					.andCondition(CriteriaAPI.getCondition("ORG_USERID", "ouid", String.valueOf(AccountUtil.getCurrentUser().getId()), NumberOperators.EQUALS));
 				  
 			Map<String,Object> select = selectBuilder.fetchFirst();
 			
@@ -58,7 +58,7 @@ public class AddOrUpdateUserSignatureCommand extends FacilioCommand{
 					.table(ModuleFactory.getOrgUserModule().getTableName())
 					.fields(AccountConstants.getAppOrgUserFields())
 					.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition("USERID", "uid", String.valueOf(AccountUtil.getCurrentUser().getId()), NumberOperators.EQUALS));
+					.andCondition(CriteriaAPI.getCondition("ORG_USERID", "ouid", String.valueOf(AccountUtil.getCurrentUser().getId()), NumberOperators.EQUALS));
 				  
 			int updatedRows = updateBuilder.update(props);
 			
