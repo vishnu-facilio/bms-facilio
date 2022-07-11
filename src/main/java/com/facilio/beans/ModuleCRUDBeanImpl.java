@@ -172,20 +172,12 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
 			}
 
-			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WOV3_BETA)) {
-				LOGGER.info("creating WO with v3");
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
-				FacilioContext ctx = V3Util.createRecord(woModule, FieldUtil.getAsJSON(workOrder));
-				return ((V3WorkOrderContext) ctx.get("workorder")).getId();
-			}
+			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+			FacilioContext ctx = V3Util.createRecord(woModule, FieldUtil.getAsJSON(workOrder));
+			return ((V3WorkOrderContext) ctx.get("workorder")).getId();
 
-			LOGGER.info("creating WO with v2");
-
-			Command addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
-			addWorkOrder.execute(context);
-
-			return workOrder.getId();
 		}
 		return -1;
 	}

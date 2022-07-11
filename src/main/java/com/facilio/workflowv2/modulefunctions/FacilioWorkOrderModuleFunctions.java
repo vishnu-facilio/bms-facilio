@@ -88,33 +88,11 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 	
 	public long addWorkOrderContext(WorkOrderContext workorder) throws Exception {
 
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WOV3_BETA)) {
-			LOGGER.info("creating WO with v3");
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
-			FacilioContext ctx = V3Util.createRecord(woModule, FieldUtil.getAsJSON(workorder));
-			return ((V3WorkOrderContext) ctx.get("workorder")).getId();
-		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+		FacilioContext ctx = V3Util.createRecord(woModule, FieldUtil.getAsJSON(workorder));
+		return ((V3WorkOrderContext) ctx.get("workorder")).getId();
 
-		LOGGER.info("creating WO with v2");
-
-		if (workorder.getSourceTypeEnum() == null) {
-			workorder.setSourceType(TicketContext.SourceType.WEB_ORDER);
-		}
-
-		FacilioChain addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
-		FacilioContext context = addWorkOrder.getContext();
-
-		context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
-		if (AccountUtil.getCurrentUser() == null) {
-			context.put(FacilioConstants.ContextNames.IS_PUBLIC_REQUEST, true);
-		}
-
-		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
-		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
-
-		addWorkOrder.execute();
-		return workorder.getId();
 	}
 	
 	public void addTask(Map<String,Object> globalParams,List<Object> objects) throws Exception {
