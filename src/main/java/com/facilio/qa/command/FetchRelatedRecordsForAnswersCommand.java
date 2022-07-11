@@ -2,6 +2,7 @@ package com.facilio.qa.command;
 
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.qa.QAndAUtil;
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.QuestionContext;
@@ -18,7 +19,7 @@ public class FetchRelatedRecordsForAnswersCommand extends FacilioCommand{
 	@Override
 	public boolean executeCommand(Context context) throws Exception{
 
-		List<AnswerContext> answers = Constants.getRecordList((FacilioContext) context);
+		List<AnswerContext> answers = context.containsKey(FacilioConstants.ContextNames.RECORD_MAP) ?Constants.getRecordList((FacilioContext) context) :(List<AnswerContext>) context.get(FacilioConstants.QAndA.Command.ANSWER_LIST);
 		if (CollectionUtils.isNotEmpty(answers)) {
 			Map<Long, QuestionContext> questionMap = fetchQuestions(answers);
 			for(AnswerContext answer : answers) {

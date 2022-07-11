@@ -7,10 +7,7 @@ import com.facilio.qa.context.client.answers.*;
 import com.facilio.qa.context.client.answers.handler.*;
 import com.facilio.qa.context.questions.*;
 import com.facilio.qa.context.questions.handler.*;
-import com.facilio.qa.rules.pojo.BooleanRuleHandler;
-import com.facilio.qa.rules.pojo.DefaultRuleHandler;
-import com.facilio.qa.rules.pojo.MCQRuleHandler;
-import com.facilio.qa.rules.pojo.RatingRuleHandler;
+import com.facilio.qa.rules.pojo.*;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
@@ -127,7 +124,7 @@ public enum QuestionType implements FacilioStringEnum {
             MatrixQuestionContext.class,
             new MatrixAnswerHandler(MatrixAnswerContext.class),
             new MatrixQuestionHandler(),
-            null
+			MatrixRuleHandler.MATRIX
     ),
     MULTI_QUESTION(
             FacilioConstants.QAndA.Questions.MULTI_QUESTION,

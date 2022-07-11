@@ -88,6 +88,8 @@ public class Constants {
             fields.add(getField("sequence", "SEQUENCE_VAL", module, FieldType.NUMBER));
             fields.add(getField("operator", "OPERATOR_ID", module, FieldType.NUMBER));
             fields.add(getField("value", "VAL", module, FieldType.STRING));
+			fields.add(getField("rowId","ROW_ID",module,FieldType.NUMBER));
+			fields.add(getField("columnId","COLUMN_ID",module,FieldType.NUMBER));
             addSysFields(module, fields);
 
             return Collections.unmodifiableList(fields);
