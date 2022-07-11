@@ -4198,7 +4198,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("accessTokenSetting", "ACCESS_TOKEN_SETTING", module, FieldType.NUMBER));
         fields.add(getField("oAuthParamInHeader", "OAUTH_PARAM_IN_HEADER", module, FieldType.BOOLEAN));
         fields.add(getField("meta", "META_JSON", module, FieldType.STRING));
-        
+        fields.add(getField("lastAuthoriedTime", "LAST_AUTHORIZED_TIME", module, FieldType.NUMBER));
         fields.add(getSystemField("sysCreatedTime", module));
         fields.add(getSystemField("sysModifiedTime", module));
         fields.add(getSystemField("sysCreatedBy", module));
