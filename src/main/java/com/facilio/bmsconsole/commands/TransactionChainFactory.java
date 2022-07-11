@@ -438,44 +438,49 @@ public class TransactionChainFactory {
 			return c;
 		}
 
-
-		public static FacilioChain getUpdateWorkOrderChain() {
-			FacilioChain c = getDefaultChain();
-			c.addCommand(SetTableNamesCommand.getForWorkOrder());
-			c.addCommand(new LoadAllFieldsCommand());
-			c.addCommand(new FetchOldWorkOrdersCommand());
-			c.addCommand(new ChangeApprovalStatusForModuleDataCommand());
-			c.addCommand(new VerifyApprovalCommand());
-			c.addCommand(new UpdateEventListForStateFlowCommand());
-			c.addCommand(new AddRequesterCommand());
-			c.addCommand(new UpdateWorkOrderCommand());
-			c.addCommand(new BackwardCompatibleStateFlowUpdateCommand());
-			c.addCommand(new ToVerifyStateFlowTransitionForStart());
-			c.addCommand(new VerifyQrCommand());
-			c.addCommand(new UpdateStateForModuleDataCommand());
-			c.addCommand(new SendNotificationCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SATISFACTION_SURVEY_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SURVEY_ACTION_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
-			c.addCommand(new AddOrUpdateSLABreachJobCommand(false));
-			c.addCommand(new ExecuteSLACommitmentWorkflowsCommand());
-			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
-			c.addCommand(new ExecuteSpecificWorkflowsCommand(RuleType.CUSTOM_BUTTON));
-			c.addCommand(new ExecuteAllTriggersCommand(TriggerType.MODULE_TRIGGER));
-			c.addCommand(new ForkChainToInstantJobCommand()
+	/**
+	 * Creates a new Workorder
+	 *
+	 * @deprecated use V3 Create instead.
+	 */
+	@Deprecated
+	public static FacilioChain getUpdateWorkOrderChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkOrder());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new FetchOldWorkOrdersCommand());
+		c.addCommand(new ChangeApprovalStatusForModuleDataCommand());
+		c.addCommand(new VerifyApprovalCommand());
+		c.addCommand(new UpdateEventListForStateFlowCommand());
+		c.addCommand(new AddRequesterCommand());
+		c.addCommand(new UpdateWorkOrderCommand());
+		c.addCommand(new BackwardCompatibleStateFlowUpdateCommand());
+		c.addCommand(new ToVerifyStateFlowTransitionForStart());
+		c.addCommand(new VerifyQrCommand());
+		c.addCommand(new UpdateStateForModuleDataCommand());
+		c.addCommand(new SendNotificationCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SATISFACTION_SURVEY_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SURVEY_ACTION_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
+		c.addCommand(new AddOrUpdateSLABreachJobCommand(false));
+		c.addCommand(new ExecuteSLACommitmentWorkflowsCommand());
+		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+		c.addCommand(new ExecuteSpecificWorkflowsCommand(RuleType.CUSTOM_BUTTON));
+		c.addCommand(new ExecuteAllTriggersCommand(TriggerType.MODULE_TRIGGER));
+		c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION))
 				.addCommand(new ClearAlarmOnWOCloseCommand())
 				.addCommand(new ExecuteTaskFailureActionCommand())
-			);
-			c.addCommand(new ConstructTicketNotesCommand());
-			c.addCommand(getAddNotesChain());
-			c.addCommand(new AddAttachmentCommand());
-			c.addCommand(new AttachmentContextCommand());
-			c.addCommand(new AddAttachmentRelationshipCommand());
-			c.addCommand(new AddActivitiesCommand());
+		);
+		c.addCommand(new ConstructTicketNotesCommand());
+		c.addCommand(getAddNotesChain());
+		c.addCommand(new AddAttachmentCommand());
+		c.addCommand(new AttachmentContextCommand());
+		c.addCommand(new AddAttachmentRelationshipCommand());
+		c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 
