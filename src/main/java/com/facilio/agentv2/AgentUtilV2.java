@@ -259,9 +259,9 @@ public class AgentUtilV2
     private static AgentEventContext getDataMissingEventContext(FacilioAgent agent, long currentTime, String severity, long pointsDataMissingSize) {
         AgentEventContext event = new AgentEventContext();
         String description = null;
-        String message = "Data missing in agent " + agent.getName();
+        String message = "Data missing in agent " + agent.getDisplayName();
         if (severity.equals(FacilioConstants.Alarm.CRITICAL_SEVERITY)) {
-            description = "Data missing for "+ pointsDataMissingSize + " points in agent "+ agent.getName();
+            description = "Data missing for "+ pointsDataMissingSize + " points in agent "+ agent.getDisplayName();
         } else if (severity.equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
             description = "Data arriving for all points in agent "+agent.getName();
         }
