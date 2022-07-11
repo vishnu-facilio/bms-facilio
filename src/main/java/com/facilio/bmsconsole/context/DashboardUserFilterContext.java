@@ -190,6 +190,15 @@ public Map<Long, FacilioField> getCascadingFilters() {
 		List<Long> selectedSliderRangeValues;
 
 
+		public String getParentModuleName() {
+			return parentModuleName;
+		}
+
+		public void setParentModuleName(String parentModuleName) {
+			this.parentModuleName = parentModuleName;
+		}
+
+		public String parentModuleName ;
 
 	}
 	public static enum OptionType implements FacilioIntEnum {
@@ -472,4 +481,10 @@ public Map<Long, FacilioField> getCascadingFilters() {
 		this.criteria = criteria;
 	}
 
+	public void setParentModuleName(String parentModuleName){
+		this.filterPojo.setParentModuleName(parentModuleName);
+	}
+	public String getParentModuleName(){
+		return this.filterPojo.getParentModuleName();
+	}
 }
