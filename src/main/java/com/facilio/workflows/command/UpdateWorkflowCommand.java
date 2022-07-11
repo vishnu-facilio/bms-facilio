@@ -2,6 +2,8 @@ package com.facilio.workflows.command;
 
 import java.util.Map;
 
+import com.facilio.constants.FacilioConstants;
+import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -32,6 +34,8 @@ public class UpdateWorkflowCommand extends FacilioCommand {
 
 			workflow.setSysModifiedBy(AccountUtil.getCurrentUser().getOuid());
 			workflow.setSysModifiedTime(DateTimeUtil.getCurrenTime());
+
+			WorkflowUtil.throwExceptionIfScriptValidationFailed(workflow);
 
 			GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder();
 			update.table(ModuleFactory.getWorkflowModule().getTableName());
