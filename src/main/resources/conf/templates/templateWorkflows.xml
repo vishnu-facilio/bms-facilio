@@ -1596,4 +1596,27 @@
 			</expression>
 		</workflow>
 	</template>
+	<template id="123">
+		<workflow>
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.emailDomain" type="String"/>
+			<parameter name="org.originalUrl" type="String"/>
+			<parameter name="announcement.id" type="Number" />
+			<parameter name="announcement.longDescription"
+					   type="String" />
+			<parameter name="announcement.title" type="String" />
+			<expression name="audience.notif_mod_audience">
+				<function>system.getAudienceEmail('audience','announcement','${announcement.id}')
+				</function>
+			</expression>
+			<expression name="announcement.attachments_url">
+				<function>system.getAnnouncementAttachmentUrls('${announcement.id}')
+				</function>
+			</expression>
+			<expression name="announcement.attachments_name">
+				<function>system.getAnnouncementAttachmentNames('${announcement.id}')
+				</function>
+			</expression>
+		</workflow>
+	</template>
 </workflows>
