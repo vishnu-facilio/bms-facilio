@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.Map;
 
+import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
@@ -13,6 +14,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import org.json.simple.JSONObject;
 
 public class UpdateFormFieldCommand extends FacilioCommand {
 

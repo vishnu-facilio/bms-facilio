@@ -18,6 +18,7 @@ import java.util.Objects;
 
 import javax.imageio.ImageIO;
 
+import com.google.common.io.ByteSource;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -178,6 +179,36 @@ public class S3FileStore extends FileStore {
 	    	deleteFileEntry(namespace, fileId);
 	    	throw e;
 	    }
+	}
+	@Override
+	public long addFile(String namespace, String fileName, byte[] content, String contentType, boolean isOrphan) throws Exception {
+		if (contentType == null) {
+			throw new IllegalArgumentException("Content type is mandatory");
+		}
+
+		long fileId = addDummyFileEntry(namespace, fileName, isOrphan);
+		String filePath = getRootPath(namespace) + File.separator + fileId + "-" + fileName;
+		long fileSize = content.length;
+
+		try {
+
+			InputStream inputStream = new ByteArrayInputStream(content);
+
+			ObjectMetadata metaData = new ObjectMetadata();
+			metaData.setContentLength(content.length);
+			PutObjectResult rs = AwsUtil.getAmazonS3Client().putObject(getBucketName(), filePath,inputStream,metaData);
+			if (rs != null) {
+				updateFileEntry(namespace, fileId, fileName, filePath, fileSize, contentType);
+				return fileId;
+			}
+			else {
+				deleteFileEntry(namespace, fileId);
+				return -1;
+			}
+		} catch (IOException ioe) {
+			deleteFileEntry(namespace, fileId);
+			throw ioe;
+		}
 	}
 
 	@Override

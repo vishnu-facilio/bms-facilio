@@ -3107,6 +3107,12 @@
 			class="com.facilio.bmsconsole.actions.FileAction" method="addFile">
 		</action>
 	</package>
+	<package name="deletefile" namespace="/api/v2/files"
+			 extends="v2Api">
+		<action name="delete"
+				class="com.facilio.bmsconsole.actions.FileAction" method="deleteFile">
+		</action>
+	</package>
 	<package name="fileDownloadApiv2"
 		namespace="/api/v2/files/download" extends="fileDownload,v2Api">
 		<action name="*"

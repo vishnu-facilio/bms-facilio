@@ -191,6 +191,16 @@ public class FormAction extends FacilioAction {
 		this.formField = formField;
 	}
 
+	private Boolean forCreate = false;
+
+	public Boolean getForCreate() {
+		return forCreate;
+	}
+
+	public void setForCreate(Boolean forCreate) {
+		this.forCreate = forCreate;
+	}
+
 	public String loadApprovalFormFields() throws Exception {
 		List<FacilioField> allFields = new ArrayList();
 		List<FacilioField> fields = new ArrayList();
@@ -214,14 +224,13 @@ public class FormAction extends FacilioAction {
 		c.execute(context);
 		
 		setResult("result", "success");
-		
+
 		return SUCCESS;
 	}
-	
+
 	public String updateFormField() throws Exception {
 		Context context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FORM_FIELD, getFormField());
-		
 		FacilioChain c = TransactionChainFactory.getUpdateFormFieldChain();
 		c.execute(context);
 		
@@ -360,6 +369,7 @@ public class FormAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.FETCH_FORM_RULE_FIELDS, fetchFormRuleFields);
 		context.put(FacilioConstants.ContextNames.FORM_SOURCE, formSourceType);
+		context.put(ContextNames.FOR_CREATE, forCreate);
 		
 		FacilioChain c = FacilioChainFactory.getFormMetaChain();
 		c.execute(context);

@@ -1,9 +1,14 @@
 package com.facilio.bmsconsole.commands.form;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.fs.FileInfo;
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.chain.Context;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -30,11 +35,12 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 	
 	FormSourceType formSourceType;
 	boolean isFromBuilder;
-
+	Boolean forCreate;
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		forCreate = (context.get(ContextNames.FOR_CREATE) != null) ? (Boolean) context.get(ContextNames.FOR_CREATE): false;
 		if (moduleName == null) {
 			return false;
 		}
@@ -71,14 +77,45 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 					}
 					setLookupName(field, module.getName(), isFromBuilder);
 					addFilters(module, field, isAssetModule);
+					if(forCreate&&(field.getValue()!=null)&&(field.getDisplayTypeEnum() == FacilioField.FieldDisplayType.TEXTAREA||field.getDisplayTypeEnum() == FacilioField.FieldDisplayType.NOTES||field.getDisplayTypeEnum() == FacilioField.FieldDisplayType.RICH_TEXT)&&field.getValue().toString().contains("\"fileId\"")) {
+						org.json.JSONObject k= new org.json.JSONObject(field.getValue().toString());
+						int fileId = (int) k.get("fileId");
+						InputStream defaultValue = FacilioFactory.getFileStore().readFile((long)fileId);
+						String value1= IOUtils.toString(defaultValue);
+						field.setValue(value1);
+					}
 					setValidations(field);
 				}
 			}
 		}
 	}
-	
+
 	private void handleDefaultValue(FormField formField) throws Exception {
 		Object value = formField.getValue();
+		if(forCreate&&(formField.getValue()!=null)&&(formField.getDisplayTypeEnum() == FacilioField.FieldDisplayType.ATTACHMENT||formField.getDisplayTypeEnum() == FacilioField.FieldDisplayType.FILE) && !(StringUtils.isEmpty(formField.getValue().toString()))){
+			org.json.JSONArray defaultval= new org.json.JSONArray(formField.getValue().toString());
+			JSONArray orphanedArray = new JSONArray();
+			for(Object val:defaultval){
+				org.json.JSONObject fileVal=new org.json.JSONObject(val.toString());
+				String fileIdString = fileVal.get("fileId").toString();
+				int fileId = Integer.parseInt(fileIdString);
+				FileInfo fileInfo= FacilioFactory.getFileStore().getFileInfo(fileId);
+				String contentType = fileInfo.getContentType();
+				String fileName = fileInfo.getFileName();
+
+				InputStream defaultValue = FacilioFactory.getFileStore().readFile((long)fileId);
+
+				byte[] bytes = IOUtils. toByteArray(defaultValue);
+
+				long orphanFileId = FacilioFactory.getFileStore().addOrphanedFile("Orphan File created for Form Field with File Id "+fileId,bytes,contentType);
+
+				JSONObject orphanedObject = new JSONObject();
+				orphanedObject.put("fileId",orphanFileId);
+				orphanedObject.put("fileName",fileName);
+				orphanedArray.add(orphanedObject);
+			}
+		formField.setValue(orphanedArray.toString());
+		}
 		if (formField.getField() != null && value != null) {
 			switch(formField.getField().getDataTypeEnum()) {
 				case DATE:
@@ -90,7 +127,6 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 					}
 					break;
 			}
-			
 			formField.setValueObject(value);
 		}
 		

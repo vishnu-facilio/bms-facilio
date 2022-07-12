@@ -135,6 +135,15 @@ public class FacilioFileStore extends FileStore {
 			return -1;
 		}
 	}
+	@Override
+	public long addFile(String namespace, String fileName, byte[] content, String contentType,boolean isOrphan) throws Exception {
+		long fileId = addDummyFileEntry(namespace, fileName, true);
+		try {
+			return addFile(namespace, fileId, fileName, content, contentType);
+		} catch (Exception e){
+			return -1;
+		}
+	}
 	private long addSecretFile(long fileId, String fileName, byte[] content, String contentType) throws Exception
 	{
 		HttpUtil httpConn;
