@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestLineItemContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedToolContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ToolContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ToolTypesContext;
 import com.facilio.v3.context.V3Context;
@@ -26,13 +27,13 @@ public class V3ToolTransactionContext extends V3Context {
         this.toolType = toolType;
     }
 
-    private PurchasedToolContext purchasedTool;
+    private V3PurchasedToolContext purchasedTool;
 
-    public PurchasedToolContext getPurchasedTool() {
+    public V3PurchasedToolContext getPurchasedTool() {
         return purchasedTool;
     }
 
-    public void setPurchasedTool(PurchasedToolContext purchasedTool) {
+    public void setPurchasedTool(V3PurchasedToolContext purchasedTool) {
         this.purchasedTool = purchasedTool;
     }
 

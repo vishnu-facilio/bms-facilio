@@ -1,9 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.purchaseorder;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ReceivableContext;
 import com.facilio.command.FacilioCommand;
-import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
 import com.facilio.bmsconsole.util.PurchaseOrderAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsoleV3.context.V3TermsAndConditionContext;
@@ -43,7 +41,7 @@ public class POAfterCreateOrEditV3Command extends FacilioCommand {
 
                     if (purchaseOrderContext.getId() > 0) {
                         if (purchaseOrderContext.getLineItems() != null && purchaseOrderContext.getReceivableStatus() == V3PurchaseOrderContext.ReceivableStatus.YET_TO_RECEIVE.getIndex()) {
-                            DeleteRecordBuilder<PurchaseOrderLineItemContext> deleteBuilder = new DeleteRecordBuilder<PurchaseOrderLineItemContext>()
+                            DeleteRecordBuilder<V3PurchaseOrderLineItemContext> deleteBuilder = new DeleteRecordBuilder<V3PurchaseOrderLineItemContext>()
                                     .module(lineItemsModule)
                                     .andCondition(CriteriaAPI.getCondition("PO_ID", "purchaseOrder", String.valueOf(purchaseOrderContext.getId()), NumberOperators.EQUALS));
                             deleteBuilder.delete();
@@ -135,12 +133,12 @@ public class POAfterCreateOrEditV3Command extends FacilioCommand {
         String receivablesModuleName = FacilioConstants.ContextNames.RECEIVABLE;
         FacilioModule receivablesModule = modBean.getModule(receivablesModuleName);
         List<FacilioField> receivablesFields = modBean.getAllFields(receivablesModuleName);
-        SelectRecordsBuilder<ReceivableContext> selectRecordsBuilder = new SelectRecordsBuilder<ReceivableContext>()
+        SelectRecordsBuilder<V3ReceivableContext> selectRecordsBuilder = new SelectRecordsBuilder<V3ReceivableContext>()
                 .module(receivablesModule)
-                .beanClass(ReceivableContext.class)
+                .beanClass(V3ReceivableContext.class)
                 .select(receivablesFields)
                 .andCondition(CriteriaAPI.getCondition("PO_ID", "poId", String.valueOf(poId), NumberOperators.EQUALS));
-        List<ReceivableContext> receivables = selectRecordsBuilder.get();
+        List<V3ReceivableContext> receivables = selectRecordsBuilder.get();
         if(receivables.size() <= 0){
             return true;
         }

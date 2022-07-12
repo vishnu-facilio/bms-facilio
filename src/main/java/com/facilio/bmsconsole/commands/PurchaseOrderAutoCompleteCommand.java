@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsoleV3.context.inventory.*;
+import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderLineItemContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
@@ -28,30 +30,30 @@ public class PurchaseOrderAutoCompleteCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		List<V3PurchaseOrderContext> purchaseOrders = (List<V3PurchaseOrderContext>) context
 				.get(FacilioConstants.ContextNames.PURCHASE_ORDERS);
-		List<ItemContext> itemsTobeAdded = new ArrayList<>();
-		List<ToolContext> toolsToBeAdded = new ArrayList<>();
+		List<V3ItemContext> itemsTobeAdded = new ArrayList<>();
+		List<V3ToolContext> toolsToBeAdded = new ArrayList<>();
 		boolean containsIndividualTrackingItem = false;
 		boolean containsIndividualTrackingTool = false;
-		List<ItemTypesVendorsContext> itemTypesVendors = new ArrayList<>();	
-		List<ToolTypeVendorContext> toolTypesVendors = new ArrayList<>();
+		List<V3ItemTypesVendorsContext> itemTypesVendors = new ArrayList<>();
+		List<V3ToolTypeVendorContext> toolTypesVendors = new ArrayList<>();
 
 		long storeRoomId = -1;
 		long vendorId =-1;
 		if (purchaseOrders != null && !purchaseOrders.isEmpty()) {
 			for (V3PurchaseOrderContext v3po : purchaseOrders) {
 				Map<String, Object> map = FieldUtil.getAsProperties(v3po);
-				PurchaseOrderContext po = FieldUtil.getAsBeanFromMap(map, PurchaseOrderContext.class);
+				V3PurchaseOrderContext po = FieldUtil.getAsBeanFromMap(map, V3PurchaseOrderContext.class);
 				if (v3po.getReceivableStatus() == V3PurchaseOrderContext.ReceivableStatus.RECEIVED.getIndex()) {
 					if (po.getStoreRoom() != null) {
 						storeRoomId = po.getStoreRoom().getId();
 					}
 					vendorId= po.getVendor().getId();
-					List<PurchaseOrderLineItemContext> lineItems = getLineItemsForPO(po.getId());
+					List<V3PurchaseOrderLineItemContext> lineItems = getLineItemsForPO(po.getId());
 					if (lineItems != null && !lineItems.isEmpty()) {
-						for (PurchaseOrderLineItemContext lineItem : lineItems) {
+						for (V3PurchaseOrderLineItemContext lineItem : lineItems) {
 							if (lineItem.getInventoryTypeEnum() == InventoryType.ITEM) {
-								itemTypesVendors.add(new ItemTypesVendorsContext(lineItem.getItemType(), po.getVendor(), lineItem.getCost(), po.getOrderedTime()));
-								ItemTypesContext itemtype = getItemType(lineItem.getItemType().getId());
+								itemTypesVendors.add(new V3ItemTypesVendorsContext(lineItem.getItemType(), po.getVendor(), lineItem.getCost(), po.getOrderedTime()));
+								V3ItemTypesContext itemtype = getItemType(lineItem.getItemType().getId());
 								if (itemtype.isRotating()) {
 									containsIndividualTrackingItem = true;
 									break;
@@ -59,8 +61,8 @@ public class PurchaseOrderAutoCompleteCommand extends FacilioCommand {
 									itemsTobeAdded.add(createItem(po, lineItem));
 								}
 							} else if (lineItem.getInventoryTypeEnum() == InventoryType.TOOL) {
-								toolTypesVendors.add(new ToolTypeVendorContext(lineItem.getToolType(), po.getVendor(), lineItem.getCost(), po.getOrderedTime()));
-								ToolTypesContext toolType = getToolType(lineItem.getToolType().getId());
+								toolTypesVendors.add(new V3ToolTypeVendorContext(lineItem.getToolType(), po.getVendor(), lineItem.getCost(), po.getOrderedTime()));
+								V3ToolTypesContext toolType = getToolType(lineItem.getToolType().getId());
 								if (toolType.isRotating()) {
 									containsIndividualTrackingTool = true;
 									break;
@@ -87,60 +89,60 @@ public class PurchaseOrderAutoCompleteCommand extends FacilioCommand {
 		return false;
 	}
 
-	private List<PurchaseOrderLineItemContext> getLineItemsForPO(long id) throws Exception {
+	private List<V3PurchaseOrderLineItemContext> getLineItemsForPO(long id) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS);
 		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
 
-		SelectRecordsBuilder<PurchaseOrderLineItemContext> builder = new SelectRecordsBuilder<PurchaseOrderLineItemContext>()
+		SelectRecordsBuilder<V3PurchaseOrderLineItemContext> builder = new SelectRecordsBuilder<V3PurchaseOrderLineItemContext>()
 				.module(module).select(fields)
 				.andCondition(
 						CriteriaAPI.getCondition(fieldsMap.get("purchaseOrder"), String.valueOf(id), NumberOperators.EQUALS))
-				.beanClass(PurchaseOrderLineItemContext.class);
+				.beanClass(V3PurchaseOrderLineItemContext.class);
 
-		List<PurchaseOrderLineItemContext> lineItems = builder.get();
+		List<V3PurchaseOrderLineItemContext> lineItems = builder.get();
 		if (lineItems != null && !lineItems.isEmpty()) {
 			return lineItems;
 		}
 		return null;
 	}
 
-	private ItemTypesContext getItemType(long id) throws Exception {
+	private V3ItemTypesContext getItemType(long id) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM_TYPES);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM_TYPES);
 
-		SelectRecordsBuilder<ItemTypesContext> builder = new SelectRecordsBuilder<ItemTypesContext>().module(module)
-				.select(fields).andCondition(CriteriaAPI.getIdCondition(id, module)).beanClass(ItemTypesContext.class);
+		SelectRecordsBuilder<V3ItemTypesContext> builder = new SelectRecordsBuilder<V3ItemTypesContext>().module(module)
+				.select(fields).andCondition(CriteriaAPI.getIdCondition(id, module)).beanClass(V3ItemTypesContext.class);
 
-		List<ItemTypesContext> item = builder.get();
+		List<V3ItemTypesContext> item = builder.get();
 		if (item != null && !item.isEmpty()) {
 			return item.get(0);
 		}
 		return null;
 	}
 
-	private ToolTypesContext getToolType(long id) throws Exception {
+	private V3ToolTypesContext getToolType(long id) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL_TYPES);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL_TYPES);
 
-		SelectRecordsBuilder<ToolTypesContext> builder = new SelectRecordsBuilder<ToolTypesContext>().module(module)
-				.select(fields).andCondition(CriteriaAPI.getIdCondition(id, module)).beanClass(ToolTypesContext.class);
+		SelectRecordsBuilder<V3ToolTypesContext> builder = new SelectRecordsBuilder<V3ToolTypesContext>().module(module)
+				.select(fields).andCondition(CriteriaAPI.getIdCondition(id, module)).beanClass(V3ToolTypesContext.class);
 
-		List<ToolTypesContext> tool = builder.get();
+		List<V3ToolTypesContext> tool = builder.get();
 		if (tool != null && !tool.isEmpty()) {
 			return tool.get(0);
 		}
 		return null;
 	}
 
-	private ItemContext createItem(PurchaseOrderContext po, PurchaseOrderLineItemContext lineItem) {
-		ItemContext item = new ItemContext();
+	private V3ItemContext createItem(V3PurchaseOrderContext po, V3PurchaseOrderLineItemContext lineItem) {
+		V3ItemContext item = new V3ItemContext();
 		item.setStoreRoom(po.getStoreRoom());
 		item.setItemType(lineItem.getItemType());
-		PurchasedItemContext purchasedItem = new PurchasedItemContext();
+		V3PurchasedItemContext purchasedItem = new V3PurchasedItemContext();
 		purchasedItem.setQuantity(lineItem.getQuantity());
 		purchasedItem.setUnitcost(lineItem.getUnitPrice());
 		item.setPurchasedItems(Collections.singletonList(purchasedItem));
@@ -148,8 +150,8 @@ public class PurchaseOrderAutoCompleteCommand extends FacilioCommand {
 		return item;
 	}
 
-	private ToolContext createTool(PurchaseOrderContext po, PurchaseOrderLineItemContext lineItem) {
-		ToolContext tool = new ToolContext();
+	private V3ToolContext createTool(V3PurchaseOrderContext po, V3PurchaseOrderLineItemContext lineItem) {
+		V3ToolContext  tool = new V3ToolContext ();
 		tool.setStoreRoom(po.getStoreRoom());
 		tool.setToolType(lineItem.getToolType());
 		tool.setQuantity(lineItem.getQuantity());

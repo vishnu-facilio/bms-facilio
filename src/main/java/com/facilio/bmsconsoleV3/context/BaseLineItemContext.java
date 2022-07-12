@@ -1,9 +1,9 @@
 package com.facilio.bmsconsoleV3.context;
 
-import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.LabourContext;
 import com.facilio.bmsconsole.context.ServiceContext;
-import com.facilio.bmsconsole.context.ToolTypesContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ToolTypesContext;
 import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
 import com.facilio.v3.context.V3Context;
 
@@ -11,8 +11,8 @@ public class BaseLineItemContext extends V3Context {
 
     private static final long serialVersionUID = 1L;
 
-    private ItemTypesContext itemType;
-    private ToolTypesContext toolType;
+    private V3ItemTypesContext itemType;
+    private V3ToolTypesContext toolType;
     private ServiceContext service;
     private LabourContext labour;
     private TaxContext tax;
@@ -23,19 +23,19 @@ public class BaseLineItemContext extends V3Context {
     private String description;
     private Long unitOfMeasure;
 
-    public ItemTypesContext getItemType() {
+    public V3ItemTypesContext getItemType() {
         return itemType;
     }
 
-    public void setItemType(ItemTypesContext itemType) {
+    public void setItemType(V3ItemTypesContext itemType) {
         this.itemType = itemType;
     }
 
-    public ToolTypesContext getToolType() {
+    public V3ToolTypesContext getToolType() {
         return toolType;
     }
 
-    public void setToolType(ToolTypesContext toolType) {
+    public void setToolType(V3ToolTypesContext toolType) {
         this.toolType = toolType;
     }
 
