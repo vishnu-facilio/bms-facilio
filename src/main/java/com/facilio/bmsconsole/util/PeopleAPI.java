@@ -122,7 +122,7 @@ public class PeopleAPI {
 		
 	}
 	
-	public static PeopleContext getOrAddPeople(String email) throws Exception {
+	public static PeopleContext getOrAddRequester(String email) throws Exception {  //used only for service Request Module
 		
 		email = MailMessageUtil.getEmailFromPrettifiedFromAddress.apply(email);
 		
@@ -131,6 +131,7 @@ public class PeopleAPI {
 		if(people == null) {
 			people = new PeopleContext();
 			people.setEmail(email);
+			people.setPeopleType(PeopleType.OCCUPANT);
 			FacilioChain c = TransactionChainFactory.addPeopleChain();
 			c.getContext().put(FacilioConstants.ContextNames.VERIFY_USER, false);
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);

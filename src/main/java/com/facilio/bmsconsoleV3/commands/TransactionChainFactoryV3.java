@@ -1041,6 +1041,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new AddSuplimentsForEmailBaseMessageCommand());
         chain.addCommand(new AddDefaultFieldsForEmailThreadingCommand());
+        chain.addCommand(new AddEmailsToPeopleCommandV3());
         return chain;
     }
 
