@@ -13,6 +13,7 @@ import org.apache.commons.chain.Context;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Log4j
 public class FetchReadingsModuleFieldsCommand extends FacilioCommand implements Serializable {
@@ -21,10 +22,7 @@ public class FetchReadingsModuleFieldsCommand extends FacilioCommand implements 
         Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(context);
         String moduleName = Constants.getModuleName(context);
         List<ModuleBaseWithCustomFields> records = recordMap.get(moduleName);
-        Long parentId = null;
-        for (ModuleBaseWithCustomFields record: records) {
-            parentId = record.getId();
-        }
+        List<Long> recordList = records.stream().map(row -> row.getId()).collect(Collectors.toList());
 
         ModuleBean modBean = Constants.getModBean();
         List<FacilioModule> readingModules = modBean.getSubModules(moduleName, FacilioModule.ModuleType.READING, FacilioModule.ModuleType.SYSTEM_SCHEDULED_FORMULA);
@@ -33,9 +31,8 @@ public class FetchReadingsModuleFieldsCommand extends FacilioCommand implements 
             List<FacilioField> fields = modBean.getAllFields(subModule.getName());
             subModule.setFields(fields);
         }
-
         context.put(FacilioConstants.ContextNames.MODULE_LIST, readingModules);
-        context.put(FacilioConstants.ContextNames.RECORD_ID, parentId);
+        context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordList);
         return false;
     }
 }

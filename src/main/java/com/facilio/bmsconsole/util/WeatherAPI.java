@@ -68,6 +68,9 @@ public class WeatherAPI {
 		}
 	}
 
+	public static List<V3WeatherStationContext> getAllStations() throws Exception {
+		return getAllStations(0);
+	}
 	public static List<V3WeatherStationContext> getAllStations(long serviceId) throws Exception {
 		ModuleBean modBean = Constants.getModBean();
 		FacilioModule module = modBean.getModule(FacilioConstants.ModuleNames.WEATHER_STATION);
@@ -77,8 +80,10 @@ public class WeatherAPI {
 		SelectRecordsBuilder<V3WeatherStationContext> selectBuilder = new SelectRecordsBuilder<V3WeatherStationContext>()
 				.select(fields)
 				.module(module)
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("serviceId"), String.valueOf(serviceId), NumberOperators.EQUALS))
 				.beanClass(V3WeatherStationContext.class);
+		if(serviceId!=0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("serviceId"), String.valueOf(serviceId), NumberOperators.EQUALS));
+		}
 		return selectBuilder.get();
 	}
 

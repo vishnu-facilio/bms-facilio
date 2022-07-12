@@ -62,7 +62,7 @@ public class FacilioWeatherDataJob extends FacilioJob {
 		}
 		catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
-			CommonCommandUtil.emailException("FacilioWeatherDataJob", "Exception in Weather Data job ", e);
+			CommonCommandUtil.emailException("FacilioWeatherDataJob", "Exception in Facilio Weather Data job ", e);
 		}
 	}
 }
