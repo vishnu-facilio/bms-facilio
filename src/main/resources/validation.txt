@@ -2707,3 +2707,6 @@
 /api/event/sources
 /api/event/updatesource
 /api/v2/wosurvey
+/api/v3/dashboard/update
+/api/v3/dashboard/:linkName
+

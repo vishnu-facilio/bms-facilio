@@ -5031,6 +5031,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("dashboardId", "DASHBOARD_ID", module, FieldType.NUMBER));
 
         fields.add(getField("dashboardTabId", "DASHBOARD_TAB_ID", module, FieldType.NUMBER));
+        fields.add(getField("sectionId", "SECTION_ID", module, FieldType.NUMBER));
 
         FacilioField dashboardWidgetName = new FacilioField();
         dashboardWidgetName.setName("widgetName");
@@ -5113,6 +5114,19 @@ public class FieldFactory extends BaseFieldFactory {
 
         fields.add(getField("newReportId", "NEW_REPORT_ID", module, FieldType.LOOKUP));
         fields.add(getField("reportTemplate", "REPORT_TEMPLATE", module, FieldType.STRING));
+
+        return fields;
+    }
+
+    public static List<FacilioField> getWidgetSectionFields(){
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getWidgetSectionModule();
+        fields.add(getIdField(module));
+        fields.add(getField("name", "NAME", module, FieldType.STRING));
+        fields.add(getField("desc", "DESCRIPTION", module, FieldType.STRING));
+        fields.add(getField("banner_details", "BANNER_DETAILS", module, FieldType.STRING));
+        fields.add(getField("collapsed", "IS_COLLAPSED", module, FieldType.BOOLEAN));
+        fields.add(getField("noResize", "IS_RESIZE_ENABLED", module, FieldType.BOOLEAN));
 
         return fields;
     }

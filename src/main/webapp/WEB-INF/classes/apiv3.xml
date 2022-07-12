@@ -827,6 +827,14 @@
         <action name="moveto"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
                 method="move_dashboard"/>
+        <action name="update"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
+                method="update"/>
+        <action name="*"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
+                method="get">
+            <param name="linkName">{1}</param>
+        </action>
     </package>
 
     <package name="readingImportApp" namespace="/api/v3/readingimport" extends="v3Api">
