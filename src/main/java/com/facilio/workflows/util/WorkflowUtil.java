@@ -16,8 +16,10 @@ import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+
 import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.util.ScriptUtil;
+import com.facilio.scriptengine.systemfunctions.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -65,17 +67,6 @@ import com.facilio.report.util.DemoHelperUtil;
 import com.facilio.scriptengine.context.ParameterContext;
 import com.facilio.scriptengine.context.WorkflowFieldType;
 import com.facilio.scriptengine.context.WorkflowFunctionContext;
-import com.facilio.scriptengine.systemfunctions.FacilioCSVFunctions;
-import com.facilio.scriptengine.systemfunctions.FacilioHTTPFunctions;
-import com.facilio.scriptengine.systemfunctions.FacilioListFunction;
-import com.facilio.scriptengine.systemfunctions.FacilioMapFunction;
-import com.facilio.scriptengine.systemfunctions.FacilioMathFunction;
-import com.facilio.scriptengine.systemfunctions.FacilioNumberFunctions;
-import com.facilio.scriptengine.systemfunctions.FacilioRegexFunctions;
-import com.facilio.scriptengine.systemfunctions.FacilioStringFunction;
-import com.facilio.scriptengine.systemfunctions.FacilioSystemFunctionNameSpace;
-import com.facilio.scriptengine.systemfunctions.FacilioWorkflowFunctionInterface;
-import com.facilio.scriptengine.systemfunctions.FacilioXMLBuilderFunctions;
 import com.facilio.scriptengine.util.WorkflowGlobalParamUtil;
 import com.facilio.services.messageQueue.MessageQueue;
 import com.facilio.services.messageQueue.MessageQueueFactory;
@@ -2233,6 +2224,9 @@ public class WorkflowUtil {
 				case REGEX:
 					facilioWorkflowFunction = FacilioRegexFunctions.getFacilioRegexFunction(functionName);
 					break;
+				case DATABASE_CONNECTION:
+					facilioWorkflowFunction = FacilioDBFunction.getFacilioDbcFunction(functionName);
+					break;
 			}
 		}
 		return facilioWorkflowFunction;
@@ -2360,6 +2354,9 @@ public class WorkflowUtil {
 					break;
 				case REGEX:
 					facilioWorkflowFunction = new ArrayList<>( FacilioRegexFunctions.getAllFunctions().values());
+					break;
+				case DATABASE_CONNECTION:
+					facilioWorkflowFunction = new ArrayList<>(FacilioDBFunction.getAllFunctions().values());
 					break;
 			}
 		}

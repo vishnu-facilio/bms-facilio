@@ -1,10 +1,12 @@
 package com.facilio.workflowv2.Visitor;
 
 import java.lang.reflect.Method;
+import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import com.facilio.scriptengine.systemfunctions.FacilioDBFunction;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -316,6 +318,10 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
                     	else if (value.asObject() instanceof FacilioSystemFunctionNameSpace) {
                     		wfFunctionContext.setNameSpace(((FacilioSystemFunctionNameSpace)value.asObject()).getName());
                     	}
+						else if(value.asObject() instanceof Connection){
+							wfFunctionContext.setNameSpace(((FacilioSystemFunctionNameSpace.DATABASE_CONNECTION.getName())));
+							isDataTypeSpecificFunction = true;
+						}
                     	
                     	List<Object> paramValues = ScriptUtil.getParamList(functionCall,isDataTypeSpecificFunction,this,value);
                     	
