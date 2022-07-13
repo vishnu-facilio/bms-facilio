@@ -574,7 +574,7 @@ public abstract class FileStore {
 		fileInfo.setNamespace(namespace);
 		fileInfo.setFileId(rs.getLong("FILE_ID"));
 		if (rs.getString("FILE_NAME") != null) {
-			fileInfo.setFileName(rs.getString("FILE_NAME").trim());
+			fileInfo.setFileName(rs.getString("FILE_NAME"));
 		}
 		String compressedFilePath = null;
 		try {
@@ -588,7 +588,7 @@ public abstract class FileStore {
 		}
 		else {
 			if (rs.getString("FILE_PATH") != null) {
-				fileInfo.setFilePath(rs.getString("FILE_PATH").trim());
+				fileInfo.setFilePath(rs.getString("FILE_PATH"));
 			}
 			fileInfo.setFileSize(rs.getLong("FILE_SIZE"));
 		}
