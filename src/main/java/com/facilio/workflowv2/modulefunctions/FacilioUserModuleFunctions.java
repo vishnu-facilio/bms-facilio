@@ -6,18 +6,23 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.modules.FieldUtil;
 import com.facilio.scriptengine.annotation.ScriptModule;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 
 @ScriptModule(moduleName = FacilioConstants.ContextNames.USERS)
 public class FacilioUserModuleFunctions extends FacilioModuleFunctionImpl {
@@ -33,7 +38,19 @@ public class FacilioUserModuleFunctions extends FacilioModuleFunctionImpl {
 		}
 		return Collections.EMPTY_LIST;
 	}
-
+	
+    public String getMySignature(Map<String, Object> globalParam, List<Object> objects) throws Exception{
+		FacilioChain chain = TransactionChainFactory.getUserSignatureChain();
+		FacilioContext context = chain.getContext();
+    	if(CollectionUtils.isNotEmpty(objects) && objects.size() > 1 && !objects.get(1).toString().isEmpty()) {
+    		Long userId = (long) Double.parseDouble(objects.get(1).toString());
+    		context.put(FacilioConstants.ContextNames.USER_ID,userId);
+    	}
+		chain.execute();
+		Map<String,Object> signature = (Map<String, Object>) context.get(FacilioConstants.ContextNames.SIGNATURE);
+		String signature_content = (String) signature.get(FacilioConstants.ContextNames.SIGNATURE_CONTENT);
+		return signature_content;
+    }
 	
 	@Override
 	public void add(Map<String,Object> globalParams,List<Object> objects) throws Exception {

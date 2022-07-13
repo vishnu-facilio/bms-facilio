@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.IOUtils;
 
 import com.facilio.accounts.dto.User;
@@ -28,15 +30,16 @@ public class GetUserSignatureCommand extends FacilioCommand{
 	public boolean executeCommand(Context context) throws Exception{
 		
 		Long signatureFileId =null;
+		Long userId = (Long) context.get(FacilioConstants.ContextNames.USER_ID) == null ? AccountUtil.getCurrentUser().getId(): (Long) context.get(FacilioConstants.ContextNames.USER_ID);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getOrgUserModule().getTableName())
 				.select(AccountConstants.getAppOrgUserFields())
 				.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("ORG_USERID", "ouid", String.valueOf(AccountUtil.getCurrentUser().getId()), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition("ORG_USERID", "ouid", String.valueOf(userId), NumberOperators.EQUALS));
 			  
 		Map<String,Object> select = selectBuilder.fetchFirst();
 		
-		if(select.containsKey(FacilioConstants.ContextNames.SIGNATURE_FILE_ID)) {
+		if(MapUtils.isNotEmpty(select) && select.containsKey(FacilioConstants.ContextNames.SIGNATURE_FILE_ID)) {
 			 signatureFileId= (Long) select.get(FacilioConstants.ContextNames.SIGNATURE_FILE_ID);
 		}
 		if(signatureFileId!=null) {
