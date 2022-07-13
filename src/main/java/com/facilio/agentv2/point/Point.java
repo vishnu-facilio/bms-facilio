@@ -72,6 +72,8 @@ public abstract class Point extends FacilioPoint implements Serializable {
 
     private boolean dataMissing;
 
+    private String actionName;
+
     public boolean isAgentWritable() {
         return agentWritable;
     }
@@ -231,6 +233,14 @@ public abstract class Point extends FacilioPoint implements Serializable {
 
     public int getConfigureStatus() {
         return configureStatus.getIndex();
+    }
+
+    public void setActionName(String actionName) {
+        this.actionName = actionName;
+    }
+
+    public String getActionName(){
+        return actionName;
     }
 
     @JSON(serialize = false)
