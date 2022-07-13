@@ -1,6 +1,7 @@
 package com.facilio.readingrule.command;
 
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -41,6 +42,7 @@ public class ReadingRuleDependenciesCommand extends FacilioCommand {
 
         ctx.put(FacilioConstants.ContextNames.READING_NAME, rule.getName());
         ctx.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, NewReadingRuleAPI.READING_RULE_FIELD_TABLE_NAME);
+        ctx.put(FacilioConstants.ContextNames.READING_DATA_META_TYPE, ReadingDataMeta.ReadingInputType.ALARM_POINT_FIELD);
 
         ArrayList<FacilioField> fieldList = new ArrayList<FacilioField>() {
             {

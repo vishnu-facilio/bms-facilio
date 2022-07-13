@@ -7,6 +7,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
@@ -105,12 +106,15 @@ public class GetLatestReadingDataCommand extends FacilioCommand {
 			
 			List<ReadingDataMeta> rdmList = ReadingsAPI.getReadingDataMetaList(parentIds, fieldMap, excludeEmptyFields, unused, pagination, search, readingType, types);
 			if (rdmList != null) {
+				Stream<ReadingDataMeta> rdmStream = rdmList.stream();
 				boolean excludeForecast = (boolean) context.getOrDefault(FacilioConstants.ContextNames.EXCLUDE_FORECAST, false);
 				if (excludeForecast) {
-					rdmList = rdmList.stream().filter(rdm -> !SpaceAPI.WEATHER_NON_CURRENT_MODULES.contains(rdm.getField().getModule().getName()))
-							.collect(Collectors.toList());
+					rdmStream = rdmStream.filter(rdm -> !SpaceAPI.WEATHER_NON_CURRENT_MODULES.contains(rdm.getField().getModule().getName()));
 				}
-				
+
+				rdmList = rdmStream
+						.filter(rdm -> !(rdm.getField().getName().equals("info") && rdm.getField().getColumnName().equals("SYS_INFO")))
+						.collect(Collectors.toList());
 				
 				Boolean fetchInputValues = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_READING_INPUT_VALUES);
 				if (fetchInputValues != null && fetchInputValues) {
