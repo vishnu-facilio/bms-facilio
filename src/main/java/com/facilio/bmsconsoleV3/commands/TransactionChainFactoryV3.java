@@ -1678,6 +1678,11 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new RfqBeforeCreateOrUpdateCommandV3());
         return c;
     }
+    public static FacilioChain getConvertPrToRfqChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ConvertPrToRfqCommandV3());
+        return c;
+    }
     public static FacilioChain getRfqBeforeUpdateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetLocalIdCommandV3());
