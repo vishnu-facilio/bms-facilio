@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -12,6 +13,7 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("serial")
@@ -24,6 +26,13 @@ public class BaseSpaceAction extends FacilioAction {
 	@SuppressWarnings("unchecked")
 	public String baseSpaceList() throws Exception 
 	{
+		boolean omitBasespaceAPI = Boolean.valueOf(CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.OMIT_BASESPACE_API, Boolean.FALSE));
+		if (omitBasespaceAPI) {
+			List<BaseSpaceContext> basespaceList = new ArrayList<BaseSpaceContext>();
+			setModuleName("Base Space");
+			setBasespaces(basespaceList);
+			return SUCCESS;
+		}
 		FacilioContext context = new FacilioContext();
 		if(getFilters() != null)
  		{	
