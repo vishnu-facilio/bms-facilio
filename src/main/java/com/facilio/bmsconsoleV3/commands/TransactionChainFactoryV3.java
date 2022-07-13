@@ -1842,4 +1842,9 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdateWidgetCommandV3());
         return c;
     }
+    public static FacilioChain getUpdateDashboardTabChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new V3UpdateDashboardTabWidgetCommand());
+        return c;
+    }
 }

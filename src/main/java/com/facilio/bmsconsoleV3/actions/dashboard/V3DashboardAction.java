@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.actions.dashboard;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.DashboardContext;
+import com.facilio.bmsconsole.context.DashboardTabContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
@@ -17,6 +18,7 @@ import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import java.util.Collections;
 import java.util.List;
 
 @Setter @Getter
@@ -26,6 +28,7 @@ public class V3DashboardAction extends V3Action {
     private Long buildingId;
     private JSONObject dashboard_meta;
     private String linkName;
+    private Long dashboardTabId;
     public String clone_dashboard() throws Exception
     {
         try
@@ -159,6 +162,98 @@ public class V3DashboardAction extends V3Action {
         }catch (Exception e)
         {
             throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION, "Error while getting dashboard info");
+        }
+        return SUCCESS;
+    }
+
+    public String updateTab()throws Exception
+    {
+        JSONObject data = this.getDashboard_meta();
+        if(data  == null ){
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Dashboard data can not be empty");
+        }
+        if(data.containsKey("id") && data != null && data.get("id") != null && (Long)data.get("id") <= 0){
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Dashboard id can not be empty");
+        }
+        if(data.containsKey("tabId") && data != null && data.get("tabId") != null && (Long)data.get("tabId") <= 0){
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Dashboard tab id can not be empty");
+        }
+        try
+        {
+            Long dashboardTabId = (Long) data.get("tabId");
+            Long dashboardId = (Long) data.get("dashboardId");
+            FacilioChain chain = TransactionChainFactoryV3.getDashboardDataChain();
+            FacilioContext context = chain.getContext();
+            context.put("id", dashboardId);
+            context.put("tabId", dashboardTabId);
+            chain.execute();
+            DashboardContext dashboard=null;
+            DashboardTabContext dashboardTabContext=null;
+            if(context.containsKey("dashboard")){
+                dashboard = (DashboardContext) context.get("dashboard");
+                if(dashboard != null){
+                    V3DashboardAPIHandler.updateDashboardProp(dashboard, data);
+                }
+            }
+            if(context.containsKey("dashboardTabContext")){
+                dashboardTabContext = (DashboardTabContext) context.get("dashboardTabContext");
+                if(dashboardTabContext != null) {
+                    V3DashboardAPIHandler.updateDashboardTabProp(dashboardTabContext, data);
+                }
+            }
+
+            if (data.containsKey("fromType")) {
+                context.put("fromType", data.get("fromType"));
+            }
+            if(dashboardTabContext != null) {
+                FacilioChain updateDashboardChain = TransactionChainFactoryV3.getUpdateDashboardTabChainV3();
+                FacilioContext updateTabContext = updateDashboardChain.getContext();
+                updateTabContext.put(FacilioConstants.ContextNames.DASHBOARD_TAB, dashboardTabContext);
+                updateTabContext.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
+                updateDashboardChain.execute();
+            }
+        }
+        catch (Exception e)
+        {
+            throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION, "Error while updating dashboard tab info");
+        }
+        return SUCCESS;
+    }
+
+    public String dashboardTabData()throws Exception
+    {
+        if(dashboardTabId == null){
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Dashboard tab id can not be empty");
+        }
+        try
+        {
+            FacilioChain chain = TransactionChainFactoryV3.getDashboardDataChain();
+            FacilioContext context = chain.getContext();
+            context.put("tabId", dashboardTabId);
+            chain.execute();
+            DashboardTabContext dashboardTabContext = null;
+            if(context.containsKey("dashboardTabContext")){
+                dashboardTabContext = (DashboardTabContext) context.get("dashboardTabContext");
+            }
+            if(dashboardTabContext != null)
+            {
+                FacilioChain getDashboardFilterChain=ReadOnlyChainFactory.getFetchDashboardFilterAndWidgetFilterMappingChain();
+                FacilioContext getDashboardFilterContext=getDashboardFilterChain.getContext();
+                getDashboardFilterContext.put(FacilioConstants.ContextNames.DASHBOARD_TAB, dashboardTabContext);
+                getDashboardFilterChain.execute();
+
+                List<DashboardWidgetContext> widgets = dashboardTabContext.getDashboardWidgets();
+                List<DashboardWidgetContext> widgets_with_section = DashboardUtil.getDashboardWidgetsWithSection(widgets);
+                if(widgets_with_section != null && widgets_with_section.size() > 0) {
+                    dashboardTabContext.setDashboardWidgets(widgets_with_section);
+                }
+                DashboardUtil.getDashboardTabResponseJson(Collections.singletonList(dashboardTabContext));
+                setData("dashboardTabContext", dashboardTabContext);
+            }
+        }
+        catch (Exception e)
+        {
+            throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION, "Error while getting dashboard tab data");
         }
         return SUCCESS;
     }
