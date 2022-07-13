@@ -464,10 +464,7 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllInventoryRequestView().setOrder(order++));
-		views.put("pendingapproval", getInventoryRequestForStatus("pendingapproval", "Pending Approval", 1).setOrder(order++));
-		views.put("pendingissue", getInventoryRequestForStatus("pendingissue", "Pending Issue", 2).setOrder(order++));
-		views.put("rejected", getInventoryRequestForStatus("rejected", "Rejected", 3).setOrder(order++));
-		views.put("issued", getInventoryRequestForStatus("issued", "Issued", 6).setOrder(order++));
+		views.put("issued", getInventoryRequestIssued("issued", "Issued" ,true).setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.INVENTORY_REQUEST, views);
 
 		order = 1;
@@ -5587,55 +5584,7 @@ public class ViewFactory {
 
 		return allView;
 	}
-	private static FacilioView getInventoryRequestForStatus(String viewName, String viewDisplayName, int status) {
-		FacilioModule irModule = ModuleFactory.getInventoryRequestModule();
 
-		FacilioField createdTime = new FacilioField();
-		createdTime.setName("localId");
-		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("LOCAL_ID");
-		createdTime.setModule(irModule);
-
-		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
-
-		Criteria criteria = getInventoryRequestStatusCriteria(irModule, status);
-
-		FacilioView statusView = new FacilioView();
-		statusView.setName(viewName);
-		statusView.setDisplayName(viewDisplayName);
-		statusView.setSortFields(sortFields);
-		statusView.setCriteria(criteria);
-		List<ViewField> fields = new ArrayList<ViewField>();
-		fields.add(new ViewField("id", "ID"));
-		fields.add(new ViewField("name", "Name"));
-		fields.add(new ViewField("requestedBy", "Requested By"));
-		fields.add(new ViewField("requestedTime", "Requested Time"));
-		fields.add(new ViewField("status", "Valid Till"));
-		fields.add(new ViewField("totalCost", "Total Cost"));
-		statusView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
-
-		
-
-		return statusView;
-	}
-
-	private static Criteria getInventoryRequestStatusCriteria(FacilioModule module, int status) {
-
-		FacilioField irStatusField = new FacilioField();
-		irStatusField.setName("status");
-		irStatusField.setColumnName("STATUS");
-		irStatusField.setDataType(FieldType.NUMBER);
-		irStatusField.setModule(ModuleFactory.getInventoryRequestModule());
-
-		Condition statusCond = new Condition();
-		statusCond.setField(irStatusField);
-		statusCond.setOperator(NumberOperators.EQUALS);
-		statusCond.setValue(String.valueOf(status));
-
-		Criteria inventoryRequestStatusCriteria = new Criteria();
-		inventoryRequestStatusCriteria.addAndCondition(statusCond);
-		return inventoryRequestStatusCriteria;
-	}
 
 
 	private static FacilioView getGatePassForStatus(String viewName, String viewDisplayName, int status) {
@@ -9089,5 +9038,52 @@ public class ViewFactory {
 		allView.setViewSharing(getSharingContext(appDomains));
 
 		return allView;
+	}
+	private static FacilioView getInventoryRequestIssued(String viewName, String viewDisplayName, boolean isIssued) {
+		FacilioModule irModule = ModuleFactory.getInventoryRequestModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("localId");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("LOCAL_ID");
+		createdTime.setModule(irModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		Criteria criteria = getIRIssuedCondition(true);
+
+		FacilioView statusView = new FacilioView();
+		statusView.setName(viewName);
+		statusView.setDisplayName(viewDisplayName);
+		statusView.setSortFields(sortFields);
+		statusView.setCriteria(criteria);
+		List<ViewField> fields = new ArrayList<ViewField>();
+		fields.add(new ViewField("id", "ID"));
+		fields.add(new ViewField("name", "Name"));
+		fields.add(new ViewField("requestedBy", "Requested By"));
+		fields.add(new ViewField("requestedTime", "Requested Time"));
+		fields.add(new ViewField("status", "Valid Till"));
+		fields.add(new ViewField("totalCost", "Total Cost"));
+		statusView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+		return statusView;
+	}
+
+	private static Criteria getIRIssuedCondition(boolean isIssued) {
+
+		FacilioField irStatusField = new FacilioField();
+		irStatusField.setName("isIssued");
+		irStatusField.setColumnName("IS_ISSUED");
+		irStatusField.setDataType(FieldType.BOOLEAN);
+		irStatusField.setModule(ModuleFactory.getInventoryRequestModule());
+
+		Condition statusCond = new Condition();
+		statusCond.setField(irStatusField);
+		statusCond.setOperator(BooleanOperators.IS);
+		statusCond.setValue(String.valueOf(isIssued));
+
+		Criteria inventoryRequestStatusCriteria = new Criteria();
+		inventoryRequestStatusCriteria.addAndCondition(statusCond);
+		return inventoryRequestStatusCriteria;
+
 	}
 }
