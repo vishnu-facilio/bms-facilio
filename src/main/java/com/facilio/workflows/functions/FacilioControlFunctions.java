@@ -177,7 +177,7 @@ public enum FacilioControlFunctions implements FacilioWorkflowFunctionInterface 
 				controlActionCommand.setActionName(actionName);
 			}
 			if (setValue) {
-				controlActionCommand.setValue(value.get(AgentConstants.VALUE).toString());
+				controlActionCommand.setValue(value.get(AgentConstants.VALUE) != null ? value.get(AgentConstants.VALUE).toString() : null );
 			}
 
 			commands.add(controlActionCommand);
