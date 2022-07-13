@@ -566,11 +566,12 @@ public enum ActionType {
 			assignedToUserId = (long) obj.get("assignedUserId");
 			assignGroupId = (long) obj.get("assignedGroupId");
 
-			WorkOrderContext workOrder = (WorkOrderContext) currentRecord;
-			WorkOrderContext updateWO = new WorkOrderContext();
+			V3WorkOrderContext workOrder = (V3WorkOrderContext) currentRecord;
+			V3WorkOrderContext updateWO = new V3WorkOrderContext();
 
 			boolean userAssigned = false;
-			if (assignedToUserId != -1  && (workOrder.getAssignedTo() == null || workOrder.getAssignedTo().getOuid() == -1)) {
+			if (assignedToUserId != -1 &&
+					(workOrder.getAssignedTo() == null || workOrder.getAssignedTo().getOuid() == -1)) {
 				User user = new User();
 				user.setOuid(assignedToUserId);
 				workOrder.setAssignedTo(user);
@@ -578,7 +579,8 @@ public enum ActionType {
 				userAssigned = true;
 			}
 
-			if (assignGroupId != -1 && (workOrder.getAssignmentGroup() == null || workOrder.getAssignmentGroup().getGroupId() == -1)) {
+			if (assignGroupId != -1 &&
+					(workOrder.getAssignmentGroup() == null || workOrder.getAssignmentGroup().getGroupId() == -1)) {
 				Group group = new Group();
 				group.setId(assignGroupId);
 				workOrder.setAssignmentGroup(group);
@@ -597,7 +599,7 @@ public enum ActionType {
 					
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
-					UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
+					UpdateRecordBuilder<V3WorkOrderContext> updateBuilder = new UpdateRecordBuilder<V3WorkOrderContext>()
 							.module(woModule).fields(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
 							.andCondition(CriteriaAPI.getIdCondition(workOrder.getId(), woModule));
 					updateBuilder.update(updateWO);
@@ -617,7 +619,7 @@ public enum ActionType {
 								  Object currentRecord) {
 
 //			long duedate = -1;
-			WorkOrderContext workOrder = (WorkOrderContext) currentRecord;
+			V3WorkOrderContext workOrder = (V3WorkOrderContext) currentRecord;
 			if (workOrder.getPriority() == null) {
 				return;
 			}
@@ -641,18 +643,18 @@ public enum ActionType {
 			// duration =
 			// (Long)slaPolicyJson.get(String.valueOf(workorderpriority));
 			if (duration != null) {
-				long dueDate = ((WorkOrderContext)currentRecord).getCreatedTime() + duration;
+				long dueDate = ((V3WorkOrderContext) currentRecord).getCreatedTime() + duration;
 
-				WorkOrderContext updateWO = new WorkOrderContext();
-				((WorkOrderContext)currentRecord).setDueDate(dueDate);
+				V3WorkOrderContext updateWO = new V3WorkOrderContext();
+				((V3WorkOrderContext) currentRecord).setDueDate(dueDate);
 				updateWO.setDueDate(dueDate);
 
 				try {
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
-					UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
+					UpdateRecordBuilder<V3WorkOrderContext> updateBuilder = new UpdateRecordBuilder<V3WorkOrderContext>()
 							.module(woModule).fields(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
-							.andCondition(CriteriaAPI.getIdCondition(((WorkOrderContext)currentRecord).getId(), woModule));
+							.andCondition(CriteriaAPI.getIdCondition(((V3WorkOrderContext) currentRecord).getId(), woModule));
 					updateBuilder.update(updateWO);
 
 				} catch (Exception e) {
@@ -664,7 +666,6 @@ public enum ActionType {
 		}
 	},
 	CREATE_WO_FROM_ALARM(11) {
-
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 								  Object currentRecord) {

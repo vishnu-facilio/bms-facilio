@@ -2087,6 +2087,8 @@ public class FacilioConstants {
 		public static final String CALL_FROM_STORM = "req_from_storm_service";
 
 		public static final String PLANNEDMAINTENANCE = "plannedmaintenance";
+
+		public static final String PMPLANNER = "pmPlanner";
 		public static class WorkPermit {
 			public static final String WORK_PERMIT_TYPE_CHECKLIST = "workpermittypechecklist";
 			public static final String WORK_PERMIT_TYPE_CHECKLIST_CATEGORY = "workpermittypechecklistcategory";

@@ -21,12 +21,13 @@ public class JobPlanPageFactory extends PageFactory {
 
         Page.Section tab1Sec1 = page.new Section();
         tab1.addSection(tab1Sec1);
-        PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.JOBPLAN_FIELDS_WIDGET);
+        PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.SECONDARY_DETAILS_WIDGET);
         previewWidget.addToLayoutParams(tab1Sec1, 24, 4);
         tab1Sec1.addWidget(previewWidget);
 
 
         Page.Section tab1Sec2 = page.new Section();
+        tab1Sec2.setName("Sections");
         tab1.addSection(tab1Sec2);
         PageWidget taskWidget = new PageWidget(PageWidget.WidgetType.JOBPLAN_TASKS_WIDGET);
         taskWidget.addToLayoutParams(tab1Sec2, 24, 10);
@@ -36,10 +37,6 @@ public class JobPlanPageFactory extends PageFactory {
         page.addTab(tab2);
         Page.Section tab2Sec1 = page.new Section();
         tab2.addSection(tab2Sec1);
-
-        PageWidget detailsWidget = new PageWidget(PageWidget.WidgetType.FIXED_DETAILS_WIDGET);
-        detailsWidget.addToLayoutParams(tab2Sec1, 24, 4);
-        tab2Sec1.addWidget(detailsWidget);
 
         PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT);
         notesWidget.addToLayoutParams(tab2Sec1, 24, 8);

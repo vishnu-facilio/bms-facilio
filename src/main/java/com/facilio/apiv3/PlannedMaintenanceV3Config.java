@@ -1,5 +1,6 @@
 package com.facilio.apiv3;
 
+import com.facilio.bmsconsole.commands.BeforeSavePMPlannerCommand;
 import com.facilio.bmsconsole.commands.PMBeforeCreateCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.commands.PMPlannerSupplementsCommand;
@@ -50,6 +51,7 @@ public class PlannedMaintenanceV3Config {
     public static Supplier<V3Config> getPMPlanner() {
         return () -> new V3Config(PMPlanner.class, null)
                 .update()
+                    .beforeSave(new BeforeSavePMPlannerCommand())
                 .create()
                 .delete()
                 .list()

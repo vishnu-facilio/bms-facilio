@@ -25,6 +25,10 @@ public interface RuleHandler {
 
     public List<Map<String, Object>> constructAnswersForEval(QAndARuleType type, QuestionContext question, AnswerContext answer) throws Exception;
 
+	default boolean evalMisc(RuleCondition condition,Map<String,Object> props){
+		return true;
+	}
+
     public static List<Map<String, Object>> constructSingletonAnswerProp (QuestionContext question, Object answer) {
         FacilioUtil.throwIllegalArgumentException(answer == null, MessageFormat.format("Answer cannot be null during rule evaluation of question : {0}", question.getId()));
         return Collections.singletonList(Collections.singletonMap(RuleCondition.ANSWER_FIELD_NAME, answer));

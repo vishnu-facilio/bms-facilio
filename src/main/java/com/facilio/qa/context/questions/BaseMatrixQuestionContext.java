@@ -18,6 +18,7 @@ public abstract class BaseMatrixQuestionContext extends QuestionContext {
 
 	private Long answerModuleId;
 	List<MatrixQuestionColumn> columns;
+
 	
 	public Map<Long, FacilioField> getColumnVsFieldMap() {
 		Map<Long,FacilioField> map = new HashMap<Long,FacilioField>();

@@ -104,7 +104,7 @@ public class ExecuteQAndARulesCommand extends FacilioCommand implements PostTran
     }
 
     private boolean evalAndExecuteConditions (Map<String, Object> prop, AnswerContext answer, QuestionContext question, RuleCondition condition) throws Exception {
-        boolean result = condition.evaluate(prop);
+        boolean result = condition.evaluate(question,prop);
         if (result) {
             condition.executeTrueAction(question, answer);
         }

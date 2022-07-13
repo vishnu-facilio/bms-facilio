@@ -131,6 +131,9 @@ import com.facilio.bmsconsoleV3.context.facilitybooking.*;
 import com.facilio.bmsconsoleV3.context.floorplan.*;
 import com.facilio.bmsconsoleV3.context.inventory.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
+import com.facilio.bmsconsoleV3.context.jobplan.JobPlanItemsContext;
+import com.facilio.bmsconsoleV3.context.jobplan.JobPlanServicesContext;
+import com.facilio.bmsconsoleV3.context.jobplan.JobPlanToolsContext;
 import com.facilio.bmsconsoleV3.context.labour.LabourContextV3;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
@@ -1456,7 +1459,6 @@ public class APIv3Config {
                 .afterSave(TransactionChainFactoryV3.getCreateJobPlanChain())
                 .update()
                 .afterSave(TransactionChainFactoryV3.getUpdateJobPlanChain())
-                .delete()
                 .list()
                 .beforeFetch(new FetchJobPlanLookupCommand())
                 .summary()
@@ -1466,7 +1468,36 @@ public class APIv3Config {
 
                 .build();
     }
-
+    @Module("jobPlanItems")
+    public static Supplier<V3Config> getJobPlanItems() {
+        return () -> new V3Config(JobPlanItemsContext.class, null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+    @Module("jobPlanTools")
+    public static Supplier<V3Config> getJobPlanTools() {
+        return () -> new V3Config(JobPlanToolsContext.class, null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+    @Module("jobPlanServices")
+    public static Supplier<V3Config> getJobPlanServices() {
+        return () -> new V3Config(JobPlanServicesContext.class, null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
     @Module("indoorfloorplan")
     public static Supplier<V3Config> getIndoorFloorPlan() {
         return () -> new V3Config(V3IndoorFloorPlanContext.class, new ModuleCustomFieldCount30())

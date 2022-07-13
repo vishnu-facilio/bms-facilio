@@ -2,6 +2,8 @@ package com.facilio.workflows.command;
 
 import java.util.Map;
 
+import com.facilio.constants.FacilioConstants;
+import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -34,6 +36,8 @@ public class AddWorkflowCommand extends FacilioCommand {
 		workflow.setSysModifiedTime(DateTimeUtil.getCurrenTime());
 		
 		workflow.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+
+		WorkflowUtil.throwExceptionIfScriptValidationFailed(workflow);
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getWorkflowModule().getTableName())

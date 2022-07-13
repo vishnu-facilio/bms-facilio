@@ -40,6 +40,7 @@ public class ConnectionContext {
 	String password;
 	String audience;
 	String meta;
+	long lastAuthoriedTime =-1l;
 	
 	public String getAudience() {
 		return audience;
@@ -453,6 +454,12 @@ public class ConnectionContext {
 	}
 	public void setMeta(String meta) {
 		this.meta = meta;
+	}
+	public long getLastAuthoriedTime() {
+		return lastAuthoriedTime;
+	}
+	public void setLastAuthoriedTime(long lastAuthoriedTime) {
+		this.lastAuthoriedTime = lastAuthoriedTime;
 	}
 	
 }

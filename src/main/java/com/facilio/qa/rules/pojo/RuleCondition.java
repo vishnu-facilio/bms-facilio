@@ -6,6 +6,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.QuestionContext;
+import com.facilio.qa.context.RuleHandler;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,6 +26,8 @@ public abstract class RuleCondition {
     private Long sysCreatedBy;
     private Long sysModifiedTime;
     private Long sysModifiedBy;
+	private Long rowId;
+	private Long columnId;
 
     public Integer getOperator() {
         return operatorEnum == null ? null : operatorEnum.getOperatorId();
@@ -47,11 +50,18 @@ public abstract class RuleCondition {
         return !hasAction();
     }
 
-    public boolean evaluate (Map<String, Object> answerProp) {
-        return evaluateOperatorValue(answerProp) && evaluateCriteria(answerProp);
+    public boolean evaluate (QuestionContext question, Map<String, Object> answerProp) {
+        return evalMisc(this,answerProp,question) && evaluateOperatorValue(answerProp) && evaluateCriteria(answerProp);
     }
 
-    private boolean evaluateOperatorValue(Map<String, Object> answerProp) {
+	private boolean evalMisc(RuleCondition ruleCondition, Map<String, Object> answerProp, QuestionContext question){
+
+		RuleHandler ruleHandler = question.getQuestionType().getRuleHandler();
+		return ruleHandler.evalMisc(ruleCondition, answerProp);
+	}
+
+
+	private boolean evaluateOperatorValue(Map<String, Object> answerProp) {
         if (operatorEnum == null) {
             return true;
         }

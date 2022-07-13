@@ -16,6 +16,8 @@ import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import com.facilio.scriptengine.context.ScriptContext;
+import com.facilio.scriptengine.util.ScriptUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -557,12 +559,9 @@ public class WorkflowUtil {
 				validateWorkflow(workflowContext);
 			}
 		}
-		
-		if(workflowContext.isV2Script()) {
-			if(!workflowContext.validateWorkflow()) {
-				throw new Exception("Syntax Error in Workflow Script");
-			}
-		}
+
+		throwExceptionIfScriptValidationFailed(workflowContext);
+
 		
 		workflowContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		
@@ -2684,4 +2683,14 @@ public class WorkflowUtil {
 		}
 		return transitionIdVsStateFlowId;
 	}
+
+	public  static void throwExceptionIfScriptValidationFailed(WorkflowContext workflowContext) throws Exception{
+		if(workflowContext.isV2Script()) {
+			ScriptContext scriptContext = ScriptUtil.validateScript(workflowContext.getWorkflowV2String());
+			if (scriptContext.getErrorListener().hasErrors()) {
+				throw new IllegalArgumentException(scriptContext.getErrorListener().getErrorsAsString());
+			}
+		}
+	}
+
 }
