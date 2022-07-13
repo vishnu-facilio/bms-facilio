@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.facilio.agentv2.AgentConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
@@ -612,8 +613,13 @@ public class IoTMessageAPI {
 				pointControllerMap.put(point.getControllerId(), pointList);
 			}
 			ControlActionCommandContext command = commandMap.get(ReadingsAPI.getRDMKey(point.getResourceId(), point.getFieldId()));
-			point.setValue(command.getConvertedValue() != null ? command.getConvertedValue() : command.getValue());
+			if(command.getActionName() == null  || command.getActionName().equals(AgentConstants.OVERRIDE) || command.getActionName().equals(AgentConstants.EMERGENCY_OVERRIDE))  {
+				point.setValue(command.getConvertedValue() != null ? command.getConvertedValue() : command.getValue());
+			}
 			point.setControlActionId(command.getId());
+			if (command.getActionName() != null) {
+				point.setActionName(command.getActionName());
+			}
 			pointList.add(point);
 		}
 		

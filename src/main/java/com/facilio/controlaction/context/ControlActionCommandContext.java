@@ -35,6 +35,7 @@ public class ControlActionCommandContext extends V3Context {
 	ResourceContext resource;
 	long fieldId;
 	String value;
+	String actionName;
 	User executedBy;
 	ReadingDataMeta rdm;
 	FacilioField field;
@@ -167,6 +168,15 @@ public class ControlActionCommandContext extends V3Context {
 	public void setExecutedTime(long executedTime) {
 		this.executedTime = executedTime;
 	}
+
+	public void setActionName(String action) {
+		this.actionName = action;
+	}
+
+	public String getActionName(){
+		return this.actionName;
+	}
+
 
 	ControlActionMode controlActionMode;
 	public int getControlActionMode() {
