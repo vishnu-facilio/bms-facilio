@@ -133,16 +133,16 @@ public class WorkflowRuleHistoricalAlarmsAPI {
 				.andCondition(CriteriaAPI.getCondition("ALARM_OCCURRENCE_ID", "alarmOccurrence","" +edgeAlarmOccurrence.getId(), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
 				.fields(eventFields);
-		
-		BaseAlarmContext baseAlarmNull = new BaseAlarmContext();
-		baseAlarmNull.setId(-99);
-		
-		AlarmOccurrenceContext alarmOccurrenceContextNull = new AlarmOccurrenceContext();
-		alarmOccurrenceContextNull.setId(-99);
-		
+
+		Map<String, Object> baseAlarmProps = FieldUtil.getAsProperties(new BaseAlarmContext());
+		baseAlarmProps.put("id", -99);
+
+		Map<String, Object> alarmOccProps = FieldUtil.getAsProperties(new AlarmOccurrenceContext());
+		alarmOccProps.put("id", -99);
+
 		Map<String, Object> map = new HashMap<>();
-		map.put("baseAlarm", FieldUtil.getAsProperties(baseAlarmNull));
-		map.put("alarmOccurrence", FieldUtil.getAsProperties(alarmOccurrenceContextNull));
+		map.put("baseAlarm", baseAlarmProps);
+		map.put("alarmOccurrence", alarmOccProps);
 		updateBuilder.updateViaMap(map);
 	}
 

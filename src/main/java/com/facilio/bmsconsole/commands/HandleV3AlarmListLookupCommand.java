@@ -1,18 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleInterface;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
-import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,14 +24,12 @@ import java.util.stream.Collectors;
 
 public class HandleV3AlarmListLookupCommand extends FacilioCommand {
 
-
-    private static final Logger LOGGER = Logger.getLogger(HandleV3AlarmListLookupCommand.class.getName());
-
     @Override
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         HashMap alarmData = (HashMap) context.get(FacilioConstants.ContextNames.RECORD_MAP);
         List<BaseAlarmContext> alarms = (List<BaseAlarmContext>) alarmData.get(moduleName);
+        ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
 
         List<ReadingAlarm> readingAlarms = new ArrayList<>();
@@ -42,12 +42,6 @@ public class HandleV3AlarmListLookupCommand extends FacilioCommand {
                 NewAlarmAPI.updateAgentData(alarms);
             }
 
-//			Map<Long, AlarmOccurrenceContext> occurencesMap = NewAlarmAPI.getLatestAlarmOccuranceMap(alarms);
-//			for (AlarmOccurrenceContext occurrence : occurencesMap.values()) {
-//				occurrence.setAlarm(null);
-//				occurrence.setResource(null);
-//			}
-
             for (BaseAlarmContext alarm : alarms) {
                 if (alarm instanceof ReadingAlarm) {
                     ReadingAlarm readingAlarm = (ReadingAlarm) alarm;
@@ -55,16 +49,16 @@ public class HandleV3AlarmListLookupCommand extends FacilioCommand {
                         newReadingAlarms.add(readingAlarm);
                     } else {
                         readingAlarms.add(readingAlarm);
-                        oldRuleIds.add(readingAlarm.getRule().getId());
+                        ReadingRuleInterface rule = readingAlarm.getRule();
+                        Long ruleId = (rule != null) ? rule.getId() : -1;
+                        oldRuleIds.add(ruleId);
                     }
-//					readingAlarm.setRule(null);
                     readingAlarm.setSubRule(null);
+                    readingAlarm.setReadingFieldName(bean.getField(readingAlarm.getReadingFieldId()).getDisplayName());
                 }
                 long alarmOccurrenceId = alarm.getLastOccurrenceId();
                 alarm.setLastOccurrence(null);
                 alarm.setLastOccurrenceId(alarmOccurrenceId);
-                // AlarmOccurrenceContext occurrenceContext = occurencesMap.get(alarm.getLastOccurrenceId());
-
             }
 
             List<Long> newRuleIds = newReadingAlarms.stream().map(el -> el.getRule().getId()).collect(Collectors.toList());
@@ -94,7 +88,7 @@ public class HandleV3AlarmListLookupCommand extends FacilioCommand {
         }
         Map<String, List<? extends ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
         recordMap.put(moduleName, alarms);
-        context.put(FacilioConstants.ContextNames.RECORD_MAP,  recordMap);
+        context.put(FacilioConstants.ContextNames.RECORD_MAP, recordMap);
         return false;
     }
 
