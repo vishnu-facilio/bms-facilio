@@ -35,7 +35,14 @@ public class User extends IAMUser {
 		setUserStatus(user.isActive());
 		setSecurityPolicyId(user.getSecurityPolicyId());
 	}
+	public Long signatureFileId;
+	public Long getSignatureFileId() {
+		return signatureFileId;
+	}
 
+	public void setSignatureFileId(Long signatureFileId) {
+		this.signatureFileId = signatureFileId;
+	}
 	private Boolean inviteAcceptStatus;
 	public Boolean getInviteAcceptStatus() {
 		return inviteAcceptStatus;
