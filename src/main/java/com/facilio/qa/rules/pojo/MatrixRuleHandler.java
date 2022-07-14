@@ -95,11 +95,13 @@ public enum MatrixRuleHandler implements RuleHandler{
 		for(MatrixAnswerContext.RowAnswer option :matrixAnswer.getRowAnswer()){
 			List<MatrixAnswerContext.ColumnAnswer> columnAnswers = option.getColumnAnswer();
 			MatrixAnswerContext.ColumnAnswer columnAns = columnAnswers.stream().filter(columnAnswer -> columnAnswer.getAnswer()!=null).collect(Collectors.toList()).get(0);
-			Map<String,Object> prop = new HashMap<>();
-			prop.put("rowId",option.getRow());
-			prop.put("columnId", columnAns.getColumn());
-			prop.put(RuleCondition.ANSWER_FIELD_NAME,columnAns.getAnswer());
-			answerProps.add(prop);
+			if(columnAns != null){
+				Map<String,Object> prop = new HashMap<>();
+				prop.put("rowId",option.getRow());
+				prop.put("columnId", columnAns.getColumn());
+				prop.put(RuleCondition.ANSWER_FIELD_NAME,columnAns.getAnswer());
+				answerProps.add(prop);
+			}
 		}
 
 		return answerProps;
