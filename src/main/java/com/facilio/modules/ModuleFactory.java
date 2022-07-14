@@ -4200,6 +4200,22 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getFailureCodeModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(FacilioConstants.ContextNames.FAILURE_CODE);
+		module.setDisplayName("Failure Code");
+		module.setTableName("Failure_Code");
+		return module;
+	}
+
+	public static FacilioModule getFailureClassModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(FacilioConstants.ContextNames.FAILURE_CLASS);
+		module.setDisplayName("Failure Class");
+		module.setTableName("Failure_Class");
+		return module;
+	}
+
 	public static FacilioModule getVendorContactModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName(ContextNames.VENDOR_CONTACT);

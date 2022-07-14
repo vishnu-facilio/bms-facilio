@@ -794,6 +794,16 @@ public class ViewFactory {
 
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("all", getAllFailureCodes().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.FAILURE_CODE, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllFailureClass().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.FAILURE_CLASS, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
 		views.put("all", getAllHiddenVendorContacts().setOrder(order++));
 		views.put("all-contacts", getAllVendorContacts().setOrder(order++));
 
@@ -1340,7 +1350,7 @@ public class ViewFactory {
 
 		return allView;
 	}
-	
+
 	private static FacilioView getAllHiddenTenantContacts() {
 
 		FacilioModule tenantContactModule = ModuleFactory.getTenantContactModule();
@@ -1358,6 +1368,48 @@ public class ViewFactory {
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		
 		allView.setHidden(true);
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+
+	private static FacilioView getAllFailureCodes() {
+
+		FacilioModule failureCodeModule = ModuleFactory.getFailureCodeModule();
+
+		FacilioField id = new FacilioField();
+		id.setName("id");
+		id.setColumnName("ID");
+		id.setDataType(FieldType.NUMBER);
+		id.setModule(failureCodeModule);
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Failure Codes");
+		allView.setModuleName(failureCodeModule.getName());
+		allView.setSortFields(Arrays.asList(new SortField(id, false)));
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+
+	private static FacilioView getAllFailureClass() {
+
+		FacilioModule failureClassModule = ModuleFactory.getFailureClassModule();
+
+		FacilioField id = new FacilioField();
+		id.setName("id");
+		id.setColumnName("ID");
+		id.setDataType(FieldType.NUMBER);
+		id.setModule(failureClassModule);
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Failure Class");
+		allView.setModuleName(failureClassModule.getName());
+		allView.setSortFields(Arrays.asList(new SortField(id, false)));
+
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return allView;

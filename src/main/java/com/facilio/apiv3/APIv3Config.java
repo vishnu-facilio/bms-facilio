@@ -128,6 +128,8 @@ import com.facilio.bmsconsoleV3.context.communityfeatures.*;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.*;
+import com.facilio.bmsconsoleV3.context.failurecode.V3FailureClassContext;
+import com.facilio.bmsconsoleV3.context.failurecode.V3FailureCodeContext;
 import com.facilio.bmsconsoleV3.context.floorplan.*;
 import com.facilio.bmsconsoleV3.context.inventory.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
@@ -518,6 +520,27 @@ public class APIv3Config {
                 .beforeFetch(new LoadTenantSpacesLookupCommandV3())
                 .summary()
                 .beforeFetch(new LoadTenantSpacesLookupCommandV3())
+                .build();
+    }
+
+    @Module("failurecode")
+    public static Supplier<V3Config> getFailureCode() {
+        return () -> new V3Config(V3FailureCodeContext.class, null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+    @Module("failureclass")
+    public static Supplier<V3Config> getFailureClass() {
+        return () -> new V3Config(V3FailureClassContext.class, null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
                 .build();
     }
 
