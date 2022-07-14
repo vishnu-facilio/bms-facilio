@@ -1026,6 +1026,12 @@ public class LoginAction extends FacilioAction {
 	}
 	
 	public String getAllSites() throws Exception {
+		boolean omitBasespaceAPI = Boolean.valueOf(CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.OMIT_BASESPACE_API, Boolean.FALSE));
+		if (omitBasespaceAPI) {
+			List<SiteContext> allSites = new ArrayList<>();
+			setResult("sites", allSites);
+			return SUCCESS;
+		}
 		setResult("sites", SpaceAPI.getAllSites());
 		return SUCCESS;
 	}

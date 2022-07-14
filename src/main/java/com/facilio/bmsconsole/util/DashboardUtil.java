@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.context.DashboardSharingContext.SharingType;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.bmsconsole.context.ReportContext.LegendMode;
 import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
+import com.facilio.bmsconsoleV3.context.WidgetSectionContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -618,6 +619,7 @@ public class DashboardUtil {
 		fields.addAll(FieldFactory.getWidgetWebFields());
 		fields.addAll(FieldFactory.getWidgetGraphicsFields());
 		fields.addAll(FieldFactory.getWidgetCardFields());
+		fields.addAll(FieldFactory.getWidgetSectionFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -634,6 +636,8 @@ public class DashboardUtil {
 				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetGraphicsModule().getTableName()+".ID")
 				.leftJoin(ModuleFactory.getWidgetCardModule().getTableName())		
 				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetCardModule().getTableName()+".ID")
+				.leftJoin(ModuleFactory.getWidgetSectionModule().getTableName())
+				.on(ModuleFactory.getWidgetSectionModule().getTableName()+".ID="+ModuleFactory.getWidgetSectionModule().getTableName()+".ID")
 				;
 				
 		if(dashboardId != null) {
@@ -663,6 +667,42 @@ public class DashboardUtil {
 		}
 		return dashboardWidgetContexts;
 	}
+
+	public static List<DashboardWidgetContext> getDashboardWidgetsWithSection(List<DashboardWidgetContext> widget_list)throws Exception
+	{
+		HashMap<Long, List<DashboardWidgetContext>> sectionId_vs_widget = new HashMap<>();
+		List<DashboardWidgetContext> widget_list_with_section = new ArrayList<>();
+		if(widget_list.size() > 0)
+		{
+			for(DashboardWidgetContext widget : widget_list)
+			{
+				if(widget.getType() != DashboardWidgetContext.WidgetType.SECTION.getValue() && widget.getSectionId() != null && widget.getSectionId() > 0 )
+				{
+					if(sectionId_vs_widget.containsKey(widget.getSectionId())){
+						List<DashboardWidgetContext> section_widget_list = sectionId_vs_widget.get(widget.getSectionId());
+						section_widget_list.add(widget);
+					}else{
+						List<DashboardWidgetContext> section_widget_list = new ArrayList<>();
+						section_widget_list.add(widget);
+						sectionId_vs_widget.put(widget.getSectionId(), section_widget_list);
+					}
+				}
+			}
+			for(DashboardWidgetContext widget : widget_list)
+			{
+				if(widget.getType() == DashboardWidgetContext.WidgetType.SECTION.getValue() && sectionId_vs_widget.containsKey(widget.getId())){
+					((WidgetSectionContext) widget).setWidgets_in_section(sectionId_vs_widget.get(widget.getId()));
+					widget_list_with_section.add(widget);
+				}
+				else if(widget.getSectionId() == null || widget.getSectionId() <=0)
+				{
+					widget_list_with_section.add(widget);
+				}
+			}
+		}
+		return widget_list_with_section;
+	}
+
 	
 	public static DashboardWidgetContext getWidget(Long widgetId) throws Exception {
 		

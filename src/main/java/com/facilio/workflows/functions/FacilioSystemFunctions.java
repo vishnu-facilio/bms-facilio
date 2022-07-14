@@ -1,15 +1,33 @@
 package com.facilio.workflows.functions;
 
-import java.util.Arrays;
+import java.lang.reflect.Field;
+import java.util.*;
+
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AttachmentContext;
+import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
+import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
+import com.facilio.bmsconsoleV3.util.CommunityFeaturesAPI;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.scriptengine.systemfunctions.FacilioSystemFunctionNameSpace;
 import com.facilio.scriptengine.systemfunctions.FacilioWorkflowFunctionInterface;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
+
 import java.util.stream.Collectors;
 
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -17,7 +35,6 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.ResourceAPI;
-import com.facilio.modules.FieldUtil;
 
 public enum FacilioSystemFunctions implements FacilioWorkflowFunctionInterface {
 	
@@ -50,7 +67,6 @@ public enum FacilioSystemFunctions implements FacilioWorkflowFunctionInterface {
 			return "";
 		}
 	},
-	
 	/*
 	 * @param roleId Role ID
 	 * @param resourceId Resource ID
@@ -111,8 +127,109 @@ public enum FacilioSystemFunctions implements FacilioWorkflowFunctionInterface {
 		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			return FieldUtil.getAsProperties(objects[0]);
 		}
-	}
-	;
+	},
+	AUDIENCE_EMAIL (5, "getAudienceEmail", 3) {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+
+			if ( !AUDIENCE_EMAIL.checkParams(objects) ) {
+				return "";
+			}
+			String fieldName = (String) objects[0];
+			String moduleName = (String) objects[1];
+			Long recordId = Long.parseLong((String) objects[2]);
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			List<FacilioField> fields = modBean.getAllFields(moduleName);
+			List<Long> audienceIds = new ArrayList<>();
+			if(CollectionUtils.isNotEmpty(fields)){
+				Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+				FacilioField audienceField = fieldsMap.get(fieldName);
+				FacilioModule module = modBean.getModule(moduleName);
+				if(audienceField instanceof LookupField){
+					GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+							.table(module.getTableName())
+							.select(Collections.singletonList(audienceField))
+							.andCondition(CriteriaAPI.getIdCondition(recordId,module));
+					List<Map<String, Object>> props = selectRecordBuilder.get();
+					audienceIds.add((Long) props.get(0).get(fieldName));
+				}
+				else if(audienceField instanceof MultiLookupField){
+
+					String relModuleName = ((MultiLookupField) audienceField).getRelModule().getName();
+					List<FacilioField> relModuleFields = modBean.getAllFields(relModuleName);
+					Map<String,FacilioField> relModuleFieldsMap = FieldFactory.getAsMap(relModuleFields);
+
+					Criteria criteria = new Criteria();
+					criteria.addAndCondition(CriteriaAPI.getCondition(relModuleFieldsMap.get("left"),Collections.singletonList(recordId),NumberOperators.EQUALS));
+					List<RelRecord> relRecs = V3RecordAPI.getRecordsListWithSupplements(relModuleName, null, RelRecord.class, criteria, null, null, null, true );
+					if(CollectionUtils.isNotEmpty(relRecs)){
+						for(RelRecord relRecord : relRecs){
+							Map<String,Object> audience = (Map<String,Object>) relRecord.getRight();
+							audienceIds.add((Long)audience.get("id"));
+						}
+					}
+				}
+			}
+			if(CollectionUtils.isNotEmpty(audienceIds)){
+				List<String> audienceEmails = CommunityFeaturesAPI.getAudiencePeopleEmails(audienceIds);
+				if(CollectionUtils.isNotEmpty(audienceEmails)){
+					return StringUtils.join(audienceEmails,",");
+				}
+			}
+			return "";
+		}
+	},
+	GET_ANNOUNCEMENT_ATTACHMENT_URLS (5, "getAnnouncementAttachmentUrls", 1) {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+
+			if ( !GET_ANNOUNCEMENT_ATTACHMENT_URLS.checkParams(objects) ) {
+				return "";
+			}
+			Long recordId = Long.parseLong((String) objects[0]);
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(CriteriaAPI.getCondition("PARENT_ID","parentId",String.valueOf(recordId),NumberOperators.EQUALS));
+			List<AttachmentContext> announcementAttachments = V3RecordAPI.getRecordsListWithSupplements("announcementattachments",null, AttachmentContext.class,criteria,null);
+			List<String> fileUrls = new ArrayList<>();
+			FileStore fs = FacilioFactory.getFileStore();
+			if(CollectionUtils.isNotEmpty(announcementAttachments)){
+				for(AttachmentContext file : announcementAttachments){
+					fileUrls.add(fs.getOrgiFileUrl(file.getFileId()));
+				}
+				if(CollectionUtils.isNotEmpty(fileUrls)){
+					return StringUtils.join(fileUrls,",");
+				}
+			}
+			return "";
+		}
+	},
+	GET_ANNOUNCEMENT_ATTACHMENT_NAMES (5, "getAnnouncementAttachmentNames", 1) {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+
+			if ( !GET_ANNOUNCEMENT_ATTACHMENT_NAMES.checkParams(objects) ) {
+				return "";
+			}
+			Long recordId = Long.parseLong((String) objects[0]);
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(CriteriaAPI.getCondition("PARENT_ID","parentId",String.valueOf(recordId),NumberOperators.EQUALS));
+			List<AttachmentContext> announcementAttachments = V3RecordAPI.getRecordsListWithSupplements("announcementattachments",null, AttachmentContext.class,criteria,null);
+			List<String> fileNames = new ArrayList<>();
+			FileStore fs = FacilioFactory.getFileStore();
+			if(CollectionUtils.isNotEmpty(announcementAttachments)){
+				for(AttachmentContext file : announcementAttachments){
+					fileNames.add(fs.getFileInfo(file.getFileId()).getFileName());
+				}
+				if(CollectionUtils.isNotEmpty(fileNames)){
+					return StringUtils.join(fileNames,",");
+				}
+			}
+			return "";
+		}
+	};
 	
 	private int value, requiredParams;
 	private String functionName;

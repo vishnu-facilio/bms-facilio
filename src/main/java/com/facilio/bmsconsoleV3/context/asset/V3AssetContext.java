@@ -35,7 +35,7 @@ public class V3AssetContext extends V3ResourceContext {
     private String serialNumber;
     private String tagNumber;
     private String partNumber;
-    private Long unitPrice;
+    private Double unitPrice;
     private String supplier;
     private Long purchasedDate;
     private Long retireDate;
@@ -187,11 +187,11 @@ public class V3AssetContext extends V3ResourceContext {
         this.partNumber = partNumber;
     }
 
-    public Long getUnitPrice() {
+    public Double getUnitPrice() {
         return unitPrice;
     }
 
-    public void setUnitPrice(Long unitPrice) {
+    public void setUnitPrice(Double unitPrice) {
         this.unitPrice = unitPrice;
     }
 

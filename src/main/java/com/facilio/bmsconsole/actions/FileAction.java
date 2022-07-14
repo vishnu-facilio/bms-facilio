@@ -197,6 +197,18 @@ public class FileAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+
+	public String deleteFile() throws Exception {
+
+		FacilioContext context = new FacilioContext();
+
+		context.put(FacilioConstants.ContextNames.FILE_ID, this.fileID);
+
+		FacilioChain addFileChain = FacilioChainFactory.getDeleteFileChain();
+		addFileChain.execute(context);
+
+		return SUCCESS;
+	}
 	
 	private File fileContent;
 	private String fileContentFileName;

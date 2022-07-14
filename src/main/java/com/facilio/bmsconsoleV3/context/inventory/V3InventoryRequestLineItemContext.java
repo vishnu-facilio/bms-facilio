@@ -53,23 +53,23 @@ public class V3InventoryRequestLineItemContext extends BaseLineItemContext {
         this.inventoryType = InventoryType.valueOf(inventoryType);
     }
 
-    private ItemTypesContext itemType;
+    private V3ItemTypesContext itemType;
 
-    public ItemTypesContext getItemType() {
+    public V3ItemTypesContext getItemType() {
         return itemType;
     }
 
-    public void setItemType(ItemTypesContext itemType) {
+    public void setItemType(V3ItemTypesContext itemType) {
         this.itemType = itemType;
     }
 
-    private ToolTypesContext toolType;
+    private V3ToolTypesContext toolType;
 
-    public ToolTypesContext getToolType() {
+    public V3ToolTypesContext getToolType() {
         return toolType;
     }
 
-    public void setToolType(ToolTypesContext toolType) {
+    public void setToolType(V3ToolTypesContext toolType) {
         this.toolType = toolType;
     }
 

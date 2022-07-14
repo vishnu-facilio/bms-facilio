@@ -410,7 +410,10 @@ public abstract class FileStore {
 		return addFile(DEFAULT_NAMESPACE, fileName, content, contentType);
 	}
 	public abstract long addFile(String namespace, String fileName, String content, String contentType) throws Exception;
-
+	public long addOrphanedFile(String fileName, byte[] content, String contentType) throws Exception {
+		return addFile(DEFAULT_NAMESPACE, fileName, content, contentType,true);
+	}
+	public abstract long addFile(String namespace, String fileName, byte[] content, String contentType,boolean isOrphan) throws Exception;
 	public abstract void addCompressedFile(String namespace, long fileId, FileInfo fileInfo) throws Exception;
 
 	public FileInfo getFileInfo(long fileId) throws Exception {

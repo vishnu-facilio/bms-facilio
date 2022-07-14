@@ -92,7 +92,6 @@ public class FormField implements Serializable {
 	public void setSpan(int span) {
 		this.span = span;
 	}
-	
 	private Object value;
 	public Object getValue() {
 		return value;

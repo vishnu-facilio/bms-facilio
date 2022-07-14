@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ToolTypesContext;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -10,10 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.InventoryType;
-import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.PoLineItemsSerialNumberContext;
 import com.facilio.bmsconsole.context.ReceiptContext;
-import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -69,12 +69,12 @@ public class GetReceiptsListCommand extends FacilioCommand {
 			if(receipt.getLineItem().getInventoryTypeEnum() == InventoryType.ITEM) {
 				FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM_TYPES);
 				List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM_TYPES);
-                SelectRecordsBuilder<ItemTypesContext> builder = new SelectRecordsBuilder<ItemTypesContext>()
+                SelectRecordsBuilder<V3ItemTypesContext> builder = new SelectRecordsBuilder<V3ItemTypesContext>()
 						.module(module)
 						.select(fields)
-						.beanClass(ItemTypesContext.class)
+						.beanClass(V3ItemTypesContext.class)
 						.andCondition(CriteriaAPI.getIdCondition(receipt.getLineItem().getItemType().getId(), module));
-				List<ItemTypesContext> itemList = builder.get();
+				List<V3ItemTypesContext> itemList = builder.get();
 				if(!CollectionUtils.isEmpty(itemList)) {
 					receipt.getLineItem().setItemType(itemList.get(0));
 				}
@@ -85,12 +85,12 @@ public class GetReceiptsListCommand extends FacilioCommand {
 			else if(receipt.getLineItem().getInventoryTypeEnum() == InventoryType.TOOL){
 				FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL_TYPES);
 				List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL_TYPES);
-                SelectRecordsBuilder<ToolTypesContext> toolBuilder = new SelectRecordsBuilder<ToolTypesContext>()
+                SelectRecordsBuilder<V3ToolTypesContext> toolBuilder = new SelectRecordsBuilder<V3ToolTypesContext>()
 						.module(module)
 						.select(fields)
-						.beanClass(ToolTypesContext.class)
+						.beanClass(V3ToolTypesContext.class)
 						.andCondition(CriteriaAPI.getIdCondition(receipt.getLineItem().getToolType().getId(), module));
-				List<ToolTypesContext> toolList = toolBuilder.get();	
+				List<V3ToolTypesContext> toolList = toolBuilder.get();
 				if(!CollectionUtils.isEmpty(toolList)) {
 					receipt.getLineItem().setToolType(toolList.get(0));
 				}

@@ -3294,8 +3294,12 @@ public class FormFactory {
 		FormField attachment = new FormField("announcementattachments", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, 6, 1);
 		attachment.addToConfig("fileTypes", "image/*,.pdf,.doc,.docx");
 		fields.add(attachment);
+
+		FormField sendMail = new FormField("sendMail", FieldDisplayType.DECISION_BOX, "Send Mail", Required.OPTIONAL, 7, 1);
+		fields.add(sendMail);
+
 		//fields.add(new FormField("announcementsharing", FieldDisplayType.COMMUNITY_PUBLISHING, "Publish To", Required.REQUIRED, 6, 1));
-		FormField field = new FormField("audience", FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Audience", Required.OPTIONAL,14, 1);
+		FormField field = new FormField("audience", FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Audience", Required.OPTIONAL,8, 1);
 		field.setAllowCreateOptions(true);
 		field.addToConfig("canShowLookupWizard",true);
 		fields.add(field);

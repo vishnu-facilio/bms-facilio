@@ -2,10 +2,10 @@ package com.facilio.bmsconsoleV3.commands.requestForQuotation;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.ServiceContext;
-import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ToolTypesContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderLineItemContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
@@ -75,12 +75,12 @@ public class CreatePurchaseOrdersCommandV3 extends FacilioCommand {
         }
         if(requestForQuotationLineItem.getInventoryType().equals(V3RequestForQuotationLineItemsContext.InventoryTypeRfq.ITEM.getIndex())){
             Map<String, Object> map = FieldUtil.getAsProperties(requestForQuotationLineItem.getItemType());
-            ItemTypesContext itemType = FieldUtil.getAsBeanFromMap(map, ItemTypesContext.class);
+            V3ItemTypesContext itemType = FieldUtil.getAsBeanFromMap(map, V3ItemTypesContext.class);
             purchaseOrderLineItem.setItemType(itemType);
         }
         else if(requestForQuotationLineItem.getInventoryType().equals(V3RequestForQuotationLineItemsContext.InventoryTypeRfq.TOOL.getIndex())){
             Map<String, Object> map = FieldUtil.getAsProperties(requestForQuotationLineItem.getToolType());
-            ToolTypesContext toolType = FieldUtil.getAsBeanFromMap(map, ToolTypesContext.class);
+            V3ToolTypesContext toolType = FieldUtil.getAsBeanFromMap(map, V3ToolTypesContext.class);
             purchaseOrderLineItem.setToolType(toolType);
         }
         else if(requestForQuotationLineItem.getInventoryType().equals(V3RequestForQuotationLineItemsContext.InventoryTypeRfq.SERVICE.getIndex())){

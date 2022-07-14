@@ -1037,6 +1037,12 @@ public class FacilioChainFactory {
 		c.addCommand(new FileContextCommand());
 		return c;
 	}
+
+	public static FacilioChain getDeleteFileChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new DeleteFileCommand());
+		return c;
+	}
 	
 	public static FacilioChain getAddEnergyMeterChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();

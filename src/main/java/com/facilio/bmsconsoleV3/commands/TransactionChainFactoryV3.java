@@ -2,12 +2,9 @@ package com.facilio.bmsconsoleV3.commands;
 
 import java.util.Collections;
 
-import com.facilio.bmsconsole.commands.AddTasksCommand;
 import com.facilio.bmsconsoleV3.commands.assetDepartment.ValidateAssetDepartmentDeletionV3;
-import com.facilio.bmsconsoleV3.commands.dashboard.CloneDashboardCommand;
-import com.facilio.bmsconsoleV3.commands.dashboard.MoveToDashboardCommand;
+import com.facilio.bmsconsoleV3.commands.dashboard.*;
 import com.facilio.bmsconsoleV3.commands.floorplan.*;
-import com.facilio.bmsconsoleV3.commands.item.AdjustmentItemTransactionCommandV3;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.AddLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.DeleteLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.FetchLicensingInfoCommand;
@@ -27,7 +24,6 @@ import com.facilio.bmsconsoleV3.commands.servicerequest.AddActivityForServiceReq
 import com.facilio.bmsconsoleV3.commands.servicerequest.AddRequesterForServiceRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.servicerequest.SetIsNewForServiceRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.*;
-import com.facilio.bmsconsoleV3.commands.spacecategory.ValidateSpaceCategoryDeletionV3;
 import com.facilio.bmsconsoleV3.commands.tasks.*;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
 import com.facilio.bmsconsoleV3.commands.tool.AddBulkToolStockTransactionsCommandV3;
@@ -35,20 +31,8 @@ import com.facilio.bmsconsoleV3.commands.tool.ToolQuantityRollUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.tool.ToolTypeQuantityRollupCommandV3;
 import com.facilio.bmsconsoleV3.commands.tool.UpdateIsUnderStockedCommandV3;
 import com.facilio.bmsconsole.commands.*;
-import com.facilio.bmsconsoleV3.commands.people.UpdateScopingForPeopleCommandV3;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
-import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
-import com.facilio.bmsconsoleV3.commands.receipts.*;
-import com.facilio.bmsconsole.commands.*;
-import com.facilio.bmsconsoleV3.commands.people.UpdateScopingForPeopleCommandV3;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
-import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.receipts.*;
 import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
-import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddDefaultRolesMaintenanceApp;
-import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddMaintenanceApplicationDefaultForms;
-import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddMaintenanceApplicationDefaultViews;
-import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddMaintenanceApplicationLayout;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import com.facilio.accounts.util.AccountUtil;
@@ -59,7 +43,6 @@ import com.facilio.bmsconsole.automation.command.AddOrUpdateGlobalVariableComman
 import com.facilio.bmsconsole.automation.command.AddOrUpdateGlobalVariableGroupCommand;
 import com.facilio.bmsconsole.automation.command.DeleteGlobalVariableCommand;
 import com.facilio.bmsconsole.automation.command.DeleteGlobalVariableGroupCommand;
-import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.commands.accessibleSpaces.AddAccessibleSpacesCommand;
@@ -83,21 +66,15 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.Ad
 import com.facilio.bmsconsoleV3.commands.employee.AddPeopleTypeForEmployeeCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.facility.*;
-import com.facilio.bmsconsoleV3.commands.floorplan.*;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
-import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanPMsInContextCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksCommand;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.UpdatePeoplePrimaryContactCommandV3;
-import com.facilio.bmsconsoleV3.commands.people.UpdateScopingForPeopleCommandV3;
-import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
-import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.PreFillAddPurchaseRequestCommand;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.PurchaseRequestTotalCostRollUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
-import com.facilio.bmsconsoleV3.commands.receipts.*;
 import com.facilio.bmsconsoleV3.commands.reports.*;
 import com.facilio.bmsconsoleV3.commands.tasks.AddTaskSectionsV3;
 import com.facilio.bmsconsoleV3.commands.tasks.AddTasksCommandV3;
@@ -107,10 +84,6 @@ import com.facilio.bmsconsoleV3.commands.tenant.AddTenantUserCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.CheckForMandatoryTenantIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.UpdateTenantAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.termsandconditions.ReviseTandCCommand;
-import com.facilio.bmsconsoleV3.commands.tool.AddBulkToolStockTransactionsCommandV3;
-import com.facilio.bmsconsoleV3.commands.tool.ToolQuantityRollUpCommandV3;
-import com.facilio.bmsconsoleV3.commands.tool.ToolTypeQuantityRollupCommandV3;
-import com.facilio.bmsconsoleV3.commands.tool.UpdateIsUnderStockedCommandV3;
 import com.facilio.bmsconsoleV3.commands.transferRequest.*;
 import com.facilio.bmsconsoleV3.commands.usernotification.*;
 import com.facilio.bmsconsoleV3.commands.vendor.AddInsuranceVendorRollupCommandV3;
@@ -121,7 +94,6 @@ import com.facilio.bmsconsoleV3.commands.visitor.AddOrUpdateLocationForVisitorCo
 import com.facilio.bmsconsoleV3.commands.visitor.CheckForVisitorDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.*;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.*;
-import com.facilio.bmsconsoleV3.commands.workorder.*;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.command.FacilioCommand;
@@ -132,12 +104,6 @@ import com.facilio.relation.command.AppendRelationDataCommand;
 import com.facilio.relation.command.ValidateRelationParamCommand;
 import com.facilio.trigger.command.*;
 import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.Collections;
-
-import static com.facilio.bmsconsole.commands.TransactionChainFactory.getPurchaseOrderAutoCompleteChain;
 
 public class TransactionChainFactoryV3 {
     private static FacilioChain getDefaultChain() {
@@ -1041,6 +1007,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new AddSuplimentsForEmailBaseMessageCommand());
         chain.addCommand(new AddDefaultFieldsForEmailThreadingCommand());
+        chain.addCommand(new AddEmailsToPeopleCommandV3());
         return chain;
     }
 
@@ -1140,14 +1107,6 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
-    public static FacilioChain getAddOrUpdateItemStockTransactionChain() {
-        FacilioChain c = getDefaultChain();
-        c.addCommand(SetTableNamesCommand.getForItemTransactions());
-        c.addCommand(new AddOrUpdateItemStockTransactionsCommand());
-        c.addCommand(getUpdateItemQuantityRollupChain());
-        return c;
-    }
-
     public static FacilioChain getUpdateItemQuantityRollupChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddOrUpdateItemQuantityCommandV3());
@@ -1176,7 +1135,7 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getUpdatetoolQuantityRollupChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new ToolQuantityRollUpCommand());
+        c.addCommand(new ToolQuantityRollUpCommandV3());
         c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE));
         c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_OUT_OF_STOCK_NOTIFICATION_RULE));
         c.addCommand(getUpdateToolTypeQuantityRollupChain());
@@ -1185,7 +1144,7 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getUpdateToolTypeQuantityRollupChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new ToolTypeQuantityRollupCommand());
+        c.addCommand(new ToolTypeQuantityRollupCommandV3());
         return c;
     }
 
@@ -1339,21 +1298,19 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getAddOrUpdateItemTypeVendorChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new AddOrUpdateItemTypeVendorCommand());
+        c.addCommand(new AddOrUpdateItemTypeVendorCommandV3());
         return c;
     }
 
     public static FacilioChain getAddOrUpdateToolTypeVendorChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new AddOrUpdateToolVendorCommand());
+        c.addCommand(new AddOrUpdateToolVendorCommandV3());
         return c;
     }
 
     public static FacilioChain getAddBulkItemChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(SetTableNamesCommand.getForItem());
-        c.addCommand(new BulkItemAdditionCommand());
-        c.addCommand(new ExecuteAllWorkflowsCommand());
+        c.addCommand(new BulkItemAdditionCommandV3());
         c.addCommand(getAddBulkPurchasedItemChain());
         c.addCommand(getUpdateItemQuantityRollupChain());
         c.addCommand(getSetItemAndToolTypeForStoreRoomChain());
@@ -1362,9 +1319,7 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getBulkAddToolChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(SetTableNamesCommand.getForTool());
-        c.addCommand(new BulkToolAdditionCommand());
-        c.addCommand(new ExecuteAllWorkflowsCommand());
+        c.addCommand(new BulkToolAdditionCommandV3());
         c.addCommand(new AddBulkToolStockTransactionsCommand());
         c.addCommand(getUpdatetoolQuantityRollupChain());
         c.addCommand(getSetItemAndToolTypeForStoreRoomChain());
@@ -1374,8 +1329,8 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getAddBulkPurchasedItemChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(SetTableNamesCommand.getForPurchasedItem());
-        c.addCommand(new AddPurchasedItemsForBulkItemAddCommand());
-        c.addCommand(getAddOrUpdateItemStockTransactionChain());
+        c.addCommand(new AddPurchasedItemsForBulkItemAddCommandV3());
+        c.addCommand(getAddOrUpdateItemStockTransactionChainV3());
         return c;
     }
 
@@ -1753,7 +1708,18 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new AddOrUpdateReceiptCommandV3());
         chain.addCommand(getPurchaseOrderLineItemQuantityRecievedRollUpChain());
         chain.addCommand(getPurchaseOrderQuantityRecievedRollUpChain());
-        chain.addCommand(getPurchaseOrderAutoCompleteChain());
+        chain.addCommand(getPurchaseOrderAutoCompleteChainV3());
+        return chain;
+    }
+
+    public static FacilioChain getPurchaseOrderAutoCompleteChainV3() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new PurchaseOrderAutoCompleteCommand());
+        chain.addCommand(getAddOrUpdateItemTypeVendorChain());
+        chain.addCommand(getAddOrUpdateToolTypeVendorChain());
+        chain.addCommand(getBulkAddToolChain());
+        chain.addCommand(getAddBulkItemChain());
+        chain.addCommand(new UpdateServiceVendorPriceCommand());
         return chain;
     }
 
@@ -1846,5 +1812,29 @@ public class TransactionChainFactoryV3 {
         // cmd 2 - fill tasks and prerequisites from 3 JP objects
         return chain;
     }
-    
+    public static FacilioChain getUpdateDashboardChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new DuplicateDashboardForBuildingCommand());
+        c.addCommand(new V3UpdateDashboardWithWidgets());
+        c.addCommand(new EnableMobileDashboardCommand());
+
+        return c;
+    }
+
+    public static FacilioChain getDashboardDataChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetDashboardDataCommand());
+        return c;
+    }
+
+    public static FacilioChain getAddWidgetChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddWidgetCommandV3());
+        return c;
+    }
+    public static FacilioChain getUpdateWidgetsChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateWidgetCommandV3());
+        return c;
+    }
 }

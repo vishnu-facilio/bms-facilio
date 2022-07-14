@@ -410,6 +410,15 @@ public class CommunityFeaturesAPI {
         return getSharingInfo(Collections.singletonList(record),sharingModuleName,parentFieldName);
     }
 
+    public static List<String> getAudiencePeopleEmails(List<Long> audienceIds) throws Exception {
+        if(CollectionUtils.isNotEmpty(audienceIds)){
+            List<V3PeopleContext> peopleList = getAudienceSharing(audienceIds,1l,Long.MAX_VALUE);
+            if(CollectionUtils.isNotEmpty(peopleList)) {
+                return peopleList.stream().map(V3PeopleContext::getEmail).collect(Collectors.toList());
+            }
+        }
+        return null;
+    }
     public static List<? extends CommunitySharingInfoContext> getSharingInfo(List<V3Context> records, String sharingModuleName, String parentFieldName) throws Exception {
         if(CollectionUtils.isNotEmpty(records)) {
             List<Long> ids = records.stream().map(V3Context::getId).collect(Collectors.toList());

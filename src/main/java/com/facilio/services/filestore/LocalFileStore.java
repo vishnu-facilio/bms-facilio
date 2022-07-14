@@ -1,12 +1,6 @@
 package com.facilio.services.filestore;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -141,10 +135,13 @@ public class LocalFileStore extends FileStore {
 
 	@Override
 	public long addFile(String namespace, String fileName, String content, String contentType) throws Exception {
+		return addFile(namespace, fileName, content, contentType,false);
+	}
+	private long addFile(String namespace, String fileName, String content, String contentType, boolean isOrphanFile) throws Exception {
 		if (contentType == null) {
 			throw new IllegalArgumentException("Content type is mandtory");
 		}
-		long fileId = addDummyFileEntry(namespace, fileName, false);
+		long fileId = addDummyFileEntry(namespace, fileName, isOrphanFile);
 		String filePath = getRootPath(namespace) + File.separator + fileId+"-"+fileName;
 		long fileSize = content.length();
 	    try(InputStream is = IOUtils.toInputStream(content);) {
@@ -167,6 +164,36 @@ public class LocalFileStore extends FileStore {
 	    }
 		return fileId;
 	}
+
+	public long addFile(String namespace, String fileName, byte[] content, String contentType, boolean isOrphanFile) throws Exception {
+		if (contentType == null) {
+			throw new IllegalArgumentException("Content type is mandatory");
+		}
+		long fileId = addDummyFileEntry(namespace, fileName, isOrphanFile);
+		String filePath = getRootPath(namespace) + File.separator + fileId+"-"+fileName;
+		long fileSize = content.length;
+
+		try(InputStream inputStream = new ByteArrayInputStream(content);) {
+			File createFile = new File(filePath);
+			createFile.createNewFile();
+			try(OutputStream os = new FileOutputStream(createFile);) {
+				byte[] buffer = new byte[4096];
+				int length;
+				while ((length = inputStream.read(buffer)) > 0) {
+					os.write(buffer, 0, length);
+				}
+				os.flush();
+
+				updateFileEntry(namespace, fileId, fileName, filePath, fileSize, contentType);
+			}
+
+		} catch (IOException ioe) {
+			deleteFileEntry(namespace, fileId);
+			throw ioe;
+		}
+		return fileId;
+	}
+
 	@Override
 	public String getOrgiFileUrl(String namespace, long fileId) {
 		return null;

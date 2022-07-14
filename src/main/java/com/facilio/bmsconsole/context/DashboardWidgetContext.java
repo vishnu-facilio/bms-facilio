@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsoleV3.context.WidgetSectionContext;
 import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -24,13 +25,90 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 	private Integer type;
 	private Long dashboardId;
 	private Long dashboardTabId;
+
+	public Long getSectionId() {
+		return sectionId;
+	}
+
+	public void setSectionId(Long sectionId) {
+		this.sectionId = sectionId;
+	}
+
+	private Long sectionId;
 	
 	private int layoutWidth = -1;
 	private int layoutHeight= -1;
 	private int xPosition= -1;
 	private int yPosition= -1;
 	private int layoutPosition= -1;
-	
+
+
+	public int x=-1;
+	public int y=-1;
+	public int w=-1;
+	public int h=-1;
+	public int minW=-1;
+	public int maxW=-1;
+
+	private void setX(Integer x){
+		getMetaJSON().put("x", x);
+	}
+	public Integer getX(){
+		if(getMetaJSON().get("x") != null){
+			return Integer.parseInt(getMetaJSON().get("x").toString());
+		}
+		return null;
+	}
+
+	public void setY(Integer y){
+		getMetaJSON().put("y", y);
+	}
+	public Integer getY(){
+		if(getMetaJSON().get("y") != null){
+			return Integer.parseInt(getMetaJSON().get("y").toString());
+		}
+		return null;
+	}
+
+	public void setW(Integer w){
+		getMetaJSON().put("w", w);
+	}
+	public Integer getW(){
+		if(getMetaJSON().get("w") != null){
+			return Integer.parseInt(getMetaJSON().get("w").toString());
+		}
+		return null;
+	}
+	public void setH(Integer h){
+		getMetaJSON().put("h", h);
+	}
+	public Integer getH(){
+		if(getMetaJSON().get("h") != null){
+			return Integer.parseInt(getMetaJSON().get("h").toString());
+		}
+		return null;
+	}
+
+	public void setMinW(Integer minW){
+		getMetaJSON().put("minW", minW);
+	}
+	public Integer getMinW(){
+		if(getMetaJSON().get("minW") != null){
+			return Integer.parseInt(getMetaJSON().get("minW").toString());
+		}
+		return null;
+	}
+	public void setMaxW(Integer maxW){
+		getMetaJSON().put("maxW", maxW);
+	}
+
+	public Integer getMaxW(){
+		if(getMetaJSON().get("maxW") != null){
+			return Integer.parseInt(getMetaJSON().get("maxW").toString());
+		}
+		return null;
+	}
+
 	boolean showHide = Boolean.TRUE;
 	
 //	boolean mShowHide = Boolean.TRUE;
@@ -351,7 +429,8 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 		MAP(3,"map",WidgetListViewContext.class),
 		WEB(4,"web",WidgetWebContext.class),
 		GRAPHICS(5,"graphics",WidgetGraphicsContext.class),
-		CARD(6,"card",WidgetCardContext.class);
+		CARD(6,"card",WidgetCardContext.class),
+		SECTION(7,"section", WidgetSectionContext.class);
 		
 		private int value;
 		private String name;

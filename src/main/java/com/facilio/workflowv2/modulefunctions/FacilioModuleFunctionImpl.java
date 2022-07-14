@@ -635,10 +635,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 				selectFields.add(FieldFactory.getIdField(module));
 				List<FacilioField> allFields = modBean.getAllFields(module.getName());
 				for(FacilioField field: allFields) {
-					if (field instanceof MultiEnumField || (!field.isDefault() && field instanceof MultiLookupField)) {
-						selectBuilder.fetchSupplement((SupplementRecord) field);
-					}
-					else if (field instanceof LargeTextField) {
+					if(field.getDataTypeEnum().isRelRecordField()) {
 						selectBuilder.fetchSupplement((SupplementRecord) field);
 					}
 					else {

@@ -174,12 +174,12 @@ public class V3ItemsApi {
         StoreroomApi.updateStoreRoomLastPurchasedDate(storeRoomId, lastPurchasedDate);
     }
 
-    public static long getLastPurchasedItemDateForItemId(long id) throws Exception {
+    public static Long getLastPurchasedItemDateForItemId(long id) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
         List<FacilioField> assetFields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(assetFields);
-        long lastPurchasedDate = -1;
+        Long lastPurchasedDate = null;
         SelectRecordsBuilder<V3AssetContext> itemselectBuilder = new SelectRecordsBuilder<V3AssetContext>()
                 .select(assetFields).table(module.getTableName()).moduleName(module.getName())
                 .beanClass(V3AssetContext.class).andCondition(CriteriaAPI.getCondition(fieldMap.get("rotatingItem"), String.valueOf(id), NumberOperators.EQUALS))
@@ -192,22 +192,22 @@ public class V3ItemsApi {
         return lastPurchasedDate;
     }
 
-    public static double getLastPurchasedItemPriceForItemId(long id) throws Exception {
+    public static Double getLastPurchasedItemPriceForItemId(long id) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
         List<FacilioField> assetFields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(assetFields);
-        long lastPurchasedDate = -1;
+        Double lastPurchasedPrice = null;
         SelectRecordsBuilder<V3AssetContext> itemselectBuilder = new SelectRecordsBuilder<V3AssetContext>()
                 .select(assetFields).table(module.getTableName()).moduleName(module.getName())
                 .beanClass(V3AssetContext.class).andCondition(CriteriaAPI.getCondition(fieldMap.get("rotatingItem"), String.valueOf(id), NumberOperators.EQUALS))
                 .orderBy("PURCHASED_DATE DESC");
         List<V3AssetContext> assetscontext = itemselectBuilder.get();
         if(assetscontext!=null && !assetscontext.isEmpty()) {
-            lastPurchasedDate = assetscontext.get(0).getUnitPrice();
+            lastPurchasedPrice = assetscontext.get(0).getUnitPrice();
         }
 
-        return lastPurchasedDate;
+        return lastPurchasedPrice;
     }
 
     public static void updateLastPurchasedDateForItem(V3ItemContext item)

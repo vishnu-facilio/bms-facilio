@@ -1795,7 +1795,12 @@ public class ModuleFactory {
 //		dashboardWigetModule.setTableName("Dashboard_vs_Widget");
 //		return dashboardWigetModule;
 //	}
-
+	public static FacilioModule getWidgetSectionModule() {
+		FacilioModule dashboardWigetModule = new FacilioModule();
+		dashboardWigetModule.setTableName("Widget_Sections");
+		dashboardWigetModule.setExtendModule(getWidgetModule());
+		return dashboardWigetModule;
+	}
 	public static FacilioModule getWidgetChartModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Widget_Chart");

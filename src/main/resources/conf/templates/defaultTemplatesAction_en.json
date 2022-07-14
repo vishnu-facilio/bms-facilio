@@ -1042,5 +1042,15 @@
 		"message_ftl": "inviteVisitor",
 		"attachmentsUrl":  "https://static.facilio.com/downloads/nmdp/ReturnSafe_HowTo_GUEST_SIGNIN_002.pdf",
 		"attachmentsNames": "ReturnSafe-How-To_GUEST-SIGN-IN-002.pdf"
+	},
+	"123": {
+		"name": "ANNOUNCEMENT_AUDIENCE_NOTIFICATION",
+		"sender": "noreply@${org.domain}.${org.emailDomain}",
+		"mailType": "html",
+		"subject": "New Announcement - ${announcement.title} - Published",
+		"message": "<div><img height=\"100px\" src=\"${org.originalUrl}\">${announcement.longDescription}</div>",
+		"to": "${audience.notif_mod_audience}",
+		"attachmentsUrl":  "${announcement.attachments_url}",
+		"attachmentsNames": "${announcement.attachments_name}"
 	}
 }
