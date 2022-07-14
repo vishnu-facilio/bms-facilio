@@ -27,7 +27,7 @@ public class RfqBeforeCreateOrUpdateCommandV3 extends FacilioCommand {
             for (V3RequestForQuotationContext requestForQuotationContext : requestForQuotationContexts) {
                 if (requestForQuotationContext != null) {
                     //if vendors are selected edit should be restricted
-                    if(requestForQuotationContext.getVendor()!=null && MapUtils.isEmpty(bodyParams) && requestForQuotationContext.getStateFlowId()<0){
+                    if(requestForQuotationContext.getVendor()!=null && MapUtils.isEmpty(bodyParams) && requestForQuotationContext.getStateFlowId()<0 && requestForQuotationContext.getId()>0){
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "RFQ cannot be updated after selecting vendors");
                     }
                     if (requestForQuotationContext.getId() <= 0 && CollectionUtils.isEmpty(requestForQuotationContext.getRequestForQuotationLineItems())) {

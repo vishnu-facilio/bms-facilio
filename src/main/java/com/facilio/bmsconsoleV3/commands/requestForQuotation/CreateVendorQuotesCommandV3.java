@@ -73,6 +73,7 @@ public class CreateVendorQuotesCommandV3 extends FacilioCommand {
         vendorQuote.setVendor(vendor);
         vendorQuote.setRequestForQuotation(requestForQuotation);
         vendorQuote.setVendorQuotesLineItems(vendorQuotesLineItems);
+        vendorQuote.setExpectedReplyDate(requestForQuotation.getExpectedReplyDate());
         return vendorQuote;
     }
 
