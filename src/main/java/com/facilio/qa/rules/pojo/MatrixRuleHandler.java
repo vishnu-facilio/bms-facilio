@@ -1,19 +1,23 @@
 package com.facilio.qa.rules.pojo;
 
-import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.FieldUtil;
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.RuleHandler;
 import com.facilio.qa.context.client.answers.MatrixAnswerContext;
-import com.facilio.qa.context.questions.*;
+import com.facilio.qa.context.questions.MatrixQuestionColumn;
+import com.facilio.qa.context.questions.MatrixQuestionContext;
+import com.facilio.qa.context.questions.MatrixQuestionRow;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections4.MapUtils;
 
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -71,9 +75,12 @@ public enum MatrixRuleHandler implements RuleHandler{
 		List<RuleCondition> conditions = new ArrayList<>();
 		for (Map<String, Object> prop : conditionProps) {
 			MatrixQuestionRow row = options.get(prop.get("rowId"));
+			String value = prop.remove("value").toString();
+			String operatorId = (String) prop.remove("operatorId");
 			V3Util.throwRestException(row == null, ErrorCode.VALIDATION_ERROR, "Invalid option specified while adding MQ Rule");
 			RuleCondition condition = FieldUtil.getAsBeanFromMap(prop, type.getRuleConditionClass());
-			condition.setOperatorEnum(PickListOperators.IS);
+			condition.setOperator(Integer.parseInt(operatorId));
+			condition.setValue(value);
 			conditions.add(condition);
 		}
 		return conditions;
@@ -84,17 +91,17 @@ public enum MatrixRuleHandler implements RuleHandler{
 
 		FacilioUtil.throwIllegalArgumentException(answer.getMatrixAnswer() == null, MessageFormat.format("At least one option needs to be present for rule evaluation of question : {0}. This is not supposed to happen", question.getId()));
 		List<Map<String, Object>> answerProps = new ArrayList<>();
-		Map<String,Object> addProps = new HashMap<>();
 		MatrixAnswerContext.MatrixAnswer matrixAnswer = answer.getMatrixAnswer();
 		for(MatrixAnswerContext.RowAnswer option :matrixAnswer.getRowAnswer()){
 			List<MatrixAnswerContext.ColumnAnswer> columnAnswers = option.getColumnAnswer();
-			Long columnId = columnAnswers.stream().filter(columnAnswer -> columnAnswer.getAnswer()!=null).map(MatrixAnswerContext.ColumnAnswer::getColumn).collect(Collectors.toList()).get(0);
+			MatrixAnswerContext.ColumnAnswer columnAns = columnAnswers.stream().filter(columnAnswer -> columnAnswer.getAnswer()!=null).collect(Collectors.toList()).get(0);
 			Map<String,Object> prop = new HashMap<>();
 			prop.put("rowId",option.getRow());
-			prop.put("columnId", columnId);
-			addProps.put(String.valueOf(option.getRow()),prop);
+			prop.put("columnId", columnAns.getColumn());
+			prop.put(RuleCondition.ANSWER_FIELD_NAME,columnAns.getAnswer());
+			answerProps.add(prop);
 		}
-		answerProps.add(addProps);
+
 		return answerProps;
 
 	}
@@ -103,9 +110,11 @@ public enum MatrixRuleHandler implements RuleHandler{
 	public boolean evalMisc(RuleCondition ruleCondition, Map<String, Object> answerProp){
 
 		if(MapUtils.isNotEmpty(answerProp)){
-			Map<String,Object> propVal = (Map<String, Object>) answerProp.get(ruleCondition.getRowId().toString());
-			FacilioUtil.throwIllegalArgumentException(MapUtils.isEmpty(propVal),"Matrix Rule condition should not be null");
-			return (ruleCondition.getRowId() == propVal.get("rowId") && ruleCondition.getColumnId() == propVal.get("columnId"));
+
+			Long rowId = (Long) answerProp.getOrDefault("rowId",null);
+			Long columnId = (Long) answerProp.getOrDefault("columnId",null);
+
+			return (rowId !=null && columnId != null ) && (ruleCondition.getRowId() == rowId && ruleCondition.getColumnId() == columnId);
 		}
 		return false;
 	}
