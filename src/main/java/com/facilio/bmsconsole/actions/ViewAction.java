@@ -340,6 +340,8 @@ public class ViewAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.GROUP_VIEWS, viewGroupsList);
+		context.put(FacilioConstants.ContextNames.VIEW_TYPE, viewType);
+		context.put(FacilioConstants.ContextNames.VIEW_GROUP_TYPE, groupType);
 		context.put(FacilioConstants.ContextNames.RESTRICT_PERMISSIONS, true);
 		context.put(FacilioConstants.ContextNames.GET_ONLY_BASIC_VIEW_DETAILS, true);
 		
@@ -357,6 +359,8 @@ public String v2customizeView() throws Exception {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.VIEW_LIST, views);
 		context.put(FacilioConstants.ContextNames.GROUP_STATUS, getGroupStatus());
+		context.put(FacilioConstants.ContextNames.VIEW_TYPE, viewType);
+		context.put(FacilioConstants.ContextNames.VIEW_GROUP_TYPE, groupType);
 		context.put(FacilioConstants.ContextNames.RESTRICT_PERMISSIONS, true);
 		context.put(FacilioConstants.ContextNames.APP_ID, appId);
 		
