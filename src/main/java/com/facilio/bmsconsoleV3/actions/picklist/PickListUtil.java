@@ -11,6 +11,7 @@ import com.facilio.modules.fields.FieldOption;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.V3Action;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.kafka.common.protocol.types.Field;
 import org.json.simple.JSONObject;
 
 import java.util.Arrays;
@@ -23,9 +24,9 @@ import java.util.stream.Collectors;
 public class PickListUtil {
 
     public static List<FieldOption<Long>> getSpecialModulesPickList(String moduleName, int page, int perPage, String search) throws Exception {
-        return getSpecialModulesPickList(moduleName,page,perPage,search,null);
+        return getSpecialModulesPickList(moduleName,page,perPage,search,null,null);
     }
-    public static List<FieldOption<Long>> getSpecialModulesPickList(String moduleName, int page, int perPage, String search,String filters) throws Exception {
+    public static List<FieldOption<Long>> getSpecialModulesPickList(String moduleName, int page, int perPage, String search,String filters,String _default) throws Exception {
         Map<String,Object> paramsData = new HashMap<>();
         paramsData.put("page", page);
         paramsData.put("perPage", perPage);
@@ -33,6 +34,9 @@ public class PickListUtil {
         if (StringUtils.isNotEmpty(filters)) {
             JSONObject filter = FacilioUtil.parseJson(filters);
             paramsData.put("filters",filter);
+        }
+        if(StringUtils.isNotEmpty(_default)){
+            paramsData.put("_default",_default);
         }
         return LookupSpecialTypeUtil.getNewPickList(moduleName, paramsData);
     }

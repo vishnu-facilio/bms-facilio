@@ -14,7 +14,7 @@ public class V3PIckListAction extends V3Action {
     public String pickList() throws Exception {
         if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
             
-            setData(FacilioConstants.ContextNames.PICKLIST, PickListUtil.getSpecialModulesPickList(moduleName, page, perPage, search, filters));
+            setData(FacilioConstants.ContextNames.PICKLIST, PickListUtil.getSpecialModulesPickList(moduleName, page, perPage, search, filters, _default));
             setMeta("moduleType", FacilioModule.ModuleType.PICK_LIST.name());
 
             //supported api search for users module

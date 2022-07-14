@@ -1896,7 +1896,10 @@ public static void addMaintenancePortalWebGroupsForWebLayout(ApplicationLayoutCo
      public static List<User> getUsersList(Map<String,Object> paramsMap) throws Exception {
          int page = 0,perPage = 5000,offset = 0;
          List<Long> teamIds = new ArrayList<>();
+         List<Long> applicationIds = new ArrayList<>();
          String search = null;
+         Long _default = null;
+         List<Long> defaultIdList = new ArrayList<>();
          if(!paramsMap.isEmpty()){
              page = (int) paramsMap.get("page");
              perPage = (int) paramsMap.get("perPage");
@@ -1905,17 +1908,38 @@ public static void addMaintenancePortalWebGroupsForWebLayout(ApplicationLayoutCo
              if (offset < 0) {
                  offset = 0;
              }
-             if(paramsMap.containsKey("filters")){
-                 JSONObject filters = (JSONObject)paramsMap.get("filters");
-                 if(filters.containsKey("teamId")){
+             if(paramsMap.containsKey("_default")) {
+                 String defaultIds = (String) paramsMap.get("_default");
+                 if(StringUtils.isNotEmpty(defaultIds)) {
+                     String[] ids = FacilioUtil.splitByComma(defaultIds);
+                     defaultIdList = Arrays.stream(ids).map(Long::parseLong).collect(Collectors.toList());
+                 }
+             }
+             if(paramsMap.containsKey("filters")) {
+                 JSONObject filters = (JSONObject) paramsMap.get("filters");
+                 if (filters.containsKey("teamId")) {
                      JSONObject values = (JSONObject) filters.get("teamId");
-                     if(values.containsKey("value")){
+                     if (values.containsKey("value")) {
                          teamIds = (List<Long>) values.get("value");
+                     }
+                 }
+                 if (filters.containsKey("applicationId")) {
+                     JSONObject values = (JSONObject) filters.get("applicationId");
+                     if (values.containsKey("value")) {
+                         applicationIds = (List<Long>) values.get("value");
                      }
                  }
              }
          }
-         List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP), -1, false, false, offset, perPage, search, true,true,teamIds);
+         if(CollectionUtils.isEmpty(applicationIds)){
+             if(AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)){
+                 applicationIds.add(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+             }
+             else{
+                 applicationIds.add(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+             }
+         }
+         List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), -1, -1, false, false, offset, perPage, search, true,true,teamIds,applicationIds,defaultIdList);
          if(CollectionUtils.isNotEmpty(users)){
              return users;
          }

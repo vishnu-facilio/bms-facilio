@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.copyAssetReadingCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -49,6 +50,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.json.simple.JSONObject;
 
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -122,12 +124,12 @@ public class OrgBeanImpl implements OrgBean {
 	}
 
 	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,Boolean inviteAcceptStatus,boolean status) throws Exception {
-		return getAppUsers( orgId,  appId,  ouId,  checkAccessibleSites,  fetchNonAppUsers,  offset,  perPage, searchQuery, inviteAcceptStatus, status,null);
+		return getAppUsers( orgId,  appId,  ouId,  checkAccessibleSites,  fetchNonAppUsers,  offset,  perPage, searchQuery, inviteAcceptStatus, status,null,null,null);
 	}
 
 	@Override
-	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,Boolean inviteAcceptStatus,boolean status,List<Long> teamId) throws Exception {
-		List<User> users = getAppUsers( orgId,  appId,  ouId,  checkAccessibleSites,  fetchNonAppUsers,  -1,  -1, searchQuery, inviteAcceptStatus, teamId);
+	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,Boolean inviteAcceptStatus,boolean status,List<Long> teamId,List<Long> applicationIds,List<Long> defaultIds) throws Exception {
+		List<User> users = getAppUsers( orgId,  appId,  ouId,  checkAccessibleSites,  fetchNonAppUsers,  -1,  -1, searchQuery, inviteAcceptStatus, teamId, applicationIds,defaultIds);
 		List<User> finalList = new ArrayList<>();
 		int recordsAdded = 0,actualRecordsSkipped = 0;
 		if(CollectionUtils.isNotEmpty(users)) {
@@ -153,11 +155,10 @@ public class OrgBeanImpl implements OrgBean {
 	}
 
 	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,Boolean inviteAcceptStatus) throws Exception {
-		return getAppUsers(orgId, appId, ouId, checkAccessibleSites, fetchNonAppUsers, offset, perPage,searchQuery,inviteAcceptStatus,null);
+		return getAppUsers(orgId, appId, ouId, checkAccessibleSites, fetchNonAppUsers, offset, perPage,searchQuery,inviteAcceptStatus,null,null,null);
 	}
-
 	@Override
-	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,Boolean inviteAcceptStatus,List<Long> teamId) throws Exception {
+	public List<User> getAppUsers(long orgId, long appId, long ouId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage,String searchQuery,Boolean inviteAcceptStatus,List<Long> teamId,List<Long> applicationIds,List<Long> defaultIds) throws Exception {
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
 			return null;
@@ -178,11 +179,16 @@ public class OrgBeanImpl implements OrgBean {
 				.innerJoin("People")
 				.on("People.ID = ORG_Users.PEOPLE_ID");
 
+		if(CollectionUtils.isNotEmpty(defaultIds)){
+			String defaultIdAndOrderBy = MessageFormat.format("FIELD ( ORG_Users.ORG_USERID, {0} ) DESC",StringUtils.join(defaultIds,","));
+			selectBuilder.orderBy(defaultIdAndOrderBy);
+		}
 		if(CollectionUtils.isNotEmpty(teamId)){
 			selectBuilder.innerJoin("FacilioGroupMembers").on("FacilioGroupMembers.ORG_USERID = ORG_Users.ORG_USERID");
 			selectBuilder.andCondition(CriteriaAPI.getCondition("FacilioGroupMembers.GROUPID", "groupId", StringUtils.join(teamId, ','), NumberOperators.EQUALS));
 		}
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+
 		if(ouId > 0) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.ORG_USERID", "orgUserId", String.valueOf(ouId), NumberOperators.EQUALS));
 		}
@@ -195,6 +201,9 @@ public class OrgBeanImpl implements OrgBean {
 			} else {
 				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("applicationId"), String.valueOf(appId), NumberOperators.EQUALS));
 			}
+		}
+		else if(CollectionUtils.isNotEmpty(applicationIds)){
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("applicationId"), StringUtils.join(applicationIds,","), NumberOperators.EQUALS));
 		}
 
 		if(checkAccessibleSites) {
