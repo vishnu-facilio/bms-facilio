@@ -57,9 +57,10 @@ public class LargeTextCRUDHandler extends BaseSingleRelRecordCRUDHandler<String>
     }
 
     protected Map<String, Object> createRelRecord(long parentId, String fileContent) throws Exception {
-		if(fileContent.length() > LARGE_TEXT_MAX_SIZE) {
+		if(!(((LargeTextField)getField()).getSkipSizeCheck()) && fileContent.length() > LARGE_TEXT_MAX_SIZE) {
 			throw new Exception("large text content is greater that max size "+LARGE_TEXT_MAX_SIZE);
 		}
+
         Map<String, Object> relRecord = new HashMap<>();
         File newFile = File.createTempFile("largeTextFile.txt",null);
 		try(FileOutputStream fileOut = new FileOutputStream(newFile);) {
