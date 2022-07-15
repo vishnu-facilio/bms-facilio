@@ -882,6 +882,8 @@
     <package name="requestForQuotation" namespace="/api/v3/requestForQuotation" extends="v3Api">
         <action name="convertPrToRfq" class="com.facilio.bmsconsoleV3.actions.RequestForQuotationAction" method="convertPrToRfq">
         </action>
+        <action name="convertRfqToPo" class="com.facilio.bmsconsoleV3.actions.RequestForQuotationAction" method="convertRfqToPo">
+        </action>
     </package>
 
 </struts>
