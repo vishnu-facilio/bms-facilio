@@ -56,6 +56,7 @@ import com.facilio.bmsconsoleV3.commands.item.UpdateItemTransactionsCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.FetchJobPlanLookupCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.FillJobPlanDetailsCommand;
+import com.facilio.bmsconsoleV3.commands.jobplan.ValidationForJobPlanCategory;
 import com.facilio.bmsconsoleV3.commands.labour.GetLabourListCommandV3;
 import com.facilio.bmsconsoleV3.commands.labour.SetLocationCommandV3;
 import com.facilio.bmsconsoleV3.commands.moves.UpdateEmployeeInDesksCommandV3;
@@ -1478,8 +1479,10 @@ public class APIv3Config {
     public static Supplier<V3Config> getJobPlan() {
         return () -> new V3Config(JobPlanContext.class, new ModuleCustomFieldCount30())
                 .create()
+                .beforeSave(new ValidationForJobPlanCategory())
                 .afterSave(TransactionChainFactoryV3.getCreateJobPlanChain())
                 .update()
+                .beforeSave(new ValidationForJobPlanCategory())
                 .afterSave(TransactionChainFactoryV3.getUpdateJobPlanChain())
                 .list()
                 .beforeFetch(new FetchJobPlanLookupCommand())
