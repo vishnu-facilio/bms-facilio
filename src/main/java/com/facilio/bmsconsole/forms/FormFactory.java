@@ -808,14 +808,14 @@ public class FormFactory {
 		FacilioModule plannedMaintenance = null;
 		try {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			plannedMaintenance = modBean.getModule("plannedMaintenance");
+			plannedMaintenance = modBean.getModule("plannedmaintenance");
 		}
 		catch (Exception e) {
 		}
 
 		FacilioForm defaultForm = new FacilioForm();
 		defaultForm.setDisplayName("Planned Maintenance");
-		defaultForm.setName("default_planned_maintenance_web");
+		defaultForm.setName("default_plannedmaintenance_web");
 		defaultForm.setModule(plannedMaintenance);
 		defaultForm.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		defaultForm.setLabelPosition(FacilioForm.LabelPosition.TOP);

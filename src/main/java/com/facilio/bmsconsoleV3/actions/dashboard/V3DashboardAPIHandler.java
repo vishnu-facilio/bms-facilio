@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.actions.dashboard;
 
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsoleV3.context.WidgetSectionContext;
 import com.facilio.modules.FieldUtil;
 import org.json.simple.JSONObject;
@@ -11,11 +12,26 @@ import java.util.Map;
 
 public class V3DashboardAPIHandler {
 
-    public static void updateDashboardData(DashboardContext dashboard, JSONObject dashboardMeta)throws Exception
+    public static void updateDashboardProp(DashboardContext dashboard, JSONObject dashboardMeta)throws Exception
     {
+        dashboard.setDashboardName((String) dashboardMeta.get("dashboardName"));
         if(dashboardMeta.get("dashboardFolderId") != null) {
             dashboard.setDashboardFolderId((Long) dashboardMeta.get("dashboardFolderId"));
         }
+        if (dashboardMeta.get("dashboardTabPlacement") != null) {
+            int dashboardTabPlacement  = ((Long) dashboardMeta.get("dashboardTabPlacement")).intValue();
+            dashboard.setDashboardTabPlacement(dashboardTabPlacement);
+        }
+    }
+    public static void updateDashboardTabProp(DashboardTabContext dashboardTabContext, JSONObject dashboardMeta)throws Exception
+    {
+        List dashboardWidgets = (List) dashboardMeta.get("dashboardWidgets");
+        List<DashboardWidgetContext> widgets = V3DashboardAPIHandler.getDashboardSectionWidgetFromWidgetMeta(dashboardWidgets);
+        dashboardTabContext.setDashboardWidgets(widgets);
+    }
+    public static void updateDashboardData(DashboardContext dashboard, JSONObject dashboardMeta)throws Exception
+    {
+        V3DashboardAPIHandler.updateDashboardProp(dashboard, dashboardMeta);
         if(dashboardMeta.get("mobileEnabled") != null) {
             dashboard.setMobileEnabled((boolean)dashboardMeta.get("mobileEnabled"));
         }
@@ -26,11 +42,6 @@ public class V3DashboardAPIHandler {
         if (dashboardMeta.get("tabEnabled") != null) {
             dashboard.setTabEnabled((boolean) dashboardMeta.get("tabEnabled"));
         }
-        if (dashboardMeta.get("dashboardTabPlacement") != null) {
-            int dashboardTabPlacement  = ((Long) dashboardMeta.get("dashboardTabPlacement")).intValue();
-            dashboard.setDashboardTabPlacement(dashboardTabPlacement);
-        }
-        dashboard.setDashboardName((String) dashboardMeta.get("dashboardName"));
         if(dashboardMeta.get("clientMetaJsonString") != null) {
             dashboard.setClientMetaJsonString(dashboardMeta.get("clientMetaJsonString").toString());
         }

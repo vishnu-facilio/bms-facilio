@@ -326,4 +326,10 @@
             </property>
         </requestbody>
     </request>
+    <request path="/api/v3/dashboard/tab/:dashboardTabId" method="GET">
+        <urlparams>
+            <property name="dashboardTabId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+
 </config>

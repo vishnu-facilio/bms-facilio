@@ -26,8 +26,8 @@ public class UpdateDataCommandStatus extends AgentV2Command {
     public boolean executeCommand(Context context) throws Exception {
         try {
             JSONObject payload = (JSONObject) context.get(AgentConstants.DATA);
-            long controlId= (long) payload.get("controlId");
             if (payload.containsKey("controlId")) {
+                long controlId= (long) payload.get("controlId");
                 JSONArray data = (JSONArray) payload.get("data");
                 JSONObject jsonObject = (JSONObject) data.get(0);
                 // Assuming only 1 point will be received for control cov.

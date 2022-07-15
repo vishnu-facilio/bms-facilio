@@ -586,7 +586,7 @@ public abstract class FileStore {
 		catch(SQLException e) {
 		}
 		if (compressedFilePath != null && !fetchOriginal) {
-			fileInfo.setFilePath(compressedFilePath.trim());
+			fileInfo.setFilePath(compressedFilePath);
 			fileInfo.setFileSize(rs.getLong("COMPRESSED_FILE_SIZE"));
 		}
 		else {

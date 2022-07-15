@@ -837,6 +837,17 @@
         </action>
     </package>
 
+    <package name="v3DashboardTab" namespace="/api/v3/dashboard/tab" extends="v3Api">
+        <action name="update"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
+                method="updateTab"/>
+        <action name="*"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
+                method="dashboardTabData">
+            <param name="dashboardTabId">{1}</param>
+        </action>
+    </package>
+
     <package name="readingImportApp" namespace="/api/v3/readingimport" extends="v3Api">
         <action name="create"
                 class="com.facilio.bmsconsoleV3.actions.readingimportapp.ReadingImportAction"
@@ -866,6 +877,10 @@
         <action name="list"
                 class="com.facilio.bmsconsoleV3.actions.homepagefactory.HomePageFactoryAction"
                 method="getHomePage">
+        </action>
+    </package>
+    <package name="requestForQuotation" namespace="/api/v3/requestForQuotation" extends="v3Api">
+        <action name="convertPrToRfq" class="com.facilio.bmsconsoleV3.actions.RequestForQuotationAction" method="convertPrToRfq">
         </action>
     </package>
 
