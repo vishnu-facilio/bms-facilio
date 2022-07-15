@@ -93,7 +93,8 @@ public class ApplicationLayoutContext implements Serializable {
 
     public enum LayoutDeviceType implements FacilioIntEnum {
         WEB("Web"),
-        MOBILE("Mobile");
+        MOBILE("Mobile"),
+        SETUP("Setup");
 
         String name;
 

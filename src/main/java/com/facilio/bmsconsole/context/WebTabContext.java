@@ -107,33 +107,86 @@ public class WebTabContext implements Serializable {
         }
     }
 
+    public enum TabType implements FacilioIntEnum{
+        NORMAL("NormalTab"),
+        SETUP("SetUptab");
+
+        TabType(String name) {
+            this.name=name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        private String name;
+        @Override
+        public Integer getIndex() {
+            return ordinal() + 1;
+        }
+
+        public static TabType valueOf(int value) {
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
+            }
+            return null;
+        }
+
+        @Override
+        public String getValue() {
+            return getName();
+        }
+
+    }
     public enum Type implements FacilioIntEnum {
-        MODULE ("Module", false),
-        APPROVAL ("Approval", false),
-        CALENDAR ("Calendar", false),
-        REPORT ("Report", false),
-        ANALYTICS ("Analytics", true),
-        KPI ("Kpi", false),
-        DASHBOARD ("Dashboard", false),
-        CUSTOM ("Custom",false),
-        APPS ("Apps",false),
-        SETTINGS("Settings",true),
-        TIMELINE("Timeline", false),
-        PORTAL_OVERVIEW("Portal Overview", false),
-        NOTIFICATION("Notification", false),
-        INDOOR_FLOORPLAN("Indoor Floorplan", false);
+        MODULE ("Module", false, TabType.NORMAL),
+        APPROVAL ("Approval", false, TabType.NORMAL),
+        CALENDAR ("Calendar", false, TabType.NORMAL),
+        REPORT ("Report", false, TabType.NORMAL),
+        ANALYTICS ("Analytics", true, TabType.NORMAL),
+        KPI ("Kpi", false,TabType.NORMAL),
+        DASHBOARD ("Dashboard", false,TabType.NORMAL),
+        CUSTOM ("Custom",false, TabType.NORMAL),
+        APPS ("Apps",false,TabType.NORMAL),
+        SETTINGS("Settings",true,TabType.NORMAL),
+        TIMELINE("Timeline", false, TabType.NORMAL),
+        PORTAL_OVERVIEW("Portal Overview", false, TabType.NORMAL),
+        NOTIFICATION("Notification", false,TabType.NORMAL),
+        INDOOR_FLOORPLAN("Indoor Floorplan", false, TabType.NORMAL);
+
+
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public TabType getTabType() {
+            return tabType;
+        }
+
+        public void setTabType(TabType tabType) {
+            this.tabType = tabType;
+        }
 
         ;
 
         private String name;
         private boolean isGroupedType;
+
+        private TabType tabType;
+
         public String getName() {
             return name;
         }
 
-        Type(String name, boolean isGroupedType) {
+        Type(String name, boolean isGroupedType, TabType tabType) {
             this.name = name;
             this.isGroupedType = isGroupedType;
+            this.tabType = tabType;
         }
 
         @Override

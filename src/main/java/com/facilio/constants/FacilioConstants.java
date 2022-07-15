@@ -254,6 +254,7 @@ public class FacilioConstants {
 		public static final String CONSIDER_ROLE = "considerRole";
 
 		public static final String FETCH_NON_APP_USERS = "fetchNonAppUsers";
+		public static final String FILTER_SET_UP_TAP="filterSetUpTab";
 
 		public static final String APP_ID = "appId";
 		public static final String RESTRICT_PERMISSIONS = "restrictPermissions";
