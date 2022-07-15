@@ -1053,7 +1053,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("acknowledged", "Acknowledged"));
 		columns.add(new ViewField("noOfOccurrences", "Occurrences"));
 		columns.add(new ViewField("lastCreatedTime", "Last Occurred Time"));
-		columns.add(new ViewField("readingalarmcategory", "Category" ));
+		columns.add(new ViewField("readingAlarmAssetCategory", "Asset Category" ));
 		columns.add(new ViewField("faultType", "Fault Type"));
 		// columns.add(new ViewField("rule", "Rule"));
 		return columns;

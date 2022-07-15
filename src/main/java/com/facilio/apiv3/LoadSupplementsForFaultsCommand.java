@@ -26,6 +26,7 @@ public class LoadSupplementsForFaultsCommand extends FacilioCommand {
         fetchLookupsList.add((SupplementRecord)fieldsAsMap.get("severity"));
         fetchLookupsList.add((SupplementRecord)fieldsAsMap.get("rule"));
         fetchLookupsList.add((SupplementRecord)fieldsAsMap.get("readingAlarmCategory"));
+        fetchLookupsList.add((SupplementRecord)fieldsAsMap.get("readingAlarmAssetCategory"));
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
         return false;
     }

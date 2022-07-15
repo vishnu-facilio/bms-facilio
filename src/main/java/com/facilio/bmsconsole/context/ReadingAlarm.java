@@ -76,4 +76,6 @@ public class ReadingAlarm extends BaseAlarmContext {
 
     private double costImpact;
 
+    private AssetCategoryContext readingAlarmAssetCategory;
+
 }

@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleInterface;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -43,6 +45,7 @@ public class ReadingEventContext extends BaseEventContext {
             }
         }
         readingAlarm.setReadingAlarmCategory(readingAlarmCategory);
+        readingAlarm.setReadingAlarmAssetCategory(getAssetCategory());
 
         if (this.getFaultTypeEnum() != null) {
             readingAlarm.setFaultType(this.getFaultTypeEnum());
@@ -70,6 +73,7 @@ public class ReadingEventContext extends BaseEventContext {
             }
         }
         readingOccurrence.setReadingAlarmCategory(readingAlarmCategory);
+        readingOccurrence.setReadingAlarmAssetCategory(getAssetCategory());
 
         if (this.getFaultTypeEnum() != null) {
             readingOccurrence.setFaultType(this.getFaultTypeEnum());
@@ -84,6 +88,7 @@ public class ReadingEventContext extends BaseEventContext {
     }
 
     private ReadingAlarmCategoryContext readingAlarmCategory;
+    private AssetCategoryContext readingAlarmAssetCategory;
 
     @JsonDeserialize(as = ReadingRuleContext.class)
     private ReadingRuleInterface rule;
@@ -194,4 +199,19 @@ public class ReadingEventContext extends BaseEventContext {
 
     private double costImpact;
 
+    private AssetCategoryContext getAssetCategory() throws Exception {
+        if (readingAlarmAssetCategory == null) {
+            if (getResource() != null && getResource().getId() > 0) {
+                ResourceContext resource = ResourceAPI.getExtendedResource(getResource().getId());
+                if (resource != null && resource.getResourceTypeEnum() == ResourceContext.ResourceType.ASSET) {
+                    AssetContext asset = (AssetContext) resource;
+                    if (asset.getCategory() != null && asset.getCategory().getId() != -1) {
+                        readingAlarmAssetCategory=AssetsAPI.getCategoryForAsset(asset.getCategory().getId());
+                    }
+
+                }
+            }
+        }
+        return readingAlarmAssetCategory;
+    }
 }

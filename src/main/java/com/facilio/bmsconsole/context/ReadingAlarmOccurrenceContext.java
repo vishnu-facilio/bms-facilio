@@ -83,4 +83,6 @@ public class ReadingAlarmOccurrenceContext extends AlarmOccurrenceContext {
 
     private double costImpact;
 
+    private AssetCategoryContext readingAlarmAssetCategory;
+
 }
