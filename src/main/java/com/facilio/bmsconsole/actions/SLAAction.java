@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -157,14 +158,16 @@ public class SLAAction extends FacilioAction {
 
         List<WorkflowRuleContext> workFlowRuleList= (List<WorkflowRuleContext>)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST);
         List<Map<String,Object>> slaWorkFlowRuleList = new ArrayList<>();
-        for(WorkflowRuleContext slaWorkFlowRule:workFlowRuleList){
-            Map<String,Object>slaWorkFlowRuleMap=new HashMap<>();
-            slaWorkFlowRuleMap.put("name",slaWorkFlowRule.getName());
-            slaWorkFlowRuleMap.put("description",slaWorkFlowRule.getDescription());
-            slaWorkFlowRuleMap.put("status",slaWorkFlowRule.getStatus());
-            slaWorkFlowRuleMap.put("active",slaWorkFlowRule.isActive());
-            slaWorkFlowRuleMap.put("id",slaWorkFlowRule.getId());
-            slaWorkFlowRuleList.add(slaWorkFlowRuleMap);
+        if (CollectionUtils.isNotEmpty(workFlowRuleList)) {
+            for (WorkflowRuleContext slaWorkFlowRule : workFlowRuleList) {
+                Map<String, Object> slaWorkFlowRuleMap = new HashMap<>();
+                slaWorkFlowRuleMap.put("name", slaWorkFlowRule.getName());
+                slaWorkFlowRuleMap.put("description", slaWorkFlowRule.getDescription());
+                slaWorkFlowRuleMap.put("status", slaWorkFlowRule.getStatus());
+                slaWorkFlowRuleMap.put("active", slaWorkFlowRule.isActive());
+                slaWorkFlowRuleMap.put("id", slaWorkFlowRule.getId());
+                slaWorkFlowRuleList.add(slaWorkFlowRuleMap);
+            }
         }
         setResult(FacilioConstants.ContextNames.SLA_POLICY_LIST, slaWorkFlowRuleList);
         return SUCCESS;
