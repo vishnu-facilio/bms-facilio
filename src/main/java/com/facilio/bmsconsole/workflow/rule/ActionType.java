@@ -556,6 +556,99 @@ public enum ActionType {
 		}
 	},
 	ASSIGNMENT_ACTION(9) {
+		private void performActionForWO(Context context, Object currentRecord, long userID, long groupID) {
+
+			WorkOrderContext workOrder = (WorkOrderContext) currentRecord;
+			WorkOrderContext updateWO = new WorkOrderContext();
+
+			boolean userAssigned = false;
+			if (userID != -1 &&
+					(workOrder.getAssignedTo() == null || workOrder.getAssignedTo().getOuid() == -1)) {
+				User user = new User();
+				user.setOuid(userID);
+				workOrder.setAssignedTo(user);
+				updateWO.setAssignedTo(user);
+				userAssigned = true;
+			}
+
+			if (groupID != -1 &&
+					(workOrder.getAssignmentGroup() == null || workOrder.getAssignmentGroup().getGroupId() == -1)) {
+				Group group = new Group();
+				group.setId(groupID);
+				workOrder.setAssignmentGroup(group);
+				updateWO.setAssignmentGroup(group);
+				userAssigned = true;
+			}
+			try {
+				if (userAssigned) {
+					if (userID != -1 || groupID != -1) {
+						FacilioStatus status = TicketAPI.getStatus("Assigned");
+						workOrder.setStatus(status);
+						updateWO.setStatus(status);
+					}
+					workOrder.setAssignedBy(AccountUtil.getCurrentUser());
+					updateWO.setAssignedBy(AccountUtil.getCurrentUser());
+
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+					UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
+							.module(woModule).fields(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
+							.andCondition(CriteriaAPI.getIdCondition(workOrder.getId(), woModule));
+					updateBuilder.update(updateWO);
+
+					CommonCommandUtil.addEventType(EventType.ASSIGN_TICKET, (FacilioContext) context);
+				}
+			} catch (Exception e) {
+				LOGGER.error("Exception occurred ", e);
+			}
+		}
+
+		private void performActionForV3WO(Context context, Object currentRecord, long userID, long groupID) {
+
+			V3WorkOrderContext workOrder = (V3WorkOrderContext) currentRecord;
+			V3WorkOrderContext updateWO = new V3WorkOrderContext();
+
+			boolean userAssigned = false;
+			if (userID != -1 &&
+					(workOrder.getAssignedTo() == null || workOrder.getAssignedTo().getOuid() == -1)) {
+				User user = new User();
+				user.setOuid(userID);
+				workOrder.setAssignedTo(user);
+				updateWO.setAssignedTo(user);
+				userAssigned = true;
+			}
+
+			if (groupID != -1 &&
+					(workOrder.getAssignmentGroup() == null || workOrder.getAssignmentGroup().getGroupId() == -1)) {
+				Group group = new Group();
+				group.setId(groupID);
+				workOrder.setAssignmentGroup(group);
+				updateWO.setAssignmentGroup(group);
+				userAssigned = true;
+			}
+			try {
+				if (userAssigned) {
+					if (userID != -1 || groupID != -1) {
+						FacilioStatus status = TicketAPI.getStatus("Assigned");
+						workOrder.setStatus(status);
+						updateWO.setStatus(status);
+					}
+					workOrder.setAssignedBy(AccountUtil.getCurrentUser());
+					updateWO.setAssignedBy(AccountUtil.getCurrentUser());
+
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+					UpdateRecordBuilder<V3WorkOrderContext> updateBuilder = new UpdateRecordBuilder<V3WorkOrderContext>()
+							.module(woModule).fields(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
+							.andCondition(CriteriaAPI.getIdCondition(workOrder.getId(), woModule));
+					updateBuilder.update(updateWO);
+
+					CommonCommandUtil.addEventType(EventType.ASSIGN_TICKET, (FacilioContext) context);
+				}
+			} catch (Exception e) {
+				LOGGER.error("Exception occurred ", e);
+			}
+		}
 
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
@@ -566,50 +659,13 @@ public enum ActionType {
 			assignedToUserId = (long) obj.get("assignedUserId");
 			assignGroupId = (long) obj.get("assignedGroupId");
 
-			V3WorkOrderContext workOrder = (V3WorkOrderContext) currentRecord;
-			V3WorkOrderContext updateWO = new V3WorkOrderContext();
-
-			boolean userAssigned = false;
-			if (assignedToUserId != -1 &&
-					(workOrder.getAssignedTo() == null || workOrder.getAssignedTo().getOuid() == -1)) {
-				User user = new User();
-				user.setOuid(assignedToUserId);
-				workOrder.setAssignedTo(user);
-				updateWO.setAssignedTo(user);
-				userAssigned = true;
+			if (currentRecord instanceof V3WorkOrderContext) {
+				LOGGER.info("v3 WO instance");
+				performActionForV3WO(context, currentRecord, assignedToUserId, assignGroupId);
+			} else {
+				LOGGER.info("WO instance");
+				performActionForWO(context, currentRecord, assignedToUserId, assignGroupId);
 			}
-
-			if (assignGroupId != -1 &&
-					(workOrder.getAssignmentGroup() == null || workOrder.getAssignmentGroup().getGroupId() == -1)) {
-				Group group = new Group();
-				group.setId(assignGroupId);
-				workOrder.setAssignmentGroup(group);
-				updateWO.setAssignmentGroup(group);
-				userAssigned = true;
-			}
-			try {
-				if (userAssigned) {
-					if (assignedToUserId != -1 || assignGroupId != -1) {
-						FacilioStatus status = TicketAPI.getStatus("Assigned");
-						workOrder.setStatus(status);
-						updateWO.setStatus(status);
-					}
-					workOrder.setAssignedBy(AccountUtil.getCurrentUser());
-					updateWO.setAssignedBy(AccountUtil.getCurrentUser());
-					
-					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
-					UpdateRecordBuilder<V3WorkOrderContext> updateBuilder = new UpdateRecordBuilder<V3WorkOrderContext>()
-							.module(woModule).fields(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
-							.andCondition(CriteriaAPI.getIdCondition(workOrder.getId(), woModule));
-					updateBuilder.update(updateWO);
-					
-					CommonCommandUtil.addEventType(EventType.ASSIGN_TICKET, (FacilioContext) context);
-				}
-			} catch (Exception e) {
-				LOGGER.error("Exception occurred ", e);
-			}
-
 		}
 
 	},
