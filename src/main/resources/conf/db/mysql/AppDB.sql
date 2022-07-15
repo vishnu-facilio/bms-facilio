@@ -43462,7 +43462,7 @@ CREATE TABLE IF NOT EXISTS Vendor_Quotes
     RFQ_ID             BIGINT  NOT NULL,
     VENDOR             BIGINT,
     REPLY_DATE         BIGINT(20),
-    FINALIZED           TINYINT
+    FINALIZED           TINYINT,
     EXPECTED_REPLY_DATE BIGINT(20),
     FORM_ID            BIGINT,
     LOCAL_ID           BIGINT(20),
