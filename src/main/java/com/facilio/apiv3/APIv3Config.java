@@ -181,7 +181,6 @@ import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
 import com.facilio.v3.commands.FetchChangeSetForCustomActivityCommand;
 import com.facilio.v3.context.Constants;
 import com.facilio.workflowlog.context.WorkflowLogContext;
-
 import org.apache.commons.chain.Context;
 
 import java.util.function.Supplier;
