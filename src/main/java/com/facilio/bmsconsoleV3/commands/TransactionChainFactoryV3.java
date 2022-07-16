@@ -32,6 +32,7 @@ import com.facilio.bmsconsoleV3.commands.tool.ToolTypeQuantityRollupCommandV3;
 import com.facilio.bmsconsoleV3.commands.tool.UpdateIsUnderStockedCommandV3;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsoleV3.commands.receipts.*;
+import com.facilio.bmsconsoleV3.plannedmaintenance.jobplan.FillTasksAndPrerequisitesCommand;
 import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -404,6 +405,7 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getWorkorderAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ValidateTasksCommandV3());
+        c.addCommand(new FillTasksAndPrerequisitesCommand());
         c.addCommand(new AddTaskSectionsV3());
         c.addCommand(new AddTasksCommandV3());
         c.addCommand(new AddTaskOptions());
@@ -438,6 +440,7 @@ public class TransactionChainFactoryV3 {
         // c.addCommand(new VerifyApprovalCommandV3());
         c.addCommand(new UpdateEventListForStateFlowCommandV3());
         c.addCommand(new UpdateWorkorderFieldsForUpdateCommandV3());
+        c.addCommand(new FillTasksAndPrerequisitesCommand());
         c.addCommand(new BackwardCompatibleStateFlowUpdateCommandV3());
         c.addCommand(new ToVerifyStateFlowtransitionForStartCommandV3());
 
@@ -1802,26 +1805,6 @@ public class TransactionChainFactoryV3 {
         return chain;
     }
 
-    public static FacilioChain getPMExecuteNowChain() {
-        FacilioChain chain = getDefaultChain();
-        chain.addCommand(new PMExecuteNowContextCommand());
-        //        chain.addCommand(new FetchReadingsModuleFieldsCommand());
-
-        //  cmd 1 - create wo and persit to db
-        // cmd 2 - fill tasks and prerequisites from 3 JP objects
-        return chain;
-    }
-
-    // getPreOpenToDefaultChain convertes preopen wo to open wo
-    public static FacilioChain getPreOpenToDefaultChain() {
-        FacilioChain chain = getDefaultChain();
-        //        chain.addCommand(new FetchReadingsModuleFieldsCommand());
-
-
-        //  cmd 1 - change wo state from preopen to open
-        // cmd 2 - fill tasks and prerequisites from 3 JP objects
-        return chain;
-    }
     public static FacilioChain getUpdateDashboardChainV3() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new DuplicateDashboardForBuildingCommand());
