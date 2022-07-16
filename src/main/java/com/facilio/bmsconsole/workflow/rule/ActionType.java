@@ -1634,6 +1634,7 @@ public enum ActionType {
 				Map<String, List<ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
 				FacilioChain createRecordChain = ChainUtil.getCreateChain(moduleName);
 				FacilioContext createContext = createRecordChain.getContext();
+	            createContext.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
 				Constants.setRecordMap(createContext, recordMap);
 				Constants.setModuleName(createContext, moduleName);
 				FacilioModule module = ChainUtil.getModule(moduleName);
