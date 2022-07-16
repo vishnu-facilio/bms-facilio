@@ -17598,7 +17598,7 @@ VALUES (${orgId}, @FAILURE_CODE_ID, 'description', 'Description', 1, 'DESCRIPTIO
 INSERT INTO StringFields (FIELDID , ORGID) VALUES ((SELECT LAST_INSERT_ID()), ${orgId});
 
 --adding failure class
-INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, MODULE_TYPE) VALUES (${orgId}, 'failureclass', 'Failure Class', 'Failure_Class', @SUB_ENTITY_MODULE_TYPE);
+INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, MODULE_TYPE,IS_TRASH_ENABLED) VALUES (${orgId}, 'failureclass', 'Failure Class', 'Failure_Class', @BASE_ENTITY_MODULE_TYPE,true);
 SET @FAILURE_CLASS_ID := (SELECT LAST_INSERT_ID());
 INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT)
 VALUES (${orgId}, @FAILURE_CLASS_ID, 'name', 'Name', 1, 'NAME', 1, false, false, true);
