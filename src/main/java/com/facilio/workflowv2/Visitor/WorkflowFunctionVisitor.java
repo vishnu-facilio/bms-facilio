@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import com.facilio.scriptengine.systemfunctions.FacilioDBFunction;
+import com.facilio.scriptengine.systemfunctions.FacilioDatabaseConnection;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -318,7 +320,7 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
                     	else if (value.asObject() instanceof FacilioSystemFunctionNameSpace) {
                     		wfFunctionContext.setNameSpace(((FacilioSystemFunctionNameSpace)value.asObject()).getName());
                     	}
-						else if(value.asObject() instanceof Connection){
+						else if(value.asObject() instanceof FacilioDatabaseConnection){
 							wfFunctionContext.setNameSpace(((FacilioSystemFunctionNameSpace.DATABASE_CONNECTION.getName())));
 							isDataTypeSpecificFunction = true;
 						}
