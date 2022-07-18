@@ -124,3 +124,6 @@ classes:
 
     #Adding Weather service modules
   - com.facilio.bmsconsoleV3.signup.weather.AddWeatherModules
+
+    #Adding Fields for JobPlan Task Section module
+  - com.facilio.bmsconsoleV3.signup.jobPlan.AddJobPlanTaskSectionFields
