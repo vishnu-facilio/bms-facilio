@@ -132,6 +132,9 @@ public class PeopleAPI {
 			people = new PeopleContext();
 			people.setEmail(email);
 			people.setPeopleType(PeopleType.OCCUPANT);
+			
+			people.setName(MailMessageUtil.getNameFromEmail.apply(people.getEmail()));
+			
 			FacilioChain c = TransactionChainFactory.addPeopleChain();
 			c.getContext().put(FacilioConstants.ContextNames.VERIFY_USER, false);
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);

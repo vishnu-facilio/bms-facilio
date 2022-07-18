@@ -11,6 +11,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PeopleContext;
+import com.facilio.bmsconsole.context.PeopleContext.PeopleType;
 import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -54,6 +55,8 @@ public class AddRequesterForServiceRequestCommandV3 extends FacilioCommand {
 						if(requester.getName() == null) {
 							requester.setName(MailMessageUtil.getNameFromEmail.apply(requester.getEmail()));
 						}
+						requester.setPeopleType(PeopleType.OCCUPANT);
+
 						FacilioChain c = TransactionChainFactory.addPeopleChain();
 						c.getContext().put(FacilioConstants.ContextNames.VERIFY_USER, false);
 						c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
