@@ -250,6 +250,7 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
                 		}
             			wfContext.setParams(paramValues);
             			wfContext.setGlobalParameters(getGlobalParam());
+            			wfContext.setLogStringBuilder(this.getScriptContext().getLogStringBuilder());
             			
             			Object res = wfContext.executeWorkflow();
             			
