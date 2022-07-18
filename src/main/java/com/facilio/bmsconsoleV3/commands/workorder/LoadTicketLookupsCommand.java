@@ -35,6 +35,11 @@ public class LoadTicketLookupsCommand extends FacilioCommand {
         LookupField type = (LookupField) fieldsAsMap.get("type");
         fetchLookupsList.add(type);
 
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLIENT)) {
+            LookupField client = (LookupField) fieldsAsMap.get("client");
+            fetchLookupsList.add(client);
+        }
+
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
         return false;
     }
