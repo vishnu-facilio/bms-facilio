@@ -192,7 +192,8 @@ public class ApplicationContext implements Serializable{
 	public static enum AppCategory implements FacilioIntEnum {
 		PORTALS,
 		WORK_CENTERS,
-		FEATURE_GROUPING;
+		FEATURE_GROUPING,
+		TOOLS;
 
 		private AppCategory() {
 		}

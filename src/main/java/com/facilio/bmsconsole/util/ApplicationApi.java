@@ -407,6 +407,8 @@ public class ApplicationApi {
         ApplicationContext maintenanceApplication = new ApplicationContext(orgId, "Maintenance", false, facilioApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Maintenance App", ApplicationContext.AppCategory.WORK_CENTERS.getIndex());
         maintenanceApplication.setConfig(FacilioUtil.parseJson("{\"canShowSitesSwitch\":true}"));
 
+        ApplicationContext dataLoaderApplication = new ApplicationContext(orgId, "Data Loader", false, facilioApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.DATA_LOADER_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Data Loader App", ApplicationContext.AppCategory.TOOLS.getIndex());
+
         List<ApplicationContext> applicationsDefault = new ArrayList<ApplicationContext>();
         applicationsDefault.add(facilioApplication);
         applicationsDefault.add(servicePortalapplication);
@@ -415,6 +417,7 @@ public class ApplicationApi {
         applicationsDefault.add(clientPortalapplication);
         applicationsDefault.add(facilioAgentApplication);
         applicationsDefault.add(maintenanceApplication);
+        applicationsDefault.add(dataLoaderApplication);
 
         List<Map<String, Object>> props = FieldUtil.getAsMapList(applicationsDefault, ApplicationContext.class);
 
@@ -471,6 +474,18 @@ public class ApplicationApi {
             addAppRoleMapping(maintenanceManager.getRoleId(), maintenance.getId());
             Role maintenanceTechnician = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.DefaultRoleNames.MAINTENANCE_TECHNICIAN);
             addAppRoleMapping(maintenanceTechnician.getRoleId(), maintenance.getId());
+        }
+
+        ApplicationContext dataLoader = getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.DATA_LOADER_APP);
+
+        if (dataLoader.getId() > 0) {
+            addDefaultScoping(dataLoader.getId());
+
+            ApplicationLayoutContext dataLoaderLayout = new ApplicationLayoutContext(dataLoader.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.DATA_LOADER_APP);
+            addApplicationLayout(dataLoaderLayout);
+
+            Role dataLoaderAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.DefaultRoleNames.DATA_LOADER_ADMIN);
+            addAppRoleMapping(dataLoaderAdmin.getRoleId(), dataLoader.getId());
         }
 
         ApplicationContext servicePortal = getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
