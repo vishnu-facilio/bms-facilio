@@ -26,6 +26,16 @@ public class V3RequestForQuotationContext extends V3Context {
     private Boolean isPoCreated;
     private List<Long> recordIds;
 
+    private Long expectedReplyDate;
+
+    public Long getExpectedReplyDate() {
+        return expectedReplyDate;
+    }
+
+    public void setExpectedReplyDate(Long expectedReplyDate) {
+        this.expectedReplyDate = expectedReplyDate;
+    }
+
     public String getName() {
         return name;
     }

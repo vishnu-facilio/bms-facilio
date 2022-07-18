@@ -794,6 +794,16 @@ public class ViewFactory {
 
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("all", getAllFailureCodes().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.FAILURE_CODE, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllFailureClass().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.FAILURE_CLASS, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
 		views.put("all", getAllHiddenVendorContacts().setOrder(order++));
 		views.put("all-contacts", getAllVendorContacts().setOrder(order++));
 
@@ -842,21 +852,6 @@ public class ViewFactory {
 		views.put("all", getAllTaxes().setOrder(order++));
 		views.put("active", getActiveTaxes().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.TAX, views);
-
-		order = 1;
-		views = new LinkedHashMap<>();
-		views.put("all", getAllQuotationTerms().setOrder(order++));
-		viewsMap.put(FacilioConstants.ContextNames.QUOTE_ASSOCIATED_TERMS, views);
-
-		order = 1;
-		views = new LinkedHashMap<>();
-		views.put("all", getAllPOTerms().setOrder(order++));
-		viewsMap.put(FacilioConstants.ContextNames.PO_ASSOCIATED_TERMS, views);
-
-		order = 1;
-		views = new LinkedHashMap<>();
-		views.put("all", getAllPRTerms().setOrder(order++));
-		viewsMap.put(FacilioConstants.ContextNames.PR_ASSOCIATED_TERMS, views);
 
 		order = 1;
 		views = new LinkedHashMap<>();
@@ -1355,7 +1350,7 @@ public class ViewFactory {
 
 		return allView;
 	}
-	
+
 	private static FacilioView getAllHiddenTenantContacts() {
 
 		FacilioModule tenantContactModule = ModuleFactory.getTenantContactModule();
@@ -1373,6 +1368,48 @@ public class ViewFactory {
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		
 		allView.setHidden(true);
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+
+	private static FacilioView getAllFailureCodes() {
+
+		FacilioModule failureCodeModule = ModuleFactory.getFailureCodeModule();
+
+		FacilioField id = new FacilioField();
+		id.setName("id");
+		id.setColumnName("ID");
+		id.setDataType(FieldType.NUMBER);
+		id.setModule(failureCodeModule);
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Failure Codes");
+		allView.setModuleName(failureCodeModule.getName());
+		allView.setSortFields(Arrays.asList(new SortField(id, false)));
+
+		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+
+		return allView;
+	}
+
+	private static FacilioView getAllFailureClass() {
+
+		FacilioModule failureClassModule = ModuleFactory.getFailureClassModule();
+
+		FacilioField id = new FacilioField();
+		id.setName("id");
+		id.setColumnName("ID");
+		id.setDataType(FieldType.NUMBER);
+		id.setModule(failureClassModule);
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Failure Class");
+		allView.setModuleName(failureClassModule.getName());
+		allView.setSortFields(Arrays.asList(new SortField(id, false)));
+
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return allView;
@@ -8144,60 +8181,6 @@ public class ViewFactory {
 		criteria.addOrCondition(condition);
 
 		allView.setCriteria(criteria);
-
-		return allView;
-	}
-
-	private static FacilioView getAllQuotationTerms() {
-
-		FacilioModule module = ModuleFactory.getQuotationTermsModule();
-
-		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
-
-		FacilioView allView = new FacilioView();
-		allView.setName("all");
-		allView.setDisplayName("All Quote Terms");
-		allView.setModuleName(module.getName());
-		allView.setSortFields(sortFields);
-
-		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
-
-
-		return allView;
-	}
-
-	private static FacilioView getAllPOTerms() {
-
-		FacilioModule module = ModuleFactory.getPOTermsModule();
-
-		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
-
-		FacilioView allView = new FacilioView();
-		allView.setName("all");
-		allView.setDisplayName("All PO Terms");
-		allView.setModuleName(module.getName());
-		allView.setSortFields(sortFields);
-
-		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
-
-
-		return allView;
-	}
-
-	private static FacilioView getAllPRTerms() {
-
-		FacilioModule module = ModuleFactory.getPRTermsModule();
-
-		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
-
-		FacilioView allView = new FacilioView();
-		allView.setName("all");
-		allView.setDisplayName("All PR Terms");
-		allView.setModuleName(module.getName());
-		allView.setSortFields(sortFields);
-
-		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
-
 
 		return allView;
 	}

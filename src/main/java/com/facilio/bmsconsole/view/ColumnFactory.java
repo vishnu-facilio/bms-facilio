@@ -226,10 +226,6 @@ public class ColumnFactory {
 		columnMap.put("client-default", getDefaultClientColumns());
 
 		columnMap.put("quote-default", getDefaultQuotationColumns());
-		columnMap.put("quoteterms-default", getDefaultTermsSubModuleColumns());
-
-		columnMap.put("poterms-default", getDefaultTermsSubModuleColumns());
-		columnMap.put("prterms-default", getDefaultTermsSubModuleColumns());
 
 		columnMap.put("budget-default", getDefaultBudgetColumns());
 		columnMap.put("chartofaccount-default", getDefaultChartOfAccountColumns());
@@ -1057,7 +1053,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("acknowledged", "Acknowledged"));
 		columns.add(new ViewField("noOfOccurrences", "Occurrences"));
 		columns.add(new ViewField("lastCreatedTime", "Last Occurred Time"));
-		columns.add(new ViewField("readingalarmcategory", "Category" ));
+		columns.add(new ViewField("readingAlarmAssetCategory", "Asset Category" ));
 		columns.add(new ViewField("faultType", "Fault Type"));
 		// columns.add(new ViewField("rule", "Rule"));
 		return columns;
@@ -1797,16 +1793,6 @@ public class ColumnFactory {
 		columns.add(new ViewField("tenant", "Tenant"));
 		columns.add(new ViewField("moduleState", "Status"));
 
-
-		return columns;
-	}
-
-	private static List<ViewField> getDefaultTermsSubModuleColumns() {
-		List<ViewField> columns = new ArrayList<ViewField>();
-
-		columns.add(new ViewField("name", "Name", "terms"));
-		columns.add(new ViewField("shortDesc", "Short Description", "terms"));
-		columns.add(new ViewField("longDesc", "Long Description", "terms"));
 
 		return columns;
 	}

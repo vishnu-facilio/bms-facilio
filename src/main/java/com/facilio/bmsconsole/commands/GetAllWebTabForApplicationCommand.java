@@ -17,10 +17,13 @@ import org.apache.commons.collections4.CollectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.stream.Collectors;
+
 public class GetAllWebTabForApplicationCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         long appId = (long) context.get(FacilioConstants.ContextNames.APPLICATION_ID);
+        boolean filterSetUpTab=(boolean)context.get((FacilioConstants.ContextNames.FILTER_SET_UP_TAP));
 
         ApplicationContext application = null;
         if (appId <= 0) {
@@ -32,6 +35,8 @@ public class GetAllWebTabForApplicationCommand extends FacilioCommand {
             List<WebTabContext> webTabs = ApplicationApi.getWebTabsForApplication(appId);
             if (webTabs != null && !webTabs.isEmpty()) {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                webTabs = webTabs.stream().filter(webtab -> webtab.getTypeEnum().getTabType().equals(filterSetUpTab?WebTabContext.TabType.SETUP:WebTabContext.TabType.NORMAL))
+                        .collect(Collectors.toList());
                 for (WebTabContext webtab : webTabs) {
                     webtab.setPermissions(ApplicationApi.getPermissionsForWebTab(webtab.getId()));
                     List<TabIdAppIdMappingContext> tabIdAppIdMappingContextList = ApplicationApi.getTabIdModules(webtab.getId());

@@ -16,6 +16,11 @@ public class LargeTextField extends FacilioField implements SupplementRecord {
 	public static final String PARENT_FIELD_NAME = "parentId";
     public static final String FILE_FIELD_NAME = "fileId";
 
+	private boolean skipSizeCheck;
+
+	public boolean getSkipSizeCheck(){
+		return skipSizeCheck;
+	}
 	private FacilioModule relModule;
 	private long relModuleId = -1;
 	
@@ -28,6 +33,7 @@ public class LargeTextField extends FacilioField implements SupplementRecord {
         super(field);
         this.relModule = field.relModule;
         this.relModuleId = field.relModuleId;
+		this.skipSizeCheck=field.skipSizeCheck;
     }
 
 	@Override

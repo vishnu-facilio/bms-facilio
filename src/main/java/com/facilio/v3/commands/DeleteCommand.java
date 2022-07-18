@@ -53,6 +53,9 @@ public class DeleteCommand extends FacilioCommand {
         List<ModuleBaseWithCustomFields> deletedRecords = builder.get();
 
         Constants.setDeletedRecords(context, deletedRecords);
+        Map<String, List<ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
+        recordMap.put(moduleName,deletedRecords);
+        Constants.setRecordMap(context, recordMap);
     }
 
     private void deleteModuleRecords(List<Long> recordIds,  String moduleName, Map<String, Integer> deleteCount) throws Exception {

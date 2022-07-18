@@ -1081,6 +1081,7 @@ public class FieldFactory extends BaseFieldFactory {
 
         fields.add(getField("fieldId", "FIELDID", module, FieldType.ID));
         fields.add(getField("relModuleId", "DATA_MODULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("skipSizeCheck","SKIP_SIZE_CHECK",module,FieldType.BOOLEAN));
 
         return fields;
     }

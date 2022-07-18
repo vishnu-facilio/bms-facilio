@@ -126,6 +126,7 @@ public class AddWeatherModules extends SignUpData {
         fields.add(precipitationTypeField);
 
         fields.add(FieldFactory.getDefaultField("windSpeed", "Wind Speed", "WIND_SPEED", FieldType.DECIMAL));
+        fields.add(FieldFactory.getDefaultField("windDegree", "Wind Degree", "WIND_DEGREE", FieldType.DECIMAL));
         fields.add(FieldFactory.getDefaultField("windGust", "Wind Gust", "WIND_GUST", FieldType.DECIMAL));
         fields.add(FieldFactory.getDefaultField("windBearing", "Wind Bearing", "WIND_BEARING", FieldType.DECIMAL));
         fields.add(FieldFactory.getDefaultField("cloudCover", "Cloud Cover", "CLOUD_COVER", FieldType.DECIMAL));

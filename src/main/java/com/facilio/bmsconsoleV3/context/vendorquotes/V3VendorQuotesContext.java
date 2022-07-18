@@ -13,6 +13,25 @@ public class V3VendorQuotesContext extends V3Context {
     private V3VendorContext vendor;
     private List<V3VendorQuotesLineItemsContext> vendorQuotesLineItems;
     private Long replyDate;
+    private Boolean isFinalized;
+
+    private Long expectedReplyDate;
+
+    public Boolean getFinalized() {
+        return isFinalized;
+    }
+
+    public void setFinalized(Boolean isFinalized) {
+        this.isFinalized = isFinalized;
+    }
+
+    public Long getExpectedReplyDate() {
+        return expectedReplyDate;
+    }
+
+    public void setExpectedReplyDate(Long expectedReplyDate) {
+        this.expectedReplyDate = expectedReplyDate;
+    }
 
     public V3RequestForQuotationContext getRequestForQuotation() {
         return requestForQuotation;

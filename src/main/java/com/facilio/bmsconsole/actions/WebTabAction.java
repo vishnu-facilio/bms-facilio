@@ -9,6 +9,8 @@ import com.facilio.bmsconsole.context.WebtabWebgroupContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -30,6 +32,9 @@ public class WebTabAction extends FacilioAction {
         this.appId = appId;
     }
 
+    @Getter
+    @Setter
+    private boolean filterSetUpTab=false;
     private long layoutId;
 
     public long getLayoutId() {
@@ -178,6 +183,7 @@ public class WebTabAction extends FacilioAction {
         FacilioChain chain = ReadOnlyChainFactory.getAllTabForApplicationChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.APPLICATION_ID, getAppId());
+        context.put(FacilioConstants.ContextNames.FILTER_SET_UP_TAP,isFilterSetUpTab());
         chain.execute();
 
         setResult(FacilioConstants.ContextNames.WEB_TABS, context.get(FacilioConstants.ContextNames.WEB_TABS));

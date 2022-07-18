@@ -39,9 +39,6 @@ public abstract class ExecutorBase implements Executor {
                 workOrderCopy.setTriggerId(pmPlanner.getTrigger().getId());
                 workOrderCopy.setJobStatus(V3WorkOrderContext.JobsStatus.ACTIVE.getValue());
                 workOrderCopy.setSourceType(V3TicketContext.SourceType.PREVENTIVE_MAINTENANCE.getIntVal());
-                workOrderCopy.setJobPlanID(pmResourcePlanner.getJobPlan().getId());
-                workOrderCopy.setPrerequisitesJobPlanID(pmPlanner.getPreReqJobPlan().getId());
-                workOrderCopy.setAdHocTasksJobPlanID(pmPlanner.getAdhocJobPlan().getId());
                 workOrderCopy.setStatus(status);
                 result.add(workOrderCopy);
             }

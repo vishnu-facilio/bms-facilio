@@ -37,7 +37,7 @@ public class AddAssetCategoryModuleCommandV3 extends FacilioCommand {
 
         // Create a new module for the new Asset Category
         FacilioModule module = new FacilioModule();
-        module.setName(name.toLowerCase().replaceAll("[^a-zA-Z0-9]+", ""));
+        module.setName("custom_" + name.toLowerCase().replaceAll("[^a-zA-Z0-9]+", ""));
         module.setDisplayName(name);
         module.setTableName("AssetCustomModuleData");
         module.setType(FacilioModule.ModuleType.BASE_ENTITY);

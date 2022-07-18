@@ -56,6 +56,7 @@ import com.facilio.bmsconsoleV3.commands.item.UpdateItemTransactionsCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.FetchJobPlanLookupCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.FillJobPlanDetailsCommand;
+import com.facilio.bmsconsoleV3.commands.jobplan.ValidationForJobPlanCategory;
 import com.facilio.bmsconsoleV3.commands.labour.GetLabourListCommandV3;
 import com.facilio.bmsconsoleV3.commands.labour.SetLocationCommandV3;
 import com.facilio.bmsconsoleV3.commands.moves.UpdateEmployeeInDesksCommandV3;
@@ -128,6 +129,8 @@ import com.facilio.bmsconsoleV3.context.communityfeatures.*;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.*;
+import com.facilio.bmsconsoleV3.context.failurecode.V3FailureClassContext;
+import com.facilio.bmsconsoleV3.context.failurecode.V3FailureCodeContext;
 import com.facilio.bmsconsoleV3.context.floorplan.*;
 import com.facilio.bmsconsoleV3.context.inventory.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
@@ -179,7 +182,6 @@ import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
 import com.facilio.v3.commands.FetchChangeSetForCustomActivityCommand;
 import com.facilio.v3.context.Constants;
 import com.facilio.workflowlog.context.WorkflowLogContext;
-
 import org.apache.commons.chain.Context;
 
 import java.util.function.Supplier;
@@ -230,7 +232,7 @@ public class APIv3Config {
 
     @ModuleType(type = FacilioModule.ModuleType.RELATION_DATA)
     public static Supplier<V3Config> getRelationHandler() {
-	    return () -> new V3Config(RelationDataContext.class, null)
+        return () -> new V3Config(RelationDataContext.class, null)
                 .list()
                 .beforeFetch(ReadOnlyChainFactoryV3.getRelationDataListChain())
                 .afterFetch(ReadOnlyChainFactoryV3.updateRelationSupplementsChain())
@@ -360,7 +362,7 @@ public class APIv3Config {
     @Module(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_TENANT_SHARING_MODULE_NAME)
     public static Supplier<V3Config> getScheduleExceptionTenantCRUD() {
         return () -> new V3Config(ControlScheduleExceptionTenantContext.class, null) // to be changed to
-                                                                                     // ControlScheduleExceptionTenantContext
+                // ControlScheduleExceptionTenantContext
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getAddControlScheduleExceptionBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getAddControlScheduleExceptionAfterSaveChain())
@@ -521,6 +523,27 @@ public class APIv3Config {
                 .build();
     }
 
+    @Module("failurecode")
+    public static Supplier<V3Config> getFailureCode() {
+        return () -> new V3Config(V3FailureCodeContext.class, null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+    @Module("failureclass")
+    public static Supplier<V3Config> getFailureClass() {
+        return () -> new V3Config(V3FailureClassContext.class, null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+
     @Module("insurance")
     public static Supplier<V3Config> getInsurance() {
         return () -> new V3Config(V3InsuranceContext.class, new ModuleCustomFieldCount30())
@@ -585,7 +608,7 @@ public class APIv3Config {
                 .beforeSave(new AddAddressForClientLocationCommandV3())
                 .afterSave(TransactionChainFactoryV3.getAddClientsAfterSaveChain())
                 .update()
-                .beforeSave(new AssociateClientFromSite(),new DisassociateClientFromSiteCommand(), new UpdateAddressForClientLocationCommandV3())
+                .beforeSave(new AssociateClientFromSite(), new DisassociateClientFromSiteCommand(), new UpdateAddressForClientLocationCommandV3())
                 .list()
                 .beforeFetch(new LoadClientLookupCommandV3())
                 .summary()
@@ -598,7 +621,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getLabour() {
         return () -> new V3Config(LabourContextV3.class, new ModuleCustomFieldCount30())
                 .create()
-                .beforeSave(new SetLocationCommandV3(),new SetLocalIdCommandV3())
+                .beforeSave(new SetLocationCommandV3(), new SetLocalIdCommandV3())
                 .list()
                 .beforeFetch(new GetLabourListCommandV3())
                 .update()
@@ -758,6 +781,7 @@ public class APIv3Config {
                 .delete()
                 .build();
     }
+
     @Module("vendorQuotesLineItems")
     public static Supplier<V3Config> getVendorQuotesLineItems() {
         return () -> new V3Config(V3VendorQuotesLineItemsContext.class, null)
@@ -791,17 +815,19 @@ public class APIv3Config {
                 .beforeFetch(new LoadItemLookUpCommandV3())
                 .build();
     }
+
     @Module("itemTransactions")
     public static Supplier<V3Config> getItemTransactions() {
         return () -> new V3Config(V3ItemTransactionsContext.class, new ModuleCustomFieldCount30())
                 .create()
-                .beforeSave(new SetManualItemTransactionCommandV3(),new AdjustmentItemTransactionCommandV3())
+                .beforeSave(new SetManualItemTransactionCommandV3(), new AdjustmentItemTransactionCommandV3())
                 .afterSave(new UpdateItemTransactionsCommandV3())
                 .update()
                 .list()
                 .summary()
                 .build();
     }
+
     @Module("toolTransactions")
     public static Supplier<V3Config> getToolTransactions() {
         return () -> new V3Config(V3ToolTransactionContext.class, new ModuleCustomFieldCount30())
@@ -813,6 +839,7 @@ public class APIv3Config {
                 .summary()
                 .build();
     }
+
     @Module("toolTypes")
     public static Supplier<V3Config> getToolTypes() {
         return () -> new V3Config(V3ToolTypesContext.class, new ModuleCustomFieldCount30())
@@ -1456,8 +1483,10 @@ public class APIv3Config {
     public static Supplier<V3Config> getJobPlan() {
         return () -> new V3Config(JobPlanContext.class, new ModuleCustomFieldCount30())
                 .create()
+                .beforeSave(new ValidationForJobPlanCategory())
                 .afterSave(TransactionChainFactoryV3.getCreateJobPlanChain())
                 .update()
+                .beforeSave(new ValidationForJobPlanCategory())
                 .afterSave(TransactionChainFactoryV3.getUpdateJobPlanChain())
                 .list()
                 .beforeFetch(new FetchJobPlanLookupCommand())
@@ -1468,6 +1497,7 @@ public class APIv3Config {
 
                 .build();
     }
+
     @Module("jobPlanItems")
     public static Supplier<V3Config> getJobPlanItems() {
         return () -> new V3Config(JobPlanItemsContext.class, null)
@@ -1478,6 +1508,7 @@ public class APIv3Config {
                 .delete()
                 .build();
     }
+
     @Module("jobPlanTools")
     public static Supplier<V3Config> getJobPlanTools() {
         return () -> new V3Config(JobPlanToolsContext.class, null)
@@ -1488,6 +1519,7 @@ public class APIv3Config {
                 .delete()
                 .build();
     }
+
     @Module("jobPlanServices")
     public static Supplier<V3Config> getJobPlanServices() {
         return () -> new V3Config(JobPlanServicesContext.class, null)
@@ -1498,6 +1530,7 @@ public class APIv3Config {
                 .delete()
                 .build();
     }
+
     @Module("indoorfloorplan")
     public static Supplier<V3Config> getIndoorFloorPlan() {
         return () -> new V3Config(V3IndoorFloorPlanContext.class, new ModuleCustomFieldCount30())
@@ -1868,9 +1901,10 @@ public class APIv3Config {
         return () -> new V3Config(FaultImpactNameSpaceFieldContext.class, null)
                 .build();
     }
+
     @Module("assetdepartment")
-    public static Supplier<V3Config> getAssetDepartment(){
-        return () -> new V3Config(V3AssetDepartmentContext.class,null)
+    public static Supplier<V3Config> getAssetDepartment() {
+        return () -> new V3Config(V3AssetDepartmentContext.class, null)
                 .create()
                 .list()
                 .update()
@@ -1878,6 +1912,7 @@ public class APIv3Config {
                 .beforeDelete(TransactionChainFactoryV3.getDeleteAssetDepartmentChain())
                 .build();
     }
+
     @Module("receivable")
     public static Supplier<V3Config> getReceivable() {
         return () -> new V3Config(V3ReceivableContext.class, null)
@@ -1907,7 +1942,7 @@ public class APIv3Config {
     }
 
 
-    @Module("newreadingalarm")
+    @Module(FacilioConstants.ContextNames.NEW_READING_ALARM)
     public static Supplier<V3Config> getNewReadingAlarm() {
         return () -> new V3Config(ReadingAlarm.class, null)
                 .update()
@@ -1950,7 +1985,8 @@ public class APIv3Config {
                 .delete()
                 .build();
     }
-    @Module("bmsalarm")
+
+    @Module(FacilioConstants.ContextNames.BMS_ALARM)
     public static Supplier<V3Config> getBmsAlarm() {
         return () -> new V3Config(BaseAlarmContext.class, new ModuleCustomFieldCount30())
                 .update()
@@ -1960,6 +1996,22 @@ public class APIv3Config {
                 .summary()
                 .beforeFetch(new LoadSupplementsForBMSAlarmCommand())
                 .delete()
+                .build();
+    }
+
+    @Module(FacilioConstants.ContextNames.ALARM_OCCURRENCE)
+    public static Supplier<V3Config> getAlarmOccurrence() {
+        return () -> new V3Config(AlarmOccurrenceContext.class, null)
+                .list()
+                .summary()
+                .build();
+    }
+
+    @Module(FacilioConstants.ContextNames.BASE_EVENT)
+    public static Supplier<V3Config> getBmsEvent() {
+        return () -> new V3Config(BMSEventContext.class, null)
+                .list()
+                .summary()
                 .build();
     }
 }

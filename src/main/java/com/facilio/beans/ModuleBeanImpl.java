@@ -1701,6 +1701,9 @@ public class ModuleBeanImpl implements ModuleBean {
 			else if (field instanceof CurrencyField){
 				extendendPropsCount = updateExtendedProps(ModuleFactory.getCurrencyFieldsModule (), FieldFactory.getCurrencyFieldFields (), field);
 			}
+			else if (field instanceof LargeTextField){
+				extendendPropsCount = updateExtendedProps(ModuleFactory.getLargeTextFieldsModule(), FieldFactory.getLargeTextFieldFields(), field);
+			}
 //			else if (field instanceof ScoreField) {
 //				extendendPropsCount = updateExtendedProps(ModuleFactory.getScoreFieldModule(), FieldFactory.getScoreFieldFields(), field);
 //			}

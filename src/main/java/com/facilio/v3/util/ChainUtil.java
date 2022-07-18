@@ -279,6 +279,7 @@ public class ChainUtil {
         addIfNotNull(transactionChain, beforeDeleteCommand);
         transactionChain.addCommand(new DeleteCommand());
         addIfNotNull(transactionChain, afterDeleteCommand);
+        addWorkflowChain(transactionChain);
         addIfNotNull(transactionChain, afterTransactionCommand);
 
         return transactionChain;

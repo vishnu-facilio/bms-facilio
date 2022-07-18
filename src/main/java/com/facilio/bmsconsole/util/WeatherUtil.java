@@ -557,6 +557,7 @@ public class WeatherUtil {
 					getPrecipitationTypeField(moduleName).getIndex(precipitationType.toString()));
 		}
 		reading.addReading("windSpeed", hourlyWeather.get("windSpeed"));
+		reading.addReading("windDegree", hourlyWeather.get("windDegree"));
 		reading.addReading("windGust", hourlyWeather.get("windGust"));
 		reading.addReading("windBearing", hourlyWeather.get("windBearing"));
 		reading.addReading("cloudCover", hourlyWeather.get("cloudCover"));

@@ -369,6 +369,7 @@ public class V3Util {
         Constants.setBodyParams(context, bodyParams);
         context.put(Constants.QUERY_PARAMS, queryParams);
 
+        context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
         context.put(FacilioConstants.ContextNames.ONLY_PERMITTED_ACTIONS, restrictredAction);
 
         deleteChain.execute();

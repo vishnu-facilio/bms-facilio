@@ -34,7 +34,7 @@ public class CheckForTenantBeforeDeletionCommand extends FacilioCommand {
                         .andCondition(CriteriaAPI.getCondition("Tenant_Unit_Space.ID", "id", String.valueOf(id), NumberOperators.EQUALS));
                 List<V3TenantUnitSpaceContext> props = builder.get();
                 if(props.size() > 0){
-                    throw new IllegalArgumentException("The Parent Module Tenant has data associated");
+                    throw new IllegalArgumentException("Tenant Unit is occupied by a tenant");
                 }
             }
         }

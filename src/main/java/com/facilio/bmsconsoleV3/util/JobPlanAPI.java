@@ -2,15 +2,11 @@ package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.templates.TaskSectionTemplate;
-import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsoleV3.context.V3TaskContext;
-import com.facilio.bmsconsoleV3.context.budget.BudgetAmountContext;
-import com.facilio.bmsconsoleV3.context.budget.BudgetMonthlyAmountContext;
+import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.jobplan.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.constants.FacilioConstants;
@@ -19,14 +15,11 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
+import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
-import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.log4j.Level;
 
-import java.lang.reflect.Field;
 import java.util.*;
 
 public class JobPlanAPI {
@@ -52,15 +45,14 @@ public class JobPlanAPI {
                 .beanClass(JobPlanTaskSectionContext.class)
                 .select(modBean.getAllFields(module.getName()))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("jobPlan"), String.valueOf(jobPlanId), NumberOperators.EQUALS))
-                .orderBy("ID asc")
-                ;
+                .orderBy("ID asc");
         List<JobPlanTaskSectionContext> sections = builder.get();
-        if(CollectionUtils.isNotEmpty(sections)){
+        if (CollectionUtils.isNotEmpty(sections)) {
             for (JobPlanTaskSectionContext section : sections) {
-                List<JobPlanTasksContext> splitList =  getTasks(section.getId());
-                if(CollectionUtils.isNotEmpty(splitList)) {
+                List<JobPlanTasksContext> splitList = getTasks(section.getId());
+                if (CollectionUtils.isNotEmpty(splitList)) {
                     List<Map<String, Object>> mapList = FieldUtil.getAsMapList(splitList, JobPlanTasksContext.class);
-                    for(Map<String, Object> map : mapList){
+                    for (Map<String, Object> map : mapList) {
                         map.values().removeAll(Collections.singleton(null));
                     }
                     section.setTasks(mapList);
@@ -68,7 +60,7 @@ public class JobPlanAPI {
             }
             return sections;
         }
-         return null;
+        return null;
     }
 
     private static List<JobPlanTasksContext> getTasks(Long parentId) throws Exception {
@@ -80,12 +72,10 @@ public class JobPlanAPI {
                 .module(module)
                 .beanClass(JobPlanTasksContext.class)
                 .select(modBean.getAllFields(module.getName()))
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("taskSection"), String.valueOf(parentId), NumberOperators.EQUALS))
-                ;
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("taskSection"), String.valueOf(parentId), NumberOperators.EQUALS));
 
         List<JobPlanTasksContext> list = builder.get();
-        if(CollectionUtils.isNotEmpty(list))
-        {
+        if (CollectionUtils.isNotEmpty(list)) {
             return list;
         }
         return null;
@@ -108,12 +98,12 @@ public class JobPlanAPI {
         List<BuildingContext> buildingList = SpaceAPI.getAllBuildings(siteId);
 
         List<Long> floorIds = new ArrayList<>();
-        for(FloorContext floor : floorList) {
+        for (FloorContext floor : floorList) {
             floorIds.add(floor.getId());
         }
 
         List<Long> buildingsIds = new ArrayList<>();
-        for(BuildingContext building : buildingList) {
+        for (BuildingContext building : buildingList) {
             buildingsIds.add(building.getId());
         }
 
@@ -125,17 +115,17 @@ public class JobPlanAPI {
 
     public static Map<String, List<TaskContext>> getTaskMapFromJobPlan(List<JobPlanTaskSectionContext> sections, Long woResourceId) throws Exception {
         Map<String, List<TaskContext>> taskMap = new LinkedHashMap<>();
-        for(JobPlanTaskSectionContext jobPlanSection : sections ) {
+        for (JobPlanTaskSectionContext jobPlanSection : sections) {
             List<Long> resourceIds = getMatchingResourceIdsForJobPlan(jobPlanSection.getJobPlanSectionCategory().intValue(), woResourceId, jobPlanSection.getSpaceCategoryId(), jobPlanSection.getAssetCategoryId(), -1L);
 
             Map<String, Integer> dupSectionNameCount = new HashMap<>();
-            for(Long resourceId :resourceIds) {
-                if(resourceId == null || resourceId < 0) {
+            for (Long resourceId : resourceIds) {
+                if (resourceId == null || resourceId < 0) {
                     continue;
                 }
                 ResourceContext sectionResource = ResourceAPI.getResource(resourceId);
 
-                String sectionName = sectionResource.getName() + " - " +jobPlanSection.getName();
+                String sectionName = sectionResource.getName() + " - " + jobPlanSection.getName();
 
                 if (taskMap.containsKey(sectionName)) {
                     Integer count = dupSectionNameCount.get(sectionName);
@@ -151,8 +141,8 @@ public class JobPlanAPI {
                 List<JobPlanTasksContext> tasks = FieldUtil.getAsBeanListFromMapList(jobPlanSection.getTasks(), JobPlanTasksContext.class);
 
                 List<TaskContext> woTasks = new ArrayList<TaskContext>();
-                for(JobPlanTasksContext jobPlanTask :tasks) {
-                    if(jobPlanTask.getJobPlanTaskCategory() != null) {
+                for (JobPlanTasksContext jobPlanTask : tasks) {
+                    if (jobPlanTask.getJobPlanTaskCategory() != null) {
                         List<Long> taskResourceIds = getMatchingResourceIdsForJobPlan(jobPlanTask.getJobPlanTaskCategory().intValue(), sectionResource.getId(), jobPlanTask.getSpaceCategoryId(), jobPlanTask.getAssetCategoryId(), -1L);
                         for (Long taskResourceId : taskResourceIds) {
                             if (sectionCategory == JobPlanTaskSectionContext.JobPlanSectionCategory.ASSET_CATEGORY.getIndex() || sectionCategory == JobPlanTaskSectionContext.JobPlanSectionCategory.SPACE_CATEGORY.getIndex()) {
@@ -167,8 +157,7 @@ public class JobPlanAPI {
                             TaskContext t = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(jobPlanTask), TaskContext.class);
                             woTasks.add(t);
                         }
-                    }
-                    else {
+                    } else {
                         jobPlanTask.setSiteId(sectionResource.getSiteId());
                         TaskContext t = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(jobPlanTask), TaskContext.class);
                         woTasks.add(t);
@@ -185,31 +174,31 @@ public class JobPlanAPI {
     public static List<Long> getMatchingResourceIdsForJobPlan(Integer category, Long resourceId, Long spaceCategoryID, Long assetCategoryID, Long currentAssetId) throws Exception {
 
         List<Long> selectedResourceIds = new ArrayList<>();
-        switch(category) {
+        switch (category) {
             case 8:
                 selectedResourceIds.addAll(Collections.singletonList(resourceId));
                 break;
             case 7:
                 List<BaseSpaceContext> siteBuildingsWithFloors = SpaceAPI.getSiteBuildingsWithFloors(resourceId);
-                for (BaseSpaceContext building: siteBuildingsWithFloors) {
+                for (BaseSpaceContext building : siteBuildingsWithFloors) {
                     selectedResourceIds.add(building.getId());
                 }
                 break;
             case 1:
                 List<BaseSpaceContext> floors = SpaceAPI.getBuildingFloors(resourceId);
-                for(BaseSpaceContext floor :floors) {
+                for (BaseSpaceContext floor : floors) {
                     selectedResourceIds.add(floor.getId());
                 }
                 break;
             case 3:
                 List<SpaceContext> spaces = SpaceAPI.getSpaceListOfCategory(resourceId, spaceCategoryID);
-                for(SpaceContext space :spaces) {
+                for (SpaceContext space : spaces) {
                     selectedResourceIds.add(space.getId());
                 }
                 break;
             case 4:
                 List<AssetContext> assets = AssetsAPI.getAssetListOfCategory(assetCategoryID, resourceId);
-                for(AssetContext asset :assets) {
+                for (AssetContext asset : assets) {
                     selectedResourceIds.add(asset.getId());
                 }
                 break;
@@ -234,17 +223,16 @@ public class JobPlanAPI {
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .select(fields)
                 .table(module.getTableName())
-                .andCondition(CriteriaAPI.getCondition(pmFieldsMap.get("triggerId"), String.valueOf(pmTriggerId), NumberOperators.EQUALS))
-                ;
+                .andCondition(CriteriaAPI.getCondition(pmFieldsMap.get("triggerId"), String.valueOf(pmTriggerId), NumberOperators.EQUALS));
 
         List<Map<String, Object>> props = selectBuilder.get();
-        if(CollectionUtils.isNotEmpty(props)) {
-            Long pmJobPlanID = (Long)props.get(0).get("pmjobPlanId");
+        if (CollectionUtils.isNotEmpty(props)) {
+            Long pmJobPlanID = (Long) props.get(0).get("pmjobPlanId");
             PMJobPlanContextV3 pmJobPlan = getPMJobPlan(pmJobPlanID);
-            if(pmJobPlan != null){
+            if (pmJobPlan != null) {
                 Long jobPlanId = pmJobPlan.getJobPlanId();
                 JobPlanContext jobPlan = (JobPlanContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.JOB_PLAN, jobPlanId, JobPlanContext.class);
-                if(jobPlan != null) {
+                if (jobPlan != null) {
                     JobPlanContext fetchedJp = getJobPlan(jobPlan.getId());
                     return fetchedJp;
                 }
@@ -261,11 +249,10 @@ public class JobPlanAPI {
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .select(fields)
                 .table(module.getTableName())
-                .andCondition(CriteriaAPI.getIdCondition(id, module))
-                ;
+                .andCondition(CriteriaAPI.getIdCondition(id, module));
 
         List<Map<String, Object>> props = selectBuilder.get();
-        if(CollectionUtils.isNotEmpty(props)) {
+        if (CollectionUtils.isNotEmpty(props)) {
             return FieldUtil.getAsBeanListFromMapList(props, PMJobPlanContextV3.class).get(0);
         }
         return null;
@@ -279,21 +266,19 @@ public class JobPlanAPI {
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .select(fields)
                 .table(module.getTableName())
-                .andCondition(CriteriaAPI.getCondition("JOB_PLAN_ID", "jobPlanId", String.valueOf(jobPlanId), NumberOperators.EQUALS))
-                ;
+                .andCondition(CriteriaAPI.getCondition("JOB_PLAN_ID", "jobPlanId", String.valueOf(jobPlanId), NumberOperators.EQUALS));
 
         List<Map<String, Object>> props = selectBuilder.get();
-        if(CollectionUtils.isNotEmpty(props)) {
+        if (CollectionUtils.isNotEmpty(props)) {
             return FieldUtil.getAsBeanListFromMapList(props, PMJobPlanContextV3.class);
         }
         return null;
     }
 
     public static JobPlanContext getJobPlanForWorkOrder(WorkOrderContext wo) throws Exception {
-        if(wo.getPm() != null && wo.getTrigger() != null) {
+        if (wo.getPm() != null && wo.getTrigger() != null) {
             return JobPlanAPI.getJobPlanForPMTrigger(wo.getTrigger().getId());
-        }
-        else if (wo.getJobPlan() != null) {
+        } else if (wo.getJobPlan() != null) {
             return wo.getJobPlan();
         }
         return null;
@@ -313,5 +298,49 @@ public class JobPlanAPI {
             }
         }
         return null;
+    }
+
+    /**
+     * Methods with {@link V3WorkOrderContext}
+     */
+
+    public static Map<String, List<V3TaskContext>> getTasksForWo(JobPlanContext jobPlan, Boolean isPreRequest) throws Exception {
+
+        Map<String, List<V3TaskContext>> allTasks = new HashMap<>();
+
+        List<JobPlanTaskSectionContext> taskSections = setJobPlanDetails(jobPlan.getId());
+        if (taskSections != null) {
+            for (JobPlanTaskSectionContext sectionContext : taskSections) {
+                // for each JobPlanTaskSectionContext
+                if (sectionContext.getTasks() != null) {
+
+                    // get tasks from JobPlanTaskSectionContext
+                    List<Map<String, Object>> tasksMappings = sectionContext.getTasks(); // assuming Map<String, List<V3TaskContext>>
+                    List<V3TaskContext> tasks = new ArrayList<>();
+
+                    String sectionName = sectionContext.getName();
+                    int taskUniqueId = 1;
+
+                    for (Map<String, Object> taskMap : tasksMappings) {
+                        V3TaskContext task = FieldUtil.getAsBeanFromMap(taskMap, V3TaskContext.class);
+                        if (task != null) {
+                            task.setUniqueId(taskUniqueId++);
+
+                            if (!isPreRequest) {
+                                tasks.add(task);  // adding tasks
+                            } else {
+                                task.setPreRequest(true);
+                                task.setInputType(V3TaskContext.InputType.BOOLEAN.getVal());
+                                tasks.add(task); // adding prerequisites
+                            }
+                        }
+                    }
+                    if (sectionName != null && tasks.size() > 0) {
+                        allTasks.put(sectionName, tasks);
+                    }
+                }
+            }
+        }
+        return allTasks;
     }
 }

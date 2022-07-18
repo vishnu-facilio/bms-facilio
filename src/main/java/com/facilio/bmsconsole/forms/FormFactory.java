@@ -109,6 +109,8 @@ public class FormFactory {
 		forms.put("floor", getFloorForm());
 		forms.put("plannedmaintenance", getPlannedMaintenanceForm());
 		forms.put("spacecategory", getSpaceCategoryForm());
+		forms.put("failurecode", getFailureCodeForm());
+		forms.put("failureclass", getFailureClassForm());
 		/**** Do not add any forms here... Add in initFormsList() only ******/
 
 		return forms;
@@ -549,7 +551,10 @@ public class FormFactory {
 		List<FacilioForm> buildingFormList = Arrays.asList(getBuildingForm());
 		List<FacilioForm> spaceFormList = Arrays.asList(getSpaceFormFromSite(),getSpaceFormFromBuilding(),getSpaceFormFromFloor(),getSpaceFormFromSpace());
 		List<FacilioForm> floorFormList = Arrays.asList(getFloorForm());
-		
+		List<FacilioForm> failureCodeFormList = Arrays.asList(getFailureCodeForm());
+		List<FacilioForm> failureClassFormList = Arrays.asList(getFailureClassForm());
+
+
 		List<FacilioForm> inspectionFormList = Arrays.asList(getInspectionForm());
 		List<FacilioForm> inductionFormList = Arrays.asList(getInductionForm());
 		List<FacilioForm> visitResponseLogForm = Arrays.asList(getVisitResponseForm());
@@ -636,6 +641,8 @@ public class FormFactory {
 				.put(ContextNames.BUILDING, getFormMap(buildingFormList))
 				.put(ContextNames.SPACE, getFormMap(spaceFormList))
 				.put(ContextNames.FLOOR, getFormMap(floorFormList))
+				.put(ContextNames.FAILURE_CODE, getFormMap(failureCodeFormList))
+				.put(ContextNames.FAILURE_CLASS, getFormMap(failureClassFormList))
 				.put(FacilioConstants.Inspection.INSPECTION_RESPONSE, getFormMap(inspectionFormList))
 				.put(FacilioConstants.Induction.INDUCTION_RESPONSE, getFormMap(inductionFormList))
 				.put(ContextNames.WARRANTY_CONTRACTS, getFormMap(warrantyContractFormsList))
@@ -2298,10 +2305,13 @@ public class FormFactory {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
-	    fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", Required.OPTIONAL, "storeRoom", 3, 1));
+	    fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", Required.OPTIONAL, "storeRoom", 3, 2));
+		FormField field = new FormField("vendor", FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Vendors", Required.OPTIONAL,3, 3);
+		fields.add(field);
 		fields.add(new FormField("requestedDate", FieldDisplayType.DATE, "Requested Date", Required.OPTIONAL, 4, 2));
 		fields.add(new FormField("requiredDate", FieldDisplayType.DATE, "Required Date", Required.OPTIONAL, 4, 3));
-		fields.add(new FormField("requestedBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "people", 5, 1));
+		fields.add(new FormField("expectedReplyDate", FieldDisplayType.DATE, "Expected Reply Date", Required.OPTIONAL, 5, 2));
+		fields.add(new FormField("requestedBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "people", 5, 3));
 		//fields.add(new FormField("billToAddress", FieldDisplayType.SADDRESS, "BILLING ADDRESS", Required.OPTIONAL, 6, 1));
 		fields.add(new FormField("shipToAddress", FieldDisplayType.SADDRESS, "SHIPPING ADDRESS", Required.OPTIONAL, 7, 1));
 		fields.add(new FormField("requestForQuotationLineItems", FieldDisplayType.LINEITEMS, "LINE ITEMS", Required.REQUIRED, 8, 1));
@@ -2320,10 +2330,19 @@ public class FormFactory {
 	}
 	private static List<FormField> getVendorQuoteFormFields() {
 		List<FormField> fields = new ArrayList<>();
+		FacilioField expRepDateField = null;
+		try {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			expRepDateField = modBean.getField("expectedReplyDate", ContextNames.VENDOR_QUOTES);
+		}
+		catch(Exception e) {
+
+		}
 		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.REQUIRED, "vendors", 1, 1).setAllowCreateOptions(true).setCreateFormName("vendors_form");
 		vendorField.setIsDisabled(true);
 		fields.add(vendorField);
 		fields.add(new FormField("replyDate", FieldDisplayType.DATE, "Reply Date", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField(expRepDateField.getId(),"expectedReplyDate",FieldDisplayType.DATE,"Expected Reply Date",Required.OPTIONAL,2,2,true));
 		return fields;
 	}
 	private static List<FormField> getTransferRequestFormFields() {
@@ -2475,6 +2494,22 @@ public class FormFactory {
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.OPTIONAL, 1, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("commonArea", FieldDisplayType.DECISION_BOX, "Is Common Area", Required.OPTIONAL, 3, 1));
+
+		return fields;
+	}
+
+	private static List<FormField> getFailureClassFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.OPTIONAL, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+
+		return fields;
+	}
+
+	private static List<FormField> getFailureCodeFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("code", FieldDisplayType.TEXTBOX, "Code", Required.OPTIONAL, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 
 		return fields;
 	}
@@ -2963,7 +2998,30 @@ public class FormFactory {
 		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		return form;
 	}
-	
+
+	public static FacilioForm getFailureCodeForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Failure Code");
+		form.setName("default_failurecode_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.FAILURE_CODE));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getFailureCodeFields());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
+
+
+	public static FacilioForm getFailureClassForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Failure Class");
+		form.setName("default_failureclass_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.FAILURE_CLASS));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getFailureClassFields());
+		form.setAppLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
+		return form;
+	}
+
 	public static FacilioForm getPortalInsuranceForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("INSURANCE");

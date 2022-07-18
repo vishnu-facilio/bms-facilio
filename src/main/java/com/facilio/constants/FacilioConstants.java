@@ -254,6 +254,7 @@ public class FacilioConstants {
 		public static final String CONSIDER_ROLE = "considerRole";
 
 		public static final String FETCH_NON_APP_USERS = "fetchNonAppUsers";
+		public static final String FILTER_SET_UP_TAP="filterSetUpTab";
 
 		public static final String APP_ID = "appId";
 		public static final String RESTRICT_PERMISSIONS = "restrictPermissions";
@@ -870,6 +871,10 @@ public class FacilioConstants {
 		public static final String IS_ZONE = "isZone";
 		
 		public static final String SPACE_CATEGORY = "spacecategory";
+
+		public static final String FAILURE_CLASS = "failureclass";
+		public static final String FAILURE_CODE = "failurecode";
+
 		public static final String SPACE_CATEGORY_FIELD = "spaceCategory";
 		
 		public static final String ZONE = "zone";
