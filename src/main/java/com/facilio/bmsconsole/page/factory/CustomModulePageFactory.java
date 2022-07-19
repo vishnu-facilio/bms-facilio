@@ -49,13 +49,8 @@ public class CustomModulePageFactory extends PageFactory {
 
 		boolean isRelationshipAdded = addRelationshipSection(page, tab2, record.getModuleId());
 
-		Section tab2Sec1;
-		if (FacilioProperties.isDevelopment()) {
-			tab2Sec1 = page.new Section("Related List", "List of all related records across modules");
-		}
-		else {
-			tab2Sec1 = page.new Section();
-		}
+		Section tab2Sec1 = getRelatedListSectionObj(page);
+
 		addRelatedListWidgets(tab2Sec1, record.getModuleId(), formSubModules, false);
 		
 		// Temp - to add seperate pagefactory for employee module

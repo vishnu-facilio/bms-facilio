@@ -18,10 +18,10 @@ public class ValidateRelationParamCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         long fromModuleId = FacilioUtil.parseLong(Constants.getQueryParamOrThrow(context, "fromModuleId"));
 
-        String moduleName = Constants.getModuleName(context);
+        String relationModuleName = Constants.getModuleName(context);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule relationModuleName = modBean.getModule(moduleName);
-        RelationContext relation = RelationUtil.getRelation(relationModuleName, true);
+        FacilioModule relationModule = modBean.getModule(relationModuleName);
+        RelationContext relation = RelationUtil.getRelation(relationModule, true);
 
         if (relation == null) {
             throw new IllegalArgumentException("Invalid relation");

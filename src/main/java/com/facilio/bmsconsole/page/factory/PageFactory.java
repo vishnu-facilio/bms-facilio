@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AdminDocumentsContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.ContactDirectoryContext;
@@ -450,6 +451,17 @@ public class PageFactory {
 			}
 		}
 
+	}
+
+	protected static Section getRelatedListSectionObj(Page page) {
+		Section section;
+		if (FacilioProperties.isDevelopment()) {
+			section = page.new Section("Related List", "List of all related records across modules");
+		}
+		else {
+			section = page.new Section();
+		}
+		return section;
 	}
 
 	protected static boolean addRelationshipSection(Page page, Page.Tab tab, long moduleId) throws Exception{

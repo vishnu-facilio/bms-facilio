@@ -32,8 +32,15 @@ import com.facilio.bmsconsoleV3.commands.tool.ToolTypeQuantityRollupCommandV3;
 import com.facilio.bmsconsoleV3.commands.tool.UpdateIsUnderStockedCommandV3;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsoleV3.commands.receipts.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.relation.command.ValidateRelationDataCommand;
 import com.facilio.bmsconsoleV3.plannedmaintenance.jobplan.FillTasksAndPrerequisitesCommand;
 import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
+import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddDefaultRolesMaintenanceApp;
+import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddMaintenanceApplicationDefaultForms;
+import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddMaintenanceApplicationDefaultViews;
+import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddMaintenanceApplicationLayout;
+import com.facilio.v3.commands.CountCommand;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import com.facilio.accounts.util.AccountUtil;
@@ -907,12 +914,19 @@ public class TransactionChainFactoryV3 {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new ValidateRelationParamCommand());
         chain.addCommand(new AppendRelationDataCommand());
+        chain.addCommand(new ValidateRelationDataCommand());
         return chain;
     }
 
     public static FacilioChain getRelationDataBeforeDeleteChain() {
         FacilioChain chain = getDefaultChain();
 //        chain.addCommand(new ValidateRelationParamCommand());
+        return chain;
+    }
+
+    public static FacilioChain getDataCountChain(FacilioModule module) {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new CountCommand(module));
         return chain;
     }
 

@@ -45,7 +45,7 @@ public class TenantWorkRequestPageFactory extends PageFactory {
 
             addRelationshipSection(page, relatedRecordsTab, module.getModuleId());
 
-			Page.Section relatedRecordsSection = page.new Section();
+			Page.Section relatedRecordsSection = getRelatedListSectionObj(page);
 			relatedRecordsTab.addSection(relatedRecordsSection);
 
 			addRelatedListWidgets(relatedRecordsSection, module.getModuleId());

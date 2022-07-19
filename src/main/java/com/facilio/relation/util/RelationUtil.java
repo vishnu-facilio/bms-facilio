@@ -134,6 +134,7 @@ public class RelationUtil {
                     request.setForwardRelationLinkName(mapping.getMappingLinkName());
                     request.setRelationType(mapping.getRelationTypeEnum());
                     request.setPosition(mapping.getPositionEnum());
+                    request.setReversePositionFieldName(mapping.getReversePosition().getFieldName());
                 } else { // this will fetch reverse mapping
                     request.setReverseRelationName(mapping.getRelationName());
                     request.setReverseRelationLinkName(mapping.getMappingLinkName());
@@ -174,4 +175,9 @@ public class RelationUtil {
         mapping.setPosition(position);
         return mapping;
     }
+
+    public static RelationMappingContext.Position getReversePosition(RelationMappingContext.Position position) {
+        return (position == RelationMappingContext.Position.LEFT) ? RelationMappingContext.Position.RIGHT : RelationMappingContext.Position.LEFT;
+    }
+
 }

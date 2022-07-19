@@ -24,18 +24,18 @@ public class AppendRelationFilterCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         RelationMappingContext relationMapping = (RelationMappingContext) context.get(FacilioConstants.ContextNames.RELATION_MAPPING);
-        String moduleName = Constants.getModuleName(context);
+        String relationModuleName = Constants.getModuleName(context);
         long parentId = FacilioUtil.parseLong(Constants.getQueryParamOrThrow(context, "parentId"));
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioField queryField = modBean.getField(relationMapping.getPositionEnum().getFieldName(), moduleName);
+        FacilioField positionField = modBean.getField(relationMapping.getPositionEnum().getFieldName(), relationModuleName);
         Criteria addonCriteria = new Criteria();
-        addonCriteria.addAndCondition(CriteriaAPI.getCondition(queryField, String.valueOf(parentId), NumberOperators.EQUALS));
+        addonCriteria.addAndCondition(CriteriaAPI.getCondition(positionField, String.valueOf(parentId), NumberOperators.EQUALS));
 
         List<JoinContext> joinContextList = new ArrayList<>();
         joinContextList.add(new JoinContext(
                                     relationMapping.getToModule(),
-                                    modBean.getField(relationMapping.getReversePosition(relationMapping.getPositionEnum()).getFieldName(), moduleName),
+                                    modBean.getField(relationMapping.getReversePosition().getFieldName(), relationModuleName),
                                     FieldFactory.getIdField(relationMapping.getToModule()),
                                     JoinContext.JoinType.INNER_JOIN
                             ));

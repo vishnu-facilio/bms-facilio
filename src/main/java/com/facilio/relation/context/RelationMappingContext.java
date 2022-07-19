@@ -58,8 +58,8 @@ public class RelationMappingContext implements Serializable {
         this.position = Position.valueOf(position);
     }
 
-    public Position getReversePosition(Position position) {
-        return (position == Position.LEFT) ? Position.RIGHT : Position.LEFT;
+    public Position getReversePosition() {
+        return RelationUtil.getReversePosition(position);
     }
 
     private RelationContext relationContext;

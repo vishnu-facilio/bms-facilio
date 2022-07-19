@@ -3,11 +3,15 @@ package com.facilio.v3.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.command.FacilioCommand;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.relation.context.RelationMappingContext;
+import com.facilio.relation.context.RelationRequestContext;
+import com.facilio.relation.util.RelationUtil;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
@@ -33,7 +37,7 @@ public class DeleteCommand extends FacilioCommand {
         getDeletedRecords(moduleName, recordIds, context);
 
         Map<String, Integer> deleteCount = new HashMap<>();
-        deleteModuleRecords(recordIds, moduleName, deleteCount);
+        deleteModuleRecords(recordIds, moduleName, deleteCount, context);
         Constants.setCountMap(context, deleteCount);
         return false;
     }
@@ -58,7 +62,7 @@ public class DeleteCommand extends FacilioCommand {
         Constants.setRecordMap(context, recordMap);
     }
 
-    private void deleteModuleRecords(List<Long> recordIds,  String moduleName, Map<String, Integer> deleteCount) throws Exception {
+    private void deleteModuleRecords(List<Long> recordIds,  String moduleName, Map<String, Integer> deleteCount, Context context) throws Exception {
         int count = 0;
         ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = bean.getModule(moduleName);
@@ -66,7 +70,7 @@ public class DeleteCommand extends FacilioCommand {
         List<Pair<FacilioModule, Integer>> subModules = bean.getSubModulesWithDeleteType(module.getModuleId(),
                 FacilioModule.ModuleType.CUSTOM, FacilioModule.ModuleType.BASE_ENTITY);
 
-        count += deleteRows(module, recordIds);
+        count += deleteRows(module, recordIds, context);
 
         List<FacilioModule> cascadeModules = new ArrayList<>();
         List<FacilioModule> throwErrorModules = new ArrayList<>();
@@ -100,12 +104,15 @@ public class DeleteCommand extends FacilioCommand {
             if (CollectionUtils.isEmpty(rowIds)) {
                 continue;
             }
-            deleteModuleRecords(rowIds, cascadeModule.getName(), deleteCount);
+//            Map<String, Object> deleteObj = new HashMap<>();
+//            deleteObj.put(cascadeModule.getName(), rowIds);
+//            V3Util.deleteRecords(cascadeModule.getName(), deleteObj, null, null, false);
+            deleteModuleRecords(rowIds, cascadeModule.getName(), deleteCount, context);
         }
         deleteCount.put(moduleName, count);
      }
 
-    private int deleteRows(FacilioModule module, List<Long> rowIds) throws Exception {
+    private int deleteRows(FacilioModule module, List<Long> rowIds, Context context) throws Exception {
         DeleteRecordBuilder builder = new DeleteRecordBuilder()
                 .module(module)
                 ;
@@ -115,7 +122,31 @@ public class DeleteCommand extends FacilioCommand {
             return builder.markAsDelete();
         }
         else {
-            return builder.batchDeleteById(rowIds);
+            int deletedCount = builder.batchDeleteById(rowIds);
+
+            if(module != null && !module.getTypeEnum().equals(FacilioModule.ModuleType.RELATION_DATA)) {
+                //Deleting current module relationships
+                deleteRelationshipData(module, rowIds);
+
+                //Deleting Extended modules relationships
+                FacilioModule extendedModule = new FacilioModule(module);
+                while (extendedModule.getExtendModule() != null) {
+                    deleteRelationshipData(extendedModule.getExtendModule(), rowIds);
+                    extendedModule = extendedModule.getExtendModule();
+                }
+
+                //Deleting child module relationships
+                Set<String> childModules = Constants.getExtendedModules(context);
+                if (CollectionUtils.isNotEmpty(childModules)) {
+                    ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                    for (String extendedModuleName : childModules) {
+                        FacilioModule childModule = bean.getModule(extendedModuleName);
+                        deleteRelationshipData(childModule, rowIds);
+                    }
+                }
+            }
+
+            return deletedCount;
         }
     }
 
@@ -139,5 +170,24 @@ public class DeleteCommand extends FacilioCommand {
             }
         }
         return rowIds;
+    }
+
+    private static void deleteRelationshipData(FacilioModule module, List<Long> recordIds) throws Exception{
+        if(org.apache.commons.collections.CollectionUtils.isNotEmpty(recordIds)) {
+            List<RelationRequestContext> relations = RelationUtil.getAllRelations(module);
+            if (org.apache.commons.collections.CollectionUtils.isNotEmpty(relations)) {
+                for (RelationRequestContext relation : relations) {
+                    RelationMappingContext.Position position = RelationMappingContext.Position.valueOf(relation.getPosition());
+                    if (relation.getToModuleId() == module.getModuleId()) {
+                        position = RelationUtil.getReversePosition(position);
+                    }
+                    DeleteRecordBuilder deleteBuilder = new DeleteRecordBuilder()
+                            .module(relation.getRelationModule());
+                    deleteBuilder.andCondition(CriteriaAPI.getCondition(position.getColumnName(), position.getFieldName(), StringUtils.join(recordIds, ","), NumberOperators.EQUALS));
+                    deleteBuilder.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(relation.getRelationModule().getModuleId()), NumberOperators.EQUALS));
+                    deleteBuilder.delete();
+                }
+            }
+        }
     }
 }

@@ -52,9 +52,12 @@ public class PurchaseModulesPageFactory extends PageFactory {
         attachmentWidget.setTitle("Attachments");
         tab2Sec1.addWidget(attachmentWidget);
 
-        Page.Tab tab3 = page.new Tab("Related Records");
+        Page.Tab tab3 = page.new Tab("Related");
         page.addTab(tab3);
-        Page.Section tab3Sec1 = page.new Section();
+
+        addRelationshipSection(page, tab3, record.getModuleId());
+
+        Page.Section tab3Sec1 = getRelatedListSectionObj(page);
         tab3.addSection(tab3Sec1);
         addAssociatedTermsWidget(tab3Sec1,FacilioConstants.ContextNames.PR_ASSOCIATED_TERMS);
         addRelatedList(tab3Sec1, record.getModuleId());
@@ -107,9 +110,12 @@ public class PurchaseModulesPageFactory extends PageFactory {
         attachmentWidget.setTitle("Attachments");
         tab2Sec1.addWidget(attachmentWidget);
 
-        Page.Tab tab3 = page.new Tab("Related Records");
+        Page.Tab tab3 = page.new Tab("Related");
         page.addTab(tab3);
-        Page.Section tab3Sec1 = page.new Section();
+
+        addRelationshipSection(page, tab3, module.getModuleId());
+
+        Page.Section tab3Sec1 = getRelatedListSectionObj(page);
         tab3.addSection(tab3Sec1);
         addAssociatedTermsWidget(tab3Sec1,FacilioConstants.ContextNames.PO_ASSOCIATED_TERMS);
         addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.PURCHASE_REQUEST, module.getModuleId());
