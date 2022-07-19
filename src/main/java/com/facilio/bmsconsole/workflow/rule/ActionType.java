@@ -1625,28 +1625,26 @@ public enum ActionType {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
 			long formId = (long) obj.get("formId");
+
 			if (formId > -1) {
 				FacilioForm form = FormsAPI.getFormFromDB(formId);
 				String moduleName = form.getModule().getName();
+				FacilioModule module = form.getModule();
 				Class beanClassName = V3CustomModuleData.class;
 				obj.put("sourceType", 2);
+
 				ModuleBaseWithCustomFields record = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromJson(obj, beanClassName);
-				Map<String, List<ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
-				FacilioChain createRecordChain = ChainUtil.getCreateChain(moduleName);
-				FacilioContext createContext = createRecordChain.getContext();
-	            createContext.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
-				Constants.setRecordMap(createContext, recordMap);
-				Constants.setModuleName(createContext, moduleName);
-				FacilioModule module = ChainUtil.getModule(moduleName);
-				handleFileAttachmentField(currentRecord, record, module, obj);
-				recordMap.put(moduleName, Collections.singletonList(record));
-				Class beanClass = FacilioConstants.ContextNames.getClassFromModule(module);
-				createContext.put(Constants.BEAN_CLASS, beanClass);
-				createRecordChain.execute();
+				Map<String,Object> recordMap=FieldUtil.getAsProperties(record);
+				handleFileAttachmentField(currentRecord, record, module, obj,recordMap);
 				
 				BaseMailMessageContext mailContext = (BaseMailMessageContext) currentRecord;
-				
-				MailMessageUtil.addEmailToModuleDataContext(mailContext, record.getId(), module.getModuleId());
+
+				FacilioContext contextNew = V3Util.createRecord(module,recordMap,null,null);
+
+				Map<String, List<ModuleBaseWithCustomFields>> resultRecordMap = (Map<String, List<ModuleBaseWithCustomFields>>) contextNew.get(Constants.RECORD_MAP);
+		        ModuleBaseWithCustomFields resultRecord = resultRecordMap.get(moduleName).get(0);
+
+				MailMessageUtil.addEmailToModuleDataContext(mailContext, resultRecord.getId(), module.getModuleId());
 			}
 		}
 	},
@@ -2157,7 +2155,7 @@ public enum ActionType {
 
 	}
 
-	private static void handleFileAttachmentField(Object currentRecord, ModuleBaseWithCustomFields record, FacilioModule module , JSONObject obj) throws Exception {
+	private static void handleFileAttachmentField(Object currentRecord, ModuleBaseWithCustomFields record, FacilioModule module , JSONObject obj,Map<String,Object> recordMap) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		if (currentRecord instanceof BaseMailMessageContext) {
 			BaseMailMessageContext mailContext = (BaseMailMessageContext) currentRecord;
@@ -2170,14 +2168,15 @@ public enum ActionType {
 				List<FacilioModule> attachmentModules = modBean.getSubModules(module.getModuleId(), FacilioModule.ModuleType.ATTACHMENTS);
 				if (attachmentModules != null && attachmentModules.size() > 0) {
 					FacilioModule attachmentModule = attachmentModules.get(0);
-					Map<String, List<Map<String, Object>>> attachmentMap = new HashMap<>();
 					List<Map<String, Object>> attachmentList = new ArrayList<>();
 					for (AttachmentV3Context attachmentV3Context :attachments) {
 						attachmentList.add(parseFileObject(attachmentV3Context, "file"));
 					}
-					attachmentMap.put(attachmentModule.getName(), attachmentList);
-					record.setSubForm(attachmentMap);
+					LOGGER.info("AttachmentModule : "+attachmentModule.getName());
+					LOGGER.info("AttachmentList : "+attachmentList.get(0));
+					recordMap.put(attachmentModule.getName(),attachmentList);
 				}
+
 			}
 		}
 	}
