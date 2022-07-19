@@ -2982,6 +2982,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getNumberField("fromModuleId", "FROM_MODULE_ID", module));
         fields.add(getNumberField("toModuleId", "TO_MODULE_ID", module));
         fields.add(getStringField("relationName", "RELATION_NAME", module));
+        fields.add(getStringField("mappingLinkName", "LINK_NAME", module));
         fields.add(getNumberField("relationType", "RELATION_TYPE", module));
         fields.add(getNumberField("position", "POSITION", module));
 

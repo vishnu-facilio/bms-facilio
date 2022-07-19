@@ -150,6 +150,7 @@ public class AddOrUpdateRelationCommand extends FacilioCommand {
                 .fields(FieldFactory.getRelationMappingFields());
         for (RelationMappingContext mappingContext : relationContext.getMappings()) {
             mappingContext.setRelationId(relationContext.getId());
+            computeMappingLinkName(mappingContext);
             builder.addRecord(FieldUtil.getAsProperties(mappingContext));
         }
         builder.save();
@@ -178,7 +179,34 @@ public class AddOrUpdateRelationCommand extends FacilioCommand {
                     count = Integer.parseInt(linkName.substring(linkName.lastIndexOf('_') + 1));
                 } catch (NumberFormatException ex) {}
             }
-            relationRequest.setLinkName(linkName + "_" + (count + 1));
+            relationRequest.setLinkName(relationRequest.getLinkName() + "_" + (count + 1));
+        }
+    }
+
+    private void computeMappingLinkName(RelationMappingContext mappingContext) throws Exception {
+        mappingContext.setMappingLinkName(mappingContext.getRelationName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+
+        FacilioModule module = ModuleFactory.getRelationMappingModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(FieldFactory.getIdField(module));
+        fields.add(FieldFactory.getStringField("mappingLinkName", "LINK_NAME", module));
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(module.getTableName())
+                .select(fields)
+                .andCustomWhere("LINK_NAME = ? OR LINK_NAME LIKE ?",mappingContext.getMappingLinkName(),mappingContext.getMappingLinkName() + "\\_%")
+                .orderBy("ID DESC")
+                .limit(1);
+        Map<String, Object> prop = builder.fetchFirst();
+        if (prop != null) {
+            String linkName = (String) prop.get("mappingLinkName");
+            int count = 0;
+            if (linkName.contains("_")) {
+                try {
+                    count = Integer.parseInt(linkName.substring(linkName.lastIndexOf('_') + 1));
+                } catch (NumberFormatException ex) {}
+            }
+            mappingContext.setMappingLinkName(mappingContext.getMappingLinkName() + "_" + (count + 1));
         }
     }
 

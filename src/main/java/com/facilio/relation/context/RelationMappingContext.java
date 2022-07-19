@@ -22,6 +22,7 @@ public class RelationMappingContext implements Serializable {
     private long fromModuleId = -1;
     private long toModuleId = -1;
     private String relationName;
+    private String mappingLinkName;
 
     private RelationRequestContext.RelationType relationType;
     public int getRelationType() {

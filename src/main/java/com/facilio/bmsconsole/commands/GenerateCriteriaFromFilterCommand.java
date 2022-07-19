@@ -124,9 +124,43 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 			moduleName = PreventiveMaintenanceAPI.getPmModule(templateFields, fieldName);
 		}
 		
-		int operatorId;
+		int operatorId = -1;
 		String operatorName;
-		
+
+		Operator operator = null ;
+		if (fieldJson.containsKey("operatorId")) {
+			operatorId = (int) (long) fieldJson.get("operatorId");
+			operator = Operator.getOperator(operatorId);
+		}
+
+		if(operator != null && operator instanceof RelationshipOperator) {
+			Condition condition = new Condition();
+			condition.setFieldName(fieldName);
+			condition.setOperatorId(operatorId);
+
+			JSONArray value = (JSONArray) fieldJson.get("value");
+
+			if(operator.isValueNeeded() && (value!=null && value.size()>0)) {
+				StringBuilder values = new StringBuilder();
+				boolean isFirst = true;
+				Iterator<String> iterator = value.iterator();
+				while (iterator.hasNext()) {
+					String obj = iterator.next();
+					if (!isFirst) {
+						values.append(",");
+					} else {
+						isFirst = false;
+					}
+					values.append(obj);
+				}
+				condition.setValue(values.toString());
+				condition.validateValue();
+			}
+			conditionList.add(condition);
+			return;
+		}
+
+
 		boolean isOldField = false;
 		//TODO Remove the check once handled in mobile
 		if (OLD_FIELDS_MODULE.contains(moduleName) && OLD_FIELDS.contains(fieldName)) {
@@ -158,7 +192,7 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 				}
 			}
 		}
-		Operator operator;
+
 		if (fieldJson.containsKey("operatorId")) {
 			operatorId = (int) (long) fieldJson.get("operatorId");
 			if (isOldField) {
