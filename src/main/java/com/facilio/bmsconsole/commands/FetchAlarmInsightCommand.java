@@ -4,11 +4,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.modules.*;
+import com.facilio.readingrule.context.NewReadingRuleContext;
+import com.facilio.readingrule.util.NewReadingRuleAPI;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,15 +40,11 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 
 public class FetchAlarmInsightCommand extends FacilioCommand {
-	
+
 	private static final Logger LOGGER = LogManager.getLogger(FetchAlarmInsightCommand.class.getName());
 
 	@Override
@@ -64,7 +65,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 				dateRange = operator.getRange(dateOperatorValue);
 			}
 		}
-		
+
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
 		List<Map<String, Object>> props = null;
@@ -78,11 +79,23 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 		if (assetId > 0) {
 			if (CollectionUtils.isNotEmpty(props)) {
 				List<Long> ruleIds = props.stream().map(prop -> (long) prop.get("ruleId")).collect(Collectors.toList());
-				Map<Long, WorkflowRuleContext> rules = WorkflowRuleAPI.getWorkflowRulesAsMap(ruleIds, false, false);
-				for (Map<String, Object> prop : props) {
-					long ruleId = (long) prop.get("ruleId");
-					prop.put("subject", rules.get(ruleId).getName());
+				List<NewReadingRuleContext> rulesList = NewReadingRuleAPI.getRules(new Condition[]{
+						CriteriaAPI.getIdCondition(ruleIds, ModuleFactory.getNewReadingRuleModule())});
+				if ( AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
+					Map<Long, NewReadingRuleContext> rules = rulesList.stream().collect(Collectors.toMap(NewReadingRuleContext::getId, Function.identity()));
+					for (Map<String, Object> prop : props) {
+						long ruleId = (long) prop.get("ruleId");
+						prop.put("subject", rules.get(ruleId).getName());
+					}
 				}
+				else {
+					Map<Long, WorkflowRuleContext> rules = WorkflowRuleAPI.getWorkflowRulesAsMap(ruleIds, false, false);
+					for (Map<String, Object> prop : props) {
+						long ruleId = (long) prop.get("ruleId");
+						prop.put("subject", rules.get(ruleId).getName());
+					}
+				}
+
 			}
 		}
 		if (readingRuleId > 0 || (assetIds != null && assetIds.size() > 0)) {
@@ -123,9 +136,9 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 					prop.put("subject", resources.get((long) resourceId.get("id")).getName());
 				}
 			}
-		} 
+		}
 		context.put(ContextNames.ALARM_LIST, props);
-		
+
 		return false;
 	}
 
@@ -266,6 +279,9 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 
 			}
 		}
+
+		boolean isNewReadingRUle = AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE);
+		builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("isNewReadingRule"), String.valueOf(isNewReadingRUle), NumberOperators.EQUALS));
 
 		if (assetId > 0 ) {
 			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"),( assetId > 0 ? String.valueOf(assetId) : StringUtils.join(assetIds, ",") ), NumberOperators.EQUALS))
