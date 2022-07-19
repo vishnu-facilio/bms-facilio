@@ -87,7 +87,7 @@ public enum RelationshipOperator implements Operator<String>{
         .append(" WHERE ")
         .append(relation.getRelationModule().getTableName()).append(".ORGID = ").append(AccountUtil.getCurrentOrg().getOrgId()).append(" AND ")
         .append(relation.getRelationModule().getTableName()).append(".MODULEID = ").append(relation.getRelationModuleId()).append(" AND ")
-        .append(relationMapping.getReversePosition(relationMapping.getPositionEnum()).getColumnName()).append(" IN (").append(value)
+        .append(relationMapping.getReversePosition().getColumnName()).append(" IN (").append(value)
         .append("))");
         return builder.toString();
     }
