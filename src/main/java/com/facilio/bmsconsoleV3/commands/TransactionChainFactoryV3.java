@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.commands;
 import java.util.Collections;
 
 import com.facilio.bmsconsoleV3.commands.assetDepartment.ValidateAssetDepartmentDeletionV3;
+import com.facilio.bmsconsoleV3.commands.assetType.ValidateAssetTypeDeletionV3;
 import com.facilio.bmsconsoleV3.commands.dashboard.*;
 import com.facilio.bmsconsoleV3.commands.floorplan.*;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.AddLicensingInfoCommand;
@@ -1844,5 +1845,10 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new V3UpdateDashboardTabWidgetCommand());
         return c;
+    }
+    public static FacilioChain getDeleteAssetTypeChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new ValidateAssetTypeDeletionV3());
+        return chain;
     }
 }

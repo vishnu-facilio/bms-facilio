@@ -118,10 +118,7 @@ import com.facilio.bmsconsoleV3.commands.watchlist.GetLogsForWatchListCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.LoadWorkorderLookupsAfterFetchcommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.*;
-import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
-import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
-import com.facilio.bmsconsoleV3.context.asset.V3AssetDepartmentContext;
-import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
+import com.facilio.bmsconsoleV3.context.asset.*;
 import com.facilio.bmsconsoleV3.context.budget.AccountTypeContext;
 import com.facilio.bmsconsoleV3.context.budget.BudgetContext;
 import com.facilio.bmsconsoleV3.context.budget.ChartOfAccountContext;
@@ -1868,6 +1865,17 @@ public class APIv3Config {
                 .update()
                 .delete()
                 .beforeDelete(TransactionChainFactoryV3.getDeleteAssetCategoryChain())
+                .build();
+    }
+
+    @Module("assettype")
+    public static Supplier<V3Config> getAssetType() {
+        return () -> new V3Config(V3AssetTypeContext.class, null)
+                .create()
+                .list()
+                .update()
+                .delete()
+                .beforeDelete(TransactionChainFactoryV3.getDeleteAssetTypeChain())
                 .build();
     }
 
