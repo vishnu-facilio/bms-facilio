@@ -1315,29 +1315,6 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 	@Override
-	public long addServcieRequestFromEmail(ServiceRequestContext serviceRequest, List<File> attachedFiles,
-			List<String> attachedFileNames, List<String> attachedFilesContentType) throws Exception {
-		if (serviceRequest != null) {
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.REQUESTER, serviceRequest.getRequester());
-			context.put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(serviceRequest));
-
-			if (attachedFiles != null && !attachedFiles.isEmpty() && attachedFileNames != null && !attachedFileNames.isEmpty() && attachedFilesContentType != null && !attachedFilesContentType.isEmpty()) {
-				context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, attachedFiles);
-		 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, attachedFileNames);
-		 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, attachedFilesContentType);
-		 		context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.SERVICE_REQUEST_ATTACHMENT);
-			}
-
-			Command addServiceRequest = TransactionChainFactory.addServiceRequestChain();
-			addServiceRequest.execute(context);
-
-			return serviceRequest.getId();
-		}
-		return 0;
-	}
-
-	@Override
 	public void demoOneTimeJob(long orgId, ZonedDateTime currentZdt) throws Exception {
 		// TODO Auto-generated method stub
 		try {
@@ -1445,94 +1422,6 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		if (orgBean.isFeatureEnabled(FeatureLicense.CUSTOM_MAIL)) {
 			requestId = MailMessageUtil.createRecordToMailModule(supportEmail, emailMsg,workOrderRequestEmailId);
 			LOGGER.info("Added Email from Email Parser : " + requestId );
-		}
-		else if (orgBean.isFeatureEnabled(FeatureLicense.SERVICE_REQUEST)) {
-			ServiceRequestContext serviceRequestContext = new ServiceRequestContext();
-			PeopleContext requester = new PeopleContext();
-			LOGGER.info("Getting from address from parser and setting it to requester : " + parser.getFrom() );
-			requester.setEmail(parser.getFrom());
-			serviceRequestContext.setSubject(parser.getSubject());
-			if (parser.getPlainContent() != null) {
-				serviceRequestContext.setDescription(StringUtils.trim(parser.getPlainContent()));
-			}
-			else {
-				serviceRequestContext.setDescription(StringUtils.trim(parser.getHtmlContent()));
-			}
-			List<DataSource> attachments = parser.getAttachmentList();
-			List<File> attachedFiles = null;
-			List<String> attachedFilesFileName = null;
-			List<String> attachedFilesContentType = null;
-			if (attachments != null && !attachments.isEmpty()) {
-				LOGGER.info("Attachment List : "+attachments);
-				attachedFiles = new ArrayList<>();
-				attachedFilesFileName = new ArrayList<>();
-				attachedFilesContentType = new ArrayList<>();
-				for (DataSource attachment : attachments) {
-					if (attachment.getName() != null) {
-						attachedFilesFileName.add(attachment.getName());
-						attachedFilesContentType.add(attachment.getContentType());
-						File file = File.createTempFile(attachment.getName(), "");
-						FileUtils.copyInputStreamToFile(attachment.getInputStream(), file);
-						attachedFiles.add(file);
-					}
-				}
-				LOGGER.info("Parsed Attachments : "+attachedFiles);
-			}
-			serviceRequestContext.setSiteId(supportEmail.getSiteId());
-			serviceRequestContext.setSourceType(ServiceRequestContext.SourceType.EMAIL_REQUEST.getIntVal());
-			serviceRequestContext.setRequester(requester);
-			requestId = addServcieRequestFromEmail(serviceRequestContext, attachedFiles, attachedFilesFileName, attachedFilesContentType);
-			LOGGER.info("Added servicerequest from Email Parser : " + requestId );
-		}
-		else {
-			WorkOrderContext workorderContext = new WorkOrderContext();
-			workorderContext.setSendForApproval(true);
-			User requester = new User();
-			requester.setEmail(parser.getFrom());
-			//not to send email while creating wo from email
-			//requester.setInviteAcceptStatus(true);
-
-			workorderContext.setSubject(parser.getSubject());
-			if (parser.getPlainContent() != null) {
-				workorderContext.setDescription(StringUtils.trim(parser.getPlainContent()));
-			}
-			else {
-				workorderContext.setDescription(StringUtils.trim(parser.getHtmlContent()));
-			}
-
-			List<DataSource> attachments = parser.getAttachmentList();
-			List<File> attachedFiles = null;
-			List<String> attachedFilesFileName = null;
-			List<String> attachedFilesContentType = null;
-			if (attachments != null && !attachments.isEmpty()) {
-				LOGGER.info("Attachment List : "+attachments);
-				attachedFiles = new ArrayList<>();
-				attachedFilesFileName = new ArrayList<>();
-				attachedFilesContentType = new ArrayList<>();
-				for (DataSource attachment : attachments) {
-//						LOGGER.info("Attachment Class name : "+attachment.getClass());
-//						LOGGER.info("Attachment File Name : "+attachment.getName());
-//						LOGGER.info("Attachment File Type : "+attachment.getContentType());
-					if (attachment.getName() != null) {
-						attachedFilesFileName.add(attachment.getName());
-						attachedFilesContentType.add(attachment.getContentType());
-						File file = File.createTempFile(attachment.getName(), "");
-						FileUtils.copyInputStreamToFile(attachment.getInputStream(), file);
-						attachedFiles.add(file);
-					}
-				}
-				LOGGER.info("Parsed Attachments : "+attachedFiles);
-			}
-			if (supportEmail.getAutoAssignGroupId() != -1) {
-				workorderContext.setAssignmentGroup((Group) LookupSpecialTypeUtil.getEmptyLookedupObject(FacilioConstants.ContextNames.GROUPS, supportEmail.getAutoAssignGroupId()));
-			}
-			workorderContext.setSiteId(supportEmail.getSiteId());
-
-			workorderContext.setSourceType(TicketContext.SourceType.EMAIL_REQUEST);
-
-			workorderContext.setRequester(requester);
-			requestId = addWorkOrderFromEmail(workorderContext, attachedFiles, attachedFilesFileName, attachedFilesContentType);
-			LOGGER.info("Added Workorder from Email Parser : " + requestId );
 		}
 		return requestId;
 	}

@@ -134,9 +134,6 @@ public interface ModuleCRUDBean {
 	
 	public FileInfo getFile(long fileId) throws Exception;
 	
-	public long addServcieRequestFromEmail(ServiceRequestContext serviceRequest, List<File> attachedFiles,
-			List<String> attachedFileNames, List<String> attachedFilesContentType) throws Exception;
-
 	public void demoOneTimeJob(long orgId, ZonedDateTime currentZdt) throws Exception;
 
 	public boolean addMetrics(AgentMetrics toInsertMap) throws Exception;

@@ -502,11 +502,11 @@ public class V3TicketContext extends V3Context {
         }
     }
 
-    private ServiceRequestContext serviceRequest;
-    public ServiceRequestContext getServiceRequest() {
+    private V3ServiceRequestContext serviceRequest;
+    public V3ServiceRequestContext getServiceRequest() {
         return serviceRequest;
     }
-    public void setServiceRequest(ServiceRequestContext serviceRequest) {
+    public void setServiceRequest(V3ServiceRequestContext serviceRequest) {
         this.serviceRequest = serviceRequest;
     }
 }

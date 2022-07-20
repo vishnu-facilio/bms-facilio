@@ -5177,41 +5177,10 @@ public class TransactionChainFactory {
 		chain.addCommand(new DeleteTabCommand());
 		return chain;
 	}
-	public static FacilioChain addServiceRequestChain() {
-		FacilioChain c = getDefaultChain();
-		c.addCommand(SetTableNamesCommand.getForServiceRequests());
-		c.addCommand(new AddRequesterForServiceRequestCommand());
-		c.addCommand(new GenericAddModuleDataListCommand());
-		c.addCommand(new AddAttachmentCommand());
-		c.addCommand(new AttachmentContextCommand());
-		c.addCommand(new AddAttachmentRelationshipCommand());
-		c.addCommand(new ExecuteStateFlowCommand());
-		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
-		c.addCommand(new ForkChainToInstantJobCommand()
-				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
-		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
-
-		return c;
-	}
 
 	public static FacilioChain getAddRequesterChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new AddRequesterCommand());
-		return c;
-	}
-
-	public static FacilioChain updateServiceRequestChain() {
-		FacilioChain c = getDefaultChain();
-		c.addCommand(SetTableNamesCommand.getForServiceRequests());
-		c.addCommand(new AddRequesterCommand());
-		c.addCommand(new GenericUpdateModuleDataCommand());
-		c.addCommand(new GenericGetModuleDataListCommand());
-		c.addCommand(new UpdateStateForModuleDataCommand());
-		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
-		c.addCommand(new ForkChainToInstantJobCommand()
-				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
-		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
-
 		return c;
 	}
 

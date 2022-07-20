@@ -10,9 +10,6 @@ import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ServiceRequestPriorityContext;
 import com.facilio.bmsconsoleV3.context.EmailConversationThreadingContext.Email_Status_Type;
-import com.facilio.bmsconsole.context.ServiceRequestContext.Classification;
-import com.facilio.bmsconsole.context.ServiceRequestContext.ServiceRequestType;
-import com.facilio.bmsconsole.context.ServiceRequestContext.SourceType;
 import com.facilio.v3.context.V3Context;
 
 import lombok.Getter;
