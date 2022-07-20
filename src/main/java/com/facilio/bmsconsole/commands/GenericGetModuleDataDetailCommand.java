@@ -28,6 +28,7 @@ public class GenericGetModuleDataDetailCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long recordId = (long) context.get(FacilioConstants.ContextNames.ID);
+		boolean fetchDeleted = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_DELETED_RECORDS, false);
 		
 		if(recordId > 0) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
@@ -62,6 +63,11 @@ public class GenericGetModuleDataDetailCommand extends FacilioCommand {
 			boolean skipModuleCriteria = (boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, false);
 			if (skipModuleCriteria) {
 				builder.skipModuleCriteria();
+			}
+
+			// To fetch deleted records set FacilioConstants.ContextNames.FETCH_DELETED_RECORDS to true
+			if(fetchDeleted) {
+				builder.fetchDeleted();
 			}
 
 			// TODO remove this and use FETCH_SUPPLEMENTS

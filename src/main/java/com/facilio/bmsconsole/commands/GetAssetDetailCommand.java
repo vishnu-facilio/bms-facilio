@@ -47,7 +47,7 @@ public class GetAssetDetailCommand extends GenericGetModuleDataDetailCommand {
 			}
 
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			if (assetContext.getModuleId() != -1) {
+			if (assetContext != null && assetContext.getModuleId() != -1) {
 				FacilioModule module = modBean.getModule(assetContext.getModuleId());
 				if (module != null) {
 					assetContext.setModuleName(module.getName());
