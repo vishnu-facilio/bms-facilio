@@ -3,6 +3,7 @@ package com.facilio.accounts.bean;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.OrgUnitsContext;
 import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
@@ -20,24 +21,24 @@ import com.facilio.modules.fields.FacilioField;
 public interface OrgBean {
 
 	public boolean updateOrg(long orgId, Organization org) throws Exception;
-	
+
 	public boolean deleteOrg(long orgId) throws Exception;
-	
+
 	public Organization getOrg(long orgId) throws Exception;
-	
+
 	public Organization getOrg(String orgDomain) throws Exception;
-	
+
 	public PortalInfoContext getPortalInfo(long id, boolean isPortalID) throws Exception;
-	
+
 	public List<User> getOrgPortalUsers(long orgId, long appId) throws Exception;
 
 	public List<User> getRequesterTypeUsers(long orgId, boolean status) throws Exception;
-	 
+
 	public List<User> getAppUsers(long orgId, long appId, boolean checkAccessibleSites) throws Exception;
 
 	public Long getAppUsersCount(long orgId, long appId, boolean fetchNonAppUsers) throws Exception;
 
-	public Long getAppUsersCount(long orgId, long appId, boolean fetchNonAppUsers,String searchQuery,Boolean inviteAcceptStatus) throws Exception;
+	public Long getAppUsersCount(long orgId, long appId, boolean fetchNonAppUsers,String searchQuery,Boolean inviteAcceptStatus,Boolean status) throws Exception;
 
 	public List<User> getAppUsers(long orgId, long appId, boolean checkAccessibleSites, boolean fetchNonAppUsers, int offset, int perPage) throws Exception;
 
@@ -52,31 +53,31 @@ public interface OrgBean {
 	public User getAppUser(long orgId, long appId, long ouId) throws Exception;
 
 	public List<User> getOrgUsers(long orgId, boolean status) throws Exception;
-	
+
 	public List<User> getDefaultAppUsers(long orgId) throws Exception;
-	
+
 	public Map<Long, User> getOrgUsersAsMap(long orgId) throws Exception;
 
 	public List<User> getActiveOrgUsers(long orgId) throws Exception;
 
 	public User getSuperAdmin(long orgId) throws Exception;
-	
+
 	public Map<String, Long> getFeatureLicense() throws Exception;
-	
+
 	public boolean isFeatureEnabled(FeatureLicense featureLicense) throws Exception;
 
 	public int addLicence(Map<LicenseMapping, Long> licenseMap) throws Exception;
-	
+
 	public JSONObject orgInfo() throws Exception;
-	
+
 	public void updateLoggerLevel (int level, long orgId) throws Exception;
-	
+
 	public List<Organization> getOrgs() throws Exception;
-	
+
 	public Organization getPortalOrg(long portalId, AppDomainType appType) throws Exception;
-		
+
 	public void copyReadingValue(List<Map<String,Object>> porp, FacilioModule module, long targetOrgId, long targetAssetId, long timeDiff, List<FacilioField> fields, long targetId)throws Exception;
-	
+
 	public List getEnergyMeterList() throws Exception;
 
 	public Unit getOrgDisplayUnit(int metricId) throws Exception;
