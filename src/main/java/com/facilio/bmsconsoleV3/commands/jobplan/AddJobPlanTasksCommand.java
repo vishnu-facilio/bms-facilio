@@ -44,6 +44,7 @@ public class AddJobPlanTasksCommand extends FacilioCommand {
                     task.setTaskSection(section);
                     task.setJobPlan(section.getJobPlan());
                     task.setCreatedBy(AccountUtil.getCurrentUser());
+                    task.setCreatedTime(System.currentTimeMillis());
                 }
                 V3RecordAPI.addRecord(false, taskList, jobPlanTaskModule, fields);
             }
