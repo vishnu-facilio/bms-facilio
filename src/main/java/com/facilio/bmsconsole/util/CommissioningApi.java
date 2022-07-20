@@ -4,7 +4,10 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.amazonaws.services.dynamodbv2.xspec.L;
+import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.cacheimpl.AgentBean;
+import com.facilio.modules.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -31,10 +34,6 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 
@@ -56,29 +55,8 @@ public class CommissioningApi {
 		return commissioniongList(ids,fetchControllers,pagination,null);
 	}
 	public static List<CommissioningLogContext> commissioniongList(List<Long> ids, boolean fetchControllers, JSONObject pagination,String status) throws Exception {
-		FacilioModule module = ModuleFactory.getCommissioningLogModule();
-		List<FacilioField> fields = FieldFactory.getCommissioningLogFields();
-		if (ids == null || ids.size() > 1) {
-			fields.removeIf(field -> field.getName().equals("pointJsonStr") || field.getName().equals("clientMetaStr"));
-		}
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
-
-		builder.table(module.getTableName())
-				.select(fields)
-				.orderBy(fieldMap.get("sysCreatedTime").getColumnName() + " desc");
-				if (status != null) {
-					if (status.equals("draft")) {
-						builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("publishedTime"), CommonOperators.IS_EMPTY));
-					} else if (status.equals("published")) {
-						builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("publishedTime"), CommonOperators.IS_NOT_EMPTY));
-					}
-				}
-
-		if (ids != null) {
-			builder.andCondition(CriteriaAPI.getIdCondition(ids, module));
-		}
+		GenericSelectRecordBuilder builder = getLogsBuilder(ids,status);
 
 		if (pagination != null) {
 			int page = (int) pagination.get("page");
@@ -125,7 +103,6 @@ public class CommissioningApi {
 					log.setAgent(agentMap.get(log.getAgentId()));
 				}
 			}
-
 			return logs;
 		}
 
@@ -325,6 +302,41 @@ public class CommissioningApi {
 			}
 		}
 		return null;
+	}
+	public static Long getCommissioningListCount(List<Long> ids,String status)throws Exception{
+			GenericSelectRecordBuilder builder = getLogsBuilder(ids, status);
+			FacilioModule module = ModuleFactory.getCommissioningLogModule();
+			builder.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(module));
+			builder.select(new ArrayList<>());
+			List<Map<String, Object>> result = builder.get();
+			Long count = (long) result.get(0).get(AgentConstants.ID);
+
+		return count;
+	}
+	public static GenericSelectRecordBuilder getLogsBuilder(List<Long> ids,String status){
+		FacilioModule module = ModuleFactory.getCommissioningLogModule();
+		List<FacilioField> fields = FieldFactory.getCommissioningLogFields();
+		if (ids == null || ids.size() > 1) {
+			fields.removeIf(field -> field.getName().equals("pointJsonStr") || field.getName().equals("clientMetaStr"));
+		}
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
+
+		builder.table(module.getTableName())
+				.select(fields)
+				.orderBy(fieldMap.get("sysCreatedTime").getColumnName() + " desc");
+		if (status != null) {
+			if (status.equals("draft")) {
+				builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("publishedTime"), CommonOperators.IS_EMPTY));
+			} else if (status.equals("published")) {
+				builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("publishedTime"), CommonOperators.IS_NOT_EMPTY));
+			}
+		}
+		if (ids != null) {
+			builder.andCondition(CriteriaAPI.getIdCondition(ids, module));
+		}
+		return builder;
 	}
 	
 }

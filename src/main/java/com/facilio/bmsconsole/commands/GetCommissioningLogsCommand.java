@@ -18,7 +18,11 @@ public class GetCommissioningLogsCommand extends FacilioCommand {
 		
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
 		String status = (String) context.get("status");
-
+		if (context.containsKey(FacilioConstants.ContextNames.FETCH_COUNT)){
+			Long commissioningListCount = CommissioningApi.getCommissioningListCount(null,status);
+			context.put("count",commissioningListCount);
+			return false;
+		}
 		List<CommissioningLogContext> commissioningList = CommissioningApi.commissioniongList(null, true, pagination,status);
 		context.put("logs", commissioningList);
 

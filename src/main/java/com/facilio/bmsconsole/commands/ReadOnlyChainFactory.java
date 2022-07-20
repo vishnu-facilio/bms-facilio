@@ -3061,6 +3061,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetCommissionedChainCommand());
 		return chain;
 	}
+
 	public static FacilioChain getPointsdataCommand(){
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
