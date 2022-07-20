@@ -2048,6 +2048,7 @@ public class FacilioConstants {
 		public static final String JOB_PLAN_LIST = "jobPlans";
 		public static final String JOB_PLAN_SECTION = "jobplansection";
 		public static final String JOB_PLAN_TASK = "jobplantask";
+		public static final String JOB_PLAN_ATTACHMENTS = "jobplanattachments";
 
 		public static final String AUDIENCE_SHARING = "audienceSharing";
 		public static final String AUDIENCE = "audience";
@@ -2592,6 +2593,7 @@ public class FacilioConstants {
 			classMap.put(JOB_PLAN, JobPlanContext.class);
 			classMap.put(JOB_PLAN_SECTION, JobPlanTaskSectionContext.class);
 			classMap.put(JOB_PLAN_TASK, JobPlanTasksContext.class);
+			classMap.put(JOB_PLAN_ATTACHMENTS, AttachmentV3Context.class);
 
 			classMap.put(AUDIT_LOGS, AuditLogHandler.AuditLogContext.class);
 

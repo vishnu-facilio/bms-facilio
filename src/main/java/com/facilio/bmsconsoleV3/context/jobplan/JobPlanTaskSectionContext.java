@@ -199,10 +199,18 @@ public class JobPlanTaskSectionContext extends V3Context {
             additionInfo = (JSONObject) parser.parse(jsonStr);
         }
     }
-    public void setOptions(List<String> options) {
-        if(options != null && !options.isEmpty()) {
-            addAdditionInfo("options",options);
+
+    // declarations for options
+    private List<String> options;
+    public List<String> getOptions() {
+        if(getAdditionInfo().containsKey("options")){
+            return (List<String>) getAdditionInfo().get("options");
         }
+        return options;
+    }
+    public void setOptions(List<String> options) {
+        addStringListToAdditionInfo("options",options);
+        this.options = options;
     }
 
     // declarations for attachmentRequired

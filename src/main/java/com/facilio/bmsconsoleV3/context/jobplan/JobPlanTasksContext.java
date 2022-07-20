@@ -177,6 +177,50 @@ public class JobPlanTasksContext extends V3TaskContext {
         this.createWoOnFailure = createWoOnFailure;
     }
 
+    // declarations for attachmentOption
+    private String attachmentOption;
+    public String getAttachmentOption() {
+        if(getAdditionInfo().containsKey("attachmentOption")){
+            return (String) getAdditionInfo().get("attachmentOption");
+        }
+        return attachmentOption;
+    }
+    public void setAttachmentOption(String attachmentOption) {
+        if(attachmentOption != null){
+            addAdditionInfo("attachmentOption", attachmentOption);
+        }
+        this.attachmentOption = attachmentOption;
+    }
+
+    // declarations for remarkOption
+    private String remarkOption;
+    public String getRemarkOption() {
+        if(getAdditionInfo().containsKey("remarkOption")){
+            return (String) getAdditionInfo().get("remarkOption");
+        }
+        return remarkOption;
+    }
+    public void setRemarkOption(String remarkOption) {
+        if(remarkOption != null){
+            addAdditionInfo("remarkOption", remarkOption);
+        }
+        this.remarkOption = remarkOption;
+    }
+
+    // declarations for woCreateFormId
+    private Long woCreateFormId;
+    public Long getWoCreateFormId() {
+        if(getAdditionInfo().containsKey("woCreateFormId")) {
+            return (Long) getAdditionInfo().get("woCreateFormId");
+        }
+        return woCreateFormId;
+    }
+    public void setWoCreateFormId(Long woCreateFormId) {
+        if(woCreateFormId != null && woCreateFormId >0){
+            addAdditionInfo("woCreateFormId", woCreateFormId);
+        }
+        this.woCreateFormId = woCreateFormId;
+    }
 
 }
 
