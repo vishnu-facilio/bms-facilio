@@ -18,10 +18,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class UpdateRfqIdInPrCommandV3 extends FacilioCommand {
     @Override
@@ -30,13 +27,15 @@ public class UpdateRfqIdInPrCommandV3 extends FacilioCommand {
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3RequestForQuotationContext> requestForQuotationContexts = recordMap.get(moduleName);
         Long rfqId = requestForQuotationContexts.get(0).getId();
-        List<Long> prRecordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
+        List<Long> prRecordIds =requestForQuotationContexts.get(0).getRecordIds();
 
         if(CollectionUtils.isNotEmpty(prRecordIds)){
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             String prModuleName = FacilioConstants.ContextNames.PURCHASE_REQUEST;
             FacilioModule module = modBean.getModule(prModuleName);
             List<FacilioField> fields = modBean.getAllFields(prModuleName);
+            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
 
             V3RequestForQuotationContext rfq = new V3RequestForQuotationContext();
             rfq.setId(rfqId);
@@ -45,7 +44,7 @@ public class UpdateRfqIdInPrCommandV3 extends FacilioCommand {
             purchaseRequest.setRequestForQuotation(rfq);
 
             UpdateRecordBuilder<V3PurchaseRequestContext> updateBuilder = new UpdateRecordBuilder<V3PurchaseRequestContext>()
-            .module(module).fields(fields)
+            .module(module).fields(Collections.singletonList(fieldMap.get("requestForQuotation")))
             .andCondition(CriteriaAPI.getIdCondition(StringUtils.join(prRecordIds,','), module));
             updateBuilder.update(purchaseRequest);
         }

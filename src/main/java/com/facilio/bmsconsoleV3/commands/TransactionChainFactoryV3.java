@@ -1686,7 +1686,7 @@ public class TransactionChainFactoryV3 {
     }
     public static FacilioChain getRfqBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new CreateRfqFromPrCommandV3());
+       // c.addCommand(new CreateRfqFromPrCommandV3());
         c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new RfqBeforeCreateOrUpdateCommandV3());
         return c;
