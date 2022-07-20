@@ -68,7 +68,7 @@ public class PrepareReadingRuleForUpdateCommand extends FacilioCommand {
         if (newCtx.getImpact() != null) {
             oldRule.setImpact(newCtx.getImpact());
         }
-        if (oldRule.getImpact() != null && newCtx.getImpact() == null) {
+        if (oldRule.getImpact() != null && newCtx.getImpact().getId() == -1) {
             ctx.put("canDeleteFaultImpact", true);
         }
     }
