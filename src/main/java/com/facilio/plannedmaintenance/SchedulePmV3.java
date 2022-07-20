@@ -25,8 +25,8 @@ public class SchedulePmV3 extends FacilioCommand {
         long pmPlannerId = (Long) context.get("pmPlannerId");
         PMPlanner planner = getPMPlanner(pmPlannerId);
         PlannedMaintenance plannedMaintenance = getPlannedMaintenance(planner.getPmId());
-        PMTriggerV2 pmTrigger = getPMTrigger(plannedMaintenance.getTriggerId());
-        context.put("trigger", pmTrigger);
+        // PMTriggerV2 pmTrigger = getPMTrigger(plannedMaintenance.getTriggerId());
+       // context.put("trigger", pmTrigger);
         context.put("cutOffTime", System.currentTimeMillis());
         context.put("maxCount", 15);
 

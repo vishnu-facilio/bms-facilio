@@ -38,4 +38,12 @@ public class PlannedMaintenanceAction extends V3Action {
         return SUCCESS;
     }
 
+    public String deactivate() throws Exception {
+        FacilioChain publishPMChain = TransactionChainFactoryV3.getDeactivatePM();
+        FacilioContext context = publishPMChain.getContext();
+        context.put("pmId", pmId);
+        publishPMChain.execute();
+        return SUCCESS;
+    }
+
 }

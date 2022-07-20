@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.jobs.DataProcessingAlertJob;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.modules.*;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.plannedmaintenance.ScheduleExecutor;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.util.V3Util;
@@ -1564,6 +1565,9 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		FacilioModule workOrderModule = modBean.getModule("workorder");
 
 		FacilioContext context = new FacilioContext();
+		context.put("trigger", pmPlanner.getTrigger());
+		context.put("cutOffTime", System.currentTimeMillis());
+		context.put("maxCount", 15);
 		ScheduleExecutor scheduleExecutor = new ScheduleExecutor();
 		pmPlanner.setResourcePlanners(pmResourcePlanners);
 		List<V3WorkOrderContext> generatedWorkOrders = scheduleExecutor.execute(context, plannedmaintenance, pmPlanner);
@@ -1576,15 +1580,17 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule pmPlannerModule = modBean.getModule("pmPlanner");
 		List<FacilioField> pmPlannerFields = modBean.getAllFields("pmPlanner");
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(pmPlannerFields);
 
 		SelectRecordsBuilder<PMPlanner> selectRecordsBuilder = new SelectRecordsBuilder<>();
 		selectRecordsBuilder.select(pmPlannerFields);
 		selectRecordsBuilder.beanClass(PMPlanner.class);
 		selectRecordsBuilder.module(pmPlannerModule);
+		selectRecordsBuilder.fetchSupplements(Collections.singletonList((LookupField) fieldMap.get("trigger")));
 		selectRecordsBuilder.andCondition(CriteriaAPI.getIdCondition(plannerId, pmPlannerModule));
 		List<PMPlanner> pmPlanners = selectRecordsBuilder.get();
 
-		if (org.apache.commons.collections4.CollectionUtils.isEmpty(pmPlanners)) {
+		if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(pmPlanners)) {
 			return pmPlanners.get(0);
 		}
 

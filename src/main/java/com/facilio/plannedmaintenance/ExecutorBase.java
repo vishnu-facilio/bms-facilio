@@ -18,6 +18,8 @@ public abstract class ExecutorBase implements Executor {
         FacilioStatus status = getStatus(context);
         List<V3WorkOrderContext> result = new ArrayList<>();
 
+        PMTriggerV2 trigger = (PMTriggerV2) context.get("trigger");
+
         for (long nextExecutionTime: nextExecutionTimes) {
             for (PMResourcePlanner pmResourcePlanner: pmPlanner.getResourcePlanners()) {
                 //Cloning workorder
@@ -36,12 +38,13 @@ public abstract class ExecutorBase implements Executor {
                 resourceContext.setSiteId(pmResourcePlanner.getSiteId());
                 workOrderCopy.setScheduledStart(nextExecutionTime);
                 workOrderCopy.setResource(resourceContext);
-                workOrderCopy.setPmId(pmResourcePlanner.getPmId());
+                workOrderCopy.setPmV2(pmResourcePlanner.getPmId());
                 workOrderCopy.setSiteId(resourceContext.getSiteId());
-                if (pmPlanner.getTrigger() != null) {
-                    workOrderCopy.setTriggerId(pmPlanner.getTrigger().getId());
+                if (trigger != null) {
+                    workOrderCopy.setPmTriggerV2(trigger.getId());
                 }
-
+                workOrderCopy.setPmPlanner(pmPlanner.getId());
+                workOrderCopy.setPmResourcePlanner(pmResourcePlanner.getId());
                 workOrderCopy.setJobPlan(pmResourcePlanner.getJobPlan());
                 workOrderCopy.setAdhocJobPlan(pmPlanner.getAdhocJobPlan());
                 workOrderCopy.setPrerequisiteJobPlan(pmPlanner.getPreReqJobPlan());

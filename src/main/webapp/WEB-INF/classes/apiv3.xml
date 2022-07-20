@@ -910,6 +910,8 @@
         </action>
         <action name="publish" class="com.facilio.bmsconsoleV3.actions.PlannedMaintenanceAction" method="publishPM">
         </action>
+        <action name="deactivate" class="com.facilio.bmsconsoleV3.actions.PlannedMaintenanceAction" method="deactivate">
+        </action>
     </package>
 
 </struts>

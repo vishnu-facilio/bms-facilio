@@ -42,7 +42,7 @@ public class OpenScheduleWOV2 extends FacilioJob {
 
             V3WorkOrderContext wo = workOrderContexts.get(0);
 
-            PlannedMaintenance plannedmaintenance = (PlannedMaintenance) V3Util.getRecord("plannedmaintenance", wo.getPmV2().getId(), null);
+            PlannedMaintenance plannedmaintenance = (PlannedMaintenance) V3Util.getRecord("plannedmaintenance", wo.getPmV2(), null);
 
             if (!plannedmaintenance.isActive()) {
                 return;
@@ -91,7 +91,7 @@ public class OpenScheduleWOV2 extends FacilioJob {
             List<Object> wolist = new ArrayList<Object>();
 
             JSONObject newinfo = new JSONObject();
-            newinfo.put("pmidV2", wo.getPmV2().getId());
+            newinfo.put("pmidV2", wo.getPmV2());
             wolist.add(newinfo);
 
             for (UpdateChangeSet changeset : changeSetList) {
