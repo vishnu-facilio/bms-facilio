@@ -94,6 +94,9 @@ public class ReadingEventContext extends BaseEventContext {
     private ReadingRuleInterface rule;
 
     public void setRule(ReadingRuleInterface rule) throws Exception {
+        if(rule == null) {
+            return;
+        }
         if (isNewReadingRule) {
             NewReadingRuleContext ruleContext = new NewReadingRuleContext();
             ruleContext.setId(rule.getId());

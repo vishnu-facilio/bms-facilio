@@ -1,32 +1,29 @@
 package com.facilio.events.commands;
 
-import java.util.*;
-
 import com.facilio.activity.AlarmActivityType;
-import com.facilio.command.PostTransactionCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
-import com.facilio.command.PostTransactionCommand;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-
-import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
+import com.facilio.command.FacilioCommand;
+import com.facilio.command.PostTransactionCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.events.commands.NewEventsToAlarmsConversionCommand.PointedList;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.events.context.EventContext.EventState;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
+
+import java.util.*;
 
 public class NewEventsToAlarmsConversionCommand extends FacilioCommand implements PostTransactionCommand {
 
@@ -146,6 +143,7 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand implement
 		constructHistoricalAutoClearEvent = (constructHistoricalAutoClearEvent == null) ? true : constructHistoricalAutoClearEvent;
 
 		if(constructHistoricalAutoClearEvent) {
+
 			for (String key : eventKeys) {
 				PointedList<AlarmOccurrenceContext> pointedList = alarmOccurrenceMap.get(key);
 				if (CollectionUtils.isEmpty(pointedList)) {
@@ -162,15 +160,15 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand implement
 
 				List<AlarmOccurrenceContext> list = new ArrayList<>(pointedList);
 				for (AlarmOccurrenceContext alarmOccurrence : list) {
-					if (!alarmOccurrence.equals(pointedList.getLastRecord()) && !alarmOccurrence.getSeverity().equals(AlarmAPI.getAlarmSeverity("Clear"))) {
+					if (!alarmOccurrence.equals(pointedList.getLastRecord()) && !alarmOccurrence.getSeverity().equals(clearSeverity)) {
 						LOGGER.debug(alarmOccurrence.getId() + " : " + pointedList.getLastRecord().getId());
 						BaseAlarmContext alarm = alarmOccurrence.getAlarm();
 						alarm = NewAlarmAPI.getAlarm(alarm.getId());
 						BaseEventContext createdEvent = BaseEventContext.createNewEvent(alarm.getTypeEnum(), alarm.getResource(),
-								AlarmAPI.getAlarmSeverity("Clear"), "Automated Clear Event", alarm.getKey(), alarmOccurrence.getLastOccurredTime() + 1000);
+								clearSeverity, "Automated Clear Event", alarm.getKey(), alarmOccurrence.getLastOccurredTime() + 1000);
 						JSONObject info = new JSONObject();
 						info.put("field", "Severity");
-						info.put("newValue", AlarmAPI.getAlarmSeverity("Clear").getDisplayName());
+						info.put("newValue", clearSeverity.getDisplayName());
 						if (alarmOccurrence.getPreviousSeverity() != null){
 							info.put("oldValue", AlarmAPI.getAlarmSeverity(alarmOccurrence.getPreviousSeverity().getId()).getDisplayName());
 						}

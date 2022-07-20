@@ -23,6 +23,9 @@ public class ReadingAlarm extends BaseAlarmContext {
     }
 
     public void setRule(ReadingRuleInterface rule) throws Exception {
+        if(rule == null) {
+            return;
+        }
         if(getIsNewReadingRule()) {
             NewReadingRuleContext ruleContext = new NewReadingRuleContext();
             ruleContext.setId(rule.getId());
