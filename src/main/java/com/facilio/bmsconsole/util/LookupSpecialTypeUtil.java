@@ -12,7 +12,9 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.agent.controller.FacilioPoint;
 import com.facilio.agentv2.cacheimpl.AgentBean;
+import com.facilio.agentv2.point.Point;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.StringSystemEnumField;
@@ -87,6 +89,7 @@ public class LookupSpecialTypeUtil {
 				|| ModuleFactory.getAgentDataModule().getName().equals(specialType)
 				|| ModuleFactory.getTriggerModule().getName().equals(specialType)
 				|| ModuleFactory.getNewReadingRuleModule().getName().equals(specialType)
+				|| ModuleFactory.getPointModule().getName().equals(specialType)
 				;
 	}
 	
@@ -955,7 +958,9 @@ public class LookupSpecialTypeUtil {
 		else if(ModuleFactory.getTriggerModule().getName().equals(specialType)){
 			return ModuleFactory.getTriggerModule();
 		}
-		
+		else if(ModuleFactory.getPointModule().getName().equals(specialType)){
+			return ModuleFactory.getPointModule();
+		}
 		return null;
 	}
 	
@@ -1065,6 +1070,9 @@ public class LookupSpecialTypeUtil {
 		}
 		else if(ModuleFactory.getPMReminderModule().getName().equals(specialType)){
 			return FieldFactory.getPMReminderFields();
+		}
+		else if(ModuleFactory.getPointModule().getName().equals(specialType)){
+			return FieldFactory.getPointFields();
 		}
 		return null;
 	}
