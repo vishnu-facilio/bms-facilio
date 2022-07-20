@@ -68,6 +68,7 @@ import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.wmsv2.handler.AuditLogHandler;
 
+import org.apache.kafka.common.protocol.types.Field;
 import org.json.simple.JSONObject;
 
 import java.text.SimpleDateFormat;
@@ -3011,6 +3012,11 @@ public class FacilioConstants {
 	}
 	public static class LinkNamePrefix {
 		public static final String SUB_FORM_PREFIX = "subform__";
+	}
+
+	public static class CraftAndSKills{
+		public static final String CRAFT = "crafts";
+		public static final String SKILLS = "craftSkill";
 	}
 
 	public static class Reports 

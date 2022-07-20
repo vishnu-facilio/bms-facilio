@@ -2014,4 +2014,22 @@ public class APIv3Config {
                 .summary()
                 .build();
     }
+
+	@Module(FacilioConstants.CraftAndSKills.SKILLS)
+	public static Supplier<V3Config> getCraftSkills() {
+		return () -> new V3Config(SkillsContext.class, null)
+							 .list()
+							 .delete()
+							 .build();
+	}
+
+	@Module(FacilioConstants.CraftAndSKills.CRAFT)
+	public static Supplier<V3Config> getCrafts() {
+		return () -> new V3Config(CraftContext.class, null)
+							 .create()
+							 .list()
+							 .summary()
+							 .afterFetch(new FetchCraftAndSkillsCommand())
+							 .build();
+	}
 }
