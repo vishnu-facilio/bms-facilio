@@ -195,7 +195,7 @@ public class WorkorderPageFactory extends PageFactory {
         addRelationshipSection(page, relatedRecordsTab, workorderModuleID);
         page.addTab(relatedRecordsTab);
 
-        Page.Section relatedRecordsSection = page.new Section();
+        Page.Section relatedRecordsSection = getRelatedListSectionObj(page);
         relatedRecordsTab.addSection(relatedRecordsSection);
 
         // related records widget

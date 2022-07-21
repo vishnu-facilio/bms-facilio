@@ -88,10 +88,12 @@ public class TenantPageFactory extends PageFactory{
 		}
 		addNotesAttachmentsModule(tab2Sec1);
 
-		Tab tab3 = page.new Tab("related records");
+		Tab tab3 = page.new Tab("Related");
 		page.addTab(tab3);
 
-		Section tab3Sec1 = page.new Section();
+		addRelationshipSection(page, tab3, module.getModuleId());
+
+		Section tab3Sec1 = getRelatedListSectionObj(page);
 		tab3.addSection(tab3Sec1);
 
 		if(AccountUtil.getCurrentOrg().getOrgId() == 321l) {
@@ -105,7 +107,7 @@ public class TenantPageFactory extends PageFactory{
 			addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.FACILITY_BOOKING, module.getModuleId());
 		}
 
-		Page.Tab tab4 = page.new Tab("History");;
+		Page.Tab tab4 = page.new Tab("History");
 		page.addTab(tab4);
 		Page.Section tab4Sec1 = page.new Section();
 		tab4.addSection(tab4Sec1);

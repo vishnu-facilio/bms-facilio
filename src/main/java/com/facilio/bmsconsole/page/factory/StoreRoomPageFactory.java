@@ -90,7 +90,7 @@ public class StoreRoomPageFactory extends PageFactory{
         Page.Tab tab3 = page.new Tab("Related");
         page.addTab(tab3);
         addRelationshipSection(page, tab3, module.getModuleId());
-        Page.Section tab3Sec1 = page.new Section();
+        Page.Section tab3Sec1 = getRelatedListSectionObj(page);
         tab3.addSection(tab3Sec1);
         
         addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.PURCHASE_ORDER, module.getModuleId());

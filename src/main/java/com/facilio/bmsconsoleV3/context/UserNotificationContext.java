@@ -280,6 +280,27 @@ public class UserNotificationContext extends V3Context {
         return notificationObj;
     }
 
+    public static JSONObject getFcmObjectMaintainence(UserNotificationContext userNotification) throws Exception{
+        JSONObject obj = new JSONObject();
+        FacilioModule module = Constants.getModBean().getModule(userNotification.getParentModule());
+        obj.put("summaryId",userNotification.getParentId());
+        obj.put("moduleName",module.getName());
+        obj.put("body",userNotification.getSubject());
+        obj.put("title",userNotification.getTitle());
+        obj.put("notificationId",userNotification.getId());
+        obj.put("redirectTo","SUMMARY");
+
+        JSONObject notification = new JSONObject();
+        notification.put("body",userNotification.getSubject());
+        notification.put("title",userNotification.getTitle());
+
+        JSONObject notificationObj = new JSONObject();
+        notificationObj.put("notification",notification);
+        notificationObj.put("data",obj);
+
+        return notificationObj;
+    }
+
     public static class Action implements Serializable {
 
         public ActionType getActionType() {

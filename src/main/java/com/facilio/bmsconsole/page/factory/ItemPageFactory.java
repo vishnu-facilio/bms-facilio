@@ -70,7 +70,7 @@ public class ItemPageFactory extends PageFactory{
 
         Page.Tab tab3 = page.new Tab("Related");
         boolean isRelationshipNeeded = addRelationshipSection(page, tab3, module.getModuleId());
-        Page.Section tab3Sec1 = page.new Section();
+        Page.Section tab3Sec1 = getRelatedListSectionObj(page);
         tab3.addSection(tab3Sec1);
 
         addRelatedListWidgets(tab3Sec1, module.getModuleId());

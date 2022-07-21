@@ -62,7 +62,7 @@ public class ServiceRequestPageFactory extends PageFactory {
             if (AccountUtil.getCurrentOrg().getOrgId() == 429l || !AccountUtil.getCurrentUser().isPortalUser()) {
                 Page.Tab tab3 = page.new Tab("Related");
                 boolean isRelationshipNeeded = addRelationshipSection(page, tab3, record.getModuleId());
-                Page.Section tab3Sec1 = page.new Section();
+                Page.Section tab3Sec1 = getRelatedListSectionObj(page);
                 tab3.addSection(tab3Sec1);
                 addRelatedListWidgets(tab3Sec1, record.getModuleId());
                 if (CollectionUtils.isNotEmpty(tab3Sec1.getWidgets()) || isRelationshipNeeded) {

@@ -190,7 +190,7 @@ public class VendorPageFactory extends PageFactory{
 			Tab tab2 = page.new Tab("Related");
 			//page.addTab(tab2);
 			boolean isRelationshipAdded = addRelationshipSection(page, tab2, vendor.getModuleId());
-			Section tab2Sec1 = page.new Section();
+			Section tab2Sec1 = getRelatedListSectionObj(page);
 			tab2.addSection(tab2Sec1);
 			addRelatedListWidgets(tab2Sec1, vendor.getModuleId());
 			addRelatedListWidget(tab2Sec1, "vendorDocuments", vendor.getModuleId());

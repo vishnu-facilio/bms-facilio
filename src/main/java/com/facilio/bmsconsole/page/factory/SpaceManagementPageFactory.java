@@ -206,10 +206,11 @@ public class SpaceManagementPageFactory extends PageFactory {
 		addCommonSubModuleWidget(tab1Sec3, module, space);
 		tab1.addSection(tab1Sec3);
 
-		Tab tab2 = page.new Tab("Related Records");
+		Tab tab2 = page.new Tab("Related");
 		page.addTab(tab2);
+		addRelationshipSection(page, tab2, module.getModuleId());
 		FacilioModule baseSpaceModule = modBean.getModule(ContextNames.BASE_SPACE);
-		Section tab1Sec6 = page.new Section();
+		Section tab1Sec6 = getRelatedListSectionObj(page);
 		addRelatedListWidget(tab1Sec6, ContextNames.ASSET, baseSpaceModule.getModuleId(), "Assets");
 		tab2.addSection(tab1Sec6);
 

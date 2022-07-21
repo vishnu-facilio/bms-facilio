@@ -281,7 +281,7 @@ public class InspectionPageFactory extends PageFactory {
             
             Tab relatedList = page.new Tab("Related");
 			boolean isRelationshipNeeded = addRelationshipSection(page, relatedList, module.getModuleId());
-    		Section relatedListSec = page.new Section();
+    		Section relatedListSec = getRelatedListSectionObj(page);
     		addRelatedListWidgets(relatedListSec, module.getModuleId());
     		relatedList.addSection(relatedListSec);
     		

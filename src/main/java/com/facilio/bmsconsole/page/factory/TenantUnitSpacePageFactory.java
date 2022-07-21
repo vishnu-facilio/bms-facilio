@@ -84,7 +84,7 @@ public class TenantUnitSpacePageFactory extends PageFactory {
         page.addTab(tab3);
 
         addRelationshipSection(page, tab3, module.getModuleId());
-        Page.Section tab3Sec1 = page.new Section();
+        Page.Section tab3Sec1 = getRelatedListSectionObj(page);
         tab3.addSection(tab3Sec1);
         addRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.ASSET, baseSpaceModule.getModuleId(), "Assets");
         addRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.WORK_ORDER, resourceModule.getModuleId(), "Work Orders");

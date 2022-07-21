@@ -22,6 +22,7 @@ public class RelationMappingContext implements Serializable {
     private long fromModuleId = -1;
     private long toModuleId = -1;
     private String relationName;
+    private String mappingLinkName;
 
     private RelationRequestContext.RelationType relationType;
     public int getRelationType() {
@@ -57,8 +58,8 @@ public class RelationMappingContext implements Serializable {
         this.position = Position.valueOf(position);
     }
 
-    public Position getReversePosition(Position position) {
-        return (position == Position.LEFT) ? Position.RIGHT : Position.LEFT;
+    public Position getReversePosition() {
+        return RelationUtil.getReversePosition(position);
     }
 
     private RelationContext relationContext;

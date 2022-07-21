@@ -39,10 +39,12 @@ public class DesksPageFactory extends PageFactory {
         addSecondaryDetailsWidget(tab1Sec1);
         addCommonSubModuleWidget(tab1Sec1, module, deskContext);
 
-        Page.Tab tab2 = page.new Tab("related records");
+        Page.Tab tab2 = page.new Tab("Related");
         page.addTab(tab2);
 
-        Page.Section tab2Sec1 = page.new Section();
+        addRelationshipSection(page, tab2, module.getModuleId());
+
+        Page.Section tab2Sec1 = getRelatedListSectionObj(page);
         tab2.addSection(tab2Sec1);
 
         addCombinedRelatedListWidget(tab2Sec1, FacilioConstants.ContextNames.MOVES, module.getModuleId(), "Moves");

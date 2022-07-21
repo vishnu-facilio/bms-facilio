@@ -4,14 +4,15 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.UpdateChangeSet;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FileField;
 import com.facilio.v3.V3Builder.V3Config;
@@ -415,4 +416,30 @@ public class V3Util {
         return null;
     }
 
+    public static Boolean isIdPresentForModule(long id, FacilioModule module) throws Exception{
+        return (getCountFromIds(Collections.singletonList(id), module) > 0);
+    }
+
+    public static Boolean checkifIdsArePresentForModule(List<Long> ids, FacilioModule module) throws Exception{
+        return (ids.size() == getCountFromIds(ids, module));
+    }
+
+    private static long getCountFromIds(List<Long> ids, FacilioModule module) throws Exception{
+        Criteria idCriteria = new Criteria();
+        idCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(module), StringUtils.join(ids,","), NumberOperators.EQUALS));
+        return getCountFromModuleAndCriteria(module, idCriteria);
+    }
+
+    public static long getCountFromModuleAndCriteria(FacilioModule module, Criteria criteria) throws Exception{
+        FacilioChain chain = TransactionChainFactoryV3.getDataCountChain(module);
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.FILTER_SERVER_CRITERIA, criteria);
+
+        V3Config config = ChainUtil.getV3Config(module);
+        Class beanClass = ChainUtil.getBeanClass(config, module);
+        context.put(Constants.BEAN_CLASS, beanClass);
+
+        chain.execute();
+        return (long)context.getOrDefault(Constants.COUNT, 0l);
+    }
 }

@@ -5,6 +5,8 @@ import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsoleV3.context.UserNotificationContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -31,7 +33,14 @@ public class SendUserNotificationJob extends InstantJob {
                     // content.put("to",
                     // "exA12zxrItk:APA91bFzIR6XWcacYh24RgnTwtsyBDGa5oCs5DVM9h3AyBRk7GoWPmlZ51RLv4DxPt2Dq2J4HDTRxW6_j-RfxwAVl9RT9uf9-d9SzQchMO5DHCbJs7fLauLIuwA5XueDuk7p5P7k9PfV");
                     for(UserNotificationContext userNotificationContext:userNotification) {
-                        JSONObject obj = UserNotificationContext.getFcmObject(userNotificationContext);
+                        ApplicationContext applicationContext = ApplicationApi.getApplicationForId(userNotificationContext.getApplication());
+                        String appLinkName = applicationContext.getLinkName();
+                        JSONObject obj = new JSONObject();
+                        if (appLinkName.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
+                             obj = UserNotificationContext.getFcmObject(userNotificationContext);
+                        }else {
+                            obj = UserNotificationContext.getFcmObjectMaintainence(userNotificationContext);
+                        }
                         long uid = userNotificationContext.getUser().getId();
                         User userList = AccountUtil.getUserBean().getUser(userNotificationContext.getApplication(),uid);
                         if (userMobileSettings.containsKey(userList.getUid())) {

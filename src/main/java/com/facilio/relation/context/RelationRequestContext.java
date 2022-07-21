@@ -22,9 +22,12 @@ public class RelationRequestContext implements Serializable {
     private String toModuleName;
     private FacilioModule toModule;
     private String relationName;
+    private String forwardRelationLinkName;
     private String reverseRelationName;
+    private String reverseRelationLinkName;
     private FacilioModule relationModule;
     private RelationMappingContext.Position position;
+    private String reversePositionFieldName;
     public int getPosition() {
         if (position != null) {
             return position.getIndex();

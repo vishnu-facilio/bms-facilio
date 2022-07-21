@@ -33,7 +33,7 @@ public class LockersPageFactory extends PageFactory {
 
         Tab tab2 = page.new Tab("Related");
         boolean isRelationshipAdded = addRelationshipSection(page, tab2, module.getModuleId());
-        Section tab2Sec1 = page.new Section();
+        Section tab2Sec1 = getRelatedListSectionObj(page);
 		tab2.addSection(tab2Sec1);
 		addRelatedListWidgets(tab2Sec1, module.getModuleId());
 		if(CollectionUtils.isNotEmpty(tab2Sec1.getWidgets()) || isRelationshipAdded) {

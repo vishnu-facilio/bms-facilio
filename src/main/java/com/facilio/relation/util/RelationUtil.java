@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -33,6 +34,17 @@ public class RelationUtil {
             }
         }
         return relation;
+    }
+
+    public static RelationMappingContext getRelationMapping(String mappingLinkName) throws Exception {
+        FacilioModule module = ModuleFactory.getRelationMappingModule();
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(module.getTableName())
+                .select(FieldFactory.getRelationMappingFields())
+                .andCondition(CriteriaAPI.getCondition("LINK_NAME", "mappingLinkName", mappingLinkName, StringOperators.IS));
+
+        RelationMappingContext mapping = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), RelationMappingContext.class);
+        return mapping;
     }
 
     public static List<RelationRequestContext> getAllRelations(FacilioModule module) throws Exception {
@@ -119,10 +131,13 @@ public class RelationUtil {
                     request.setToModuleId(mapping.getToModuleId());
                     request.setToModuleName(toModule.getName());
                     request.setRelationName(mapping.getRelationName());
+                    request.setForwardRelationLinkName(mapping.getMappingLinkName());
                     request.setRelationType(mapping.getRelationTypeEnum());
                     request.setPosition(mapping.getPositionEnum());
+                    request.setReversePositionFieldName(mapping.getReversePosition().getFieldName());
                 } else { // this will fetch reverse mapping
                     request.setReverseRelationName(mapping.getRelationName());
+                    request.setReverseRelationLinkName(mapping.getMappingLinkName());
                 }
             }
             requests.add(request);
@@ -160,4 +175,9 @@ public class RelationUtil {
         mapping.setPosition(position);
         return mapping;
     }
+
+    public static RelationMappingContext.Position getReversePosition(RelationMappingContext.Position position) {
+        return (position == RelationMappingContext.Position.LEFT) ? RelationMappingContext.Position.RIGHT : RelationMappingContext.Position.LEFT;
+    }
+
 }

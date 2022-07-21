@@ -41,6 +41,8 @@ public class Constants {
     public static final String CUSTOM_BUTTONS = "customButtons";
     public static final String SYSTEM_BUTTONS = "systemButtons";
 
+    public static final String MODULE_VS_DELETEDIDS = "moduleVsDeletedIds";
+
     public static final String FILTER_BY = "filter_by";
     public static String getFilterBy(Context context) {
         return (String) context.get(FILTER_BY);

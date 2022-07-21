@@ -40,9 +40,10 @@ public class RequestForQuotationPageFactory extends PageFactory{
         addSecondaryDetailsWidget(tab2Sec1);
         addNotesAttachmentsModule(tab2Sec1);
 
-        Page.Tab tab3 = page.new Tab("Related Records");
+        Page.Tab tab3 = page.new Tab("Related");
         page.addTab(tab3);
-        Page.Section tab3Sec1 = page.new Section();
+        addRelationshipSection(page, tab3, module.getModuleId());
+        Page.Section tab3Sec1 = getRelatedListSectionObj(page);
         tab3.addSection(tab3Sec1);
 
         addRelatedListWidget(tab3Sec1,"vendorQuotes",module.getModuleId());

@@ -41,7 +41,7 @@ public class PeopleModulesPageFactory extends PageFactory {
 
 		Tab tab2 = page.new Tab("Related");
 		boolean isRelationshipNeeded = addRelationshipSection(page, tab2, record.getModuleId());
-		Section tab2Sec1 = page.new Section();
+		Section tab2Sec1 = getRelatedListSectionObj(page);
 		tab2.addSection(tab2Sec1);
 		addRelatedListWidgets(tab2Sec1, record.getModuleId(), formSubModules, false);
 		
