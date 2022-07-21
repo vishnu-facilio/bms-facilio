@@ -322,11 +322,11 @@ public class OrgBeanImpl implements OrgBean {
 
 	@Override
 	public Long getAppUsersCount(long orgId, long appId, boolean fetchNonAppUsers) throws Exception {
-		return getAppUsersCount(orgId, appId, fetchNonAppUsers,null,null,null);
+		return getAppUsersCount(orgId, appId, fetchNonAppUsers,null,null);
 	}
 
 	@Override
-	public Long getAppUsersCount(long orgId, long appId, boolean fetchNonAppUsers,String searchQuery,Boolean inviteAcceptStatus,Boolean userStatus) throws Exception {
+	public Long getAppUsersCount(long orgId, long appId, boolean fetchNonAppUsers,String searchQuery,Boolean inviteAcceptStatus) throws Exception {
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
 			return null;
@@ -368,12 +368,6 @@ public class OrgBeanImpl implements OrgBean {
 		if(inviteAcceptStatus != null)
 		{
 			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.INVITATION_ACCEPT_STATUS","inviteAcceptStatus", String.valueOf(inviteAcceptStatus), BooleanOperators.IS));
-		}
-		if(userStatus != null)
-		{
-			selectBuilder.innerJoin("Account_ORG_Users")
-					.on("Account_ORG_Users.USERID = ORG_Users.USERID");
-			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USER_STATUS","userStatus",String.valueOf(userStatus),BooleanOperators.IS));
 		}
 		List<Map<String, Object>> props = selectBuilder.get();
 		if(CollectionUtils.isNotEmpty(props)) {

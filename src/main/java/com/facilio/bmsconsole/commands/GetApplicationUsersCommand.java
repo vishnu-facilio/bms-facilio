@@ -5,6 +5,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.dto.User;
@@ -41,7 +43,8 @@ public class GetApplicationUsersCommand extends FacilioCommand {
 			context.put(FacilioConstants.ContextNames.USERS, users);
 		}
 		else {
-			Long count = AccountUtil.getOrgBean().getAppUsersCount(AccountUtil.getCurrentOrg().getOrgId(), appId, fetchNonAppUsers, searchQuery, inviteAcceptStatus,userStatus);
+			List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), appId, -1, false, fetchNonAppUsers, 0, 5000, searchQuery, inviteAcceptStatus,userStatus,null,null,null);
+			int count = users.size();
 			context.put(FacilioConstants.ContextNames.COUNT, count);
 
 		}
