@@ -418,6 +418,11 @@ public class OrgBeanImpl implements OrgBean {
 		return getAppUsers(orgId, ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP), false);
 	}
 
+	@Override
+	public List<User> getDefaultAppUsers(long orgId, String applinkName) throws Exception {
+		return getAppUsers(orgId, ApplicationApi.getApplicationIdForLinkName(applinkName), false);
+	}
+
 	public Map<String, Object> getOrgUser(long iamOrgUserId) throws Exception {
 		List<FacilioField> fields = new ArrayList<>(AccountConstants.getAppOrgUserFields());
 
@@ -432,6 +437,20 @@ public class OrgBeanImpl implements OrgBean {
 	public Map<Long, User> getOrgUsersAsMap(long orgId) throws Exception {
 
 		List<User> userList = getDefaultAppUsers(orgId);
+		Map<Long, User> map = new HashMap<Long, User>();
+		if(CollectionUtils.isNotEmpty(userList)) {
+			for(User u : userList) {
+				map.put(u.getId(), u);
+			}
+			return map;
+		}
+		return null;
+	}
+
+	@Override
+	public Map<Long, User> getOrgUsersAsMap(long orgId, String LinkName) throws Exception {
+
+		List<User> userList = getDefaultAppUsers(orgId, LinkName);
 		Map<Long, User> map = new HashMap<Long, User>();
 		if(CollectionUtils.isNotEmpty(userList)) {
 			for(User u : userList) {

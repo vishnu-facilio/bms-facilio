@@ -4,6 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsoleV3.context.readingimportapp.V3ReadingImportAppContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.accounts.dto.User;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -27,7 +28,7 @@ public class FetchReadingImportDataList extends FacilioCommand {
 
         selectBuilder.orderBy("CREATED_TIME  desc");
 
-        Map<Long, User> orgUsers = AccountUtil.getOrgBean().getOrgUsersAsMap(AccountUtil.getCurrentOrg().getOrgId());
+        Map<Long, User> orgUsers = AccountUtil.getOrgBean().getOrgUsersAsMap(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.ApplicationLinkNames.DATA_LOADER_APP);
 
 
         List<Map<String, Object>> props = selectBuilder.get();
