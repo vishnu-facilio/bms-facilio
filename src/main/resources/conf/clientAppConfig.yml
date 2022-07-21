@@ -7,5 +7,5 @@ clientapps:
     baseUrl: https://static.facilio.com/auth
     stageBaseUrl: https://static.facilio.com/dev
   - name: dataloader
-    baseUrl: https://static.facilio.in/dataloader
-    stageBaseUrl: https://static.facilio.in/dev
+    baseUrl: https://static.facilio.com/dataloader
+    stageBaseUrl: https://static.facilio.com/dev
