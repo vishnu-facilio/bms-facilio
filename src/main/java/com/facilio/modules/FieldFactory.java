@@ -8577,6 +8577,7 @@ public class FieldFactory extends BaseFieldFactory {
         list.add(getStringField("configJson", "CONFIG_JSON", module));
         list.add(getNumberField("recordCustomizationId","RECORD_CUSTOMIZATION_ID",module));
         list.add(getNumberField("groupCriteriaId", "GROUP_BY_CRITERIA_ID", module));
+        list.add(getField("excludeModuleCriteria", "EXCLUDE_MODULE_CRITERIA", module, FieldType.BOOLEAN));
 
         return list;
     }

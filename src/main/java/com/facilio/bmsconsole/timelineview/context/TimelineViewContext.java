@@ -121,6 +121,14 @@ public class TimelineViewContext extends FacilioView {
         this.disablePastEvents = disablePastEvents;
     }
 
+    private Boolean excludeModuleCriteria;
+    public Boolean isExcludeModuleCriteria() {
+        return excludeModuleCriteria;
+    }
+    public void setExcludeModuleCriteria(Boolean excludeModuleCriteria) {
+        this.excludeModuleCriteria = excludeModuleCriteria;
+    }
+
     private long weekendId;
     public long getWeekendId() { return weekendId; }
     public void setWeekendId(long weekendId) { this.weekendId = weekendId; }
@@ -213,7 +221,8 @@ public class TimelineViewContext extends FacilioView {
     public static enum CalendarViewType {
         DAY(1),
         WEEK(2),
-        MONTH(3);
+        MONTH(3),
+        YEAR(4);
 
         private int intVal;
 
