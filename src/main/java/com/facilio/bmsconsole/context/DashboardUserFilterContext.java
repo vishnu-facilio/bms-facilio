@@ -200,6 +200,16 @@ public Map<Long, FacilioField> getCascadingFilters() {
 
 		public String parentModuleName ;
 
+		public List getWidget_field_mapping() {
+			return widget_field_mapping;
+		}
+
+		public void setWidget_field_mapping(List widget_field_mapping) {
+			this.widget_field_mapping = widget_field_mapping;
+		}
+
+		public List widget_field_mapping;
+
 	}
 	public static enum OptionType implements FacilioIntEnum {
 		ALL("All"), SOME("Some");
@@ -486,5 +496,12 @@ public Map<Long, FacilioField> getCascadingFilters() {
 	}
 	public String getParentModuleName(){
 		return this.filterPojo.getParentModuleName();
+	}
+
+	public List getWidget_field_mapping() {
+		return this.filterPojo.getWidget_field_mapping();
+	}
+	public void setWidget_field_mapping(List widget_field_mapping) {
+		this.filterPojo.setWidget_field_mapping(widget_field_mapping);
 	}
 }
