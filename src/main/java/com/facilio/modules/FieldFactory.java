@@ -5141,7 +5141,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getIdField(module));
         fields.add(getField("name", "NAME", module, FieldType.STRING));
         fields.add(getField("desc", "DESCRIPTION", module, FieldType.STRING));
-        fields.add(getField("banner_details", "BANNER_DETAILS", module, FieldType.STRING));
+        fields.add(getField("banner_meta", "BANNER_DETAILS", module, FieldType.STRING));
         fields.add(getField("collapsed", "IS_COLLAPSED", module, FieldType.BOOLEAN));
         fields.add(getField("noResize", "IS_RESIZE_ENABLED", module, FieldType.BOOLEAN));
 

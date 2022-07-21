@@ -15,7 +15,7 @@ public class WidgetSectionContext extends DashboardWidgetContext {
     private static final long serialVersionUID = 1L;
     private String name;
     private String desc;
-    private JSONObject banner_meta;
+    private String banner_meta;
 
     private List<DashboardWidgetContext> widgets_in_section = new ArrayList<DashboardWidgetContext>();
     private Boolean noResize;
@@ -39,6 +39,9 @@ public class WidgetSectionContext extends DashboardWidgetContext {
         resultJson.put("h", getH());
         resultJson.put("minW", getMinW());
         resultJson.put("maxW", getMaxW());
+        if(getBanner_meta() != null) {
+            resultJson.put("banner_meta", getBanner_meta());
+        }
 
         JSONObject widgetJson = new JSONObject();
         widgetJson.put("widget", resultJson);

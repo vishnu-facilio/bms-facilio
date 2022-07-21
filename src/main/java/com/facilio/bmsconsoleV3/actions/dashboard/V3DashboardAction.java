@@ -103,7 +103,7 @@ public class V3DashboardAction extends V3Action {
             throw e;
         }
         catch (Exception e){
-            throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION, "Error while moving dashboard in to another app");
+            throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION, "Error while moving dashboard in to another app"+e);
         }
         return V3Action.SUCCESS;
     }
@@ -137,7 +137,7 @@ public class V3DashboardAction extends V3Action {
         }
         catch (Exception e)
         {
-            throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION, "Error while updating dashboard");
+            throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION, "Error while updating dashboard" + e);
         }
         return SUCCESS;
     }
@@ -161,7 +161,7 @@ public class V3DashboardAction extends V3Action {
             setData("dashboardJson", DashboardUtil.getDashboardResponseJson(dashboard, false));
         }catch (Exception e)
         {
-            throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION, "Error while getting dashboard info");
+            throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION, "Error while getting dashboard info"+e);
         }
         return SUCCESS;
     }
@@ -215,7 +215,7 @@ public class V3DashboardAction extends V3Action {
         }
         catch (Exception e)
         {
-            throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION, "Error while updating dashboard tab info");
+            throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION, "Error while updating dashboard tab info"+e);
         }
         return SUCCESS;
     }
@@ -253,7 +253,7 @@ public class V3DashboardAction extends V3Action {
         }
         catch (Exception e)
         {
-            throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION, "Error while getting dashboard tab data");
+            throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION, "Error while getting dashboard tab data"+e);
         }
         return SUCCESS;
     }
