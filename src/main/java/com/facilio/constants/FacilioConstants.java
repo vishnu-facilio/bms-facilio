@@ -1285,6 +1285,8 @@ public class FacilioConstants {
 		public static final String RELATION = "relation";
 		public static final String RELATION_LIST = "relationList";
 		public static final String RELATION_MAPPING = "relationMapping";
+		public static final String RELATION_NAME = "relationName";
+		public static final String RELATION_MODULE_NAME = "relationModuleName";
 
 		public static final String SPACECATEGORY = "SPACECATEGORY";
 		public static final String SPACECATEGORIESLIST = "SPACECATEGORIESLIST";

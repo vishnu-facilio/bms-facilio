@@ -150,6 +150,15 @@
 
     </package>
 
+    <package name="relationv3api" namespace="/api/v3/modules" extends="v3Api">
+        <action name="*/associate" class="com.facilio.v3.action.RelationshipDataAction" method="associateRelation">
+            <param name="moduleName">{1}</param>
+        </action>
+        <action name="*/dissociate" class="com.facilio.v3.action.RelationshipDataAction" method="dissociateRelation">
+            <param name="moduleName">{1}</param>
+        </action>
+    </package>
+
     <package name="newV3Api" extends="v3Api" namespace="/api/v3/modules">
         <action name="*/*" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">{1}</param>

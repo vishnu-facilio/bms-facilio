@@ -34,7 +34,7 @@ import com.facilio.bmsconsoleV3.commands.tool.UpdateIsUnderStockedCommandV3;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsoleV3.commands.receipts.*;
 import com.facilio.modules.FacilioModule;
-import com.facilio.relation.command.ValidateRelationDataCommand;
+import com.facilio.relation.command.*;
 import com.facilio.bmsconsoleV3.plannedmaintenance.jobplan.FillTasksAndPrerequisitesCommand;
 import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
 import com.facilio.v3.commands.CountCommand;
@@ -105,8 +105,6 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.readingrule.faultimpact.command.FaultImpactAfterSaveCommand;
 import com.facilio.readingrule.faultimpact.command.FaultImpactBeforeSaveCommand;
-import com.facilio.relation.command.AppendRelationDataCommand;
-import com.facilio.relation.command.ValidateRelationParamCommand;
 import com.facilio.trigger.command.*;
 import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
 
@@ -914,8 +912,6 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getRelationDataAddBeforeSaveChain() {
         FacilioChain chain = getDefaultChain();
-        chain.addCommand(new ValidateRelationParamCommand());
-        chain.addCommand(new AppendRelationDataCommand());
         chain.addCommand(new ValidateRelationDataCommand());
         return chain;
     }
@@ -923,6 +919,18 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getRelationDataBeforeDeleteChain() {
         FacilioChain chain = getDefaultChain();
 //        chain.addCommand(new ValidateRelationParamCommand());
+        return chain;
+    }
+
+    public static FacilioChain getRelationAPIDataChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new GenerateRelationModuleAPIDataCommand());
+        return chain;
+    }
+
+    public static FacilioChain getRelationDeleteAPIDataChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new GenerateRelationDeleteAPIDataCommand());
         return chain;
     }
 

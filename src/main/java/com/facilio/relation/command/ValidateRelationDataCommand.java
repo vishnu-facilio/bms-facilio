@@ -1,16 +1,20 @@
 package com.facilio.relation.command;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.relation.context.RelationContext;
 import com.facilio.relation.context.RelationDataContext;
 import com.facilio.relation.context.RelationMappingContext;
 import com.facilio.relation.context.RelationRequestContext;
+import com.facilio.relation.util.RelationUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
@@ -27,11 +31,15 @@ public class ValidateRelationDataCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        RelationContext relation = (RelationContext) context.get(FacilioConstants.ContextNames.RELATION);
-        RelationMappingContext relationMapping = (RelationMappingContext) context.get(FacilioConstants.ContextNames.RELATION_MAPPING);
-        String relationModuleName = Constants.getModuleName(context);
 
-        long parentId = FacilioUtil.parseLong(Constants.getQueryParamOrThrow(context, "parentId"));
+        String relationLinkName = (String) Constants.getQueryParamOrThrow(context, FacilioConstants.ContextNames.RELATION_NAME);
+        long parentId = FacilioUtil.parseLong(Constants.getQueryParamOrThrow(context, FacilioConstants.ContextNames.PARENT_ID));
+
+        RelationMappingContext relationMapping = RelationUtil.getRelationMapping(relationLinkName);
+        String relationModuleName = Constants.getModuleName(context);
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule relationModule = modBean.getModule(relationModuleName);
+        RelationContext relation = RelationUtil.getRelation(relationModule, false);
 
         if(!V3Util.isIdPresentForModule(parentId, relationMapping.getFromModule())) {
             throw new IllegalArgumentException("Invalid parent record");
