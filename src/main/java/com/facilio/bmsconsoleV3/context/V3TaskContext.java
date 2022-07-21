@@ -10,10 +10,12 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.unitconversion.Unit;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.V3Context;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -148,11 +150,17 @@ public class V3TaskContext extends V3Context {
     }
     @TypeConversion(converter = "java.lang.String", value = "java.lang.String")
     public void setCreatedTime(String createdTime) {
+
         if(createdTime != null && !createdTime.isEmpty()) {
+            if (NumberUtils.isDigits(createdTime)) {
+                this.createdTime = FacilioUtil.parseLong(createdTime);
+                return;
+            }
+            // TODO:VR Find cases where textual dates are sent.
+            log.info("Textual Date received: " + createdTime);
             try {
                 this.createdTime = FacilioConstants.HTML5_DATE_FORMAT.parse(createdTime).getTime();
-            }
-            catch (ParseException e) {
+            } catch (ParseException e) {
                 try {
                     this.createdTime = FacilioConstants.HTML5_DATE_FORMAT_1.parse(createdTime).getTime();
                 } catch (ParseException e1) {

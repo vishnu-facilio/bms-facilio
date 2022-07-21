@@ -1461,27 +1461,34 @@ public class WorkOrderAction extends FacilioAction {
 		this.avgResponseResolution = avgResponseResolution;
 	}
 
-	
-	private Map<String,Object> avgResolutionTimeByCategory;
 
-	public Map<String,Object> getAvgResolutionTimeByCategory() {
-		return avgResolutionTimeByCategory;
-	}
+    private Map<String, Object> avgResolutionTimeByCategory;
 
-	public void setAvgResolutionTimeByCategory(Map<String,Object> avgResolutionTimeByCategory) {
-		this.avgResolutionTimeByCategory = avgResolutionTimeByCategory;
-	}
+    public Map<String, Object> getAvgResolutionTimeByCategory() {
+        return avgResolutionTimeByCategory;
+    }
 
-	public String assignWorkOrder() throws Exception {
+    public void setAvgResolutionTimeByCategory(Map<String, Object> avgResolutionTimeByCategory) {
+        this.avgResolutionTimeByCategory = avgResolutionTimeByCategory;
+    }
+
+
+
+    public String assignWorkOrder() throws Exception {
+
+
+		LOGGER.info("assigning with v2");
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ASSIGN_TICKET);
-		if(workorder != null && workorder.getAssignedTo() != null && workorder.getAssignedTo().getId() == -1l) {
+		if (workorder != null && workorder.getAssignedTo() != null && workorder.getAssignedTo().getId() == -1l) {
 			workorder.getAssignedTo().setId(-99l);
 		}
-		if(workorder != null && workorder.getAssignmentGroup() != null && workorder.getAssignmentGroup().getId() == -1l) {
+		if (workorder != null && workorder.getAssignmentGroup() != null && workorder.getAssignmentGroup().getId() == -1l) {
 			workorder.getAssignmentGroup().setId(-99l);
 		}
-		return updateWorkOrder(context);
+		updateWorkOrder(context);
+
+		return SUCCESS;
 	}
 	
 	private File signature;
@@ -1509,9 +1516,7 @@ public class WorkOrderAction extends FacilioAction {
 	}
 
 	public String closeWorkOrder() throws Exception {
-		if (AccountUtil.getCurrentOrg().getId() == 274) {
-			LOGGER.info("Close WO called");
-		}
+
 		FacilioContext context = new FacilioContext();
 		if (StringUtils.isNotEmpty(workOrderString) && workorder == null) {
 			setWorkordercontex(workOrderString);
@@ -1536,7 +1541,6 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		setUpdateWorkorderContext(context);
 		CommonCommandUtil.addEventType(EventType.CLOSE_WORK_ORDER, context);
-		
 
 		if (actualWorkDuration != -1) {
 			workorder.setActualWorkDuration(actualWorkDuration);
@@ -1551,8 +1555,8 @@ public class WorkOrderAction extends FacilioAction {
 
 		workorder = new WorkOrderContext();
 		workorder.setStatus(TicketAPI.getStatus("Resolved")); // We shouldn't
-																// allow resolve
-																// to be edited
+		// allow resolve
+		// to be edited
 		if (actualWorkDuration != -1) {
 			workorder.setActualWorkDuration(actualWorkDuration);
 		}
@@ -1725,25 +1729,25 @@ public class WorkOrderAction extends FacilioAction {
 
 	private WorkorderTemplate workorderTemplate;
 
-	public WorkorderTemplate getWorkorderTemplate() {
-		return workorderTemplate;
-	}
+    public WorkorderTemplate getWorkorderTemplate() {
+        return workorderTemplate;
+    }
 
-	public void setWorkorderTemplate(WorkorderTemplate workorderTemplate) {
-		this.workorderTemplate = workorderTemplate;
-	}
+    public void setWorkorderTemplate(WorkorderTemplate workorderTemplate) {
+        this.workorderTemplate = workorderTemplate;
+    }
 
-	private WorkOrderContext workorder;
+    private WorkOrderContext workorder;
 
-	public WorkOrderContext getWorkorder() {
-		return workorder;
-	}
+    public WorkOrderContext getWorkorder() {
+        return workorder;
+    }
 
-	public void setWorkorder(WorkOrderContext workorder) {
-		this.workorder = workorder;
-	}
+    public void setWorkorder(WorkOrderContext workorder) {
+        this.workorder = workorder;
+    }
 
-	private long workOrderId = -1;
+    private long workOrderId = -1;
 
 	public long getWorkOrderId() {
 		return workOrderId;
@@ -2984,16 +2988,16 @@ public class WorkOrderAction extends FacilioAction {
 	}
 	
 	public String v2closeWorkorder() throws Exception {
-		closeWorkOrder();
-		setResult(FacilioConstants.ContextNames.RESULT, "success");
-		if (workOrders.size() == 1) {
-			setWorkOrderId(workOrders.get(0).getId());
-			v2viewWorkOrder();
-			setResult(FacilioConstants.ContextNames.MODIFIED_TIME, workorder.getModifiedTime());
-		}
-		else {
-			setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
-		}
+			LOGGER.info("closing with v2");
+			closeWorkOrder();
+			setResult(FacilioConstants.ContextNames.RESULT, "success");
+			if (workOrders.size() == 1) {
+				setWorkOrderId(workOrders.get(0).getId());
+				v2viewWorkOrder();
+				setResult(FacilioConstants.ContextNames.MODIFIED_TIME, workorder.getModifiedTime());
+			} else {
+				setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
+			}
 		return SUCCESS;
 	}
 	
