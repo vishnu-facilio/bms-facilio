@@ -442,6 +442,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new GetRecordIdsFromRecordMapCommandV3());
         c.addCommand(new FetchOldWorkordersCommandV3());
+        c.addCommand(new ValidateWOForUpdate());
         // c.addCommand(new ChangeApprovalStatusForModuleDataCommand());
         // c.addCommand(new VerifyApprovalCommandV3());
         c.addCommand(new UpdateEventListForStateFlowCommandV3());
@@ -471,7 +472,7 @@ public class TransactionChainFactoryV3 {
                 .addCommand(
                         new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.WORKORDER_AGENT_NOTIFICATION_RULE,
                                 WorkflowRuleContext.RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE))
-                .addCommand(new ClearAlarmOnWOCloseCommand())
+                .addCommand(new ClearAlarmOnWOClosureCommand())
                 .addCommand(new ExecuteTaskFailureActionCommand()));
         c.addCommand(new ConstructTicketNotesCommand());
         c.addCommand(TransactionChainFactory.getAddNotesChain());

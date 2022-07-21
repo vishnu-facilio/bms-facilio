@@ -441,7 +441,7 @@ public class TransactionChainFactory {
 	/**
 	 * Creates a new Workorder
 	 *
-	 * @deprecated use V3 Create instead.
+	 * @deprecated use V3 Update instead.
 	 */
 	@Deprecated
 	public static FacilioChain getUpdateWorkOrderChain() {

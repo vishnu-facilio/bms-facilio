@@ -171,15 +171,25 @@
 
         <action name="list"
                 class="com.facilio.bmsconsoleV3.actions.TimelineAction"
-                method="timelineSelectiveList" />
+                method="timelineSelectiveList"/>
 
         <action name="update"
                 class="com.facilio.bmsconsoleV3.actions.TimelineAction"
-                method="timelinePatch" />
+                method="timelinePatch"/>
 
         <action name="unscheduled"
                 class="com.facilio.bmsconsoleV3.actions.TimelineAction"
-                method="timelineUnScheduledList" />
+                method="timelineUnScheduledList"/>
+    </package>
+
+    <package name="workorderV3Api" namespace="/api/v3/workorders" extends="v3Api">
+        <action name="close"
+                class="com.facilio.bmsconsoleV3.actions.WorkorderAction"
+                method="close"/>
+
+        <action name="assign"
+                class="com.facilio.bmsconsoleV3.actions.WorkorderAction"
+                method="assign"/>
     </package>
 
 
