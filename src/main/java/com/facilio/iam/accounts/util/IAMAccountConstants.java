@@ -354,6 +354,13 @@ public class IAMAccountConstants {
 			groupName.setModule(module);
 			fields.add(groupName);
 
+			FacilioField allowUserTimeZone = new FacilioField();
+			allowUserTimeZone.setName("allowUserTimeZone");
+			allowUserTimeZone.setDataType(FieldType.BOOLEAN);
+			allowUserTimeZone.setColumnName("ALLOW_USER_TIMEZONE");
+			allowUserTimeZone.setModule(module);
+			fields.add(allowUserTimeZone);
+
 			return fields;
 		}
 

@@ -267,6 +267,13 @@ public class ScopeInterceptor extends AbstractInterceptor {
                                 timezoneVar = site.getTimeZone();
                             }
                         }
+                        if(AccountUtil.getCurrentOrg().getAllowUserTimeZone() != null && AccountUtil.getCurrentOrg().getAllowUserTimeZone())
+                        {
+                            if(AccountUtil.getCurrentUser().getTimezone() != null)
+                            {
+                                timezoneVar = AccountUtil.getCurrentUser().getTimezone();
+                            }
+                        }
                         if (StringUtils.isEmpty(timezoneVar)) {
                             timezoneVar = AccountUtil.getCurrentOrg().getTimezone();
                         }
