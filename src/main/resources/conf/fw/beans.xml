@@ -26,4 +26,6 @@
 	<bean name="QueueingServiceBean" class="com.facilio.queueingservice.QueueingServiceBeanImpl" />
 	
 	<bean name="ScriptBean" class="com.facilio.workflowv2.bean.ScriptBeanCacheImpl" />
+	
+	<bean name="BundleBean" class="com.facilio.bundle.bean.BundleBeanImpl" />
 </beans>

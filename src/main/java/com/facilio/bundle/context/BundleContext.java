@@ -51,7 +51,9 @@ public class BundleContext {
 		
 		UN_MANAGED_SYSTEM(1,"Un-Managed System"),
 		UN_MANAGED(2,"Un-Managed"),
-		MANGED(3,"Managed"),
+		MANAGED(3,"Managed"),
+		PRODUCTION_SANDBOX_INTERNAL(4,"Production Sandbox Internal"),
+		SANDBOX_UN_MANAGED(5,"Sandbox Un-Managed"),
 		;
 		
 		int value;

@@ -1,7 +1,9 @@
 package com.facilio.bundle.utils;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ import org.reflections.scanners.FieldAnnotationsScanner;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bundle.anotations.ExcludeInBundle;
 import com.facilio.bundle.anotations.IncludeInBundle;
+import com.facilio.bundle.command.PackBundleChangeSetCommand;
 import com.facilio.bundle.context.BundleChangeSetContext;
 import com.facilio.bundle.context.BundleContext;
 import com.facilio.bundle.enums.BundleComponentsEnum;
@@ -38,6 +41,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.services.factory.FacilioFactory;
 import com.google.common.io.Files;
 
 import io.jsonwebtoken.lang.Collections;
@@ -394,5 +398,24 @@ public class BundleUtil {
 		return props;
 	}
 
+	public static File getBundleZipFile(BundleContext productionSandboxBundle) throws Exception {
+
+		
+		try (InputStream inputStream = FacilioFactory.getFileStore().readFile(productionSandboxBundle.getBundleFileId())) {
+
+			String tempFilePath = PackBundleChangeSetCommand.class.getClassLoader().getResource("").getFile() + File.separator + "facilio-temp-files" + File.separator + AccountUtil.getCurrentOrg().getOrgId() + File.separator + "bundles"+File.separator+productionSandboxBundle.getBundleFileId()+".zip";
+            File file = new File(tempFilePath);
+
+            try (FileOutputStream outputStream = new FileOutputStream(file, false)) {
+                int read;
+                byte[] bytes = new byte[8192];
+                while ((read = inputStream.read(bytes)) != -1) {
+                    outputStream.write(bytes, 0, read);
+                }
+            }
+
+            return file;
+        }
+	}
 	
 }

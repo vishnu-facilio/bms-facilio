@@ -5932,7 +5932,6 @@ public class FieldFactory extends BaseFieldFactory {
 
         return fields;
     }
-
     public static List<FacilioField> getWorkflowFieldsFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getWorkflowFieldModule();
@@ -10217,6 +10216,25 @@ public class FieldFactory extends BaseFieldFactory {
     }
     
     //Bundle Related Fields ends
+    
+    //Sandbox Related Fields starts
+    
+    public static List<FacilioField> getSandboxFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getSandboxModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("name", "NAME", module, FieldType.STRING));
+        fields.add(getField("domain", "DOMAIN_NAME", module, FieldType.STRING));
+        fields.add(getField("sandboxOrgId", "SANDBOX_ORG_ID", module, FieldType.NUMBER));
+        fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
+        fields.add(getField("createdBy", "CREATED_BY", module, FieldType.NUMBER));
+        fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.NUMBER));
+        return fields;
+    }
+    
+    //Sandbox Related Fields ends
     
     public static List<FacilioField> getQAndADisplayLogicFields() {
         List<FacilioField> fields = new ArrayList<>();

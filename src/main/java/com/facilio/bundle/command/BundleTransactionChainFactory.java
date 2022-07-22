@@ -1,6 +1,10 @@
 package com.facilio.bundle.command;
 
 import com.facilio.chain.FacilioChain;
+import com.facilio.sandbox.command.AddNewOrgAndInstallForSandboxCommand;
+import com.facilio.sandbox.command.AddSandboxCommand;
+import com.facilio.sandbox.command.PackCurrentOrgForSandboxCommand;
+import com.facilio.sandbox.command.ValidateAndFillDefaultValuesSandboxCommand;
 
 public class BundleTransactionChainFactory {
 
@@ -65,5 +69,38 @@ public class BundleTransactionChainFactory {
 		FacilioChain c = getDefaultChain();
         c.addCommand(new GetAllInstalledBundlesCommand());
         return c;
+	}
+
+	public static FacilioChain getAddSandboxChain() {
+		// TODO Auto-generated method stub
+		FacilioChain c = getDefaultChain();
+		
+		c.addCommand(new ValidateAndFillDefaultValuesSandboxCommand());
+		c.addCommand(new PackCurrentOrgForSandboxCommand());
+		c.addCommand(new AddNewOrgAndInstallForSandboxCommand());			// will be connected with sandbox org.
+		c.addCommand(new AddSandboxCommand());
+		return c;
+	}
+	
+	public static FacilioChain getUpdateSandboxChain() {
+		// TODO Auto-generated method stub
+		
+		FacilioChain c = getDefaultChain();
+		return c;
+	}
+	
+	public static FacilioChain getSandboxChangeSetChain() {
+		
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetSandboxChangeSetCommand());
+		return c;
+	}
+
+	public static FacilioChain getPullSandboxChangesChain() {
+
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new PackSandboxChangeSetCommand());
+		c.addCommand(new InstallSandboxChangeSetCommand());
+		return c;
 	}
 }
