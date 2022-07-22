@@ -26,7 +26,7 @@ public class AddFaultImpactRelationCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         NewReadingRuleContext readingRule = (NewReadingRuleContext) context.get(FacilioConstants.ContextNames.NEW_READING_RULE);
 
-        if (readingRule.getImpact() != null) {
+        if (readingRule.getImpact() != null && readingRule.getImpact().getId() != -1) {
 
             FaultImpactContext impact = (FaultImpactContext) V3Util.getRecord(FacilioConstants.FaultImpact.MODULE_NAME, readingRule.getImpact().getId(), null);
 
