@@ -322,6 +322,7 @@ public class FieldFactory extends BaseFieldFactory {
                 "configureStatus",
                 "createdTime",
                 "displayName",
+                AgentConstants.DATA_MISSING,
 //                "fieldId",
                 "Interval",
                 "lastRecordedTime",
@@ -7006,6 +7007,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getDefaultField(AgentConstants.UNIT,"Unit","UNIT", module, FieldType.NUMBER));
         fields.add(getDefaultField(AgentConstants.AGENT_ID,"Agent ID","AGENT_ID", module, FieldType.NUMBER));
         fields.add(getDefaultField(AgentConstants.DATA_INTERVAL,"Data Interval","DATA_INTERVAL", module, FieldType.NUMBER));
+        fields.add(getDefaultField(AgentConstants.DATA_MISSING, "Data Missing","DATA_MISSING", module, FieldType.BOOLEAN));
         //fields.add(getNewDeletedTimeField(module));
         SystemEnumField configureStatusfield = (SystemEnumField) getDefaultField(AgentConstants.CONFIGURE_STATUS, "Configure Status","CONFIGURE_STATUS", module, FieldType.SYSTEM_ENUM);
         configureStatusfield.setEnumName("ConfigureStatus");
