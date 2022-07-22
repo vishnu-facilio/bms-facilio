@@ -6,5 +6,4 @@ import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 @Data
 public class PMJobPlan extends JobPlanContext {
     long pmId;
-    boolean isPreRequisite;
 }

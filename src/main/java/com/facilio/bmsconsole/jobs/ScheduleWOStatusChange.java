@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -58,61 +56,39 @@ public class ScheduleWOStatusChange extends FacilioJob {
                     .andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleState"), CommonOperators.IS_EMPTY))
                     .andCondition(CriteriaAPI.getCondition(fieldMap.get("jobStatus"), String.valueOf(PMJobsContext.PMJobsStatus.ACTIVE.getValue()), NumberOperators.EQUALS))
                     .andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), String.valueOf(maxTime), NumberOperators.LESS_THAN))
-                    .andCustomWhere("WorkOrders.PM_ID IS NOT NULL OR WorkOrders.PM_V2_ID IS NOT NULL")
+                    .andCustomWhere("WorkOrders.PM_ID IS NOT NULL")
                     .skipModuleCriteria();
-			List<Map<String, Object>> workOrderProps = selectRecordsBuilder.getAsProps();
+            List<WorkOrderContext> wos = selectRecordsBuilder.get();
 
-			List<WorkOrderContext> workOrderContexts = new ArrayList<>();
-			List<V3WorkOrderContext> v3WorkOrderContexts = new ArrayList<>();
+            if (wos == null || wos.isEmpty()) {
+                return;
+            }
+            
+            modifyWorkflowBasedOnRule(wos);
 
-			for (Map<String, Object> workOrderProp: workOrderProps) {
-				Object pmV2 = workOrderProp.get("pmV2");
-				if (pmV2 != null) {
-					v3WorkOrderContexts.add(FieldUtil.getAsBeanFromMap(workOrderProp, V3WorkOrderContext.class));
-				} else {
-					workOrderContexts.add(FieldUtil.getAsBeanFromMap(workOrderProp, WorkOrderContext.class));
+            for (WorkOrderContext wo : wos) {
+//            	TicketAPI.loadRelatedModules(wo);
+//            	if(wo.getTasks() == null || wo.getTasks().isEmpty()) {
+//            		continue;
+//            	}
+				try {
+					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(wo.getId(), "OpenScheduledWO", wo.getCreatedTime() / 1000, "priority");
 				}
-			}
+				catch (Exception e) { //Delete job entry if any and try again
+					FacilioTimer.deleteJob(wo.getId(), "OpenScheduledWO");
+					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(wo.getId(), "OpenScheduledWO", wo.getCreatedTime() / 1000, "priority");
+				}
+            }
 
-			handlePMV1Scheduling(workOrderContexts);
-			handlePMV2Scheduling(v3WorkOrderContexts);
-		} catch (Exception e) {
+            updateJobStatus(wos);
+        } catch (Exception e) {
             CommonCommandUtil.emailException("ScheduleWOStatusChange", ""+jc.getJobId(), e);
             LOGGER.error("PM Execution failed: ", e);
             throw e;
         }
     }
 
-	private void handlePMV2Scheduling(List<V3WorkOrderContext> v3WorkOrderContexts) throws Exception {
-		if (CollectionUtils.isNotEmpty(v3WorkOrderContexts)) {
-			for (V3WorkOrderContext v3WorkOrderContext: v3WorkOrderContexts) {
-				try {
-					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(v3WorkOrderContext.getId(), "OpenScheduledWOV2", v3WorkOrderContext.getCreatedTime() / 1000, "priority");
-				} catch (Exception e) { //Delete job entry if any and try again
-					FacilioTimer.deleteJob(v3WorkOrderContext.getId(), "OpenScheduledWOV2");
-					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(v3WorkOrderContext.getId(), "OpenScheduledWOV2", v3WorkOrderContext.getCreatedTime() / 1000, "priority");
-				}
-			}
-			updateV3JobStatus(v3WorkOrderContexts);
-		}
-	}
-
-	private void handlePMV1Scheduling(List<WorkOrderContext> workOrderContexts) throws Exception {
-		if (CollectionUtils.isNotEmpty(workOrderContexts)) {
-			modifyWorkflowBasedOnRule(workOrderContexts);
-			for (WorkOrderContext wo : workOrderContexts) {
-				try {
-					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(wo.getId(), "OpenScheduledWO", wo.getCreatedTime() / 1000, "priority");
-				} catch (Exception e) { //Delete job entry if any and try again
-					FacilioTimer.deleteJob(wo.getId(), "OpenScheduledWO");
-					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(wo.getId(), "OpenScheduledWO", wo.getCreatedTime() / 1000, "priority");
-				}
-			}
-			updateJobStatus(workOrderContexts);
-		}
-	}
-
-	private void modifyWorkflowBasedOnRule(List<WorkOrderContext> wos) throws Exception {
+    private void modifyWorkflowBasedOnRule(List<WorkOrderContext> wos) throws Exception {
     	
     	if(wos == null) {
     		return;
@@ -227,24 +203,6 @@ public class ScheduleWOStatusChange extends FacilioJob {
     	}
     	return uniqueIdVsParentIdMap;
     }
-
-	private void updateV3JobStatus(List<V3WorkOrderContext> wos) throws Exception {
-		if (wos == null || wos.isEmpty()) {
-			return;
-		}
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		List<Long> woIds = wos.stream().map(V3WorkOrderContext::getId).collect(Collectors.toList());
-		V3WorkOrderContext wo = new V3WorkOrderContext();
-		wo.setJobStatus(V3WorkOrderContext.JobsStatus.SCHEDULED.getValue());
-		UpdateRecordBuilder<V3WorkOrderContext> updateRecordBuilder = new UpdateRecordBuilder<>();
-		updateRecordBuilder.fields(Arrays.asList(fieldMap.get("jobStatus")))
-				.module(module)
-				.andCondition(CriteriaAPI.getIdCondition(woIds, module))
-				.update(wo);
-	}
 
 	private void updateJobStatus(List<WorkOrderContext> wos) throws Exception {
         if (wos == null || wos.isEmpty()) {

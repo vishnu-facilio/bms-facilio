@@ -25,7 +25,6 @@ import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.jobplan.PMJobPlanContextV3;
 import com.facilio.bmsconsoleV3.util.JobPlanAPI;
 import com.facilio.chain.FacilioChain;
@@ -50,9 +49,6 @@ import com.facilio.taskengine.job.JobContext;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
-import com.facilio.wmsv2.constants.Topics;
-import com.facilio.wmsv2.endpoint.SessionManager;
-import com.facilio.wmsv2.message.Message;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -3305,10 +3301,6 @@ public class PreventiveMaintenanceAPI {
 
 	public static boolean canOpenWorkOrder(PreventiveMaintenance pm) {
 		return pm.getStatusEnum() == PMStatus.ACTIVE && !pm.isWoGenerating();
-	}
-
-	public static boolean canOpenWorkOrder(PlannedMaintenance pm) {
-		return pm.isActive();
 	}
 
 	public static void migrateScheduleGeneration(List<Long> orgs) throws Exception {

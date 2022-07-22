@@ -113,22 +113,6 @@ public class V3WorkOrderContext extends V3TicketContext {
         this.pm = pm;
     }
 
-    @Getter
-    @Setter
-    private PlannedMaintenance pmV2;
-
-    @Getter
-    @Setter
-    private PMResourcePlanner pmResourcePlanner;
-
-    @Getter
-    @Setter
-    private PMTriggerV2 pmTriggerV2;
-
-    @Getter
-    @Setter
-    private PMPlanner pmPlanner;
-
     public String getUrl() {
 //		return "http://"+OrgInfo.getCurrentOrgInfo().getOrgDomain()+".fazilio.com/app/workorders/open/summary/"+getId(); Removing subdomain temp
         if (super.getId() != -1) {

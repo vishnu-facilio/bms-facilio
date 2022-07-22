@@ -1856,17 +1856,4 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new ValidateAssetTypeDeletionV3());
         return chain;
     }
-
-    public static FacilioChain getExecuteNow() {
-        FacilioChain c = getDefaultChain();
-        c.addCommand(new PMExecuteNowContextCommand());
-        return c;
-    }
-
-    public static FacilioChain getPublishPM() {
-        FacilioChain c = getDefaultChain();
-        c.addCommand(new MarkPMAsActiveCommand());
-        c.addCommand(new PublishPMCommand());
-        return c;
-    }
 }

@@ -15,7 +15,6 @@ import com.facilio.bmsconsole.jobs.DataProcessingAlertJob;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.modules.*;
-import com.facilio.plannedmaintenance.ScheduleExecutor;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.util.V3Util;
 import com.facilio.wmsv2.handler.AuditLogHandler;
@@ -1551,59 +1550,6 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	@Override
 	public ApplicationContext getApplicationForLinkName(String appName) throws Exception {
 		return ApplicationApi.getApplicationForLinkName(appName);
-	}
-
-	@Override
-	public void schedulePM(long plannerId) throws Exception {
-		PMPlanner pmPlanner = getPmPlanners(plannerId);
-		PlannedMaintenance plannedmaintenance = (PlannedMaintenance) V3Util.getRecord("plannedmaintenance", pmPlanner.getPmId(), new HashMap<>());
-
-		List<PMResourcePlanner> pmResourcePlanners = getPMResourcePlanner(plannerId);
-
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule workOrderModule = modBean.getModule("workorder");
-
-		FacilioContext context = new FacilioContext();
-		ScheduleExecutor scheduleExecutor = new ScheduleExecutor();
-		pmPlanner.setResourcePlanners(pmResourcePlanners);
-		List<V3WorkOrderContext> generatedWorkOrders = scheduleExecutor.execute(context, plannedmaintenance, pmPlanner);
-		List<ModuleBaseWithCustomFields> moduleBaseWithCustomFields = generatedWorkOrders.stream().map(i-> (ModuleBaseWithCustomFields)i).collect(Collectors.toList());
-
-		V3Util.createRecord(workOrderModule, moduleBaseWithCustomFields);
-	}
-
-	private PMPlanner getPmPlanners(long plannerId) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule pmPlannerModule = modBean.getModule("pmPlanner");
-		List<FacilioField> pmPlannerFields = modBean.getAllFields("pmPlanner");
-
-		SelectRecordsBuilder<PMPlanner> selectRecordsBuilder = new SelectRecordsBuilder<>();
-		selectRecordsBuilder.select(pmPlannerFields);
-		selectRecordsBuilder.beanClass(PMPlanner.class);
-		selectRecordsBuilder.module(pmPlannerModule);
-		selectRecordsBuilder.andCondition(CriteriaAPI.getIdCondition(plannerId, pmPlannerModule));
-		List<PMPlanner> pmPlanners = selectRecordsBuilder.get();
-
-		if (org.apache.commons.collections4.CollectionUtils.isEmpty(pmPlanners)) {
-			return pmPlanners.get(0);
-		}
-
-		return null;
-	}
-
-	private List<PMResourcePlanner> getPMResourcePlanner(Long pmPlannerId) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule pmPlannerModule = modBean.getModule("pmResourcePlanner");
-		List<FacilioField> pmPlannerFields = modBean.getAllFields("pmResourcePlanner");
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(pmPlannerFields);
-
-		SelectRecordsBuilder<PMResourcePlanner> selectRecordsBuilder = new SelectRecordsBuilder<>();
-		selectRecordsBuilder.select(pmPlannerFields)
-				.beanClass(PMResourcePlanner.class)
-				.module(pmPlannerModule)
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("planner"), pmPlannerId+"", NumberOperators.EQUALS));
-
-		return selectRecordsBuilder.get();
 	}
 }
 
