@@ -5468,19 +5468,19 @@ INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NA
 INSERT INTO StringFields (FIELDID , ORGID) VALUES ((SELECT LAST_INSERT_ID()), ${orgId});
 
 INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT)
-VALUES (${orgId}, @WORK_ORDER_MODULE_ID, 'pmV2', '${common.pmV2}', 11, 'PM_V2_ID', 7, false, false, true);
+VALUES (${orgId}, @WORK_ORDER_MODULE_ID, 'pmV2', '${common.pmV2}', 11, 'PM_V2_ID', 2, false, false, true);
 INSERT INTO NumberFields (FIELDID, ORGID) VALUES ((SELECT LAST_INSERT_ID()), ${orgId});
 
 INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT)
-VALUES (${orgId}, @WORK_ORDER_MODULE_ID, 'pmResourcePlanner', '${common.pmRpId}', 11, 'PM_RP_ID', 7, false, false, true);
+VALUES (${orgId}, @WORK_ORDER_MODULE_ID, 'pmResourcePlanner', '${common.pmRpId}', 11, 'PM_RP_ID', 2, false, false, true);
 INSERT INTO NumberFields (FIELDID, ORGID) VALUES ((SELECT LAST_INSERT_ID()), ${orgId});
 
 INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT)
-VALUES (${orgId}, @WORK_ORDER_MODULE_ID, 'pmTriggerV2', '${common.pmTriggerId}', 11, 'PM_V2_TRIGGER_ID', 7, false, false, true);
+VALUES (${orgId}, @WORK_ORDER_MODULE_ID, 'pmTriggerV2', '${common.pmTriggerId}', 11, 'PM_V2_TRIGGER_ID', 2, false, false, true);
 INSERT INTO NumberFields (FIELDID, ORGID) VALUES ((SELECT LAST_INSERT_ID()), ${orgId});
 
 INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT)
-VALUES (${orgId}, @WORK_ORDER_MODULE_ID, 'pmPlanner', '${common.pmPlanner}', 11, 'PM_PLANNER_ID', 7, false, false, true);
+VALUES (${orgId}, @WORK_ORDER_MODULE_ID, 'pmPlanner', '${common.pmPlanner}', 11, 'PM_PLANNER_ID', 2, false, false, true);
 INSERT INTO NumberFields (FIELDID, ORGID) VALUES ((SELECT LAST_INSERT_ID()), ${orgId});
 
 
