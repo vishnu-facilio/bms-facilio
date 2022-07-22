@@ -15,6 +15,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.modules.*;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -1305,7 +1306,6 @@ public class ApplicationApi {
         }
         return -1;
     }
-
     public static List<FacilioField> computeValueForScopingField(ScopingConfigContext sc, FacilioModule module) throws Exception {
         if (sc != null) {
             if (sc.getCriteriaId() <= 0) {
@@ -1316,6 +1316,7 @@ public class ApplicationApi {
             }
             List<FacilioField> scopingFields = new ArrayList<>();
             Map<String, Condition> conditionMap = sc.getCriteria().getConditions();
+            Map<String, Condition> nullConditionMap = new HashMap<String, Condition>();
             if (MapUtils.isNotEmpty(conditionMap)) {
                 Iterator<Map.Entry<String, Condition>> itr = conditionMap.entrySet().iterator();
                 Map<String, String> valueGenerators = null;
@@ -1325,12 +1326,19 @@ public class ApplicationApi {
                 else {
                     valueGenerators = new HashMap<>();
                 }
+                boolean hasSiteField = false;
                 while (itr.hasNext()) {
                     Map.Entry<String, Condition> entry = itr.next();
                     Condition condition = entry.getValue();
                     String fieldName = condition.getFieldName();
-                    FacilioField field = RecordAPI.getField(fieldName, module.getName());;
+                    FacilioField field = RecordAPI.getField(fieldName, module.getName());
+                    Condition nullCondition = new Condition();
                     if(field != null){
+                        boolean isCurrentFieldSite = false;
+                        if(field.getName().equals("siteId")){
+                            hasSiteField = true;
+                            isCurrentFieldSite = true;
+                        }
                         if(!field.getDataTypeEnum().isRelRecordField()) {
                             scopingFields.add(field);
                         }
@@ -1354,6 +1362,20 @@ public class ApplicationApi {
                                 condition.setValue("");
                             }
                         }
+                        nullCondition = FieldUtil.cloneBean(condition, Condition.class);
+                        if(isCurrentFieldSite) {
+                            nullCondition.setOperatorId(CommonOperators.IS_EMPTY.getOperatorId());
+                        }
+                    }
+                    nullConditionMap.put(entry.getKey(),nullCondition);
+                }
+                Long currentSiteId = (Long) AccountUtil.getSwitchScopingFieldValue("siteId");
+                User currentUser = AccountUtil.getCurrentAccount().getUser();
+                if (!(currentSiteId != null && currentSiteId > 0) && hasSiteField && !nullConditionMap.isEmpty() && AccountUtil.getCurrentApp().getAppCategory() != ApplicationContext.AppCategory.PORTALS.getIndex()) {
+                    if(CollectionUtils.isEmpty(currentUser.getAccessibleSpace())) {
+                        Criteria nullCriteria = FieldUtil.cloneBean(sc.getCriteria(), Criteria.class);
+                        nullCriteria.setConditions(nullConditionMap);
+                        sc.getCriteria().orCriteria(nullCriteria);
                     }
                 }
                 AccountUtil.setValueGenerator(valueGenerators);
