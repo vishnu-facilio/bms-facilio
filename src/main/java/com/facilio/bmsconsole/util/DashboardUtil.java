@@ -637,7 +637,7 @@ public class DashboardUtil {
 				.leftJoin(ModuleFactory.getWidgetCardModule().getTableName())		
 				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetCardModule().getTableName()+".ID")
 				.leftJoin(ModuleFactory.getWidgetSectionModule().getTableName())
-				.on(ModuleFactory.getWidgetSectionModule().getTableName()+".ID="+ModuleFactory.getWidgetSectionModule().getTableName()+".ID")
+				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetSectionModule().getTableName()+".ID")
 				;
 				
 		if(dashboardId != null) {
