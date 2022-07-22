@@ -50,8 +50,14 @@ public class GetBuildingReportCards extends FacilioCommand {
 				JSONObject faCount = new JSONObject();
 				faCount.put("type", "count");
 				faCount.put("name", "fire_alarms");
-				faCount.put("label", "Alarms");
+				faCount.put("label", "FDD Alarms");
 				faCount.put("data", SpaceAPI.getV2AlarmCount(buildingId));
+
+				JSONObject bmsalarmCount = new JSONObject();
+				bmsalarmCount.put("type", "count");
+				bmsalarmCount.put("name", "bms_alarms");
+				bmsalarmCount.put("label", "BMS Alarms");
+				bmsalarmCount.put("data", SpaceAPI.getV2BmsAlarmCount(buildingId));
 
 				JSONObject assetCount = new JSONObject();
 				assetCount.put("type", "count");
@@ -61,6 +67,7 @@ public class GetBuildingReportCards extends FacilioCommand {
 
 				reportCards.add(woCount);
 				reportCards.add(faCount);
+				reportCards.add(bmsalarmCount);
 				reportCards.add(assetCount);
 			}
 			
