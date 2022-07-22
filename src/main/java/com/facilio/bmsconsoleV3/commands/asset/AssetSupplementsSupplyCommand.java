@@ -38,6 +38,7 @@ public class AssetSupplementsSupplyCommand extends FacilioCommand {
         SupplementRecord rotatingToolField = (SupplementRecord) fieldsAsMap.get("rotatingTool");
         SupplementRecord departmentField = (SupplementRecord) fieldsAsMap.get("department");
         SupplementRecord typeField = (SupplementRecord) fieldsAsMap.get("type");
+        SupplementRecord failureClassField = (SupplementRecord) fieldsAsMap.get("failureClass");
 
         supplementFields.add(identifiedLocationField);
         supplementFields.add(spaceField);
@@ -46,6 +47,7 @@ public class AssetSupplementsSupplyCommand extends FacilioCommand {
         supplementFields.add(rotatingToolField);
         supplementFields.add(departmentField);
         supplementFields.add(typeField);
+        supplementFields.add(failureClassField);
 
         LookupField sysCreatedBy = (LookupField) FieldFactory.getSystemField("sysCreatedBy", modBean.getModule(FacilioConstants.ContextNames.RESOURCE));
         supplementFields.add(sysCreatedBy);
