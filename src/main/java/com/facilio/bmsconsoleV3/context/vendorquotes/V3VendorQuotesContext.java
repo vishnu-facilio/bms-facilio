@@ -17,11 +17,14 @@ public class V3VendorQuotesContext extends V3Context {
 
     private Long expectedReplyDate;
 
-    public Boolean getFinalized() {
-        return isFinalized;
+    public Boolean getIsFinalized() {
+        if(isFinalized != null){
+            return isFinalized.booleanValue();
+        }
+        return false;
     }
 
-    public void setFinalized(Boolean isFinalized) {
+    public void setIsFinalized(Boolean isFinalized) {
         this.isFinalized = isFinalized;
     }
 

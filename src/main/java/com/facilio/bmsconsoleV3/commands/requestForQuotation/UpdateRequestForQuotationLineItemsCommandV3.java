@@ -31,7 +31,7 @@ public class UpdateRequestForQuotationLineItemsCommandV3 extends FacilioCommand 
 
         Map<String, Object> bodyParams = Constants.getBodyParams(context);
 
-        if (CollectionUtils.isNotEmpty(requestForQuotationContexts) && !requestForQuotationContexts.get(0).getIsVendorSelected() &&  MapUtils.isEmpty(bodyParams) ) {
+        if (CollectionUtils.isNotEmpty(requestForQuotationContexts) && !requestForQuotationContexts.get(0).getIsRfqFinalized() &&  MapUtils.isEmpty(bodyParams) ) {
             for (V3RequestForQuotationContext requestForQuotationContext : requestForQuotationContexts) {
                     if (CollectionUtils.isNotEmpty(requestForQuotationContext.getRequestForQuotationLineItems())) {
                         DeleteRecordBuilder<V3RequestForQuotationLineItemsContext> deleteBuilder = new DeleteRecordBuilder<V3RequestForQuotationLineItemsContext>()

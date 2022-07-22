@@ -2345,7 +2345,7 @@ public class FormFactory {
 			expRepDateField = modBean.getField("expectedReplyDate", ContextNames.VENDOR_QUOTES);
 		}
 		catch(Exception e) {
-
+			throw new IllegalArgumentException("expectedReplyDate field not found");
 		}
 		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.REQUIRED, "vendors", 1, 1).setAllowCreateOptions(true).setCreateFormName("vendors_form");
 		vendorField.setIsDisabled(true);

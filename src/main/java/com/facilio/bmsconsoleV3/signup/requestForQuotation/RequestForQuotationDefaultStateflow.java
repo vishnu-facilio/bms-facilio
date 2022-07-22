@@ -24,15 +24,10 @@ public class RequestForQuotationDefaultStateflow extends SignUpData {
     public void addData() throws Exception {
 
         List<StateflowTransitionContext> stateTransitions = new ArrayList<>();
-        StateflowTransitionContext vendorsSelected = getStateflowTransitionContext("Vendors Selected","isVendorSelected");
         StateflowTransitionContext quoteReceived = getStateflowTransitionContext("Quotes Received","isQuoteReceived");
-        stateTransitions.add(vendorsSelected);
-        stateTransitions.add(quoteReceived);
-        for (StateflowTransitionContext stateTransition:stateTransitions){
-            FacilioChain chain = TransactionChainFactory.updateWorkflowRuleChain();
-            chain.getContext().put(FacilioConstants.ContextNames.WORKFLOW_RULE,stateTransition);
-            chain.execute();
-        }
+        FacilioChain chain = TransactionChainFactory.updateWorkflowRuleChain();
+        chain.getContext().put(FacilioConstants.ContextNames.WORKFLOW_RULE,quoteReceived);
+        chain.execute();
     }
     private StateflowTransitionContext getStateflowTransitionContext(String stateTransitionName, String fieldName) throws Exception {
         StateflowTransitionContext stateTransition = new StateflowTransitionContext();

@@ -29,9 +29,6 @@ public class CreateVendorQuotesCommandV3 extends FacilioCommand {
         List<V3RequestForQuotationLineItemsContext> requestForQuotationLineItems = (List<V3RequestForQuotationLineItemsContext>) context.get(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION_LINE_ITEMS);
         List<V3RequestForQuotationVendorsContext> vendors = requestForQuotation.getVendor();
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        //deleting already created quotes
-        deleteLineItemsCreated(requestForQuotationLineItems);
-        deleteVendorQuotesCreated(requestForQuotation);
 
         for (V3RequestForQuotationVendorsContext vendor : vendors) {
                 V3VendorContext vendorContext = new V3VendorContext();
@@ -45,28 +42,6 @@ public class CreateVendorQuotesCommandV3 extends FacilioCommand {
         }
 
         return false;
-    }
-    private void deleteVendorQuotesCreated(V3RequestForQuotationContext requestForQuotation) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        String moduleName = FacilioConstants.ContextNames.VENDOR_QUOTES;
-        FacilioModule module = modBean.getModule(moduleName);
-
-        DeleteRecordBuilder<V3VendorQuotesContext> deleteBuilder = new DeleteRecordBuilder<V3VendorQuotesContext>()
-                .module(module)
-                .andCondition(CriteriaAPI.getCondition("RFQ_ID", "requestForQuotation", String.valueOf(requestForQuotation.getId()), NumberOperators.EQUALS));
-        deleteBuilder.delete();
-    }
-    private void deleteLineItemsCreated(List<V3RequestForQuotationLineItemsContext> requestForQuotationLineItems) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        String moduleName = FacilioConstants.ContextNames.VENDOR_QUOTES_LINE_ITEMS;
-        FacilioModule module = modBean.getModule(moduleName);
-        for(V3RequestForQuotationLineItemsContext lineItem : requestForQuotationLineItems){
-            DeleteRecordBuilder<V3VendorQuotesLineItemsContext> deleteBuilder = new DeleteRecordBuilder<V3VendorQuotesLineItemsContext>()
-                    .module(module)
-                    .andCondition(CriteriaAPI.getCondition("RFQ_LINE_ITEM_ID", "requestForQuotationLineItem", String.valueOf(lineItem.getId()), NumberOperators.EQUALS));
-            deleteBuilder.delete();
-        }
-
     }
     private V3VendorQuotesContext setVendorQuote(V3VendorContext vendor, V3RequestForQuotationContext requestForQuotation, List<V3VendorQuotesLineItemsContext> vendorQuotesLineItems) {
         V3VendorQuotesContext vendorQuote = new V3VendorQuotesContext();
