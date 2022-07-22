@@ -3302,6 +3302,8 @@
 	<package name="commissioningApiv2" namespace="/api/v2/commissioning" extends="v2Api">
 		<action name="list" class="com.facilio.bmsconsole.actions.CommissionAction" method="logList">
 		</action>
+		<action name="count" class="com.facilio.bmsconsole.actions.CommissionAction" method="logCount">
+		</action>
 		<action name="add" class="com.facilio.bmsconsole.actions.CommissionAction" method="addLog">
 		</action>
 		<action name="update" class="com.facilio.bmsconsole.actions.CommissionAction" method="updateLog">

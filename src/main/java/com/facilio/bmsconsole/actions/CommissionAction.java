@@ -95,6 +95,18 @@ public class CommissionAction extends FacilioAction{
 
 			return SUCCESS;
 	}
+	public String logCount() throws Exception{
+		FacilioChain chain = ReadOnlyChainFactory.getCommissioningLogsChain();
+		FacilioContext context = chain.getContext();
+		context.put("status",status);
+		setFetchCount(true);
+		constructListContext(context);
+
+		chain.execute();
+		setResult(FacilioConstants.ContextNames.COUNT,context.get(FacilioConstants.ContextNames.COUNT));
+
+		return SUCCESS;
+	}
 	
 	public String logDetails() throws Exception {
 		FacilioChain chain = ReadOnlyChainFactory.getCommissioningDetailsChain();

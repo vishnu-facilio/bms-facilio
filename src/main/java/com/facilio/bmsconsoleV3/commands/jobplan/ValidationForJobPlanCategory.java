@@ -7,6 +7,7 @@ import com.facilio.constants.FacilioConstants;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
@@ -16,8 +17,8 @@ public class ValidationForJobPlanCategory extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-
-        List<JobPlanContext> category = (List<JobPlanContext>) (((Map<String,Object>)context.get(FacilioConstants.ContextNames.RECORD_MAP)).get("jobplan"));
+        String moduleName = Constants.getModuleName(context);
+        List<JobPlanContext> category = (List<JobPlanContext>) (((Map<String,Object>)context.get(FacilioConstants.ContextNames.RECORD_MAP)).get(moduleName));
         if(CollectionUtils.isNotEmpty(category)) {
             for (JobPlanContext section : category) {
                     if(section.getJobPlanCategory() == 3 && section.getSpaceCategory() == null ){

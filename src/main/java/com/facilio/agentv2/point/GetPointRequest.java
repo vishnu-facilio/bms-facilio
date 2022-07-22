@@ -104,7 +104,7 @@ public class GetPointRequest {
         return this;
     }
 
-    public GetPointRequest filterSubsctibedPoints() {
+    public GetPointRequest filterSubscribedPoints() {
         criteria.addAndCondition(CriteriaAPI.getCondition(POINT_MAP.get(AgentConstants.SUBSCRIBE_STATUS), String.valueOf(3), NumberOperators.EQUALS));
         return this;
     }

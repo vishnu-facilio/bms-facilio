@@ -355,6 +355,8 @@ public class AssetAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getAssetId());
 		AssetContext asset= AssetsAPI.getAssetInfo(assetId, true);
+		// added this to handle the fetch deleted records for assets, in WO summary page.
+		context.put(FacilioConstants.ContextNames.FETCH_DELETED_RECORDS, true);
 		AssetCategoryContext category= asset.getCategory();
 		
 		if (category != null && category.getId() != -1) {

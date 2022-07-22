@@ -6,7 +6,9 @@ import java.util.stream.Collectors;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.agentv2.misc.MiscControllerContext;
+import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.rdm.RdmControllerContext;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.FacilioException;
 import com.facilio.modules.*;
@@ -604,7 +606,7 @@ public class ControllerApiV2 {
 //    }
 
     private static void addLogicalController(long agentId , List<Map<String,Object>> controllerData) throws Exception {
-        if(GetPointsAction.isVirtualPointExist(agentId)) {
+        if(isVirtualPointExist(agentId)) {
             Map<String,Object> prop = new HashMap<String, Object>();
             prop.put("id", 0L);
             prop.put("controllerType",0);
@@ -654,7 +656,7 @@ public class ControllerApiV2 {
 //    				break;
 //    			}
 //    		}
-            if( CollectionUtils.isNotEmpty(props) && GetPointsAction.isVirtualPointExist(agentId)) {
+            if( CollectionUtils.isNotEmpty(props) && isVirtualPointExist(agentId)) {
             	Map<String,Object> prop = new HashMap<String, Object>();
             	prop.put("id", 0L);
             	prop.put("controllerType",0);
@@ -872,5 +874,13 @@ public class ControllerApiV2 {
             criteriaList.orCriteria(criteria);
         }
         return criteriaList;
+    }
+    public static boolean isVirtualPointExist(Long agentId) throws Exception {
+        GetPointRequest point = new GetPointRequest();
+        point.ofType(FacilioControllerType.valueOf(0));
+        point.withLogicalControllers(agentId);
+        point.count();
+        Long pointCount =  (long) point.getPointsData().get(0).getOrDefault(AgentConstants.ID, 0L);
+        return pointCount > 0;
     }
 }

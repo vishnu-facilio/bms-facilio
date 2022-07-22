@@ -28,6 +28,8 @@ public class PMPlannerSupplementsCommand extends FacilioCommand {
         }
 
         supplementFields.add((SupplementRecord) fieldsAsMap.get("resource"));
+        supplementFields.add((SupplementRecord) fieldsAsMap.get("jobPlan"));
+        supplementFields.add((SupplementRecord) fieldsAsMap.get("assignedTo"));
         return false;
     }
 }

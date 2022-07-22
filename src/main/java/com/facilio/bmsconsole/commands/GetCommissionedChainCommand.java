@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.util.CommissioningApi;
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.unitconversion.Unit;
 import org.apache.commons.chain.Context;
 
@@ -19,15 +20,18 @@ public class GetCommissionedChainCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
-        List<Map<String,Object>> data = (List<Map<String, Object>>) context.get("data");
-        Set<Long> resourceIdSet =data.stream().map(x->(Long)x.get("resourceId")).collect(Collectors.toSet());
-        Set<Long>fieldIdSet =data.stream().map(x->(Long)x.get("fieldId")).collect(Collectors.toSet());
-        Map<Long, String> resourceMap = CommissioningApi.getResources(resourceIdSet);
-        Map<Long, Map<String, Object>> fieldMap = CommissioningApi.getFields(fieldIdSet);
-        Map<Integer, String> unitMap = unitMap(data);
-        context.put("resourceMap",resourceMap);
-        context.put("fieldMap",fieldMap);
-        context.put("unitMap",unitMap);
+        String status = (String) context.get("status");
+        if (status.equals("COMMISSIONED") && !context.containsKey(FacilioConstants.ContextNames.FETCH_COUNT)) {
+            List<Map<String, Object>> data = (List<Map<String, Object>>) context.get("data");
+            Set<Long> resourceIdSet = data.stream().map(x -> (Long) x.get("resourceId")).collect(Collectors.toSet());
+            Set<Long> fieldIdSet = data.stream().map(x -> (Long) x.get("fieldId")).collect(Collectors.toSet());
+            Map<Long, String> resourceMap = CommissioningApi.getResources(resourceIdSet);
+            Map<Long, Map<String, Object>> fieldMap = CommissioningApi.getFields(fieldIdSet);
+            Map<Integer, String> unitMap = unitMap(data);
+            context.put("resourceMap", resourceMap);
+            context.put("fieldMap", fieldMap);
+            context.put("unitMap", unitMap);
+        }
         return false;
 
 

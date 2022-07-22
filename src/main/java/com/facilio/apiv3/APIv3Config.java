@@ -118,10 +118,7 @@ import com.facilio.bmsconsoleV3.commands.watchlist.GetLogsForWatchListCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.LoadWorkorderLookupsAfterFetchcommandV3;
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.*;
-import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
-import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
-import com.facilio.bmsconsoleV3.context.asset.V3AssetDepartmentContext;
-import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
+import com.facilio.bmsconsoleV3.context.asset.*;
 import com.facilio.bmsconsoleV3.context.budget.AccountTypeContext;
 import com.facilio.bmsconsoleV3.context.budget.BudgetContext;
 import com.facilio.bmsconsoleV3.context.budget.ChartOfAccountContext;
@@ -1871,6 +1868,17 @@ public class APIv3Config {
                 .build();
     }
 
+    @Module("assettype")
+    public static Supplier<V3Config> getAssetType() {
+        return () -> new V3Config(V3AssetTypeContext.class, null)
+                .create()
+                .list()
+                .update()
+                .delete()
+                .beforeDelete(TransactionChainFactoryV3.getDeleteAssetTypeChain())
+                .build();
+    }
+
     @Module("spacecategory")
     public static Supplier<V3Config> getSpaceCategory() {
         return () -> new V3Config(V3SpaceCategoryContext.class, null)
@@ -2014,4 +2022,22 @@ public class APIv3Config {
                 .summary()
                 .build();
     }
+
+	@Module(FacilioConstants.CraftAndSKills.SKILLS)
+	public static Supplier<V3Config> getCraftSkills() {
+		return () -> new V3Config(SkillsContext.class, null)
+							 .list()
+							 .delete()
+							 .build();
+	}
+
+	@Module(FacilioConstants.CraftAndSKills.CRAFT)
+	public static Supplier<V3Config> getCrafts() {
+		return () -> new V3Config(CraftContext.class, null)
+							 .create()
+							 .list()
+							 .summary()
+							 .afterFetch(new FetchCraftAndSkillsCommand())
+							 .build();
+	}
 }

@@ -17,7 +17,7 @@ public class DeleteFaultImpactFromReadingRuleCommand extends FacilioCommand {
             NewReadingRuleContext readingRule = (NewReadingRuleContext) context.get(FacilioConstants.ContextNames.NEW_READING_RULE);
             NamespaceAPI.deleteNameSpacesFromRuleId(readingRule.getId(), NSType.FAULT_IMPACT_RULE);
             LOGGER.info("Successfully deleted fault impact rules. rule : " + readingRule.getImpactId());
-            readingRule.setImpactId(-1L);
+            readingRule.setImpactId(-99L);
             readingRule.setImpact(null);
         }
         return false;

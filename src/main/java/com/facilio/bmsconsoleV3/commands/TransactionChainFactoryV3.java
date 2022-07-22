@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.commands;
 import java.util.Collections;
 
 import com.facilio.bmsconsoleV3.commands.assetDepartment.ValidateAssetDepartmentDeletionV3;
+import com.facilio.bmsconsoleV3.commands.assetType.ValidateAssetTypeDeletionV3;
 import com.facilio.bmsconsoleV3.commands.dashboard.*;
 import com.facilio.bmsconsoleV3.commands.floorplan.*;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.AddLicensingInfoCommand;
@@ -36,10 +37,6 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.relation.command.ValidateRelationDataCommand;
 import com.facilio.bmsconsoleV3.plannedmaintenance.jobplan.FillTasksAndPrerequisitesCommand;
 import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
-import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddDefaultRolesMaintenanceApp;
-import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddMaintenanceApplicationDefaultForms;
-import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddMaintenanceApplicationDefaultViews;
-import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddMaintenanceApplicationLayout;
 import com.facilio.v3.commands.CountCommand;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -388,6 +385,8 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getWorkOrderWorkflowsChainV3(boolean sendNotification) {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.WORKORDER_CUSTOM_CHANGE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SATISFACTION_SURVEY_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SURVEY_ACTION_RULE));
         c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.ASSIGNMENT_RULE));
         c.addCommand(new ExecuteSLAWorkFlowsCommand());
         c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_RULE,
@@ -459,6 +458,8 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new FillContextAfterWorkorderUpdateCommandV3());
         c.addCommand(new VerifyQrCommand());
         c.addCommand(new SendNotificationCommandV3());
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SATISFACTION_SURVEY_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SURVEY_ACTION_RULE));
         c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.ASSIGNMENT_RULE));
         c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW));
         c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_RULE,
@@ -1690,7 +1691,7 @@ public class TransactionChainFactoryV3 {
     }
     public static FacilioChain getRfqBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new CreateRfqFromPrCommandV3());
+       // c.addCommand(new CreateRfqFromPrCommandV3());
         c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new RfqBeforeCreateOrUpdateCommandV3());
         return c;
@@ -1847,6 +1848,24 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getUpdateDashboardTabChainV3() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new V3UpdateDashboardTabWidgetCommand());
+        return c;
+    }
+    public static FacilioChain getDeleteAssetTypeChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new ValidateAssetTypeDeletionV3());
+        return chain;
+    }
+
+    public static FacilioChain getExecuteNow() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new PMExecuteNowContextCommand());
+        return c;
+    }
+
+    public static FacilioChain getPublishPM() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new MarkPMAsActiveCommand());
+        c.addCommand(new PublishPMCommand());
         return c;
     }
 }

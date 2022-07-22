@@ -248,8 +248,8 @@ public class OrgBeanImpl implements OrgBean {
 			selectBuilder.offset(offset);
 			selectBuilder.limit(perPage);
 		}
-		if(!StringUtils.isEmpty(searchQuery))	
-		{            
+		if(!StringUtils.isEmpty(searchQuery))
+		{
 			selectBuilder.andCriteria(getUserSearchCriteria(searchQuery));
 		}
 		if(inviteAcceptStatus != null)
@@ -322,11 +322,11 @@ public class OrgBeanImpl implements OrgBean {
 
 	@Override
 	public Long getAppUsersCount(long orgId, long appId, boolean fetchNonAppUsers) throws Exception {
-		return getAppUsersCount(orgId, appId, fetchNonAppUsers,null,null);
+		return getAppUsersCount(orgId, appId, fetchNonAppUsers,null,null,null);
 	}
-	
+
 	@Override
-	public Long getAppUsersCount(long orgId, long appId, boolean fetchNonAppUsers,String searchQuery,Boolean inviteAcceptStatus) throws Exception {
+	public Long getAppUsersCount(long orgId, long appId, boolean fetchNonAppUsers,String searchQuery,Boolean inviteAcceptStatus,Boolean userStatus) throws Exception {
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
 			return null;
@@ -361,13 +361,19 @@ public class OrgBeanImpl implements OrgBean {
 				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("applicationId"), String.valueOf(appId), NumberOperators.EQUALS));
 			}
 		}
-		if(!StringUtils.isEmpty(searchQuery))	
-		{            
+		if(!StringUtils.isEmpty(searchQuery))
+		{
 			selectBuilder.andCriteria(getUserSearchCriteria(searchQuery));
 		}
 		if(inviteAcceptStatus != null)
 		{
 			selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.INVITATION_ACCEPT_STATUS","inviteAcceptStatus", String.valueOf(inviteAcceptStatus), BooleanOperators.IS));
+		}
+		if(userStatus != null)
+		{
+			selectBuilder.innerJoin("Account_ORG_Users")
+					.on("Account_ORG_Users.USERID = ORG_Users.USERID");
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USER_STATUS","userStatus",String.valueOf(userStatus),BooleanOperators.IS));
 		}
 		List<Map<String, Object>> props = selectBuilder.get();
 		if(CollectionUtils.isNotEmpty(props)) {
@@ -377,20 +383,20 @@ public class OrgBeanImpl implements OrgBean {
 		return null;
 	}
 
-    private List<Long> getAppUserIds(long appId, GenericSelectRecordBuilder builder, Map<String, FacilioField> fieldMap) throws Exception {
-    		List<Long> userIds = null;
+	private List<Long> getAppUserIds(long appId, GenericSelectRecordBuilder builder, Map<String, FacilioField> fieldMap) throws Exception {
+		List<Long> userIds = null;
 
-    		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder(builder)
-    					.select(Collections.singletonList(fieldMap.get("ouid")))
-    					.andCondition(CriteriaAPI.getCondition(fieldMap.get("applicationId"), String.valueOf(appId), NumberOperators.EQUALS));
-    					;
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder(builder)
+				.select(Collections.singletonList(fieldMap.get("ouid")))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("applicationId"), String.valueOf(appId), NumberOperators.EQUALS));
+		;
 
-    		List<Map<String, Object>> props = selectBuilder.get();
-    		if (CollectionUtils.isNotEmpty(props)) {
-    			userIds = props.stream().map(prop -> (long) prop.get("ouid")).collect(Collectors.toList());
-    		}
-    		return userIds;
-    }
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (CollectionUtils.isNotEmpty(props)) {
+			userIds = props.stream().map(prop -> (long) prop.get("ouid")).collect(Collectors.toList());
+		}
+		return userIds;
+	}
 
 	@Override
 	public List<User> getOrgUsers(long orgId, boolean status) throws Exception {
@@ -489,7 +495,7 @@ public class OrgBeanImpl implements OrgBean {
 		}
 
 		List<FacilioField> fields = new ArrayList<>();
-		 fields.addAll(AccountConstants.getAppOrgUserFields());
+		fields.addAll(AccountConstants.getAppOrgUserFields());
 		fields.add(AccountConstants.getOrgIdField(AccountConstants.getAppOrgUserModule()));
 		fields.add(AccountConstants.getRoleIdField());
 
@@ -516,7 +522,7 @@ public class OrgBeanImpl implements OrgBean {
 
 	@Override
 	public Map<String,Long> getFeatureLicense() throws Exception{
-    	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getFeatureLicenseFields())
 				.table(AccountConstants.getFeatureLicenseModule().getTableName());
 //				.andCondition(CriteriaAPI.getCondition(AccountConstants.getOrgIdField(AccountConstants.getFeatureLicenseModule()), orgidString, StringOperators.IS));
@@ -536,7 +542,7 @@ public class OrgBeanImpl implements OrgBean {
 			for (LicenseMapping val:LicenseMapping.values()) {
 				licenseMap.put(val.getLicenseKey(),moduleMap.containsKey(val.getLicenseKey()) ? (long) moduleMap.get(val.getLicenseKey()) : 0);
 			}
-			
+
 			return licenseMap;
 		}
 		else {
@@ -574,8 +580,8 @@ public class OrgBeanImpl implements OrgBean {
 
 	public JSONObject orgInfo() throws Exception{
 		JSONObject result = new JSONObject();
-    	FacilioModule module = AccountConstants.getOrgInfoModule();
-    	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+		FacilioModule module = AccountConstants.getOrgInfoModule();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getOrgInfoFields())
 				.table(module.getTableName());
 //				.andCustomWhere("ORGID = ?", orgId);
@@ -592,13 +598,13 @@ public class OrgBeanImpl implements OrgBean {
 	}
 
 	@Override
-    public List<User> getOrgPortalUsers(long orgId, long appId) throws Exception {
-      	return getAppUsers(orgId, appId, false);
-    }
+	public List<User> getOrgPortalUsers(long orgId, long appId) throws Exception {
+		return getAppUsers(orgId, appId, false);
+	}
 
 	@Override
-    public List<User> getRequesterTypeUsers(long orgId, boolean status) throws Exception {
-  		List<FacilioField> fields = new ArrayList<>();
+	public List<User> getRequesterTypeUsers(long orgId, boolean status) throws Exception {
+		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAppOrgUserFields());
 		fields.add(AccountConstants.getRoleIdField());
 
@@ -607,15 +613,15 @@ public class OrgBeanImpl implements OrgBean {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("ORG_Users")
-		;
+				;
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 
 		fields.add(AccountConstants.getApplicationIdField());
 		selectBuilder.innerJoin("ORG_User_Apps")
-			.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
-			.innerJoin("Application")
-			.on("Application.ID = ORG_User_Apps.APPLICATION_ID")
-			;
+				.on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
+				.innerJoin("Application")
+				.on("Application.ID = ORG_User_Apps.APPLICATION_ID")
+		;
 		selectBuilder.andCondition(CriteriaAPI.getCondition("LINK_NAME", "linkName", mainAppLinkNames, StringOperators.ISN_T));
 
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -635,12 +641,12 @@ public class OrgBeanImpl implements OrgBean {
 			}
 			return users;
 		}
-      	return null;
-    }
+		return null;
+	}
 
 	@Override
 	public void updateLoggerLevel(int level, long orgId) throws Exception {
-		 // TODO Auto-generated method stub
+		// TODO Auto-generated method stub
 		IAMOrgUtil.updateLoggerLevel(level, orgId);
 	}
 
@@ -663,16 +669,16 @@ public class OrgBeanImpl implements OrgBean {
 		}
 		org.setPortalId(portalId);
 
-			FileStore fs = FacilioFactory.getFileStoreFromOrg(org.getId());
-			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId()));
-			org.setOriginalUrl(fs.orginalFileUrl(org.getLogoId()));
+		FileStore fs = FacilioFactory.getFileStoreFromOrg(org.getId());
+		org.setLogoUrl(fs.getPrivateUrl(org.getLogoId()));
+		org.setOriginalUrl(fs.orginalFileUrl(org.getLogoId()));
 
 		if(appType == AppDomainType.SERVICE_PORTAL) {
-	        if(portalInfo.getCustomDomain() != null) {
-	            org.setDomain(portalInfo.getCustomDomain());
-	        } else {
-	            org.setDomain(org.getDomain() + "." + FacilioProperties.getOccupantAppDomain());
-	        }
+			if(portalInfo.getCustomDomain() != null) {
+				org.setDomain(portalInfo.getCustomDomain());
+			} else {
+				org.setDomain(org.getDomain() + "." + FacilioProperties.getOccupantAppDomain());
+			}
 		}
 		else if(appType == AppDomainType.TENANT_PORTAL) {
 			org.setDomain(org.getDomain() + FacilioProperties.getTenantAppDomain());
@@ -685,7 +691,7 @@ public class OrgBeanImpl implements OrgBean {
 		}
 
 
-	   return org;
+		return org;
 	}
 
 	@Override
@@ -778,10 +784,10 @@ public class OrgBeanImpl implements OrgBean {
 
 	@Override
 	public void runDemoRollup ( long orgId,long timeDuration ) throws Exception {
-			FacilioChain demoRollupChain = TransactionChainFactory.demoRollUpChain();
-			demoRollupChain.getContext().put(FacilioConstants.ContextNames.DEMO_ROLLUP_EXECUTION_TIME, timeDuration);
-			demoRollupChain.getContext().put(FacilioConstants.ContextNames.DEMO_ROLLUP_JOB_ORG, orgId);
-			demoRollupChain.execute();
+		FacilioChain demoRollupChain = TransactionChainFactory.demoRollUpChain();
+		demoRollupChain.getContext().put(FacilioConstants.ContextNames.DEMO_ROLLUP_EXECUTION_TIME, timeDuration);
+		demoRollupChain.getContext().put(FacilioConstants.ContextNames.DEMO_ROLLUP_JOB_ORG, orgId);
+		demoRollupChain.execute();
 	}
 
 	@Override
@@ -793,24 +799,24 @@ public class OrgBeanImpl implements OrgBean {
 				.get();
 	}
 	private Criteria getUserSearchCriteria(String searchQuery)
-	{		
+	{
 		Criteria criteria = new Criteria();
 		Condition condition_name = new Condition();
 		condition_name.setColumnName("People.Name");
 		condition_name.setFieldName("name");
 		condition_name.setOperator(StringOperators.CONTAINS);
 		condition_name.setValue(searchQuery);
-        criteria.addOrCondition(condition_name);
-        
-        Condition condition_email = new Condition();
-        condition_email.setColumnName("People.EMAIL");
-        condition_email.setFieldName("email");
-        condition_email.setOperator(StringOperators.CONTAINS);
-        condition_email.setValue(searchQuery);
-        criteria.addOrCondition(condition_email);
-        
-        
-        return criteria;
+		criteria.addOrCondition(condition_name);
+
+		Condition condition_email = new Condition();
+		condition_email.setColumnName("People.EMAIL");
+		condition_email.setFieldName("email");
+		condition_email.setOperator(StringOperators.CONTAINS);
+		condition_email.setValue(searchQuery);
+		criteria.addOrCondition(condition_email);
+
+
+		return criteria;
 	}
 
 	public Long getDefaultApplicationId() throws Exception {

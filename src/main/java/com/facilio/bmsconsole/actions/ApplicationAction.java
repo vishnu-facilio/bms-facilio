@@ -58,6 +58,18 @@ public class ApplicationAction extends FacilioAction {
 		this.appId = appId;
 	}
 
+	private Boolean userStatus;
+
+	public Boolean getUserStatus() {
+		if (userStatus == null) {
+			return true;
+		}
+		return userStatus;	}
+
+	public void setUserStatus(Boolean userStatus) {
+		this.userStatus = userStatus;
+	}
+
 	private List<Long> appIds;
 	public List<Long> getAppIds() {
 		return appIds;
@@ -161,7 +173,7 @@ public class ApplicationAction extends FacilioAction {
 	public void setVendorsCount(Long vendorsCount) {
 		this.vendorsCount = vendorsCount;
 	}
-	
+
 	private Boolean inviteAcceptStatus;
 	public Boolean getInviteAcceptStatus() {
 		return inviteAcceptStatus;
@@ -169,7 +181,7 @@ public class ApplicationAction extends FacilioAction {
 	public void setInviteAcceptStatus(Boolean inviteAcceptStatus) {
 		this.inviteAcceptStatus = inviteAcceptStatus;
 	}
-	
+
 	private String signatureContent;
 
 	public String getSignatureContent() {
@@ -204,7 +216,7 @@ public class ApplicationAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.APPLICATION, context.get(FacilioConstants.ContextNames.APPLICATION));
 		return SUCCESS;
 	}
-	
+
 	public String getAllApplicationBasedOnModule() throws Exception {
 		FacilioChain chain = ReadOnlyChainFactory.getAllApplicationBasedOnModuleChain();
 		FacilioContext context = chain.getContext();
@@ -219,7 +231,7 @@ public class ApplicationAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.APPLICATION, context.get(FacilioConstants.ContextNames.APPLICATION));
 		return SUCCESS;
 	}
-	
+
 
 	public String markApplicationAsDefault() throws Exception {
 		FacilioChain chain = TransactionChainFactory.markApplicationAsDefault();
@@ -303,6 +315,7 @@ public class ApplicationAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
 		}
 		context.put(FacilioConstants.ContextNames.INVITE_ACCEPT_STATUS, getInviteAcceptStatus());
+		context.put(FacilioConstants.ContextNames.USER_STATUS,getUserStatus());
 		chain.execute();
 		if(!getFetchCount()) {
 			setResult(FacilioConstants.ContextNames.USERS, context.get(FacilioConstants.ContextNames.USERS));
@@ -340,7 +353,7 @@ public class ApplicationAction extends FacilioAction {
 		return SUCCESS;
 
 	}
-	
+
 	public String addOrUpdateUserSignature() throws Exception {
 		FacilioChain chain = TransactionChainFactory.addorUpdateUserSignatureChain();
 		FacilioContext context = chain.getContext();
@@ -352,7 +365,7 @@ public class ApplicationAction extends FacilioAction {
 		return SUCCESS;
 
 	}
-	
+
 	public String getUserSignature() throws Exception {
 		FacilioChain chain = TransactionChainFactory.getUserSignatureChain();
 		FacilioContext context = chain.getContext();

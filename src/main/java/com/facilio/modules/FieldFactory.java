@@ -317,6 +317,21 @@ public class FieldFactory extends BaseFieldFactory {
                 "estimatedEnd",
                 "description"
         }));
+        public static final List<String> POINT_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
+                "categoryId",
+                "configureStatus",
+                "createdTime",
+                "displayName",
+//                "fieldId",
+                "Interval",
+                "lastRecordedTime",
+                "lastRecordedValue",
+                "mappedTime",
+                "name",
+                "resourceId",
+                "subscribeStatus",
+                "writable"
+        }));
 
         public static final List<String> ASSET_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
                 "category",
@@ -819,7 +834,7 @@ public class FieldFactory extends BaseFieldFactory {
 
 
     private static FacilioField getNewControllerIdField(FacilioModule module) {
-        return getField(AgentConstants.CONTROLLER_ID, "CONTROLLER_ID", module, FieldType.NUMBER);
+        return getDefaultField(AgentConstants.CONTROLLER_ID,"Controller ID", "CONTROLLER_ID", module, FieldType.NUMBER);
     }
 
     public static FacilioField getAgentNameField(FacilioModule module) {
@@ -6970,34 +6985,33 @@ public class FieldFactory extends BaseFieldFactory {
         FacilioModule module = ModuleFactory.getPointModule();
         List<FacilioField> fields = new ArrayList<>();
         fields.add(getIdField(module));
-        fields.add(getField(AgentConstants.NAME, "NAME", module, FieldType.STRING));
-        fields.add(getField(AgentConstants.DISPLAY_NAME, "DISPLAY_NAME", module, FieldType.STRING));
-        fields.add(getField(AgentConstants.DESCRIPTION, "DESCRIPTION", module, FieldType.STRING));
-        fields.add(getField(AgentConstants.DATA_TYPE, "DATA_TYPE", module, FieldType.NUMBER));
-        fields.add(getField(AgentConstants.POINT_TYPE, "POINT_TYPE", module, FieldType.NUMBER));
-        fields.add(getField(AgentConstants.DEVICE_NAME, "DEVICE_NAME", module, FieldType.STRING));
-        fields.add(getField(AgentConstants.LOGICAL, "LOGICAL", module, FieldType.BOOLEAN));
+        fields.add(getDefaultField(AgentConstants.NAME, "Name","Name",module, FieldType.STRING));
+        fields.add(getDefaultField(AgentConstants.DISPLAY_NAME,"Display Name","DISPLAY_NAME", module, FieldType.STRING));
+        fields.add(getDefaultField(AgentConstants.DESCRIPTION,"Description", "DESCRIPTION", module, FieldType.STRING));
+        fields.add(getDefaultField(AgentConstants.DATA_TYPE,"Data Type", "DATA_TYPE", module, FieldType.NUMBER));
+        fields.add(getDefaultField(AgentConstants.POINT_TYPE,"Point Type", "POINT_TYPE", module, FieldType.NUMBER));
+        fields.add(getDefaultField(AgentConstants.DEVICE_NAME,"Device Name", "DEVICE_NAME", module, FieldType.STRING));
+        fields.add(getDefaultField(AgentConstants.LOGICAL,"Logical", "LOGICAL", module, FieldType.BOOLEAN));
         fields.add(getNewControllerIdField(module));
         fields.add(getPointAssetCategoryIdField(module));
         fields.add(getPointResourceIdField(module));
         fields.add(getPointFieldIdField(module));
-        fields.add(getField(AgentConstants.WRITABLE, "WRITABLE", module, FieldType.BOOLEAN));
-        fields.add(getField(AgentConstants.AGENT_WRITABLE, "AGENT_WRITABLE", module, FieldType.BOOLEAN));
-        fields.add(getField(AgentConstants.THRESHOLD_JSON, "THRESHOLD_JSON", module, FieldType.STRING));
-        fields.add(getField(AgentConstants.CREATED_TIME, "CREATED_TIME", module, FieldType.NUMBER));
-        fields.add(getField(AgentConstants.MAPPED_TIME, "MAPPED_TIME", module, FieldType.NUMBER));
-        fields.add(getField(AgentConstants.LAST_RECORDED_TIME, "LAST_RECORDED_TIME", module, FieldType.NUMBER));
-        fields.add(getField(AgentConstants.LAST_RECORDED_VALUE, "LAST_RECORDED_VALUE", module, FieldType.STRING));
-        fields.add(getField(AgentConstants.UNIT, "UNIT", module, FieldType.NUMBER));
-        fields.add(getField(AgentConstants.AGENT_ID, "AGENT_ID", module, FieldType.NUMBER));
-        fields.add(getField(AgentConstants.DATA_INTERVAL, "DATA_INTERVAL", module, FieldType.NUMBER));
-        fields.add(getField(AgentConstants.DATA_MISSING, "DATA_MISSING", module, FieldType.BOOLEAN));
+        fields.add(getDefaultField(AgentConstants.WRITABLE,"Writable","WRITABLE", module, FieldType.BOOLEAN));
+        fields.add(getDefaultField(AgentConstants.AGENT_WRITABLE,"Agent Writable","AGENT_WRITABLE", module, FieldType.BOOLEAN));
+        fields.add(getDefaultField(AgentConstants.THRESHOLD_JSON, "Threshold JSON","THRESHOLD_JSON", module, FieldType.STRING));
+        fields.add(getDefaultField(AgentConstants.CREATED_TIME, "Created Time","CREATED_TIME", module, FieldType.NUMBER));
+        fields.add(getDefaultField(AgentConstants.MAPPED_TIME,"Mapped Time", "MAPPED_TIME", module, FieldType.NUMBER));
+        fields.add(getDefaultField(AgentConstants.LAST_RECORDED_TIME,"Last Recorded Time","LAST_RECORDED_TIME", module, FieldType.NUMBER));
+        fields.add(getDefaultField(AgentConstants.LAST_RECORDED_VALUE,"Last Recorded Value","LAST_RECORDED_VALUE", module, FieldType.STRING));
+        fields.add(getDefaultField(AgentConstants.UNIT,"Unit","UNIT", module, FieldType.NUMBER));
+        fields.add(getDefaultField(AgentConstants.AGENT_ID,"Agent ID","AGENT_ID", module, FieldType.NUMBER));
+        fields.add(getDefaultField(AgentConstants.DATA_INTERVAL,"Data Interval","DATA_INTERVAL", module, FieldType.NUMBER));
         //fields.add(getNewDeletedTimeField(module));
-        SystemEnumField configureStatusfield = (SystemEnumField) getField(AgentConstants.CONFIGURE_STATUS, "CONFIGURE_STATUS", module, FieldType.SYSTEM_ENUM);
+        SystemEnumField configureStatusfield = (SystemEnumField) getDefaultField(AgentConstants.CONFIGURE_STATUS, "Configure Status","CONFIGURE_STATUS", module, FieldType.SYSTEM_ENUM);
         configureStatusfield.setEnumName("ConfigureStatus");
         fields.add(configureStatusfield);
 
-        SystemEnumField subscribeStatusfield = (SystemEnumField) getField(AgentConstants.SUBSCRIBE_STATUS, "SUBSCRIBE_STATUS", module, FieldType.SYSTEM_ENUM);
+        SystemEnumField subscribeStatusfield = (SystemEnumField) getDefaultField(AgentConstants.SUBSCRIBE_STATUS,"Subscribe Status", "SUBSCRIBE_STATUS", module, FieldType.SYSTEM_ENUM);
         subscribeStatusfield.setEnumName("SubscribeStatus");
         fields.add(subscribeStatusfield);
         return fields;
@@ -7030,15 +7044,18 @@ public class FieldFactory extends BaseFieldFactory {
 
 
     public static FacilioField getPointFieldIdField(FacilioModule module) {
-        return getField(AgentConstants.FIELD_ID, "FIELD_ID", module, FieldType.NUMBER);
+        return getDefaultField(AgentConstants.FIELD_ID,"Field ID","FIELD_ID", module, FieldType.NUMBER);
     }
 
     public static FacilioField getPointAssetCategoryIdField(FacilioModule module) {
-        return getField(AgentConstants.ASSET_CATEGORY_ID, "ASSET_CATEGORY_ID", module, FieldType.NUMBER);
+        return getDefaultField(AgentConstants.ASSET_CATEGORY_ID, "Asset Category ID","ASSET_CATEGORY_ID", module, FieldType.NUMBER);
     }
 
     public static FacilioField getPointResourceIdField(FacilioModule module) {
-        return getField(AgentConstants.RESOURCE_ID, "RESOURCE_ID", module, FieldType.NUMBER);
+        LookupField resourceId  = (LookupField) getDefaultField(AgentConstants.RESOURCE_ID,"Resource ID","RESOURCE_ID", module, FieldType.LOOKUP);
+        resourceId.setLookupModule(ModuleFactory.getResourceModule());
+        resourceId.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
+        return resourceId;
     }
 
     public static FacilioField getControllerTypeField() {
@@ -8264,7 +8281,6 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("errorCode", "ERROR_CODE", module, FieldType.NUMBER));
         return fields;
     }
-
     public static List<FacilioField> getMLCheckRatioFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getMLReadingModule();

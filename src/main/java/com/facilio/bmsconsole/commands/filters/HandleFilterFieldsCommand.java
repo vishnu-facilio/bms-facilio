@@ -198,6 +198,8 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
                     return FieldFactory.Fields.filterOutFields(fields, SENSOR_ALARM_FIELDS_TO_HIDE, FieldFactory.Fields.FilterType.EXCLUDE);
                 case ContextNames.NEW_READING_RULE_MODULE:
                     return FieldFactory.Fields.filterOutFields(fields, FieldFactory.Fields.NEW_READING_RULE_FIELDS_INCLUDE, FieldFactory.Fields.FilterType.INCLUDE);
+                case ContextNames.POINTS:
+                    return FieldFactory.Fields.filterOutFields(fields, FieldFactory.Fields.POINT_FIELDS_INCLUDE, FieldFactory.Fields.FilterType.INCLUDE);
                 default:
                     return fields;
             }

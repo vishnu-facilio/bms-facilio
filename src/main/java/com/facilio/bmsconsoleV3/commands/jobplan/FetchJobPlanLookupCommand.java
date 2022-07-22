@@ -7,6 +7,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -18,7 +19,8 @@ public class FetchJobPlanLookupCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        List<FacilioField> jobPlanFields = modBean.getAllFields(FacilioConstants.ContextNames.JOB_PLAN);
+        String moduleName = Constants.getModuleName(context);
+        List<FacilioField> jobPlanFields = modBean.getAllFields(moduleName);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(jobPlanFields);
 
         List<LookupField> additionaLookups = new ArrayList<LookupField>();

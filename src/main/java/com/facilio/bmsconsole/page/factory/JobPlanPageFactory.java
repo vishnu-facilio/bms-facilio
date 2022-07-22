@@ -23,6 +23,8 @@ public class JobPlanPageFactory extends PageFactory {
         tab1.addSection(tab1Sec1);
         PageWidget previewWidget = new PageWidget(PageWidget.WidgetType.SECONDARY_DETAILS_WIDGET);
         previewWidget.addToLayoutParams(tab1Sec1, 24, 4);
+        // label position for field details widget can be added via Widget Params
+        previewWidget.addToWidgetParams("labelPosition", "top");
         tab1Sec1.addWidget(previewWidget);
 
 

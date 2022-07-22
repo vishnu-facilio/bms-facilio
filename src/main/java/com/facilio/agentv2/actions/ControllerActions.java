@@ -114,7 +114,7 @@ public class ControllerActions extends AgentActionV2 {
 
     public String getSubscribedPoints(){
         GetPointRequest getPointRequest = new GetPointRequest()
-                .filterSubsctibedPoints();
+                .filterSubscribedPoints();
         try {
             getPointRequest.withControllerId(getControllerId());
             List<Map<String, Object>> points = getPointRequest.getPointsData();

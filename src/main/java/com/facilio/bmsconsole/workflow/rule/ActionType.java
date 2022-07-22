@@ -1834,27 +1834,34 @@ public enum ActionType {
 		@Override
 		public void performAction (JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
 
-			WorkOrderContext wocontext = (WorkOrderContext) currentRecord;
-			obj.put("parentId", wocontext.getId());
+			Long woId=-1L;
+			Map<String, Object> props = new HashMap<>();
+			if(currentRecord instanceof V3WorkOrderContext){
+				V3WorkOrderContext v3wo = (V3WorkOrderContext) currentRecord;
+				woId = v3wo.getId();
+				props = FieldUtil.getAsProperties(v3wo);
+			}else if(currentRecord instanceof WorkOrderContext){    // temp handling
+				WorkOrderContext workOrderContext = (WorkOrderContext) currentRecord;
+				woId = workOrderContext.getId();
+				props = FieldUtil.getAsProperties(workOrderContext);
+			}
+
+			obj.put("parentId",woId);
 
 			Long userId = (Long) obj.get("userId");
 			Long fieldId = (Long) obj.get("fieldId");
 			if(userId != null){
 				Long peopleId = PeopleAPI.getPeopleForId(userId).getId();
-				if(peopleId == null){
-					IAMUserUtil.getFacilioUser(AccountUtil.getCurrentOrg().getId(), userId).getUid();
-				}
 				obj.put("assignedTo", peopleId);
 			}else if(fieldId != null){
 				ModuleBean bean = Constants.getModBean();
 				List<FacilioField> fields = bean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
 				FacilioField field = fields.stream().filter(p -> p.getFieldId() == fieldId).collect(Collectors.toList()).get(0);
-				Map<String, Object> props = FieldUtil.getAsProperties(wocontext);
 				Map<String, Object> userObject = (Map<String, Object>) props.get(field.getName());
 				if(userObject !=null && !userObject.isEmpty()){
-					PeopleContext peopleContext = PeopleAPI.getPeopleForId((Long) userObject.get("peopleId"));
-					if(peopleContext != null) {
-						obj.put("assignedTo", peopleContext.getId());
+					Long pplId = PeopleAPI.getPeopleIdForUser((Long) userObject.get("id"));
+					if(pplId != null) {
+						obj.put("assignedTo", pplId);
 					}
 				}
 			}

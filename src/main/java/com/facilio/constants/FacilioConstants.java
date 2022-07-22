@@ -68,6 +68,7 @@ import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.wmsv2.handler.AuditLogHandler;
 
+import org.apache.kafka.common.protocol.types.Field;
 import org.json.simple.JSONObject;
 
 import java.text.SimpleDateFormat;
@@ -425,6 +426,7 @@ public class FacilioConstants {
 		public static final String ASSIGNED_TO_ID = "assignedTo";
 		
 		public static final String WORK_ORDER = "workorder";
+		public static final String POINTS = "points";
 		public static final String WORK_ORDER_LIST = "workorders";
 		public static final String BULK_WORK_ORDER_CONTEXT = "bulkworkorders";
 		public static final String WORK_ORDER_COUNT = "workorderscount";
@@ -2046,6 +2048,7 @@ public class FacilioConstants {
 		public static final String JOB_PLAN_LIST = "jobPlans";
 		public static final String JOB_PLAN_SECTION = "jobplansection";
 		public static final String JOB_PLAN_TASK = "jobplantask";
+		public static final String JOB_PLAN_ATTACHMENTS = "jobplanattachments";
 
 		public static final String AUDIENCE_SHARING = "audienceSharing";
 		public static final String AUDIENCE = "audience";
@@ -2590,6 +2593,7 @@ public class FacilioConstants {
 			classMap.put(JOB_PLAN, JobPlanContext.class);
 			classMap.put(JOB_PLAN_SECTION, JobPlanTaskSectionContext.class);
 			classMap.put(JOB_PLAN_TASK, JobPlanTasksContext.class);
+			classMap.put(JOB_PLAN_ATTACHMENTS, AttachmentV3Context.class);
 
 			classMap.put(AUDIT_LOGS, AuditLogHandler.AuditLogContext.class);
 
@@ -3011,6 +3015,11 @@ public class FacilioConstants {
 	}
 	public static class LinkNamePrefix {
 		public static final String SUB_FORM_PREFIX = "subform__";
+	}
+
+	public static class CraftAndSKills{
+		public static final String CRAFT = "crafts";
+		public static final String SKILLS = "craftSkill";
 	}
 
 	public static class Reports 
