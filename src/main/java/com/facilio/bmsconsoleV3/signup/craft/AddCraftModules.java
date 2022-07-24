@@ -49,6 +49,7 @@ public class AddCraftModules extends SignUpData{
 		LookupField parent = FieldFactory.getDefaultField("parentId","Parent Id","PARENT_ID",FieldType.LOOKUP);
 		parent.setLookupModule(craftModule);
 		fields.add(parent);
+		fields.add(FieldFactory.getDefaultField("standardRate","Standard Rate","STANDARD_RATE",FieldType.DECIMAL));
 		fields.add(FieldFactory.getDefaultField("skillLevelRank","Skill Level Rank","SKILL_LEVEL_RANK",FieldType.NUMBER));
 		module.setFields(fields);
 
