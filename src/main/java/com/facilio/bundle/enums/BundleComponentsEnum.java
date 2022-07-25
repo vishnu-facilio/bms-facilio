@@ -6,11 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.bundle.context.FieldBundleComponent;
-import com.facilio.bundle.context.FunctionBundleComponent;
-import com.facilio.bundle.context.FunctionNameSpaceBundleComponent;
-import com.facilio.bundle.context.ModuleBundleComponent;
-import com.facilio.bundle.context.ScheduledActionBundleComponent;
+import com.facilio.bmsconsole.localization.util.TranslationConstants;
+import com.facilio.bundle.context.*;
 import com.facilio.bundle.interfaces.BundleComponentInterface;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -37,7 +34,8 @@ public enum BundleComponentsEnum {
 	
 	SCHEDULED_ACTIONS(5,"Scheduled_Actions",ScheduledActionBundleComponent.class,null,
 			ModuleFactory.getScheduledWorkflowModule(),FieldFactory.getScheduledWorkflowFields(),null,null,null,"linkName","name","deleted"),
-	
+
+//	TRANSLATION(6,"Translation", TranslationBundleComponent.class,null ,TranslationConstants.getTranslationModule(),TranslationConstants.getTranslationFields(),null,null,null,null,null,null)
 	;
 	
 	int value;

@@ -106,6 +106,7 @@ public class ModuleBundleComponent extends CommonBundleComponent {
 			FacilioChain addModulesChain = TransactionChainFactory.getAddModuleChain();
 			FacilioContext newContext = addModulesChain.getContext();
 			newContext.put(FacilioConstants.ContextNames.MODULE_TYPE, 0);
+			newContext.put(FacilioConstants.ContextNames.MODULE_NAME,name);
 			newContext.put(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME, displayName);
 			newContext.put(FacilioConstants.ContextNames.MODULE_DESCRIPTION, description);
 			newContext.put(FacilioConstants.ContextNames.STATE_FLOW_ENABLED, stateFlowEnabled);

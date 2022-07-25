@@ -29,8 +29,12 @@ public class LoadSpaceManagementLookupFieldsCommand extends FacilioCommand {
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         List<LookupField> additionalLookups = new ArrayList<LookupField>();
         LookupField locationField = (LookupField) fieldsAsMap.get("location");
+        LookupField failureClassField = (LookupField) fieldsAsMap.get("failureClass");
         if (locationField != null) {
             additionalLookups.add(locationField);
+        }
+        if(failureClassField != null){
+            additionalLookups.add(failureClassField);
         }
 
         context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,additionalLookups);

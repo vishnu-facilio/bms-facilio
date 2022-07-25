@@ -38,7 +38,7 @@ public class GetTranslationDetailFields implements TranslationTypeInterface {
             }
         }
         String webTabKey = getTranslationKey(WEB_TAB,context.getRoute());
-        jsonArray.add(TranslationsUtil.constructJSON(context.getName(),WEB_TAB,TranslationConstants.DISPLAY_NAME,context.getRoute(),webTabKey,properties));
+        jsonArray.add(TranslationsUtil.constructJSON(context.getName(),WEB_TAB,TranslationConstants.DISPLAY_NAME,context.getId()+"",webTabKey,properties));
 
         JSONObject fieldObject = new JSONObject();
         fieldObject.put("fields",jsonArray);

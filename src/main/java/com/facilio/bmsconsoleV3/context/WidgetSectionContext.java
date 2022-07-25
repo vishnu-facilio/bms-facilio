@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.context;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import lombok.Getter;
 import lombok.Setter;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ public class WidgetSectionContext extends DashboardWidgetContext {
     private static final long serialVersionUID = 1L;
     private String name;
     private String desc;
-    private JSONObject banner_meta;
+    private String banner_meta;
 
     private List<DashboardWidgetContext> widgets_in_section = new ArrayList<DashboardWidgetContext>();
     private Boolean noResize;
@@ -29,7 +30,6 @@ public class WidgetSectionContext extends DashboardWidgetContext {
         resultJson.put("id", getId());
         resultJson.put("type", getWidgetType().getName());
         resultJson.put("helpText",getHelpText());
-        resultJson.put("section", getWidgets_in_section());
         resultJson.put("noResize", getNoResize());
         resultJson.put("collapsed", getCollapsed());
 
@@ -39,6 +39,19 @@ public class WidgetSectionContext extends DashboardWidgetContext {
         resultJson.put("h", getH());
         resultJson.put("minW", getMinW());
         resultJson.put("maxW", getMaxW());
+        if(getBanner_meta() != null) {
+            resultJson.put("banner_meta", getBanner_meta());
+        }
+
+        JSONArray childrenArray = new JSONArray();
+        resultJson.put("section", childrenArray);
+        if(getWidgets_in_section() != null && getWidgets_in_section().size() > 0) {
+            resultJson.put("section", childrenArray);
+            for(DashboardWidgetContext widget_context : getWidgets_in_section())
+            {
+                childrenArray.add(widget_context.widgetJsonObject(false));
+            }
+        }
 
         JSONObject widgetJson = new JSONObject();
         widgetJson.put("widget", resultJson);

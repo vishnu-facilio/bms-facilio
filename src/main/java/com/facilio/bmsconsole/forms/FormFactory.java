@@ -551,7 +551,7 @@ public class FormFactory {
 		List<FacilioForm> buildingFormList = Arrays.asList(getBuildingForm());
 		List<FacilioForm> spaceFormList = Arrays.asList(getSpaceFormFromSite(),getSpaceFormFromBuilding(),getSpaceFormFromFloor(),getSpaceFormFromSpace());
 		List<FacilioForm> floorFormList = Arrays.asList(getFloorForm());
-		List<FacilioForm> failureCodeFormList = Arrays.asList(getFailureCodeForm());
+		List<FacilioForm> failureCodesFormList = Arrays.asList(getFailureCodeForm());
 		List<FacilioForm> failureClassFormList = Arrays.asList(getFailureClassForm());
 
 
@@ -641,7 +641,7 @@ public class FormFactory {
 				.put(ContextNames.BUILDING, getFormMap(buildingFormList))
 				.put(ContextNames.SPACE, getFormMap(spaceFormList))
 				.put(ContextNames.FLOOR, getFormMap(floorFormList))
-				.put(ContextNames.FAILURE_CODE, getFormMap(failureCodeFormList))
+				.put(ContextNames.FAILURE_CODE, getFormMap(failureCodesFormList))
 				.put(ContextNames.FAILURE_CLASS, getFormMap(failureClassFormList))
 				.put(FacilioConstants.Inspection.INSPECTION_RESPONSE, getFormMap(inspectionFormList))
 				.put(FacilioConstants.Induction.INDUCTION_RESPONSE, getFormMap(inductionFormList))
@@ -806,6 +806,7 @@ public class FormFactory {
 		fields.add(new FormField("area", FacilioField.FieldDisplayType.DECIMAL, "Area", FormField.Required.OPTIONAL, 4, 2));
 		fields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Max Occupancy", FormField.Required.OPTIONAL, 4, 3));
 		fields.add(new FormField("floorlevel", FacilioField.FieldDisplayType.NUMBER, "Floor Level", FormField.Required.OPTIONAL, 5, 2));
+		fields.add(new FormField("failureClass", FieldDisplayType.LOOKUP_SIMPLE, "Failure Class", FormField.Required.OPTIONAL, "failureclass",7, 2));
 
 		defaultForm.setFields(fields);
 		return defaultForm;
@@ -952,7 +953,8 @@ public class FormFactory {
 		fields.add(new FormField("site", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site Associated", FormField.Required.REQUIRED,"site", 5, 1,true));
 		fields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Maximum Occupancy Count", FormField.Required.OPTIONAL, 6, 1));
 		fields.add(new FormField("location", FieldDisplayType.GEO_LOCATION, "Location", Required.OPTIONAL, 7, 1));
-		
+		fields.add(new FormField("failureClass", FieldDisplayType.LOOKUP_SIMPLE, "Failure Class", FormField.Required.OPTIONAL, "failureclass",8, 2));
+
 		try {
 			if(AccountUtil.isFeatureEnabled(FeatureLicense.RESOURCE_BOOKING)) {
 				fields.add(new FormField("reservable", FacilioField.FieldDisplayType.DECISION_BOX, "Is Reservable", FormField.Required.OPTIONAL, 8, 1));
@@ -985,6 +987,7 @@ public class FormFactory {
 		fields.add(new FormField("building", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Building Associated", FormField.Required.REQUIRED,"building", 5, 1,true));
 		fields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Maximum Occupancy Count", FormField.Required.OPTIONAL, 6, 1));
 		fields.add(new FormField("location", FieldDisplayType.GEO_LOCATION, "Location", Required.OPTIONAL, 7, 1));
+		fields.add(new FormField("failureClass", FieldDisplayType.LOOKUP_SIMPLE, "Failure Class", FormField.Required.OPTIONAL, "failureclass",8, 2));
 
 		try {
 			if(AccountUtil.isFeatureEnabled(FeatureLicense.RESOURCE_BOOKING)) {
@@ -1017,7 +1020,8 @@ public class FormFactory {
 		fields.add(new FormField("floor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Floor Associated", FormField.Required.REQUIRED,"floor", 5, 1,true));
 		fields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Maximum Occupancy Count", FormField.Required.OPTIONAL, 6, 1));
 		fields.add(new FormField("location", FieldDisplayType.GEO_LOCATION, "Location", Required.OPTIONAL, 7, 1));
-		
+		fields.add(new FormField("failureClass", FieldDisplayType.LOOKUP_SIMPLE, "Failure Class", FormField.Required.OPTIONAL, "failureclass",8, 2));
+
 		try {
 			if(AccountUtil.isFeatureEnabled(FeatureLicense.RESOURCE_BOOKING)) {
 				fields.add(new FormField("reservable", FacilioField.FieldDisplayType.DECISION_BOX, "Is Reservable", FormField.Required.OPTIONAL, 8, 1));
@@ -1049,7 +1053,8 @@ public class FormFactory {
 		fields.add(getSpaceAssociatedField());
 		fields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Maximum Occupancy Count", FormField.Required.OPTIONAL, 6, 1));
 		fields.add(new FormField("location", FieldDisplayType.GEO_LOCATION, "Location", Required.OPTIONAL, 7, 1));
-		
+		fields.add(new FormField("failureClass", FieldDisplayType.LOOKUP_SIMPLE, "Failure Class", FormField.Required.OPTIONAL, "failureclass",8, 2));
+
 		try {
 			if(AccountUtil.isFeatureEnabled(FeatureLicense.RESOURCE_BOOKING)) {
 				fields.add(new FormField("reservable", FacilioField.FieldDisplayType.DECISION_BOX, "Is Reservable", FormField.Required.OPTIONAL, 8, 1));
@@ -1089,6 +1094,7 @@ public class FormFactory {
 		fields.add(new FormField("grossFloorArea", FacilioField.FieldDisplayType.DECIMAL, "Gross Floor Area", FormField.Required.OPTIONAL, 5, 2));
 		fields.add(new FormField("area", FacilioField.FieldDisplayType.DECIMAL, "Total Built Area", FormField.Required.OPTIONAL, 5, 3));
 		fields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Max Occupancy", FormField.Required.OPTIONAL, 6, 2));
+		fields.add(new FormField("failureClass", FieldDisplayType.LOOKUP_SIMPLE, "Failure Class", FormField.Required.OPTIONAL, "failureclass",7, 2));
 		defaultForm.setFields(fields);
 		return defaultForm;
 	}
@@ -1117,6 +1123,7 @@ public class FormFactory {
 		fields.add(new FormField("wddBaseTemperature", FacilioField.FieldDisplayType.DECIMAL, "WDD Base Temperature", FormField.Required.OPTIONAL, 7, 2));
 		fields.add(new FormField("timeZone", FieldDisplayType.TIMEZONE, "Time Zone", FormField.Required.OPTIONAL, 8, 3));
 		fields.add(new FormField("boundaryRadius", FacilioField.FieldDisplayType.NUMBER, "Boundary Radius", FormField.Required.OPTIONAL, 9, 2));
+		fields.add(new FormField("failureClass", FieldDisplayType.LOOKUP_SIMPLE, "Failure Class", FormField.Required.OPTIONAL, "failureclass",10, 2));
 		defaultForm.setFields(fields);
 		return defaultForm;
 	}
@@ -1707,7 +1714,8 @@ public class FormFactory {
 		fields.add(new FormField("geoLocationEnabled", FieldDisplayType.DECISION_BOX, "Is Movable",Required.OPTIONAL, 13,2));
 		fields.add(new FormField("moveApprovalNeeded", FieldDisplayType.DECISION_BOX, "Is Move Approval Needed",Required.OPTIONAL, 13,2));
 		fields.add(new FormField("boundaryRadius", FieldDisplayType.NUMBER, "Boundary Radius", Required.OPTIONAL, 14, 2));
-		
+		fields.add(new FormField("failureClass", FieldDisplayType.LOOKUP_SIMPLE, "Failure Class", FormField.Required.OPTIONAL, "failureclass",8, 2));
+
 		return Collections.unmodifiableList(fields);
 	}
 	
@@ -1745,7 +1753,8 @@ public class FormFactory {
 		fields.add(new FormField("purposeSpace", FieldDisplayType.SPACECHOOSER, "Operational Space", Required.OPTIONAL, 18, 2));
 		fields.add(new FormField("root", FieldDisplayType.DECISION_BOX, "Is Root", Required.OPTIONAL, 19, 2));
 		fields.add(new FormField("multiplicationFactor", FieldDisplayType.TEXTBOX, "Multiplication Factor", Required.OPTIONAL, 20, 2));
-		
+		fields.add(new FormField("failureClass", FieldDisplayType.LOOKUP_SIMPLE, "Failure Class", FormField.Required.OPTIONAL, "failureclass",10, 2));
+
 		return Collections.unmodifiableList(fields);
 	}
 
@@ -2336,7 +2345,7 @@ public class FormFactory {
 			expRepDateField = modBean.getField("expectedReplyDate", ContextNames.VENDOR_QUOTES);
 		}
 		catch(Exception e) {
-
+			throw new IllegalArgumentException("expectedReplyDate field not found");
 		}
 		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.REQUIRED, "vendors", 1, 1).setAllowCreateOptions(true).setCreateFormName("vendors_form");
 		vendorField.setIsDisabled(true);

@@ -1,10 +1,12 @@
 package com.facilio.bundle.command;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.bundle.context.BundleContext;
 import com.facilio.bundle.utils.BundleConstants;
@@ -26,10 +28,14 @@ public class FetchAllBundleCommand extends FacilioCommand {
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getBundleFields());
 		
+		List<Integer> inclBundleType = new ArrayList<Integer>();
+		inclBundleType.add(BundleContext.BundleTypeEnum.UN_MANAGED.getValue());
+		inclBundleType.add(BundleContext.BundleTypeEnum.MANAGED.getValue());
+		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getBundleModule().getTableName())
 				.select(FieldFactory.getBundleFields())
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("type"), BundleContext.BundleTypeEnum.UN_MANAGED_SYSTEM.getValue()+"", NumberOperators.NOT_EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("type"), StringUtils.join(inclBundleType, ","), NumberOperators.EQUALS))
 				.andCustomWhere("ID = PARENT_BUNDLE")
 				;
 		

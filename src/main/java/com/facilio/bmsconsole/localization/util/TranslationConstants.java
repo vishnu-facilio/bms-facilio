@@ -38,6 +38,9 @@ public class TranslationConstants {
         fields.add(FieldFactory.getField(LANG_CODE, "LANG_CODE", module, FieldType.STRING));
         fields.add(FieldFactory.getField(FILE_ID, "FILE_ID", module, FieldType.NUMBER));
         fields.add(FieldFactory.getField("status","STATUS",module,FieldType.BOOLEAN));
+		fields.add(FieldFactory.getField("createdTime","CREATED_TIME",FieldType.DATE_TIME));
+		fields.add(FieldFactory.getField("modifiedTime","MODIFIED_TIME",FieldType.DATE_TIME));
+
         return fields;
     }
 }

@@ -1,8 +1,24 @@
 package com.facilio.v3.context;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bundle.bean.BundleBean;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
@@ -14,14 +30,6 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.commands.SaveOptions;
 import com.facilio.workflowv2.bean.ScriptBean;
-
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.json.simple.JSONObject;
-
-import java.io.File;
-import java.util.*;
 
 public class Constants {
     public static final String SITE_LIST = "siteIds";
@@ -453,6 +461,10 @@ public class Constants {
     }
     public static ScriptBean getScriptBean() throws Exception {
         return (ScriptBean) BeanFactory.lookup("ScriptBean");
+    }
+    
+    public static BundleBean getBundleBean(long orgid) throws Exception {
+        return (BundleBean) BeanFactory.lookup("BundleBean",orgid);
     }
 
     private static final String IS_V4 = "isV4";

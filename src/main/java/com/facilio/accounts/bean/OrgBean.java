@@ -56,7 +56,11 @@ public interface OrgBean {
 
 	public List<User> getDefaultAppUsers(long orgId) throws Exception;
 
+	public List<User> getDefaultAppUsers(long orgId, String linkName) throws Exception;
+
 	public Map<Long, User> getOrgUsersAsMap(long orgId) throws Exception;
+
+	public Map<Long, User> getOrgUsersAsMap(long orgId, String appLinkName) throws Exception;
 
 	public List<User> getActiveOrgUsers(long orgId) throws Exception;
 

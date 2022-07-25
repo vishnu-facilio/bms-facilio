@@ -11,6 +11,8 @@ public class BundleConstants {
 		ALLOWED_EXTN.add("xml");
 		ALLOWED_EXTN.add("fs");
 	}
+	
+	
 
 	public static final String COMPONENT_ID = "componentId";
 	
@@ -85,5 +87,9 @@ public class BundleConstants {
 		public static final String NAME = "name";
 		public static final String DISPLAY_NAME = "displayName";
 		public static final String MODE = "mode";
+	}
+	
+	public static class Sandbox {
+		public static final String SANDBOX = "sandbox";
 	}
 }

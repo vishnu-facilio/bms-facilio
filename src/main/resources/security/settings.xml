@@ -919,8 +919,51 @@
     </request>
 
 
+	<request path="/api/v3/sandbox/add">
+        <requestbody type="object">
+            <property name="sandbox" type="object">
+                <property name="name" type="string"/>
+                <property name="domain" type="string"/>
+                <property name="sharing" type="array">
+                	<items type="object">
+	                	<property name="peopleId" type="number"/>
+	                </items>
+                </property>
+            </property>
+        </requestbody>
+    </request>
+    
+    <request path="/api/v3/sandbox/update">
+        <requestbody type="object">
+            <property name="sandbox" type="object">
+                <property name="id" type="number"/>
+                <property name="orgId" type="number"/>
+                <property name="name" type="string"/>
+                <property name="domain" type="string"/>
+                <property name="sandboxOrgId" type="number"/>
+                <property name="status" type="string"/>
+                <property name="sharing" type="array"/>
+                <property name="createdBy" type="number"/>
+                <property name="createdTime" type="number"/>
+                <property name="modifiedTime" type="number"/>
+            </property>
+        </requestbody>
+    </request>
 
-
-
-
+	<request path="/api/v3/sandbox/changeSet">
+        <requestbody type="object">
+            <property name="sandbox" type="object">
+                <property name="id" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+    
+    <request path="/api/v3/sandbox/pullSandboxChanges">
+        <requestbody type="object">
+            <property name="sandbox" type="object">
+                <property name="id" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+    
 </config>

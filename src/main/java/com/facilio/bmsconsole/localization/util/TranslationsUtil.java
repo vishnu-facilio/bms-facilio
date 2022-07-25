@@ -170,4 +170,12 @@ public class TranslationsUtil {
         assetFieldsMap.put("TYPE","assettype");
         return assetFieldsMap;
     }
+
+	public static Map<String,Object> getTranslation(long id) throws Exception{
+		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder().select(TranslationConstants.getTranslationFields())
+													.table(TranslationConstants.getTranslationModule().getTableName())
+													.andCondition(CriteriaAPI.getIdCondition(id,TranslationConstants.getTranslationModule()))
+													.andCondition(CriteriaAPI.getCondition("STATUS","status","1",StringOperators.IS));
+		return select.fetchFirst();
+	}
 }

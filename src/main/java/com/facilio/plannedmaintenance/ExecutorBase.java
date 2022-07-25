@@ -18,6 +18,8 @@ public abstract class ExecutorBase implements Executor {
         FacilioStatus status = getStatus(context);
         List<V3WorkOrderContext> result = new ArrayList<>();
 
+        PMTriggerV2 trigger = (PMTriggerV2) context.get("trigger");
+
         for (long nextExecutionTime: nextExecutionTimes) {
             for (PMResourcePlanner pmResourcePlanner: pmPlanner.getResourcePlanners()) {
                 //Cloning workorder

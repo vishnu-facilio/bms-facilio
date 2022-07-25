@@ -27,8 +27,80 @@ import java.util.Map;
 public class WorkorderPageFactory extends PageFactory {
     private static final Logger LOGGER = LogManager.getLogger(WorkorderPageFactory.class.getName());
 
+    private static boolean isTutenLabs() {
+        final long ordId = 592L;
+        return AccountUtil.getCurrentOrg().getOrgId() == ordId;
+    }
+
     private static void composeRightPanel(Page.Section section, WorkOrderContext workorder) throws Exception {
 
+        if (isTutenLabs()) {
+            composeRightPanelTuten(section, workorder);
+        } else {
+            int yOffset = 0;
+            int xOffset = 17;
+            int widgetWidth = 7;
+
+            // work duration widget
+            int widgetHeight = 3;
+            PageWidget workDuration = new PageWidget(PageWidget.WidgetType.WORK_DURATION);
+            workDuration.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
+            section.addWidget(workDuration);
+            yOffset += widgetHeight;
+
+            // total cost widget
+            if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY) &&
+                    !AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
+                widgetHeight = 3;
+                PageWidget totalCost = new PageWidget(PageWidget.WidgetType.TOTAL_COST);
+                totalCost.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
+                section.addWidget(totalCost);
+                yOffset += widgetHeight;
+            }
+
+            // resource widget
+            widgetHeight = 3;
+            PageWidget resource = new PageWidget(PageWidget.WidgetType.RESOURCE);
+            resource.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
+            section.addWidget(resource);
+            yOffset += widgetHeight;
+
+            // maintenance cost & quotation widget
+            if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
+                widgetHeight = QuotationAPI.getQuoteCount(workorder.getId()) > 0 ? 8 : 4;
+                PageWidget totalCost = new PageWidget(PageWidget.WidgetType.QUOTATION);
+                totalCost.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
+                totalCost.addToWidgetParams("hideBg", true);
+                section.addWidget(totalCost);
+                yOffset += widgetHeight;
+            }
+
+            // tenant widget
+            if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS) &&
+                    workorder.getTenant() != null) {
+                widgetHeight = 4;
+                PageWidget totalCost = new PageWidget(PageWidget.WidgetType.TENANT);
+                totalCost.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
+                section.addWidget(totalCost);
+                yOffset += widgetHeight;
+            }
+
+            // responsibility widget
+            widgetHeight = 6;
+            PageWidget responsibility = new PageWidget(PageWidget.WidgetType.RESPONSIBILITY);
+            responsibility.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
+            section.addWidget(responsibility);
+            yOffset += widgetHeight;
+
+            // workorderDetails widget
+            widgetHeight = 10;
+            PageWidget workorderDetails = new PageWidget(PageWidget.WidgetType.WORKORDER_DETAILS);
+            workorderDetails.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
+            section.addWidget(workorderDetails);
+            yOffset += widgetHeight;
+        }
+    }
+    public static void composeRightPanelTuten(Page.Section section, WorkOrderContext workorder)throws Exception{
         int yOffset = 0;
         int xOffset = 17;
         int widgetWidth = 7;
@@ -57,7 +129,6 @@ public class WorkorderPageFactory extends PageFactory {
         section.addWidget(resource);
         yOffset += widgetHeight;
 
-        // maintenance cost & quotation widget
         if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.QUOTATION)) {
             widgetHeight = QuotationAPI.getQuoteCount(workorder.getId()) > 0 ? 8 : 4;
             PageWidget totalCost = new PageWidget(PageWidget.WidgetType.QUOTATION);
@@ -84,15 +155,68 @@ public class WorkorderPageFactory extends PageFactory {
         section.addWidget(responsibility);
         yOffset += widgetHeight;
 
-        // workorderDetails widget
-        widgetHeight = 10;
-        PageWidget workorderDetails = new PageWidget(PageWidget.WidgetType.WORKORDER_DETAILS);
-        workorderDetails.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
-        section.addWidget(workorderDetails);
+        // scheduled duration widget
+        PageWidget scheduledDuration = new PageWidget(PageWidget.WidgetType.SCHEDULED_DURATION);
+        scheduledDuration.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
+        section.addWidget(scheduledDuration);
         yOffset += widgetHeight;
+
+        // actual duration widget
+        PageWidget actualDuration = new PageWidget(PageWidget.WidgetType.ACTUAL_DURATION);
+        actualDuration.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
+        section.addWidget(actualDuration);
+
     }
 
     private static void addSummaryTab(Page page, WorkOrderContext workorder) throws Exception {
+        if (isTutenLabs()) {
+            SummaryTabTuten(page, workorder);
+        } else {
+            Page.Tab summaryTab = page.new Tab("summary");
+            page.addTab(summaryTab);
+
+            Page.Section summarySection = page.new Section();
+            summaryTab.addSection(summarySection);
+
+            int yOffset = 0;
+
+            if (workorder.getDescription() != null && !workorder.getDescription().isEmpty()) {
+                PageWidget descWidget = new PageWidget(PageWidget.WidgetType.WORKORDER_DESCRIPTION);
+                descWidget.addToLayoutParams(0, 0, 17, 3);
+                summarySection.addWidget(descWidget);
+                yOffset += 3;
+            }
+
+            // tasks completed widget
+            PageWidget tasksCompleted = new PageWidget(PageWidget.WidgetType.TASKS_COMPLETED);
+            tasksCompleted.addToLayoutParams(0, yOffset, 5, 6);
+            summarySection.addWidget(tasksCompleted);
+
+            // scheduled duration widget
+            PageWidget scheduledDuration = new PageWidget(PageWidget.WidgetType.SCHEDULED_DURATION);
+            scheduledDuration.addToLayoutParams(5, yOffset, 6, 6);
+            summarySection.addWidget(scheduledDuration);
+
+            // actual duration widget
+            PageWidget actualDuration = new PageWidget(PageWidget.WidgetType.ACTUAL_DURATION);
+            actualDuration.addToLayoutParams(11, yOffset, 6, 6);
+            summarySection.addWidget(actualDuration);
+
+            // comments widget
+            PageWidget commentsWidget = new PageWidget(PageWidget.WidgetType.WORKORDER_COMMENTS);
+            commentsWidget.addToLayoutParams(0, 6 + yOffset, 17, 9);
+            summarySection.addWidget(commentsWidget);
+
+            // attachments widget
+            PageWidget attachmentsWidget = new PageWidget(PageWidget.WidgetType.WORKORDER_ATTACHMENTS);
+            attachmentsWidget.addToLayoutParams(0, 15 + yOffset, 17, 8);
+            summarySection.addWidget(attachmentsWidget);
+
+            composeRightPanel(summarySection, workorder);
+        }
+    }
+
+    public static void SummaryTabTuten(Page page, WorkOrderContext workorder) throws Exception {
         Page.Tab summaryTab = page.new Tab("summary");
         page.addTab(summaryTab);
 
@@ -108,22 +232,10 @@ public class WorkorderPageFactory extends PageFactory {
             yOffset += 3;
         }
 
-        // tasks completed widget
-        PageWidget tasksCompleted = new PageWidget(PageWidget.WidgetType.TASKS_COMPLETED);
-        tasksCompleted.addToLayoutParams(0, yOffset, 5, 6);
-        summarySection.addWidget(tasksCompleted);
+        PageWidget detailsWidget = new PageWidget(PageWidget.WidgetType.WORKORDER_SECONDARY_DETAILS_WIDGET);
+        detailsWidget.addToLayoutParams(0, yOffset, 17, 7);
+        summarySection.addWidget(detailsWidget);
 
-        // scheduled duration widget
-        PageWidget scheduledDuration = new PageWidget(PageWidget.WidgetType.SCHEDULED_DURATION);
-        scheduledDuration.addToLayoutParams(5, yOffset, 6, 6);
-        summarySection.addWidget(scheduledDuration);
-
-        // actual duration widget
-        PageWidget actualDuration = new PageWidget(PageWidget.WidgetType.ACTUAL_DURATION);
-        actualDuration.addToLayoutParams(11, yOffset, 6, 6);
-        summarySection.addWidget(actualDuration);
-
-        // comments widget
         PageWidget commentsWidget = new PageWidget(PageWidget.WidgetType.WORKORDER_COMMENTS);
         commentsWidget.addToLayoutParams(0, 6 + yOffset, 17, 9);
         summarySection.addWidget(commentsWidget);
@@ -208,58 +320,58 @@ public class WorkorderPageFactory extends PageFactory {
 
         addRelatedListWidgets(relatedRecordsSection, module.getModuleId());
     }
-    
+
     private static void addMetricandTimelogTab(Page page, long workOrderId) throws Exception {
         Page.Tab metricandTimelogTab = page.new Tab("timelog");
         page.addTab(metricandTimelogTab);
 
-		addWorkOrderSurveyPageWidget(page, metricandTimelogTab,workOrderId);
+        addWorkOrderSurveyPageWidget(page, metricandTimelogTab,workOrderId);
 
         Page.Section metrictimelogSection = page.new Section();
         metricandTimelogTab.addSection(metrictimelogSection);
 
-		// metric and timelog widget
+        // metric and timelog widget
         PageWidget stateTransitionTimelogWidget = new PageWidget(PageWidget.WidgetType.STATE_TRANSITION_TIME_LOG);
         stateTransitionTimelogWidget.addToLayoutParams(metrictimelogSection, 24, 8);
-		metrictimelogSection.addWidget(stateTransitionTimelogWidget);
+        metrictimelogSection.addWidget(stateTransitionTimelogWidget);
 
     }
 
-	private static void addWorkOrderSurveyPageWidget(Page page, Page.Tab metricandTimelogTab, long workOrderId) throws Exception{
+    private static void addWorkOrderSurveyPageWidget(Page page, Page.Tab metricandTimelogTab, long workOrderId) throws Exception{
 
-		if(isSurveyAvailable(workOrderId) && AccountUtil.getCurrentUser().getRole().getName().equals(RoleFactory.Role.SUPER_ADMIN.getName())){
+        if(isSurveyAvailable(workOrderId) && AccountUtil.getCurrentUser().getRole().getName().equals(RoleFactory.Role.SUPER_ADMIN.getName())){
 
-			Page.Section surveyTimeLogSection = page.new Section();
-			metricandTimelogTab.addSection(surveyTimeLogSection);
+            Page.Section surveyTimeLogSection = page.new Section();
+            metricandTimelogTab.addSection(surveyTimeLogSection);
 
-			PageWidget surveyTimelogWidget = new PageWidget(PageWidget.WidgetType.SURVEY_RESPONSE_WIDGET);
-			surveyTimelogWidget.addToLayoutParams(surveyTimeLogSection, 24, 8);
-			surveyTimeLogSection.addWidget(surveyTimelogWidget);
-		}
-	}
+            PageWidget surveyTimelogWidget = new PageWidget(PageWidget.WidgetType.SURVEY_RESPONSE_WIDGET);
+            surveyTimelogWidget.addToLayoutParams(surveyTimeLogSection, 24, 8);
+            surveyTimeLogSection.addWidget(surveyTimelogWidget);
+        }
+    }
 
-	private static boolean isSurveyAvailable(long workOrderId) throws Exception{
+    private static boolean isSurveyAvailable(long workOrderId) throws Exception{
 
-		ModuleBean bean = Constants.getModBean();
-		FacilioModule module = bean.getModule(FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_RESPONSE);
-		List<FacilioField> fields  = bean.getAllFields(module.getName());
+        ModuleBean bean = Constants.getModBean();
+        FacilioModule module = bean.getModule(FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_RESPONSE);
+        List<FacilioField> fields  = bean.getAllFields(module.getName());
 
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 
-		SelectRecordsBuilder<WorkOrderSurveyResponseContext> builder = new SelectRecordsBuilder<WorkOrderSurveyResponseContext>()
-																			   .select(fields)
-																			   .moduleName(module.getName())
-																			   .beanClass(WorkOrderSurveyResponseContext.class)
-																			   .andCondition(CriteriaAPI.getCondition(module.getTableName()+".PARENT_ID",module.getTableName()+".parentId",String.valueOf(workOrderId), StringOperators.IS));
-		if(!AccountUtil.getCurrentUser().isSuperAdmin()){
-			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("assignedTo"),String.valueOf(AccountUtil.getCurrentUser().getPeopleId()), NumberOperators.EQUALS));
-		}
+        SelectRecordsBuilder<WorkOrderSurveyResponseContext> builder = new SelectRecordsBuilder<WorkOrderSurveyResponseContext>()
+                .select(fields)
+                .moduleName(module.getName())
+                .beanClass(WorkOrderSurveyResponseContext.class)
+                .andCondition(CriteriaAPI.getCondition(module.getTableName()+".PARENT_ID",module.getTableName()+".parentId",String.valueOf(workOrderId), StringOperators.IS));
+        if(!AccountUtil.getCurrentUser().isSuperAdmin()){
+            builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("assignedTo"),String.valueOf(AccountUtil.getCurrentUser().getPeopleId()), NumberOperators.EQUALS));
+        }
 
 
-		return builder.get().size() > 0;
-	}
+        return builder.get().size() > 0;
+    }
 
-	private static void addTasksTab(Page page) {
+    private static void addTasksTab(Page page) {
         Page.Tab tasksTab = page.new Tab("tasks");
         page.addTab(tasksTab);
 

@@ -81,6 +81,10 @@ public class GetTimeLineDataCommand extends FacilioCommand {
                 .groupBy(groupBy.toString())
                 .andCriteria(mainCriteria);
 
+        if(Boolean.TRUE.equals(viewObj.isExcludeModuleCriteria())){
+            aggregateBuilder.skipModuleCriteria();
+        }
+
         long queryStartTime = System.currentTimeMillis();
         List<Map<String, Object>> aggregateValue = aggregateBuilder.getAsProps();
         LOGGER.error("query for aggregate value: " + aggregateBuilder + "; time taken is: " + (System.currentTimeMillis() - queryStartTime));
@@ -94,6 +98,9 @@ public class GetTimeLineDataCommand extends FacilioCommand {
                 filterCriteria, false);
 
         SelectRecordsBuilder subQuerybuilder = getQueryContactQuery(module, timelineGroupField, startTimeField, idFieldColumnName, timelineRequest.getDateAggregator(), mainCriteria);
+        if(Boolean.TRUE.equals(viewObj.isExcludeModuleCriteria())){
+            subQuerybuilder.skipModuleCriteria();
+        }
         String subQuery = subQuerybuilder.constructQueryString();
 
         SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<>()
@@ -104,6 +111,9 @@ public class GetTimeLineDataCommand extends FacilioCommand {
                 .beanClass(ChainUtil.getBeanClass(config, module))
                 .select(allModuleFields);
 
+        if(Boolean.TRUE.equals(viewObj.isExcludeModuleCriteria())){
+            builder.skipModuleCriteria();
+        }
         builder.andCustomWhere("FIND_IN_SET(" + idFieldColumnName + ", " + GROUP_CONCAT_FIELD_NAME + ") <= " + timelineRequest.getMaxResultPerCell());
 
         // Reconstructing criteria for select builder

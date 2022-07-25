@@ -24,6 +24,7 @@ public class BuildingFillLookupFieldsCommand extends FacilioCommand {
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         List<LookupField> fetchLookupsList = new ArrayList<LookupField>();
         fetchLookupsList.add((LookupField) fieldsAsMap.get("location"));
+        fetchLookupsList.add((LookupField) fieldsAsMap.get("failureClass"));
 
 
 

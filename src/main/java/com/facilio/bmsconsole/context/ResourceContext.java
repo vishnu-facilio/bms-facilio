@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.enums.SourceType;
+import com.facilio.bmsconsoleV3.context.failurecode.V3FailureClassContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.services.factory.FacilioFactory;
@@ -225,4 +226,13 @@ public class ResourceContext extends ModuleBaseWithCustomFields {
 
 	private long sourceId = -1;
 
+	public V3FailureClassContext getFailureClass() {
+		return failureClass;
+	}
+
+	public void setFailureClass(V3FailureClassContext failureClass) {
+		this.failureClass = failureClass;
+	}
+
+	private V3FailureClassContext failureClass;
 }

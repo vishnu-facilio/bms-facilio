@@ -74,7 +74,7 @@ public enum RelationshipOperator implements Operator<String>{
         RelationMappingContext relationMapping = RelationUtil.getRelationMapping(relationName);
         RelationContext relation = RelationUtil.getRelation(relationMapping.getRelationId(), false);
 
-        FacilioField idField = FieldFactory.getIdField(relationMapping.getToModule());
+        FacilioField idField = FieldFactory.getIdField(relationMapping.getFromModule());
 
         StringBuilder builder = new StringBuilder();
         builder.append(idField.getCompleteColumnName());

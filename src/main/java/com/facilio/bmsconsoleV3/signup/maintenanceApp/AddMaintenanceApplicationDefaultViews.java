@@ -80,7 +80,7 @@ public class AddMaintenanceApplicationDefaultViews extends FacilioCommand {
             view = ViewFactory.getView(module, viewName, modBean);
             //view = FieldUtil.cloneBean(viewFromFactory,FacilioView.class);
             if(view != null) {
-                view.setName(view.getName());
+                view.setName("maintenance_" + view.getName());
                 view.setAppId(maintenance.getId());
                 if(view.getTypeEnum() == null){
                     view.setType(FacilioView.ViewType.TABLE_LIST);

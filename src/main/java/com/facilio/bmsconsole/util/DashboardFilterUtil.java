@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -379,7 +380,7 @@ public class DashboardFilterUtil {
 		return null;
 	}
 
-public static FacilioField getFilterApplicableField(FacilioModule filterModule, FacilioModule widgetModule){
+	public static FacilioField getFilterApplicableField(FacilioModule filterModule, FacilioModule widgetModule, Long fieldId){
 		
 		//see if module's lookup fields refrer to the filter's lookupmodule.
 		List<FacilioField> filterApplicableFields = widgetModule.getFields().stream().filter((FacilioField field) -> {
@@ -420,7 +421,14 @@ public static FacilioField getFilterApplicableField(FacilioModule filterModule, 
 		
 		if (filterApplicableFields != null && filterApplicableFields.size() > 0) {
 			
-			
+			if(fieldId != null && fieldId > 0)
+			{
+				for(FacilioField field : filterApplicableFields){
+					if(field != null && field.getFieldId() == fieldId){
+						return field;
+					}
+				}
+			}
 			return filterApplicableFields.get(0);
 		}
 		return null;
@@ -478,7 +486,8 @@ public static Map<Long,FacilioField>  findCascadingFilterRel(DashboardUserFilter
 				cascadingRelMap.put(otherFilter.getFieldId(), otherFilter.getField());
 			}
 			else if(otherFilter.getModule()!=null) {//both current and other are lookup ie module filters,find which col in current relates to other
-				FacilioField applicableField=DashboardFilterUtil.getFilterApplicableField(otherFilter.getModule(), currentFilter.getModule());
+				Long fieldId = DashboardFilterUtil.getFieldForMappingOnWidget(otherFilter.getDashboardUserFilterJson(), currentFilter.getModule() != null? currentFilter.getModule().getName() : null);
+				FacilioField applicableField=DashboardFilterUtil.getFilterApplicableField(otherFilter.getModule(), currentFilter.getModule(), fieldId != null && fieldId > 0 ? fieldId : null);
 				if(applicableField!=null)
 				{
 					cascadingRelMap.put(otherFilter.getId(), applicableField);
@@ -514,8 +523,8 @@ public static Criteria getUserFilterCriteriaForModule(DashboardCustomScriptFilte
 			FacilioField fieldForFilter = null;
 			if (userFilter.getModuleName() != null)// LOOKUP filter
 			{
-
-				fieldForFilter = getFilterApplicableField(userFilter.getModule(), widgetModule);
+				Long fieldId = DashboardFilterUtil.getFieldForMappingOnWidget(userFilter.getDashboardUserFilterJson(), widgetModule != null ? widgetModule.getName() : null);
+				fieldForFilter = getFilterApplicableField(userFilter.getModule(), widgetModule, fieldId != null && fieldId > 0 ? fieldId : null);
 
 			} else if (userFilter.getFieldId() > 0)// ENUM type filter
 			{
@@ -568,4 +577,29 @@ public static Criteria getUserFilterCriteriaForModule(DashboardCustomScriptFilte
 	}
 }
 
+	public static Long getFieldForMappingOnWidget(String dashboardFilterJson, String module)throws Exception
+	{
+		try {
+			if (dashboardFilterJson != null && dashboardFilterJson.contains("widget_field_mapping") && module != null) {
+				JSONParser parser = new JSONParser();
+				JSONObject dashboard_filter_obj = (JSONObject) parser.parse(dashboardFilterJson);
+				if (dashboard_filter_obj != null && dashboard_filter_obj.containsKey("widget_field_mapping")) {
+					JSONArray jsonArray = (JSONArray) parser.parse(dashboard_filter_obj.get("widget_field_mapping").toString());
+					if (jsonArray != null && jsonArray.size() > 0) {
+						int len = jsonArray.size();
+						for (int i = 0; i < len; i++) {
+							JSONObject temp = (JSONObject) jsonArray.get(i);
+							if (temp != null && temp.containsKey("moduleName") && temp.get("moduleName").equals(module)) {
+								return (Long) temp.get("fieldId");
+							}
+						}
+					}
+				}
+			}
+		}catch (Exception e)
+		{
+			LOGGER.log(Level.SEVERE,"Exception finding widget mapping field",e);
+		}
+		return null;
+	}
 }

@@ -207,6 +207,7 @@ public class PageWidget {
 		PRIMARY_DETAILS_WIDGET("primaryDetailsWidget"),
 		MV_DETAILS_WIDGET("mvSummaryWidget"),
 		SECONDARY_DETAILS_WIDGET("secondaryDetailsWidget"),
+		WORKORDER_SECONDARY_DETAILS_WIDGET("workOrderSecondaryDetailsWidget"),
 		CUSTOM_SECONDARY_DETAILS_WIDGET("customSecondaryDetailsWidget"),
 		TENANT_SPECIAL_WIDGET("tenantSpecialWidget"),
 		CARD("card"),

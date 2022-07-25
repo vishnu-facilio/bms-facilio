@@ -84,6 +84,9 @@ public class GetTimeLineListCommand extends FacilioCommand {
                 .beanClass(ChainUtil.getBeanClass(config, module))
                 .select(allFields);
         builder.andCriteria(mainCriteria);
+        if (Boolean.TRUE.equals(viewObj.isExcludeModuleCriteria())) {
+            builder.skipModuleCriteria();
+        }
         if(perPage > 0 && offset >= 0) {
             builder.offset(offset);
             builder.limit(perPage);

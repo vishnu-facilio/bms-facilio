@@ -4830,6 +4830,14 @@ public class ModuleFactory {
 		module.setTableName("Bundle_Change_Set");
         return module;
     }
+    
+    public static FacilioModule getSandboxModule() {
+        FacilioModule module = new FacilioModule();
+        module.setName("sandbox");
+        module.setDisplayName("Sandbox");
+		module.setTableName("Sandbox");
+        return module;
+    }
 
     public static FacilioModule getRuleBuilderConfigModule() {
 		FacilioModule module = new FacilioModule();

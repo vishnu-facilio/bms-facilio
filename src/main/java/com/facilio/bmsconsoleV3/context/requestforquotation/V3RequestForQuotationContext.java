@@ -20,13 +20,12 @@ public class V3RequestForQuotationContext extends V3Context {
     private LocationContext shipToAddress;
     private List<V3RequestForQuotationLineItemsContext> requestForQuotationLineItems;
     private List<V3RequestForQuotationVendorsContext> vendor;
-    private Boolean isVendorSelected;
     private Boolean isQuoteReceived;
     private Boolean isAwarded;
     private Boolean isPoCreated;
     private List<Long> recordIds;
-
     private Long expectedReplyDate;
+    private Boolean isRfqFinalized;
 
     public Long getExpectedReplyDate() {
         return expectedReplyDate;
@@ -116,17 +115,6 @@ public class V3RequestForQuotationContext extends V3Context {
         this.vendor = vendor;
     }
 
-    public Boolean getIsVendorSelected() {
-        if(isVendorSelected!=null){
-            return isVendorSelected.booleanValue();
-        }
-        return false;
-    }
-
-    public void setIsVendorSelected(Boolean vendorSelected) {
-        isVendorSelected = vendorSelected;
-    }
-
     public Boolean getIsQuoteReceived() {
         if(isQuoteReceived!=null){
             return isQuoteReceived.booleanValue();
@@ -159,6 +147,14 @@ public class V3RequestForQuotationContext extends V3Context {
     public void setIsPoCreated(Boolean poCreated) {
         isPoCreated = poCreated;
     }
+
+    public Boolean getIsRfqFinalized() {
+        if (isRfqFinalized != null) {
+            return isRfqFinalized.booleanValue();
+        }
+        return false;
+    }
+    public void setIsRfqFinalized(Boolean rfqFinalized) { isRfqFinalized = rfqFinalized; }
 
     public List<Long> getRecordIds() {
         return recordIds;

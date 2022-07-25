@@ -2,7 +2,11 @@ package com.facilio.bmsconsoleV3.actions.dashboard;
 
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.WidgetSectionContext;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 import org.json.simple.JSONObject;
 
@@ -52,7 +56,7 @@ public class V3DashboardAPIHandler {
 
     }
 
-    private static List<DashboardWidgetContext> getDashboardSectionWidgetFromWidgetMeta(List dashboardWidgets)throws Exception
+    public static List<DashboardWidgetContext> getDashboardSectionWidgetFromWidgetMeta(List dashboardWidgets)throws Exception
     {
         List<DashboardWidgetContext> widgets = new ArrayList<>();
         if (dashboardWidgets != null)
@@ -128,6 +132,20 @@ public class V3DashboardAPIHandler {
         widgetContext.setType(widgetType);
 
         return widgetContext;
+    }
+
+    public static void updateDashboardTabAPI(DashboardContext dashboard, DashboardTabContext dashboardTabContext, JSONObject data)throws Exception
+    {
+        if(dashboardTabContext != null) {
+            FacilioChain updateDashboardChain = TransactionChainFactoryV3.getUpdateDashboardTabChainV3();
+            FacilioContext updateTabContext = updateDashboardChain.getContext();
+            if (data.containsKey("fromType")) {
+                updateTabContext.put("fromType", data.get("fromType"));
+            }
+            updateTabContext.put(FacilioConstants.ContextNames.DASHBOARD_TAB, dashboardTabContext);
+            updateTabContext.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
+            updateDashboardChain.execute();
+        }
     }
 
 }

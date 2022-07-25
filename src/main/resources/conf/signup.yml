@@ -119,8 +119,8 @@ classes:
     #WorkOrder survey Modules
   - com.facilio.bmsconsoleV3.signup.workordersurvey.AddWorkOrderSurveyModules
 
-    #Adding stateflow
-  - com.facilio.bmsconsoleV3.signup.requestForQuotation.RequestForQuotationDefaultStateflow
+    #Adding stateflow Rfq
+#  - com.facilio.bmsconsoleV3.signup.requestForQuotation.RequestForQuotationDefaultStateflow
 
     #Adding Weather service modules
   - com.facilio.bmsconsoleV3.signup.weather.AddWeatherModules

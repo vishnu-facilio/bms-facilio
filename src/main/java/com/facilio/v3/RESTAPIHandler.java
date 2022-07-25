@@ -599,7 +599,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         return httpServletRequest;
     }
 
-    private void removeRestrictedFields(List<Map<String, Object>> dataList, String moduleName, Boolean validatePermissions) throws Exception{
+    protected void removeRestrictedFields(List<Map<String, Object>> dataList, String moduleName, Boolean validatePermissions) throws Exception{
         if (CollectionUtils.isEmpty(dataList)) {
             return;
         }

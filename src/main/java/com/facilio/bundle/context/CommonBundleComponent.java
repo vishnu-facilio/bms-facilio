@@ -281,7 +281,7 @@ public abstract class CommonBundleComponent implements BundleComponentInterface 
 					.select(component.getFields())
 					.table(component.getModule().getTableName())
 					.andCondition(CriteriaAPI.getCondition(componentFieldMap.get(component.getIdFieldName()), StringUtils.join(addedOrModifiedChangeSetComponentIDList, ","), NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition(componentFieldMap.get(component.getDeletedFieldName()), Boolean.TRUE.toString(), BooleanOperators.IS)) 										// commenting for now. will be released when all delete is handled properly.
+					.andCondition(CriteriaAPI.getCondition(componentFieldMap.get(component.getDeletedFieldName()), Boolean.TRUE.toString(), BooleanOperators.IS)) 
 					;
 			
 			if(component.getModule().getExtendModule() != null) {
