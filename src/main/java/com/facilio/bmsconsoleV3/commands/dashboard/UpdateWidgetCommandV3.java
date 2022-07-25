@@ -34,7 +34,8 @@ public class UpdateWidgetCommandV3 extends FacilioCommand {
                     updateBuilder = new GenericUpdateRecordBuilder()
                             .table(ModuleFactory.getWidgetModule().getTableName())
                             .fields(FieldFactory.getWidgetFields())
-                            .andCondition(CriteriaAPI.getIdCondition(updatewidget.getId(), ModuleFactory.getWidgetModule()));
+                            .andCondition(CriteriaAPI.getIdCondition(updatewidget.getId(), ModuleFactory.getWidgetModule()))
+                            .ignoreSplNullHandling();
 
                     Long widgetId = updatewidget.getId();
 
@@ -50,7 +51,10 @@ public class UpdateWidgetCommandV3 extends FacilioCommand {
 
 
                     Map<String, Object> props1 = FieldUtil.getAsProperties(updatewidget);
-
+                    if(!props1.containsKey("sectionId") || (props1.containsKey("sectionId") && props1.get("sectionId") == null))
+                    {
+                        props1.put("sectionId", null);
+                    }
                     updateBuilder.update(props1);
 
                     if (updatewidget.getType().equals(DashboardWidgetContext.WidgetType.STATIC.getValue())) {
