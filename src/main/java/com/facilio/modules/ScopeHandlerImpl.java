@@ -172,21 +172,20 @@ public class ScopeHandlerImpl extends ScopeHandler {
         }
         return ScopeFieldsAndCriteria.of(fields, criteria);
     }
-    
-    private ScopeFieldsAndCriteria constructScopingFieldsAndCriteria(FacilioModule primaryModule, Collection<FacilioModule> joinModules, boolean isInsert) throws Exception {
-    	if(joinModules == null) {
-    		joinModules = Collections.singletonList(primaryModule);
-    	}
-    	else {
+
+	private ScopeFieldsAndCriteria constructScopingFieldsAndCriteria(FacilioModule primaryModule, Collection<FacilioModule> joinModules, boolean isInsert) throws Exception {
+		if(joinModules == null) {
+			joinModules = Collections.singletonList(primaryModule);
+		}
+		else {
 			joinModules.add(primaryModule);
 		}
-    	List<FacilioField> fields = new ArrayList<FacilioField>();
+		List<FacilioField> fields = new ArrayList<FacilioField>();
 		Criteria criteria = null;
 
 		for(FacilioModule module : joinModules) {
-    		ScopingConfigContext scoping = AccountUtil.getCurrentAppScopingMap(module.getModuleId());
-	    	if(scoping != null) {
-				ScopingConfigContext moduleScoping = FieldUtil.cloneBean(scoping,ScopingConfigContext.class);
+			ScopingConfigContext moduleScoping = AccountUtil.getCurrentAppScopingMap(module.getModuleId());
+			if(moduleScoping != null) {
 				fields.addAll(ApplicationApi.computeValueForScopingField(moduleScoping, module));
 				if(!isInsert) {
 					if (criteria == null) {
@@ -195,10 +194,7 @@ public class ScopeHandlerImpl extends ScopeHandler {
 					criteria.andCriteria(moduleScoping.getCriteria());
 				}
 			}
-    	}
+		}
 		return ScopeFieldsAndCriteria.of(fields, criteria);
-    }
-
-    
-  
+	}
 }
