@@ -52,7 +52,7 @@ public class ServiceRequestContext extends ModuleBaseWithCustomFields{
 	public void setRequester(PeopleContext requester) {
 		this.requester = requester;
 	}
-	
+	private Long responseDueDate;
 	private long dueDate;
 	public long getDueDate() {
 		return dueDate;
@@ -277,5 +277,11 @@ public class ServiceRequestContext extends ModuleBaseWithCustomFields{
 	}
 	public void setRatingVal(int ratingVal) {
 		this.ratingVal = ratingVal;
+	}
+	public Long getResponseDueDate() {
+		return responseDueDate;
+	}
+	public void setResponseDueDate(Long responseDueDate) {
+		this.responseDueDate = responseDueDate;
 	}
 }
