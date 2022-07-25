@@ -1360,7 +1360,7 @@ public class TransactionChainFactory {
 		public static FacilioChain onlyAddOrUpdateReadingsChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new GetReadingDataMetaCommand());
-			c.addCommand(new ReadingUnitAndInputConversionCommand());
+			c.addCommand(new ReadingUnitConversionCommand());
 			c.addCommand(new EnergyDataDeltaCalculationCommand());
 			c.addCommand(new CalculateDeltaCommand());
 			c.addCommand(new CalculateDependencyCommand());

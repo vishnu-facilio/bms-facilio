@@ -32,7 +32,7 @@ public class FillDefaultValuesForControlActionCommand extends FacilioCommand {
 		Control_Action_Execute_Mode controlActionExecuteMode = (Control_Action_Execute_Mode)context.get(ControlActionUtil.CONTROL_ACTION_COMMAND_EXECUTED_FROM);
 		
 		List<Long> rdmIds = commands.stream().map(c -> c.getRdm().getId()).collect(Collectors.toList());
-		Map<Long, Map<Integer, String>> readingInputValuesMap = ReadingsAPI.getReadingInputValuesMapFromIndex(rdmIds);
+		Map<Long, Map<Integer, String>> readingInputValuesMap = ReadingsAPI.getReadingIdxVsValuesMap(rdmIds);
 		
 		for(ControlActionCommandContext command :commands) {
 			if(command.getControlActionMode() <= 0) {
@@ -76,7 +76,7 @@ public class FillDefaultValuesForControlActionCommand extends FacilioCommand {
 		}
 		else if (field.getDataTypeEnum() == FieldType.BOOLEAN || field.getDataTypeEnum() == FieldType.ENUM) {
 			// Converting from enum index to the enum value in agent
-			convertedValue = convertInputValue(command.getRdm(), readingInputValuesMap, command.getValue());
+			convertedValue = convertInputValue(command.getRdm(), readingInputValuesMap, command.getValue(), field.getDataTypeEnum());
 		}
 		
 		if (convertedValue != null) {
@@ -84,10 +84,16 @@ public class FillDefaultValuesForControlActionCommand extends FacilioCommand {
 		}
 	}
 	
-	private String convertInputValue(ReadingDataMeta readingDataMeta, Map<Long, Map<Integer, String>> rdmValueMap, String value) {
+	private String convertInputValue(ReadingDataMeta readingDataMeta, Map<Long, Map<Integer, String>> rdmValueMap, String value, FieldType dataType) {
 		if (rdmValueMap != null && rdmValueMap.get(readingDataMeta.getId()) != null && readingDataMeta.getInputTypeEnum() == ReadingInputType.CONTROLLER_MAPPED) {
 			Map<Integer, String> valueMap = rdmValueMap.get(readingDataMeta.getId());
-			int valIndex = FacilioUtil.parseInt(value);
+			int valIndex;
+			if (dataType == FieldType.BOOLEAN) {
+				valIndex = value.equals("true") ? 1 : 0;
+			}
+			else {
+				valIndex = FacilioUtil.parseInt(value);
+			}
 			if (valueMap.containsKey(valIndex)) {
 				return valueMap.get(valIndex);
 			}
