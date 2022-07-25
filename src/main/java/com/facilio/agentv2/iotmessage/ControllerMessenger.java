@@ -35,7 +35,7 @@ import com.facilio.modules.FieldUtil;
 public class ControllerMessenger {
     private static final Logger LOGGER = LogManager.getLogger(ControllerMessenger.class.getName());
     private static final long DEFAULT_TIMEOUT = 900000;
-    private static final int MAX_BUFFER = 45000; //45000 fix for db insert 112640  110KiB;  AWS IOT limits max publish message size to 128KiB
+    private static final int MAX_BUFFER = 4500; //4500 fix for db insert 112640  110KiB;  AWS IOT limits max publish message size to 128KiB
 
     /**
      * use this for point relates functionality

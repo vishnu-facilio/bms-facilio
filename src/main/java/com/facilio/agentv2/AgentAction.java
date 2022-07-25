@@ -107,7 +107,7 @@ public class AgentAction extends AgentActionV2 {
             FacilioContext context = new FacilioContext();
             constructListContext(context);
             AgentBean agentBean = getAgentBean();
-            List<Map<String, Object>> agentListData = agentBean.getAgentListData(false);
+            List<Map<String, Object>> agentListData = agentBean.getAgentListData(false,querySearch,getPagination());
             // agentBean.listFacilioAgents(context);
             int offLineAgents = 0;
             Set<Long> siteCount = new HashSet<>();

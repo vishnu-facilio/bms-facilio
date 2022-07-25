@@ -1,5 +1,6 @@
 package com.facilio.agentv2.cacheimpl;
 
+import bsh.StringUtil;
 import com.facilio.agent.AgentType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.AgentUtilV2;
@@ -17,6 +18,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.FacilioException;
 import com.facilio.modules.*;
@@ -26,6 +28,7 @@ import com.facilio.tasker.FacilioTimer;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
@@ -324,7 +327,7 @@ public class AgentBeanImpl implements AgentBean {
     }
 
     @Override
-    public List<Map<String, Object>> getAgentListData(boolean fetchDeleted) throws Exception {
+    public List<Map<String, Object>> getAgentListData(boolean fetchDeleted, String querySearch, JSONObject pagination ) throws Exception {
         FacilioModule agentDataModule = ModuleFactory.getNewAgentModule();
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getNewAgentFields());
         FacilioModule controllerModule = ModuleFactory.getNewControllerModule();
@@ -345,6 +348,24 @@ public class AgentBeanImpl implements AgentBean {
                 .select(fieldMap.values())
                 .leftJoin(controllerModule.getTableName()).on(agentDataModule.getTableName() + ".ID = " + controllerModule.getTableName() + ".AGENT_ID")
                 .groupBy(agentDataModule.getTableName() + ".ID");
+        if (querySearch != null){
+            genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("displayName"),querySearch, StringOperators.CONTAINS));
+        }
+        if (pagination != null) {
+            int page = (int) pagination.get("page");
+            int perPage = (int) pagination.get("perPage");
+
+            if (perPage != -1) {
+                int offset = ((page-1) * perPage);
+                if (offset < 0) {
+                    offset = 0;
+                }
+
+                genericSelectRecordBuilder.offset(offset);
+                genericSelectRecordBuilder.limit(perPage);
+            }
+        }
+
         if(fieldMap.containsKey(AgentConstants.CONNECTED)){
             genericSelectRecordBuilder.orderBy(fieldMap.get(AgentConstants.CONNECTED).getColumnName());
 
@@ -384,6 +405,7 @@ public class AgentBeanImpl implements AgentBean {
                 }
             }
         }
+
         return maps;
     }
 

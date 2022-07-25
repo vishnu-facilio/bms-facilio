@@ -73,6 +73,7 @@ public class ProcessDataCommandV2 extends AgentV2Command {
                             for (String name : pointNamesSet) {
                                 MiscPoint point = new MiscPoint(agent.getId(), controller.getControllerId());
                                 point.setName(name);
+                                point.setDisplayName(name);
                                 point.setDeviceName(controller.getName());
                                 point.setConfigureStatus(3);
                                 point.setControllerId(controller.getId());

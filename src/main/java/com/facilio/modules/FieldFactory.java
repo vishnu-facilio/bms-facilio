@@ -318,18 +318,18 @@ public class FieldFactory extends BaseFieldFactory {
                 "description"
         }));
         public static final List<String> POINT_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
-                "categoryId",
-                "configureStatus",
-                "createdTime",
                 "displayName",
-                AgentConstants.DATA_MISSING,
+                "name",
+                "categoryId",
+                "resourceId",
+                "dataMissing",
 //                "fieldId",
-                "Interval",
+                "interval",
+                "createdTime",
                 "lastRecordedTime",
                 "lastRecordedValue",
                 "mappedTime",
-                "name",
-                "resourceId",
+                "configureStatus",
                 "subscribeStatus",
                 "writable"
         }));
@@ -6985,8 +6985,8 @@ public class FieldFactory extends BaseFieldFactory {
         FacilioModule module = ModuleFactory.getPointModule();
         List<FacilioField> fields = new ArrayList<>();
         fields.add(getIdField(module));
-        fields.add(getDefaultField(AgentConstants.NAME, "Name","Name",module, FieldType.STRING));
-        fields.add(getDefaultField(AgentConstants.DISPLAY_NAME,"Display Name","DISPLAY_NAME", module, FieldType.STRING));
+        fields.add(getDefaultField(AgentConstants.NAME, "Link Name","Name",module, FieldType.STRING));
+        fields.add(getDefaultField(AgentConstants.DISPLAY_NAME,"Name","DISPLAY_NAME", module, FieldType.STRING));
         fields.add(getDefaultField(AgentConstants.DESCRIPTION,"Description", "DESCRIPTION", module, FieldType.STRING));
         fields.add(getDefaultField(AgentConstants.DATA_TYPE,"Data Type", "DATA_TYPE", module, FieldType.NUMBER));
         fields.add(getDefaultField(AgentConstants.POINT_TYPE,"Point Type", "POINT_TYPE", module, FieldType.NUMBER));
@@ -7049,11 +7049,14 @@ public class FieldFactory extends BaseFieldFactory {
     }
 
     public static FacilioField getPointAssetCategoryIdField(FacilioModule module) {
-        return getDefaultField(AgentConstants.ASSET_CATEGORY_ID, "Asset Category ID","ASSET_CATEGORY_ID", module, FieldType.NUMBER);
+        LookupField assetCategoryId = (LookupField) getDefaultField(AgentConstants.ASSET_CATEGORY_ID, "Category","ASSET_CATEGORY_ID", module, FieldType.LOOKUP);
+        assetCategoryId.setLookupModule(ModuleFactory.getAssetCategoryModule());
+        assetCategoryId.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
+        return assetCategoryId;
     }
 
     public static FacilioField getPointResourceIdField(FacilioModule module) {
-        LookupField resourceId  = (LookupField) getDefaultField(AgentConstants.RESOURCE_ID,"Resource ID","RESOURCE_ID", module, FieldType.LOOKUP);
+        LookupField resourceId  = (LookupField) getDefaultField(AgentConstants.RESOURCE_ID,"Asset","RESOURCE_ID", module, FieldType.LOOKUP);
         resourceId.setLookupModule(ModuleFactory.getResourceModule());
         resourceId.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
         return resourceId;
