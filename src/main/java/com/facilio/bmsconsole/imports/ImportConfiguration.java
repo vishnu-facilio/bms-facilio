@@ -2,13 +2,14 @@ package com.facilio.bmsconsole.imports;
 
 import com.facilio.bmsconsole.imports.annotations.ImportModule;
 import com.facilio.bmsconsole.imports.config.ImportConfig;
+import com.facilio.bmsconsoleV3.commands.pmImport.HandleResourcePlannerImportCommand;
+import com.facilio.bmsconsoleV3.commands.pmImport.HandleTasksImportCommand;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
 import java.util.function.Supplier;
 
 public class ImportConfiguration {
-
 
     @ImportModule(value = "test_module")
     public static Supplier<ImportConfig> getAssetImportConfig() {
@@ -31,6 +32,102 @@ public class ImportConfiguration {
                         return false;
                     }
                 }).done()
+                .build();
+    }
+
+    @ImportModule(value = "plannedmaintenance")
+    public static Supplier<ImportConfig> getPlannedMaintenanceImportConfig() {
+        return () -> new ImportConfig.ImportConfigBuilder()
+                .uploadHandler()
+                .done()
+
+                .parseHandler()
+                .done()
+
+                .importHandler()
+                .done()
+                .build();
+    }
+
+    @ImportModule(value = "pmPlanner")
+    public static Supplier<ImportConfig> getPmPlannerImportConfig() {
+        return () -> new ImportConfig.ImportConfigBuilder()
+                .uploadHandler()
+                .done()
+
+                .parseHandler()
+                .done()
+
+                .importHandler()
+                .done()
+                .build();
+    }
+
+    @ImportModule(value = "pmTrigger")
+    public static Supplier<ImportConfig> getPmTriggerImportConfig() {
+        return () -> new ImportConfig.ImportConfigBuilder()
+                .uploadHandler()
+                .done()
+
+                .parseHandler()
+                .done()
+
+                .importHandler()
+                .done()
+                .build();
+    }
+
+    @ImportModule(value = "pmResourcePlanner")
+    public static Supplier<ImportConfig> getPmResourcePlannerImportConfig() {
+        return () -> new ImportConfig.ImportConfigBuilder()
+                .uploadHandler()
+                .done()
+
+                .parseHandler()
+                .done()
+
+                .importHandler()
+                .done()
+                .build();
+    }
+
+    @ImportModule(value = "pmImport")
+    public static Supplier<ImportConfig> getPmImportConfig() {
+        return () -> new ImportConfig.ImportConfigBuilder()
+                .uploadHandler()
+                .done()
+
+                .parseHandler()
+                .afterParseCommand(new FacilioCommand() {
+                    @Override
+                    public boolean executeCommand(Context context) throws Exception {
+                        return false;
+                    }
+                })
+                .done()
+                .importHandler()
+                .afterImportCommand(new HandleResourcePlannerImportCommand())
+                .done()
+                .build();
+    }
+
+    @ImportModule(value = "pmTasksImport")
+    public static Supplier<ImportConfig> getPmTasksImportConfig() {
+        return () -> new ImportConfig.ImportConfigBuilder()
+                .uploadHandler()
+                .done()
+
+                .parseHandler()
+                .afterParseCommand(new FacilioCommand() {
+                    @Override
+                    public boolean executeCommand(Context context) throws Exception {
+                        return false;
+                    }
+                })
+                .done()
+                .importHandler()
+                .afterImportCommand(new HandleTasksImportCommand())
+                .done()
                 .build();
     }
 }
