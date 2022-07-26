@@ -61,9 +61,6 @@ public class ApplicationAction extends FacilioAction {
 	private Boolean userStatus;
 
 	public Boolean getUserStatus() {
-		if (userStatus == null) {
-			return true;
-		}
 		return userStatus;	}
 
 	public void setUserStatus(Boolean userStatus) {
