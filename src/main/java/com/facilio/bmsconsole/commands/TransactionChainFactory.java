@@ -5998,6 +5998,12 @@ public class TransactionChainFactory {
 
 		return c;
 	}
+	public static FacilioChain deleteUserSignatureChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new DeleteUserSignatureCommand());
+
+		return c;
+	}
 
 	public static FacilioChain enableEnergyStarChain() {
 		FacilioChain c = getDefaultChain();
