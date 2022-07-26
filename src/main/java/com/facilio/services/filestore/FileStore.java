@@ -130,6 +130,7 @@ public abstract class FileStore {
 	protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
 
 	public static final String DEFAULT_NAMESPACE = "default";
+	public static final String DEFAULT_NAMESPACE_ORPHAN = "formOrphanFile";
 
 	private long orgId;
 	private long userId;
@@ -410,6 +411,10 @@ public abstract class FileStore {
 		return addFile(DEFAULT_NAMESPACE, fileName, content, contentType);
 	}
 	public abstract long addFile(String namespace, String fileName, String content, String contentType) throws Exception;
+
+	public long addOrphanedFileForFormFields(String fileName, byte[] content, String contentType) throws Exception{
+		return addFile(DEFAULT_NAMESPACE_ORPHAN, fileName, content, contentType,true);
+	}
 	public long addOrphanedFile(String fileName, byte[] content, String contentType) throws Exception {
 		return addFile(DEFAULT_NAMESPACE, fileName, content, contentType,true);
 	}
