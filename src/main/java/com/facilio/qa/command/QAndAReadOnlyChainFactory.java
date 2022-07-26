@@ -22,10 +22,8 @@ public class QAndAReadOnlyChainFactory {
         c.addCommand(new FetchQuestionsFromPagesCommand());
         c.addCommand(new FetchAnswersForQuestionsCommand());
         c.addCommand(new FetchAnswerSummaryForQuestionsCommand());
-        if(AccountUtil.getCurrentOrg().getOrgId() == 173l || AccountUtil.getCurrentOrg().getOrgId() == 267l || AccountUtil.getCurrentOrg().getOrgId() == 1l) {
-        	c.addCommand(new PrepareDataForDisplayLogicExecutionCommand());				// always keep these 2 commands at the end.
-            c.addCommand(QAndATransactionChainFactory.executeDisplayLogicChain());
-        }
+    	c.addCommand(new PrepareDataForDisplayLogicExecutionCommand());
+        c.addCommand(QAndATransactionChainFactory.executeDisplayLogicChain());
         return c;
     }
 
