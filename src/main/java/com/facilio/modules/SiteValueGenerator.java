@@ -90,7 +90,7 @@ public class SiteValueGenerator extends ValueGenerator {
 					}
 				}
 				else {
-					List<SiteContext> sites = SpaceAPI.getAllSites(false);
+					List<SiteContext> sites = SpaceAPI.getAllSites(false,null,null,true);
 					if (CollectionUtils.isNotEmpty(sites)) {
 						for (SiteContext site : sites) {
 							values.add(site.getId());
