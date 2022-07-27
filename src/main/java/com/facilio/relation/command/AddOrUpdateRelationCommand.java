@@ -135,6 +135,7 @@ public class AddOrUpdateRelationCommand extends FacilioCommand {
             mapping.setId(oldMapping.getId());
             mapping.setRelationId(oldMapping.getRelationId());
             mapping.setPosition(oldMapping.getPositionEnum());
+            mapping.setMappingLinkName(oldMapping.getMappingLinkName());
 
             GenericUpdateRecordBuilder.BatchUpdateByIdContext datum = new GenericUpdateRecordBuilder.BatchUpdateByIdContext();
             datum.setWhereId(mapping.getId());

@@ -15,6 +15,7 @@ public class UploadHandler {
 
     public UploadHandler(UploadHandlerBuilder parent) {
         this.beforeUploadCommand = parent.beforeUploadCommand;
+        this.afterUploadCommand = parent.afterUploadCommand;
     }
 
     public static class UploadHandlerBuilder extends NesterBuilder<ImportConfig.ImportConfigBuilder> {
@@ -26,7 +27,7 @@ public class UploadHandler {
 
         private Command afterUploadCommand;
         public UploadHandlerBuilder afterUploadCommand(Command command) {
-            this.afterUploadCommand = afterUploadCommand;
+            this.afterUploadCommand = command;
             return this;
         }
 

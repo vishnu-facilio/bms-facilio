@@ -141,6 +141,7 @@ public class ImportChainUtil {
 
         Command beforeImportCommand = null;
         Command afterImportCommand = null;
+        Command afterInsertCommand = null;
         RowFunction beforeImportFunction = null;
         RowFunction afterImportFunction = null;
 
@@ -149,6 +150,7 @@ public class ImportChainUtil {
             if (importHandler != null) {
                 beforeImportCommand = importHandler.getBeforeImportCommand();
                 afterImportCommand = importHandler.getAfterImportCommand();
+                afterInsertCommand = importHandler.getAfterInsertCommand();
                 beforeImportFunction = importHandler.getBeforeImportFunction();
                 afterImportFunction = importHandler.getAfterImportFunction();
             }
@@ -159,25 +161,8 @@ public class ImportChainUtil {
         chain.addCommand(new V3ProcessImportCommand());
         chain.addCommand(new FilterImportDataCommand());
         addIfNotNull(chain, afterImportCommand);
-        chain.addCommand(new FacilioCommand() {
-            @Override
-            public boolean executeCommand(Context context) throws Exception {
-                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                FacilioModule module = modBean.getModule(moduleName);
-
-                List<Map<String, Object>> insertRecordList = (List<Map<String, Object>>) context.get(ImportAPI.ImportProcessConstants.INSERT_RECORDS);
-                if (CollectionUtils.isNotEmpty(insertRecordList)) {
-                    V3Util.createRecordList(module, insertRecordList, null, null);
-                }
-                List<Map<String, Object>> updateRecordList = (List<Map<String, Object>>) context.get(ImportAPI.ImportProcessConstants.UPDATE_RECORDS);
-                if (CollectionUtils.isNotEmpty(updateRecordList)) {
-                    List<ModuleBaseWithCustomFields> oldRecords =
-                            (List<ModuleBaseWithCustomFields>) context.get(ImportAPI.ImportProcessConstants.OLD_RECORDS);
-                    V3Util.processAndUpdateBulkRecords(module, oldRecords, updateRecordList, null, null, null, null, null, null, true);
-                }
-                return false;
-            }
-        });
+        chain.addCommand(new V3AddOrUpdateCommand());
+        addIfNotNull(chain, afterInsertCommand);
 
         FacilioContext context = chain.getContext();
         context.put(ImportAPI.ImportProcessConstants.BEFORE_IMPORT_FUNCTION, beforeImportFunction);

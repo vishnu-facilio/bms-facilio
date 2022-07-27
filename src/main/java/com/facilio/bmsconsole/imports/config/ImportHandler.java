@@ -14,6 +14,11 @@ public class ImportHandler {
         return afterImportCommand;
     }
 
+    private Command afterInsertCommand;
+    public Command getAfterInsertCommand() {
+        return afterInsertCommand;
+    }
+
     private RowFunction beforeImportFunction;
     public RowFunction getBeforeImportFunction() {
         return beforeImportFunction;
@@ -27,6 +32,7 @@ public class ImportHandler {
     public ImportHandler(ImportHandlerBuilder importHandlerBuilder) {
         this.beforeImportCommand = importHandlerBuilder.beforeImportCommand;
         this.afterImportCommand = importHandlerBuilder.afterImportCommand;
+        this.afterInsertCommand = importHandlerBuilder.afterInsertCommand;
         this.beforeImportFunction = importHandlerBuilder.beforeImportFunction;
         this.afterImportFunction = importHandlerBuilder.afterImportFunction;
     }
@@ -40,7 +46,13 @@ public class ImportHandler {
 
         private Command afterImportCommand;
         public ImportHandlerBuilder afterImportCommand(Command command) {
-            this.afterImportCommand = afterImportCommand;
+            this.afterImportCommand = command;
+            return this;
+        }
+
+        private Command afterInsertCommand;
+        public ImportHandlerBuilder afterInsertCommand(Command command) {
+            this.afterInsertCommand = command;
             return this;
         }
 

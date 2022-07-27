@@ -51,10 +51,24 @@ public class V3ResourceAPI {
 
         FacilioField aggregateField = FieldFactory.getIdField(modBean.getModule(module.getName()));
 
-        List<Map<String, Object>> props = V3RecordAPI.getRecordsAggregateValue(module.getName(), null, V3AssetContext.class,criteria, BmsAggregateOperators.CommonAggregateOperator.COUNT, aggregateField, null);
-        if(props != null) {
+        List<Map<String, Object>> props = V3RecordAPI.getRecordsAggregateValue(module.getName(), null, V3AssetContext.class, criteria, BmsAggregateOperators.CommonAggregateOperator.COUNT, aggregateField, null);
+        if (props != null) {
             Long count = (Long) props.get(0).get(aggregateField.getName());
             return count;
+        }
+        return null;
+    }
+
+    public static V3ResourceContext getResource(long id) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+        SelectRecordsBuilder<V3ResourceContext> resourceBuilder = new SelectRecordsBuilder<V3ResourceContext>()
+                .select(modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE)).module(module)
+                .beanClass(V3ResourceContext.class).andCondition(CriteriaAPI.getIdCondition(id, module));
+
+        List<V3ResourceContext> resources = resourceBuilder.get();
+        if (resources != null && !resources.isEmpty()) {
+            return resources.get(0);
         }
         return null;
     }

@@ -8,6 +8,7 @@ import java.util.Map;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -34,9 +35,14 @@ import com.facilio.modules.SelectRecordsBuilder.BatchResult;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
+import com.jcraft.jsch.Logger;
 
+import lombok.extern.log4j.Log4j;
+
+@Log4j
 public class MigrateReadingDataCommand extends FacilioCommand {
 	
+	long id = -1;
 	long fieldId = -1;
 	long parentId = -1;
 	Unit unit = null;
@@ -46,6 +52,7 @@ public class MigrateReadingDataCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
+		id =  (long) context.get(ContextNames.ID);
 		fieldId = (long) context.get(ContextNames.FIELD_ID);
 		parentId = (long) context.get(ContextNames.PARENT_ID);
 		unit = (Unit) context.get(ContextNames.UNIT);
@@ -69,7 +76,7 @@ public class MigrateReadingDataCommand extends FacilioCommand {
 				unitOnlyChanged = true;
 			}
 			else {	// New field commissioning
-				migrateUnmodeledData(context, newField);
+				migrateUnmodeledData(newField);
 				return false;
 			}
 		}
@@ -105,11 +112,11 @@ public class MigrateReadingDataCommand extends FacilioCommand {
 			}
 		}
 		
-		
+		LOGGER.info("Migration finished for parent - " + parentId + ", field - " + fieldId);
 		return false;
 	}
 	
-	private void migrateUnmodeledData(Context context, FacilioField field) throws Exception {
+	private void migrateUnmodeledData(FacilioField field) throws Exception {
 		List<FacilioField> fields= FieldFactory.getUnmodeledDataFields();
 		fields.add(FieldFactory.getIdField());
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -119,10 +126,16 @@ public class MigrateReadingDataCommand extends FacilioCommand {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("instanceId"), String.valueOf(context.get("id")), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("instanceId"), String.valueOf(id), NumberOperators.EQUALS))
 				;
 		
 		GenericBatchResult bs = builder.getInBatches(fieldMap.get("ttime").getCompleteColumnName(), 5000);
+		
+		Map<Long, Map<String, Integer>> readingInputValuesMap = ReadingsAPI.getReadingInputValuesMap(Collections.singletonList(id));
+		Map<String, Integer> readingInputs = null;
+		if (MapUtils.isNotEmpty(readingInputValuesMap)) {
+			readingInputs = readingInputValuesMap.get(id);
+		}
 		
 		List<Long> dataIds = new ArrayList<>();
 		while (bs.hasNext()) {
@@ -130,14 +143,19 @@ public class MigrateReadingDataCommand extends FacilioCommand {
 			if (CollectionUtils.isNotEmpty(unmodelledData)) {
 				
 				List<ReadingContext> readings = new ArrayList<>();
-				unmodelledData.forEach(data -> {
+				for (Map<String, Object> data : unmodelledData) {
+					Object value = data.get("value");
+					if (readingInputs != null && readingInputs.containsKey(value)) {
+						value = readingInputs.get(value);
+					}
+					
 					dataIds.add((Long) data.get("id"));
 					ReadingContext reading=new ReadingContext();
-					reading.addReading(field.getName(), data.get("value"));
+					reading.addReading(field.getName(), value);
 					reading.setParentId(parentId);
 					reading.setTtime((long) data.get("ttime"));
 					readings.add(reading);
-				});
+				}
 				
 				addOrUpdateData(field, readings);
 			}

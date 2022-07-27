@@ -25,9 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ReadingUnitAndInputConversionCommand extends FacilioCommand {
+public class ReadingUnitConversionCommand extends FacilioCommand {
 
-	private static final Logger LOGGER = LogManager.getLogger(ReadingUnitAndInputConversionCommand.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(ReadingUnitConversionCommand.class.getName());
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -38,8 +38,6 @@ public class ReadingUnitAndInputConversionCommand extends FacilioCommand {
 
 		if (readingMap != null && !readingMap.isEmpty() && !isFromStorm) {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
-			Map<Long,Map<String, Integer>> valuesMap = getInputValuesMap(metaMap);
 
 			for (Map.Entry<String, List<ReadingContext>> entry : readingMap.entrySet()) {
 				String moduleName = entry.getKey();
@@ -80,7 +78,6 @@ public class ReadingUnitAndInputConversionCommand extends FacilioCommand {
                                             LOGGER.info("unit conversion failed. fieldName : " + fieldName + " , value : " + readingData.get(fieldName) + ", unit : " + readingDataMeta.getUnitEnum() +", field : " + field, ex);
                                             throw ex;
                                         }
-										convertInputValue(readingDataMeta, valuesMap, readingData, fieldName);
 									}
 								}
 							}
@@ -91,21 +88,6 @@ public class ReadingUnitAndInputConversionCommand extends FacilioCommand {
             LOGGER.info("Time taken for Unit conversion is : " + (System.currentTimeMillis() - startTime) + ", modules: " + readingMap.keySet());
 		}
 		return false;
-	}
-
-	private void convertInputValue(ReadingDataMeta readingDataMeta, Map<Long,Map<String, Integer>> rdmValueMap, Map<String, Object> readingData, String fieldName) {
-		if (rdmValueMap != null && rdmValueMap.get(readingDataMeta.getId()) != null && readingDataMeta.getInputTypeEnum() == ReadingInputType.CONTROLLER_MAPPED) {
-			Map<String, Integer> valueMap = rdmValueMap.get(readingDataMeta.getId());
-			String value = readingData.get(fieldName).toString();
-			if (valueMap != null && valueMap.get(value) != null) {
-				readingData.put(fieldName, valueMap.get(value));
-			}
-		}
-	}
-
-	private Map<Long,Map<String, Integer>> getInputValuesMap(Map<String, ReadingDataMeta> metaMap) throws Exception {
-		List<Long> rdmIds = metaMap.values().stream().map(ReadingDataMeta::getId).collect(Collectors.toList());
-		return ReadingsAPI.getReadingInputValuesMap(rdmIds);
 	}
 
 }

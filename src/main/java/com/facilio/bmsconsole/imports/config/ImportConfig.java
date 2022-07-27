@@ -6,6 +6,7 @@ public class ImportConfig {
     private ImportConfig(ImportConfigBuilder builder) {
         this.uploadHandler = builder.uploadHandler;
         this.importHandler = builder.importHandler;
+        this.parseHandler = builder.parseHandler;
     }
 
     private UploadHandler uploadHandler;

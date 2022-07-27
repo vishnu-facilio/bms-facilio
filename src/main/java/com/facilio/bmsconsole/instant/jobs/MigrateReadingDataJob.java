@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.taskengine.job.InstantJob;
 
 public class MigrateReadingDataJob extends InstantJob {
@@ -21,6 +22,11 @@ public class MigrateReadingDataJob extends InstantJob {
 			chain.execute(context);
 			
 		} catch (Exception e) {
+			
+			long fieldId = (long) context.get(ContextNames.FIELD_ID);
+			long parentId = (long) context.get(ContextNames.PARENT_ID);
+			LOGGER.info("Migration failed for parent - " + parentId + ", field - " + fieldId);
+			
 			LOGGER.error("Error occurred during execution of MigrateReadingDataJob", e);
 			CommonCommandUtil.emailException("MigrateReadingDataJob", "Error occurred during execution of MigrateReadingDataJob", e);
 		}

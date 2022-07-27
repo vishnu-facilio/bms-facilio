@@ -8,6 +8,7 @@ import com.facilio.agentv2.point.Point;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldType;
@@ -19,6 +20,7 @@ import org.apache.commons.chain.Context;
 
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Log4j
 public class ModeledDataCommandV2 extends AgentV2Command {
@@ -40,6 +42,8 @@ public class ModeledDataCommandV2 extends AgentV2Command {
     	FacilioAgent agent = (FacilioAgent) context.get(AgentConstants.AGENT);
     	int agentInterval = (int)agent.getInterval(); 
     	
+    	Map<Long, Map<String, Integer>> inputValues = fetchInputValues(dataPointsRecords.values());
+    	
         Map<String, Object> unmodelled = new HashMap<>();
         Map<String, ReadingContext> iModuleVsReading = new HashMap<>();
         for (String pointName : data.keySet()) {
@@ -54,12 +58,12 @@ public class ModeledDataCommandV2 extends AgentV2Command {
                     FieldType type = field.getDataTypeEnum();
                     String moduleName = field.getModule().getName();
                     
+                    if (inputValues != null && pointValue!= null && (type == FieldType.BOOLEAN || type == FieldType.ENUM)) {
+                    	pointValue = convertInputValue(inputValues, p.getId(), pointValue);
+                    }
+                    
                     try {
-                        Object value = pointValue;
-                        if (type == FieldType.DECIMAL || type == FieldType.NUMBER) {
-                            value = FacilioUtil.castOrParseValueAsPerType(field, pointValue);
-                        }
-                        
+                        Object value = FacilioUtil.castOrParseValueAsPerType(field, pointValue);
                         int interval = p.getInterval() > 0 ? p.getInterval() : agentInterval;
                         String readingKey = moduleName + "|" + resourceId + "|" + interval;
                         ReadingContext reading = iModuleVsReading.get(readingKey);
@@ -104,4 +108,21 @@ public class ModeledDataCommandV2 extends AgentV2Command {
         context.put(FacilioConstants.ContextNames.READINGS_MAP, moduleVsReading);
         context.put(FacilioConstants.ContextNames.HISTORY_READINGS, false);
     }
+    
+    private Map<Long, Map<String, Integer>> fetchInputValues(Collection<Point> points) throws Exception {
+    	List<Long> ids = points.stream().map(Point::getId).collect(Collectors.toList());
+    	Map<Long, Map<String, Integer>> inputValues = ReadingsAPI.getReadingInputValuesMap(ids);
+    	return inputValues;
+    }
+    
+    private Object convertInputValue( Map<Long,Map<String, Integer>> inputValues, long pointId, Object pointValue) {
+		if (inputValues.get(pointId) != null) {
+			Map<String, Integer> valueMap = inputValues.get(pointId);
+			String value = pointValue.toString();
+			if (valueMap != null && valueMap.get(value) != null) {
+				return valueMap.get(value);
+			}
+		}
+		return pointValue;
+	}
 }

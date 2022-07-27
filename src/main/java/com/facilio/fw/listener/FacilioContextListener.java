@@ -72,7 +72,6 @@ import com.facilio.jmx.FacilioQueryCounterMBean;
 import com.facilio.logging.SysOutLogger;
 import com.facilio.modules.FieldUtil;
 import com.facilio.queue.FacilioDBQueueExceptionProcessor;
-import com.facilio.queueingservice.FacilioQueueingServiceHandler;
 import com.facilio.server.ServerInfo;
 import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 import com.facilio.services.factory.FacilioFactory;
@@ -161,9 +160,6 @@ public class FacilioContextListener implements ServletContextListener {
 			if (FacilioProperties.isMessageProcessor()) {
 				MessageQueueFactory.start();
 			}
-//			if(FacilioProperties.isScheduleServer()) {
-//				FacilioQueueingServiceHandler.init();
-//			}
 			//AgentIntegrationQueueFactory.startIntegrationQueues();
 
 			PortalAuthInterceptor.setPortalDomain(FacilioProperties.getOccupantAppDomain());// event.getServletContext().getInitParameter("SERVICEPORTAL_DOMAIN");

@@ -1365,11 +1365,11 @@ public class ReadingsAPI {
 	public static List<Map<String, Object>> getReadingInputValues(long resourceId, long fieldId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		ReadingDataMeta rdm = getReadingDataMeta(resourceId, modBean.getField(fieldId));
-		return getReadingInputValueProps(Collections.singletonList(rdm.getId()));
+		return getReadingInputValueProps(Collections.singletonList(rdm.getId()), "rdmId");
 	}
 	
 	public static Map<Long,Map<Integer, String>> getReadingIdxVsValuesMap(List<Long> rdmIds) throws Exception {
-		List<Map<String, Object>> props = getReadingInputValueProps(rdmIds);
+		List<Map<String, Object>> props = getReadingInputValueProps(rdmIds, "rdmId");
 		Map<Long, Map<Integer, String>> rdmValuesMap = null;
 		if(props!=null && !props.isEmpty()) {
 			rdmValuesMap = new HashMap<>();
@@ -1386,56 +1386,38 @@ public class ReadingsAPI {
 		return rdmValuesMap;
 	}
 	
-	public static Map<Long,Map<String, Integer>> getReadingInputValuesMap(List<Long> rdmIds) throws Exception {
+	
+	public static Map<Long,Map<String, Integer>> getReadingInputValuesMap(List<Long> ids) throws Exception {
 		
-		List<Map<String, Object>> props = getReadingInputValueProps(rdmIds);
-		Map<Long,Map<String, Integer>> rdmValuesMap = null;
+		List<Map<String, Object>> props = getReadingInputValueProps(ids, "pointId");
+		Map<Long,Map<String, Integer>> parentValuesMap = null;
 		if(props!=null && !props.isEmpty()) {
-			rdmValuesMap = new HashMap<>();
+			parentValuesMap = new HashMap<>();
 			for(Map<String, Object> prop: props) {
-				long rdmId = (long) prop.get("rdmId");
-				Map<String, Integer> valueMap = rdmValuesMap.get(rdmId);
+				long parentId = (long) prop.get("pointId");
+				Map<String, Integer> valueMap = parentValuesMap.get(parentId);
 				if (valueMap == null) {
 					valueMap = new HashMap<>();
-					rdmValuesMap.put(rdmId, valueMap);
+					parentValuesMap.put(parentId, valueMap);
 				}
 				valueMap.put((String)prop.get("inputValue"), (int) prop.get("idx"));
 			}
 		}
-		return rdmValuesMap;
+		return parentValuesMap;
 	}
 	
-	public static Map<Long,Map<Integer, String>> getReadingInputValuesMapFromIndex(List<Long> rdmIds) throws Exception {
-		
-		List<Map<String, Object>> props = getReadingInputValueProps(rdmIds);
-		Map<Long,Map<Integer, String>> rdmValuesMap = null;
-		if(props!=null && !props.isEmpty()) {
-			rdmValuesMap = new HashMap<>();
-			for(Map<String, Object> prop: props) {
-				long rdmId = (long) prop.get("rdmId");
-				Map<Integer, String> valueMap = rdmValuesMap.get(rdmId);
-				if (valueMap == null) {
-					valueMap = new HashMap<>();
-					rdmValuesMap.put(rdmId, valueMap);
-				}
-				valueMap.put((int) prop.get("idx"), (String)prop.get("inputValue"));
-			}
-		}
-		return rdmValuesMap;
-	}
-	
-	private static List<Map<String, Object>> getReadingInputValueProps(List<Long> rdmIds) throws Exception {
+	private static List<Map<String, Object>> getReadingInputValueProps(List<Long> ids, String fieldName) throws Exception {
 		List<FacilioField> fields = FieldFactory.getReadingInputValuesFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioModule module = ModuleFactory.getReadingInputValuesModule();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("rdmId"), rdmIds, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get(fieldName), ids, NumberOperators.EQUALS))
 				;
 		return builder.get();
 	}
+	
 	
 	public static void addDefaultPMTaskReading(TaskContext task, ReadingContext reading) {
 		reading.addReading("woId", task.getParentTicketId());

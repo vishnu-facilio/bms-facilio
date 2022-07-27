@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import com.facilio.bmsconsole.commands.ReadingUnitAndInputConversionCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
