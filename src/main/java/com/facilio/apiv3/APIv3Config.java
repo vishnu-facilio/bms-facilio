@@ -1488,7 +1488,7 @@ public class APIv3Config {
                 .beforeSave(new ValidationForJobPlanCategory())
                 .afterSave(TransactionChainFactoryV3.getCreateJobPlanChain())
                 .update()
-                .beforeSave(new ValidationForJobPlanCategory())
+                .beforeSave(TransactionChainFactoryV3.getUpdateJobPlanBeforeChain())
                 .afterSave(TransactionChainFactoryV3.getUpdateJobPlanChain())
                 .list()
                 .beforeFetch(new FetchJobPlanLookupCommand())

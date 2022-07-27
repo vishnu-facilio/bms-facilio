@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.jobplan;
 
+import com.facilio.bmsconsole.context.PlannedMaintenance;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -21,10 +22,12 @@ public class ValidationForJobPlanCategory extends FacilioCommand {
         List<JobPlanContext> category = (List<JobPlanContext>) (((Map<String,Object>)context.get(FacilioConstants.ContextNames.RECORD_MAP)).get(moduleName));
         if(CollectionUtils.isNotEmpty(category)) {
             for (JobPlanContext section : category) {
-                    if(section.getJobPlanCategory() == 3 && section.getSpaceCategory() == null ){
+                    if(section.getJobPlanCategory() == PlannedMaintenance.PMScopeAssigmentType.SPACECATEGORY.getVal()
+                            && section.getSpaceCategory() == null ){
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Space Category should not be null ");
                     }
-                    else if(section.getJobPlanCategory() == 4 && section.getAssetCategory() == null){
+                    else if(section.getJobPlanCategory() == PlannedMaintenance.PMScopeAssigmentType.ASSETCATEGORY.getVal()
+                            && section.getAssetCategory() == null){
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Asset Category  should not be null ");
                     }
             }

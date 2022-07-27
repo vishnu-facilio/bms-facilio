@@ -207,9 +207,9 @@ enums:
 
   - name: TicketSourceType
     enumClassName: com.facilio.bmsconsole.context.TicketContext$SourceType
-    
+
   - name: JobPlanCategory
-    enumClassName: com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext$JobPlanCategory
+    enumClassName: com.facilio.bmsconsole.context.PlannedMaintenance$PMScopeAssigmentType
 
   - name: JobPlanSectionCategory
     enumClassName: com.facilio.bmsconsoleV3.context.jobplan.JobPlanTaskSectionContext$JobPlanSectionCategory

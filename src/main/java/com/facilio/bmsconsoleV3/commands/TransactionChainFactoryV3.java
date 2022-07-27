@@ -6,6 +6,9 @@ import com.facilio.bmsconsoleV3.commands.assetDepartment.ValidateAssetDepartment
 import com.facilio.bmsconsoleV3.commands.assetType.ValidateAssetTypeDeletionV3;
 import com.facilio.bmsconsoleV3.commands.dashboard.*;
 import com.facilio.bmsconsoleV3.commands.floorplan.*;
+import com.facilio.bmsconsoleV3.commands.jobplan.FillUpJobPlanSectionAdditionInfoObject;
+import com.facilio.bmsconsoleV3.commands.jobplan.FillUpJobPlanTaskAdditionInfoObject;
+import com.facilio.bmsconsoleV3.commands.jobplan.ValidationForJobPlanCategory;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.AddLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.DeleteLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.FetchLicensingInfoCommand;
@@ -36,8 +39,7 @@ import com.facilio.bmsconsoleV3.commands.receipts.*;
 import com.facilio.modules.FacilioModule;
 import com.facilio.relation.command.*;
 import com.facilio.bmsconsoleV3.plannedmaintenance.jobplan.FillTasksAndPrerequisitesCommand;
-import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
-import com.facilio.v3.commands.CountCommand;
+import com.facilio.v3.commands.*;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import com.facilio.accounts.util.AccountUtil;
@@ -106,7 +108,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.readingrule.faultimpact.command.FaultImpactAfterSaveCommand;
 import com.facilio.readingrule.faultimpact.command.FaultImpactBeforeSaveCommand;
 import com.facilio.trigger.command.*;
-import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
 
 public class TransactionChainFactoryV3 {
     private static FacilioChain getDefaultChain() {
@@ -968,8 +969,17 @@ public class TransactionChainFactoryV3 {
         return chain;
     }
 
+    public static FacilioChain getUpdateJobPlanBeforeChain() {
+        FacilioChain chain = FacilioChain.getTransactionChain();
+        // added this command to prefill/remove properties in JobPlanSection's additionInfo object
+        chain.addCommand(new FillUpJobPlanSectionAdditionInfoObject());
+        chain.addCommand(new ValidationForJobPlanCategory());
+        return chain;
+    }
     public static FacilioChain getUpdateJobPlanChain() {
         FacilioChain chain = getDefaultChain();
+        // added this command to prefill/remove properties in JobPlanTask's additionInfo object
+        chain.addCommand(new FillUpJobPlanTaskAdditionInfoObject());
         chain.addCommand(new AddJobPlanTasksCommand());
        // chain.addCommand(new AddJobPlanPMsInContextCommand());
         chain.addCommand(new ConstructUpdateCustomActivityCommandV3());
