@@ -1255,11 +1255,7 @@ public class DashboardUtil {
 		else {
 			dashboardsFinalList = getFilteredDashboards(dashboardMap);
 		}
-					
-		if(AccountUtil.isFeatureEnabled(FeatureLicense.NEW_LAYOUT))  {
-			getAllBuildingsForDashboard(dashboardsFinalList);
-			
-		}
+
 		if(getOnlyMobileDashboard) {
 			splitBuildingDashboardForMobile(dashboardsFinalList);
 		}
@@ -1341,11 +1337,7 @@ public class DashboardUtil {
 			else {
 				dashboards = getFilteredDashboards(dashboardMap);
 			}
-						
-			if(AccountUtil.isFeatureEnabled(FeatureLicense.NEW_LAYOUT))  {
-				getAllBuildingsForDashboard(dashboards);
-				
-			}
+
 			if(getOnlyMobileDashboard) {
 				splitBuildingDashboardForMobile(dashboards);
 			}

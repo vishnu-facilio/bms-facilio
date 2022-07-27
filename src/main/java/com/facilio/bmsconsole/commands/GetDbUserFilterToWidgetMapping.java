@@ -67,7 +67,7 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 				for (DashboardWidgetContext widget : widgets) {
 
 					JSONObject widgetSettings = widget.getWidgetSettings();
-					Boolean isFilterExclude = (widgetSettings == null) ? false : (Boolean) widgetSettings.get("excludeDbFilters");
+					Boolean isFilterExclude = (widgetSettings == null) ? false : widgetSettings.containsKey("excludeDbFilters") ?   (Boolean) widgetSettings.get("excludeDbFilters") : false;
 					if (isFilterExclude != null && isFilterExclude == true) {
 						continue;
 					}
