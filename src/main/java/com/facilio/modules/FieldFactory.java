@@ -9142,6 +9142,18 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getApplicationRelatedAppsModuleFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getApplicationRelatedAppsModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("applicationId", "APPLICATION_ID", module, FieldType.NUMBER));
+        fields.add(getField("relatedApplicationId","RELATED_APPLICATION_ID", FieldType.NUMBER));
+
+        return fields;
+    }
+
+
     public static List<FacilioField> getWebTabGroupFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getWebTabGroupModule();

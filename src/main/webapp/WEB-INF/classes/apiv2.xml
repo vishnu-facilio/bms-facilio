@@ -6124,6 +6124,16 @@
 			<param name="translationImpl">WebTabTranslation</param>
 			</action>
 	</package>
+	<package name="applicationsRelatedApps" namespace="/api/v2/application/relatedApps"
+			 extends="v2Api">
+		<action name="fetchList" class="com.facilio.bmsconsole.actions.ApplicationAction"
+				method="getAllApplicationRelatedApps" />
+		<action name="delete" class="com.facilio.bmsconsole.actions.ApplicationAction"
+				method="deleteApplicationRelatedApps" />
+		<action name="add" class="com.facilio.bmsconsole.actions.ApplicationAction"
+				method="addApplicationRelatedApps" />
+
+	</package>
 	<package name="applicationUsers" namespace="/api/v2/application/users"
 		extends="v2Api">
 		<action name="add" class="com.facilio.bmsconsole.actions.ApplicationAction"

@@ -3950,6 +3950,14 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getApplicationRelatedAppsModule(){
+		FacilioModule module = new FacilioModule();
+		module.setName("applicationRelatedApps");
+		module.setDisplayName("Application Related Apps");
+		module.setTableName("Application_Related_Apps");
+		return module;
+	}
+
 	public static FacilioModule getWebTabGroupModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("webTabGroup");

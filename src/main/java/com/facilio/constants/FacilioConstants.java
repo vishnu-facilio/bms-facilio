@@ -348,6 +348,8 @@ public class FacilioConstants {
 		public static final String RECORD_ID = "recordId";
 		public static final String MODULE_ID = "moduleId";
 		public static final String RECORD_ID_LIST = "recordIds";
+		public static final String RELATED_APPLICATIONS="relatedApplications";
+		public static final String APPLICATION_RELATED_APPS_LIST= "applicationRelatedAppsList";
 		public static final String IS_FROM_SUMMARY = "isFromSummary";
 		public static final String IS_FROM_VIEW = "isFromView";
 		public static final String PM_INCLUDE_EXCLUDE_LIST = "pmIcludeExcludeList";

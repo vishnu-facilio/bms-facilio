@@ -919,6 +919,30 @@
     </request>
 
 
+<!--    <request path="/api/v2/application/relatedApps/fetchList">-->
+<!--        <urlparams>-->
+<!--            <property name="appId" type="number"  mandatory="true"/>-->
+<!--        </urlparams>-->
+<!--    </request>-->
+
+<!--    <request path="/api/v2/application/relatedApps/delete">-->
+<!--        <requestbody type="object">-->
+<!--            <property name="appId" type="number"  mandatory="true"/>-->
+<!--            <property name="relatedApplicationIds" type="array">-->
+<!--                <items type="number"/>-->
+<!--            </property>-->
+<!--        </requestbody>-->
+<!--    </request>-->
+<!--    <request path="/api/v2/application/relatedApps/add">-->
+<!--        <requestbody type="object">-->
+<!--            <property name="appId" type="number"  mandatory="true"/>-->
+<!--            <property name="relatedApplicationIds" type="array">-->
+<!--                <items type="number"/>-->
+<!--            </property>-->
+<!--        </requestbody>-->
+<!--    </request>-->
+
+
 	<request path="/api/v3/sandbox/add">
         <requestbody type="object">
             <property name="sandbox" type="object">
@@ -932,7 +956,7 @@
             </property>
         </requestbody>
     </request>
-    
+
     <request path="/api/v3/sandbox/update">
         <requestbody type="object">
             <property name="sandbox" type="object">
@@ -957,7 +981,7 @@
             </property>
         </requestbody>
     </request>
-    
+
     <request path="/api/v3/sandbox/pullSandboxChanges">
         <requestbody type="object">
             <property name="sandbox" type="object">
@@ -987,5 +1011,6 @@
             <property name="id" type="number"></property>
         </requestbody>
     </request>-->
-    
+
+
 </config>
