@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -64,8 +65,6 @@ public class ValidateRelationDataCommand extends FacilioCommand {
         }
 
         Criteria relationDataCriteria = new Criteria();
-        relationDataCriteria.addAndCondition(CriteriaAPI.getCondition(relationMapping.getPositionEnum().getColumnName(), relationMapping.getPositionEnum().getFieldName(), String.valueOf(parentId), NumberOperators.EQUALS));
-        relationDataCriteria.addAndCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(relation.getRelationModule().getModuleId()), NumberOperators.EQUALS));
         if(relationMapping.getRelationType() == RelationRequestContext.RelationType.ONE_TO_ONE.getIndex()
                 || relationMapping.getRelationType() == RelationRequestContext.RelationType.MANY_TO_ONE.getIndex()) {
             if(ids.size() > 1) {
@@ -75,6 +74,19 @@ public class ValidateRelationDataCommand extends FacilioCommand {
         else {
             relationDataCriteria.addAndCondition(CriteriaAPI.getCondition(relationMapping.getReversePosition().getColumnName(), relationMapping.getReversePosition().getFieldName(), StringUtils.join(ids, ","), NumberOperators.EQUALS));
         }
+
+        if(relationMapping.getRelationType() == RelationRequestContext.RelationType.ONE_TO_ONE.getIndex()){
+            Criteria oneCriteria = new Criteria();
+            oneCriteria.addAndCondition(CriteriaAPI.getCondition(relationMapping.getReversePosition().getColumnName(), relationMapping.getReversePosition().getFieldName(), StringUtils.join(ids, ","), NumberOperators.EQUALS));
+            oneCriteria.addOrCondition(CriteriaAPI.getCondition(relationMapping.getPositionEnum().getColumnName(), relationMapping.getPositionEnum().getFieldName(), String.valueOf(parentId), NumberOperators.EQUALS));
+            relationDataCriteria.andCriteria(oneCriteria);
+        }
+        else {
+            relationDataCriteria.addAndCondition(CriteriaAPI.getCondition(relationMapping.getPositionEnum().getColumnName(), relationMapping.getPositionEnum().getFieldName(), String.valueOf(parentId), NumberOperators.EQUALS));
+        }
+
+        relationDataCriteria.addAndCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(relation.getRelationModule().getModuleId()), NumberOperators.EQUALS));
+
         if(V3Util.getCountFromModuleAndCriteria(relation.getRelationModule(), relationDataCriteria) > 0) {
             throw new IllegalArgumentException("Relation already exists");
         }
