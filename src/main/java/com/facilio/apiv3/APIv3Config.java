@@ -2014,15 +2014,22 @@ public class APIv3Config {
 
     @Module(FacilioConstants.ContextNames.ALARM_OCCURRENCE)
     public static Supplier<V3Config> getAlarmOccurrence() {
-        return () -> new V3Config(AlarmOccurrenceContext.class, null)
+        return () -> new V3Config(AlarmOccurrenceContext.class, new ModuleCustomFieldCount30())
                 .list()
                 .summary()
                 .build();
     }
 
-    @Module(FacilioConstants.ContextNames.BASE_EVENT)
+    @Module(FacilioConstants.ContextNames.BMS_EVENT)
     public static Supplier<V3Config> getBmsEvent() {
-        return () -> new V3Config(BMSEventContext.class, null)
+        return () -> new V3Config(BMSEventContext.class, new ModuleCustomFieldCount30())
+                .list()
+                .summary()
+                .build();
+    }
+    @Module(FacilioConstants.ContextNames.BASE_EVENT)
+    public static Supplier<V3Config> getBaseEvent() {
+        return () -> new V3Config(BaseEventContext.class, null)
                 .list()
                 .summary()
                 .build();
