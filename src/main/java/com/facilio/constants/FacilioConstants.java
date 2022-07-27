@@ -3023,6 +3023,8 @@ public class FacilioConstants {
 	public static class CraftAndSKills{
 		public static final String CRAFT = "crafts";
 		public static final String SKILLS = "craftSkill";
+
+		public static final String LABOUR_CRAFT = "labourCraftSkill";
 	}
 
 	public static class Reports 

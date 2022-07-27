@@ -58,6 +58,7 @@ import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.FetchJobPlanLookupCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.FillJobPlanDetailsCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.ValidationForJobPlanCategory;
+import com.facilio.bmsconsoleV3.commands.labour.FetchLabourCraftAndSkillCommandV3;
 import com.facilio.bmsconsoleV3.commands.labour.GetLabourListCommandV3;
 import com.facilio.bmsconsoleV3.commands.labour.SetLocationCommandV3;
 import com.facilio.bmsconsoleV3.commands.moves.UpdateEmployeeInDesksCommandV3;
@@ -136,6 +137,7 @@ import com.facilio.bmsconsoleV3.context.jobplan.JobPlanItemsContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanServicesContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanToolsContext;
 import com.facilio.bmsconsoleV3.context.labour.LabourContextV3;
+import com.facilio.bmsconsoleV3.context.labour.LabourCraftAndSkillContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3ReceiptContext;
@@ -623,6 +625,7 @@ public class APIv3Config {
                 .beforeSave(new SetLocationCommandV3(), new SetLocalIdCommandV3())
                 .list()
                 .beforeFetch(new GetLabourListCommandV3())
+			    .afterFetch(new FetchLabourCraftAndSkillCommandV3())
                 .update()
                 .beforeSave(new SetLocationCommandV3())
                 .delete()
