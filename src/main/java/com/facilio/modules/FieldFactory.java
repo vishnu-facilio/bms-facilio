@@ -6998,9 +6998,9 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getDefaultField(AgentConstants.WRITABLE,"Writable","WRITABLE", module, FieldType.BOOLEAN));
         fields.add(getDefaultField(AgentConstants.AGENT_WRITABLE,"Agent Writable","AGENT_WRITABLE", module, FieldType.BOOLEAN));
         fields.add(getDefaultField(AgentConstants.THRESHOLD_JSON, "Threshold JSON","THRESHOLD_JSON", module, FieldType.STRING));
-        fields.add(getDefaultField(AgentConstants.CREATED_TIME, "Created Time","CREATED_TIME", module, FieldType.NUMBER));
-        fields.add(getDefaultField(AgentConstants.MAPPED_TIME,"Mapped Time", "MAPPED_TIME", module, FieldType.NUMBER));
-        fields.add(getDefaultField(AgentConstants.LAST_RECORDED_TIME,"Last Recorded Time","LAST_RECORDED_TIME", module, FieldType.NUMBER));
+        fields.add(getDefaultField(AgentConstants.CREATED_TIME, "Created Time","CREATED_TIME", module, FieldType.DATE_TIME));
+        fields.add(getDefaultField(AgentConstants.MAPPED_TIME,"Mapped Time", "MAPPED_TIME", module, FieldType.DATE_TIME));
+        fields.add(getDefaultField(AgentConstants.LAST_RECORDED_TIME,"Last Recorded Time","LAST_RECORDED_TIME", module, FieldType.DATE_TIME));
         fields.add(getDefaultField(AgentConstants.LAST_RECORDED_VALUE,"Last Recorded Value","LAST_RECORDED_VALUE", module, FieldType.STRING));
         fields.add(getDefaultField(AgentConstants.UNIT,"Unit","UNIT", module, FieldType.NUMBER));
         fields.add(getDefaultField(AgentConstants.AGENT_ID,"Agent ID","AGENT_ID", module, FieldType.NUMBER));
