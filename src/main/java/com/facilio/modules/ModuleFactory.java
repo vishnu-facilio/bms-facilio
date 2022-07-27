@@ -1,9 +1,5 @@
 package com.facilio.modules;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.facilio.agent.AgentKeys;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.constants.FacilioConstants;
@@ -12,6 +8,10 @@ import com.facilio.constants.FacilioConstants.ModuleNames;
 import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ModuleFactory {
 
@@ -4729,7 +4729,15 @@ public class ModuleFactory {
 		module.setTableName("Trigger_Log");
 		return module;
 	}
-	
+
+	public static FacilioModule getColorPaletteModule(){
+		FacilioModule module=new FacilioModule();
+		module.setName("colourPalette");
+		module.setDisplayName("Color_Palette");
+		module.setTableName("Color_Palette");
+		return module;
+	}
+
 	public static FacilioModule getTriggerInclExclModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("triggerInclExcl");

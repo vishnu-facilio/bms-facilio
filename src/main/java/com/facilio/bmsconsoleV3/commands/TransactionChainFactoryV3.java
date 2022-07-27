@@ -50,6 +50,10 @@ import com.facilio.bmsconsole.automation.command.AddOrUpdateGlobalVariableComman
 import com.facilio.bmsconsole.automation.command.AddOrUpdateGlobalVariableGroupCommand;
 import com.facilio.bmsconsole.automation.command.DeleteGlobalVariableCommand;
 import com.facilio.bmsconsole.automation.command.DeleteGlobalVariableGroupCommand;
+import com.facilio.bmsconsole.commands.*;
+import com.facilio.bmsconsole.commands.util.AddColorPaletteCommand;
+import com.facilio.bmsconsole.commands.util.DeleteColorPaletteCommand;
+import com.facilio.bmsconsole.commands.util.ListColorPaletteCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.commands.accessibleSpaces.AddAccessibleSpacesCommand;
@@ -58,6 +62,8 @@ import com.facilio.bmsconsoleV3.commands.accessibleSpaces.FetchAccessibleSpacesC
 import com.facilio.bmsconsoleV3.commands.assetCategory.AddAssetCategoryModuleCommandV3;
 import com.facilio.bmsconsoleV3.commands.assetCategory.UpdateCategoryAssetModuleIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.assetCategory.ValidateAssetCategoryDeletionV3;
+import com.facilio.bmsconsoleV3.commands.assetDepartment.ValidateAssetDepartmentDeletionV3;
+import com.facilio.bmsconsoleV3.commands.assetType.ValidateAssetTypeDeletionV3;
 import com.facilio.bmsconsoleV3.commands.budget.ValidateBudgetAmountCommandV3;
 import com.facilio.bmsconsoleV3.commands.budget.ValidateChartOfAccountTypeCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.UpdateClientIdInSiteCommandV3;
@@ -107,6 +113,9 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.readingrule.faultimpact.command.FaultImpactAfterSaveCommand;
 import com.facilio.readingrule.faultimpact.command.FaultImpactBeforeSaveCommand;
+import com.facilio.relation.command.GenerateRelationDeleteAPIDataCommand;
+import com.facilio.relation.command.GenerateRelationModuleAPIDataCommand;
+import com.facilio.relation.command.ValidateRelationDataCommand;
 import com.facilio.trigger.command.*;
 
 public class TransactionChainFactoryV3 {
@@ -1891,6 +1900,22 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getDeactivatePM() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new MarkPMAsDeactivatedCommand());
+        return c;
+    }
+
+    public static FacilioChain getAddColorPaletteChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddColorPaletteCommand());
+        return c;
+    }
+    public  static FacilioChain getDeleteColorPaletteChain(){
+        FacilioChain c=getDefaultChain();
+        c.addCommand(new DeleteColorPaletteCommand());
+        return c;
+    }
+    public static FacilioChain getListColorPaletteChain(){
+        FacilioChain c=getDefaultChain();
+        c.addCommand(new ListColorPaletteCommand());
         return c;
     }
 }

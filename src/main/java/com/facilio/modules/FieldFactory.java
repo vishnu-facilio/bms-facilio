@@ -10375,6 +10375,19 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getColorPaletteFields() {
+        List<FacilioField> fields = new ArrayList<>();
+
+        FacilioModule module = ModuleFactory.getColorPaletteModule();
+
+        fields.add(getIdField(module));
+        fields.add(getNumberField("userId","USERID",module));
+        fields.add(getField("keyName", "KEY_NAME", module, FieldType.STRING));
+        fields.add(getField("colorCode", "COLOR_CODE", module, FieldType.STRING));
+        return fields;
+    }
+
+
 
     protected static <F extends FacilioField> F  getNewFieldObject(FieldType type) {
         switch (type) {

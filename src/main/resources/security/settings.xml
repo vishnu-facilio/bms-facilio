@@ -965,5 +965,27 @@
             </property>
         </requestbody>
     </request>
+
+ <!--   <request path="/api/v2/colorPalette/add">
+        <requestbody type="object">
+            <property name="colorPalette" type="object">
+                <property name="keyName" type="string"></property>
+                <property name="colorCode" type="string"></property>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v2/colorPalette/list">
+        <requestbody type="object">
+            <property name="keys" type="array">
+                <items type="string"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/colorPalette/delete">
+        <requestbody type="object">
+            <property name="id" type="number"></property>
+        </requestbody>
+    </request>-->
     
 </config>

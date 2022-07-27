@@ -6841,4 +6841,17 @@
             <param name="workOrderId">{1}</param>
         </action>
     </package>
+	<package name="colorPalette" namespace="/api/v2/colorPalette" extends="v2Api">
+		<action name="add"
+				class="com.facilio.bmsconsole.actions.ColorPaletteAction"
+				method="addColorPalette"/>
+
+		<action name="list"
+				class="com.facilio.bmsconsole.actions.ColorPaletteAction"
+				method="listColorPalette"/>
+
+		<action name="delete"
+				class="com.facilio.bmsconsole.actions.ColorPaletteAction"
+				method="deleteColorPalette"/>
+	</package>
 </struts>

@@ -3430,4 +3430,9 @@ public class FacilioConstants {
 		public static final String VIEW_FOLDER = "ViewFolder";
 		public static final String VIEW = "View";
 	}
+
+	public static class ColourPalette{
+		public static final String COLOR_PALETTE="colorPalette";
+		public static final String COLOR_KEYS="colorKeys";
+	}
 }
