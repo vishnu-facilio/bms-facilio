@@ -2974,6 +2974,31 @@ public class V3VisitorManagementAPI {
             }
         }
     }
+    public static VisitorTypeFormsContext getVisitorTypeFormForType(List<Map<String,Object>> rows,long visitorTypeId)
+    {
+        VisitorTypeFormsContext visitorTypeFormContext = new VisitorTypeFormsContext();
+        for (Map<String, Object> row : rows) {
+            visitorTypeFormContext = FieldUtil.getAsBeanFromMap(row, VisitorTypeFormsContext.class);
+            if(visitorTypeFormContext.getVisitorTypeId() == visitorTypeId)
+            {
+                return visitorTypeFormContext;
+            }
+        }
+        return new VisitorTypeFormsContext();
+    }
+
+    public static Boolean checkAddOrUpdateVisitorTypeForm(long appId, long vTypeId) throws Exception {
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder();
+        selectRecordBuilder.table(ModuleFactory.getVisitorTypeFormsModule().getTableName()).
+                select(FieldFactory.getVisitorTypeFormsFields())
+                .andCondition(CriteriaAPI.getCondition("APP_ID", "appId", appId + "", NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("VISITOR_TYPE_ID", "visitorTypeId", vTypeId+"", NumberOperators.EQUALS));
+        if( selectRecordBuilder.get().size() >0)
+        {
+            return true;
+        }
+        return false;
+    }
 
 
 

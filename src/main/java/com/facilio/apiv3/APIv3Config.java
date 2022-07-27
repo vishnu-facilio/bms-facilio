@@ -109,10 +109,7 @@ import com.facilio.bmsconsoleV3.commands.vendorQuotes.LoadVendorQuotesLookupComm
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.SetVendorQuotesLineItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorcontact.LoadVendorContactLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitor.LoadVisitorLookUpCommandV3;
-import com.facilio.bmsconsoleV3.commands.visitorlog.GetChildInvitesForGroupInviteCommand;
-import com.facilio.bmsconsoleV3.commands.visitorlog.GetScheduleTriggerForRecurringInviteCommandV3;
-import com.facilio.bmsconsoleV3.commands.visitorlog.UpdateChildInvitesAfterSaveCommand;
-import com.facilio.bmsconsoleV3.commands.visitorlog.ValidateBaseVisitDetailAndLogCommand;
+import com.facilio.bmsconsoleV3.commands.visitorlog.*;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.GetTriggerForRecurringLogCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.LoadVisitorLoggingLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.watchlist.CheckForExisitingWatchlistRecordsCommandV3;
@@ -944,6 +941,19 @@ public class APIv3Config {
                 .afterFetch(new GetChildInvitesForGroupInviteCommand())
                 .build();
     }
+
+    @Module("visitorType")
+    public static Supplier<V3Config> getVisitorType() {
+        return () -> new V3Config(V3VisitorTypeContext.class, null)
+                .create()
+                .update()
+                .list()
+                .afterFetch(new FetchAllVisitorTypeForms())
+                .summary()
+                .build();
+    }
+
+
 
     @Module("basevisit")
     public static Supplier<V3Config> getBaseVisit() {

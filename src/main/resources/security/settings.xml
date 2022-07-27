@@ -971,6 +971,21 @@
                 <property name="createdTime" type="number"/>
                 <property name="modifiedTime" type="number"/>
             </property>
+             </requestbody>
+    </request>
+    <request path="/api/v3/visitorTypeForm/update">
+        <requestbody type="object">
+            <property name="visitorType" type="object">
+                <property name="id" type="number"/>
+                <property name="orgId" type="number"/>
+                <property name="name" type="string"/>
+                <property name="moduleId" type="number"/>
+                <property name="visitorLogo" type="number"/>
+                <property name="visitorFormId" type="number"/>
+                <property name="formEnabled" type="boolean"/>
+            </property>
+            <property name="parentModuleName" type="string"/>
+            <property name="appId" type="number"/>
         </requestbody>
     </request>
 

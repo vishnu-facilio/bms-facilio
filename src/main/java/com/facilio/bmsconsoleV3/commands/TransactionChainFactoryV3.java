@@ -1913,9 +1913,17 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new DeleteColorPaletteCommand());
         return c;
     }
-    public static FacilioChain getListColorPaletteChain(){
-        FacilioChain c=getDefaultChain();
+
+    public static FacilioChain getListColorPaletteChain() {
+        FacilioChain c = getDefaultChain();
         c.addCommand(new ListColorPaletteCommand());
         return c;
+    }
+    
+
+    public static FacilioChain addVisitsAndInvitesForms() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new AddOrUpdateVisitorTypeFormCommand());
+        return chain;
     }
 }

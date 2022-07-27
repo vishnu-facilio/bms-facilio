@@ -31,13 +31,16 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
+import static com.facilio.bmsconsoleV3.util.V3VisitorManagementAPI.checkAddOrUpdateVisitorTypeForm;
+
 public class FetchVisitorTypeSettingsCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// Add Picklist entry for visitor and insert that ID Into table
 		
-		Boolean fetchAll = (Boolean)context.get(ContextNames.FETCH_ALL);		
+		Boolean fetchAll = (Boolean)context.get(ContextNames.FETCH_ALL);
+		Boolean isVisitorSetting = (Boolean)context.get(ContextNames.IS_VISITOR_SETTING);
 		FacilioModule visitorSettingsModule=ModuleFactory.getVisitorSettingsModule();
 		List<FacilioField> visitorSettingsFields=FieldFactory.getVisitorSettingsFields();
 		VisitorTypeContext visitorTypeCtx=(VisitorTypeContext)context.get(ContextNames.VISITOR_TYPE_PICKLIST_OPTION);		
@@ -54,8 +57,17 @@ public class FetchVisitorTypeSettingsCommand extends FacilioCommand {
 
 		ApplicationContext app = ApplicationApi.getApplicationForLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 		long appId = app.getId();
+		ApplicationContext kioskApp = ApplicationApi.getApplicationForLinkName(ApplicationLinkNames.KIOSK_APP);
+		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.KIOSK_APP_FORM) && checkAddOrUpdateVisitorTypeForm(kioskApp.getId(),visitorTypeId))
+		{
+			appId = kioskApp.getId();
+		}
 		if(AccountUtil.getCurrentApp() != null && AccountUtil.getCurrentApp().getId() > 0) {
 			appId = AccountUtil.getCurrentApp().getId();
+		}
+		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.KIOSK_APP_FORM) && isVisitorSetting!=null && isVisitorSetting.equals(Boolean.TRUE) && checkAddOrUpdateVisitorTypeForm(kioskApp.getId(),visitorTypeId))
+		{
+			appId = kioskApp.getId();
 		}
 		
 		selectBuilder=new GenericSelectRecordBuilder();

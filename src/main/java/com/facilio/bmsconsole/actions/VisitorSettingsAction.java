@@ -19,6 +19,16 @@ public class VisitorSettingsAction extends FacilioAction
 	VisitorTypeContext visitorType;
 	VisitorSettingsContext visitorSettings;
 
+	public Boolean getVisitorSettingPage() {
+		return visitorSettingPage;
+	}
+
+	public void setVisitorSettingPage(Boolean visitorSettingPage) {
+		this.visitorSettingPage = visitorSettingPage;
+	}
+
+	Boolean visitorSettingPage;
+
 	public VisitorSettingsContext getVisitorSettings() {
 		return visitorSettings;
 	}
@@ -78,6 +88,7 @@ public class VisitorSettingsAction extends FacilioAction
 		FacilioContext context=chain.getContext();
 		context.put(ContextNames.VISITOR_TYPE_PICKLIST_OPTION, getVisitorType());
 		context.put(ContextNames.FETCH_ALL, getFetchAll());
+		context.put(ContextNames.IS_VISITOR_SETTING, getVisitorSettingPage());
 		chain.execute();
 		setResult(ContextNames.VISITOR_SETTINGS, context.get(ContextNames.VISITOR_SETTINGS));
 		setResult(ContextNames.FORMS_LIST, context.get(ContextNames.FORMS_LIST));

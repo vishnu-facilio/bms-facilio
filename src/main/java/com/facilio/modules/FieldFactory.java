@@ -9000,6 +9000,8 @@ public class FieldFactory extends BaseFieldFactory {
 	    fields.add(getField("visitorTypeId", "VISITOR_TYPE_ID", module , FieldType.LOOKUP));
 	    fields.add(getField("visitorLogFormId", "VISITOR_LOG_FORM_ID", module , FieldType.LOOKUP));
 	    fields.add(getField("visitorInviteFormId", "VISITOR_INVITE_FORM_ID", module , FieldType.LOOKUP));
+        fields.add(getField("visitorLogEnabled", "VISITORLOG_ENABLED", module , FieldType.BOOLEAN));
+        fields.add(getField("inviteEnabled", "INVITE_ENABLED", module , FieldType.BOOLEAN));
 
 	    return fields;
     }
