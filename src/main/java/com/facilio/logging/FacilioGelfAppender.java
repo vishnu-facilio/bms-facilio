@@ -20,7 +20,7 @@ import org.graylog2.log.GelfAppender;
 public class FacilioGelfAppender extends GelfAppender {
 
     public void append(LoggingEvent event) {
-        if( FacilioLogHandler.isLoggable(event)) {
+        if( FacilioLogHandler.isLoggable(event,false)) {
             super.append(FacilioLogHandler.addEventProps(event));
         }
     }

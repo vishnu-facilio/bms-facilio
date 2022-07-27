@@ -70,6 +70,10 @@ public class FacilioLogHandler extends Handler {
     private static final String DEFAULT_ORG_USER_ID = "-1";
 
     static boolean isLoggable(LoggingEvent event) {
+    	return isLoggable(event,true);
+    }
+    
+    static boolean isLoggable(LoggingEvent event,boolean checkDiskSize) {
         if((lastFreeSpaceCheckedTime + 300_000L) < System.currentTimeMillis()) {
             lastFreeSpaceCheckedTime = System.currentTimeMillis();
             freeSpace = ROOT_FILE.getFreeSpace();
@@ -80,6 +84,9 @@ public class FacilioLogHandler extends Handler {
         }
         else {
             isLoggable = event.getLevel().toInt() >= org.apache.log4j.Level.INFO_INT;
+        }
+        if (!checkDiskSize) {
+            return isLoggable;
         }
         return isLoggable && freeSpace > FREE_SPACE_THRESHOLD;
     }
