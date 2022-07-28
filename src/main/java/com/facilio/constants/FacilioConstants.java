@@ -1465,6 +1465,7 @@ public class FacilioConstants {
 
 		public static final String HOME_PAGE = "homepage";
 		public static final String RELATED_LIST_META = "relatedListMeta";
+		public static final String RELATIONSHIP_META = "relationshipMeta";
 		public static final String CURRENT_CALENDAR_VIEW = "currentCalendarView";
 		public static final String ML_FORECASTING = "ml_forecasting";
 		public static final String CREATE_IN_PREOPEN = "crateInPreOpen";
