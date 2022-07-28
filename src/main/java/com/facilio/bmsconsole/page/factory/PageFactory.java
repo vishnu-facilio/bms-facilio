@@ -454,13 +454,7 @@ public class PageFactory {
 	}
 
 	protected static Section getRelatedListSectionObj(Page page) {
-		Section section;
-		if (FacilioProperties.isDevelopment()) {
-			section = page.new Section("Related List", "List of all related records across modules");
-		}
-		else {
-			section = page.new Section();
-		}
+		Section section = page.new Section("Related List", "List of all related records across modules");
 		return section;
 	}
 
