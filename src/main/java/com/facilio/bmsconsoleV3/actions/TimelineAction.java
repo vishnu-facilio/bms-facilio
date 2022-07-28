@@ -120,6 +120,15 @@ public class TimelineAction extends RESTAPIHandler {
 		return SUCCESS;
 	}
 
+	public  String list(boolean getUnscheduled) throws Exception{
+		FacilioChain chain = ChainUtil.getTimelineListChain();
+		FacilioContext context = TimelineViewUtil.getTimelineContext(chain, this.getTimelineRequest(), true,
+				this.getPage(), this.getPerPage(), getUnscheduled);
+		chain.execute();
+		setData(timelineRequest.getModuleName(), context.get(FacilioConstants.ContextNames.TIMELINE_CUSTOMIZATONDATA_MAP));
+		return SUCCESS;
+	}
+
 	public String timelineUnScheduledList() throws Exception {
 		FacilioChain chain = ChainUtil.getTimelineListChain();
 		FacilioContext context = TimelineViewUtil.getTimelineContext(chain, this.getTimelineRequest(), true,
