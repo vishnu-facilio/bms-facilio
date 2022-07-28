@@ -916,6 +916,10 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllRequestForQuotationView().setOrder(order++));
+		views.put("quotesReceived", getQuotesReceivedRfqView("quotesReceived", "Quotes Received" ,true).setOrder(order++));
+		views.put("awarded", getAwardedRfqView("awarded", "Awarded" ,true).setOrder(order++));
+		views.put("poCreated", getPoCreatedRfqView("poCreated", "PO Created" ,true).setOrder(order++));
+		views.put("discarded", getDiscardedRfqView("discarded", "Discarded" ,true).setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION, views);
 
 		order = 1;
@@ -9068,5 +9072,154 @@ public class ViewFactory {
 		inventoryRequestStatusCriteria.addAndCondition(statusCond);
 		return inventoryRequestStatusCriteria;
 
+	}
+	private static FacilioView getQuotesReceivedRfqView(String viewName, String viewDisplayName, boolean quotesReceived) {
+		FacilioModule rfqModule = ModuleFactory.getRequestForQuotationModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("localId");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("LOCAL_ID");
+		createdTime.setModule(rfqModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		Criteria criteria = getQuotesReceivedRfqCondition(quotesReceived);
+		FacilioView statusView = new FacilioView();
+		statusView.setName(viewName);
+		statusView.setDisplayName(viewDisplayName);
+		statusView.setSortFields(sortFields);
+		statusView.setCriteria(criteria);
+		statusView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+		return statusView;
+	}
+
+	private static Criteria getQuotesReceivedRfqCondition(boolean quotesReceived) {
+		FacilioField quotesReceivedField = new FacilioField();
+		quotesReceivedField.setName("isQuoteReceived");
+		quotesReceivedField.setColumnName("QUOTE_RECEIVED");
+		quotesReceivedField.setDataType(FieldType.BOOLEAN);
+		quotesReceivedField.setModule(ModuleFactory.getRequestForQuotationModule());
+
+		Condition statusCond = new Condition();
+		statusCond.setField(quotesReceivedField);
+		statusCond.setOperator(BooleanOperators.IS);
+		statusCond.setValue(String.valueOf(quotesReceived));
+
+		Criteria rfqStatusCriteria = new Criteria();
+		rfqStatusCriteria.addAndCondition(statusCond);
+		return rfqStatusCriteria;
+	}
+
+	private static FacilioView getAwardedRfqView(String viewName, String viewDisplayName, boolean awarded) {
+		FacilioModule rfqModule = ModuleFactory.getRequestForQuotationModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("localId");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("LOCAL_ID");
+		createdTime.setModule(rfqModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		Criteria criteria = getAwardedRfqCondition(awarded);
+		FacilioView statusView = new FacilioView();
+		statusView.setName(viewName);
+		statusView.setDisplayName(viewDisplayName);
+		statusView.setSortFields(sortFields);
+		statusView.setCriteria(criteria);
+		statusView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+		return statusView;
+	}
+
+	private static Criteria getAwardedRfqCondition(boolean awarded) {
+		FacilioField awardedField = new FacilioField();
+		awardedField.setName("isAwarded");
+		awardedField.setColumnName("AWARDED");
+		awardedField.setDataType(FieldType.BOOLEAN);
+		awardedField.setModule(ModuleFactory.getRequestForQuotationModule());
+
+		Condition statusCond = new Condition();
+		statusCond.setField(awardedField);
+		statusCond.setOperator(BooleanOperators.IS);
+		statusCond.setValue(String.valueOf(awarded));
+
+		Criteria rfqStatusCriteria = new Criteria();
+		rfqStatusCriteria.addAndCondition(statusCond);
+		return rfqStatusCriteria;
+	}
+	private static FacilioView getPoCreatedRfqView(String viewName, String viewDisplayName, boolean poCreated) {
+		FacilioModule rfqModule = ModuleFactory.getRequestForQuotationModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("localId");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("LOCAL_ID");
+		createdTime.setModule(rfqModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		Criteria criteria = getPoCreatedRfqCondition(poCreated);
+		FacilioView statusView = new FacilioView();
+		statusView.setName(viewName);
+		statusView.setDisplayName(viewDisplayName);
+		statusView.setSortFields(sortFields);
+		statusView.setCriteria(criteria);
+		statusView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+		return statusView;
+	}
+
+	private static Criteria getPoCreatedRfqCondition(boolean poCreated) {
+		FacilioField awardedField = new FacilioField();
+		awardedField.setName("isPoCreated");
+		awardedField.setColumnName("PO_CREATED");
+		awardedField.setDataType(FieldType.BOOLEAN);
+		awardedField.setModule(ModuleFactory.getRequestForQuotationModule());
+
+		Condition statusCond = new Condition();
+		statusCond.setField(awardedField);
+		statusCond.setOperator(BooleanOperators.IS);
+		statusCond.setValue(String.valueOf(poCreated));
+
+		Criteria rfqStatusCriteria = new Criteria();
+		rfqStatusCriteria.addAndCondition(statusCond);
+		return rfqStatusCriteria;
+	}
+	private static FacilioView getDiscardedRfqView(String viewName, String viewDisplayName, boolean discarded) {
+		FacilioModule rfqModule = ModuleFactory.getRequestForQuotationModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("localId");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("LOCAL_ID");
+		createdTime.setModule(rfqModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		Criteria criteria = getDiscardedRfqCondition(discarded);
+		FacilioView statusView = new FacilioView();
+		statusView.setName(viewName);
+		statusView.setDisplayName(viewDisplayName);
+		statusView.setSortFields(sortFields);
+		statusView.setCriteria(criteria);
+		statusView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
+		return statusView;
+	}
+
+	private static Criteria getDiscardedRfqCondition(boolean discarded) {
+		FacilioField awardedField = new FacilioField();
+		awardedField.setName("isDiscarded");
+		awardedField.setColumnName("DISCARDED");
+		awardedField.setDataType(FieldType.BOOLEAN);
+		awardedField.setModule(ModuleFactory.getRequestForQuotationModule());
+
+		Condition statusCond = new Condition();
+		statusCond.setField(awardedField);
+		statusCond.setOperator(BooleanOperators.IS);
+		statusCond.setValue(String.valueOf(discarded));
+
+		Criteria rfqStatusCriteria = new Criteria();
+		rfqStatusCriteria.addAndCondition(statusCond);
+		return rfqStatusCriteria;
 	}
 }

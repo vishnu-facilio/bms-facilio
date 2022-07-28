@@ -26,6 +26,7 @@ public class V3RequestForQuotationContext extends V3Context {
     private List<Long> recordIds;
     private Long expectedReplyDate;
     private Boolean isRfqFinalized;
+    private Boolean isDiscarded;
 
     public Long getExpectedReplyDate() {
         return expectedReplyDate;
@@ -155,6 +156,14 @@ public class V3RequestForQuotationContext extends V3Context {
         return false;
     }
     public void setIsRfqFinalized(Boolean rfqFinalized) { isRfqFinalized = rfqFinalized; }
+
+    public Boolean getIsDiscarded() {
+        if(isDiscarded != null){
+            return isDiscarded.booleanValue();
+        }
+        return false;
+    }
+    public void setIsDiscarded(Boolean discarded) { isDiscarded = discarded; }
 
     public List<Long> getRecordIds() {
         return recordIds;

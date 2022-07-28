@@ -4,16 +4,26 @@ import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.util.LocationAPI;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationLineItemsContext;
+import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesLineItemsContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class RfqBeforeCreateOrUpdateCommandV3 extends FacilioCommand {
 
@@ -27,14 +37,15 @@ public class RfqBeforeCreateOrUpdateCommandV3 extends FacilioCommand {
             for (V3RequestForQuotationContext requestForQuotationContext : requestForQuotationContexts) {
                 if (requestForQuotationContext != null) {
                     //if vendors are selected edit should be restricted
-                    if(requestForQuotationContext.getVendor()!=null && MapUtils.isEmpty(bodyParams) && requestForQuotationContext.getStateFlowId()<0 && requestForQuotationContext.getId()>0){
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "RFQ cannot be updated after selecting vendors");
+                    if(requestForQuotationContext.getIsRfqFinalized() && requestForQuotationContext.getVendor().size()>0 && MapUtils.isEmpty(bodyParams) && requestForQuotationContext.getStateFlowId()<0 && requestForQuotationContext.getId()>0 && !requestForQuotationContext.getIsDiscarded()){
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "RFQ cannot be updated after Finalizing Rfq");
                     }
                     if (requestForQuotationContext.getId() <= 0 && CollectionUtils.isEmpty(requestForQuotationContext.getRequestForQuotationLineItems())) {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Line items cannot be empty");
                     }
+
                     //storeroom validation
-                    checkForStoreRoom(requestForQuotationContext, requestForQuotationContext.getRequestForQuotationLineItems());
+                    // checkForStoreRoom(requestForQuotationContext, requestForQuotationContext.getRequestForQuotationLineItems());
 
                    // to set addresses
                     requestForQuotationContext.setShipToAddress(LocationAPI.getPoPrLocation(requestForQuotationContext.getStoreRoom(), requestForQuotationContext.getShipToAddress(), "SHIP_TO_Location", true, true));
