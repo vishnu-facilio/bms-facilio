@@ -1128,6 +1128,10 @@ public class SpaceAPI {
 	}
 
 	public static List<SiteContext> getAllSites(boolean fetchLocation,JSONObject pagination,String search) throws Exception {
+		return getAllSites(fetchLocation, pagination, search, false );
+	}
+
+	public static List<SiteContext> getAllSites(boolean fetchLocation,JSONObject pagination,String search, boolean skipScoping) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SITE);
@@ -1137,6 +1141,9 @@ public class SpaceAPI {
 																	.module(module)
 //																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.beanClass(SiteContext.class);
+		if(skipScoping) {
+			selectBuilder.skipScopeCriteria();
+		}
 		if (fetchLocation) {
 			selectBuilder.fetchSupplement((SupplementRecord) FieldFactory.getAsMap(fields).get("location"));
 		}

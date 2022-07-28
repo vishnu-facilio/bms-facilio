@@ -6142,6 +6142,8 @@
 		</action>
 		<action name="getSignature" class="com.facilio.bmsconsole.actions.ApplicationAction" method="getUserSignature">
 		</action>
+		<action name="deleteSignature" class="com.facilio.bmsconsole.actions.ApplicationAction" method="deleteUserSignature">
+		</action>
 	</package>
 	
 	<package name="fetchApplicationDetails" namespace="/api/v2/application/fetchDetails"

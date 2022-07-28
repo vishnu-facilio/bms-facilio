@@ -107,7 +107,7 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 
 				byte[] bytes = IOUtils. toByteArray(defaultValue);
 
-				long orphanFileId = FacilioFactory.getFileStore().addOrphanedFile("Orphan File created for Form Field with File Id "+fileId,bytes,contentType);
+				long orphanFileId = FacilioFactory.getFileStore().addOrphanedFileForFormFields(fileName,bytes,contentType);
 
 				JSONObject orphanedObject = new JSONObject();
 				orphanedObject.put("fileId",orphanFileId);

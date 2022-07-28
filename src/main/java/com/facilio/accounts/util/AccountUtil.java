@@ -500,6 +500,7 @@ public class AccountUtil {
 		REQUEST_FOR_QUOTATION(74, 1024, LicenseMapping.GROUP2LICENSE),
 		PM_OBSERVATION(75, 2048, LicenseMapping.GROUP2LICENSE),
 		TUTEN_LABS(76, 4096, LicenseMapping.GROUP2LICENSE),
+		FAILURE_CODES(77, 8192, LicenseMapping.GROUP2LICENSE),
 		;
 
 		public int featureId;

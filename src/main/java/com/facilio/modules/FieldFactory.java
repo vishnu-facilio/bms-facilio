@@ -6986,7 +6986,6 @@ public class FieldFactory extends BaseFieldFactory {
         List<FacilioField> fields = new ArrayList<>();
         fields.add(getIdField(module));
         fields.add(getDefaultField(AgentConstants.NAME, "Link Name","Name",module, FieldType.STRING));
-        fields.add(getDefaultField(AgentConstants.DISPLAY_NAME,"Name","DISPLAY_NAME", module, FieldType.STRING));
         fields.add(getDefaultField(AgentConstants.DESCRIPTION,"Description", "DESCRIPTION", module, FieldType.STRING));
         fields.add(getDefaultField(AgentConstants.DATA_TYPE,"Data Type", "DATA_TYPE", module, FieldType.NUMBER));
         fields.add(getDefaultField(AgentConstants.POINT_TYPE,"Point Type", "POINT_TYPE", module, FieldType.NUMBER));
@@ -7010,11 +7009,17 @@ public class FieldFactory extends BaseFieldFactory {
         //fields.add(getNewDeletedTimeField(module));
         SystemEnumField configureStatusfield = (SystemEnumField) getDefaultField(AgentConstants.CONFIGURE_STATUS, "Configure Status","CONFIGURE_STATUS", module, FieldType.SYSTEM_ENUM);
         configureStatusfield.setEnumName("ConfigureStatus");
+        configureStatusfield.setValues(FacilioEnum.getEnumValues(configureStatusfield.getEnumName()));
         fields.add(configureStatusfield);
 
         SystemEnumField subscribeStatusfield = (SystemEnumField) getDefaultField(AgentConstants.SUBSCRIBE_STATUS,"Subscribe Status", "SUBSCRIBE_STATUS", module, FieldType.SYSTEM_ENUM);
         subscribeStatusfield.setEnumName("SubscribeStatus");
+        subscribeStatusfield.setValues(FacilioEnum.getEnumValues(subscribeStatusfield.getEnumName()));
         fields.add(subscribeStatusfield);
+
+        FacilioField displayName = getDefaultField(AgentConstants.DISPLAY_NAME,"Name","DISPLAY_NAME", module, FieldType.STRING);
+        displayName.setMainField(true);
+        fields.add(displayName);
         return fields;
     }
 

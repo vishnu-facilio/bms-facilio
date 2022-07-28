@@ -11,6 +11,7 @@ import com.facilio.qa.context.questions.MatrixQuestionRow;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
 import java.text.MessageFormat;
@@ -94,13 +95,15 @@ public enum MatrixRuleHandler implements RuleHandler{
 		MatrixAnswerContext.MatrixAnswer matrixAnswer = answer.getMatrixAnswer();
 		for(MatrixAnswerContext.RowAnswer option :matrixAnswer.getRowAnswer()){
 			List<MatrixAnswerContext.ColumnAnswer> columnAnswers = option.getColumnAnswer();
-			MatrixAnswerContext.ColumnAnswer columnAns = columnAnswers.stream().filter(columnAnswer -> columnAnswer.getAnswer()!=null).collect(Collectors.toList()).get(0);
-			if(columnAns != null){
-				Map<String,Object> prop = new HashMap<>();
-				prop.put("rowId",option.getRow());
-				prop.put("columnId", columnAns.getColumn());
-				prop.put(RuleCondition.ANSWER_FIELD_NAME,columnAns.getAnswer());
-				answerProps.add(prop);
+			List<MatrixAnswerContext.ColumnAnswer> columnAns = columnAnswers.stream().filter(columnAnswer -> columnAnswer.getAnswer()!=null).collect(Collectors.toList());
+			if(CollectionUtils.isNotEmpty(columnAns)){
+				columnAns.forEach(columnAnswer -> {
+					Map<String,Object> prop = new HashMap<>();
+					prop.put("rowId",option.getRow());
+					prop.put("columnId", columnAnswer.getColumn());
+					prop.put(RuleCondition.ANSWER_FIELD_NAME,columnAnswer.getAnswer());
+					answerProps.add(prop);
+				});
 			}
 		}
 

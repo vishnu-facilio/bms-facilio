@@ -372,5 +372,14 @@ public class ApplicationAction extends FacilioAction {
 		return SUCCESS;
 
 	}
+	
+	public String deleteUserSignature() throws Exception {
+		FacilioChain chain = TransactionChainFactory.deleteUserSignatureChain();
+		FacilioContext context = chain.getContext();
+		chain.execute();
+		setResult(FacilioConstants.ContextNames.SIGNATURE_DELETE, context.get(FacilioConstants.ContextNames.SIGNATURE_DELETE));
 
+		return SUCCESS;
+
+	}
 }
