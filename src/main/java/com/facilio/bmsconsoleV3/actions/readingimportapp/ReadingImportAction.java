@@ -7,10 +7,12 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.V3Action;
+import com.facilio.v3.context.Constants;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 
 @Log4j
@@ -25,6 +27,10 @@ public class ReadingImportAction extends V3Action{
 
     private JSONObject data;
 
+    private int page;
+    private int perPage;
+    private String filters;
+    private String moduleName;
 
     public JSONObject getData() {
         return this.data;
@@ -72,6 +78,17 @@ public class ReadingImportAction extends V3Action{
 
         FacilioChain chain = ReadOnlyChainFactoryV3.getReadingImportDataList();
         FacilioContext context = chain.getContext();
+        JSONObject pagination = new JSONObject();
+        pagination.put("page", this.getPage());
+        pagination.put("perPage", this.getPerPage());
+        context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME,this.getModuleName());
+
+        if (filters != null && !filters.isEmpty()) {
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(filters);
+            context.put(FacilioConstants.ContextNames.FILTERS, json);
+        }
         chain.execute();
 
         setData("readingimport", context.get("READING_IMPORT_DATA_LIST"));
@@ -82,6 +99,16 @@ public class ReadingImportAction extends V3Action{
 
         FacilioChain chain = ReadOnlyChainFactoryV3.getMyReadingImportDataList();
         FacilioContext context = chain.getContext();
+        JSONObject pagination = new JSONObject();
+        pagination.put("page", this.getPage());
+        pagination.put("perPage", this.getPerPage());
+        context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME,this.getModuleName());
+        if (filters != null && !filters.isEmpty()) {
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(filters);
+            context.put(FacilioConstants.ContextNames.FILTERS, json);
+        }
         chain.execute();
 
         setData("readingimport", context.get("READING_IMPORT_DATA_LIST"));

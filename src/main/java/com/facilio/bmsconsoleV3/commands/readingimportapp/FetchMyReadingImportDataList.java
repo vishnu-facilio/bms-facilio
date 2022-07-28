@@ -9,6 +9,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -29,7 +30,6 @@ public class FetchMyReadingImportDataList extends FacilioCommand {
 
         selectBuilder.andCondition(CriteriaAPI.getCondition("Reading_Import_APP.CREATED_BY", "createdBy", String.valueOf(AccountUtil.getCurrentUser().getOuid()), NumberOperators.EQUALS));
         selectBuilder.orderBy("CREATED_TIME  desc");
-
 
         Map<Long, User> orgUsers = AccountUtil.getOrgBean().getOrgUsersAsMap(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.ApplicationLinkNames.DATA_LOADER_APP);
 
