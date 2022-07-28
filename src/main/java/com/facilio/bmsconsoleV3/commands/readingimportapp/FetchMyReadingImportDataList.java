@@ -7,13 +7,16 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.accounts.dto.User;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +30,30 @@ public class FetchMyReadingImportDataList extends FacilioCommand {
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .select(FieldFactory.getReadingImportFields())
                 .table(ModuleFactory.getReadingImportAPPModule().getTableName());
+
+        JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+
+        int perPage;
+        int page;
+        if (pagination != null) {
+            page = (int) (pagination.get("page") == null ? 1 : pagination.get("page"));
+            perPage = (int) (pagination.get("perPage") == null ? 50 : pagination.get("perPage"));
+        } else {
+            page = 1;
+            perPage = 50;
+        }
+        int offset = ((page-1) * perPage);
+        if (offset < 0) {
+            offset = 0;
+        }
+
+        selectBuilder.offset(offset);
+        selectBuilder.limit(perPage);
+
+        Criteria filterCriteria = (Criteria) context.get(Constants.FILTER_CRITERIA);
+        if(filterCriteria != null) {
+            selectBuilder.andCriteria(filterCriteria);
+        }
 
         selectBuilder.andCondition(CriteriaAPI.getCondition("Reading_Import_APP.CREATED_BY", "createdBy", String.valueOf(AccountUtil.getCurrentUser().getOuid()), NumberOperators.EQUALS));
         selectBuilder.orderBy("CREATED_TIME  desc");
