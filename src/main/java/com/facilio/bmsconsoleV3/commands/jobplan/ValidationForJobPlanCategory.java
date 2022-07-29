@@ -22,7 +22,11 @@ public class ValidationForJobPlanCategory extends FacilioCommand {
         List<JobPlanContext> category = (List<JobPlanContext>) (((Map<String,Object>)context.get(FacilioConstants.ContextNames.RECORD_MAP)).get(moduleName));
         if(CollectionUtils.isNotEmpty(category)) {
             for (JobPlanContext section : category) {
-                    if(section.getJobPlanCategory() == PlannedMaintenance.PMScopeAssigmentType.SPACECATEGORY.getVal()
+                // case for import - ad hoc tasks
+                if (section.getJobPlanCategory() == null) {
+                    continue;
+                }
+                if(section.getJobPlanCategory() == PlannedMaintenance.PMScopeAssigmentType.SPACECATEGORY.getVal()
                             && section.getSpaceCategory() == null ){
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Space Category should not be null ");
                     }

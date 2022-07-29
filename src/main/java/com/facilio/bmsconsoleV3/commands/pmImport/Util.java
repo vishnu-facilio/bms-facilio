@@ -205,4 +205,15 @@ public class Util {
         trigger.setSchedule(FieldUtil.getAsJSON(schedule).toJSONString());
         return trigger;
     }
+
+    public static Object persistModuleRecord(String moduleName, Object context) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule plannerModule = modBean.getModule(moduleName);
+
+        FacilioContext ctx = V3Util.createRecord(plannerModule, FieldUtil.getAsProperties(context));
+
+        Map<String, Object> recordMap = (Map<String, Object>) ctx.get("recordMap");
+        List<PMPlanner> triggerList = (List<PMPlanner>) recordMap.get(moduleName);
+        return triggerList.get(0);
+    }
 }

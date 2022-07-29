@@ -9,7 +9,6 @@ import com.facilio.bmsconsole.context.PMTriggerV2;
 import com.facilio.bmsconsole.context.PMTriggerV2.PMTriggerFrequency;
 import com.facilio.bmsconsoleV3.context.V3ResourceContext;
 import com.facilio.bmsconsoleV3.util.V3ResourceAPI;
-import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -50,19 +49,9 @@ public class HandleResourcePlannerImportCommand extends FacilioCommand {
 
 
     private PMTriggerV2 createTrigger(Long pmID, PMTriggerFrequency triggerFreq, Map<String, Object> pm) throws Exception {
-
         PMTriggerV2 trigger = Util.createTrigger(pmID, triggerFreq, pm);
-
         final String triggerModuleName = "pmTriggerV2";
-
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule triggerModule = modBean.getModule(triggerModuleName);
-        FacilioContext ctx = V3Util.createRecord(triggerModule, FieldUtil.getAsProperties(trigger));
-
-        Map<String, Object> recordMap = (Map<String, Object>) ctx.get("recordMap");
-        List<PMTriggerV2> triggerList = (List<PMTriggerV2>) recordMap.get(triggerModuleName);
-
-        return triggerList.get(0);
+        return (PMTriggerV2) Util.persistModuleRecord(triggerModuleName, trigger);
     }
 
 
@@ -97,19 +86,8 @@ public class HandleResourcePlannerImportCommand extends FacilioCommand {
         planner.setName(schedule.getFrequencyTypeEnum().getDescription());
         planner.setTrigger(trigger);
 
-        // private PMJobPlan adhocJobPlan;
-        // private PMJobPlan preReqJobPlan;
-
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule plannerModule = modBean.getModule("pmPlanner");
-
-        FacilioContext ctx = V3Util.createRecord(plannerModule, FieldUtil.getAsProperties(planner));
-
-        final String triggerModuleName = "pmPlanner";
-        Map<String, Object> recordMap = (Map<String, Object>) ctx.get("recordMap");
-        List<PMPlanner> triggerList = (List<PMPlanner>) recordMap.get(triggerModuleName);
-
-        return triggerList.get(0);
+        final String plannerModuleName = "pmPlanner";
+        return (PMPlanner) Util.persistModuleRecord(plannerModuleName, planner);
     }
 
     private void createResourcePlanner(Long pmID, PMPlanner planner, PMTriggerV2 trigger, List<Map<String, Object>> rpList) throws Exception {
@@ -121,11 +99,11 @@ public class HandleResourcePlannerImportCommand extends FacilioCommand {
 
             //        private PMJobPlan jobPlan;
 
-            Object rpResourceObj = record.get("rpResource");
-            if (rpResourceObj == null) {
+            Map<String, Object> rpResource = (Map<String, Object>) record.get("rpResource");
+            if (rpResource == null) {
                 throw new Exception("rpResource cannot be null");
             }
-            long resourceID = FacilioUtil.parseLong(rpResourceObj);
+            long resourceID = FacilioUtil.parseLong(rpResource.get("id"));
             V3ResourceContext resource = V3ResourceAPI.getResource(resourceID);
             resourcePlanner.setResource(resource);
 
