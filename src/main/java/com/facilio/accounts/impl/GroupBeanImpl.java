@@ -1,13 +1,9 @@
 package com.facilio.accounts.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
+import java.util.*;
 
 import com.facilio.db.criteria.operators.StringOperators;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
 
@@ -394,14 +390,13 @@ public class GroupBeanImpl implements GroupBean {
 
 	@Override
 	public List<Group> getOrgGroups(long orgId, boolean status, boolean fetchMembers) throws Exception {
-		return getOrgGroups(orgId,status,fetchMembers,-1,-1,null);
+		return getOrgGroups(orgId,status,fetchMembers,-1,-1,null,null);
 	}
 
 	@Override
-	public List<Group> getOrgGroups(long orgId, boolean status, boolean fetchMembers,int offset, int perPage,String searchQuery) throws Exception {
-		
-		List<Group> groups = new ArrayList<>();
-		
+	public List<Group> getOrgGroups(long orgId, boolean status, boolean fetchMembers,int offset, int perPage,String searchQuery,List<Long> filteredSiteId) throws Exception {
+
+ 		List<Group> groups = new ArrayList<>();
 		List<Long> siteIds = new ArrayList<>();
 		long siteId = AccountUtil.getCurrentSiteId();
 		if (siteId > 0) {
@@ -416,8 +411,14 @@ public class GroupBeanImpl implements GroupBean {
 		}
 		
 		String siteCondition = "";
-		
-		if (!siteIds.isEmpty()) {
+
+		if (CollectionUtils.isNotEmpty(filteredSiteId) ) {
+			filteredSiteId.retainAll(siteIds);
+			if(CollectionUtils.isEmpty(filteredSiteId))
+				return null;
+			siteCondition = " AND (SITE_ID IS NULL OR SITE_ID IN (" + Strings.join(filteredSiteId, ',') + "))";
+		}
+		else{
 			siteCondition = " AND (SITE_ID IS NULL OR SITE_ID IN (" + Strings.join(siteIds, ',') + "))";
 		}
 		
@@ -462,7 +463,10 @@ public class GroupBeanImpl implements GroupBean {
 			}
 
 			if (fetchMembers) {
-				Map<Long, List<Long>> ouidVsAccSpace = UserBeanImpl.getAccessibleSpaceList(ouids);
+				Map<Long, List<Long>> ouidVsAccSpace = null;
+				if(CollectionUtils.isNotEmpty(ouids) && CollectionUtils.size(ouids) > 0){
+					 ouidVsAccSpace = UserBeanImpl.getAccessibleSpaceList(ouids);
+				}
 				for (Group group : groups) {
 					if (group.getMembers() != null) {
 						for (GroupMember member : group.getMembers()) {

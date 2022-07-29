@@ -156,6 +156,7 @@ public class LookupSpecialTypeUtil {
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
 			int page = 0,perPage = 5000,offset = 0;
 			String search = null;
+			List<Long> filteredSiteId = new ArrayList<>();
 			if(!paramsMap.isEmpty()){
 				page = (int) paramsMap.get("page");
 				perPage = (int) paramsMap.get("perPage");
@@ -165,8 +166,19 @@ public class LookupSpecialTypeUtil {
 					offset = 0;
 				}
 			}
+			if(paramsMap.containsKey("filters")) {
+				JSONObject filters = (JSONObject) paramsMap.get("filters");
+				if (filters.containsKey("siteId")) {
+					JSONObject values = (JSONObject) filters.get("siteId");
+					if (values.containsKey("value")) {
+						filteredSiteId = ((List<String>) values.get("value")).stream()
+								.map(s -> Long.parseLong(String.valueOf(s)))
+								.collect(Collectors.toList());
+					}
+				}
+			}
 			List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getOrgId(), true,true,
-					offset,perPage,search);
+					offset,perPage,search,filteredSiteId);
 			List<FieldOption<Long>> groupList = null;
 			if (CollectionUtils.isNotEmpty(groups)) {
 				groupList = groups.stream()
