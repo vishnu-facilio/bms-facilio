@@ -213,7 +213,7 @@ public class SizeBasedLogAppender extends RollingFileAppender {
     
     private String getFileName(String fileName) {
 		Date date = new Date();  
-	    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");  
+	    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HH");  
 	    String strDate= formatter.format(date);
     	String pathArr[] = fileName.split("" + java.io.File.separatorChar);
     	String newFileName = pathArr[pathArr.length-1];

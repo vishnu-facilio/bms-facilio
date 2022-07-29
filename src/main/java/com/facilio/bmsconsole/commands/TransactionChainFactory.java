@@ -5029,7 +5029,11 @@ public class TransactionChainFactory {
 		chain.addCommand(new AddOrUpdateApplicationCommand());
 		return chain;
 	}
-
+	public static FacilioChain getAddApplicationRelatedAppsChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddApplicationRelatedAppsCommand());
+		return chain;
+	}
 	public static FacilioChain markApplicationAsDefault() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new MarkApplicationAsDefaultCommand());
@@ -5102,6 +5106,11 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getDeleteApllicationRelatedAppsChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new DeleteApplicationRelatedAppsCommand());
+		return chain;
+	}
 	public static FacilioChain getAddNewPermissionChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddNewPermissionCommand());

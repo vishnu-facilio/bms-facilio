@@ -21,8 +21,11 @@ public class GetLabourListCommandV3 extends FacilioCommand {
         List<FacilioField> fields = modBean.getAllFields(moduleName);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 
-        List<LookupField>fetchLookup = Arrays.asList((LookupField) fieldsAsMap.get("user"), (LookupField) fieldsAsMap.get("location"));
-        context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,fetchLookup);
+        List<LookupField>fetchLookup = Arrays.asList((LookupField) fieldsAsMap.get("user"),
+				(LookupField) fieldsAsMap.get("location"),
+				(LookupField) fieldsAsMap.get(FacilioConstants.ContextNames.PEOPLE));
+
+        context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,fetchLookup);
         return false;
     }
 }

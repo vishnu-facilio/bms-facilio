@@ -2218,6 +2218,12 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetAllApplicationBasedOnModuleCommand());
 		return chain;
 	}
+	public static FacilioChain getAllApplicationRelatedAppsChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetAllApplicationRealtedAppsCommand());
+		return chain;
+	}
+
 
 	public static FacilioChain getApplicationDetails() {
 		FacilioChain chain = getDefaultChain();
@@ -2559,9 +2565,9 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 	
-	
+
 	public static FacilioChain getControllableCategoryFromSpaceIdChain() {
-		FacilioChain chain = getDefaultChain();		
+		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetControllableCategoryFromSpaceCommand());
 		return chain;
 	}

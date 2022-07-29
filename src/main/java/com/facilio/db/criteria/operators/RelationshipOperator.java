@@ -21,7 +21,7 @@ public enum RelationshipOperator implements Operator<String>{
 
         @Override @SneakyThrows
         public String getWhereClause(String relationName, String value) {
-                return getCondition(relationName, value,true);
+            return getCondition(relationName, true, true, value);
         }
 
         @Override
@@ -47,7 +47,7 @@ public enum RelationshipOperator implements Operator<String>{
 
         @Override @SneakyThrows
         public String getWhereClause(String relationName, String value) {
-            return getCondition(relationName, value, false);
+            return getCondition(relationName, false, true, value);
         }
 
         @Override
@@ -68,9 +68,61 @@ public enum RelationshipOperator implements Operator<String>{
         public List<Object> computeValues(String value) {
             return null;
         }
+    },
+    RELATED(111, "related") {
+
+        @Override @SneakyThrows
+        public String getWhereClause(String relationName, String value) {
+            return getCondition(relationName, true, false, null);
+        }
+
+        @Override
+        public FacilioModulePredicate getPredicate(String s, String value) {
+            return null;
+        }
+
+        @Override
+        public boolean isDynamicOperator() {
+            return false;
+        }
+
+        public boolean isValueNeeded() {
+            return false;
+        }
+
+        @Override
+        public List<Object> computeValues(String value) {
+            return null;
+        }
+    },
+    NOT_RELATED(112, "notrelated") {
+
+        @Override @SneakyThrows
+        public String getWhereClause(String relationName, String value) {
+            return getCondition(relationName, false, false, null);
+        }
+
+        @Override
+        public FacilioModulePredicate getPredicate(String s, String value) {
+            return null;
+        }
+
+        @Override
+        public boolean isDynamicOperator() {
+            return false;
+        }
+
+        public boolean isValueNeeded() {
+            return false;
+        }
+
+        @Override
+        public List<Object> computeValues(String value) {
+            return null;
+        }
     };
 
-    private static String getCondition(String relationName, String value, boolean havingRelation) throws Exception{
+    private static String getCondition(String relationName, boolean havingRelation, boolean withValue, String value) throws Exception{
         RelationMappingContext relationMapping = RelationUtil.getRelationMapping(relationName);
         RelationContext relation = RelationUtil.getRelation(relationMapping.getRelationId(), false);
 
@@ -82,13 +134,15 @@ public enum RelationshipOperator implements Operator<String>{
             builder.append(" NOT ");
         }
         builder.append(" IN (SELECT ")
-        .append(relationMapping.getPositionEnum().getColumnName()).append(" FROM ")
-        .append(relation.getRelationModule().getTableName())
-        .append(" WHERE ")
-        .append(relation.getRelationModule().getTableName()).append(".ORGID = ").append(AccountUtil.getCurrentOrg().getOrgId()).append(" AND ")
-        .append(relation.getRelationModule().getTableName()).append(".MODULEID = ").append(relation.getRelationModuleId()).append(" AND ")
-        .append(relationMapping.getReversePosition().getColumnName()).append(" IN (").append(value)
-        .append("))");
+                .append(relationMapping.getPositionEnum().getColumnName()).append(" FROM ")
+                .append(relation.getRelationModule().getTableName())
+                .append(" WHERE ")
+                .append(relation.getRelationModule().getTableName()).append(".ORGID = ").append(AccountUtil.getCurrentOrg().getOrgId()).append(" AND ")
+                .append(relation.getRelationModule().getTableName()).append(".MODULEID = ").append(relation.getRelationModuleId());
+        if(withValue) {
+            builder.append(" AND ").append(relationMapping.getReversePosition().getColumnName()).append(" IN (").append(value).append(")");
+        }
+        builder.append(")");
         return builder.toString();
     }
 

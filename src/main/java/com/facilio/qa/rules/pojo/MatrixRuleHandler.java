@@ -1,6 +1,7 @@
 package com.facilio.qa.rules.pojo;
 
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.RuleHandler;
@@ -52,16 +53,21 @@ public enum MatrixRuleHandler implements RuleHandler{
 	public List<Map<String, Object>> serializeConditions(QAndARuleType type, QuestionContext question, List<RuleCondition> conditions) throws Exception{
 
 		MatrixQuestionContext mq = (MatrixQuestionContext) question;
-		Map<Long, RuleCondition> conditionMap = conditions.stream().collect(Collectors.toMap(RuleCondition::getRowId, Function.identity()));
+		Map<Long, List<RuleCondition>> conditionMap = conditions.stream().collect(Collectors.groupingBy(RuleCondition::getRowId));
 		List<Map<String, Object>> props = new ArrayList<>();
+		Map<Long, FacilioField> columnIdVsFieldMap = mq.getColumnVsFieldMap();
 		for (MatrixQuestionRow matrixQuestionRow :mq.getRows()) {
-			RuleCondition condition = conditionMap.get(matrixQuestionRow.getId()); //ID cannot be null
-			if (condition == null) {
-				addRowColumns(mq.getColumns(),props,matrixQuestionRow );
-			}
-			else {
-				Map<String, Object> prop = FieldUtil.getAsProperties(condition);
-				props.add(prop);
+			List<RuleCondition> ruleConditions = conditionMap.get(matrixQuestionRow.getId()); //ID cannot be null
+			for(RuleCondition condition:ruleConditions){
+				if (condition == null) {
+					addRowColumns(mq.getColumns(),props,matrixQuestionRow );
+				}
+				else {
+					Map<String, Object> prop = FieldUtil.getAsProperties(condition);
+					FacilioField field = columnIdVsFieldMap.get(prop.get("columnId"));
+					prop.put("displayTypeInt",field.getDisplayTypeInt());
+					props.add(prop);
+				}
 			}
 		}
 

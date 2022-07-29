@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.context.jobplan;
 
+import com.facilio.bmsconsoleV3.context.V3TaskContext;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
@@ -200,10 +201,14 @@ public class JobPlanTaskSectionContext extends V3Context {
         }
     }
 
+    /**
+     * Declaring the variables for handling the properties in additionInfo.
+     */
+
     // declarations for options
     private List<String> options;
     public List<String> getOptions() {
-        if(getAdditionInfo().containsKey("options")){
+        if(options == null && getAdditionInfo().containsKey("options")){
             return (List<String>) getAdditionInfo().get("options");
         }
         return options;
@@ -216,7 +221,7 @@ public class JobPlanTaskSectionContext extends V3Context {
     // declarations for attachmentRequired
     private Boolean attachmentRequired;
     public Boolean getAttachmentRequired() {
-        if(getAdditionInfo().containsKey("attachmentRequired")){
+        if(attachmentRequired == null && getAdditionInfo().containsKey("attachmentRequired")){
             return (Boolean) getAdditionInfo().get("attachmentRequired");
         }
         return attachmentRequired;
@@ -235,13 +240,13 @@ public class JobPlanTaskSectionContext extends V3Context {
     // declarations for enableInput
     private Boolean enableInput;
     public Boolean getEnableInput(){
-        if(getAdditionInfo().containsKey("enableInput")){
+        if(enableInput == null && getAdditionInfo().containsKey("enableInput")){
             return (Boolean) getAdditionInfo().get("enableInput");
         }
         return enableInput;
     }
     public void setEnableInput(Boolean enableInput) {
-        if((enableInput != null && enableInput) || (getInputType() > 0)) {
+        if(enableInput != null) {
             addAdditionInfo("enableInput", enableInput);
         }
         this.enableInput = enableInput;
@@ -250,7 +255,7 @@ public class JobPlanTaskSectionContext extends V3Context {
     // declarations for defaultValue
     private String defaultValue;
     public String getDefaultValue() {
-        if(getAdditionInfo().containsKey("defaultValue")) {
+        if(defaultValue == null && getAdditionInfo().containsKey("defaultValue")) {
             return (String) getAdditionInfo().get("defaultValue");
         }
         return defaultValue;
@@ -265,7 +270,7 @@ public class JobPlanTaskSectionContext extends V3Context {
     // declarations for failureValue
     private String failureValue;
     public String getFailureValue() {
-        if(getAdditionInfo().containsKey("failureValue")) {
+        if(failureValue == null && getAdditionInfo().containsKey("failureValue")) {
             return (String) getAdditionInfo().get("failureValue");
         }
         return failureValue;
@@ -280,8 +285,8 @@ public class JobPlanTaskSectionContext extends V3Context {
     // declarations for deviationOperator
     private Integer deviationOperatorId;
     public Integer getDeviationOperatorId() {
-        if(getAdditionInfo().containsKey("deviationOperatorId")) {
-            return (Integer) getAdditionInfo().get("deviationOperatorId");
+        if(deviationOperatorId == null && getAdditionInfo().containsKey("deviationOperatorId")) {
+            return ((Long) getAdditionInfo().get("deviationOperatorId")).intValue();
         }else if(deviationOperator != null) {
             return deviationOperator.getOperatorId();
         }
@@ -308,7 +313,7 @@ public class JobPlanTaskSectionContext extends V3Context {
     // declarations for createWoOnFailure
     private Boolean createWoOnFailure;
     public Boolean getCreateWoOnFailure() {
-        if(getAdditionInfo().containsKey("createWoOnFailure")){
+        if(createWoOnFailure == null && getAdditionInfo().containsKey("createWoOnFailure")){
             return (Boolean) getAdditionInfo().get("createWoOnFailure");
         }
         return createWoOnFailure;
@@ -321,7 +326,7 @@ public class JobPlanTaskSectionContext extends V3Context {
     // declarations for woCreateFormId
     private Long woCreateFormId;
     public Long getWoCreateFormId() {
-        if(getAdditionInfo().containsKey("woCreateFormId")) {
+        if(woCreateFormId == null && getAdditionInfo().containsKey("woCreateFormId")) {
             return (Long) getAdditionInfo().get("woCreateFormId");
         }
         return woCreateFormId;
@@ -336,7 +341,7 @@ public class JobPlanTaskSectionContext extends V3Context {
     // declarations for remarkOption
     private String remarkOption;
     public String getRemarkOption() {
-        if(getAdditionInfo().containsKey("remarkOption")){
+        if(remarkOption == null && getAdditionInfo().containsKey("remarkOption")){
             return (String) getAdditionInfo().get("remarkOption");
         }
         return remarkOption;
@@ -351,7 +356,7 @@ public class JobPlanTaskSectionContext extends V3Context {
     // declarations for remarksRequired
     private Boolean remarksRequired;
     public Boolean getRemarksRequired() {
-        if(getAdditionInfo().containsKey("remarksRequired")){
+        if(remarksRequired == null && getAdditionInfo().containsKey("remarksRequired")){
             return (Boolean) getAdditionInfo().get("remarksRequired");
         }
         return remarksRequired;
@@ -370,7 +375,7 @@ public class JobPlanTaskSectionContext extends V3Context {
     // declarations for remarkOptionValues
     private List<String> remarkOptionValues;
     public List<String> getRemarkOptionValues() throws Exception {
-        if(getAdditionInfo().containsKey("remarkOptionValues")){
+        if(remarkOptionValues ==null && getAdditionInfo().containsKey("remarkOptionValues")){
             return (List<String>) getAdditionInfo().get("remarkOptionValues");
         } else if (remarkOptionValuesString != null && remarkOptionValuesString.length() > 0) {
             List<String> valueList = new ArrayList<String>(Arrays.asList(remarkOptionValuesString.split(",")));
@@ -386,19 +391,22 @@ public class JobPlanTaskSectionContext extends V3Context {
     // declarations for remarkOptionValuesString
     private String remarkOptionValuesString;
     public String getRemarkOptionValuesString() {
-        if (remarkOptionValues != null && remarkOptionValues.size() != 0) {
+        if(remarkOptionValues ==null && getAdditionInfo().containsKey("remarkOptionValuesString")){
+            return (String) getAdditionInfo().get("remarkOptionValuesString");
+        } else if (remarkOptionValues != null && remarkOptionValues.size() != 0) {
             return StringUtils.join(remarkOptionValues, ",");
         }
         return remarkOptionValuesString;
     }
     public void setRemarkOptionValuesString(String remarkOptionValuesString) {
+        addAdditionInfo("remarkOptionValuesString", remarkOptionValuesString);
         this.remarkOptionValuesString = remarkOptionValuesString;
     }
 
     // declarations for attachmentOption
     private String attachmentOption;
     public String getAttachmentOption() {
-        if(getAdditionInfo().containsKey("attachmentOption")){
+        if(attachmentOption == null && getAdditionInfo().containsKey("attachmentOption")){
             return (String) getAdditionInfo().get("attachmentOption");
         }
         return attachmentOption;
@@ -413,7 +421,7 @@ public class JobPlanTaskSectionContext extends V3Context {
     // declarations for attachmentOptionValues
     private List<String> attachmentOptionValues;
     public List<String> getAttachmentOptionValues() throws Exception {
-        if(getAdditionInfo().containsKey("attachmentOptionValues")){
+        if(attachmentOptionValues == null && getAdditionInfo().containsKey("attachmentOptionValues")){
             return (List<String>) getAdditionInfo().get("attachmentOptionValues");
         }
         return attachmentOptionValues;
@@ -423,19 +431,38 @@ public class JobPlanTaskSectionContext extends V3Context {
         this.attachmentOptionValues = attachmentOptionValues;
     }
 
+    // declaration of attachmentOptionValuesString
+    private String attachmentOptionValuesString;
     public void setAttachmentOptionValuesString(String attachmentOptionValuesString) {
         if (StringUtils.isNotEmpty(attachmentOptionValuesString)) {
             this.attachmentOptionValues = new ArrayList<String>(Arrays.asList(attachmentOptionValuesString.split(",")));
-            addStringListToAdditionInfo("attachmentOptionValues", this.attachmentOptionValues);
+            addAdditionInfo("attachmentOptionValuesString", this.attachmentOptionValuesString);
         }
     }
 
     // getter for attachmentOptionValues as string
     public String getAttachmentOptionValuesString() {
-        if (CollectionUtils.isNotEmpty(attachmentOptionValues)) {
+        if(attachmentOptionValuesString ==null && getAdditionInfo().containsKey("attachmentOptionValuesString")){
+            return (String) getAdditionInfo().get("attachmentOptionValuesString");
+        } else if (CollectionUtils.isNotEmpty(attachmentOptionValues)) {
             return StringUtils.join(attachmentOptionValues, ",");
         }
         return null;
+    }
+
+    // declarations for validation
+    private String validation;
+    public String getValidation() {
+        if(validation == null && getAdditionInfo().containsKey("validation")){
+            return (String) getAdditionInfo().get("validation");
+        }
+        return validation;
+    }
+    public void setValidation(String validation) {
+        if(validation != null){
+            addAdditionInfo("validation", validation);
+        }
+        this.validation = validation;
     }
 
     // Helper function to add list of string to additionInfo

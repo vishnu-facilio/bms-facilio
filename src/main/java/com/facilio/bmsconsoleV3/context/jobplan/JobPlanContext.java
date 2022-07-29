@@ -1,8 +1,8 @@
 package com.facilio.bmsconsoleV3.context.jobplan;
 
+import com.facilio.bmsconsole.context.PlannedMaintenance.PMScopeAssigmentType;
 import com.facilio.bmsconsoleV3.context.V3SpaceCategoryContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
-import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 
 import java.util.List;
@@ -10,57 +10,22 @@ import java.util.List;
 public class JobPlanContext extends V3Context {
 
     private String name;
-    private JobPlanCategory jobPlanCategory;
-
-    public enum JobPlanCategory implements FacilioIntEnum {
-        ALL_FLOORS("All Floors"),
-        ALL_SPACES("All Spaces"),
-        SPACE_CATEGORY("Space Category"),
-        ASSET_CATEGORY("Asset Category"),
-        CURRENT_ASSET("Current Asset"),
-        SPECIFIC_ASSET("Specific Asset"),
-        ALL_BUILDINGS("All Buildings"),
-        ALL_SITES("All Sites"),
-        SPECIFIC_SPACES("Specific Spaces")
-        ;
-        private String name;
-
-        JobPlanCategory(String name) {
-            this.name = name;
-        }
-
-        public static JobPlanCategory valueOf(int value) {
-            if (value > 0 && value <= values().length) {
-                return values()[value - 1];
-            }
-            return null;
-        }
-
-        @Override
-        public Integer getIndex() {
-            return ordinal() + 1;
-        }
-
-        @Override
-        public String getValue() {
-            return name;
-        }
-    }
+    private PMScopeAssigmentType jobPlanCategory;
 
     public void setJobPlanCategory(Integer type) {
         if (type != null) {
-            this.jobPlanCategory = JobPlanCategory.valueOf(type);
+            this.jobPlanCategory = PMScopeAssigmentType.valueOf(type);
         }
     }
 
-    public JobPlanCategory getJobPlanCategoryEnum() {
+    public PMScopeAssigmentType getJobPlanCategoryEnum() {
         return jobPlanCategory;
     }
     public Integer getJobPlanCategory() {
-        if (jobPlanCategory != null) {
-            return jobPlanCategory.getIndex();
+        if(jobPlanCategory != null) {
+            return jobPlanCategory.getVal();
         }
-        return null;
+        return -1;
     }
 
     public String getName() {

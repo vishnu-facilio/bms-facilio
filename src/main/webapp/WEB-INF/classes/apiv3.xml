@@ -924,4 +924,11 @@
         </action>
     </package>
 
+    <package name="visitorTypeForm" namespace="/api/v3/visitorTypeForm" extends="v3Api">
+        <action name="update"
+                class="com.facilio.bmsconsoleV3.actions.VisitorTypeFormsAction"
+                method="updateVisitorTypeForm">
+        </action>
+    </package>
+
 </struts>

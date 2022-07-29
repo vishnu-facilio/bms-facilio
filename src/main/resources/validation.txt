@@ -2710,4 +2710,10 @@
 /api/v3/dashboard/update
 /api/v3/dashboard/:linkName
 /api/v3/dashboard/tab/update
+/api/v2/colorPalette/add
+/api/v2/colorPalette/list
+/api/v2/colorPalette/delete
+/api/v2/application/relatedApps/fetchList
+/api/v2/application/relatedApps/delete
+/api/v2/application/relatedApps/add
 

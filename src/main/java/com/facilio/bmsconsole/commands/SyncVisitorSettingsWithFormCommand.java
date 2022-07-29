@@ -20,12 +20,11 @@ public class SyncVisitorSettingsWithFormCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		VisitorSettingsContext visitorSettingsContext=(VisitorSettingsContext)context.get(ContextNames.VISITOR_SETTINGS);
 		//sync HOST FIELD , NDA field,PHOTO field with visitor settings
-		
+
 		FacilioForm logForm=visitorSettingsContext.getVisitorLogForm();
 		FacilioForm inviteForm=visitorSettingsContext.getVisitorInviteForm();
 		
 		FormField loggingModuleHostField=logForm.getFieldsMap().get("host");
-		FormField inviteModuleHostField=inviteForm.getFieldsMap().get("host");
 		
 		FormField ndaField=logForm.getFieldsMap().get("nda");
 		FormField avatarField=logForm.getFieldsMap().get("avatar");
@@ -44,13 +43,11 @@ public class SyncVisitorSettingsWithFormCommand extends FacilioCommand {
 		}
 		
 		loggingModuleHostField.setConfig(jsonObject);
-		inviteModuleHostField.setConfig(jsonObject);
 		
 		//these fields A MUST IN VISITOR FORM
 		loggingModuleHostField.setHideField(!visitorSettingsContext.getHostEnabled());
 		loggingModuleHostField.setRequired((Boolean)visitorSettingsContext.getHostSettings().get("required"));
-		
-		inviteModuleHostField.setHideField(!visitorSettingsContext.getHostEnabled());
+
 		loggingModuleHostField.setRequired((Boolean)visitorSettingsContext.getHostSettings().get("required"));
 		
 		ndaField.setHideField(!visitorSettingsContext.getNdaEnabled());
@@ -59,11 +56,7 @@ public class SyncVisitorSettingsWithFormCommand extends FacilioCommand {
 		FacilioChain loggingHostFieldUpdateChain = TransactionChainFactory.getUpdateFormFieldChain();
 		loggingHostFieldUpdateChain.getContext().put(ContextNames.FORM_FIELD, loggingModuleHostField);
 		loggingHostFieldUpdateChain.execute();
-		
-		FacilioChain inviteHostFieldUpdateChain = TransactionChainFactory.getUpdateFormFieldChain();
-		inviteHostFieldUpdateChain.getContext().put(ContextNames.FORM_FIELD, inviteModuleHostField);
-		inviteHostFieldUpdateChain.execute();
-		
+
 		FacilioChain avatarFieldUpdateChain = TransactionChainFactory.getUpdateFormFieldChain();
 		avatarFieldUpdateChain.getContext().put(ContextNames.FORM_FIELD, avatarField);
 		avatarFieldUpdateChain.execute();

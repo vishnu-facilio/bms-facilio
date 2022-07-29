@@ -11,10 +11,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.filters.MultiReadServletRequest;
 import com.facilio.util.FacilioUtil;
-import com.facilio.wmsv2.constants.Topics;
-import com.facilio.wmsv2.endpoint.SessionManager;
 import com.facilio.wmsv2.handler.AuditLogHandler;
-import com.facilio.wmsv2.message.Message;
 import com.opensymphony.xwork2.ActionSupport;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,7 +27,6 @@ import org.json.simple.parser.JSONParser;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
-
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.List;
@@ -49,7 +45,6 @@ public class FacilioAction extends ActionSupport {
 	public void setResponseCode(int responseCode) {
 		this.responseCode = responseCode;
 	}
-	
 	private String message;
 	public String getMessage() {
 		return message;
@@ -273,7 +268,7 @@ public class FacilioAction extends ActionSupport {
 	protected void setContentType(String contentType) {
 		this.contentType = contentType;
 	}
-	
+
 	private String filename;
 	public String getFilename() {
 		return filename;
@@ -281,7 +276,7 @@ public class FacilioAction extends ActionSupport {
 	public void setFilename(String filename) {
 		this.filename = filename;
 	}
-	
+
 	private boolean includeParentFilter;
 	public boolean getIncludeParentFilter() {
 		return includeParentFilter;

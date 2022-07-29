@@ -6998,9 +6998,9 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getDefaultField(AgentConstants.WRITABLE,"Writable","WRITABLE", module, FieldType.BOOLEAN));
         fields.add(getDefaultField(AgentConstants.AGENT_WRITABLE,"Agent Writable","AGENT_WRITABLE", module, FieldType.BOOLEAN));
         fields.add(getDefaultField(AgentConstants.THRESHOLD_JSON, "Threshold JSON","THRESHOLD_JSON", module, FieldType.STRING));
-        fields.add(getDefaultField(AgentConstants.CREATED_TIME, "Created Time","CREATED_TIME", module, FieldType.NUMBER));
-        fields.add(getDefaultField(AgentConstants.MAPPED_TIME,"Mapped Time", "MAPPED_TIME", module, FieldType.NUMBER));
-        fields.add(getDefaultField(AgentConstants.LAST_RECORDED_TIME,"Last Recorded Time","LAST_RECORDED_TIME", module, FieldType.NUMBER));
+        fields.add(getDefaultField(AgentConstants.CREATED_TIME, "Created Time","CREATED_TIME", module, FieldType.DATE_TIME));
+        fields.add(getDefaultField(AgentConstants.MAPPED_TIME,"Mapped Time", "MAPPED_TIME", module, FieldType.DATE_TIME));
+        fields.add(getDefaultField(AgentConstants.LAST_RECORDED_TIME,"Last Recorded Time","LAST_RECORDED_TIME", module, FieldType.DATE_TIME));
         fields.add(getDefaultField(AgentConstants.LAST_RECORDED_VALUE,"Last Recorded Value","LAST_RECORDED_VALUE", module, FieldType.STRING));
         fields.add(getDefaultField(AgentConstants.UNIT,"Unit","UNIT", module, FieldType.NUMBER));
         fields.add(getDefaultField(AgentConstants.AGENT_ID,"Agent ID","AGENT_ID", module, FieldType.NUMBER));
@@ -9000,6 +9000,8 @@ public class FieldFactory extends BaseFieldFactory {
 	    fields.add(getField("visitorTypeId", "VISITOR_TYPE_ID", module , FieldType.LOOKUP));
 	    fields.add(getField("visitorLogFormId", "VISITOR_LOG_FORM_ID", module , FieldType.LOOKUP));
 	    fields.add(getField("visitorInviteFormId", "VISITOR_INVITE_FORM_ID", module , FieldType.LOOKUP));
+        fields.add(getField("visitorLogEnabled", "VISITORLOG_ENABLED", module , FieldType.BOOLEAN));
+        fields.add(getField("inviteEnabled", "INVITE_ENABLED", module , FieldType.BOOLEAN));
 
 	    return fields;
     }
@@ -9141,6 +9143,18 @@ public class FieldFactory extends BaseFieldFactory {
 
         return fields;
     }
+
+    public static List<FacilioField> getApplicationRelatedAppsModuleFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getApplicationRelatedAppsModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("applicationId", "APPLICATION_ID", module, FieldType.NUMBER));
+        fields.add(getField("relatedApplicationId","RELATED_APPLICATION_ID", FieldType.NUMBER));
+
+        return fields;
+    }
+
 
     public static List<FacilioField> getWebTabGroupFields() {
         List<FacilioField> fields = new ArrayList<>();
@@ -10374,6 +10388,19 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("displayName", "DISPLAY_NAME", module, FieldType.STRING));
         return fields;
     }
+
+    public static List<FacilioField> getColorPaletteFields() {
+        List<FacilioField> fields = new ArrayList<>();
+
+        FacilioModule module = ModuleFactory.getColorPaletteModule();
+
+        fields.add(getIdField(module));
+        fields.add(getNumberField("userId","USERID",module));
+        fields.add(getField("keyName", "KEY_NAME", module, FieldType.STRING));
+        fields.add(getField("colorCode", "COLOR_CODE", module, FieldType.STRING));
+        return fields;
+    }
+
 
 
     protected static <F extends FacilioField> F  getNewFieldObject(FieldType type) {

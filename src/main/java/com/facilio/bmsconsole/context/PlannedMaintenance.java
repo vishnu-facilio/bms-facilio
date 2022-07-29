@@ -57,5 +57,9 @@ public class PlannedMaintenance extends V3WorkOrderContext {
             }
             return null;
         }
+
+        public int getVal() {
+            return ordinal() + 1;
+        }
     }
 }

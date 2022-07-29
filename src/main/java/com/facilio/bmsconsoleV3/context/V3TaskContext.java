@@ -7,7 +7,6 @@ import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.modules.FacilioStatus;
-import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.unitconversion.Unit;
 import com.facilio.util.FacilioUtil;
@@ -501,11 +500,12 @@ public class V3TaskContext extends V3Context {
         return false;
     }
 
+    // declaration of remarkOptionValues
     private List<String> remarkOptionValues;
 
     public List<String> getRemarkOptionValues() throws Exception {
 
-        if (remarkOptionValuesString != null && remarkOptionValuesString.length() > 0) {
+        if (remarkOptionValues == null && remarkOptionValuesString != null && remarkOptionValuesString.length() > 0) {
             List<String> valueList = new ArrayList<String>(Arrays.asList(remarkOptionValuesString.split(",")));
             return valueList;
         }
@@ -515,6 +515,7 @@ public class V3TaskContext extends V3Context {
         this.remarkOptionValues = remarkOptionValues;
     }
 
+    // declaration of remarkOptionValuesString
     private String remarkOptionValuesString;
 
     public String getRemarkOptionValuesString() {
@@ -529,13 +530,8 @@ public class V3TaskContext extends V3Context {
         this.remarkOptionValuesString = remarkOptionValuesString;
     }
 
-    private List<String> attachmentOptionValues;
-    public List<String> getAttachmentOptionValues() throws Exception {
-        return attachmentOptionValues;
-    }
-    public void setAttachmentOptionValues(List<String> attachmentOptionValues) {
-        this.attachmentOptionValues = attachmentOptionValues;
-    }
+    // declaration of attachmentOptionValuesString
+    private String attachmentOptionValuesString;
     public String getAttachmentOptionValuesString() {
         if (CollectionUtils.isNotEmpty(attachmentOptionValues)) {
             return StringUtils.join(attachmentOptionValues, ",");
@@ -543,9 +539,20 @@ public class V3TaskContext extends V3Context {
         return null;
     }
     public void setAttachmentOptionValuesString(String attachmentOptionValuesString) {
-        if (StringUtils.isNotEmpty(attachmentOptionValuesString)) {
-            this.attachmentOptionValues = new ArrayList<String>(Arrays.asList(attachmentOptionValuesString.split(",")));
+        this.attachmentOptionValuesString = attachmentOptionValuesString;
+    }
+
+    // declaration of attachmentOptionValues
+    private List<String> attachmentOptionValues;
+    public List<String> getAttachmentOptionValues() throws Exception {
+        if (attachmentOptionValues == null && attachmentOptionValuesString != null && attachmentOptionValuesString.length() > 0) {
+            List<String> valueList = new ArrayList<String>(Arrays.asList(attachmentOptionValuesString.split(",")));
+            return valueList;
         }
+        return attachmentOptionValues;
+    }
+    public void setAttachmentOptionValues(List<String> attachmentOptionValues) {
+        this.attachmentOptionValues = attachmentOptionValues;
     }
 
     @JsonIgnore

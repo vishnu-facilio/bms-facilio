@@ -130,4 +130,4 @@ classes:
   - com.facilio.bmsconsoleV3.signup.jobPlan.AddJobPlanTaskSectionFields
 
   - com.facilio.bmsconsoleV3.signup.craft.AddCraftModules
-
+  - com.facilio.bmsconsoleV3.signup.craft.LabourCraftAndSkillsModules

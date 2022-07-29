@@ -2,12 +2,18 @@ package com.facilio.bmsconsoleV3.context.labour;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsole.context.PeopleContext;
+import com.facilio.bmsconsoleV3.context.CraftContext;
+import com.facilio.bmsconsoleV3.context.SkillsContext;
 import com.facilio.bmsconsoleV3.context.location.LocationContextV3;
 import com.facilio.v3.context.V3Context;
-
+import lombok.Getter;
+import lombok.Setter;
+@Setter@Getter
 public class LabourContextV3 extends V3Context {
     private static final Long serialVersionUID = 1L;
 
@@ -129,4 +135,17 @@ public class LabourContextV3 extends V3Context {
         }
         return -1L;
     }
+
+	public PeopleContext getPeople(){
+
+		return people;
+	}
+
+	public void setPeople(PeopleContext people){
+
+		this.people = people;
+	}
+
+	private PeopleContext people;
+	private List<LabourCraftAndSkillContext> labourCrafts;
 }

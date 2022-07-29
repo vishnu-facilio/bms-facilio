@@ -919,6 +919,30 @@
     </request>
 
 
+<!--    <request path="/api/v2/application/relatedApps/fetchList">-->
+<!--        <urlparams>-->
+<!--            <property name="appId" type="number"  mandatory="true"/>-->
+<!--        </urlparams>-->
+<!--    </request>-->
+
+<!--    <request path="/api/v2/application/relatedApps/delete">-->
+<!--        <requestbody type="object">-->
+<!--            <property name="appId" type="number"  mandatory="true"/>-->
+<!--            <property name="relatedApplicationIds" type="array">-->
+<!--                <items type="number"/>-->
+<!--            </property>-->
+<!--        </requestbody>-->
+<!--    </request>-->
+<!--    <request path="/api/v2/application/relatedApps/add">-->
+<!--        <requestbody type="object">-->
+<!--            <property name="appId" type="number"  mandatory="true"/>-->
+<!--            <property name="relatedApplicationIds" type="array">-->
+<!--                <items type="number"/>-->
+<!--            </property>-->
+<!--        </requestbody>-->
+<!--    </request>-->
+
+
 	<request path="/api/v3/sandbox/add">
         <requestbody type="object">
             <property name="sandbox" type="object">
@@ -932,7 +956,7 @@
             </property>
         </requestbody>
     </request>
-    
+
     <request path="/api/v3/sandbox/update">
         <requestbody type="object">
             <property name="sandbox" type="object">
@@ -947,6 +971,21 @@
                 <property name="createdTime" type="number"/>
                 <property name="modifiedTime" type="number"/>
             </property>
+             </requestbody>
+    </request>
+    <request path="/api/v3/visitorTypeForm/update">
+        <requestbody type="object">
+            <property name="visitorType" type="object">
+                <property name="id" type="number"/>
+                <property name="orgId" type="number"/>
+                <property name="name" type="string"/>
+                <property name="moduleId" type="number"/>
+                <property name="visitorLogo" type="number"/>
+                <property name="visitorFormId" type="number"/>
+                <property name="formEnabled" type="boolean"/>
+            </property>
+            <property name="parentModuleName" type="string"/>
+            <property name="appId" type="number"/>
         </requestbody>
     </request>
 
@@ -957,7 +996,7 @@
             </property>
         </requestbody>
     </request>
-    
+
     <request path="/api/v3/sandbox/pullSandboxChanges">
         <requestbody type="object">
             <property name="sandbox" type="object">
@@ -965,5 +1004,28 @@
             </property>
         </requestbody>
     </request>
-    
+
+ <!--   <request path="/api/v2/colorPalette/add">
+        <requestbody type="object">
+            <property name="colorPalette" type="object">
+                <property name="keyName" type="string"></property>
+                <property name="colorCode" type="string"></property>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v2/colorPalette/list">
+        <requestbody type="object">
+            <property name="keys" type="array">
+                <items type="string"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/colorPalette/delete">
+        <requestbody type="object">
+            <property name="id" type="number"></property>
+        </requestbody>
+    </request>-->
+
+
 </config>

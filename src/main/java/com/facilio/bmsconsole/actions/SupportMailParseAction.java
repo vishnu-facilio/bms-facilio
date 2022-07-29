@@ -21,8 +21,8 @@ public class SupportMailParseAction extends ActionSupport {
 	public String execute() throws Exception {
 		// TODO Auto-generated method stub
 		//System.out.println(s3.toJSONString());
-		 HttpServletRequest request = ServletActionContext.getRequest();
-		String param = request.getQueryString();		
+		HttpServletRequest request = ServletActionContext.getRequest();
+		String param = request.getQueryString();
 		LOGGER.info("SupportMailParseAction::execute :: called "+param);
 		LOGGER.info("Added to WorkorderEmail table with id : "+WorkOrderRequestAPI.addS3MessageId(s3,recipient));
 		return SUCCESS;

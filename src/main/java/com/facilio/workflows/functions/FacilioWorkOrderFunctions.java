@@ -1,6 +1,11 @@
 package com.facilio.workflows.functions;
 
 import java.util.Collections;
+
+import com.facilio.bmsconsole.context.TaskSectionContext;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.scriptengine.systemfunctions.FacilioSystemFunctionNameSpace;
 import com.facilio.scriptengine.systemfunctions.FacilioWorkflowFunctionInterface;
 import java.util.HashMap;
@@ -203,9 +208,33 @@ public enum FacilioWorkOrderFunctions implements FacilioWorkflowFunctionInterfac
 				throw new FunctionParamException("Required Object is null");
 			}
 		}
+	},
+
+	ADD_TASK_SECTION_SCRIPT(1,"addTaskSection") {
+		@Override
+		public Object execute (Map < String, Object > globalParam, Object...objects) throws Exception {
+			if (objects.length != 3) {
+				throw new Exception("Arguments are not Valid");
+			}
+			String sectionName = String.valueOf(objects[0]);
+			Long parentTicket = (Long) objects[1];
+			Long sequenceNumber = (Long) objects[2];
+			TaskSectionContext section = new TaskSectionContext();
+			section.setParentTicketId(parentTicket);
+			section.setName(sectionName);
+			section.setSequenceNumber(sequenceNumber);
+			section.setPreRequest(Boolean.FALSE);
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.table(ModuleFactory.getTaskSectionModule().getTableName())
+					.fields(FieldFactory.getTaskSectionFields());
+			Map<String, Object> taskSection = FieldUtil.getAsProperties(section);
+			long taskSectionId = insertBuilder.insert(taskSection);
+
+			return taskSectionId;
+		}
 	}
-	
-	
+
+
 	;
 	;
 	

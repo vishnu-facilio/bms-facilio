@@ -10,9 +10,12 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.ApplicationLayoutContext;
+import com.facilio.bmsconsole.context.ApplicationRelatedAppsContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.ServletActionContext;
@@ -29,6 +32,9 @@ public class ApplicationAction extends FacilioAction {
 	private static final long serialVersionUID = 1L;
 
 	private ApplicationContext application;
+	@Getter
+	@Setter
+	private List<Long> relatedApplicationIds;
 
 	private Boolean fetchMyApps = false;
 
@@ -229,6 +235,38 @@ public class ApplicationAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	public String addApplicationRelatedApps() throws Exception{
+		FacilioChain chain = TransactionChainFactory.getAddApplicationRelatedAppsChain();
+		FacilioContext context = chain.getContext();
+
+		context.put(FacilioConstants.ContextNames.APPLICATION_ID,appId);
+		context.put(FacilioConstants.ContextNames.APPLICATION_RELATED_APPS_LIST,relatedApplicationIds);
+		chain.execute();
+
+		return SUCCESS;
+	}
+	public String getAllApplicationRelatedApps() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.getAllApplicationRelatedAppsChain();
+		FacilioContext context = chain.getContext();
+
+		context.put(FacilioConstants.ContextNames.APPLICATION_ID,appId);
+		chain.execute();
+
+		setResult(FacilioConstants.ContextNames.RELATED_APPLICATIONS, context.get(FacilioConstants.ContextNames.RELATED_APPLICATIONS));
+		return SUCCESS;
+	}
+
+	public String deleteApplicationRelatedApps() throws Exception{
+		FacilioChain chain = TransactionChainFactory.getDeleteApllicationRelatedAppsChain();
+		FacilioContext context = chain.getContext();
+
+		context.put(FacilioConstants.ContextNames.APPLICATION_ID,appId);
+		context.put(FacilioConstants.ContextNames.APPLICATION_RELATED_APPS_LIST,relatedApplicationIds);
+		chain.execute();
+
+		return SUCCESS;
+	}
+
 
 	public String markApplicationAsDefault() throws Exception {
 		FacilioChain chain = TransactionChainFactory.markApplicationAsDefault();
@@ -372,7 +410,7 @@ public class ApplicationAction extends FacilioAction {
 		return SUCCESS;
 
 	}
-	
+
 	public String deleteUserSignature() throws Exception {
 		FacilioChain chain = TransactionChainFactory.deleteUserSignatureChain();
 		FacilioContext context = chain.getContext();

@@ -501,6 +501,7 @@ public class AccountUtil {
 		PM_OBSERVATION(75, 2048, LicenseMapping.GROUP2LICENSE),
 		TUTEN_LABS(76, 4096, LicenseMapping.GROUP2LICENSE),
 		FAILURE_CODES(77, 8192, LicenseMapping.GROUP2LICENSE),
+		KIOSK_APP_FORM(78, 16384, LicenseMapping.GROUP2LICENSE),
 		;
 
 		public int featureId;
