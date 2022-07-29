@@ -459,20 +459,28 @@ public class PageFactory {
 	}
 
 	protected static boolean addRelationshipSection(Page page, Page.Tab tab, long moduleId) throws Exception{
+		return addRelationshipSection(page, tab, Collections.singletonList(moduleId));
+	}
+	protected static boolean addRelationshipSection(Page page, Page.Tab tab, List<Long> moduleIds) throws Exception{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		List<RelationRequestContext> relations = RelationUtil.getAllRelations(modBean.getModule(moduleId));
-		if (CollectionUtils.isEmpty(relations)) {
-			return false;
-		}
 		Section relationshipSection = page.new Section("Relationships", "List of relationships and types between records across modules");
-		for (RelationRequestContext relation : relations) {
-			PageWidget relationWidget = new PageWidget(WidgetType.RELATIONSHIP_WIDGET);
-			relationWidget.setRelation(relation);
-			relationWidget.addToLayoutParams(relationshipSection, 24, 8);
-			relationshipSection.addWidget(relationWidget);
+		boolean isRelationshipAdded = false;
+		for(Long moduleId : moduleIds) {
+			List<RelationRequestContext> relations = RelationUtil.getAllRelations(modBean.getModule(moduleId));
+			if (CollectionUtils.isNotEmpty(relations)) {
+				isRelationshipAdded = true;
+				for (RelationRequestContext relation : relations) {
+					PageWidget relationWidget = new PageWidget(WidgetType.RELATIONSHIP_WIDGET);
+					relationWidget.setRelation(relation);
+					relationWidget.addToLayoutParams(relationshipSection, 24, 8);
+					relationshipSection.addWidget(relationWidget);
+				}
+			}
 		}
-		tab.addSection(relationshipSection);
-		return true;
+		if(isRelationshipAdded) {
+			tab.addSection(relationshipSection);
+		}
+		return isRelationshipAdded;
 	}
 
 	public static void getRelatedListMeta(Section section, long moduleId, List<String> relatedModules, boolean include) throws Exception {

@@ -260,7 +260,7 @@ public class AssetPageFactory extends PageFactory {
 
 
 			Tab tab11 = page.new Tab("Related");
-			boolean isRelationshipAdded = addRelationshipSection(page, tab11, assetModule.getModuleId());
+			boolean isRelationshipAdded = addRelationshipSection(page, tab11, module.getModuleId());
 
 			Section tab11Sec1 = getRelatedListSectionObj(page);
 			tab11.addSection(tab11Sec1);
