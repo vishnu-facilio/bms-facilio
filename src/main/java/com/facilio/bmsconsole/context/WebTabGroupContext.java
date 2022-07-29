@@ -1,10 +1,22 @@
 package com.facilio.bmsconsole.context;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 
 public class WebTabGroupContext implements Serializable {
 
+    public WebTabGroupContext(List<WebTabContext> webTabs, String name, String route, int iconType, int order, Long featureLicense,long layoutId){
+        this.webTabs = webTabs;
+        this.name = name;
+        this.route = route;
+        this.iconType = iconType;
+        this.order = order;
+        if(featureLicense != null){
+            this.featureLicense = featureLicense;
+        }
+        this.layoutId = layoutId;
+    }
     private long id = -1;
     public long getId() {
         return id;

@@ -15,7 +15,21 @@ import java.util.List;
 import java.util.Map;
 
 public class WebTabContext implements Serializable {
-
+    public WebTabContext(String name, String route, WebTabContext.Type type, List<Long> moduleIds, String config, Integer featureLicense,List<String> specialTypeModules,long appId) {
+        this.name = name;
+        this.route = route;
+        this.type = type;
+        this.moduleIds = moduleIds;
+        try {
+            JSONParser parser = new JSONParser();
+            this.config = (JSONObject) parser.parse(config);
+        } catch (Exception e) {}
+        if(featureLicense != null){
+            this.featureLicense = featureLicense;
+        }
+        this.specialTypeModules = specialTypeModules;
+        this.applicationId = appId;
+    }
     private long id = -1;
     public long getId() {
         return id;

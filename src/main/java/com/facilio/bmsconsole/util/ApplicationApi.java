@@ -1019,9 +1019,8 @@ public class ApplicationApi {
             long webGroupId = 0l;
             FacilioChain chain;
             FacilioContext chainContext;
-            DefaultTabsAndTabGroups defaultTabsAndTabGroups = new DefaultTabsAndTabGroups(layout.getApplicationId(),
-                    layout.getId());
-            for (WebTabGroupContext webTabGroupContext : defaultTabsAndTabGroups.getWebTabGroups()) {
+            DefaultTabsAndTabGroups defaultTabsAndTabGroups = new DefaultTabsAndTabGroups();
+            for (WebTabGroupContext webTabGroupContext : defaultTabsAndTabGroups.getWebTabGroups(layout.getApplicationId(),layout.getId())) {
                 if (!webTabGroupContext.getName().equals("ONLY_TABS")) {
                     chain = TransactionChainFactory.getAddOrUpdateTabGroup();
                     chainContext = chain.getContext();
@@ -1030,7 +1029,7 @@ public class ApplicationApi {
                     webGroupId = (long) chainContext.get(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID);
                 }
                 webTabGroupContext.setId(webGroupId);
-                List<WebTabContext> tabs = defaultTabsAndTabGroups.getGroupNameVsTabsMap()
+                List<WebTabContext> tabs = defaultTabsAndTabGroups.getGroupNameVsTabsMap(layout.getApplicationId(),layout.getId())
                         .get(webTabGroupContext.getRoute());
                 for (WebTabContext webTabContext : tabs) {
                     WebTabContext webtab = getWebTabForApplication(layout.getApplicationId(), webTabContext.getRoute());
