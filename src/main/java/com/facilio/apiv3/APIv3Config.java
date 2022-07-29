@@ -2026,6 +2026,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getAlarmOccurrence() {
         return () -> new V3Config(AlarmOccurrenceContext.class, new ModuleCustomFieldCount30())
                 .list()
+                .beforeFetch(new LoadSupplementsForAlarmOccurrenceCommand())
                 .summary()
                 .build();
     }
