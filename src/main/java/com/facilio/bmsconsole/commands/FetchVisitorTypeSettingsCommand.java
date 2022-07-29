@@ -1,9 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
@@ -31,6 +28,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
+import static com.facilio.bmsconsole.util.ApplicationApi.getApplicationForId;
 import static com.facilio.bmsconsoleV3.util.V3VisitorManagementAPI.checkAddOrUpdateVisitorTypeForm;
 
 public class FetchVisitorTypeSettingsCommand extends FacilioCommand {
@@ -107,6 +105,27 @@ public class FetchVisitorTypeSettingsCommand extends FacilioCommand {
 		if(visitorTypeFormContext.getVisitorInviteFormId() > 0) {
 			FacilioForm visitorInviteForm = FormsAPI.getFormFromDB(visitorTypeFormContext.getVisitorInviteFormId());		
 			visitorSettingsContext.setVisitorInviteForm(visitorInviteForm);
+		}
+
+		ApplicationContext currentApp = getApplicationForId(appId);
+		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.KIOSK_APP_FORM) && currentApp != null && Objects.equals(currentApp.getLinkName(), ApplicationLinkNames.KIOSK_APP))
+		{
+			selectBuilder=new GenericSelectRecordBuilder();
+			selectBuilder.table(ModuleFactory.getVisitorTypeFormsModule().getTableName()).
+					select(FieldFactory.getVisitorTypeFormsFields()).
+					andCondition(CriteriaAPI.getCondition("VISITOR_TYPE_ID", "visitorTypeId", visitorTypeId+"", NumberOperators.EQUALS)).
+					andCondition(CriteriaAPI.getCondition("APP_ID", "appId", app.getId()+"", NumberOperators.EQUALS));
+			List<Map<String,Object>> MainAppTypeFormList = selectBuilder.get();
+			Map<String,Object> MainAppvisitorTypeForm = null;
+			if(!CollectionUtils.isEmpty(MainAppTypeFormList)) {
+				MainAppvisitorTypeForm = MainAppTypeFormList.get(0);
+			}
+			VisitorTypeFormsContext MainAppVTypeFormContext = FieldUtil.getAsBeanFromMap(MainAppvisitorTypeForm, VisitorTypeFormsContext.class);
+			visitorSettingsContext.setVisitorInviteFormId(MainAppVTypeFormContext.getVisitorInviteFormId());
+			if(MainAppVTypeFormContext.getVisitorInviteFormId() > 0) {
+				FacilioForm visitorInviteForm = FormsAPI.getFormFromDB(MainAppVTypeFormContext.getVisitorInviteFormId());
+				visitorSettingsContext.setVisitorInviteForm(visitorInviteForm);
+			}
 		}
 		
 		context.put(ContextNames.VISITOR_SETTINGS,visitorSettingsContext);
