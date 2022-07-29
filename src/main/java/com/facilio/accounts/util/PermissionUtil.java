@@ -252,6 +252,9 @@ public class PermissionUtil {
 													isPlanned = true;
 													userCondition.setColumnName("Workorder_Template.ASSIGNED_TO_ID");
 												}
+												else if(moduleName.equals("workorder")){
+													userCondition.setColumnName("Tickets.ASSIGNED_TO_ID");
+												}
 												else {
 													userCondition.setColumnName("ASSIGNED_TO_ID");
 												}
@@ -288,6 +291,10 @@ public class PermissionUtil {
 												isPlanned = true;
 												groupColName = "Workorder_Template.ASSIGNMENT_GROUP_ID";
 												colName = "Workorder_Template.ASSIGNED_TO_ID";
+											}
+											else if(moduleName.equals("workorder")){
+												groupColName = "Tickets.ASSIGNMENT_GROUP_ID";
+												colName = "Tickets.ASSIGNED_TO_ID";
 											}
 											Condition groupCondition = CriteriaAPI.getCondition(groupColName, "assignmentGroupId", StringUtils.join(groupIds, ","), PickListOperators.IS);
 											Condition userCondition = CriteriaAPI.getCondition(colName, "assignedToid", (FacilioConstants.Criteria.LOGGED_IN_USER), PickListOperators.IS);
@@ -376,6 +383,9 @@ public class PermissionUtil {
 										isPlanned = true;
 										userCondition.setColumnName("Workorder_Template.ASSIGNED_TO_ID");
 									}
+									else if(moduleName.equals("workorder")){
+										userCondition.setColumnName("Tickets.ASSIGNED_TO_ID");
+									}
 									else {
 										userCondition.setColumnName("ASSIGNED_TO_ID");
 									}
@@ -414,6 +424,10 @@ public class PermissionUtil {
 										groupColName = "Workorder_Template.ASSIGNMENT_GROUP_ID";
 										colName = "Workorder_Template.ASSIGNED_TO_ID";
 										isPlanned = true;
+									}
+									else if(moduleName.equals("workorder")){
+										groupColName = "Tickets.ASSIGNMENT_GROUP_ID";
+										colName = "Tickets.ASSIGNED_TO_ID";
 									}
 									Condition groupCondition = CriteriaAPI.getCondition(groupColName, "assignmentGroupId", StringUtils.join(groupIds, ","), PickListOperators.IS);
 									Condition userCondition = CriteriaAPI.getCondition(colName, "assignedToid", (FacilioConstants.Criteria.LOGGED_IN_USER), PickListOperators.IS);
