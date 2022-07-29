@@ -31,6 +31,7 @@ public class ReadingImportAction extends V3Action{
     private int perPage;
     private String filters;
     private String moduleName;
+   // private boolean withCount;
 
     public JSONObject getData() {
         return this.data;
@@ -78,9 +79,12 @@ public class ReadingImportAction extends V3Action{
 
         FacilioChain chain = ReadOnlyChainFactoryV3.getReadingImportDataList();
         FacilioContext context = chain.getContext();
+
         JSONObject pagination = new JSONObject();
         pagination.put("page", this.getPage());
         pagination.put("perPage", this.getPerPage());
+        pagination.put("withCount",this.getWithCount());
+
         context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
         context.put(FacilioConstants.ContextNames.MODULE_NAME,this.getModuleName());
 
@@ -92,6 +96,7 @@ public class ReadingImportAction extends V3Action{
         chain.execute();
 
         setData("readingimport", context.get("READING_IMPORT_DATA_LIST"));
+        setData("count",context.get("count"));
 
         return V3Action.SUCCESS;
     }
@@ -99,11 +104,15 @@ public class ReadingImportAction extends V3Action{
 
         FacilioChain chain = ReadOnlyChainFactoryV3.getMyReadingImportDataList();
         FacilioContext context = chain.getContext();
+
         JSONObject pagination = new JSONObject();
         pagination.put("page", this.getPage());
         pagination.put("perPage", this.getPerPage());
+        pagination.put("withCount",this.getWithCount());
+
         context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
         context.put(FacilioConstants.ContextNames.MODULE_NAME,this.getModuleName());
+
         if (filters != null && !filters.isEmpty()) {
             JSONParser parser = new JSONParser();
             JSONObject json = (JSONObject) parser.parse(filters);
@@ -112,6 +121,7 @@ public class ReadingImportAction extends V3Action{
         chain.execute();
 
         setData("readingimport", context.get("READING_IMPORT_DATA_LIST"));
+        setData("count",context.get("count"));
 
         return V3Action.SUCCESS;
     }

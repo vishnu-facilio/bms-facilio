@@ -11,11 +11,10 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
@@ -27,17 +26,17 @@ public class FetchMyReadingImportDataList extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
-        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-                .select(FieldFactory.getReadingImportFields())
-                .table(ModuleFactory.getReadingImportAPPModule().getTableName());
+        GenericSelectRecordBuilder selectBuilder = select(context);
 
         JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
 
         int perPage;
         int page;
+        boolean withCount = false;
         if (pagination != null) {
             page = (int) (pagination.get("page") == null ? 1 : pagination.get("page"));
             perPage = (int) (pagination.get("perPage") == null ? 50 : pagination.get("perPage"));
+            withCount = (boolean) pagination.get("withCount");
         } else {
             page = 1;
             perPage = 50;
@@ -46,7 +45,6 @@ public class FetchMyReadingImportDataList extends FacilioCommand {
         if (offset < 0) {
             offset = 0;
         }
-
         selectBuilder.offset(offset);
         selectBuilder.limit(perPage);
 
@@ -82,6 +80,31 @@ public class FetchMyReadingImportDataList extends FacilioCommand {
                 }
             context.put("READING_IMPORT_DATA_LIST", readingDataList);
         }
+        if(withCount){
+            GenericSelectRecordBuilder countSelectBuilder = new GenericSelectRecordBuilder()
+                    .select(FieldFactory.getCountField())
+                    .table(ModuleFactory.getReadingImportAPPModule().getTableName());
+            List<Map<String,Object>> countRecord = countSelectBuilder.get();
+            if(CollectionUtils.isNotEmpty(countRecord)){
+                context.put("count", countRecord.get(0).get("count"));
+            }
+        }
         return false;
+    }
+    public GenericSelectRecordBuilder select(Context context){
+
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(FieldFactory.getReadingImportFields())
+                .table(ModuleFactory.getReadingImportAPPModule().getTableName());
+
+        Criteria filterCriteria = (Criteria) context.get(Constants.FILTER_CRITERIA);
+        if(filterCriteria != null) {
+            selectBuilder.andCriteria(filterCriteria);
+        }
+
+        selectBuilder.andCondition(CriteriaAPI.getCondition("Reading_Import_APP.CREATED_BY", "createdBy", String.valueOf(AccountUtil.getCurrentUser().getOuid()), NumberOperators.EQUALS));
+        selectBuilder.orderBy("CREATED_TIME  desc");
+
+        return selectBuilder;
     }
 }
