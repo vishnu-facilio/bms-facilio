@@ -994,8 +994,21 @@ public class ReportUtil {
 				
 				ReportFolderContext folder = FieldUtil.getAsBeanFromMap(prop, ReportFolderContext.class);
 				if(isWithReports) {
+					List<ReportContext> response_folder_list = new ArrayList<>();
 					List<ReportContext> reports = getReportsFromFolderId(folder.getId());
-					folder.setReports(reports);
+					if(reports != null && reports.size() > 0)
+					{
+						ReportContext  new_report_context = null;
+						for(ReportContext report_context : reports)
+						{
+							new_report_context = new ReportContext();
+							new_report_context.setName(report_context.getName());
+							new_report_context.setId(report_context.getId());
+							new_report_context.setReportFolderId(report_context.getReportFolderId());
+							response_folder_list.add(new_report_context);
+						}
+					}
+					folder.setReports(response_folder_list);
 				}
 				reportFolders.add(folder);
 			}
