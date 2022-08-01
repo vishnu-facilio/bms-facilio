@@ -265,7 +265,12 @@ public class PermissionUtil {
 												criteria = new Criteria();
 												criteria.addAndCondition(userCondition);
 												if (!isPlanned) {
-													Condition createdByCondition = CriteriaAPI.getCondition("CREATED_BY", "createdBy", (FacilioConstants.Criteria.LOGGED_IN_USER), PickListOperators.IS);
+													Condition createdByCondition = null;
+													if(moduleName.equals("workorder")) {
+														createdByCondition = CriteriaAPI.getCondition("Tickets.CREATED_BY", "createdBy", (FacilioConstants.Criteria.LOGGED_IN_USER), PickListOperators.IS);
+													}else {
+														createdByCondition = CriteriaAPI.getCondition("CREATED_BY", "createdBy", (FacilioConstants.Criteria.LOGGED_IN_USER), PickListOperators.IS);
+													}
 													criteria.addOrCondition(createdByCondition);
 												}
 												
@@ -304,7 +309,12 @@ public class PermissionUtil {
 											criteria.addOrCondition(userCondition);
 											
 											if (!isPlanned) {
-												Condition createdByCondition = CriteriaAPI.getCondition("CREATED_BY", "createdBy", (FacilioConstants.Criteria.LOGGED_IN_USER), PickListOperators.IS);
+												Condition createdByCondition = null;
+												if(moduleName.equals("workorder")) {
+													createdByCondition = CriteriaAPI.getCondition("Tickets.CREATED_BY", "createdBy", (FacilioConstants.Criteria.LOGGED_IN_USER), PickListOperators.IS);
+												}else {
+													createdByCondition = CriteriaAPI.getCondition("CREATED_BY", "createdBy", (FacilioConstants.Criteria.LOGGED_IN_USER), PickListOperators.IS);
+												}
 												criteria.addOrCondition(createdByCondition);
 											}
 											return criteria;
@@ -396,7 +406,13 @@ public class PermissionUtil {
 									criteria = new Criteria();
 									criteria.addAndCondition(userCondition);
 									if (!isPlanned) {
-										Condition createdByCondition = CriteriaAPI.getCondition("CREATED_BY", "createdBy", (FacilioConstants.Criteria.LOGGED_IN_USER), PickListOperators.IS);
+										Condition createdByCondition = null;
+										if(moduleName.equals("workorder"))
+										{
+											createdByCondition = CriteriaAPI.getCondition("Tickets.CREATED_BY", "createdBy", (FacilioConstants.Criteria.LOGGED_IN_USER), PickListOperators.IS);
+										}else {
+											createdByCondition = CriteriaAPI.getCondition("CREATED_BY", "createdBy", (FacilioConstants.Criteria.LOGGED_IN_USER), PickListOperators.IS);
+										}
 										criteria.addOrCondition(createdByCondition);
 									}
 									
@@ -436,7 +452,12 @@ public class PermissionUtil {
 									criteria.addOrCondition(groupCondition);
 									criteria.addOrCondition(userCondition);
 									if (!isPlanned) {
-										Condition createdByCondition = CriteriaAPI.getCondition("CREATED_BY", "createdBy", (FacilioConstants.Criteria.LOGGED_IN_USER), PickListOperators.IS);
+										Condition createdByCondition = null;
+										if(moduleName.equals("workorder")) {
+											createdByCondition = CriteriaAPI.getCondition("Tickets.CREATED_BY", "createdBy", (FacilioConstants.Criteria.LOGGED_IN_USER), PickListOperators.IS);
+										}else {
+											createdByCondition = CriteriaAPI.getCondition("CREATED_BY", "createdBy", (FacilioConstants.Criteria.LOGGED_IN_USER), PickListOperators.IS);
+										}
 										criteria.addOrCondition(createdByCondition);
 									}
 								}break;
