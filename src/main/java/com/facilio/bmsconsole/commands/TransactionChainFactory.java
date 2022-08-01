@@ -4349,6 +4349,7 @@ public class TransactionChainFactory {
 	public static FacilioChain getAddPointsChain(){
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddPointsCommand());
+		chain.addCommand(new MLTagPointListCommand());
 		return chain;
 	}
 
@@ -5001,6 +5002,13 @@ public class TransactionChainFactory {
 	public static FacilioChain updatePointsConfigured() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new UpdatePointsConfiguredCommand());
+		return chain;
+	}
+
+	public static FacilioChain pointsConfigurationComplete(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new PointsConfigurationCompleteCommand());
+		chain.addCommand(new MLTagPointListCommand());
 		return chain;
 	}
 
@@ -5862,6 +5870,7 @@ public class TransactionChainFactory {
 	public static FacilioChain getPublishCommissioningChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new PublishCommissioningCommand());
+		chain.addCommand(new MLUpdateTaggedPointsCommand());
 		return chain;
 	}
 

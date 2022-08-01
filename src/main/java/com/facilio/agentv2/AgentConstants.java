@@ -145,6 +145,7 @@ public class AgentConstants
     public static final String CONTROLLER_NAME = "controllerName";
     public static final String CONTROLLER_TABLE = "Controllers";
     public static final String POINT_IDS = "pointIds";
+    public static final String POINT_NAMES = "pointNames";
     public static final String UPDATE_CHILD = "updateChild";
     public static final String RECORD_ID = "recordId";
     public static final String AGENT_IDS = "agentIds";

@@ -1,24 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import com.facilio.command.FacilioCommand;
-import com.facilio.command.PostTransactionCommand;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.tuple.Pair;
-
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.beans.ModuleBean;
@@ -30,6 +11,8 @@ import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.CommissioningApi;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioContext;
+import com.facilio.command.FacilioCommand;
+import com.facilio.command.PostTransactionCommand;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -50,6 +33,14 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.unitconversion.Unit;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class PublishCommissioningCommand extends FacilioCommand implements PostTransactionCommand {
 	
@@ -66,6 +57,7 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 		long id = (long) context.get(ContextNames.ID);
 		CommissioningLogContext log = CommissioningApi.commissioniongDetails(id);
 		validate(log);
+		context.put(AgentConstants.POINTS,log.getPoints());
 		
 		long publishTime = System.currentTimeMillis();
 		List<BatchUpdateByIdContext> batchUpdateList = new ArrayList<>();

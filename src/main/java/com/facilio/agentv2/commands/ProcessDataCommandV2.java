@@ -9,8 +9,11 @@ import com.facilio.agentv2.misc.MiscPoint;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.agentv2.point.PointsUtil;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ControllerType;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 
@@ -84,8 +87,9 @@ public class ProcessDataCommandV2 extends AgentV2Command {
                                 Map<String, Object> pointMap = FieldUtil.getAsProperties(point.toJSON());
                                 pointRecordsToAdd.add(pointMap);
                             }
-                            PointsUtil.addPoints(controller, pointRecordsToAdd);
+//                            PointsUtil.addPoints(controller, pointRecordsToAdd);
                             //get newly added points from db with point ids
+                            bulkAddPoints(controller,pointRecordsToAdd,agent);
                             List<Point> newlyAddedPoints = FieldUtil.getAsBeanListFromMapList(getPointsFromDb(new ArrayList<>(pointNamesSet), controller), PointsAPI.getPointType(FacilioControllerType.valueOf(controller.getControllerType())));
                             pointsFromDb.addAll(newlyAddedPoints);
                         }
@@ -111,6 +115,14 @@ public class ProcessDataCommandV2 extends AgentV2Command {
 
         return false;
     }
-
+  public void bulkAddPoints(Controller controller,List<Map<String,Object>>pointsToBeAdded,FacilioAgent agent) throws Exception {
+      FacilioChain addPointsChain = TransactionChainFactory.getAddPointsChain();
+      FacilioContext context1 = new FacilioContext();
+      context1.put(AgentConstants.AGENT,agent);
+      context1.put(AgentConstants.CONTROLLER,controller);
+      context1.put(AgentConstants.POINTS,pointsToBeAdded);
+      addPointsChain.setContext(context1);
+      addPointsChain.execute();
+  }
 
 }

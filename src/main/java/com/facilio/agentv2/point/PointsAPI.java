@@ -194,7 +194,7 @@ public class PointsAPI {
         return null;
     }
 
-    private static List<Map<String, Object>> getPointData(List<Long> pointIds, FacilioControllerType type) throws Exception {
+    private static List<Map<String, Object>> getPointsData(List<Long> pointIds, FacilioControllerType type) throws Exception {
         if ((pointIds != null) && (!pointIds.isEmpty()) && (type != null)) {
             List<Map<String, Object>> result = getAllPoints(type, pointIds, -1, -1, -1, -1);
             return result;
@@ -411,27 +411,6 @@ public class PointsAPI {
         ControllerMessenger.configurePoints(points, controller, -1);
     }
 
-    public static void handlePointConfigurationAndSubscription(FacilioCommand command,List<Long> pointIds) throws Exception {
-        if ((command != FacilioCommand.SUBSCRIBE) && (command != FacilioCommand.CONFIGURE)) {
-            return;
-        }
-        if (!pointIds.isEmpty()) {
-                switch (command) {
-                    case CONFIGURE:
-                        PointsAPI.updatePointsConfigurationComplete(pointIds);
-                        return;
-                    case SUBSCRIBE:
-                        PointsAPI.updatePointSubsctiptionComplete(pointIds);
-                        return;
-                    default:
-                        LOGGER.info(" no update for command ->" + command.toString());
-                        return;
-                }
-            } else {
-                throw new Exception(" point ids cant be empty while ack processing for->" + command.toString());
-            }
-    }
-
     public static boolean configurePoints(List<Point> points, Controller controller, boolean isLogical, int interval) throws Exception {
         ControllerMessenger.configurePoints(points, controller, interval);
         if ((points != null) && (!points.isEmpty())) {
@@ -450,34 +429,6 @@ public class PointsAPI {
         }
     }
 
-//    private static void updatePointsControllerId(Controller controller) throws SQLException {
-//        Objects.requireNonNull(controller,"controllr can't be null");
-//        FacilioModule pointModule = ModuleFactory.getPointModule();
-//        GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
-//                .table(pointModule.getTableName())
-//                .fields(FieldFactory.getPointFields())
-//                .andCondition(CriteriaAPI.getCondition(FieldFactory.getFieldDeviceId(pointModule), String.valueOf(controller.getDeviceId()), NumberOperators.EQUALS));
-//        Map<String,Object> toUpdate = new HashMap<>();
-//        toUpdate.put(AgentConstants.CONTROLLER_ID,controller.getId());
-//        if(updateRecordBuilder.update(toUpdate)>0){
-//            LOGGER.info("____________________Updated points controllerId_____________________"+controller.getId());
-//        }
-//    }
-    //Controller_ID is added when points are discovered
-
-    public static boolean updatePointsConfigurationComplete(List<Long> pointIds) throws Exception {
-        if ((pointIds != null) && (!pointIds.isEmpty())) {
-            FacilioChain editChain = TransactionChainFactory.getEditPointChain();
-            FacilioContext context = editChain.getContext();
-            context.put(FacilioConstants.ContextNames.CRITERIA, getIdCriteria(pointIds));
-            context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, Collections.singletonMap(AgentConstants.CONFIGURE_STATUS, PointEnum.ConfigureStatus.CONFIGURED.getIndex()));
-            editChain.execute();
-            if (context.containsKey(FacilioConstants.ContextNames.ROWS_UPDATED) && ((Integer) context.get(FacilioConstants.ContextNames.ROWS_UPDATED) > 0)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     public static boolean updatePointsConfiguredInprogress(List<Long> ids, long controllerId, int controllerType, boolean logical, int interval) throws Exception {
         if ((ids != null) && (!ids.isEmpty())) {
@@ -529,19 +480,12 @@ public class PointsAPI {
     }
 
     private static boolean updatePointsConfigurationComplete(Long controllerId,List<String> pointNames) throws Exception {
-        FacilioModule pointModule = ModuleFactory.getPointModule();
-        if ((pointNames != null) && (!pointNames.isEmpty())) {
-            FacilioChain editChain = TransactionChainFactory.getEditPointChain();
-            FacilioContext context = editChain.getContext();
-            Criteria criteria = getNameCriteria(pointNames);
-            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(pointModule), String.valueOf(controllerId), NumberOperators.EQUALS));
-            context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
-            context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, Collections.singletonMap(AgentConstants.CONFIGURE_STATUS, PointEnum.ConfigureStatus.CONFIGURED.getIndex()));
-            editChain.execute();
-            if (context.containsKey(FacilioConstants.ContextNames.ROWS_UPDATED) && ((Integer) context.get(FacilioConstants.ContextNames.ROWS_UPDATED) > 0)) {
-                return true;
-            }
-        }
+        FacilioChain chain = TransactionChainFactory.pointsConfigurationComplete();
+        FacilioContext context = chain.getContext();
+        Controller controller = ControllerApiV2.getControllerFromDb(controllerId);
+        context.put(AgentConstants.POINT_NAMES,pointNames);
+        context.put(AgentConstants.CONTROLLER,controller);
+        chain.execute();
         return false;
     }
 
@@ -615,13 +559,13 @@ public class PointsAPI {
         return UpdatePointsUnConfigured(Collections.singletonList(pointId));
     }
 
-    private static Criteria getIdCriteria(List<Long> pointIds) {
+    public static Criteria getIdCriteria(List<Long> pointIds) {
         FacilioModule pointModule = ModuleFactory.getPointModule();
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getIdCondition(pointIds, pointModule));
         return criteria;
     }
-    private static Criteria getNameCriteria(List<String> pointNames) {
+    public static Criteria getNameCriteria(List<String> pointNames) {
         FacilioModule pointModule = ModuleFactory.getPointModule();
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(pointModule), StringUtils.join(pointNames, ","), StringOperators.IS));

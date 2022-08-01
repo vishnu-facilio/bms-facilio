@@ -65,6 +65,16 @@ public class CommissioningLogContext {
 	public void setPublishedTime(long publishedTime) {
 		this.publishedTime = publishedTime;
 	}
+
+	public boolean isPrefillMlData() {
+		return prefillMlData;
+	}
+
+	public void setPrefillMlData(boolean prefillMlData) {
+		this.prefillMlData = prefillMlData;
+	}
+
+	private boolean prefillMlData;
 	
 	@JsonIgnore
 	private List<Point> pointList;

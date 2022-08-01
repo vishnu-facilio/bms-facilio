@@ -8120,6 +8120,23 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
     
+    public static List<FacilioField> getMLBmsPointsTaggingFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getMLBmsPointsTaggingModule();
+        fields.add(getField("id", "ID", module, FieldType.NUMBER));
+//        fields.add(getField("orgId", "ORGID", module, FieldType.NUMBER));
+        fields.add(getField("controllerName", "CONTROLLER_NAME", module, FieldType.STRING));
+        fields.add(getField("pointName", "POINT_NAME", module, FieldType.NUMBER));
+        fields.add(getField("clusterName", "CLUSTER_NAME", module, FieldType.STRING));
+        fields.add(getField("categoryName", "CATEGORY", module, FieldType.NUMBER));
+        fields.add(getField("assetName", "ASSET_NAME", module, FieldType.STRING));
+        fields.add(getField("readingName", "READING_NAME", module, FieldType.STRING));
+        fields.add(getField("splitter", "SPLITTER", module, FieldType.STRING));
+        fields.add(getField("updated", " ", module, FieldType.STRING));
+        fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.STRING));
+        fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.BOOLEAN));
+        return fields;
+    }
     public static List<FacilioField> getMLServiceFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getMLServiceModule();
@@ -9694,6 +9711,7 @@ public class FieldFactory extends BaseFieldFactory {
 		fields.add(getField("pointJsonStr", "POINT_JSON", module, FieldType.STRING));
 		fields.add(getField("clientMetaStr", "CLIENT_META_JSON", module, FieldType.STRING));
 		fields.add(getField("logical", "LOGICAL", module, FieldType.BOOLEAN));
+        fields.add(getField("prefillMlData","PREFILL_ML_DATA",module,FieldType.BOOLEAN));
 		return fields;
 	}
 	

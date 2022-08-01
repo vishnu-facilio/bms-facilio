@@ -1,0 +1,30 @@
+package com.facilio.agentv2.commands;
+
+import com.facilio.agent.AgentType;
+import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.controller.Controller;
+import com.facilio.bmsconsole.commands.util.BmsPointsTaggingUtil;
+import org.apache.commons.chain.Context;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+
+public class MLTagPointListCommand extends AgentV2Command{
+    @Override
+    public boolean executeCommand(Context context) throws Exception {
+        List<String>pointNames = (List<String>) context.get(AgentConstants.POINT_NAMES);
+        Controller controller = (Controller) context.get(AgentConstants.CONTROLLER);
+        if(pointNames!=null && !pointNames.isEmpty()){
+            HashMap<String,Object>pointsMap = new HashMap<>();
+            pointsMap.put("pointName",pointNames);
+            pointsMap.put("controller",controller.getName());
+            pointsMap.put("agentName",controller.getAgent().getName());
+            pointsMap.put("agentType", AgentType.valueOf(controller.getAgent().getAgentType()).toString() );
+
+            BmsPointsTaggingUtil.tagPointListV1(Collections.singletonList(pointsMap));
+            return false;
+        }
+        return true;
+    }
+}
