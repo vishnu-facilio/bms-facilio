@@ -99,7 +99,7 @@ public class ReportFactory {
 			openVsCloseField.addGenericCondition("Skipped", CriteriaAPI.getCondition("MODULE_STATE", "moduleState", "@", PickListOperators.IS));
 			reportFields.add(openVsCloseField);
 			
-			ReportFacilioField overdueOpenField = (ReportFacilioField) getField(WorkOrder.OVERDUE_OPEN_COL, "Open Due Status", ModuleFactory.getWorkOrdersModule(), " CASE WHEN Tickets.DUE_DATE IS NOT NULL THEN CASE WHEN Tickets.DUE_DATE < ? THEN 'Overdue' ELSE 'On Schedule' END END ", FieldType.STRING, WorkOrder.OVERDUE_OPEN);
+			ReportFacilioField overdueOpenField = (ReportFacilioField) getField(WorkOrder.OVERDUE_OPEN_COL, "Open Due Status", ModuleFactory.getWorkOrdersModule(), " CASE WHEN Tickets.DUE_DATE IS NOT NULL THEN CASE WHEN Tickets.DUE_DATE < ? THEN 'Overdue' ELSE 'Ontime' END END ", FieldType.STRING, WorkOrder.OVERDUE_OPEN);
 			overdueOpenField.addGenericCondition("Overdue", CriteriaAPI.getCondition("DUE_DATE", "dueDate", "?", NumberOperators.LESS_THAN));
 			overdueOpenField.addGenericCondition("On Schedule", CriteriaAPI.getCondition("DUE_DATE", "dueDate", "?", NumberOperators.GREATER_THAN_EQUAL));
 			reportFields.add(overdueOpenField);
