@@ -62,7 +62,7 @@ public class AltayerVendorSiteValueGenerator extends ValueGenerator {
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleState"), "26327", NumberOperators.EQUALS));
 
         if(vendorContact != null && !vendorContact.isPrimaryContact()){
-                builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("contacts"), String.valueOf(pplId), PickListOperators.IS));
+            builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("contacts"), String.valueOf(pplId), PickListOperators.IS));
         }
 
         builder.skipScopeCriteria();

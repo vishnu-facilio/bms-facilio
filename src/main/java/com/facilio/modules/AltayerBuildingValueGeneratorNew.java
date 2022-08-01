@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class AltayerBuildingValueGenerator extends ValueGenerator{
+public class AltayerBuildingValueGeneratorNew extends ValueGenerator{
 
     @Override
     public Object generateValueForCondition(int appType) {
@@ -52,12 +52,12 @@ public class AltayerBuildingValueGenerator extends ValueGenerator{
 
     @Override
     public String getValueGeneratorName() {
-        return "Altayer Vendors Buildings";
+        return "Altayer Vendors Buildings New";
     }
 
     @Override
     public String getLinkName() {
-        return "com.facilio.modules.AltayerBuildingValueGenerator";
+        return "com.facilio.modules.AltayerBuildingValueGeneratorNew";
     }
 
     @Override
@@ -88,7 +88,7 @@ public class AltayerBuildingValueGenerator extends ValueGenerator{
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("vendor"), String.valueOf(vendorID), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleState"), "26327", NumberOperators.EQUALS));
 
-        if(vendorContact != null && !vendorContact.isPrimaryContact()){
+        if(!(vendorContact != null && vendorContact.getData() != null && vendorContact.getData().containsKey("is_bu_primary_contact_vendorcontact") && (boolean) vendorContact.getData().get("is_bu_primary_contact_vendorcontact"))){
             builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("contacts"), String.valueOf(pplId), PickListOperators.IS));
         }
 
