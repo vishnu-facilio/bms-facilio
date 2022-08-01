@@ -2038,6 +2038,7 @@ public class APIv3Config {
                 .list()
                 .beforeFetch(new LoadSupplementsForAlarmOccurrenceCommand())
                 .summary()
+                .beforeFetch(new LoadSupplementsForAlarmOccurrenceCommand())
                 .build();
     }
 
@@ -2052,6 +2053,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getBaseEvent() {
         return () -> new V3Config(BaseEventContext.class, null)
                 .list()
+                .beforeFetch(new LoadSupplementsForBaseEventCommand())
                 .summary()
                 .build();
     }
