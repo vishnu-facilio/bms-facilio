@@ -771,15 +771,17 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 		List<AccountSSO> accountSSODetails = IAMOrgUtil.getAccountSSO(orgIds);
 		DomainSSO domainSSO = IAMOrgUtil.getDomainSSODetails(orgIds.get(0), appDomainType, groupType, AppDomain.DomainType.DEFAULT);
-
-		if (CollectionUtils.isNotEmpty(accountSSODetails) || domainSSO != null) {
-			loginModes.add("SAML");
-			if (groupType == AppDomain.GroupType.TENANT_OCCUPANT_PORTAL) {
+		if (groupType == AppDomain.GroupType.TENANT_OCCUPANT_PORTAL) {
+			if (domainSSO != null && domainSSO.getIsActive() != null && domainSSO.getIsActive()) {
+				loginModes.add("SAML");
 				AppDomain appDomain = IAMAppUtil.getAppDomain(domainSSO.getAppDomainId());
 				String domainLoginURL = SSOUtil.getDomainSSOEndpoint(appDomain.getDomain());
 				result.put("SSOURL", domainLoginURL);
-			} else {
-				AccountSSO accountSSO = accountSSODetails.get(0);
+			}
+		} else {
+			AccountSSO accountSSO = accountSSODetails.get(0);
+			if (accountSSO != null && accountSSO.getIsActive() != null && accountSSO.getIsActive()) {
+				loginModes.add("SAML");
 				long orgId = accountSSO.getOrgId();
 				String domainLoginURL = SSOUtil.getSSOEndpoint(IAMOrgUtil.getOrg(orgId).getDomain());
 				result.put("SSOURL", domainLoginURL);
