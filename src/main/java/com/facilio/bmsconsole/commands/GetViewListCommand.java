@@ -36,11 +36,11 @@ public class GetViewListCommand extends FacilioCommand {
         Long appId = (Long) context.getOrDefault(FacilioConstants.ContextNames.APP_ID, -1l);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		int groupTypeVal = ViewGroups.ViewGroupType.TABLE_GROUP.getIntVal();
-		if(context.containsKey(ContextNames.VIEW_GROUP_TYPE)) {
+		if(context.containsKey(ContextNames.VIEW_GROUP_TYPE) && (int) context.get(ContextNames.VIEW_GROUP_TYPE)>0) {
 			groupTypeVal = (int) context.get(ContextNames.VIEW_GROUP_TYPE);
 		}
 		int viewTypeVal = FacilioView.ViewType.TABLE_LIST.getIntVal();
-		if(context.containsKey(ContextNames.VIEW_TYPE)) {
+		if(context.containsKey(ContextNames.VIEW_TYPE) && (int) context.get(ContextNames.VIEW_TYPE)>0) {
 			viewTypeVal = (int) context.get(ContextNames.VIEW_TYPE);
 		}
 		boolean getOnlyBasicViewDetails = (context.containsKey(ContextNames.GET_ONLY_BASIC_VIEW_DETAILS)) ? (boolean)context.get(ContextNames.GET_ONLY_BASIC_VIEW_DETAILS) : false;
