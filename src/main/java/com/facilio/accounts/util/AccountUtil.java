@@ -502,8 +502,8 @@ public class AccountUtil {
 		TUTEN_LABS(76, 4096, LicenseMapping.GROUP2LICENSE),
 		FAILURE_CODES(77, 8192, LicenseMapping.GROUP2LICENSE),
 		KIOSK_APP_FORM(78, 16384, LicenseMapping.GROUP2LICENSE),
+		ML_POINTS_SUGGESTIONS(79,32768,LicenseMapping.GROUP2LICENSE),
 		;
-
 		public int featureId;
 		private long license;
 		private String[] modules;
