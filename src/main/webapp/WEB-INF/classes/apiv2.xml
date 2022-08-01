@@ -3439,6 +3439,9 @@
 		<action name="lookuprelatedlist"
 				class="com.facilio.bmsconsole.actions.PageAction" method="fetchLookupRelatedListData">
 		</action>
+		<action name="relatedTabDetails"
+				class="com.facilio.bmsconsole.actions.PageAction" method="fetchRelatedTabMeta">
+		</action>
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.PageAction" method="fetchPage">
 			<param name="moduleName">{1}</param>

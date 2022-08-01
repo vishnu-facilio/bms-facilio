@@ -640,6 +640,13 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
+	public static FacilioChain getRelatedTabMetaChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetRelatedListMetaCommand());
+		c.addCommand(new GetRelationshipMetaCommand());
+		return c;
+	}
+
 	public static FacilioChain getSpecialModulePageChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetSpecialModuleDataDetailCommand());

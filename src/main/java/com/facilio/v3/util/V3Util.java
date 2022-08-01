@@ -1,9 +1,11 @@
 package com.facilio.v3.util;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -15,13 +17,16 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FileField;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
@@ -416,6 +421,180 @@ public class V3Util {
         return null;
     }
 
+    public static FacilioContext fetchList(String moduleName, Boolean isV3, String viewName, String filters, boolean excludeParentFilter, String clientCriteria,
+                          Object orderBy, Object orderByType, String search, int page, int perPage, boolean withCount, Map<String, List<Object>> queryParameters, Criteria serverCriteria) throws Exception {
+        FacilioChain listChain = ChainUtil.getListChain(moduleName);
+        FacilioContext context = listChain.getContext();
+
+        if (!isV3) {
+            Constants.setIsV4(context, true);
+        }
+
+        context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        context.put(FacilioConstants.ContextNames.PERMISSION_TYPE, FieldPermissionContext.PermissionType.READ_ONLY);
+
+        if (isV3) {
+            if (filters != null && !filters.isEmpty()) {
+                JSONParser parser = new JSONParser();
+                JSONObject json = (JSONObject) parser.parse(filters);
+                if(json.containsKey("drillDownPattern") && json.get("drillDownPattern") != null) {
+                    String drillDownPattern = json.get("drillDownPattern").toString();
+                    context.put(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN_PATTERN, drillDownPattern);
+                    json.remove("drillDownPattern");
+                }
+                context.put(Constants.FILTERS, json);
+
+                context.put(Constants.EXCLUDE_PARENT_CRITERIA, excludeParentFilter);
+            }
+
+            if(StringUtils.isNotEmpty(clientCriteria)){
+                JSONObject json = FacilioUtil.parseJson(clientCriteria);
+                Criteria newCriteria = FieldUtil.getAsBeanFromJson(json, Criteria.class);
+                context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, newCriteria);
+            }
+
+            if (orderBy != null) {
+                JSONObject sorting = new JSONObject();
+                sorting.put("orderBy", orderBy);
+                sorting.put("orderType", orderByType);
+                context.put(FacilioConstants.ContextNames.SORTING, sorting);
+                context.put(FacilioConstants.ContextNames.OVERRIDE_SORTING, true);
+            }
+
+            if (search != null) {
+                context.put(FacilioConstants.ContextNames.SEARCH, search);
+            }
+
+            JSONObject pagination = new JSONObject();
+            pagination.put("page", page);
+            pagination.put("perPage", perPage);
+
+            context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+            context.put(Constants.WITH_COUNT, withCount);
+            context.put(Constants.QUERY_PARAMS, queryParameters);
+        } else {
+            context.put(Constants.QUERY_PARAMS, queryParameters);
+
+            List<Object> sort_by = queryParameters.get("sort_by");
+            JSONObject sorting = new JSONObject();
+            if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(sort_by)) {
+                orderBy = (String) sort_by.get(0);
+                sorting.put("orderBy", sort_by.get(0));
+            }
+
+            List<Object> sort_type = queryParameters.get("sort_type");
+            if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(sort_type)) {
+                orderByType = (String) sort_type.get(0);
+                sorting.put("orderType", sort_type.get(0));
+            }
+
+            List<Object> pageFromQueryParam = queryParameters.get("page");
+            JSONObject pagination = new JSONObject();
+            if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(pageFromQueryParam)) {
+                try {
+                    page = Integer.valueOf((String) pageFromQueryParam.get(0));
+                    pagination.put("page", page);
+                } catch (Exception ex) {
+                    page = 1;
+                    pagination.put("page", 1);
+                }
+            }
+
+            List<Object> limit = queryParameters.get("limit");
+            if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(limit)) {
+                try {
+                    perPage = Integer.valueOf((String) limit.get(0));
+                    pagination.put("perPage", perPage);
+                } catch (Exception ex) {
+                    perPage = 50;
+                    pagination.put("perPage", perPage);
+                }
+            }
+
+            List<Object> filter_by = queryParameters.get("filter_by");
+            Constants.setFilterBy(context, org.apache.commons.collections4.CollectionUtils.isEmpty(filter_by) ? null : (String) filter_by.get(0));
+            context.put(FacilioConstants.ContextNames.PAGINATION, pagination.isEmpty() ? null : pagination);
+
+            if (MapUtils.isNotEmpty(sorting)) {
+                context.put(FacilioConstants.ContextNames.SORTING, sorting);
+            }
+
+            context.put(FacilioConstants.ContextNames.OVERRIDE_SORTING, true);
+        }
+
+        if(serverCriteria != null) {
+            context.put(FacilioConstants.ContextNames.FILTER_SERVER_CRITERIA, serverCriteria);
+        }
+
+        FacilioModule module = ChainUtil.getModule(moduleName);
+        V3Config v3Config = ChainUtil.getV3Config(moduleName);
+
+        if (v3Config != null) {
+            V3Config.ListHandler listHandler = v3Config.getListHandler();
+            if (listHandler != null) {
+                Map<String, List<String>> lookupFieldCriteriaMap = listHandler.getLookupFieldCriteriaMap();
+                if (!MapUtils.isEmpty(lookupFieldCriteriaMap)) {
+                    Constants.setListRelationCriteria(context, lookupFieldCriteriaMap);
+                }
+            }
+        }
+
+        Constants.setV3config(context, v3Config);
+
+        Class beanClass = ChainUtil.getBeanClass(v3Config, module);
+        context.put(Constants.BEAN_CLASS, beanClass);
+        listChain.execute();
+        Map<String, Object> meta = new HashMap<>();
+
+        if (isV3) {
+            if (withCount) {
+                Map<String, Object> paging = new HashMap<>();
+                paging.put("totalCount", context.get(Constants.COUNT));
+                meta.put("pagination", paging);
+            }
+
+            Map<String, List<WorkflowRuleContext>> stateFlows = (Map<String, List<WorkflowRuleContext>>) context.get(Constants.STATE_FLOWS);
+            if (MapUtils.isNotEmpty(stateFlows)) {
+                meta.put("stateflows", stateFlows);
+            }
+
+            Collection<WorkflowRuleContext> customButtons = (Collection<WorkflowRuleContext>) context.get(Constants.CUSTOM_BUTTONS);
+            if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(customButtons)) {
+                meta.put(Constants.CUSTOM_BUTTONS, customButtons);
+            }
+
+            Collection<WorkflowRuleContext> systemButtons = (Collection<WorkflowRuleContext>) context.get(Constants.SYSTEM_BUTTONS);
+            if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(systemButtons)){
+                meta.put(Constants.SYSTEM_BUTTONS,systemButtons);
+            }
+
+            Object supplMap = Constants.getSupplementMap(context);
+            if (supplMap != null) {
+                meta.put("supplements", supplMap);
+            }
+
+            Map<String, Map<String, Object>> listRelationRecords = Constants.getListRelationRecords(context);
+            if (listRelationRecords != null) {
+                meta.put("submoduleRelations", listRelationRecords);
+            }
+        } else {
+            Map<String, Object> paging = new HashMap<>();
+            meta.put("pagination", paging);
+            paging.put("page", page);
+            paging.put("per_page", perPage);
+            paging.put("sort_type", orderByType);
+            paging.put("sort_by", orderBy);
+            paging.put("has_more_page", Constants.hasMoreRecords(context));
+        }
+
+        if (MapUtils.isNotEmpty(meta)) {
+            context.put(FacilioConstants.ContextNames.META, FieldUtil.getAsJSON(meta));
+        }
+        return context;
+    }
+
+
     public static Boolean isIdPresentForModule(long id, FacilioModule module) throws Exception{
         return (getCountFromIds(Collections.singletonList(id), module) > 0);
     }
@@ -441,5 +620,30 @@ public class V3Util {
 
         chain.execute();
         return (long)context.getOrDefault(Constants.COUNT, 0l);
+    }
+
+    public static void removeRestrictedFields(List<Map<String, Object>> dataList, String moduleName, Boolean validatePermissions) throws Exception{
+        if (org.apache.commons.collections4.CollectionUtils.isEmpty(dataList)) {
+            return;
+        }
+
+        for (Map<String, Object> dataMap : dataList) {
+            removeRestrictedFields(dataMap, moduleName, validatePermissions);
+        }
+    }
+
+    public static void removeRestrictedFields(Map<String, Object> dataMap, String moduleName, Boolean validatePermissions) throws Exception{
+        FacilioModule module = ChainUtil.getModule(moduleName);
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.FIELD_PERMISSIONS)) {
+            List<FacilioField> restrictedFields = FieldUtil.getPermissionRestrictedFields(module,
+                    FieldPermissionContext.PermissionType.READ_WRITE, validatePermissions);
+            if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(restrictedFields)) {
+                for (FacilioField field : restrictedFields) {
+                    if(field != null) {
+                        dataMap.remove(field.getName());
+                    }
+                }
+            }
+        }
     }
 }

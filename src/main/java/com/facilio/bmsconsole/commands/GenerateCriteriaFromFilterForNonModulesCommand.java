@@ -142,6 +142,8 @@ public class GenerateCriteriaFromFilterForNonModulesCommand extends FacilioComma
         switch (moduleName) {
             case FacilioConstants.ContextNames.USER_DELEGATION:
                 return FieldFactory.getUserDelegationFields();
+            case FacilioConstants.ContextNames.READING_IMPORT_APP:
+                return FieldFactory.getReadingImportFields();
         }
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);

@@ -2821,7 +2821,7 @@ public class V2ReportAction extends FacilioAction {
             reportContext.setId(report.getId());
         }
 
-        reportContext.setTabularState(FieldUtil.getAsJSON(pivotparams).toJSONString());
+        reportContext.setTabularState(FieldUtil.getAsJSON(pivotparams, true).toJSONString());
         reportContext.setType(ReportType.PIVOT_REPORT);
         context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 

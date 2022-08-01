@@ -35,6 +35,18 @@ public class PageAction extends FacilioAction {
 		setResult(ContextNames.RELATED_LIST_META, context.get(ContextNames.RELATED_LIST_META));
 		return SUCCESS;
 	}
+
+	public String fetchRelatedTabMeta() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.getRelatedTabMetaChain();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+
+		chain.execute();
+		setResult(ContextNames.RELATED_LIST_META, context.get(ContextNames.RELATED_LIST_META));
+		setResult(ContextNames.RELATIONSHIP_META, context.get(ContextNames.RELATIONSHIP_META));
+		return SUCCESS;
+	}
+
  	public String fetchSpecialModulePage() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);

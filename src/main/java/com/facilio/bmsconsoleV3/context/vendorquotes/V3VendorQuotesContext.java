@@ -14,9 +14,19 @@ public class V3VendorQuotesContext extends V3Context {
     private List<V3VendorQuotesLineItemsContext> vendorQuotesLineItems;
     private Long replyDate;
     private Boolean isFinalized;
-
+    private Boolean isDiscarded;
     private Long expectedReplyDate;
 
+    public Boolean getIsDiscarded() {
+        if(isDiscarded != null){
+            return isDiscarded.booleanValue();
+        }
+        return false;
+    }
+
+    public void setIsDiscarded(Boolean isDiscarded) {
+        this.isDiscarded = isDiscarded;
+    }
     public Boolean getIsFinalized() {
         if(isFinalized != null){
             return isFinalized.booleanValue();

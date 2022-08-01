@@ -64,28 +64,33 @@ public class ValidateRelationDataCommand extends FacilioCommand {
             throw new IllegalArgumentException("Duplicates present in relation data");
         }
 
+        if(ids.size() > 1 && (relationMapping.getRelationType() == RelationRequestContext.RelationType.ONE_TO_ONE.getIndex()
+                            || relationMapping.getRelationType() == RelationRequestContext.RelationType.MANY_TO_ONE.getIndex())) {
+            throw new IllegalArgumentException("Only one relation is allowed");
+        }
+
         Criteria relationDataCriteria = new Criteria();
-        if(relationMapping.getRelationType() == RelationRequestContext.RelationType.ONE_TO_ONE.getIndex()
-                || relationMapping.getRelationType() == RelationRequestContext.RelationType.MANY_TO_ONE.getIndex()) {
-            if(ids.size() > 1) {
-                throw new IllegalArgumentException("Only one relation is allowed");
-            }
-        }
-        else {
-            relationDataCriteria.addAndCondition(CriteriaAPI.getCondition(relationMapping.getReversePosition().getColumnName(), relationMapping.getReversePosition().getFieldName(), StringUtils.join(ids, ","), NumberOperators.EQUALS));
-        }
-
-        if(relationMapping.getRelationType() == RelationRequestContext.RelationType.ONE_TO_ONE.getIndex()){
-            Criteria oneCriteria = new Criteria();
-            oneCriteria.addAndCondition(CriteriaAPI.getCondition(relationMapping.getReversePosition().getColumnName(), relationMapping.getReversePosition().getFieldName(), StringUtils.join(ids, ","), NumberOperators.EQUALS));
-            oneCriteria.addOrCondition(CriteriaAPI.getCondition(relationMapping.getPositionEnum().getColumnName(), relationMapping.getPositionEnum().getFieldName(), String.valueOf(parentId), NumberOperators.EQUALS));
-            relationDataCriteria.andCriteria(oneCriteria);
-        }
-        else {
-            relationDataCriteria.addAndCondition(CriteriaAPI.getCondition(relationMapping.getPositionEnum().getColumnName(), relationMapping.getPositionEnum().getFieldName(), String.valueOf(parentId), NumberOperators.EQUALS));
-        }
-
         relationDataCriteria.addAndCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(relation.getRelationModule().getModuleId()), NumberOperators.EQUALS));
+
+        Condition idsCondition = CriteriaAPI.getCondition(relationMapping.getReversePosition().getColumnName(), relationMapping.getReversePosition().getFieldName(), StringUtils.join(ids, ","), NumberOperators.EQUALS);
+        Condition parentIdCondition = CriteriaAPI.getCondition(relationMapping.getPositionEnum().getColumnName(), relationMapping.getPositionEnum().getFieldName(), String.valueOf(parentId), NumberOperators.EQUALS);
+        Criteria typebasedCriteria = new Criteria();
+        if(relationMapping.getRelationType() == RelationRequestContext.RelationType.ONE_TO_ONE.getIndex()) {
+            typebasedCriteria.addAndCondition(idsCondition);
+            typebasedCriteria.addOrCondition(parentIdCondition);
+        }
+        else if(relationMapping.getRelationType() == RelationRequestContext.RelationType.MANY_TO_ONE.getIndex()) {
+            typebasedCriteria.addAndCondition(parentIdCondition);
+        }
+        else if(relationMapping.getRelationType() == RelationRequestContext.RelationType.ONE_TO_MANY.getIndex()) {
+            typebasedCriteria.addAndCondition(idsCondition);
+        }
+        else if(relationMapping.getRelationType() == RelationRequestContext.RelationType.MANY_TO_MANY.getIndex()) {
+            typebasedCriteria.addAndCondition(idsCondition);
+            typebasedCriteria.addAndCondition(parentIdCondition);
+        }
+
+        relationDataCriteria.andCriteria(typebasedCriteria);
 
         if(V3Util.getCountFromModuleAndCriteria(relation.getRelationModule(), relationDataCriteria) > 0) {
             throw new IllegalArgumentException("Relation already exists");

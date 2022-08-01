@@ -112,6 +112,7 @@ import com.facilio.workflows.functions.FacilioNotificationFunctions;
 import com.facilio.workflows.functions.FacilioOrgSpecificFunctions;
 import com.facilio.workflows.functions.FacilioPsychrometricsFunction;
 import com.facilio.workflows.functions.FacilioReadingFunctions;
+import com.facilio.workflows.functions.FacilioRelationshipFunctions;
 import com.facilio.workflows.functions.FacilioResourceFunction;
 import com.facilio.workflows.functions.FacilioScheduleFunctions;
 import com.facilio.workflows.functions.FacilioSystemFunctions;
@@ -2226,6 +2227,9 @@ public class WorkflowUtil {
 				case DATABASE_CONNECTION:
 					facilioWorkflowFunction = FacilioDBFunction.getFacilioDbcFunction(functionName);
 					break;
+				case RELATIONSHIP:
+					facilioWorkflowFunction = FacilioRelationshipFunctions.getFacilioRelationshipFunction(functionName);
+					break;
 			}
 		}
 		return facilioWorkflowFunction;
@@ -2356,6 +2360,9 @@ public class WorkflowUtil {
 					break;
 				case DATABASE_CONNECTION:
 					facilioWorkflowFunction = new ArrayList<>(FacilioDBFunction.getAllFunctions().values());
+					break;
+				case RELATIONSHIP:
+					facilioWorkflowFunction = new ArrayList<>(FacilioRelationshipFunctions.getAllFunctions().values());
 					break;
 			}
 		}

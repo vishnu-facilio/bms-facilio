@@ -4,9 +4,7 @@ import com.facilio.agentv2.commands.FetchAgentDetailsCommand;
 import com.facilio.agentv2.commands.FetchMessageSourcesCommand;
 import com.facilio.bmsconsole.automation.command.ListGlobalVariableCommand;
 import com.facilio.bmsconsole.automation.command.ListGlobalVariableGroupCommand;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.GenerateCriteriaFromFilterCommand;
-import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.commands.module.GetSortableFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.asset.AssetSupplementsSupplyCommand;
 import com.facilio.bmsconsoleV3.commands.asset.CheckPMForAssetsCommandV3;
@@ -265,12 +263,15 @@ public class ReadOnlyChainFactoryV3 {
 
     public static FacilioChain getReadingImportDataList() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new GenerateCriteriaFromFilterForNonModulesCommand());
         c.addCommand(new FetchReadingImportDataList());
         return c;
     }
     public static FacilioChain getMyReadingImportDataList() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new GenerateCriteriaFromFilterForNonModulesCommand());
         c.addCommand(new FetchMyReadingImportDataList());
+
         return c;
     }
     public static FacilioChain getHomepageChain() {

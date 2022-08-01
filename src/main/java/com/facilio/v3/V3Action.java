@@ -161,7 +161,6 @@ public class V3Action extends ActionSupport implements ServletResponseAware {
 	public int getPerPage() {
 		return this.perPage;
 	}
-
 	private boolean withCount;
 	public boolean getWithCount() {
 		return this.withCount;

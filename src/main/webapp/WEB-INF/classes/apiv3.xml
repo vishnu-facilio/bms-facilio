@@ -173,6 +173,20 @@
         </action>
     </package>
 
+    <package name="newTimelineV3Api" namespace="/api/v3/modules/timeline" extends="v3Api">
+        <action name="*/*/get/*" class="com.facilio.bmsconsoleV3.actions.TimelineActionV3">
+            <param name="moduleName">{1}</param>
+            <param name="viewName">{2}</param>
+            <param name="methodType">{3}</param>
+        </action>
+
+        <action name="*/*/*" class="com.facilio.bmsconsoleV3.actions.TimelineActionV3">
+        <param name="moduleName">{1}</param>
+        <param name="viewName">{2}</param>
+        <param name="id">{3}</param>
+        </action>
+    </package>
+
     <package name="timelineV3Api" namespace="/api/v3/modules/data/timeline" extends="v3Api">
         <action name="get"
                 class="com.facilio.bmsconsoleV3.actions.TimelineAction"

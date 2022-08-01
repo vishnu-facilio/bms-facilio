@@ -15,7 +15,21 @@ import java.util.List;
 import java.util.Map;
 
 public class WebTabContext implements Serializable {
-
+    public WebTabContext(String name, String route, WebTabContext.Type type, List<Long> moduleIds, String config, Integer featureLicense,List<String> specialTypeModules,long appId) {
+        this.name = name;
+        this.route = route;
+        this.type = type;
+        this.moduleIds = moduleIds;
+        try {
+            JSONParser parser = new JSONParser();
+            this.config = (JSONObject) parser.parse(config);
+        } catch (Exception e) {}
+        if(featureLicense != null){
+            this.featureLicense = featureLicense;
+        }
+        this.specialTypeModules = specialTypeModules;
+        this.applicationId = appId;
+    }
     private long id = -1;
     public long getId() {
         return id;
@@ -156,7 +170,60 @@ public class WebTabContext implements Serializable {
         TIMELINE("Timeline", false, TabType.NORMAL),
         PORTAL_OVERVIEW("Portal Overview", false, TabType.NORMAL),
         NOTIFICATION("Notification", false,TabType.NORMAL),
-        INDOOR_FLOORPLAN("Indoor Floorplan", false, TabType.NORMAL);
+        INDOOR_FLOORPLAN("Indoor Floorplan", false, TabType.NORMAL),
+
+        COMPANY_PROFILE("Company Profile", false,TabType.SETUP),
+        PORTALS("Portals", false,TabType.SETUP),
+        VISITOR_SETTINGS("Visitor Settings", false,TabType.SETUP),
+        FEEDBACK_COMPLAINTS("Feedback & Complaints", false,TabType.SETUP),
+        SMART_CONTROLS("Smart Controls",false,TabType.SETUP),
+        SERVICE_CATALOGS("Service Catalogs",false,TabType.SETUP),
+        TAX("Tax",false,TabType.SETUP),
+        USERS("Users",false,TabType.SETUP),
+        TEAMS("Teams",false,TabType.SETUP),
+        ROLES("Roles",false,TabType.SETUP),
+        SINGLE_SIGN_ON("Single Sign-On",false,TabType.SETUP),
+        SECURITY_POLICY("Security Policy",false,TabType.SETUP),
+        EMAIL_SETTINGS("Email Settings",false,TabType.SETUP),
+        WORKORDER_CUSTOMIZATION("Customization",false,TabType.SETUP),
+        SPACE_ASSET_CUSTOMIZATION("Customization",false,TabType.SETUP),
+        READINGS("Readings",false,TabType.SETUP),
+        ASSET_DEPRECIATION("Asset Depreciation",false,TabType.SETUP),
+        SPACE_CATEGORIES("Space categories",false,TabType.SETUP),
+        OPERATING_HOURS("Operating Hours",false,TabType.SETUP),
+        WORKFLOWS("Workflows",false,TabType.SETUP),
+        NOTIFICATIONS("Notifications",false,TabType.SETUP),
+        TRIGGERS("Triggers",false,TabType.SETUP),
+        CONDITION_MANAGER("Condition Manager",false,TabType.SETUP),
+        SCHEDULER("Scheduler",false,TabType.SETUP),
+        VARIABLES("Variables",false,TabType.SETUP),
+        SLA_POLICIES("SLA Policies",false,TabType.SETUP),
+        ASSIGNMENT_RULES("Assignment Rules",false,TabType.SETUP),
+        BMS_EVENT_FILTERING("BMS Event Filtering",false,TabType.SETUP),
+        SCORING_RULES("Scoring Rules",false,TabType.SETUP),
+        TRANSACTION_RULES("Transaction Rules",false,TabType.SETUP),
+        STATEFLOWS("Stateflows",false,TabType.SETUP),
+        APPROVALS("Approvals",false,TabType.SETUP),
+        MODULES("Modules",false,TabType.SETUP),
+        TABS_AND_LAYOUTS("Tabs and Layouts",false,TabType.SETUP),
+        CONNECTED_APPS("Connected Apps",false,TabType.SETUP),
+        CONNECTORS("Connectors",false,TabType.SETUP),
+        FUNCTIONS("Functions",false,TabType.SETUP),
+        EMAIL_TEMPLATES("Email Templates",false,TabType.SETUP),
+        ENERGY_METERS("Energy Meters",false,TabType.SETUP),
+        BASELINE("Baseline",false,TabType.SETUP),
+        FAULT_IMPACT_TEMPLATE("Fault Impact Template",false,TabType.SETUP),
+        API_SETUP("API Setup",false,TabType.SETUP),
+
+        AGENTS("AGENTS",false,TabType.SETUP),
+        CONTROLLERS("CONTROLLERS",false,TabType.SETUP),
+        LOGS("LOGS",false,TabType.SETUP),
+        CONFIGURATION("CONFIGURATION",false,TabType.SETUP),
+        COMMISSIONING("COMMISSIONING",false,TabType.SETUP),
+        IMPORT_BIM_FILE("Import BIM File",false,TabType.SETUP),
+        BIM_FILES("BIM Files",false,TabType.SETUP),
+        TENANT("Tenant",false,TabType.SETUP),
+        RATE_CARD("Rate Card",false,TabType.SETUP);
 
 
 

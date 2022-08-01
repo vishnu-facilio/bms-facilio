@@ -20,7 +20,7 @@ public class UpdateRequestForQuotationCommandV3 extends FacilioCommand {
         Map<String, Object> bodyParams = Constants.getBodyParams(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3RequestForQuotationContext> requestForQuotations = recordMap.get(moduleName);
-        if (CollectionUtils.isNotEmpty(requestForQuotations) && MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("vendorSelected") && !(boolean) bodyParams.get("vendorSelected")) {
+        if (CollectionUtils.isNotEmpty(requestForQuotations) && MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("rfqFinalized") && (boolean) bodyParams.get("rfqFinalized")) {
             FacilioChain chain = TransactionChainFactoryV3.getCreateVendorQuotesChainV3();
             chain.getContext().put(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION,requestForQuotations.get(0));
             chain.getContext().put(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION_LINE_ITEMS,requestForQuotations.get(0).getRequestForQuotationLineItems());

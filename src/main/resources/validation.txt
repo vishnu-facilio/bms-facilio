@@ -1240,6 +1240,8 @@
 /api/v3/modules/data/list
 /api/v3/modules/data/update
 /api/v3/modules/data/unscheduled
+/api/v3/modules/:modulename/associate
+/api/v3/modules/:modulename/dissociate
 /api/v3/usernotification/update/seen
 /api/v3/usernotification/update/markAsRead
 /api/v3/trigger/list
@@ -2716,4 +2718,5 @@
 /api/v2/application/relatedApps/fetchList
 /api/v2/application/relatedApps/delete
 /api/v2/application/relatedApps/add
+
 

@@ -60,7 +60,7 @@ public class GenerateRelationDeleteAPIDataCommand extends FacilioCommand {
 
         List<Map<String, Object>> relatedProps = selectRecordBuilder.get();
         if(CollectionUtils.isEmpty(relatedProps)) {
-            throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND);
+            throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND, "Relationship not present");
         }
         List<Long> ids = new ArrayList<>();
         for(Map<String,Object> relationData : relatedProps) {
