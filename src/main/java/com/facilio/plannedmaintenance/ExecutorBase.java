@@ -36,7 +36,7 @@ public abstract class ExecutorBase implements Executor {
                 ResourceContext resourceContext = new ResourceContext();
                 resourceContext.setId(pmResourcePlanner.getResource().getId());
                 resourceContext.setSiteId(pmResourcePlanner.getSiteId());
-                workOrderCopy.setScheduledStart(nextExecutionTime);
+                workOrderCopy.setScheduledStart(nextExecutionTime * 1000);
                 workOrderCopy.setResource(resourceContext);
                 workOrderCopy.setPmV2(pmResourcePlanner.getPmId());
                 workOrderCopy.setSiteId(resourceContext.getSiteId());
@@ -48,6 +48,7 @@ public abstract class ExecutorBase implements Executor {
                 workOrderCopy.setJobPlan(pmResourcePlanner.getJobPlan());
                 workOrderCopy.setAdhocJobPlan(pmPlanner.getAdhocJobPlan());
                 workOrderCopy.setPrerequisiteJobPlan(pmPlanner.getPreReqJobPlan());
+                workOrderCopy.setCreatedTime(nextExecutionTime * 1000);
 
                 workOrderCopy.setJobStatus(V3WorkOrderContext.JobsStatus.ACTIVE.getValue());
                 workOrderCopy.setSourceType(V3TicketContext.SourceType.PREVENTIVE_MAINTENANCE.getIntVal());

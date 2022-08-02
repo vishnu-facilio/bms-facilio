@@ -87,10 +87,10 @@ public class ScheduleWOStatusChange extends FacilioJob {
 		if (CollectionUtils.isNotEmpty(v3WorkOrderContexts)) {
 			for (V3WorkOrderContext v3WorkOrderContext: v3WorkOrderContexts) {
 				try {
-					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(v3WorkOrderContext.getId(), "OpenScheduledWOV2", v3WorkOrderContext.getCreatedTime() / 1000, "priority");
+					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(v3WorkOrderContext.getId(), "OpenScheduleWOV2", v3WorkOrderContext.getCreatedTime() / 1000, "priority");
 				} catch (Exception e) { //Delete job entry if any and try again
-					FacilioTimer.deleteJob(v3WorkOrderContext.getId(), "OpenScheduledWOV2");
-					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(v3WorkOrderContext.getId(), "OpenScheduledWOV2", v3WorkOrderContext.getCreatedTime() / 1000, "priority");
+					FacilioTimer.deleteJob(v3WorkOrderContext.getId(), "OpenScheduleWOV2");
+					FacilioTimer.scheduleOneTimeJobWithTimestampInSec(v3WorkOrderContext.getId(), "OpenScheduleWOV2", v3WorkOrderContext.getCreatedTime() / 1000, "priority");
 				}
 			}
 			updateV3JobStatus(v3WorkOrderContexts);

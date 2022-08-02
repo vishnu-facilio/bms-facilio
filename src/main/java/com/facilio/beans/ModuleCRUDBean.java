@@ -1,6 +1,7 @@
 package com.facilio.beans;
 
 import java.io.File;
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -164,4 +165,6 @@ public interface ModuleCRUDBean {
 	ApplicationContext getApplicationForLinkName(String appName) throws Exception;
 
 	void schedulePM(long plannerId) throws Exception;
+
+	void extendPlanner(long plannerId, Duration duration) throws Exception;
 }

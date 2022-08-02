@@ -45,7 +45,6 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.taskengine.job.FacilioJob;
 import com.facilio.taskengine.job.JobContext;
 import org.json.simple.JSONObject;
-import org.owasp.validator.html.util.ErrorMessageUtil;
 
 public class PMNewScheduler extends FacilioJob {
 

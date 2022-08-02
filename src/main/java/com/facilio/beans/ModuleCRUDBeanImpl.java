@@ -2,6 +2,7 @@ package com.facilio.beans;
 
 import java.io.File;
 import java.sql.BatchUpdateException;
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -16,6 +17,7 @@ import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.plannedmaintenance.PlannedMaintenanceAPI;
 import com.facilio.plannedmaintenance.ScheduleExecutor;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.util.V3Util;
@@ -1567,13 +1569,93 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		FacilioContext context = new FacilioContext();
 		context.put("trigger", pmPlanner.getTrigger());
 		context.put("cutOffTime", System.currentTimeMillis());
-		context.put("maxCount", 15);
+
+		Map<FacilioStatus.StatusType, FacilioStatus> statusMap = new HashMap<>();
+		getPreOpenStatus(statusMap);
+		FacilioStatus preOpenStatus = statusMap.get(FacilioStatus.StatusType.PRE_OPEN);
+		deletePreOpenworkOrder(plannerId, preOpenStatus);
+		context.put(FacilioConstants.ContextNames.STATUS_MAP, statusMap);
+
 		ScheduleExecutor scheduleExecutor = new ScheduleExecutor();
 		pmPlanner.setResourcePlanners(pmResourcePlanners);
 		List<V3WorkOrderContext> generatedWorkOrders = scheduleExecutor.execute(context, plannedmaintenance, pmPlanner);
 		List<ModuleBaseWithCustomFields> moduleBaseWithCustomFields = generatedWorkOrders.stream().map(i-> (ModuleBaseWithCustomFields)i).collect(Collectors.toList());
 
 		V3Util.createRecord(workOrderModule, moduleBaseWithCustomFields);
+		updateLastGeneratedTimeInPlanner(plannerId, pmPlanner.getTrigger().getEndTime() * 1000);
+	}
+
+	@Override
+	public void extendPlanner(long plannerId, Duration duration) throws Exception {
+		PMPlanner pmPlanner = getPmPlanners(plannerId);
+		PlannedMaintenance plannedmaintenance = (PlannedMaintenance) V3Util.getRecord("plannedmaintenance", pmPlanner.getPmId(), new HashMap<>());
+
+		List<PMResourcePlanner> pmResourcePlanners = getPMResourcePlanner(plannerId);
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule workOrderModule = modBean.getModule("workorder");
+
+
+		FacilioContext context = new FacilioContext();
+		context.put("cutOffTime", pmPlanner.getGeneratedUpto());
+
+		ZonedDateTime dateTime = DateTimeUtil.getDateTime(pmPlanner.getGeneratedUpto(), false);
+		ZonedDateTime plannedEndTime = dateTime.plus(duration);
+		pmPlanner.getTrigger().setPlanEndTime(plannedEndTime.toEpochSecond() * 1000);
+
+		context.put("trigger", pmPlanner.getTrigger());
+
+		Map<FacilioStatus.StatusType, FacilioStatus> statusMap = new HashMap<>();
+		getPreOpenStatus(statusMap);
+		context.put(FacilioConstants.ContextNames.STATUS_MAP, statusMap);
+
+		ScheduleExecutor scheduleExecutor = new ScheduleExecutor();
+		pmPlanner.setResourcePlanners(pmResourcePlanners);
+
+		List<V3WorkOrderContext> generatedWorkOrders = scheduleExecutor.execute(context, plannedmaintenance, pmPlanner);
+		List<ModuleBaseWithCustomFields> moduleBaseWithCustomFields = generatedWorkOrders.stream().map(i-> (ModuleBaseWithCustomFields)i).collect(Collectors.toList());
+
+		V3Util.createRecord(workOrderModule, moduleBaseWithCustomFields);
+		updateLastGeneratedTimeInPlanner(plannerId, pmPlanner.getTrigger().getEndTime() * 1000);
+	}
+
+	private void deletePreOpenworkOrder(long plannerId, FacilioStatus preOpenStatus) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule workorderModule = modBean.getModule("workorder");
+		FacilioField statusField = modBean.getField("status", "workorder");
+		FacilioField jobStatusField = modBean.getField("jobStatus", "workorder");
+		FacilioField pmPlannerField = modBean.getField("pmPlanner", "workorder");
+
+		DeleteRecordBuilder<V3WorkOrderContext> deleteRecordBuilder = new DeleteRecordBuilder<>();
+		deleteRecordBuilder.module(workorderModule);
+		deleteRecordBuilder.andCondition(CriteriaAPI.getCondition(pmPlannerField, plannerId+"", NumberOperators.EQUALS));
+		deleteRecordBuilder.andCondition(CriteriaAPI.getCondition(statusField,preOpenStatus.getId()+"", NumberOperators.EQUALS));
+		deleteRecordBuilder.andCondition(CriteriaAPI.getCondition(jobStatusField, V3WorkOrderContext.JobsStatus.ACTIVE.getValue()+"", NumberOperators.EQUALS));
+		deleteRecordBuilder.skipModuleCriteria();
+		deleteRecordBuilder.delete();
+	}
+
+	private void updateLastGeneratedTimeInPlanner(long plannerId, long generatedUpto) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule pmPlannerModule = modBean.getModule("pmPlanner");
+		List<FacilioField> pmPlannerFields = modBean.getAllFields("pmPlanner");
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(pmPlannerFields);
+
+		Map<String, Object> updateMap = new HashMap<>();
+		updateMap.put("generatedUpto", generatedUpto);
+
+		UpdateRecordBuilder<PMPlanner> updateRecordBuilder = new UpdateRecordBuilder<>();
+		updateRecordBuilder.fields(Collections.singletonList(fieldMap.get("generatedUpto")));
+		updateRecordBuilder.module(pmPlannerModule);
+		updateRecordBuilder.andCondition(CriteriaAPI.getIdCondition(plannerId, pmPlannerModule));
+		updateRecordBuilder.updateViaMap(updateMap);
+	}
+
+	private void getPreOpenStatus(Map<FacilioStatus.StatusType, FacilioStatus> statusMap) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule workorderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+		List<FacilioStatus> statusOfStatusType = TicketAPI.getStatusOfStatusType(workorderModule, FacilioStatus.StatusType.PRE_OPEN);
+		statusMap.put(FacilioStatus.StatusType.PRE_OPEN, statusOfStatusType.get(0));
 	}
 
 	private PMPlanner getPmPlanners(long plannerId) throws Exception {
@@ -1612,8 +1694,3 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		return selectRecordsBuilder.get();
 	}
 }
-
-
-
-
-
