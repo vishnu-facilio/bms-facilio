@@ -503,8 +503,8 @@ public class AccountUtil {
 		FAILURE_CODES(77, 8192, LicenseMapping.GROUP2LICENSE),
 		KIOSK_APP_FORM(78, 16384, LicenseMapping.GROUP2LICENSE),
 		ML_POINTS_SUGGESTIONS(79,32768,LicenseMapping.GROUP2LICENSE),
-		PLANNED_INVENTORY(79, 32768, LicenseMapping.GROUP2LICENSE),//2^15
-		PM_PLANNER(79, 65536, LicenseMapping.GROUP2LICENSE)
+		PLANNED_INVENTORY(79, 65536, LicenseMapping.GROUP2LICENSE),//2^16
+		PM_PLANNER(79, 131072, LicenseMapping.GROUP2LICENSE)
 		;
 		public int featureId;
 		private long license;

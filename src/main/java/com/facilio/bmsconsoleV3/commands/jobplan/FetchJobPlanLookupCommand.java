@@ -23,7 +23,7 @@ public class FetchJobPlanLookupCommand extends FacilioCommand {
         List<FacilioField> jobPlanFields = modBean.getAllFields(moduleName);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(jobPlanFields);
 
-        List<LookupField> additionaLookups = new ArrayList<LookupField>();
+        List<LookupField> additionaLookups = new ArrayList<>();
         additionaLookups.add((LookupField) fieldsAsMap.get("assetCategory"));
         additionaLookups.add((LookupField) fieldsAsMap.get("spaceCategory"));
 

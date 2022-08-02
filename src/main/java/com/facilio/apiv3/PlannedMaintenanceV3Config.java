@@ -3,6 +3,7 @@ package com.facilio.apiv3;
 import com.facilio.bmsconsole.commands.BeforeSavePMPlannerCommand;
 import com.facilio.bmsconsole.commands.PMBeforeCreateCommand;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsoleV3.commands.PMFetchSupplements;
 import com.facilio.bmsconsoleV3.commands.PMPlannerSupplementsCommand;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.FetchJobPlanLookupCommand;
@@ -27,6 +28,7 @@ public class PlannedMaintenanceV3Config {
                 .delete()
                 .list()
                 .summary()
+                    .beforeFetch(new PMFetchSupplements())
                 .build();
     }
 
