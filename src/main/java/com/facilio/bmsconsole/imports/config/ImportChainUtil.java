@@ -144,6 +144,7 @@ public class ImportChainUtil {
         Command afterInsertCommand = null;
         RowFunction beforeImportFunction = null;
         RowFunction afterImportFunction = null;
+        Map<String, String> lookupMainFieldMap = null;
 
         if (importConfig != null) {
             ImportHandler importHandler = importConfig.getImportHandler();
@@ -153,6 +154,7 @@ public class ImportChainUtil {
                 afterInsertCommand = importHandler.getAfterInsertCommand();
                 beforeImportFunction = importHandler.getBeforeImportFunction();
                 afterImportFunction = importHandler.getAfterImportFunction();
+                lookupMainFieldMap = importHandler.getLookupMainFieldMap();
             }
         }
 
@@ -167,6 +169,7 @@ public class ImportChainUtil {
         FacilioContext context = chain.getContext();
         context.put(ImportAPI.ImportProcessConstants.BEFORE_IMPORT_FUNCTION, beforeImportFunction);
         context.put(ImportAPI.ImportProcessConstants.AFTER_IMPORT_FUNCTION, afterImportFunction);
+        context.put(ImportAPI.ImportProcessConstants.LOOKUP_MAIN_FIELD_MAP, lookupMainFieldMap);
 
         return chain;
     }

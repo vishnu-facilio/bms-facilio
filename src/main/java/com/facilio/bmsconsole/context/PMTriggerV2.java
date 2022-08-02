@@ -87,14 +87,13 @@ public class PMTriggerV2 extends V3Context {
         DAILY(21, "Daily"),
         WEEKLY(8 * 2, "Weekly"),
         MONTHLY(366, "Monthly"),
-        QUARTERTLY(366, "Quarterly"),
+        QUARTERLY(366, "Quarterly"),
         HALF_YEARLY(366, "Half Yearly"),
         ANNUALLY(366, "Annually"),
         CUSTOM(-1, "Custom"),
         HOURLY(-1, "Hourly"),
         FIFTEEN_MINUTES(-1, "Quarter Hour"),
-        TEN_MINUTES(-1, "One-Sixth Hour")
-        ;
+        TEN_MINUTES(-1, "One-Sixth Hour");
 
         private int days;
         private String name;
