@@ -77,7 +77,7 @@ public class ScheduleExecutor extends ExecutorBase {
             zonedEnd = dateTime.plusWeeks(15);
         } else if (triggerV2.getFrequencyEnum() == PMTriggerV2.PMTriggerFrequency.MONTHLY) {
             zonedEnd = dateTime.plusMonths(15);
-        } else if (triggerV2.getFrequencyEnum() == PMTriggerV2.PMTriggerFrequency.QUARTERTLY) {
+        } else if (triggerV2.getFrequencyEnum() == PMTriggerV2.PMTriggerFrequency.QUARTERLY) {
             zonedEnd = dateTime.plusYears(5);
         } else if (triggerV2.getFrequencyEnum() == PMTriggerV2.PMTriggerFrequency.HALF_YEARLY) {
             zonedEnd = dateTime.plusYears(5);
