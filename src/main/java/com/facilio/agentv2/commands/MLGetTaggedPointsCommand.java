@@ -4,13 +4,15 @@ import com.facilio.bmsconsole.commands.util.BmsPointsTaggingUtil;
 import com.facilio.bmsconsole.context.CommissioningLogContext;
 import com.facilio.bmsconsole.util.CommissioningApi;
 import com.facilio.constants.FacilioConstants;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
+@Log4j
 public class MLGetTaggedPointsCommand extends AgentV2Command {
+
     @Override
     public boolean executeCommand(Context context) throws Exception {
         CommissioningLogContext log = (CommissioningLogContext) context.get(FacilioConstants.ContextNames.LOG);
@@ -19,7 +21,11 @@ public class MLGetTaggedPointsCommand extends AgentV2Command {
             List<String> controllerNames = log.getControllers().stream().map(x -> (String) x.get("name")).collect(Collectors.toList());
             Map<String, Map<String, Object>> recordMap = new HashMap<>();
             if (controllerNames != null && !controllerNames.isEmpty()) {
-                recordMap = BmsPointsTaggingUtil.getTaggedPointList(controllerNames);
+                try {
+                    recordMap = BmsPointsTaggingUtil.getTaggedPointList(controllerNames);
+                }catch (Exception e){
+                    LOGGER.error("Exception while getting points suggestions",e);
+                }
             }
             if (recordMap != null && !recordMap.isEmpty()) {
                 JSONArray pointsJson = log.getPoints();

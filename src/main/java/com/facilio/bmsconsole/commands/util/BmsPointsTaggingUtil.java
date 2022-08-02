@@ -354,6 +354,9 @@ public class BmsPointsTaggingUtil {
         Map<String, Map<String, String>> wronglyPredictedFieldMap = new HashMap<String, Map<String, String>>();
         for (String key : actualTaggedMap.keySet()) {
             Map<String, Map<Long, String>> resultMap = (Map<String, Map<Long, String>>) actualTaggedMap.get(key);
+            if(!predictedMap.containsKey(key)){
+                continue;
+            }
             Map<String, Object> predictionMap = predictedMap.get(key);
             String categoryId = resultMap.get("category").keySet().toArray()[0].toString();
             String fieldId = resultMap.get("reading").keySet().toArray()[0].toString();
@@ -400,6 +403,7 @@ public class BmsPointsTaggingUtil {
         String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString(), 300);
         if (org.apache.commons.lang.StringUtils.isEmpty(result) || result.contains("Internal Server Error")) {
             LOGGER.info("Error createDb api " + postURL + " ERROR MESSAGE : " + "Response is not valid. RESULT : " + result);
+            throw new Exception("failed during Python - create Db");
         }
     }
 }
