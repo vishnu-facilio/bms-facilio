@@ -16,4 +16,12 @@ public class LabourCraftAndSkillContext extends V3Context{
 	private CraftContext craft;
 	private SkillsContext skill;
 	private LabourContextV3 labour;
+	private Boolean isDefault;
+
+	public boolean isDefault() {
+		if(isDefault != null) {
+			return isDefault.booleanValue();
+		}
+		return false;
+	}
 }
