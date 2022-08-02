@@ -3,14 +3,4 @@ pipelines:
     production:
       - step:
           script:
-            - echo "started"
-            - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
-            - commitid=`git rev-list -1 --before="24 hour ago" master`
-            - git fetch --all
-            - git branch
-            - echo $commitid
-            - git checkout production
-            - git merge $commitid
-            - git push -v --tags origin production:production
-            - echo "success"
-            - echo "finished"
+            - /bin/bash bitbucket-script.sh
