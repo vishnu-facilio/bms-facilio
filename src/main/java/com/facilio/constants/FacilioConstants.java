@@ -1805,6 +1805,7 @@ public class FacilioConstants {
 
 		public static final String INCLUDE_SERVING_SITE = "includeServingSite";
 		public static final String SEARCH_QUERY = "searchQuery";
+		public static final String QUERY_PARAMS = "queryParams";
 
 		public static final Object DEFAULT_DATE = "defaultDate";
 		public static final Object READING_RULE_ALARM_OCCURANCE = "readingRuleAlarmOccurance";
@@ -2078,7 +2079,7 @@ public class FacilioConstants {
 		public static final String PLANNEDMAINTENANCE = "plannedmaintenance";
 
 		public static final String PMPLANNER = "pmPlanner";
-
+		public static final String PLANNER_ID = "plannerId";
 		public static class WorkPermit {
 			public static final String WORK_PERMIT_TYPE_CHECKLIST = "workpermittypechecklist";
 			public static final String WORK_PERMIT_TYPE_CHECKLIST_CATEGORY = "workpermittypechecklistcategory";

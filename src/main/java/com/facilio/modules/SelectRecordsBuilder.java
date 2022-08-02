@@ -842,7 +842,6 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 				.append(" ");
 			return parentBuilder;
 		}
-		
 	}
 
 	public E fetchFirst() throws Exception {

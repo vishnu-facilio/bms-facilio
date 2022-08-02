@@ -1790,7 +1790,7 @@ public class APIv3Config {
                 .afterDelete(new DeleteBasespaceChildrenCommandV3())
                 .summary().beforeFetch(new SpaceFillLookupFieldsCommand())
                 .afterFetch(new FetchBasespaceChildrenCountCommandV3())
-                .list().beforeFetch(new SpaceFillLookupFieldsCommand())
+                .list().beforeFetch(TransactionChainFactoryV3.getSpaceBeforeFetchChain())
                 .build();
     }
 
@@ -1840,7 +1840,7 @@ public class APIv3Config {
                 .beforeFetch(new AssetSupplementsSupplyCommand())
                 .afterFetch(new LoadAssetSummaryCommandV3())
                 .list()
-                .beforeFetch(new AssetSupplementsSupplyCommand())
+                .beforeFetch(TransactionChainFactoryV3.getAssetBeforeFetchChain())
                 .afterFetch(new AssetListFilterByReadingsCommand())
                 .build();
     }
