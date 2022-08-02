@@ -8,8 +8,9 @@ public class JobPlanToolsContext extends V3Context {
     private JobPlanContext jobPlan;
     private V3ToolTypesContext toolType;
     private String description;
-    private Double unitPrice;
+    private Double rate;
     private Double quantity;
+    private Double duration;
     private Double totalCost;
     private V3StoreRoomContext storeRoom;
 
@@ -37,12 +38,12 @@ public class JobPlanToolsContext extends V3Context {
         this.description = description;
     }
 
-    public Double getUnitPrice() {
-        return unitPrice;
+    public Double getRate() {
+        return rate;
     }
 
-    public void setUnitPrice(Double unitPrice) {
-        this.unitPrice = unitPrice;
+    public void setRate(Double rate) {
+        this.rate = rate;
     }
 
     public Double getQuantity() {
@@ -51,6 +52,14 @@ public class JobPlanToolsContext extends V3Context {
 
     public void setQuantity(Double quantity) {
         this.quantity = quantity;
+    }
+
+    public Double getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Double duration) {
+        this.duration = duration;
     }
 
     public Double getTotalCost() {

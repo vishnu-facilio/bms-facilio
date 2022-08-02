@@ -55,6 +55,9 @@ import com.facilio.bmsconsoleV3.commands.item.LoadItemLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.item.SetManualItemTransactionCommandV3;
 import com.facilio.bmsconsoleV3.commands.item.UpdateItemTransactionsCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanItemsLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanServicesCommandV3;
+import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanToolsLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.FetchJobPlanLookupCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.FillJobPlanDetailsCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.ValidationForJobPlanCategory;
@@ -1516,7 +1519,9 @@ public class APIv3Config {
                 .create()
                 .update()
                 .list()
+                .beforeFetch(new LoadJobPlanItemsLookupCommandV3())
                 .summary()
+                .beforeFetch(new LoadJobPlanItemsLookupCommandV3())
                 .delete()
                 .build();
     }
@@ -1527,7 +1532,9 @@ public class APIv3Config {
                 .create()
                 .update()
                 .list()
+                .beforeFetch(new LoadJobPlanToolsLookupCommandV3())
                 .summary()
+                .beforeFetch(new LoadJobPlanToolsLookupCommandV3())
                 .delete()
                 .build();
     }
@@ -1538,7 +1545,9 @@ public class APIv3Config {
                 .create()
                 .update()
                 .list()
+                .beforeFetch(new LoadJobPlanServicesCommandV3())
                 .summary()
+                .beforeFetch(new LoadJobPlanServicesCommandV3())
                 .delete()
                 .build();
     }

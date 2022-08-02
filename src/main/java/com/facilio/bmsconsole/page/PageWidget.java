@@ -446,7 +446,13 @@ public class PageWidget {
 
 		RELATIONSHIP_WIDGET("relationshipwidget"),
 		JOBPLAN_FIELDS_WIDGET("jobPlanFieldDetails"),
-		JOBPLAN_TASKS_WIDGET("jobPlanTasks");
+		JOBPLAN_TASKS_WIDGET("jobPlanTasks"),
+
+		PLANNED_INVENTORY_OVERALL_COST("plannedInventoryOverallCost"),
+		PLANNED_INVENTORY_ITEMS("plannedInventoryItems"),
+		PLANNED_INVENTORY_SERVICES("plannedInventoryServices"),
+		PLANNED_INVENTORY_LABOR("plannedInventoryLabor"),
+		PLANNED_INVENTORY_TOOLS("plannedInventoryTools");
 
 		private String name;
 

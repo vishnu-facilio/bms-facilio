@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.page.factory;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
@@ -35,6 +36,11 @@ public class JobPlanPageFactory extends PageFactory {
         taskWidget.addToLayoutParams(tab1Sec2, 24, 10);
         tab1Sec2.addWidget(taskWidget);
 
+        //Inventory tab
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY) && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PLANNED_INVENTORY) ) {
+            addInventoryTab(page);
+        }
+
         Page.Tab tab2 = page.new Tab("Notes & Information");
         page.addTab(tab2);
         Page.Section tab2Sec1 = page.new Section();
@@ -60,6 +66,46 @@ public class JobPlanPageFactory extends PageFactory {
         tab4Sec1.addWidget(activityWidget);
 
         return  page;
+    }
+    private static void addInventoryTab(Page page) throws Exception {
+        Page.Tab itemsAndLaborTab = page.new Tab("Plans");
+        page.addTab(itemsAndLaborTab);
+
+        Page.Section itemsAndLaborSection = page.new Section();
+        itemsAndLaborTab.addSection(itemsAndLaborSection);
+
+        int yOffset = 0;
+
+        // overall cost
+        PageWidget overallCost = new PageWidget(PageWidget.WidgetType.PLANNED_INVENTORY_OVERALL_COST);
+        overallCost.addToLayoutParams(16, 0, 8, 10);
+        itemsAndLaborSection.addWidget(overallCost);
+
+        // items
+        PageWidget items = new PageWidget(PageWidget.WidgetType.PLANNED_INVENTORY_ITEMS);
+        items.addToLayoutParams(itemsAndLaborSection, 16, 7 + yOffset);
+        itemsAndLaborSection.addWidget(items);
+        yOffset += 7;
+
+        // services
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CONTRACT)) {
+            PageWidget services = new PageWidget(PageWidget.WidgetType.PLANNED_INVENTORY_SERVICES);
+            services.addToLayoutParams(0, yOffset, 16, 7);
+            itemsAndLaborSection.addWidget(services);
+            yOffset += 7;
+        }
+
+//        // labor
+//        PageWidget labor = new PageWidget(PageWidget.WidgetType.PLANNED_INVENTORY_LABOR);
+//        labor.addToLayoutParams(0, yOffset, 16, 7);
+//        itemsAndLaborSection.addWidget(labor);
+//        yOffset += 7;
+
+        // tools
+        PageWidget tools = new PageWidget(PageWidget.WidgetType.PLANNED_INVENTORY_TOOLS);
+        tools.addToLayoutParams(0, yOffset, 16, 7);
+        itemsAndLaborSection.addWidget(tools);
+        yOffset += 7;
     }
 }
 
