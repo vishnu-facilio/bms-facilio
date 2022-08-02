@@ -1432,6 +1432,13 @@ public class AccountConstants {
 		scopingId.setModule(module);
 		fields.add(scopingId);
 
+		FacilioField isDefaultApp = new FacilioField();
+		isDefaultApp.setName("isDefaultApp");
+		isDefaultApp.setDataType(FieldType.BOOLEAN);
+		isDefaultApp.setColumnName("IS_DEFAULT_APP");
+		isDefaultApp.setModule(module);
+		fields.add(isDefaultApp);
+
 		return fields;
 	}
 

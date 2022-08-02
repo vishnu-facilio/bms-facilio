@@ -1,0 +1,58 @@
+package com.facilio.bmsconsoleV3.commands;
+
+import com.facilio.accounts.util.AccountConstants;
+import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.Operator;
+import com.facilio.modules.FieldFactory;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class SetDefaultAppForUserCommandV3 extends FacilioCommand {
+    @Override
+    public boolean executeCommand(Context context) throws Exception {
+
+        List<Long> ouIds = (List<Long>) context.get(FacilioConstants.ContextNames.ORG_USER_ID);
+        Long appId = (Long) context.get(FacilioConstants.ContextNames.APPLICATION_ID);
+
+        if(CollectionUtils.isEmpty(ouIds)){
+            throw new IllegalArgumentException("User(s) cannot be empty");
+        }
+        if(appId == null){
+            throw new IllegalArgumentException("Invalid app id");
+        }
+
+        for(Long ouId : ouIds){
+
+            GenericUpdateRecordBuilder trueBuilder =  getUpdateBuilder(ouId,appId,NumberOperators.EQUALS);
+            Map<String, Object> props = new HashMap<>();
+            props.put("isDefaultApp", true);
+            trueBuilder.update(props);
+
+            GenericUpdateRecordBuilder falseBuilder =  getUpdateBuilder(ouId,appId,NumberOperators.NOT_EQUALS);
+            props = new HashMap<>();
+            props.put("isDefaultApp", false);
+            falseBuilder.update(props);
+        }
+        return false;
+    }
+
+    public GenericUpdateRecordBuilder getUpdateBuilder(Long ouId, Long appId, NumberOperators applicationOperator){
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("APPLICATION_ID","applicationId",String.valueOf(appId), applicationOperator));
+        criteria.addAndCondition(CriteriaAPI.getCondition("ORG_USERID","ouid",String.valueOf(ouId), NumberOperators.EQUALS));
+        GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+                .fields(AccountConstants.getOrgUserAppsFields())
+                .table("ORG_User_Apps")
+                .andCriteria(criteria);
+        return builder;
+    }
+}

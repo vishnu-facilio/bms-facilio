@@ -14,7 +14,7 @@ public class OrgUserApp implements Serializable {
 	private long applicationId;
 	private long roleId;
 	private long scopingId;
-
+	private Boolean isDefaultApp;
 	
 	public long getId() {
 		return id;
@@ -49,5 +49,13 @@ public class OrgUserApp implements Serializable {
 
 	public void setScopingId(long scopingId) {
 		this.scopingId = scopingId;
+	}
+
+	public Boolean getDefaultApp() {
+		return isDefaultApp;
+	}
+
+	public void setDefaultApp(Boolean defaultApp) {
+		isDefaultApp = defaultApp;
 	}
 }

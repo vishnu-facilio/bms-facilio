@@ -1943,4 +1943,9 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new AddOrUpdateVisitorTypeFormCommand());
         return chain;
     }
+    public static FacilioChain setDefaultAppForUser() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetDefaultAppForUserCommandV3());
+        return c;
+    }
 }
