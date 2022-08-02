@@ -295,7 +295,7 @@ public class AgentBeanImpl implements AgentBean {
         return new JSONObject();
     }
 
-    public long getAgentCount() {
+    public long getAgentCount(String querySearch) {
         Map<String, FacilioField> fieldsmap = FieldFactory.getAsMap(FieldFactory.getNewAgentFields());
         FacilioModule agentDataModule = ModuleFactory.getNewAgentModule();
         try {
@@ -304,6 +304,9 @@ public class AgentBeanImpl implements AgentBean {
                     .table(agentDataModule.getTableName())
                     .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, fieldsmap.get(AgentConstants.ID))
                     .andCondition(getDeletedTimeNullCondition(agentDataModule));
+            if (querySearch != null){
+                builder.andCondition(CriteriaAPI.getCondition(fieldsmap.get("displayName"),querySearch, StringOperators.CONTAINS));
+            }
             List<Map<String, Object>> result = builder.get();
             return (long) result.get(0).get(AgentConstants.ID);
         } catch (Exception e) {
