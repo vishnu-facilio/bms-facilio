@@ -80,6 +80,7 @@ public class MLBmsPointsTaggingJob extends FacilioJob {
             LOGGER.info("Finished MLBmsPointsTaggingJob, JOB ID :" + jc.getJobId());
         } catch (Exception e) {
             LOGGER.fatal("Error in MLBmsPointsTaggingJob" + e);
+            throw e;
         }
     }
 }

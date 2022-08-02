@@ -6,11 +6,12 @@ import com.facilio.bmsconsole.commands.util.BmsPointsTaggingUtil;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.CommissioningApi;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
+@Log4j
 public class MLUpdateTaggedPointsCommand extends AgentV2Command {
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -35,8 +36,12 @@ public class MLUpdateTaggedPointsCommand extends AgentV2Command {
         }
 
         if(updateMap!=null && !updateMap.isEmpty()){
-            BmsPointsTaggingUtil.updateTaggedPointList(updateMap);
-            return false;
+            try {
+                BmsPointsTaggingUtil.updateTaggedPointList(updateMap);
+                return false;
+            }catch (Exception e){
+                LOGGER.error("Exception while updating commissioned points",e);
+            }
         }
         return true;
     }
