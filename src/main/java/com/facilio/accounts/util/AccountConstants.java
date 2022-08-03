@@ -1473,6 +1473,42 @@ public class AccountConstants {
 		return fields;
 	}
 
+	public static FacilioField getFailureCodeField() {
+		FacilioField failure_code_id = new FacilioField();
+		failure_code_id.setName("code_id");
+		failure_code_id.setColumnName("ID");
+		failure_code_id.setDataType(FieldType.NUMBER);
+		failure_code_id.setModule(ModuleFactory.getFailureCodeModule());
+		return failure_code_id;
+	}
+
+	public static FacilioField getFailureCodeProblemField() {
+		FacilioField failure_problem_id = new FacilioField();
+		failure_problem_id.setName("id");
+		failure_problem_id.setColumnName("ID");
+		failure_problem_id.setDataType(FieldType.NUMBER);
+		failure_problem_id.setModule(ModuleFactory.getFailureCodeProblemModule());
+		return failure_problem_id;
+	}
+
+	public static FacilioField getFailureCodeCausesField() {
+		FacilioField failure_cause_id = new FacilioField();
+		failure_cause_id.setName("id");
+		failure_cause_id.setColumnName("ID");
+		failure_cause_id.setDataType(FieldType.NUMBER);
+		failure_cause_id.setModule(ModuleFactory.getFailureCodeCausesModule());
+		return failure_cause_id;
+	}
+
+	public static FacilioField getFailureCodeRemediesField() {
+		FacilioField failure_remedies_id = new FacilioField();
+		failure_remedies_id.setName("id");
+		failure_remedies_id.setColumnName("ID");
+		failure_remedies_id.setDataType(FieldType.NUMBER);
+		failure_remedies_id.setModule(ModuleFactory.getFailureCodeRemediesModule());
+		return failure_remedies_id;
+	}
+
 	public static List<FacilioField> getLicensingInfoFields() {
 		FacilioModule module = ModuleFactory.getLicensingInfoModule();
 		List<FacilioField> fields = new ArrayList<>();

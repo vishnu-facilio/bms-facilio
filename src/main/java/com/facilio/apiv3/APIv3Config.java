@@ -41,6 +41,7 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.Lo
 import com.facilio.bmsconsoleV3.commands.employee.LoadEmployeeLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.facility.*;
+import com.facilio.bmsconsoleV3.commands.failureclass.FetchFailureClassSubModules;
 import com.facilio.bmsconsoleV3.commands.failureclass.FetchFailureClassSupplements;
 import com.facilio.bmsconsoleV3.commands.floor.CreateFloorAfterSave;
 import com.facilio.bmsconsoleV3.commands.floor.FloorFillLookupFieldsCommand;
@@ -129,8 +130,7 @@ import com.facilio.bmsconsoleV3.context.communityfeatures.*;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.*;
-import com.facilio.bmsconsoleV3.context.failurecode.V3FailureClassContext;
-import com.facilio.bmsconsoleV3.context.failurecode.V3FailureCodeContext;
+import com.facilio.bmsconsoleV3.context.failurecode.*;
 import com.facilio.bmsconsoleV3.context.floorplan.*;
 import com.facilio.bmsconsoleV3.context.inventory.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
@@ -542,10 +542,27 @@ public class APIv3Config {
                 .create()
                 .update()
                 .list()
+                .beforeFetch(new FetchFailureClassSupplements())
                 .summary()
                 .beforeFetch(new FetchFailureClassSupplements())
+                .afterFetch(new FetchFailureClassSubModules())
                 .delete()
                 .build();
+    }
+
+    @Module("failurecodeproblems")
+    public static Supplier<V3Config> getFailureCodeProblems() {
+        return () -> new V3Config(V3FailureCodeProblemsContext.class, null);
+    }
+
+    @Module("failurecodecauses")
+    public static Supplier<V3Config> getFailureCodeCauses() {
+        return () -> new V3Config(V3FailureCodeCausesContext.class, null);
+    }
+
+    @Module("failurecoderemedies")
+    public static Supplier<V3Config> getFailureCodeRemedies() {
+        return () -> new V3Config(V3FailureCodeRemediesContext.class, null);
     }
 
     @Module("insurance")

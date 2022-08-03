@@ -879,6 +879,9 @@ public class FacilioConstants {
 
 		public static final String FAILURE_CLASS = "failureclass";
 		public static final String FAILURE_CODE = "failurecode";
+		public static final String FAILURE_CODE_PROBLEMS = "failurecodeproblems";
+		public static final String FAILURE_CODE_CAUSES = "failurecodecauses";
+		public static final String FAILURE_CODE_REMEDIES = "failurecoderemedies";
 
 		public static final String SPACE_CATEGORY_FIELD = "spaceCategory";
 
