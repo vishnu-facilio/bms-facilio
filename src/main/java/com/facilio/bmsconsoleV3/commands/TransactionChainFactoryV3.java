@@ -2,13 +2,12 @@ package com.facilio.bmsconsoleV3.commands;
 
 import java.util.Collections;
 
+import com.facilio.bmsconsoleV3.commands.asset.AssetSupplementsSupplyCommand;
 import com.facilio.bmsconsoleV3.commands.assetDepartment.ValidateAssetDepartmentDeletionV3;
 import com.facilio.bmsconsoleV3.commands.assetType.ValidateAssetTypeDeletionV3;
 import com.facilio.bmsconsoleV3.commands.dashboard.*;
 import com.facilio.bmsconsoleV3.commands.floorplan.*;
-import com.facilio.bmsconsoleV3.commands.jobplan.FillUpJobPlanSectionAdditionInfoObject;
-import com.facilio.bmsconsoleV3.commands.jobplan.FillUpJobPlanTaskAdditionInfoObject;
-import com.facilio.bmsconsoleV3.commands.jobplan.ValidationForJobPlanCategory;
+import com.facilio.bmsconsoleV3.commands.jobplan.*;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.AddLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.DeleteLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.FetchLicensingInfoCommand;
@@ -20,6 +19,7 @@ import com.facilio.bmsconsoleV3.commands.readingimportapp.AddReadingImportAppDat
 import com.facilio.bmsconsoleV3.commands.readingimportapp.DeleteReadingImportDataCommand;
 import com.facilio.bmsconsoleV3.commands.readingimportapp.UpdateReadingImportDataCommand;
 import com.facilio.bmsconsoleV3.commands.shift.*;
+import com.facilio.bmsconsoleV3.commands.space.SpaceFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.spacecategory.ValidateSpaceCategoryDeletionV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.AutoAwardingPriceCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.CreatePurchaseOrdersCommandV3;
@@ -83,7 +83,6 @@ import com.facilio.bmsconsoleV3.commands.facility.*;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
-import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksCommand;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.UpdatePeoplePrimaryContactCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.PreFillAddPurchaseRequestCommand;
@@ -1965,5 +1964,25 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new RemoveShiftAbsenceDetectionJobCommand());
         chain.addCommand(new AddShiftAbsenceDetectionJobCommand());
         return chain;
+    }
+
+    public static FacilioChain getSpaceBeforeFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SpaceFillLookupFieldsCommand());
+        c.addCommand(new AddPlannerIdFilterCriteriaCommand());
+        return c;
+    }
+
+    public static FacilioChain getAssetBeforeFetchChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new AssetSupplementsSupplyCommand());
+        chain.addCommand(new AddPlannerIdFilterCriteriaCommand());
+        return chain;
+    }
+
+    public static FacilioChain setDefaultAppForUser() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetDefaultAppForUserCommandV3());
+        return c;
     }
 }
