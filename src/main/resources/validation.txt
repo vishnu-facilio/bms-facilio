@@ -2718,5 +2718,5 @@
 /api/v2/application/relatedApps/fetchList
 /api/v2/application/relatedApps/delete
 /api/v2/application/relatedApps/add
-
+/api/v3/approval/:moduleName/view/:viewName
 

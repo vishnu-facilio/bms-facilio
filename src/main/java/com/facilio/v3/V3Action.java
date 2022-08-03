@@ -101,7 +101,6 @@ public class V3Action extends ActionSupport implements ServletResponseAware {
 	public void setFilters(String filters) {
 		this.filters = filters;
 	}
-
 	private String clientCriteria;
 
 	public void setClientCriteria(String clientCriteria) {

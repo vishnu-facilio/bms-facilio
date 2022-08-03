@@ -187,6 +187,13 @@
         </action>
     </package>
 
+    <package name="newV3Approval" extends="v3Api" namespace="/api/v3/approval">
+        <action name="*/view/*" class="com.facilio.bmsconsoleV3.actions.ApprovalV3Action">
+            <param name="moduleName">{1}</param>
+            <param name="viewName">{2}</param>
+        </action>
+    </package>
+
     <package name="timelineV3Api" namespace="/api/v3/modules/data/timeline" extends="v3Api">
         <action name="get"
                 class="com.facilio.bmsconsoleV3.actions.TimelineAction"

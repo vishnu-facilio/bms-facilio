@@ -22,11 +22,11 @@ import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
+import net.minidev.json.parser.JSONParser;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;

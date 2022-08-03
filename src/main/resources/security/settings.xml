@@ -1027,5 +1027,14 @@
         </requestbody>
     </request>-->
 
+  <!--  <request path="/api/v3/approval/:moduleName/view/:viewName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="viewName" type="string" mandatory="true"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+        </urlparams>
+    </request>-->
+
 
 </config>
