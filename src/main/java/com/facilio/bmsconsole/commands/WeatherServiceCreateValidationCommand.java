@@ -9,12 +9,13 @@ import com.facilio.v3.exception.RESTException;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Map;
 
 @Log4j
-public class ValidateWeatherServiceCommand extends FacilioCommand {
+public class WeatherServiceCreateValidationCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = Constants.getModuleName(context);
@@ -23,15 +24,24 @@ public class ValidateWeatherServiceCommand extends FacilioCommand {
         if(CollectionUtils.isEmpty(weatherServiceContexts)) {
             return true;
         }
+
         V3WeatherServiceContext weatherServiceContext = weatherServiceContexts.get(0);
-        V3WeatherServiceContext existingService =  WeatherAPI.getWeatherServiceByName(weatherServiceContext.getName());
-        if(weatherServiceContext.getId() > 0) {  // update check
-            if(!weatherServiceContext.getName().equals(existingService.getName())) {
-                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Weather service name is not allowed to modify");
+        if(StringUtils.isEmpty(weatherServiceContext.getName())) {
+            if(StringUtils.isEmpty(weatherServiceContext.getDisplayName())) {
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Both service name and displayName can't be empty");
             }
-        } else if(existingService!=null) { // normal check
-            throw new Exception("Given weather service name already exists");
+            String serviceName = weatherServiceContext.getDisplayName();
+            serviceName = serviceName.toLowerCase();
+            serviceName = serviceName.replaceAll("[^a-z0-9]", "");
+            weatherServiceContext.setName(serviceName);
         }
+
+        V3WeatherServiceContext existingService =  WeatherAPI.getWeatherServiceByName(weatherServiceContext.getName());
+        if(existingService != null) { // normal check
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Given weather service name already exists");
+        }
+
         return false;
     }
+
 }

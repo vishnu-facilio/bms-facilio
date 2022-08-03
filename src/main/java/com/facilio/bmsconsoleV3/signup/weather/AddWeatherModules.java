@@ -11,6 +11,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.EnumFieldValue;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import lombok.extern.log4j.Log4j;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Log4j
 public class AddWeatherModules extends SignUpData {
+
     @Override
     public void addData() throws Exception {
         addWeatherModules();
@@ -29,17 +31,20 @@ public class AddWeatherModules extends SignUpData {
     }
 
     private void addWeatherModules() throws Exception {
+        FacilioModule serviceModule = constructWeatherServiceModule();
+        FacilioModule stationModule = constructWeatherStationModule(serviceModule);
+
         List< FacilioModule > modules = new ArrayList<>();
-        modules.add(constructWeatherServiceModule());
-        modules.add(constructWeatherStationModule());
+        modules.add(serviceModule);
+        modules.add(stationModule);
 
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         addModuleChain.execute();
     }
-
+    
     private void addWeatherSubModules() throws Exception {
-        List< FacilioModule > subModules = new ArrayList<>();
+        List< FacilioModule> subModules = new ArrayList<>();
         subModules.add(constructWeatherReadingModule());
         subModules.add(constructPsychrometricModule());
 
@@ -55,6 +60,7 @@ public class AddWeatherModules extends SignUpData {
 
         Map<String, Object> addDefaultWeather = new HashMap<>();
         addDefaultWeather.put("name", "facilioweather");
+        addDefaultWeather.put("displayName", "Facilio Weather");
         addDefaultWeather.put("dataInterval", 30);
 
         V3Util.createRecord(module, addDefaultWeather);
@@ -65,21 +71,27 @@ public class AddWeatherModules extends SignUpData {
 
         List<FacilioField> fields = new ArrayList<>();
         fields.add(FieldFactory.getDefaultField("name", "Name", "NAME", FieldType.STRING, true));
+        fields.add(FieldFactory.getDefaultField("displayName", "Display Name", "DISPLAY_NAME", FieldType.STRING));
         fields.add(FieldFactory.getDefaultField("dataInterval", "Data Interval", "DATA_INTERVAL", FieldType.NUMBER));
 
         module.setFields(fields);
         return module;
     }
 
-    private FacilioModule constructWeatherStationModule() {
+    private FacilioModule constructWeatherStationModule(FacilioModule serviceModule) {
         FacilioModule module = new FacilioModule("weatherstation", "Weather Station", "Weather_Station", FacilioModule.ModuleType.BASE_ENTITY);
 
         List<FacilioField> fields = new ArrayList<>();
         fields.add(FieldFactory.getDefaultField("stationCode", "Station Code", "STATION_CODE", FieldType.NUMBER, true));
         fields.add(FieldFactory.getDefaultField("name", "Name", "NAME", FieldType.STRING));
+        fields.add(FieldFactory.getDefaultField("description", "Description", "DESCRIPTION", FieldType.STRING));
         fields.add(FieldFactory.getDefaultField("lat", "Latitude", "LAT", FieldType.DECIMAL));
         fields.add(FieldFactory.getDefaultField("lng", "Longtitude", "LNG", FieldType.DECIMAL));
         fields.add(FieldFactory.getDefaultField("serviceId", "Service ID", "SERVICE_ID", FieldType.NUMBER));
+
+        LookupField service = FieldFactory.getDefaultField("service", "Service", "SERVICE", FieldType.LOOKUP);
+        service.setLookupModule(serviceModule);
+        fields.add(service);
 
         module.setFields(fields);
         return module;

@@ -51,6 +51,7 @@ public class AddWeatherStationCommand extends FacilioCommand {
                 }
                 stationData.put("name", locationName);
                 stationData.put("serviceId", facilioWeatherService.getId());
+                stationData.put("service", facilioWeatherService);
                 V3Util.createRecord(module, stationData);
             }catch (Exception e) {
                 LOGGER.info("Failed to add weather station for site id :: "+site.getId());

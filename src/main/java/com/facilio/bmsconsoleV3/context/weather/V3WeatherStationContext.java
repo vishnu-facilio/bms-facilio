@@ -12,5 +12,7 @@ public class V3WeatherStationContext extends V3Context {
 	private Double lng;
 	private long stationCode;
 	private long serviceId;
+	private String description;
+	private V3WeatherServiceContext service;
 
 }

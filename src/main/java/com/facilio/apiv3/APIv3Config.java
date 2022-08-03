@@ -2046,10 +2046,10 @@ public class APIv3Config {
     public static Supplier<V3Config> getWeatherService() {
         return () -> new V3Config(V3WeatherServiceContext.class, null)
                 .create()
-                .beforeSave(new ValidateWeatherServiceCommand())
+                .beforeSave(new WeatherServiceCreateValidationCommand())
                 .afterSave(new AddWeatherServiceJobCommand())
                 .update()
-                .beforeSave(new ValidateWeatherServiceCommand())
+                .beforeSave(new WeatherServiceUpdateValidationCommand())
                 .afterSave(new AddWeatherServiceJobCommand())
                 .list()
                 .summary()
@@ -2062,12 +2062,14 @@ public class APIv3Config {
     public static Supplier<V3Config> getWeatherStation() {
         return () -> new V3Config(V3WeatherStationContext.class, null)
                 .create()
-                .beforeSave(new ValidateWeatherStationCommand())
+                .beforeSave(new WeatherStationCreateValidationCommand())
                 .afterSave(TransactionChainFactoryV3.addReadingDataMetaForReadingModule())
                 .update()
-                .beforeSave(new ValidateWeatherStationCommand())
+                .beforeSave(new WeatherStationUpdateValidationCommand())
                 .list()
+                .beforeFetch(new WeatherStationLoadSupplementCommand())
                 .summary()
+                .beforeFetch(new WeatherStationLoadSupplementCommand())
                 .delete()
                 .build();
     }
