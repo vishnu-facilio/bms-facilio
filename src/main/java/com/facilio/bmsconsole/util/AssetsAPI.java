@@ -1285,7 +1285,6 @@ public class AssetsAPI {
 		}
 		return data;
 	}
-	
 	public static JSONObject getAssetsWithReadingsForSpecificCategory(List<Long> buildingIds, List<Long> categoryIds, boolean fetchOnlyAlarmPoints) throws Exception{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);

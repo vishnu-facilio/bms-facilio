@@ -3151,6 +3151,13 @@ public class ModuleFactory {
 		mlServiceModule.setTableName("ML_Service");
 		return mlServiceModule;
 	}
+	public static FacilioModule getMLBmsPointsTaggingModule() {
+		FacilioModule mlBmsPointsTaggingModule = new FacilioModule();
+		mlBmsPointsTaggingModule.setName("mlBmsPointsTagging");
+		mlBmsPointsTaggingModule.setDisplayName("ML_BmsPredictedPoints");
+		mlBmsPointsTaggingModule.setTableName("ML_BmsPredictedPoints");
+		return mlBmsPointsTaggingModule;
+	}
 	
 	public static FacilioModule getMLModelVariablesModule()
 	{

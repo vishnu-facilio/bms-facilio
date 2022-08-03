@@ -174,6 +174,7 @@ public class PointsUtil
             FacilioChain addPointsChain = TransactionChainFactory.getAddPointsChain();
             FacilioContext context = new FacilioContext();
             context.put(AgentConstants.CONTROLLER,controller);
+            context.put(AgentConstants.AGENT,agent);
             context.put(AgentConstants.POINTS,points);
             addPointsChain.setContext(context);
             addPointsChain.execute();

@@ -137,46 +137,6 @@ public class IotMessageApiV2 {
         return FieldUtil.getAsBeanListFromMapList(builder.get(), IotMessage.class);
     }
 
-    private static void updatePointAcks(IotMessage iotMessage) throws Exception {
-        // {"identifier":"1_#_1002_#_0_#_192.168.1.2","agent":"iamcvijay","agentId":1,"networkNumber":0,"ipAddress":"192.168.1.2","id":3,"instanceNumber":1002,"type":1,"command":255,"timestamp":1577086482410,"points":
-        // [{"controllerId":3,"instanceType":8,"id":1,"instanceNumber":1002},{"controllerId":3,"instanceType":10,"id":2,"instanceNumber":1},{"controllerId":3,"instanceType":16,"id":3,"instanceNumber":1}]}
-        if (iotMessage != null) {
-            FacilioCommand command = FacilioCommand.valueOf(iotMessage.getCommand());
-            if ((command != FacilioCommand.SUBSCRIBE) && (command != FacilioCommand.CONFIGURE)) {
-                return;
-            }
-            if (iotMessage.getMessageData().containsKey(AgentConstants.POINTS)) {
-                JSONArray pointData = getPointDataFromIotMessage(iotMessage, command);
-                List<Long> pointIds = new ArrayList<>();
-                for (Object pointDatumObject : pointData) {
-                    JSONObject pointDatum = (JSONObject) pointDatumObject;
-                    if (pointDatum.containsKey(AgentConstants.ID)) {
-                        pointIds.add((Long) pointDatum.get(AgentConstants.ID));
-                    }
-                }
-                if (!pointIds.isEmpty()) {
-                    switch (command) {
-                        case CONFIGURE:
-                            PointsAPI.updatePointsConfigurationComplete(pointIds);
-                            return;
-                        case SUBSCRIBE:
-                            PointsAPI.updatePointSubsctiptionComplete(pointIds);
-                            return;
-                        default:
-                            LOGGER.info(" no update for command ->" + command.toString());
-                            return;
-                    }
-                } else {
-                    throw new Exception(" point ids cant be empty while ack processing for->" + command.toString());
-                }
-            } else {
-                throw new Exception(" points data missing from iotMessage data ->" + iotMessage.getMessageData());
-            }
-        } else {
-            throw new Exception(" iot Message can't be null");
-        }
-    }
-
     private static FacilioControllerType getControllerTypeFromIotMessage(IotMessage iotMessage) throws Exception {
         if (iotMessage.getMessageData().containsKey(AgentConstants.CONTROLLER_TYPE)) {
             return FacilioControllerType.valueOf((Integer) iotMessage.getMessageData().get(AgentConstants.CONTROLLER_TYPE));

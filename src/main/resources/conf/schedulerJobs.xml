@@ -110,6 +110,7 @@
 	 <job name='HistoricalScheduledRule' classname='com.facilio.bmsconsole.jobs.HistoricalScheduledRuleJob' transactionTimeout='7200000' />
 	 <!--  ML jobs -->
 	 <job name='DefaultMLJob' classname='com.facilio.bmsconsole.jobs.DefaultMLJob' transactionTimeout='7200000'/>
+	<job name='MLBmsPointsTaggingJob' classname='com.facilio.bmsconsole.jobs.MLBmsPointsTaggingJob' transactionTimeout='7200000'/>
 	 <job name='HistoricalAnomalyDetectionJob' classname='com.facilio.bmsconsole.jobs.HistoricalAnomalyDetectionJob' transactionTimeout='7200000'/>
 	 <job name='HistoricalMLJob' classname='com.facilio.bmsconsole.jobs.HistoricalMLJob' transactionTimeout='7200000'/>
 	 <job name='testMLHistoricalJob' classname='com.facilio.bmsconsole.jobs.DefaultMLHistoricalJob' transactionTimeout='7200000'/>

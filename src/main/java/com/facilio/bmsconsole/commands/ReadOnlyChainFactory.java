@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.agentv2.commands.MLGetTaggedPointsCommand;
 import com.facilio.banner.commands.GetBannersCommand;
 import com.facilio.bmsconsole.actions.GetToolTransactionsListCommand;
 import com.facilio.bmsconsole.commands.anomaly.FormatAnomalyMetricsCommand;
@@ -2619,6 +2620,7 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getCommissioningDetailsChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetCommissioningDetailsCommand());
+		chain.addCommand(new MLGetTaggedPointsCommand());
 		return chain;
 	}
 	

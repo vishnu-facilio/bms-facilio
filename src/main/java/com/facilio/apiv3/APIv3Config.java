@@ -1975,6 +1975,7 @@ public class APIv3Config {
                 .afterFetch(new HandleV3AlarmListLookupCommand())
                 .summary()
                 .beforeFetch(new LoadSupplementsForFaultsCommand())
+                .afterFetch(new HandleV3AlarmListLookupCommand())
                 .delete()
                 .build();
     }

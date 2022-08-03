@@ -52,7 +52,7 @@ public class MigrateReadingDataCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
-		id =  (long) context.get(ContextNames.ID);
+		id =  (long) context.get("id");
 		fieldId = (long) context.get(ContextNames.FIELD_ID);
 		parentId = (long) context.get(ContextNames.PARENT_ID);
 		unit = (Unit) context.get(ContextNames.UNIT);
@@ -73,7 +73,6 @@ public class MigrateReadingDataCommand extends FacilioCommand {
 			if (unitOnlyChanged) { // Only unit is being changed in commissioning
 				oldFieldId= fieldId;
 				oldAssetId = parentId;
-				unitOnlyChanged = true;
 			}
 			else {	// New field commissioning
 				migrateUnmodeledData(newField);
