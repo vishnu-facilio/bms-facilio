@@ -204,8 +204,8 @@ public class FileAction extends FacilioAction {
 
 		context.put(FacilioConstants.ContextNames.FILE_ID, this.fileID);
 
-		FacilioChain addFileChain = FacilioChainFactory.getDeleteFileChain();
-		addFileChain.execute(context);
+		FacilioChain deleteFileChain = FacilioChainFactory.getDeleteFileChain();
+		deleteFileChain.execute(context);
 
 		return SUCCESS;
 	}

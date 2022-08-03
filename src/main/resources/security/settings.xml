@@ -1037,4 +1037,32 @@
     </request>-->
 
 
+<!--    <request path="/api/v2/publicFile/addPublicFile">
+        <requestbody type="object">
+            <property name="fileName" type="string"/>
+            <property name="fileContentContentType" type="string"/>
+            <property name="expiryOn" type="number"/>
+            <property name="file" type="upload"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/publicFile/addPublicUrlForFile">
+        <requestbody type="object">
+            <property name="fileId" type="number"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/publicFile/deletePublicFile">
+        <requestbody type="object">
+                <property name="fileId" type="number"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/file/preview/public">
+        <urlparams>
+            <property name="q" type="string"  mandatory="true"/>
+            <property name="isDownload" type="boolean"/>
+        </urlparams>
+    </request>-->
+
 </config>

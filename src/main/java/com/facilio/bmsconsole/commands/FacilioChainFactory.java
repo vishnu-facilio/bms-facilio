@@ -16,6 +16,9 @@ import com.facilio.leed.commands.AddConsumptionForLeed;
 import com.facilio.leed.commands.AddEnergyMeterCommand;
 import com.facilio.leed.commands.FetchArcAssetsCommand;
 import com.facilio.leed.commands.LeedBuildingDetailsCommand;
+import com.facilio.v3.commands.AddPublicFileCommand;
+import com.facilio.v3.commands.DeletePublicFileCommand;
+import com.facilio.v3.commands.AddPublicUrlForFileCommand;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
@@ -1043,7 +1046,22 @@ public class FacilioChainFactory {
 		c.addCommand(new DeleteFileCommand());
 		return c;
 	}
-	
+
+	public  static FacilioChain getDeletePublicFileChain(){
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new DeletePublicFileCommand());
+		return  c;
+	}
+	public  static FacilioChain getAddPublicUrlForFileChain(){
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new AddPublicUrlForFileCommand());
+		return  c;
+	}
+	public  static FacilioChain getAddPublicFileChain(){
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new AddPublicFileCommand());
+		return  c;
+	}
 	public static FacilioChain getAddEnergyMeterChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForEnergyMeter());
@@ -2165,7 +2183,7 @@ public class FacilioChainFactory {
 		c.addCommand(new GetFormRuleFields());
 		return c;
 	}
-	
+
 	public static FacilioChain getFormFieldsChain() {
 		FacilioChain c = FacilioChain.getNonTransactionChain();
 		c.addCommand(new GetFormFieldsCommand());

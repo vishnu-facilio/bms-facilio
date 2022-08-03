@@ -2,6 +2,7 @@ package com.facilio.beans;
 
 import java.io.File;
 import java.time.Duration;
+import java.io.InputStream;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -155,7 +156,12 @@ public interface ModuleCRUDBean {
 	public List<Map<String,Object>> getMissingData() throws Exception;
 
 	public long addRequestFromEmail(MimeMessage emailMsg, MimeMessageParser parser, SupportEmailContext supportEmail) throws Exception;
-	
+
+	public InputStream getDownloadStream(String nameSpace, long fileId) throws Exception;
+
+	public FileInfo getFileInfo(String nameSpace,long fileId) throws Exception;
+
+
 	public Object executeWorkflow(WorkflowContext workflowContext) throws Exception;
 
 	void addAuditLog(AuditLogHandler.AuditLogContext auditLog) throws Exception;

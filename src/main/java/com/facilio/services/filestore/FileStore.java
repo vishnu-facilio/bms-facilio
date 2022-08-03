@@ -732,6 +732,10 @@ public abstract class FileStore {
 		String url = getUrl(moduleName, namespace, fileId, expiryTime, false);
 		return url;
 	}
+	public String newPreviewFileUrl (String moduleName, String namespace, long fileId, long expiryTime,long publicFileId,long orgId){
+		String url = getPublicUrl(moduleName, namespace, fileId, expiryTime, false,publicFileId);
+		return url;
+	}
 
 	public String newDownloadFileUrl (String moduleName, long fileId) throws Exception {
 		return newDownloadFileUrl(moduleName, DEFAULT_NAMESPACE, fileId);
@@ -747,8 +751,7 @@ public abstract class FileStore {
 		String url = getUrl(moduleName, namespace, fileId, expiryTime, true);
 		return url;
 	}
-
-	private String getUrl (String moduleName, String namespace, long fileId, long expiryTime, boolean isDownload) {
+	private String getToken(String moduleName, String namespace, long fileId, long expiryTime,long publicFileId){
 		Objects.requireNonNull(moduleName, "Module Name cannot be null for url generation");
 		Objects.requireNonNull(namespace, "Namespace cannot be null for url generation");
 		Map<String, String> claims = new HashMap<>();
@@ -756,7 +759,34 @@ public abstract class FileStore {
 		claims.put("namespace", namespace);
 		claims.put("fileId", String.valueOf(fileId));
 		claims.put("expiresAt", String.valueOf(expiryTime));
-		String token =  FileJWTUtil.generateFileJWT(claims);
+		if(publicFileId>0){
+			claims.put("publicFileId",String.valueOf(publicFileId));
+		}
+		return FileJWTUtil.generateFileJWT(claims);
+	}
+
+	private String getPublicUrl(String moduleName, String namespace, long fileId, long expiryTime, boolean isDownload,long publicFileId){
+		String token = getToken(moduleName,namespace,fileId,expiryTime,publicFileId);
+		StringBuilder url = new StringBuilder();
+		if (FacilioProperties.isDevelopment()) {
+			url.append(FacilioProperties.getServerName());
+		}
+		url.append("/api/v3/file/");
+		if(AccountUtil.getCurrentOrg() !=null) {
+			url.append("app/");
+		} else {
+			url.append("public/");
+		}
+		url.append(token);
+		if(isDownload) {
+			url.append("/download");
+		} else {
+			url.append("/preview");
+		}
+		return url.toString();
+	}
+	private String getUrl (String moduleName, String namespace, long fileId, long expiryTime, boolean isDownload) {
+		String token = getToken(moduleName,namespace,fileId,expiryTime,-1);
 		StringBuilder url = new StringBuilder();
 		if (FacilioProperties.isDevelopment()) {
 			url.append(FacilioProperties.getServerName());

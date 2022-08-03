@@ -1,6 +1,7 @@
 package com.facilio.beans;
 
 import java.io.File;
+import java.io.InputStream;
 import java.sql.BatchUpdateException;
 import java.time.Duration;
 import java.time.ZonedDateTime;
@@ -18,7 +19,10 @@ import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.plannedmaintenance.PlannedMaintenanceAPI;
+import com.facilio.ns.context.NSType;
 import com.facilio.plannedmaintenance.ScheduleExecutor;
+import com.facilio.qa.displaylogic.context.DisplayLogicAction;
+import com.facilio.qa.displaylogic.context.DisplayLogicTriggerQuestions;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.util.V3Util;
 import com.facilio.wmsv2.handler.AuditLogHandler;
@@ -1531,6 +1535,22 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			LOGGER.info("Added Workorder from Email Parser : " + requestId );
 		}
 		return requestId;
+	}
+
+	@Override
+	public InputStream getDownloadStream(String namespace, long fileId) throws Exception {
+		FileStore fs = FacilioFactory.getFileStore();
+		FileInfo fileInfo = namespace == null ? fs.getFileInfo(fileId) : fs.getFileInfo(namespace, fileId);
+		InputStream downloadStream = null;
+		if (fileInfo != null) {
+			downloadStream = fs.readFile(fileInfo);
+		}
+		return downloadStream;
+	}
+	@Override
+	public FileInfo getFileInfo(String namespace, long fileId) throws Exception {
+		FileStore fs = FacilioFactory.getFileStore();
+		return namespace == null ? fs.getFileInfo(fileId) : fs.getFileInfo(namespace, fileId);
 	}
 
 	@Override

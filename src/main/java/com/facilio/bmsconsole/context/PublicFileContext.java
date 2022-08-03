@@ -23,6 +23,9 @@ public class PublicFileContext {
 	public void setId(long id) {
 		this.id = id;
 	}
+	private Boolean isFromFilesTable;
+	public Boolean getIsFromFilesTable() { return isFromFilesTable; }
+	public void setIsFromFilesTable(Boolean isFromFilesTable) { this.isFromFilesTable = isFromFilesTable; }
 	public long getOrgId() {
 		return orgId;
 	}

@@ -603,11 +603,15 @@ public class FacilioConstants {
 
 		public static final String FILE = "file";
 		public static final String FILE_NAME = "fileName";
+
+		public static final String PUBLIC_FILE = "publicFile";
+		public static final String PUBLIC_FILE_URL = "publicFileUrl";
 		public static final String FILE_CONTENT_TYPE = "fileContentType";
 		public static final String FILE_CONTEXT_LIST = "fileContextList";
 		public static final String FILE_RESPONSE_STATUS = "fileResponseStatus";
 		public static final String FILE_DOWNLOAD_STREAM = "fileDownloadStream";
 
+		public static final String EXPIRY_ON = "expiryOn";
 		public static final String IS_BIM = "isBim";
 		public static final String VALID_SHEETS = "validSheets";
 		public static final String SELECTED_SHEET_NAMES = "selectedSheetNames";
@@ -1289,6 +1293,8 @@ public class FacilioConstants {
 
 		public static final String FILE_FORMAT = "fileFormat";
 		public static final String FILE_ID = "fileID";
+
+		public static final String PUBLIC_FILE_ID = "publicFileID";
 		public static final String FILE_URL = "fileUrl";
 		public static final String FILE_NAME_SPACE = "namespace";
 		public static final String DATE_FILTER = "dateFilter";

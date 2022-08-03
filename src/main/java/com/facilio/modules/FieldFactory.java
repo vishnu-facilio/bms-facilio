@@ -4410,6 +4410,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("fileId", "FILEID", module, FieldType.NUMBER));
 //		fields.add(getField("key", "FILE_KEY", module, FieldType.STRING));
         fields.add(getField("expiresOn", "EXPIRES_ON", module, FieldType.NUMBER));
+        fields.add(getField("isFromFilesTable","IS_FROM_FILES_TABLE",module,FieldType.BOOLEAN));
 
         return fields;
     }
