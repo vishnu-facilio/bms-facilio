@@ -2049,6 +2049,7 @@ public class APIv3Config {
                 .summary()
                 .build();
     }
+
     @Module(FacilioConstants.ContextNames.BASE_EVENT)
     public static Supplier<V3Config> getBaseEvent() {
         return () -> new V3Config(BaseEventContext.class, null)
@@ -2058,21 +2059,39 @@ public class APIv3Config {
                 .build();
     }
 
-	@Module(FacilioConstants.CraftAndSKills.SKILLS)
-	public static Supplier<V3Config> getCraftSkills() {
-		return () -> new V3Config(SkillsContext.class, null)
-							 .list()
-							 .delete()
-							 .build();
-	}
+    @Module(FacilioConstants.CraftAndSKills.SKILLS)
+    public static Supplier<V3Config> getCraftSkills() {
+        return () -> new V3Config(SkillsContext.class, null)
+                .list()
+                .delete()
+                .build();
+    }
 
-	@Module(FacilioConstants.CraftAndSKills.CRAFT)
-	public static Supplier<V3Config> getCrafts() {
-		return () -> new V3Config(CraftContext.class, null)
-							 .create()
-							 .list()
-							 .summary()
-							 .afterFetch(new FetchCraftAndSkillsCommand())
-							 .build();
-	}
+    @Module(FacilioConstants.CraftAndSKills.CRAFT)
+    public static Supplier<V3Config> getCrafts() {
+        return () -> new V3Config(CraftContext.class, null)
+                .create()
+                .list()
+                .summary()
+                .afterFetch(new FetchCraftAndSkillsCommand())
+                .build();
+    }
+
+
+    @Module(FacilioConstants.Shift.SHIFT)
+    public static Supplier<V3Config> getShift() {
+        return () -> new V3Config(Shift.class, null)
+                .create()
+                .beforeSave(TransactionChainFactoryV3.getShiftBeforeSaveChain())
+                .afterSave(TransactionChainFactoryV3.getShiftAfterSaveChain())
+                .update()
+                .beforeSave(TransactionChainFactoryV3.getShiftBeforeUpdateChain())
+                .afterSave(TransactionChainFactoryV3.getShiftAfterUpdateChain())
+                .delete()
+                .beforeDelete(TransactionChainFactoryV3.getShiftBeforeDeleteChain())
+                .afterDelete(TransactionChainFactoryV3.getShiftAfterDeleteChain())
+                .list()
+                .summary()
+                .build();
+    }
 }

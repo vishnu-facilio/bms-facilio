@@ -3011,17 +3011,19 @@ public class FacilioConstants {
 		public static final String SUB_FORM_PREFIX = "subform__";
 	}
 
-	public static class CraftAndSKills{
+	public static class CraftAndSKills {
 		public static final String CRAFT = "crafts";
 		public static final String SKILLS = "craftSkill";
 
 		public static final String LABOUR_CRAFT = "labourCraftSkill";
 	}
 
+	public static class Shift {
+		public static final String SHIFT = "shift";
+	}
 
-	public static class Reports
 
-	{
+	public static class Reports {
 		public static final String MODULE_TYPE = "module_type";
 
 		public static final String ACTUAL_DATA = "actual";
