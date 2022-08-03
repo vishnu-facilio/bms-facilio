@@ -13,11 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class PMPlannerSupplementsCommand extends FacilioCommand {
+public class PMResourcePlannerSupplementsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        String moduleName = "pmPlanner";
+        String moduleName = "pmResourcePlanner";
         List<FacilioField> fields = modBean.getAllFields(moduleName);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 
@@ -27,7 +27,9 @@ public class PMPlannerSupplementsCommand extends FacilioCommand {
             context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, supplementFields);
         }
 
-        supplementFields.add((SupplementRecord) fieldsAsMap.get("trigger"));
+        supplementFields.add((SupplementRecord) fieldsAsMap.get("resource"));
+        supplementFields.add((SupplementRecord) fieldsAsMap.get("jobPlan"));
+        supplementFields.add((SupplementRecord) fieldsAsMap.get("assignedTo"));
         return false;
     }
 }

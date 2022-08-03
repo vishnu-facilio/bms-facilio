@@ -317,6 +317,19 @@ public class FieldFactory extends BaseFieldFactory {
                 "estimatedEnd",
                 "description"
         }));
+
+        public static final List<String> PM_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
+                "name",
+                "type",
+                "priority",
+                "assignmentType",
+                "category",
+                "spaceCategory",
+                "assetCategory",
+                "isActive",
+                "subject"
+        }));
+
         public static final List<String> POINT_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
                 "displayName",
                 "name",

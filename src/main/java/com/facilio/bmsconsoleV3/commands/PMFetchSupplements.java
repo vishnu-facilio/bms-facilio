@@ -2,10 +2,13 @@ package com.facilio.bmsconsoleV3.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.MultiLookupField;
+import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 
@@ -22,13 +25,17 @@ public class PMFetchSupplements extends FacilioCommand {
         List<FacilioField> moduleFields = modBean.getAllFields(moduleName);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(moduleFields);
 
-        List<LookupField> fetchSupplements = Constants.getFetchSupplements(context);
-        if (fetchSupplements == null) {
-            fetchSupplements = new ArrayList<>();
+        List<SupplementRecord> supplementRecords = (List<SupplementRecord>) context.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);
+        if (supplementRecords == null) {
+            supplementRecords = new ArrayList<>();
         }
-        fetchSupplements.add((LookupField) fieldsAsMap.get("sites"));
+        supplementRecords.add((MultiLookupField) fieldsAsMap.get("sites"));
+        supplementRecords.add((LookupField) fieldsAsMap.get("category"));
+        supplementRecords.add((LookupField) fieldsAsMap.get("spaceCategory"));
+        supplementRecords.add((LookupField) fieldsAsMap.get("assetCategory"));
+        supplementRecords.add((LookupField) fieldsAsMap.get("priority"));
 
-        Constants.setFetchSupplements(context, fetchSupplements);
+        context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, supplementRecords);
         return false;
     }
 }

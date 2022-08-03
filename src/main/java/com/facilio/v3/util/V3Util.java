@@ -158,7 +158,7 @@ public class V3Util {
     }
 
     private static FacilioContext updateRecords(FacilioModule module, V3Config v3Config, boolean bulkOp,
-                                                List<ModuleBaseWithCustomFields> oldRecords,
+                                                List<ModuleBaseWithCustomFields>oldRecords,
                                                 List<Map<String, Object>> recordList, List<Long> ids,
                                                 Map<String, Object> bodyParams, Map<String, List<Object>> queryParams,
                                                 Long stateTransitionId, Long customButtonId, Long approvalTransitionId,

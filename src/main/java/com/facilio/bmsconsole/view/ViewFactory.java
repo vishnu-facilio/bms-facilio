@@ -6876,20 +6876,36 @@ public class ViewFactory {
 		List<AppDomain.AppDomainType> appdomains = new ArrayList<>();
 		appdomains.add(AppDomain.AppDomainType.FACILIO);
 
+		FacilioModule plannedMaintenanceModule = ModuleFactory.getPlannedMaintenanceModule();
+		FacilioField createdTime = FieldFactory.getSystemField("sysCreatedTime", plannedMaintenanceModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		allView.setSortFields(sortFields);
+
 		allView.setViewSharing(getSharingContext(appdomains));
 		return allView;
 	}
 
 	private static FacilioView getInActivePlannedMaintenanceView() {
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(getActivePlannedMaintenanceCondition());
+		criteria.addAndCondition(getInActivePlannedMaintenanceCondition());
 		FacilioModule plannedMaintenanceModule = ModuleFactory.getPlannedMaintenanceModule();
 		FacilioField idField = FieldFactory.getIdField();
 		idField.setModule(plannedMaintenanceModule);
 		FacilioView allView = new FacilioView();
-		allView.setName("plannedMaintenanceActive");
-		allView.setDisplayName("Active");
+		allView.setName("inactive");
+		allView.setDisplayName("Inactive");
 		allView.setCriteria(criteria);
+
+		FacilioField createdTime = FieldFactory.getSystemField("sysCreatedTime", plannedMaintenanceModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appdomains = new ArrayList<>();
+		appdomains.add(AppDomain.AppDomainType.FACILIO);
+
+		allView.setViewSharing(getSharingContext(appdomains));
 		return allView;
 	}
 
@@ -6900,9 +6916,19 @@ public class ViewFactory {
 		FacilioField idField = FieldFactory.getIdField();
 		idField.setModule(plannedMaintenanceModule);
 		FacilioView allView = new FacilioView();
-		allView.setName("plannedMaintenanceActive");
+		allView.setName("active");
 		allView.setDisplayName("Active");
 		allView.setCriteria(criteria);
+
+		FacilioField createdTime = FieldFactory.getSystemField("sysCreatedTime", plannedMaintenanceModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appdomains = new ArrayList<>();
+		appdomains.add(AppDomain.AppDomainType.FACILIO);
+
+		allView.setViewSharing(getSharingContext(appdomains));
 		return allView;
 	}
 

@@ -835,7 +835,7 @@ public class FormFactory {
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
 		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "ticketcategory", 4, 2));
 		fields.add(new FormField("priority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 5, 3));
-		fields.add(new FormField("duration", FieldDisplayType.DURATION, "Due Duration", Required.OPTIONAL, "duration", 6, 1));
+		fields.add(new FormField("dueDuration", FieldDisplayType.DURATION, "Due Duration", Required.OPTIONAL, "duration", 6, 1));
 		fields.add(new FormField("estimatedWorkDuration", FieldDisplayType.DURATION, "Estimated Duration", Required.OPTIONAL, "duration", 7, 1));
 		FormField groups = new FormField("groups",FieldDisplayType.LOOKUP_SIMPLE,"Team", Required.OPTIONAL, "groups", 8, 1);
 		groups.addToConfig("isFiltersEnabled", true); // groups is special form field without actual field

@@ -956,6 +956,10 @@
         </action>
         <action name="deactivate" class="com.facilio.bmsconsoleV3.actions.PlannedMaintenanceAction" method="deactivate">
         </action>
+        <action name="bulkpublish" class="com.facilio.bmsconsoleV3.actions.PlannedMaintenanceAction" method="bulkPublish">
+        </action>
+        <action name="bulkunpublish" class="com.facilio.bmsconsoleV3.actions.PlannedMaintenanceAction" method="bulkUnPublishPM">
+        </action>
     </package>
     <package name="visitorTypeForm" namespace="/api/v3/visitorTypeForm" extends="v3Api">
         <action name="update"

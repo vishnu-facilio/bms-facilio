@@ -58,7 +58,7 @@ public class PlannedMaintenanceAPI {
         );
     }
 
-    public static List<Long> getPlanners(long pmId) throws Exception {
+    public static List<Long> getPlanners(List<Long> pmIds) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule pmPlannerModule = modBean.getModule("pmPlanner");
         List<FacilioField> pmPlannerFields = modBean.getAllFields("pmPlanner");
@@ -69,7 +69,7 @@ public class PlannedMaintenanceAPI {
         records.select(pmPlannerFields)
                 .module(pmPlannerModule)
                 .beanClass(PMPlanner.class)
-                .andCondition(CriteriaAPI.getCondition(pmIdField, pmId+"", NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition(pmIdField, pmIds, NumberOperators.EQUALS));
         List<PMPlanner> pmPlanners = records.get();
         return pmPlanners.stream().map(PMPlanner::getId).collect(Collectors.toList());
     }

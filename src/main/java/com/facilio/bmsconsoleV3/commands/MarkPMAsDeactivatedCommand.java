@@ -10,11 +10,9 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MarkPMAsDeactivatedCommand extends FacilioCommand {
     @Override
@@ -24,7 +22,17 @@ public class MarkPMAsDeactivatedCommand extends FacilioCommand {
         List<FacilioField> pmPlannerFields = modBean.getAllFields("plannedmaintenance");
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(pmPlannerFields);
 
-        long pmId = (long) context.get("pmId");
+        Long pmId = (Long) context.get("pmId");
+        List<Long> pmIds = new ArrayList<>();
+        if (pmId != null) {
+            pmIds.add(pmId);
+        } else {
+            pmIds = (List<Long>) context.get("pmIds");
+        }
+
+        if (CollectionUtils.isEmpty(pmIds)) {
+            throw new IllegalArgumentException("Pm ids cannot be empty");
+        }
 
         Map<String, Object> valMap = new HashMap<>();
         valMap.put("isActive", false);
@@ -32,7 +40,7 @@ public class MarkPMAsDeactivatedCommand extends FacilioCommand {
         UpdateRecordBuilder<PlannedMaintenance> updateRecordBuilder = new UpdateRecordBuilder<>();
         updateRecordBuilder.module(pmPlannerModule)
                 .fields(Collections.singletonList(fieldMap.get("isActive")))
-                .andCondition(CriteriaAPI.getIdCondition(pmId, pmPlannerModule))
+                .andCondition(CriteriaAPI.getIdCondition(pmIds, pmPlannerModule))
                 .updateViaMap(valMap);
 
         return false;

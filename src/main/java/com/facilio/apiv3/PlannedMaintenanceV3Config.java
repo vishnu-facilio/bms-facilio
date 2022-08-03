@@ -3,9 +3,7 @@ package com.facilio.apiv3;
 import com.facilio.bmsconsole.commands.BeforeSavePMPlannerCommand;
 import com.facilio.bmsconsole.commands.PMBeforeCreateCommand;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsoleV3.commands.PMFetchSupplements;
-import com.facilio.bmsconsoleV3.commands.PMPlannerSupplementsCommand;
-import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.jobplan.FetchJobPlanLookupCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.FillJobPlanDetailsCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.PrefillPMJobPlanfields;
@@ -22,11 +20,12 @@ public class PlannedMaintenanceV3Config {
     public static Supplier<V3Config> getPlannedMaintenance() {
         return () -> new V3Config(PlannedMaintenance.class, null)
                 .update()
-                .beforeSave(new PMBeforeCreateCommand())
+                    .afterSave(new PMAfterPatchCommand())
                 .create()
-                .beforeSave(new PMBeforeCreateCommand())
+                    .beforeSave(new PMBeforeCreateCommand())
                 .delete()
                 .list()
+                    .beforeFetch(new PMFetchSupplements())
                 .summary()
                     .beforeFetch(new PMFetchSupplements())
                 .build();
@@ -69,7 +68,9 @@ public class PlannedMaintenanceV3Config {
                 .create()
                 .delete()
                 .list()
+                    .beforeFetch(new PMPlannerSupplementsCommand())
                 .summary()
+                    .beforeFetch(new PMPlannerSupplementsCommand())
                 .build();
     }
 
@@ -77,10 +78,12 @@ public class PlannedMaintenanceV3Config {
     public static Supplier<V3Config> getPmResourcePlanner() {
         return () -> new V3Config(PMResourcePlanner.class, null)
                 .update()
+                    .beforeSave(new PMResourcePlannerBeforeSaveCommand())
                 .create()
+                    .beforeSave(new PMResourcePlannerBeforeSaveCommand())
                 .delete()
                 .list()
-                .beforeFetch(new PMPlannerSupplementsCommand())
+                    .beforeFetch(new PMResourcePlannerSupplementsCommand())
                 .summary()
                 .build();
     }
