@@ -15,6 +15,7 @@ public class MLTagPointListCommand extends AgentV2Command{
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        try{
         List<String>pointNames = (List<String>) context.get(AgentConstants.POINT_NAMES);
         Controller controller = (Controller) context.get(AgentConstants.CONTROLLER);
         if(pointNames!=null && !pointNames.isEmpty()){
@@ -23,13 +24,13 @@ public class MLTagPointListCommand extends AgentV2Command{
             pointsMap.put("controller",controller.getName());
             pointsMap.put("agentName",controller.getAgent().getName());
             pointsMap.put("agentType", AgentType.valueOf(controller.getAgent().getAgentType()).toString() );
-            try{
                 BmsPointsTaggingUtil.tagPointListV1(Collections.singletonList(pointsMap));
-            }catch (Exception e ){
-                LOGGER.error("Exception while tagging new points in ml",e);
-            }
             return false;
         }
         return true;
+        }catch (Exception e ){
+        LOGGER.error("Exception while tagging new points in ml",e);
+        }
+        return false;
     }
 }

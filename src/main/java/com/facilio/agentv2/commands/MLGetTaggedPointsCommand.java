@@ -15,17 +15,14 @@ public class MLGetTaggedPointsCommand extends AgentV2Command {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        try{
         CommissioningLogContext log = (CommissioningLogContext) context.get(FacilioConstants.ContextNames.LOG);
         boolean prefillMldata = log.isPrefillMlData();
         if (prefillMldata) {
             List<String> controllerNames = log.getControllers().stream().map(x -> (String) x.get("name")).collect(Collectors.toList());
             Map<String, Map<String, Object>> recordMap = new HashMap<>();
             if (controllerNames != null && !controllerNames.isEmpty()) {
-                try {
                     recordMap = BmsPointsTaggingUtil.getTaggedPointList(controllerNames);
-                }catch (Exception e){
-                    LOGGER.error("Exception while getting points suggestions",e);
-                }
             }
             if (recordMap != null && !recordMap.isEmpty()) {
                 JSONArray pointsJson = log.getPoints();
@@ -40,8 +37,8 @@ public class MLGetTaggedPointsCommand extends AgentV2Command {
                 pointsJson.forEach(item -> {
                     HashMap<String, Object> point = (HashMap<String, Object>) item;
                     if (finalRecordMap.containsKey(point.get("name"))) {
-                        Map<String,Object>pointMap =  finalRecordMap.get(point.get("name"));
-                        List<Long> resourceIds = ( (List<String>)pointMap.get("assetIds")).stream().map(Long::parseLong).collect(Collectors.toList());
+                        Map<String, Object> pointMap = finalRecordMap.get(point.get("name"));
+                        List<Long> resourceIds = ((List<String>) pointMap.get("assetIds")).stream().map(Long::parseLong).collect(Collectors.toList());
                         newResourceids.addAll(resourceIds);
                         point.put("suggestedResourceId", resourceIds);
                         List<Long> fieldIds = ((List<String>) pointMap.get("readingIds")).stream().map(Long::parseLong).collect(Collectors.toList());
@@ -57,6 +54,9 @@ public class MLGetTaggedPointsCommand extends AgentV2Command {
                 return false;
             }
             return true;
+         }
+         }catch (Exception e){
+            LOGGER.error("Exception while getting points suggestions",e);
         }
         return false;
     }
