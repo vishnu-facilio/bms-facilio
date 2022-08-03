@@ -3423,8 +3423,12 @@ public class FacilioConstants {
 		public static final String VIEW = "View";
 	}
 
-	public static class ColourPalette{
-		public static final String COLOR_PALETTE="colorPalette";
-		public static final String COLOR_KEYS="colorKeys";
+	public static class ColourPalette {
+		public static final String COLOR_PALETTE = "colorPalette";
+		public static final String COLOR_KEYS = "colorKeys";
+	}
+
+	public static class Break {
+		public static final String BREAK = "break";
 	}
 }

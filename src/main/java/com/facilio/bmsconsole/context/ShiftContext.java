@@ -15,6 +15,7 @@ import org.json.simple.parser.ParseException;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.time.DateTimeUtil;
 
+@Deprecated
 public class ShiftContext extends ModuleBaseWithCustomFields {
 	/**
 	 * 

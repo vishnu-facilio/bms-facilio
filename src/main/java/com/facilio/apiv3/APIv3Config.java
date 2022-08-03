@@ -2049,7 +2049,6 @@ public class APIv3Config {
                 .summary()
                 .build();
     }
-
     @Module(FacilioConstants.ContextNames.BASE_EVENT)
     public static Supplier<V3Config> getBaseEvent() {
         return () -> new V3Config(BaseEventContext.class, null)
@@ -2059,13 +2058,13 @@ public class APIv3Config {
                 .build();
     }
 
-    @Module(FacilioConstants.CraftAndSKills.SKILLS)
-    public static Supplier<V3Config> getCraftSkills() {
-        return () -> new V3Config(SkillsContext.class, null)
-                .list()
-                .delete()
-                .build();
-    }
+	@Module(FacilioConstants.CraftAndSKills.SKILLS)
+	public static Supplier<V3Config> getCraftSkills() {
+		return () -> new V3Config(SkillsContext.class, null)
+							 .list()
+							 .delete()
+							 .build();
+	}
 
     @Module(FacilioConstants.CraftAndSKills.CRAFT)
     public static Supplier<V3Config> getCrafts() {
@@ -2077,6 +2076,22 @@ public class APIv3Config {
                 .build();
     }
 
+    @Module(FacilioConstants.Break.BREAK)
+    public static Supplier<V3Config> getBreak() {
+        return () -> new V3Config(Break.class, null)
+                .create()
+                .beforeSave(TransactionChainFactoryV3.getBreakBeforeSaveChain())
+                .afterSave(TransactionChainFactoryV3.getBreakAfterSaveChain())
+                .update()
+                .beforeSave(TransactionChainFactoryV3.getBreakBeforeUpdateChain())
+                .afterSave(TransactionChainFactoryV3.getBreakAfterUpdateChain())
+                .delete()
+                .beforeDelete(TransactionChainFactoryV3.getBreakBeforeDeleteChain())
+                .list()
+                .summary()
+                .build();
+
+    }
 
     @Module(FacilioConstants.Shift.SHIFT)
     public static Supplier<V3Config> getShift() {
