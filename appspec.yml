@@ -31,6 +31,8 @@ files:
     destination: /home/facilio
   - source: /validate_health.sh
     destination: /home/facilio
+  - source: /disk_alert.sh
+    destination: /home/facilio
   - source: /awsprops-scheduler.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-scheduler-app.properties
