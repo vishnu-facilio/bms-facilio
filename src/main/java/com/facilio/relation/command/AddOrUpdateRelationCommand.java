@@ -232,10 +232,13 @@ public class AddOrUpdateRelationCommand extends FacilioCommand {
             throw new IllegalArgumentException("Same Module relationship is not allowed");
         }
         if (StringUtils.isEmpty(relationRequest.getRelationName())) {
-            throw new IllegalArgumentException("Relation Name is required");
+            throw new IllegalArgumentException("Forward Relation Name is required");
         }
         if (StringUtils.isEmpty(relationRequest.getReverseRelationName())) {
             throw new IllegalArgumentException("Reverse Relation Name is required");
+        }
+        if(relationRequest.getRelationName().equals(relationRequest.getReverseRelationName())) {
+            throw new IllegalArgumentException("Forward and Reverse Relation Name should not be same");
         }
     }
 }
