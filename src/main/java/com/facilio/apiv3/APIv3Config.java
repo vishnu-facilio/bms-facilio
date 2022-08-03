@@ -152,6 +152,9 @@ import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesLineItemsContext;
 import com.facilio.bmsconsoleV3.context.weather.V3WeatherServiceContext;
 import com.facilio.bmsconsoleV3.context.weather.V3WeatherStationContext;
+import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext;
+import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedServicesContext;
+import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedToolsContext;
 import com.facilio.bmsconsoleV3.context.workpermit.V3WorkPermitContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
@@ -1548,6 +1551,39 @@ public class APIv3Config {
                 .beforeFetch(new LoadJobPlanServicesCommandV3())
                 .summary()
                 .beforeFetch(new LoadJobPlanServicesCommandV3())
+                .delete()
+                .build();
+    }
+
+    @Module("workOrderPlannedItems")
+    public static Supplier<V3Config> getWorkOrderPlannedItems() {
+        return () -> new V3Config(WorkOrderPlannedItemsContext.class, null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+
+    @Module("workOrderPlannedTools")
+    public static Supplier<V3Config> getWorkOrderPlannedTools() {
+        return () -> new V3Config(WorkOrderPlannedToolsContext.class, null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+
+    @Module("workOrderPlannedServices")
+    public static Supplier<V3Config> getWorkOrderPlannedServices() {
+        return () -> new V3Config(WorkOrderPlannedServicesContext.class, null)
+                .create()
+                .update()
+                .list()
+                .summary()
                 .delete()
                 .build();
     }

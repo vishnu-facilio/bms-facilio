@@ -36,6 +36,7 @@ import com.facilio.bmsconsoleV3.commands.servicerequest.AddRequesterForServiceRe
 import com.facilio.bmsconsoleV3.commands.servicerequest.SetIsNewForServiceRequestCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.*;
 import com.facilio.bmsconsoleV3.commands.tasks.*;
+import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.CreateWorkOrderPlannedInventoryCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
 import com.facilio.bmsconsoleV3.commands.tool.AddBulkToolStockTransactionsCommandV3;
 import com.facilio.bmsconsoleV3.commands.tool.ToolQuantityRollUpCommandV3;
@@ -449,10 +450,15 @@ public class TransactionChainFactoryV3 {
         // to be removed once all attachments are handled as sub module
         c.addCommand(new UpdateTicketAttachmentsOldParentIdCommandV3());
         c.addCommand(new AddActivitiesCommandV3());
-
+        //planned inventory
+        c.addCommand(getPlannedInventoryChainV3());
         return c;
     }
-
+    public static FacilioChain getPlannedInventoryChainV3() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CreateWorkOrderPlannedInventoryCommandV3());
+        return c;
+    }
     public static FacilioChain getWorkorderBeforeUpdateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new GetRecordIdsFromRecordMapCommandV3());

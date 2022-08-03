@@ -33,9 +33,8 @@ import com.facilio.bmsconsoleV3.context.facilitybooking.*;
 import com.facilio.bmsconsoleV3.context.floorplan.*;
 import com.facilio.bmsconsoleV3.context.inspection.*;
 import com.facilio.bmsconsoleV3.context.inventory.*;
+import com.facilio.bmsconsoleV3.context.jobplan.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
-import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTaskSectionContext;
-import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTasksContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderLineItemContext;
@@ -48,6 +47,9 @@ import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotatio
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationVendorsContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesLineItemsContext;
+import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext;
+import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedServicesContext;
+import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedToolsContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitChecklistContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
@@ -2034,6 +2036,15 @@ public class FacilioConstants {
 		public static final String JOB_PLAN_TASK = "jobplantask";
 		public static final String JOB_PLAN_ATTACHMENTS = "jobplanattachments";
 
+
+		public static final String JOB_PLAN_ITEMS = "jobPlanItems";
+		public static final String JOB_PLAN_TOOLS = "jobPlanTools";
+		public static final String JOB_PLAN_SERVICES = "jobPlanServices";
+
+		public static final String WO_PLANNED_ITEMS = "workOrderPlannedItems";
+		public static final String WO_PLANNED_TOOLS = "workOrderPlannedTools";
+		public static final String WO_PLANNED_SERVICES = "workOrderPlannedServices";
+
 		public static final String AUDIENCE_SHARING = "audienceSharing";
 		public static final String AUDIENCE = "audience";
 
@@ -2622,6 +2633,12 @@ public class FacilioConstants {
 			classMap.put(VENDOR_QUOTES, V3VendorQuotesContext.class);
 			classMap.put(VENDOR_QUOTES_LINE_ITEMS, V3VendorQuotesLineItemsContext.class);
 			classMap.put(JOB_PLAN_ACTIVITY, ActivityContext.class);
+			classMap.put(JOB_PLAN_ITEMS, JobPlanItemsContext.class);
+			classMap.put(JOB_PLAN_TOOLS, JobPlanToolsContext.class);
+			classMap.put(JOB_PLAN_SERVICES, JobPlanServicesContext.class);
+			classMap.put(WO_PLANNED_ITEMS, WorkOrderPlannedItemsContext.class);
+			classMap.put(WO_PLANNED_TOOLS, WorkOrderPlannedToolsContext.class);
+			classMap.put(WO_PLANNED_SERVICES, WorkOrderPlannedServicesContext.class);
 
 			for (QuestionType type : QuestionType.values()) {
 				classMap.put(type.getSubModuleName(), type.getSubClass());
