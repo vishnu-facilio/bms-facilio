@@ -46,6 +46,7 @@ public class FacilioProperties {
     private static boolean scheduleServer = false;
     private static boolean isSmtp = false;
     private static String region;
+    private static String regionCountryCode;    
     private static String deployment;
     private static String db;
     private static String dbClass;
@@ -822,4 +823,30 @@ public class FacilioProperties {
         return maxProcessorThreads;
     }
 
+    public static String getRegionCountryCode() {
+   	 if (regionCountryCode != null) {
+   		 return regionCountryCode;
+   	 }
+       switch (region) {
+           case "us-west-2":
+           	regionCountryCode = "US";
+               break;
+           case "eu-central-1":
+           	regionCountryCode = "EU";
+               break;
+           case "eu-west-2":
+           	regionCountryCode = "UK";
+               break;
+           case "ap-southeast-2":
+           	regionCountryCode = "AU";
+               break;
+           case "ap-southeast-1":
+           	regionCountryCode = "SG";
+               break;
+           default:
+           	regionCountryCode = "ND"; //No Data
+       }
+       return regionCountryCode;
+   }
+    
 }

@@ -7,6 +7,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.util.RequestUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -117,6 +118,9 @@ public class FacilioLogHandler extends Handler {
                 event.setProperty(RequestUtil.REQUEST_URL, "-");
             }
         }
+        
+        event.setProperty("region", FacilioProperties.getRegionCountryCode());
+        
         try {
             ThrowableInformation information = event.getThrowableInformation();
             if (information != null) {
