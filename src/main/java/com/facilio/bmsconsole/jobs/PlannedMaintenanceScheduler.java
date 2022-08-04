@@ -9,7 +9,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.plannedmaintenance.PlannedMaintenanceAPI;
+//import com.facilio.plannedmaintenance.PlannedMaintenanceAPI;
 import com.facilio.taskengine.job.FacilioJob;
 import com.facilio.taskengine.job.JobContext;
 
@@ -24,7 +24,7 @@ public class PlannedMaintenanceScheduler extends FacilioJob {
             List<Map<String, Object>> props = plannedMaintenanceBatchResult.get();
             for (Map<String, Object> prop: props) {
                 long plannerId = (long) prop.get("id");
-                PlannedMaintenanceAPI.extendPlanner(plannerId, Duration.ofDays(1));
+               // PlannedMaintenanceAPI.extendPlanner(plannerId, Duration.ofDays(1));
             }
         }
     }
