@@ -2494,7 +2494,7 @@ public class FacilioConstants {
 			classMap.put(FLOOR_PLAN, FloorPlanContext.class);
 			classMap.put(FLOOR_PLAN_VIEW, FloorPlanContext.class);
 			classMap.put(FLOORPLAN_OBJECT, FloorPlanObjectContext.class);
-			classMap.put(PEOPLE, V3PeopleContext.class);
+			classMap.put(PEOPLE, PeopleContext.class);
 			classMap.put(EMPLOYEE, EmployeeContext.class);
 			classMap.put(TENANT_CONTACT, TenantContactContext.class);
 			classMap.put(CLIENT_CONTACT, ClientContactContext.class);
