@@ -1,6 +1,5 @@
 package com.facilio.fw.filter;
 
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.security.SecurityRequestWrapper;
 import com.facilio.security.requestvalidator.Executor;

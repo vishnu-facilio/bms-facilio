@@ -18,10 +18,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
-import com.facilio.modules.fields.BaseLookupField;
-import com.facilio.modules.fields.EnumField;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.MultiEnumField;
+import com.facilio.modules.fields.*;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
@@ -152,6 +149,16 @@ public class V3ProcessImportCommand extends FacilioCommand {
                                 if (!props.containsKey(field.getName())) {
                                     props.put(field.getName(), millis);
                                 }
+                            }
+                            break;
+                        }
+                        case SYSTEM_ENUM: {
+                            SystemEnumField enumField = (SystemEnumField) field;
+                            String enumString = (String) rowVal.get(fieldMapping.get(key));
+                            int enumIndex = enumField.getIndex(enumString);
+
+                            if (!props.containsKey(field.getName())) {
+                                props.put(field.getName(), enumIndex);
                             }
                             break;
                         }
@@ -294,7 +301,7 @@ public class V3ProcessImportCommand extends FacilioCommand {
         for (BaseLookupField lookupField : lookupMap.keySet()) {
             List<FacilioField> fieldsList = new ArrayList<>();
             fieldsList.add(FieldFactory.getIdField(lookupField.getLookupModule()));
-            FacilioField primaryField = modBean.getPrimaryField(lookupField.getLookupModule().getName());
+            FacilioField primaryField = getImportLookupMainField(modBean, context, lookupField.getLookupModule().getName());
             fieldsList.add(primaryField);
             SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder =  new SelectRecordsBuilder<>()
                     .module(lookupField.getLookupModule())
@@ -324,6 +331,19 @@ public class V3ProcessImportCommand extends FacilioCommand {
             }
         }
         return lookupMap;
+    }
+
+    private FacilioField getImportLookupMainField(ModuleBean modBean, Context context, String moduleName) throws Exception {
+        Map<String, String> lookupMainFieldMap = (Map<String, String>) context.get(ImportAPI.ImportProcessConstants.LOOKUP_MAIN_FIELD_MAP);
+        FacilioField primaryField = null;
+        if (MapUtils.isNotEmpty(lookupMainFieldMap) && lookupMainFieldMap.containsKey(moduleName)) {
+            String fieldName = lookupMainFieldMap.get(moduleName);
+            primaryField = modBean.getField(fieldName, moduleName);
+        }
+        if (primaryField == null) {
+            primaryField = modBean.getPrimaryField(moduleName);
+        }
+        return primaryField;
     }
 
     private boolean isEmpty(Object cellValue) {

@@ -55,11 +55,15 @@ import com.facilio.bmsconsoleV3.commands.item.LoadItemLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.item.SetManualItemTransactionCommandV3;
 import com.facilio.bmsconsoleV3.commands.item.UpdateItemTransactionsCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanItemsLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanServicesCommandV3;
+import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanToolsLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.FetchJobPlanLookupCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.FillJobPlanDetailsCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.ValidationForJobPlanCategory;
 import com.facilio.bmsconsoleV3.commands.labour.FetchLabourCraftAndSkillCommandV3;
 import com.facilio.bmsconsoleV3.commands.labour.GetLabourListCommandV3;
+import com.facilio.bmsconsoleV3.commands.labour.SetDefaultValueForSingleLabourCraftRecord;
 import com.facilio.bmsconsoleV3.commands.labour.SetLocationCommandV3;
 import com.facilio.bmsconsoleV3.commands.moves.UpdateEmployeeInDesksCommandV3;
 import com.facilio.bmsconsoleV3.commands.moves.ValidateMovesCommand;
@@ -134,7 +138,6 @@ import com.facilio.bmsconsoleV3.context.jobplan.JobPlanItemsContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanServicesContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanToolsContext;
 import com.facilio.bmsconsoleV3.context.labour.LabourContextV3;
-import com.facilio.bmsconsoleV3.context.labour.LabourCraftAndSkillContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3ReceiptContext;
@@ -619,7 +622,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getLabour() {
         return () -> new V3Config(LabourContextV3.class, new ModuleCustomFieldCount30())
                 .create()
-                .beforeSave(new SetLocationCommandV3(), new SetLocalIdCommandV3())
+                .beforeSave(new SetLocationCommandV3(), new SetLocalIdCommandV3(),new SetDefaultValueForSingleLabourCraftRecord())
                 .list()
                 .beforeFetch(new GetLabourListCommandV3())
 			    .afterFetch(new FetchLabourCraftAndSkillCommandV3())
@@ -1516,7 +1519,9 @@ public class APIv3Config {
                 .create()
                 .update()
                 .list()
+                .beforeFetch(new LoadJobPlanItemsLookupCommandV3())
                 .summary()
+                .beforeFetch(new LoadJobPlanItemsLookupCommandV3())
                 .delete()
                 .build();
     }
@@ -1527,7 +1532,9 @@ public class APIv3Config {
                 .create()
                 .update()
                 .list()
+                .beforeFetch(new LoadJobPlanToolsLookupCommandV3())
                 .summary()
+                .beforeFetch(new LoadJobPlanToolsLookupCommandV3())
                 .delete()
                 .build();
     }
@@ -1538,7 +1545,9 @@ public class APIv3Config {
                 .create()
                 .update()
                 .list()
+                .beforeFetch(new LoadJobPlanServicesCommandV3())
                 .summary()
+                .beforeFetch(new LoadJobPlanServicesCommandV3())
                 .delete()
                 .build();
     }
@@ -1781,7 +1790,7 @@ public class APIv3Config {
                 .afterDelete(new DeleteBasespaceChildrenCommandV3())
                 .summary().beforeFetch(new SpaceFillLookupFieldsCommand())
                 .afterFetch(new FetchBasespaceChildrenCountCommandV3())
-                .list().beforeFetch(new SpaceFillLookupFieldsCommand())
+                .list().beforeFetch(TransactionChainFactoryV3.getSpaceBeforeFetchChain())
                 .build();
     }
 
@@ -1831,7 +1840,7 @@ public class APIv3Config {
                 .beforeFetch(new AssetSupplementsSupplyCommand())
                 .afterFetch(new LoadAssetSummaryCommandV3())
                 .list()
-                .beforeFetch(new AssetSupplementsSupplyCommand())
+                .beforeFetch(TransactionChainFactoryV3.getAssetBeforeFetchChain())
                 .afterFetch(new AssetListFilterByReadingsCommand())
                 .build();
     }
@@ -2029,6 +2038,7 @@ public class APIv3Config {
                 .list()
                 .beforeFetch(new LoadSupplementsForAlarmOccurrenceCommand())
                 .summary()
+                .beforeFetch(new LoadSupplementsForAlarmOccurrenceCommand())
                 .build();
     }
 
@@ -2043,6 +2053,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getBaseEvent() {
         return () -> new V3Config(BaseEventContext.class, null)
                 .list()
+                .beforeFetch(new LoadSupplementsForBaseEventCommand())
                 .summary()
                 .build();
     }

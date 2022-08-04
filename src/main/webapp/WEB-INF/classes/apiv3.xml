@@ -945,4 +945,9 @@
         </action>
     </package>
 
+    <package name="defaultAppUser" namespace="/api/v3/defaultApp" extends="v3Api">
+        <action name="setUserDefaultApp" class="com.facilio.bmsconsoleV3.actions.DefaultAppUserAction" method="setDefaultAppUser">
+        </action>
+    </package>
+
 </struts>

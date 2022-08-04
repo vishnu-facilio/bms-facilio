@@ -2,7 +2,6 @@ package com.facilio.bmsconsoleV3.signup.craft;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.chain.FacilioChain;
@@ -13,10 +12,8 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import com.facilio.v3.context.Constants;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -66,7 +63,7 @@ public class LabourCraftAndSkillsModules extends SignUpData{
 
 		fields.add(labour);
 
-		LookupField craft = FieldFactory.getDefaultField("craft","Craft","CRAFT_ID",FieldType.LOOKUP);
+		LookupField craft = FieldFactory.getDefaultField("craft","Craft","CRAFT_ID",FieldType.LOOKUP,true);
 		craft.setLookupModule(bean.getModule(FacilioConstants.CraftAndSKills.CRAFT));
 
 		fields.add(craft);
@@ -77,7 +74,7 @@ public class LabourCraftAndSkillsModules extends SignUpData{
 		fields.add(skill);
 
 		fields.add(FieldFactory.getDefaultField("rate","Rate","RATE",FieldType.DECIMAL));
-
+		fields.add(FieldFactory.getDefaultField("isDefault","Is Default","IS_DEFAULT",FieldType.BOOLEAN));
 		module.setFields(fields);
 
 		return module;

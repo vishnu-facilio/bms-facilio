@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.commands;
 
 import java.util.Collections;
 
+import com.facilio.bmsconsoleV3.commands.asset.AssetSupplementsSupplyCommand;
 import com.facilio.bmsconsoleV3.commands.assetDepartment.ValidateAssetDepartmentDeletionV3;
 import com.facilio.bmsconsoleV3.commands.assetType.ValidateAssetTypeDeletionV3;
 import com.facilio.bmsconsoleV3.commands.dashboard.*;
@@ -9,6 +10,7 @@ import com.facilio.bmsconsoleV3.commands.floorplan.*;
 import com.facilio.bmsconsoleV3.commands.jobplan.FillUpJobPlanSectionAdditionInfoObject;
 import com.facilio.bmsconsoleV3.commands.jobplan.FillUpJobPlanTaskAdditionInfoObject;
 import com.facilio.bmsconsoleV3.commands.jobplan.ValidationForJobPlanCategory;
+import com.facilio.bmsconsoleV3.commands.jobplan.AddPlannerIdFilterCriteriaCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.AddLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.DeleteLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.FetchLicensingInfoCommand;
@@ -19,6 +21,7 @@ import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupComma
 import com.facilio.bmsconsoleV3.commands.readingimportapp.AddReadingImportAppDataCommand;
 import com.facilio.bmsconsoleV3.commands.readingimportapp.DeleteReadingImportDataCommand;
 import com.facilio.bmsconsoleV3.commands.readingimportapp.UpdateReadingImportDataCommand;
+import com.facilio.bmsconsoleV3.commands.space.SpaceFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.spacecategory.ValidateSpaceCategoryDeletionV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.AutoAwardingPriceCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.CreatePurchaseOrdersCommandV3;
@@ -581,6 +584,13 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new GetSpaceSpecifcReadingsCommand());
         c.addCommand(new GetCategoryReadingsCommand());
         c.addCommand(new GetReadingFieldsCommand());
+        return c;
+    }
+
+    public static FacilioChain getSpaceBeforeFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SpaceFillLookupFieldsCommand());
+        c.addCommand(new AddPlannerIdFilterCriteriaCommand());
         return c;
     }
 
@@ -1579,6 +1589,13 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getAssetBeforeFetchChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new AssetSupplementsSupplyCommand());
+        chain.addCommand(new AddPlannerIdFilterCriteriaCommand());
+        return chain;
+    }
+
     public static FacilioChain getCreateAssetCategoryChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new AddAssetCategoryModuleCommandV3());
@@ -1905,5 +1922,10 @@ public class TransactionChainFactoryV3 {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new AddOrUpdateVisitorTypeFormCommand());
         return chain;
+    }
+    public static FacilioChain setDefaultAppForUser() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetDefaultAppForUserCommandV3());
+        return c;
     }
 }

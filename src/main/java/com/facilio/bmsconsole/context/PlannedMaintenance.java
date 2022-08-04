@@ -17,6 +17,17 @@ public class PlannedMaintenance extends V3WorkOrderContext {
     private V3BaseSpaceContext baseSpace;
     private PMScopeAssigmentType assignmentType;
 
+    public boolean isActive() {
+        return isActive;
+    }
+    public boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
     public Integer getAssignmentType() {
         if (assignmentType == null) {
             return null;

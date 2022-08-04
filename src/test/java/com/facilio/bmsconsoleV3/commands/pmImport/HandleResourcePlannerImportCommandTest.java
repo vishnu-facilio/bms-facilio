@@ -132,7 +132,7 @@ class HandleResourcePlannerImportCommandTest {
         pm.put("trTimes", "09:00, 12:00");
         pm.put("trDates", "1, 5");
 
-        PMTriggerV2 trigger = Util.createTrigger(-1L, PMTriggerV2.PMTriggerFrequency.QUARTERTLY, pm);
+        PMTriggerV2 trigger = Util.createTrigger(-1L, PMTriggerV2.PMTriggerFrequency.QUARTERLY, pm);
 
         JSONParser parser = new JSONParser();
         JSONObject json = (JSONObject) parser.parse(trigger.getSchedule());
@@ -153,7 +153,7 @@ class HandleResourcePlannerImportCommandTest {
         pm.put("trDays", "MON, WED");
 
 
-        PMTriggerV2 trigger = Util.createTrigger(-1L, PMTriggerV2.PMTriggerFrequency.QUARTERTLY, pm);
+        PMTriggerV2 trigger = Util.createTrigger(-1L, PMTriggerV2.PMTriggerFrequency.QUARTERLY, pm);
 
         JSONParser parser = new JSONParser();
         JSONObject json = (JSONObject) parser.parse(trigger.getSchedule());

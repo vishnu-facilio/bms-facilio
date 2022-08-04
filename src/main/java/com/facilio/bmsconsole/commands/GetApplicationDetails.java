@@ -43,7 +43,6 @@ public class GetApplicationDetails extends FacilioCommand {
 			appId = AccountUtil.getCurrentUser().getApplicationId();
 		}
 		application = ApplicationApi.getApplicationForId(appId);
-
 		if (application != null) {
 			List<AppDomain> appDomainList = IAMAppUtil.getAppDomainForType(application.getDomainType(), AccountUtil.getCurrentOrg().getOrgId());
 			if(CollectionUtils.isNotEmpty(appDomainList)) {

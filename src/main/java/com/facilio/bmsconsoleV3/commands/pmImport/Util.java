@@ -20,11 +20,12 @@ public class Util {
     public static Map<Long, List<Map<String, Object>>> classifyByPM(List<Map<String, Object>> records) throws Exception {
         Map<Long, List<Map<String, Object>>> classification = new HashMap<>();
         for (Map<String, Object> rec : records) {
-            Object pmIDObj = rec.get("pmId");
-            if (pmIDObj == null) {
-                throw new Exception("pmId cannot be null");
+
+            Map<String, Object> pmObj = (Map<String, Object>) rec.get("pmId");
+            if (pmObj == null) {
+                throw new Exception("pm cannot be null");
             }
-            Long pmID = FacilioUtil.parseLong(pmIDObj);
+            Long pmID = FacilioUtil.parseLong(pmObj.get("id"));
 
             if (classification.containsKey(pmID)) {
                 classification.get(pmID).add(rec);
@@ -157,7 +158,7 @@ public class Util {
                     schedule.setValues(explodeAndConvToIntByComma((String) datesObj));
                 }
                 break;
-            case QUARTERTLY:
+            case QUARTERLY:
                 schedule.setMonthValue(1); // supporting only Jan - Apr - Jul - Oct
                 if (triggersWeekly) {
                     schedule.setFrequencyType(ScheduleInfo.FrequencyType.QUARTERLY_WEEK);

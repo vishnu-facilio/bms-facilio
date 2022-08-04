@@ -91,7 +91,7 @@ public class HandleResourcePlannerImportCommand extends FacilioCommand {
     }
 
     private void createResourcePlanner(Long pmID, PMPlanner planner, PMTriggerV2 trigger, List<Map<String, Object>> rpList) throws Exception {
-
+        LOGGER.info("creating RP " + rpList);
         List<Map<String, Object>> mutatedRpList = new ArrayList<>();
 
         for (Map<String, Object> record : rpList) {

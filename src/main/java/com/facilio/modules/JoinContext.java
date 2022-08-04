@@ -1,5 +1,6 @@
 package com.facilio.modules;
 
+import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.fields.FacilioField;
 
 public class JoinContext {
@@ -15,6 +16,7 @@ public class JoinContext {
     private FacilioField parentTableField;
     private FacilioField joinField;
     private JoinType joinType;
+    private Criteria criteria;
 
     public FacilioModule getJoinModule() {
         return joinModule;
@@ -42,6 +44,13 @@ public class JoinContext {
     }
     public void setJoinType(JoinType joinType) {
         this.joinType = joinType;
+    }
+
+    public Criteria getCriteria() {
+        return criteria;
+    }
+     public void setCriteria(Criteria criteria) {
+        this.criteria = criteria;
     }
 
     public static enum JoinType implements FacilioIntEnum {

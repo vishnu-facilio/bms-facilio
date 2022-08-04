@@ -545,6 +545,7 @@ public class ApplicationApi {
                     FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
             addApplicationLayout(maintenanceLayoutMobile);
 
+
             addMaintenancePortalWebGroupsForMobileLayout(maintenanceLayoutMobile);
 
 
@@ -1965,12 +1966,41 @@ public class ApplicationApi {
     }
 
     public static ApplicationContext getDefaultOrFirstApp(List<ApplicationContext> applications) throws Exception {
-        for (ApplicationContext app : applications) {
-            if (app.isDefault()) {
-                return app;
+        ApplicationContext defaultAppForUser = getUserDefaultApp(applications);
+        ApplicationContext finalDefaultApplication = null;
+        for(ApplicationContext app : applications) {
+            if(defaultAppForUser != null && defaultAppForUser.getId() == app.getId()){
+                finalDefaultApplication = app;
+                break;
+            }
+            if(app.isDefault()){
+                finalDefaultApplication = app;
             }
         }
+        if(finalDefaultApplication != null){
+            return finalDefaultApplication;
+        }
         return applications.get(0);
+    }
+
+    public static ApplicationContext getUserDefaultApp(List<ApplicationContext> permissibleApplications) throws Exception {
+        if(CollectionUtils.isNotEmpty(permissibleApplications)){
+            List<Long> appIds = permissibleApplications.stream().map(ApplicationContext::getId).collect(Collectors.toList());
+            GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                    .select(AccountConstants.getOrgUserAppsFields())
+                    .table(AccountConstants.getOrgUserAppsModule().getTableName())
+                    .andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", StringUtils.join(appIds,","), NumberOperators.EQUALS))
+                    .andCondition(CriteriaAPI.getCondition("IS_DEFAULT_APP", "isDefaultApp", String.valueOf(Boolean.TRUE), BooleanOperators.IS));
+
+            List<Map<String, Object>> props = selectBuilder.get();
+            if(CollectionUtils.isNotEmpty(props)) {
+                OrgUserApp userApp = FieldUtil.getAsBeanFromMap(props.get(0), OrgUserApp.class);
+                if(userApp != null){
+                    return ApplicationApi.getApplicationForId(userApp.getApplicationId());
+                }
+            }
+        }
+        return null;
     }
 
     public static List<ApplicationContext> getApplicationsContainsModule(String moduleName) throws Exception {

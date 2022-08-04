@@ -137,7 +137,7 @@ public class AgentAction extends AgentActionV2 {
     public String getAgentCount() {
         try {
             AgentBean agentBean = getAgentBean();
-            setResult(AgentConstants.DATA, agentBean.getAgentCount());
+            setResult(AgentConstants.DATA, agentBean.getAgentCount(querySearch));
             ok();
         } catch (Exception e) {
             LOGGER.info("Exception while getting agentCount->", e);

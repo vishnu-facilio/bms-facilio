@@ -2,11 +2,11 @@ package com.facilio.bmsconsole.imports;
 
 import com.facilio.bmsconsole.imports.annotations.ImportModule;
 import com.facilio.bmsconsole.imports.config.ImportConfig;
+import com.facilio.bmsconsoleV3.commands.plannedmaintenance.WhitelistRequiredFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.pmImport.HandleResourcePlannerImportCommand;
 import com.facilio.bmsconsoleV3.commands.pmImport.HandleTasksImportCommand;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
-
 import java.util.function.Supplier;
 
 public class ImportConfiguration {
@@ -42,6 +42,7 @@ public class ImportConfiguration {
                 .done()
 
                 .parseHandler()
+                .beforeParseCommand(new WhitelistRequiredFieldsCommand())
                 .done()
 
                 .importHandler()
@@ -98,14 +99,10 @@ public class ImportConfiguration {
                 .done()
 
                 .parseHandler()
-                .afterParseCommand(new FacilioCommand() {
-                    @Override
-                    public boolean executeCommand(Context context) throws Exception {
-                        return false;
-                    }
-                })
                 .done()
+
                 .importHandler()
+                .lookupMainFieldMap("plannedmaintenance", "subject")
                 .afterImportCommand(new HandleResourcePlannerImportCommand())
                 .done()
                 .build();
@@ -118,12 +115,6 @@ public class ImportConfiguration {
                 .done()
 
                 .parseHandler()
-                .afterParseCommand(new FacilioCommand() {
-                    @Override
-                    public boolean executeCommand(Context context) throws Exception {
-                        return false;
-                    }
-                })
                 .done()
                 .importHandler()
                 .afterImportCommand(new HandleTasksImportCommand())

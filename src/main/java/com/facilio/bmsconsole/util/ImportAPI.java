@@ -856,6 +856,7 @@ public class ImportAPI {
 		public static final String ROW_FUNCTION = "rowFunction";
 		public static final String BEFORE_IMPORT_FUNCTION = "beforeImportFunction";
 		public static final String AFTER_IMPORT_FUNCTION = "afterImportFunction";
+		public static final String LOOKUP_MAIN_FIELD_MAP = "lookupMainFieldMap";
 
 		public static final String INSERT_RECORDS = "insertRecords";
 		public static final String UPDATE_RECORDS = "updateRecords";

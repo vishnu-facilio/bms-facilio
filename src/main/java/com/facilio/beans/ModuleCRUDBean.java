@@ -1,6 +1,7 @@
 package com.facilio.beans;
 
 import java.io.File;
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;

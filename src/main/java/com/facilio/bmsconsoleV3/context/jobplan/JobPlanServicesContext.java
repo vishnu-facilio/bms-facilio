@@ -9,6 +9,7 @@ public class JobPlanServicesContext extends V3Context {
     private String description;
     private Double unitPrice;
     private Double quantity;
+    private Double duration;
     private Double totalCost;
 
     public JobPlanContext getJobPlan() {
@@ -49,6 +50,14 @@ public class JobPlanServicesContext extends V3Context {
 
     public void setQuantity(Double quantity) {
         this.quantity = quantity;
+    }
+
+    public Double getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Double duration) {
+        this.duration = duration;
     }
 
     public Double getTotalCost() {
