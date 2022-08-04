@@ -1439,11 +1439,11 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 	@Override
-	public long addRequestFromEmail(MimeMessage emailMsg, MimeMessageParser parser, SupportEmailContext supportEmail) throws Exception {
+	public long addRequestFromEmail(MimeMessage emailMsg, MimeMessageParser parser, SupportEmailContext supportEmail,Long workOrderRequestEmailId) throws Exception {
 		long requestId = -1;
 		OrgBean orgBean = AccountUtil.getOrgBean();
 		if (orgBean.isFeatureEnabled(FeatureLicense.CUSTOM_MAIL)) {
-			requestId = MailMessageUtil.createRecordToMailModule(supportEmail, emailMsg);
+			requestId = MailMessageUtil.createRecordToMailModule(supportEmail, emailMsg,workOrderRequestEmailId);
 			LOGGER.info("Added Email from Email Parser : " + requestId );
 		}
 		else if (orgBean.isFeatureEnabled(FeatureLicense.SERVICE_REQUEST)) {

@@ -155,13 +155,13 @@ public interface ModuleCRUDBean {
 
 	public List<Map<String,Object>> getMissingData() throws Exception;
 
-	public long addRequestFromEmail(MimeMessage emailMsg, MimeMessageParser parser, SupportEmailContext supportEmail) throws Exception;
 
 	public InputStream getDownloadStream(String nameSpace, long fileId) throws Exception;
 
 	public FileInfo getFileInfo(String nameSpace,long fileId) throws Exception;
 
-
+	public long addRequestFromEmail(MimeMessage emailMsg, MimeMessageParser parser, SupportEmailContext supportEmail,Long workOrderRequestEmailId) throws Exception;
+	
 	public Object executeWorkflow(WorkflowContext workflowContext) throws Exception;
 
 	void addAuditLog(AuditLogHandler.AuditLogContext auditLog) throws Exception;

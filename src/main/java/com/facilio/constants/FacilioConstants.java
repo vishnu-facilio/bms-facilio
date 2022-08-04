@@ -1045,6 +1045,7 @@ public class FacilioConstants {
 		public static final String IS_PLAN_REQUEST = "is_plan_request";
 		public static final String SUPPORT_EMAIL = "supportEmail";
 		public static final String SUPPORT_EMAIL_LIST = "supportEmails";
+		public static final String REQUEST_EMAIL_ID = "requestEmailId";
 		public static final String EMAIL_SETTING = "emailSetting";
 
 		public static final String CONFIG = "config";

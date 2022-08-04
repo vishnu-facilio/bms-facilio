@@ -1,0 +1,19 @@
+MIME-Version: 1.0
+Date: Wed, 20 Jul 2022 13:53:46 +0530
+Message-ID: <CACL5ErOAj21SHouEy_KgBZzJ_fZ9dCEAO+kK98qzu7ScaHJhwg@mail.gmail.com>
+Subject: test1
+From: Subashini K <subashinitest@gmail.com>
+To: Subashini K <subashinitest@gmail.com>
+Content-Type: multipart/alternative; boundary="0000000000000f57ae05e4385286"
+
+--0000000000000f57ae05e4385286
+Content-Type: text/plain; charset="UTF-8"
+
+test1234
+
+--0000000000000f57ae05e4385286
+Content-Type: text/html; charset="UTF-8"
+
+<div dir="ltr">test1234</div>
+
+--0000000000000f57ae05e4385286--
