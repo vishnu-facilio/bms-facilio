@@ -92,7 +92,7 @@ public class ImportConfiguration {
                 .build();
     }
 
-    @ImportModule(value = "pmImport")
+    @ImportModule(value = "resourceplanner")
     public static Supplier<ImportConfig> getPmImportConfig() {
         return () -> new ImportConfig.ImportConfigBuilder()
                 .uploadHandler()
@@ -102,7 +102,8 @@ public class ImportConfiguration {
                 .done()
 
                 .importHandler()
-                .lookupMainFieldMap("plannedmaintenance", "subject")
+                .lookupMainFieldMap("plannedmaintenance", "name")
+                .lookupMainFieldMap("users", "email")
                 .afterImportCommand(new HandleResourcePlannerImportCommand())
                 .done()
                 .build();
