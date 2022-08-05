@@ -101,7 +101,7 @@ public class AddEmployeePortalDefaultViews extends FacilioCommand {
             if(view != null) {
                 if (isEmployeePortal){
                     view.setName(view.getName()+ "_employee_portal");
-                    addViewSharing(view, portalAdminRoleId);
+                    view.setViewSharing(null);
                 } else {
                     view.setName(view.getName());
                 }
@@ -165,14 +165,5 @@ public class AddEmployeePortalDefaultViews extends FacilioCommand {
                 ViewAPI.customizeViewSortColumns(viewId, sortFields);
             }
         }
-    }
-    public static FacilioView addViewSharing(FacilioView view, long portalAdminRoleId){
-        SharingContext<SingleSharingContext> viewSharing = new SharingContext<>();
-        SingleSharingContext sharingContext = new SingleSharingContext();
-        sharingContext.setType(SingleSharingContext.SharingType.ROLE);
-        sharingContext.setRoleId(portalAdminRoleId);
-        viewSharing.add(sharingContext);
-        view.setViewSharing(viewSharing);
-        return view;
     }
 }
