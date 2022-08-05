@@ -78,19 +78,19 @@ public class JobPlanPageFactory extends PageFactory {
 
         // overall cost
         PageWidget overallCost = new PageWidget(PageWidget.WidgetType.PLANNED_INVENTORY_OVERALL_COST);
-        overallCost.addToLayoutParams(16, 0, 8, 10);
+        overallCost.addToLayoutParams(18, 0, 6, 10);
         itemsAndLaborSection.addWidget(overallCost);
 
         // items
         PageWidget items = new PageWidget(PageWidget.WidgetType.PLANNED_INVENTORY_ITEMS);
-        items.addToLayoutParams(itemsAndLaborSection, 16, 7 + yOffset);
+        items.addToLayoutParams(itemsAndLaborSection, 18, 7 + yOffset);
         itemsAndLaborSection.addWidget(items);
         yOffset += 7;
 
         // services
         if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CONTRACT)) {
             PageWidget services = new PageWidget(PageWidget.WidgetType.PLANNED_INVENTORY_SERVICES);
-            services.addToLayoutParams(0, yOffset, 16, 7);
+            services.addToLayoutParams(0, yOffset, 18, 7);
             itemsAndLaborSection.addWidget(services);
             yOffset += 7;
         }
@@ -103,7 +103,7 @@ public class JobPlanPageFactory extends PageFactory {
 
         // tools
         PageWidget tools = new PageWidget(PageWidget.WidgetType.PLANNED_INVENTORY_TOOLS);
-        tools.addToLayoutParams(0, yOffset, 16, 7);
+        tools.addToLayoutParams(0, yOffset, 18, 7);
         itemsAndLaborSection.addWidget(tools);
         yOffset += 7;
     }
