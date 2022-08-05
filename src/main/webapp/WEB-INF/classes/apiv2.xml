@@ -6867,4 +6867,17 @@
 				class="com.facilio.bmsconsole.actions.ColorPaletteAction"
 				method="deleteColorPalette"/>
 	</package>
+	<package name="publicFile" namespace="/api/v2/publicFile" extends="v2Api">
+
+		<action name="addPublicFile"
+				class="com.facilio.bmsconsole.actions.PublicFileAction" method="addPublicFile">
+		</action>
+		<action name="addPublicUrlForFile"
+				class="com.facilio.bmsconsole.actions.PublicFileAction" method="addPublicUrlForFile">
+		</action>
+		<action name="deletePublicFile"
+				class="com.facilio.bmsconsole.actions.PublicFileAction" method="deletePublicFile">
+		</action>
+
+	</package>
 </struts>

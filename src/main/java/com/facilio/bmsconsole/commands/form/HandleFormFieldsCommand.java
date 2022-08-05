@@ -103,16 +103,17 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 				String contentType = fileInfo.getContentType();
 				String fileName = fileInfo.getFileName();
 
-				InputStream defaultValue = FacilioFactory.getFileStore().readFile((long)fileId);
+				try (InputStream defaultValue = FacilioFactory.getFileStore().readFile((long) fileId)){
 
-				byte[] bytes = IOUtils. toByteArray(defaultValue);
+					byte[] bytes = IOUtils.toByteArray(defaultValue);
 
-				long orphanFileId = FacilioFactory.getFileStore().addOrphanedFileForFormFields(fileName,bytes,contentType);
+					long orphanFileId = FacilioFactory.getFileStore().addOrphanedFileForFormFields(fileName, bytes, contentType);
 
-				JSONObject orphanedObject = new JSONObject();
-				orphanedObject.put("fileId",orphanFileId);
-				orphanedObject.put("fileName",fileName);
-				orphanedArray.add(orphanedObject);
+					JSONObject orphanedObject = new JSONObject();
+					orphanedObject.put("fileId", orphanFileId);
+					orphanedObject.put("fileName", fileName);
+					orphanedArray.add(orphanedObject);
+				}
 			}
 		formField.setValue(orphanedArray.toString());
 		}

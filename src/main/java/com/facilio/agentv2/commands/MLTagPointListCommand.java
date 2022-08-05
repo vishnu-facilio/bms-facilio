@@ -24,11 +24,7 @@ public class MLTagPointListCommand extends AgentV2Command{
             pointsMap.put("controller",controller.getName());
             pointsMap.put("agentName",controller.getAgent().getName());
             pointsMap.put("agentType", AgentType.valueOf(controller.getAgent().getAgentType()).toString() );
-            try{
                 BmsPointsTaggingUtil.tagPointListV1(Collections.singletonList(pointsMap));
-            }catch (Exception e ){
-                LOGGER.error("Exception while tagging new points in ml",e);
-            }
             return false;
         }
         return true;

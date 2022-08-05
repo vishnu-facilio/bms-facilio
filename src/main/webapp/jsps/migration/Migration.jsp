@@ -76,11 +76,15 @@
         @Override
         public boolean executeCommand(Context context) throws Exception {
 
-        	// Have migration commands for each org
+            // Have migration commands for each org
             // Transaction is only org level. If failed, have to continue from the last failed org and not from first
-            
-            LOGGER.info("Completed For -- "+AccountUtil.getCurrentOrg().getId());
-            response.getWriter().println("Completed For -- "+AccountUtil.getCurrentOrg().getId());
+            long orgId = AccountUtil.getCurrentOrg().getId();
+            LOGGER.info("Started For -- "+orgId);
+            response.getWriter().println("Started For -- "+orgId);
+            // code
+
+            LOGGER.info("Completed For -- "+orgId);
+            response.getWriter().println("Completed For -- "+orgId);
             return false;
         }
 

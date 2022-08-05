@@ -43,4 +43,11 @@
 			<param name="isDownload">true</param>
 		</action>
 	</package>
+	<package name="publicFilesPreviewv2" namespace="/api/v3/file/public" extends="filePreview,publicApi">
+		<action name="*/preview"
+				class="com.facilio.bmsconsole.actions.PublicFileAction"
+				method="previewPublicFile">
+			<param name="token">{1}</param>
+		</action>
+	</package>
 </struts>

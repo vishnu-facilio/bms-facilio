@@ -41,6 +41,7 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.Lo
 import com.facilio.bmsconsoleV3.commands.employee.LoadEmployeeLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.facility.*;
+import com.facilio.bmsconsoleV3.commands.failureclass.FetchFailureClassSubModules;
 import com.facilio.bmsconsoleV3.commands.failureclass.FetchFailureClassSupplements;
 import com.facilio.bmsconsoleV3.commands.floor.CreateFloorAfterSave;
 import com.facilio.bmsconsoleV3.commands.floor.FloorFillLookupFieldsCommand;
@@ -129,8 +130,7 @@ import com.facilio.bmsconsoleV3.context.communityfeatures.*;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.*;
-import com.facilio.bmsconsoleV3.context.failurecode.V3FailureClassContext;
-import com.facilio.bmsconsoleV3.context.failurecode.V3FailureCodeContext;
+import com.facilio.bmsconsoleV3.context.failurecode.*;
 import com.facilio.bmsconsoleV3.context.floorplan.*;
 import com.facilio.bmsconsoleV3.context.inventory.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
@@ -152,6 +152,9 @@ import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesLineItemsContext;
 import com.facilio.bmsconsoleV3.context.weather.V3WeatherServiceContext;
 import com.facilio.bmsconsoleV3.context.weather.V3WeatherStationContext;
+import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext;
+import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedServicesContext;
+import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedToolsContext;
 import com.facilio.bmsconsoleV3.context.workpermit.V3WorkPermitContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
@@ -539,10 +542,27 @@ public class APIv3Config {
                 .create()
                 .update()
                 .list()
+                .beforeFetch(new FetchFailureClassSupplements())
                 .summary()
                 .beforeFetch(new FetchFailureClassSupplements())
+                .afterFetch(new FetchFailureClassSubModules())
                 .delete()
                 .build();
+    }
+
+    @Module("failurecodeproblems")
+    public static Supplier<V3Config> getFailureCodeProblems() {
+        return () -> new V3Config(V3FailureCodeProblemsContext.class, null);
+    }
+
+    @Module("failurecodecauses")
+    public static Supplier<V3Config> getFailureCodeCauses() {
+        return () -> new V3Config(V3FailureCodeCausesContext.class, null);
+    }
+
+    @Module("failurecoderemedies")
+    public static Supplier<V3Config> getFailureCodeRemedies() {
+        return () -> new V3Config(V3FailureCodeRemediesContext.class, null);
     }
 
     @Module("insurance")
@@ -1552,6 +1572,39 @@ public class APIv3Config {
                 .build();
     }
 
+    @Module("workOrderPlannedItems")
+    public static Supplier<V3Config> getWorkOrderPlannedItems() {
+        return () -> new V3Config(WorkOrderPlannedItemsContext.class, null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+
+    @Module("workOrderPlannedTools")
+    public static Supplier<V3Config> getWorkOrderPlannedTools() {
+        return () -> new V3Config(WorkOrderPlannedToolsContext.class, null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+
+    @Module("workOrderPlannedServices")
+    public static Supplier<V3Config> getWorkOrderPlannedServices() {
+        return () -> new V3Config(WorkOrderPlannedServicesContext.class, null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+
     @Module("indoorfloorplan")
     public static Supplier<V3Config> getIndoorFloorPlan() {
         return () -> new V3Config(V3IndoorFloorPlanContext.class, new ModuleCustomFieldCount30())
@@ -1993,10 +2046,10 @@ public class APIv3Config {
     public static Supplier<V3Config> getWeatherService() {
         return () -> new V3Config(V3WeatherServiceContext.class, null)
                 .create()
-                .beforeSave(new ValidateWeatherServiceCommand())
+                .beforeSave(new WeatherServiceCreateValidationCommand())
                 .afterSave(new AddWeatherServiceJobCommand())
                 .update()
-                .beforeSave(new ValidateWeatherServiceCommand())
+                .beforeSave(new WeatherServiceUpdateValidationCommand())
                 .afterSave(new AddWeatherServiceJobCommand())
                 .list()
                 .summary()
@@ -2009,12 +2062,14 @@ public class APIv3Config {
     public static Supplier<V3Config> getWeatherStation() {
         return () -> new V3Config(V3WeatherStationContext.class, null)
                 .create()
-                .beforeSave(new ValidateWeatherStationCommand())
+                .beforeSave(new WeatherStationCreateValidationCommand())
                 .afterSave(TransactionChainFactoryV3.addReadingDataMetaForReadingModule())
                 .update()
-                .beforeSave(new ValidateWeatherStationCommand())
+                .beforeSave(new WeatherStationUpdateValidationCommand())
                 .list()
+                .beforeFetch(new WeatherStationLoadSupplementCommand())
                 .summary()
+                .beforeFetch(new WeatherStationLoadSupplementCommand())
                 .delete()
                 .build();
     }
@@ -2066,13 +2121,47 @@ public class APIv3Config {
 							 .build();
 	}
 
-	@Module(FacilioConstants.CraftAndSKills.CRAFT)
-	public static Supplier<V3Config> getCrafts() {
-		return () -> new V3Config(CraftContext.class, null)
-							 .create()
-							 .list()
-							 .summary()
-							 .afterFetch(new FetchCraftAndSkillsCommand())
-							 .build();
-	}
+    @Module(FacilioConstants.CraftAndSKills.CRAFT)
+    public static Supplier<V3Config> getCrafts() {
+        return () -> new V3Config(CraftContext.class, null)
+                .create()
+                .list()
+                .summary()
+                .afterFetch(new FetchCraftAndSkillsCommand())
+                .build();
+    }
+
+    @Module(FacilioConstants.Break.BREAK)
+    public static Supplier<V3Config> getBreak() {
+        return () -> new V3Config(Break.class, null)
+                .create()
+                .beforeSave(TransactionChainFactoryV3.getBreakBeforeSaveChain())
+                .afterSave(TransactionChainFactoryV3.getBreakAfterSaveChain())
+                .update()
+                .beforeSave(TransactionChainFactoryV3.getBreakBeforeUpdateChain())
+                .afterSave(TransactionChainFactoryV3.getBreakAfterUpdateChain())
+                .delete()
+                .beforeDelete(TransactionChainFactoryV3.getBreakBeforeDeleteChain())
+                .list()
+                .summary()
+                .build();
+
+    }
+
+    @Module(FacilioConstants.Shift.SHIFT)
+    public static Supplier<V3Config> getShift() {
+        return () -> new V3Config(Shift.class, null)
+                .create()
+                .beforeSave(TransactionChainFactoryV3.getShiftBeforeSaveChain())
+                .afterSave(TransactionChainFactoryV3.getShiftAfterSaveChain())
+                .update()
+                .beforeSave(TransactionChainFactoryV3.getShiftBeforeUpdateChain())
+                .afterSave(TransactionChainFactoryV3.getShiftAfterUpdateChain())
+                .delete()
+                .beforeDelete(TransactionChainFactoryV3.getShiftBeforeDeleteChain())
+                .afterDelete(TransactionChainFactoryV3.getShiftAfterDeleteChain())
+                .list()
+                .summary()
+                .build();
+    }
 }

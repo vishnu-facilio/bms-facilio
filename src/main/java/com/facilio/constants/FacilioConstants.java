@@ -33,9 +33,8 @@ import com.facilio.bmsconsoleV3.context.facilitybooking.*;
 import com.facilio.bmsconsoleV3.context.floorplan.*;
 import com.facilio.bmsconsoleV3.context.inspection.*;
 import com.facilio.bmsconsoleV3.context.inventory.*;
+import com.facilio.bmsconsoleV3.context.jobplan.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
-import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTaskSectionContext;
-import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTasksContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderLineItemContext;
@@ -48,6 +47,9 @@ import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotatio
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationVendorsContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesLineItemsContext;
+import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext;
+import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedServicesContext;
+import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedToolsContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitChecklistContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
@@ -67,8 +69,6 @@ import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.wmsv2.handler.AuditLogHandler;
-
-import org.apache.kafka.common.protocol.types.Field;
 import org.json.simple.JSONObject;
 
 import java.text.SimpleDateFormat;
@@ -605,11 +605,15 @@ public class FacilioConstants {
 
 		public static final String FILE = "file";
 		public static final String FILE_NAME = "fileName";
+
+		public static final String PUBLIC_FILE = "publicFile";
+		public static final String PUBLIC_FILE_URL = "publicFileUrl";
 		public static final String FILE_CONTENT_TYPE = "fileContentType";
 		public static final String FILE_CONTEXT_LIST = "fileContextList";
 		public static final String FILE_RESPONSE_STATUS = "fileResponseStatus";
 		public static final String FILE_DOWNLOAD_STREAM = "fileDownloadStream";
 
+		public static final String EXPIRY_ON = "expiryOn";
 		public static final String IS_BIM = "isBim";
 		public static final String VALID_SHEETS = "validSheets";
 		public static final String SELECTED_SHEET_NAMES = "selectedSheetNames";
@@ -875,6 +879,9 @@ public class FacilioConstants {
 
 		public static final String FAILURE_CLASS = "failureclass";
 		public static final String FAILURE_CODE = "failurecode";
+		public static final String FAILURE_CODE_PROBLEMS = "failurecodeproblems";
+		public static final String FAILURE_CODE_CAUSES = "failurecodecauses";
+		public static final String FAILURE_CODE_REMEDIES = "failurecoderemedies";
 
 		public static final String SPACE_CATEGORY_FIELD = "spaceCategory";
 
@@ -1291,6 +1298,8 @@ public class FacilioConstants {
 
 		public static final String FILE_FORMAT = "fileFormat";
 		public static final String FILE_ID = "fileID";
+
+		public static final String PUBLIC_FILE_ID = "publicFileID";
 		public static final String FILE_URL = "fileUrl";
 		public static final String FILE_NAME_SPACE = "namespace";
 		public static final String DATE_FILTER = "dateFilter";
@@ -2030,6 +2039,15 @@ public class FacilioConstants {
 		public static final String JOB_PLAN_TASK = "jobplantask";
 		public static final String JOB_PLAN_ATTACHMENTS = "jobplanattachments";
 
+
+		public static final String JOB_PLAN_ITEMS = "jobPlanItems";
+		public static final String JOB_PLAN_TOOLS = "jobPlanTools";
+		public static final String JOB_PLAN_SERVICES = "jobPlanServices";
+
+		public static final String WO_PLANNED_ITEMS = "workOrderPlannedItems";
+		public static final String WO_PLANNED_TOOLS = "workOrderPlannedTools";
+		public static final String WO_PLANNED_SERVICES = "workOrderPlannedServices";
+
 		public static final String AUDIENCE_SHARING = "audienceSharing";
 		public static final String AUDIENCE = "audience";
 
@@ -2618,6 +2636,12 @@ public class FacilioConstants {
 			classMap.put(VENDOR_QUOTES, V3VendorQuotesContext.class);
 			classMap.put(VENDOR_QUOTES_LINE_ITEMS, V3VendorQuotesLineItemsContext.class);
 			classMap.put(JOB_PLAN_ACTIVITY, ActivityContext.class);
+			classMap.put(JOB_PLAN_ITEMS, JobPlanItemsContext.class);
+			classMap.put(JOB_PLAN_TOOLS, JobPlanToolsContext.class);
+			classMap.put(JOB_PLAN_SERVICES, JobPlanServicesContext.class);
+			classMap.put(WO_PLANNED_ITEMS, WorkOrderPlannedItemsContext.class);
+			classMap.put(WO_PLANNED_TOOLS, WorkOrderPlannedToolsContext.class);
+			classMap.put(WO_PLANNED_SERVICES, WorkOrderPlannedServicesContext.class);
 
 			for (QuestionType type : QuestionType.values()) {
 				classMap.put(type.getSubModuleName(), type.getSubClass());
@@ -3011,17 +3035,19 @@ public class FacilioConstants {
 		public static final String SUB_FORM_PREFIX = "subform__";
 	}
 
-	public static class CraftAndSKills{
+	public static class CraftAndSKills {
 		public static final String CRAFT = "crafts";
 		public static final String SKILLS = "craftSkill";
 
 		public static final String LABOUR_CRAFT = "labourCraftSkill";
 	}
 
+	public static class Shift {
+		public static final String SHIFT = "shift";
+	}
 
-	public static class Reports
 
-	{
+	public static class Reports {
 		public static final String MODULE_TYPE = "module_type";
 
 		public static final String ACTUAL_DATA = "actual";
@@ -3417,8 +3443,12 @@ public class FacilioConstants {
 		public static final String VIEW = "View";
 	}
 
-	public static class ColourPalette{
-		public static final String COLOR_PALETTE="colorPalette";
-		public static final String COLOR_KEYS="colorKeys";
+	public static class ColourPalette {
+		public static final String COLOR_PALETTE = "colorPalette";
+		public static final String COLOR_KEYS = "colorKeys";
+	}
+
+	public static class Break {
+		public static final String BREAK = "break";
 	}
 }

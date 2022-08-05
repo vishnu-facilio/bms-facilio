@@ -4,6 +4,8 @@ import com.facilio.bmsconsole.util.WeatherAPI;
 import com.facilio.bmsconsoleV3.context.weather.V3WeatherStationContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -12,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @Log4j
-public class ValidateWeatherStationCommand extends FacilioCommand {
+public class WeatherStationCreateValidationCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = Constants.getModuleName(context);
@@ -24,8 +26,9 @@ public class ValidateWeatherStationCommand extends FacilioCommand {
 
         V3WeatherStationContext weatherStationContext = weatherStationContexts.get(0);
         V3WeatherStationContext existingStationContext =  WeatherAPI.getWeatherStationByCode(weatherStationContext.getStationCode());
+
         if(existingStationContext!=null) {
-            throw new Exception("Given weather station code already exists");
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Given weather station code already exists");
         }
         return false;
     }

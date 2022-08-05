@@ -22,11 +22,7 @@ public class MLGetTaggedPointsCommand extends AgentV2Command {
             List<String> controllerNames = log.getControllers().stream().map(x -> (String) x.get("name")).collect(Collectors.toList());
             Map<String, Map<String, Object>> recordMap = new HashMap<>();
             if (controllerNames != null && !controllerNames.isEmpty()) {
-                try {
                     recordMap = BmsPointsTaggingUtil.getTaggedPointList(controllerNames);
-                }catch (Exception e){
-                    LOGGER.error("Exception while getting points suggestions",e);
-                }
             }
             if (recordMap != null && !recordMap.isEmpty()) {
                 JSONArray pointsJson = log.getPoints();

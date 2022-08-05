@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,6 +21,7 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import org.apache.log4j.LogManager;
 
 public class QRCodeGenerator {
 	
@@ -36,6 +38,7 @@ public class QRCodeGenerator {
         }
 	}
 */
+private static org.apache.log4j.Logger log = LogManager.getLogger(QRCodeGenerator.class.getName());
 	public static void generate_qr(String image_name,String qrCodeData) {
         try {
             String filePath = System.getProperty("user.home") + "/"+image_name+".png";
@@ -63,4 +66,23 @@ public class QRCodeGenerator {
                     return qrCodeResult.getText();
                 }
 			    }
+
+    public static File generateQR(String imageName, String qrCodeData, int width, int height) {
+        try {
+            long startTime= System.currentTimeMillis();
+            File tempFile = File.createTempFile(imageName,"");
+            String charset = "UTF-8"; // or "ISO-8859-1"
+            Map<EncodeHintType, Object> hintMap = new EnumMap<EncodeHintType, Object>(EncodeHintType.class);
+            hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
+            hintMap.put(EncodeHintType.MARGIN, 1);
+            hintMap.put(EncodeHintType.CHARACTER_SET, charset);
+            BitMatrix matrix = new MultiFormatWriter().encode(qrCodeData, BarcodeFormat.QR_CODE, width, height, hintMap);
+            MatrixToImageWriter.writeToFile(matrix,  imageName.substring(imageName.lastIndexOf('.') + 1), tempFile);
+            log.info("QR code has been generated successfully, time taken: "+(System.currentTimeMillis()-startTime));
+            return tempFile;
+        } catch (Exception e) {
+            log.info(e);
+        }
+        return null;
+    }
 }

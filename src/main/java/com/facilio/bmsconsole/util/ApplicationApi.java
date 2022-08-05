@@ -2224,7 +2224,9 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Users", "users", WebTabContext.Type.USERS, null, appId, null));
             webTabs.add(new WebTabContext("Teams", "teams", WebTabContext.Type.TEAMS, null, appId, null));
             webTabs.add(new WebTabContext("Roles", "roles", WebTabContext.Type.ROLES, null, appId, null));
-
+            webTabs.add(new WebTabContext("Labor", "labour", WebTabContext.Type.LABOUR, null, appId, null));
+            webTabs.add(new WebTabContext("Crafts", "crafts", WebTabContext.Type.CRAFTS, null, appId, null));
+            webTabs.add(new WebTabContext("People", "people", WebTabContext.Type.PEOPLE, null, appId, null));
 
             groupNameVsWebTabsMap.put("resource", webTabs);
 
@@ -2240,13 +2242,16 @@ public class ApplicationApi {
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Email Settings", "emailsettings", WebTabContext.Type.EMAIL_SETTINGS, null, appId, null));
             webTabs.add(new WebTabContext("Customization", "category", WebTabContext.Type.WORKORDER_CUSTOMIZATION, null, appId, null));
+            webTabs.add(new WebTabContext("Priority", "priority", WebTabContext.Type.PRIORITY, null, appId, null));
+            webTabs.add(new WebTabContext("Types", "types", WebTabContext.Type.TYPES, null, appId, null));
+            webTabs.add(new WebTabContext("Audit log", "auditlog", WebTabContext.Type.AUDIT_LOG, null, appId, null));
+            webTabs.add(new WebTabContext("Survey", "survey", WebTabContext.Type.SURVEY, null, appId, null));
 
             groupNameVsWebTabsMap.put("workordersettings", webTabs);
 
             webTabGroups.add(new WebTabGroupContext("Space and Asset Settings", "assetsettings", layout.getId(), 204, groupOrder++));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Readings", "readings", WebTabContext.Type.READINGS, null, appId, null));
-           // webTabs.add(new WebTabContext("Space Asset Customization", "category", WebTabContext.Type.SPACE_ASSET_CUSTOMIZATION, null, appId, null));
             webTabs.add(new WebTabContext("Asset Depreciation", "depreciation", WebTabContext.Type.ASSET_DEPRECIATION, null, appId, null));
             webTabs.add(new WebTabContext("Space categories", "spacecategory", WebTabContext.Type.SPACE_CATEGORIES, null, appId, null));
             webTabs.add(new WebTabContext("Operating Hours", "operatinghours", WebTabContext.Type.OPERATING_HOURS, null, appId, null));
@@ -2276,8 +2281,8 @@ public class ApplicationApi {
 
             webTabGroups.add(new WebTabGroupContext("Process", "process", layout.getId(), 0, groupOrder++));
             webTabs = new ArrayList<>();
-            webTabs.add(new WebTabContext("Stateflows", "stateflows", WebTabContext.Type.SLA_POLICIES, null, appId, null));
-            webTabs.add(new WebTabContext("Approvals", "approvals", WebTabContext.Type.ASSIGNMENT_RULES, null, appId, null));
+            webTabs.add(new WebTabContext("Stateflows", "stateflows", WebTabContext.Type.STATEFLOWS, null, appId, null));
+            webTabs.add(new WebTabContext("Approvals", "approvals", WebTabContext.Type.APPROVALS, null, appId, null));
 
             groupNameVsWebTabsMap.put("process", webTabs);
 
@@ -2289,6 +2294,8 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Connectors", "connections", WebTabContext.Type.CONNECTORS, null, appId, null));
             webTabs.add(new WebTabContext("Functions", "functions", WebTabContext.Type.FUNCTIONS, null, appId, null));
             webTabs.add(new WebTabContext("Email Templates", "emailtemplates", WebTabContext.Type.EMAIL_TEMPLATES, null, appId, null));
+            webTabs.add(new WebTabContext("Localization", "localization", WebTabContext.Type.LOCALIZATION, null, appId, null));
+            webTabs.add(new WebTabContext("User Scopes", "userscopes", WebTabContext.Type.USER_SCOPES, null, appId, null));
 
             groupNameVsWebTabsMap.put("customization", webTabs);
 
@@ -2296,6 +2303,7 @@ public class ApplicationApi {
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Energy Meters", "energymeters", WebTabContext.Type.ENERGY_METERS, null, appId, null));
             webTabs.add(new WebTabContext("Baseline", "baseline", WebTabContext.Type.BASELINE, null, appId, null));
+            webTabs.add(new WebTabContext("EnPI", "enpi", WebTabContext.Type.ENPI, null, appId, null));
             webTabs.add(new WebTabContext("Fault Impact Template", "impacttemplates", WebTabContext.Type.FAULT_IMPACT_TEMPLATE, null, appId, null));
 
             groupNameVsWebTabsMap.put("energyanalytics", webTabs);
@@ -2306,28 +2314,13 @@ public class ApplicationApi {
 
             groupNameVsWebTabsMap.put("developerspace", webTabs);
 
-            webTabGroups.add(new WebTabGroupContext("Agent Configuration", "agents", layout.getId(), 4, groupOrder++));
+            webTabGroups.add(new WebTabGroupContext("Developer", "developer", layout.getId(), 6, groupOrder++));
             webTabs = new ArrayList<>();
-            webTabs.add(new WebTabContext("Controllers", "controllers", WebTabContext.Type.CONTROLLERS, null, appId, null));
-            webTabs.add(new WebTabContext("Logs", "logs", WebTabContext.Type.LOGS, null, appId, null));
-            webTabs.add(new WebTabContext("Configuration", "config", WebTabContext.Type.CONFIGURATION, null, appId, null));
-            webTabs.add(new WebTabContext("Commissioning", "commissioning", WebTabContext.Type.COMMISSIONING, null, appId, null));
+            webTabs.add(new WebTabContext("Bundle", "bundle", WebTabContext.Type.BUNDLE, null, appId, null));
+            webTabs.add(new WebTabContext("Install Bundle", "installBundle", WebTabContext.Type.INSTALL_BUNDLE, null, appId, null));
 
-            groupNameVsWebTabsMap.put("agents", webTabs);
+            groupNameVsWebTabsMap.put("developer", webTabs);
 
-            webTabGroups.add(new WebTabGroupContext("BIM Integeration", "bim", layout.getId(), 201, groupOrder++));
-            webTabs = new ArrayList<>();
-            webTabs.add(new WebTabContext("Import BIM File", "bimintegration", WebTabContext.Type.IMPORT_BIM_FILE, null, appId, null));
-            webTabs.add(new WebTabContext("BIM Files", "bimFiles", WebTabContext.Type.BIM_FILES, null, appId, null));
-
-            groupNameVsWebTabsMap.put("bim", webTabs);
-
-            webTabGroups.add(new WebTabGroupContext("Tenant Billing", "tenantbilling", layout.getId(), 5, groupOrder++));
-            webTabs = new ArrayList<>();
-            webTabs.add(new WebTabContext("Tenant", "tenant", WebTabContext.Type.TENANT, null, appId, null));
-            webTabs.add(new WebTabContext("Rate Card", "ratecard", WebTabContext.Type.RATE_CARD, null, appId, null));
-
-            groupNameVsWebTabsMap.put("tenantbilling", webTabs);
 
 
             for (WebTabGroupContext webTabGroupContext : webTabGroups) {

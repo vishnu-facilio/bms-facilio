@@ -11,6 +11,7 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AdminDocumentsContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.AudienceContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.ContactDirectoryContext;
+import com.facilio.bmsconsoleV3.context.failurecode.V3FailureClassContext;
 import com.facilio.bmsconsoleV3.context.inventory.*;
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
@@ -117,6 +118,8 @@ public class PageFactory {
 				return AssetPageFactory.getAssetPage((AssetContext) record);
 			case ContextNames.TENANT:
 				return TenantPageFactory.getTenantPage((TenantContext) record, module);
+			case ContextNames.FAILURE_CLASS:
+				return FailureClassPageFactory.getFailureClassPage((V3FailureClassContext) record);
 			case ContextNames.READING_RULE_MODULE:
 			case ContextNames.NEW_READING_RULE_MODULE:
 				return RulePageFactory.getRulePage((AlarmRuleContext) record);

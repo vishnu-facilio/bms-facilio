@@ -432,6 +432,8 @@ public class PageWidget {
 		TENANT_DESCRIPTION("tenantdescription"),
 		ASSOCIATED_TERMS("associatedterms"),
 		TENANT_DETAIL_OVERVIEW("tenantdetailoverview"),
+		FAILURE_CLASS_DETAILS("failureclassdetails"),
+		FAILURE_CLASS_ASSOCIATED_PROBELMS("failureclassassociatedproblems"),
 		PURCHASED_ITEMS("purchaseditems"),
 		ITEM_TRANSACTIONS("transactionsitem"),
 		TOOL_TRANSACTIONS("transactionstool"),

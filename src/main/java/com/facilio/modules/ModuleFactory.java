@@ -4233,6 +4233,30 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getFailureCodeProblemModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(FacilioConstants.ContextNames.FAILURE_CODE_PROBLEMS);
+		module.setDisplayName("Failure Code Problem");
+		module.setTableName("Failure_Code_Problems");
+		return module;
+	}
+
+	public static FacilioModule getFailureCodeCausesModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ContextNames.FAILURE_CODE_CAUSES);
+		module.setDisplayName("Failure Code Causes");
+		module.setTableName("Failure_Code_Causes");
+		return module;
+	}
+
+	public static FacilioModule getFailureCodeRemediesModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ContextNames.FAILURE_CODE_REMEDIES);
+		module.setDisplayName("Failure Code Remedies");
+		module.setTableName("Failure_Code_Remedies");
+		return module;
+	}
+
 	public static FacilioModule getVendorContactModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName(ContextNames.VENDOR_CONTACT);

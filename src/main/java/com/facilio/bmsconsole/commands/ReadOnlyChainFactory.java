@@ -2169,6 +2169,12 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new V3FilePreviewCommad());
 		return chain;
 	}
+
+	public static FacilioChain getPublicFilePreview() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new PublicFilePreviewCommand());
+		return chain;
+	}
 	public static FacilioChain getVisitorKioskDetailsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new FetchVisitorKioskDetailsCommand());

@@ -9,6 +9,7 @@ public class V3WeatherServiceContext extends V3Context {
 	private static final long serialVersionUID = 1L;
 
 	private String name;
+	private String displayName;
 	private long dataInterval;
 
 }

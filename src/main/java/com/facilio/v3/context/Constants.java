@@ -196,7 +196,6 @@ public class Constants {
         context.put(ATTACHMENT_ID_MAP, attachmentVsId);
     }
 
-
     public static Map<String, List<ModuleBaseWithCustomFields>> getRecordMap(Context context) {
         return (Map<String, List<ModuleBaseWithCustomFields>>) context.get(RECORD_MAP);
     }

@@ -9,7 +9,10 @@ import java.util.Map;
 import org.apache.commons.collections.Predicate;
 import org.json.simple.JSONObject;
 
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FieldUtil;
 import com.facilio.scriptengine.exceptions.FunctionParamException;
 
@@ -87,6 +90,28 @@ public enum FacilioCriteriaFunctions implements FacilioWorkflowFunctionInterface
 			Criteria criteria1 = (Criteria)objects[1];
 			
 			criteria.orCriteria(criteria1);
+			return criteria;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	GET_CONTAINS_CRITERIA(5,"getContainsCriteria") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+			
+			String fieldName = (String)objects[0];
+			String value = (String)objects[1];
+			
+			Condition condition = CriteriaAPI.getCondition(fieldName, value, StringOperators.CONTAINS);
+			
+			Criteria criteria = new Criteria();
+			
+			criteria.addAndCondition(condition);
+			
 			return criteria;
 		};
 		
