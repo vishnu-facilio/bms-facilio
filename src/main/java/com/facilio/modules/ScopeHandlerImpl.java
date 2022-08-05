@@ -184,7 +184,8 @@ public class ScopeHandlerImpl extends ScopeHandler {
 		Criteria criteria = null;
 
 		for(FacilioModule module : joinModules) {
-			ScopingConfigContext moduleScoping = AccountUtil.getCurrentAppScopingMap(module.getModuleId());
+			ScopingConfigContext scoping = AccountUtil.getCurrentAppScopingMap(module.getModuleId());
+			ScopingConfigContext moduleScoping = FieldUtil.cloneBean(scoping,ScopingConfigContext.class);
 			if(moduleScoping != null) {
 				fields.addAll(ApplicationApi.computeValueForScopingField(moduleScoping, module));
 				if(!isInsert) {
