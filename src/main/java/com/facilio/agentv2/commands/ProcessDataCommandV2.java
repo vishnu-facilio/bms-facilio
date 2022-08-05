@@ -1,17 +1,16 @@
 package com.facilio.agentv2.commands;
 
-import com.facilio.agent.AgentType;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.misc.MiscPoint;
 import com.facilio.agentv2.point.Point;
+import com.facilio.agentv2.point.PointEnum;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.agentv2.point.PointsUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.ControllerType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -68,41 +67,21 @@ public class ProcessDataCommandV2 extends AgentV2Command {
                         List<Point> pointsFromDb = FieldUtil.getAsBeanListFromMapList(getPointsFromDb(pointNames, controller), PointsAPI.getPointType(FacilioControllerType.valueOf(controller.getControllerType())));
                         if (pointsFromDb.size() < pointNames.size() && agent.getAgentTypeEnum().allowAutoAddition()) {
                             Set<String> pointsFromDbSet = new HashSet<>();
-                            pointsFromDb.forEach(point -> pointsFromDbSet.add(point.getName()));
-                            Set<String> pointNamesSet = new HashSet<>(pointNames);
-                            pointNamesSet.removeAll(pointsFromDbSet);
-                            List<Map<String, Object>> pointRecordsToAdd = new ArrayList<>();
-                            List<Point> points = new ArrayList<>();
-                            for (String name : pointNamesSet) {
-                                MiscPoint point = new MiscPoint(agent.getId(), controller.getControllerId());
-                                point.setName(name);
-                                point.setDisplayName(name);
-                                point.setDeviceName(controller.getName());
-                                point.setConfigureStatus(3);
-                                point.setControllerId(controller.getId());
-                                point.setPath(name);
-                                point.setCreatedTime(System.currentTimeMillis());
-                                point.setAgentWritable(true);
-                                points.add(point);
-                                Map<String, Object> pointMap = FieldUtil.getAsProperties(point.toJSON());
-                                pointRecordsToAdd.add(pointMap);
-                            }
-//                            PointsUtil.addPoints(controller, pointRecordsToAdd);
+                            Set<String> pointNamesSet = addNewPoints(controller, agent, pointNames, pointsFromDb, pointsFromDbSet);
                             //get newly added points from db with point ids
-                            bulkAddPoints(controller,pointRecordsToAdd,agent);
                             List<Point> newlyAddedPoints = FieldUtil.getAsBeanListFromMapList(getPointsFromDb(new ArrayList<>(pointNamesSet), controller), PointsAPI.getPointType(FacilioControllerType.valueOf(controller.getControllerType())));
                             pointsFromDb.addAll(newlyAddedPoints);
                         }
-                        context.put(FacilioConstants.ContextNames.DataProcessor.DATA_SNAPSHOT, deviceData);
                         Map<String, Point> pointRecords = new HashMap<>();
                         for (Point p : pointsFromDb) {
                             pointRecords.put(p.getName(), p);
                         }
                         context.put(FacilioConstants.ContextNames.DataProcessor.POINT_RECORDS, pointRecords);
-
                     } else {
                         LOGGER.info("points empty");
                     }
+                    context.put(FacilioConstants.ContextNames.DataProcessor.DATA_SNAPSHOT, deviceData);
+
                 }
 
             }else {
@@ -114,6 +93,31 @@ public class ProcessDataCommandV2 extends AgentV2Command {
         }
 
         return false;
+    }
+
+    private Set<String> addNewPoints(Controller controller, FacilioAgent agent, List<String> pointNames, List<Point> pointsFromDb, Set<String> pointsFromDbSet) throws Exception {
+        pointsFromDb.forEach(point -> pointsFromDbSet.add(point.getName()));
+        Set<String> pointNamesSet = new HashSet<>(pointNames);
+        pointNamesSet.removeAll(pointsFromDbSet);
+        List<Map<String, Object>> pointRecordsToAdd = new ArrayList<>();
+        List<Point> points = new ArrayList<>();
+        for (String name : pointNamesSet) {
+            MiscPoint point = new MiscPoint(agent.getId(), controller.getControllerId());
+            point.setName(name);
+            point.setDeviceName(controller.getName());
+            point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
+            point.setControllerId(controller.getId());
+            point.setPath(name);
+            point.setCreatedTime(System.currentTimeMillis());
+            point.setAgentWritable(true);
+            points.add(point);
+            Map<String, Object> pointMap = FieldUtil.getAsProperties(point.toJSON());
+            pointRecordsToAdd.add(pointMap);
+        }
+        //PointsUtil.addPoints(controller, pointRecordsToAdd);
+        //get newly added points from db with point ids
+        bulkAddPoints(controller,pointRecordsToAdd,agent);
+        return pointNamesSet;
     }
   public void bulkAddPoints(Controller controller,List<Map<String,Object>>pointsToBeAdded,FacilioAgent agent) throws Exception {
       FacilioChain addPointsChain = TransactionChainFactory.getAddPointsChain();

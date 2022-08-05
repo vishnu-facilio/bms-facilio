@@ -56,7 +56,7 @@ public class DataProcessorV2 {
     private AgentUtilV2 agentUtil;
     private ControllerUtilV2 controllerUtil;
     private Map<Long, ControllerUtilV2> agentIdControllerUtilMap = new HashMap<>();
-    private Map<Long, Long> controllerIdVsLastTimeSeriesTimeStamp = new HashMap<>();
+    private final Map<Long, String> controllerIdVsLastTimeSeriesTimeStamp = new HashMap<>();
 
     private static final Meter OTEL_METER = GlobalOpenTelemetry.getMeter(DataProcessorV2.class.getSimpleName());
 
@@ -129,12 +129,16 @@ public class DataProcessorV2 {
                 case TIMESERIES:
                     JSONObject timeSeriesPayload = (JSONObject) payload.clone();
                     Controller timeseriesController = getCachedControllerUsingPayload(payload, agent.getId());
-
+                    int messagePartition = 0;
+                    if (payload.containsKey(AgentConstants.MESSAGE_PARTITION)) {
+                        messagePartition = Integer.parseInt(payload.get(AgentConstants.MESSAGE_PARTITION).toString());
+                    }
                     Span.current().setAllAttributes(Attributes.of(AttributeKey.stringKey("controller-name"), timeseriesController.getName()));
-                    if (!controllerIdVsLastTimeSeriesTimeStamp.containsKey(timeseriesController.getId()) ||
-                            !controllerIdVsLastTimeSeriesTimeStamp.get(timeseriesController.getId()).equals(timeStamp)) {
 
-                        controllerIdVsLastTimeSeriesTimeStamp.put(timeseriesController.getId(), timeStamp);
+                    if (!controllerIdVsLastTimeSeriesTimeStamp.containsKey(timeseriesController.getId()) ||
+                            !controllerIdVsLastTimeSeriesTimeStamp.get(timeseriesController.getId()).equals(timeStamp + "#" + messagePartition)) {
+
+                        controllerIdVsLastTimeSeriesTimeStamp.put(timeseriesController.getId(), timeStamp + "#" + messagePartition);
 
                         timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, timeseriesController.getId());
                         processStatus = processTimeSeries(agent, timeSeriesPayload, timeseriesController, true);

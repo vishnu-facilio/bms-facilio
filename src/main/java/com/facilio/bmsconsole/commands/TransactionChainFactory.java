@@ -4357,15 +4357,21 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
-	public static FacilioChain deleteControllerChain(){
+	public static FacilioChain deleteControllerChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new DeleteResourceCommand());
 		return chain;
 	}
 
-	public static FacilioChain getControllerChain() {
+	public static FacilioChain getRtuControllerChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetRtuNetworkCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
+		return chain;
+	}
+
+	public static FacilioChain getControllerChain() {
+		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		return chain;
 	}
