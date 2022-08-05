@@ -561,9 +561,11 @@ public class ApplicationApi {
                     FacilioConstants.DefaultRoleNames.MAINTENANCE_ADMIN);
 
             //Setup layout for Maintenance App
+
             ApplicationLayoutContext maintenanceLayoutSetup = new ApplicationLayoutContext(maintenance.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.SETUP, FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
             addApplicationLayout(maintenanceLayoutSetup);
             addSetupLayoutWebGroups(maintenanceLayoutSetup);
+
 
             addAppRoleMapping(maintenanceAdmin.getRoleId(), maintenance.getId());
 
@@ -2394,7 +2396,7 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Users", "users", WebTabContext.Type.USERS, null, appId, null));
             webTabs.add(new WebTabContext("Teams", "teams", WebTabContext.Type.TEAMS, null, appId, null));
             webTabs.add(new WebTabContext("Roles", "roles", WebTabContext.Type.ROLES, null, appId, null));
-            webTabs.add(new WebTabContext("Labor", "labour", WebTabContext.Type.LABOUR, null, appId, null));
+            webTabs.add(new WebTabContext("Labor", "labor", WebTabContext.Type.LABOUR, null, appId, null));
             webTabs.add(new WebTabContext("Crafts", "crafts", WebTabContext.Type.CRAFTS, null, appId, null));
             webTabs.add(new WebTabContext("People", "people", WebTabContext.Type.PEOPLE, null, appId, null));
 
