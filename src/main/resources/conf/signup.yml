@@ -1,3 +1,4 @@
+
 version: 1.0
 
 # The following classes should implement SignUpData interface and shouldn't have any state variables as only one instance will be created
@@ -131,3 +132,4 @@ classes:
 
   - com.facilio.bmsconsoleV3.signup.craft.AddCraftModules
   - com.facilio.bmsconsoleV3.signup.craft.LabourCraftAndSkillsModules
+  - com.facilio.bmsconsoleV3.signup.people.AddPeopleModuleFields
