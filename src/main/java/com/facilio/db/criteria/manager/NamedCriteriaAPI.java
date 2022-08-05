@@ -1,16 +1,20 @@
 package com.facilio.db.criteria.manager;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,11 +26,12 @@ import java.util.stream.Collectors;
 
 public class NamedCriteriaAPI {
 
-    public static long addOrUpdateNamedCriteria(NamedCriteria namedCriteria) throws Exception {
+    public static long addOrUpdateNamedCriteria(NamedCriteria namedCriteria, String moduleName) throws Exception {
         if (namedCriteria == null) {
             return -1;
         }
 
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         namedCriteria.validate();
 
         if (namedCriteria.getId() < 0) {
@@ -57,6 +62,11 @@ public class NamedCriteriaAPI {
                 .fields(FieldFactory.getNamedConditionFields());
         for (String key : namedCriteria.getConditions().keySet()) {
             NamedCondition namedCondition = namedCriteria.getConditions().get(key);
+            if (namedCondition.getType() == NamedCondition.Type.CRITERIA.getIndex()) {
+                Condition condition = namedCondition.getCriteria().getConditions().get(key);
+                FacilioField field = modBean.getField(condition.getFieldName(), moduleName);
+                condition.setField(field);
+            }
             namedCondition.validateAndAddChildren();
             namedCondition.setNamedCriteriaId(namedCriteria.getId());
             namedCondition.setSequence(Integer.valueOf(key));

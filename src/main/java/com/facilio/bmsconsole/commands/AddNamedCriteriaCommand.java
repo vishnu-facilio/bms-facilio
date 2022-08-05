@@ -24,7 +24,7 @@ public class AddNamedCriteriaCommand extends FacilioCommand {
             }
 
             namedCriteria.setNamedCriteriaModuleId(module.getModuleId());
-            NamedCriteriaAPI.addOrUpdateNamedCriteria(namedCriteria);
+            NamedCriteriaAPI.addOrUpdateNamedCriteria(namedCriteria,moduleName);
         }
         return false;
     }
