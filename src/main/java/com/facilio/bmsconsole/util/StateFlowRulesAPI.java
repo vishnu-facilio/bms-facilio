@@ -478,15 +478,32 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			List<UpdateChangeSet> changeSet = getDefaultFieldChangeSet(moduleName, record.getId());
 
 			Iterator<WorkflowRuleContext> iterator = stateTransitions.iterator();
+
 			while (iterator.hasNext()) {
-				WorkflowRuleContext stateTransition = iterator.next();
+				StateflowTransitionContext stateTransition = (StateflowTransitionContext) iterator.next();
 				boolean evaluate = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(stateTransition, moduleName, record, changeSet, recordPlaceHolders, (FacilioContext) context, false);
 				if (evaluate) {
-					list.add(stateTransition);
+					StateflowTransitionContext s = (StateflowTransitionContext) stateTransition;
+					if (s.getButtonType() <= 0){
+						s.setButtonType(3);
+					}
+					list.add(s);
 				}
 			}
+
+			list.sort((o1,o2) ->{
+					StateflowTransitionContext s1 = (StateflowTransitionContext) o1;
+			        StateflowTransitionContext s2 = (StateflowTransitionContext) o2;
+
+				if (s1.getButtonType() == s2.getButtonType()) {
+					return Long.compare(s1.getId(), s2.getId());
+				}
+
+				return Integer.compare(s1.getButtonType(), s2. getButtonType());
+
+			});
 		}
-		return list;
+		return  list;
 	}
 
 	public static Map<String, List<WorkflowRuleContext>> getAvailableStates(List<? extends ModuleBaseWithCustomFields> records) throws Exception {
