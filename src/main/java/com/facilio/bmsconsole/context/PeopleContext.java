@@ -15,7 +15,6 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 	private String email;
 	private String phone;
 	private String language;
-	
 	public String getName() {
 		return name;
 	}
@@ -80,7 +79,6 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 			return null;
 		}
 	}
-	
 	private BaseSpaceContext locatedSpace;
 
 	public BaseSpaceContext getLocatedSpace() {
@@ -89,7 +87,6 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 	public void setLocatedSpace(BaseSpaceContext locatedSpace) {
 		this.locatedSpace = locatedSpace;
 	}
-	
 	private Boolean active;
 
 	public Boolean getActive() {
@@ -116,9 +113,8 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 	public void setRoleId(long roleId) {
 		this.roleId = roleId;
 	}
-	
-	private Boolean isOccupantPortalAccess;
 
+	private Boolean isOccupantPortalAccess;
 	public Boolean getIsOccupantPortalAccess() {
 		return isOccupantPortalAccess;
 	}
@@ -133,6 +129,9 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 		}
 		return false;
 	}
+
+	@Getter @Setter
+	private Boolean employeePortalAccess;
 
 	public Map<String, Long> getScopingsMap() {
 		return scopingsMap;

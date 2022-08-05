@@ -6573,6 +6573,10 @@
 	</package>
 	<package name="employee" namespace="/api/v2/employee"
 		extends="v2Api">
+		<action name="addfromPortal"
+				class="com.facilio.bmsconsole.actions.EmployeeAction" method="addEmployeefromPortal" />
+		<action name="updatefromPortal"
+				class="com.facilio.bmsconsole.actions.EmployeeAction" method="updateEmployeefromPortal" />
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.EmployeeAction" method="addEmployees" />
 		<action name="update"

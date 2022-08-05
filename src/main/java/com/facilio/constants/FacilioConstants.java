@@ -185,6 +185,14 @@ public class FacilioConstants {
 
 		public static class HomePage {
 			public static final String HOME_PAGE = "homepage";
+			public static final String WIDGET_LINKNAME = "widgetLinkName";
+			public static final String WIDGET_DATA = "widgetData";
+			public static final String NUTSHLL_WIDGET = "nutshellwidget";
+			public static final String ACTION_WIDGET = "groupedactioncard";
+
+			public static final String RECENT_RESERVED_SPACE = "recentreservedspacecard";
+
+
 		}
 
 		public static final String VERIFY_USER = "verifyUser";
@@ -266,6 +274,13 @@ public class FacilioConstants {
 		public static final String SERVICE_PORTAL_APP_ID = "servicePortalappId";
 		public static final String VENDOR_PORTAL_APP_ID = "vendorPortalappId";
 		public static final String CLIENT_PORTAL_APP_ID = "clientPortalappId";
+		public static final String EMPLOYEE_PORTAL_APP_ID = "employeePortalappId";
+
+		public static final String EMPLOYEE_PORTAL_ACCESS = "employeePortalAccess";
+
+		public static class EmployeePortal {
+			public static final String EMPLOYEE_ADMIN_SCOPING_ID = "employeeadminscopingid";
+		}
 
 		public static final String FETCH_FULL_FORM = "fetchFullForm";
 		public static final String DONT_FETCH_WO_WITH_DELETED_RESOURCES = "dontFetchWOWithDeletedResources";
@@ -3003,6 +3018,9 @@ public class FacilioConstants {
 		public static final String DEVELOPER_APP = "dev";
 		public static final String DATA_LOADER_APP = "dataloader";
 		public static final String KIOSK_APP = "visitor_kiosk";
+
+		public static final String EMPLOYEE_PORTAL_APP = "employee";
+
 	}
 
 	public static class DefaultRoleNames {
@@ -3020,6 +3038,9 @@ public class FacilioConstants {
 		public static final String MAINTENANCE_MANAGER = "CAFM Manager";
 		public static final String MAINTENANCE_TECHNICIAN = "CAFM Technician";
 		public static final String DATA_LOADER_ADMIN = "Data Loader Admin";
+
+		public static final String EMPLOYEE_ADMIN = "Employee Admin";
+
 	}
 
 	public static class TableNames {

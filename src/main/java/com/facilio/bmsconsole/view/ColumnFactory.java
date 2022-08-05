@@ -2010,6 +2010,7 @@ public class ColumnFactory {
 	
 	private static List<ViewField> getDefaultDeliveriesColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("employee", "Recipient"));
 		columns.add(new ViewField("receivedTime", "Received Time"));
 		columns.add(new ViewField("deliveredTime", "Delivered Time"));

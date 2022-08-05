@@ -14,10 +14,7 @@ import com.facilio.agentv2.point.AddPointCommand;
 import com.facilio.agentv2.point.ConfigurePointCommand;
 import com.facilio.agentv2.point.EditPointCommand;
 import com.facilio.agentv2.sqlitebuilder.AgentSqliteMakerCommand;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.banner.commands.CloseBannerCommand;
-import com.facilio.bmsconsole.commands.AddOrUpdateUserSignatureCommand;
-import com.facilio.bmsconsole.commands.GetUserSignatureCommand;
 import com.facilio.bmsconsole.actions.GetModuleFromReportContextCommand;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
@@ -37,10 +34,12 @@ import com.facilio.bmsconsoleV3.commands.jobplan.BulkAddJobPlanTasksCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.AssociateQuotationTermsCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.DisAssociateQuotationTermsCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.SendQuotationMailCommand;
+import com.facilio.bmsconsoleV3.signup.employeePortalApp.AddEmployeePortalDefaultViews;
 import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddDefaultRolesMaintenanceApp;
 import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddMaintenanceApplicationDefaultForms;
 import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddMaintenanceApplicationDefaultViews;
 import com.facilio.bmsconsoleV3.signup.maintenanceApp.AddMaintenanceApplicationLayout;
+import com.facilio.bmsconsoleV3.signup.employeePortalApp.AddEmployeePortalDefaultForms;
 import com.facilio.cb.command.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.command.FacilioCommand;
@@ -56,7 +55,6 @@ import com.facilio.energystar.command.*;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand;
 import com.facilio.events.commands.NewExecuteEventRulesCommand;
 import com.facilio.events.constants.EventConstants;
-import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.relations.CalculateDependencyCommand;
 import com.facilio.mv.command.*;
 import com.facilio.ns.command.AddNamespaceCommand;
@@ -70,7 +68,6 @@ import com.facilio.storm.command.StormHistoricalProxyCommand;
 import com.facilio.trigger.context.TriggerType;
 import com.facilio.weekends.*;
 import com.facilio.workflows.command.*;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import java.util.Collections;
@@ -100,6 +97,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddMaintenanceApplicationDefaultViews());
 			c.addCommand(new AddMaintenanceApplicationDefaultForms());
 			c.addCommand(new AddDefaultRolesMaintenanceApp());
+			c.addCommand(addEmployeePortalChain());
 			return c;
 		}
 
@@ -6490,6 +6488,53 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain addEmployeePortalChain(){
+		FacilioChain chain = getDefaultChain();
+//		chain.addCommand(new AddEmployeePortalScoping());
+		chain.addCommand(new AddEmployeePortalDefaultViews());
+		chain.addCommand(new AddEmployeePortalDefaultForms());
+		return chain;
+	}
+
+	public static FacilioChain addPortalEmployeeChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForEmployee());
+		c.addCommand(new CheckForPeopleDuplicationCommand());
+		c.addCommand(new AddPeopleTypeForEmployeeCommand());
+		c.addCommand(new GenericAddModuleDataListCommand());
+		c.addCommand(new UpdateEmployeePortalAccessCommand());
+		c.addCommand(new UpdateScopingForPeopleCommand());
+		c.addCommand(new ExecuteStateFlowCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
+		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+		c.addCommand(new ForkChainToInstantJobCommand()
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
+
+
+		return c;
+	}
+
+	public static FacilioChain updatePortalEmployeeChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForEmployee());
+		c.addCommand(new CheckForPeopleDuplicationCommand());
+		c.addCommand(new GenericUpdateListModuleDataCommand());
+		c.addCommand(new UpdatePeoplePrimaryContactCommand());
+		c.addCommand(new UpdateEmployeePortalAccessCommand());
+		c.addCommand(new UpdateScopingForPeopleCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+		c.addCommand(new UpdateStateForModuleDataCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
+		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+		c.addCommand(new ForkChainToInstantJobCommand()
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+
+
+
+
+		return c;
+	}
 }
 
 

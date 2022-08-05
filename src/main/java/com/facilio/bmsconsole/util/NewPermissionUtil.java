@@ -30,6 +30,12 @@ public class NewPermissionUtil {
     private static Map<String, Integer> notificationType = Collections.unmodifiableMap(initNotificationMap());
     private static Map<String, Integer> indoorFloorplanTabType = Collections.unmodifiableMap(initIndoorFloorplanMap());
 
+    private static Map<String, Integer> homepageTabType = Collections.unmodifiableMap(initHomePageMap());
+
+    private static Map<String, Integer> serviceCatalogTabType = Collections.unmodifiableMap(initServiceCatalogMap());
+
+
+
 
     private static Map<String, Integer> initModuleMap() {
         moduleTabType = new HashMap<>();
@@ -183,6 +189,26 @@ public class NewPermissionUtil {
 
 
         return indoorFloorplanTabType;
+    }
+
+    private static Map<String, Integer> initHomePageMap() {
+        homepageTabType = new HashMap<>();
+        homepageTabType.put("CREATE", 1);
+        homepageTabType.put("READ", 2);
+        homepageTabType.put("UPDATE", 4);
+        homepageTabType.put("DELETE", 8);
+
+        return homepageTabType;
+    }
+
+    private static Map<String, Integer> initServiceCatalogMap() {
+        serviceCatalogTabType = new HashMap<>();
+        serviceCatalogTabType.put("CREATE", 1);
+        serviceCatalogTabType.put("READ", 2);
+        serviceCatalogTabType.put("UPDATE", 4);
+        serviceCatalogTabType.put("DELETE", 8);
+
+        return serviceCatalogTabType;
     }
 
 
@@ -433,6 +459,25 @@ public class NewPermissionUtil {
         permissions.add(new PermissionGroup("View bookings", view_booking));
         permissionMap.put("*", permissions);
         permissionList.put(Type.INDOOR_FLOORPLAN.getIndex(), permissionMap);
+
+
+        permissions = new ArrayList<>();
+        permissionMap = new HashMap<>();
+        permissions.add(new Permission("CREATE", "Create", homepageTabType.get("CREATE"), null));
+        permissions.add(new Permission("READ", "Edit", homepageTabType.get("READ"), null));
+        permissions.add(new Permission("UPDATE", "View", homepageTabType.get("UPDATE"), null));
+        permissions.add(new Permission("DELETE", "Assign", homepageTabType.get("DELETE"), null));
+        permissionMap.put("*", permissions);
+        permissionList.put(Type.HOMEPAGE.getIndex(), permissionMap);
+
+        permissions = new ArrayList<>();
+        permissionMap = new HashMap<>();
+        permissions.add(new Permission("CREATE", "Create", serviceCatalogTabType.get("CREATE"), null));
+        permissions.add(new Permission("READ", "Edit", serviceCatalogTabType.get("READ"), null));
+        permissions.add(new Permission("UPDATE", "View", serviceCatalogTabType.get("UPDATE"), null));
+        permissions.add(new Permission("DELETE", "Assign", serviceCatalogTabType.get("DELETE"), null));
+        permissionMap.put("*", permissions);
+        permissionList.put(Type.SERVICE_CATALOG.getIndex(), permissionMap);
     }
 
     public static List<Permission> getPermissions(int tabType, String moduleName) {
@@ -509,6 +554,11 @@ public class NewPermissionUtil {
                 return portalOverviewType.getOrDefault(action, -1);
             case 14:
                 return indoorFloorplanTabType.getOrDefault(action, -1);
+            case 15:
+                return homepageTabType.getOrDefault(action, -1);
+            case 16:
+                return serviceCatalogTabType.getOrDefault(action, -1);
+
             default:
                 return -1;
         }

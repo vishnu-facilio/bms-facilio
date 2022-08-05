@@ -794,6 +794,8 @@ public class V3PeopleAPI {
                 domainSsoList = IAMOrgUtil.getDomainSSODetails(orgId, AppDomain.AppDomainType.TENANT_PORTAL, AppDomain.GroupType.TENANT_OCCUPANT_PORTAL);
             } else if (linkname.equals(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP)) {
                 domainSsoList = IAMOrgUtil.getDomainSSODetails(orgId, AppDomain.AppDomainType.VENDOR_PORTAL, AppDomain.GroupType.VENDOR_PORTAL);
+            } else if (linkname.equals(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP)) {
+                domainSsoList = IAMOrgUtil.getDomainSSODetails(orgId, AppDomain.AppDomainType.EMPLOYEE_PORTAL, AppDomain.GroupType.EMPLOYEE_PORTAL);
             } else {
                 return false;
             }

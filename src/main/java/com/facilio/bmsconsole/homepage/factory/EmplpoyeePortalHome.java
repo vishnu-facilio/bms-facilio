@@ -22,7 +22,7 @@ public class EmplpoyeePortalHome extends HomePageFactory {
 
         Section section3 = new Section();
         section3.setName("");
-        section3.setH(10);
+        section3.setH(6);
 
         defaultPage.addSection(section1);
         defaultPage.addSection(section2);
@@ -42,6 +42,7 @@ public class EmplpoyeePortalHome extends HomePageFactory {
         HomePageWidget widget3 = new HomePageWidget(HomePageWidget.WidgetType.RESERVED_SPACES);
         widget3.addToLayoutParams(section3, 6, 2);
         section3.addWidget(widget3);
+        section3.setY(6);
 
         HomePageWidget widget4 = new HomePageWidget(HomePageWidget.WidgetType.TINY_LIST_VIEW);
         widget4.addToLayoutParams(section3, 6, 5);
@@ -51,16 +52,16 @@ public class EmplpoyeePortalHome extends HomePageFactory {
         HomePageWidget widget5 = new HomePageWidget(HomePageWidget.WidgetType.SPACE_FINDER);
         widget5.addToLayoutParams(section3, 6, 3);
         section3.addWidget(widget5);
-
-        HomePageWidget widget6 = new HomePageWidget(HomePageWidget.WidgetType.TINY_LIST_VIEW);
-        widget6.addToLayoutParams(section3, 6, 5);
-        widget6.addToWidgetParams("moduleName", "visitor");
-        section3.addWidget(widget6);
-
-        HomePageWidget widget7 = new HomePageWidget(HomePageWidget.WidgetType.TINY_LIST_VIEW);
-        widget7.addToLayoutParams(section3, 6, 5);
-        widget7.addToWidgetParams("moduleName", "deliveries");
-        section3.addWidget(widget7);
+//
+//        HomePageWidget widget6 = new HomePageWidget(HomePageWidget.WidgetType.TINY_LIST_VIEW);
+//        widget6.addToLayoutParams(section3, 6, 5);
+//        widget6.addToWidgetParams("moduleName", "visitor");
+//        section3.addWidget(widget6);
+//
+//        HomePageWidget widget7 = new HomePageWidget(HomePageWidget.WidgetType.TINY_LIST_VIEW);
+//        widget7.addToLayoutParams(section3, 6, 5);
+//        widget7.addToWidgetParams("moduleName", "deliveries");
+//        section3.addWidget(widget7);
 
 
 

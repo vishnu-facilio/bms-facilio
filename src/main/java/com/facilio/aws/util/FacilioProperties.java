@@ -110,6 +110,8 @@ public class FacilioProperties {
     private static String occupantAppDomain;
     private static String vendorAppDomain;
 
+    private static String employeeAppDomain;
+
     private static String esDomain;
     private static String esIndex;
 
@@ -253,6 +255,7 @@ public class FacilioProperties {
             clientAppDomain = PROPERTIES.getProperty("clientportal.domain");
             vendorAppDomain = PROPERTIES.getProperty("vendorportal.domain");
             occupantAppDomain = PROPERTIES.getProperty("occupantportal.domain");
+            employeeAppDomain = PROPERTIES.getProperty("employeeportal.domain");
 
             mobileMainAppScheme = PROPERTIES.getProperty("mobile.mainapp.scheme");
             mobileServiceportalAppScheme = PROPERTIES.getProperty("mobile.serviceportal.scheme");
@@ -698,9 +701,12 @@ public class FacilioProperties {
     public static String getOccupantAppDomain() {
         return occupantAppDomain;
     }
+    public static String getEmployeeAppDomain() {
+        return employeeAppDomain;
+    }
 
     public static String getPortalAppDomains() {
-        return occupantAppDomain + "," + tenantAppDomain + "," + vendorAppDomain + "," + clientAppDomain;
+        return occupantAppDomain + "," + tenantAppDomain + "," + vendorAppDomain + "," + clientAppDomain + "," + employeeAppDomain ;
     }
 
     public static String getClientAppDomain() {

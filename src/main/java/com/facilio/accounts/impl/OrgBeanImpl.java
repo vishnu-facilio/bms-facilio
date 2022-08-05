@@ -702,6 +702,9 @@ public class OrgBeanImpl implements OrgBean {
 		else if(appType == AppDomainType.CLIENT_PORTAL) {
 			org.setDomain(org.getDomain() + FacilioProperties.getClientAppDomain());
 		}
+		else if(appType == AppDomainType.EMPLOYEE_PORTAL) {
+			org.setDomain(org.getDomain() + FacilioProperties.getEmployeeAppDomain());
+		}
 
 
 		return org;

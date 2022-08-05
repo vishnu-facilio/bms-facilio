@@ -154,6 +154,15 @@ public class DesksAPI {
 		List<FacilityContext> existingFacilities = FacilityAPI.getFacilityList(space.getId(),
 				spaceModule.getModuleId());
 
+		if (zone.getZoneModuleId() != null) {
+			// special handle for parking module
+			FacilioModule module = modBean.getModule(zone.getZoneModuleId());
+			if (module.getName().equals(FacilioConstants.ContextNames.PARKING_STALL)) {
+				 existingFacilities = FacilityAPI.getFacilityList(space.getId(),
+						 zone.getZoneModuleId());
+			}
+		}
+
 //		if(existingFacilities != null && !existingFacilities.isEmpty()) {
 //			List<Long> ids = new ArrayList<>();
 //            for (FacilityContext ef : existingFacilities) {
@@ -173,7 +182,12 @@ public class DesksAPI {
 
 			BaseSpaceContext location = SpaceAPI.getBaseSpace(space.getId());
 			facility.setName(location.getName());
-			facility.setParentModuleId(spaceModule.getModuleId());
+			if (zone.getZoneModuleId() != null) {
+				facility.setParentModuleId(zone.getZoneModuleId());
+			}
+			else {
+				facility.setParentModuleId(spaceModule.getModuleId());
+			}
 			facility.setParentId(space.getId());
 			facility.setSiteId(location.getSiteId());
 			facility.setLocation(location);

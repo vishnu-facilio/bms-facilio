@@ -131,6 +131,21 @@ public class V3PeopleContext extends V3Context {
         }
         return false;
     }
+    private Boolean isEmployeePortalAccess;
+    public Boolean getEmployeePortalAccess() {
+        return isEmployeePortalAccess;
+    }
+
+    public void setEmployeePortalAccess(Boolean employeePortalAccess) {
+        isEmployeePortalAccess = employeePortalAccess;
+    }
+
+    public boolean isEmployeePortalAccess() {
+        if (isEmployeePortalAccess != null) {
+            return isEmployeePortalAccess.booleanValue();
+        }
+        return false;
+    }
 
     private Map<String, Long> rolesMap;
 

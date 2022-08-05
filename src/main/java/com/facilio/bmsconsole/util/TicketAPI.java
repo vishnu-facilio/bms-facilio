@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
