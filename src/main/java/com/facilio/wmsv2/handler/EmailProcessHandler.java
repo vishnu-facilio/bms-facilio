@@ -161,11 +161,13 @@ public class EmailProcessHandler extends BaseHandler{
 	}
 
 	private static void markAsDone(Long workOrderRequestEmailId, long requestID, long orgID) throws Exception {
+		FacilioModule module=ModuleFactory.getWorkOrderRequestEMailModule();
 
 			GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
-					.table("WorkOrderRequest_EMail")
+					.table(module.getTableName())
 					.select(FieldFactory.getWorkorderEmailFields())
-					.andCustomWhere("id = "+workOrderRequestEmailId);
+					.andCondition(CriteriaAPI.getIdCondition(workOrderRequestEmailId,module));
+				
 
 			Map<String, Object> props = select.fetchFirst();
 			if((Long)props.get("state")!=Status.FAILED.getVal() && props!=null)
@@ -180,7 +182,7 @@ public class EmailProcessHandler extends BaseHandler{
 
 	}
 
-	private static void updateEmailProp(Long workOrderRequestEmailId, Map<String, Object> dataBag) throws Exception {
+	public static void updateEmailProp(Long workOrderRequestEmailId, Map<String, Object> dataBag) throws Exception {
 
 			FacilioModule module = ModuleFactory.getWorkOrderRequestEMailModule();
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()

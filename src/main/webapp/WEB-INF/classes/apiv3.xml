@@ -963,6 +963,11 @@
     <package name="defaultAppUser" namespace="/api/v3/defaultApp" extends="v3Api">
         <action name="setUserDefaultApp" class="com.facilio.bmsconsoleV3.actions.DefaultAppUserAction" method="setDefaultAppUser">
         </action>
-    </package>
-
+    </package>  
+    
+   <package name="unProcessedEmail" namespace="/api/v3/unProcessedEmail" extends="v3Api">
+        <action name="runUnprocessedEmail" class="com.facilio.bmsconsole.actions.SupportMailParseAction" method="runUnprocessedEmail">
+        </action>
+    </package> 
+	
 </struts>
