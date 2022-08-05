@@ -480,29 +480,28 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			Iterator<WorkflowRuleContext> iterator = stateTransitions.iterator();
 
 			while (iterator.hasNext()) {
-				StateflowTransitionContext stateTransition = (StateflowTransitionContext) iterator.next();
+				WorkflowRuleContext stateTransition = iterator.next();
 				boolean evaluate = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(stateTransition, moduleName, record, changeSet, recordPlaceHolders, (FacilioContext) context, false);
 				if (evaluate) {
-					StateflowTransitionContext s = (StateflowTransitionContext) stateTransition;
-					if (s.getButtonType() <= 0){
-						s.setButtonType(3);
+						if (((AbstractStateTransitionRuleContext)stateTransition).getButtonType() <= 0) {
+							((AbstractStateTransitionRuleContext) stateTransition).setButtonType(3);
 					}
-					list.add(s);
+					list.add(stateTransition);
 				}
 			}
 
-			list.sort((o1,o2) ->{
-					StateflowTransitionContext s1 = (StateflowTransitionContext) o1;
-			        StateflowTransitionContext s2 = (StateflowTransitionContext) o2;
+				list.sort((o1, o2) -> {
+					AbstractStateTransitionRuleContext s1 = (AbstractStateTransitionRuleContext) o1;
+					AbstractStateTransitionRuleContext s2 = (AbstractStateTransitionRuleContext) o2;
 
-				if (s1.getButtonType() == s2.getButtonType()) {
-					return Long.compare(s1.getId(), s2.getId());
-				}
+					if (s1.getButtonType() == s2.getButtonType()) {
+						return Long.compare(s1.getId(), s2.getId());
+					}
 
-				return Integer.compare(s1.getButtonType(), s2. getButtonType());
+					return Integer.compare(s1.getButtonType(), s2.getButtonType());
 
-			});
-		}
+				});
+			}
 		return  list;
 	}
 
