@@ -36,7 +36,16 @@ public class ReportDataPointContext {
 	}
 
 	private long buildingId = -1;
-	
+
+	public String getConvertTounit() {
+		return convertTounit;
+	}
+
+	public void setConvertTounit(String convertTounit) {
+		this.convertTounit = convertTounit;
+	}
+
+	private String convertTounit;
 	public long getBuildingId() {
 		return buildingId;
 	}

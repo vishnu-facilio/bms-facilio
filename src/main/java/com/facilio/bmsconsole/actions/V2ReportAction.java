@@ -2454,6 +2454,7 @@ public class V2ReportAction extends FacilioAction {
                 JSONParser parser = new JSONParser();
                 context.put(FacilioConstants.ContextNames.FILTERS, (JSONObject) parser.parse(getFilters()));
             }
+            context.put("is_export_report", true);
             // pass filterJsonString as is, will be set in summary url in export command
             getReport(context);
         } else {

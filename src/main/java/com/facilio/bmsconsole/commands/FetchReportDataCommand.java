@@ -32,6 +32,7 @@ import com.facilio.report.util.DemoHelperUtil;
 import com.facilio.report.util.FilterUtil;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
+import com.facilio.unitconversion.Unit;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -61,11 +62,13 @@ public class FetchReportDataCommand extends FacilioCommand {
     private List<FacilioField> globalFields = new ArrayList<>();
     private Boolean isBaseModuleJoined = false;
     private List<Map<String, Object>> pivotFieldsList = new ArrayList<>();
+    private Boolean isReportExport=false;
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
         modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         globalContext = context;
+        isReportExport = context != null && context.containsKey("is_export_report") ? true : false;
         ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
         if (report.getTypeEnum() != null) {
             reportType = report.getTypeEnum();
@@ -1295,12 +1298,37 @@ public class FetchReportDataCommand extends FacilioCommand {
             }
             FacilioField aggrField = dataPoint.getyAxis().getAggrEnum().getSelectField(facilioField).clone();
             aggrField.setName(ReportUtil.getAggrFieldName(aggrField, dataPoint.getyAxis().getAggrEnum()));
+            if(isReportExport) {
+                setSelectedUnitAggregation(dataPoint, aggrField);
+            }
             fields.add(aggrField);
             if (reportType == ReportType.PIVOT_REPORT) {
                 handlePivotFields(aggrField, null, true, dataPoint.getyAxis().getModule(), false);
             }
             return true;
         }
+    }
+
+    private void setSelectedUnitAggregation(ReportDataPointContext datapoint, FacilioField aggrField)throws Exception
+    {
+        try
+        {
+            if (aggrField instanceof NumberField && datapoint.getConvertTounit() != null && !datapoint.getConvertTounit().equals("None")) {
+                String unit_display_name = datapoint.getConvertTounit().toLowerCase();
+                unit_display_name = unit_display_name.substring(0, unit_display_name.length() - 1);
+                NumberField numberField = (NumberField) aggrField;
+                Collection<Unit> units = Unit.getUnitsForMetric(numberField.getMetricEnum());
+                for (Unit unit : units) {
+                    if (unit.getDisplayName().equals(unit_display_name)) {
+                        numberField.setUnitId(unit.getUnitId());
+                    }
+                }
+            }
+        }catch(Exception e)
+        {
+            LOGGER.debug("Error in getting and setting converto unit during export of report");
+        }
+
     }
 
     private void applyOrderByAndLimit(ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, AggregateOperator xAggr) {

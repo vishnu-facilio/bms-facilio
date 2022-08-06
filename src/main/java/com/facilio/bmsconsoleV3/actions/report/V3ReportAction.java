@@ -174,6 +174,34 @@ public class V3ReportAction extends V3Action {
         context.put(FacilioConstants.Reports.MODULE_TYPE, moduleType);
 
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+
+        if(chartState != null && !chartState.equals("null"))
+        {
+            try
+            {
+                JSONObject data_point_vs_convert_to_unit = null;
+                JSONObject chart_json = (JSONObject) parser.parse(chartState);
+                if (chart_json != null && chart_json.containsKey("dataPoints")) {
+                    data_point_vs_convert_to_unit = new JSONObject();
+                    JSONArray data_point_arr = (JSONArray) chart_json.get("dataPoints");
+                    int len = data_point_arr.size();
+                    for (int i = 0; i < len; i++) {
+                        JSONObject dataPoint = (JSONObject) data_point_arr.get(i);
+                        if (dataPoint != null && dataPoint.containsKey("convertTounit") && dataPoint.get("convertTounit") != null &&  dataPoint.containsKey("fieldName")) {
+                            data_point_vs_convert_to_unit.put((String) dataPoint.get("fieldName"), dataPoint.get("convertTounit"));
+                        }
+                    }
+                    if (data_point_vs_convert_to_unit != null && !data_point_vs_convert_to_unit.isEmpty()) {
+                        context.put("datapoint_vs_convert_unit", data_point_vs_convert_to_unit);
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                LOGGER.debug("Errot while forming the convertounit map");
+            }
+        }
+
     }
     private void updateModuleReportContext() throws Exception
     {
@@ -568,6 +596,7 @@ public class V3ReportAction extends V3Action {
                 JSONParser parser = new JSONParser();
                 context.put(FacilioConstants.ContextNames.FILTERS, (JSONObject) parser.parse(getFilters()));
             }
+            context.put("is_export_report", true);
             setReportWithDataContext(context);
         }
         else
