@@ -80,10 +80,14 @@ public class HomepageWidgteApi {
                 visitors.forEach(visitor -> {
                     HomepageWidgetData widget = new HomepageWidgetData();
                     JSONObject params = new JSONObject();
+                    String visitedSpace = "---";
+                    if(visitor.getVisitedSpace() != null && visitor.getVisitedSpace().getName() != null) {
+                        visitedSpace = visitor.getVisitedSpace().getName();
+                    }
                     widget.setIcon(4);
                     widget.setTitle(visitor.getModuleState().getDisplayName());
                     widget.setPrimaryText(visitor.getHost().getName());
-                    widget.setSecondaryText(visitor.getVisitedSpace().getName());
+                    widget.setSecondaryText(visitedSpace);
                     widget.setModuleName(module.getName());
                     widget.setSecondaryText2("Today");
                     params.put("record", visitor);
@@ -129,7 +133,6 @@ public class HomepageWidgteApi {
         List<FacilioField> deliveryFileds = modBean.getAllFields(module.getName());
 
         Long peopleId = AccountUtil.getCurrentUser().getPeopleId();
-        HomepageWidgetData widget = new HomepageWidgetData();
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
 
 
@@ -154,6 +157,8 @@ public class HomepageWidgteApi {
             if(CollectionUtils.isNotEmpty(deliveriesList))
             {
                 deliveriesList.forEach(deliveries -> {
+                    HomepageWidgetData widget = new HomepageWidgetData();
+
                     JSONObject params = new JSONObject();
 
                     widget.setSecondaryText("");
@@ -531,7 +536,7 @@ public class HomepageWidgteApi {
                     .moduleName(FacilityModule.getName())
                     .select(modBean.getAllFields(FacilityModule.getName()))
                     .beanClass(FacilityContext.class)
-                    .limit(5);
+                    .limit(4);
 
             selectBuilder
                     .innerJoin("FacilityBooking")
