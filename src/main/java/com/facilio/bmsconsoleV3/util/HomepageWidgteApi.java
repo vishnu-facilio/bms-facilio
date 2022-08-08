@@ -84,9 +84,11 @@ public class HomepageWidgteApi {
                     if(visitor.getVisitedSpace() != null && visitor.getVisitedSpace().getName() != null) {
                         visitedSpace = visitor.getVisitedSpace().getName();
                     }
+                    String primaryText = visitor.getVisitorName()+ " is waiting to meet you";
                     widget.setIcon(4);
                     widget.setTitle(visitor.getModuleState().getDisplayName());
-                    widget.setPrimaryText(visitor.getHost().getName());
+                    widget.setPrimaryText(primaryText);
+//                    widget.setPrimaryText(visitor.getHost().getName());
                     widget.setSecondaryText(visitedSpace);
                     widget.setModuleName(module.getName());
                     widget.setSecondaryText2("Today");
@@ -163,12 +165,15 @@ public class HomepageWidgteApi {
 
                     widget.setSecondaryText("");
                     widget.setSecondaryText2("");
+                    String secondaryText = "Package " + deliveries.getTrackingNumber() + " is waiting for pickup";
                     if (deliveries.getDeliveryArea() !=null && deliveries.getDeliveryArea().getName() != null) {
                         widget.setSecondaryText(deliveries.getDeliveryArea().getName());
-                        widget.setSecondaryText2("package is waiting for pickup");
+                        widget.setSecondaryText2(secondaryText);
                     }
 
-                    String primaryText = "Package " + deliveries.getTrackingNumber() + " arrived";
+//                    String primaryText = "Package " + deliveries.getTrackingNumber() + " arrived";
+
+                    String primaryText = "Your Package is arrived";
 
                     if (deliveries.getModuleState() != null && deliveries.getModuleState().getDisplayName() != null) {
                         widget.setTitle(deliveries.getModuleState().getDisplayName());
@@ -260,7 +265,7 @@ public class HomepageWidgteApi {
             try {
                 FacilioStatus moduleState = V3RecordAPI.getRecord(FacilioConstants.ContextNames.TICKET_STATUS, booking.getModuleState().getId());
                 booking.setModuleState(moduleState);
-                widget.setPrimaryText("Upcoming " + module.getDisplayName() + " booking");
+                widget.setPrimaryText(" Your upcoming " + module.getDisplayName() + " booking");
             }
             catch (Exception e) {
                 throw new RuntimeException(e);
