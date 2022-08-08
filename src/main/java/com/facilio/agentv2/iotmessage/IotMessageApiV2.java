@@ -35,6 +35,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -176,12 +177,20 @@ public class IotMessageApiV2 {
                 .table(ModuleFactory.getIotMessageModule().getTableName())
                 .fields(FieldFactory.getIotMessageFields());
         long createdTime = System.currentTimeMillis();
+        Map<Long, List<Long>> messageVsControls = new HashMap<>();
         for (IotMessage iotMessage : messages) {
             iotMessage.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
             iotMessage.setParentId(parentId);
             iotMessage.setStatus(Status.MESSAGE_SENT.asInt());
             iotMessage.setSentTime(createdTime);
-            iotMessage.setId(builder.insert(FieldUtil.getAsProperties(iotMessage)));
+            long id = builder.insert(FieldUtil.getAsProperties(iotMessage));
+            iotMessage.setId(id);
+            if (iotMessage.getControlIds() != null) {
+            	messageVsControls.put(id, iotMessage.getControlIds());
+            }
+        }
+        if (!messageVsControls.isEmpty()) {
+        	ControlActionUtil.updateControlMessageId(messageVsControls);
         }
     }
 

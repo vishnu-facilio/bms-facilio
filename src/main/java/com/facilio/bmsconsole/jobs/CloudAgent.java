@@ -113,30 +113,38 @@ public class CloudAgent extends FacilioJob {
 				JSONObject payload = new JSONObject();
 				payloads.add(payload);
 
-				PublishType type = PublishType.TIMESERIES;
-				if ((boolean) result.getOrDefault("cov", false)) {
-					type = PublishType.COV;
-				}
-
-				payload.put("publishType", type.asInt());
 				payload.put("agent", agent.getName());
-				payload.put("controllerType", 0);
-
-				Long timeStamp = (Long) result.get("timestamp");
-				if (timeStamp == null) {
-					timeStamp = toTime;
+                Long timeStamp = (Long) result.get("timestamp");
+                if (timeStamp == null) {
+                    timeStamp = toTime;
+                }
+                Map<String, Object> data = (Map<String, Object>) result.get("data");
+                
+                PublishType type = PublishType.TIMESERIES;
+				if ((boolean) result.getOrDefault("event", false)) {
+					// For alarms
+					type = PublishType.EVENTS;
+					payload.putAll(data);
 				}
-				payload.put("actual_timestamp", timeStamp);
-				payload.put("timestamp", timeStamp);
+				else {
+					// For timeseries or cov
+					if ((boolean) result.getOrDefault("cov", false)) {
+						type = PublishType.COV;
+					}
+					payload.put("controllerType", 0);
+					payload.put("actual_timestamp", timeStamp);
+					
+					JSONObject controller = new JSONObject();
+	                controller.put("name", result.remove("controller"));
+	                payload.put("controller", controller);
 
-				JSONObject controller = new JSONObject();
-				controller.put("name", result.remove("controller"));
-				payload.put("controller", controller);
-
-				Map<String, Object> data = (Map<String, Object>) result.get("data");
-				if (data != null) {
-					payload.put("data", Collections.singletonList(data));
+	                if (data != null) {
+	                    payload.put("data", Collections.singletonList(data));
+	                }
 				}
+				
+				payload.put("publishType", type);
+                payload.put("timestamp", timeStamp);
 			}
 		}
 		return payloads;

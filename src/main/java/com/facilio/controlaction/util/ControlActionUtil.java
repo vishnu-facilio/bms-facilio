@@ -1,14 +1,17 @@
 package com.facilio.controlaction.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
@@ -19,6 +22,8 @@ import com.facilio.controlaction.context.ControlGroupSpace;
 import com.facilio.controlaction.context.ControllableAssetCategoryContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder.BatchUpdateByIdContext;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -31,6 +36,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.mv.context.MVProjectContext;
 import com.facilio.mv.context.MVProjectWrapper;
+import com.facilio.unitconversion.UnitsUtil;
 
 public class ControlActionUtil {
 
@@ -315,5 +321,31 @@ public class ControlActionUtil {
 				.table(ModuleFactory.getControlGroupInclExclModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition("CONTROL_GROUP_ID", "controlGroupId", controlGroup.getId()+"", NumberOperators.EQUALS));
 		delete.delete();
+	}
+	
+	public static void updateControlMessageId(Map<Long, List<Long>> controlVsMessage) throws Exception {
+		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modbean.getModule(FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modbean.getAllFields(FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE));
+        FacilioField messageField = fieldMap.get("iotMessageId");
+		
+		List<BatchUpdateByIdContext> batchUpdateList = new ArrayList<>();
+		for (Entry<Long, List<Long>> controlMessage : controlVsMessage.entrySet()) {
+			long messageId = controlMessage.getKey();
+			List<Long> controlIds = controlMessage.getValue();
+			controlIds.forEach(controlId -> {
+				BatchUpdateByIdContext batchValue = new BatchUpdateByIdContext();
+				batchValue.setWhereId(controlId);
+				batchValue.addUpdateValue(messageField.getName(), messageId);
+				batchUpdateList.add(batchValue);
+			});
+		}
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(module.getTableName())
+				.fields(Collections.singletonList(messageField))
+				;
+		
+		updateBuilder.batchUpdateById(batchUpdateList);
 	}
 }
