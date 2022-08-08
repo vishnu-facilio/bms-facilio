@@ -289,4 +289,6 @@ public class AgentConstants
     public static final String MESSAGE_SOURCES = "messageSources";
     public static final String WORKFLOW_SYNTAX_ERROR = "workflowSyntaxError";
     public static final String WORKFLOW_RESPONSE = "workflowResponse";
+    public static final String MESSAGE_PARTITION = "messagePartition";
+
 }

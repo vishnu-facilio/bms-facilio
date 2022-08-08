@@ -1,9 +1,13 @@
 package com.facilio.bmsconsoleV3.context;
 
 import com.facilio.accounts.dto.RoleApp;
+import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsoleV3.context.labour.LabourContextV3;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Map;
 
@@ -131,6 +135,23 @@ public class V3PeopleContext extends V3Context {
         }
         return false;
     }
+	@Getter@Setter
+    private Boolean isEmployeePortalAccess,user,labour;
+    public Boolean getEmployeePortalAccess() {
+        return isEmployeePortalAccess;
+    }
+
+    public void setEmployeePortalAccess(Boolean employeePortalAccess) {
+        isEmployeePortalAccess = employeePortalAccess;
+    }
+
+
+    public boolean isEmployeePortalAccess() {
+        if (isEmployeePortalAccess != null) {
+            return isEmployeePortalAccess.booleanValue();
+        }
+        return false;
+    }
 
     private Map<String, Long> rolesMap;
 
@@ -151,4 +172,23 @@ public class V3PeopleContext extends V3Context {
     public void setRolesMap(Map<String, Long> rolesMap) {
         this.rolesMap = rolesMap;
     }
+
+	@Setter@Getter
+	private LabourContextV3 labourContext; // for client purpose only
+	@Setter@Getter
+	private User userContext; // for client purpose only
+
+	public Boolean isLabour() {
+		if (labour != null) {
+			return labour.booleanValue();
+		}
+		return false;
+	}
+
+	public Boolean isUser() {
+		if (user != null) {
+			return user.booleanValue();
+		}
+		return false;
+	}
 }

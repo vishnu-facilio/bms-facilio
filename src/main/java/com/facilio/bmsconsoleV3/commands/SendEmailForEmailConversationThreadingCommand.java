@@ -183,11 +183,16 @@ public class SendEmailForEmailConversationThreadingCommand extends FacilioComman
 				case OCCUPANT: {
 					appDomains = IAMAppUtil.getAppDomain(AppDomainType.SERVICE_PORTAL, AccountUtil.getCurrentOrg().getId());
 					break;
-				}
+				} 
 				case CLIENT_CONTACT: {
 					appDomains = IAMAppUtil.getAppDomain(AppDomainType.CLIENT_PORTAL, AccountUtil.getCurrentOrg().getId());
 					break;
 				}
+				case EMPLOYEE: {
+					appDomains = IAMAppUtil.getAppDomain(AppDomainType.EMPLOYEE_PORTAL, AccountUtil.getCurrentOrg().getId());
+					break;
+				} 
+
 				default:
 					break;
 				}

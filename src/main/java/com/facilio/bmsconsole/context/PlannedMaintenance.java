@@ -55,12 +55,23 @@ public class PlannedMaintenance extends V3WorkOrderContext {
     private List<V3SiteContext> sites;
 
     public enum PMScopeAssigmentType implements FacilioIntEnum {
-        ASSETS,
-        SPACES,
-        ASSETCATEGORY,
-        SPACECATEGORY,
-        BUILDINGS,
-        SITES;
+        ASSETS("Assets"),
+        SPACES("Spaces"),
+        ASSETCATEGORY("Asset Category"),
+        SPACECATEGORY("Space Category"),
+        BUILDINGS("Buildings"),
+        SITES("Sites");
+
+        @Override
+        public String getValue() {
+            return this.name;
+        }
+
+        private String name;
+
+        PMScopeAssigmentType(String name) {
+            this.name = name;
+        }
 
         public static PMScopeAssigmentType valueOf(int index) {
             if (index >= 1 && index <= values().length) {

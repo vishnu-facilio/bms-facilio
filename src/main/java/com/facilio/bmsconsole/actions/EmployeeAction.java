@@ -287,4 +287,44 @@ public String getEmployeeOccupantPortalSummary() throws Exception {
 		return SUCCESS;
 	}
 
+	public String addEmployeefromPortal() throws Exception {
+
+		if(!CollectionUtils.isEmpty(employees)) {
+			FacilioChain c = TransactionChainFactory.addPortalEmployeeChain();
+			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
+			c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+
+			for(EmployeeContext emp : employees) {
+				emp.parseFormData();
+				RecordAPI.handleCustomLookup(emp.getData(), FacilioConstants.ContextNames.EMPLOYEE);
+			}
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, employees);
+			c.execute();
+			setResult(FacilioConstants.ContextNames.EMPLOYEES, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
+		}
+		return SUCCESS;
+	}
+	public String updateEmployeefromPortal() throws Exception {
+
+		if(CollectionUtils.isEmpty(employees) && employee != null) {
+			employees = new ArrayList<>();
+			employees.add(employee);
+		}
+		if(!CollectionUtils.isEmpty(employees)) {
+			FacilioChain c = TransactionChainFactory.updatePortalEmployeeChain();
+			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
+			c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
+			c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+			for(EmployeeContext emp : employees) {
+				emp.parseFormData();
+				RecordAPI.handleCustomLookup(emp.getData(), FacilioConstants.ContextNames.EMPLOYEE);
+			}
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, employees);
+			c.execute();
+			setResult(FacilioConstants.ContextNames.EMPLOYEES, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
+		}
+		return SUCCESS;
+	}
+
 }

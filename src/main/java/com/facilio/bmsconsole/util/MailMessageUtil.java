@@ -368,7 +368,7 @@ public class MailMessageUtil {
 		insert.save();
     }
 
-    public static long createRecordToMailModule(SupportEmailContext supportMail, Message rawEmail) throws Exception {
+    public static long createRecordToMailModule(SupportEmailContext supportMail, Message rawEmail,Long workOrderRequestEmailId) throws Exception {
         BaseMailMessageContext mailMessage = BaseMailMessageContext.instance(rawEmail);
         mailMessage.setParentId(supportMail.getId());
         mailMessage.setSiteId(supportMail.getSiteId());
@@ -381,11 +381,11 @@ public class MailMessageUtil {
         FacilioChain chain = TransactionChainFactory.getSaveMailMessage();
 
         FacilioContext context = chain.getContext();
-
         context.put(FacilioConstants.ContextNames.SUPPORT_EMAIL, supportMail);
         context.put(FacilioConstants.ContextNames.MESSAGES, Collections.singletonList(mailMessage));
-
+		context.put(FacilioConstants.ContextNames.REQUEST_EMAIL_ID, workOrderRequestEmailId);
         chain.execute();
+
         long recordId = (long) context.getOrDefault(FacilioConstants.ContextNames.RECORD_ID, -1);
         return recordId;
     }

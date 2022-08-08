@@ -3323,6 +3323,8 @@
 		<action name="*" class="com.facilio.bmsconsole.actions.CommissionAction" method="logDetails">
 			<param name="id">{1}</param>
 		</action>
+		<action name="mlpointsmigration" class="com.facilio.bmsconsole.actions.CommissionAction" method="mlPointsMigration">
+		</action>
 	</package>
 
 	<package name="inventoryApi" namespace="/api/v2/inventory"
@@ -6573,6 +6575,10 @@
 	</package>
 	<package name="employee" namespace="/api/v2/employee"
 		extends="v2Api">
+		<action name="addfromPortal"
+				class="com.facilio.bmsconsole.actions.EmployeeAction" method="addEmployeefromPortal" />
+		<action name="updatefromPortal"
+				class="com.facilio.bmsconsole.actions.EmployeeAction" method="updateEmployeefromPortal" />
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.EmployeeAction" method="addEmployees" />
 		<action name="update"

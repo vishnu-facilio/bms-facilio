@@ -937,6 +937,10 @@
                 class="com.facilio.bmsconsoleV3.actions.homepagefactory.HomePageFactoryAction"
                 method="getHomePage">
         </action>
+        <action name="widgetData"
+                class="com.facilio.bmsconsoleV3.actions.homepagefactory.HomePageFactoryAction"
+                method="getWidgetData">
+        </action>
     </package>
     <package name="requestForQuotation" namespace="/api/v3/requestForQuotation" extends="v3Api">
         <action name="convertPrToRfq" class="com.facilio.bmsconsoleV3.actions.RequestForQuotationAction" method="convertPrToRfq">
@@ -955,6 +959,11 @@
     <package name="defaultAppUser" namespace="/api/v3/defaultApp" extends="v3Api">
         <action name="setUserDefaultApp" class="com.facilio.bmsconsoleV3.actions.DefaultAppUserAction" method="setDefaultAppUser">
         </action>
-    </package>
-
+    </package>  
+    
+   <package name="unProcessedEmail" namespace="/api/v3/unProcessedEmail" extends="v3Api">
+        <action name="runUnprocessedEmail" class="com.facilio.bmsconsole.actions.SupportMailParseAction" method="runUnprocessedEmail">
+        </action>
+    </package> 
+	
 </struts>

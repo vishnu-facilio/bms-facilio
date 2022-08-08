@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsoleV3.context.labour.LabourContextV3;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import lombok.Getter;
@@ -15,7 +17,6 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 	private String email;
 	private String phone;
 	private String language;
-	
 	public String getName() {
 		return name;
 	}
@@ -80,7 +81,6 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 			return null;
 		}
 	}
-	
 	private BaseSpaceContext locatedSpace;
 
 	public BaseSpaceContext getLocatedSpace() {
@@ -89,7 +89,6 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 	public void setLocatedSpace(BaseSpaceContext locatedSpace) {
 		this.locatedSpace = locatedSpace;
 	}
-	
 	private Boolean active;
 
 	public Boolean getActive() {
@@ -116,9 +115,8 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 	public void setRoleId(long roleId) {
 		this.roleId = roleId;
 	}
-	
-	private Boolean isOccupantPortalAccess;
 
+	private Boolean isOccupantPortalAccess;
 	public Boolean getIsOccupantPortalAccess() {
 		return isOccupantPortalAccess;
 	}
@@ -133,6 +131,9 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 		}
 		return false;
 	}
+
+	@Getter @Setter
+	private Boolean employeePortalAccess,user,labour;
 
 	public Map<String, Long> getScopingsMap() {
 		return scopingsMap;
@@ -157,5 +158,20 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 	@Getter
 	@Setter
 	private Map<String, Long> securityPolicyMap;
+
+	public boolean isUser(){
+
+		return user != null && user.booleanValue();
+	}
+
+	public boolean isLabour(){
+
+		return labour != null && labour.booleanValue();
+	}
+
+	@Setter
+	private LabourContextV3 labourContext; // for client purpose only
+	@Setter
+	private User userContext; // for client purpose only
 
 }

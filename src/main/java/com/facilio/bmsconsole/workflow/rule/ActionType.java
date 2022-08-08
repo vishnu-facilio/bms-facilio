@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.jobs.WorkOrderRequestEmailParser;
 import com.facilio.bmsconsole.templates.ControlActionTemplate;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ReadingRuleType;
@@ -32,6 +33,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.PickListOperators;
@@ -48,6 +50,7 @@ import com.facilio.modules.fields.FileField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.pdf.PdfUtil;
 import com.facilio.qa.QAndAUtil;
+import com.facilio.service.FacilioService;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.services.filestore.PublicFileUtil;
@@ -61,6 +64,7 @@ import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.v3.util.V3Util;
+import com.facilio.wmsv2.handler.EmailProcessHandler;
 import com.facilio.workflowlog.context.WorkflowLogContext.WorkflowLogType;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -1704,128 +1708,133 @@ public enum ActionType {
 	EMAIL_CONVERSATION(35) {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
-			
-			LOGGER.error("obj --- "+obj);
-			BaseMailMessageContext mailContext = (BaseMailMessageContext) currentRecord;
-			
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			
-			long formId = (long) obj.get("formId");
-			if (formId > -1) {
-				FacilioForm form = FormsAPI.getFormFromDB(formId);
-				
-				FacilioModule module = form.getModule();
-				
-				Long recordId = null; 
-				if(mailContext.getReferenceMessageId() != null) { // checking w.r.t. In reference message to
+			try {
 
-					List<String> refferenceMessageIds = new ArrayList<String>();
-					if(mailContext.getReferenceMessageId().contains(",")) {
-						String[] refferenceMessageIdArray = mailContext.getReferenceMessageId().split(",");
+				BaseMailMessageContext mailContext = (BaseMailMessageContext) currentRecord;
 
-						if(ArrayUtils.isNotEmpty(refferenceMessageIdArray)) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
-							for(int i=refferenceMessageIdArray.length -1 ; i>=0 ;i--) {
-								refferenceMessageIds.add(refferenceMessageIdArray[i]);
+				long formId = (long) obj.get("formId");
+				if (formId > -1) {
+					FacilioForm form = FormsAPI.getFormFromDB(formId);
+
+					FacilioModule module = form.getModule();
+
+					Long recordId = null;
+					if (mailContext.getReferenceMessageId() != null) { // checking w.r.t. In reference message to
+
+						List<String> refferenceMessageIds = new ArrayList<String>();
+						if (mailContext.getReferenceMessageId().contains(",")) {
+							String[] refferenceMessageIdArray = mailContext.getReferenceMessageId().split(",");
+
+							if (ArrayUtils.isNotEmpty(refferenceMessageIdArray)) {
+
+								for (int i = refferenceMessageIdArray.length - 1; i >= 0; i--) {
+									refferenceMessageIds.add(refferenceMessageIdArray[i]);
+								}
+							}
+						} else {
+							refferenceMessageIds.add(mailContext.getReferenceMessageId());
+						}
+
+						for (String refferenceMessageId : refferenceMessageIds) {
+
+							EmailToModuleDataContext emailToModuleData = MailMessageUtil.getEmailToModuleData(refferenceMessageId, module);
+							if (emailToModuleData != null) {
+								recordId = emailToModuleData.getRecordId();
+							} else {
+								EmailConversationThreadingContext conversation = MailMessageUtil.getEmailConversationData(refferenceMessageId, module);
+								if (conversation != null) {
+									recordId = conversation.getRecordId();
+								}
+							}
+
+							if (recordId != null) {
+								break;
 							}
 						}
 					}
-					else {
-						refferenceMessageIds.add(mailContext.getReferenceMessageId());
-					}
 
-					for(String refferenceMessageId : refferenceMessageIds) {
-
-						EmailToModuleDataContext emailToModuleData = MailMessageUtil.getEmailToModuleData(refferenceMessageId, module);
-						if(emailToModuleData != null) {
-							recordId = emailToModuleData.getRecordId();
-						}
-						else {
-							EmailConversationThreadingContext conversation = MailMessageUtil.getEmailConversationData(refferenceMessageId, module);
-							if(conversation != null) {
-								recordId = conversation.getRecordId();
-							}
-						}
-
-						if(recordId != null) {
-							break;
-						}
-					}
-				}
-
-				if(recordId == null) {
-					Long localId = MailMessageUtil.getLocalIdFromSubject(mailContext.getSubject());
-					if(localId != null) {
-						Map<String, Object> record = MailMessageUtil.fetchRecordWithLocalIdOrId(module, localId);
-						if(record != null) {
-							recordId = (Long) record.get("id");
-						}
-					}
-				}
-				
-				if(recordId == null) {
-					if(mailContext.getInReplyToMessageId() != null) {	// checking w.r.t. In reply to 
-						EmailToModuleDataContext emailToModuleData = MailMessageUtil.getEmailToModuleData(mailContext.getInReplyToMessageId(), module);
-						if(emailToModuleData != null) {
-							recordId = emailToModuleData.getRecordId();
-						}
-						else {
-							EmailConversationThreadingContext conversation = MailMessageUtil.getEmailConversationData(mailContext.getInReplyToMessageId(), module);
-							if(conversation != null) {
-								recordId = conversation.getRecordId();
+					if (recordId == null) {
+						Long localId = MailMessageUtil.getLocalIdFromSubject(mailContext.getSubject());
+						if (localId != null) {
+							Map<String, Object> record = MailMessageUtil.fetchRecordWithLocalIdOrId(module, localId);
+							if (record != null) {
+								recordId = (Long) record.get("id");
 							}
 						}
 					}
-				}
-				
-				if(recordId != null) {
-					
-					EmailConversationThreadingContext emailConversationContext = FieldUtil.getAsBeanFromJson(FieldUtil.getAsJSON(mailContext), EmailConversationThreadingContext.class);
-					
-					addAttachments(mailContext, emailConversationContext,MailMessageUtil.EMAIL_CONVERSATION_THREADING_ATTACHMENT_MODULE);
-					
-					emailConversationContext.setFromPeople(PeopleAPI.getOrAddRequester(mailContext.getFrom()));
-					
-					emailConversationContext.setParentBaseMail(mailContext);
-					emailConversationContext.setDataModuleId(module.getModuleId());
-					emailConversationContext.setRecordId(recordId);
-					
-					emailConversationContext.setFromType(EmailConversationThreadingContext.From_Type.CLIENT.getIndex());
-					emailConversationContext.setMessageType(EmailConversationThreadingContext.Message_Type.REPLY.getIndex());
-					
-					
-					FacilioContext contextNew = V3Util.createRecord(modBean.getModule(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME), Collections.singletonList(emailConversationContext));
-				}
-				
-				if(recordId == null) {
-					
-					obj.put("siteId", mailContext.getSiteId());
-					
-					V3Config v3Config = ChainUtil.getV3Config(module.getName());
-					
-					ModuleBaseWithCustomFields record = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromJson(obj, v3Config.getBeanClass());
-					
-					List<FacilioModule> subModules = modBean.getSubModules(module.getName(), FacilioModule.ModuleType.ATTACHMENTS);
-					
-					if(subModules != null && !subModules.isEmpty()) {
-						
-						addAttachments(mailContext, record, subModules.get(0).getName());
+
+					if (recordId == null) {
+						if (mailContext.getInReplyToMessageId() != null) {    // checking w.r.t. In reply to
+							EmailToModuleDataContext emailToModuleData = MailMessageUtil.getEmailToModuleData(mailContext.getInReplyToMessageId(), module);
+							if (emailToModuleData != null) {
+								recordId = emailToModuleData.getRecordId();
+							} else {
+								EmailConversationThreadingContext conversation = MailMessageUtil.getEmailConversationData(mailContext.getInReplyToMessageId(), module);
+								if (conversation != null) {
+									recordId = conversation.getRecordId();
+								}
+							}
+						}
 					}
-					
-					FacilioContext contextNew = V3Util.createRecord(module,Collections.singletonList(record));	//adding record to the corresponding module.
-			        
-			        Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) contextNew.get(Constants.RECORD_MAP);
-			        
-			        EmailToModuleDataContext emailToModuleData = FieldUtil.getAsBeanFromJson(FieldUtil.getAsJSON(mailContext), EmailToModuleDataContext.class);
-			        
-					emailToModuleData.setParentBaseMail(mailContext);
-					emailToModuleData.setRecordId(recordMap.get(module.getName()).get(0).getId());
-					emailToModuleData.setDataModuleId(module.getModuleId());
-					
-					addAttachments(mailContext, emailToModuleData, MailMessageUtil.EMAIL_TO_MODULE_DATA_ATTACHMENT_MODULE);
-			        
-					V3Util.createRecord(modBean.getModule(MailMessageUtil.EMAIL_TO_MODULE_DATA_MODULE_NAME), Collections.singletonList(emailToModuleData));
+
+					if (recordId != null) {
+
+						EmailConversationThreadingContext emailConversationContext = FieldUtil.getAsBeanFromJson(FieldUtil.getAsJSON(mailContext), EmailConversationThreadingContext.class);
+
+						addAttachments(mailContext, emailConversationContext, MailMessageUtil.EMAIL_CONVERSATION_THREADING_ATTACHMENT_MODULE);
+
+						emailConversationContext.setFromPeople(PeopleAPI.getOrAddRequester(mailContext.getFrom()));
+
+						emailConversationContext.setParentBaseMail(mailContext);
+						emailConversationContext.setDataModuleId(module.getModuleId());
+						emailConversationContext.setRecordId(recordId);
+
+						emailConversationContext.setFromType(EmailConversationThreadingContext.From_Type.CLIENT.getIndex());
+						emailConversationContext.setMessageType(EmailConversationThreadingContext.Message_Type.REPLY.getIndex());
+
+
+						FacilioContext contextNew = V3Util.createRecord(modBean.getModule(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME), Collections.singletonList(emailConversationContext));
+					}
+
+					if (recordId == null) {
+
+						obj.put("siteId", mailContext.getSiteId());
+
+						V3Config v3Config = ChainUtil.getV3Config(module.getName());
+
+						ModuleBaseWithCustomFields record = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromJson(obj, v3Config.getBeanClass());
+
+						List<FacilioModule> subModules = modBean.getSubModules(module.getName(), FacilioModule.ModuleType.ATTACHMENTS);
+
+						if (subModules != null && !subModules.isEmpty()) {
+
+							addAttachments(mailContext, record, subModules.get(0).getName());
+						}
+
+						FacilioContext contextNew = V3Util.createRecord(module, Collections.singletonList(record));    //adding record to the corresponding module.
+
+						Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) contextNew.get(Constants.RECORD_MAP);
+
+						EmailToModuleDataContext emailToModuleData = FieldUtil.getAsBeanFromJson(FieldUtil.getAsJSON(mailContext), EmailToModuleDataContext.class);
+
+						emailToModuleData.setParentBaseMail(mailContext);
+						emailToModuleData.setRecordId(recordMap.get(module.getName()).get(0).getId());
+						emailToModuleData.setDataModuleId(module.getModuleId());
+
+						addAttachments(mailContext, emailToModuleData, MailMessageUtil.EMAIL_TO_MODULE_DATA_ATTACHMENT_MODULE);
+
+						V3Util.createRecord(modBean.getModule(MailMessageUtil.EMAIL_TO_MODULE_DATA_MODULE_NAME), Collections.singletonList(emailToModuleData));
+					}
 				}
+			}
+			catch (Exception e)
+			{
+				if((Long) context.get(FacilioConstants.ContextNames.REQUEST_EMAIL_ID)!=null) {
+					FacilioService.runAsService(FacilioConstants.Services.DEFAULT_SERVICE,() -> EmailProcessHandler.markAsFailed( (Long) context.get(FacilioConstants.ContextNames.REQUEST_EMAIL_ID)));
+				}
+				throw e;
 			}
 			
 		}

@@ -163,7 +163,15 @@ public class CommissionAction extends FacilioAction{
 		setResult(ContextNames.RESULT, "success");
 		return SUCCESS;
 	}
-	
+
+	public String mlPointsMigration() throws Exception {
+		FacilioChain chain = TransactionChainFactory.MlCommissionedPointsMigration();
+		FacilioContext context = chain.getContext();
+		context.put(AgentConstants.AGENT_ID,agentId);
+		chain.execute();
+		setResult(ContextNames.RESULT,"success");
+		return SUCCESS;
+	}
 	public String deleteLog() throws Exception {
 		FacilioChain chain = TransactionChainFactory.getDeleteCommissioningChain();
 		FacilioContext context = chain.getContext();

@@ -1,3 +1,4 @@
+
 version: 1.0
 
 # The following classes should implement SignUpData interface and shouldn't have any state variables as only one instance will be created
@@ -129,5 +130,9 @@ classes:
     #Adding Fields for JobPlan Task Section module
   - com.facilio.bmsconsoleV3.signup.jobPlan.AddJobPlanTaskSectionFields
 
+    #Adding Modules and Fields for V2 Planned Maintenance
+  - com.facilio.bmsconsoleV3.signup.plannedmaintenance.AddPmV2ModuleAndFields
+
   - com.facilio.bmsconsoleV3.signup.craft.AddCraftModules
   - com.facilio.bmsconsoleV3.signup.craft.LabourCraftAndSkillsModules
+  - com.facilio.bmsconsoleV3.signup.people.AddPeopleModuleFields

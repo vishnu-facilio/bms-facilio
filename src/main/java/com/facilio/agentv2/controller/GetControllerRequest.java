@@ -48,7 +48,13 @@ public class GetControllerRequest
         if (controllerType == null) {
             throw new Exception(" controller type cant be null ");
         }
-        FacilioChain getControllerChain = TransactionChainFactory.getControllerChain();
+        FacilioChain getControllerChain;
+        if (controllerType == FacilioControllerType.MODBUS_RTU) {
+            getControllerChain = TransactionChainFactory.getRtuControllerChain();
+        } else {
+            getControllerChain = TransactionChainFactory.getControllerChain();
+        }
+
         FacilioContext context = getControllerChain.getContext();
         String moduleName = ControllerApiV2.getControllerModuleName(controllerType);
         if (moduleName == null || moduleName.isEmpty()) {

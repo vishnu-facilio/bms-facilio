@@ -442,6 +442,30 @@ public class PeopleAPI {
 						addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP, appDomain.getIdentifier(), verifyUser, roleId, secPolId);
 					}
 				}
+				else if((linkName.equals(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP) && existingPeople.getEmployeePortalAccess())) {
+					if(MapUtils.isEmpty(person.getRolesMap()) || !person.getRolesMap().containsKey(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP)){
+						throw new IllegalArgumentException("Role is mandatory");
+					}
+					long roleId = person.getRolesMap().get(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
+					if(user != null) {
+						user.setAppDomain(appDomain);
+						user.setApplicationId(appId);
+						user.setRoleId(roleId);
+						user.setLanguage(person.getLanguage());
+						user.setSecurityPolicyId(secPolId);
+						if(isSsoEnabled)
+						{
+							user.setUserVerified(true);
+							user.setInviteAcceptStatus(true);
+						}
+						ApplicationApi.addUserInApp(user, false, !isSsoEnabled);
+						AccountUtil.getUserBean().updateUser(user);
+					}
+					else {
+						addPortalAppUser(existingPeople, FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP, appDomain.getIdentifier(), verifyUser, roleId, secPolId);
+					}
+				}
+
 				else {
 					if(user != null) {
 						ApplicationApi.deleteUserFromApp(user, appId);
@@ -989,6 +1013,10 @@ public class PeopleAPI {
 			else if(linkname.equals(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP))
 			{
 				domainSsoList = IAMOrgUtil.getDomainSSODetails(orgId, AppDomain.AppDomainType.VENDOR_PORTAL, AppDomain.GroupType.VENDOR_PORTAL);
+			}
+			else if(linkname.equals(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP))
+			{
+				domainSsoList = IAMOrgUtil.getDomainSSODetails(orgId, AppDomain.AppDomainType.EMPLOYEE_PORTAL, AppDomain.GroupType.EMPLOYEE_PORTAL);
 			}
 			else
 			{

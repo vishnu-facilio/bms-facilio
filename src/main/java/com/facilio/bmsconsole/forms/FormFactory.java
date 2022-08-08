@@ -2331,8 +2331,8 @@ public class FormFactory {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("jobPlanCategory", FieldDisplayType.SELECTBOX, "Category", Required.REQUIRED, 2, 1));
-		fields.add(new FormField("assetCategoryId", FieldDisplayType.LOOKUP_SIMPLE, "Asset Category", Required.OPTIONAL, "assetcategory", 3, 1));
-		fields.add(new FormField("spaceCategoryId", FieldDisplayType.LOOKUP_SIMPLE, "Space Category", Required.OPTIONAL, "spacecategory", 4, 1));
+		fields.add(new FormField("assetCategory", FieldDisplayType.LOOKUP_SIMPLE, "Asset Category", Required.OPTIONAL, "assetcategory", 3, 1));
+		fields.add(new FormField("spaceCategory", FieldDisplayType.LOOKUP_SIMPLE, "Space Category", Required.OPTIONAL, "spacecategory", 4, 1));
 		fields.add(new FormField("jobplansection", FieldDisplayType.JP_TASK, "Tasks", Required.REQUIRED, 5, 1));
 
 		return fields;

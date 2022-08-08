@@ -73,9 +73,10 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 						SupportEmailContext supportEmail = getSupportEmail(parser);
 						long requestID = -1L;
 						long orgID = -1L;
+						Long workOrderRequestEmailId=0L;
 						if (supportEmail != null) {
 							orgID = supportEmail.getOrgId();
-							requestID = NewTransactionService.newTransactionWithReturn(() -> addWorkRequest(emailMsg, parser, supportEmail));
+							requestID = NewTransactionService.newTransactionWithReturn(() -> addWorkRequest(emailMsg, parser, supportEmail,workOrderRequestEmailId));
 						}
 						markAsDone(emailID, requestID, orgID);
 
@@ -115,9 +116,9 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 		updateBuilder.update(dataBag);
 	}
 
-	private long addWorkRequest(MimeMessage emailMsg, MimeMessageParser parser, SupportEmailContext supportEmail) throws Exception {
+	private long addWorkRequest(MimeMessage emailMsg, MimeMessageParser parser, SupportEmailContext supportEmail,Long workOrderRequestEmailId) throws Exception {
 		ModuleCRUDBean bean = (ModuleCRUDBean) TransactionBeanFactory.lookup("ModuleCRUD", supportEmail.getOrgId());
-		return bean.addRequestFromEmail(emailMsg, parser, supportEmail);
+		return bean.addRequestFromEmail(emailMsg, parser, supportEmail,workOrderRequestEmailId);
 	}
 
 	private SupportEmailContext getSupportEmail(MimeMessageParser parser) throws Exception {

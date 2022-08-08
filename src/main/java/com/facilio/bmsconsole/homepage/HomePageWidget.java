@@ -157,7 +157,7 @@ public class HomePageWidget {
     public enum WidgetType {
         NUT_SHELL_WIDGET("nutshellwidget"),
         GROUPED_ACTION_CARD("groupedactioncard"),
-        RESERVED_SPACES("reservedspace"),
+        RESERVED_SPACES("recentreservedspacecard"),
         SPACE_FINDER("spacefinder"),
         TINY_LIST_VIEW("listview");
 

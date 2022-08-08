@@ -1,5 +1,6 @@
 package com.facilio.wmsv2.handler;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,7 +13,10 @@ import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.mail.util.MimeMessageParser;
 
 import com.amazonaws.services.s3.model.S3Object;
@@ -52,29 +56,50 @@ public class EmailProcessHandler extends BaseHandler{
 	public Message processOutgoingMessage(Message message) {
         try {
 			LOGGER.info("KAFKA EMAIL PROCESS HANDLER STARTED");
-    		long emailID = -1L;
+    		Long workOrderRequestEmailId = 0L;
         	if (message != null && message.getContent()!=null) {
         			Map<String, Object> messageMap = message.getContent();
         			if(messageMap!=null) {
 						String s3Id = (String) messageMap.get("s3MessageId");
-						emailID = (long) Long.parseLong(messageMap.get("id").toString());
+						workOrderRequestEmailId = FacilioUtil.parseLong(messageMap.get("id"));
+
 						String recepient = (String) messageMap.get("recipient");
-						try (S3Object rawEmail = AwsUtil.getAmazonS3Client().getObject(S3_BUCKET_NAME, s3Id); InputStream is = rawEmail.getObjectContent()) {
+						S3Object rawEmail = null;
+						InputStream is=null;
+						try {
+							if(FacilioProperties.isDevelopment()){
+								is = new FileInputStream("/resources/test.eml");
+							}
+							else {
+								rawEmail = AwsUtil.getAmazonS3Client().getObject(S3_BUCKET_NAME, s3Id);
+								is = rawEmail.getObjectContent();
+							}
 							MimeMessage emailMsg = new MimeMessage(null, is);
 							MimeMessageParser parser = new MimeMessageParser(emailMsg);
 							parser.parse();
-							SupportEmailContext supportEmail = getSupportEmail(recepient);
+							SupportEmailContext supportEmail =getSupportEmail(recepient);
 							long requestID = -1L;
 							long orgID = -1L;
 							if (supportEmail != null) {
 								orgID = supportEmail.getOrgId();
-								requestID = NewTransactionService.newTransactionWithReturn(() -> addWorkRequest(emailMsg, parser, supportEmail));
+								Long workorderRequestEmailId=workOrderRequestEmailId;
+								requestID = NewTransactionService.newTransactionWithReturn(() -> addWorkRequest(emailMsg, parser, supportEmail,workorderRequestEmailId));
 							}
-							markAsDone(emailID, requestID, orgID);
+							markAsDone(workOrderRequestEmailId, requestID, orgID);
 	
 						} catch (Exception e) {
 							LOGGER.error("Exception occurred for id - " + s3Id, e);
-							markAsFailed(emailID);
+							markAsFailed(workOrderRequestEmailId);
+						}
+						finally {
+							if(rawEmail!=null)
+							{
+								rawEmail.close();
+							}
+							if(is!=null)
+							{
+								is.close();
+							}
 						}
         			}
                 }
@@ -84,9 +109,9 @@ public class EmailProcessHandler extends BaseHandler{
         return null;
     }
 	
-	private long addWorkRequest(MimeMessage emailMsg, MimeMessageParser parser, SupportEmailContext supportEmail) throws Exception {
+	private long addWorkRequest(MimeMessage emailMsg, MimeMessageParser parser, SupportEmailContext supportEmail,Long workOrderRequestEmailId) throws Exception {
 		ModuleCRUDBean bean = (ModuleCRUDBean) TransactionBeanFactory.lookup("ModuleCRUD", supportEmail.getOrgId());
-		return bean.addRequestFromEmail(emailMsg, parser, supportEmail);
+		return bean.addRequestFromEmail(emailMsg, parser, supportEmail,workOrderRequestEmailId);
 	}
 
 //	private SupportEmailContext getSupportEmail(MimeMessageParser parser) throws Exception {
@@ -128,29 +153,46 @@ public class EmailProcessHandler extends BaseHandler{
 //		return null;
 //	}
 	
-	private void markAsFailed(long id) throws Exception {
+	public static void markAsFailed(Long workOrderRequestEmailId) throws Exception {
 		Map<String, Object> dataBag = new HashMap<>();
 		dataBag.put("state", Status.FAILED.getVal());
-		updateEmailProp(id, dataBag);
+		updateEmailProp(workOrderRequestEmailId, dataBag);
+
 	}
 
-	private void markAsDone(long id, long requestID, long orgID) throws Exception {
-		Map<String, Object> dataBag = new HashMap<>();
-		dataBag.put("requestId", requestID);
-		dataBag.put("orgId", orgID);
-		dataBag.put("state", Status.PROCESSED.getVal());
-		updateEmailProp(id, dataBag);
-		LOGGER.info("Mark as Done Completed");
+	private static void markAsDone(Long workOrderRequestEmailId, long requestID, long orgID) throws Exception {
+		FacilioModule module=ModuleFactory.getWorkOrderRequestEMailModule();
+
+			GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+					.table(module.getTableName())
+					.select(FieldFactory.getWorkorderEmailFields())
+					.andCondition(CriteriaAPI.getIdCondition(workOrderRequestEmailId,module));
+				
+
+			Map<String, Object> props = select.fetchFirst();
+			if((Long)props.get("state")!=Status.FAILED.getVal() && props!=null)
+			{
+				Map<String, Object> dataBag = new HashMap<>();
+				dataBag.put("requestId", requestID);
+				dataBag.put("orgId", orgID);
+				dataBag.put("state", Status.PROCESSED.getVal());
+				updateEmailProp(workOrderRequestEmailId, dataBag);
+				LOGGER.info("Mark as Done Completed");
+			}
+
 	}
-	
-	private void updateEmailProp(long id, Map<String, Object> dataBag) throws Exception {
-		FacilioModule module = ModuleFactory.getWorkOrderRequestEMailModule();
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.fields(FieldFactory.getWorkorderEmailFields())
-				.table("WorkOrderRequest_EMail")
-				.andCondition(CriteriaAPI.getIdCondition(id, module));
-		LOGGER.info("Update Query in Email Process handler : "+updateBuilder.toString());
-		updateBuilder.update(dataBag);
-		LOGGER.info("Update Query in Email Process handler ran Successfully ");
+
+	public static void updateEmailProp(Long workOrderRequestEmailId, Map<String, Object> dataBag) throws Exception {
+
+			FacilioModule module = ModuleFactory.getWorkOrderRequestEMailModule();
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+					.fields(FieldFactory.getWorkorderEmailFields())
+					.table("WorkOrderRequest_EMail")
+					.andCondition(CriteriaAPI.getIdCondition(workOrderRequestEmailId, module));
+			LOGGER.info("Update Query in Email Process handler : " + updateBuilder.toString());
+			updateBuilder.update(dataBag);
+			LOGGER.info("Update Query in Email Process handler : " + updateBuilder.toString() + "map -- "+dataBag);
+
+
 	}
 }

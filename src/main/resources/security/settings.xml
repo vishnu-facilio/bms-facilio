@@ -220,7 +220,7 @@
             <property name="peopleType" type="number"/>
             <property name="id" type="number"/>
             <property name="rolesMap" type="object">
-                <property name="service" type="number"/>
+            <property name="service" type="number"/>
             </property>
             </items>
         </property>
@@ -894,16 +894,10 @@
             <property name="lng" type="number"/>
         </requestbody>
     </request>
-     <request path="/api/v3/homepage/add">
-        <requestbody type="object">
-            <property name="homepage" type="object">
-                <property name="displayName" type="string"/>
-                <property name="linkName" type="string"/>
-                <property name="id" type="number"/>
-                <property name="orgId" type="number"/>
-                <property name="appId" type="number"/>
-            </property>
-        </requestbody>
+     <request path="/api/v3/homepage/widgetData">
+         <urlparams>
+             <property name="linkName" type="string"/>
+         </urlparams>
     </request>
 
     <request path="/api/v3/homepage/list">
@@ -1005,6 +999,43 @@
         </requestbody>
     </request>
 
+    <request path="/api/v2/employee/addfromPortal">
+        <requestbody type="object">
+            <property name="employees" type="array">
+                <items type="object">
+                    <property name="name" type="string" mandatory="true"/>
+                    <property name="email" type="string" mandatory="true"/>
+                    <property name="phone" type="string"/>
+                    <property name="employeePortalAccess" type="boolean"/>
+                    <property name="language" type="string"/>
+                    <property name="peopleType" type="number"/>
+                    <property name="rolesMap" type="object">
+                        <property name="service" type="number"/>
+                    </property>
+                </items>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/employee/updatefromPortal">
+        <requestbody type="object">
+            <property name="employees" type="array">
+                <items type="object">
+                    <property name="name" type="string" mandatory="true"/>
+                    <property name="email" type="string" mandatory="true"/>
+                    <property name="phone" type="string"/>
+                    <property name="employeePortalAccess" type="boolean"/>
+                    <property name="language" type="string"/>
+                    <property name="peopleType" type="number"/>
+                    <property name="id" type="number"/>
+                    <property name="rolesMap" type="object">
+                        <property name="service" type="number"/>
+                    </property>
+                </items>
+            </property>
+        </requestbody>
+    </request>
+
  <!--   <request path="/api/v2/colorPalette/add">
         <requestbody type="object">
             <property name="colorPalette" type="object">
@@ -1033,6 +1064,9 @@
             <property name="viewName" type="string" mandatory="true"/>
             <property name="page" type="number"/>
             <property name="perPage" type="number"/>
+            <property name="orderBy" type="string"/>
+            <property name="orderType" type="string"/>
+            <property name="filters" type="string"/>
         </urlparams>
     </request>-->
 

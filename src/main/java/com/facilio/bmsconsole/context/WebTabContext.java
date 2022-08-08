@@ -171,7 +171,8 @@ public class WebTabContext implements Serializable {
         PORTAL_OVERVIEW("Portal Overview", false, TabType.NORMAL),
         NOTIFICATION("Notification", false,TabType.NORMAL),
         INDOOR_FLOORPLAN("Indoor Floorplan", false, TabType.NORMAL),
-
+        HOMEPAGE("Home Page", false,TabType.NORMAL),
+        SERVICE_CATALOG("Service Catalog", false,TabType.NORMAL),
         COMPANY_PROFILE("Company Profile", false,TabType.SETUP),
         PORTALS("Portals", false,TabType.SETUP),
         VISITOR_SETTINGS("Visitor Settings", false,TabType.SETUP),

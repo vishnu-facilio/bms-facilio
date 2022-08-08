@@ -14,6 +14,7 @@ import com.facilio.bmsconsoleV3.commands.floorplan.*;
 import com.facilio.bmsconsole.commands.page.GetSummaryFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.facility.GetFacilityAvailabilityCommandV3;
 import com.facilio.bmsconsoleV3.commands.homepage.getHomePageCommand;
+import com.facilio.bmsconsoleV3.commands.homepage.getHomePageWidgetDataCommand;
 import com.facilio.bmsconsoleV3.commands.people.FetchScopingForPeopleCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.AddDefaultCriteriaForQuoteFetchCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.QuotationFillLookupFields;
@@ -277,6 +278,12 @@ public class ReadOnlyChainFactoryV3 {
     public static FacilioChain getHomepageChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new getHomePageCommand());
+        return c;
+    }
+
+    public static FacilioChain getWidgetDataChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new getHomePageWidgetDataCommand());
         return c;
     }
 

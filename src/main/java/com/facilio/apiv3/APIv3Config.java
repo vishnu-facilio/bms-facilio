@@ -69,6 +69,7 @@ import com.facilio.bmsconsoleV3.commands.labour.SetLocationCommandV3;
 import com.facilio.bmsconsoleV3.commands.moves.UpdateEmployeeInDesksCommandV3;
 import com.facilio.bmsconsoleV3.commands.moves.ValidateMovesCommand;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
+import com.facilio.bmsconsoleV3.commands.people.FetchLabourAndUserContextForPeople;
 import com.facilio.bmsconsoleV3.commands.people.MarkRandomContactAsPrimaryCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.ValidateContactsBeforeDeleteCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
@@ -2164,4 +2165,14 @@ public class APIv3Config {
                 .summary()
                 .build();
     }
+
+	@Module(FacilioConstants.ContextNames.PEOPLE)
+	public static Supplier<V3Config> getPeoples() {
+		return () -> new V3Config(V3PeopleContext.class, null)
+							 .create()
+							 .list()
+							 .summary()
+							 .afterFetch(new FetchLabourAndUserContextForPeople ())
+							 .build();
+	}
 }

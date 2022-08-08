@@ -3628,7 +3628,11 @@ public class ViewFactory {
 		myAllWorkordersView.setDisplayName("All");
 		myAllWorkordersView.setSortFields(sortFields);
 
-		myAllWorkordersView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.SERVICE_PORTAL)));
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.SERVICE_PORTAL);
+		appDomains.add(AppDomain.AppDomainType.EMPLOYEE_PORTAL);
+
+		myAllWorkordersView.setViewSharing(getSharingContext(appDomains));
 
 		return myAllWorkordersView;
 	}
@@ -3654,7 +3658,11 @@ public class ViewFactory {
 		criteria.addAndCondition(getOpenStatusCondition());
 		myWorkordersView.setCriteria(criteria);
 
-		myWorkordersView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.SERVICE_PORTAL)));
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.SERVICE_PORTAL);
+		appDomains.add(AppDomain.AppDomainType.EMPLOYEE_PORTAL);
+
+		myWorkordersView.setViewSharing(getSharingContext(appDomains));
 
 		return myWorkordersView;
 	}
@@ -3678,7 +3686,11 @@ public class ViewFactory {
 
 		myWorkordersView.setCriteria(getClosedTicketsCriteria());
 
-		myWorkordersView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.SERVICE_PORTAL)));
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.SERVICE_PORTAL);
+		appDomains.add(AppDomain.AppDomainType.EMPLOYEE_PORTAL);
+
+		myWorkordersView.setViewSharing(getSharingContext(appDomains));
 
 		return myWorkordersView;
 	}

@@ -260,7 +260,28 @@ public class FacilityAPI {
         List<SlotContext> list = builder.get();
         return  list;
     }
-    
+    public static List<SlotContext> getFacilityBookedSlotsForTimeRange(List<Long> facilityIds, Long startTime, Long endTime) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String slots = FacilioConstants.ContextNames.FacilityBooking.SLOTS;
+        List<FacilioField> fields = modBean.getAllFields(slots);
+        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+
+        SelectRecordsBuilder<SlotContext> builder = new SelectRecordsBuilder<SlotContext>()
+                .moduleName(slots)
+                .select(fields)
+                .beanClass(SlotContext.class)
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("facilityId"), StringUtils.join(facilityIds,","), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("bookingCount"), String.valueOf(0), NumberOperators.GREATER_THAN));
+
+        if(startTime != null && endTime != null) {
+            DateRange range = new DateRange(startTime,endTime);
+            builder.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("slotStartTime"), range.toString(), DateOperators.BETWEEN))
+                    .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("slotEndTime"), range.toString(), DateOperators.BETWEEN));
+        }
+
+        List<SlotContext> slotList = builder.get();
+        return  slotList;
+    }
     public static List<SlotContext> getFacilitySlotsForTimeRange(List<Long> facilityIds, Long startTime, Long endTime) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         String slots = FacilioConstants.ContextNames.FacilityBooking.SLOTS;

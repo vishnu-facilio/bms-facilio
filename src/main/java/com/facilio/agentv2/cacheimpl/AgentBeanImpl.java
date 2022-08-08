@@ -168,14 +168,15 @@ public class AgentBeanImpl implements AgentBean {
 
 
         List<Long> oldWorkflowIds = new ArrayList<>();
-        addWorkflows(AgentConstants.WORKFLOW, agent, jsonObject, agent.getWorkflowId(), oldWorkflowIds, agent::setWorkflowId);
         addWorkflows(AgentConstants.TRANSFORM_WORKFLOW, agent, jsonObject, agent.getTransformWorkflowId(), oldWorkflowIds, agent::setTransformWorkflowId);
         addWorkflows(AgentConstants.COMMAND_WORKFLOW, agent, jsonObject, agent.getCommandWorkflowId(), oldWorkflowIds, agent::setCommandWorkflowId);
         if (agentType.isAgentService()) {
             WorkflowContext workflow = FieldUtil.getAsBeanFromMap((Map<String, Object>) jsonObject.get(AgentConstants.WORKFLOW), WorkflowContext.class);
             agent.setWorkflow(workflow);
             CloudAgentUtil.editServiceAgent(agent);
-
+        }
+        else {
+            addWorkflows(AgentConstants.WORKFLOW, agent, jsonObject, agent.getWorkflowId(), oldWorkflowIds, agent::setWorkflowId);
         }
 
         boolean status = updateAgent(agent);

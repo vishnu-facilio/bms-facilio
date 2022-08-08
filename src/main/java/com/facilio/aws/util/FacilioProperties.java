@@ -46,6 +46,7 @@ public class FacilioProperties {
     private static boolean scheduleServer = false;
     private static boolean isSmtp = false;
     private static String region;
+    private static String regionCountryCode;    
     private static String deployment;
     private static String db;
     private static String dbClass;
@@ -108,6 +109,8 @@ public class FacilioProperties {
     private static String clientAppDomain;
     private static String occupantAppDomain;
     private static String vendorAppDomain;
+
+    private static String employeeAppDomain;
 
     private static String esDomain;
     private static String esIndex;
@@ -252,6 +255,7 @@ public class FacilioProperties {
             clientAppDomain = PROPERTIES.getProperty("clientportal.domain");
             vendorAppDomain = PROPERTIES.getProperty("vendorportal.domain");
             occupantAppDomain = PROPERTIES.getProperty("occupantportal.domain");
+            employeeAppDomain = PROPERTIES.getProperty("employeeportal.domain");
 
             mobileMainAppScheme = PROPERTIES.getProperty("mobile.mainapp.scheme");
             mobileServiceportalAppScheme = PROPERTIES.getProperty("mobile.serviceportal.scheme");
@@ -697,9 +701,12 @@ public class FacilioProperties {
     public static String getOccupantAppDomain() {
         return occupantAppDomain;
     }
+    public static String getEmployeeAppDomain() {
+        return employeeAppDomain;
+    }
 
     public static String getPortalAppDomains() {
-        return occupantAppDomain + "," + tenantAppDomain + "," + vendorAppDomain + "," + clientAppDomain;
+        return occupantAppDomain + "," + tenantAppDomain + "," + vendorAppDomain + "," + clientAppDomain + "," + employeeAppDomain ;
     }
 
     public static String getClientAppDomain() {
@@ -822,4 +829,30 @@ public class FacilioProperties {
         return maxProcessorThreads;
     }
 
+    public static String getRegionCountryCode() {
+   	 if (regionCountryCode != null) {
+   		 return regionCountryCode;
+   	 }
+       switch (region) {
+           case "us-west-2":
+           	regionCountryCode = "US";
+               break;
+           case "eu-central-1":
+           	regionCountryCode = "EU";
+               break;
+           case "eu-west-2":
+           	regionCountryCode = "UK";
+               break;
+           case "ap-southeast-2":
+           	regionCountryCode = "AU";
+               break;
+           case "ap-southeast-1":
+           	regionCountryCode = "SG";
+               break;
+           default:
+           	regionCountryCode = "ND"; //No Data
+       }
+       return regionCountryCode;
+   }
+    
 }
