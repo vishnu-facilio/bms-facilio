@@ -528,9 +528,9 @@ public class V3TicketAPI {
                     }
                     // scheduled work duration
                     workorder.setScheduledStart(ticket.getScheduledStart() != null ? ticket.getScheduledStart() : -1);
-                    workorder.setEstimatedEnd(ticket.getEstimatedEnd() != null ? ticket.getEstimatedEnd() : -1);
+                    workorder.setEstimatedEnd(ticket.getEstimatedEnd() != null ? ticket.getEstimatedEnd() : null);
                     // actual work duration
-                    workorder.setActualWorkEnd(ticket.getActualWorkEnd() != null ? ticket.getActualWorkEnd() : -1);
+                    workorder.setActualWorkEnd(ticket.getActualWorkEnd() != null ? ticket.getActualWorkEnd() : null);
                 }
             }
         } catch (Exception e) {

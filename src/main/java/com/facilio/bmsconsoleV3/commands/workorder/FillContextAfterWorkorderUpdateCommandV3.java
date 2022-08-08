@@ -60,9 +60,6 @@ public class FillContextAfterWorkorderUpdateCommandV3 extends FacilioCommand {
                 context.put(FacilioConstants.ContextNames.RECORD_LIST, workOrders);
             }
 
-            if(MapUtils.isNotEmpty(moduleChangeSet)){
-                addActivity(workOrder, oldWos, moduleChangeSet, recordIds, modBean, moduleName, context);
-            }
 
         }
 
