@@ -12,3 +12,6 @@ clientapps:
   - name: dataloader
     baseUrl: https://static.facilio.in/dataloader
     stageBaseUrl: https://static.facilio.in/dev
+  - name: setup
+    baseUrl: https://static.facilio.in/setup
+    stageBaseUrl: https://static.facilio.in/dev
