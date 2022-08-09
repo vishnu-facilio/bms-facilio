@@ -42988,7 +42988,7 @@ CREATE TABLE IF NOT EXISTS Q_And_A_Display_Logic (
     FOREIGN KEY (QUESTION_ID)
     REFERENCES Q_And_A_Questions (ID)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION),
+    ON UPDATE NO ACTION,
   CONSTRAINT Q_And_A_Display_Logic_row_id_fk
     FOREIGN KEY (ROW_ID)
     REFERENCES Q_And_A_Matrix_Questions_Row (ID)
@@ -42998,7 +42998,7 @@ CREATE TABLE IF NOT EXISTS Q_And_A_Display_Logic (
     FOREIGN KEY (COLUMN_ID)
     REFERENCES Q_And_A_Matrix_Questions_Column (ID)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION;
+    ON UPDATE NO ACTION);
 
 CREATE TABLE IF NOT EXISTS Q_And_A_Display_Logic_Trigger_Questions (
   ID BIGINT NOT NULL AUTO_INCREMENT,
@@ -43018,17 +43018,17 @@ CREATE TABLE IF NOT EXISTS Q_And_A_Display_Logic_Trigger_Questions (
     FOREIGN KEY (TRIGGER_QUESTION_ID)
     REFERENCES Q_And_A_Questions (ID)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION),
+    ON UPDATE NO ACTION,
   CONSTRAINT Q_And_A_Display_Logic_Trigger_Questions_row_id
     FOREIGN KEY (TRIGGER_ROW_ID)
-    REFERENCES bmslocal.Q_And_A_Matrix_Questions_Row (ID)
+    REFERENCES Q_And_A_Matrix_Questions_Row (ID)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT Q_And_A_Display_Logic_Trigger_Questions_column_id
     FOREIGN KEY (TRIGGER_COLUMN_ID)
-    REFERENCES bmslocal.Q_And_A_Matrix_Questions_Column (ID)
+    REFERENCES Q_And_A_Matrix_Questions_Column (ID)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION;
+    ON UPDATE NO ACTION);
 
 CREATE TABLE  IF NOT EXISTS Q_And_A_Display_Logic_Action (
   ID BIGINT NOT NULL AUTO_INCREMENT,
