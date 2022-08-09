@@ -117,7 +117,7 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 			}
 		formField.setValue(orphanedArray.toString());
 		}
-		if (formField.getField() != null && value != null) {
+		else if (formField.getField() != null && value != null) {
 			switch(formField.getField().getDataTypeEnum()) {
 				case DATE:
 				case DATE_TIME:
