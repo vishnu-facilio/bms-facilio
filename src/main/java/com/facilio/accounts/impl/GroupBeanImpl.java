@@ -1,5 +1,6 @@
 package com.facilio.accounts.impl;
 
+import java.sql.SQLException;
 import java.util.*;
 
 import com.facilio.db.criteria.operators.StringOperators;
@@ -52,7 +53,20 @@ public class GroupBeanImpl implements GroupBean {
 		insertBuilder.save();
 		
 		long groupId = (Long) props.get("id");
+		updateGroupId(groupId); // will remove later
 		return groupId;
+	}
+
+	private void updateGroupId(long id) throws SQLException {
+		Map<String,Object> prop = new HashMap<>();
+		prop.put("groupId",id);
+
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(AccountConstants.getGroupModule().getTableName())
+				.fields(AccountConstants.getGroupFields())
+				.andCondition(CriteriaAPI.getCondition("ID","id",id+"",NumberOperators.EQUALS));
+		updateBuilder.update(prop);
+
 	}
 
 	@Override

@@ -11,6 +11,8 @@ public class Group implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	private long id = -1L;
 	private long groupId = -1;
 	private long orgId = -1;
 	private String name;
@@ -23,12 +25,13 @@ public class Group implements Serializable {
 	private long siteId = -1;
 	
 	public long getGroupId() {
-		return groupId;
+		return id;
 	}
 	public long getId() {
-		return groupId;
+		return id;
 	}
 	public void setId(long id) {
+		this.id = id;
 		this.groupId = id;
 	}
 	public void setGroupId(long groupId) {
