@@ -48,7 +48,7 @@ public class ExecuteDisplayLogicRules extends FacilioCommand {
 				
 				Criteria criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getId(), displayLogic.getCriteriaId());
 				
-				context.put(DisplayLogicUtil.QUESTION_ID, displayLogic.getQuestionId());
+				context.put(DisplayLogicUtil.DISPLAY_LOGIC_CONTEXT, displayLogic);
 				if(questionMap != null) {
 					context.put(DisplayLogicUtil.QUESTION_CONTEXT, questionMap.get(displayLogic.getQuestionId()));
 				}

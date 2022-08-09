@@ -17,7 +17,7 @@ public enum DisplayLogicActionType {
 		@Override
 		public void performAction(FacilioContext facilioContext) throws Exception {
 			
-			JSONObject json = DisplayLogicUtil.getActionJson((Long)facilioContext.get(DisplayLogicUtil.QUESTION_ID), SHOW_QUESTION, null);
+			JSONObject json = DisplayLogicUtil.getActionJson((DisplayLogicContext)facilioContext.get(DisplayLogicUtil.DISPLAY_LOGIC_CONTEXT), SHOW_QUESTION, null);
 			
 			DisplayLogicUtil.addDisplyLogicJsonToResult(facilioContext,json);
 		}
@@ -25,21 +25,21 @@ public enum DisplayLogicActionType {
 	HIDE_QUESTION(2,"hide",1) {
 		@Override
 		public void performAction(FacilioContext facilioContext) throws Exception {
-			JSONObject json = DisplayLogicUtil.getActionJson((Long)facilioContext.get(DisplayLogicUtil.QUESTION_ID), HIDE_QUESTION, null);
+			JSONObject json = DisplayLogicUtil.getActionJson((DisplayLogicContext)facilioContext.get(DisplayLogicUtil.DISPLAY_LOGIC_CONTEXT), HIDE_QUESTION, null);
 			DisplayLogicUtil.addDisplyLogicJsonToResult(facilioContext,json);
 		}
 	},
 	ENABLE_QUESTION(3,"enable",4) {
 		@Override
 		public void performAction(FacilioContext facilioContext) throws Exception {
-			JSONObject json = DisplayLogicUtil.getActionJson((Long)facilioContext.get(DisplayLogicUtil.QUESTION_ID), ENABLE_QUESTION, null);
+			JSONObject json = DisplayLogicUtil.getActionJson((DisplayLogicContext)facilioContext.get(DisplayLogicUtil.DISPLAY_LOGIC_CONTEXT), ENABLE_QUESTION, null);
 			DisplayLogicUtil.addDisplyLogicJsonToResult(facilioContext,json);
 		}
 	},
 	DISABLE_QUESTION(4,"disable",3) {
 		@Override
 		public void performAction(FacilioContext facilioContext) throws Exception {
-			JSONObject json = DisplayLogicUtil.getActionJson((Long)facilioContext.get(DisplayLogicUtil.QUESTION_ID), DISABLE_QUESTION, null);
+			JSONObject json = DisplayLogicUtil.getActionJson((DisplayLogicContext)facilioContext.get(DisplayLogicUtil.DISPLAY_LOGIC_CONTEXT), DISABLE_QUESTION, null);
 			DisplayLogicUtil.addDisplyLogicJsonToResult(facilioContext,json);
 		}
 	},
@@ -47,14 +47,14 @@ public enum DisplayLogicActionType {
 		@Override
 		public void performAction(FacilioContext facilioContext) throws Exception {
 			DisplayLogicAction displayLogicAction = (DisplayLogicAction)facilioContext.get(DisplayLogicUtil.DISPLAY_LOGIC_ACTION_CONTEXT);
-			JSONObject json = DisplayLogicUtil.getActionJson((Long)facilioContext.get(DisplayLogicUtil.QUESTION_ID), SET_FIELD_VALUE, displayLogicAction.getActionMeta());
+			JSONObject json = DisplayLogicUtil.getActionJson((DisplayLogicContext)facilioContext.get(DisplayLogicUtil.DISPLAY_LOGIC_CONTEXT), SET_FIELD_VALUE, displayLogicAction.getActionMeta());
 			DisplayLogicUtil.addDisplyLogicJsonToResult(facilioContext,json);
 		}
 	},
 	RE_SET_FIELD_VALUE(6,"reset",-1) {
 		@Override
 		public void performAction(FacilioContext facilioContext) throws Exception {
-			JSONObject json = DisplayLogicUtil.getActionJson((Long)facilioContext.get(DisplayLogicUtil.QUESTION_ID), RE_SET_FIELD_VALUE, null);
+			JSONObject json = DisplayLogicUtil.getActionJson((DisplayLogicContext)facilioContext.get(DisplayLogicUtil.DISPLAY_LOGIC_CONTEXT), RE_SET_FIELD_VALUE, null);
 			DisplayLogicUtil.addDisplyLogicJsonToResult(facilioContext,json);
 		}
 	},
@@ -68,14 +68,14 @@ public enum DisplayLogicActionType {
 	SET_MANDATORY_QUESTION(8,"setMandatory",9) {
 		@Override
 		public void performAction(FacilioContext facilioContext) throws Exception {
-			JSONObject json = DisplayLogicUtil.getActionJson((Long)facilioContext.get(DisplayLogicUtil.QUESTION_ID), SET_MANDATORY_QUESTION, null);
+			JSONObject json = DisplayLogicUtil.getActionJson((DisplayLogicContext)facilioContext.get(DisplayLogicUtil.DISPLAY_LOGIC_CONTEXT), SET_MANDATORY_QUESTION, null);
 			DisplayLogicUtil.addDisplyLogicJsonToResult(facilioContext,json);
 		}
 	},
 	REMOVE_MANDATORY_QUESTION(9,"removeMandatory",8) {
 		@Override
 		public void performAction(FacilioContext facilioContext) throws Exception {
-			JSONObject json = DisplayLogicUtil.getActionJson((Long)facilioContext.get(DisplayLogicUtil.QUESTION_ID), REMOVE_MANDATORY_QUESTION, null);
+			JSONObject json = DisplayLogicUtil.getActionJson((DisplayLogicContext)facilioContext.get(DisplayLogicUtil.DISPLAY_LOGIC_CONTEXT), REMOVE_MANDATORY_QUESTION, null);
 			DisplayLogicUtil.addDisplyLogicJsonToResult(facilioContext,json);
 		}
 	},

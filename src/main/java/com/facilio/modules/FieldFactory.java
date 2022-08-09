@@ -10290,6 +10290,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
         fields.add(getField("pageId", "PAGE_ID", module, FieldType.NUMBER));
         fields.add(getField("questionId", "QUESTION_ID", module, FieldType.NUMBER));
+        fields.add(getField("rowId", "ROW_ID", module, FieldType.NUMBER));
+        fields.add(getField("columnId", "COLUMN_ID", module, FieldType.NUMBER));
         fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));
         
         fields.add(getSystemField("sysCreatedTime", module));
@@ -10307,6 +10309,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getIdField(module));
         fields.add(getField("displayLogicId", "DISPLAY_LOGIC_ID", module, FieldType.NUMBER));
         fields.add(getField("triggerQuestionId", "TRIGGER_QUESTION_ID", module, FieldType.NUMBER));
+        fields.add(getField("triggerRowId", "TRIGGER_ROW_ID", module, FieldType.NUMBER));
+        fields.add(getField("triggerColumnId", "TRIGGER_COLUMN_ID", module, FieldType.NUMBER));
         
         return fields;
     }

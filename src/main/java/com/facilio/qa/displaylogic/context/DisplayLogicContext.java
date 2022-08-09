@@ -28,6 +28,8 @@ public class DisplayLogicContext {
 	DisplayLogicType type;
 	Long pageId;
 	Long questionId;
+	Long rowId;
+	Long columnId;
 	Boolean status;
 	
 	private Long sysCreatedTime;

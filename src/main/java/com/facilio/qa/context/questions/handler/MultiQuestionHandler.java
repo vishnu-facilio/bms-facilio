@@ -3,14 +3,22 @@ package com.facilio.qa.context.questions.handler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
+import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.QuestionHandler;
 import com.facilio.qa.context.questions.MatrixQuestionColumn;
+import com.facilio.qa.context.questions.MatrixQuestionContext;
 import com.facilio.qa.context.questions.MatrixQuestionRow;
 import com.facilio.qa.context.questions.MultiQuestionContext;
+import com.facilio.qa.displaylogic.context.DisplayLogicContext;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
@@ -92,5 +100,24 @@ public class MultiQuestionHandler extends BaseMatrixQuestionHandler implements Q
 		}
 		
 	}
+	
+	@Override
+	public void addAnswerDisplayLogicActions(QuestionContext question, DisplayLogicContext displayLogic, JSONObject actionJson) {
+		
+		MultiQuestionContext multiQuestionContext = (MultiQuestionContext) question;
+		
+		if (displayLogic.getColumnId() != null) {
+			
+			Map<Long, MatrixQuestionColumn> columnMap = multiQuestionContext.getColumns().stream().collect(Collectors.toMap(MatrixQuestionColumn::getId, Function.identity()));
+			
+			MatrixQuestionColumn column = columnMap.get(displayLogic.getColumnId());
+			
+			JSONArray displayLogicMeta = column.getDisplayLogicMeta() == null ? new JSONArray() :  column.getDisplayLogicMeta();
+			
+			displayLogicMeta.add(actionJson);
+			
+			column.setDisplayLogicMeta(displayLogicMeta);
+		}
+    }
 
 }
