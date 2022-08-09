@@ -24,6 +24,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LargeTextField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.mail.util.MimeMessageParser;
 import org.apache.log4j.LogManager;
@@ -74,7 +75,18 @@ public class MailMessageUtil {
 		
 		return email.split("@")[0];
 	};
-	
+
+	public static Function<String, Pair<String, String>> getUserNameAndEmailAddress = (email) -> {
+		if(email != null && email.contains("<") && email.contains(">")) {
+			String name = email.substring(0, email.indexOf('<')).trim();
+			String address = email.substring(email.indexOf('<')+1, email.indexOf('>'));
+			return Pair.of(address, name);
+		}
+		else {
+			return Pair.of(email, null);
+		}
+	};
+
 	public static Function<String,String> getEmailFromPrettifiedFromAddress = (messageIDs) -> {
 	    
     	if(messageIDs != null && messageIDs.contains("<") && messageIDs.contains(">")) {

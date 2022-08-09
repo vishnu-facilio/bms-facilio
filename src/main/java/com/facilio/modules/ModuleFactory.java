@@ -4953,4 +4953,12 @@ public class ModuleFactory {
 		readingImportModule.setTableName("Reading_Import_APP");
 		return readingImportModule;
 	}
+
+	public static FacilioModule getMailMapperModule() {
+		FacilioModule mailMapperModule = new FacilioModule();
+		mailMapperModule.setName("outgoingMailMapper");
+		mailMapperModule.setDisplayName("OutgoingMail Mapper");
+		mailMapperModule.setTableName("Outgoing_Mail_Mapper");
+		return mailMapperModule;
+	}
 }

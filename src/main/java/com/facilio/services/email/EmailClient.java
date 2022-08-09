@@ -1,31 +1,5 @@
 package com.facilio.services.email;
 
-import java.net.URL;
-import java.text.MessageFormat;
-import java.time.ZoneId;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
-import javax.activation.URLDataSource;
-import javax.mail.Message;
-import javax.mail.Session;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -34,6 +8,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.CommonAPI;
 import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsoleV3.context.EmailFromAddress;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
@@ -43,11 +19,26 @@ import com.facilio.delegate.context.DelegationType;
 import com.facilio.delegate.util.DelegationUtil;
 import com.facilio.email.BaseEmailClient;
 import com.facilio.fw.BeanFactory;
+import com.facilio.mailtracking.MailConstants;
+import com.facilio.mailtracking.commands.MailTransactionChainFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import javax.mail.Session;
+import javax.mail.internet.MimeMessage;
+import java.text.MessageFormat;
+import java.time.ZoneId;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class EmailClient extends BaseEmailClient {
 
@@ -58,7 +49,6 @@ public abstract class EmailClient extends BaseEmailClient {
     public static final String ERROR_MAIL_TO="ai@" + mailDomain;
     public static final String ERROR_AT_FACILIO="error@" + mailDomain;
     public static final String ERROR_AND_ALERT_AT_FACILIO="error+alert@" + mailDomain;
-
     protected abstract Session getSession();
 
     private static boolean checkIfActiveUserFromEmail(String email) throws Exception { //TODO Have to handle this in bulk. For now all emails are not sent in user thread and so okay I guess
@@ -71,21 +61,34 @@ public abstract class EmailClient extends BaseEmailClient {
         return (user == null || user.getUserStatus());
     }
 
-    public void sendEmailWithActiveUserCheck (JSONObject mailJson) throws Exception {
-        sendEmailWithActiveUserCheck(mailJson, true);
+    public long sendEmailWithActiveUserCheck (JSONObject mailJson) throws Exception {
+        return sendEmailWithActiveUserCheck(mailJson, true);
     }
 
-    public void sendEmailWithActiveUserCheck (JSONObject mailJson, boolean handleUserDelegation) throws Exception {
+    public long sendEmailWithActiveUserCheck(JSONObject mailJson, boolean handleUserDelegation) throws Exception {
         if (removeInActiveUsers(mailJson)) {
             if (handleUserDelegation) {
                 checkUserDelegation(mailJson);
             }
-            sendEmail(mailJson);
+            return pushEmailToQueue(mailJson, null);
         }
+        return -1;
     }
 
-    public void checkUserDelegation(JSONObject mailJson) throws Exception {
-    	
+    private long pushEmailToQueue(JSONObject mailJson, Map<String, String> files) throws Exception {
+
+        FacilioChain chain = MailTransactionChainFactory.pushOutgoingMailToQueue();
+        FacilioContext context = chain.getContext();
+        context.put(MailConstants.Params.MAIL_JSON, mailJson);
+        context.put(MailConstants.Params.FILES, files);
+        chain.execute();
+
+        return (long) context.getOrDefault(MailConstants.Params.LOGGER_ID, -1);
+    }
+
+
+    private void checkUserDelegation(JSONObject mailJson) throws Exception {
+
     	Set<String> toEmails = getEmailAddresses(mailJson, TO);
     	
     	Set<String> modifiedToEmailList = changeEmailToDelegatedUserEmail(toEmails);
@@ -136,11 +139,12 @@ public abstract class EmailClient extends BaseEmailClient {
     	return null;
     }
 
-	public void sendEmailWithActiveUserCheck (JSONObject mailJson, Map<String, String> files) throws Exception {
+	public long sendEmailWithActiveUserCheck (JSONObject mailJson, Map<String, String> files) throws Exception {
         if (removeInActiveUsers(mailJson)) {
         	checkUserDelegation(mailJson);
-            sendEmail(mailJson, files);
+            return pushEmailToQueue(mailJson, files);
         }
+        return -1;
     }
 
     private String combineEmailsAgain (Set<String> emailAddresses) { //TODO Have to handle this better
@@ -171,19 +175,23 @@ public abstract class EmailClient extends BaseEmailClient {
         return true;
     }
 
+    public String sendEmailFromWMS(JSONObject mailJson, Map<String, String> files) throws Exception {
+        return sendEmail(mailJson, files);
+    }
+
     /**
      * @deprecated
      * Use {@link #sendEmailWithActiveUserCheck(JSONObject)} instead.
      */
     @Deprecated
-    public abstract void sendEmail(JSONObject mailJson) throws Exception;
+    public abstract String sendEmail(JSONObject mailJson) throws Exception;
     
     /**
      * @deprecated
      * Use {@link #sendEmailWithActiveUserCheck(JSONObject, Map)} instead.
      */
     @Deprecated
-    public abstract void sendEmail(JSONObject mailJson, Map<String, String> files) throws Exception;
+    public abstract String sendEmail(JSONObject mailJson, Map<String, String> files) throws Exception;
 
     MimeMessage getEmailMessage(JSONObject mailJson, Map<String, String> files) throws Exception {
         Session session = getSession();
@@ -335,25 +343,36 @@ public abstract class EmailClient extends BaseEmailClient {
 
     private Set<String> getEmailAddresses(JSONObject mailJson, String key, boolean checkActive) throws Exception {
         String emailAddressString = (String)mailJson.get(key);
-        HashSet<String> emailAddress = new HashSet<>();
+        Set<String> emailAddress = new HashSet<>();
         if(StringUtils.isNotEmpty(emailAddressString)) {
-            if (!FacilioProperties.isProduction()) {
-                for (String address : FacilioUtil.splitByComma(emailAddressString)) {
-                	address = MailMessageUtil.getEmailFromPrettifiedFromAddress.apply(address);
-                    if (address.contains("@facilio.com") && (!checkActive || checkIfActiveUserFromEmail(address))) {
+            JSONObject emailMetaJson = new JSONObject();
+            for(String address : FacilioUtil.splitByComma(emailAddressString)) {
+                Pair<String, String> emailMeta = MailMessageUtil.getUserNameAndEmailAddress.apply(address);
+                address = emailMeta.getKey();
+                if(!FacilioProperties.isProduction()) {
+                    if (address != null && address.contains("@facilio.com") && (!checkActive || checkIfActiveUserFromEmail(address))) {
                         emailAddress.add(address);
+                        emailMetaJson.put(address, emailMeta.getValue());
                     }
-                }
-            } else {
-                for (String address : FacilioUtil.splitByComma(emailAddressString)) {
-                	address = MailMessageUtil.getEmailFromPrettifiedFromAddress.apply(address);
+                } else {
                     if (address != null && address.contains("@") && (!checkActive || checkIfActiveUserFromEmail(address))) {
                         emailAddress.add(address);
+                        emailMetaJson.put(address, emailMeta.getValue());
                     }
                 }
             }
+            persistOriginalEmailAddresses(mailJson, key, emailMetaJson);
         }
+
         return emailAddress;
+    }
+
+    private void persistOriginalEmailAddresses(JSONObject mailJson, String key, JSONObject emailMetaJson) {
+        String originalKey = "original"+StringUtils.capitalize(key);
+        if(mailJson.containsKey(originalKey)) {
+            return;
+        }
+        mailJson.put(originalKey, emailMetaJson);
     }
 
 }

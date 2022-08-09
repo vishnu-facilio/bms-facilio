@@ -26,4 +26,8 @@ public interface Topics {
     interface InApp{
         String inApp = "__inApp__";
     }
+
+    interface Mail {
+        String outgoingMail = "__sendmail__/org";
+    }
 }

@@ -174,6 +174,13 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.elasticsearch.command.PushDataToESCommand;
+import com.facilio.mailtracking.MailConstants;
+import com.facilio.mailtracking.OutgoingMailAPI;
+import com.facilio.mailtracking.commands.MailReadOnlyChainFactory;
+import com.facilio.mailtracking.commands.OutgoingMailLoggerListAfterFetchCommand;
+import com.facilio.mailtracking.commands.OutgoingRecipientLoadSupplementsCommand;
+import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
+import com.facilio.mailtracking.context.V3OutgoingRecipientContext;
 import com.facilio.modules.FacilioModule;
 import com.facilio.readingrule.faultimpact.FaultImpactContext;
 import com.facilio.readingrule.faultimpact.FaultImpactNameSpaceFieldContext;
@@ -2178,4 +2185,23 @@ public class APIv3Config {
 							 .afterFetch(new FetchLabourAndUserContextForPeople ())
 							 .build();
 	}
+
+
+    @Module(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER)
+    public static Supplier<V3Config> getSendMailTracker() {
+        return () -> new V3Config(V3OutgoingMailLogContext.class, null)
+                .list()
+                .afterFetch(new OutgoingMailLoggerListAfterFetchCommand())
+                .build();
+    }
+
+    @Module(MailConstants.ModuleNames.OUTGOING_RECIPIENT_LOGGER)
+    public static Supplier<V3Config> getSendMailTrackerExpander() {
+        return () -> new V3Config(V3OutgoingRecipientContext.class, null)
+                .list()
+                .beforeFetch(MailReadOnlyChainFactory.getBeforeFetchMailRecipientListChain())
+                .summary()
+                .beforeFetch(new OutgoingRecipientLoadSupplementsCommand())
+                .build();
+    }
 }

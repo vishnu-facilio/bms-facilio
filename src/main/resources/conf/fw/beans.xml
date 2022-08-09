@@ -28,4 +28,6 @@
 	<bean name="ScriptBean" class="com.facilio.workflowv2.bean.ScriptBeanCacheImpl" />
 	
 	<bean name="BundleBean" class="com.facilio.bundle.bean.BundleBeanImpl" />
+
+	<bean name="MailBean" class="com.facilio.mailtracking.bean.MailTrackBeanImpl" />
 </beans>

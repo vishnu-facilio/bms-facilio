@@ -50,7 +50,7 @@ class SMTPEmailClient extends EmailClient {
         return INSTANCE;
     }
 
-    public void sendEmail(JSONObject mailJson) throws Exception {
+    public String sendEmail(JSONObject mailJson) throws Exception {
         String sender = FacilioProperties.getConfig(MAIL_FROM) != null ? FacilioProperties.getConfig(MAIL_FROM) : FacilioProperties.getConfig(MAIL_USERNAME);
 
         Session session = getSession();
@@ -80,9 +80,10 @@ class SMTPEmailClient extends EmailClient {
         } catch (MessagingException e) {
             LOGGER.info("Exception while sending message ", e);
         }
+        return null;
     }
 
-    public void sendEmail(JSONObject mailJson, Map<String,String> files) throws Exception {
+    public String sendEmail(JSONObject mailJson, Map<String,String> files) throws Exception {
         try {
             if(canSendEmail(mailJson,files)) {
                     MimeMessage message = getEmailMessage(mailJson, files);
@@ -92,6 +93,7 @@ class SMTPEmailClient extends EmailClient {
         }catch (Exception ex){
             LOGGER.info("Exception while sending message ", ex);
         }
+        return null;
     }
    protected Session getSession() {
        String sender = FacilioProperties.getConfig(MAIL_USERNAME);

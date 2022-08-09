@@ -12,9 +12,9 @@ import java.util.Map;
 import java.util.Properties;
 
 class AwsEmailClient extends EmailClient {
-	
-	private static final Logger LOGGER = LogManager.getLogger(AwsEmailClient.class.getName());
-	
+
+    private static final Logger LOGGER = LogManager.getLogger(AwsEmailClient.class.getName());
+
     private static final AwsEmailClient INSTANCE =new AwsEmailClient();
     private static final Object LOCK = new Object();
     private static volatile AWSCredentialsProvider credentialsProvider = null;
@@ -23,45 +23,29 @@ class AwsEmailClient extends EmailClient {
         LOGGER.error("AWS Email Client created");
     }
 
-    public void sendEmail(JSONObject mailJson) throws Exception  {
-            logEmail(mailJson);
-            sendEmailViaAws(mailJson);
-
+    public String sendEmail(JSONObject mailJson) throws Exception  {
+        return sendEmailViaAws(mailJson, null);
     }
     public static EmailClient getClient(){
         return INSTANCE;
     }
 
-    private void sendEmailViaAws(JSONObject mailJson) throws Exception  {
-        if(canSendEmail(mailJson)) {
-            AwsUtil.sendMail(mailJson, getEmailAddresses(mailJson, TO), getEmailAddresses(mailJson, CC),getEmailAddresses(mailJson, BCC));
-        }
+    public String sendEmail(JSONObject mailJson, Map<String,String> files) throws Exception  {
+        return sendEmailViaAws(mailJson, files);
     }
 
-
-
-
-    public void sendEmail(JSONObject mailJson, Map<String,String> files) throws Exception  {
+    private String sendEmailViaAws(JSONObject mailJson, Map<String,String> files) throws Exception  {
         logEmail(mailJson);
-        if(files == null || files.isEmpty()) {
-            sendEmail(mailJson);
-            return;
-        }
-        sendEmailViaAws(mailJson, files);
-
-    }
-
-    private void sendEmailViaAws(JSONObject mailJson, Map<String,String> files) throws Exception  {
-
-        if(canSendEmail(mailJson,files)) {
+        if(canSendEmail(mailJson)) {
             try {
-                AwsUtil.sendMail(mailJson, files);
+                return AwsUtil.sendMail(mailJson, files);
             } catch (Exception ex) {
                 LOGGER.info("The email was not sent.");
                 LOGGER.info("Error message: "+ex.getMessage());
                 throw ex;
             }
         }
+        return null;
     }
     private static AWSCredentialsProvider getAWSCredentialsProvider() {
         if(credentialsProvider == null){
