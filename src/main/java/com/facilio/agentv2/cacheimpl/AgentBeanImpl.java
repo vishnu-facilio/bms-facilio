@@ -219,7 +219,7 @@ public class AgentBeanImpl implements AgentBean {
         }
     }
 
-    private boolean updateAgent(FacilioAgent agent) throws Exception {
+    public boolean updateAgent(FacilioAgent agent) throws Exception {
         FacilioModule module = ModuleFactory.getNewAgentModule();
         long currTime = System.currentTimeMillis();
         agent.setLastUpdatedTime(currTime);

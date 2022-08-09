@@ -4,10 +4,7 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentType;
 import com.facilio.agent.integration.DownloadCertFile;
-import com.facilio.agentv2.AgentConstants;
-import com.facilio.agentv2.AgentUtilV2;
-import com.facilio.agentv2.CloudAgentUtil;
-import com.facilio.agentv2.FacilioAgent;
+import com.facilio.agentv2.*;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -57,10 +54,11 @@ public class CreateAgentCommand extends AgentV2Command {
                 agentBean.scheduleRestJob(agent);
             }
             agentBean.schedulePointsDataMissingJob(agent);
-
+            if (agentType == AgentType.NIAGARA || agentType == AgentType.FACILIO) {
+                AgentUtilV2.togglePointsDataMissingAlarmJob(agent);
+            }
             if (agentType.isAgentService()) {
                 CloudAgentUtil.addCloudServiceAgent(agent);
-                createMessageTopic(currentOrg);
             }
 
             return false;
