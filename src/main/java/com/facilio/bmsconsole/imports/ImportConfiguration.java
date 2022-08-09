@@ -118,6 +118,7 @@ public class ImportConfiguration {
                 .parseHandler()
                 .done()
                 .importHandler()
+                .lookupMainFieldMap("plannedmaintenance", "name")
                 .afterImportCommand(new HandleTasksImportCommand())
                 .done()
                 .build();
