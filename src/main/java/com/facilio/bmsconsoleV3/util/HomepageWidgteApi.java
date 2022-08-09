@@ -25,6 +25,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
+import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
@@ -165,8 +166,16 @@ public class HomepageWidgteApi {
 
                     widget.setSecondaryText("");
                     widget.setSecondaryText2("");
-                    String secondaryText = "Package " + deliveries.getTrackingNumber() + " is waiting for pickup";
-                    if (deliveries.getDeliveryArea() !=null && deliveries.getDeliveryArea().getName() != null) {
+                    FacilioField carrierField;
+                    try {
+                        carrierField = modBean.getField("carrier", module.getName());
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    EnumField enums = (EnumField) carrierField;
+                    String carrierName= (String) enums.getEnumMap().get(deliveries.getCarrier());
+                    String secondaryText = "Package from " + carrierName + " is waiting for you";
+                    if (deliveries.getDeliveryArea() != null && deliveries.getDeliveryArea().getName() != null) {
                         widget.setSecondaryText(deliveries.getDeliveryArea().getName());
                         widget.setSecondaryText2(secondaryText);
                     }
@@ -293,6 +302,7 @@ public class HomepageWidgteApi {
             Long durationEndTime = null;
 
             String secondaryText2 = "";
+            String date = "";
 
             if (CollectionUtils.isNotEmpty(slotList)) {
 
@@ -309,11 +319,12 @@ public class HomepageWidgteApi {
                 }
 
                 if(durationstartTime != null && durationEndTime != null) {
-                    secondaryText2 += new SimpleDateFormat("dd MMM yyyy").format(durationstartTime);
-                    secondaryText2 += " (" + new SimpleDateFormat("hh:mm a").format(durationstartTime);
+                    date = new SimpleDateFormat("dd MMM yyyy").format(durationstartTime);
+                    secondaryText2 += new SimpleDateFormat("hh:mm a").format(durationstartTime);
                     secondaryText2 += " to " + new SimpleDateFormat("hh:mm a").format(durationEndTime);
-                    secondaryText2 = secondaryText2.replace("am", "AM").replace("pm","PM") + ")";
+                    secondaryText2 = secondaryText2.replace("am", "AM").replace("pm","PM");
                 }
+                widget.setDate(date);
                 widget.setSecondaryText2(secondaryText2);
                 return widget;
             }
@@ -455,6 +466,7 @@ public class HomepageWidgteApi {
 
 
             String secondaryText2 = "";
+            String date = "";
 
 
             Long endTime = DateTimeUtil.addDays(startTime, 7);
@@ -486,12 +498,13 @@ public class HomepageWidgteApi {
                 }
 
                 if(durationstartTime != null && durationEndTime != null) {
-                    secondaryText2 += new SimpleDateFormat("dd MMM yyyy").format(durationstartTime);
-                    secondaryText2 += " (" + new SimpleDateFormat("hh:mm a").format(durationstartTime);
+                    date= new SimpleDateFormat("dd MMM yyyy").format(durationstartTime);
+                    secondaryText2 +=new SimpleDateFormat("hh:mm a").format(durationstartTime);
                     secondaryText2 += " to " + new SimpleDateFormat("hh:mm a").format(durationEndTime);
-                    secondaryText2 = secondaryText2.replace("am", "AM").replace("pm","PM") + ")";
+                    secondaryText2 = secondaryText2.replace("am", "AM").replace("pm","PM");
 
                 }
+                widgetData.setDate(date);
                 widgetData.setSecondaryText2(secondaryText2);
             }
             widgetDataList.add(widgetData);
@@ -801,6 +814,7 @@ public class HomepageWidgteApi {
 
 
                 String secondaryText2 = "";
+                String date = "";
 
 
                 Long endTime = DateTimeUtil.addDays(startTime, 7);
@@ -824,13 +838,14 @@ public class HomepageWidgteApi {
                     }
 
                     if(durationstartTime != null && durationEndTime != null) {
-                        secondaryText2 += new SimpleDateFormat("dd MMM yyyy").format(durationstartTime);
-                        secondaryText2 += " (" + new SimpleDateFormat("hh:mm a").format(durationstartTime);
+                        date = new SimpleDateFormat("dd MMM yyyy").format(durationstartTime);
+                        secondaryText2 +=new SimpleDateFormat("hh:mm a").format(durationstartTime);
                         secondaryText2 += " to " + new SimpleDateFormat("hh:mm a").format(durationEndTime);
-                        secondaryText2 = secondaryText2.replace("am", "AM").replace("pm","PM") + ")";
+                        secondaryText2 = secondaryText2.replace("am", "AM").replace("pm","PM");
 
                     }
                     widget.setSecondaryText(latestBooking.getFacility().getName());
+                    widget.setDate(date);
                     widget.setSecondaryText2(secondaryText2);
                     widget.setModuleName(module.getName());
                     return widget;
