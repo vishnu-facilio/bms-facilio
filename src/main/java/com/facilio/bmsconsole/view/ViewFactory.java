@@ -9139,13 +9139,18 @@ public class ViewFactory {
 		quotesReceivedField.setDataType(FieldType.BOOLEAN);
 		quotesReceivedField.setModule(ModuleFactory.getRequestForQuotationModule());
 
-		Condition statusCond = new Condition();
-		statusCond.setField(quotesReceivedField);
-		statusCond.setOperator(BooleanOperators.IS);
-		statusCond.setValue(String.valueOf(quotesReceived));
+		Condition quotesReceivedCondition = new Condition();
+		quotesReceivedCondition.setField(quotesReceivedField);
+		quotesReceivedCondition.setOperator(BooleanOperators.IS);
+		quotesReceivedCondition.setValue(String.valueOf(quotesReceived));
 
 		Criteria rfqStatusCriteria = new Criteria();
-		rfqStatusCriteria.addAndCondition(statusCond);
+		rfqStatusCriteria.addAndCondition(quotesReceivedCondition);
+		rfqStatusCriteria.addAndCondition(CriteriaAPI.getCondition("RFQ_FINALIZED","isRfqFinalized",String.valueOf(true),BooleanOperators.IS));
+		rfqStatusCriteria.addAndCondition(CriteriaAPI.getCondition("AWARDED","isAwarded",String.valueOf(false),BooleanOperators.IS));
+		rfqStatusCriteria.addAndCondition(CriteriaAPI.getCondition("PO_CREATED","isPoCreated",String.valueOf(false),BooleanOperators.IS));
+		rfqStatusCriteria.addAndCondition(CriteriaAPI.getCondition("DISCARDED","isDiscarded",String.valueOf(false),BooleanOperators.IS));
+
 		return rfqStatusCriteria;
 	}
 
@@ -9177,13 +9182,17 @@ public class ViewFactory {
 		awardedField.setDataType(FieldType.BOOLEAN);
 		awardedField.setModule(ModuleFactory.getRequestForQuotationModule());
 
-		Condition statusCond = new Condition();
-		statusCond.setField(awardedField);
-		statusCond.setOperator(BooleanOperators.IS);
-		statusCond.setValue(String.valueOf(awarded));
+		Condition awardedCondition = new Condition();
+		awardedCondition.setField(awardedField);
+		awardedCondition.setOperator(BooleanOperators.IS);
+		awardedCondition.setValue(String.valueOf(awarded));
 
 		Criteria rfqStatusCriteria = new Criteria();
-		rfqStatusCriteria.addAndCondition(statusCond);
+		rfqStatusCriteria.addAndCondition(awardedCondition);
+		rfqStatusCriteria.addAndCondition(CriteriaAPI.getCondition("RFQ_FINALIZED","isRfqFinalized",String.valueOf(true),BooleanOperators.IS));
+		rfqStatusCriteria.addAndCondition(CriteriaAPI.getCondition("QUOTE_RECEIVED","isQuoteReceived",String.valueOf(true),BooleanOperators.IS));
+		rfqStatusCriteria.addAndCondition(CriteriaAPI.getCondition("PO_CREATED","isPoCreated",String.valueOf(false),BooleanOperators.IS));
+		rfqStatusCriteria.addAndCondition(CriteriaAPI.getCondition("DISCARDED","isDiscarded",String.valueOf(false),BooleanOperators.IS));
 		return rfqStatusCriteria;
 	}
 	private static FacilioView getPoCreatedRfqView(String viewName, String viewDisplayName, boolean poCreated) {
@@ -9208,19 +9217,24 @@ public class ViewFactory {
 	}
 
 	private static Criteria getPoCreatedRfqCondition(boolean poCreated) {
-		FacilioField awardedField = new FacilioField();
-		awardedField.setName("isPoCreated");
-		awardedField.setColumnName("PO_CREATED");
-		awardedField.setDataType(FieldType.BOOLEAN);
-		awardedField.setModule(ModuleFactory.getRequestForQuotationModule());
+		FacilioField poCreatedField = new FacilioField();
+		poCreatedField.setName("isPoCreated");
+		poCreatedField.setColumnName("PO_CREATED");
+		poCreatedField.setDataType(FieldType.BOOLEAN);
+		poCreatedField.setModule(ModuleFactory.getRequestForQuotationModule());
 
-		Condition statusCond = new Condition();
-		statusCond.setField(awardedField);
-		statusCond.setOperator(BooleanOperators.IS);
-		statusCond.setValue(String.valueOf(poCreated));
+		Condition poCreatedCondition = new Condition();
+		poCreatedCondition.setField(poCreatedField);
+		poCreatedCondition.setOperator(BooleanOperators.IS);
+		poCreatedCondition.setValue(String.valueOf(poCreated));
 
 		Criteria rfqStatusCriteria = new Criteria();
-		rfqStatusCriteria.addAndCondition(statusCond);
+		rfqStatusCriteria.addAndCondition(poCreatedCondition);
+		rfqStatusCriteria.addAndCondition(CriteriaAPI.getCondition("RFQ_FINALIZED","isRfqFinalized",String.valueOf(true),BooleanOperators.IS));
+		rfqStatusCriteria.addAndCondition(CriteriaAPI.getCondition("QUOTE_RECEIVED","isQuoteReceived",String.valueOf(true),BooleanOperators.IS));
+		rfqStatusCriteria.addAndCondition(CriteriaAPI.getCondition("AWARDED","isAwarded",String.valueOf(true),BooleanOperators.IS));
+		rfqStatusCriteria.addAndCondition(CriteriaAPI.getCondition("DISCARDED","isDiscarded",String.valueOf(false),BooleanOperators.IS));
+
 		return rfqStatusCriteria;
 	}
 	private static FacilioView getDiscardedRfqView(String viewName, String viewDisplayName, boolean discarded) {
@@ -9245,19 +9259,19 @@ public class ViewFactory {
 	}
 
 	private static Criteria getDiscardedRfqCondition(boolean discarded) {
-		FacilioField awardedField = new FacilioField();
-		awardedField.setName("isDiscarded");
-		awardedField.setColumnName("DISCARDED");
-		awardedField.setDataType(FieldType.BOOLEAN);
-		awardedField.setModule(ModuleFactory.getRequestForQuotationModule());
+		FacilioField discardedField = new FacilioField();
+		discardedField.setName("isDiscarded");
+		discardedField.setColumnName("DISCARDED");
+		discardedField.setDataType(FieldType.BOOLEAN);
+		discardedField.setModule(ModuleFactory.getRequestForQuotationModule());
 
-		Condition statusCond = new Condition();
-		statusCond.setField(awardedField);
-		statusCond.setOperator(BooleanOperators.IS);
-		statusCond.setValue(String.valueOf(discarded));
+		Condition discardedCondition = new Condition();
+		discardedCondition.setField(discardedField);
+		discardedCondition.setOperator(BooleanOperators.IS);
+		discardedCondition.setValue(String.valueOf(discarded));
 
 		Criteria rfqStatusCriteria = new Criteria();
-		rfqStatusCriteria.addAndCondition(statusCond);
+		rfqStatusCriteria.addAndCondition(discardedCondition);
 		return rfqStatusCriteria;
 	}
 }

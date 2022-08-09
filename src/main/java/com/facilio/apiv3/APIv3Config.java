@@ -114,6 +114,7 @@ import com.facilio.bmsconsoleV3.commands.vendor.LoadVendorLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.LoadVendorQuoteLineItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.LoadVendorQuotesLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.SetVendorQuotesLineItemsCommandV3;
+import com.facilio.bmsconsoleV3.commands.vendorQuotes.SetVendorQuotesLineItemsOnListCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorcontact.LoadVendorContactLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitor.LoadVisitorLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.*;
@@ -799,6 +800,7 @@ public class APIv3Config {
                 .update()
                 .list()
                 .beforeFetch(new LoadVendorQuotesLookupCommandV3())
+                .afterFetch(new SetVendorQuotesLineItemsOnListCommandV3())
                 .summary()
                 .beforeFetch(new LoadVendorQuotesLookupCommandV3())
                 .afterFetch(new SetVendorQuotesLineItemsCommandV3())

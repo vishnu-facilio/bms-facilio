@@ -1741,7 +1741,7 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getRequestForQuotationLineItemsChainV3() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetRequestForQuotationLineItemsCommandV3());
-        c.addCommand(new AutoAwardingPriceCommandV3());
+//        c.addCommand(new AutoAwardingPriceCommandV3());
         return c;
     }
     public static FacilioChain getRfqBeforeSaveChain() {
