@@ -13,6 +13,7 @@ import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
 import com.facilio.mailtracking.context.V3OutgoingRecipientContext;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.V3Util;
@@ -60,7 +61,7 @@ public class OutgoingMailAPI {
         }
         mailLogContext.setRecordsModuleId((Long) mailJson.get("moduleId"));
         if(mailJson.containsKey(MailConstants.Params.LOGGER_ID)) {
-            mailLogContext.setId((Long) mailJson.get(MailConstants.Params.LOGGER_ID));
+            mailLogContext.setId(FacilioUtil.parseLong(mailJson.get(MailConstants.Params.LOGGER_ID)));
         }
         return mailLogContext;
     }

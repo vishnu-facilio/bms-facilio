@@ -3,6 +3,7 @@ package com.facilio.services.email;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -38,6 +39,9 @@ class AwsEmailClient extends EmailClient {
         logEmail(mailJson);
         if(canSendEmail(mailJson)) {
             try {
+                if(!"stage".equals(FacilioProperties.getEnvironment()) && (files == null || files.isEmpty())) {
+                    return AwsUtil.sendMail(mailJson, getEmailAddresses(mailJson, TO), getEmailAddresses(mailJson, CC),getEmailAddresses(mailJson, BCC));
+                }
                 return AwsUtil.sendMail(mailJson, files);
             } catch (Exception ex) {
                 LOGGER.info("The email was not sent.");
