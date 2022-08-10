@@ -77,6 +77,16 @@ public abstract class EmailClient extends BaseEmailClient {
 
     private long pushEmailToQueue(JSONObject mailJson, Map<String, String> files) throws Exception {
 
+        if(!"stage".equals(FacilioProperties.getEnvironment())) { // normal behaviour for production env
+            if(files == null) {
+                sendEmail(mailJson);
+            } else {
+                sendEmail(mailJson, files);
+            }
+            return -1;
+        }
+
+        //new behaviour for stage alone
         FacilioChain chain = MailTransactionChainFactory.pushOutgoingMailToQueue();
         FacilioContext context = chain.getContext();
         context.put(MailConstants.Params.MAIL_JSON, mailJson);
