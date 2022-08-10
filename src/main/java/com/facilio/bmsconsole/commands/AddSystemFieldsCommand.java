@@ -94,6 +94,11 @@ public class AddSystemFieldsCommand extends FacilioCommand {
 			fields.add(FieldFactory.getSystemField("sysModifiedTime",module));
 			fields.add(FieldFactory.getSystemField("sysModifiedBy",module));
 
+			FacilioField slaPolicyIdField = FieldFactory.getField("slaPolicyId", "SLA_POLICY_ID", module, FieldType.NUMBER);
+			slaPolicyIdField.setDefault(true);
+			slaPolicyIdField.setDisplayType(FieldDisplayType.NUMBER);
+			fields.add(slaPolicyIdField);
+
 		}
 		return false;
 	}
