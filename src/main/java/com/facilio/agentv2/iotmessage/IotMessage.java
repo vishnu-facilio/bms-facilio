@@ -1,8 +1,13 @@
 package com.facilio.agentv2.iotmessage;
 
+import java.util.List;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
+import lombok.Getter;
+import lombok.Setter;
 
 public class IotMessage
 {
@@ -27,6 +32,8 @@ public class IotMessage
     private long completedTime = -1;
     private long sentTime = -1;
     private int command = -1;
+    @Getter @Setter
+    private List<Long> controlIds;
 
 
     public int getCommand() {

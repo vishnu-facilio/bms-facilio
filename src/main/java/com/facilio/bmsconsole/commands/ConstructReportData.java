@@ -115,6 +115,16 @@ public class ConstructReportData extends FacilioCommand {
 			for (int i = 0; i < yAxisJSON.size(); i++) {
 				addDataPointContext(modBean, reportContext, xAxisJSON, dateFieldJSON, (Map) yAxisJSON.get(i), groupByJSONArray, criteria, sortFields, sortOrder, limit, havingJSON);
 			}
+			if(context != null && context.containsKey("datapoint_vs_convert_unit") && context.get("datapoint_vs_convert_unit") != null){
+				JSONObject datapoint_vs_convertunit = (JSONObject) context.get("datapoint_vs_convert_unit");
+				for(ReportDataPointContext datapoint : reportContext.getDataPoints())
+				{
+					if(datapoint_vs_convertunit != null && datapoint.getyAxis() != null && datapoint.getyAxis().getFieldName() != null && datapoint_vs_convertunit.containsKey(datapoint.getyAxis().getFieldName()) && datapoint_vs_convertunit.get(datapoint.getyAxis().getFieldName()) != null)
+					{
+						datapoint.setConvertTounit((String)datapoint_vs_convertunit.get(datapoint.getyAxis().getFieldName()));
+					}
+				}
+			}
 		}
 		if(context.get("chartState")!= null) {
 			reportContext.setChartState((String)context.get("chartState"));

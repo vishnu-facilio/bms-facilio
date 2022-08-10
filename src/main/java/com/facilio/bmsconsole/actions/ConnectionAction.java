@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.util.ConnectionUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.time.DateTimeUtil;
 
 public class ConnectionAction extends FacilioAction {
 
@@ -69,6 +70,7 @@ public class ConnectionAction extends FacilioAction {
 		}
 		connectionContext = ConnectionUtil.getConnectionFromSecretStateString(state);
 		connectionContext.setAuthCode(code);
+		connectionContext.setLastAuthoriedTime(DateTimeUtil.getCurrenTime());
 		
 		FacilioChain chain = TransactionChainFactory.getUpdateConnectionChain();
 		FacilioContext context = chain.getContext();

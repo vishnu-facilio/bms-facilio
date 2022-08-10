@@ -343,7 +343,7 @@ public class V3TicketContext extends V3Context {
             }
         }
     }
-    public void setActualWorkEnd(long actualWorkEnd) {
+    public void setActualWorkEnd(Long actualWorkEnd) {
         this.actualWorkEnd = actualWorkEnd;
     }
 

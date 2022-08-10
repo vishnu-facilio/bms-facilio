@@ -1,5 +1,6 @@
 package com.facilio.agentv2.iotmessage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.LogManager;
@@ -37,7 +38,21 @@ public class MessengerUtil
         JSONObject data = new JSONObject();
         data.putAll(message);
         msg.setMessageData(data);
+        setControlMessageMap(message, command, msg);
         return msg;
+    }
+    
+    private static void setControlMessageMap(JSONObject message, FacilioCommand command, IotMessage msg) {
+    	if (command == FacilioCommand.SET) {
+        	List<Long> controlIds = new ArrayList<>();
+        	JSONArray pointsArray = (JSONArray) message.get(AgentConstants.POINTS);
+    		for (int i = 0; i < pointsArray.size(); i++) {
+    			JSONObject point = (JSONObject) pointsArray.get(i);
+    			long controlId = (long) point.get("controlId");
+    			controlIds.add(controlId);
+    		}
+    		msg.setControlIds(controlIds);
+    	}
     }
 
     static IotData addAndPublishNewAgentData(IotData data) throws Exception {
