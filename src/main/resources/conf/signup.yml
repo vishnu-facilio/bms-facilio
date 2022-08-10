@@ -139,3 +139,4 @@ classes:
 
     #Adding Send Mail modules
   - com.facilio.mailtracking.signup.AddOutgoingMailLoggerModules
+  - com.facilio.bmsconsoleV3.signup.serviceRequestModules.AddServiceRequestModules
