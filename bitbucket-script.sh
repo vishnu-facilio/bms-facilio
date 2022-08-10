@@ -7,12 +7,12 @@ echo "Current_Day_Last_Commit";
 currentdaycommit=`git rev-list -1 --since="24 hour" master`;
 echo $currentdaycommit;
 echo "In_Between_Commits";
-inbetweencommit=`git rev-list --all $previousdaycommit..$currentdaycommit master --not production`; 
+inbetweencommit=`git rev-list $previousdaycommit..$currentdaycommit -m master --not production`; 
 echo $inbetweencommit;
 echo "Revert_Commit_For_Last_24_hours";
 for allcommits in $inbetweencommit;
 do
-revertcommit=` git rev-list --all  $allcommits --grep="Revert " $previousdaycommit..$currentdaycommit master --not production`; 
+revertcommit=` git rev-list $allcommits --grep="Revert " $previousdaycommit..$currentdaycommit -m master --not production`; 
 done;
 echo $revertcommit;
 if [[ $revertcommit ]]
