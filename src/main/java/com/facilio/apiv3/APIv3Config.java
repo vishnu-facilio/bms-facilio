@@ -59,14 +59,10 @@ import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanItemsLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanServicesCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanToolsLookupCommandV3;
-import com.facilio.bmsconsoleV3.commands.jobplan.AddPlannerIdFilterCriteriaCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.FetchJobPlanLookupCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.FillJobPlanDetailsCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.ValidationForJobPlanCategory;
-import com.facilio.bmsconsoleV3.commands.labour.FetchLabourCraftAndSkillCommandV3;
-import com.facilio.bmsconsoleV3.commands.labour.GetLabourListCommandV3;
-import com.facilio.bmsconsoleV3.commands.labour.SetDefaultValueForSingleLabourCraftRecord;
-import com.facilio.bmsconsoleV3.commands.labour.SetLocationCommandV3;
+import com.facilio.bmsconsoleV3.commands.labour.*;
 import com.facilio.bmsconsoleV3.commands.moves.UpdateEmployeeInDesksCommandV3;
 import com.facilio.bmsconsoleV3.commands.moves.ValidateMovesCommand;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
@@ -175,7 +171,6 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.elasticsearch.command.PushDataToESCommand;
 import com.facilio.mailtracking.MailConstants;
-import com.facilio.mailtracking.OutgoingMailAPI;
 import com.facilio.mailtracking.commands.MailReadOnlyChainFactory;
 import com.facilio.mailtracking.commands.OutgoingMailLoggerListAfterFetchCommand;
 import com.facilio.mailtracking.commands.OutgoingRecipientLoadSupplementsCommand;
@@ -653,6 +648,7 @@ public class APIv3Config {
         return () -> new V3Config(LabourContextV3.class, new ModuleCustomFieldCount30())
                 .create()
                 .beforeSave(new SetLocationCommandV3(), new SetLocalIdCommandV3(),new SetDefaultValueForSingleLabourCraftRecord())
+                .afterSave(new UpdatePeopleAsALabour())
                 .list()
                 .beforeFetch(new GetLabourListCommandV3())
 			    .afterFetch(new FetchLabourCraftAndSkillCommandV3())

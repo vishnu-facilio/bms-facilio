@@ -102,6 +102,7 @@ public class PeopleAPI {
 			people.setPhone(user.getMobile());
 			people.setPeopleType(PeopleType.EMPLOYEE);
 			people.setIsAppAccess(true);
+			people.setUser(true);
 			people.setRoleId(user.getRoleId());
 			
 			people.setLanguage(user.getLanguage());
@@ -113,6 +114,7 @@ public class PeopleAPI {
 			pplId = people.getId();
 		}
 		else {
+			peopleExisiting.setUser(true);
 			EmployeeContext emp = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(peopleExisiting), EmployeeContext.class);
 			emp.setIsAppAccess(true);
 			RecordAPI.updateRecord(emp, module, modBean.getAllFields(module.getName()));
