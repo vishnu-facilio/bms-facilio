@@ -97,7 +97,9 @@ public class GetAutomationModulesCommand extends FacilioCommand {
         else {
             modules.add(modBean.getModule(FacilioConstants.ContextNames.ALARM));
         }
-
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.COMMUNITY)){
+            modules.add(modBean.getModule(FacilioConstants.ContextNames.ANNOUNCEMENT));
+        }
         modules.addAll(modBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY, true));
 
         context.put(FacilioConstants.ContextNames.MODULE_LIST, modules);
