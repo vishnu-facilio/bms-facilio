@@ -5,6 +5,7 @@ import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.OutgoingMailAPI;
 import com.facilio.mailtracking.context.MailStatus;
 import com.facilio.mailtracking.context.V3OutgoingRecipientContext;
+import com.facilio.util.FacilioUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 
@@ -14,7 +15,7 @@ import java.util.List;
 public class UpdateRecipientStatusCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        Long loggerId = (Long) context.get(MailConstants.Params.LOGGER_ID);
+        Long loggerId = FacilioUtil.parseLong(context.get(MailConstants.Params.LOGGER_ID));
         List<V3OutgoingRecipientContext> oldRecords = OutgoingMailAPI.getRecipients(loggerId);
         OutgoingMailAPI.updateRecipientStatus(oldRecords, MailStatus.SENT.getValue());
         return false;
