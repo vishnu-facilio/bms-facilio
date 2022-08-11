@@ -4,6 +4,7 @@ import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.OutgoingMailAPI;
 import com.facilio.mailtracking.bean.MailBean;
 import com.facilio.mailtracking.context.AwsMailResponseContext;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
 import lombok.extern.log4j.Log4j;
@@ -46,7 +47,7 @@ public class ParseMailResponseCommand {
     private static MailBean getMailBeanWithCurrentOrg(String mapperId) throws Exception {
         Map<String, Object> mapperRecord = OutgoingMailAPI.getMapperRecord(mapperId);
         V3Util.throwRestException(mapperRecord.isEmpty(), ErrorCode.VALIDATION_ERROR, "Given mapperId not found :: "+mapperId);
-        long orgId = (long) mapperRecord.get("orgId");
+        long orgId = FacilioUtil.parseLong(mapperRecord.get("orgId"));
         return MailConstants.getMailBean(orgId);
     }
 

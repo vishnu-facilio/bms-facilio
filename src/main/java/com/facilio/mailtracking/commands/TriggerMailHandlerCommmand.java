@@ -6,6 +6,7 @@ import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.OutgoingMailData;
 import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
 import com.facilio.modules.FacilioModule;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
@@ -68,7 +69,7 @@ public class TriggerMailHandlerCommmand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        Long recordModuleId = (Long) context.get(MailConstants.Params.RECORD_MODULE_ID);
+        Long recordModuleId = FacilioUtil.parseLong(context.get(MailConstants.Params.RECORD_MODULE_ID));
         if(recordModuleId == null || recordModuleId.equals(-1L)) {
             return false;
         }
