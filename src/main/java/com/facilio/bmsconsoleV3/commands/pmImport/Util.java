@@ -1,8 +1,13 @@
 package com.facilio.bmsconsoleV3.commands.pmImport;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.PMJobPlan;
 import com.facilio.bmsconsole.context.PMPlanner;
 import com.facilio.bmsconsole.context.PMTriggerV2;
+import com.facilio.bmsconsoleV3.context.V3TaskContext;
+import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTaskSectionContext;
+import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTasksContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -11,6 +16,7 @@ import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.lang3.StringUtils;
+import org.bouncycastle.util.Strings;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -49,17 +55,24 @@ public class Util {
         return triggerList.get(0);
     }
 
-    private static List<String> explodeAndCapitalizeByComma(String value) {
+    private static String[] explode(String value) {
         String[] explodedValues = StringUtils.split(value, ",");
-        explodedValues = StringUtils.stripAll(explodedValues);
+        return StringUtils.stripAll(explodedValues);
+    }
+
+    private static String trimAndUppercase(String value) {
+        return Strings.toUpperCase(StringUtils.strip(value));
+    }
+
+    private static List<String> explodeAndCapitalizeByComma(String value) {
+        String[] explodedValues = explode(value);
         return Arrays.stream(explodedValues)
                 .map(String::toUpperCase)
                 .collect(Collectors.toList());
     }
 
     private static List<Integer> explodeAndConvToIntByComma(String value) {
-        String[] explodedValues = StringUtils.split(value, ",");
-        explodedValues = StringUtils.stripAll(explodedValues);
+        String[] explodedValues = explode(value);
         return Arrays.stream(explodedValues)
                 .map(Integer::parseInt)
                 .collect(Collectors.toList());
@@ -216,5 +229,68 @@ public class Util {
         Map<String, Object> recordMap = (Map<String, Object>) ctx.get("recordMap");
         List<PMPlanner> triggerList = (List<PMPlanner>) recordMap.get(moduleName);
         return triggerList.get(0);
+    }
+
+
+    public static JobPlanTasksContext createJobPlanTask(PMJobPlan jobPlan,
+                                                        JobPlanTaskSectionContext section,
+                                                        Map<String, Object> rec) {
+
+        JobPlanTasksContext jpTask = new JobPlanTasksContext();
+        jpTask.setTaskSection(section);
+        jpTask.setJobPlan(jobPlan);
+        jpTask.setStatusNew(V3TaskContext.TaskStatus.OPEN.getValue());
+        jpTask.setCreatedBy(AccountUtil.getCurrentUser());
+        jpTask.setCreatedTime(System.currentTimeMillis());
+
+        Object subjectObj = rec.get("jpTaskSubject");
+        if (subjectObj != null) {
+            jpTask.setSubject((String) subjectObj);
+        }
+
+        Object descriptionObj = rec.get("jpTaskDescription");
+        if (descriptionObj != null) {
+            jpTask.setDescription((String) descriptionObj);
+        }
+
+        // input type
+        jpTask.setInputType(getTaskInputType(rec.get("jpInputType")));
+
+        // default value
+        Object defaultValueObj = rec.get("jpDefaultValue");
+        String defaultValue = defaultValueObj == null ? "" : (String) defaultValueObj;
+        jpTask.addAdditionInfo("defaultValue", defaultValue);
+
+        // remarks
+        Object remarksRequired = rec.get("jpRemarksRequired");
+        Boolean remarksRequiredValue = remarksRequired != null;
+        jpTask.addAdditionInfo("remarksRequired", remarksRequiredValue);
+
+        Object remarkOptionValuesObj = rec.get("jpRemarkOptionValues");
+        if (remarkOptionValuesObj == null) {
+            jpTask.addAdditionInfo("remarkOptionValues", new String[]{});
+        } else {
+            String[] remarkOptionValues = explode((String) remarkOptionValuesObj);
+            jpTask.addAdditionInfo("remarkOptionValues", remarkOptionValues);
+        }
+
+        return jpTask;
+    }
+
+    private static Integer getTaskInputType(Object inputType) {
+        if (inputType == null) {
+            return V3TaskContext.InputType.NONE.getVal();
+        }
+        String inputTypeStr = (String) inputType;
+        inputTypeStr = trimAndUppercase(inputTypeStr);
+        switch (inputTypeStr) {
+            case "TEXT":
+                return V3TaskContext.InputType.TEXT.getVal();
+            case "RADIO":
+                return V3TaskContext.InputType.RADIO.getVal();
+            case "NUMBER":
+                return V3TaskContext.InputType.NUMBER.getVal();
+        }
+        return V3TaskContext.InputType.NONE.getVal();
     }
 }
