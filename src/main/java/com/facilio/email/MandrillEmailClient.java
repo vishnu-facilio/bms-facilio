@@ -2,27 +2,26 @@ package com.facilio.email;
 
 import com.cribbstechnologies.clients.mandrill.exception.RequestFailedException;
 import com.cribbstechnologies.clients.mandrill.model.MandrillAttachment;
+import com.cribbstechnologies.clients.mandrill.model.MandrillHtmlMessage;
+import com.cribbstechnologies.clients.mandrill.model.MandrillMessageRequest;
 import com.cribbstechnologies.clients.mandrill.model.MandrillRecipient;
 import com.cribbstechnologies.clients.mandrill.model.response.message.MessageResponse;
 import com.cribbstechnologies.clients.mandrill.model.response.message.SendMessageResponse;
-import com.facilio.aws.util.AwsUtil;
+import com.cribbstechnologies.clients.mandrill.request.MandrillMessagesRequest;
+import com.cribbstechnologies.clients.mandrill.request.MandrillRESTRequest;
+import com.cribbstechnologies.clients.mandrill.util.MandrillConfiguration;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.services.email.EmailClient;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.simple.JSONObject;
-import com.cribbstechnologies.clients.mandrill.model.MandrillHtmlMessage;
-import com.cribbstechnologies.clients.mandrill.model.MandrillMessageRequest;
-import com.cribbstechnologies.clients.mandrill.request.MandrillMessagesRequest;
-import com.cribbstechnologies.clients.mandrill.request.MandrillRESTRequest;
-import com.cribbstechnologies.clients.mandrill.util.MandrillConfiguration;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
 
-
+import javax.mail.Session;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -32,7 +31,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.mail.Session;
 
 
 public class MandrillEmailClient extends EmailClient {
@@ -89,8 +87,8 @@ public class MandrillEmailClient extends EmailClient {
     }
 
     @Override
-    public void sendEmail(JSONObject mailJson) throws Exception {
-        sendEmail(mailJson, new HashMap<>());
+    public String sendEmail(JSONObject mailJson) throws Exception {
+        return sendEmail(mailJson, new HashMap<>());
     }
 
 
@@ -177,12 +175,12 @@ public class MandrillEmailClient extends EmailClient {
                 connection.disconnect();
             }
         }
-
     }
 
     @Override
-    public void sendEmail(JSONObject mailJson, Map<String, String> files) throws Exception {
+    public String sendEmail(JSONObject mailJson, Map<String, String> files) throws Exception {
         sendEmailViaHttpConnection(mailJson, files);
+        return null;
     }
 
     private void sendEmailViaMandrillLibrary(JSONObject mailJson, Map<String, String> files) throws Exception {

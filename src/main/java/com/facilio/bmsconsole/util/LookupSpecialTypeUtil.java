@@ -546,6 +546,7 @@ public class LookupSpecialTypeUtil {
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
 			Group group = new Group();
 			group.setGroupId(id);
+			group.setId(id);
 			return group;
 		}
 		else if (FacilioConstants.ContextNames.ROLE.equals(specialType)) {

@@ -200,6 +200,8 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
                     return FieldFactory.Fields.filterOutFields(fields, FieldFactory.Fields.NEW_READING_RULE_FIELDS_INCLUDE, FieldFactory.Fields.FilterType.INCLUDE);
                 case ContextNames.POINTS:
                     return FieldFactory.Fields.filterOutFields(fields, FieldFactory.Fields.POINT_FIELDS_INCLUDE, FieldFactory.Fields.FilterType.INCLUDE);
+                case ContextNames.PLANNEDMAINTENANCE:
+                    return FieldFactory.Fields.filterOutFields(fields, FieldFactory.Fields.PM_FIELDS_INCLUDE, FieldFactory.Fields.FilterType.INCLUDE);
                 default:
                     return fields;
             }

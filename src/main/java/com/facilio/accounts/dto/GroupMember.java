@@ -8,17 +8,22 @@ public class GroupMember extends User {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+
+	public long getMemberId() {
+		return memberId;
+	}
+
+	public void setMemberId(long memberId) {
+		this.memberId = memberId;
+	}
+
 	private long memberId;
 	private long groupId;
 	private long ouid;
 	private int memberRole;
 	
-	public long getMemberId() {
-		return memberId;
-	}
-	public void setMemberId(long memberId) {
-		this.memberId = memberId;
-	}
+
 	public long getGroupId() {
 		return groupId;
 	}

@@ -17,7 +17,7 @@ public class PMPlannerSupplementsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        String moduleName = "pmResourcePlanner";
+        String moduleName = "pmPlanner";
         List<FacilioField> fields = modBean.getAllFields(moduleName);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 
@@ -27,7 +27,7 @@ public class PMPlannerSupplementsCommand extends FacilioCommand {
             context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, supplementFields);
         }
 
-        supplementFields.add((SupplementRecord) fieldsAsMap.get("resource"));
+        supplementFields.add((SupplementRecord) fieldsAsMap.get("trigger"));
         return false;
     }
 }

@@ -2,10 +2,11 @@ package com.facilio.agentv2.actions;
 
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.AgentUtilV2;
+import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.bmsconsole.actions.FacilioAction;
+import com.facilio.fw.BeanFactory;
 import com.facilio.queue.source.MessageSource;
 import com.facilio.services.messageQueue.MessageQueueFactory;
 import com.facilio.services.procon.message.FacilioRecord;
@@ -54,7 +55,8 @@ public class RestAgentPushAction extends FacilioAction {
                 String topic = AccountUtil.getCurrentOrg().getDomain();
                 FacilioRecord record = new FacilioRecord(getSender(), getPayload());
                 try {
-                    MessageSource ms = AgentUtilV2.getMessageSource(AgentApiV2.getAgent(getAgentNameFromPayload(payload)));
+                    AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+                    MessageSource ms = AgentUtilV2.getMessageSource(agentBean.getAgent(getAgentNameFromPayload(payload)));
                     MessageQueueFactory.getMessageQueue(ms).put(topic, record);
                 } catch (Exception e) {
                     LOGGER.info("Exception while put record ", e);

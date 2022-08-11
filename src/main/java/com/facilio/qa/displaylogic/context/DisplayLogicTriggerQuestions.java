@@ -10,6 +10,8 @@ public class DisplayLogicTriggerQuestions {
 	Long id;
 	Long displayLogicId;
 	Long triggerQuestionId;
+	Long triggerRowId;
+	Long triggerColumnId;
 	
 	public DisplayLogicTriggerQuestions() {
 		
@@ -17,5 +19,10 @@ public class DisplayLogicTriggerQuestions {
 	
 	public DisplayLogicTriggerQuestions (Long triggerQuestionId) {
 		this.triggerQuestionId = triggerQuestionId;
+	}
+	public DisplayLogicTriggerQuestions (Long triggerQuestionId,Long triggerRowId,Long triggerColumnId) {
+		this.triggerQuestionId = triggerQuestionId;
+		this.triggerRowId = triggerRowId;
+		this.triggerColumnId = triggerColumnId;
 	}
 }

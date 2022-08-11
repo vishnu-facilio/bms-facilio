@@ -366,12 +366,13 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultPlannedMaintenanceViewColumns() {
 		List<ViewField> columns = new ArrayList<>();
 
-		columns.add(new ViewField("subject", "Subject"));
-		columns.add(new ViewField("category", "Category"));
+		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("priority", "Priority"));
-		columns.add(new ViewField("assignmentType", "Assignment Type"));
+		columns.add(new ViewField("assignmentType", "Scope Category"));
+		columns.add(new ViewField("category", "Category"));
 		columns.add(new ViewField("spaceCategory", "Space Category"));
 		columns.add(new ViewField("assetCategory", "Asset Category"));
+		columns.add(new ViewField("createdTime", "Created Time"));
 		return columns;
 	}
 	

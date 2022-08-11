@@ -1121,9 +1121,11 @@ public class AccountConstants {
 		FacilioModule module = getGroupModule();
 		List<FacilioField> fields = new ArrayList<>();
 
+		fields.add(FieldFactory.getIdField(module));
+
 		FacilioField groupId = new FacilioField();
 		groupId.setName("groupId");
-		groupId.setDataType(FieldType.ID);
+		groupId.setDataType(FieldType.NUMBER);
 		groupId.setColumnName("GROUPID");
 		groupId.setModule(module);
 		fields.add(groupId);
@@ -1192,6 +1194,8 @@ public class AccountConstants {
 	public static List<FacilioField> getGroupMemberFields() {
 		FacilioModule module = getGroupMemberModule();
 		List<FacilioField> fields = new ArrayList<>();
+
+//		fields.add(FieldFactory.getIdField(module));
 
 		FacilioField memberId = new FacilioField();
 		memberId.setName("memberId");

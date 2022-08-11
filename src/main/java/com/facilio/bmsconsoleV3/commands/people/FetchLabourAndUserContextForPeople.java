@@ -50,7 +50,7 @@ public class FetchLabourAndUserContextForPeople extends FacilioCommand{
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition("PEOPLE_ID", "peopleId", String.valueOf(id), NumberOperators.EQUALS));
 
-		GenericSelectRecordBuilder builder = UserBeanImpl.fetchUserSelectBuilder(-1L, criteria, AccountUtil.getCurrentOrg().getOrgId(), null);
+		GenericSelectRecordBuilder builder = UserBeanImpl.fetchUserSelectBuilder(AccountUtil.getCurrentApp() != null ? AccountUtil.getCurrentApp().getId() : -1L, criteria, AccountUtil.getCurrentOrg().getOrgId(), null);
 		List<Map<String,Object>> props = builder.get();
 
 		if(CollectionUtils.isNotEmpty(props)){

@@ -18,20 +18,20 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.OrgInfoKeys;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.queue.source.KafkaMessageSource;
 import com.facilio.queue.source.MessageSource;
 import com.facilio.queue.source.MessageSourceUtil;
 import com.facilio.services.messageQueue.MessageQueue;
 import com.facilio.services.messageQueue.MessageQueueFactory;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.AckUtil;
 import org.apache.commons.collections4.MapUtils;
@@ -164,20 +164,18 @@ public class AgentUtilV2
             long timeStamp = (long) payload.get(AgentConstants.TIMESTAMP);
             if(payload.containsKey(AgentConstants.STATUS)){ // for LWT
                 Status status = Status.valueOf(((Number) payload.get(AgentConstants.STATUS)).intValue());
-                long connectionCount = 0;
                 if(status == Status.CONNECTION_LOST || status == Status.DISCONNECTED){
                     LOGGER.info(" LWT -- "+payload);
                     agent.setConnected(false);
                     raiseAgentAlarm(agent);
-                }else if (containsValueCheck(AgentConstants.COUNT,payload)){
-                    LOGGER.info(" CONNECTED ");
+                    togglePointsDataMissingAlarmJob(agent);
+                } else if (status == Status.CONNECTED){
+                    LOGGER.info("CONNECTED");
                     agent.setConnected(true);
                     dropAgentAlarm( agent);
-                    connectionCount = (long) payload.get(AgentConstants.COUNT);
-                }else {
-                    LOGGER.info("SUBSCRIBED");
-                    agent.setConnected(true);
-                    dropAgentAlarm( agent);
+                    togglePointsDataMissingAlarmJob(agent);
+                } else {
+                    LOGGER.info("Unknown status type - "+ status);
                 }
                     //LogsApi.logAgentConnection(agent.getId(), status, connectionCount, timeStamp);
             }
@@ -191,11 +189,27 @@ public class AgentUtilV2
         }
     }
 
+    public static void togglePointsDataMissingAlarmJob(FacilioAgent agent) throws Exception {
+        String jobName = FacilioConstants.Job.POINTS_DATA_MISSING_ALARM_JOB_NAME;
+        boolean isActiveUpdateValue = agent.getConnected();
+        long jobId = agent.getId();
+
+        if(isActiveUpdateValue) {
+            FacilioTimer.activateJob(jobId, jobName);
+            LOGGER.info("Job Activated - Job Id : "+ jobId +", Job Name: " + jobName);
+        }
+        else {
+            FacilioTimer.inActivateJob(jobId, jobName);
+            LOGGER.info("Job InActivated - Job Id : "+ jobId +", Job Name: " + jobName);
+
+        }
+    }
+
     public static void dropAgentAlarm(FacilioAgent agent) throws Exception {
         long currentTime = System.currentTimeMillis();
         AgentEventContext event = getAgentEventContext(agent, currentTime, FacilioConstants.Alarm.CLEAR_SEVERITY);
         addEventToDB(event);
-        LOGGER.info("Cleared Agent Alarm for Agent : " + agent.getName() + " ( ID :" + agent.getId()+ ")");
+        LOGGER.info("Cleared Agent Alarm for Agent : " + agent.getDisplayName() + " ( ID :" + agent.getId()+ ")");
 
     }
 
@@ -213,7 +227,7 @@ public class AgentUtilV2
         AgentEventContext event = getAgentEventContext(agent, currentTime, FacilioConstants.Alarm.CRITICAL_SEVERITY);
 
         addEventToDB(event);
-        LOGGER.info("Added Agent Alarm for Agent : " + agent.getName() + " ( ID :" + agent.getId() + ")");
+        LOGGER.info("Added Agent Alarm for Agent : " + agent.getDisplayName() + " ( ID :" + agent.getId() + ")");
 
     }
 
@@ -231,14 +245,14 @@ public class AgentUtilV2
         long currentTime = System.currentTimeMillis();
         AgentEventContext event = getControllerEventContext(agent, currentTime, FacilioConstants.Alarm.CLEAR_SEVERITY,null);
         addEventToDB(event);
-        LOGGER.info("Cleared Controller Alarm for Agent : " + agent.getName() + " ( ID :" + agent.getId()+ ")");
+        LOGGER.info("Cleared Controller Alarm for Agent : " + agent.getDisplayName() + " ( ID :" + agent.getId()+ ")");
     }
 
     public void raiseControllerAlarm(FacilioAgent agent,List<Controller> controllers) throws Exception {
         long currentTime = System.currentTimeMillis();
         AgentEventContext event = getControllerEventContext(agent, currentTime, FacilioConstants.Alarm.CRITICAL_SEVERITY,controllers);
         addEventToDB(event);
-        LOGGER.info("Added controller Alarm for Agent : " + agent.getName() + " ( ID :" + agent.getId() + ")");
+        LOGGER.info("Added controller Alarm for Agent : " + agent.getDisplayName() + " ( ID :" + agent.getId() + ")");
 
     }
 
@@ -246,14 +260,14 @@ public class AgentUtilV2
         long currentTime = System.currentTimeMillis();
         AgentEventContext event = getDataMissingEventContext(agent, currentTime, FacilioConstants.Alarm.CRITICAL_SEVERITY, points);
         addEventToDB(event);
-        LOGGER.info("Added Point Alarm for Agent : " + agent.getName() + " ( ID :" + agent.getId() + ")");
+        LOGGER.info("Added Point Alarm for Agent : " + agent.getDisplayName() + " ( ID :" + agent.getId() + ")");
     }
 
     public static void clearPointAlarm(FacilioAgent agent) throws Exception {
         long currentTime = System.currentTimeMillis();
         AgentEventContext event = getDataMissingEventContext(agent, currentTime, FacilioConstants.Alarm.CLEAR_SEVERITY, 0);
         addEventToDB(event);
-        LOGGER.info("Cleared Point Alarm for Agent : " + agent.getName() + " ( ID :" + agent.getId()+ ")");
+        LOGGER.info("Cleared Point Alarm for Agent : " + agent.getDisplayName()+ " ( ID :" + agent.getId()+ ")");
     }
 
     private static AgentEventContext getDataMissingEventContext(FacilioAgent agent, long currentTime, String severity, long pointsDataMissingSize) {
@@ -263,7 +277,7 @@ public class AgentUtilV2
         if (severity.equals(FacilioConstants.Alarm.CRITICAL_SEVERITY)) {
             description = "Data missing for "+ pointsDataMissingSize + " points in agent "+ agent.getDisplayName();
         } else if (severity.equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
-            description = "Data arriving for all points in agent "+agent.getName();
+            description = "Data arriving for all points in agent "+ agent.getDisplayName();
         }
         event.setMessage(message);
         event.setDescription(description);
@@ -280,7 +294,7 @@ public class AgentUtilV2
     private AgentEventContext getControllerEventContext(FacilioAgent agent, long currentTime, String severity, List<Controller> controllers) {
         AgentEventContext event = new AgentEventContext();
         if (severity.equals(FacilioConstants.Alarm.CRITICAL_SEVERITY)){
-            event.setMessage("Data missing for "+controllers.size()+" controllers in agent "+agent.getName());
+            event.setMessage("Data missing for "+controllers.size()+" controllers in agent "+agent.getDisplayName());
             StringBuilder descBuilder = new StringBuilder();
             for (Controller c :
                     controllers) {
@@ -289,7 +303,7 @@ public class AgentUtilV2
             event.setDescription(descBuilder.toString());
             event.setComment("Disconnected time : " + DateTimeUtil.getFormattedTime(currentTime));
         }else{
-            event.setMessage("Data arriving for all controllers in agent "+agent.getName());
+            event.setMessage("Data arriving for all controllers in agent "+agent.getDisplayName());
         }
         event.setSeverityString(severity);
         event.setCreatedTime(currentTime);
@@ -305,11 +319,11 @@ public class AgentUtilV2
         String description = null;
         String message = null;
         if (severity.equals(FacilioConstants.Alarm.CRITICAL_SEVERITY)) {
-            description = "Agent " + agent.getName() + " has lost connection with the facilio cloud on" + DateTimeUtil.getFormattedTime(currentTime);
-            message = "agent "+agent.getName() +" connection lost ";
+            description = "Agent " + agent.getDisplayName()+ " has lost connection with the facilio cloud on" + DateTimeUtil.getFormattedTime(currentTime);
+            message = "Agent "+agent.getDisplayName() +" connection lost ";
         } else if (severity.equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
-            description = "Agent " + agent.getName() + " has reestablished the connection with the facilio cloud on" + DateTimeUtil.getFormattedTime(currentTime);
-            message = "agent "+agent.getName() +" connection reestablished";
+            description = "Agent " + agent.getDisplayName() + " has reestablished the connection with the facilio cloud on" + DateTimeUtil.getFormattedTime(currentTime);
+            message = "Agent "+agent.getDisplayName() +" connection reestablished";
         }
         event.setMessage(message);
         event.setDescription(description);

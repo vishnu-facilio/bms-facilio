@@ -25,6 +25,8 @@ public interface AgentBean {
 
     public boolean editAgent(FacilioAgent agent, JSONObject jsonObject, boolean updateLastDataReceivedTime) throws Exception;
 
+    public boolean updateAgent(FacilioAgent agent) throws Exception;
+
     public void updateAgentLastDataReceivedTime(FacilioAgent agent);
 
     public JSONObject getAgentCountDetails();

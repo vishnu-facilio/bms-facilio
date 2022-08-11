@@ -15,13 +15,22 @@ import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.AnswerHandler;
 import com.facilio.qa.context.ClientAnswerContext;
 import com.facilio.qa.context.QuestionContext;
+import com.facilio.qa.context.QuestionType;
 import com.facilio.qa.context.ResponseContext;
+import com.facilio.qa.context.client.answers.MatrixAnswerContext;
+import com.facilio.qa.context.client.answers.MatrixAnswerContext.ColumnAnswer;
+import com.facilio.qa.context.client.answers.MatrixAnswerContext.MatrixAnswer;
+import com.facilio.qa.context.client.answers.MatrixAnswerContext.RowAnswer;
 import com.facilio.qa.displaylogic.util.DisplayLogicUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
 
 import lombok.SneakyThrows;
 
+/**
+ * @author krishna
+ * This class is to fetch already answered questions in the same response.
+ */
 public class PrepareAnswersForDisplayLogicExecution extends FacilioCommand {
 
 	@Override
@@ -42,17 +51,38 @@ public class PrepareAnswersForDisplayLogicExecution extends FacilioCommand {
 			
 			AnswerContext otherAnswer = otherAnswers.get(questionId);
 			
-			Object answer = null;
+			QuestionContext questionContext = questionMap.get(questionId);
 			
-			if(otherAnswer != null) {
-				AnswerHandler handler = questionMap.get(otherAnswer.getQuestion().getId()).getQuestionType().getAnswerHandler();
+			if(questionContext.getQuestionType() == QuestionType.MULTI_QUESTION || questionContext.getQuestionType() == QuestionType.MATRIX) {
 				
-				ClientAnswerContext clientAnswer = handler.serialize(otherAnswer);
-				
-				answer = clientAnswer.getActualAnswerObject();
+				if(otherAnswer != null) {
+					AnswerHandler handler = questionMap.get(otherAnswer.getQuestion().getId()).getQuestionType().getAnswerHandler();
+					
+					ClientAnswerContext clientAnswer = handler.serialize(otherAnswer);
+					
+					MatrixAnswer answer = (MatrixAnswer)clientAnswer.getActualAnswerObject();
+					
+					for(RowAnswer rowAns : answer.getRowAnswer()) {
+						for(ColumnAnswer columnAns :  rowAns.getColumnAnswer()) {
+							
+							mainRecordMap.put(questionId+"_"+rowAns.getRow()+"_"+columnAns.getColumn(),columnAns.getAnswer());
+						}
+					}
+				}
 			}
-			
-			mainRecordMap.put(String.valueOf(questionId),answer);
+			else {
+				Object answer = null;
+				
+				if(otherAnswer != null) {
+					AnswerHandler handler = questionMap.get(otherAnswer.getQuestion().getId()).getQuestionType().getAnswerHandler();
+					
+					ClientAnswerContext clientAnswer = handler.serialize(otherAnswer);
+					
+					answer = clientAnswer.getActualAnswerObject();
+				}
+				
+				mainRecordMap.put(String.valueOf(questionId),answer);
+			}
 		}
 		
         context.put(DisplayLogicUtil.ANSWER_MAP, mainRecordMap);
@@ -60,11 +90,4 @@ public class PrepareAnswersForDisplayLogicExecution extends FacilioCommand {
 		return false;
 	}
 	
-	@SneakyThrows
-    private Long fetchQuestionId (Map<String, Object> answer)  {
-        Long questionId = (Long) answer.get("question");
-        V3Util.throwRestException(questionId == null, ErrorCode.VALIDATION_ERROR, "Question cannot be null while add/ update of answer");
-        return questionId;
-    }
-
 }

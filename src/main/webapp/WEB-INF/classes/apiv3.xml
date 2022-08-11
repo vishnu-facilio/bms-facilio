@@ -949,6 +949,18 @@
         </action>
     </package>
 
+    <package name="plannedMaintenance" namespace="/api/v3/plannedmaintenance" extends="v3Api">
+        <action name="execute" class="com.facilio.bmsconsoleV3.actions.PlannedMaintenanceAction" method="executeNow">
+        </action>
+        <action name="publish" class="com.facilio.bmsconsoleV3.actions.PlannedMaintenanceAction" method="publishPM">
+        </action>
+        <action name="deactivate" class="com.facilio.bmsconsoleV3.actions.PlannedMaintenanceAction" method="deactivate">
+        </action>
+        <action name="bulkpublish" class="com.facilio.bmsconsoleV3.actions.PlannedMaintenanceAction" method="bulkPublish">
+        </action>
+        <action name="bulkunpublish" class="com.facilio.bmsconsoleV3.actions.PlannedMaintenanceAction" method="bulkUnPublishPM">
+        </action>
+    </package>
     <package name="visitorTypeForm" namespace="/api/v3/visitorTypeForm" extends="v3Api">
         <action name="update"
                 class="com.facilio.bmsconsoleV3.actions.VisitorTypeFormsAction"

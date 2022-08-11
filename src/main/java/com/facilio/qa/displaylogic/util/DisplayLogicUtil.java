@@ -18,6 +18,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.qa.context.QuestionContext;
+import com.facilio.qa.context.questions.BaseMatrixQuestionContext;
 import com.facilio.qa.displaylogic.context.DisplayLogicAction;
 import com.facilio.qa.displaylogic.context.DisplayLogicActionType;
 import com.facilio.qa.displaylogic.context.DisplayLogicContext;
@@ -37,16 +38,29 @@ public class DisplayLogicUtil {
 	public static final String JSON_RESULT_VALUE_STRING = "value";
 	public static final String JSON_RESULT_ACTION_NAME_STRING = "action";
 	public static final String JSON_RESULT_QUESTION_ID_STRING = "questionId";
+	public static final String JSON_RESULT_ROW_ID_STRING = "rowId";
+	public static final String JSON_RESULT_COLUMN_ID_STRING = "columnId";
+	public static final String JSON_DISPLAY_LOGIC_TYPE_STRING = "dispalyLogicType";
 	public static final String DISPLAY_LOGIC_RULE_RESULT_JSON = "resultJsonArray";
 	public static final String IS_DISPLAY_LOGIC_EXECUTION_ON_PAGE_LOAD = "isDisplyLogicExecutionOnPageLoad";
 	
 
-	public static JSONObject getActionJson(Long questionId,DisplayLogicActionType actionType,Object value) {
+	public static JSONObject getActionJson(DisplayLogicContext displayLogicContext,DisplayLogicActionType actionType,Object value) {
 		JSONObject jsonObject = new JSONObject();
 		
-		jsonObject.put(JSON_RESULT_QUESTION_ID_STRING,questionId);
+		jsonObject.put(JSON_RESULT_QUESTION_ID_STRING,displayLogicContext.getQuestionId());
+		if(displayLogicContext.getRowId() != null) {
+			
+			jsonObject.put(JSON_RESULT_ROW_ID_STRING,displayLogicContext.getRowId());
+		}
+		else if (displayLogicContext.getColumnId() != null) {
+			
+			jsonObject.put(JSON_RESULT_ROW_ID_STRING,displayLogicContext.getColumnId());
+		}
+		
 		jsonObject.put(JSON_RESULT_ACTION_NAME_STRING,actionType.getName());
 		jsonObject.put(JSON_RESULT_VALUE_STRING,value);
+		jsonObject.put(JSON_DISPLAY_LOGIC_TYPE_STRING, displayLogicContext.getDisplayLogicTypeEnum());
 		
 		return jsonObject;
 	}
@@ -138,19 +152,27 @@ public class DisplayLogicUtil {
 		return triggerQuestion.stream().collect(Collectors.groupingBy(DisplayLogicTriggerQuestions::getDisplayLogicId));
 	}
 
-	public static void addDisplyLogicJsonToResult(FacilioContext facilioContext,JSONObject json) {
+	public static void addDisplyLogicJsonToResult(FacilioContext facilioContext,JSONObject actionJson) {
 
 		JSONArray resultJson = (JSONArray) facilioContext.get(DisplayLogicUtil.DISPLAY_LOGIC_RULE_RESULT_JSON);
-		resultJson.add(json);
+		resultJson.add(actionJson);
 		
+		DisplayLogicContext displayLogic = (DisplayLogicContext) facilioContext.get(DisplayLogicUtil.DISPLAY_LOGIC_CONTEXT);
 		
 		QuestionContext questionContext = (QuestionContext)facilioContext.get(DisplayLogicUtil.QUESTION_CONTEXT);
+		
 		if(questionContext != null) {
-			JSONArray displayLogicMeta = questionContext.getDisplayLogicMeta();
-			displayLogicMeta = displayLogicMeta == null ? new JSONArray() : displayLogicMeta; 
-			displayLogicMeta.add(json);
-			questionContext.setDisplayLogicMeta(displayLogicMeta);
+			
+			if(displayLogic.getDisplayLogicTypeEnum() == DisplayLogicContext.DisplayLogicType.QUESTION_DISPLAY) {
+				questionContext.getQuestionType().getQuestionHandler().addQuestionDisplayLogicActions(questionContext, displayLogic, actionJson);
+			}
+			
+			else if(displayLogic.getDisplayLogicTypeEnum() == DisplayLogicContext.DisplayLogicType.ANSWER_DISPLAY) {
+				
+				questionContext.getQuestionType().getQuestionHandler().addAnswerDisplayLogicActions(questionContext, displayLogic, actionJson);
+			}
 		}
+		
 	}
 
 }

@@ -56,8 +56,8 @@ public class GetModulesListCommand extends FacilioCommand {
 			Induction.INDUCTION_RESPONSE,
 			ContextNames.TRANSFER_REQUEST,
 			ContextNames.TRANSFER_REQUEST_SHIPMENT,
-			ContextNames.REQUEST_FOR_QUOTATION
-			// ContextNames.PLANNEDMAINTENANCE
+			ContextNames.REQUEST_FOR_QUOTATION,
+			ContextNames.PLANNEDMAINTENANCE
 	});
 	
 	@Override

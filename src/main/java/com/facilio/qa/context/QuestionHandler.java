@@ -1,8 +1,12 @@
 package com.facilio.qa.context;
 
+import com.facilio.qa.displaylogic.context.DisplayLogicContext;
 import com.facilio.v3.commands.SaveOptions;
 
 import java.util.List;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 public interface QuestionHandler<Q extends QuestionContext> {
     default SaveOptions defaultSaveOption() throws Exception { // For now will use the same one for insert and update. We can have separate ones if needed later
@@ -34,5 +38,16 @@ public interface QuestionHandler<Q extends QuestionContext> {
     default boolean hideShowResponseButton (QuestionContext question) throws Exception {
         return false;
     }
-
+    
+    default void addQuestionDisplayLogicActions(QuestionContext question, DisplayLogicContext displayLogic, JSONObject actionJson) {
+		
+    	JSONArray displayLogicMeta = question.getDisplayLogicMeta() == null ? new JSONArray() : question.getDisplayLogicMeta(); 
+		displayLogicMeta.add(actionJson);
+		
+		question.setDisplayLogicMeta(displayLogicMeta);
+    }
+    
+    default void addAnswerDisplayLogicActions(QuestionContext question, DisplayLogicContext displayLogic, JSONObject actionJson) {
+		
+    }
 }

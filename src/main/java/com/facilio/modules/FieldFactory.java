@@ -317,6 +317,19 @@ public class FieldFactory extends BaseFieldFactory {
                 "estimatedEnd",
                 "description"
         }));
+
+        public static final List<String> PM_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
+                "name",
+                "type",
+                "priority",
+                "assignmentType",
+                "category",
+                "spaceCategory",
+                "assetCategory",
+                "isActive",
+                "subject"
+        }));
+
         public static final List<String> POINT_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[] {
                 "displayName",
                 "name",
@@ -10290,6 +10303,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
         fields.add(getField("pageId", "PAGE_ID", module, FieldType.NUMBER));
         fields.add(getField("questionId", "QUESTION_ID", module, FieldType.NUMBER));
+        fields.add(getField("rowId", "ROW_ID", module, FieldType.NUMBER));
+        fields.add(getField("columnId", "COLUMN_ID", module, FieldType.NUMBER));
         fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));
         
         fields.add(getSystemField("sysCreatedTime", module));
@@ -10307,6 +10322,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getIdField(module));
         fields.add(getField("displayLogicId", "DISPLAY_LOGIC_ID", module, FieldType.NUMBER));
         fields.add(getField("triggerQuestionId", "TRIGGER_QUESTION_ID", module, FieldType.NUMBER));
+        fields.add(getField("triggerRowId", "TRIGGER_ROW_ID", module, FieldType.NUMBER));
+        fields.add(getField("triggerColumnId", "TRIGGER_COLUMN_ID", module, FieldType.NUMBER));
         
         return fields;
     }
@@ -10371,6 +10388,15 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("modifiedBy", "MODIFIED_BY", module, FieldType.LOOKUP));
         fields.add(getField("name", "NAME", module, FieldType.STRING));
         fields.add(getField("fileSize", "FILE_SIZE", module, FieldType.NUMBER));
+        return fields;
+    }
+
+    public static List<FacilioField> getMailMapperFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getMailMapperModule();
+        fields.add(getIdField(module));
+        fields.add(getField("orgId", "ORGID", module, FieldType.NUMBER));
+        fields.add(getSystemField("sysCreatedTime", module));
         return fields;
     }
 

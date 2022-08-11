@@ -154,8 +154,13 @@ public class GetAllFieldsCommand extends FacilioCommand {
 					if(!fieldObject.getName().equals("template") && !fieldObject.getName().equals("sysCreatedTime")) {
 						fields.add(fieldObject);
 					}
-				}
-				else {
+				} else if ("plannedmaintenance".equals(moduleName)) {
+					if(!fieldObject.isDefault()) {
+						fields.add(fieldObject);
+					} else if(FieldFactory.Fields.PM_FIELDS_INCLUDE.contains(fieldObject.getName())) {
+						fields.add(fieldObject);
+					}
+				} else {
 					fields.add(fieldObject);
 				}
 			}
@@ -164,6 +169,10 @@ public class GetAllFieldsCommand extends FacilioCommand {
 			for(FacilioField fieldObject:allFields) {
 				if ( moduleName.equals(Inspection.INSPECTION_RESPONSE) || moduleName.equals(Induction.INDUCTION_RESPONSE) ) {
 					if(!fieldObject.getName().equals("template") && !fieldObject.getName().equals("sysCreatedTime")) {
+						fields.add(fieldObject);
+					}
+				} else if (moduleName.equals(ContextNames.PLANNEDMAINTENANCE)) {
+					if (FieldFactory.Fields.PM_FIELDS_INCLUDE.contains(fieldObject.getName())) {
 						fields.add(fieldObject);
 					}
 				}

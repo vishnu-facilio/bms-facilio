@@ -23,6 +23,7 @@ public class HomepageWidgetData {
     String moduleName;
     Long RecordId;
     String secondaryText2;
+    String date;
     //List<JSONObject> params;
     JSONObject params;
 

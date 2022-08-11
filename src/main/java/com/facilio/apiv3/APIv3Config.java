@@ -59,6 +59,7 @@ import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanItemsLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanServicesCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanToolsLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.jobplan.AddPlannerIdFilterCriteriaCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.FetchJobPlanLookupCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.FillJobPlanDetailsCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.ValidationForJobPlanCategory;
@@ -113,6 +114,7 @@ import com.facilio.bmsconsoleV3.commands.vendor.LoadVendorLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.LoadVendorQuoteLineItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.LoadVendorQuotesLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.SetVendorQuotesLineItemsCommandV3;
+import com.facilio.bmsconsoleV3.commands.vendorQuotes.SetVendorQuotesLineItemsOnListCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorcontact.LoadVendorContactLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitor.LoadVisitorLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlog.*;
@@ -172,6 +174,13 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.elasticsearch.command.PushDataToESCommand;
+import com.facilio.mailtracking.MailConstants;
+import com.facilio.mailtracking.OutgoingMailAPI;
+import com.facilio.mailtracking.commands.MailReadOnlyChainFactory;
+import com.facilio.mailtracking.commands.OutgoingMailLoggerListAfterFetchCommand;
+import com.facilio.mailtracking.commands.OutgoingRecipientLoadSupplementsCommand;
+import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
+import com.facilio.mailtracking.context.V3OutgoingRecipientContext;
 import com.facilio.modules.FacilioModule;
 import com.facilio.readingrule.faultimpact.FaultImpactContext;
 import com.facilio.readingrule.faultimpact.FaultImpactNameSpaceFieldContext;
@@ -798,6 +807,7 @@ public class APIv3Config {
                 .update()
                 .list()
                 .beforeFetch(new LoadVendorQuotesLookupCommandV3())
+                .afterFetch(new SetVendorQuotesLineItemsOnListCommandV3())
                 .summary()
                 .beforeFetch(new LoadVendorQuotesLookupCommandV3())
                 .afterFetch(new SetVendorQuotesLineItemsCommandV3())
@@ -2175,4 +2185,23 @@ public class APIv3Config {
 							 .afterFetch(new FetchLabourAndUserContextForPeople ())
 							 .build();
 	}
+
+
+    @Module(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER)
+    public static Supplier<V3Config> getSendMailTracker() {
+        return () -> new V3Config(V3OutgoingMailLogContext.class, null)
+                .list()
+                .afterFetch(new OutgoingMailLoggerListAfterFetchCommand())
+                .build();
+    }
+
+    @Module(MailConstants.ModuleNames.OUTGOING_RECIPIENT_LOGGER)
+    public static Supplier<V3Config> getSendMailTrackerExpander() {
+        return () -> new V3Config(V3OutgoingRecipientContext.class, null)
+                .list()
+                .beforeFetch(MailReadOnlyChainFactory.getBeforeFetchMailRecipientListChain())
+                .summary()
+                .beforeFetch(new OutgoingRecipientLoadSupplementsCommand())
+                .build();
+    }
 }

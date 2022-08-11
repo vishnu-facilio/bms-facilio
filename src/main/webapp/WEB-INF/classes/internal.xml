@@ -25,6 +25,18 @@
 			</result>
 		</action>
 
+		<action name="updateMailStatus"
+				class="com.facilio.mailtracking.actions.OutgoingMailResponseAction">
+			<result name="success" type="json">
+				<param name="statusCode">200</param>
+				<param name="includeProperties">status</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="includeProperties">status</param>
+			</result>
+		</action>
+
 		<action name="testSoapRequest">
 			<result name="success">/jsps/testsoaprequest.jsp</result>
 		</action>

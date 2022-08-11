@@ -594,6 +594,11 @@ public class BmsDBConf extends DBConf {
     }
 
     @Override
+    public String getMailTrackingConfName() throws Exception {
+        return FacilioProperties.getConfig("outgoing.mail.tracking.conf");
+    }
+
+    @Override
 	public Account getCurrentAccount() throws Exception {
 		return AccountUtil.getCurrentAccount();
 	}

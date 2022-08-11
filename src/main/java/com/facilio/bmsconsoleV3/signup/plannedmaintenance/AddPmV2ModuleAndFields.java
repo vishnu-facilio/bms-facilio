@@ -3,10 +3,15 @@ package com.facilio.bmsconsoleV3.signup.plannedmaintenance;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.RollUpField;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -322,9 +327,31 @@ public class AddPmV2ModuleAndFields extends SignUpData {
                 FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
         fields.add(generatedUptoField);
 
+        NumberField resourceCountField = getNumberField(module, "resourceCount", "Resource Count", "RP_COUNT",
+                FacilioField.FieldDisplayType.NUMBER, false, false, true, orgId);
+        fields.add(resourceCountField);
+
         module.setFields(fields);
 
         return module;
+    }
+
+
+    public static RollUpField constructRollUpField(String desc, FacilioModule childModule, FacilioField childLookupField, FacilioModule parentModule, FacilioField parentRollupField, Condition condition) throws Exception {
+        RollUpField rollUp = new RollUpField();
+        rollUp.setDescription(desc);
+        rollUp.setAggregateFunctionId(BmsAggregateOperators.CommonAggregateOperator.COUNT.getValue());
+        rollUp.setChildModuleId(childModule.getModuleId());
+        rollUp.setChildFieldId(childLookupField.getFieldId());
+        rollUp.setParentModuleId(parentModule.getModuleId());
+        rollUp.setParentRollUpFieldId(parentRollupField.getFieldId());
+        rollUp.setIsSystemRollUpField(true);
+        if (condition != null) {
+            Criteria criteria = new Criteria();
+            criteria.addAndCondition(condition);
+            rollUp.setChildCriteriaId(CriteriaAPI.addCriteria(criteria));
+        }
+        return rollUp;
     }
 
 
@@ -348,7 +375,7 @@ public class AddPmV2ModuleAndFields extends SignUpData {
         /* resource Field */
         LookupField resourceField = getLookupField(module, moduleBean.getModule(FacilioConstants.ContextNames.RESOURCE),
                 "resource", "Resource", "RESOURCE_ID", null, FacilioField.FieldDisplayType.LOOKUP_SIMPLE,
-                false, false, true, orgId);
+                false, false, true, orgId, true);
         fields.add(resourceField);
 
         /* jobPlan Field */
@@ -608,12 +635,18 @@ public class AddPmV2ModuleAndFields extends SignUpData {
     private LookupField getLookupField(FacilioModule fieldModule, FacilioModule lookUpModule, String name, String displayName,
                                        String columnName, String specialType, FacilioField.FieldDisplayType displayType, Boolean required,
                                        Boolean disabled, Boolean isDefault, Long orgId) {
+       return getLookupField(fieldModule, lookUpModule, name, displayName, columnName, specialType, displayType, required, disabled, isDefault, orgId, false);
+    }
+    private LookupField getLookupField(FacilioModule fieldModule, FacilioModule lookUpModule, String name, String displayName,
+                                       String columnName, String specialType, FacilioField.FieldDisplayType displayType, Boolean required,
+                                       Boolean disabled, Boolean isDefault, Long orgId, boolean isMainField) {
         LookupField lookupField = FieldFactory.getField(name, displayName, columnName, fieldModule, FieldType.LOOKUP);
         lookupField.setDisplayType(displayType);
         lookupField.setRequired(required);
         lookupField.setDisabled(disabled);
         lookupField.setDefault(isDefault);
         lookupField.setOrgId(orgId);
+        lookupField.setMainField(isMainField);
 
         if (lookUpModule != null) {
             lookupField.setLookupModule(lookUpModule);
