@@ -6,7 +6,6 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.jobplan.FetchJobPlanLookupCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.FillJobPlanDetailsCommand;
-import com.facilio.bmsconsoleV3.commands.jobplan.PrefillPMJobPlanfields;
 import com.facilio.bmsconsoleV3.commands.jobplan.ValidationForJobPlanCategory;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
