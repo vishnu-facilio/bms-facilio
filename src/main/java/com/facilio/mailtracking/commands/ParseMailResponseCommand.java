@@ -40,7 +40,6 @@ public class ParseMailResponseCommand {
             mailBean.updateBounceStatus(mapperId, bounce);
             LOGGER.info("Bounce status updated successfully for mapperId  : "+mapperIdList);
         }
-        LOGGER.info("Mail response status has been updated for SendMail with id : "+ mapperId);
         return mapperId;
     }
 

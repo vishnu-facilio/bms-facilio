@@ -59,7 +59,9 @@ public class OutgoingMailAPI {
         if(mapperId != null) {
             mailLogContext.setMapperId(mapperId);
         }
-        mailLogContext.setRecordsModuleId(FacilioUtil.parseLong(mailJson.get("moduleId")));
+        if(mailJson.containsKey("moduleId")) {
+            mailLogContext.setRecordsModuleId(FacilioUtil.parseLong(mailJson.get("moduleId")));
+        }
         if(mailJson.containsKey(MailConstants.Params.LOGGER_ID)) {
             mailLogContext.setId(FacilioUtil.parseLong(mailJson.get(MailConstants.Params.LOGGER_ID)));
         }

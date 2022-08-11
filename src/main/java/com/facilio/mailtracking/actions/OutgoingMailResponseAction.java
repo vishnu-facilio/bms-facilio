@@ -9,6 +9,7 @@ import lombok.extern.log4j.Log4j;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.json.JSONUtil;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStreamReader;
@@ -35,43 +36,35 @@ public class OutgoingMailResponseAction extends ActionSupport {
             awsMailResponseContext.setBounce(bounce);
             String mapperId = OutgoingMailAPI.parseMailResponse(awsMailResponseContext);
             status = "Successfully parsed and updated aws mail responses for mapperId :: "+mapperId;
+            LOGGER.info(status);
         } catch (Exception e) {
-            topicSignatureCheck();
-            getErrMsg(e);
+            parserErrorMsg(e);
             return ERROR;
         }
         return SUCCESS;
     }
 
-    private void getErrMsg(Exception e) {
-        status = e.getMessage();
-        if(status == null) {
-            StringBuffer er = new StringBuffer();
-            er.append(e);
-            er.append(" at ");
-            StackTraceElement st = e.getStackTrace()[0];
-            er.append(st.getClassName());
-            er.append(".");
-            er.append(st.getMethodName());
-            er.append("(");
-            er.append(st.getFileName());
-            er.append(":");
-            er.append(st.getLineNumber());
-            er.append(")");
-            status = er.toString();
+    private void parserErrorMsg(Exception e) throws Exception {
+        LOGGER.error("OG_MAIL_ERROR :: OutgoingMailResponse parsing failed.. ");
+        if(e.getMessage() == null) {
+            status = e.getStackTrace()[0] + " :: " +e.toString();
+        } else {
+            status = e.getStackTrace()[1] + " :: "+e.getMessage();
         }
+        topicSignatureCheck();
+        LOGGER.error("OG_MAIL_ERROR :: ", e);
     }
 
     private void topicSignatureCheck() throws Exception {
-        LOGGER.info("OutgoingMailResponse parsing failed.. ");
         HttpServletRequest request = ServletActionContext.getRequest();
         ((SecurityRequestWrapper)((org.apache.struts2.dispatcher.StrutsRequestWrapper) request).getRequest()).reset();
         try(InputStreamReader data = new InputStreamReader(request.getInputStream(), StandardCharsets.UTF_8);) {
-            Map requestMap = (Map) JSONUtil.deserialize(data);
-            if(requestMap.containsKey("SubscribeURL")) {
-                LOGGER.info("SubscribeURL detected from aws. Please sign up");
+            JSONParser jsonParser = new JSONParser();
+            JSONObject inputJson = (JSONObject)jsonParser.parse(data);
+            if(inputJson.containsKey("SubscribeURL")) {
+                LOGGER.error("SubscribeURL detected from aws. Please sign up");
             }
-            LOGGER.info(requestMap);
+            LOGGER.error("failedData :: "+inputJson);
         }
     }
 
