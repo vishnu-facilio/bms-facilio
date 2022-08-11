@@ -143,7 +143,7 @@ public class CloudAgent extends FacilioJob {
 	                }
 				}
 				
-				payload.put("publishType", type);
+				payload.put("publishType", type.asInt());
                 payload.put("timestamp", timeStamp);
 			}
 		}
