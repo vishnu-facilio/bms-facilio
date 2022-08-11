@@ -2,6 +2,12 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
+import com.facilio.bmsconsole.timelineview.context.TimelineViewContext;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.EnumField;
+import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -35,20 +41,8 @@ public class AddCVCommand extends FacilioCommand {
 			Criteria criteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
 			if (view.getCriteria() != null) {
 				Criteria viewCriteria = view.getCriteria();
-				boolean isPm = moduleName.equals(ContextNames.PREVENTIVE_MAINTENANCE);
-				List<String> templateFields = null;
-				if (isPm) {
-					templateFields = PreventiveMaintenanceAPI.getTemplateFields();
-				}
-				for (String key : viewCriteria.getConditions().keySet()) {
-					Condition condition = viewCriteria.getConditions().get(key);
-					String fieldModuleName = moduleName;
-					if(isPm) {
-						fieldModuleName = PreventiveMaintenanceAPI.getPmModule(templateFields, condition.getFieldName());
-					}
-					FacilioField field = modBean.getField(condition.getFieldName(), fieldModuleName);
-					condition.setField(field);
-				}
+				updateConditionField(modBean, moduleName, viewCriteria);
+
 				if (criteria != null) {
 					criteria.andCriteria(viewCriteria);
 				}
@@ -56,7 +50,22 @@ public class AddCVCommand extends FacilioCommand {
 					criteria = viewCriteria;
 				}
 			}
-			
+
+			if(view instanceof TimelineViewContext && ((TimelineViewContext) view).getGroupCriteria() != null) {
+				TimelineViewContext timelineView = (TimelineViewContext) view;
+				FacilioField field = modBean.getField(timelineView.getGroupByFieldId());
+				if(field instanceof LookupField) {
+					updateConditionField(modBean, ((LookupField)field).getLookupModule().getName(), timelineView.getGroupCriteria());
+				}
+				else if(field instanceof EnumField) {
+					Criteria groupCriteria = timelineView.getGroupCriteria();
+					for (String key : groupCriteria.getConditions().keySet()) {
+						Condition condition = groupCriteria.getConditions().get(key);
+						condition.setField(FieldFactory.getField("index", "IDX", ModuleFactory.getEnumFieldValuesModule(), FieldType.NUMBER));
+					}
+				}
+			}
+
 			if(view.getIncludeParentCriteria()) {
 				FacilioView parentView = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 				if (criteria == null && parentView != null) {
@@ -115,4 +124,20 @@ public class AddCVCommand extends FacilioCommand {
 		return false;
 	}
 
+	private static void updateConditionField(ModuleBean modBean, String moduleName, Criteria criteria) throws Exception{
+		boolean isPm = moduleName.equals(ContextNames.PREVENTIVE_MAINTENANCE);
+		List<String> templateFields = null;
+		if (isPm) {
+			templateFields = PreventiveMaintenanceAPI.getTemplateFields();
+		}
+		for (String key : criteria.getConditions().keySet()) {
+			Condition condition = criteria.getConditions().get(key);
+			String fieldModuleName = moduleName;
+			if(isPm) {
+				fieldModuleName = PreventiveMaintenanceAPI.getPmModule(templateFields, condition.getFieldName());
+			}
+			FacilioField field = modBean.getField(condition.getFieldName(), fieldModuleName);
+			condition.setField(field);
+		}
+	}
 }

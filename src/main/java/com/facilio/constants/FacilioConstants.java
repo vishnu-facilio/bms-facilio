@@ -1487,6 +1487,7 @@ public class FacilioConstants {
 		public static final String IDS_TO_UPDATE_COUNT = "ids_to_update_count";
 
 		public static final String PAGE = "page";
+		public static final String PER_PAGE = "perPage";
 
 		public static final String HOME_PAGE = "homepage";
 		public static final String RELATED_LIST_META = "relatedListMeta";
@@ -2254,6 +2255,12 @@ public class FacilioConstants {
 			public static final String FLOORPLAN_LAYER = "floorplanlayer";
 			public static final String FLOORPLAN_CLIENT_LAYER = "floorplanlayers";
 
+		}
+
+		public static class FormValidationRuleConstants {
+			public static final String RULE = "formValidationRuleContext";
+			public static final String RULES = "formValidationRuleContexts";
+			public static final String RESULT = "formValidationRuleResult";
 		}
 
 		public static class SpaceCategory {
