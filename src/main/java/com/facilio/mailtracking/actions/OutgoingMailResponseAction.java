@@ -63,14 +63,15 @@ public class OutgoingMailResponseAction extends ActionSupport {
     }
 
     private void topicSignatureCheck() throws Exception {
+        LOGGER.info("OutgoingMailResponse parsing failed.. ");
         HttpServletRequest request = ServletActionContext.getRequest();
         ((SecurityRequestWrapper)((org.apache.struts2.dispatcher.StrutsRequestWrapper) request).getRequest()).reset();
         try(InputStreamReader data = new InputStreamReader(request.getInputStream(), StandardCharsets.UTF_8);) {
             Map requestMap = (Map) JSONUtil.deserialize(data);
             if(requestMap.containsKey("SubscribeURL")) {
                 LOGGER.info("SubscribeURL detected from aws. Please sign up");
-                LOGGER.info(requestMap);
             }
+            LOGGER.info(requestMap);
         }
     }
 
