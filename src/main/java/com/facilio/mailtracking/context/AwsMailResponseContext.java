@@ -11,9 +11,4 @@ public class AwsMailResponseContext {
     private JSONObject delivery;
     private JSONObject bounce;
 
-    public AwsMailResponseContext(String eventType, JSONObject mail) {
-        this.eventType = eventType;
-        this.mail = mail;
-    }
-
 }
