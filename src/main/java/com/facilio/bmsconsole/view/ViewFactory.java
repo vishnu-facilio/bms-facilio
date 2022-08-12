@@ -925,6 +925,8 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllJobPlanView().setOrder(order++));
+		views.put("active", getActiveJobPlanView().setOrder(order++));
+		views.put("inactive", getInActiveJobPlanView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.JOB_PLAN, views);
 
 		order = 1;
@@ -6963,7 +6965,65 @@ public class ViewFactory {
 
 		return open;
 	}
-	
+
+	/* JobPlan View Declarations */
+	private static FacilioView getActiveJobPlanView() {
+		Criteria criteria = getActiveJobPlanCriteria();
+		FacilioModule jobPlanModule = ModuleFactory.getJobPlanModule();
+		FacilioField idField = FieldFactory.getIdField();
+		idField.setModule(jobPlanModule);
+		FacilioView allView = new FacilioView();
+		allView.setName("active");
+		allView.setDisplayName("Active");
+		allView.setCriteria(criteria);
+		return allView;
+	}
+
+	private static FacilioView getInActiveJobPlanView() {
+		Criteria criteria = getInActiveJobPlanCriteria();
+		FacilioModule jobPlanModule = ModuleFactory.getJobPlanModule();
+		FacilioField idField = FieldFactory.getIdField();
+		idField.setModule(jobPlanModule);
+		FacilioView allView = new FacilioView();
+		allView.setName("inactive");
+		allView.setDisplayName("Inactive");
+		allView.setCriteria(criteria);
+		return allView;
+	}
+
+	public static Criteria getActiveJobPlanCriteria() {
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(getJobPlanBooleanCondition("isActive", "IS_ACTIVE", "true"));
+		criteria.addAndCondition(getJobPlanBooleanCondition("isDisabled", "IS_DISABLED", "false"));
+		return criteria;
+	}
+
+	public static Criteria getInActiveJobPlanCriteria() {
+		Criteria criteria = new Criteria();
+
+		criteria.addCondition("1", getJobPlanBooleanCondition("isActive", "IS_ACTIVE", "false"));
+		criteria.addCondition("2", getJobPlanBooleanCondition("isDisabled", "IS_DISABLED", "false"));
+		criteria.setPattern("(1 and 2)");
+
+		return criteria;
+	}
+
+	public static Condition getJobPlanBooleanCondition(String fieldName, String columnName, String conditionValue) {
+		FacilioModule module = ModuleFactory.getJobPlanModule();
+		FacilioField field = new FacilioField();
+		field.setName(fieldName);
+		field.setColumnName(columnName);
+		field.setDataType(FieldType.BOOLEAN);
+		field.setModule(module);
+
+		Condition condition = new Condition();
+		condition.setField(field);
+		condition.setOperator(BooleanOperators.IS);
+		condition.setValue(conditionValue);
+
+		return condition;
+	}
+
 	private static FacilioView getAllInsuranceView() {
 
 		FacilioView allView = new FacilioView();

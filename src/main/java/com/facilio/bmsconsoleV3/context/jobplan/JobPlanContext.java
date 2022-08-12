@@ -4,6 +4,8 @@ import com.facilio.bmsconsole.context.PlannedMaintenance.PMScopeAssigmentType;
 import com.facilio.bmsconsoleV3.context.V3SpaceCategoryContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.v3.context.V3Context;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -65,4 +67,19 @@ public class JobPlanContext extends V3Context {
     public void setSpaceCategory(V3SpaceCategoryContext spaceCategory) {
         this.spaceCategory = spaceCategory;
     }
+
+
+    /*
+        When JobPlan is published isActive is set to true, after that isActive cannot be made false.
+     */
+    @Getter
+    @Setter
+    private Boolean isActive;
+
+    /*
+        isDisabled is used to track if JobPlan could be used or not.
+     */
+    @Getter
+    @Setter
+    private Boolean isDisabled;
 }

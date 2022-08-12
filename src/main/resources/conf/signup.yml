@@ -133,6 +133,9 @@ classes:
     #Adding Modules and Fields for V2 Planned Maintenance
   - com.facilio.bmsconsoleV3.signup.plannedmaintenance.AddPmV2ModuleAndFields
 
+    #Adding isActive, isDisable Fields for JobPlan module
+  - com.facilio.bmsconsoleV3.signup.jobPlan.AddJobPlanActiveDeActivateFields
+
   - com.facilio.bmsconsoleV3.signup.craft.AddCraftModules
   - com.facilio.bmsconsoleV3.signup.craft.LabourCraftAndSkillsModules
   - com.facilio.bmsconsoleV3.signup.people.AddPeopleModuleFields
