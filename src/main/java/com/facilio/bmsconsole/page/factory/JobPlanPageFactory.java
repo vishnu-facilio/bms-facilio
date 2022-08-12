@@ -41,7 +41,7 @@ public class JobPlanPageFactory extends PageFactory {
             addInventoryTab(page);
         }
 
-        Page.Tab tab2 = page.new Tab("Notes & Information");
+        Page.Tab tab2 = page.new Tab("Notes & Attachments");
         page.addTab(tab2);
         Page.Section tab2Sec1 = page.new Section();
         tab2.addSection(tab2Sec1);

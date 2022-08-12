@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -78,7 +79,13 @@ public class ConstructUpdateCustomActivityCommandV3 extends FacilioCommand {
             }
             info.put("changeSet", changeList);
 
-            CommonCommandUtil.addActivityToContext(recordId, -1, CommonActivityType.UPDATE_RECORD, info, (FacilioContext) context);
+            // Adding this conditional check as this is used in both Create & Update Chain
+            EventType eventType = (EventType) context.get(ContextNames.EVENT_TYPE);
+            if(eventType == EventType.CREATE){
+                CommonCommandUtil.addActivityToContext(recordId, -1, CommonActivityType.ADD_RECORD, info, (FacilioContext) context);
+            }else if (eventType == EventType.EDIT){
+                CommonCommandUtil.addActivityToContext(recordId, -1, CommonActivityType.UPDATE_RECORD, info, (FacilioContext) context);
+            }
         }
         
         // Temp... move this to a common place
