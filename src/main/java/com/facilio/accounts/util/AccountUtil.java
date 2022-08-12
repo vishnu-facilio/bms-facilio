@@ -504,7 +504,7 @@ public class AccountUtil {
 		KIOSK_APP_FORM(78, 16384, LicenseMapping.GROUP2LICENSE),
 		ML_POINTS_SUGGESTIONS(79,32768,LicenseMapping.GROUP2LICENSE),
 		PLANNED_INVENTORY(80, 65536, LicenseMapping.GROUP2LICENSE),//2^16
-		PM_PLANNER(81, 131072, LicenseMapping.GROUP2LICENSE)
+		PM_PLANNER(81, 131072, new String[]{ContextNames.PLANNEDMAINTENANCE} , LicenseMapping.GROUP2LICENSE)
 		;
 		public int featureId;
 		private long license;
