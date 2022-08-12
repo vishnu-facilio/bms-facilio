@@ -4,10 +4,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
+import com.facilio.accounts.bean.RoleBean;
 import com.facilio.accounts.dto.RoleApp;
+import com.facilio.accounts.util.RoleFactory;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
+import com.facilio.wmsv2.handler.AuditLogHandler;
 import org.apache.commons.chain.Command;
 
 import com.facilio.accounts.dto.NewPermission;
@@ -23,6 +29,12 @@ import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import static com.facilio.bmsconsole.util.AuditLogUtil.sendAuditLogs;
 
 public class RoleAction extends ActionSupport {
 
@@ -167,7 +179,7 @@ public class RoleAction extends ActionSupport {
         Command addRole = FacilioChainFactory.getAddRoleCommand();
         addRole.execute(context);
         setRoleId(role.getRoleId());
-
+        addAuditLogs(roleId,"added");
         return SUCCESS;
     }
 
@@ -183,8 +195,8 @@ public class RoleAction extends ActionSupport {
 
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.ROLE_ID, getRoleId());
-
         Command deleteRole = FacilioChainFactory.getDeleteRoleCommand();
+        addAuditLogs(roleId,"deleted");
         deleteRole.execute(context);
 
         return SUCCESS;
@@ -201,7 +213,7 @@ public class RoleAction extends ActionSupport {
         Command updateRole = FacilioChainFactory.getUpdateRoleCommand();
         updateRole.execute(context);
         setRoleId(role.getRoleId());
-
+        addAuditLogs(roleId,"updated");
         return SUCCESS;
     }
 
@@ -274,5 +286,31 @@ public class RoleAction extends ActionSupport {
         setRoleId(role.getRoleId());
         return SUCCESS;
 	}
+    private void addAuditLogs(long roleId , String action) throws Exception {
+        Role role1 =  AccountUtil.getRoleBean().getRole(roleId);
+       AuditLogHandler.ActionType actionType = null;
+        if (action.equals("added")) {
+            actionType = AuditLogHandler.ActionType.ADD;
+        } else if (action.equals("updated")) {
+            actionType = AuditLogHandler.ActionType.UPDATE;
+        } else if (action.equals("deleted")) {
+            actionType = AuditLogHandler.ActionType.DELETE;
+        }
+        sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("Role  {%s}  has been %s.", role1.getName(), action),
+                String.format("Role  %s  has been %s.", role1.getName(),  action),
+                AuditLogHandler.RecordType.SETTING,
+                "Role", role1.getRoleId())
+                .setActionType(actionType)
+                .setLinkConfig(((Function<Void, String>) o -> {
+                    JSONArray array = new JSONArray();
+                    JSONObject json = new JSONObject();
+                    json.put("id", role1.getRoleId());
+                     json.put("name", role1.getName());
+                    json.put("navigateTo", "Roles");
+                    array.add(json);
+                    return array.toJSONString();
+                }).apply(null))
+        );
+    }
 
 }
