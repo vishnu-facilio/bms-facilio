@@ -805,7 +805,8 @@ public class ColumnFactory {
 		
 		columns.add(new ViewField("exception", "EXCEPTION"));
 		columns.add(new ViewField("logValue", "LOG VALUE"));
-
+		columns.add(new ViewField("createdTime", "CREATED TIME"));
+		
 		return columns;
 	}
 	

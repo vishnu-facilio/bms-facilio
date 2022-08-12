@@ -4,7 +4,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
+import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 

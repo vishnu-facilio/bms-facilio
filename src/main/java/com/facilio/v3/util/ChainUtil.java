@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
+import com.facilio.bmsconsoleV3.commands.AddOrUpdateSLABreachJobCommandV3;
 import com.facilio.bmsconsoleV3.commands.ExecutePostTransactionWorkFlowsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.VerifyApprovalCommandV3;
 import com.facilio.chain.FacilioChain;
@@ -350,7 +351,7 @@ public class ChainUtil {
         transactionChain.addCommand(new UpdateStateForModuleDataCommand());
 
         addIfNotNull(transactionChain, afterSaveCommand);
-        addWorkflowChain(transactionChain);
+        updateWorkflowChain(transactionChain);
         // execute custom button action if the custom button id is sent
         transactionChain.addCommand(new ExecuteSpecificWorkflowsCommand(WorkflowRuleContext.RuleType.CUSTOM_BUTTON));
 
@@ -511,6 +512,22 @@ public class ChainUtil {
         chain.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
                 .addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION))
         );
+        chain.addCommand(new ExecuteSLAWorkFlowsCommand());
+        chain.addCommand(new AddOrUpdateSLABreachJobCommandV3(true));
+        chain.addCommand(new ExecuteRollUpFieldCommand());
+    }
+
+    public static void updateWorkflowChain(Chain chain){
+        chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.SATISFACTION_SURVEY_RULE));
+        chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.SURVEY_ACTION_RULE));
+        chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE));
+        chain.addCommand(new ExecuteStateTransitionsCommand(WorkflowRuleContext.RuleType.STATE_RULE));
+        chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW));
+        chain.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
+                .addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION))
+        );
+        chain.addCommand(new AddOrUpdateSLABreachJobCommandV3(false));
+        chain.addCommand(new ExecuteSLACommitmentWorkflowsCommand());
         chain.addCommand(new ExecuteRollUpFieldCommand());
     }
 

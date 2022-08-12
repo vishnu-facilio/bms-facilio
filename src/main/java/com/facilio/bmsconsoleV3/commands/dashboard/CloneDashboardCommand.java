@@ -6,6 +6,8 @@ import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardTabContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.bmsconsoleV3.context.WidgetSectionContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
@@ -51,8 +53,9 @@ public class CloneDashboardCommand extends FacilioCommand {
             if(dashboard != null && dashboard.getDashboardTabContexts() != null )
             {
                 List<DashboardWidgetContext> widgets = dashboard.getDashboardWidgets();
-                if(widgets != null) {
-                    cloneDashboardWidgets(widgets, cloned_dashboard.getId());
+                if(widgets != null && widgets.size() > 0) {
+                    List<DashboardWidgetContext> widgets_with_section =  DashboardUtil.getDashboardWidgetsWithSection(widgets);
+                    cloneDashboardWidgets(widgets_with_section, cloned_dashboard.getId());
                 }
                 for(DashboardTabContext dashboardTabContext : dashboard.getDashboardTabContexts())
                 {
@@ -65,7 +68,8 @@ public class CloneDashboardCommand extends FacilioCommand {
                         List<DashboardWidgetContext>  dashboard_tab_widgets = dashboardTabContext_obj.getDashboardWidgets();
                         if(dashboard_tab_widgets != null && dashboard_tab_widgets.size() > 0)
                         {
-                            addWidgetForDashboardTab(dashboard_tab_widgets , newDashboardTabContext.getId(), cloned_dashboard.getId());
+                            List<DashboardWidgetContext> widgets_with_section =  DashboardUtil.getDashboardWidgetsWithSection(dashboard_tab_widgets);
+                            addWidgetForDashboardTab(widgets_with_section , newDashboardTabContext.getId(), cloned_dashboard.getId());
                         }
                     }
                 }
@@ -74,8 +78,9 @@ public class CloneDashboardCommand extends FacilioCommand {
             else if(dashboard != null)
             {
                 List<DashboardWidgetContext> widgets = dashboard.getDashboardWidgets();
-                if(widgets != null) {
-                    cloneDashboardWidgets(widgets, cloned_dashboard.getId());
+                List<DashboardWidgetContext> widgets_with_section =  DashboardUtil.getDashboardWidgetsWithSection(widgets);
+                if(widgets_with_section != null) {
+                    cloneDashboardWidgets(widgets_with_section, cloned_dashboard.getId());
                     context.put("cloned_dashbaord", DashboardUtil.getDashboardWithWidgets(cloned_dashboard.getLinkName(), null));
                 }
             }
@@ -93,20 +98,12 @@ public class CloneDashboardCommand extends FacilioCommand {
 
     private void cloneDashboardWidgets(List<DashboardWidgetContext> widgetContexts, Long dashboardId)throws Exception
     {
-        FacilioChain addWidgetChain = null;
-        FacilioContext context = null;
         for(DashboardWidgetContext widget : widgetContexts)
         {
-            addWidgetChain = TransactionChainFactory.getAddWidgetChain();
-            widget.setDashboardId(dashboardId);
             if(widget.getDashboardTabId() != null){
-                   continue;
+                continue;
             }
-            context = new FacilioContext();
-            context.put(FacilioConstants.ContextNames.WIDGET, widget);
-            context.put(FacilioConstants.ContextNames.WIDGET_TYPE, widget.getWidgetType());
-            context.put(FacilioConstants.ContextNames.DASHBOARD_ID, dashboardId);
-            addWidgetChain.execute(context);
+            createDashboardWidgetWithSections(widget , dashboardId, null);
         }
     }
     private DashboardTabContext setNewDashboardTabData(DashboardTabContext dashboardTabContext)throws Exception
@@ -126,18 +123,53 @@ public class CloneDashboardCommand extends FacilioCommand {
     }
     private void addWidgetForDashboardTab(List<DashboardWidgetContext> widgets, Long dashboardTabId, Long newdashboardId)throws Exception
     {
-        FacilioChain addWidgetChain = null;
-        FacilioContext context = null;
         for (DashboardWidgetContext widget : widgets)
         {
             widget.setId(-1);
-            addWidgetChain = TransactionChainFactory.getAddWidgetChain();
-            context = new FacilioContext();
+            createDashboardWidgetWithSections(widget, newdashboardId, dashboardTabId);
+        }
+    }
+
+
+    private void createDashboardWidgetWithSections(DashboardWidgetContext widget, Long dashboardId, Long dashboardTabId)throws Exception
+    {
+        FacilioChain addWidgetChain = null;
+        FacilioContext context = null;
+        if(widget.getWidgetType().equals(DashboardWidgetContext.WidgetType.SECTION))
+        {
+            FacilioChain addSectionWidgetChain = TransactionChainFactoryV3.getAddWidgetChainV3();
             widget.setDashboardTabId(dashboardTabId);
-            widget.setDashboardId(widget.getDashboardId() != null ? newdashboardId : null);
+            widget.setDashboardId(widget.getDashboardId() != null ? dashboardId : null);
+            context = addSectionWidgetChain.getContext();
             context.put(FacilioConstants.ContextNames.WIDGET, widget);
             context.put(FacilioConstants.ContextNames.WIDGET_TYPE, widget.getWidgetType());
-            addWidgetChain.execute(context);
+            addSectionWidgetChain.execute();
+
+            widget = (DashboardWidgetContext) context.get(FacilioConstants.ContextNames.WIDGET);
+            if(widget != null && ((WidgetSectionContext) widget).getWidgets_in_section().size() > 0) {
+                List<DashboardWidgetContext> widget_list = ((WidgetSectionContext) widget).getWidgets_in_section();
+                for(DashboardWidgetContext dashboard_widget: widget_list)
+                {
+                    FacilioChain add_widgetChain = TransactionChainFactoryV3.getAddWidgetChainV3();
+                    context = add_widgetChain.getContext();
+                    dashboard_widget.setDashboardTabId(dashboardTabId);
+                    dashboard_widget.setDashboardId(dashboard_widget.getDashboardId() != null ? dashboardId : null);
+                    dashboard_widget.setSectionId(widget.getId());
+                    context.put(FacilioConstants.ContextNames.WIDGET, dashboard_widget);
+                    context.put(FacilioConstants.ContextNames.WIDGET_TYPE, dashboard_widget.getWidgetType());
+                    add_widgetChain.execute();
+                }
+            }
+        }
+        else
+        {
+            addWidgetChain = TransactionChainFactoryV3.getAddWidgetChainV3();
+            context = addWidgetChain.getContext();
+            widget.setDashboardId(widget.getDashboardId() != null ? dashboardId : null);
+            widget.setDashboardTabId(dashboardTabId);
+            context.put(FacilioConstants.ContextNames.WIDGET, widget);
+            context.put(FacilioConstants.ContextNames.WIDGET_TYPE, widget.getWidgetType());
+            addWidgetChain.execute();
         }
     }
 }

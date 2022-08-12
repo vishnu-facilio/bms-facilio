@@ -404,7 +404,6 @@ public class TransactionChainFactoryV3 {
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SATISFACTION_SURVEY_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SURVEY_ACTION_RULE));
         c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.ASSIGNMENT_RULE));
-        c.addCommand(new ExecuteSLAWorkFlowsCommand());
         c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_RULE,
                 WorkflowRuleContext.RuleType.CHILD_APPROVAL_RULE, WorkflowRuleContext.RuleType.REQUEST_APPROVAL_RULE,
                 WorkflowRuleContext.RuleType.REQUEST_REJECT_RULE));
@@ -446,7 +445,6 @@ public class TransactionChainFactoryV3 {
             }
         });
         c.addCommand(getWorkOrderWorkflowsChainV3(true));
-        c.addCommand(new AddOrUpdateSLABreachJobCommandV3(true));
         // to be removed once all attachments are handled as sub module
         c.addCommand(new UpdateTicketAttachmentsOldParentIdCommandV3());
         c.addCommand(new AddActivitiesCommandV3());
@@ -487,8 +485,6 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_RULE,
                 WorkflowRuleContext.RuleType.CHILD_APPROVAL_RULE, WorkflowRuleContext.RuleType.REQUEST_APPROVAL_RULE,
                 WorkflowRuleContext.RuleType.REQUEST_REJECT_RULE));
-        c.addCommand(new AddOrUpdateSLABreachJobCommandV3(false));
-        c.addCommand(new ExecuteSLACommitmentWorkflowsCommand());
         c.addCommand(new ForkChainToInstantJobCommand()
                 .addCommand(
                         new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.WORKORDER_AGENT_NOTIFICATION_RULE,
@@ -498,7 +494,6 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ConstructTicketNotesCommand());
         c.addCommand(TransactionChainFactory.getAddNotesChain());
         c.addCommand(new AddActivitiesCommand());
-
         return c;
     }
 

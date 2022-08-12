@@ -14,8 +14,12 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
+
+import lombok.extern.log4j.Log4j;
+
 import org.apache.commons.lang3.StringUtils;
 
+@Log4j
 public class LargeTextCRUDHandler extends BaseSingleRelRecordCRUDHandler<String> {
 
     private static final String FILE_ID_FIELD_NAME = "fileId";
@@ -41,9 +45,12 @@ public class LargeTextCRUDHandler extends BaseSingleRelRecordCRUDHandler<String>
                 Long fileId = (Long) record.get(FILE_ID_FIELD_NAME);
                 FileStore fs = FacilioFactory.getFileStore();
                 
+                LOGGER.info("Large Text File ID : "+ fileId);              
                 String value = null;
                 try (InputStream is = fs.readFile(fileId)) {
-                	value = IOUtils.toString(is);
+                	if(is!=null) {
+                		value = IOUtils.toString(is);
+                	}
     	        }
                 addToRecordMap(recordId, value);
         	}
