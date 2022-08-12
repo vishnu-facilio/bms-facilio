@@ -8,7 +8,6 @@ import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
 import com.facilio.mailtracking.context.V3OutgoingRecipientContext;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,11 +19,7 @@ public class InsertOutgoingRecipientsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
-        JSONObject mailJson = (JSONObject) context.get(MailConstants.Params.MAIL_JSON);
-
-        V3OutgoingMailLogContext mailLogContext = OutgoingMailAPI.convertToMailLogContext(null, mailJson);
-        context.put(MailConstants.ContextNames.OUTGOING_MAIL_LOGGER, mailLogContext);
-        context.put(MailConstants.Params.RECORD_MODULE_ID, mailLogContext.getRecordsModuleId());
+        V3OutgoingMailLogContext mailLogContext = (V3OutgoingMailLogContext) context.get(MailConstants.ContextNames.OUTGOING_MAIL_LOGGER);
 
         Map<String, String> emailMeta = new HashMap<>();
         if(mailLogContext.getOriginalTo()!=null) {
@@ -50,7 +45,6 @@ public class InsertOutgoingRecipientsCommand extends FacilioCommand {
             record.setStatus(MailStatus.IN_PROGRESS.getValue());
             records.add(record);
         }
-//        OutgoingMailAPI.insertOutgoingRecipients(records);
         OutgoingMailAPI.insertV3(MailConstants.ModuleNames.OUTGOING_RECIPIENT_LOGGER, records);
         return false;
     }
