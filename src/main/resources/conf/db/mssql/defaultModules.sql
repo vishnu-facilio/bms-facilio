@@ -14518,3 +14518,5 @@ INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NA
 VALUES (${orgId}, @PM_RP_ID, 'plannerId', '${fields.pmplanner}', 11, 'PLANNER_ID', 7, false, false, true);
 INSERT INTO LookupFields (FIELDID, ORGID, LOOKUP_MODULE_ID) VALUES ((SELECT LAST_INSERT_ID()), ${orgId}, @PM_PLANNER_ID);
 
+INSERT INTO OrgInfo (ORGID,NAME,VALUE) VALUES(${orgId},"hideCreateWOSystemButtonInSR","true");
+
