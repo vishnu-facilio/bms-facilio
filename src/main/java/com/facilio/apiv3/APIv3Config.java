@@ -41,6 +41,7 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.Lo
 import com.facilio.bmsconsoleV3.commands.employee.LoadEmployeeLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.facility.*;
+import com.facilio.bmsconsoleV3.commands.failureclass.CheckForDuplicateFailureCode;
 import com.facilio.bmsconsoleV3.commands.failureclass.FetchFailureClassSubModules;
 import com.facilio.bmsconsoleV3.commands.failureclass.FetchFailureClassSupplements;
 import com.facilio.bmsconsoleV3.commands.floor.CreateFloorAfterSave;
@@ -537,6 +538,7 @@ public class APIv3Config {
                 .create()
                 .update()
                 .list()
+                .beforeFetch(new CheckForDuplicateFailureCode())
                 .summary()
                 .delete()
                 .build();
@@ -546,6 +548,7 @@ public class APIv3Config {
         return () -> new V3Config(V3FailureClassContext.class, null)
                 .create()
                 .update()
+                .beforeSave()
                 .list()
                 .beforeFetch(new FetchFailureClassSupplements())
                 .summary()
