@@ -6,6 +6,8 @@ import com.facilio.bmsconsoleV3.commands.asset.AssetSupplementsSupplyCommand;
 import com.facilio.bmsconsoleV3.commands.assetDepartment.ValidateAssetDepartmentDeletionV3;
 import com.facilio.bmsconsoleV3.commands.assetType.ValidateAssetTypeDeletionV3;
 import com.facilio.bmsconsoleV3.commands.dashboard.*;
+import com.facilio.bmsconsoleV3.commands.failureclass.FetchFailureClassSupplements;
+import com.facilio.bmsconsoleV3.commands.failureclass.FetchResourceSupplements;
 import com.facilio.bmsconsoleV3.commands.floorplan.*;
 import com.facilio.bmsconsoleV3.commands.jobplan.FillUpJobPlanSectionAdditionInfoObject;
 import com.facilio.bmsconsoleV3.commands.jobplan.FillUpJobPlanTaskAdditionInfoObject;
@@ -2022,6 +2024,13 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getBreakBeforeDeleteChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new RemoveBreakShiftRelationshipCommand());
+        return c;
+    }
+
+    public static FacilioChain getFetchFailureClassSupplements() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchResourceSupplements());
+        c.addCommand(new FetchFailureClassSupplements());
         return c;
     }
 }

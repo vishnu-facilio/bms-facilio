@@ -552,7 +552,7 @@ public class APIv3Config {
                 .list()
                 .beforeFetch(new FetchFailureClassSupplements())
                 .summary()
-                .beforeFetch(new FetchFailureClassSupplements())
+                .beforeFetch(TransactionChainFactoryV3.getFetchFailureClassSupplements())
                 .afterFetch(new FetchFailureClassSubModules())
                 .delete()
                 .build();
