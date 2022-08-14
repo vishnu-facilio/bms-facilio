@@ -1,9 +1,9 @@
 package com.facilio.bmsconsoleV3.context;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.PeopleContext;
@@ -15,6 +15,13 @@ import com.facilio.bmsconsole.context.ServiceRequestContext.ServiceRequestType;
 import com.facilio.bmsconsole.context.ServiceRequestContext.SourceType;
 import com.facilio.v3.context.V3Context;
 
+import lombok.Getter;
+import lombok.Setter;
+
+
+
+@Getter
+@Setter
 public class V3ServiceRequestContext extends V3Context{
 	
 	public static final int DESCIPTION_LENGTH = 1900;  
@@ -296,5 +303,7 @@ public class V3ServiceRequestContext extends V3Context{
 	public void setMode(int mode) {
 		this.mode = Email_Status_Type.statusTypeMap.get(mode);
 	}
+	private PeopleContext affectedPerson;
+	private Long reportedDate,affectedDate,actualStartDate,actualFinishDate,responseDueDate  ;
 
 }
