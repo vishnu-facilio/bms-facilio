@@ -2,10 +2,9 @@ package com.facilio.bmsconsoleV3.signup.plannedmaintenance;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.RollUpField;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
-import com.facilio.chain.FacilioChain;
+import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -18,7 +17,6 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -42,10 +40,10 @@ public class AddPmV2ModuleAndFields extends SignUpData {
 
         /* Stage 1 */
         FacilioModule plannedMaintenanceModule = constructPlannedMaintenanceModule(modBean, orgId);
-        addModules(plannedMaintenanceModule);
+        SignupUtil.addModules(plannedMaintenanceModule);
 
         FacilioModule plannedMaintenanceSiteModule = constructPlannedMaintenanceSiteModule(modBean, orgId, plannedMaintenanceModule);
-        addModules(plannedMaintenanceSiteModule);
+        SignupUtil.addModules(plannedMaintenanceSiteModule);
 
         /* Stage 2 */
         /* Add sites Field into plannedmaintenance module - do this only after creating plannedMaintenanceSite module */
@@ -58,12 +56,12 @@ public class AddPmV2ModuleAndFields extends SignUpData {
         FacilioModule pmTriggerV2Module = constructPmTriggerV2Module(modBean, orgId);
         FacilioModule pmJobPlanModule = constructPmJobPlanModule(modBean, orgId);
         // add the modules
-        addModules(pmTriggerV2Module, pmJobPlanModule);
+        SignupUtil.addModules(pmTriggerV2Module, pmJobPlanModule);
 
         /* Stage 4 */
         FacilioModule pmPlannerModule = constructPmPlannerModule(modBean, orgId, pmJobPlanModule, pmTriggerV2Module);
         // add the modules
-        addModules(pmPlannerModule);
+        SignupUtil.addModules(pmPlannerModule);
         /* Adding SubModulesRel for plannedmaintenance & pmPlanner */
         modBean.addSubModule(plannedMaintenanceModule.getModuleId(), pmPlannerModule.getModuleId());
 
@@ -72,19 +70,7 @@ public class AddPmV2ModuleAndFields extends SignUpData {
         FacilioModule pmImportModule = constructPmImportModule(modBean, orgId, plannedMaintenanceModule, pmPlannerModule, pmJobPlanModule, pmTriggerV2Module);
         FacilioModule pmTasksImportModule = constructPmTasksImportModule(modBean, orgId, plannedMaintenanceModule);
         // add the modules
-        addModules(pmResourcePlannerModule, pmImportModule, pmTasksImportModule);
-    }
-
-    /**
-     * Helper method to add modules via using SystemModuleChain
-     *
-     * @param modules - List of modules to be added as System Module
-     * @throws Exception
-     */
-    private void addModules(FacilioModule... modules) throws Exception {
-        FacilioChain addModulesChain = TransactionChainFactory.addSystemModuleChain();
-        addModulesChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Arrays.asList(modules));
-        addModulesChain.execute();
+        SignupUtil.addModules(pmResourcePlannerModule, pmImportModule, pmTasksImportModule);
     }
 
     /**
@@ -103,46 +89,46 @@ public class AddPmV2ModuleAndFields extends SignUpData {
          */
         List<FacilioField> fields = new ArrayList<>();
         /* name Field */
-        StringField nameField = getStringField(module, "name", "Name", "NAME", FacilioField.FieldDisplayType.TEXTBOX,
+        StringField nameField = SignupUtil.getStringField(module, "name", "Name", "NAME", FacilioField.FieldDisplayType.TEXTBOX,
                 true, false, true, true, orgId);
         fields.add(nameField);
 
         /* assetCategory Field */
-        LookupField assetCategoryField = getLookupField(module, moduleBean.getModule(FacilioConstants.ContextNames.ASSET_CATEGORY),
+        LookupField assetCategoryField = SignupUtil.getLookupField(module, moduleBean.getModule(FacilioConstants.ContextNames.ASSET_CATEGORY),
                 "assetCategory", "Asset Category", "ASSET_CATEGORY_ID", null,
                 FacilioField.FieldDisplayType.LOOKUP_SIMPLE, false, false, true, orgId);
         fields.add(assetCategoryField);
 
         /* spaceCategory Field */
-        LookupField spaceCategoryField = getLookupField(module, moduleBean.getModule(FacilioConstants.ContextNames.SPACE_CATEGORY),
+        LookupField spaceCategoryField = SignupUtil.getLookupField(module, moduleBean.getModule(FacilioConstants.ContextNames.SPACE_CATEGORY),
                 "spaceCategory", "Space Category", "SPACE_CATEGORY_ID", null,
                 FacilioField.FieldDisplayType.LOOKUP_SIMPLE, false, false, true, orgId);
         fields.add(spaceCategoryField);
 
         /* baseSpace Field */
-        LookupField baseSpaceField = getLookupField(module, moduleBean.getModule(FacilioConstants.ContextNames.BASE_SPACE),
+        LookupField baseSpaceField = SignupUtil.getLookupField(module, moduleBean.getModule(FacilioConstants.ContextNames.BASE_SPACE),
                 "baseSpace", "Building", "BASE_SPACE_ID", null,
                 FacilioField.FieldDisplayType.LOOKUP_SIMPLE, false, false, true, orgId);
         fields.add(baseSpaceField);
 
         /* assignmentType Field */
-        SystemEnumField assignmentTypeField = getSystemEnumField(module, "assignmentType", "Scope Category",
+        SystemEnumField assignmentTypeField = SignupUtil.getSystemEnumField(module, "assignmentType", "Scope Category",
                 "ASSIGNMENT_TYPE", "PMScopeAssigmentType", FacilioField.FieldDisplayType.TEXTBOX,
                 false, false, true, orgId);
         fields.add(assignmentTypeField);
 
         /* dueDuration Field */
-        NumberField dueDurationField = getNumberField(module, "dueDuration", "Due Duration", "DUE_DURATION",
+        NumberField dueDurationField = SignupUtil.getNumberField(module, "dueDuration", "Due Duration", "DUE_DURATION",
                 FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
         fields.add(dueDurationField);
 
         /* estimatedDuration Field */
-        NumberField estimatedDurationField = getNumberField(module, "estimatedDuration", "Estimated Duration", "ESTIMATED_DURATION",
+        NumberField estimatedDurationField = SignupUtil.getNumberField(module, "estimatedDuration", "Estimated Duration", "ESTIMATED_DURATION",
                 FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
         fields.add(estimatedDurationField);
 
         /* isActive Field */
-        BooleanField isActiveField = getBooleanField(module, "isActive", "Is Active", "IS_ACTIVE",
+        BooleanField isActiveField = SignupUtil.getBooleanField(module, "isActive", "Is Active", "IS_ACTIVE",
                 FacilioField.FieldDisplayType.DECISION_BOX, 63L, false, false, true, orgId);
         fields.add(isActiveField);
 
@@ -165,12 +151,12 @@ public class AddPmV2ModuleAndFields extends SignUpData {
          */
         List<FacilioField> fields = new ArrayList<>();
         /* left Field */
-        LookupField leftField = getLookupField(module, plannedMaintenanceModule, "left", "Planned Maintenance", "PM_ID", null,
+        LookupField leftField = SignupUtil.getLookupField(module, plannedMaintenanceModule, "left", "Planned Maintenance", "PM_ID", null,
                 FacilioField.FieldDisplayType.LOOKUP_SIMPLE, false, false, true, orgId);
         fields.add(leftField);
 
         /* right Field */
-        LookupField rightField = getLookupField(module, moduleBean.getModule(FacilioConstants.ContextNames.SITE),
+        LookupField rightField = SignupUtil.getLookupField(module, moduleBean.getModule(FacilioConstants.ContextNames.SITE),
                 "right", "Site", "SITE_ID", null,
                 FacilioField.FieldDisplayType.LOOKUP_SIMPLE, false, false, true, orgId);
         fields.add(rightField);
@@ -219,32 +205,32 @@ public class AddPmV2ModuleAndFields extends SignUpData {
          */
         List<FacilioField> fields = new ArrayList<>();
         /* pmId Field */
-        NumberField pmIdField = getNumberField(module, "pmId", "PM ID", "PM_ID",
+        NumberField pmIdField = SignupUtil.getNumberField(module, "pmId", "PM ID", "PM_ID",
                 FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
         fields.add(pmIdField);
 
         /* schedule Field */
-        StringField scheduleField = getStringField(module, "schedule", "Schedule", "SCHEDULE_INFO",
+        StringField scheduleField = SignupUtil.getStringField(module, "schedule", "Schedule", "SCHEDULE_INFO",
                 FacilioField.FieldDisplayType.TEXTBOX, false, false, true, true, orgId);
         fields.add(scheduleField);
 
         /* frequency Field */
-        SystemEnumField frequencyField = getSystemEnumField(module, "frequency", "Frequency", "FREQUENCY",
+        SystemEnumField frequencyField = SignupUtil.getSystemEnumField(module, "frequency", "Frequency", "FREQUENCY",
                 "PMTriggerFrequency", FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
         fields.add(frequencyField);
 
         /* type Field */
-        SystemEnumField typeField = getSystemEnumField(module, "type", "Type", "TRIGGER_TYPE",
+        SystemEnumField typeField = SignupUtil.getSystemEnumField(module, "type", "Type", "TRIGGER_TYPE",
                 "PMTriggerType", FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
         fields.add(typeField);
 
         /* startTime Field */
-        NumberField startTimeField = getNumberField(module, "startTime", "Start Time", "TRIGGER_START_TIME",
+        NumberField startTimeField = SignupUtil.getNumberField(module, "startTime", "Start Time", "TRIGGER_START_TIME",
                 FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId); // check for display name
         fields.add(startTimeField);
 
         /* endTime Field */
-        NumberField endTimeField = getNumberField(module, "endTime", "End Time", "TRIGGER_END_TIME",
+        NumberField endTimeField = SignupUtil.getNumberField(module, "endTime", "End Time", "TRIGGER_END_TIME",
                 FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
         fields.add(endTimeField);
 
@@ -266,12 +252,12 @@ public class AddPmV2ModuleAndFields extends SignUpData {
          */
         List<FacilioField> fields = new ArrayList<>();
         /* pmId Field */
-        NumberField pmIdField = getNumberField(module, "pmId", "PM ID", "PM_ID",
+        NumberField pmIdField = SignupUtil.getNumberField(module, "pmId", "PM ID", "PM_ID",
                 FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
         fields.add(pmIdField);
 
         /* isPreRequisite Field */
-        BooleanField isPreRequisiteField = getBooleanField(module, "isPreRequisite", "Is Pre Requisite",
+        BooleanField isPreRequisiteField = SignupUtil.getBooleanField(module, "isPreRequisite", "Is Pre Requisite",
                 "IS_PREREQUISITE", FacilioField.FieldDisplayType.DECISION_BOX, null, false, false,
                 true, orgId);
         fields.add(isPreRequisiteField);
@@ -295,39 +281,39 @@ public class AddPmV2ModuleAndFields extends SignUpData {
          */
         List<FacilioField> fields = new ArrayList<>();
         /* name Field */
-        StringField nameField = getStringField(module, "name", "Name", "NAME",
+        StringField nameField = SignupUtil.getStringField(module, "name", "Name", "NAME",
                 FacilioField.FieldDisplayType.TEXTBOX, true, false, true, true, orgId);
         fields.add(nameField);
 
         /* pmId Field */
-        NumberField pmIdField = getNumberField(module, "pmId", "PM ID", "PM_ID",
+        NumberField pmIdField = SignupUtil.getNumberField(module, "pmId", "PM ID", "PM_ID",
                 FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
         fields.add(pmIdField);
 
         /* adhocJobPlan Field */
-        LookupField adhocJobPlanField = getLookupField(module, pmJobPlanModule, "adhocJobPlan", "As Hoc Task",
+        LookupField adhocJobPlanField = SignupUtil.getLookupField(module, pmJobPlanModule, "adhocJobPlan", "As Hoc Task",
                 "JOB_PLAN_ID", null, FacilioField.FieldDisplayType.LOOKUP_SIMPLE,
                 false, false, true, orgId);
         fields.add(adhocJobPlanField);
 
         /* preReqJobPlan Field */
-        LookupField preReqJobPlanField = getLookupField(module, pmJobPlanModule, "preReqJobPlan", "Job Plan",
+        LookupField preReqJobPlanField = SignupUtil.getLookupField(module, pmJobPlanModule, "preReqJobPlan", "Job Plan",
                 "PREREQ_JOB_PLAN_ID", null, FacilioField.FieldDisplayType.LOOKUP_SIMPLE,
                 false, false, true, orgId);
         fields.add(preReqJobPlanField);
 
         /* trigger Field */
-        LookupField triggerField = getLookupField(module, pmTriggerV2Module, "trigger", "Trigger",
+        LookupField triggerField = SignupUtil.getLookupField(module, pmTriggerV2Module, "trigger", "Trigger",
                 "TRIGGER_ID", null, FacilioField.FieldDisplayType.LOOKUP_SIMPLE,
                 false, false, true, orgId);
         fields.add(triggerField);
 
         /* generatedUpto Field */
-        NumberField generatedUptoField = getNumberField(module, "generatedUpto", "Generated Upto", "GENERATED_UPTO",
+        NumberField generatedUptoField = SignupUtil.getNumberField(module, "generatedUpto", "Generated Upto", "GENERATED_UPTO",
                 FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
         fields.add(generatedUptoField);
 
-        NumberField resourceCountField = getNumberField(module, "resourceCount", "Resource Count", "RP_COUNT",
+        NumberField resourceCountField = SignupUtil.getNumberField(module, "resourceCount", "Resource Count", "RP_COUNT",
                 FacilioField.FieldDisplayType.NUMBER, false, false, true, orgId);
         fields.add(resourceCountField);
 
@@ -368,30 +354,30 @@ public class AddPmV2ModuleAndFields extends SignUpData {
          */
         List<FacilioField> fields = new ArrayList<>();
         /* pmId Field */
-        NumberField pmIdField = getNumberField(module, "pmId", "PM ID", "PM_ID",
+        NumberField pmIdField = SignupUtil.getNumberField(module, "pmId", "PM ID", "PM_ID",
                 FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
         fields.add(pmIdField);
 
         /* resource Field */
-        LookupField resourceField = getLookupField(module, moduleBean.getModule(FacilioConstants.ContextNames.RESOURCE),
+        LookupField resourceField = SignupUtil.getLookupField(module, moduleBean.getModule(FacilioConstants.ContextNames.RESOURCE),
                 "resource", "Resource", "RESOURCE_ID", null, FacilioField.FieldDisplayType.LOOKUP_SIMPLE,
                 false, false, true, orgId, true);
         fields.add(resourceField);
 
         /* jobPlan Field */
-        LookupField jobPlanField = getLookupField(module, pmJobPlanModule, "jobPlan", "Job Plan",
+        LookupField jobPlanField = SignupUtil.getLookupField(module, pmJobPlanModule, "jobPlan", "Job Plan",
                 "JOB_PLAN_ID", null, FacilioField.FieldDisplayType.LOOKUP_SIMPLE,
                 false, false, true, orgId);
         fields.add(jobPlanField);
 
         /* assignedTo Field */
-        LookupField assignedToField = getLookupField(module, null, "assignedTo", "Staff",
+        LookupField assignedToField = SignupUtil.getLookupField(module, null, "assignedTo", "Staff",
                 "ASSIGNED_TO", "users", FacilioField.FieldDisplayType.LOOKUP_POPUP,
                 false, false, true, orgId);
         fields.add(assignedToField);
 
         /* planner Field */
-        LookupField plannerField = getLookupField(module, pmPlannerModule, "planner", "Planner",
+        LookupField plannerField = SignupUtil.getLookupField(module, pmPlannerModule, "planner", "Planner",
                 "PLANNER_ID", null, FacilioField.FieldDisplayType.LOOKUP_POPUP, false,
                 false, true, orgId);
         fields.add(plannerField);
@@ -415,105 +401,105 @@ public class AddPmV2ModuleAndFields extends SignUpData {
          */
         List<FacilioField> fields = new ArrayList<>();
         /* pmId Field */
-        LookupField pmIdField = getLookupField(module, plannedMaintenanceModule, "pmId", "PM",
+        LookupField pmIdField = SignupUtil.getLookupField(module, plannedMaintenanceModule, "pmId", "PM",
                 "PM_ID", null, FacilioField.FieldDisplayType.LOOKUP_SIMPLE, false, false,
                 true, orgId);
         fields.add(pmIdField);
 
         /* resource planner - rpResource Field */
-        LookupField rpResourceField = getLookupField(module, moduleBean.getModule(FacilioConstants.ContextNames.RESOURCE),
+        LookupField rpResourceField = SignupUtil.getLookupField(module, moduleBean.getModule(FacilioConstants.ContextNames.RESOURCE),
                 "rpResource", "Asset/Space", "RP_RESOURCE_ID", null, FacilioField.FieldDisplayType.LOOKUP_SIMPLE,
                 false, false, true, orgId);
         fields.add(rpResourceField);
 
         /* resource planner - assignedTo Field */
-        LookupField assignedToField = getLookupField(module, null,
+        LookupField assignedToField = SignupUtil.getLookupField(module, null,
                 "rpAssignedTo", "Asset/Space Assignee", "RP_ASSIGNED_TO", "users",
                 FacilioField.FieldDisplayType.LOOKUP_POPUP, false, false, true, orgId);
         fields.add(assignedToField);
 
         /* resource planner - rpPlanner Field */
-        LookupField rpPlannerField = getLookupField(module, pmPlannerModule,
+        LookupField rpPlannerField = SignupUtil.getLookupField(module, pmPlannerModule,
                 "rpPlanner", "Asset/Space Planner", "RP_PLANNER_ID", null,
                 FacilioField.FieldDisplayType.LOOKUP_POPUP, false, false, true, orgId);
         fields.add(rpPlannerField);
 
         /* pm planner - plName Field */
-        StringField plNameField = getStringField(module, "plName", "Planner name", "PL_NAME",
+        StringField plNameField = SignupUtil.getStringField(module, "plName", "Planner name", "PL_NAME",
                 FacilioField.FieldDisplayType.TEXTBOX, false, false, true, true, orgId);
         fields.add(plNameField);
 
         /* pm planner - plJobPlan Field */
-        LookupField plJobPlanField = getLookupField(module, pmJobPlanModule, "plJobPlan", "Planner Job Plan",
+        LookupField plJobPlanField = SignupUtil.getLookupField(module, pmJobPlanModule, "plJobPlan", "Planner Job Plan",
                 "PL_JOB_PLAN_ID", null, FacilioField.FieldDisplayType.LOOKUP_SIMPLE, false,
                 false, true, orgId);
         fields.add(plJobPlanField);
 
         /* pm planner - plPreReqJobPlan Field */
-        LookupField plPreReqJobPlanField = getLookupField(module, pmJobPlanModule, "plPreReqJobPlan", "Planner Prerequisite Job Plan",
+        LookupField plPreReqJobPlanField = SignupUtil.getLookupField(module, pmJobPlanModule, "plPreReqJobPlan", "Planner Prerequisite Job Plan",
                 "PL_PREREQ_JOB_PLAN_ID", null, FacilioField.FieldDisplayType.LOOKUP_SIMPLE, false,
                 false, true, orgId);
         fields.add(plPreReqJobPlanField);
 
         /* pm planner - plTrigger Field */
-        LookupField plTriggerField = getLookupField(module, pmTriggerV2Module, "plTrigger", "Planner Trigger",
+        LookupField plTriggerField = SignupUtil.getLookupField(module, pmTriggerV2Module, "plTrigger", "Planner Trigger",
                 "PL_TRIGGER_ID", null, FacilioField.FieldDisplayType.LOOKUP_SIMPLE, false,
                 false, true, orgId);
         fields.add(plTriggerField);
 
         /* trigger - trFrequency Field */
-        StringField trFrequencyField = getStringField(module, "trFrequency", "Trigger Frequency", "TR_FREQUENCY",
+        StringField trFrequencyField = SignupUtil.getStringField(module, "trFrequency", "Trigger Frequency", "TR_FREQUENCY",
                 FacilioField.FieldDisplayType.TEXTBOX, false, true, true, true, orgId);
         trFrequencyField.setOrgId(orgId);
         fields.add(trFrequencyField);
 
         /* trigger - trTimes Field */
-        StringField trTimesField = getStringField(module, "trTimes", "Trigger Times", "TR_TIMES",
+        StringField trTimesField = SignupUtil.getStringField(module, "trTimes", "Trigger Times", "TR_TIMES",
                 FacilioField.FieldDisplayType.TEXTBOX, false, true, true, true, orgId);
         fields.add(trTimesField);
 
         /* trigger - trDays Field */
-        StringField trDaysField = getStringField(module, "trDays", "Trigger Days", "TR_DAYS",
+        StringField trDaysField = SignupUtil.getStringField(module, "trDays", "Trigger Days", "TR_DAYS",
                 FacilioField.FieldDisplayType.TEXTBOX, false, false, true, true, orgId);
         fields.add(trDaysField);
 
         /* trigger - trDates Field */
-        StringField trDatesField = getStringField(module, "trDates", "Trigger Dates", "TR_DATES",
+        StringField trDatesField = SignupUtil.getStringField(module, "trDates", "Trigger Dates", "TR_DATES",
                 FacilioField.FieldDisplayType.TEXTBOX, false, false, true, true, orgId);
         fields.add(trDatesField);
 
         /* trigger - trWeeks Field */
-        StringField trWeeksField = getStringField(module, "trWeeks", "Trigger Weeks", "TR_WEEKS",
+        StringField trWeeksField = SignupUtil.getStringField(module, "trWeeks", "Trigger Weeks", "TR_WEEKS",
                 FacilioField.FieldDisplayType.TEXTBOX, false, false, true, true, orgId);
         fields.add(trWeeksField);
 
         /* trigger - trMonths Field */
-        StringField trMonthsField = getStringField(module, "trMonths", "Trigger Months", "TR_MONTHS",
+        StringField trMonthsField = SignupUtil.getStringField(module, "trMonths", "Trigger Months", "TR_MONTHS",
                 FacilioField.FieldDisplayType.TEXTBOX, false, false, true, true, orgId);
         fields.add(trMonthsField);
 
         /* trigger - trType Field */
-        SystemEnumField trTypeField = getSystemEnumField(module, "trType", "Trigger Type", "TR_TRIGGER_TYPE",
+        SystemEnumField trTypeField = SignupUtil.getSystemEnumField(module, "trType", "Trigger Type", "TR_TRIGGER_TYPE",
                 "PMTriggerType", FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
         fields.add(trTypeField);
 
         /* trigger - trStartTime Field */
-        NumberField trStartTimeField = getNumberField(module, "trStartTime", "Trigger Start Time", "TR_TRIGGER_START_TIME",
+        NumberField trStartTimeField = SignupUtil.getNumberField(module, "trStartTime", "Trigger Start Time", "TR_TRIGGER_START_TIME",
                 FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
         fields.add(trStartTimeField);
 
         /* trigger - trEndTime Field */
-        NumberField trEndTimeField = getNumberField(module, "trEndTime", "Trigger End Time", "TR_TRIGGER_END_TIME",
+        NumberField trEndTimeField = SignupUtil.getNumberField(module, "trEndTime", "Trigger End Time", "TR_TRIGGER_END_TIME",
                 FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
         fields.add(trEndTimeField);
 
         /* trigger - skip Field */
-        NumberField skipField = getNumberField(module, "skip", "Trigger Skip", "TR_SKIP",
+        NumberField skipField = SignupUtil.getNumberField(module, "skip", "Trigger Skip", "TR_SKIP",
                 FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
         fields.add(skipField);
 
         /* trigger - every Field */
-        NumberField everyField = getNumberField(module, "every", "Trigger Every", "TR_EVERY",
+        NumberField everyField = SignupUtil.getNumberField(module, "every", "Trigger Every", "TR_EVERY",
                 FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
         fields.add(everyField);
 
@@ -534,128 +520,27 @@ public class AddPmV2ModuleAndFields extends SignUpData {
          */
         List<FacilioField> fields = new ArrayList<>();
         /* pmId Field */
-        LookupField pmIdField = getLookupField(module, plannedMaintenanceModule, "pmId", "PM ID",
+        LookupField pmIdField = SignupUtil.getLookupField(module, plannedMaintenanceModule, "pmId", "PM ID",
                 "PM_ID", null, FacilioField.FieldDisplayType.LOOKUP_SIMPLE, false,
                 false, true, orgId);
         fields.add(pmIdField);
 
         /* sectionName Field */
-        StringField sectionNameField = getStringField(module, "sectionName", "Section", "SECTION",
+        StringField sectionNameField = SignupUtil.getStringField(module, "sectionName", "Section", "SECTION",
                 FacilioField.FieldDisplayType.TEXTBOX, false, true, true, true, orgId);
         fields.add(sectionNameField);
 
         /* task Field */
-        StringField taskField = getStringField(module, "task", "Task", "TASK",
+        StringField taskField = SignupUtil.getStringField(module, "task", "Task", "TASK",
                 FacilioField.FieldDisplayType.TEXTBOX, false, true, true, true, orgId);
         fields.add(taskField);
 
         /* isPrerequisite Field */
-        StringField isPrerequisiteField = getStringField(module, "isPrerequisite", "IS PREREQUISITE", "IS_PREREQUISITE",
+        StringField isPrerequisiteField = SignupUtil.getStringField(module, "isPrerequisite", "IS PREREQUISITE", "IS_PREREQUISITE",
                 FacilioField.FieldDisplayType.TEXTBOX, false, true, true, true, orgId);
         fields.add(isPrerequisiteField);
 
         module.setFields(fields);
         return module;
-    }
-
-
-    /**
-     * Helper methods declared to get the different FacilioFields.
-     * viz. {@link StringField}, {@link NumberField}, {@link BooleanField}, {@link SystemEnumField}, {@link LookupField}
-     */
-
-    /**
-     * Helper method to get {@link StringField}
-     */
-    private StringField getStringField(FacilioModule module, String name, String displayName, String columnName, FacilioField.FieldDisplayType displayType,
-                                       Boolean required, Boolean disabled, Boolean isDefault, Boolean isMainField, Long orgId) {
-        StringField stringField = FieldFactory.getField(name, displayName, columnName, module, FieldType.STRING);
-        stringField.setDisplayType(displayType);
-        stringField.setRequired(required);
-        stringField.setDisabled(disabled);
-        stringField.setDefault(isDefault);
-        stringField.setMainField(isMainField);
-        stringField.setOrgId(orgId);
-        return stringField;
-    }
-
-    /**
-     * Helper method to get {@link NumberField}
-     */
-    private NumberField getNumberField(FacilioModule module, String name, String displayName, String columnName,
-                                       FacilioField.FieldDisplayType displayType, Boolean required, Boolean disabled,
-                                       Boolean isDefault, Long orgId) {
-        NumberField numberField = FieldFactory.getField(name, displayName, columnName, module, FieldType.NUMBER);
-        numberField.setDisplayType(displayType);
-        numberField.setRequired(required);
-        numberField.setDisabled(disabled);
-        numberField.setDefault(isDefault);
-        numberField.setOrgId(orgId);
-        return numberField;
-    }
-
-    /**
-     * Helper method to get {@link BooleanField}
-     */
-    private BooleanField getBooleanField(FacilioModule module, String name, String displayName, String columnName,
-                                         FacilioField.FieldDisplayType displayType, Long accessType, Boolean required,
-                                         Boolean disabled, Boolean isDefault, Long orgId) {
-        BooleanField booleanField = FieldFactory.getField(name, displayName, columnName, module, FieldType.BOOLEAN);
-        booleanField.setDisplayType(displayType);
-        booleanField.setRequired(required);
-        booleanField.setDisabled(disabled);
-        booleanField.setDefault(isDefault);
-        booleanField.setOrgId(orgId);
-
-        if (accessType != null) {
-            booleanField.setAccessType(accessType);
-        }
-        return booleanField;
-    }
-
-    /**
-     * Helper method to get {@link SystemEnumField}
-     */
-    private SystemEnumField getSystemEnumField(FacilioModule module, String name, String displayName, String columnName,
-                                               String enumName, FacilioField.FieldDisplayType displayType, Boolean required,
-                                               Boolean disabled, Boolean isDefault, Long orgId) {
-        SystemEnumField systemEnumField = FieldFactory.getField(name, displayName, columnName, module, FieldType.SYSTEM_ENUM);
-        systemEnumField.setDisplayType(displayType);
-        systemEnumField.setRequired(required);
-        systemEnumField.setDisabled(disabled);
-        systemEnumField.setDefault(isDefault);
-        systemEnumField.setOrgId(orgId);
-        systemEnumField.setEnumName(enumName);
-        return systemEnumField;
-    }
-
-    /**
-     * Helper method to get {@link LookupField}
-     */
-    private LookupField getLookupField(FacilioModule fieldModule, FacilioModule lookUpModule, String name, String displayName,
-                                       String columnName, String specialType, FacilioField.FieldDisplayType displayType, Boolean required,
-                                       Boolean disabled, Boolean isDefault, Long orgId) {
-       return getLookupField(fieldModule, lookUpModule, name, displayName, columnName, specialType, displayType, required, disabled, isDefault, orgId, false);
-    }
-    private LookupField getLookupField(FacilioModule fieldModule, FacilioModule lookUpModule, String name, String displayName,
-                                       String columnName, String specialType, FacilioField.FieldDisplayType displayType, Boolean required,
-                                       Boolean disabled, Boolean isDefault, Long orgId, boolean isMainField) {
-        LookupField lookupField = FieldFactory.getField(name, displayName, columnName, fieldModule, FieldType.LOOKUP);
-        lookupField.setDisplayType(displayType);
-        lookupField.setRequired(required);
-        lookupField.setDisabled(disabled);
-        lookupField.setDefault(isDefault);
-        lookupField.setOrgId(orgId);
-        lookupField.setMainField(isMainField);
-
-        if (lookUpModule != null) {
-            lookupField.setLookupModule(lookUpModule);
-            lookupField.setLookupModuleId(lookUpModule.getModuleId());
-        }
-
-        if (specialType != null) {
-            lookupField.setSpecialType(specialType);
-        }
-        return lookupField;
     }
 }

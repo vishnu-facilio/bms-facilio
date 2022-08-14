@@ -61,7 +61,6 @@ import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanItemsLookup
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanServicesCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanToolsLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.FetchJobPlanLookupCommand;
-import com.facilio.bmsconsoleV3.commands.jobplan.FillJobPlanDetailsCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.ValidationForJobPlanCategory;
 import com.facilio.bmsconsoleV3.commands.labour.*;
 import com.facilio.bmsconsoleV3.commands.moves.UpdateEmployeeInDesksCommandV3;
@@ -1537,7 +1536,7 @@ public class APIv3Config {
                 .beforeFetch(new FetchJobPlanLookupCommand())
                 .summary()
                 .beforeFetch(new FetchJobPlanLookupCommand())
-                .afterFetch(new FillJobPlanDetailsCommand())
+                .afterFetch(TransactionChainFactoryV3.getJobPlanSummaryAfterFetchChain())
                 .delete()
 
                 .build();
