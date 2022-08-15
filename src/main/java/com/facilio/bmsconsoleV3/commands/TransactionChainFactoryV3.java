@@ -1012,6 +1012,12 @@ public class TransactionChainFactoryV3 {
         return chain;
     }
 
+    public static FacilioChain getDeleteJobPlanBeforeChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new DeleteJobPlanValidationCommand());
+        return chain;
+    }
+
     public static FacilioChain addfloorplanObjectsChain() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new AddDeskCommand());

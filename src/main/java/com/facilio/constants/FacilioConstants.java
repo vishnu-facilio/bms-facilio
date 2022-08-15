@@ -2055,7 +2055,7 @@ public class FacilioConstants {
 		public static final String JOB_PLAN_SECTION = "jobplansection";
 		public static final String JOB_PLAN_TASK = "jobplantask";
 		public static final String JOB_PLAN_ATTACHMENTS = "jobplanattachments";
-
+		public static final String JOB_PLAN_NOTES = "jobplannotes";
 
 		public static final String JOB_PLAN_ITEMS = "jobPlanItems";
 		public static final String JOB_PLAN_TOOLS = "jobPlanTools";

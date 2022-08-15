@@ -1538,7 +1538,7 @@ public class APIv3Config {
                 .beforeFetch(new FetchJobPlanLookupCommand())
                 .afterFetch(TransactionChainFactoryV3.getJobPlanSummaryAfterFetchChain())
                 .delete()
-
+                .beforeDelete(TransactionChainFactoryV3.getDeleteJobPlanBeforeChain())
                 .build();
     }
 
