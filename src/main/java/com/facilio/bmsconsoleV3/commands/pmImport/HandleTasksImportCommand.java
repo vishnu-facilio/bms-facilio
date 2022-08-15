@@ -76,6 +76,8 @@ public class HandleTasksImportCommand extends FacilioCommand {
         PMJobPlan jobPlan = new PMJobPlan();
         jobPlan.setPmId(pmID);
         jobPlan.setPreRequisite(false);
+        jobPlan.setIsActive(true);
+        jobPlan.setIsDisabled(false);
         jobPlan.setName("pm-" + pmID + "-import");
 
         final String jobPlanModuleName = "pmJobPlan";
@@ -92,8 +94,10 @@ public class HandleTasksImportCommand extends FacilioCommand {
         }
         PMJobPlan jobPlan = new PMJobPlan();
         jobPlan.setPmId(pmID);
+        jobPlan.setIsActive(true);
+        jobPlan.setIsDisabled(false);
         jobPlan.setPreRequisite(true);
-        jobPlan.setName("pm-" + pmID + "-import");
+        jobPlan.setName("pm-pre-" + pmID + "-import");
 
         final String jobPlanModuleName = "pmJobPlan";
         jobPlan = (PMJobPlan) Util.persistModuleRecord(jobPlanModuleName, jobPlan);
