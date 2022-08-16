@@ -19,6 +19,7 @@ import java.util.Map;
 
 @TopicHandler(
         topic = Topics.Mail.outgoingMail + "/#",
+        sendToAllWorkers = false,
         priority = -5
 )
 @Log4j
@@ -36,7 +37,7 @@ public class OutgoingMailHandler extends BaseHandler {
 
                 MailBean mailBean = MailConstants.getMailBean(orgId);
                 mailBean.trackAndSendMail(mailJson);
-                LOGGER.info("Sending mail via wms");
+                LOGGER.info("Processing mail from queue");
             }
         } catch (Exception e) {
             LOGGER.info("ERROR IN OutgoingMailHandler for orgId "+ orgId, e);
