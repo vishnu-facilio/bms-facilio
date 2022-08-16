@@ -29,6 +29,7 @@ public class OutgoingMailResponseAction extends ActionSupport {
     public String execute() throws Exception {
         JSONObject requestJson = null;
         try {
+            LOGGER.info("OG_MAIL_LOG :: I am in OutgoingMailResponseAction entry point");
             requestJson = parseRequestData();
             AwsMailResponseContext awsMailResponseContext = FieldUtil.getAsBeanFromJson(requestJson, AwsMailResponseContext.class);
             V3Util.throwRestException(
