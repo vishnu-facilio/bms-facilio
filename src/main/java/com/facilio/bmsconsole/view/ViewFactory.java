@@ -903,6 +903,12 @@ public class ViewFactory {
 		views.put("all", getAllBudgetView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.Budget.BUDGET, views);
 
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllTransactionView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.TRANSACTION, views);
+
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllTransferRequestView().setOrder(order++));
@@ -1526,7 +1532,7 @@ public class ViewFactory {
 		allView.setModuleName(employeeModule.getName());
 		allView.setSortFields(sortFields);
 
-		allView.setHidden(true);
+		//allView.setHidden(true);
 		allView.setViewSharing(getSharingContext(Collections.singletonList(AppDomain.AppDomainType.FACILIO)));
 
 		return allView;
@@ -8419,6 +8425,23 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Request For Quotations");
+		allView.setModuleName(module.getName());
+		allView.setSortFields(sortFields);
+
+		List<AppDomain.AppDomainType> appDomains = new ArrayList<>();
+		appDomains.add(AppDomain.AppDomainType.FACILIO);
+		allView.setViewSharing(getSharingContext(appDomains));
+
+		return allView;
+	}
+	private static FacilioView getAllTransactionView() {
+
+		FacilioModule module = ModuleFactory.getTransactionModule();
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), false));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
 		allView.setModuleName(module.getName());
 		allView.setSortFields(sortFields);
 

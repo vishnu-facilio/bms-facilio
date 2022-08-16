@@ -280,6 +280,8 @@ public class ColumnFactory {
 		columnMap.put("inventoryCategory-default", getInventoryCategoryColumns());
 
 		columnMap.put(FacilioConstants.ContextNames.PLANNEDMAINTENANCE + "-default", getDefaultPlannedMaintenanceViewColumns());
+
+		columnMap.put("transaction-all", getBudgetTransactionColumns());
 		return columnMap;
 	}
 	
@@ -2062,6 +2064,18 @@ public class ColumnFactory {
 		columns.add(new ViewField("employee", "Employee"));
 		return columns;
 
+	}
+
+	public static List<ViewField> getBudgetTransactionColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("account", "Chart of Account"));
+		columns.add(new ViewField("transactionDate", "Transaction Date"));
+		columns.add(new ViewField("transactionType", "Transaction Type"));
+		columns.add(new ViewField("transactionSourceRecordId", "Record Id"));
+		columns.add(new ViewField("transactionRollUpModuleName", "Module Name"));
+		columns.add(new ViewField("transactionAmount", "Actual"));
+
+		return columns;
 	}
 
 

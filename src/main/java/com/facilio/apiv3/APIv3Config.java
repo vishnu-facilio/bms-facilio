@@ -1480,6 +1480,10 @@ public class APIv3Config {
                 .create().afterSave(new RollUpTransactionAmountCommand())
                 .update()
                 .afterSave(new RollUpTransactionAmountCommand())
+                .list()
+                .beforeFetch(new LoadTransactionsLookupCommandV3())
+                .summary()
+                .beforeFetch(new LoadTransactionsLookupCommandV3())
                 .delete()
                 .afterDelete(new RollUpTransactionAmountCommand())
                 .build();
