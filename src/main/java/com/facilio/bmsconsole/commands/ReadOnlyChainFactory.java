@@ -192,6 +192,12 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
+	public static FacilioChain getEnumFieldPickListChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetEnumValuesCommand());
+		return c;
+	}
+
 	private static FacilioChain commonFetchDataListChain(boolean isPicklist) {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new CheckForCustomFilterAndGenerateCriteria());

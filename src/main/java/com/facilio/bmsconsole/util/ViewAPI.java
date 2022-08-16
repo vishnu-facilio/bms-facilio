@@ -493,6 +493,9 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 					long criteriaId = CriteriaAPI.addCriteria(criteria, AccountUtil.getCurrentOrg().getOrgId());
 					viewProp.put("groupCriteriaId",criteriaId);
 				}
+				else {
+					viewProp.put("groupCriteriaId", -99);
+				}
 
 				if(isNew)
 				{

@@ -57,6 +57,9 @@ public class AgentV3Action extends V3Action {
 		if (context.containsKey(AgentConstants.WORKFLOW_RESPONSE)) {
 			setData(AgentConstants.WORKFLOW_RESPONSE, context.get(AgentConstants.WORKFLOW_RESPONSE));
 		}
+		else if (context.containsKey(AgentConstants.WORKFLOW_SYNTAX_ERROR)){
+			setData(AgentConstants.WORKFLOW_SYNTAX_ERROR, context.get(AgentConstants.WORKFLOW_SYNTAX_ERROR));
+		}
 		return SUCCESS;
 	}
 

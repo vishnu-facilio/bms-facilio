@@ -1513,6 +1513,73 @@ public class AccountConstants {
 		return failure_remedies_id;
 	}
 
+	public static List<FacilioField> getFailureCodeProblemFields() {
+		FacilioModule module = ModuleFactory.getFailureCodeProblemModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getFailureCodeProblemField());
+
+		FacilioField code_id = new FacilioField();
+		code_id.setName("code_id");
+		code_id.setColumnName("FAILURE_CODE_ID");
+		code_id.setDataType(FieldType.NUMBER);
+		code_id.setModule(module);
+		fields.add(code_id);
+
+		FacilioField class_id = new FacilioField();
+		class_id.setName("class_id");
+		class_id.setColumnName("FAILURE_CLASS_ID");
+		class_id.setDataType(FieldType.NUMBER);
+		class_id.setModule(module);
+		fields.add(class_id);
+
+		return fields;
+	}
+
+	public static List<FacilioField> getFailureCodeCausesFields() {
+		FacilioModule module = ModuleFactory.getFailureCodeCausesModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getFailureCodeCausesField());
+
+		FacilioField code_id = new FacilioField();
+		code_id.setName("code_id");
+		code_id.setColumnName("FAILURE_CODE_ID");
+		code_id.setDataType(FieldType.NUMBER);
+		code_id.setModule(module);
+		fields.add(code_id);
+
+		FacilioField problem_id = new FacilioField();
+		problem_id.setName("problem_id");
+		problem_id.setColumnName("FAILURE_CODE_PROBLEMS_ID");
+		problem_id.setDataType(FieldType.NUMBER);
+		problem_id.setModule(module);
+		fields.add(problem_id);
+
+		return fields;
+	}
+
+	public static List<FacilioField> getFailureCodeRemediesFields() {
+		FacilioModule module = ModuleFactory.getFailureCodeRemediesModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getFailureCodeRemediesField());
+
+		FacilioField code_id = new FacilioField();
+		code_id.setName("code_id");
+		code_id.setColumnName("FAILURE_CODE_ID");
+		code_id.setDataType(FieldType.NUMBER);
+		code_id.setModule(module);
+		fields.add(code_id);
+
+		FacilioField causes_id = new FacilioField();
+		causes_id.setName("causes_id");
+		causes_id.setColumnName("FAILURE_CODE_CAUSES_ID");
+		causes_id.setDataType(FieldType.NUMBER);
+		causes_id.setModule(module);
+		fields.add(causes_id);
+
+		return fields;
+	}
+
+
 	public static List<FacilioField> getLicensingInfoFields() {
 		FacilioModule module = ModuleFactory.getLicensingInfoModule();
 		List<FacilioField> fields = new ArrayList<>();

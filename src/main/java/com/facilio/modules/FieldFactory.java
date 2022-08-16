@@ -8395,6 +8395,44 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getIdField(module));
         fields.add(getNameField(module));
 
+        SystemEnumField jobPlanCategoryField = getField("jobPlanCategory", "CATEGORY", module, FieldType.SYSTEM_ENUM);
+        jobPlanCategoryField.setEnumName("JobPlanCategory");
+        jobPlanCategoryField.setDisplayName("Category");
+        jobPlanCategoryField.setDisplayType(FieldDisplayType.SELECTBOX);
+        jobPlanCategoryField.setRequired(false);
+        jobPlanCategoryField.setDisabled(false);
+        jobPlanCategoryField.setDefault(true);
+        fields.add(jobPlanCategoryField);
+
+        LookupField assetCategoryField = getField("assetCategory", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP);
+        assetCategoryField.setDisplayName("Asset Category");
+        assetCategoryField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
+        assetCategoryField.setDefault(true);
+        assetCategoryField.setMainField(false);
+        assetCategoryField.setRequired(false);
+        assetCategoryField.setLookupModule(ModuleFactory.getAssetCategoryModule());
+        fields.add(assetCategoryField);
+
+        LookupField spaceCategoryField = getField("spaceCategory", "SPACE_CATEGORY_ID", module, FieldType.LOOKUP);
+        spaceCategoryField.setDisplayName("Space Category");
+        spaceCategoryField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
+        spaceCategoryField.setDefault(true);
+        spaceCategoryField.setMainField(false);
+        spaceCategoryField.setRequired(false);
+        spaceCategoryField.setLookupModule(ModuleFactory.getAssetCategoryModule());
+        fields.add(spaceCategoryField);
+
+        BooleanField isActiveField = (BooleanField) getBooleanField("isActive", "IS_ACTIVE", module);
+        spaceCategoryField.setDefault(true);
+        spaceCategoryField.setMainField(false);
+        spaceCategoryField.setRequired(true);
+        fields.add(isActiveField);
+
+        BooleanField isDisabledField = (BooleanField)getBooleanField("isDisabled", "IS_DISABLED", module);
+        spaceCategoryField.setDefault(true);
+        spaceCategoryField.setMainField(false);
+        spaceCategoryField.setRequired(true);
+        fields.add(isDisabledField);
         return fields;
     }
 

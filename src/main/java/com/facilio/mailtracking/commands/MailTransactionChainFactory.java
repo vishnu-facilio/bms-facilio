@@ -10,7 +10,6 @@ public class MailTransactionChainFactory {
 
     public static FacilioChain pushOutgoingMailToQueue() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new RegisterOutgoingMailMapperCommand());
         c.addCommand(new InsertOutgoingMailLoggerCommand());
         c.addCommand(new PushOutgoingMailToQueueCommand());
         return c;
@@ -18,6 +17,7 @@ public class MailTransactionChainFactory {
 
     public static FacilioChain trackOutgoingMailChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateGlobalMapperIdCommand());
         c.addCommand(new InsertOutgoingRecipientsCommand());
         c.addCommand(new SendMailCommand());
         c.addCommand(new UpdateMailMessageIdCommand());

@@ -6,11 +6,10 @@ import com.facilio.bmsconsoleV3.commands.asset.AssetSupplementsSupplyCommand;
 import com.facilio.bmsconsoleV3.commands.assetDepartment.ValidateAssetDepartmentDeletionV3;
 import com.facilio.bmsconsoleV3.commands.assetType.ValidateAssetTypeDeletionV3;
 import com.facilio.bmsconsoleV3.commands.dashboard.*;
+import com.facilio.bmsconsoleV3.commands.failureclass.FetchFailureClassSupplements;
+import com.facilio.bmsconsoleV3.commands.failureclass.FetchResourceSupplements;
 import com.facilio.bmsconsoleV3.commands.floorplan.*;
-import com.facilio.bmsconsoleV3.commands.jobplan.FillUpJobPlanSectionAdditionInfoObject;
-import com.facilio.bmsconsoleV3.commands.jobplan.FillUpJobPlanTaskAdditionInfoObject;
-import com.facilio.bmsconsoleV3.commands.jobplan.ValidationForJobPlanCategory;
-import com.facilio.bmsconsoleV3.commands.jobplan.AddPlannerIdFilterCriteriaCommand;
+import com.facilio.bmsconsoleV3.commands.jobplan.*;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.AddLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.DeleteLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.FetchLicensingInfoCommand;
@@ -27,7 +26,6 @@ import com.facilio.bmsconsoleV3.commands.shift.ValidateBreakCommand;
 import com.facilio.bmsconsoleV3.commands.space.SpaceFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.shift.*;
 import com.facilio.bmsconsoleV3.commands.spacecategory.ValidateSpaceCategoryDeletionV3;
-import com.facilio.bmsconsoleV3.commands.requestForQuotation.AutoAwardingPriceCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.CreatePurchaseOrdersCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.CreateVendorQuotesCommandV3;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.SetRequestForQuotationLineItemsCommandV3;
@@ -45,7 +43,6 @@ import com.facilio.bmsconsoleV3.commands.tool.UpdateIsUnderStockedCommandV3;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsoleV3.commands.receipts.*;
 import com.facilio.modules.FacilioModule;
-import com.facilio.relation.command.*;
 import com.facilio.bmsconsoleV3.plannedmaintenance.jobplan.FillTasksAndPrerequisitesCommand;
 import com.facilio.v3.commands.*;
 import org.apache.commons.chain.Command;
@@ -58,7 +55,6 @@ import com.facilio.bmsconsole.automation.command.AddOrUpdateGlobalVariableComman
 import com.facilio.bmsconsole.automation.command.AddOrUpdateGlobalVariableGroupCommand;
 import com.facilio.bmsconsole.automation.command.DeleteGlobalVariableCommand;
 import com.facilio.bmsconsole.automation.command.DeleteGlobalVariableGroupCommand;
-import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.commands.util.AddColorPaletteCommand;
 import com.facilio.bmsconsole.commands.util.DeleteColorPaletteCommand;
 import com.facilio.bmsconsole.commands.util.ListColorPaletteCommand;
@@ -70,8 +66,6 @@ import com.facilio.bmsconsoleV3.commands.accessibleSpaces.FetchAccessibleSpacesC
 import com.facilio.bmsconsoleV3.commands.assetCategory.AddAssetCategoryModuleCommandV3;
 import com.facilio.bmsconsoleV3.commands.assetCategory.UpdateCategoryAssetModuleIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.assetCategory.ValidateAssetCategoryDeletionV3;
-import com.facilio.bmsconsoleV3.commands.assetDepartment.ValidateAssetDepartmentDeletionV3;
-import com.facilio.bmsconsoleV3.commands.assetType.ValidateAssetTypeDeletionV3;
 import com.facilio.bmsconsoleV3.commands.budget.ValidateBudgetAmountCommandV3;
 import com.facilio.bmsconsoleV3.commands.budget.ValidateChartOfAccountTypeCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.UpdateClientIdInSiteCommandV3;
@@ -90,7 +84,6 @@ import com.facilio.bmsconsoleV3.commands.facility.*;
 import com.facilio.bmsconsoleV3.commands.insurance.AssociateVendorToInsuranceCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
-import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksCommand;
 import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.UpdatePeoplePrimaryContactCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.PreFillAddPurchaseRequestCommand;
@@ -1009,6 +1002,19 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new ConstructUpdateCustomActivityCommandV3());
         chain.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.JOB_PLAN_ACTIVITY));
 
+        return chain;
+    }
+
+    public static FacilioChain getJobPlanSummaryAfterFetchChain(){
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new FillJobPlanDetailsCommand());
+        chain.addCommand(new SortJobPlanTaskSectionCommand());
+        return chain;
+    }
+
+    public static FacilioChain getDeleteJobPlanBeforeChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new DeleteJobPlanValidationCommand());
         return chain;
     }
 
@@ -2002,6 +2008,13 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getBreakBeforeDeleteChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new RemoveBreakShiftRelationshipCommand());
+        return c;
+    }
+
+    public static FacilioChain getFetchFailureClassSupplements() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchResourceSupplements());
+        c.addCommand(new FetchFailureClassSupplements());
         return c;
     }
 }

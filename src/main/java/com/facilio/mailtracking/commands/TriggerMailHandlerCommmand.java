@@ -69,8 +69,8 @@ public class TriggerMailHandlerCommmand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        Long recordModuleId = FacilioUtil.parseLong(context.get(MailConstants.Params.RECORD_MODULE_ID));
-        if(recordModuleId == null || recordModuleId.equals(-1L)) {
+        Long recordModuleId = FacilioUtil.parseLong(context.getOrDefault(MailConstants.Params.RECORD_MODULE_ID, -1L));
+        if(recordModuleId.equals(-1L)) {
             return false;
         }
         if(!(MAIL_DATA_MAP == null || MAIL_DATA_MAP.isEmpty())) {

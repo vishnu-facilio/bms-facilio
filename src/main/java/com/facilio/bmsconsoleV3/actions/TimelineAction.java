@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.actions;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.timelineview.context.TimelineViewContext;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -10,6 +11,8 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.EnumField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.timeline.context.TimelineRequest;
 import com.facilio.v3.RESTAPIHandler;
@@ -41,25 +44,38 @@ public class TimelineAction extends RESTAPIHandler {
 			throw new IllegalArgumentException("Invalid View data passed");
 		}
 
-		if(((TimelineViewContext)viewObj).getGroupByField() == null) {
+		FacilioField groupByField = ((TimelineViewContext)viewObj).getGroupByField();
+		if(groupByField == null) {
 			throw new IllegalArgumentException("Group field not configured for the view");
 		}
-		setModuleName(((LookupField)(((TimelineViewContext)viewObj).getGroupByField())).getLookupModule().getName());
-		if(LookupSpecialTypeUtil.isSpecialType(getModuleName())) {
-			setData(FacilioConstants.ContextNames.PICKLIST, PickListUtil.getSpecialModulesPickList(getModuleName(), getPage(), getPerPage(), getSearch()));
-			setMeta("moduleType", FacilioModule.ModuleType.PICK_LIST.name());
-			setMeta("localSearch", !FacilioConstants.ContextNames.USERS.equals(getModuleName()));
-		}
-		else {
-			FacilioContext pickListContext = new FacilioContext();
-			PickListUtil.populatePicklistContext(pickListContext, getModuleName(), getFilters(), getSearch(), getCriteria(), getClientCriteria(), getDefault(), getViewName(), getPage(), getPerPage());
-			if(((TimelineViewContext)viewObj).getGroupCriteriaId() > 0) {
-				pickListContext.put(FacilioConstants.ContextNames.FILTER_SERVER_CRITERIA, ((TimelineViewContext) viewObj).getGroupCriteria());
-			}
-			pickListContext = PickListUtil.fetchPickListData(pickListContext);
+		if(groupByField instanceof LookupField) {
+			setModuleName(((LookupField) (((TimelineViewContext) viewObj).getGroupByField())).getLookupModule().getName());
+			if (LookupSpecialTypeUtil.isSpecialType(getModuleName())) {
+				setData(FacilioConstants.ContextNames.PICKLIST, PickListUtil.getSpecialModulesPickList(getModuleName(), getPage(), getPerPage(), getSearch()));
+				setMeta("moduleType", FacilioModule.ModuleType.PICK_LIST.name());
+				setMeta("localSearch", !FacilioConstants.ContextNames.USERS.equals(getModuleName()));
+			} else {
+				FacilioContext pickListContext = new FacilioContext();
+				PickListUtil.populatePicklistContext(pickListContext, getModuleName(), getFilters(), getSearch(), getCriteria(), getClientCriteria(), getDefault(), getViewName(), getPage(), getPerPage());
+				if (((TimelineViewContext) viewObj).getGroupCriteriaId() > 0) {
+					pickListContext.put(FacilioConstants.ContextNames.FILTER_SERVER_CRITERIA, ((TimelineViewContext) viewObj).getGroupCriteria());
+				}
+				pickListContext = PickListUtil.fetchPickListData(pickListContext);
 
+				setData(FacilioConstants.ContextNames.PICKLIST, pickListContext.get(FacilioConstants.ContextNames.PICKLIST));
+				setMeta("moduleType", ((FacilioModule) pickListContext.get(FacilioConstants.ContextNames.MODULE)).getTypeEnum().name());
+				setMeta("localSearch", pickListContext.getOrDefault(FacilioConstants.PickList.LOCAL_SEARCH, true));
+			}
+		}
+		else if(groupByField instanceof EnumField) {
+			FacilioChain pickListChain = ReadOnlyChainFactory.getEnumFieldPickListChain();
+			FacilioContext pickListContext = pickListChain.getContext();
+			pickListContext.put(FacilioConstants.ContextNames.ID, groupByField.getFieldId());
+			pickListContext.put(FacilioConstants.ContextNames.PAGE, getPage());
+			pickListContext.put(FacilioConstants.ContextNames.PER_PAGE, getPerPage());
+			pickListContext.put(FacilioConstants.ContextNames.FILTER_SERVER_CRITERIA, ((TimelineViewContext) viewObj).getGroupCriteria());
+			pickListChain.execute();
 			setData(FacilioConstants.ContextNames.PICKLIST, pickListContext.get(FacilioConstants.ContextNames.PICKLIST));
-			setMeta("moduleType", ((FacilioModule) pickListContext.get(FacilioConstants.ContextNames.MODULE)).getTypeEnum().name());
 			setMeta("localSearch", pickListContext.getOrDefault(FacilioConstants.PickList.LOCAL_SEARCH, true));
 		}
 

@@ -54,12 +54,11 @@ public class OutgoingMailAPI {
         V3Util.processAndUpdateSingleRecord(moduleName, record.getId(), row, null, null, null, null, null,null);
     }
 
-    public static V3OutgoingMailLogContext convertToMailLogContext(Long mapperId, JSONObject mailJson) throws IOException {
+    public static V3OutgoingMailLogContext convertToMailLogContext(JSONObject mailJson) throws IOException {
         V3OutgoingMailLogContext mailLogContext = FieldUtil.getAsBeanFromJson(mailJson, V3OutgoingMailLogContext.class);
-        if(mapperId != null) {
-            mailLogContext.setMapperId(mapperId);
+        if(mailJson.containsKey("moduleId")) {
+            mailLogContext.setRecordsModuleId(FacilioUtil.parseLong(mailJson.get("moduleId")));
         }
-        mailLogContext.setRecordsModuleId(FacilioUtil.parseLong(mailJson.get("moduleId")));
         if(mailJson.containsKey(MailConstants.Params.LOGGER_ID)) {
             mailLogContext.setId(FacilioUtil.parseLong(mailJson.get(MailConstants.Params.LOGGER_ID)));
         }

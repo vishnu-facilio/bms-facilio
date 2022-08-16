@@ -124,20 +124,6 @@ public class JobPlanTasksContext extends V3TaskContext {
         }
         this.additionInfo.put(key,value);
     }
-
-    public String getAdditionalInfoJsonStr() {
-        if(additionInfo != null) {
-            return additionInfo.toJSONString();
-        }
-        return null;
-    }
-    public void setAdditionalInfoJsonStr(String jsonStr) throws ParseException {
-        if(jsonStr != null) {
-            JSONParser parser = new JSONParser();
-            additionInfo = (JSONObject) parser.parse(jsonStr);
-        }
-    }
-
     /**
      * Re-declaring/Redefining the variables from {@link V3TaskContext }, for handling the properties in additionInfo.
      */

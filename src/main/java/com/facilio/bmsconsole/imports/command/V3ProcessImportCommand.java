@@ -321,7 +321,7 @@ public class V3ProcessImportCommand extends FacilioCommand {
             selectBuilder.andCondition(CriteriaAPI.getCondition(primaryField, StringUtils.join(set, ","), StringOperators.IS));
             List<Map<String, Object>> props = selectBuilder.getAsProps();
             if (CollectionUtils.isNotEmpty(props)) {
-                Map<String, Map<String, Object>> propMap = props.stream().collect(Collectors.toMap(prop -> (String) prop.get(primaryField.getName()), Function.identity()));
+                Map<String, Map<String, Object>> propMap = props.stream().collect(Collectors.toMap(prop -> (String) prop.get(primaryField.getName()), Function.identity(), (a, b) -> a));
                 for (String name : propMap.keySet()) {
                     String nameLower = name.toLowerCase().trim();
                     if (propMap.containsKey(name)) {

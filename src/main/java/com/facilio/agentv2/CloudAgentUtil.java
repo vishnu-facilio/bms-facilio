@@ -73,15 +73,18 @@ public class CloudAgentUtil {
 		return id;
 	}
 
-	public static String runWorkflow(WorkflowContext workflow) throws Exception{
+	public static Map<String,Object> runWorkflow(WorkflowContext workflow) throws Exception{
 		Map<String,Object> props = FieldUtil.getAsProperties(workflow);
 		Map<String, Object> data = doPost(Urls.RUN_WORKFLOW,AgentConstants.WORKFLOW,props);
+		Map<String,Object> resultMap = new HashMap<>();
 		if (data != null) {
 			if(data.containsKey(AgentConstants.WORKFLOW_RESPONSE)){
-				return (String) data.get(AgentConstants.WORKFLOW_RESPONSE);
+				resultMap.put(AgentConstants.WORKFLOW_RESPONSE,data.get(AgentConstants.WORKFLOW_RESPONSE));
+				return resultMap;
 			}
 			else if(data.containsKey(AgentConstants.WORKFLOW_SYNTAX_ERROR)){
-				return (String) data.get(AgentConstants.WORKFLOW_SYNTAX_ERROR);
+				resultMap.put(AgentConstants.WORKFLOW_SYNTAX_ERROR,data.get(AgentConstants.WORKFLOW_SYNTAX_ERROR));
+				return resultMap;
 			}
 		}
 		return null;

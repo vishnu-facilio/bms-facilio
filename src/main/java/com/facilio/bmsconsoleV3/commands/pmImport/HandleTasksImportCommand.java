@@ -1,9 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.pmImport;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PMJobPlan;
-import com.facilio.bmsconsoleV3.context.V3TaskContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTaskSectionContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTasksContext;
 import com.facilio.command.FacilioCommand;
@@ -128,24 +126,9 @@ public class HandleTasksImportCommand extends FacilioCommand {
         List<Map<String, Object>> mutatedTaskList = new ArrayList<>();
 
         for (Map<String, Object> rec : recList) {
-            JobPlanTasksContext jpTask = new JobPlanTasksContext();
-            jpTask.setTaskSection(section);
-            jpTask.setJobPlan(jobPlan);
-            jpTask.setInputType(1);
-            jpTask.setStatusNew(V3TaskContext.TaskStatus.OPEN.getValue());
-            jpTask.setCreatedBy(AccountUtil.getCurrentUser());
-            jpTask.setCreatedTime(System.currentTimeMillis());
 
-            Object subjectObj = rec.get("jpTaskSubject");
-            if (subjectObj != null) {
-                jpTask.setSubject((String) subjectObj);
-            }
-
-            Object descriptionObj = rec.get("jpTaskDescription");
-            if (descriptionObj != null) {
-                jpTask.setDescription((String) descriptionObj);
-            }
-
+            JobPlanTasksContext jpTask = Util.createJobPlanTask(jobPlan, section, rec);
+            
             mutatedTaskList.add(FieldUtil.getAsProperties(jpTask));
         }
 

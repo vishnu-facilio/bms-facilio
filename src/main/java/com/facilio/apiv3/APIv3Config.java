@@ -41,6 +41,7 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.Lo
 import com.facilio.bmsconsoleV3.commands.employee.LoadEmployeeLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.employee.UpdateEmployeePeopleAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.facility.*;
+import com.facilio.bmsconsoleV3.commands.failureclass.CheckForDuplicateFailureCode;
 import com.facilio.bmsconsoleV3.commands.failureclass.FetchFailureClassSubModules;
 import com.facilio.bmsconsoleV3.commands.failureclass.FetchFailureClassSupplements;
 import com.facilio.bmsconsoleV3.commands.floor.CreateFloorAfterSave;
@@ -60,7 +61,6 @@ import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanItemsLookup
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanServicesCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.LoadJobPlanToolsLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.FetchJobPlanLookupCommand;
-import com.facilio.bmsconsoleV3.commands.jobplan.FillJobPlanDetailsCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.ValidationForJobPlanCategory;
 import com.facilio.bmsconsoleV3.commands.labour.*;
 import com.facilio.bmsconsoleV3.commands.moves.UpdateEmployeeInDesksCommandV3;
@@ -537,6 +537,7 @@ public class APIv3Config {
                 .create()
                 .update()
                 .list()
+                .beforeFetch(new CheckForDuplicateFailureCode())
                 .summary()
                 .delete()
                 .build();
@@ -546,10 +547,11 @@ public class APIv3Config {
         return () -> new V3Config(V3FailureClassContext.class, null)
                 .create()
                 .update()
+                .beforeSave()
                 .list()
                 .beforeFetch(new FetchFailureClassSupplements())
                 .summary()
-                .beforeFetch(new FetchFailureClassSupplements())
+                .beforeFetch(TransactionChainFactoryV3.getFetchFailureClassSupplements())
                 .afterFetch(new FetchFailureClassSubModules())
                 .delete()
                 .build();
@@ -1534,9 +1536,9 @@ public class APIv3Config {
                 .beforeFetch(new FetchJobPlanLookupCommand())
                 .summary()
                 .beforeFetch(new FetchJobPlanLookupCommand())
-                .afterFetch(new FillJobPlanDetailsCommand())
+                .afterFetch(TransactionChainFactoryV3.getJobPlanSummaryAfterFetchChain())
                 .delete()
-
+                .beforeDelete(TransactionChainFactoryV3.getDeleteJobPlanBeforeChain())
                 .build();
     }
 
