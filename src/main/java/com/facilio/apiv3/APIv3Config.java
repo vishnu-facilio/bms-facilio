@@ -693,6 +693,8 @@ public class APIv3Config {
                 .update()
                 .beforeSave(new SetLocationCommandV3())
                 .delete()
+                .beforeDelete(new FetchPeopleForAssociatedLabour())
+                .afterDelete(new UpdateStatusForDeletedLabour())
                 .build();
     }
 
