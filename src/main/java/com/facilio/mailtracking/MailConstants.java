@@ -13,7 +13,6 @@ public class MailConstants {
         public static final String ORGID = "orgId";
         public static final String MAIL_JSON = "mailJson";
         public static final String FILES = "files";
-        public static final String TRACKING_CONF = "trackingConf";
         public static final String MAPPER_ID = "mapperId";
         public static final String LOGGER_ID = "logger";
         public static final String MESSAGE_ID = "messageId";
