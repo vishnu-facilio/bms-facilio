@@ -8766,6 +8766,17 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getValidationRuleFields(FacilioModule validationModule) {
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getField("id", "ID", validationModule, FieldType.ID));
+        fields.add(getField("parentId", "PARENT_ID", validationModule, FieldType.NUMBER));
+        fields.add(getField("name", "NAME", validationModule, FieldType.STRING));
+        fields.add(getField("errorMessage", "ERROR_MESSAGE", validationModule, FieldType.STRING));
+        fields.add(getField("namedCriteriaId", "NAMED_CRITERIA_ID", validationModule, FieldType.NUMBER));
+        fields.add(getField("errorMessagePlaceHolderScriptId", "ERROR_MESSAGE_PLACE_HOLDER_SCRIPT_ID", validationModule, FieldType.NUMBER));
+        return fields;
+    }
+
     public static List<FacilioField> getConfirmationDialogFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getConfirmationDialogModule();

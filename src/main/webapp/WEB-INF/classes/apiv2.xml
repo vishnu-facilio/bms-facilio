@@ -2099,6 +2099,25 @@
 			<param name="moduleName">{1}</param>
 		</action>
 	</package>
+
+	<package name="formValidationRuleApiv2" namespace="/api/v2/form/validationrule"
+			 extends="v2Api">
+		<action name="add"
+				class="com.facilio.bmsconsole.actions.FormValidationRuleAction" method="addOrUpdateRule">
+		</action>
+		<action name="update"
+				class="com.facilio.bmsconsole.actions.FormValidationRuleAction" method="addOrUpdateRule">
+		</action>
+		<action name="list"
+				class="com.facilio.bmsconsole.actions.FormValidationRuleAction" method="getRuleList">
+		</action>
+		<action name="get"
+				class="com.facilio.bmsconsole.actions.FormValidationRuleAction" method="getRule">
+		</action>
+		<action name="delete"
+				class="com.facilio.bmsconsole.actions.FormValidationRuleAction" method="deleteRule">
+		</action>
+	</package>
 	
 	<package name="formRuleApiv2" namespace="/api/v2/form/rule"
 		extends="v2Api">

@@ -29,7 +29,15 @@ public class ValidationContext {
 	public void setRuleId(long ruleId) {
 		this.ruleId = ruleId;
 	}
-	
+
+	private long parentId = -1;
+	public long getParentId() {
+		return parentId;
+	}
+	public void setParentId(long parentId) {
+		this.parentId = parentId;
+	}
+
 	private String name;
 	public String getName() {
 		return name;
@@ -98,6 +106,9 @@ public class ValidationContext {
 	@JSON(serialize = false)
 	@JsonIgnore
 	public boolean isValid() throws Exception {
+		if(ruleId <= 0 && parentId <= 0) {
+			return false;
+		}
 		if (StringUtils.isEmpty(errorMessage)) {
 			return false;
 		}

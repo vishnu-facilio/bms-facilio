@@ -3380,6 +3380,14 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getFormValidationRuleModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("formValidationRule");
+		module.setDisplayName("Form Validation Rule");
+		module.setTableName("Form_Validation_Rule");
+		return module;
+	}
+
 	public static FacilioModule getConfirmationDialogModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("confirmationDialog");

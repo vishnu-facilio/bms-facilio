@@ -187,6 +187,7 @@ public class ChainUtil {
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "beforeSaveCommand", moduleName));
         transactionChain.addCommand(new AddMultiSelectFieldsCommand());
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "AddMultiSelectFieldsCommand", moduleName));
+        transactionChain.addCommand(new EvaluateFormValidationRuleCommand());
         transactionChain.addCommand(new SaveCommand(module));
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "SaveCommand", moduleName));
         addIfNotNull(transactionChain, activityCommand);
@@ -338,6 +339,7 @@ public class ChainUtil {
         addIfNotNull(transactionChain, beforeSaveCommand);
 
         transactionChain.addCommand(new AddMultiSelectFieldsCommand());
+        transactionChain.addCommand(new EvaluateFormValidationRuleCommand());
         transactionChain.addCommand(new UpdateCommand(module));
         transactionChain.addCommand(activityCommand);
         transactionChain.addCommand(new DeleteSubModuleRecordCommand());

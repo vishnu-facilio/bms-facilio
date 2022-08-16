@@ -4141,6 +4141,18 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static FacilioChain getAddOrUpdateFormValidationRuleChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new AddOrUpdateFormValidationRuleCommand());
+			return c;
+		}
+
+		public static FacilioChain getDeleteFormValidationRuleChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new DeleteFormValidationRuleCommand());
+			return c;
+		}
+
 
 		public static FacilioChain getUpdateStateFlowDiagramChain() {
 			FacilioChain c = getDefaultChain();

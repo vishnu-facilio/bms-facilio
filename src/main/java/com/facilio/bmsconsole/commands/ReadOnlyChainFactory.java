@@ -198,6 +198,18 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
+	public static FacilioChain getFormValidationRule() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetFormValidationRuleCommand());
+		return c;
+	}
+
+	public static FacilioChain getFormValidationRuleList() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetAllFormValidationRulesCommand());
+		return c;
+	}
+
 	private static FacilioChain commonFetchDataListChain(boolean isPicklist) {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new CheckForCustomFilterAndGenerateCriteria());
