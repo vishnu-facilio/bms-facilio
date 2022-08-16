@@ -36,7 +36,7 @@ public class AddServiceRequestModules extends SignUpData{
 		buttonRule.setButtonType(CustomButtonRuleContext.ButtonType.SHOW_WIDGET.getIndex());
 		JSONObject config=new JSONObject();
 		config.put("actionType", "Redirect URL");
-		config.put("url",SSOUtil.getCurrentAppURL()+"/app/wo/create?serviceRequest=${serviceRequest.id:-}&subject=${serviceRequest.subject:-}&site=${serviceRequest.site:-}&description=${serviceRequest.description:-}");
+		config.put("url",SSOUtil.getCurrentAppURL()+"/app/wo/create?serviceRequest=${serviceRequest.id:-}&subject=${serviceRequest.subject:-}&siteId=${serviceRequest.siteId:-}&description=${serviceRequest.description:-}");
 		buttonRule.setConfig(config);
 		buttonRule.setCreatedTime(DateTimeUtil.getCurrenTime());
 		WorkflowEventContext workFlowEvent=new WorkflowEventContext();
