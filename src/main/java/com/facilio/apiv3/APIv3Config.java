@@ -157,10 +157,7 @@ import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlann
 import com.facilio.bmsconsoleV3.context.workpermit.V3WorkPermitContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
-import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount10;
-import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30;
-import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30_BS2;
-import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount50;
+import com.facilio.bmsconsoleV3.interfaces.customfields.*;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.control.*;
@@ -533,7 +530,7 @@ public class APIv3Config {
 
     @Module("failurecode")
     public static Supplier<V3Config> getFailureCode() {
-        return () -> new V3Config(V3FailureCodeContext.class, null)
+        return () -> new V3Config(V3FailureCodeContext.class, new ModuleCustomFieldCount15())
                 .create()
                 .update()
                 .list()
@@ -544,7 +541,7 @@ public class APIv3Config {
     }
     @Module("failureclass")
     public static Supplier<V3Config> getFailureClass() {
-        return () -> new V3Config(V3FailureClassContext.class, null)
+        return () -> new V3Config(V3FailureClassContext.class, new ModuleCustomFieldCount15())
                 .create()
                 .update()
                 .beforeSave()
