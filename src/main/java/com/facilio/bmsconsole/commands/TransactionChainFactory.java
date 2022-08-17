@@ -2298,7 +2298,7 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForTool());
 			c.addCommand(new BulkToolAdditionCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
-			c.addCommand(new AddBulkToolStockTransactionsCommand());
+			c.addCommand(new AddBulkToolStockTransactionsCommandV2());
 			c.addCommand(getUpdatetoolQuantityRollupChain());
 			c.addCommand(getSetItemAndToolTypeForStoreRoomChain());
 			return c;
