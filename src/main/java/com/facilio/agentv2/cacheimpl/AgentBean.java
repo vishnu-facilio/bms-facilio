@@ -3,6 +3,7 @@ package com.facilio.agentv2.cacheimpl;
 
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FacilioModule;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
@@ -14,6 +15,8 @@ public interface AgentBean {
     public List<FacilioAgent> getAgents(Collection<Long> ids) throws Exception;
 
     public List<FacilioAgent> getAgents(Collection<Long> ids, boolean fetchOnlyName) throws Exception;
+    
+    public List<FacilioAgent> getAgents(Criteria criteria) throws Exception;
 
     public Map<Long, FacilioAgent> getAgentMap(Collection<Long> ids) throws Exception;
 

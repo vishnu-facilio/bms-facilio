@@ -455,13 +455,19 @@ public class AgentBeanImpl implements AgentBean {
     public FacilioAgent getAgent(String agentName) throws Exception {
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(ModuleFactory.getNewAgentModule()),agentName, StringOperators.IS));
-        FacilioContext context = new FacilioContext();
-        context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
-        List<FacilioAgent> agents = getAgents(context);
-        if( ! agents.isEmpty() ){
+        List<FacilioAgent> agents = getAgents(criteria);
+        if( !agents.isEmpty() ){
             return agents.get(0);
         }
         return null;
+    }
+    
+    @Override
+    public List<FacilioAgent> getAgents(Criteria criteria) throws Exception {
+        FacilioContext context = new FacilioContext();
+        context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
+        List<FacilioAgent> agents = getAgents(context);
+        return agents;
     }
 
     private List<FacilioAgent> getAgents(FacilioContext context) throws Exception {
@@ -478,7 +484,8 @@ public class AgentBeanImpl implements AgentBean {
 
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(newAgentModule.getTableName())
-                .select(newAgentfields);
+                .select(newAgentfields)
+                .andCondition(getDeletedTimeNullCondition(newAgentModule));
 
         if (context.containsKey(FacilioConstants.ContextNames.CRITERIA)) {
             Criteria criteria;

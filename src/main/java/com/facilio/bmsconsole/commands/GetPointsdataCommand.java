@@ -31,7 +31,7 @@ public class GetPointsdataCommand extends FacilioCommand {
     Long controllerId;
     Long agentId;
     String status;
-    private static final  Map<String, FacilioField> BACNET_POINT_MAP = FieldFactory.getAsMap(FieldFactory.getBACnetIPPointFields());
+    private static final  Map<String, FacilioField> BACNET_POINT_MAP = FieldFactory.getAsMap(FieldFactory.getBACnetIPPointFields(true));
     private static final List<Integer> FILTER_INSTANCES = new ArrayList<>();
     static {
         FILTER_INSTANCES.add(BACNetUtil.InstanceType.ANALOG_INPUT.ordinal());//0

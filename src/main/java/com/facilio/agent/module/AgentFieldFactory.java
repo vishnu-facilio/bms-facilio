@@ -42,10 +42,12 @@ public class AgentFieldFactory {
 			return fields;
 		}
 	 
-	 public static List<FacilioField> getLonWorksPointFields(){
+	 public static List<FacilioField> getLonWorksPointFields(boolean fetchExtended){
 	        FacilioModule module = AgentModuleFactory.getLonWorksPointModule();
 	        List<FacilioField> fields = new ArrayList<>();
-	        fields.addAll(FieldFactory.getPointFields());
+	        if (fetchExtended) {
+	        	fields.addAll(FieldFactory.getPointFields());
+	        }
 	        fields.add(FieldFactory.getIdField(module));
 	        fields.add(FieldFactory.getControllerIdField(module));
 	        fields.add(FieldFactory.getField(AgentConstants.TARGET_NAME, "TARGET_NAME", module, FieldType.STRING));
@@ -54,10 +56,12 @@ public class AgentFieldFactory {
 	        return fields;
 	    }
 
-	public static List<FacilioField> getRdmPointFields() {
+	public static List<FacilioField> getRdmPointFields(boolean fetchExtended) {
 		FacilioModule module = AgentModuleFactory.getRdmPointModule();
 		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(FieldFactory.getPointFields());
+		if (fetchExtended) {
+        	fields.addAll(FieldFactory.getPointFields());
+        }
         fields.add(FieldFactory.getIdField(module));
 		fields.add(FieldFactory.getControllerIdField(module));
 		fields.add(FieldFactory.getField(AgentConstants.PATH, "PATH", module, FieldType.STRING));

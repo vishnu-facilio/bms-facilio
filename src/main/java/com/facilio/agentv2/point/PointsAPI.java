@@ -83,29 +83,33 @@ public class PointsAPI {
                 throw new Exception("No such implementation " + controllerType);
         }
     }
-
+    
     public static List<FacilioField> getChildPointFields(FacilioControllerType controllerType) throws Exception {
+    	return getChildPointFields(controllerType, true);
+    }
+
+    public static List<FacilioField> getChildPointFields(FacilioControllerType controllerType, boolean fetchExtended) throws Exception {
         switch (controllerType) {
             case OPC_XML_DA:
-                return FieldFactory.getOPCXmlDAPointFields();
+                return FieldFactory.getOPCXmlDAPointFields(fetchExtended);
             case MODBUS_RTU:
-                return FieldFactory.getModbusRtuPointFields();
+                return FieldFactory.getModbusRtuPointFields(fetchExtended);
             case MODBUS_IP:
-                return FieldFactory.getModbusTcpPointFields();
+                return FieldFactory.getModbusTcpPointFields(fetchExtended);
             case BACNET_IP:
-                return FieldFactory.getBACnetIPPointFields();
+                return FieldFactory.getBACnetIPPointFields(fetchExtended);
             case NIAGARA:
-                return FieldFactory.getNiagaraPointFields();
+                return FieldFactory.getNiagaraPointFields(fetchExtended);
             case MISC:
-                return FieldFactory.getMiscPointFields();
+                return FieldFactory.getMiscPointFields(fetchExtended);
             case OPC_UA:
-                return FieldFactory.getOPCUAPointFields();
+                return FieldFactory.getOPCUAPointFields(fetchExtended);
             case SYSTEM:
-                return FieldFactory.getSystemPointFields();
+                return FieldFactory.getSystemPointFields(fetchExtended);
             case LON_WORKS:
-            	return AgentFieldFactory.getLonWorksPointFields();
+            	return AgentFieldFactory.getLonWorksPointFields(fetchExtended);
             case RDM:
-                return AgentFieldFactory.getRdmPointFields();
+                return AgentFieldFactory.getRdmPointFields(fetchExtended);
             case REST:
             case CUSTOM:
             case BACNET_MSTP:
@@ -155,131 +159,6 @@ public class PointsAPI {
     }
 
 
-    public static List<Point> getAllPoints(List<Long> ids, long controllerId, FacilioContext paginationContext) {
-        List<Point> allPoints = new ArrayList<>();
-        for (FacilioControllerType type : FacilioControllerType.values()) {
-            List<Map<String, Object>> pointData = getAllPoints(type, ids, controllerId, -1, -1, -1, paginationContext);
-            if (!pointData.isEmpty()) {
-                List<Point> pointList = getPointFromRows(pointData);
-                if ((pointList != null) && (!pointList.isEmpty())) {
-                    allPoints.addAll(pointList);
-                }
-            }
-        }
-        return allPoints;
-    }
-
-    public static List<Map<String, Object>> getControllerPointsData(FacilioControllerType controllerType, long controllerId, FacilioContext context) {
-        if ((controllerType != null) && (controllerId > 0)) {
-            List<Map<String, Object>> pointData = getAllPoints(controllerType, null, controllerId, -1, -1, -1, context);
-            return pointData;
-        }
-        return null;
-    }
-
-
-    public static List<Point> getControllerPoints(FacilioControllerType controllerType, long controllerId) {
-        List<Map<String, Object>> pointData = getControllerPointsData(controllerType, controllerId, null);
-        if (!pointData.isEmpty()) {
-            return getPointFromRows(pointData);
-        }
-        return null;
-    }
-
-    public static List<Point> getControllerPoints(FacilioControllerType controllerType, long controllerId, FacilioContext paginationContext) {
-        List<Map<String, Object>> pointData = getControllerPointsData(controllerType, controllerId, paginationContext);
-        if (!pointData.isEmpty()) {
-            return getPointFromRows(pointData);
-        }
-        return null;
-    }
-
-    private static List<Map<String, Object>> getPointsData(List<Long> pointIds, FacilioControllerType type) throws Exception {
-        if ((pointIds != null) && (!pointIds.isEmpty()) && (type != null)) {
-            List<Map<String, Object>> result = getAllPoints(type, pointIds, -1, -1, -1, -1);
-            return result;
-        } else {
-            throw new Exception(" point Id->" + pointIds + " and controller type" + type + " can't be null or empty");
-        }
-    }
-
-    private static List<Map<String, Object>> getAllPoints(FacilioControllerType type, List<Long> pointIds, long controllerId, long fieldId, long assetCategoryId, long deviceId) {
-        FacilioContext context = new FacilioContext();
-        context.put(AgentConstants.CONTROLLER_TYPE, type);
-        context.put(AgentConstants.POINT_IDS, pointIds);
-        context.put(AgentConstants.CONTROLLER_ID, controllerId);
-        context.put(AgentConstants.FIELD_ID, fieldId);
-        context.put(AgentConstants.ASSET_CATEGORY_ID, assetCategoryId);
-        context.put(AgentConstants.DEVICE_ID, deviceId);
-        return fetchPoints(context);
-    }
-
-    private static List<Map<String, Object>> getAllPoints(FacilioControllerType type, List<Long> pointIds, long controllerId, long fieldId, long assetCategoryId, long deviceId, FacilioContext paginationContext) {
-        if(paginationContext == null){
-            paginationContext = new FacilioContext();
-        }
-        paginationContext.put(AgentConstants.CONTROLLER_TYPE, type);
-        paginationContext.put(AgentConstants.POINT_IDS, pointIds);
-        paginationContext.put(AgentConstants.CONTROLLER_ID, controllerId);
-        paginationContext.put(AgentConstants.FIELD_ID, fieldId);
-        paginationContext.put(AgentConstants.ASSET_CATEGORY_ID, assetCategoryId);
-        paginationContext.put(AgentConstants.DEVICE_ID, deviceId);
-        return fetchPoints(paginationContext);
-    }
-
-
-    private static List<Map<String, Object>> fetchPoints(FacilioContext paginationContext) {
-        FacilioModule pointModule = ModuleFactory.getPointModule();
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
-        List<Map<String, Object>> pointsData = new ArrayList<>();
-        if (!containsValueCheck(AgentConstants.CONTROLLER_TYPE, paginationContext)) {
-            LOGGER.info("Exception occurred, controllerType->" + paginationContext.get(AgentConstants.CONTROLLER_TYPE) + " is mandatory ");
-            return pointsData;
-        }
-        ModuleCRUDBean bean;
-        try {
-            bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getOrgId());
-            Criteria criteria = new Criteria();
-            Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
-            if (containsValueCheck(AgentConstants.CONTROLLER_ID, paginationContext) && checkValue((Long) paginationContext.get(AgentConstants.CONTROLLER_ID))) {
-                if (fieldsMap.containsKey(AgentConstants.CONTROLLER_ID)) {
-                    criteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.CONTROLLER_ID), String.valueOf(paginationContext.get(AgentConstants.CONTROLLER_ID)), NumberOperators.EQUALS));
-                }
-            }
-            if (containsValueCheck(AgentConstants.ASSET_CATEGORY_ID, paginationContext) && (checkValue((Long) paginationContext.get(AgentConstants.ASSET_CATEGORY_ID)))) {
-                if (fieldsMap.containsKey(AgentConstants.ASSET_CATEGORY_ID)) {
-                    criteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.ASSET_CATEGORY_ID), String.valueOf(paginationContext.get(AgentConstants.ASSET_CATEGORY_ID)), NumberOperators.EQUALS));
-                }
-            }
-            if (containsValueCheck(AgentConstants.FIELD_ID, paginationContext) && checkValue((Long) paginationContext.get(AgentConstants.FIELD_ID))) {
-                if (fieldsMap.containsKey(AgentConstants.FIELD_ID)) {
-                    criteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.FIELD_ID), String.valueOf(paginationContext.get(AgentConstants.FIELD_ID)), NumberOperators.EQUALS));
-                }
-            }
-            if (containsValueCheck(AgentConstants.POINT_IDS, paginationContext)) {
-                List<Long> ids = (List<Long>) paginationContext.get(AgentConstants.POINT_IDS);
-                if (!ids.isEmpty()) {
-                    criteria.addAndCondition(CriteriaAPI.getIdCondition(ids, pointModule));
-                }
-            }
-            if (containsValueCheck(AgentConstants.DEVICE_ID, paginationContext) && checkValue((Long) paginationContext.get(AgentConstants.DEVICE_ID))) {
-                criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.DEVICE_ID), String.valueOf(paginationContext.get(AgentConstants.DEVICE_ID)), NumberOperators.EQUALS));
-            }
-            criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.ID), "0", NumberOperators.GREATER_THAN));
-            List<FacilioField> fields = FieldFactory.getPointFields();
-            getPointTypeBasedConditionAndFields((FacilioControllerType) paginationContext.get(AgentConstants.CONTROLLER_TYPE), paginationContext);
-            if (paginationContext != null && (!paginationContext.isEmpty())) {
-                paginationContext.put(FacilioConstants.ContextNames.CRITERIA, criteria);
-                paginationContext.put(FacilioConstants.ContextNames.TABLE_NAME, AgentConstants.POINTS_TABLE);
-                ((List<FacilioField>) paginationContext.get(FacilioConstants.ContextNames.FIELDS)).addAll(fields);
-                pointsData = bean.getRows(paginationContext);
-            }
-        } catch (Exception e) {
-            LOGGER.info("Exception occurred ", e);
-        }
-        return pointsData;
-    }
-
     public static List<Point> getPointFromRows(List<Map<String, Object>> points) {
         List<Point> pointList = new ArrayList<>();
         for (Map<String, Object> point : points) {
@@ -297,74 +176,6 @@ public class PointsAPI {
             }
         }
         return pointList;
-    }
-
-    private static FacilioContext getPointTypeBasedConditionAndFields(FacilioControllerType controllerType) throws Exception {
-        FacilioContext context = new FacilioContext();
-        getPointTypeBasedConditionAndFields(controllerType, context);
-        return context;
-    }
-
-    private static void getPointTypeBasedConditionAndFields(FacilioControllerType controllerType, FacilioContext context) throws Exception {
-        switch (controllerType) {
-            case BACNET_MSTP:
-                //throw  new Exception("Implementation for BACNET_MSTP, not found ");
-            case MODBUS_RTU:
-                context.put(FacilioConstants.ContextNames.INNER_JOIN, ModuleFactory.getModbusRtuPointModule().getTableName());
-                context.put(FacilioConstants.ContextNames.ON_CONDITION, AgentConstants.POINTS_TABLE + ".ID=" + ModuleFactory.getModbusRtuPointModule().getTableName() + ".ID");
-                context.put(FacilioConstants.ContextNames.FIELDS, FieldFactory.getModbusRtuPointFields());
-                break;
-            case OPC_UA:
-                context.put(FacilioConstants.ContextNames.INNER_JOIN, ModuleFactory.getOPCUAPointModule().getTableName());
-                context.put(FacilioConstants.ContextNames.ON_CONDITION, AgentConstants.POINTS_TABLE + ".ID=" + ModuleFactory.getOPCUAPointModule().getTableName() + ".ID");
-                context.put(FacilioConstants.ContextNames.FIELDS, FieldFactory.getOPCUAPointFields());
-                break;
-            case OPC_XML_DA:
-                context.put(FacilioConstants.ContextNames.INNER_JOIN, ModuleFactory.getOPCXmlDAPointModule().getTableName());
-                context.put(FacilioConstants.ContextNames.ON_CONDITION, AgentConstants.POINTS_TABLE + ".ID=" + ModuleFactory.getOPCXmlDAPointModule().getTableName() + ".ID");
-                context.put(FacilioConstants.ContextNames.FIELDS, FieldFactory.getOPCXmlDAPointFields());
-                break;
-            case BACNET_IP:
-                context.put(FacilioConstants.ContextNames.INNER_JOIN, ModuleFactory.getBACnetIPPointModule().getTableName());
-                context.put(FacilioConstants.ContextNames.ON_CONDITION, AgentConstants.POINTS_TABLE + ".ID=" + ModuleFactory.getBACnetIPPointModule().getTableName() + ".ID");
-                context.put(FacilioConstants.ContextNames.FIELDS, FieldFactory.getBACnetIPPointFields());
-                break;
-            case MODBUS_IP:
-                context.put(FacilioConstants.ContextNames.INNER_JOIN, ModuleFactory.getModbusTcpPointModule().getTableName());
-                context.put(FacilioConstants.ContextNames.ON_CONDITION, AgentConstants.POINTS_TABLE + ".ID=" + ModuleFactory.getModbusTcpPointModule().getTableName() + ".ID");
-                context.put(FacilioConstants.ContextNames.FIELDS, FieldFactory.getModbusTcpPointFields());
-                break;
-            case MISC:
-                context.put(FacilioConstants.ContextNames.INNER_JOIN, ModuleFactory.getMiscPointModule().getTableName());
-                context.put(FacilioConstants.ContextNames.ON_CONDITION, AgentConstants.POINTS_TABLE + ".ID=" + ModuleFactory.getMiscPointModule().getTableName() + ".ID");
-                context.put(FacilioConstants.ContextNames.FIELDS, FieldFactory.getMiscPointFields());
-                break;
-            case NIAGARA:
-                context.put(FacilioConstants.ContextNames.INNER_JOIN, ModuleFactory.getNiagaraPointModule().getTableName());
-                context.put(FacilioConstants.ContextNames.ON_CONDITION, AgentConstants.POINTS_TABLE + ".ID=" + ModuleFactory.getNiagaraPointModule().getTableName() + ".ID");
-                context.put(FacilioConstants.ContextNames.FIELDS, FieldFactory.getNiagaraPointFields());
-                break;
-            case RDM:
-                context.put(FacilioConstants.ContextNames.INNER_JOIN, AgentModuleFactory.getRdmPointModule().getTableName());
-                context.put(FacilioConstants.ContextNames.ON_CONDITION, AgentConstants.POINTS_TABLE + ".ID=" + AgentModuleFactory.getRdmPointModule().getTableName() + ".ID");
-                context.put(FacilioConstants.ContextNames.FIELDS, AgentFieldFactory.getRdmPointFields());
-                break;
-            case LON_WORKS:
-                // throw  new Exception("Implementation for LON_WORKS, not found ");
-            case KNX:
-                //throw  new Exception("Implementation for KNX, not found ");
-
-            default:
-                //throw new Exception("FacilioControler type didnt match with cases "+controllerType.toString());
-        }
-        
-        List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.FIELDS);
-        if (fields != null) {
-        		FacilioModule pointModule = ModuleFactory.getPointModule();
-        		fields = fields.stream().filter(p -> p.getModule().getName() != pointModule.getName())
-						   .collect(Collectors.toList()); 
-        		 context.put(FacilioConstants.ContextNames.FIELDS,fields);
-        }
     }
 
     public static boolean addPoint(Point point) {
@@ -610,26 +421,6 @@ public class PointsAPI {
         return 0;
     }
 
-    public static List<Point> getDevicePoints(Long deviceId, int type, FacilioContext paginationContext) {
-        List<Map<String, Object>> records = getDevicePointsAsMapList(deviceId, type, null);
-        if (!records.isEmpty()) {
-            try {
-                return getPointFromRows(records);
-            } catch (Exception e) {
-                LOGGER.info("Exception occurred while making point" + e.getMessage());
-            }
-        }
-        return new ArrayList<>();
-    }
-
-    public static List<Map<String, Object>> getDevicePointsAsMapList(Long deviceId, int type, FacilioContext paginationcontext) {
-        if ((deviceId != null) && (deviceId > 0) && (type > 0)) {
-            return getAllPoints(FacilioControllerType.valueOf(type), null, -1, -1, -1, deviceId,paginationcontext);
-        } else {
-            LOGGER.info("Exception while getting points for device->" + deviceId + " and of type->" + type);
-        }
-        return new ArrayList<>();
-    }
 
     public static Class getPointType(FacilioControllerType type) throws Exception {
         switch (type) {
@@ -896,27 +687,6 @@ public class PointsAPI {
         }
     }
 
-    public static List<Point> getControllerPointsFromNames(FacilioControllerType type, Controller controller, List<String> pointNames) throws Exception {
-
-        if (controller.getDeviceId() < 0) {
-            throw new Exception("Invalid deviceId for controller : " + controller.getName());
-        }
-        FacilioContext context = getPointTypeBasedConditionAndFields(type);
-        List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.FIELDS);
-        fields.addAll(FieldFactory.getPointFields());
-        String condition = context.get(FacilioConstants.ContextNames.ON_CONDITION).toString();
-        String innerJoin = context.get(FacilioConstants.ContextNames.INNER_JOIN).toString();
-        List<Long> deviceIds = new ArrayList<>();
-        deviceIds.add(controller.getDeviceId());
-        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                .table(ModuleFactory.getPointModule().getTableName()).innerJoin(innerJoin).on(condition)
-                .select(fields)
-                .andCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(ModuleFactory.getPointModule()), StringUtils.join(pointNames, ","), StringOperators.IS))
-                .andCondition(CriteriaAPI.getCondition(FieldFactory.getField(AgentConstants.DEVICE_ID, "DEVICE_ID", ModuleFactory.getPointModule(), FieldType.NUMBER), deviceIds, NumberOperators.EQUALS));
-        List<Map<String, Object>> rows = selectRecordBuilder.get();
-        return getPointFromRows(rows);
-    }
-    
     public static List<Point> getPointData(Collection<Pair<Long, Long>> assetFieldPairs) throws Exception {
 		FacilioModule pointModule = ModuleFactory.getPointModule();
 		FacilioField readingField = FieldFactory.getPointFieldIdField(pointModule);
@@ -964,6 +734,13 @@ public class PointsAPI {
 
         updateBuilder.batchUpdateById(batchUpdateList);
 
-
     }
+    
+    public static List<Point> getPoints(Criteria criteria) throws Exception {
+    	GetPointRequest getPointRequest = new GetPointRequest()
+				.withCriteria(criteria)
+				;
+    	return getPointRequest.getPoints();
+    }
+    
 }

@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.util.CommissioningApi;
@@ -15,6 +17,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import com.facilio.agent.AgentType;
+import com.facilio.agent.FacilioAgent;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.module.AgentFieldFactory;
 import com.facilio.agent.module.AgentModuleFactory;
@@ -34,6 +38,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.FacilioUtil;
 
 public class GetPointRequest {
     private static final Logger LOGGER = LogManager.getLogger(GetPointRequest.class.getName());
@@ -42,16 +47,16 @@ public class GetPointRequest {
     private static final FacilioModule POINT_MODULE = ModuleFactory.getPointModule();
     private static final  Map<String, FacilioField> POINT_MAP = FieldFactory.getAsMap(POINT_FIELDS);
 
-    private GenericSelectRecordBuilder selectRecordBuilder = null;
     private Criteria criteria = new Criteria();
     private FacilioControllerType controllerType = null;
     private int limit = 50 ;
     private int offset = 0;
     private String orderBy;
+    private boolean fetchCount = false;
 
 	public GetPointRequest ofType(FacilioControllerType controllerType) throws Exception {
         if (controllerType != null) {
-            selectRecordBuilder = loadBuilder(controllerType);
+        	this.controllerType = controllerType;
             return this;
         } else {
             throw new Exception(" controller type cant be null");
@@ -74,6 +79,11 @@ public class GetPointRequest {
 
     public GetPointRequest withControllerIds ( Collection<Long> controllerIds ) throws Exception {
         criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(POINT_MODULE),controllerIds,NumberOperators.EQUALS));
+        return this;
+    }
+    
+    public GetPointRequest withAgentId ( long agentId ) throws Exception {
+        criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(POINT_MODULE),String.valueOf(agentId), NumberOperators.EQUALS));
         return this;
     }
     
@@ -153,16 +163,10 @@ public class GetPointRequest {
     }
     
     public GetPointRequest count() throws Exception {
-    	selectRecordBuilder.select(new ArrayList<>());
-    	selectRecordBuilder.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, POINT_MAP.get(AgentConstants.ID));
+    	this.fetchCount = true;
     	return this;
     }
 
-    public GetPointRequest querySearch(String column,String value) {
-        selectRecordBuilder.andCustomWhere("NAME OR DISPLAY_NAME LIKE ?", "%"+value+"%");
-    	return this;
-    }
-    
     public List<Point> getPoints() throws Exception {
         return PointsAPI.getPointFromRows(getPointsData());
     }
@@ -172,54 +176,88 @@ public class GetPointRequest {
     }
 
     public List<Map<String, Object>> getPointsData() throws Exception {
-        List<Map<String, Object>> data = new ArrayList<>();
-       
-        if(selectRecordBuilder == null){
-            for (FacilioControllerType controllerType : FacilioControllerType.values()) {
-                try{
-                    selectRecordBuilder = loadBuilder(controllerType);
-                    if( (criteria.getConditions() != null) && ! criteria.getConditions().isEmpty()){
-                        selectRecordBuilder.andCriteria(criteria);
-                    }
-                    selectRecordBuilder.limit(limit);
-                    data.addAll(selectRecordBuilder.get());
-                    if(FacilioProperties.isDevelopment()){
-                        LOGGER.info(controllerType.asString()+"Getpoints query "+selectRecordBuilder.toString());
-                    }
-                }catch (Exception e){
-                    LOGGER.info("Exceptio  while getting points for type "+controllerType.asString(), e);
-                }
-            }
+    	GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder().table(POINT_MODULE.getTableName());
+		if (fetchCount) {
+			selectRecordBuilder.select(new ArrayList<>())
+	    		.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, POINT_MAP.get(AgentConstants.ID));
+		}
+		else if (controllerType != null) {
+			joinExtendedTable(selectRecordBuilder);
+		}
+		else {
+			selectRecordBuilder.select(new ArrayList<>(POINT_FIELDS));
+		}
+    	
+        if(criteria.getConditions() != null && !criteria.getConditions().isEmpty()){
+            selectRecordBuilder.andCriteria(criteria);
         }
-        else {
-            if( (criteria.getConditions() != null) && ! criteria.getConditions().isEmpty()){
-                selectRecordBuilder.andCriteria(criteria).orderBy(orderBy)
-                        .limit(limit).offset(offset);
-            }
-            data = selectRecordBuilder.get();
-            if(FacilioProperties.isDevelopment()){
-                LOGGER.info("Getpoints query "+selectRecordBuilder.toString());
-            }
+        if (limit > 0) {
+        	selectRecordBuilder.limit(limit);
         }
-        if( ! data.isEmpty()){
-            handlePointToggleFlag(data);
+        
+        
+        List<Map<String, Object>> props = selectRecordBuilder.get();
+        if( !props.isEmpty()){
+        	if (fetchCount) {
+        		return props;
+        	}
+        	
+        	Map<FacilioControllerType, List<Long>> extendedIds = new HashMap<>();
+        	for (Map<String, Object> prop : props) {
+        		
+        		FacilioControllerType pointControllerType = FacilioControllerType.valueOf(FacilioUtil.parseInt(prop.get(AgentConstants.POINT_TYPE)));
+        		handlePointToggleFlag(prop, pointControllerType);
+        		
+        		// Fetching extended data if controllerType unknown during fetch
+            	if (this.controllerType == null) {
+            		
+            		List<Long> ids = extendedIds.get(pointControllerType);
+            		if (ids == null) {
+            			ids = new ArrayList<>();
+            			extendedIds.put(pointControllerType, ids);
+            		}
+            		ids.add((long) prop.get("id"));
+            	}
+    		}
+        	
+        	if (!extendedIds.isEmpty()) {
+        		Map<Long, Map<String, Object>> extendedProps = getExtendedProps(extendedIds);
+        		for (Map<String, Object> prop : props) {
+        			Map<String, Object> extendedProp = extendedProps.get(prop.get("id"));
+        			prop.putAll(extendedProp);
+        		}
+        	}
+            
         }
-        return data;
+        return props;
     }
+    
+	private  Map<Long, Map<String, Object>> getExtendedProps(Map<FacilioControllerType, List<Long>> extendedIds) throws Exception {
+		Map<Long, Map<String, Object>> extendedProps = new HashMap<>();
+        for (Entry<FacilioControllerType, List<Long>> entry: extendedIds.entrySet()) {
+        	FacilioControllerType pointControllerType = entry.getKey();
+    		List<Long> pointIds = entry.getValue();
+    		FacilioModule pointModule = PointsAPI.getPointModule(pointControllerType);
+    		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+    				.table(pointModule.getTableName())
+    				.select(PointsAPI.getChildPointFields(pointControllerType, false))
+    				.andCondition(CriteriaAPI.getIdCondition(pointIds, pointModule))
+    				;
+    		
+    		List<Map<String, Object>> props = builder.get();
+    		extendedProps.putAll(props.stream().collect(Collectors.toMap(prop -> (long)prop.get("id"), prop -> prop)));
+        }
+        return extendedProps;
+	}
 
-    private void handlePointToggleFlag(List<Map<String, Object>> points) {
-        for (Map<String, Object> point : points) {
-            if (containsValueCheck(AgentConstants.POINT_TYPE,point)) {
-                FacilioControllerType controllerType = FacilioControllerType.valueOf(((Number)point.get(AgentConstants.POINT_TYPE)).intValue());
-                switch (controllerType){
-                    case BACNET_IP:
-                        PointsAPI.handleBacnetWritableSwitch(point);
-                        break;
-                    case MODBUS_IP:
-                        PointsAPI.handleModbusIpWritableSwitch(point);
-                        break;
-                }
-            }
+    private void handlePointToggleFlag(Map<String, Object> point, FacilioControllerType controllerType) {
+        switch (controllerType){
+            case BACNET_IP:
+                PointsAPI.handleBacnetWritableSwitch(point);
+                break;
+            case MODBUS_IP:
+                PointsAPI.handleModbusIpWritableSwitch(point);
+                break;
         }
     }
 
@@ -232,83 +270,14 @@ public class GetPointRequest {
 		this.orderBy = orderBy;
 		return this;
 	}
-    
-    public GetPointRequest initBuilder(List<FacilioField> fields) {
-		this.selectRecordBuilder = getPointBuilder();
-		if (fields == null) {
-			fields = new ArrayList<>(POINT_FIELDS);
-		}
-		this.selectRecordBuilder.select(fields);
-		return this;
-}
-    
-    private GenericSelectRecordBuilder getPointBuilder() {
-    		return new GenericSelectRecordBuilder().table(POINT_MODULE.getTableName());
-    }
 
-    private GenericSelectRecordBuilder loadBuilder(FacilioControllerType controllerType) throws Exception {
-        GenericSelectRecordBuilder builder = getPointBuilder();
-        List<FacilioField> fields = new ArrayList<>();
-        switch (controllerType) {
-            case MODBUS_RTU:
-                fields.addAll(FieldFactory.getModbusRtuPointFields());
-                builder.select(fields).innerJoin(ModuleFactory.getModbusRtuPointModule().getTableName())
-                        .on(AgentConstants.POINTS_TABLE + ".ID=" + ModuleFactory.getModbusRtuPointModule().getTableName() + ".ID");
-                return builder;
-
-            case OPC_UA:
-                fields.addAll(FieldFactory.getOPCUAPointFields());
-                builder.select(fields).innerJoin(ModuleFactory.getOPCUAPointModule().getTableName())
-                        .on(AgentConstants.POINTS_TABLE + ".ID=" + ModuleFactory.getOPCUAPointModule().getTableName() + ".ID");
-                return builder;
-
-            case OPC_XML_DA:
-                fields.addAll(FieldFactory.getOPCXmlDAPointFields());
-                builder.select(fields).innerJoin(ModuleFactory.getOPCXmlDAPointModule().getTableName())
-                        .on(AgentConstants.POINTS_TABLE + ".ID=" + ModuleFactory.getOPCXmlDAPointModule().getTableName() + ".ID");
-                return builder;
-
-            case BACNET_IP:
-                fields.addAll(FieldFactory.getBACnetIPPointFields());
-                builder.select(fields).innerJoin(ModuleFactory.getBACnetIPPointModule().getTableName())
-                        .on(AgentConstants.POINTS_TABLE + ".ID=" + ModuleFactory.getBACnetIPPointModule().getTableName() + ".ID");
-                return builder;
-
-            case MODBUS_IP:
-                fields.addAll(FieldFactory.getModbusTcpPointFields());
-                builder.select(fields).innerJoin(ModuleFactory.getModbusTcpPointModule().getTableName())
-                        .on(AgentConstants.POINTS_TABLE + ".ID=" + ModuleFactory.getModbusTcpPointModule().getTableName() + ".ID");
-                return builder;
-
-            case MISC:
-                fields.addAll(FieldFactory.getMiscPointFields());
-                builder.select(fields).innerJoin(ModuleFactory.getMiscPointModule().getTableName())
-                        .on(AgentConstants.POINTS_TABLE + ".ID=" + ModuleFactory.getMiscPointModule().getTableName() + ".ID");
-                return builder;
-
-            case NIAGARA:
-                fields.addAll(FieldFactory.getNiagaraPointFields());
-                builder.select(fields).innerJoin(ModuleFactory.getNiagaraPointModule().getTableName())
-                        .on(AgentConstants.POINTS_TABLE + ".ID=" + ModuleFactory.getNiagaraPointModule().getTableName() + ".ID");
-                return builder;
-            case SYSTEM:
-                fields.addAll(FieldFactory.getSystemPointFields());
-                builder.select(fields).innerJoin(ModuleFactory.getSystemPointModule().getTableName())
-                        .on(AgentConstants.POINTS_TABLE+".ID="+ModuleFactory.getSystemPointModule().getTableName()+".ID");
-                return builder;
-            case LON_WORKS:
-            	fields.addAll(AgentFieldFactory.getLonWorksPointFields());
-            	builder.select(fields).innerJoin(AgentModuleFactory.getLonWorksPointModule().getTableName())
-            	.on(AgentConstants.POINTS_TABLE+".ID="+AgentModuleFactory.getLonWorksPointModule().getTableName()+".ID");
-            	return builder;
-            case RDM:
-                fields.addAll(AgentFieldFactory.getRdmPointFields());
-                builder.select(fields).innerJoin(AgentModuleFactory.getRdmPointModule().getTableName())
-                        .on(AgentConstants.POINTS_TABLE + ".ID=" + AgentModuleFactory.getRdmPointModule().getTableName() + ".ID");
-                return builder;
-            default:
-                throw new Exception("FacilioControler type didnt match with cases " + controllerType.toString());
-        }
+    private GenericSelectRecordBuilder joinExtendedTable(GenericSelectRecordBuilder builder) throws Exception {
+        
+		FacilioModule extendedModule = PointsAPI.getPointModule(controllerType);
+        builder.select(PointsAPI.getChildPointFields(controllerType))
+        	.innerJoin(extendedModule.getTableName())
+        	.on(AgentConstants.POINTS_TABLE + ".ID=" + extendedModule.getTableName() + ".ID");
+        return builder;
     }
 
     public GetPointRequest pagination(FacilioContext context){
@@ -341,4 +310,6 @@ public class GetPointRequest {
         }
         return false;
     }
+    
+     
 }
