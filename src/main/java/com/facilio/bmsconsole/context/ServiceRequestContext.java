@@ -277,4 +277,44 @@ public class ServiceRequestContext extends ModuleBaseWithCustomFields{
 	public void setRatingVal(int ratingVal) {
 		this.ratingVal = ratingVal;
 	}
+	private PeopleContext affectedPerson;
+	private Long reportedDate,affectedDate,actualStartDate,actualFinishDate,responseDueDate  ;
+	public PeopleContext getAffectedPerson() {
+		return affectedPerson;
+	}
+	public void setAffectedPerson(PeopleContext affectedPerson) {
+		this.affectedPerson = affectedPerson;
+	}
+	public Long getReportedDate() {
+		return reportedDate;
+	}
+	public void setReportedDate(Long reportedDate) {
+		this.reportedDate = reportedDate;
+	}
+	public Long getAffectedDate() {
+		return affectedDate;
+	}
+	public void setAffectedDate(Long affectedDate) {
+		this.affectedDate = affectedDate;
+	}
+	public Long getActualStartDate() {
+		return actualStartDate;
+	}
+	public void setActualStartDate(Long actualStartDate) {
+		this.actualStartDate = actualStartDate;
+	}
+	public Long getActualFinishDate() {
+		return actualFinishDate;
+	}
+	public void setActualFinishDate(Long actualFinishDate) {
+		this.actualFinishDate = actualFinishDate;
+	}
+	public Long getResponseDueDate() {
+		return responseDueDate;
+	}
+	public void setResponseDueDate(Long responseDueDate) {
+		this.responseDueDate = responseDueDate;
+	}
+	
+	
 }
