@@ -102,6 +102,7 @@ public enum ActionType {
 					if (to != null && !to.isEmpty()) {
 						if(currentRecord instanceof ModuleBaseWithCustomFields) {
 							obj.put("recordId", ((ModuleBaseWithCustomFields) currentRecord).getId());
+							obj.put("recordCreatedTime", ((ModuleBaseWithCustomFields) currentRecord).getSysCreatedTime());
 						}
 						obj.put("moduleId", currentRule.getModuleId());
 						obj.put("sourceType", MailSourceType.RULE_NOTIFICATION.name());
@@ -164,6 +165,7 @@ public enum ActionType {
 					}
 					if(currentRecord instanceof ModuleBaseWithCustomFields) {
 						obj.put("recordId", ((ModuleBaseWithCustomFields) currentRecord).getId());
+						obj.put("recordCreatedTime", ((ModuleBaseWithCustomFields) currentRecord).getSysCreatedTime());
 					}
 					obj.put("moduleId", currentRule.getModuleId());
 					obj.put("sourceType", MailSourceType.RULE_NOTIFICATION.name());

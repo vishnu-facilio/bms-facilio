@@ -12,6 +12,7 @@ public class V3OutgoingMailLogContext extends BaseMailMessageContext {
     private Long mapperId;
     private Long recordId;
     private Long recordsModuleId;
+    private Long recordCreatedTime;
     private String sender;
     private String message;
     private MailSourceType sourceType;
