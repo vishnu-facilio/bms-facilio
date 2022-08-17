@@ -23,7 +23,7 @@ public class PushOutgoingMailToQueueCommand extends FacilioCommand {
         message.setOrgId(orgId);
         message.setContent(mailJson);
         SessionManager.getInstance().sendMessage(message);
-        LOGGER.info("Pushing outgoing mail to queue/wms");
+        LOGGER.info("OG_MAIL_LOG :: Pushing outgoing mail to queue/wms");
 
         return false;
     }

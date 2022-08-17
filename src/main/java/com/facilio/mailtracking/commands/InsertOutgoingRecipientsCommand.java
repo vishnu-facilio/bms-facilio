@@ -33,7 +33,7 @@ public class InsertOutgoingRecipientsCommand extends FacilioCommand {
         }
 
         if(emailMeta.isEmpty()) {
-            LOGGER.info("No recipients found in the given outgoing mail record. So stopping here..");
+            LOGGER.error("OG_MAIL_ERROR :: No recipients found in the given outgoing mail record. So stopping here..");
             return true;
         }
         List<V3OutgoingRecipientContext> records = new ArrayList<>();

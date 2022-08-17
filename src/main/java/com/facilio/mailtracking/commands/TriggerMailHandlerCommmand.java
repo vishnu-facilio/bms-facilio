@@ -32,7 +32,7 @@ public class TriggerMailHandlerCommmand extends FacilioCommand {
             json = yaml.load(inputStream);
         }
         catch (Exception e) {
-            throwRunTimeException(MessageFormat.format("Error occurred while reading outgoing mail data fetch conf file, msg : {0}",e.getMessage()), e);
+            throwRunTimeException(MessageFormat.format("OG_MAIL_ERROR :: Error occurred while reading outgoing mail data fetch conf file, msg : {0}",e.getMessage()), e);
         }
 
         try {
@@ -47,7 +47,7 @@ public class TriggerMailHandlerCommmand extends FacilioCommand {
                         mailDataMap.put(moduleName, (OutgoingMailData) Class.forName(handler).newInstance());
                     }
                     catch (Exception e) {
-                        throwRunTimeException(MessageFormat.format("Error occurred while creating instance of OutgoingMailData class {0}, msg : {1}", handler, e.getMessage()), e);
+                        throwRunTimeException(MessageFormat.format("OG_MAIL_ERROR :: Error occurred while creating instance of OutgoingMailData class {0}, msg : {1}", handler, e.getMessage()), e);
                     }
                 }
                 return Collections.unmodifiableMap(mailDataMap);
@@ -57,7 +57,7 @@ public class TriggerMailHandlerCommmand extends FacilioCommand {
             }
         }
         catch (Exception e) {
-            throwRunTimeException(MessageFormat.format("Error occurred while parsing mailData conf file, msg : {0}",e.getMessage()), e);
+            throwRunTimeException(MessageFormat.format("OG_MAIL_ERROR :: Error occurred while parsing mailData conf file, msg : {0}",e.getMessage()), e);
         }
         return null;
     }

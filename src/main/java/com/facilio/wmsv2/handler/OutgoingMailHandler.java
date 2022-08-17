@@ -33,14 +33,15 @@ public class OutgoingMailHandler extends BaseHandler {
                 JSONObject mailJson = message.getContent();
 
                 Long mapperId = registerOutgoingMailMapper(orgId);
+                LOGGER.info("OG_MAIL_LOG :: mapperId inserted :: "+mapperId);
                 mailJson.put(MailConstants.Params.MAPPER_ID, mapperId);
 
                 MailBean mailBean = MailConstants.getMailBean(orgId);
                 mailBean.trackAndSendMail(mailJson);
-                LOGGER.info("Processing mail from queue");
+                LOGGER.info("OG_MAIL_LOG :: Processing mail from queue for mapperId :: "+mapperId);
             }
         } catch (Exception e) {
-            LOGGER.info("ERROR IN OutgoingMailHandler for orgId "+ orgId, e);
+            LOGGER.info("OG_MAIL_ERROR :: ERROR IN OutgoingMailHandler for orgId "+ orgId, e);
         }
         return null;
     }

@@ -36,7 +36,7 @@ public class MailTrackBeanImpl implements MailBean {
         oldRecords = oldRecords.stream().filter(oldRecord -> !oldRecord.getStatus().equals(deliveryStatus)).collect(Collectors.toList());
 
         if(oldRecords.isEmpty()) {
-            LOGGER.info("Already updated all the given email addresses");
+            LOGGER.info("OG_MAIL_LOG :: Already updated [delivery status] all the given email addresses");
             return;
         }
 
@@ -60,7 +60,7 @@ public class MailTrackBeanImpl implements MailBean {
             List<V3OutgoingRecipientContext> bounceRecords = OutgoingMailAPI.getRecipients(loggerId, bouncedEmail);
             V3OutgoingRecipientContext oldRecord = bounceRecords.get(0);
             if(oldRecord.getStatus().equals(bounceStatus)) {
-                LOGGER.info("Skipping bounce status update for "+bouncedEmail+", since its already updated");
+                LOGGER.info("OG_MAIL_LOG :: Skipping bounce status update for "+bouncedEmail+", since its already updated");
                 continue; //already updated
             }
             String statusCode = recipient.get("status");
