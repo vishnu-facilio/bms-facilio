@@ -1655,7 +1655,6 @@ public class APIv3Config {
                 .afterSave(TransactionChainFactoryV3.addfloorplanObjectsChain())
                 .update().afterSave(TransactionChainFactoryV3.AddORUpdateMarkersAndModulesCommand())
                 .list().beforeFetch(new LoadFloorplanLookupCommand())
-                .afterFetch(TransactionChainFactoryV3.getFloorPlanObjectsChain())
                 .summary().beforeFetch(new LoadFloorplanLookupCommand())
                 .afterFetch(TransactionChainFactoryV3.getFloorPlanObjectsChain())
                 .build();
