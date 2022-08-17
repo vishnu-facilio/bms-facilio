@@ -7766,6 +7766,29 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getClassificationAppliedModulesFields() {
+        FacilioModule module = ModuleFactory.getClassificationAppliedModules();
+        List<FacilioField> fields = new ArrayList<>();
+
+        fields.add(getIdField(module));
+        fields.add(getNumberField("classificationId", "CLASSIFICATION_ID", module));
+        fields.add(getNumberField("moduleId", "MODULE_ID", module));
+
+        return fields;
+    }
+
+    public static List<FacilioField> getClassificationAttributeFields() {
+        FacilioModule module = ModuleFactory.getClassificationAttributeModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        fields.add(getIdField(module));
+        fields.add(getStringField("attributeName", "ATTRIBUTE_NAME", module));
+        fields.add(getNumberField("fieldType", "FIELD_TYPE", module));
+        fields.add(getNumberField("classificationId", "CLASSIFICATION_ID", module));
+
+        return fields;
+    }
+
     public static List<FacilioField> getRelatedAssetesFields() {
         FacilioModule module = ModuleFactory.getRelatedAssetsModule();
         List<FacilioField> fields = new ArrayList<>();

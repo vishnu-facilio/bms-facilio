@@ -7,6 +7,8 @@ public interface ListBuilder {
 
     ListBuilder afterFetch(Command afterFetchCommand);
 
+    ListBuilder fetchSupplement(String moduleName, String fieldName);
+
     ListBuilder showStateFlowList();
 
     ListBuilder fetchRelations(String moduleName, String lookupField);

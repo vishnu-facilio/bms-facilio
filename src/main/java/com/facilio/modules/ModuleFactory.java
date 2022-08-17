@@ -560,6 +560,22 @@ public class ModuleFactory {
 		return fieldModule;
 	}
 
+	public static FacilioModule getClassificationAppliedModules() {
+		FacilioModule module = new FacilioModule();
+		module.setName("classificationAppliedModule");
+		module.setDisplayName("Classification Applied Module");
+		module.setTableName("Classification_Applied_Module");
+		return module;
+	}
+
+	public static FacilioModule getClassificationAttributeModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("classificationAttribute");
+		module.setDisplayName("Classification Attribute");
+		module.setTableName("Classification_Attribute");
+		return module;
+	}
+
 	public static FacilioModule getAssetCategoryReadingRelModule() {
 		FacilioModule fieldModule = new FacilioModule();
 		fieldModule.setName("assetcategoryreading");

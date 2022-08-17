@@ -1,7 +1,11 @@
 package com.facilio.v3.V3Builder;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldsCount;
 import com.facilio.chain.FacilioChain;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.chain.Command;
 
 import java.util.ArrayList;
@@ -453,6 +457,7 @@ public class V3Config implements V3Builder {
         private Command beforeFetchCommand;
         private Command afterFetchCommand;
         private Command beforeCountCommand;
+        private List<SupplementRecord> fetchSupplements;
         private V3Builder parent;
         private boolean showStateFlowList;
         private Map<String, List<String>> lookupFieldCriteriaMap;
@@ -465,6 +470,26 @@ public class V3Config implements V3Builder {
         @Override
         public ListBuilder beforeFetch(Command criteriaCommand) {
             this.beforeFetchCommand = criteriaCommand;
+            return this;
+        }
+
+        private void fetchSupplement(SupplementRecord supplementRecord) {
+            if (fetchSupplements == null) {
+                fetchSupplements = new ArrayList<>();
+            }
+            fetchSupplements.add(supplementRecord);
+        }
+
+        @Override
+        public ListBuilder fetchSupplement(String moduleName, String fieldName) {
+            try {
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                FacilioField field = modBean.getField(fieldName, moduleName);
+                if (!(field instanceof SupplementRecord)) {
+                    throw new IllegalArgumentException("Not an supplement field");
+                }
+                fetchSupplement((SupplementRecord) field);
+            } catch (Exception ex) {}
             return this;
         }
 
@@ -532,6 +557,10 @@ public class V3Config implements V3Builder {
             return afterFetchCommand;
         }
 
+        public List<SupplementRecord> getSupplementFields() {
+            return fetchSupplements;
+        }
+
         public void setAfterFetchCommand(Command afterFetchCommand) {
             this.afterFetchCommand = afterFetchCommand;
         }
@@ -557,6 +586,7 @@ public class V3Config implements V3Builder {
         private Command beforeFetchCommand;
         private Command afterFetchCommand;
         private V3Builder parent;
+        private List<SupplementRecord> fetchSupplements;
 
         private SummaryHandler(V3Builder parent) {
             this.parent = parent;
@@ -573,6 +603,26 @@ public class V3Config implements V3Builder {
             return this;
         }
 
+        private void fetchSupplement(SupplementRecord supplementRecord) {
+            if (fetchSupplements == null) {
+                fetchSupplements = new ArrayList<>();
+            }
+            fetchSupplements.add(supplementRecord);
+        }
+
+        @Override
+        public SummaryHandler fetchSupplement(String moduleName, String fieldName) {
+            try {
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                FacilioField field = modBean.getField(fieldName, moduleName);
+                if (!(field instanceof SupplementRecord)) {
+                    throw new IllegalArgumentException("Not an supplement field");
+                }
+                fetchSupplement((SupplementRecord) field);
+            } catch (Exception ex) {}
+            return this;
+        }
+
         @Override
         public UpdateBuilder update() {
             return this.parent.update();
@@ -581,6 +631,10 @@ public class V3Config implements V3Builder {
         @Override
         public CreateBuilder create() {
             return this.parent.create();
+        }
+
+        public List<SupplementRecord> getSupplementFields() {
+            return fetchSupplements;
         }
 
         @Override

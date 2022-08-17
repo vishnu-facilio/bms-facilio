@@ -283,6 +283,10 @@ public class Constants {
         return CollectionUtils.isEmpty(values) ? null : values.get(0);
     }
 
+    public static boolean containsQueryParam(Context context, String paramName) {
+        return getQueryParam(context, paramName) != null;
+    }
+
     public static Object getQueryParamOrThrow(Context context, String paramName) {
         Object paramValue = getQueryParam(context, paramName);
         if (paramValue == null) {
