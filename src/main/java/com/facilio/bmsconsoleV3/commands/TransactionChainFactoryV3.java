@@ -597,8 +597,6 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdateAttachmentsParentIdCommandV3());
         c.addCommand(new PublishAnnouncementCommandV3());
         c.addCommand(new CancelParentChildAnnouncementsCommandV3());
-        c.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
-                .addCommand(new ExecuteAllWorkflowsCommand()));
         return c;
 
     }
