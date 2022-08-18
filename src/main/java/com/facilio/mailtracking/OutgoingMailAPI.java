@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 
 @Log4j
 public class OutgoingMailAPI {
-    
+
     public static long insert(FacilioModule module, List<FacilioField> fields, Map<String, Object> row) throws Exception {
         GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                 .table(module.getTableName())
@@ -56,11 +56,13 @@ public class OutgoingMailAPI {
 
     public static V3OutgoingMailLogContext convertToMailLogContext(JSONObject mailJson) throws IOException {
         V3OutgoingMailLogContext mailLogContext = FieldUtil.getAsBeanFromJson(mailJson, V3OutgoingMailLogContext.class);
-        if(mailJson.containsKey("moduleId")) {
-            mailLogContext.setRecordsModuleId(FacilioUtil.parseLong(mailJson.get("moduleId")));
+        Object recModuleVal = mailJson.get("moduleId");
+        if(recModuleVal!=null) {
+            mailLogContext.setRecordsModuleId(FacilioUtil.parseLong(recModuleVal));
         }
-        if(mailJson.containsKey(MailConstants.Params.LOGGER_ID)) {
-            mailLogContext.setId(FacilioUtil.parseLong(mailJson.get(MailConstants.Params.LOGGER_ID)));
+        Object loggerId = mailJson.get(MailConstants.Params.LOGGER_ID);
+        if(loggerId!=null) {
+            mailLogContext.setId(FacilioUtil.parseLong(loggerId));
         }
         return mailLogContext;
     }
