@@ -378,6 +378,7 @@ public class PageWidget {
 		SCHEDULED_DURATION("scheduledDuration"),
 		ACTUAL_DURATION("actualDuration"),
 		WORK_DURATION("workDuration"),
+		SLA_REMAINING_TIME("slaRemainingTime"),
 		RESOURCE("resource"),
 		RESPONSIBILITY("responsibility"),
 		WORKORDER_DETAILS("workorderDetails"),
