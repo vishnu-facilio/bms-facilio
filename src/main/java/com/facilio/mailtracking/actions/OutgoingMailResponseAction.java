@@ -29,6 +29,7 @@ public class OutgoingMailResponseAction extends ActionSupport {
     public String execute() throws Exception {
         JSONObject requestJson = null;
         try {
+            LOGGER.info("OG_MAIL_LOG :: I am in OutgoingMailResponseAction entry point");
             requestJson = parseRequestData();
             AwsMailResponseContext awsMailResponseContext = FieldUtil.getAsBeanFromJson(requestJson, AwsMailResponseContext.class);
             V3Util.throwRestException(
@@ -45,15 +46,16 @@ public class OutgoingMailResponseAction extends ActionSupport {
             String subUrl = (String) requestJson.getOrDefault("SubscribeURL", "-1");
             if(!subUrl.equals("-1")) {
                 LOGGER.error("SubscribeURL detected from aws. Please sign up :: "+subUrl);
+                parserErrorMsg(e, requestJson);
+                return SUCCESS;
             }
-            LOGGER.error("failedData :: "+requestJson);
-            parserErrorMsg(e);
+            parserErrorMsg(e, requestJson);
             return ERROR;
         }
     }
 
-    private void parserErrorMsg(Exception e) throws Exception {
-
+    private void parserErrorMsg(Exception e, JSONObject requestJson) throws Exception {
+        LOGGER.error("failedData :: "+requestJson);
         if(e.getMessage() == null) {
             status = e.getStackTrace()[0] + " :: " +e.toString();
         } else {

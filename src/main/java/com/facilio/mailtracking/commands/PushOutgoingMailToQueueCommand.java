@@ -5,9 +5,11 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.wmsv2.endpoint.SessionManager;
 import com.facilio.wmsv2.message.Message;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+@Log4j
 public class PushOutgoingMailToQueueCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -21,6 +23,7 @@ public class PushOutgoingMailToQueueCommand extends FacilioCommand {
         message.setOrgId(orgId);
         message.setContent(mailJson);
         SessionManager.getInstance().sendMessage(message);
+        LOGGER.info("Pushing outgoing mail to queue/wms");
 
         return false;
     }

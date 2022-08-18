@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.page.factory;
 
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.page.WidgetGroup;
 import com.facilio.bmsconsoleV3.context.failurecode.V3FailureClassContext;
 
 
@@ -33,6 +34,38 @@ public class FailureClassPageFactory extends PageFactory{
             return page;
         }
 
+        Page.Tab tab2 = page.new Tab("Notes and Information");
+        page.addTab(tab2);
+        Page page1 = new Page();
+        Page.Section tab2Sec1 = page1.new Section();
+        tab2.addSection(tab2Sec1);
+        addSecondaryDetailsWidget(tab2Sec1);
+        addNotesAttachmentsModule(tab2Sec1);
+
         return page;
+    }
+
+    private static void addSecondaryDetailsWidget(Page.Section section) {
+        PageWidget detailsWidget = new PageWidget(PageWidget.WidgetType.SECONDARY_DETAILS_WIDGET);
+        detailsWidget.addToLayoutParams(section, 24, 7);
+        section.addWidget(detailsWidget);
+    }
+
+    private static PageWidget addNotesAttachmentsModule(Page.Section section) {
+
+        PageWidget subModuleGroup = new PageWidget(PageWidget.WidgetType.GROUP);
+        subModuleGroup.addToLayoutParams(section, 24, 8);
+        subModuleGroup.addToWidgetParams("type", WidgetGroup.WidgetGroupType.TAB);
+        section.addWidget(subModuleGroup);
+
+        PageWidget notesWidget = new PageWidget();
+        notesWidget.setWidgetType(PageWidget.WidgetType.COMMENT);
+        subModuleGroup.addToWidget(notesWidget);
+
+        PageWidget attachmentWidget = new PageWidget();
+        attachmentWidget.setWidgetType(PageWidget.WidgetType.ATTACHMENT);
+        subModuleGroup.addToWidget(attachmentWidget);
+
+        return subModuleGroup;
     }
 }

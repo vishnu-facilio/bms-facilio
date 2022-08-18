@@ -15,11 +15,16 @@ public class MailTransactionChainFactory {
         return c;
     }
 
-    public static FacilioChain trackOutgoingMailChain() {
+    public static FacilioChain sendOutgoingMailChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateGlobalMapperIdCommand());
         c.addCommand(new InsertOutgoingRecipientsCommand());
         c.addCommand(new SendMailCommand());
+        return c;
+    }
+
+    public static FacilioChain updateOutgoingMailChain() {
+        FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateMailMessageIdCommand());
         c.addCommand(new UpdateRecipientStatusCommand());
         c.addCommand(new TriggerMailHandlerCommmand());
