@@ -206,6 +206,10 @@ public class FieldUtil {
 	}
 
 	public static Map<Long, ? extends Object> getLookupProps(LookupField field, Collection<Long> ids, boolean isMap) throws Exception {
+		return getLookupProps(field, ids, isMap, false);
+	}
+
+	public static Map<Long, ? extends Object> getLookupProps(LookupField field, Collection<Long> ids, boolean isMap, boolean skipAllScope) throws Exception {
 		if(CollectionUtils.isNotEmpty(ids)) {
 			if(LookupSpecialTypeUtil.isSpecialType(field.getSpecialType())) {
 				if (isMap) {
@@ -234,6 +238,13 @@ public class FieldUtil {
 																						.andCondition(CriteriaAPI.getIdCondition(ids, module))
 																						.fetchDeleted()
 																						;
+
+					if (skipAllScope) {
+						lookupBeanBuilder.skipModuleCriteria()
+								.skipScopeCriteria()
+								.skipPermission();
+					}
+
 					List<FacilioField> lookupBeanFields = null;
 					if (field instanceof LookupFieldMeta) {
 						LookupFieldMeta lfm = (LookupFieldMeta) field;
