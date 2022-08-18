@@ -53,7 +53,7 @@ public class SendUserNotificationJob extends InstantJob {
                                 headers.put("Authorization", "key=" + (mobileSetting.isFromPortal() ? FacilioProperties.getPortalPushNotificationKey() : FacilioProperties.getPushNotificationKey()));
 
                                 String url = "https://fcm.googleapis.com/fcm/send";
-
+                                LOGGER.info("push notification Job :" + url + headers + obj);
                                 AwsUtil.doHttpPost(url, headers, null, obj.toJSONString());
                                 LOGGER.debug("Sending push notification data ====> " + obj.toJSONString());
                             }

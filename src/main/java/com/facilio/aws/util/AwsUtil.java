@@ -339,6 +339,7 @@ public class AwsUtil extends BaseAwsUtil{
 
 			CloseableHttpResponse response = client.execute(post);
 			int status = response.getStatusLine().getStatusCode();
+			LOGGER.info("push notification awsutil :" + url + headers + bodyContent + status);
 			if (status != 200) {
 				LOGGER.info("\nSending 'POST' request to URL : " + url);
 				LOGGER.info("Post parameters : " + post.getEntity());
