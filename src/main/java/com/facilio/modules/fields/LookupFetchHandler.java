@@ -26,7 +26,7 @@ class LookupFetchHandler implements FetchSupplementHandler {
     Map<Long, ? extends Object> lookupObjects = null;
     @Override
     public void fetchSupplements(boolean isMap) throws Exception {
-        lookupObjects = FieldUtil.getLookupProps(field, lookupIds, isMap);
+        lookupObjects = FieldUtil.getLookupProps(field, lookupIds, isMap, true);
     }
 
     @Override
