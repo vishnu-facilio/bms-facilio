@@ -1,7 +1,6 @@
 package com.facilio.apiv3;
 
 import com.facilio.activity.AddActivitiesCommand;
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.MLServiceUtil;
@@ -163,14 +162,10 @@ import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlann
 import com.facilio.bmsconsoleV3.context.workpermit.V3WorkPermitContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
-import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount10;
-import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30;
-import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30_BS2;
-import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount50;
-import com.facilio.classifcation.chain.ClassificationChain;
-import com.facilio.classifcation.command.BeforeSaveClassificationCommand;
-import com.facilio.classifcation.context.ClassificationContext;
 import com.facilio.bmsconsoleV3.interfaces.customfields.*;
+import com.facilio.classification.chain.ClassificationChain;
+import com.facilio.classification.command.BeforeSaveClassificationCommand;
+import com.facilio.classification.context.ClassificationContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.control.*;
@@ -180,7 +175,6 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.elasticsearch.command.PushDataToESCommand;
-import com.facilio.fw.BeanFactory;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.commands.MailReadOnlyChainFactory;
 import com.facilio.mailtracking.commands.OutgoingMailLoggerListAfterFetchCommand;
@@ -188,9 +182,6 @@ import com.facilio.mailtracking.commands.OutgoingRecipientLoadSupplementsCommand
 import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
 import com.facilio.mailtracking.context.V3OutgoingRecipientContext;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
 import com.facilio.readingrule.faultimpact.FaultImpactContext;
 import com.facilio.readingrule.faultimpact.FaultImpactNameSpaceFieldContext;
 import com.facilio.relation.context.RelationDataContext;
@@ -206,9 +197,6 @@ import com.facilio.v3.context.Constants;
 import com.facilio.workflowlog.context.WorkflowLogContext;
 import org.apache.commons.chain.Context;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 
 import static com.facilio.bmsconsole.commands.FacilioChainFactory.getSpaceReadingsChain;
@@ -285,9 +273,24 @@ public class APIv3Config {
                 .create()
                 .beforeSave(new BeforeSaveClassificationCommand())
                 .afterSave(ClassificationChain.getAfterSaveChain())
+                .update()
+                .beforeSave(ClassificationChain.getBeforeUpdateChain())
+                .afterSave(new FacilioCommand() {
+                    @Override
+                    public boolean executeCommand(Context context) throws Exception {
+                        throw new IllegalArgumentException("Should throw error");
+                    }
+                })
                 .summary()
                 .fetchSupplement(FacilioConstants.ContextNames.CLASSIFICATION, "parentClassification")
                 .afterFetch(ClassificationChain.getAfterSummaryChain())
+                .delete()
+                .beforeDelete(new FacilioCommand() {
+                    @Override
+                    public boolean executeCommand(Context context) throws Exception {
+                        throw new IllegalArgumentException("Delete is not supported");
+                    }
+                })
                 .build();
     }
 

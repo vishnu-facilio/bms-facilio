@@ -1,4 +1,4 @@
-package com.facilio.classifcation.action;
+package com.facilio.classification.action;
 
 import com.facilio.bmsconsole.actions.FacilioAction;
 

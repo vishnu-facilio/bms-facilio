@@ -1,8 +1,8 @@
-package com.facilio.classifcation.command;
+package com.facilio.classification.command;
 
 import com.facilio.chain.FacilioContext;
-import com.facilio.classifcation.context.ClassificationAttributeContext;
-import com.facilio.classifcation.context.ClassificationContext;
+import com.facilio.classification.context.ClassificationAttributeContext;
+import com.facilio.classification.context.ClassificationContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
