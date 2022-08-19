@@ -588,9 +588,9 @@ public class AwsUtil extends BaseAwsUtil{
 			KafkaMessageSource defaultSource = MessageSourceUtil.getDefaultSource();
 			Map<String, Object> configs = defaultSource.getConfigs();
 			if (configs != null) {
-				if (configs.containsKey(IOT_RULE_SECURITY_PROTOCOL)
+				if (defaultSource.isAuthEnabled() && defaultSource.getAuthMode().equals("sasl_ssl") &&
+						configs.containsKey(IOT_RULE_SECURITY_PROTOCOL)
 						&& configs.containsKey(IOT_RULE_SASL_MECHANISM)
-						&& configs.containsKey(BROKER)
 						&& configs.containsKey(IOT_RULE_SASL_SCRAM_USERNAME)
 						&& configs.containsKey(IOT_RULE_SASL_SCRAM_PASSWORD)
 						&& configs.containsKey(IOT_RULE_ARN)) {
@@ -598,11 +598,10 @@ public class AwsUtil extends BaseAwsUtil{
 					ruleConfig.put("sasl.mechanism", configs.get(IOT_RULE_SASL_MECHANISM).toString());
 					ruleConfig.put("sasl.scram.username", configs.get(IOT_RULE_SASL_SCRAM_USERNAME).toString());
 					ruleConfig.put("sasl.scram.password", configs.get(IOT_RULE_SASL_SCRAM_PASSWORD).toString());
-					ruleConfig.put("bootstrap.servers", defaultSource.getBroker());
 				} else {
 					throw new Exception("Required keys not found in  : " + configs);
-
 				}
+				ruleConfig.put("bootstrap.servers", defaultSource.getBroker());
 			} else {
 				throw new FacilioException("Config is null for message source" + defaultSource.getName());
 			}
