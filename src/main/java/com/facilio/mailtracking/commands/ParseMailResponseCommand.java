@@ -33,12 +33,12 @@ public class ParseMailResponseCommand {
 
         if(!(delivery == null || delivery.isEmpty())) {
             mailBean.updateDeliveryStatus(mapperId, delivery);
-            LOGGER.info("Delivery status updated successfully for mapperId  : "+mapperIdList);
+            LOGGER.info("OG_MAIL_LOG :: Delivery status updated successfully for mapperId  : "+mapperIdList);
         }
 
         if(!(bounce == null || bounce.isEmpty())) {
             mailBean.updateBounceStatus(mapperId, bounce);
-            LOGGER.info("Bounce status updated successfully for mapperId  : "+mapperIdList);
+            LOGGER.info("OG_MAIL_LOG :: Bounce status updated successfully for mapperId  : "+mapperIdList);
         }
         return mapperId;
     }

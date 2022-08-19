@@ -227,7 +227,6 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 		criteria.andCriteria(mappedOrWritableCriteria);
 		
 		GetPointRequest getPointRequest = new GetPointRequest()
-				.initBuilder(null)
 				.limit(-1)
 				.withCriteria(criteria)
 				;

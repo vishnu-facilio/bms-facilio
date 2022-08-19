@@ -11,9 +11,11 @@ import com.facilio.bmsconsoleV3.commands.AddOrUpdateSLABreachJobCommandV3;
 import com.facilio.bmsconsoleV3.commands.ExecutePostTransactionWorkFlowsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.VerifyApprovalCommandV3;
 import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
@@ -24,6 +26,7 @@ import com.facilio.v3.context.CustomModuleDataV3;
 import com.facilio.v3.context.V3Context;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
+import org.apache.commons.collections.CollectionUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
@@ -31,10 +34,7 @@ import org.reflections.util.ClasspathHelper;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -48,15 +48,28 @@ public class ChainUtil {
 
         Command afterFetchCommand = null;
         Command beforeFetchCommand = null;
+        List<SupplementRecord> supplementFields = null;
         if (v3Config != null) {
             V3Config.SummaryHandler summaryHandler = v3Config.getSummaryHandler();
             if (summaryHandler != null) {
                 beforeFetchCommand = summaryHandler.getBeforeFetchCommand();
                 afterFetchCommand = summaryHandler.getAfterFetchCommand();
+                supplementFields = summaryHandler.getSupplementFields();
             }
         }
 
         FacilioChain nonTransactionChain = FacilioChain.getNonTransactionChain();
+
+        if (CollectionUtils.isNotEmpty(supplementFields)) {
+            FacilioContext context = nonTransactionChain.getContext();
+            List<SupplementRecord> list = (List<SupplementRecord>) context.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);
+            if (list == null) {
+                list = new ArrayList<>();
+                context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, list);
+            }
+            list.addAll(supplementFields);
+        }
+
         if (beforeFetchCommand != null) {
             nonTransactionChain.addCommand(beforeFetchCommand);
         }
@@ -109,6 +122,7 @@ public class ChainUtil {
 
         Command beforeFetchCommand = null;
         Command afterFetchCommand = null;
+        List<SupplementRecord> supplementFields = null;
 
         FacilioChain nonTransactionChain = FacilioChain.getNonTransactionChain();
         nonTransactionChain.addCommand(new LoadViewCommand());
@@ -118,7 +132,18 @@ public class ChainUtil {
             if (listHandler != null) {
                 beforeFetchCommand = listHandler.getBeforeFetchCommand();
                 afterFetchCommand = listHandler.getAfterFetchCommand();
+                supplementFields = listHandler.getSupplementFields();
             }
+        }
+
+        if (CollectionUtils.isNotEmpty(supplementFields)) {
+            FacilioContext context = nonTransactionChain.getContext();
+            List<SupplementRecord> list = (List<SupplementRecord>) context.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);
+            if (list == null) {
+                list = new ArrayList<>();
+                context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, list);
+            }
+            list.addAll(supplementFields);
         }
 
         addIfNotNull(nonTransactionChain, beforeFetchCommand);

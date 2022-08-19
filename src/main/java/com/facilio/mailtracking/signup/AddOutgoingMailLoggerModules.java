@@ -110,13 +110,13 @@ public class AddOutgoingMailLoggerModules extends SignUpData {
         fields.add(FieldFactory.getDefaultField("mapperId", "Mapper ID", "MAPPER_ID", FieldType.NUMBER, true));
         fields.add(FieldFactory.getDefaultField("recordId", "Record ID", "RECORD_ID", FieldType.NUMBER));
         fields.add(FieldFactory.getDefaultField("recordsModuleId", "Records Module ID", "RECORDS_MODULE_ID", FieldType.NUMBER));
+        fields.add(FieldFactory.getDefaultField("recordCreatedTime", "Record Created Time", "RECORD_CREATED_TIME",
+                FieldType.DATE_TIME, FacilioField.FieldDisplayType.DATETIME));
         fields.add(FieldFactory.getDefaultField("messageId", "Message ID", "MESSAGE_ID", FieldType.STRING));
-//        fields.add(FieldFactory.getDefaultField("sourceType", "Source Type", "SOURCE_TYPE", FieldType.STRING));
 
         StringSystemEnumField sourceTypeField =  FieldFactory.getDefaultField("sourceType", "Source Type", "SOURCE_TYPE", FieldType.STRING_SYSTEM_ENUM);
         sourceTypeField.setEnumName("MailSourceType");
         fields.add(sourceTypeField);
-
 
         fields.add(FieldFactory.getDefaultField("sender", "From Address", "SENDER", FieldType.STRING));
         fields.add(FieldFactory.getDefaultField("to", "To Addresses", "TO_ADDR", FieldType.STRING));
@@ -129,6 +129,8 @@ public class AddOutgoingMailLoggerModules extends SignUpData {
         fields.add(FieldFactory.getDefaultField("sentCount", "Sent Count", "SENT_COUNT", FieldType.NUMBER));
         fields.add(FieldFactory.getDefaultField("deliveredCount", "Delivered Count", "DELIVERED_COUNT", FieldType.NUMBER));
         fields.add(FieldFactory.getDefaultField("bouncedCount", "Bounced Count", "BOUNCED_COUNT", FieldType.NUMBER));
+        fields.add(FieldFactory.getSystemField("sysCreatedTime", module));
+        fields.add(FieldFactory.getSystemField("sysModifiedTime", module));
 
         module.setFields(fields);
         return module;

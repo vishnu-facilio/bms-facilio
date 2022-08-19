@@ -131,7 +131,7 @@ public enum QuestionType implements FacilioStringEnum {
             MultiQuestionContext.class,
             new MatrixAnswerHandler(MatrixAnswerContext.class),
             new MultiQuestionHandler(),
-            null
+            MultiQuestionRuleHandler.MULTI_QUESTION
     ),
     ;
 

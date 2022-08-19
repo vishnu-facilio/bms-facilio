@@ -4,11 +4,11 @@ import java.io.ByteArrayInputStream;
 import com.facilio.scriptengine.systemfunctions.FacilioSystemFunctionNameSpace;
 import com.facilio.scriptengine.systemfunctions.FacilioWorkflowFunctionInterface;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import com.facilio.fs.FileInfo;
+import com.facilio.modules.FieldUtil;
 
 import com.amazonaws.util.IOUtils;
 import com.facilio.ftp.SFTPUtil;
@@ -65,7 +65,21 @@ public enum FacilioFileFunction implements FacilioWorkflowFunctionInterface  {
 			return fileId;
 		};
 	},
-	
+
+	GET_FILE_INFO(4,"getFileInfo") {
+		@Override
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+
+			Long fileId = (long) Double.parseDouble(objects[0].toString());
+			FileStore fs = FacilioFactory.getFileStore();
+
+			FileInfo fileInfo = fs.getFileInfo(fileId);
+			if (fileInfo != null) {
+				return FieldUtil.getAsProperties(fileInfo);
+			}
+			return null;
+		};
+	},
 	;
 	
 	private Integer value;

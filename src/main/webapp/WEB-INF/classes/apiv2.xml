@@ -2977,6 +2977,10 @@
 		</action>
 	</package>
 
+	<package name="classification" namespace="/api/v2/classification" extends="v2Api">
+
+	</package>
+
    <package name="relatedAssetsApiV2" namespace="/api/v2/assets/related"
 		extends="v2Api">
 

@@ -7086,20 +7086,24 @@ public class FieldFactory extends BaseFieldFactory {
         return getField(AgentConstants.CONTROLLER_TYPE, "CONTROLLER_TYPE", module, FieldType.NUMBER);
     }
 
-    public static List<FacilioField> getNiagaraPointFields() {
+    public static List<FacilioField> getNiagaraPointFields(boolean fetchExtended) {
         FacilioModule module = ModuleFactory.getNiagaraPointModule();
         List<FacilioField> fields = new ArrayList<>();
-        fields.addAll(getPointFields());
+        if (fetchExtended) {
+        	fields.addAll(getPointFields());
+        }
         fields.add(getIdField(module));
         fields.add(getControllerIdField(module));
         fields.add(getField(AgentConstants.PATH, "PATH", module, FieldType.STRING));
         return fields;
     }
 
-    public static List<FacilioField> getOPCXmlDAPointFields() {
+    public static List<FacilioField> getOPCXmlDAPointFields(boolean fetchExtended) {
         FacilioModule module = ModuleFactory.getOPCXmlDAPointModule();
         List<FacilioField> fields = new ArrayList<>();
-        fields.addAll(getPointFields());
+        if (fetchExtended) {
+        	fields.addAll(getPointFields());
+        }
         fields.add(getIdField(module));
         fields.add(getControllerIdField(module));
         fields.add(getField(AgentConstants.PATH, "PATH", module, FieldType.STRING));
@@ -7107,10 +7111,12 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
-    public static List<FacilioField> getMiscPointFields() {
+    public static List<FacilioField> getMiscPointFields(boolean fetchExtended) {
         FacilioModule module = ModuleFactory.getMiscPointModule();
         List<FacilioField> fields = new ArrayList<>();
-        fields.addAll(getPointFields());
+        if (fetchExtended) {
+        	fields.addAll(getPointFields());
+        }
         fields.add(getIdField(module));
         fields.add(getControllerIdField(module));
         fields.add(getField(AgentConstants.PATH, "PATH", module, FieldType.STRING));
@@ -7120,10 +7126,12 @@ public class FieldFactory extends BaseFieldFactory {
     }
 
 
-    public static List<FacilioField> getOPCUAPointFields() {
+    public static List<FacilioField> getOPCUAPointFields(boolean fetchExtended) {
         FacilioModule module = ModuleFactory.getOPCUAPointModule();
         List<FacilioField> fields = new ArrayList<>();
-        fields.addAll(getPointFields());
+        if (fetchExtended) {
+        	fields.addAll(getPointFields());
+        }
         fields.add(getIdField(module));
         fields.add(getControllerIdField(module));
         fields.add(getField(AgentConstants.NAMESPACE, "NAME_SPACE", module, FieldType.NUMBER));
@@ -7131,10 +7139,12 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
-    public static List<FacilioField> getModbusTcpPointFields() {
+    public static List<FacilioField> getModbusTcpPointFields(boolean fetchExtended) {
         FacilioModule module = ModuleFactory.getModbusTcpPointModule();
         List<FacilioField> fields = new ArrayList<>();
-        fields.addAll(getPointFields());
+        if (fetchExtended) {
+        	fields.addAll(getPointFields());
+        }
         fields.add(getIdField(module));
         fields.add(getControllerIdField(module));
         fields.add(getField(AgentConstants.REGISTER_NUMBER, "REGISTER_NUMBER", module, FieldType.NUMBER));
@@ -7142,10 +7152,12 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField(AgentConstants.MODBUS_DATA_TYPE, "MODBUS_DATA_TYPE", module, FieldType.NUMBER));
         return fields;
     }
-    public static List<FacilioField> getSystemPointFields(){
+    public static List<FacilioField> getSystemPointFields(boolean fetchExtended){
         FacilioModule module = ModuleFactory.getSystemPointModule();
         List<FacilioField> fields = new ArrayList<>();
-        fields.addAll(getPointFields());
+        if (fetchExtended) {
+        	fields.addAll(getPointFields());
+        }
         fields.add(getIdField(module));
         fields.add(getControllerIdField(module));
         fields.add(getNameField(module));
@@ -7166,10 +7178,12 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
-    public static List<FacilioField> getModbusRtuPointFields() {
+    public static List<FacilioField> getModbusRtuPointFields(boolean fetchExtended) {
         FacilioModule module = ModuleFactory.getModbusRtuPointModule();
         List<FacilioField> fields = new ArrayList<>();
-        fields.addAll(getPointFields());
+        if (fetchExtended) {
+        	fields.addAll(getPointFields());
+        }
         fields.add(getIdField(module));
         fields.add(getControllerIdField(module));
         fields.add(getField(AgentConstants.REGISTER_NUMBER, "REGISTER_NUMBER", module, FieldType.NUMBER));
@@ -7179,10 +7193,12 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
-    public static List<FacilioField> getBACnetIPPointFields() {
+    public static List<FacilioField> getBACnetIPPointFields(boolean fetchExtended) {
         FacilioModule module = ModuleFactory.getBACnetIPPointModule();
         List<FacilioField> fields = new ArrayList<>();
-        fields.addAll(getPointFields());
+        if (fetchExtended) {
+        	fields.addAll(getPointFields());
+        }
         fields.add(getIdField(module));
         fields.add(getControllerIdField(module));
         fields.add(getField(AgentConstants.INSTANCE_NUMBER, "INSTANCE_NUMBER", module, FieldType.NUMBER));
@@ -7762,6 +7778,29 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getIdField(module));
         fields.add(getField("name", "NAME", module, FieldType.STRING));
         fields.add(getField("relationshipType", "TYPE", module, FieldType.NUMBER));
+
+        return fields;
+    }
+
+    public static List<FacilioField> getClassificationAppliedModulesFields() {
+        FacilioModule module = ModuleFactory.getClassificationAppliedModules();
+        List<FacilioField> fields = new ArrayList<>();
+
+        fields.add(getIdField(module));
+        fields.add(getNumberField("classificationId", "CLASSIFICATION_ID", module));
+        fields.add(getNumberField("moduleId", "MODULE_ID", module));
+
+        return fields;
+    }
+
+    public static List<FacilioField> getClassificationAttributeFields() {
+        FacilioModule module = ModuleFactory.getClassificationAttributeModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        fields.add(getIdField(module));
+        fields.add(getStringField("attributeName", "ATTRIBUTE_NAME", module));
+        fields.add(getNumberField("fieldType", "FIELD_TYPE", module));
+        fields.add(getNumberField("classificationId", "CLASSIFICATION_ID", module));
 
         return fields;
     }

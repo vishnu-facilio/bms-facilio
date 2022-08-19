@@ -20,6 +20,8 @@ import com.facilio.v3.context.Constants;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.LookupFieldMeta;
 import com.facilio.modules.FieldFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 import org.apache.commons.chain.Context;
@@ -29,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 public class SerializeCommand extends FacilioCommand {
+	private static final java.util.logging.Logger LOGGER = Logger.getLogger(SerializeCommand.class.getName());
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -79,7 +82,13 @@ public class SerializeCommand extends FacilioCommand {
 
 				floorplan.setMarkedZones(zones);
 
-				setDeskRecords(floorplan.getMarkers());
+				try {
+					setDeskRecords(floorplan.getMarkers());
+				}
+				catch (NullPointerException e) {
+					LOGGER.log(Level.SEVERE, "no markers present in floorplan" + floorplan.getId());
+					throw e;
+				}
 
 			}
 
@@ -100,9 +109,12 @@ public class SerializeCommand extends FacilioCommand {
 			for (V3MarkerContext marker : markers) {
 				if (marker.getRecordId() != null) {
 
-					FacilioModule recordModule = modBean.getModule(marker.getMarkerModuleId());
+					FacilioModule recordModule = null;
+
            		 
-           		 if(recordModule.getName().equals("desks")) {
+					if(marker.getMarkerModuleId() != null) {
+					recordModule = modBean.getModule(marker.getMarkerModuleId());
+					if(recordModule.getName().equals("desks")) {
 
 					Long id = marker.getRecordId();
 					List<LookupField> supplements = new ArrayList<>();
@@ -127,6 +139,7 @@ public class SerializeCommand extends FacilioCommand {
                     
                     marker.setModuleData(record);
            		 }
+					}
 
 				}
 

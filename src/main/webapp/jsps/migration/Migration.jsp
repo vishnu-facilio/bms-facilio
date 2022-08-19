@@ -79,16 +79,18 @@
             // Have migration commands for each org
             // Transaction is only org level. If failed, have to continue from the last failed org and not from first
             long orgId = AccountUtil.getCurrentOrg().getId();
-            LOGGER.info("Started For -- "+orgId);
-            response.getWriter().println("Started For -- "+orgId);
-            // code
+            printMsg("Started For -- "+AccountUtil.getCurrentOrg().getId());
+            // write code here
+            printMsg("Completed For -- "+AccountUtil.getCurrentOrg().getId());
 
-            LOGGER.info("Completed For -- "+orgId);
-            response.getWriter().println("Completed For -- "+orgId);
             return false;
         }
 
-
+        // to print in both logs and web
+        private void printMsg(String message) throws Exception {
+            LOGGER.info(message);
+            response.getWriter().println(message+"<br>");
+        }
 
     }
 %>
@@ -96,6 +98,7 @@
 <%
     try {
         List<Organization> orgs = AccountUtil.getOrgBean().getOrgs();
+        response.getWriter().println("orgs count ::"+orgs.size()+"<br>");
         if (CollectionUtils.isNotEmpty(orgs)) {
             for (Organization org : orgs) {
                 if (org.getOrgId() > 0) {

@@ -39,13 +39,13 @@ public class OutgoingMailResponseAction extends ActionSupport {
             );
             String mapperId = OutgoingMailAPI.parseMailResponse(awsMailResponseContext);
             status = "Successfully parsed and updated aws mail responses for mapperId :: "+mapperId;
-            LOGGER.info(status);
+            LOGGER.info("OG_MAIL_LOG :: "+status);
             return SUCCESS;
         } catch (Exception e) {
             LOGGER.error("OG_MAIL_ERROR :: OutgoingMailResponse parsing failed.. ");
             String subUrl = (String) requestJson.getOrDefault("SubscribeURL", "-1");
             if(!subUrl.equals("-1")) {
-                LOGGER.error("SubscribeURL detected from aws. Please sign up :: "+subUrl);
+                LOGGER.error("OG_MAIL_ERROR :: SubscribeURL detected from aws. Please sign up :: "+subUrl);
                 parserErrorMsg(e, requestJson);
                 return SUCCESS;
             }
@@ -54,25 +54,26 @@ public class OutgoingMailResponseAction extends ActionSupport {
         }
     }
 
-    private void parserErrorMsg(Exception e, JSONObject requestJson) throws Exception {
-        LOGGER.error("failedData :: "+requestJson);
+    private void parserErrorMsg(Exception e, JSONObject requestJson) {
+        LOGGER.error("OG_MAIL_DATA :: failedData :: "+requestJson);
         if(e.getMessage() == null) {
-            status = e.getStackTrace()[0] + " :: " +e.toString();
+            status = e + " at " + e.getStackTrace()[0];
         } else {
-            status = e.getStackTrace()[1] + " :: "+e.getMessage();
+            status = e.getMessage() + " at "+ e.getStackTrace()[1];
         }
-        LOGGER.error("OG_MAIL_ERROR :: ", e);
+        LOGGER.error("OG_MAIL_ERROR :: " + status, e);
+
     }
 
     private JSONObject parseRequestData() throws Exception {
-        JSONObject requestJson = null;
+        JSONObject requestJson;
         HttpServletRequest request = ServletActionContext.getRequest();
         ((SecurityRequestWrapper)((org.apache.struts2.dispatcher.StrutsRequestWrapper) request).getRequest()).reset();
-        try(InputStreamReader data = new InputStreamReader(request.getInputStream(), StandardCharsets.UTF_8);) {
+        try(InputStreamReader data = new InputStreamReader(request.getInputStream(), StandardCharsets.UTF_8)) {
             JSONParser jsonParser = new JSONParser();
             requestJson = (JSONObject)jsonParser.parse(data);
         }
-        return requestJson;
+        return requestJson == null ? new JSONObject() : requestJson;
     }
 
 }

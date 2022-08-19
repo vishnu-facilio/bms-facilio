@@ -5,11 +5,13 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.services.email.EmailClient;
 import com.facilio.services.email.EmailFactory;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import java.util.Map;
 
+@Log4j
 public class SendMailCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -25,6 +27,7 @@ public class SendMailCommand extends FacilioCommand {
         EmailClient emailClient = EmailFactory.getEmailClient();
         String messageId = emailClient.sendEmailFromWMS(mailJson, files);
         context.put(MailConstants.Params.MESSAGE_ID, messageId);
+        LOGGER.info("OG_MAIL_LOG :: email sent successfully for mapperId "+ context.get(MailConstants.Params.MAPPER_ID));
         return false;
     }
 }

@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import com.facilio.agent.controller.FacilioPoint;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.point.Point;
+import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.StringSystemEnumField;
@@ -420,6 +421,13 @@ public class LookupSpecialTypeUtil {
 		}
 		else if (ModuleFactory.getPMTriggersModule().getName().equals(specialType) || FacilioConstants.ContextNames.PM_TRIGGER.equals(specialType)) {
 			return PreventiveMaintenanceAPI.getPMTriggers(criteria);
+		}
+		else if(ContextNames.AGENT.equals(specialType)) {
+			AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
+			return agentBean.getAgents(criteria);
+		}
+		else if(ContextNames.POINTS.equals(specialType)) {
+			return PointsAPI.getPoints(criteria);
 		}
 		return null;
 	}
