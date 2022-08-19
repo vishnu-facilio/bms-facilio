@@ -120,6 +120,7 @@ public class ReportFactoryFields {
 		selectedFields.add(fields.get("totalCost"));
 		selectedFields.add(fields.get("moduleState"));
 		selectedFields.add(fields.get("requestedBy"));
+		selectedFields.add(fields.get("modifiedTime"));
 		selectedFields.addAll(FieldFactory.getSystemPointFields(woModule));
 		
 		if(AccountUtil.isFeatureEnabled(FeatureLicense.TENANTS)) {
