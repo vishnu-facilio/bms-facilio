@@ -1,7 +1,9 @@
 package com.facilio.mailtracking.bean;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.OutgoingMailAPI;
 import com.facilio.mailtracking.commands.MailTransactionChainFactory;
@@ -76,6 +78,14 @@ public class MailTrackBeanImpl implements MailBean {
 
     @Override
     public void trackAndSendMail(JSONObject mailJson) throws Exception {
+        if("development".equals(FacilioProperties.getEnvironment())) {
+            NewTransactionService.newTransaction(() -> initMailTracking(mailJson));
+        } else {
+            initMailTracking(mailJson);
+        }
+    }
+
+    private void initMailTracking(JSONObject mailJson) throws Exception {
         FacilioChain chain = MailTransactionChainFactory.sendOutgoingMailChain();
         FacilioContext context = chain.getContext();
         context.put(MailConstants.Params.MAIL_JSON, mailJson);

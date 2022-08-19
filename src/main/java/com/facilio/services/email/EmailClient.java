@@ -15,6 +15,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.db.util.DBConf;
 import com.facilio.delegate.context.DelegationType;
 import com.facilio.delegate.util.DelegationUtil;
 import com.facilio.email.BaseEmailClient;
@@ -76,8 +77,8 @@ public abstract class EmailClient extends BaseEmailClient {
     }
 
     private long pushEmailToQueue(JSONObject mailJson, Map<String, String> files) throws Exception {
-
-        if(!"stage".equals(FacilioProperties.getEnvironment())) { // normal behaviour for production env
+        boolean isTrackingConfNotFound = DBConf.getInstance().getMailTrackingConfName()==null;
+        if(isTrackingConfNotFound) { // normal behaviour for production env
             if(files == null) {
                 sendEmail(mailJson);
             } else {
@@ -86,7 +87,7 @@ public abstract class EmailClient extends BaseEmailClient {
             return -1;
         }
 
-        //new behaviour for stage alone
+        //new behaviour for non-prod env
         FacilioChain chain = MailTransactionChainFactory.pushOutgoingMailToQueue();
         FacilioContext context = chain.getContext();
         context.put(MailConstants.Params.MAIL_JSON, mailJson);

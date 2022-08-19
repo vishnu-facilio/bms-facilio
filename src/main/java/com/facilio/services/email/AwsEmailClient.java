@@ -4,6 +4,7 @@ import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.db.util.DBConf;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -39,8 +40,11 @@ class AwsEmailClient extends EmailClient {
         logEmail(mailJson);
         if(canSendEmail(mailJson)) {
             try {
-                if(!"stage".equals(FacilioProperties.getEnvironment()) && (files == null || files.isEmpty())) {
-                    return AwsUtil.sendMail(mailJson, getEmailAddresses(mailJson, TO), getEmailAddresses(mailJson, CC),getEmailAddresses(mailJson, BCC));
+                boolean isTrackingConfNotFound = DBConf.getInstance().getMailTrackingConfName()==null;
+                if(isTrackingConfNotFound) { // normal behaviour for production env
+                    if(files==null || files.isEmpty()) {
+                        return AwsUtil.sendMail(mailJson, getEmailAddresses(mailJson, TO), getEmailAddresses(mailJson, CC),getEmailAddresses(mailJson, BCC));
+                    }
                 }
                 return AwsUtil.sendMail(mailJson, files);
             } catch (Exception ex) {
