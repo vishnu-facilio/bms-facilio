@@ -6,7 +6,6 @@ import com.facilio.agentv2.commands.AgentV2Command;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.point.Point;
-import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.bmsconsole.commands.util.BmsPointsTaggingUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
@@ -20,10 +19,9 @@ public class ConfiguredPointsMlMigration extends AgentV2Command {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         try{
-        List<Map<String, Object>> props = (List<Map<String, Object>>) context.get(AgentConstants.POINTS);
-        List<Point> points = PointsAPI.getPointFromRows(props);
-        Map<Long, List<String>> controllerIdVsPointNamesMap = new HashMap<>();
-        for (Point point : points) {
+            List<Point> points = (List<Point>) context.get(AgentConstants.POINT);
+            Map<Long, List<String>> controllerIdVsPointNamesMap = new HashMap<>();
+            for (Point point : points) {
             if (!controllerIdVsPointNamesMap.containsKey(point.getControllerId())) {
                 if (point.getResourceId() == null || point.getFieldId() == null) {
                     List<String> pointNames = new ArrayList<>();

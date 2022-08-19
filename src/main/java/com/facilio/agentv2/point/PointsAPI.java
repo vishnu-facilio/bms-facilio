@@ -742,5 +742,5 @@ public class PointsAPI {
 				;
     	return getPointRequest.getPoints();
     }
-    
+
 }
