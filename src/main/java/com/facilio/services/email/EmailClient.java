@@ -45,7 +45,9 @@ public abstract class EmailClient extends BaseEmailClient {
 
     private static final Logger LOGGER = LogManager.getLogger(EmailClient.class.getName());
     public static final String mailDomain = FacilioProperties.getMailDomain();
-    
+
+    private boolean viaActiveCheck = false;
+
     public static final String ERROR_MAIL_FROM="mlerror@" + mailDomain;
     public static final String ERROR_MAIL_TO="ai@" + mailDomain;
     public static final String ERROR_AT_FACILIO="error@" + mailDomain;
@@ -67,11 +69,12 @@ public abstract class EmailClient extends BaseEmailClient {
     }
 
     public long sendEmailWithActiveUserCheck(JSONObject mailJson, boolean handleUserDelegation) throws Exception {
+        viaActiveCheck = true;
         if (removeInActiveUsers(mailJson)) {
             if (handleUserDelegation) {
                 checkUserDelegation(mailJson);
             }
-            return pushEmailToQueue(mailJson, null);
+            return sendEmail(mailJson);
         }
         return -1;
     }
@@ -80,9 +83,9 @@ public abstract class EmailClient extends BaseEmailClient {
         boolean isTrackingConfNotFound = DBConf.getInstance().getMailTrackingConfName()==null;
         if(isTrackingConfNotFound) { // normal behaviour for production env
             if(files == null) {
-                sendEmail(mailJson);
+                sendEmailImpl(mailJson);
             } else {
-                sendEmail(mailJson, files);
+                sendEmailImpl(mailJson, files);
             }
             return -1;
         }
@@ -150,10 +153,11 @@ public abstract class EmailClient extends BaseEmailClient {
     	return null;
     }
 
-	public long sendEmailWithActiveUserCheck (JSONObject mailJson, Map<String, String> files) throws Exception {
+    public long sendEmailWithActiveUserCheck (JSONObject mailJson, Map<String, String> files) throws Exception {
+        viaActiveCheck = true;
         if (removeInActiveUsers(mailJson)) {
-        	checkUserDelegation(mailJson);
-            return pushEmailToQueue(mailJson, files);
+            checkUserDelegation(mailJson);
+            return sendEmail(mailJson, files);
         }
         return -1;
     }
@@ -186,8 +190,16 @@ public abstract class EmailClient extends BaseEmailClient {
         return true;
     }
 
+
+    /**
+     * Used to log outgoing mail tracking info. Don't use this method directly.
+     * Use {@link #sendEmailWithActiveUserCheck(JSONObject, Map)} instead.
+     */
     public String sendEmailFromWMS(JSONObject mailJson, Map<String, String> files) throws Exception {
-        return sendEmail(mailJson, files);
+        if(files == null || files.isEmpty()) {
+            return sendEmailImpl(mailJson);
+        }
+        return sendEmailImpl(mailJson, files);
     }
 
     /**
@@ -195,14 +207,25 @@ public abstract class EmailClient extends BaseEmailClient {
      * Use {@link #sendEmailWithActiveUserCheck(JSONObject)} instead.
      */
     @Deprecated
-    public abstract String sendEmail(JSONObject mailJson) throws Exception;
-    
+    public long sendEmail(JSONObject mailJson) throws Exception {
+        return sendEmail(mailJson, null);
+    }
+
     /**
      * @deprecated
      * Use {@link #sendEmailWithActiveUserCheck(JSONObject, Map)} instead.
      */
     @Deprecated
-    public abstract String sendEmail(JSONObject mailJson, Map<String, String> files) throws Exception;
+    public long sendEmail(JSONObject mailJson, Map<String, String> files) throws Exception {
+        if(!viaActiveCheck) {
+            preserveOriginalEmailAddress(mailJson);
+        }
+        return pushEmailToQueue(mailJson, files);
+    }
+
+    protected abstract String sendEmailImpl(JSONObject mailJson) throws Exception;
+    
+    protected abstract String sendEmailImpl(JSONObject mailJson, Map<String, String> files) throws Exception;
 
     MimeMessage getEmailMessage(JSONObject mailJson, Map<String, String> files) throws Exception {
         Session session = getSession();
@@ -298,7 +321,7 @@ public abstract class EmailClient extends BaseEmailClient {
                     ;
             json.put(MESSAGE, body.toString());
 
-            sendEmail(json);
+            sendEmailImpl(json);
         }
         catch(Exception e)
         {
@@ -335,7 +358,7 @@ public abstract class EmailClient extends BaseEmailClient {
     }
     boolean canSendEmail(JSONObject mailJson, Map<String, String> files) throws Exception {
         if(files == null || files.isEmpty() || FacilioProperties.isDevelopment()) {
-            sendEmail(mailJson);
+            sendEmailImpl(mailJson);
             return false;
         }
         return canSendEmail(mailJson);
@@ -372,13 +395,13 @@ public abstract class EmailClient extends BaseEmailClient {
                     }
                 }
             }
-            persistOriginalEmailAddresses(mailJson, key, emailMetaJson);
+            preserveOriginalEmailAddress(mailJson, key, emailMetaJson);
         }
 
         return emailAddress;
     }
 
-    private void persistOriginalEmailAddresses(JSONObject mailJson, String key, JSONObject emailMetaJson) {
+    private void preserveOriginalEmailAddress(JSONObject mailJson, String key, JSONObject emailMetaJson) {
         String originalKey = "original"+StringUtils.capitalize(key);
         if(mailJson.containsKey(originalKey)) {
             return;
@@ -386,4 +409,9 @@ public abstract class EmailClient extends BaseEmailClient {
         mailJson.put(originalKey, emailMetaJson);
     }
 
+    private void preserveOriginalEmailAddress(JSONObject mailJson) throws Exception {
+        getEmailAddresses(mailJson, TO, false);
+        getEmailAddresses(mailJson, CC, false);
+        getEmailAddresses(mailJson, BCC, false);
+    }
 }

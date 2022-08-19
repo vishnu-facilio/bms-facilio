@@ -87,8 +87,8 @@ public class MandrillEmailClient extends EmailClient {
     }
 
     @Override
-    public String sendEmail(JSONObject mailJson) throws Exception {
-        return sendEmail(mailJson, new HashMap<>());
+    public String sendEmailImpl(JSONObject mailJson) throws Exception {
+        return sendEmailImpl(mailJson, new HashMap<>());
     }
 
 
@@ -178,7 +178,7 @@ public class MandrillEmailClient extends EmailClient {
     }
 
     @Override
-    public String sendEmail(JSONObject mailJson, Map<String, String> files) throws Exception {
+    public String sendEmailImpl(JSONObject mailJson, Map<String, String> files) throws Exception {
         sendEmailViaHttpConnection(mailJson, files);
         return null;
     }

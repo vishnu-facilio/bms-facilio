@@ -25,14 +25,16 @@ class AwsEmailClient extends EmailClient {
         LOGGER.error("AWS Email Client created");
     }
 
-    public String sendEmail(JSONObject mailJson) throws Exception  {
+    @Override
+    public String sendEmailImpl(JSONObject mailJson) throws Exception  {
         return sendEmailViaAws(mailJson, null);
     }
     public static EmailClient getClient(){
         return INSTANCE;
     }
 
-    public String sendEmail(JSONObject mailJson, Map<String,String> files) throws Exception  {
+    @Override
+    public String sendEmailImpl(JSONObject mailJson, Map<String,String> files) throws Exception  {
         return sendEmailViaAws(mailJson, files);
     }
 
