@@ -1,7 +1,11 @@
 package com.facilio.accounts.dto;
 
 import com.facilio.accounts.util.AccountConstants.GroupMemberRole;
-
+import com.facilio.bmsconsole.context.PeopleContext;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
+import lombok.Getter;
+import lombok.Setter;
+@Deprecated
 public class GroupMember extends User {
 
 	/**
@@ -22,8 +26,8 @@ public class GroupMember extends User {
 	private long groupId;
 	private long ouid;
 	private int memberRole;
-	
-
+	@Getter@Setter
+	private V3PeopleContext people;
 	public long getGroupId() {
 		return groupId;
 	}

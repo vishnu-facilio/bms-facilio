@@ -70,10 +70,15 @@ import com.facilio.bmsconsoleV3.commands.people.CheckforPeopleDuplicationCommand
 import com.facilio.bmsconsoleV3.commands.people.FetchLabourAndUserContextForPeople;
 import com.facilio.bmsconsoleV3.commands.people.MarkRandomContactAsPrimaryCommandV3;
 import com.facilio.bmsconsoleV3.commands.people.ValidateContactsBeforeDeleteCommandV3;
+
 import com.facilio.bmsconsoleV3.commands.purchaseorder.DeleteReceivableByPOIdV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.FetchPODetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.LoadAssociatedTermsLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.LoadPOSummaryLookupCommandV3;
+
+import com.facilio.bmsconsoleV3.commands.peoplegroup.FetchPeopleGroupMembersCommand;
+import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
+
 import com.facilio.bmsconsoleV3.commands.purchaserequest.FetchPurchaseRequestDetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestSummaryLookupCommandV3;
@@ -142,6 +147,7 @@ import com.facilio.bmsconsoleV3.context.jobplan.JobPlanItemsContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanServicesContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanToolsContext;
 import com.facilio.bmsconsoleV3.context.labour.LabourContextV3;
+import com.facilio.bmsconsoleV3.context.peoplegroup.V3PeopleGroupContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3ReceiptContext;
@@ -2237,6 +2243,19 @@ public class APIv3Config {
                 .beforeFetch(MailReadOnlyChainFactory.getBeforeFetchMailRecipientListChain())
                 .summary()
                 .beforeFetch(new OutgoingRecipientLoadSupplementsCommand())
+                .build();
+    }
+
+    @Module(FacilioConstants.PeopleGroup.PEOPLE_GROUP)
+    public static Supplier<V3Config> getPeopleGroups() {
+        return () -> new V3Config(V3PeopleGroupContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .beforeSave(new SetOuIdInPeopleGroupMemberCommand())
+                .list()
+                .afterFetch(new FetchPeopleGroupMembersCommand())
+                .update()
+                .beforeSave(new SetOuIdInPeopleGroupMemberCommand())
+                .delete()
                 .build();
     }
 }

@@ -6,8 +6,6 @@ import com.facilio.bmsconsole.automation.command.ListGlobalVariableCommand;
 import com.facilio.bmsconsole.automation.command.ListGlobalVariableGroupCommand;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.commands.module.GetSortableFieldsCommand;
-import com.facilio.bmsconsoleV3.commands.asset.AssetSupplementsSupplyCommand;
-import com.facilio.bmsconsoleV3.commands.asset.CheckPMForAssetsCommandV3;
 import com.facilio.bmsconsoleV3.commands.building.BuildingFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.employee.LoadEmployeeLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.floorplan.*;
@@ -17,6 +15,7 @@ import com.facilio.bmsconsoleV3.commands.homepage.getHomePageCommand;
 import com.facilio.bmsconsoleV3.commands.homepage.getHomePageWidgetDataCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddPlannerIdFilterCriteriaCommand;
 import com.facilio.bmsconsoleV3.commands.people.FetchScopingForPeopleCommandV3;
+import com.facilio.bmsconsoleV3.commands.peoplegroup.V3FetchPeopleGroupCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.AddDefaultCriteriaForQuoteFetchCommandV3;
 import com.facilio.bmsconsoleV3.commands.quotation.QuotationFillLookupFields;
 import com.facilio.bmsconsoleV3.commands.readingimportapp.FetchMyReadingImportDataList;
@@ -312,6 +311,12 @@ public class ReadOnlyChainFactoryV3 {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new JoinAndFetchAnnouncementPeopleCommandV3());
         chain.addCommand(new LoadEmployeeLookupCommandV3());
+        return chain;
+    }
+
+    public static FacilioChain getPeopleGroupChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new V3FetchPeopleGroupCommand());
         return chain;
     }
 }

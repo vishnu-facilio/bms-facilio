@@ -14,7 +14,6 @@ import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
-import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -36,7 +35,6 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
-import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -1396,8 +1394,8 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 					}
 				}
 			} 
-			if (assignmentGroup != null && assignmentGroup.getGroupId() > 0) {
-				assignmentGroup = AccountUtil.getGroupBean().getGroup(assignmentGroup.getGroupId());
+			if (assignmentGroup != null && assignmentGroup.getId() > 0) {
+				assignmentGroup = AccountUtil.getGroupBean().getGroup(assignmentGroup.getId());
 				groupSiteId = assignmentGroup.getSiteId();
 			}
 			
@@ -1520,8 +1518,8 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		}
 		
 		long groupSiteId = -1;
-		if (assignmentGroup != null && assignmentGroup.getGroupId() != -1) {
-			assignmentGroup = AccountUtil.getGroupBean().getGroup(assignmentGroup.getGroupId());
+		if (assignmentGroup != null && assignmentGroup.getId() != -1) {
+			assignmentGroup = AccountUtil.getGroupBean().getGroup(assignmentGroup.getId());
 			groupSiteId = assignmentGroup.getSiteId();
 		}
 	

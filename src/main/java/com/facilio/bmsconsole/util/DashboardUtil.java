@@ -4,7 +4,6 @@ import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.*;
@@ -1896,7 +1895,7 @@ public class DashboardUtil {
 						else if (dashboardSharing.getSharingTypeEnum().equals(SharingType.GROUP)) {
 							List<Group> mygroups = AccountUtil.getGroupBean().getMyGroups(user.getOuid());
 							for (Group group : mygroups) {
-								if (dashboardSharing.getGroupId() == group.getGroupId() && !dashboardList.contains(dashboardMap.get(dashboardSharing.getDashboardId()))) {
+								if (dashboardSharing.getGroupId() == group.getId() && !dashboardList.contains(dashboardMap.get(dashboardSharing.getDashboardId()))) {
 									dashboardList.add(dashboardMap.get(dashboardSharing.getDashboardId()));
 								}
 							}

@@ -17,7 +17,6 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.jobs.WorkOrderRequestEmailParser;
 import com.facilio.bmsconsole.templates.ControlActionTemplate;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ReadingRuleType;
@@ -33,7 +32,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.PickListOperators;
@@ -43,7 +41,6 @@ import com.facilio.events.context.EventContext;
 import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
-import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.mailtracking.context.MailSourceType;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -566,7 +563,7 @@ public enum ActionType {
 			}
 
 			if (groupID != -1 &&
-					(workOrder.getAssignmentGroup() == null || workOrder.getAssignmentGroup().getGroupId() == -1)) {
+					(workOrder.getAssignmentGroup() == null || workOrder.getAssignmentGroup().getId() == -1)) {
 				Group group = new Group();
 				group.setId(groupID);
 				workOrder.setAssignmentGroup(group);
@@ -613,7 +610,7 @@ public enum ActionType {
 			}
 
 			if (groupID != -1 &&
-					(workOrder.getAssignmentGroup() == null || workOrder.getAssignmentGroup().getGroupId() == -1)) {
+					(workOrder.getAssignmentGroup() == null || workOrder.getAssignmentGroup().getId() == -1)) {
 				Group group = new Group();
 				group.setId(groupID);
 				workOrder.setAssignmentGroup(group);

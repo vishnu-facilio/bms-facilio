@@ -97,7 +97,7 @@ public class ValidateWOForUpdate extends FacilioCommand {
                 (wo.getAssignmentGroup().getId() <= 0)) {
             return false;
         }
-        Group assignmentGroup = AccountUtil.getGroupBean().getGroup(wo.getAssignmentGroup().getGroupId());
+        Group assignmentGroup = AccountUtil.getGroupBean().getGroup(wo.getAssignmentGroup().getId());
         long groupSiteId = assignmentGroup.getSiteId();
         long siteId = oldWo.getSiteId();
         return (groupSiteId > 0 && groupSiteId != siteId);

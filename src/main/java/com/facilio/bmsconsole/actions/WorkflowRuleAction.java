@@ -56,7 +56,7 @@ public class WorkflowRuleAction extends FacilioAction {
 //		assignmentGroupList = new HashMap<>();
 //		if (groups != null && groups.size() > 0) {
 //			for(Group group : groups) {
-//				assignmentGroupList.put(group.getGroupId(), group.getName());
+//				assignmentGroupList.put(group.getId(), group.getName());
 //			}
 //		}
 //		

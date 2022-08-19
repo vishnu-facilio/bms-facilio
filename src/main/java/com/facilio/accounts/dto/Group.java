@@ -3,152 +3,52 @@ package com.facilio.accounts.dto;
 import java.io.Serializable;
 import java.util.List;
 
+import com.facilio.v3.context.V3Context;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.struts2.json.annotations.JSON;
+@Getter@Setter@Deprecated
+public class Group extends V3Context implements Serializable {
 
-public class Group implements Serializable {
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	private long id = -1L;
-	private long groupId = -1;
-	private long orgId = -1;
+	private Long groupId;
 	private String name;
 	private String email;
 	private String description;
-//	private boolean isActive;
 	private long createdTime = -1;
 	private long createdBy = -1;
 	private long parent = -1;
-	private long siteId = -1;
-	
-	public long getGroupId() {
-		return id;
-	}
-	public long getId() {
-		return id;
-	}
-	public void setId(long id) {
-		this.id = id;
+	private String phone;
+	private String groupMembersEmail;
+	private String groupMembersPhone;
+	private String groupMembersIds;
+	private List<GroupMember> members;
+	private Boolean isActive;
+
+	public void setId(Long id) {
 		this.groupId = id;
 	}
-	public void setGroupId(long groupId) {
-		this.groupId = groupId;
+
+	public Long getGroupId() {
+		return getId();
 	}
-	public long getOrgId() {
-		return orgId;
-	}
-	public void setOrgId(long orgId) {
-		this.orgId = orgId;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getEmail() {
-		return email;
-	}
-	public void setEmail(String email) {
-		this.email = email;
-	}
-	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String description) {
-		this.description = description;
-	}
-//	public boolean isActive() {
-//		return isActive;
-//	}
-//	public void setActive(boolean isActive) {
-//		this.isActive = isActive;
-//	}
-//	
-	private Boolean isActive;
-	public Boolean getIsActive() {
-		return isActive;
-	}
-	public void setIsActive(Boolean isActive) {
-		this.isActive = isActive;
-	}
+
 	public boolean isActive() {
-		if(isActive != null) {
-			return isActive.booleanValue();
-		}
-		return false;
+		return isActive != null && isActive.booleanValue();
 	}
-	public long getCreatedTime() {
-		return createdTime;
-	}
-	public void setCreatedTime(long createdTime) {
-		this.createdTime = createdTime;
-	}
-	public long getCreatedBy() {
-		return createdBy;
-	}
-	public void setCreatedBy(long createdBy) {
-		this.createdBy = createdBy;
-	}
-	public long getParent() {
-		return parent;
-	}
-	public void setParent(long parent) {
-		this.parent = parent;
-	}
-	
-	private String phone;
-	public String getPhone() {
-		return phone;
-	}
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-	
-	private String groupMembersEmail;
 
 	@JSON(serialize=false)
 	public String getGroupMembersEmail() {
 		return groupMembersEmail;
 	}
-	public void setGroupMembersEmail(String groupMembersEmail) {
-		this.groupMembersEmail = groupMembersEmail;
-	}
-	
-	private String groupMembersPhone;
 
 	@JSON(serialize=false)
 	public String getGroupMembersPhone() {
 		return groupMembersPhone;
 	}
-	public void setGroupMembersPhone(String groupMembersPhone) {
-		this.groupMembersPhone = groupMembersPhone;
-	}
-	
-	private String groupMembersIds;
 
 	@JSON(serialize=false)
 	public String getGroupMembersIds() {
 		return groupMembersIds;
 	}
-	public void setGroupMembersIds(String groupMembersIds) {
-		this.groupMembersIds = groupMembersIds;
-	}
-	
-	private List<GroupMember> members;
-	public List<GroupMember> getMembers() {
-		return members;
-	}
-	public void setMembers(List<GroupMember> members) {
-		this.members = members;
-	}
-	public long getSiteId() {
-		return siteId;
-	}
-	public void setSiteId(long siteId) {
-		this.siteId = siteId;
-	} 
+
 }

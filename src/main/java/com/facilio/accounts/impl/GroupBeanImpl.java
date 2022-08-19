@@ -1,25 +1,15 @@
 package com.facilio.accounts.impl;
 
-import java.sql.SQLException;
-import java.util.*;
-
-import com.facilio.db.criteria.operators.StringOperators;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.util.Strings;
-
 import com.facilio.accounts.bean.GroupBean;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountConstants.GroupMemberRole;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -28,54 +18,47 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.iam.accounts.util.IAMUserUtil;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.context.Constants;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.util.Strings;
+
+import java.util.*;
 
 public class GroupBeanImpl implements GroupBean {
 
 	@Override
-	public long createGroup(long orgId, Group group) throws Exception {
-		
-		group.setOrgId(orgId);
+	public long createGroup(Group group, FacilioModule module) throws Exception {
+
+		group.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		group.setCreatedTime(System.currentTimeMillis());
+		group.setModuleId(module.getModuleId());
 		group.setIsActive(true);
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(AccountConstants.getGroupModule().getTableName())
 				.fields(AccountConstants.getGroupFields());
-		
+
 		Map<String, Object> props = FieldUtil.getAsProperties(group);
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
-		
+
 		long groupId = (Long) props.get("id");
-		updateGroupId(groupId); // will remove later
 		return groupId;
-	}
-
-	private void updateGroupId(long id) throws SQLException {
-		Map<String,Object> prop = new HashMap<>();
-		prop.put("groupId",id);
-
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(AccountConstants.getGroupModule().getTableName())
-				.fields(AccountConstants.getGroupFields())
-				.andCondition(CriteriaAPI.getCondition("ID","id",id+"",NumberOperators.EQUALS));
-		updateBuilder.update(prop);
-
 	}
 
 	@Override
 	public boolean updateGroup(long groupId, Group group) throws Exception {
-		
+		FacilioModule module = AccountConstants.getGroupModule();
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(AccountConstants.getGroupModule().getTableName())
+				.table(module.getTableName())
 				.fields(AccountConstants.getGroupFields())
-				.andCustomWhere("GROUPID = ?", groupId);
+				.andCustomWhere("ID = ?", groupId);
 
 		Map<String, Object> props = FieldUtil.getAsProperties(group);
 		int updatedRows = updateBuilder.update(props);
@@ -87,11 +70,11 @@ public class GroupBeanImpl implements GroupBean {
 
 	@Override
 	public boolean deleteGroup(long groupId) throws Exception {
-		
+
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 				.table(AccountConstants.getGroupModule().getTableName())
-				.andCustomWhere("GROUPID = ?", groupId);
-		
+				.andCustomWhere("ID = ?", groupId);
+
 		int deletedRows = builder.delete();
 		if (deletedRows == 1) {
 			return true;
@@ -105,15 +88,17 @@ public class GroupBeanImpl implements GroupBean {
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(AccountConstants.getGroupMemberModule().getTableName())
 				.fields(AccountConstants.getGroupMemberFields());
-		
+
+		FacilioModule module = Constants.getModBean().getModule(FacilioConstants.PeopleGroup.PEOPLE_GROUP_MEMBER);
+
 		for (long ouid : ouidList) {
 			GroupMember member = new GroupMember();
 			member.setGroupId(groupId);
 			member.setOuid(ouid);
 			member.setMemberRole(memberRole);
-			
-			member.setGroupId(groupId);
 			Map<String, Object> props = FieldUtil.getAsProperties(member);
+			props.put(FacilioConstants.ContextNames.PEOPLE,PeopleAPI.getPeopleForId(PeopleAPI.getPeopleIdForUser(ouid)).getId());
+			props.put("moduleId",module.getModuleId());
 			insertBuilder.addRecord(props);
 		}
 		insertBuilder.save();
@@ -227,6 +212,7 @@ public class GroupBeanImpl implements GroupBean {
 			List<GroupMember> members = new ArrayList<>();
 			IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), false);
 			for(Map<String, Object> prop : props) {
+				prop.put("people",PeopleAPI.getPeopleForId((Long) prop.get("people")));
 				prop.put("id", prop.get("ouid"));
 				members.add(FieldUtil.getAsBeanFromMap(prop, GroupMember.class));
 			}
@@ -237,16 +223,16 @@ public class GroupBeanImpl implements GroupBean {
 
 	@Override
 	public Group getGroup(long groupId) throws Exception {
-		FacilioModule module = AccountConstants.getGroupModule();
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getGroupFields())
-				.table(module.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCustomWhere("GROUPID = ?", groupId);
+		FacilioModule module = Constants.getModBean().getModule(FacilioConstants.PeopleGroup.PEOPLE_GROUP);
+		SelectRecordsBuilder<Group> selectBuilder = new SelectRecordsBuilder<Group>()
+				.select(Constants.getModBean().getAllFields(module.getName()))
+				.module(module)
+				.beanClass(Group.class)
+				.andCondition(CriteriaAPI.getIdCondition(groupId,module));
 		
-		List<Map<String, Object>> props = selectBuilder.get();
+		List<Group> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			Group group = FieldUtil.getAsBeanFromMap(props.get(0), Group.class);
+			Group group =props.get(0);
 			populateGroupEmailAndPhone(group);
 			return group;
 		}
@@ -254,16 +240,16 @@ public class GroupBeanImpl implements GroupBean {
 	}
 	
 	public Group getGroup(String groupName) throws Exception {
-		FacilioModule module = AccountConstants.getGroupModule();
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getGroupFields())
-				.table(module.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+		FacilioModule module = Constants.getModBean().getModule(FacilioConstants.PeopleGroup.PEOPLE_GROUP);
+		SelectRecordsBuilder<Group> selectBuilder = new SelectRecordsBuilder<Group>()
+				.select(Constants.getModBean().getAllFields(module.getName()))
+				.module(module)
+				.beanClass(Group.class)
 				.andCustomWhere("GROUP_NAME = ?", groupName);
 		
-		List<Map<String, Object>> props = selectBuilder.get();
+		List<Group> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			Group group = FieldUtil.getAsBeanFromMap(props.get(0), Group.class);
+			Group group = props.get(0);
 			populateGroupEmailAndPhone(group);
 			return group;
 		}
@@ -308,9 +294,11 @@ public class GroupBeanImpl implements GroupBean {
 	@Override
 	public List<Group> getGroups(Criteria criteria) throws Exception {
 		FacilioModule module = AccountConstants.getGroupModule();
+		List<FacilioField> fields = AccountConstants.getGroupFields();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getGroupFields())
+				.select(fields)
 				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCondition("SYS_DELETED_TIME","sysDeletedTime",null, CommonOperators.IS_EMPTY))
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				;
 
@@ -338,8 +326,8 @@ public class GroupBeanImpl implements GroupBean {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(fields).get("groupId"), ids, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("SYS_DELETED_TIME","sysDeletedTime",null, CommonOperators.IS_EMPTY))
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(fields).get("id"), ids, NumberOperators.EQUALS))
 				;
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -378,16 +366,17 @@ public class GroupBeanImpl implements GroupBean {
 		if (!siteIds.isEmpty()) {
 			siteCondition = " AND (SITE_ID IS NULL OR SITE_ID IN (" + Strings.join(siteIds, ',') + "))";
 		}
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getGroupFields())
-				.table(AccountConstants.getGroupModule().getTableName())
+		FacilioModule module = Constants.getModBean().getModule(FacilioConstants.PeopleGroup.PEOPLE_GROUP);
+		SelectRecordsBuilder<Group> selectBuilder = new SelectRecordsBuilder<Group>()
+				.select(Constants.getModBean().getAllFields(module.getName()))
+				.module(module)
+				.beanClass(Group.class)
 				.andCustomWhere("ORGID = ?" + siteCondition, orgId);
 		
-		List<Map<String, Object>> props = selectBuilder.get();
+		List<Group> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			for(Map<String, Object> prop : props) {
-				Group group = FieldUtil.getAsBeanFromMap(prop, Group.class);
+			for(Group group : props) {
+
 				group.setMembers(AccountUtil.getGroupBean().getGroupMembers(group.getId()));
 				//populateGroupEmailAndPhone(group);
 				groups.add(group);
@@ -435,12 +424,13 @@ public class GroupBeanImpl implements GroupBean {
 		else{
 			siteCondition = " AND (SITE_ID IS NULL OR SITE_ID IN (" + Strings.join(siteIds, ',') + "))";
 		}
-		
-		
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getGroupFields())
-				.table(AccountConstants.getGroupModule().getTableName())
+
+
+		FacilioModule module = Constants.getModBean().getModule(FacilioConstants.PeopleGroup.PEOPLE_GROUP);
+		SelectRecordsBuilder<Group> selectBuilder = new SelectRecordsBuilder<Group>()
+				.select(Constants.getModBean().getAllFields(module.getName()))
+				.module(module)
+				.beanClass(Group.class)
 				.andCustomWhere("ORGID = ? AND IS_ACTIVE = true"+siteCondition, orgId);
 		
 		if(perPage > 0 && offset >= 0) {
@@ -458,11 +448,10 @@ public class GroupBeanImpl implements GroupBean {
 			criteria.addOrCondition(condition_name);
 			selectBuilder.andCriteria(criteria);
 		}
-		List<Map<String, Object>> props = selectBuilder.get();
+		List<Group> props = selectBuilder.get();
 		List<Long> ouids = new ArrayList<>();
 		if (props != null && !props.isEmpty()) {
-			for(Map<String, Object> prop : props) {
-				Group group = FieldUtil.getAsBeanFromMap(prop, Group.class);
+			for(Group group : props) {
 
 				if (fetchMembers) {
 					populateGroupEmailAndPhone(group);
@@ -498,12 +487,12 @@ public class GroupBeanImpl implements GroupBean {
 	public List<Group> getMyGroups(long ouid) throws Exception {
 		
 		List<Group> groups = new ArrayList<>();
-		
+		FacilioModule module = AccountConstants.getGroupModule();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getGroupFields())
-				.table(AccountConstants.getGroupModule().getTableName())
+				.table(module.getTableName())
 				.innerJoin(AccountConstants.getGroupMemberModule().getTableName())
-				.on("FacilioGroups.GROUPID = FacilioGroupMembers.GROUPID")
+				.on("FacilioGroups.ID = FacilioGroupMembers.GROUPID")
 				.andCustomWhere("FacilioGroupMembers.ORG_USERID = ? and FacilioGroups.IS_ACTIVE = true", ouid);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -520,9 +509,9 @@ public class GroupBeanImpl implements GroupBean {
 
 	@Override
 	public boolean changeGroupStatus(long groupId, Group group) throws Exception {
-		
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder().table(AccountConstants.getGroupModule().getTableName()).fields(AccountConstants.getGroupFields())
-				.andCustomWhere("GROUPID = ?", group.getGroupId());
+		FacilioModule module =AccountConstants.getGroupModule();
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder().table(module.getTableName()).fields(AccountConstants.getGroupFields())
+				.andCustomWhere("ID = ?", group.getId());
 		Map<String, Object> props = FieldUtil.getAsProperties(group);
 		updateBuilder.update(props);
 		int updatedRows = updateBuilder.update(props);

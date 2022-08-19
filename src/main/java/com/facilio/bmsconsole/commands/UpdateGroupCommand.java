@@ -16,9 +16,9 @@ public class UpdateGroupCommand extends FacilioCommand {
 		
 		if (group != null) {
 			
-			AccountUtil.getGroupBean().updateGroup(group.getGroupId(), group);
+			AccountUtil.getGroupBean().updateGroup(group.getId(), group);
 			
-			context.put(FacilioConstants.ContextNames.GROUP_ID, group.getGroupId());
+			context.put(FacilioConstants.ContextNames.GROUP_ID, group.getId());
 		}
 		else {
 			throw new IllegalArgumentException("Group Object cannot be null");

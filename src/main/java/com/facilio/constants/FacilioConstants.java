@@ -1,5 +1,6 @@
 package com.facilio.constants;
 
+import com.facilio.accounts.dto.Group;
 import com.facilio.activity.ActivityContext;
 import com.facilio.agent.alarms.AgentAlarmContext;
 import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
@@ -3075,6 +3076,11 @@ public class FacilioConstants {
 		public static final String SKILLS = "craftSkill";
 
 		public static final String LABOUR_CRAFT = "labourCraftSkill";
+	}
+
+	public static class PeopleGroup {
+		public static final String PEOPLE_GROUP = "peopleGroup";
+		public static final String PEOPLE_GROUP_MEMBER = "peopleGroupMember";
 	}
 
 	public static class Shift {

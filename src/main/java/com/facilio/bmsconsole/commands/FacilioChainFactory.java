@@ -165,6 +165,7 @@ public class FacilioChainFactory {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new ValidateWorkOrderFieldsCommand());
 		c.addCommand(new AddGroupCommand());
+		c.addCommand(new SetOuIdInPeopleGroupMemberCommand());
 		c.addCommand(new AddGroupMembersCommand());
 		return c;
 	}
