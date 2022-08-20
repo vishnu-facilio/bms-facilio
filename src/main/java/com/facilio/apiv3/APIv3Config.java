@@ -43,6 +43,7 @@ import com.facilio.bmsconsoleV3.commands.facility.*;
 import com.facilio.bmsconsoleV3.commands.failureclass.CheckForDuplicateFailureCode;
 import com.facilio.bmsconsoleV3.commands.failureclass.FetchFailureClassSubModules;
 import com.facilio.bmsconsoleV3.commands.failureclass.FetchFailureClassSupplements;
+import com.facilio.bmsconsoleV3.commands.failureclass.FetchFailureCodeSupplements;
 import com.facilio.bmsconsoleV3.commands.floor.CreateFloorAfterSave;
 import com.facilio.bmsconsoleV3.commands.floor.FloorFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.floor.SetFloorRelatedContextCommand;
@@ -601,17 +602,26 @@ public class APIv3Config {
 
     @Module("failurecodeproblems")
     public static Supplier<V3Config> getFailureCodeProblems() {
-        return () -> new V3Config(V3FailureCodeProblemsContext.class, null);
+        return () -> new V3Config(V3FailureCodeProblemsContext.class, null)
+                .list()
+                .beforeFetch(new FetchFailureCodeSupplements())
+                .build();
     }
 
     @Module("failurecodecauses")
     public static Supplier<V3Config> getFailureCodeCauses() {
-        return () -> new V3Config(V3FailureCodeCausesContext.class, null);
+        return () -> new V3Config(V3FailureCodeCausesContext.class, null)
+                .list()
+                .beforeFetch(new FetchFailureCodeSupplements())
+                .build();
     }
 
     @Module("failurecoderemedies")
     public static Supplier<V3Config> getFailureCodeRemedies() {
-        return () -> new V3Config(V3FailureCodeRemediesContext.class, null);
+        return () -> new V3Config(V3FailureCodeRemediesContext.class, null)
+                .list()
+                .beforeFetch(new FetchFailureCodeSupplements())
+                .build();
     }
 
     @Module("insurance")
