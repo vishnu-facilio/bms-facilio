@@ -14,6 +14,8 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -31,6 +33,9 @@ public class AwardVendorsCommandV3 extends FacilioCommand {
         List<V3RequestForQuotationLineItemsContext> requestForQuotationLineItems = (List<V3RequestForQuotationLineItemsContext>) context.get(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION_LINE_ITEMS);
 
        for(V3RequestForQuotationLineItemsContext lineItem : requestForQuotationLineItems){
+            if(lineItem.getAwardedPrice() == null){
+                throw new RESTException(ErrorCode.VALIDATION_ERROR,"Vendor has not quoted the counter price");
+            }
             Double totalCost=lineItem.getQuantity()* lineItem.getAwardedPrice();
 
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
