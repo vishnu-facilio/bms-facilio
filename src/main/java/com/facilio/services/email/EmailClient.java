@@ -27,6 +27,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -81,7 +82,9 @@ public abstract class EmailClient extends BaseEmailClient {
 
     private long pushEmailToQueue(JSONObject mailJson, Map<String, String> files) throws Exception {
         boolean isTrackingConfNotFound = DBConf.getInstance().getMailTrackingConfName()==null;
-        if(isTrackingConfNotFound) { // normal behaviour for production env
+        ModuleBean modBean = Constants.getModBean();
+        boolean isSignUp = modBean.getModule(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER) == null;
+        if(isSignUp || isTrackingConfNotFound) { // normal behaviour for production env
             if(files == null) {
                 sendEmailImpl(mailJson);
             } else {
