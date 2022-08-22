@@ -2005,7 +2005,7 @@ public class FacilioConstants {
 
 		public static final String PEOPLE = "people";
 
-		public static final String WORKORDER_FAILURE_CLASS_RELATIONSHIP = "workOrderFailureClassRelationship";
+		public static final String WORKORDER_FAILURE_CLASS_RELATIONSHIP = "workorderFailureClassRelationship";
 		public static final String CUSTOM_MODULE_DATA_FAILURE_CLASS_RELATIONSHIP = "customModuleDataFailureClassRelationship";
 
 		public static final String ACCESS_NEEDED_FOR = "accessNeeded";
