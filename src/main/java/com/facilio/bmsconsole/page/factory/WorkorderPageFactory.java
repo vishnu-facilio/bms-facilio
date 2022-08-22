@@ -109,7 +109,7 @@ public class WorkorderPageFactory extends PageFactory {
         int widgetHeight = 3;
         PageWidget slaRemainingDuration = new PageWidget(PageWidget.WidgetType.SLA_REMAINING_TIME);
         slaRemainingDuration.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
-        slaRemainingDuration.addToWidgetParams("dateField", "sla_current_time_workorder");
+        slaRemainingDuration.addToWidgetParams("dateField", "responseDueDate");
         section.addWidget(slaRemainingDuration);
         yOffset += widgetHeight;
 
