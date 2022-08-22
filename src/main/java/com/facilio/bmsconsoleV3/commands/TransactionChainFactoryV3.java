@@ -1140,6 +1140,7 @@ public class TransactionChainFactoryV3 {
 
     public static Command getServiceRequestAfterUpdateChain() {
         FacilioChain chain = getDefaultChain();
+        chain.addCommand(new AddCommentForServiceRequestCommand());
         chain.addCommand(new FillActivityforServiceRequestCommand());
         return chain;
     }

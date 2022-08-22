@@ -1140,6 +1140,9 @@ public class FormsAPI {
 			if (moduleName.equals(ContextNames.WORK_ORDER)) {
 				defaultFields.add(new FormField("comment", FieldDisplayType.TICKETNOTES, "Comment", Required.OPTIONAL, "ticketnotes", defaultFields.size()+1, 1));
 			}
+			if (moduleName.equals(ContextNames.SERVICE_REQUEST)) {
+				defaultFields.add(new FormField("comment", FieldDisplayType.TICKETNOTES, "Comment", Required.OPTIONAL, "servicerequestsnotes", defaultFields.size()+1, 1));
+			}
 			if (defaultForm.getId() == -1) {
 				setFieldDetails(modBean, defaultFields, moduleName);
 			}
