@@ -648,6 +648,7 @@ public class FacilioConstants {
 		public static final String MODULE_DISPLAY_NAME = "moduleDisplayName";
 		public static final String DUPLICATE_OBJECT = "duplicateObj";
 		public static final String STATE_FLOW_ENABLED = "stateFlowEnabled";
+		public static final String FAILURE_REPORTING_ENABLED = "failureReportingEnabled";
 		public static final String MODULE_DATA_TABLE_NAME = "moduleDataTable";
 		public static final String MODULE_DATA = "moduleData";
 		public static final String MODULE_DATA_LIST = "moduleDatas";
@@ -2003,6 +2004,9 @@ public class FacilioConstants {
 		public static final String VENDOR_CONTACTS = "vendorcontacts";
 
 		public static final String PEOPLE = "people";
+
+		public static final String WORKORDER_FAILURE_CLASS_RELATIONSHIP = "workOrderFailureClassRelationship";
+		public static final String CUSTOM_MODULE_DATA_FAILURE_CLASS_RELATIONSHIP = "customModuleDataFailureClassRelationship";
 
 		public static final String ACCESS_NEEDED_FOR = "accessNeeded";
 

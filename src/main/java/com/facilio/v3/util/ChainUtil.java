@@ -10,6 +10,7 @@ import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
 import com.facilio.bmsconsoleV3.commands.AddOrUpdateSLABreachJobCommandV3;
 import com.facilio.bmsconsoleV3.commands.ExecutePostTransactionWorkFlowsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.VerifyApprovalCommandV3;
+import com.facilio.bmsconsoleV3.context.CustomModuleDataFailureClassRelationship;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -564,6 +565,9 @@ public class ChainUtil {
             beanClass = config.getBeanClass();
         }
         if (beanClass == null) {
+            if (module.getTypeEnum() == FacilioModule.ModuleType.CUSTOM_MODULE_DATA_FAILURE_CLASS_RELATIONSHIP) {
+                return CustomModuleDataFailureClassRelationship.class;
+            }
             if (module.isCustom()) {
                 if (module.getTypeEnum() == FacilioModule.ModuleType.ATTACHMENTS) {
                     beanClass = AttachmentV3Context.class;
@@ -573,12 +577,11 @@ public class ChainUtil {
             } else {
                 beanClass = FacilioConstants.ContextNames.getClassFromModule(module);
                 if (beanClass == null) {
-                	if (module.getTypeEnum() == FacilioModule.ModuleType.ATTACHMENTS) {
+                    if (module.getTypeEnum() == FacilioModule.ModuleType.ATTACHMENTS) {
                         beanClass = AttachmentV3Context.class;
+                    } else {
+                        beanClass = V3Context.class;
                     }
-                	else {
-                		beanClass = V3Context.class;
-                	}
                 }
             }
         }

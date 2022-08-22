@@ -2,7 +2,6 @@ package com.facilio.bmsconsoleV3.context;
 
 import com.facilio.bmsconsole.context.BusinessHoursContext;
 import com.facilio.bmsconsole.enums.SourceType;
-import com.facilio.bmsconsoleV3.context.failurecode.V3FailureClassContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
@@ -208,16 +207,5 @@ public class V3ResourceContext extends V3Context {
 	}
 
 	private Long sourceId;
-
-
-	public V3FailureClassContext getFailureClass() {
-		return failureClass;
-	}
-
-	public void setFailureClass(V3FailureClassContext failureClass) {
-		this.failureClass = failureClass;
-	}
-
-	private V3FailureClassContext failureClass;
 
 }
