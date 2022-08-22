@@ -275,6 +275,9 @@ public class PageWidget {
 		UNDER_REVIEW("underReview"),
 		DETAILS_TABLE("detailstable"),
 		DETAILS_TAB("detailsTab"),
+
+
+
 		SUPPLIER_CANCELLED_PAYMENTS("supplierCancelledPayments"),
 		SUPPLIER_CARDS("supplierCards"),
 		SUPPLIER_CARDS2("supplierCards2"),
@@ -378,6 +381,7 @@ public class PageWidget {
 		SCHEDULED_DURATION("scheduledDuration"),
 		ACTUAL_DURATION("actualDuration"),
 		WORK_DURATION("workDuration"),
+		SLA_REMAINING_TIME("slaRemainingTime"),
 		RESOURCE("resource"),
 		RESPONSIBILITY("responsibility"),
 		WORKORDER_DETAILS("workorderDetails"),
@@ -454,7 +458,8 @@ public class PageWidget {
 		PLANNED_INVENTORY_ITEMS("plannedInventoryItems"),
 		PLANNED_INVENTORY_SERVICES("plannedInventoryServices"),
 		PLANNED_INVENTORY_LABOR("plannedInventoryLabor"),
-		PLANNED_INVENTORY_TOOLS("plannedInventoryTools");
+		PLANNED_INVENTORY_TOOLS("plannedInventoryTools"),
+		BUDGET_TRANSACTIONS("budgetTransactions");
 
 		private String name;
 

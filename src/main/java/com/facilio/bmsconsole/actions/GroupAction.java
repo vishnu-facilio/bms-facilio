@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.actions;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.v3.V3Action;
 import org.apache.commons.chain.Command;
 
 import com.facilio.accounts.dto.Group;
@@ -12,9 +13,8 @@ import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionContext;
-import com.opensymphony.xwork2.ActionSupport;
 
-public class GroupAction extends ActionSupport {
+public class GroupAction extends V3Action {
 	
 	/**
 	 * 
@@ -75,14 +75,14 @@ public class GroupAction extends ActionSupport {
 		
 		// setting necessary fields
 		group.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-		
+
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.GROUP, getGroup());
 		context.put(FacilioConstants.ContextNames.GROUP_MEMBER_IDS, getMembers());
-		
+
 		Command addGroup = FacilioChainFactory.getAddGroupCommand();
 		addGroup.execute(context);
-		setGroupId(group.getGroupId());
+		setGroupId(group.getId());
 		
 		return SUCCESS;
 	}
@@ -106,9 +106,9 @@ public class GroupAction extends ActionSupport {
 	public String editGroup() throws Exception {
 				
 //		setSetup(SetupLayout.getEditGroupLayout());
-//		setGroup(GroupAPI.getGroup(getGroupId()));
+//		setGroup(GroupAPI.getGroup(getId()));
 //		
-//		Map<Long, String> membersMap = GroupAPI.getGroupMembersMap(getGroupId());
+//		Map<Long, String> membersMap = GroupAPI.getGroupMembersMap(getId());
 //		List<Long> membersList = new ArrayList<>();
 //		Iterator<Long> itr = membersMap.keySet().iterator();
 //		while (itr.hasNext()) {
@@ -134,6 +134,8 @@ public class GroupAction extends ActionSupport {
 	public String deleteGroup() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME,getModuleName());
+		context.put(FacilioConstants.ContextNames.DATA,getData());
 		context.put(FacilioConstants.ContextNames.GROUP_ID, getGroupId());
 
 		Command deleteGroup = FacilioChainFactory.getDeleteGroupCommand();

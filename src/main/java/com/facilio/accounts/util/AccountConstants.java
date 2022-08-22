@@ -649,8 +649,8 @@ public class AccountConstants {
 
 	public static FacilioModule getGroupModule() {
 		FacilioModule groupModule = new FacilioModule();
-		groupModule.setName("groups");
-		groupModule.setDisplayName("Groups");
+		groupModule.setName("peopleGroup");
+		groupModule.setDisplayName("People Group");
 		groupModule.setTableName("FacilioGroups");
 
 		return groupModule;
@@ -658,8 +658,8 @@ public class AccountConstants {
 
 	public static FacilioModule getGroupMemberModule() {
 		FacilioModule groupMemberModule = new FacilioModule();
-		groupMemberModule.setName("groupmember");
-		groupMemberModule.setDisplayName("Group Members");
+		groupMemberModule.setName("peopleGroupMember");
+		groupMemberModule.setDisplayName("People Group Members");
 		groupMemberModule.setTableName("FacilioGroupMembers");
 
 		return groupMemberModule;
@@ -1122,6 +1122,7 @@ public class AccountConstants {
 		List<FacilioField> fields = new ArrayList<>();
 
 		fields.add(FieldFactory.getIdField(module));
+		fields.add(FieldFactory.getModuleIdField(module));
 
 		FacilioField groupId = new FacilioField();
 		groupId.setName("groupId");
@@ -1195,11 +1196,12 @@ public class AccountConstants {
 		FacilioModule module = getGroupMemberModule();
 		List<FacilioField> fields = new ArrayList<>();
 
-//		fields.add(FieldFactory.getIdField(module));
+		fields.add(FieldFactory.getIdField(module));
+		fields.add(FieldFactory.getModuleIdField(module));
 
 		FacilioField memberId = new FacilioField();
 		memberId.setName("memberId");
-		memberId.setDataType(FieldType.ID);
+		memberId.setDataType(FieldType.NUMBER);
 		memberId.setColumnName("MEMBERID");
 		memberId.setModule(module);
 		fields.add(memberId);
@@ -1217,6 +1219,13 @@ public class AccountConstants {
 		ouid.setColumnName("ORG_USERID");
 		ouid.setModule(module);
 		fields.add(ouid);
+
+		FacilioField people = new FacilioField();
+		people.setName("people");
+		people.setDataType(FieldType.LOOKUP);
+		people.setColumnName("PEOPLE_ID");
+		people.setModule(module);
+		fields.add(people);
 
 		FacilioField memberRole = new FacilioField();
 		memberRole.setName("memberRole");

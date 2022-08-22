@@ -12,9 +12,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.facilio.agent.controller.FacilioPoint;
 import com.facilio.agentv2.cacheimpl.AgentBean;
-import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.modules.*;
@@ -100,7 +98,7 @@ public class LookupSpecialTypeUtil {
 			return FieldFactory.getAsMap(AccountConstants.getAppOrgUserFields()).get("ouid");
 		}
 		else if (FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
-			return FieldFactory.getAsMap(AccountConstants.getGroupFields()).get("groupId"); 
+			return FieldFactory.getAsMap(AccountConstants.getGroupFields()).get("id");
 		}
 		else if (FacilioConstants.ContextNames.ROLE.equals(specialType)) {
 			return FieldFactory.getAsMap(AccountConstants.getRoleFields()).get("roleId");
@@ -183,7 +181,7 @@ public class LookupSpecialTypeUtil {
 			List<FieldOption<Long>> groupList = null;
 			if (CollectionUtils.isNotEmpty(groups)) {
 				groupList = groups.stream()
-								.map(group -> new FieldOption<>(group.getGroupId(), group.getName()))
+								.map(group -> new FieldOption<>(group.getId(), group.getName()))
 								.collect(Collectors.toList());
 			}
 			return groupList;
@@ -271,7 +269,7 @@ public class LookupSpecialTypeUtil {
 			List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getOrgId(), true);
 			Map<Long, String> groupList = new HashMap<>();
 			for(Group group : groups) {
-				groupList.put(group.getGroupId(), group.getName());
+				groupList.put(group.getId(), group.getName());
 			}
 			return groupList;
 		}

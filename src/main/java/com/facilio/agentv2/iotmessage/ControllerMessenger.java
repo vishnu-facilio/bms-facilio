@@ -200,7 +200,9 @@ public class ControllerMessenger {
                     if (pointsSize < MAX_BUFFER) {
                         pointsArray.add(point);
                     } else {
-                        object.put("points", pointsArray);
+                        JSONArray pointsArrayCopy = new JSONArray();
+                        pointsArrayCopy.addAll(pointsArray);
+                        object.put("points", pointsArrayCopy);
                         messages.add(MessengerUtil.getMessageObject(object, command));
                         pointsArray.clear();
                         pointsSize = point.toJSONString().length();

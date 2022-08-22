@@ -6,15 +6,17 @@ import java.util.List;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.util.AccountConstants.GroupMemberRole;
+import com.facilio.chain.FacilioContext;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.modules.FacilioModule;
 
 public interface GroupBean {
 	
-	public long createGroup(long orgId, Group group) throws Exception;
+	public long createGroup(Group group, FacilioModule module) throws Exception;
 
 	public boolean updateGroup(long groupId, Group group) throws Exception;
 
-	public boolean deleteGroup(long groupId) throws Exception;
+	public boolean deleteGroup(long conext) throws Exception;
 
 	public boolean addGroupMember(long groupId, List<Long> ouidList, GroupMemberRole memberRole) throws Exception;
 	

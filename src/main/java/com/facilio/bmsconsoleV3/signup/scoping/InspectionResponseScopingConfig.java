@@ -15,23 +15,23 @@ import com.facilio.modules.FacilioModule;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 public class InspectionResponseScopingConfig extends SignUpData {
     @Override
     public void addData() throws Exception {
         try {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            FacilioModule resourceModule = modBean.getModule(FacilioConstants.Inspection.INSPECTION_RESPONSE);
-
+            FacilioModule inspectionTemplateModule = modBean.getModule(FacilioConstants.Inspection.INSPECTION_RESPONSE);
             //adding site scope in Facilio
             long applicationScopingId = ApplicationApi.addDefaultScoping(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
             ScopingConfigContext scoping = new ScopingConfigContext();
             Criteria criteria = new Criteria();
             Condition condition = CriteriaAPI.getCondition("siteId", "com.facilio.modules.SiteValueGenerator", ScopeOperator.SCOPING_IS);
-            condition.setModuleName(resourceModule.getName());
+            condition.setModuleName(inspectionTemplateModule.getName());
             criteria.addAndCondition(condition);
             scoping.setScopingId(applicationScopingId);
-            scoping.setModuleId(resourceModule.getModuleId());
+            scoping.setModuleId(inspectionTemplateModule.getModuleId());
             scoping.setCriteria(criteria);
 
             //adding site scope in Maintenance
@@ -39,10 +39,10 @@ public class InspectionResponseScopingConfig extends SignUpData {
             ScopingConfigContext maintenanceScoping = new ScopingConfigContext();
             Criteria maintenanceCriteria = new Criteria();
             Condition maintenanceCondition = CriteriaAPI.getCondition("siteId", "com.facilio.modules.SiteValueGenerator", ScopeOperator.SCOPING_IS);
-            maintenanceCondition.setModuleName(resourceModule.getName());
+            maintenanceCondition.setModuleName(inspectionTemplateModule.getName());
             maintenanceCriteria.addAndCondition(maintenanceCondition);
             maintenanceScoping.setScopingId(maintenanceScopingId);
-            maintenanceScoping.setModuleId(resourceModule.getModuleId());
+            maintenanceScoping.setModuleId(inspectionTemplateModule.getModuleId());
             maintenanceScoping.setCriteria(maintenanceCriteria);
             ApplicationApi.addScopingConfigForApp(Arrays.asList(scoping,maintenanceScoping));
 

@@ -1,12 +1,13 @@
-package com.facilio.classifcation.command;
+package com.facilio.classification.command;
 
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
-import com.facilio.classifcation.context.ClassificationAttributeContext;
-import com.facilio.classifcation.context.ClassificationContext;
+import com.facilio.classification.context.ClassificationAttributeContext;
+import com.facilio.classification.context.ClassificationContext;
+import com.facilio.classification.util.ClassificationCache;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -22,6 +23,7 @@ import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.SetUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -29,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 
 public class BeforeSaveClassificationCommand extends FacilioCommand {
+
+    private ClassificationCache cache = new ClassificationCache();
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -49,9 +53,16 @@ public class BeforeSaveClassificationCommand extends FacilioCommand {
         return false;
     }
 
-    private void validateClassification(ClassificationContext classificationContext) {
+    private void validateClassification(ClassificationContext classificationContext) throws Exception {
         FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(classificationContext.getName()), "Classification name cannot be empty");
         FacilioUtil.throwIllegalArgumentException(CollectionUtils.isEmpty(classificationContext.getAppliedModuleIds()), "Classification should be applied to at least one module");
+
+        if (classificationContext.getParentClassification() != null) {
+            ClassificationContext parentClassification = cache.getFromCache(classificationContext.getParentClassification().getId());
+            if (!(parentClassification.getAppliedModuleIds().containsAll(classificationContext.getAppliedModuleIds()))) {
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Child classification has modules that doesn't contain in parent");
+            }
+        }
     }
 
     private String generateLinkName(String name) throws Exception {
@@ -67,6 +78,7 @@ public class BeforeSaveClassificationCommand extends FacilioCommand {
         List<Map<String, Object>> maps = builder.get();
         if (CollectionUtils.isNotEmpty(maps)) {
             // TODO
+            throw new IllegalArgumentException("Link name already found");
         }
         return linkName;
     }

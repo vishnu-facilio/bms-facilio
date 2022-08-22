@@ -18,18 +18,18 @@ public class AddGroupMembersCommand extends FacilioCommand {
 		
 		Long groupId = (Long) context.get(FacilioConstants.ContextNames.GROUP_ID);
 		Long[] memberIds = (Long[]) context.get(FacilioConstants.ContextNames.GROUP_MEMBER_IDS);
-		
+
 		if (groupId != null && memberIds != null) {
-			
+
 			List<Long> members = new ArrayList<>();
 			for (long memberId : memberIds) {
 				members.add(memberId);
 			}
-			
+
 			GroupBean groupBean = AccountUtil.getGroupBean();
-			
+
 			groupBean.removeAllGroupMembers(groupId);
-			
+
 			groupBean.addGroupMember(groupId, members, AccountConstants.GroupMemberRole.MEMBER);
 		}
 		else {

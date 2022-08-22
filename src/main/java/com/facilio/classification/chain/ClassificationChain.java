@@ -1,9 +1,7 @@
-package com.facilio.classifcation.chain;
+package com.facilio.classification.chain;
 
 import com.facilio.chain.FacilioChain;
-import com.facilio.classifcation.command.AfterSaveClassificationCommand;
-import com.facilio.classifcation.command.ResolveClassificationPathCommand;
-import com.facilio.classifcation.command.ValidateListCommand;
+import com.facilio.classification.command.*;
 
 public class ClassificationChain {
 
@@ -15,6 +13,8 @@ public class ClassificationChain {
 
     public static FacilioChain getAfterSummaryChain() {
         FacilioChain chain = FacilioChain.getNonTransactionChain();
+        chain.addCommand(new GetClassificationAppliedModulesCommand());
+        chain.addCommand(new GetClassificationAttributesCommand());
         chain.addCommand(new ResolveClassificationPathCommand());
         return chain;
     }
@@ -28,6 +28,12 @@ public class ClassificationChain {
     public static FacilioChain getBeforeListChain() {
         FacilioChain chain = FacilioChain.getNonTransactionChain();
         chain.addCommand(new ValidateListCommand());
+        return chain;
+    }
+
+    public static FacilioChain getBeforeUpdateChain() {
+        FacilioChain chain = FacilioChain.getTransactionChain();
+        chain.addCommand(new BeforeUpdateClassificationCommand());
         return chain;
     }
 }

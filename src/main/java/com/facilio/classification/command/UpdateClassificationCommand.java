@@ -1,6 +1,6 @@
-package com.facilio.classifcation.command;
+package com.facilio.classification.command;
 
-import com.facilio.classifcation.context.ClassificationContext;
+import com.facilio.classification.context.ClassificationContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.util.FacilioUtil;

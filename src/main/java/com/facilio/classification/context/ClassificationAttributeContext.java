@@ -1,4 +1,4 @@
-package com.facilio.classifcation.context;
+package com.facilio.classification.context;
 
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;

@@ -1,5 +1,6 @@
 package com.facilio.constants;
 
+import com.facilio.accounts.dto.Group;
 import com.facilio.activity.ActivityContext;
 import com.facilio.agent.alarms.AgentAlarmContext;
 import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
@@ -76,7 +77,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
 //import com.facilio.custom.CustomController;
 
 public class FacilioConstants {
@@ -1310,6 +1310,8 @@ public class FacilioConstants {
 		public static final String RELATION_MODULE_NAME = "relationModuleName";
 
 		public static final String CLASSIFICATION = "classification";
+		public static final String CLASSIFICATION_RESOLVE_PATH = "classificationResolvePath";
+
 		public static final String CLASSIFICATION_DONT_RESOLVE_PATH = "classificationDontResolvePath";
 
 		public static final String SPACECATEGORY = "SPACECATEGORY";
@@ -3072,6 +3074,11 @@ public class FacilioConstants {
 		public static final String SKILLS = "craftSkill";
 
 		public static final String LABOUR_CRAFT = "labourCraftSkill";
+	}
+
+	public static class PeopleGroup {
+		public static final String PEOPLE_GROUP = "peopleGroup";
+		public static final String PEOPLE_GROUP_MEMBER = "peopleGroupMember";
 	}
 
 	public static class Shift {

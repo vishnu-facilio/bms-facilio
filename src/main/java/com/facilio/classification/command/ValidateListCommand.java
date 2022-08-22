@@ -1,4 +1,4 @@
-package com.facilio.classifcation.command;
+package com.facilio.classification.command;
 
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;

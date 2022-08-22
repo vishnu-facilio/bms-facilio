@@ -55,7 +55,8 @@ public class ValidationRulesAPI {
 					.table(validationModule.getTableName())
 					.fields(fields);
 
-			builder.insert(FieldUtil.getAsProperties(validationContext));
+			long id = builder.insert(FieldUtil.getAsProperties(validationContext));
+			validationContext.setId(id);
 		}
 
 	}

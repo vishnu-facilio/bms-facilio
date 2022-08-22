@@ -107,9 +107,10 @@ public class WorkorderPageFactory extends PageFactory {
 
         // work duration widget
         int widgetHeight = 3;
-        PageWidget workDuration = new PageWidget(PageWidget.WidgetType.WORK_DURATION);
-        workDuration.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
-        section.addWidget(workDuration);
+        PageWidget slaRemainingDuration = new PageWidget(PageWidget.WidgetType.SLA_REMAINING_TIME);
+        slaRemainingDuration.addToLayoutParams(xOffset, yOffset, widgetWidth, widgetHeight);
+        slaRemainingDuration.addToWidgetParams("dateField", "sla_current_time_workorder");
+        section.addWidget(slaRemainingDuration);
         yOffset += widgetHeight;
 
         // total cost widget

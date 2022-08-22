@@ -8,6 +8,7 @@ import com.facilio.agentv2.bacnet.BacnetIpPointContext;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.GetControllerRequest;
 import com.facilio.agentv2.modbusrtu.RtuNetworkContext;
+import com.facilio.agentv2.rdm.RdmControllerContext;
 import com.facilio.bacnet.BACNetUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
@@ -152,7 +153,7 @@ public class PointsUtil
                             }
                             if (controller.getControllerType() == FacilioControllerType.MODBUS_IP.asInt() ||
                                     controller.getControllerType() == FacilioControllerType.MODBUS_RTU.asInt() ||
-                                    controller.getControllerType() == FacilioControllerType.RDM.asInt()) {
+                                    (controller.getControllerType() == FacilioControllerType.RDM.asInt() && ((RdmControllerContext) controller).isTdb())) {
                                 if (agentType == AgentType.FACILIO.getKey() || agent.getAgentTypeEnum().isAgentService()) {
                                     point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
                                 }

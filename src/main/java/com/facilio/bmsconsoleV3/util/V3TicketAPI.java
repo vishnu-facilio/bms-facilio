@@ -6,7 +6,6 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsoleV3.context.V3TaskContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
@@ -23,7 +22,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.util.FacilioUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections.CollectionUtils;
@@ -122,8 +120,8 @@ public class V3TicketAPI {
                     }
                 }
             }
-            if (assignmentGroup != null && assignmentGroup.getGroupId() > 0) {
-                assignmentGroup = AccountUtil.getGroupBean().getGroup(assignmentGroup.getGroupId());
+            if (assignmentGroup != null && assignmentGroup.getId() > 0) {
+                assignmentGroup = AccountUtil.getGroupBean().getGroup(assignmentGroup.getId());
                 groupSiteId = assignmentGroup.getSiteId();
             }
 
@@ -222,8 +220,8 @@ public class V3TicketAPI {
         }
 
         long groupSiteId = -1;
-        if (assignmentGroup != null && assignmentGroup.getGroupId() != -1) {
-            assignmentGroup = AccountUtil.getGroupBean().getGroup(assignmentGroup.getGroupId());
+        if (assignmentGroup != null && assignmentGroup.getId() != -1) {
+            assignmentGroup = AccountUtil.getGroupBean().getGroup(assignmentGroup.getId());
             groupSiteId = assignmentGroup.getSiteId();
         }
 

@@ -2118,7 +2118,7 @@
 				class="com.facilio.bmsconsole.actions.FormValidationRuleAction" method="deleteRule">
 		</action>
 	</package>
-	
+
 	<package name="formRuleApiv2" namespace="/api/v2/form/rule"
 		extends="v2Api">
 		<action name="add"

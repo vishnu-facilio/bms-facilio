@@ -494,7 +494,8 @@ public class AgentAction extends AgentActionV2 {
                 .append("privateKeyName=facilio-private.key").append(System.lineSeparator())
                 .append("certName=facilio.crt").append(System.lineSeparator())
                 .append("endpoint=").append(FacilioProperties.getIotEndPoint()).append(System.lineSeparator())
-                .append("topic=").append(domainName);
+                .append("topic=").append(domainName).append(System.lineSeparator())
+                .append("interval.ms=").append(agent.getInterval() * 60000);
         AgentType type = AgentType.valueOf(agent.getAgentType());
         if (type == AgentType.FACILIO) {
             builder.append(System.lineSeparator())
