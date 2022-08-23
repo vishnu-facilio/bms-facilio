@@ -1,16 +1,15 @@
 package com.facilio.accounts.dto;
 
-import java.io.Serializable;
-import java.util.List;
-
-import com.facilio.v3.context.V3Context;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.struts2.json.annotations.JSON;
-@Getter@Setter@Deprecated
-public class Group extends V3Context implements Serializable {
 
-	private Long groupId;
+import java.io.Serializable;
+import java.util.List;
+@Getter@Setter@Deprecated
+public class Group extends ModuleBaseWithCustomFields implements Serializable {
+
 	private String name;
 	private String email;
 	private String description;
@@ -24,12 +23,11 @@ public class Group extends V3Context implements Serializable {
 	private List<GroupMember> members;
 	private Boolean isActive;
 
-	public void setId(Long id) {
-		this.groupId = id;
-	}
-
-	public Long getGroupId() {
+	public long getGroupId() {
 		return getId();
+	}
+	public void setGroupId (long id) {
+		setId(id);
 	}
 
 	public boolean isActive() {
