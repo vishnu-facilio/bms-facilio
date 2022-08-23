@@ -75,12 +75,14 @@ public class BmsPointsTaggingUtil {
     }
 
     public static void tagPointListV1(List<HashMap<String, Object>> pointsMapList) throws Exception {
+        LOGGER.info("tagPointListV1 pointsMapList to Tag :" + pointsMapList.toString());
         HashMap<String, String> splitterMap = BmsPointsTaggingUtil.getSplitterMap();
         List<String> pointNameList = convertToList(pointsMapList, splitterMap);
         tagPointList(pointNameList, pointsMapList, null);
     }
 
     private static Map<String, Map<String, Object>> predictApi(List<String> pointNameList) throws Exception {
+        LOGGER.info("predictApi method pointNameList :" + pointNameList.toString());
         JSONObject postObj = new JSONObject();
         postObj.put("data", pointNameList);
         //postObj.put("splitter",splitter);
@@ -348,6 +350,8 @@ public class BmsPointsTaggingUtil {
 
     public static void updateTaggedPointList(Map<String, Map<String, Map<Long, String>>> actualTaggedMap) throws
             Exception {
+        LOGGER.info("updateTaggedPointList method actualTaggedMap :" + actualTaggedMap.toString());
+
         //Map<String, String> concatnatedPointNameMap = getConcatenatedPointMap(new ArrayList<String>(actualTaggedMap.keySet()));
         Map<String, Map<String, Object>> predictedMap = getTaggedPointListFromPoint(new ArrayList<String>(actualTaggedMap.keySet()), null);
         Map<String, Map<String, String>> wronglyPredictedMap = new HashMap<String, Map<String, String>>();
